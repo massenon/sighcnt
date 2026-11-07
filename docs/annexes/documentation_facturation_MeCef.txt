@@ -1,0 +1,152 @@
+pour la facturation MeCef lire ce repo (module electronique de controle de facturation de la DGI)
+https://github.com/issotina/eltrade-cc300-driver
+
+Je confie ces quatre demandes à un agent.
+
+Un agent construit vos quatre demandes en arrière-plan. Voici ce qu’il fait :
+
+Prix entiers : tous les montants envoyés à la DGI seront des nombres entiers en FCFA, calculés au même endroit pour les prix unitaires et les totaux. Les totaux restent égaux à la somme des lignes et au total des paiements. Les quantités peuvent garder des décimales (kg), mais pas les prix.
+Choix à la vente : à l’encaissement, au POS web et à la caisse du poste, la vente demande « Facture simple » (par défaut, jamais transmise) ou « Facture normalisée ».
+Pour une facture normalisée, une fenêtre demande l’IFU du client, son nom et prénom, et le taux AIB (5 % par défaut, avec 1 % et « Aucun » en choix).
+Ces informations sont rangées dans la vente, imprimées sur la facture, et transmises à la DGI.
+Hors ligne, la vente part « en attente » et le serveur la transmet à la synchronisation.
+Livraison : les frais de livraison entrent dans le total de la vente et sur la facture normalisée, avec une ligne « Frais de livraison ». L’agent prépare le traitement comptable en gardant les écritures équilibrées, sans casser les ventes déjà enregistrées.
+Formulaire de réglage e-MECeF : une carte « Facturation normalisée (e-MECeF) » claire dans Paramètres. Elle contient le mode, l’IFU sur 13 chiffres, l’adresse de l’API, l’opérateur et le jeton masqué. Le jeton se saisit au web seulement. Un bouton « Tester la configuration » vérifie la configuration et fait un appel en lecture sans créer de facture. Il affiche un résultat en français, par exemple « Jeton refusé (401) » ou « Configuration valide ». L’agent n’invente pas l’adresse de l’environnement d’essai : s’il ne la trouve pas dans une source fiable, vous la saisirez.
+Au premier essai réel, vous saisirez le jeton et l’IFU, testerez la configuration, passerez en mode e-MECeF, puis facturerez une vente de test en choisissant « Facture normalisée ». Le rapport de l’agent décrira ce parcours pas à pas.
+
+Je vous donne le résultat, avec les tests, quand l’agent a fini.
+
+
+44 background commands completed
+Je lance les deux suites complètes, et je joue les nouvelles migrations sur MariaDB pendant ce temps.
+
+Ran a command, finished a background agent
+Les trois nouvelles migrations passent sur MariaDB, sur base fraîche puis en annulation et rejeu. Je commite et je pousse l’état actuel pendant que les suites complètes tournent.
+
+Ran 2 commands
+Vos quatre demandes sont construites et poussées sur claude/sleepy-dijkstra-uvt68t. Les deux suites complètes tournent encore, et je vous donne leurs résultats dès qu’elles sont finies. Sans elles, les tests ciblés de l’agent sont verts et flutter analyze est propre. Rien n’a été essayé contre la vraie DGI.
+
+Ce qui est fait
+
+Prix entiers : tout ce qui part à la DGI est un entier en FCFA, calculé par une seule fonction d’arrondi. Une remise se répartit sur les lignes, et l’écart d’arrondi est absorbé par la plus grande ligne. Une quantité décimale reste possible : si le prix ne divise pas juste, la ligne passe à quantité 1 avec « (2,5 kg) » dans le libellé.
+Choix à la vente : « Facture simple » est le choix par défaut et n’est jamais transmise, même module actif. Avec « Facture normalisée », une fenêtre demande le nom et prénom du client, son IFU s’il en a un, et l’AIB (5 % par défaut, 1 % ou aucun). C’est identique au POS web et à la caisse du poste. L’IFU est aussi un champ de la fiche client, au web et au poste.
+Livraison : les frais entrent dans le total de la vente, la trésorerie et la créance, et la facture porte une ligne « Frais de livraison ». C’est valable pour les nouvelles ventes seulement, les ventes déjà enregistrées ne bougent pas. La caisse du poste ne saisit toujours pas la livraison.
+Formulaire de réglage : un onglet « Facturation normalisée (e-MECeF) » au web et au poste, avec le mode, l’IFU, l’adresse de l’API et l’opérateur. Le jeton et le bouton « Tester la configuration » sont au web seulement.
+Migrations sur MariaDB : les trois nouvelles migrations (IFU client, choix de facture, livraison incluse) passent sur MariaDB, sur base fraîche puis en annulation et rejeu.
+
+Parcours du premier essai réel (au web)
+
+Paramètres, puis « Facturation normalisée (e-MECeF) ».
+Mode « e-MECeF (en ligne) », et l’IFU de 13 chiffres.
+Préréglage « Environnement d’essai (DGI) ».
+Coller le jeton du compte e-MECeF, puis Enregistrer.
+« Tester la configuration » : attendre « Configuration valide ».
+À la caisse : un produit, « Facture normalisée », le nom du client, puis valider la vente.
+Dans Facturation, la ligne passe à « Normalisée » avec le QR code, le code, le NIM et les compteurs. En cas de refus, le motif en français s’affiche et « Retransmettre » existe.
+Imprimer le PDF : QR code, IFU, nom et AIB.
+Points à confirmer ou à connaître
+
+Adresses de l’API : celle que j’avais appelée « production » est en fait l’environnement d’essai, d’après le paquet de référence. Elle reste l’adresse par défaut, donc un premier essai ne part pas en production. api.impots.bj/sygmef-emcf/api devient le préréglage « Production ». Aucune documentation de la DGI ne confirme ces deux adresses.
+AIB : le champ aib de l’API et le fait que l’AIB reste hors du total envoyé viennent du paquet non officiel. La DGI peut refuser, et son motif s’affichera tel quel.
+Déclaration de TVA : elle ne retient que les ventes normalisées. Les factures simples n’y figurent pas, y compris celles issues d’un devis. À confirmer avec le cabinet FAGUEZ.
+Anciennes ventes : celles déjà normalisées restent « normalisée », les autres passent « simple », donc aucune vieille vente ne part à la DGI sans accord.
+Factures issues d’un devis : elles sont des factures simples.
+Ran cut…
+Laravel est vert : 3071 tests passés. Flutter a deux échecs, que j’examine.
+
+Ran 4 commands
+Les suites sont vertes, poussées sur claude/sleepy-dijkstra-uvt68t.
+
+Laravel : 3071 tests passés, 0 échec.
+Flutter : 4105 tests passés, avec 2 échecs que j’ai corrigés. Je n’ai relancé que ces deux fichiers, qui passent. Je n’ai pas refait de suite complète.
+Les deux échecs, dus aux nouveautés MECEF-3 :
+
+Onglets des réglages : le test attendait « Email (SMTP) » juste après « Données de l’Entreprise », alors que l’onglet « Facturation normalisée (e-MECeF) » s’y intercale. Il vérifie maintenant cet ordre au web et au poste.
+Fiche client : l’envoi de la fiche client porte maintenant l’IFU, vide pour un particulier. Le test l’attend.
+
+
+pour la facturation MeCef lire ce repo (module electronique de controle de facturation de la DGI)
+https://github.com/issotina/eltrade-cc300-driver
+
+J’ai lu le dépôt Banelsems/laraSgmefQR (v4.0.0). Voici ce que j’en retiens, mon avis sur la proposition que vous avez collée, et ce que je propose de construire.
+
+Ce que montre laraSgmefQR (l’API e-MECeF en ligne)
+C’est un paquet Laravel qui parle à l’API de la DGI (https://developper.impots.bj/sygmef-emcf/api) avec un jeton JWT en Authorization: Bearer.
+
+Création : POST /invoice, avec l’IFU de l’entreprise (13 chiffres), le type (FV vente, FA avoir, EV et EA exportation), le client, l’opérateur, les articles, les paiements et, pour un avoir, la référence de la facture d’origine. La réponse donne un uid, les totaux de TVA et un statut. Elle ne donne pas encore le QR code.
+Confirmation : PUT /invoice/{uid}/confirm renvoie le code MECeF DGI, le QR code, la date, les compteurs et le NIM. C’est ce qui rend la facture normalisée.
+Annulation : PUT /invoice/{uid}/cancel ou POST /invoice/cancel.
+Informations : GET /info/status, /info/taxGroups, /info/invoiceTypes, /info/paymentTypes.
+Ce que le paquet apporte en plus : une facture « en attente » expire localement après 2 minutes, les erreurs de l’API sont classées (authentification, limite de débit, délai dépassé, réseau), et il y a des événements de suivi.
+Détails de format : les groupes de taxe vont de A à F. Les modes de paiement sont ESPECES, VIREMENT, CARTEBANCAIRE, MOBILEMONEY, CHEQUES, CREDIT et AUTRE. Le paquet vérifie que les paiements sont égaux au total.
+Deux voies, qui se complètent
+e-MECeF (en ligne)	Boîtier CC300 (poste)
+Matériel	aucun	CC300 branché en USB à la réception
+Sans internet	impossible : création et confirmation exigent le réseau	possible : le boîtier garde la facture et la transmet plus tard
+Où ça se passe	le serveur (ou n’importe quel écran en ligne)	le poste, via le pilote local
+Factures créées au web	oui	non, il faut un poste
+Comme le Gîte a des coupures d’internet, le boîtier est la bonne voie pour le poste de la réception. L’e-MECeF convient aux factures créées au web, et tant que vous êtes en ligne.
+
+Mon avis sur la proposition que vous avez collée
+Réglage du mode (« Désactivé », « e-MECeF (en ligne) », « Boîtier ») : bonne idée, je la reprends.
+Jeton chiffré, masqué à l’écran, jamais envoyé au poste ni écrit dans le journal : à reprendre tel quel.
+Création puis confirmation en deux temps, vente déjà normalisée jamais retransmise, erreur qui laisse la vente « en attente » avec un motif en français : à reprendre.
+Facture normalisée figée, correction par un avoir transmis comme facture d’avoir : à reprendre. Cela correspond à ce que TATACORA fait déjà pour les avoirs.
+Le relais serveur vers le PC du Gîte : écarté, il est inutile puisque le poste appelle directement le pilote.
+Points à vérifier avant de coder
+DGI : peut-on utiliser le boîtier et l’e-MECeF avec le même IFU ? Je ne connais pas la règle. Elle est à confirmer auprès de la DGI ou de votre conseiller.
+Jeton JWT e-MECeF : il se saisit dans les Paramètres, avec la double authentification de la DGI. Je ne l’ai pas et je n’en ai pas besoin pour coder. Je teste avec un faux serveur de la DGI. Il ne faut jamais me le coller ici.
+Défauts du pilote CC300 : il répond 200 même en cas d’échec, utilise des montants en float32 et n’a pas d’authentification. Je dois donc tout vérifier côté poste.
+Date d’expiration d’une facture en attente : l’e-MECeF en ligne la fait expirer après 2 minutes. Le serveur doit confirmer tout de suite après la création.
+Plan proposé, par lots
+Réglage du mode dans les Paramètres, au web et au poste (un seul mode actif à la fois).
+Boîtier au poste :
+client du pilote avec adresse réglable sans recompiler ;
+conversion d’une facture en JSON du pilote, avec totaux vérifiés ;
+enregistrement du NIM et du QR code sur la facture, qui devient immuable ;
+reprise sans doublon en cas d’échec.
+e-MECeF au serveur : client des deux temps, jeton chiffré, statuts (normalisée, en attente, refusée, expirée), avoirs.
+PDF et ticket : le QR code et les mentions normalisées n’apparaissent que sur une facture réellement normalisée.
+Tests avec un faux pilote et un faux serveur DGI, puis un essai réel avec le boîtier.
+Voulez-vous que je lance la spécification puis le développement dans cet ordre ? Je commencerais par les lots 1 et 2 (poste et boîtier), puisque c’est le cas de la réception.
+
+DGI : peut-on utiliser le boîtier et l’e-MECeF avec le même IFU ? OUI IFU est unique 
+Jeton JWT e-MECeF : il se saisit dans les Paramètres, avec la double authentification de la DGI. Je ne l’ai pas et je n’en ai pas besoin pour coder. Je teste avec un faux serveur de la DGI. Il ne faut jamais me le coller ici.
+IL FAUT CREER une section formulaire pour xa dans les paraemetres 
+
+prévoir les deux, avec un réglage qui choisit le mode. (poste et web)
+e-MECeF (en ligne)
+Boîtier CC300 (poste)
+
+Voulez-vous que je lance la spécification puis le développement dans cet ordre ? Je commencerais par les lots 1 et 2 (poste et boîtier), puisque c’est le cas de la réception.
+
+Facturation normalisée MECeF: spec, réglages, boîtier poste
+C’est lancé : un agent construit les deux modes de facturation normalisée, avec la section de réglages dans Paramètres. Je n’ai pas encore de résultat. Il avance par lots et pousse à la fin de chacun.
+
+Ce qui sera livré
+Lot 0, spécification : un document court, docs/SPEC_FACTURATION_NORMALISEE_MECEF.md, avec les modes, les statuts, les erreurs en français et la sécurité du jeton.
+Lot 1, réglage et formulaire, au web et au poste :
+Mode : un sélecteur « Désactivé », « e-MECeF (en ligne) » ou « Boîtier CC300 (poste) ».
+e-MECeF :
+l’IFU (13 chiffres, validé) ;
+l’adresse de l’API de la DGI (https exigé) ;
+le jeton JWT, chiffré en base et masqué à l’écran (seule la date d’enregistrement est visible), jamais renvoyé au navigateur ni au poste, jamais écrit dans les journaux ;
+l’identifiant et le nom de l’opérateur ;
+un bouton « Tester la connexion ».
+Boîtier (au poste) : l’adresse du pilote (par défaut http://localhost:38917), modifiable sans recompiler, et un bouton « Tester le boîtier ».
+Droits : administrateur seulement, avec une entrée au journal d’audit sans secret.
+Lot 2, boîtier CC300 au poste de la réception :
+Client du pilote : il vérifie le contenu de la réponse (le pilote répond 200 même en cas d’échec) et contrôle que les totaux concordent avant d’envoyer.
+Anti-doublon : il n’envoie jamais deux factures en même temps. Si la réponse se perd, il compare le compteur du boîtier pour ne pas facturer deux fois. S’il ne peut pas trancher, la facture passe « à vérifier » et n’est pas rejouée automatiquement.
+Résultat : la facture normalisée garde le NIM et le QR code, et elle est figée. Une correction passe par un avoir, qui passe aussi par le boîtier.
+Synchronisation : le résultat monte au serveur, qui le range sans jamais appeler le boîtier.
+PDF : le QR code et les mentions normalisées n’apparaissent que sur une facture réellement normalisée. Sinon le bandeau DEMO reste.
+Lot 3, e-MECeF en ligne au serveur (seulement si les lots 0 à 2 sont terminés et poussés) :
+Création puis confirmation en deux temps, dans la foulée, car une facture non confirmée expire au bout de 2 minutes.
+Erreurs et reprise : les erreurs de la DGI sont classées. Une vente en erreur reste « en attente » avec un motif en français, et elle se rejoue sans jamais être retransmise si elle est déjà normalisée.
+Mode boîtier : le serveur ne certifie pas, puisque le boîtier n’existe que sur le poste.
+Ce qui ne pourra pas être testé ici
+Je teste avec un faux pilote local et un faux serveur de la DGI. Les vrais essais restent à faire chez vous :
+
+le boîtier réel branché au poste de la réception ;
+votre compte e-MECeF réel, avec le jeton saisi directement dans Paramètres (ne me le collez jamais ici).

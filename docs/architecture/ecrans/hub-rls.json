@@ -1,0 +1,28 @@
+{
+ "id": "hub-rls",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Relais en ligne (apps/web)",
+ "acces": "ouvert",
+ "titre": "Relais en ligne (apps/web)",
+ "description": "Tous les écrans du module RLS — Relais en ligne (apps/web).",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

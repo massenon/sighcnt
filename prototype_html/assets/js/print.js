@@ -26,45 +26,68 @@
   }
 
   /** Chemin du logo, ajusté à la profondeur de la page courante. */
-  function logoSrc() {
+  function logoSrc(identite) {
     var base = document.documentElement.getAttribute('data-root') || '';
-    return base + B.logo;
+    return base + ((identite || B).logo || B.logo);
+  }
+
+  /* --------------------------------------------------------------------------
+   * L'IDENTITÉ D'UNE PIÈCE EST CELLE DE SA DATE (06/11/2026). `B` reste la
+   * référence capturée de C.BRAND, écrasée EN PLACE par le magasin avec la
+   * version en force aujourd'hui ; une pièce qui porte `date` (facture, avoir,
+   * reçu, ticket) s'imprime avec `C.identiteALaDate(date)` : une facture
+   * d'hier garde le RCCM d'hier quand une nouvelle version prend effet demain.
+   * ----------------------------------------------------------------------- */
+  function identitePour(date) {
+    if (date && C.identiteALaDate) {
+      try { return C.identiteALaDate(date); } catch (e) { return B; }
+    }
+    return B;
+  }
+  /* Deux options d'impression vivent au MAGASIN (réglages d'exploitation) et
+     sont LUES ici : un réglage que rien ne lit est un mensonge (E2271). */
+  function reglageImpression(cle, defaut) {
+    try { return S().reglage('impression.' + cle, defaut); } catch (e) { return defaut; }
   }
 
   /* ==========================================================================
    * EN-TÊTE OFFICIEL — reproduction fidèle du papier à en-tête
    * ======================================================================== */
-  function entete() {
+  function entete(identite) {
+    var I = identite || B;
     var head = el('header.print-entete.border-b-\\[3px\\].border-navy-900.pb-2');
     var top = el('div.flex.items-center.justify-center.gap-4');
 
     top.appendChild(el('img.h-16.w-16.shrink-0.object-contain', {
-      src: logoSrc(), alt: 'Logo ' + B.sigle,
+      src: logoSrc(I), alt: 'Logo ' + I.sigle,
       onerror: function () { this.style.visibility = 'hidden'; },
     }));
 
     var mid = el('div.text-center');
     mid.appendChild(el('p.text-\\[22px\\].font-bold.leading-tight.tracking-tight.text-navy-950', { text: 'CLINIQUE NASSIERA TOO' }));
     mid.appendChild(el('p.text-\\[10px\\].leading-snug.text-slate-700', {
-      text: B.bp + '   TÉL. : ' + B.telephones.join('  /  '),
+      text: I.bp + '   TÉL. : ' + (I.telephones || []).join('  /  '),
     }));
     mid.appendChild(el('p.text-\\[9px\\].leading-snug.text-slate-700', {
-      text: 'AUTORISATION D’OUVERTURE ' + B.autorisation,
+      text: 'AUTORISATION D’OUVERTURE ' + I.autorisation,
     }));
     mid.appendChild(el('p.text-\\[9px\\].font-semibold.leading-snug.text-slate-800', {
-      text: 'IFU : ' + B.ifu + '   RCCM : ' + B.rccm,
+      text: 'IFU : ' + I.ifu + '   RCCM : ' + I.rccm,
     }));
-    mid.appendChild(el('p.text-\\[9px\\].leading-snug.text-slate-700', { text: 'E-mail : ' + B.email }));
+    mid.appendChild(el('p.text-\\[9px\\].leading-snug.text-slate-700', { text: 'E-mail : ' + I.email }));
     /* La devise de la clinique, dictée par la Direction le 24/08/2026.
        Elle figure sur les états parce que c'est ce que le patient emporte
        chez lui — et qu'une devise qui ne se lit nulle part n'en est pas une. */
-    mid.appendChild(el('p.text-\\[9px\\].font-semibold.italic.leading-snug.text-navy-800', { text: B.slogan }));
+    mid.appendChild(el('p.text-\\[9px\\].font-semibold.italic.leading-snug.text-navy-800', { text: I.slogan }));
     top.appendChild(mid);
 
-    top.appendChild(el('img.h-16.w-16.shrink-0.object-contain', {
-      src: logoSrc(), alt: '',
-      onerror: function () { this.style.visibility = 'hidden'; },
-    }));
+    /* Le second logo est une OPTION d'impression (cfg-branding), lue au magasin. */
+    if (reglageImpression('doubleLogo', true) !== false) {
+      top.appendChild(el('img.h-16.w-16.shrink-0.object-contain', {
+        src: logoSrc(I), alt: '',
+        onerror: function () { this.style.visibility = 'hidden'; },
+      }));
+    }
 
     head.appendChild(top);
     return head;
@@ -73,11 +96,12 @@
   /* ==========================================================================
    * PIED DE PAGE NORMALISÉ
    * ======================================================================== */
-  function pied(ref) {
+  function pied(ref, identite) {
+    var I = identite || B;
     var f = el('footer.print-pied.mt-6.border-t.border-slate-300.pt-2');
     var row = el('div.flex.items-end.justify-between.gap-4.text-\\[8px\\].text-slate-500');
     row.appendChild(el('div', null, [
-      el('p', { text: B.nom + ' — ' + B.rccm + ' — IFU ' + B.ifu }),
+      el('p', { text: I.nom + ' — ' + I.rccm + ' — IFU ' + I.ifu }),
       el('p', { text: 'Document généré par ' + global.SIGH.store.currentUser() + ' le ' + C.dateHeure(new Date()) }),
     ]));
     row.appendChild(el('div.text-right', null, [
@@ -262,15 +286,21 @@
    * COMPOSITION ET PRÉVISUALISATION DE L'ÉTAT
    * ======================================================================== */
   /**
-   * etat({ titre, sousTitre, contenu, cartouche, signatures, filigrane, lieuDate })
+   * etat({ titre, sousTitre, contenu, cartouche, signatures, filigrane, lieuDate, date })
    * Affiche la prévisualisation ; l'impression (ou « Enregistrer en PDF » du
    * navigateur) est déclenchée depuis la barre d'action.
+   * `date` (ISO) : la date de la PIÈCE ; l'en-tête et le pied portent
+   * l'identité légale en force à cette date. Sans `date`, l'identité du jour.
    */
   function etat(options) {
     var o = Object.assign({
       titre: 'État', sousTitre: null, contenu: null, cartouche: null,
-      signatures: null, filigrane: null, lieuDate: true, archive: true,
+      signatures: null, filigrane: undefined, lieuDate: true, archive: true, date: null,
     }, options);
+    var I = identitePour(o.date);
+    /* Le filigrane par défaut est un réglage d'exploitation (cfg-branding) ; un appelant qui en nomme un
+       (« Pro-forma », « AVOIR ») ou qui le refuse (`null`) garde la main. */
+    if (o.filigrane === undefined) o.filigrane = reglageImpression('filigrane', '') || null;
 
     compteur++;
     var ref = 'CNT-' + C.iso(new Date()).replace(/-/g, '') + '-' + C.pad(compteur, 4);
@@ -288,7 +318,7 @@
     }
 
     var inner = el('div.relative.flex.min-h-full.flex-col');
-    inner.appendChild(entete());
+    inner.appendChild(entete(I));
 
     var titleBlock = el('div.my-4.text-center');
     titleBlock.appendChild(el('h1.inline-block.border-b-2.border-navy-900.px-6.pb-1.text-\\[15px\\].font-bold.uppercase.tracking-wide.text-navy-950', { text: o.titre }));
@@ -331,7 +361,7 @@
       }));
     }
     if (o.signatures) inner.appendChild(signatures(o.signatures));
-    inner.appendChild(pied(ref));
+    inner.appendChild(pied(ref, I));
     sheet.appendChild(inner);
 
     return afficher(sheet, o.titre, ref, false, o.archive);
@@ -361,10 +391,13 @@
       bar.appendChild(el('button.btn.btn-sm.btn-secondary', {
         type: 'button',
         onclick: function () {
+          /* Ce geste ne dépose RIEN dans la GED (aucune catégorie documentaire ne reçoit les états imprimés) :
+             il journalise l'édition (RG-12), et le dit. log() ne sauve pas : save() explicite, sinon l'entrée se perd. */
           global.SIGH.store.log('Impression', 'RAP', 'Document', ref, null, { titre: titre });
-          U.toast('Document archivé dans la GED.', { type: 'success', detail: 'Réf. ' + ref });
+          global.SIGH.store.save();
+          U.toast('Édition journalisée.', { type: 'success', detail: 'Réf. ' + ref + '. La pièce n’est pas déposée dans la GED : imprimez ou enregistrez-la en PDF.' });
         },
-      }, [C.icon('archive', 'h-4 w-4'), 'Archiver']));
+      }, [C.icon('clipboard-list', 'h-4 w-4'), 'Journaliser l’édition']));
     }
     bar.appendChild(el('button.btn.btn-sm.btn-primary', { type: 'button', onclick: fermer }, [C.icon('x', 'h-4 w-4'), 'Fermer']));
     overlay.appendChild(bar);
@@ -420,6 +453,8 @@
    * ======================================================================== */
   function ticket(o) {
     o = o || {};
+    /* L'identité imprimée est celle de la DATE de la pièce (voir `identitePour`). */
+    var I = identitePour(o.date);
     compteur++;
     var ref = 'CNT-' + C.iso(new Date()).replace(/-/g, '') + '-' + C.pad(compteur, 4);
 
@@ -442,11 +477,11 @@
 
     /* En-tête de la clinique, resserré */
     sheet.appendChild(el('p.text-center.text-\\[11px\\].font-bold.leading-tight', { text: 'CLINIQUE NASSIERA TOO' }));
-    sheet.appendChild(ligneTexte(B.bp, 'text-[8px] text-center leading-snug'));
-    sheet.appendChild(ligneTexte('TÉL. ' + B.telephones.join(' / '), 'text-[8px] text-center leading-snug'));
-    sheet.appendChild(ligneTexte('IFU ' + B.ifu, 'text-[8px] text-center leading-snug'));
-    /* Les pièces de caisse portent l'autre RCCM (voir core.js). */
-    sheet.appendChild(ligneTexte('RCCM ' + B.rccm, 'text-[8px] text-center leading-snug'));
+    sheet.appendChild(ligneTexte(I.bp, 'text-[8px] text-center leading-snug'));
+    sheet.appendChild(ligneTexte('TÉL. ' + (I.telephones || []).join(' / '), 'text-[8px] text-center leading-snug'));
+    sheet.appendChild(ligneTexte('IFU ' + I.ifu, 'text-[8px] text-center leading-snug'));
+    /* UN SEUL RCCM depuis l'arbitrage du 31/08/2026 : celui de l'identité en force à la date de la pièce. */
+    sheet.appendChild(ligneTexte('RCCM ' + I.rccm, 'text-[8px] text-center leading-snug'));
     sheet.appendChild(separateur());
 
     /* Bloc MECeF — structure du ticket réel */
@@ -516,10 +551,10 @@
     }
 
     sheet.appendChild(separateur());
-    sheet.appendChild(ligneTexte(B.formuleArrete + ' :', 'text-[8px] leading-snug'));
+    sheet.appendChild(ligneTexte(I.formuleArrete + ' :', 'text-[8px] leading-snug'));
     sheet.appendChild(ligneTexte(C.montantEnLettres(o.partPatient || 0), 'text-[8px] font-semibold leading-snug'));
     sheet.appendChild(separateur());
-    sheet.appendChild(ligneTexte(B.formulePolitesse, 'text-[9px] font-bold text-center leading-snug'));
+    sheet.appendChild(ligneTexte(I.formulePolitesse, 'text-[9px] font-bold text-center leading-snug'));
     sheet.appendChild(ligneTexte('Réf. ' + ref, 'text-[7px] text-center text-slate-400 mt-1'));
 
     afficher(sheet, o.titre || 'Ticket de caisse', ref, true);
@@ -715,7 +750,7 @@
   function S() { return global.SIGH.store; }
 
   global.SIGH.print = {
-    etat: etat, entete: entete, pied: pied, ticket: ticket,
+    etat: etat, entete: entete, pied: pied, ticket: ticket, identitePour: identitePour,
     tableau: tableau, cartouche: cartouche, signatures: signatures,
     filtresDeLaPage: filtresDeLaPage,
     badge: badge, planche: planche, carteBadge: carteBadge, CR80: CR80,

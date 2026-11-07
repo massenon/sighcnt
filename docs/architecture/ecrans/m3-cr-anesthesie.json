@@ -1,0 +1,38 @@
+{
+ "id": "m3-cr-anesthesie",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Comptes rendus d’anesthésie",
+ "acces": "ouvert",
+ "titre": "Comptes rendus d’anesthésie",
+ "description": "Le déroulé anesthésique de l’intervention : technique, agents, incidents, réveil et décision de sortie.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Comptes rendus d’anesthésie"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Comptes rendus",
+  "Avec incident nommé",
+  "Surveillances prolongées",
+  "CRO liés"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau compte rendu"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

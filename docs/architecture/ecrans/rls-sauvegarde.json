@@ -1,0 +1,44 @@
+{
+ "id": "rls-sauvegarde",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Sauvegarde du relais",
+ "acces": "ouvert",
+ "titre": "Sauvegarde du relais",
+ "description": "Export de la base du relais avant toute migration ; le journal chiffré qu’elle contient sert à restaurer la mère.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Sauvegarde du relais"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Dernier export",
+  "Taille"
+ ],
+ "cartes": [
+  "Exports"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Taille",
+   "Avant migration"
+  ]
+ ],
+ "commandes": [
+  "Exporter maintenant"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 2
+}

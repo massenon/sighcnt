@@ -11,16 +11,31 @@
   var el = C.el;
 
   /* --- RG-01 : génération du prochain code patient ------------------------- */
+  /* UNE SEULE FABRIQUE DE FORMAT : `C.codePatient()`. Ce site construisait le code À LA MAIN, à l'ancien format « CNT530/25 »
+     — le défaut déjà payé sur le patient externe (`PR.dossierExterne`). Pire : l'expression ne reconnaissait QUE l'ancien format,
+     donc sur un répertoire dont 192 dossiers sur 210 portent `CNT/n/AA` le plus grand rang était calculé sur les 18 anciens seuls
+     (écart E300). Le rang se lit désormais sur les DEUX formes, archivés compris (RG-01 : un code attribué ne se réutilise pas). */
   function prochainCode() {
     var rows = S.collection('patients').all();
     var annee = new Date().getFullYear();
     var suffixe = String(annee).slice(-2);
     var max = 0;
     rows.forEach(function (p) {
-      var m = /^CNT(\d+)\/(\d{2})$/.exec(p.code || '');
+      var m = /^CNT\/?(\d+)\/(\d{2})$/.exec(p.code || '');
       if (m && m[2] === suffixe) max = Math.max(max, Number(m[1]));
     });
-    return 'CNT' + (max + 1) + '/' + suffixe;
+    return C.codePatient(max + 1, annee);
+  }
+
+  /* Ce que l'enregistrement d'un dossier DÉDUIT de la saisie : le nom de la compagnie (le formulaire ne porte que son code) et l'âge. L'âge
+     n'est plus une valeur calculée qu'on remet à zéro : c'est une DÉCLARATION datée, quand la date de naissance est inconnue. Une seule
+     fonction pour le répertoire, la page d'ouverture ET la modale de la fiche. */
+  function transformerPatient(v, record) {
+    var a = D.ASSUREURS.filter(function (x) { return x.code === v.assureur; })[0];
+    v.assureurNom = a ? a.nom : null;
+    Object.assign(v, K.valeursAge(v, record));
+    delete v.naissanceConnue;
+    return v;
   }
 
   /* Antécédents et allergies acceptent désormais plusieurs valeurs. Le jeu de
@@ -38,16 +53,18 @@
     return t.length ? t.join(', ') : (vide || '—');
   }
 
+  /* L'âge se lit par `C.ageDe()` — la fabrique UNIQUE, qui connaît l'âge DÉCLARÉ et sa date de référence. Cette copie locale ne lisait que
+     la date de naissance : un patient dont l'âge est déclaré (« la réponse ordinaire au guichet ») s'affichait « — » au répertoire et
+     « âge inconnu » en tête de fiche, alors que l'onglet Administratif, lui, l'écrivait (écart E301). */
   function age(p) {
-    if (!p.dateNaissance) return null;
-    return Math.max(0, Math.floor(C.daysBetween(p.dateNaissance, new Date()) / 365.25));
+    return C.ageDe(p);
   }
 
   /* UNE SEULE VÉRITÉ : la validité se lit au moteur, qui connaît
      l’historique des couvertures. Une copie locale divergerait le jour où
      un assuré changerait de compagnie en cours d’année. */
   function carteValide(p) {
-    return PR.carteValide(p, new Date(2026, 7, 16));
+    return PR.carteValide(p, C.aujourdhui());   /* RG-09 à la MÊME date que la caisse (vague 68) */
   }
 
   /* --- Champs du formulaire patient --------------------------------------- */
@@ -694,6 +711,23 @@
     peindreMenu();
     peindreZone();
 
+    /* LE DOSSIER IMPRIMÉ EST LE DOSSIER ENTIER (05/11/2026). L'état imprimé ne portait que l'identité et quinze consultations : tout le reste
+       (dossier de consultation, antécédents, soins, hospitalisations, maternité, analyses, imagerie, ordonnances, domicile, finances, assurance,
+       traçabilité) ne sortait pas. Les sections viennent des MÊMES rubriques que l'écran, donc des mêmes droits : une rubrique restreinte à l'écran
+       l'est sur le papier (résultats d'analyses, comptes rendus d'imagerie). */
+    wrap.sectionsImprimables = function () {
+      var out = [
+        { titre: 'Identité et couverture', noeud: head.cloneNode(true) },
+        { titre: 'Dossier de consultation', noeud: carteDossierConsultation(p) },
+      ];
+      rubriques.forEach(function (r) {
+        var n;
+        try { n = r.render(); } catch (e) { n = U.empty('Rubrique indisponible.', { icon: 'alert-triangle' }); }
+        out.push({ titre: r.label, noeud: n });
+      });
+      return out;
+    };
+
     wrap.appendChild(droite);
     wrap.appendChild(gauche);
     return wrap;
@@ -781,7 +815,8 @@
     }
 
     /* --- L'EXAMEN IPPOA, APPAREIL PAR APPAREIL, DATÉ ----------------- */
-    var synthese = D.syntheseExamen ? D.syntheseExamen(d) : [];
+    /* L'ÉCART E316 : la synthèse reçoit les EXAMENS (appareil → temps), non le dossier — passer le dossier entier la laissait toujours vide, et la fiche affirmait « aucun appareil renseigné » devant un examen saisi. */
+    var synthese = D.syntheseExamen ? D.syntheseExamen(D.examensPhysiquesDe(d)) : [];
     if (synthese.length) {
       corps.appendChild(el('div', null, [
         el('p.mb-2.text-xs.font-semibold.uppercase.tracking-wide.text-slate-400', { text: 'Examen physique par appareil (IPPOA)' }),
@@ -957,40 +992,24 @@
     return box;
   }
 
-  /* --- État imprimable : fiche patient ------------------------------------- */
+  /* --- État imprimable : DOSSIER PATIENT COMPLET --------------------------- */
   function etatFiche(p) {
-    var consultations = C.sortBy(S.collection('consultations').active().filter(function (c) { return c.patientId === p.id; }), 'date', 'desc');
-    var contenu = el('div.space-y-4');
-    contenu.appendChild(P.tableau([
-      { label: 'Rubrique', key: 'k' }, { label: 'Information', key: 'v' },
-    ], [
-      { k: 'Code dossier', v: p.code },
-      { k: 'Nom et prénoms', v: p.nom + ' ' + p.prenom },
-      { k: 'Sexe', v: p.sexe === 'F' ? 'Féminin' : 'Masculin' },
-      { k: 'Âge', v: C.ageTexte(p) },
-      { k: 'Groupe sanguin', v: p.groupeSanguin || '—' },
-      { k: 'Antécédents', v: texteListe(p.antecedents, 'Aucun antécédent notable') },
-      { k: 'Allergies connues', v: texteListe(p.allergies, 'Aucune allergie connue') },
-      { k: 'Traitement en cours', v: p.traitementEnCours || '—' },
-      { k: 'Téléphone', v: p.telephone },
-      { k: 'Adresse', v: p.adresse || p.quartier },
-      { k: 'Personne à prévenir', v: p.personneAPrevenir || '—' },
-      { k: 'Assurance', v: p.assureurNom ? p.assureurNom + ' — ' + p.tauxPriseEnCharge + ' % (carte au ' + C.dateFR(p.carteExpiration) + ')' : 'Aucune' },
-    ]));
-
-    if (consultations.length) {
-      contenu.appendChild(el('p.mt-4.mb-1.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: 'Historique des consultations' }));
-      contenu.appendChild(P.tableau([
-        { label: 'Date', value: function (c) { return C.dateFR(c.date); } },
-        { label: 'Motif', key: 'motif' },
-        { label: 'Diagnostic', key: 'diagnostic' },
-        { label: 'Médecin', key: 'medecin' },
-      ], consultations.slice(0, 20)));
-    }
-
+    var sections;
+    try { sections = fiche(p).sectionsImprimables(); } catch (e) { if (global.console) global.console.error('[SIGH] dossier imprimé', e); sections = []; }
+    var contenu = el('div.space-y-3');
+    sections.forEach(function (sec) {
+      var n = sec.noeud;
+      if (!n) return;
+      /* Rien d'interactif sur le papier : les boutons (Lire, Imprimer…) n'ont pas de sens imprimés. */
+      [].slice.call(n.querySelectorAll('button, [role="tablist"]')).forEach(function (b) { b.remove(); });
+      contenu.appendChild(el('p.mt-4.mb-1.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: sec.titre }));
+      contenu.appendChild(n);
+    });
+    var vide = [].slice.call(contenu.querySelectorAll('p')).length === 0;
+    if (vide) contenu.appendChild(el('p.text-sm', { text: 'Dossier indisponible.' }));
     P.etat({
       titre: 'Fiche patient',
-      sousTitre: 'Dossier ' + p.code,
+      sousTitre: 'Dossier complet ' + p.code,
       cartouche: [
         ['Patient', p.nom + ' ' + p.prenom],
         ['Code dossier', p.code],
@@ -1033,15 +1052,7 @@
       onCreate: function () {
         return { code: prochainCode(), dateCreation: C.iso(new Date()), statut: 'actif', tauxPriseEnCharge: 0 };
       },
-      transform: function (v, record) {
-        var a = D.ASSUREURS.filter(function (x) { return x.code === v.assureur; })[0];
-        v.assureurNom = a ? a.nom : null;
-        /* L'âge n'est plus une valeur calculée qu'on remet à zéro : c'est
-           une DÉCLARATION datée, quand la date de naissance est inconnue. */
-        Object.assign(v, K.valeursAge(v, record));
-        delete v.naissanceConnue;
-        return v;
-      },
+      transform: transformerPatient,
       beforeSave: function (v, record) {
         if (!record) {
           var exists = S.collection('patients').all().some(function (p) { return p.code === v.code; });
@@ -1115,13 +1126,7 @@
       onCreate: function () {
         return { code: prochainCode(), dateCreation: C.iso(new Date()), statut: 'actif', tauxPriseEnCharge: 0 };
       },
-      transform: function (v, record) {
-        var a = D.ASSUREURS.filter(function (x) { return x.code === v.assureur; })[0];
-        v.assureurNom = a ? a.nom : null;
-        Object.assign(v, K.valeursAge(v, record));
-        delete v.naissanceConnue;
-        return v;
-      },
+      transform: transformerPatient,
       beforeSave: function (v, record) {
         if (!record) {
           var exists = S.collection('patients').all().some(function (p) { return p.code === v.code; });
@@ -1192,11 +1197,13 @@
         variant: 'primary', icon: 'pencil',
         onclick: function () {
           if (!courant) return;
+          /* LA MÊME TRANSFORMATION QUE LE RÉPERTOIRE (écart E315). Cette modale n'en passait aucune : « Enregistrer » laissait le nom de la
+             compagnie sur l'ancienne, écrivait `naissanceConnue` dans la fiche et ne datait pas l'âge déclaré. */
           K.modifier(S.collection('patients', { module: 'M1', entite: 'Patient' }), champs(courant), courant, function () {
             patients = S.collection('patients').active();
             courant = patients.filter(function (p) { return p.id === sel.value; })[0] || courant;
             afficher();
-          });
+          }, null, function (v) { return transformerPatient(v, courant); });
         },
       }));
       body.appendChild(K.btn('Fiche de consultation', {
@@ -1304,13 +1311,18 @@
       /* Saisie des éléments médicaux d'un dossier — les mêmes champs que la
          section « Éléments médicaux » de la fiche patient. */
       function modifier(p) {
+        /* DES LISTES, COMME LA FICHE PATIENT (écart E304). Cet écran proposait « Antécédent principal » et « Allergies connues » en CHOIX UNIQUE
+           alors que le dossier les tient en listes : rouvrir un patient à deux antécédents montrait le premier seul, et « Enregistrer » ÉCRASAIT
+           la liste par cette valeur — la perte était silencieuse. Les mêmes champs que la section « Éléments médicaux » de la fiche. */
         var f = U.form([
-          { name: 'antecedents', label: 'Antécédent principal', type: 'select', options: D.ANTECEDENTS, col: 'full' },
+          { name: 'antecedents', label: 'Antécédents', type: 'multiselect', col: 'full',
+            options: D.ANTECEDENTS.filter(function (a) { return a !== 'Aucun antécédent notable'; }) },
           { name: 'antecedentsAutres', label: 'Autres antécédents', col: 'full' },
-          { name: 'allergies', label: 'Allergies connues', type: 'select', options: D.ALLERGIES, col: 'full' },
+          { name: 'allergies', label: 'Allergies connues', type: 'multiselect', col: 'full',
+            options: D.ALLERGIES.filter(function (a) { return a !== 'Aucune allergie connue'; }) },
           { name: 'traitementEnCours', label: 'Traitement en cours', col: 'full' },
           { name: 'groupeSanguin', label: 'Groupe sanguin', type: 'select', options: D.GROUPES_SANGUINS },
-        ], p);
+        ], Object.assign({}, p, { antecedents: liste(p.antecedents), allergies: liste(p.allergies) }));
         var m = U.modal({
           title: 'Antécédents et allergies',
           subtitle: p.nom + ' ' + p.prenom + ' — ' + p.code,
@@ -1340,8 +1352,12 @@
         exportName: 'antecedents', pageSize: 12,
         searchPlaceholder: 'Patient, code dossier, antécédent…',
         filters: [
-          { name: 'allergies', label: 'Allergie', options: D.ALLERGIES },
-          { name: 'antecedents', label: 'Antécédent', options: D.ANTECEDENTS },
+          /* Le filtre cherche DANS la liste (écart E305) : l'égalité stricte ne trouvait jamais un patient à plusieurs valeurs, forme devenue
+             la règle — filtrer « Drépanocytose » ne rendait personne alors que trois dossiers la portaient. « Aucun… » = liste vide. */
+          { name: 'allergies', label: 'Allergie', options: D.ALLERGIES,
+            match: function (r, v) { return v === 'Aucune allergie connue' ? liste(r.allergies).length === 0 : liste(r.allergies).indexOf(v) !== -1; } },
+          { name: 'antecedents', label: 'Antécédent', options: D.ANTECEDENTS,
+            match: function (r, v) { return v === 'Aucun antécédent notable' ? liste(r.antecedents).length === 0 : liste(r.antecedents).indexOf(v) !== -1; } },
         ],
         columns: [
           { key: 'code', label: 'Dossier', nowrap: true, render: function (r) { return el('span.font-mono.text-xs', { text: r.code }); } },
@@ -1524,7 +1540,14 @@
             return [
               K.iconBtn('eye', 'Prévisualiser', function () { previsualiser(r); }),
               K.commandeIcone('pencil', 'Modifier', function () {
-                K.modifier(colDocs(), champsDocument(), r, dessiner);
+                /* Le dossier choisi à l'édition recalcule `code` et `patient` : sans cela
+                   les colonnes, le KPI et l'état imprimé gardaient l'ancien patient. */
+                K.modifier(colDocs(), champsDocument(), r, dessiner, null, function (v) {
+                  var p = S.collection('patients').get(v.patientId);
+                  v.code = p ? p.code : null;
+                  v.patient = p ? p.nom + ' ' + p.prenom : '—';
+                  return v;
+                });
               }),
               K.commandeIcone('trash-2', 'Retirer du dossier', function () { retirer(r); }, { droit: 'annuler' }),
             ];
@@ -1964,7 +1987,9 @@
 
       function ligneEtat(d) {
         var bloc = blocageResultat(d);
-        if (bloc) return U.badge('En attente de caisse', 'warning');
+        /* Le verrou a DEUX causes : la caisse, ou l'échantillon qui n'est pas parvenu au laboratoire. Dire « en attente de caisse » d'une
+           analyse RÉGLÉE (prélèvement en cours) envoyait le patient payer deux fois (écart E309). */
+        if (bloc) return U.badge(d.examenCode || d.bloqueParPaiement ? 'En attente de caisse' : 'Échantillon non parvenu', 'warning');
         if (d.examenCode) {
           if (d.statut === 'validee') return U.badge('Compte rendu rendu', 'success');
           if (d.statut === 'executee') return U.badge('Exécuté — CR à rendre', 'info');
@@ -2137,6 +2162,12 @@
             options: (L ? L.NIVEAUX_URGENCE : [{ id: 'aucune', label: 'Courant' }])
               .map(function (x) { return { value: x.id, label: x.label }; }),
           },
+          {
+            name: 'examenUrgent', label: 'Examen urgent (si « un examen urgent », analyses)', type: 'select',
+            options: [{ value: '', label: '—' }].concat(S.collection('analyses').active().map(function (a) {
+              return { value: a.code, label: a.designation };
+            })),
+          },
 
           { type: 'section', label: 'Examens demandés — au catalogue' },
           /* DEUX NATURES DE DEMANDE. L'accueil ne transcrivait que des
@@ -2204,6 +2235,13 @@
                     detail: imagerie ? 'Catalogue d’imagerie médicale.' : 'Catalogue des analyses.' });
                   return;
                 }
+                /* Refus nommé : « un examen urgent » doit nommer l'examen, sinon
+                   aucune analyse ne serait marquée urgente. */
+                if (!imagerie && v.urgence === 'examen' && !v.examenUrgent) {
+                  U.toast('Nommer L’EXAMEN urgent.', { type: 'error',
+                    detail: '« Un examen urgent » sans le nommer laisserait le laboratoire deviner.' });
+                  return;
+                }
                 var res;
                 try {
                   /* CHAQUE NATURE PASSE PAR SA FABRIQUE — celle-là même qui
@@ -2213,6 +2251,7 @@
                   res = imagerie
                     ? PR.ouvrirDemandeImagerie(Object.assign({}, v, {
                       examens: v.examens, origine: 'externe',
+                      urgent: v.urgence !== 'aucune',
                       secteurDemandeur: v.serviceDemandeur || null,
                     }))
                     : PR.ouvrirDemandeExterne(v);
@@ -2398,7 +2437,17 @@
             hint: 'Le corps du certificat, tel qu’il sera imprimé.' },
           { name: 'remisA', label: 'Remis à', type: 'text',
             hint: 'L’intéressé lui-même, ou la personne nommément désignée.' },
-        ].filter(function (c) {
+        ].map(function (c) {
+          /* À l'édition, le type et le patient sont ARRÊTÉS : la pièce est
+             numérotée, tarifée et facturée. Changer l'un laissait « Pièce »,
+             « Patient » et l'impression sur l'ancienne valeur. Pour corriger :
+             archiver, puis réémettre. */
+          if (edition && (c.name === 'typeId' || c.name === 'patientCode')) {
+            c = Object.assign({}, c, { readonly: true,
+              hint: 'Arrêté : la pièce est numérotée et facturée. Pour corriger, l’archiver puis la réémettre.' });
+          }
+          return c;
+        }).filter(function (c) {
           if (!edition) return true;
           /* À l'édition, le patient est arrêté : la pièce est numérotée et
              remise. Laisser le bloc « patient extérieur » inviterait à ouvrir
@@ -2584,6 +2633,8 @@
                 : [])
               .concat(K.actionsLigne(colPieces(), champs(true), {
                 module: 'M1', refresh: afficher,
+                /* Type et patient arrêtés à l'édition : jamais réécrits. */
+                transform: function (v) { delete v.typeId; delete v.patientCode; return v; },
                 titre: function (x) { return x.libelle; },
                 detail: function (x) {
                   return el('div.space-y-4', null,
@@ -2662,6 +2713,20 @@
       afficher();
       return null;
 
+      /* Ce que le relevé DÉDUIT de sa saisie : le patient (identifiant et nom), la tension « sys/dia » et l'IMC. L'IMC est CALCULÉ : le
+         saisir autoriserait une valeur qui ne correspond ni au poids ni à la taille de la même ligne. */
+      function valeursCalculees(v) {
+        var pt = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
+        var imc = (v.poids && v.taille)
+          ? Math.round((v.poids / Math.pow(v.taille / 100, 2)) * 10) / 10 : null;
+        return {
+          patientId: pt ? pt.id : null,
+          patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
+          tension: (v.tensionSys != null && v.tensionDia != null) ? v.tensionSys + '/' + v.tensionDia : null,
+          imc: imc,
+        };
+      }
+
       function champs() {
         return [
           { name: 'patientCode', label: 'Patient', type: 'select', required: true, options: optionsPatientsM1() },
@@ -2729,20 +2794,8 @@
             module: 'M1', label: 'Nouveau relevé', titre: 'Relever les constantes',
             entite: 'Relevé', size: 'lg', apres: afficher,
             transform: function (v) {
-              var pt = S.collection('patients').active().filter(function (x) {
-                return x.code === v.patientCode;
-              })[0];
-              var imc = (v.poids && v.taille)
-                ? Math.round((v.poids / Math.pow(v.taille / 100, 2)) * 10) / 10 : null;
-              return Object.assign({}, v, {
-                reference: C.nextRef('CST-', 5),
-                patientId: pt ? pt.id : null,
-                patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
-                tension: (v.tensionSys != null && v.tensionDia != null)
-                  ? v.tensionSys + '/' + v.tensionDia : null,
-                /* L'IMC est CALCULÉ : le saisir autoriserait une valeur qui ne
-                   correspond ni au poids ni à la taille de la même ligne. */
-                imc: imc,
+              return Object.assign({}, v, valeursCalculees(v), {
+                reference: C.referenceSuivante('CST-', 5, colConstantes().all()),
                 origine: 'accueil',
               });
             },
@@ -2768,6 +2821,10 @@
           ],
           rowActions: K.actionsLigne(colConstantes(), champs(), {
             module: 'M1', refresh: afficher,
+            /* LE CALCULÉ SUIT LA CORRECTION (écart E303). Modifier le poids ou la tension laissait `imc` et `tension` à leur valeur d'avant : la
+               ligne affichait une TA de 12/8 pour des champs à 15/9, un IMC qui ne correspondait plus au poids. La référence et l'origine ne
+               se recalculent pas. */
+            transform: function (v) { return Object.assign({}, v, valeursCalculees(v)); },
             titre: function (r) { return r.patient + ' — ' + C.dateHeure(r.dateHeure); },
             detail: function (r) {
               var m = anormale(r);
@@ -2948,10 +3005,10 @@
             transform: function (v) {
               var pt = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
               return Object.assign({}, v, {
-                numero: C.nextRef('REF-', 5),
+                numero: C.referenceSuivante('REF-', 5, colReference().all().map(function (x) { return { reference: x.numero }; })),
                 patientId: pt ? pt.id : null,
                 patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
-                age: pt ? C.age(pt.dateNaissance) : null,
+                age: pt ? C.ageDe(pt) : null,
                 sexe: pt ? pt.sexe : null,
                 adresse: pt ? pt.quartier : null,
               });
@@ -2983,6 +3040,18 @@
             return [K.iconBtn('printer', 'Imprimer la fiche', function () { imprimer(r); })]
               .concat(K.actionsLigne(colReference(), champs(), {
                 module: 'M1', refresh: afficher, detail: detail,
+                /* LE CALCULÉ SUIT LA CORRECTION : changer de patient recalcule
+                   patientId, nom, âge, sexe et adresse comme à la création. */
+                transform: function (v) {
+                  var pt = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
+                  return Object.assign({}, v, {
+                    patientId: pt ? pt.id : null,
+                    patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
+                    age: pt ? C.ageDe(pt) : null,
+                    sexe: pt ? pt.sexe : null,
+                    adresse: pt ? pt.quartier : null,
+                  });
+                },
                 titre: function (x) { return x.numero; },
               })(r));
           },
@@ -3140,10 +3209,10 @@
           { label: 'Contre-références reçues', value: C.num(rows.length), icon: 'reply', tone: 'navy' },
           { label: 'Diagnostics concordants', value: C.num(concordantes.length), icon: 'check-check',
             tone: 'success',
-            hint: rows.length ? C.pct(concordantes.length / rows.length) + ' des retours' : null },
+            hint: rows.length ? C.pct(concordantes.length / rows.length * 100) + ' des retours' : null },
           { label: 'Références justifiées', value: C.num(justifiees.length), icon: 'thumbs-up',
             tone: justifiees.length === rows.length ? 'success' : 'warning',
-            hint: rows.length ? C.pct(justifiees.length / rows.length) + ' des retours' : null },
+            hint: rows.length ? C.pct(justifiees.length / rows.length * 100) + ' des retours' : null },
           { label: 'Décès au centre d’accueil', value: C.num(deces.length), icon: 'cross',
             tone: deces.length ? 'danger' : 'neutral' },
         ]));
@@ -3162,7 +3231,7 @@
             transform: function (v) {
               var ref = colReference().active().filter(function (r) { return r.numero === v.numeroReference; })[0];
               return Object.assign({}, v, {
-                reference: C.nextRef('CRF-', 5),
+                reference: C.referenceSuivante('CRF-', 5, colContreRef().all()),
                 patientId: ref ? ref.patientId : null,
                 patient: ref ? ref.patient : '—',
                 patientCode: ref ? ref.patientCode : null,
@@ -3188,6 +3257,15 @@
           ],
           rowActions: K.actionsLigne(colContreRef(), champs(), {
             module: 'M1', refresh: afficher,
+            /* Changer de fiche de référence recalcule le patient rattaché. */
+            transform: function (v) {
+              var ref = colReference().active().filter(function (r) { return r.numero === v.numeroReference; })[0];
+              return Object.assign({}, v, {
+                patientId: ref ? ref.patientId : null,
+                patient: ref ? ref.patient : '—',
+                patientCode: ref ? ref.patientCode : null,
+              });
+            },
             titre: function (r) { return r.reference; },
             detail: function (r) {
               return el('div.space-y-4', null,

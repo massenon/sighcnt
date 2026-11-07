@@ -1,0 +1,52 @@
+{
+ "id": "m5-resultats",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Saisie des résultats",
+ "acces": "ouvert",
+ "titre": "Saisie des résultats",
+ "description": "Enregistrement, validation biologique et archivage numérique des résultats d’analyses.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Saisie des résultats"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [
+  "Deux verrous. La validation technique atteste la saisie ; le prescripteur ne voit encore rien. La validation biologique rend le résultat opposable — c’est elle qui le porte au dossier du médecin. Entre les deux, le laboratoire relit. Après elle, une correction devient une rectification versionnée, et le prescripteur est averti que ce qu’il a lu a changé."
+ ],
+ "onglets": [
+  "À saisir",
+  "À valider biologiquement",
+  "Rendus au prescripteur"
+ ],
+ "kpis": [
+  "Résultats à saisir",
+  "À valider biologiquement",
+  "Rendus au prescripteur",
+  "Rectifiés"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Aujourd’hui",
+  "Sept derniers jours",
+  "Toutes les dates",
+  "À saisir0",
+  "À valider biologiquement0",
+  "Rendus au prescripteur94",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

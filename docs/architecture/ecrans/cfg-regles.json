@@ -1,0 +1,80 @@
+{
+ "id": "cfg-regles",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Règles métier versionnées",
+ "acces": "ouvert",
+ "titre": "Règles métier versionnées",
+ "description": "Matrice de traçabilité : chaque règle du système est rattachée au document de cadrage qui la fonde.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Règles métier versionnées"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Annotation manuscrite de la réunion du 30/12/2024 : « Paramétrer pour que les produits sortent au Prix de Vente et non au CUMP ». La Direction demandait un paramètre — le voici, avec la mesure de ce qu’il change.",
+  "Prix de venteValeur de sortie = prix de vente de l’article. Demandé par la Direction ; la marge éventuelle est reconnue dès la sortie de stock.En vigueur",
+  "Coût unitaire moyen pondéré (CUMP)Valeur de sortie = coût moyen d’acquisition. Méthode comptable classique ; la marge n’apparaît qu’à la facturation."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Documents sources",
+  "Intégrés au système",
+  "À importer",
+  "Règles de gestion"
+ ],
+ "cartes": [
+  "Valorisation des sorties de stock",
+  "Groupes et familles d’articles",
+  "Matrice « document collecté → rôle dans le logiciel »",
+  "Règles de gestion transversales",
+  "Règles métier versionnées"
+ ],
+ "tableaux": [
+  [
+   "Groupe",
+   "Famille",
+   "Articles",
+   "Quantité en stock",
+   "Valeur"
+  ],
+  [
+   "Document collecté",
+   "Devient dans le logiciel",
+   "Module",
+   "Écran",
+   "Statut"
+  ],
+  [
+   "Code",
+   "Règle appliquée",
+   "Module",
+   "Écran d’application"
+  ],
+  [
+   "Référence",
+   "Objet",
+   "Version",
+   "Date d’effet",
+   "Statut",
+   "Moteur piloté"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Ouvrir",
+  "Imprimer la matrice",
+  "Voir",
+  "Consulter les notes"
+ ],
+ "champs": [],
+ "nbTableaux": 4,
+ "nbKpis": 4
+}

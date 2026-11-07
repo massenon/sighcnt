@@ -1,0 +1,62 @@
+{
+ "id": "m4-dossier-obstetrical",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Dossier obstétrical",
+ "acces": "ouvert",
+ "titre": "Dossier obstétrical",
+ "description": "Le cahier de la parturiente, de la première CPN à la surveillance du deuxième jour — identité, antécédents, facteurs de surveillance, examens, plan d’accouchement.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Dossier obstétrical"
+ ],
+ "actions": [
+  "Suivi maternité",
+  "CPN & carte maternelle",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les dossiers obstétricaux",
+  "Archivés"
+ ],
+ "kpis": [
+  "Dossiers ouverts",
+  "Suivis en cours",
+  "Grossesses à risque (GAR)",
+  "Référées"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N° dossier",
+   "Parturiente",
+   "G / P",
+   "DDR",
+   "Terme prévu",
+   "Surveillance",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Aujourd’hui",
+  "Sept derniers jours",
+  "Toute la période",
+  "Tous les dossiers obstétricaux24",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,1231 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-fiscal-date.js, ne pas éditer. Horloge : 16/08/2026 10 h. Moteur : SIGH.configurationFiscale, S.identiteALaDate, D.obligationsALaDate, S.genEcheances, SIGH.paie.calculOrtb.",
+ "aujourdhui": "2026-08-16",
+ "identiteALaDate": {
+  "semence": {
+   "statut": "actif",
+   "version": 1,
+   "debut": null,
+   "fin": null,
+   "motif": null,
+   "valideLe": null,
+   "validePar": null,
+   "source": "core.js, arbitrage du 31/08/2026",
+   "sigle": "CNT",
+   "nom": "CLINIQUE NASSIERA TOO SARL",
+   "slogan": "Votre santé, notre raison de vivre",
+   "forme": "Société à Responsabilité Limitée",
+   "adresse": "Quartier Tchirimina, Natitingou",
+   "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
+   "pays": "République du Bénin",
+   "telephones": [
+    "01 95 44 51 51",
+    "01 66 43 28 20"
+   ],
+   "telephoneRdv": "60 33 92 92",
+   "email": "cliniquenassiera@gmail.com",
+   "ifu": "3201642748214",
+   "rccm": "RB/NAT/2016-B-268",
+   "autorisation": "N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020",
+   "autorisationExercice": null,
+   "autorisationExerciceMotif": "Non applicable — l’inscription à l’ordre suffit depuis la loi 2025-1 de juin 2026. L’autorisation d’exercice n’est plus imprimée sur les états.",
+   "devise": "FCFA",
+   "codeDevise": "XOF",
+   "logo": "assets/img/logo.jpeg",
+   "formuleArrete": "Arrêtée la présente facture à la somme de",
+   "formulePolitesse": "QUE DIEU VOUS GUÉRISSE ! AMINE !",
+   "regimeTva": "Taux normal 18 %"
+  },
+  "creation": {
+   "ok": true,
+   "version": 2,
+   "enForceAujourdhui": false
+  },
+  "versions": [
+   {
+    "version": 2,
+    "debut": "2026-09-01",
+    "fin": null,
+    "rccm": "RB/NAT/2026-B-999",
+    "bp": "BP : 999 NATITINGOU (Rép. du Bénin)",
+    "ifu": "3201642748214",
+    "valideLe": null
+   },
+   {
+    "version": 1,
+    "debut": null,
+    "fin": "2026-08-31",
+    "rccm": "RB/NAT/2016-B-268",
+    "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
+    "ifu": "3201642748214",
+    "valideLe": null
+   }
+  ],
+  "dates": [
+   {
+    "date": "2020-01-01",
+    "version": 1,
+    "rccm": "RB/NAT/2016-B-268",
+    "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
+    "ifu": "3201642748214",
+    "nom": "CLINIQUE NASSIERA TOO SARL"
+   },
+   {
+    "date": "2026-08-16",
+    "version": 1,
+    "rccm": "RB/NAT/2016-B-268",
+    "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
+    "ifu": "3201642748214",
+    "nom": "CLINIQUE NASSIERA TOO SARL"
+   },
+   {
+    "date": "2026-08-31",
+    "version": 1,
+    "rccm": "RB/NAT/2016-B-268",
+    "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
+    "ifu": "3201642748214",
+    "nom": "CLINIQUE NASSIERA TOO SARL"
+   },
+   {
+    "date": "2026-09-01",
+    "version": 2,
+    "rccm": "RB/NAT/2026-B-999",
+    "bp": "BP : 999 NATITINGOU (Rép. du Bénin)",
+    "ifu": "3201642748214",
+    "nom": "CLINIQUE NASSIERA TOO SARL"
+   },
+   {
+    "date": "2026-12-31",
+    "version": 2,
+    "rccm": "RB/NAT/2026-B-999",
+    "bp": "BP : 999 NATITINGOU (Rép. du Bénin)",
+    "ifu": "3201642748214",
+    "nom": "CLINIQUE NASSIERA TOO SARL"
+   }
+  ],
+  "brandAujourdhui": {
+   "rccm": "RB/NAT/2016-B-268",
+   "bp": "BP : 507 NATITINGOU (Rép. du Bénin)"
+  },
+  "refus": {
+   "sansMotif": "MOTIF_REQUIS",
+   "exerciceClos": "EXERCICE_CLOS",
+   "ifuFormat": "IFU_FORMAT",
+   "memeDate": "VERSION_EXISTANTE"
+  },
+  "etat": {
+   "etat": "a_valider",
+   "nombre": 2,
+   "nonValidees": 2,
+   "valideLe": null,
+   "validePar": null,
+   "modifieLe": "2026-08-16T10:00:00.000Z",
+   "modifiePar": "BASSONGUI Chabi Séko",
+   "validationAnterieure": null
+  }
+ },
+ "obligationsALaDate": {
+  "avant": {
+   "code": "CCIB-2",
+   "jour": 10,
+   "mois": 5,
+   "periodicite": "annuelle",
+   "part": 50,
+   "dateEffet": null
+  },
+  "refus": {
+   "exerciceClos": "EXERCICE_CLOS",
+   "sansMotif": "MOTIF_REQUIS",
+   "jourInvalide": "JOUR_INVALIDE",
+   "codeExistant": "CODE_EXISTANT"
+  },
+  "modification": {
+   "ok": true,
+   "code": "CCIB-2",
+   "jour": 15,
+   "dateEffet": "2026-06-01"
+  },
+  "dates": [
+   {
+    "date": "2026-05-15",
+    "jour": 10,
+    "dateEffet": null,
+    "nombreObligations": 19,
+    "codes": [
+     "ITS",
+     "AIB",
+     "VPS",
+     "CNSS",
+     "IS-1",
+     "IS-2",
+     "IS-3",
+     "IS-4",
+     "IS-SOLDE",
+     "ETATS-FIN",
+     "PATENTE-DECL",
+     "PATENTE-1",
+     "PATENTE-2",
+     "CCIB-DECL",
+     "CCIB-1",
+     "CCIB-2",
+     "TVM",
+     "ORTB-RADIO",
+     "ORTB-TELE"
+    ]
+   },
+   {
+    "date": "2026-06-01",
+    "jour": 15,
+    "dateEffet": "2026-06-01",
+    "nombreObligations": 19,
+    "codes": [
+     "ITS",
+     "AIB",
+     "VPS",
+     "CNSS",
+     "IS-1",
+     "IS-2",
+     "IS-3",
+     "IS-4",
+     "IS-SOLDE",
+     "ETATS-FIN",
+     "PATENTE-DECL",
+     "PATENTE-1",
+     "PATENTE-2",
+     "CCIB-DECL",
+     "CCIB-1",
+     "CCIB-2",
+     "TVM",
+     "ORTB-RADIO",
+     "ORTB-TELE"
+    ]
+   },
+   {
+    "date": "2026-12-31",
+    "jour": 15,
+    "dateEffet": "2026-06-01",
+    "nombreObligations": 19,
+    "codes": [
+     "ITS",
+     "AIB",
+     "VPS",
+     "CNSS",
+     "IS-1",
+     "IS-2",
+     "IS-3",
+     "IS-4",
+     "IS-SOLDE",
+     "ETATS-FIN",
+     "PATENTE-DECL",
+     "PATENTE-1",
+     "PATENTE-2",
+     "CCIB-DECL",
+     "CCIB-1",
+     "CCIB-2",
+     "TVM",
+     "ORTB-RADIO",
+     "ORTB-TELE"
+    ]
+   }
+  ],
+  "historique": [
+   {
+    "jour": 10,
+    "dateEffet": null,
+    "dateFin": "2026-05-31",
+    "retiree": false
+   }
+  ],
+  "fiche": {
+   "jour": 15,
+   "dateEffet": "2026-06-01",
+   "valideLe": null
+  }
+ },
+ "echeancesVersion": {
+  "regeneration": {
+   "code": "CCIB-2",
+   "dateEffet": "2026-06-01",
+   "conservees": 0,
+   "anterieures": 0,
+   "archivees": 1,
+   "creees": 1
+  },
+  "magasinCcib": [
+   {
+    "code": "CCIB-1",
+    "echeance": "2026-03-10",
+    "statut": "actif",
+    "versionObligation": null,
+    "paye": true,
+    "reference": "QUIT-CCIB-1-2026"
+   },
+   {
+    "code": "CCIB-2",
+    "echeance": "2026-06-10",
+    "statut": "archive",
+    "versionObligation": null,
+    "paye": false,
+    "reference": null
+   },
+   {
+    "code": "CCIB-2",
+    "echeance": "2026-06-15",
+    "statut": "actif",
+    "versionObligation": "2026-06-01",
+    "paye": false,
+    "reference": null
+   }
+  ],
+  "engendrees2026": [
+   {
+    "code": "ITS",
+    "echeance": "2026-01-12",
+    "echeanceTheorique": "2026-01-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "janvier 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-02-10",
+    "echeanceTheorique": "2026-02-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "janvier 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-03-10",
+    "echeanceTheorique": "2026-03-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "février 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-04-10",
+    "echeanceTheorique": "2026-04-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "mars 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-05-11",
+    "echeanceTheorique": "2026-05-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "avril 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-06-10",
+    "echeanceTheorique": "2026-06-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "mai 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-07-10",
+    "echeanceTheorique": "2026-07-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "juin 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-08-10",
+    "echeanceTheorique": "2026-08-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "juillet 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-09-10",
+    "echeanceTheorique": "2026-09-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "août 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-10-12",
+    "echeanceTheorique": "2026-10-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "septembre 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-11-10",
+    "echeanceTheorique": "2026-11-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "octobre 2026"
+   },
+   {
+    "code": "ITS",
+    "echeance": "2026-12-10",
+    "echeanceTheorique": "2026-12-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "novembre 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-01-12",
+    "echeanceTheorique": "2026-01-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "janvier 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-02-10",
+    "echeanceTheorique": "2026-02-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "janvier 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-03-10",
+    "echeanceTheorique": "2026-03-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "février 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-04-10",
+    "echeanceTheorique": "2026-04-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "mars 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-05-11",
+    "echeanceTheorique": "2026-05-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "avril 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-06-10",
+    "echeanceTheorique": "2026-06-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "mai 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-07-10",
+    "echeanceTheorique": "2026-07-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "juin 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-08-10",
+    "echeanceTheorique": "2026-08-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "juillet 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-09-10",
+    "echeanceTheorique": "2026-09-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "août 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-10-12",
+    "echeanceTheorique": "2026-10-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "septembre 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-11-10",
+    "echeanceTheorique": "2026-11-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "octobre 2026"
+   },
+   {
+    "code": "AIB",
+    "echeance": "2026-12-10",
+    "echeanceTheorique": "2026-12-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "novembre 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-01-12",
+    "echeanceTheorique": "2026-01-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "janvier 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-02-10",
+    "echeanceTheorique": "2026-02-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "janvier 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-03-10",
+    "echeanceTheorique": "2026-03-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "février 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-04-10",
+    "echeanceTheorique": "2026-04-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "mars 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-05-11",
+    "echeanceTheorique": "2026-05-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "avril 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-06-10",
+    "echeanceTheorique": "2026-06-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "mai 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-07-10",
+    "echeanceTheorique": "2026-07-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "juin 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-08-10",
+    "echeanceTheorique": "2026-08-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "juillet 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-09-10",
+    "echeanceTheorique": "2026-09-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "août 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-10-12",
+    "echeanceTheorique": "2026-10-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "septembre 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-11-10",
+    "echeanceTheorique": "2026-11-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "octobre 2026"
+   },
+   {
+    "code": "VPS",
+    "echeance": "2026-12-10",
+    "echeanceTheorique": "2026-12-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "novembre 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-01-12",
+    "echeanceTheorique": "2026-01-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "janvier 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-02-10",
+    "echeanceTheorique": "2026-02-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "janvier 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-03-10",
+    "echeanceTheorique": "2026-03-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "février 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-04-10",
+    "echeanceTheorique": "2026-04-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "mars 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-05-11",
+    "echeanceTheorique": "2026-05-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "avril 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-06-10",
+    "echeanceTheorique": "2026-06-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "mai 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-07-10",
+    "echeanceTheorique": "2026-07-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "juin 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-08-10",
+    "echeanceTheorique": "2026-08-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "juillet 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-09-10",
+    "echeanceTheorique": "2026-09-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "août 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-10-12",
+    "echeanceTheorique": "2026-10-10",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "septembre 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-11-10",
+    "echeanceTheorique": "2026-11-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "octobre 2026"
+   },
+   {
+    "code": "CNSS",
+    "echeance": "2026-12-10",
+    "echeanceTheorique": "2026-12-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "novembre 2026"
+   },
+   {
+    "code": "PATENTE-DECL",
+    "echeance": "2026-01-28",
+    "echeanceTheorique": "2026-01-28",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "PATENTE-1",
+    "echeance": "2026-02-10",
+    "echeanceTheorique": "2026-02-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "CCIB-DECL",
+    "echeance": "2026-03-02",
+    "echeanceTheorique": "2026-02-28",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "IS-1",
+    "echeance": "2026-03-10",
+    "echeanceTheorique": "2026-03-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "CCIB-1",
+    "echeance": "2026-03-10",
+    "echeanceTheorique": "2026-03-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "ORTB-RADIO",
+    "echeance": "2026-03-30",
+    "echeanceTheorique": "2026-03-28",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "IS-SOLDE",
+    "echeance": "2026-04-28",
+    "echeanceTheorique": "2026-04-28",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "ETATS-FIN",
+    "echeance": "2026-04-28",
+    "echeanceTheorique": "2026-04-28",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "PATENTE-2",
+    "echeance": "2026-04-28",
+    "echeanceTheorique": "2026-04-28",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "TVM",
+    "echeance": "2026-04-28",
+    "echeanceTheorique": "2026-04-28",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "IS-2",
+    "echeance": "2026-06-10",
+    "echeanceTheorique": "2026-06-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "CCIB-2",
+    "echeance": "2026-06-15",
+    "echeanceTheorique": "2026-06-15",
+    "reportee": false,
+    "versionObligation": "2026-06-01",
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "ORTB-TELE",
+    "echeance": "2026-06-29",
+    "echeanceTheorique": "2026-06-28",
+    "reportee": true,
+    "versionObligation": null,
+    "paye": true,
+    "periode": "2026"
+   },
+   {
+    "code": "IS-3",
+    "echeance": "2026-09-10",
+    "echeanceTheorique": "2026-09-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "2026"
+   },
+   {
+    "code": "IS-4",
+    "echeance": "2026-12-10",
+    "echeanceTheorique": "2026-12-10",
+    "reportee": false,
+    "versionObligation": null,
+    "paye": false,
+    "periode": "2026"
+   }
+  ],
+  "engendrees2027": [
+   {
+    "code": "CCIB-DECL",
+    "echeance": "2027-03-01",
+    "versionObligation": null
+   },
+   {
+    "code": "CCIB-1",
+    "echeance": "2027-03-10",
+    "versionObligation": null
+   },
+   {
+    "code": "CCIB-2",
+    "echeance": "2027-06-15",
+    "versionObligation": "2026-06-01"
+   }
+  ],
+  "retrait": {
+   "ok": true,
+   "echeances": {
+    "code": "TVM",
+    "dateEffet": "2026-07-01",
+    "conservees": 0,
+    "anterieures": 1,
+    "archivees": 0,
+    "creees": 0
+   },
+   "enVigueurApres": false,
+   "enVigueurAvant": true,
+   "historique": [
+    {
+     "dateFin": "2026-06-30",
+     "retiree": true
+    }
+   ]
+  }
+ },
+ "calculOrtbDate": {
+  "modification": {
+   "ok": true,
+   "seuilTele": 80000,
+   "dateEffet": "2026-08-01"
+  },
+  "parametresAvant": {
+   "id": "HOBxmsvmvr40ntsnk",
+   "statut": "actif",
+   "type": "parametres",
+   "code": "ORTB-PARAMETRES",
+   "libelle": "Redevance ORTB",
+   "famille": "ORTB",
+   "seuilTele": 60000,
+   "redevances": [
+    {
+     "id": "radio",
+     "code": "ORTB-RADIO",
+     "categorie": "Radio",
+     "libelle": "Redevance ORTB / Radio",
+     "montant": 1000,
+     "mois": 2,
+     "moisLabel": "mars",
+     "seuilMin": null,
+     "seuilMax": null,
+     "assiette": "Tous les salariés, sans exception"
+    },
+    {
+     "id": "tele",
+     "code": "ORTB-TELE",
+     "categorie": "Télé",
+     "libelle": "Redevance ORTB / Télé",
+     "montant": 3000,
+     "mois": 5,
+     "moisLabel": "juin",
+     "seuilMin": 60001,
+     "seuilMax": null,
+     "assiette": "Salaire brut supérieur à 60 000 FCFA"
+    }
+   ],
+   "cumulMaximum": 4000,
+   "source": "Direction — précision du 20/08/2026",
+   "dateEffet": null,
+   "modifieLe": null,
+   "modifiePar": null,
+   "motif": null,
+   "valideLe": null,
+   "validePar": null,
+   "obligationId": "ORTB-PARAMETRES",
+   "dateFin": "2026-07-31",
+   "remplaceeLe": "2026-08-16T10:00:00.000Z",
+   "remplaceePar": "BASSONGUI Chabi Séko",
+   "motifRemplacement": "Vecteur : seuil relevé",
+   "retiree": false,
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-08-16T10:00:00.000Z"
+  },
+  "parametresApres": {
+   "id": "ORTB-PARAMETRES",
+   "statut": "actif",
+   "type": "parametres",
+   "code": "ORTB-PARAMETRES",
+   "libelle": "Redevance ORTB",
+   "famille": "ORTB",
+   "seuilTele": 80000,
+   "redevances": [
+    {
+     "id": "radio",
+     "code": "ORTB-RADIO",
+     "categorie": "Radio",
+     "libelle": "Redevance ORTB / Radio",
+     "montant": 1000,
+     "mois": 2,
+     "moisLabel": "mars",
+     "seuilMin": null,
+     "seuilMax": null,
+     "assiette": "Tous les salariés, sans exception"
+    },
+    {
+     "id": "tele",
+     "code": "ORTB-TELE",
+     "categorie": "Télé",
+     "libelle": "Redevance ORTB / Télé",
+     "montant": 3000,
+     "mois": 5,
+     "moisLabel": "juin",
+     "seuilMin": 80001,
+     "seuilMax": null,
+     "assiette": "Salaire brut supérieur à 80 000 FCFA"
+    }
+   ],
+   "cumulMaximum": 4000,
+   "source": "Direction — précision du 20/08/2026",
+   "dateEffet": "2026-08-01",
+   "modifieLe": "2026-08-16T10:00:00.000Z",
+   "modifiePar": "BASSONGUI Chabi Séko",
+   "motif": "Vecteur : seuil relevé",
+   "valideLe": null,
+   "validePar": null,
+   "_modifiePar": "BASSONGUI Chabi Séko",
+   "_modifieLe": "2026-08-16T10:00:00.000Z"
+  },
+  "cas": [
+   {
+    "brut": 70000,
+    "mois": 5,
+    "date": "2026-06-01",
+    "montant": 3000,
+    "montantAnnuel": 4000,
+    "du": true,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 0,
+      "montantAnnuel": 1000,
+      "du": false
+     },
+     {
+      "id": "tele",
+      "montant": 3000,
+      "montantAnnuel": 3000,
+      "du": true
+     }
+    ]
+   },
+   {
+    "brut": 70000,
+    "mois": 5,
+    "date": "2026-09-01",
+    "montant": 0,
+    "montantAnnuel": 1000,
+    "du": false,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 0,
+      "montantAnnuel": 1000,
+      "du": false
+     }
+    ]
+   },
+   {
+    "brut": 70000,
+    "mois": 2,
+    "date": "2026-06-01",
+    "montant": 1000,
+    "montantAnnuel": 4000,
+    "du": true,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 1000,
+      "montantAnnuel": 1000,
+      "du": true
+     },
+     {
+      "id": "tele",
+      "montant": 0,
+      "montantAnnuel": 3000,
+      "du": false
+     }
+    ]
+   },
+   {
+    "brut": 70000,
+    "mois": 2,
+    "date": "2026-09-01",
+    "montant": 1000,
+    "montantAnnuel": 1000,
+    "du": true,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 1000,
+      "montantAnnuel": 1000,
+      "du": true
+     }
+    ]
+   },
+   {
+    "brut": 50000,
+    "mois": 5,
+    "date": "2026-06-01",
+    "montant": 0,
+    "montantAnnuel": 1000,
+    "du": false,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 0,
+      "montantAnnuel": 1000,
+      "du": false
+     }
+    ]
+   },
+   {
+    "brut": 60000,
+    "mois": 5,
+    "date": "2026-06-01",
+    "montant": 0,
+    "montantAnnuel": 1000,
+    "du": false,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 0,
+      "montantAnnuel": 1000,
+      "du": false
+     }
+    ]
+   },
+   {
+    "brut": 60001,
+    "mois": 5,
+    "date": "2026-06-01",
+    "montant": 3000,
+    "montantAnnuel": 4000,
+    "du": true,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 0,
+      "montantAnnuel": 1000,
+      "du": false
+     },
+     {
+      "id": "tele",
+      "montant": 3000,
+      "montantAnnuel": 3000,
+      "du": true
+     }
+    ]
+   },
+   {
+    "brut": 80000,
+    "mois": 5,
+    "date": "2026-09-01",
+    "montant": 0,
+    "montantAnnuel": 1000,
+    "du": false,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 0,
+      "montantAnnuel": 1000,
+      "du": false
+     }
+    ]
+   },
+   {
+    "brut": 80001,
+    "mois": 5,
+    "date": "2026-09-01",
+    "montant": 3000,
+    "montantAnnuel": 4000,
+    "du": true,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 0,
+      "montantAnnuel": 1000,
+      "du": false
+     },
+     {
+      "id": "tele",
+      "montant": 3000,
+      "montantAnnuel": 3000,
+      "du": true
+     }
+    ]
+   },
+   {
+    "brut": 90000,
+    "mois": 2,
+    "date": "2026-09-01",
+    "montant": 1000,
+    "montantAnnuel": 4000,
+    "du": true,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 1000,
+      "montantAnnuel": 1000,
+      "du": true
+     },
+     {
+      "id": "tele",
+      "montant": 0,
+      "montantAnnuel": 3000,
+      "du": false
+     }
+    ]
+   },
+   {
+    "brut": 70000,
+    "mois": 5,
+    "date": null,
+    "montant": 0,
+    "montantAnnuel": 1000,
+    "du": false,
+    "lignes": [
+     {
+      "id": "radio",
+      "montant": 0,
+      "montantAnnuel": 1000,
+      "du": false
+     }
+    ]
+   }
+  ],
+  "historique": [
+   {
+    "seuilTele": 60000,
+    "dateFin": "2026-07-31",
+    "cumulMaximum": 4000
+   }
+  ]
+ },
+ "validation": {
+  "reception": "VALIDATION_RESERVEE",
+  "da": {
+   "ok": true,
+   "nombre": 19,
+   "validePar": "TAKI Alimatou"
+  },
+  "etatObligations": "valide",
+  "apresModification": {
+   "ok": true,
+   "etat": "modifie_depuis",
+   "regeneration": {
+    "code": "ITS",
+    "dateEffet": "2026-09-01",
+    "conservees": 0,
+    "anterieures": 8,
+    "archivees": 4,
+    "creees": 4
+   }
+  }
+ },
+ "roles": [
+  "direction",
+  "da",
+  "admin"
+ ],
+ "erreurs": []
+}

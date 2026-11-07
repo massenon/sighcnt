@@ -1,0 +1,59 @@
+{
+ "id": "m13-courriers",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Courriers (départ / arrivée)",
+ "acces": "ouvert",
+ "titre": "Courriers (départ / arrivée)",
+ "description": "Registre numérisé du courrier administratif, avec suivi des réponses et des accusés de réception.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Courriers (départ / arrivée)"
+ ],
+ "actions": [
+  "Imprimer le registre",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les courriers",
+  "Archivés"
+ ],
+ "kpis": [
+  "Courriers enregistrés",
+  "Arrivées",
+  "Départs",
+  "En attente de traitement"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N° d’ordre",
+   "Sens",
+   "Date",
+   "Correspondant",
+   "Objet",
+   "Nature",
+   "Affecté à",
+   "Traitement",
+   "Numérisé",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les courriers34",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,72 @@
+{
+ "id": "m14-sauvegardes",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Sauvegardes & restauration",
+ "acces": "ouvert",
+ "titre": "Sauvegardes & restauration",
+ "description": "Sauvegardes quotidiennes locales, sauvegardes hebdomadaires externalisées et procédure de restauration.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs",
+  "Sauvegardes & restauration"
+ ],
+ "actions": [
+  "Utilisateurs",
+  "Rôles & permissions (RBAC)",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [
+  "4 sauvegarde(s) en échec. Une alerte est adressée à l’Administrateur système à chaque échec ; la procédure de restauration doit être testée périodiquement.",
+  "La sauvegarde hebdomadaire est automatique ; l’utilisateur est invité à en télécharger une copie sur un support externe. Une sauvegarde qui reste sur le poste ne protège de rien."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Sauvegardes conservées",
+  "Dernière sauvegarde",
+  "Échecs constatés",
+  "Volume moyen"
+ ],
+ "cartes": [
+  "Fichiers de sauvegarde disponibles",
+  "Historique des sauvegardes"
+ ],
+ "tableaux": [
+  [
+   "Fichier",
+   "Date",
+   "Tables",
+   "Portée",
+   "Actions"
+  ],
+  [
+   "Référence",
+   "Date",
+   "Heure",
+   "Type",
+   "Support",
+   "Volume",
+   "Durée",
+   "Résultat",
+   "Message",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Générer une sauvegarde",
+  "Importer par module",
+  "Lancer une sauvegarde manuelle",
+  "Tester une restauration",
+  "Exporter le journal des sauvegardes",
+  "Restaurer",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

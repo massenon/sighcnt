@@ -1,0 +1,47 @@
+{
+ "id": "mere-mises-a-jour",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Mises à jour et compatibilité",
+ "acces": "ouvert",
+ "titre": "Mises à jour et compatibilité",
+ "description": "Version de l’application et du schéma par poste ; refus nommé d’un poste trop ancien ; déploiement planifié.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Cycle de vie",
+  "Mises à jour et compatibilité"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Version de la mère",
+  "Schéma",
+  "Postes à jour",
+  "Postes refusés"
+ ],
+ "cartes": [
+  "Versions par appareil"
+ ],
+ "tableaux": [
+  [
+   "Appareil",
+   "Application",
+   "Schéma",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Planifier le déploiement"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

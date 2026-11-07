@@ -1,0 +1,57 @@
+{
+ "id": "m12-cloture",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Exercices & clôtures",
+ "acces": "ouvert",
+ "titre": "Exercices & clôtures",
+ "description": "Sélecteur d’exercice, pré-clôture, clôture en deux gestes, à-nouveaux et lettrage des tiers.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Exercices & clôtures"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [],
+ "onglets": [
+  "Exercices",
+  "Périodes de l’exercice",
+  "Lettrage des tiers"
+ ],
+ "kpis": [
+  "Exercice affiché",
+  "État",
+  "Résultat provisoire",
+  "Contrôles bloquants en échec"
+ ],
+ "cartes": [
+  "Exercices comptables"
+ ],
+ "tableaux": [
+  [
+   "Exercice",
+   "Période",
+   "État",
+   "Résultat net",
+   "Validée par",
+   "Empreinte",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Exercices",
+  "Périodes de l’exercice",
+  "Lettrage des tiers",
+  "Colonnes",
+  "Exporter",
+  "Pré-clôture"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

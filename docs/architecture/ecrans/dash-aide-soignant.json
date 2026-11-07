@@ -1,0 +1,41 @@
+{
+ "id": "dash-aide-soignant",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Aide-soignante",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Aide-soignante",
+ "description": "Patients hospitalisés, soins du jour et visites — sans aucun résultat d’analyse.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Aide-soignante"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Patients hospitalisés",
+  "Relevés de constantes du jour",
+  "Visites reçues aujourd’hui",
+  "Lits occupés"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Voir les admissions",
+  "Voir les patients",
+  "Visites"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

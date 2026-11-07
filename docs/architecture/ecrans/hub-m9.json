@@ -1,0 +1,31 @@
+{
+ "id": "hub-m9",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Assurances & Créances",
+ "acces": "ouvert",
+ "titre": "Assurances & Créances",
+ "description": "Tous les écrans du module M9 — Assurances & Créances.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances"
+ ],
+ "actions": [
+  "Tableau de bord assurances",
+  "Compagnies partenaires",
+  "Assurances & Créances"
+ ],
+ "regle": [
+  "MECeF — Facture normalisée",
+  "Comptabilité SYSCOHADA"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

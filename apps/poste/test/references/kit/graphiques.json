@@ -1,0 +1,51 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/reference-graphiques.js. Ne pas éditer.",
+ "barres": {
+  "zone": {
+   "x": 30.5,
+   "y": 9.6,
+   "l": 569.5,
+   "h": 188.2
+  },
+  "taille": [
+   600,
+   260
+  ]
+ },
+ "ligne": {
+  "zone": {
+   "x": 28,
+   "y": 9.6,
+   "l": 555.5,
+   "h": 188.2
+  },
+  "taille": [
+   600,
+   260
+  ]
+ },
+ "anneau": {
+  "zone": {
+   "x": 0,
+   "y": 0,
+   "l": 495,
+   "h": 260
+  },
+  "taille": [
+   600,
+   260
+  ]
+ },
+ "sparkline": {
+  "zone": {
+   "x": 0,
+   "y": 0,
+   "l": 600,
+   "h": 40
+  },
+  "taille": [
+   600,
+   40
+  ]
+ }
+}

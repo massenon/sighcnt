@@ -1,0 +1,44 @@
+{
+ "id": "rls-tableau",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Tableau de bord du relais",
+ "acces": "ouvert",
+ "titre": "Tableau de bord du relais",
+ "description": "La mère est-elle vivante, à jour, sauvegardée ? Volumes et alertes — sans aucun nom de patient.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Tableau de bord du relais"
+ ],
+ "actions": [
+  "Appareils",
+  "Boîtes aux lettres",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Mère",
+  "Appareils actifs",
+  "Enveloppes stockées",
+  "Alertes"
+ ],
+ "cartes": [
+  "Dernières alertes"
+ ],
+ "tableaux": [
+  [
+   "Quand",
+   "Alerte",
+   "Durée"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

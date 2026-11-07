@@ -1,0 +1,59 @@
+{
+ "id": "m8-facturation",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Nouvelle facture",
+ "acces": "ouvert",
+ "titre": "Nouvelle facture",
+ "description": "Établissement d’une facture : sélection du patient, ajout des prestations et médicaments, calcul de la prise en charge et encaissement.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Nouvelle facture"
+ ],
+ "actions": [
+  "Tableau de bord facturation",
+  "Factures",
+  "Facturation & Caisse"
+ ],
+ "regle": [
+  "Patient non assuré : la facturation est intégrale à sa charge.",
+  "Base MECeF : 0 FCFA — seule la part réglée par le patient est normalisée.",
+  "RG-02 — médicaments au prix d’achat, sans marge."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Patient et nature de la facture",
+  "Prestations facturées",
+  "Récapitulatif",
+  "Actions",
+  "Rappels"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "TCHANE Bertine",
+  "Consultation généraliste",
+  "Nouvelle nature",
+  "Ajouter",
+  "Enregistrer et encaisser",
+  "Facture pro-forma",
+  "Ticket de caisse"
+ ],
+ "champs": [
+  "Patient",
+  "Nature de la facture",
+  "Nature",
+  "Prestation",
+  "Qté",
+  "Prix unitaire",
+  "Remise",
+  "Motif de remise",
+  "Mode de règlement",
+  "Montant réglé (FCFA)",
+  "Opération de caisse détachée du dossier patient (vente au comptoir)"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

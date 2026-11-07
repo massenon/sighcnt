@@ -489,6 +489,8 @@
          et RIEN N’EST RETIRÉ de la collection (RG-14 : un rendez-vous honoré
          EST la consultation, l’archiver effacerait l’acte). */
       function filtreBase(r) {
+        /* `exerciceChamp` : l'écran SUIT l'exercice choisi à la barre supérieure (arbitrage du 05/11/2026). Le choix ne fait que filtrer ce qu'on lit. */
+        if (cfg.exerciceChamp && global.SIGH.exercice && !global.SIGH.exercice.dansExercice(r[cfg.exerciceChamp])) return false;
         return typeof cfg.filtreBase === 'function' ? cfg.filtreBase(r) : true;
       }
 
@@ -568,7 +570,8 @@
    * ======================================================================== */
   function amorcer(nom, seed) {
     var db = S.raw();
-    if (seed && (!db[nom] || !db[nom].length)) {
+    /* Un magasin volontairement vidé ne se ré-amorce pas écran par écran. */
+    if (seed && (!db[nom] || !db[nom].length) && S.amorcable(nom)) {
       db[nom] = seed() || [];
       S.save();
     }
@@ -727,7 +730,7 @@
             /* Le contrôle métier de l'appelant : il refuse EN LE DISANT
                (son propre toast) et retourne false — rien n'est écrit. */
             if (typeof avant === 'function' && avant(v, record) === false) return;
-            if (typeof transform === 'function') v = transform(v);
+            if (typeof transform === 'function') v = transform(v, record);   /* E364 : la fiche corrigée est transmise */
             var res = col.update(record.id, v);
             m.close();
             if (apres) apres();
@@ -1202,6 +1205,46 @@
    * déclaration. C'est le point d'entrée du module, atteint depuis le fil
    * d'Ariane, l'intitulé du module dans le ruban et les raccourcis permanents.
    * ======================================================================== */
+  /** Une carte d'écran (icône, titre, description reprise de sa déclaration) : la MÊME pour les hubs de module et pour « Paramètres système ». */
+  function carteHub(it, mod) {
+      var def = global.SIGH.screens[it.id] || {};
+      var carte = el('a.hub-card.group.flex.gap-3.rounded-xl.border.border-slate-200.bg-white.p-4.shadow-card.transition-all.hover\\:-translate-y-0\\.5.hover\\:border-navy-300.hover\\:shadow-raise',
+        { href: A().href(it.id) });
+      carte.appendChild(el('span.grid.h-10.w-10.shrink-0.place-items-center.rounded-lg.bg-navy-50.text-navy-700.transition-colors.group-hover\\:bg-navy-900.group-hover\\:text-white',
+        null, C.icon(it.icon || mod.icon, 'h-5 w-5')));
+      var corps = el('span.min-w-0.flex-1');
+      corps.appendChild(el('span.block.text-sm.font-semibold.text-slate-900', { text: def.title || it.label }));
+      corps.appendChild(el('span.mt-1.block.text-xs.leading-relaxed.text-slate-500', {
+        text: def.description || 'Écran du module ' + mod.label + '.',
+      }));
+      carte.appendChild(corps);
+      carte.appendChild(C.icon('arrow-right', 'h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-navy-700'));
+      return carte;
+  }
+
+  /* LES GROUPES DE CARTES DE « PARAMÈTRES SYSTÈME » (arbitrage du 05/11/2026) : un groupe par module (titre + cartes en flex qui passent à la ligne), la
+     matière venant de `N.treeParametres(role, domaines)` : déjà filtrée par les droits, donc jamais une carte vers un écran interdit (RG-13). */
+  function groupesCartes(arbre) {
+    var hote = el('div.space-y-5');
+    arbre.forEach(function (d) {
+      d.modules.forEach(function (m) {
+        var groupe = el('section.hub-group');
+        groupe.appendChild(el('h3.mb-2.flex.items-center.gap-2.text-sm.font-semibold.text-slate-700', null,
+          [C.icon(m.icon, 'h-4 w-4 text-navy-700'), el('span', null, [el('span', { text: m.label }), ' ', el('span.text-xs.font-normal.text-slate-400', { text: String(m.items.length) + ' écran(s)' })])]));
+        var flex = el('div.hub-flex.flex.flex-wrap.gap-3');
+        m.items.forEach(function (it) {
+          var carte = carteHub(it, m);
+          carte.classList.add('grow', 'basis-72');
+          flex.appendChild(carte);
+        });
+        groupe.appendChild(flex);
+        hote.appendChild(groupe);
+      });
+    });
+    if (!hote.children.length) return U.empty('Aucun écran de cette rubrique n’est accessible à votre profil.', { icon: 'lock' });
+    return hote;
+  }
+
   function hubCartes(mod, role) {
     var grille = el('div.grid.gap-3.sm\\:grid-cols-2.xl\\:grid-cols-3');
     /* L'IDENTIFIANT DE L'ÉCRAN DOIT ÊTRE PASSÉ. `N.can` interroge
@@ -1216,21 +1259,7 @@
         module: mod.code,
       });
     });
-    visibles.forEach(function (it) {
-      var def = global.SIGH.screens[it.id] || {};
-      var carte = el('a.hub-card.group.flex.gap-3.rounded-xl.border.border-slate-200.bg-white.p-4.shadow-card.transition-all.hover\\:-translate-y-0\\.5.hover\\:border-navy-300.hover\\:shadow-raise',
-        { href: A().href(it.id) });
-      carte.appendChild(el('span.grid.h-10.w-10.shrink-0.place-items-center.rounded-lg.bg-navy-50.text-navy-700.transition-colors.group-hover\\:bg-navy-900.group-hover\\:text-white',
-        null, C.icon(it.icon || mod.icon, 'h-5 w-5')));
-      var corps = el('span.min-w-0.flex-1');
-      corps.appendChild(el('span.block.text-sm.font-semibold.text-slate-900', { text: def.title || it.label }));
-      corps.appendChild(el('span.mt-1.block.text-xs.leading-relaxed.text-slate-500', {
-        text: def.description || 'Écran du module ' + mod.label + '.',
-      }));
-      carte.appendChild(corps);
-      carte.appendChild(C.icon('arrow-right', 'h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-navy-700'));
-      grille.appendChild(carte);
-    });
+    visibles.forEach(function (it) { grille.appendChild(carteHub(it, mod)); });
     if (!visibles.length) return U.empty('Aucun écran de ce module n’est accessible à votre profil.', { icon: 'lock' });
     return grille;
   }
@@ -1569,7 +1598,7 @@
     commande: commande, commandeIcone: commandeIcone,
     section: section, grid: grid, row: row, note: note, source: source,
     crud: crud, registre: registre, lectureSeule: lectureSeule, fileAttente: fileAttente,
-    pageFormulaire: pageFormulaire, actionsPageFormulaire: actionsPageFormulaire,
+    pageFormulaire: pageFormulaire, groupesCartes: groupesCartes, actionsPageFormulaire: actionsPageFormulaire,
     droits: droits, bandeauLectureSeule: bandeauLectureSeule,
     modifier: modifier, actionsLigne: actionsLigne, creer: creer,
     dash: dash, charts: charts, ranking: ranking, miniTable: miniTable,

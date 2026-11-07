@@ -66,6 +66,20 @@
   }
   function soignantsQui(pred) { return soignants().filter(pred); }
 
+  /* LE SECTEUR DU PRESCRIPTEUR SE LIT À L'ORGANIGRAMME (E2262, corrigé le 06/11/2026) : le service de l'agent ramené aux six
+     secteurs (D.secteurNormalise), sinon son poste, sinon sa fonction (médecin : Consultation ; sage-femme : Maternité) ; sans rien
+     de cela, null, jamais une valeur inventée. Sans ce champ, PR.prescrire retombait sur le secteur de la SESSION qui ouvrait la
+     première page (l'installateur) : 327 demandes semées portaient « ADMINISTRATION » et aucune sage-femme ne voyait rien. */
+  function secteurPrescripteur(agent) {
+    if (!agent) return null;
+    var d = D();
+    var s = d.secteurNormalise(agent.service) || d.secteurNormalise(agent.poste);
+    if (s) return s;
+    if (agent.fonction === 'medecin') return 'Consultation';
+    if (agent.fonction === 'sage_femme') return 'Maternité';
+    return null;
+  }
+
   function unDe(rnd, liste) { return liste.length ? C.pick(rnd, liste) : null; }
 
   /* ==========================================================================
@@ -81,6 +95,9 @@
     var meds = S().collection('produits').active().filter(function (p) { return p.stock > 20; });
     var analyses = (d.ANALYSES || []).filter(function (a) { return a.prix; });
     var medecins = parFonction('medecin').filter(function (a) { return !/Échographiste/i.test(a.poste || ''); });
+    /* Les sages-femmes PRESCRIVENT (doctrine : 3 médecins et 3 sages-femmes prescripteurs) : le suivi de grossesse d'une patiente
+       part de la maternité, et sa demande porte ce secteur. Choix sans tirage : la suite aléatoire du jeu ne bouge pas. */
+    var sagesFemmes = parFonction('sage_femme');
     var bio = soignantsQui(function (x) { return x.qualite === 'medecin'; });
     var faits = { prescriptions: 0, encaisses: 0, resultats: 0, rendus: 0 };
     if (!medecins.length || !analyses.length) return faits;
@@ -108,12 +125,17 @@
       if (!codes.length && !lignesMed.length) continue;
 
       var ord;
+      /* Le diagnostic se tire ICI, au même rang qu'avant dans la suite aléatoire (il était tiré dans l'appel). */
+      var diagnostic = C.pick(rnd, ['Paludisme simple', 'Fièvre typhoïde', 'Infection urinaire',
+        'Anémie', 'Hypertension artérielle', 'Gastro-entérite', 'Bilan de santé',
+        'Suivi de grossesse', 'Bronchite aiguë', 'Diabète — bilan']);
+      var prescripteur = (diagnostic === 'Suivi de grossesse' && sagesFemmes.length && p.sexe === 'F')
+        ? sagesFemmes[i % sagesFemmes.length] : med;
       try {
         ord = pr.prescrire({
-          patientCode: p.code, medecin: med.nomComplet, date: date,
-          diagnostic: C.pick(rnd, ['Paludisme simple', 'Fièvre typhoïde', 'Infection urinaire',
-            'Anémie', 'Hypertension artérielle', 'Gastro-entérite', 'Bilan de santé',
-            'Suivi de grossesse', 'Bronchite aiguë', 'Diabète — bilan']),
+          patientCode: p.code, medecin: prescripteur.nomComplet, date: date,
+          diagnostic: diagnostic,
+          secteurDemandeur: secteurPrescripteur(prescripteur),
           analyses: codes, medicaments: lignesMed,
           urgent: rnd() > 0.88,
         });
@@ -925,7 +947,7 @@
     var file = col('fileAttente', { module: 'M2', entite: 'ticket de file', prefix: 'FIL' });
     var POSTES = [['accueil', 'Accueil'], ['consultation', 'Consultation'], ['caisse', 'Caisse'],
       ['prelevement', 'Salle de prélèvement'], ['pharmacie', 'Pharmacie'], ['salle_soins', 'Salle de soins'],
-      ['imagerie', 'Échographie']];
+      ['imagerie', 'Imagerie médicale']];
     var PRIORITES = ['ordre_arrivee', 'ordre_arrivee', 'ordre_arrivee', 'rdv', 'urgence', 'urgence_vitale'];
     /* Les praticiens qui reçoivent, dérivés du personnel soignant. */
     var recoivent = soignantsQui(function (x) { return x.prescrit; });
@@ -950,7 +972,7 @@
           praticien: attendu ? attendu.nomComplet : null,
           priorite: C.pick(rnd, PRIORITES),
           motif: C.pick(rnd, ['Consultation', 'Retrait de résultat', 'Règlement',
-            'Prélèvement', 'Délivrance', 'Pansement', 'Échographie']),
+            'Prélèvement', 'Délivrance', 'Pansement', 'Imagerie médicale']),
           arriveeLe: C.iso(FIN) + 'T' + C.pad(7 + Math.floor(attente / 12), 2) + ':'
             + C.pad(attente % 60, 2) + ':00.000Z',
           etat: servi ? 'servi' : 'attente',
@@ -1082,7 +1104,7 @@
     var faits = {};
     var agents = personnel();
 
-    /* --- Prêts-études et avances ----------------------------------------- */
+    /* --- Prêts et avances ----------------------------------------- */
     var prets = col('pretsEtudes', { module: 'M11', entite: 'prêt-études', prefix: 'PRT' });
     var OBJETS = {
       pret_etudes: ['Licence en soins infirmiers', 'Formation en gestion hospitalière',
@@ -1148,15 +1170,22 @@
       agents.forEach(function (ag) {
         if (ag.id === ben.id) return;
         var comptant = evt.modeParDefaut === 'comptant' || rnd() > 0.75;
+        /* E742 : la forme est CELLE QUE L'ÉCRAN DES ÉVÉNEMENTS ÉCRIT (employeId, statutPaiement, datePaiement, fonction, service), celle que le
+           calcul de la paie lit. Le semis écrivait agentId / regle / dateReglement : aucune participation n'était jamais retenue. Les tirages
+           aléatoires gardent EXACTEMENT leur ordre (règlement, puis date) : rien d'autre du jeu ne bouge. */
+        var reglee = comptant ? rnd() > 0.2 : rnd() > 0.35;
+        var dateReglee = comptant ? C.iso(C.addDays(dte, C.between(rnd, 0, 10))) : null;
         parts.insert({
           reference: 'PAR-' + C.uid().slice(0, 6),
           evenementId: evt.id, evenementLibelle: evt.libelle,
-          agentId: ag.id, agent: ag.nomComplet, matricule: ag.matricule,
+          nature: evt.nature, dateEvenement: evt.date,
+          employeId: ag.id, agent: ag.nomComplet, matricule: ag.matricule,
+          fonction: ag.fonction, service: ag.service,
           montant: 1000,
           mode: comptant ? 'comptant' : 'salaire',
           periodeRetenue: comptant ? null : mp,
-          regle: comptant ? rnd() > 0.2 : rnd() > 0.35,
-          dateReglement: comptant ? C.iso(C.addDays(dte, C.between(rnd, 0, 10))) : null,
+          statutPaiement: reglee ? 'paye' : 'du',
+          datePaiement: dateReglee,
         });
       });
     }
@@ -2360,7 +2389,9 @@
              secteurs (vague 55) : c’est lui que l’onglet « hospitalisation »
              de l’accueil reconnaît. */
           serviceDemandeur: pl[2], hospitalise: pl[3],
-          secteurDemandeur: pl[3] ? 'Hospitalisation et soins' : null,
+          /* E2262 : le service de la clinique qui reçoit le patient externe EST son secteur (Maternité, Médecine : Consultation) ;
+             il valait null et la sage-femme ne voyait aucun de ces bilans. */
+          secteurDemandeur: pl[3] ? 'Hospitalisation et soins' : D().secteurNormalise(pl[2]),
           urgence: 'aucune', analyses: codes,
           date: horodatage(date, C.between(rnd, 7, 12), C.between(rnd, 0, 59)),
         }));
@@ -2861,6 +2892,7 @@
         try {
           var ord = pr.prescrire({
             patientCode: p.code, medecin: md.nomComplet, date: horodatage(dateP, 10, 15),
+            secteurDemandeur: secteurPrescripteur(md),
             diagnostic: 'Syndrome fébrile — bilan', analyses: codes,
             medicaments: prod2 ? [{ produitId: prod2.id, quantite: 2, posologie: '1 cp x 3/j', duree: '5 jours' }] : [],
           });
@@ -2961,6 +2993,8 @@
     var fait = { besoins: 0, commandes: 0, livraisons: 0, facturesFournisseurs: 0 };
     var prods = st.collection('produits').active();
     if (!prods.length) return fait;
+    /* Un magasin volontairement vidé de ses jeux de test le reste (vague 68). */
+    if (!st.amorcable('besoins')) return fait;
 
     if (!cmds.all().length || (complet && !besoins.all().length)) {
       var rnd = C.seeded(911);

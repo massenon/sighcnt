@@ -1,0 +1,54 @@
+{
+ "id": "m8-recettes",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Recettes par période",
+ "acces": "ouvert",
+ "titre": "Recettes par période",
+ "description": "Recettes encaissées par journée, semaine, mois, trimestre, semestre ou année, avec plage libre.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Recettes par période"
+ ],
+ "actions": [
+  "Opérations de caisse",
+  "État de caisse journalier",
+  "Tableau de bord facturation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Recette encaissée",
+  "Montant facturé",
+  "Reste à encaisser",
+  "Taux de recouvrement"
+ ],
+ "cartes": [
+  "Recettes — journalière"
+ ],
+ "tableaux": [
+  [
+   "Période",
+   "Pièces",
+   "Facturé",
+   "Dont part assureur",
+   "Encaissé",
+   "Reste à encaisser"
+  ]
+ ],
+ "commandes": [
+  "Éditer l’état",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Périodicité",
+  "Du",
+  "Au",
+  "Plage de dates libre"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

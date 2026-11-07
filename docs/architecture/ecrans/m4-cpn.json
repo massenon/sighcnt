@@ -1,0 +1,59 @@
+{
+ "id": "m4-cpn",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "CPN & carte maternelle",
+ "acces": "ouvert",
+ "titre": "CPN & carte maternelle",
+ "description": "Consultations prénatales structurées : SP1-SP5, MILDA, grossesse à risque, Mébendazole, visites CPN.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "CPN & carte maternelle"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les grossesses suivies",
+  "Archivés"
+ ],
+ "kpis": [
+  "Grossesses suivies",
+  "À risque (GAR)",
+  "Couverture SP3",
+  "MILDA remises"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Patiente",
+   "Terme",
+   "DPA",
+   "GAR",
+   "SP (TPI)",
+   "MILDA",
+   "Mébendazole",
+   "CPN",
+   "Sage-femme",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les grossesses suivies18",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

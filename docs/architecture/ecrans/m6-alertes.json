@@ -1,0 +1,49 @@
+{
+ "id": "m6-alertes",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Alertes & seuils",
+ "acces": "ouvert",
+ "titre": "Alertes & seuils",
+ "description": "Centralisation des alertes de rupture, de seuil minimal et de péremption imminente.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Alertes & seuils"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "Le seuil d’alerte est paramétrable par article dans le référentiel produits. Le délai de préavis de péremption est de 90 jours et se règle dans la configuration du module (RG-05)."
+ ],
+ "onglets": [
+  "Ruptures",
+  "Sous le seuil",
+  "Péremptions"
+ ],
+ "kpis": [
+  "Ruptures de stock",
+  "Sous le seuil d’alerte",
+  "Lots périmés",
+  "Péremption sous 90 j"
+ ],
+ "cartes": [
+  "Produits en rupture de stock"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Ruptures0",
+  "Sous le seuil51",
+  "Péremptions54",
+  "Colonnes",
+  "Exporter",
+  "Ouvrir les bons de besoins (M7)"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

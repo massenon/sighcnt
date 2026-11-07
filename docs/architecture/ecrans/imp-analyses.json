@@ -1,0 +1,54 @@
+{
+ "id": "imp-analyses",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation du catalogue des analyses",
+ "acces": "ouvert",
+ "titre": "Importation du catalogue des analyses",
+ "description": "Entrées du catalogue des examens (code, désignation, section). Les variables, unités et bornes ne se reprennent pas : le biologiste les valide.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation du catalogue des analyses"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "Proposition à valider. PROPOSITION À VALIDER : seule l’entrée du catalogue est créée. Sans variables ni bornes, un examen importé ne peut pas recevoir de résultat avant que le biologiste les ait saisies et validées."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

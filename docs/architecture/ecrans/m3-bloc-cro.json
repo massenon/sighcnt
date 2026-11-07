@@ -1,0 +1,51 @@
+{
+ "id": "m3-bloc-cro",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Comptes rendus opératoires",
+ "acces": "ouvert",
+ "titre": "Comptes rendus opératoires",
+ "description": "Rédaction et impression du compte rendu opératoire du secteur Bloc.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Comptes rendus opératoires"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Comptes rendus",
+  "Ce mois-ci",
+  "Sans aide-opérateur",
+  "Interventions au catalogue"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Date",
+   "Patient",
+   "Intervention",
+   "Opérateur",
+   "Anesthésiste",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau compte rendu",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,67 @@
+{
+ "id": "m12-bfr",
+ "module": "M12",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Besoin en fonds de roulement",
+ "acces": "ouvert",
+ "titre": "Besoin en fonds de roulement",
+ "description": "Créances clients, valorisation des stocks et dettes fournisseurs — le besoin de financement du cycle d’exploitation, calculé en continu.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Gestion & trésorerie",
+  "Besoin en fonds de roulement"
+ ],
+ "actions": [
+  "Tableau décisionnel",
+  "Créances assureurs",
+  "Tableau de bord comptable"
+ ],
+ "regle": [
+  "Les trois encours sont arrêtés au 30/10/2026 — ils ne dépendent pas de la fenêtre choisie. Seul le chiffre d’affaires, et donc le BFR exprimé en jours, se lit sur la période du 01/08/2026 au 30/10/2026.",
+  "6 512 660 FCFA que la clinique finance sur sa propre trésorerie : elle a payé ses fournisseurs et constitué son stock avant d’être réglée par ses clients et par les compagnies. C’est ce montant qu’un découvert ou un fonds de roulement doit couvrir."
+ ],
+ "onglets": [],
+ "kpis": [
+  "En-cours clients",
+  "Valorisation des stocks",
+  "Dettes fournisseurs",
+  "Besoin en fonds de roulement"
+ ],
+ "cartes": [
+  "Composition du besoin",
+  "Ce que le cycle finance",
+  "Redescendre à la source",
+  "Créances au-delà de 60 jours — le levier le plus court"
+ ],
+ "tableaux": [
+  [
+   "Composante",
+   "Registre d’origine",
+   "Montant"
+  ],
+  [
+   "Compagnie",
+   "Factures",
+   "Ancienneté maximale",
+   "Montant dû"
+  ]
+ ],
+ "commandes": [
+  "Imprimer l’état du BFR",
+  "Ouvrir la balance âgée des créances",
+  "Ouvrir le point de stock",
+  "Ouvrir les factures fournisseurs",
+  "Colonnes",
+  "Exporter",
+  "Ouvrir les relances",
+  "1",
+  "2"
+ ],
+ "champs": [
+  "Encours arrêtés au",
+  "Chiffre d’affaires observé sur"
+ ],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

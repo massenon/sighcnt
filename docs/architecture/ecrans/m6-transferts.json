@@ -1,0 +1,61 @@
+{
+ "id": "m6-transferts",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Transferts gros → détail",
+ "acces": "ouvert",
+ "titre": "Transferts gros → détail",
+ "description": "Approvisionnement de la pharmacie d’urgence depuis le magasin central, avec traçabilité complète.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Transferts gros → détail"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [],
+ "onglets": [
+  "Bons de transfert",
+  "Vue détaillée par article"
+ ],
+ "kpis": [
+  "Bons de transfert",
+  "Articles transférés (lignes)",
+  "Valeur transférée",
+  "Bons du mois"
+ ],
+ "cartes": [
+  "Bons de transfert"
+ ],
+ "tableaux": [
+  [
+   "N° bon",
+   "Date",
+   "Destination",
+   "Articles transférés",
+   "Lignes",
+   "Quantité",
+   "Valeur",
+   "Réceptionnaire",
+   "Opérateur",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Bons de transfert",
+  "Vue détaillée par article",
+  "Colonnes",
+  "Exporter",
+  "Imprimer le registre détaillé",
+  "Nouveau transfert",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

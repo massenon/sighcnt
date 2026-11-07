@@ -1,0 +1,53 @@
+{
+ "id": "m2-ordonnance-nouvelle",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Nouvelle ordonnance — saisie",
+ "acces": "ouvert",
+ "titre": "Nouvelle ordonnance",
+ "description": "Médicaments, analyses et actes d’une même ordonnance — transmise d’un seul geste à la caisse, à la pharmacie et au laboratoire.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Consultations & prescriptions",
+  "Nouvelle ordonnance — saisie"
+ ],
+ "actions": [
+  "Prescrire et transmettre"
+ ],
+ "regle": [
+  "RG-02 — les médicaments sont facturés au prix d’achat, sans marge.",
+  "RG-03 — les tâches d’aval naissent bloquées : seul l’encaissement les libère, ligne par ligne.",
+  "RG-09 — la prise en charge ne s’applique que si la carte est valide à la date de facturation."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Patient et prescripteur",
+  "Médicaments",
+  "Analyses et actes",
+  "Récapitulatif",
+  "Enchaînement du parcours",
+  "Rappels de facturation"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "CNT/1/25 — TCHANE Bertine",
+  "— Médicament —",
+  "Ajouter un médicament",
+  "— Aucune sélection —",
+  "Annuler",
+  "Prescrire et transmettre"
+ ],
+ "champs": [
+  "Dossier patient *",
+  "Médecin prescripteur *",
+  "Date et heure *",
+  "Diagnostic",
+  "Prescription urgente",
+  "Analyses de laboratoire",
+  "Actes et soins"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

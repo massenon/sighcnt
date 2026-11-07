@@ -1,0 +1,58 @@
+{
+ "id": "ged-archives",
+ "module": "GED",
+ "domaine": "Administration",
+ "libelleManifeste": "Archivage & conservation",
+ "acces": "ouvert",
+ "titre": "Archivage & conservation",
+ "description": "Cycle de vie documentaire : archives actives, archives définitives et durées de conservation.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Gestion documentaire",
+  "Archivage & conservation"
+ ],
+ "actions": [
+  "Bibliothèque documentaire",
+  "Workflow de validation",
+  "Gestion documentaire"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Archives actives",
+  "Archives définitives",
+  "Conservation échue",
+  "Volume total"
+ ],
+ "cartes": [
+  "Répartition par durée de conservation",
+  "Volume documentaire par catégorie",
+  "Cycle de vie des documents"
+ ],
+ "tableaux": [
+  [
+   "Référence",
+   "Document",
+   "Catégorie",
+   "Date du document",
+   "Conservation",
+   "Échéance",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Éditer le bordereau d’archivage",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

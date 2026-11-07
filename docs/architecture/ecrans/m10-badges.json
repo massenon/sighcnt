@@ -1,0 +1,62 @@
+{
+ "id": "m10-badges",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Badges du personnel",
+ "acces": "ouvert",
+ "titre": "Badges du personnel",
+ "description": "Un badge par agent : émission, remise, validité, retrait — et le code de contrôle qui permet de le vérifier.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Badges du personnel"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [
+  "Badges en cours (14)",
+  "Retirés (0)",
+  "Agents sans badge (30)",
+  "À décider par la Direction"
+ ],
+ "kpis": [
+  "Badges en cours",
+  "Remis à l’agent",
+  "À éditer ou à remettre",
+  "Expirent sous 60 jours",
+  "Retirés (perte, départ)",
+  "Agents sans badge"
+ ],
+ "cartes": [
+  "Badges en cours de validité"
+ ],
+ "tableaux": [
+  [
+   "N° de série",
+   "Agent",
+   "Matricule",
+   "Validité",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Badges en cours (14)",
+  "Retirés (0)",
+  "Agents sans badge (30)",
+  "À décider par la Direction",
+  "Colonnes",
+  "Exporter",
+  "Émettre un badge",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 6
+}

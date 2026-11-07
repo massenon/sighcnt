@@ -1,0 +1,40 @@
+{
+ "id": "rls-parametres",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Paramètres du relais",
+ "acces": "ouvert",
+ "titre": "Paramètres du relais",
+ "description": "Secret de la mère, seuil de battement, rétention de l’audit, crochets du banc d’essai (fermés).",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Paramètres du relais"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration.",
+  "Faire tourner le secret : le changer dans le .env du relais et dans la configuration de la mère, dans la même minute."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Paramètres"
+ ],
+ "tableaux": [
+  [
+   "Paramètre",
+   "Valeur",
+   "Où"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 0
+}

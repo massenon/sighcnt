@@ -1,0 +1,62 @@
+{
+ "id": "mecef-transmission",
+ "module": "MECEF",
+ "domaine": "Financier",
+ "libelleManifeste": "Transmission & réponses",
+ "acces": "ouvert",
+ "titre": "Transmission & réponses",
+ "description": "File d’envoi vers le dispositif fiscal, suivi des réponses, codes de retour et nouvelles tentatives.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "MECeF — Facture normalisée",
+  "Transmission & réponses"
+ ],
+ "actions": [
+  "Tableau de bord fiscal",
+  "Factures normalisées",
+  "MECeF — Facture normalisée"
+ ],
+ "regle": [],
+ "onglets": [
+  "En attente",
+  "Rejets",
+  "Transmissions réussies"
+ ],
+ "kpis": [
+  "En attente d’envoi",
+  "Transmissions réussies",
+  "Rejets à corriger",
+  "Taux de réussite"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N° facture",
+   "Date",
+   "Client",
+   "Montant TTC",
+   "TVA",
+   "Statut fiscal",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Synchroniser maintenant",
+  "Journal des transactions",
+  "En attente72",
+  "Rejets15",
+  "Transmissions réussies310",
+  "Colonnes",
+  "Exporter",
+  "Transmettre",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,73 @@
+{
+ "id": "m12-depenses",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Dépenses journalières",
+ "acces": "ouvert",
+ "titre": "Dépenses journalières",
+ "description": "Saisie au fil de l’eau des charges de trésorerie directes, avec justificatif, écriture automatique et historique.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Dépenses journalières"
+ ],
+ "actions": [
+  "Écritures comptables",
+  "Tableau de bord comptable",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [
+  "32 dépense(s) sans justificatif, pour 2 042 417 FCFA. Le reçu n’est pas bloquant à la saisie — on n’empêche pas d’enregistrer une dépense réelle parce que le vendeur n’a pas de carnet — mais ces charges sont contestables en cas de contrôle. Le filtre « Justificatif » les isole."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Dépensé aujourd’hui",
+  "Dépensé ce mois",
+  "Total enregistré",
+  "Sans justificatif"
+ ],
+ "cartes": [
+  "Dépenses par mois",
+  "Répartition par catégorie de dépenses",
+  "Cumul par catégorie"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "N°",
+   "Libellé de la dépense",
+   "Catégorie",
+   "Compte SYSCOHADA",
+   "Sortie de",
+   "Reçu",
+   "Montant",
+   "Actions"
+  ],
+  [
+   "Catégorie de dépenses",
+   "Pièces",
+   "Montant"
+  ]
+ ],
+ "commandes": [
+  "Aujourd’hui",
+  "Ce mois",
+  "Tout l’historique",
+  "Colonnes",
+  "Exporter",
+  "Nouvelle dépense",
+  "État des dépenses",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

@@ -252,6 +252,15 @@
     return { close: close, body: bodyEl, panel: panel };
   }
 
+  /** Ferme toutes les couches ouvertes (modales, tiroirs) et rend le défilement à la page.
+   *  Appelée au démontage d'un écran : une modale encore ouverte pendant une navigation
+   *  sans rechargement laissait `body { overflow: hidden }` et figeait la barre de défilement. */
+  function fermerCouches() {
+    openLayers.slice().reverse().forEach(function (c) { try { c(); } catch (e) { /* une couche ne bloque pas les autres */ } });
+    openLayers.length = 0;
+    document.body.style.overflow = '';
+  }
+
   /* Échap ferme la couche la plus haute */
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && openLayers.length) openLayers[openLayers.length - 1]();
@@ -832,11 +841,16 @@
         wrap.appendChild(row);
       } else {
         var t = f.type === 'money' ? 'number' : (f.type || 'text');
+        /* E328 : un instant ISO avec fuseau (« …T09:00:00.000Z », la forme des dates écrites par l’agenda) est REFUSÉ par un champ
+           datetime-local — il restait vide et l’édition échouait sur « Date et heure » obligatoire. On le relit à l’heure locale. */
+        if (f.type === 'datetime-local' && val && /(Z|[+-]\d{2}:?\d{2})$/.test(String(val))) val = C.isoLocal(val);
         ctrl = el('input.input', {
           type: t, id: id, name: f.name, placeholder: f.placeholder || '',
           min: f.min, max: f.max, step: f.step || (f.type === 'money' ? 1 : null),
         });
-        ctrl.value = val;
+        /* Un champ `datetime-local` ne reçoit que « AAAA-MM-JJThh:mm » : une date ISO complète (secondes, fuseau) y est REFUSÉE par le navigateur,
+           le champ s'ouvre vide et, s'il est obligatoire, la fiche ne peut plus être corrigée sans ressaisir la date (écart E402). */
+        ctrl.value = (t === 'datetime-local' && val && /(Z|[+-]\d\d:\d\d|:\d\d\.\d+)$/.test(String(val))) ? global.SIGH.core.isoLocal(val) : val;
       }
       if (f.readonly) {
         if (ctrl.classList.contains('combo')) ctrl.disabled = true;
@@ -1366,7 +1380,7 @@
   global.SIGH.ui = {
     texteEnrichi: texteEnrichi, paragrapheEnrichi: paragrapheEnrichi,
     toast: toast, toastDiffere: toastDiffere, consommerMessageDiffere: consommerMessageDiffere,
-    modal: modal, confirm: confirm, drawer: drawer,
+    modal: modal, confirm: confirm, drawer: drawer, fermerCouches: fermerCouches,
     sonner: sonner, alerter: alerter,
     kpi: kpi, kpiGrid: kpiGrid, card: card, badge: badge, statut: statut, STATUTS: STATUTS,
     empty: empty, loading: loading, errorState: errorState,

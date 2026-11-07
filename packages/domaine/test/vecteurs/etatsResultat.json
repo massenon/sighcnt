@@ -1,0 +1,42 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {},
+   "sortie": [
+    {
+     "id": "en_attente",
+     "label": "En attente"
+    },
+    {
+     "id": "attente_prelevement",
+     "label": "Réglé — à prélever"
+    },
+    {
+     "id": "preleve",
+     "label": "Prélevé"
+    },
+    {
+     "id": "en_cours",
+     "label": "Au laboratoire"
+    },
+    {
+     "id": "saisi",
+     "label": "Saisi, non validé"
+    },
+    {
+     "id": "valide_technique",
+     "label": "Validation technique"
+    },
+    {
+     "id": "valide",
+     "label": "Validé biologiquement"
+    },
+    {
+     "id": "rectifie",
+     "label": "Rectifié"
+    }
+   ]
+  }
+ ]
+}

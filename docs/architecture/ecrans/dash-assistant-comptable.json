@@ -1,0 +1,41 @@
+{
+ "id": "dash-assistant-comptable",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Assistant de Direction",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Assistant de Direction",
+ "description": "Créances assureur, obligations fiscales, point de caisse et inventaires.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Assistant de Direction"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Échéances fiscales dépassées",
+  "Encaissé aujourd’hui",
+  "Écritures en brouillon",
+  "Réactifs sous seuil"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Créances",
+  "Échéances",
+  "Point de caisse"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

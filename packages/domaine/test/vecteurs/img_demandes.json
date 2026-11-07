@@ -1,0 +1,7698 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-img-demandes.js — les trois écrans du poste d’imagerie pilotés. Ne pas éditer.",
+ "modalites": [
+  {
+   "code": "echographie",
+   "label": "Échographie",
+   "ecran": "m2-imagerie",
+   "icone": "scan-line"
+  },
+  {
+   "code": "radiographie",
+   "label": "Radiographie",
+   "ecran": "m2-imagerie-radiographie",
+   "icone": "bone"
+  },
+  {
+   "code": "mammographie",
+   "label": "Mammographie",
+   "ecran": "m2-imagerie-mammographie",
+   "icone": "ribbon"
+  },
+  {
+   "code": "scanner",
+   "label": "Scanner",
+   "ecran": "m2-imagerie-scanner",
+   "icone": "radiation"
+  },
+  {
+   "code": "irm",
+   "label": "IRM — imagerie par résonance magnétique",
+   "ecran": "m2-imagerie-irm",
+   "icone": "magnet"
+  }
+ ],
+ "etats": [
+  {
+   "id": "demandee",
+   "label": "Demandée — attente caisse"
+  },
+  {
+   "id": "payee",
+   "label": "Payée — à exécuter"
+  },
+  {
+   "id": "executee",
+   "label": "Exécutée — CR en rédaction"
+  },
+  {
+   "id": "validee",
+   "label": "Validée — CR rendu"
+  }
+ ],
+ "examens": [
+  {
+   "code": "IMG-ECHO-PEL",
+   "label": "Échographie pelvienne",
+   "modalite": "echographie"
+  },
+  {
+   "code": "IMG-ECHO-ABD",
+   "label": "Échographie abdominale",
+   "modalite": "echographie"
+  },
+  {
+   "code": "IMG-ECHO-ABP",
+   "label": "Échographie abdomino-pelvienne",
+   "modalite": "echographie"
+  },
+  {
+   "code": "IMG-ECHO-PRO",
+   "label": "Échographie vésico-prostatique",
+   "modalite": "echographie"
+  },
+  {
+   "code": "IMG-ECHO-OBS",
+   "label": "Échographie obstétricale",
+   "modalite": "echographie"
+  },
+  {
+   "code": "IMG-ECHO-OBS1",
+   "label": "Échographie obstétricale du 1er trimestre",
+   "modalite": "echographie"
+  },
+  {
+   "code": "IMG-ECHO-OBS1E",
+   "label": "Échographie obstétricale du 1er trimestre évolué",
+   "modalite": "echographie"
+  },
+  {
+   "code": "IMG-ECG",
+   "label": "Électrocardiogramme (ECG)",
+   "modalite": "echographie"
+  },
+  {
+   "code": "IMG-RX-THO",
+   "label": "Radiographie du thorax",
+   "modalite": "radiographie"
+  },
+  {
+   "code": "IMG-RX-BAS",
+   "label": "Radiographie du bassin",
+   "modalite": "radiographie"
+  },
+  {
+   "code": "IMG-RX-RAC",
+   "label": "Radiographie du rachis",
+   "modalite": "radiographie"
+  },
+  {
+   "code": "IMG-RX-MEM",
+   "label": "Radiographie d’un membre",
+   "modalite": "radiographie"
+  },
+  {
+   "code": "IMG-RX-CRA",
+   "label": "Radiographie du crâne et des sinus",
+   "modalite": "radiographie"
+  },
+  {
+   "code": "IMG-RX-ASP",
+   "label": "Abdomen sans préparation (ASP)",
+   "modalite": "radiographie"
+  },
+  {
+   "code": "IMG-MAM-DEP",
+   "label": "Mammographie bilatérale de dépistage",
+   "modalite": "mammographie"
+  },
+  {
+   "code": "IMG-MAM-DIA",
+   "label": "Mammographie diagnostique",
+   "modalite": "mammographie"
+  },
+  {
+   "code": "IMG-TDM-CER",
+   "label": "Scanner cérébral",
+   "modalite": "scanner"
+  },
+  {
+   "code": "IMG-TDM-THO",
+   "label": "Scanner thoracique",
+   "modalite": "scanner"
+  },
+  {
+   "code": "IMG-TDM-ABP",
+   "label": "Scanner abdomino-pelvien",
+   "modalite": "scanner"
+  },
+  {
+   "code": "IMG-TDM-RAC",
+   "label": "Scanner du rachis",
+   "modalite": "scanner"
+  },
+  {
+   "code": "IMG-IRM-CER",
+   "label": "IRM cérébrale",
+   "modalite": "irm"
+  },
+  {
+   "code": "IMG-IRM-RAC",
+   "label": "IRM du rachis lombaire",
+   "modalite": "irm"
+  },
+  {
+   "code": "IMG-IRM-GEN",
+   "label": "IRM du genou",
+   "modalite": "irm"
+  },
+  {
+   "code": "IMG-IRM-PEL",
+   "label": "IRM pelvienne",
+   "modalite": "irm"
+  }
+ ],
+ "moisCourant": "2026-10",
+ "registre": [
+  {
+   "nom": "14 demandes aux quatre états (pagination de 12, tri par date décroissante)",
+   "demandes": [
+    {
+     "reference": "IME-00001",
+     "statut": "demandee",
+     "dateHeure": "2026-08-24T09:21:00.000Z",
+     "patientId": "PATV0",
+     "patientCode": "CNT/62/25",
+     "patient": "BANI Zoukanéri",
+     "examenCode": "IMG-IRM-CER",
+     "examen": "IRM cérébrale",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 0",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 10000,
+     "factureNumero": "FI-2026-00407",
+     "bloqueParPaiement": true
+    },
+    {
+     "reference": "IME-00002",
+     "statut": "payee",
+     "dateHeure": "2026-08-25T10:00:00.000Z",
+     "patientId": "PATV1",
+     "patientCode": "CNT/162/26",
+     "patient": "OROU YO Chantal",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 1",
+     "urgent": true,
+     "origine": "consultation",
+     "prix": 11000,
+     "factureNumero": "FI-2026-00408",
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00003",
+     "statut": "payee",
+     "dateHeure": "2026-08-23T08:30:00.000Z",
+     "patientId": "PATV2",
+     "patientCode": "CNT/7/26",
+     "patient": "ALI Sidi",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 2",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 12000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00004",
+     "statut": "executee",
+     "dateHeure": "2026-08-22T15:00:00.000Z",
+     "patientId": "PATV3",
+     "patientCode": "CNT/11/26",
+     "patient": "TIGRI Séraphine",
+     "examenCode": "IMG-TDM-CER",
+     "examen": "Scanner cérébral",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 3",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 13000,
+     "factureNumero": "FI-2026-00410",
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00005",
+     "statut": "validee",
+     "dateHeure": "2026-08-21T11:00:00.000Z",
+     "patientId": "PATV4",
+     "patientCode": "CNT/55/26",
+     "patient": "KOUA Rose",
+     "examenCode": "IMG-MAM-DEP",
+     "examen": "Mammographie bilatérale de dépistage",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 4",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 14000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00006",
+     "statut": "validee",
+     "dateHeure": "2026-08-20T11:00:00.000Z",
+     "patientId": "PATV5",
+     "patientCode": "CNT/90/26",
+     "patient": "DJAGBA Paul",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 5",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 15000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00007",
+     "statut": "demandee",
+     "dateHeure": "2026-08-26T11:00:00.000Z",
+     "patientId": "PATV6",
+     "patientCode": "CNT/91/26",
+     "patient": "SOULE Ami",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 6",
+     "urgent": true,
+     "origine": "consultation",
+     "prix": 16000,
+     "factureNumero": "FI-2026-00411",
+     "bloqueParPaiement": true
+    },
+    {
+     "reference": "IME-00008",
+     "statut": "payee",
+     "dateHeure": "2026-08-19T08:00:00.000Z",
+     "patientId": "PATV7",
+     "patientCode": "CNT/62/25",
+     "patient": "BANI Zoukanéri",
+     "examenCode": "IMG-IRM-CER",
+     "examen": "IRM cérébrale",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 7",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 17000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00009",
+     "statut": "validee",
+     "dateHeure": "2026-08-18T08:00:00.000Z",
+     "patientId": "PATV8",
+     "patientCode": "CNT/7/26",
+     "patient": "ALI Sidi",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 8",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 18000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00010",
+     "statut": "executee",
+     "dateHeure": "2026-08-17T08:00:00.000Z",
+     "patientId": "PATV9",
+     "patientCode": "CNT/55/26",
+     "patient": "KOUA Rose",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 9",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 19000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00011",
+     "statut": "payee",
+     "dateHeure": "2026-08-16T08:00:00.000Z",
+     "patientId": "PATV10",
+     "patientCode": "CNT/90/26",
+     "patient": "DJAGBA Paul",
+     "examenCode": "IMG-TDM-CER",
+     "examen": "Scanner cérébral",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 10",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 20000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00012",
+     "statut": "validee",
+     "dateHeure": "2026-08-15T08:00:00.000Z",
+     "patientId": "PATV11",
+     "patientCode": "CNT/91/26",
+     "patient": "SOULE Ami",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 11",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 21000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00013",
+     "statut": "demandee",
+     "dateHeure": "2026-08-14T08:00:00.000Z",
+     "patientId": "PATV12",
+     "patientCode": "CNT/11/26",
+     "patient": "TIGRI Séraphine",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 12",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 22000,
+     "factureNumero": "FI-2026-00413",
+     "bloqueParPaiement": true
+    },
+    {
+     "reference": "IME-00014",
+     "statut": "validee",
+     "dateHeure": "2026-08-13T08:00:00.000Z",
+     "patientId": "PATV13",
+     "patientCode": "CNT/162/26",
+     "patient": "OROU YO Chantal",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 13",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 23000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    }
+   ],
+   "lu": {
+    "kpis": [
+     {
+      "label": "Demandée — attente caisse",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "label": "Payée — à exécuter",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "label": "Exécutée — CR en rédaction",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "label": "Validée — CR rendu",
+      "valeur": "5",
+      "indice": null
+     }
+    ],
+    "tables": [
+     {
+      "titre": null,
+      "entetes": [
+       "N°",
+       "DATE",
+       "PATIENT",
+       "EXAMEN",
+       "MODALITÉ",
+       "PRESCRIPTEUR",
+       "TARIF",
+       "ÉTAT",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "IME-00007 FI-2026-00411",
+         "26/08/2026",
+         "SOULE Ami — CNT/91/26",
+         "Échographie pelvienne",
+         "Échographie",
+         "Dr TEST 0",
+         "16 000",
+         "Demandée — attente caisse",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Examen non réglé — le patient doit passer à la caisse."
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00002 FI-2026-00408",
+         "25/08/2026",
+         "OROU YO Chantal — CNT/162/26",
+         "Échographie pelvienne",
+         "Échographie",
+         "Dr TEST 1",
+         "11 000",
+         "Payée — à exécuter",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Saisir le CR"
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00001 FI-2026-00407",
+         "24/08/2026",
+         "BANI Zoukanéri — CNT/62/25",
+         "IRM cérébrale",
+         "IRM — imagerie par résonance magnétique",
+         "Dr TEST 0",
+         "10 000",
+         "Demandée — attente caisse",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Examen non réglé — le patient doit passer à la caisse."
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00003",
+         "23/08/2026",
+         "ALI Sidi — CNT/7/26",
+         "Radiographie du thorax",
+         "Radiographie",
+         "Dr TEST 2",
+         "12 000",
+         "Payée — à exécuter",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Saisir le CR"
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00004 FI-2026-00410",
+         "22/08/2026",
+         "TIGRI Séraphine — CNT/11/26",
+         "Scanner cérébral",
+         "Scanner",
+         "Dr TEST 0",
+         "13 000",
+         "Exécutée — CR en rédaction",
+         "Poursuivre le CR"
+        ],
+        "boutons": [
+         "Poursuivre le CR"
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00005",
+         "21/08/2026",
+         "KOUA Rose — CNT/55/26",
+         "Mammographie bilatérale de dépistage",
+         "Mammographie",
+         "Dr TEST 1",
+         "14 000",
+         "Validée — CR rendu",
+         ""
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "IME-00006",
+         "20/08/2026",
+         "DJAGBA Paul — CNT/90/26",
+         "Échographie pelvienne",
+         "Échographie",
+         "Dr TEST 2",
+         "15 000",
+         "Validée — CR rendu",
+         ""
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "IME-00008",
+         "19/08/2026",
+         "BANI Zoukanéri — CNT/62/25",
+         "IRM cérébrale",
+         "IRM — imagerie par résonance magnétique",
+         "Dr TEST 1",
+         "17 000",
+         "Payée — à exécuter",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Saisir le CR"
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00009",
+         "18/08/2026",
+         "ALI Sidi — CNT/7/26",
+         "Radiographie du thorax",
+         "Radiographie",
+         "Dr TEST 2",
+         "18 000",
+         "Validée — CR rendu",
+         ""
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "IME-00010",
+         "17/08/2026",
+         "KOUA Rose — CNT/55/26",
+         "Échographie pelvienne",
+         "Échographie",
+         "Dr TEST 0",
+         "19 000",
+         "Exécutée — CR en rédaction",
+         "Poursuivre le CR"
+        ],
+        "boutons": [
+         "Poursuivre le CR"
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00011",
+         "16/08/2026",
+         "DJAGBA Paul — CNT/90/26",
+         "Scanner cérébral",
+         "Scanner",
+         "Dr TEST 1",
+         "20 000",
+         "Payée — à exécuter",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Saisir le CR"
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00012",
+         "15/08/2026",
+         "SOULE Ami — CNT/91/26",
+         "Échographie pelvienne",
+         "Échographie",
+         "Dr TEST 2",
+         "21 000",
+         "Validée — CR rendu",
+         ""
+        ],
+        "boutons": []
+       }
+      ],
+      "pied": "Affichage de 1 à 12 sur 14 enregistrements 1 2"
+     }
+    ],
+    "cartes": [],
+    "cliches": [],
+    "texteVide": "Demandée — attente caisse 3 Payée — à exécuter 4 Exécutée — CR en rédaction 2 Validée — CR rendu 5 Registre des demandes Modalité Échographie Radiographie Mammographie Scanner IRM — imagerie par résonance magnétique État Demandée — attente caisse Payée — à exécuter Exécutée — CR en rédaction Validée — CR rendu Colonnes Exporter Nouvelle demande N° DATE PATIENT EXAMEN MODALITÉ PRESCRIPTEUR TARIF ÉTAT ACTIONS IME-00007 FI-2026-00411 26/08/2026 SOULE Ami — CNT/91/26 Échographie pelvienne Échographie Dr TEST 0 16 000 Demandée — attente caisse Saisir le CR IME-00002 FI-2026-00408 25/08/2026 OROU YO Chantal — CNT/162/26 Échographie pelvienne Échographie Dr TEST 1 11 000 Payée — à exécuter Saisir le CR IME-00001 FI-2026-00407 24/08/2026 BANI Zoukanéri — CNT/62/25 IRM cérébrale IRM — imagerie par résonance magnétique Dr TEST 0 10 000 Demandée — attente caisse Saisir le CR IME-00003 23/08/2026 ALI Sidi — CNT/7/26 Radiographie du thorax Radiographie Dr TEST 2 12 000 Payée — à exécuter Saisir le CR IME-00004 FI-2026-00410 22/08/2026 TIGRI Séraphine — CNT/11/26 Scanner cérébral Scanner Dr TEST 0 13 000 Exécutée — CR en rédaction Poursuivre le CR IME-00005 21/08/2026 KOUA Rose — CNT/55/26 Mammographie bilatérale de dépistage Mammographie Dr TEST 1 14 000 Validée — CR rendu IME-00006 20/08/2026 DJAGBA Paul — CNT/90/26 Échographie pelvienne Échographie Dr TEST 2 15 000 Validée — CR rendu IME-00008 19/08/2026 BANI Zoukanéri — CNT/62/25 IRM cérébrale IRM — imagerie par résonance magnétique Dr TEST 1 17 000 Payée — à exécuter Saisir le CR IME-00009 18/08/2026 ALI Sidi — CNT/7/26 Radiographie du thorax Radiographie Dr TEST 2 18 000 Validée — CR rendu IME-00010 17/08/2026 KOUA Rose — CNT/55/26 Échographie pelvienne Échographie Dr TEST 0 19 000 Exécutée — CR en rédaction Poursuivre le CR IME-00011 16/08/2026 DJAGBA Paul — CNT/90/26 Scanner cérébral Scanner Dr TEST 1 20 000 Payée — à exécuter Saisir le CR IME-00012 15/08/2026 SOULE Ami — CNT/91/26 Échographie pelvienne Échographie Dr TEST 2 21 000 Validée — CR rendu Affichage de 1 à 12 sur 14 enregistrements 1 2",
+    "commandes": {
+     "nouvelleDemande": true,
+     "ajouterCliche": false
+    }
+   }
+  },
+  {
+   "nom": "registre vide",
+   "demandes": [],
+   "lu": {
+    "kpis": [
+     {
+      "label": "Demandée — attente caisse",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "label": "Payée — à exécuter",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "label": "Exécutée — CR en rédaction",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "label": "Validée — CR rendu",
+      "valeur": "0",
+      "indice": null
+     }
+    ],
+    "tables": [],
+    "cartes": [],
+    "cliches": [],
+    "texteVide": "Demandée — attente caisse 0 Payée — à exécuter 0 Exécutée — CR en rédaction 0 Validée — CR rendu 0 Registre des demandes Modalité Échographie Radiographie Mammographie Scanner IRM — imagerie par résonance magnétique État Demandée — attente caisse Payée — à exécuter Exécutée — CR en rédaction Validée — CR rendu Colonnes Exporter Nouvelle demande Aucune demande d’imagerie. Une demande s’ouvre ici ou naît d’une consultation. Aucun enregistrement",
+    "commandes": {
+     "nouvelleDemande": true,
+     "ajouterCliche": false
+    }
+   }
+  },
+  {
+   "nom": "une seule demande en attente de caisse",
+   "demandes": [
+    {
+     "reference": "IME-00001",
+     "statut": "demandee",
+     "dateHeure": "2026-08-24T09:21:00.000Z",
+     "patientId": "PATV0",
+     "patientCode": "CNT/62/25",
+     "patient": "BANI Zoukanéri",
+     "examenCode": "IMG-IRM-CER",
+     "examen": "IRM cérébrale",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 0",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 10000,
+     "factureNumero": "FI-2026-00407",
+     "bloqueParPaiement": true
+    }
+   ],
+   "lu": {
+    "kpis": [
+     {
+      "label": "Demandée — attente caisse",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "label": "Payée — à exécuter",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "label": "Exécutée — CR en rédaction",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "label": "Validée — CR rendu",
+      "valeur": "0",
+      "indice": null
+     }
+    ],
+    "tables": [
+     {
+      "titre": null,
+      "entetes": [
+       "N°",
+       "DATE",
+       "PATIENT",
+       "EXAMEN",
+       "MODALITÉ",
+       "PRESCRIPTEUR",
+       "TARIF",
+       "ÉTAT",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "IME-00001 FI-2026-00407",
+         "24/08/2026",
+         "BANI Zoukanéri — CNT/62/25",
+         "IRM cérébrale",
+         "IRM — imagerie par résonance magnétique",
+         "Dr TEST 0",
+         "10 000",
+         "Demandée — attente caisse",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Examen non réglé — le patient doit passer à la caisse."
+        ]
+       }
+      ],
+      "pied": "Affichage de 1 à 1 sur 1 enregistrement"
+     }
+    ],
+    "cartes": [],
+    "cliches": [],
+    "texteVide": "Demandée — attente caisse 1 Payée — à exécuter 0 Exécutée — CR en rédaction 0 Validée — CR rendu 0 Registre des demandes Modalité Échographie Radiographie Mammographie Scanner IRM — imagerie par résonance magnétique État Demandée — attente caisse Payée — à exécuter Exécutée — CR en rédaction Validée — CR rendu Colonnes Exporter Nouvelle demande N° DATE PATIENT EXAMEN MODALITÉ PRESCRIPTEUR TARIF ÉTAT ACTIONS IME-00001 FI-2026-00407 24/08/2026 BANI Zoukanéri — CNT/62/25 IRM cérébrale IRM — imagerie par résonance magnétique Dr TEST 0 10 000 Demandée — attente caisse Saisir le CR Affichage de 1 à 1 sur 1 enregistrement",
+    "commandes": {
+     "nouvelleDemande": true,
+     "ajouterCliche": false
+    }
+   }
+  }
+ ],
+ "poste": [
+  {
+   "nom": "poste chargé : 4 examens payés, 3 en attente de caisse, 2 CR en rédaction, 3 rendus ce mois-ci",
+   "demandes": [
+    {
+     "reference": "IME-00001",
+     "statut": "demandee",
+     "dateHeure": "2026-08-24T09:21:00.000Z",
+     "patientId": "PATV0",
+     "patientCode": "CNT/62/25",
+     "patient": "BANI Zoukanéri",
+     "examenCode": "IMG-IRM-CER",
+     "examen": "IRM cérébrale",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 0",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 10000,
+     "factureNumero": "FI-2026-00407",
+     "bloqueParPaiement": true
+    },
+    {
+     "reference": "IME-00002",
+     "statut": "payee",
+     "dateHeure": "2026-08-25T10:00:00.000Z",
+     "patientId": "PATV1",
+     "patientCode": "CNT/162/26",
+     "patient": "OROU YO Chantal",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 1",
+     "urgent": true,
+     "origine": "consultation",
+     "prix": 11000,
+     "factureNumero": "FI-2026-00408",
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00003",
+     "statut": "payee",
+     "dateHeure": "2026-08-23T08:30:00.000Z",
+     "patientId": "PATV2",
+     "patientCode": "CNT/7/26",
+     "patient": "ALI Sidi",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 2",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 12000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00004",
+     "statut": "executee",
+     "dateHeure": "2026-08-22T15:00:00.000Z",
+     "patientId": "PATV3",
+     "patientCode": "CNT/11/26",
+     "patient": "TIGRI Séraphine",
+     "examenCode": "IMG-TDM-CER",
+     "examen": "Scanner cérébral",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 3",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 13000,
+     "factureNumero": "FI-2026-00410",
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00005",
+     "statut": "validee",
+     "dateHeure": "2026-08-21T11:00:00.000Z",
+     "patientId": "PATV4",
+     "patientCode": "CNT/55/26",
+     "patient": "KOUA Rose",
+     "examenCode": "IMG-MAM-DEP",
+     "examen": "Mammographie bilatérale de dépistage",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 4",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 14000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00006",
+     "statut": "validee",
+     "dateHeure": "2026-08-20T11:00:00.000Z",
+     "patientId": "PATV5",
+     "patientCode": "CNT/90/26",
+     "patient": "DJAGBA Paul",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 5",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 15000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00007",
+     "statut": "demandee",
+     "dateHeure": "2026-08-26T11:00:00.000Z",
+     "patientId": "PATV6",
+     "patientCode": "CNT/91/26",
+     "patient": "SOULE Ami",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 6",
+     "urgent": true,
+     "origine": "consultation",
+     "prix": 16000,
+     "factureNumero": "FI-2026-00411",
+     "bloqueParPaiement": true
+    },
+    {
+     "reference": "IME-00008",
+     "statut": "payee",
+     "dateHeure": "2026-08-19T08:00:00.000Z",
+     "patientId": "PATV7",
+     "patientCode": "CNT/62/25",
+     "patient": "BANI Zoukanéri",
+     "examenCode": "IMG-IRM-CER",
+     "examen": "IRM cérébrale",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 7",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 17000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00009",
+     "statut": "validee",
+     "dateHeure": "2026-08-18T08:00:00.000Z",
+     "patientId": "PATV8",
+     "patientCode": "CNT/7/26",
+     "patient": "ALI Sidi",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 8",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 18000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00010",
+     "statut": "executee",
+     "dateHeure": "2026-08-17T08:00:00.000Z",
+     "patientId": "PATV9",
+     "patientCode": "CNT/55/26",
+     "patient": "KOUA Rose",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 9",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 19000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00011",
+     "statut": "payee",
+     "dateHeure": "2026-08-16T08:00:00.000Z",
+     "patientId": "PATV10",
+     "patientCode": "CNT/90/26",
+     "patient": "DJAGBA Paul",
+     "examenCode": "IMG-TDM-CER",
+     "examen": "Scanner cérébral",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 10",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 20000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00012",
+     "statut": "validee",
+     "dateHeure": "2026-08-15T08:00:00.000Z",
+     "patientId": "PATV11",
+     "patientCode": "CNT/91/26",
+     "patient": "SOULE Ami",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 11",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 21000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00013",
+     "statut": "demandee",
+     "dateHeure": "2026-08-14T08:00:00.000Z",
+     "patientId": "PATV12",
+     "patientCode": "CNT/11/26",
+     "patient": "TIGRI Séraphine",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 12",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 22000,
+     "factureNumero": "FI-2026-00413",
+     "bloqueParPaiement": true
+    },
+    {
+     "reference": "IME-00014",
+     "statut": "validee",
+     "dateHeure": "2026-08-13T08:00:00.000Z",
+     "patientId": "PATV13",
+     "patientCode": "CNT/162/26",
+     "patient": "OROU YO Chantal",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 13",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 23000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    }
+   ],
+   "comptesRendus": [
+    {
+     "reference": "IMG-0001",
+     "statut": "brouillon",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30",
+     "renduLe": null,
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0002",
+     "statut": "brouillon",
+     "examenCode": "IMG-TDM-CER",
+     "examen": "Scanner cérébral",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30",
+     "renduLe": null,
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0003",
+     "statut": "rendu",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30T10:00:00.000Z",
+     "renduLe": "2026-10-30T10:00:00.000Z",
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0004",
+     "statut": "rendu",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30T11:00:00.000Z",
+     "renduLe": "2026-10-30T11:00:00.000Z",
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0005",
+     "statut": "rendu",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30T12:00:00.000Z",
+     "renduLe": "2026-10-30T12:00:00.000Z",
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0006",
+     "statut": "rendu",
+     "examenCode": "IMG-IRM-CER",
+     "examen": "IRM cérébrale",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-09-15T12:00:00.000Z",
+     "renduLe": "2026-09-15T12:00:00.000Z",
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0007",
+     "statut": "rendu",
+     "examenCode": "IMG-MAM-DEP",
+     "examen": "Mammographie bilatérale de dépistage",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-09-15",
+     "renduLe": null,
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    }
+   ],
+   "taches": [
+    {
+     "type": "imagerie",
+     "poste": "imagerie",
+     "statut": "en_attente",
+     "libelle": "Examen",
+     "reference": "FI-T-0",
+     "patient": "P0",
+     "date": "2026-08-20T08:00:00.000Z"
+    },
+    {
+     "type": "imagerie",
+     "poste": "imagerie",
+     "statut": "en_attente",
+     "libelle": "Examen",
+     "reference": "FI-T-1",
+     "patient": "P1",
+     "date": "2026-08-21T08:00:00.000Z"
+    },
+    {
+     "type": "imagerie",
+     "poste": "imagerie",
+     "statut": "bloque",
+     "libelle": "Examen",
+     "reference": "FI-B-0",
+     "patient": "B0",
+     "date": "2026-08-10T08:00:00.000Z"
+    }
+   ],
+   "lu": {
+    "kpis": [
+     {
+      "label": "Payés — à exécuter",
+      "valeur": "4",
+      "indice": "Le premier regard du poste"
+     },
+     {
+      "label": "En attente de caisse",
+      "valeur": "3",
+      "indice": "Visibles, non exécutables"
+     },
+     {
+      "label": "CR en rédaction",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "label": "Rendus ce mois-ci",
+      "valeur": "3",
+      "indice": null
+     }
+    ],
+    "tables": [
+     {
+      "titre": null,
+      "entetes": [
+       "N°",
+       "PATIENT",
+       "EXAMEN",
+       "PRIORITÉ",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "IME-00011",
+         "DJAGBA Paul",
+         "Scanner cérébral",
+         "Courante",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Saisir le CR"
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00008",
+         "BANI Zoukanéri",
+         "IRM cérébrale",
+         "Courante",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Saisir le CR"
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00003",
+         "ALI Sidi",
+         "Radiographie du thorax",
+         "Courante",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Saisir le CR"
+        ]
+       },
+       {
+        "cellules": [
+         "IME-00002",
+         "OROU YO Chantal",
+         "Échographie pelvienne",
+         "Urgent",
+         "Saisir le CR"
+        ],
+        "boutons": [
+         "Saisir le CR"
+        ]
+       }
+      ],
+      "pied": "Affichage de 1 à 4 sur 4 enregistrements"
+     },
+     {
+      "titre": null,
+      "entetes": [
+       "MODALITÉ",
+       "ATTENTE CAISSE",
+       "À EXÉCUTER",
+       "CR EN RÉDACTION",
+       "RENDUS CE MOIS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "Échographie",
+         "1",
+         "1",
+         "1",
+         "2"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "Radiographie",
+         "1",
+         "1",
+         "0",
+         "1"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "Mammographie",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "Scanner",
+         "0",
+         "1",
+         "1",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "IRM — imagerie par résonance magnétique",
+         "1",
+         "1",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       }
+      ],
+      "pied": "Affichage de 1 à 5 sur 5 enregistrements"
+     },
+     {
+      "titre": "File d’attente du poste — 2 à traiter, 1 en attente de caisse",
+      "entetes": [
+       "ORIGINE",
+       "PATIENT",
+       "À FAIRE",
+       "MONTANT",
+       "ÉTAT",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "FI-T-0",
+         "P0",
+         "—",
+         "0",
+         "À traiter",
+         ""
+        ],
+        "boutons": [
+         "Traiter"
+        ]
+       },
+       {
+        "cellules": [
+         "FI-T-1",
+         "P1",
+         "—",
+         "0",
+         "À traiter",
+         ""
+        ],
+        "boutons": [
+         "Traiter"
+        ]
+       },
+       {
+        "cellules": [
+         "FI-B-0",
+         "B0",
+         "—",
+         "0",
+         "Attente encaissement",
+         ""
+        ],
+        "boutons": [
+         "Bloquée jusqu’à l’encaissement"
+        ]
+       }
+      ],
+      "pied": "Affichage de 1 à 3 sur 3 enregistrements"
+     },
+     {
+      "titre": null,
+      "entetes": [
+       "ORIGINE",
+       "PATIENT",
+       "À FAIRE",
+       "MONTANT",
+       "ÉTAT",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "FI-T-0",
+         "P0",
+         "—",
+         "0",
+         "À traiter",
+         ""
+        ],
+        "boutons": [
+         "Traiter"
+        ]
+       },
+       {
+        "cellules": [
+         "FI-T-1",
+         "P1",
+         "—",
+         "0",
+         "À traiter",
+         ""
+        ],
+        "boutons": [
+         "Traiter"
+        ]
+       },
+       {
+        "cellules": [
+         "FI-B-0",
+         "B0",
+         "—",
+         "0",
+         "Attente encaissement",
+         ""
+        ],
+        "boutons": [
+         "Bloquée jusqu’à l’encaissement"
+        ]
+       }
+      ],
+      "pied": "Affichage de 1 à 3 sur 3 enregistrements"
+     }
+    ],
+    "cartes": [
+     "File d’attente du poste — 2 à traiter, 1 en attente de caisse"
+    ],
+    "cliches": [],
+    "texteVide": "Payés — à exécuter 4 Le premier regard du poste En attente de caisse 3 Visibles, non exécutables CR en rédaction 2 Rendus ce mois-ci 3 À exécuter — examens réglés Colonnes Exporter N° PATIENT EXAMEN PRIORITÉ ACTIONS IME-00011 DJAGBA Paul Scanner cérébral Courante Saisir le CR IME-00008 BANI Zoukanéri IRM cérébrale Courante Saisir le CR IME-00003 ALI Sidi Radiographie du thorax Courante Saisir le CR IME-00002 OROU YO Chantal Échographie pelvienne Urgent Saisir le CR Affichage de 1 à 4 sur 4 enregistrements Activité par modalité Colonnes Exporter MODALITÉ ATTENTE CAISSE À EXÉCUTER CR EN RÉDACTION RENDUS CE MOIS Échographie 1 1 1 2 Radiographie 1 1 0 1 Mammographie 0 0 0 0 Scanner 0 1 1 0 IRM — imagerie par résonance magnétique 1 1 0 0 Affichage de 1 à 5 sur 5 enregistrements File d’attente du poste — 2 à traiter, 1 en attente de caisse Colonnes Exporter ORIGINE PATIENT À FAIRE MONTANT ÉTAT ACTIONS FI-T-0 P0 — 0 À traiter FI-T-1 P1 — 0 À traiter FI-B-0 B0 — 0 Attente encaissement Affichage de 1 à 3 sur 3 enregistrements",
+    "commandes": {
+     "nouvelleDemande": false,
+     "ajouterCliche": false
+    }
+   }
+  },
+  {
+   "nom": "poste vide : rien n’attend",
+   "demandes": [],
+   "comptesRendus": [],
+   "taches": [],
+   "lu": {
+    "kpis": [
+     {
+      "label": "Payés — à exécuter",
+      "valeur": "0",
+      "indice": "Rien n’attend"
+     },
+     {
+      "label": "En attente de caisse",
+      "valeur": "0",
+      "indice": "Visibles, non exécutables"
+     },
+     {
+      "label": "CR en rédaction",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "label": "Rendus ce mois-ci",
+      "valeur": "0",
+      "indice": null
+     }
+    ],
+    "tables": [
+     {
+      "titre": null,
+      "entetes": [
+       "MODALITÉ",
+       "ATTENTE CAISSE",
+       "À EXÉCUTER",
+       "CR EN RÉDACTION",
+       "RENDUS CE MOIS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "Échographie",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "Radiographie",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "Mammographie",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "Scanner",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "IRM — imagerie par résonance magnétique",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       }
+      ],
+      "pied": "Affichage de 1 à 5 sur 5 enregistrements"
+     }
+    ],
+    "cartes": [
+     "À exécuter",
+     "File d’attente du poste"
+    ],
+    "cliches": [],
+    "texteVide": "Payés — à exécuter 0 Rien n’attend En attente de caisse 0 Visibles, non exécutables CR en rédaction 0 Rendus ce mois-ci 0 À exécuter Aucun examen réglé en attente : rien ne vous attend. Activité par modalité Colonnes Exporter MODALITÉ ATTENTE CAISSE À EXÉCUTER CR EN RÉDACTION RENDUS CE MOIS Échographie 0 0 0 0 Radiographie 0 0 0 0 Mammographie 0 0 0 0 Scanner 0 0 0 0 IRM — imagerie par résonance magnétique 0 0 0 0 Affichage de 1 à 5 sur 5 enregistrements File d’attente du poste Aucune tâche d’imagerie en file.",
+    "commandes": {
+     "nouvelleDemande": false,
+     "ajouterCliche": false
+    }
+   }
+  },
+  {
+   "nom": "aucun examen payé mais des CR en rédaction",
+   "demandes": [
+    {
+     "reference": "IME-00001",
+     "statut": "demandee",
+     "dateHeure": "2026-08-24T09:21:00.000Z",
+     "patientId": "PATV0",
+     "patientCode": "CNT/62/25",
+     "patient": "BANI Zoukanéri",
+     "examenCode": "IMG-IRM-CER",
+     "examen": "IRM cérébrale",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 0",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 10000,
+     "factureNumero": "FI-2026-00407",
+     "bloqueParPaiement": true
+    },
+    {
+     "reference": "IME-00004",
+     "statut": "executee",
+     "dateHeure": "2026-08-22T15:00:00.000Z",
+     "patientId": "PATV3",
+     "patientCode": "CNT/11/26",
+     "patient": "TIGRI Séraphine",
+     "examenCode": "IMG-TDM-CER",
+     "examen": "Scanner cérébral",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 3",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 13000,
+     "factureNumero": "FI-2026-00410",
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00005",
+     "statut": "validee",
+     "dateHeure": "2026-08-21T11:00:00.000Z",
+     "patientId": "PATV4",
+     "patientCode": "CNT/55/26",
+     "patient": "KOUA Rose",
+     "examenCode": "IMG-MAM-DEP",
+     "examen": "Mammographie bilatérale de dépistage",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 4",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 14000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00006",
+     "statut": "validee",
+     "dateHeure": "2026-08-20T11:00:00.000Z",
+     "patientId": "PATV5",
+     "patientCode": "CNT/90/26",
+     "patient": "DJAGBA Paul",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 5",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 15000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00007",
+     "statut": "demandee",
+     "dateHeure": "2026-08-26T11:00:00.000Z",
+     "patientId": "PATV6",
+     "patientCode": "CNT/91/26",
+     "patient": "SOULE Ami",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 6",
+     "urgent": true,
+     "origine": "consultation",
+     "prix": 16000,
+     "factureNumero": "FI-2026-00411",
+     "bloqueParPaiement": true
+    },
+    {
+     "reference": "IME-00009",
+     "statut": "validee",
+     "dateHeure": "2026-08-18T08:00:00.000Z",
+     "patientId": "PATV8",
+     "patientCode": "CNT/7/26",
+     "patient": "ALI Sidi",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 8",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 18000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00010",
+     "statut": "executee",
+     "dateHeure": "2026-08-17T08:00:00.000Z",
+     "patientId": "PATV9",
+     "patientCode": "CNT/55/26",
+     "patient": "KOUA Rose",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 9",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 19000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00012",
+     "statut": "validee",
+     "dateHeure": "2026-08-15T08:00:00.000Z",
+     "patientId": "PATV11",
+     "patientCode": "CNT/91/26",
+     "patient": "SOULE Ami",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 2",
+     "indication": "Indication 11",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 21000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    },
+    {
+     "reference": "IME-00013",
+     "statut": "demandee",
+     "dateHeure": "2026-08-14T08:00:00.000Z",
+     "patientId": "PATV12",
+     "patientCode": "CNT/11/26",
+     "patient": "TIGRI Séraphine",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "prescripteur": "Dr TEST 0",
+     "indication": "Indication 12",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 22000,
+     "factureNumero": "FI-2026-00413",
+     "bloqueParPaiement": true
+    },
+    {
+     "reference": "IME-00014",
+     "statut": "validee",
+     "dateHeure": "2026-08-13T08:00:00.000Z",
+     "patientId": "PATV13",
+     "patientCode": "CNT/162/26",
+     "patient": "OROU YO Chantal",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "prescripteur": "Dr TEST 1",
+     "indication": "Indication 13",
+     "urgent": false,
+     "origine": "consultation",
+     "prix": 23000,
+     "factureNumero": null,
+     "bloqueParPaiement": false
+    }
+   ],
+   "comptesRendus": [
+    {
+     "reference": "IMG-0001",
+     "statut": "brouillon",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30",
+     "renduLe": null,
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0002",
+     "statut": "brouillon",
+     "examenCode": "IMG-TDM-CER",
+     "examen": "Scanner cérébral",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30",
+     "renduLe": null,
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0003",
+     "statut": "rendu",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30T10:00:00.000Z",
+     "renduLe": "2026-10-30T10:00:00.000Z",
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0004",
+     "statut": "rendu",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30T11:00:00.000Z",
+     "renduLe": "2026-10-30T11:00:00.000Z",
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0005",
+     "statut": "rendu",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-10-30T12:00:00.000Z",
+     "renduLe": "2026-10-30T12:00:00.000Z",
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0006",
+     "statut": "rendu",
+     "examenCode": "IMG-IRM-CER",
+     "examen": "IRM cérébrale",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-09-15T12:00:00.000Z",
+     "renduLe": "2026-09-15T12:00:00.000Z",
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    },
+    {
+     "reference": "IMG-0007",
+     "statut": "rendu",
+     "examenCode": "IMG-MAM-DEP",
+     "examen": "Mammographie bilatérale de dépistage",
+     "patient": "X",
+     "patientCode": "CNT/1/26",
+     "date": "2026-09-15",
+     "renduLe": null,
+     "prescripteur": "Dr T",
+     "realisateur": "R",
+     "demandeReference": null
+    }
+   ],
+   "taches": [
+    {
+     "type": "imagerie",
+     "poste": "imagerie",
+     "statut": "bloque",
+     "libelle": "Examen",
+     "reference": "FI-B-0",
+     "patient": "B0",
+     "date": "2026-08-10T08:00:00.000Z"
+    },
+    {
+     "type": "imagerie",
+     "poste": "imagerie",
+     "statut": "bloque",
+     "libelle": "Examen",
+     "reference": "FI-B-1",
+     "patient": "B1",
+     "date": "2026-08-11T08:00:00.000Z"
+    }
+   ],
+   "lu": {
+    "kpis": [
+     {
+      "label": "Payés — à exécuter",
+      "valeur": "0",
+      "indice": "Rien n’attend"
+     },
+     {
+      "label": "En attente de caisse",
+      "valeur": "3",
+      "indice": "Visibles, non exécutables"
+     },
+     {
+      "label": "CR en rédaction",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "label": "Rendus ce mois-ci",
+      "valeur": "3",
+      "indice": null
+     }
+    ],
+    "tables": [
+     {
+      "titre": null,
+      "entetes": [
+       "MODALITÉ",
+       "ATTENTE CAISSE",
+       "À EXÉCUTER",
+       "CR EN RÉDACTION",
+       "RENDUS CE MOIS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "Échographie",
+         "1",
+         "0",
+         "1",
+         "2"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "Radiographie",
+         "1",
+         "0",
+         "0",
+         "1"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "Mammographie",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "Scanner",
+         "0",
+         "0",
+         "1",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "IRM — imagerie par résonance magnétique",
+         "1",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       }
+      ],
+      "pied": "Affichage de 1 à 5 sur 5 enregistrements"
+     },
+     {
+      "titre": "File d’attente du poste — 0 à traiter, 2 en attente de caisse",
+      "entetes": [
+       "ORIGINE",
+       "PATIENT",
+       "À FAIRE",
+       "MONTANT",
+       "ÉTAT",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "FI-B-0",
+         "B0",
+         "—",
+         "0",
+         "Attente encaissement",
+         ""
+        ],
+        "boutons": [
+         "Bloquée jusqu’à l’encaissement"
+        ]
+       },
+       {
+        "cellules": [
+         "FI-B-1",
+         "B1",
+         "—",
+         "0",
+         "Attente encaissement",
+         ""
+        ],
+        "boutons": [
+         "Bloquée jusqu’à l’encaissement"
+        ]
+       }
+      ],
+      "pied": "Affichage de 1 à 2 sur 2 enregistrements"
+     },
+     {
+      "titre": null,
+      "entetes": [
+       "ORIGINE",
+       "PATIENT",
+       "À FAIRE",
+       "MONTANT",
+       "ÉTAT",
+       "ACTIONS"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "FI-B-0",
+         "B0",
+         "—",
+         "0",
+         "Attente encaissement",
+         ""
+        ],
+        "boutons": [
+         "Bloquée jusqu’à l’encaissement"
+        ]
+       },
+       {
+        "cellules": [
+         "FI-B-1",
+         "B1",
+         "—",
+         "0",
+         "Attente encaissement",
+         ""
+        ],
+        "boutons": [
+         "Bloquée jusqu’à l’encaissement"
+        ]
+       }
+      ],
+      "pied": "Affichage de 1 à 2 sur 2 enregistrements"
+     }
+    ],
+    "cartes": [
+     "À exécuter",
+     "File d’attente du poste — 0 à traiter, 2 en attente de caisse"
+    ],
+    "cliches": [],
+    "texteVide": "Payés — à exécuter 0 Rien n’attend En attente de caisse 3 Visibles, non exécutables CR en rédaction 2 Rendus ce mois-ci 3 À exécuter Aucun examen réglé en attente : rien ne vous attend. Activité par modalité Colonnes Exporter MODALITÉ ATTENTE CAISSE À EXÉCUTER CR EN RÉDACTION RENDUS CE MOIS Échographie 1 0 1 2 Radiographie 1 0 0 1 Mammographie 0 0 0 0 Scanner 0 0 1 0 IRM — imagerie par résonance magnétique 1 0 0 0 Affichage de 1 à 5 sur 5 enregistrements File d’attente du poste — 0 à traiter, 2 en attente de caisse Colonnes Exporter ORIGINE PATIENT À FAIRE MONTANT ÉTAT ACTIONS FI-B-0 B0 — 0 Attente encaissement FI-B-1 B1 — 0 Attente encaissement Affichage de 1 à 2 sur 2 enregistrements",
+    "commandes": {
+     "nouvelleDemande": false,
+     "ajouterCliche": false
+    }
+   }
+  }
+ ],
+ "galerie": [
+  {
+   "nom": "quatre clichés, trois patients, deux liés à un CR",
+   "cliches": [
+    {
+     "date": "2026-08-20T09:00:00.000Z",
+     "patientId": "PA1",
+     "patient": "DJAGBA Paul",
+     "patientCode": "CNT/1/26",
+     "examen": "Échographie pelvienne",
+     "legende": "Coupe sagittale",
+     "crReference": "IMG-0003",
+     "fichier": "png",
+     "deposePar": "AHOHOU Rodrigue"
+    },
+    {
+     "date": "2026-08-22T09:00:00.000Z",
+     "patientId": "PA1",
+     "patient": "DJAGBA Paul",
+     "patientCode": "CNT/2/26",
+     "examen": "Échographie pelvienne",
+     "legende": "",
+     "crReference": null,
+     "fichier": "png",
+     "deposePar": "AHOHOU Rodrigue"
+    },
+    {
+     "date": "2026-08-21T09:00:00.000Z",
+     "patientId": "PA2",
+     "patient": "KOUA Rose",
+     "patientCode": "CNT/3/26",
+     "examen": "Échographie pelvienne",
+     "legende": "Coupe sagittale",
+     "crReference": "IMG-0004",
+     "fichier": "png",
+     "deposePar": "AHOHOU Rodrigue"
+    },
+    {
+     "date": "2026-08-19T09:00:00.000Z",
+     "patientId": null,
+     "patient": "ALI Sidi",
+     "patientCode": "CNT/5/26",
+     "examen": "Échographie pelvienne",
+     "legende": "Coupe sagittale",
+     "crReference": null,
+     "fichier": "png",
+     "deposePar": "AHOHOU Rodrigue"
+    }
+   ],
+   "lu": {
+    "kpis": [
+     {
+      "label": "Clichés conservés",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "label": "Patients concernés",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "label": "Liés à un compte rendu",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "label": "Sans compte rendu lié",
+      "valeur": "2",
+      "indice": null
+     }
+    ],
+    "tables": [],
+    "cartes": [],
+    "cliches": [
+     {
+      "texte": [
+       "DJAGBA Paul",
+       "Échographie pelvienne — 22/08/2026",
+       "sans CR lié"
+      ],
+      "boutons": [
+       "Archiver le cliché"
+      ]
+     },
+     {
+      "texte": [
+       "KOUA Rose",
+       "Échographie pelvienne — 21/08/2026",
+       "Coupe sagittale",
+       "IMG-0004"
+      ],
+      "boutons": [
+       "Archiver le cliché"
+      ]
+     },
+     {
+      "texte": [
+       "DJAGBA Paul",
+       "Échographie pelvienne — 20/08/2026",
+       "Coupe sagittale",
+       "IMG-0003"
+      ],
+      "boutons": [
+       "Archiver le cliché"
+      ]
+     },
+     {
+      "texte": [
+       "ALI Sidi",
+       "Échographie pelvienne — 19/08/2026",
+       "Coupe sagittale",
+       "sans CR lié"
+      ],
+      "boutons": [
+       "Archiver le cliché"
+      ]
+     }
+    ],
+    "texteVide": "Clichés conservés 4 Patients concernés 3 Liés à un compte rendu 2 Sans compte rendu lié 2 Ajouter un cliché DJAGBA Paul Échographie pelvienne — 22/08/2026 sans CR lié KOUA Rose Échographie pelvienne — 21/08/2026 Coupe sagittale IMG-0004 DJAGBA Paul Échographie pelvienne — 20/08/2026 Coupe sagittale IMG-0003 ALI Sidi Échographie pelvienne — 19/08/2026 Coupe sagittale sans CR lié",
+    "commandes": {
+     "nouvelleDemande": false,
+     "ajouterCliche": true
+    }
+   }
+  },
+  {
+   "nom": "galerie vide",
+   "cliches": [],
+   "lu": {
+    "kpis": [
+     {
+      "label": "Clichés conservés",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "label": "Patients concernés",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "label": "Liés à un compte rendu",
+      "valeur": "0",
+      "indice": null
+     },
+     {
+      "label": "Sans compte rendu lié",
+      "valeur": "0",
+      "indice": null
+     }
+    ],
+    "tables": [],
+    "cartes": [
+     "Galerie"
+    ],
+    "cliches": [],
+    "texteVide": "Clichés conservés 0 Patients concernés 0 Liés à un compte rendu 0 Sans compte rendu lié 0 Ajouter un cliché Galerie Aucun cliché conservé. Les images s’ajoutent depuis ce poste, rattachées au patient.",
+    "commandes": {
+     "nouvelleDemande": false,
+     "ajouterCliche": true
+    }
+   }
+  }
+ ],
+ "ouverture": [
+  {
+   "entree": {
+    "nom": "patient non assuré, une échographie",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "examens": [
+      "IMG-ECHO-PEL"
+     ]
+    },
+    "rangFactures": 230,
+    "rangPatients": 202,
+    "referencesExistantes": [
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 202
+   },
+   "patientsAvant": [
+    {
+     "id": "PATxmvvd2hfu67ohd",
+     "statut": "actif",
+     "code": "CNT/7001/26",
+     "nom": "NONASSURE",
+     "prenom": "Awa",
+     "sexe": "F",
+     "dateNaissance": "1990-01-01",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T19:24:24.906Z"
+    }
+   ],
+   "erreur": null,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00015",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patientCode": "CNT/7001/26",
+     "patient": "NONASSURE Awa",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "modalite": "echographie",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 9000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hg3oy5am",
+     "factureNumero": "FI-2026-00231",
+     "_archivee": false
+    }
+   ],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "imagerie",
+       "designation": "Échographie pelvienne",
+       "quantite": 1,
+       "prixUnitaire": 9000,
+       "prixUnitaireNet": 9000,
+       "montantBrut": 9000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 9000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 9000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvd2hg2tetju",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FI-2026-00231",
+     "numeroMecef": null,
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patient": "NONASSURE Awa",
+     "patientCode": "CNT/7001/26",
+     "date": "2026-10-30",
+     "type": "Imagerie",
+     "montantHT": 9000,
+     "montantTTC": 9000,
+     "montantBrut": 9000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 9000,
+     "montantPaye": 0,
+     "reliquat": 9000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "imagerie",
+     "poste": "imagerie",
+     "libelle": "Examen d’imagerie — NONASSURE Awa",
+     "detail": "Échographie pelvienne",
+     "reference": "FI-2026-00231",
+     "factureId": "FACxmvvd2hg3oy5am",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patient": "NONASSURE Awa"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Imagerie — NONASSURE Awa",
+     "detail": "1 examen(s) — 9 000",
+     "reference": "FI-2026-00231",
+     "factureId": "FACxmvvd2hg3oy5am",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patient": "NONASSURE Awa",
+     "montant": 9000
+    }
+   ],
+   "notifications": [
+    {
+     "statut": "actif",
+     "type": "demande_imagerie",
+     "poste": "imagerie",
+     "destinataire": null,
+     "libelle": "Nouvelle demande d’imagerie — NONASSURE Awa",
+     "detail": "Échographie pelvienne — exécutable après passage en caisse",
+     "priorite": "normale",
+     "demandeId": null,
+     "factureId": null,
+     "ordonnanceId": null,
+     "patientId": "PATxmvvd2hfu67ohd",
+     "reference": "FI-2026-00231",
+     "lue": false
+    }
+   ],
+   "patientsCrees": []
+  },
+  {
+   "entree": {
+    "nom": "patient assuré (carte valide), IRM : tarif assuré, 80 % à l’assureur",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "patientId": "PATxmvvd2hfuqibn0",
+     "examens": [
+      "IMG-IRM-CER"
+     ]
+    },
+    "rangFactures": 231,
+    "rangPatients": 202,
+    "referencesExistantes": [
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 202
+   },
+   "patientsAvant": [
+    {
+     "id": "PATxmvvd2hfuqibn0",
+     "statut": "actif",
+     "code": "CNT/7002/26",
+     "nom": "ASSURE",
+     "prenom": "Koffi",
+     "sexe": "M",
+     "dateNaissance": "1985-05-05",
+     "assureur": "NSIA",
+     "tauxPriseEnCharge": 80,
+     "carteExpiration": "2027-06-01",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T19:24:24.906Z"
+    }
+   ],
+   "erreur": null,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00016",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfuqibn0",
+     "patientCode": "CNT/7002/26",
+     "patient": "ASSURE Koffi",
+     "examenCode": "IMG-IRM-CER",
+     "examen": "IRM cérébrale",
+     "modalite": "irm",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 130000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hg5cln0e",
+     "factureNumero": "FI-2026-00232",
+     "_archivee": false
+    }
+   ],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "imagerie",
+       "designation": "IRM cérébrale",
+       "quantite": 1,
+       "prixUnitaire": 130000,
+       "prixUnitaireNet": 130000,
+       "montantBrut": 130000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 130000,
+       "partAssureur": 104000,
+       "partPersonnel": 0,
+       "partPatient": 26000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvd2hg5c9b7h",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FI-2026-00232",
+     "numeroMecef": null,
+     "patientId": "PATxmvvd2hfuqibn0",
+     "patient": "ASSURE Koffi",
+     "patientCode": "CNT/7002/26",
+     "date": "2026-10-30",
+     "type": "Imagerie",
+     "montantHT": 130000,
+     "montantTTC": 130000,
+     "montantBrut": 130000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": "NSIA",
+     "tauxPriseEnCharge": 80,
+     "partAssurance": 104000,
+     "partPatient": 26000,
+     "montantPaye": 0,
+     "reliquat": 26000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "imagerie",
+     "poste": "imagerie",
+     "libelle": "Examen d’imagerie — ASSURE Koffi",
+     "detail": "IRM cérébrale",
+     "reference": "FI-2026-00232",
+     "factureId": "FACxmvvd2hg5cln0e",
+     "patientId": "PATxmvvd2hfuqibn0",
+     "patient": "ASSURE Koffi"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Imagerie — ASSURE Koffi",
+     "detail": "1 examen(s) — 130 000",
+     "reference": "FI-2026-00232",
+     "factureId": "FACxmvvd2hg5cln0e",
+     "patientId": "PATxmvvd2hfuqibn0",
+     "patient": "ASSURE Koffi",
+     "montant": 130000
+    }
+   ],
+   "notifications": [
+    {
+     "statut": "actif",
+     "type": "demande_imagerie",
+     "poste": "imagerie",
+     "destinataire": null,
+     "libelle": "Nouvelle demande d’imagerie — ASSURE Koffi",
+     "detail": "IRM cérébrale — exécutable après passage en caisse",
+     "priorite": "normale",
+     "demandeId": null,
+     "factureId": null,
+     "ordonnanceId": null,
+     "patientId": "PATxmvvd2hfuqibn0",
+     "reference": "FI-2026-00232",
+     "lue": false
+    }
+   ],
+   "patientsCrees": []
+  },
+  {
+   "entree": {
+    "nom": "carte EXPIRÉE : facturé au tarif non assuré (RG-09)",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "patientId": "PATxmvvd2hfuxf2w9",
+     "examens": [
+      "IMG-ECHO-PEL"
+     ]
+    },
+    "rangFactures": 232,
+    "rangPatients": 202,
+    "referencesExistantes": [
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 202
+   },
+   "patientsAvant": [
+    {
+     "id": "PATxmvvd2hfuxf2w9",
+     "statut": "actif",
+     "code": "CNT/7003/26",
+     "nom": "EXPIREE",
+     "prenom": "Marie",
+     "sexe": "F",
+     "dateNaissance": "1980-03-03",
+     "assureur": "NSIA",
+     "tauxPriseEnCharge": 80,
+     "carteExpiration": "2025-06-01",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T19:24:24.906Z"
+    }
+   ],
+   "erreur": null,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00017",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfuxf2w9",
+     "patientCode": "CNT/7003/26",
+     "patient": "EXPIREE Marie",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "modalite": "echographie",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 9000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hg6opm57",
+     "factureNumero": "FI-2026-00233",
+     "_archivee": false
+    }
+   ],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "imagerie",
+       "designation": "Échographie pelvienne",
+       "quantite": 1,
+       "prixUnitaire": 9000,
+       "prixUnitaireNet": 9000,
+       "montantBrut": 9000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 9000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 9000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvd2hg6ax4kh",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FI-2026-00233",
+     "numeroMecef": null,
+     "patientId": "PATxmvvd2hfuxf2w9",
+     "patient": "EXPIREE Marie",
+     "patientCode": "CNT/7003/26",
+     "date": "2026-10-30",
+     "type": "Imagerie",
+     "montantHT": 9000,
+     "montantTTC": 9000,
+     "montantBrut": 9000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": "NSIA",
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 9000,
+     "montantPaye": 0,
+     "reliquat": 9000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "imagerie",
+     "poste": "imagerie",
+     "libelle": "Examen d’imagerie — EXPIREE Marie",
+     "detail": "Échographie pelvienne",
+     "reference": "FI-2026-00233",
+     "factureId": "FACxmvvd2hg6opm57",
+     "patientId": "PATxmvvd2hfuxf2w9",
+     "patient": "EXPIREE Marie"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Imagerie — EXPIREE Marie",
+     "detail": "1 examen(s) — 9 000",
+     "reference": "FI-2026-00233",
+     "factureId": "FACxmvvd2hg6opm57",
+     "patientId": "PATxmvvd2hfuxf2w9",
+     "patient": "EXPIREE Marie",
+     "montant": 9000
+    }
+   ],
+   "notifications": [
+    {
+     "statut": "actif",
+     "type": "demande_imagerie",
+     "poste": "imagerie",
+     "destinataire": null,
+     "libelle": "Nouvelle demande d’imagerie — EXPIREE Marie",
+     "detail": "Échographie pelvienne — exécutable après passage en caisse",
+     "priorite": "normale",
+     "demandeId": null,
+     "factureId": null,
+     "ordonnanceId": null,
+     "patientId": "PATxmvvd2hfuxf2w9",
+     "reference": "FI-2026-00233",
+     "lue": false
+    }
+   ],
+   "patientsCrees": []
+  },
+  {
+   "entree": {
+    "nom": "agent du personnel : pris en charge à 100 % par la clinique",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "patientId": "PATxmvvd2hfukujdf",
+     "examens": [
+      "IMG-RX-THO"
+     ]
+    },
+    "rangFactures": 233,
+    "rangPatients": 202,
+    "referencesExistantes": [
+     "IME-00017",
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 202
+   },
+   "patientsAvant": [
+    {
+     "id": "PATxmvvd2hfukujdf",
+     "statut": "actif",
+     "code": "CNT/7004/26",
+     "nom": "AGENT",
+     "prenom": "Luc",
+     "sexe": "M",
+     "dateNaissance": "1975-03-03",
+     "personnelId": "PERS1",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T19:24:24.906Z"
+    }
+   ],
+   "erreur": null,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00018",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfukujdf",
+     "patientCode": "CNT/7004/26",
+     "patient": "AGENT Luc",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "modalite": "radiographie",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 10000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hg80tv5o",
+     "factureNumero": "FI-2026-00234",
+     "_archivee": false
+    }
+   ],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "imagerie",
+       "designation": "Radiographie du thorax",
+       "quantite": 1,
+       "prixUnitaire": 10000,
+       "prixUnitaireNet": 10000,
+       "montantBrut": 10000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 10000,
+       "partAssureur": 0,
+       "partPersonnel": 10000,
+       "partPatient": 0,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvd2hg8xoud5",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FI-2026-00234",
+     "numeroMecef": null,
+     "patientId": "PATxmvvd2hfukujdf",
+     "patient": "AGENT Luc",
+     "patientCode": "CNT/7004/26",
+     "date": "2026-10-30",
+     "type": "Imagerie",
+     "montantHT": 10000,
+     "montantTTC": 10000,
+     "montantBrut": 10000,
+     "totalRemise": 0,
+     "partPersonnel": 10000,
+     "priseEnChargePersonnel": true,
+     "personnelId": "PERS1",
+     "assureur": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 0,
+     "montantPaye": 0,
+     "reliquat": 0,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "imagerie",
+     "poste": "imagerie",
+     "libelle": "Examen d’imagerie — AGENT Luc",
+     "detail": "Radiographie du thorax",
+     "reference": "FI-2026-00234",
+     "factureId": "FACxmvvd2hg80tv5o",
+     "patientId": "PATxmvvd2hfukujdf",
+     "patient": "AGENT Luc"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Imagerie — AGENT Luc",
+     "detail": "1 examen(s) — 10 000",
+     "reference": "FI-2026-00234",
+     "factureId": "FACxmvvd2hg80tv5o",
+     "patientId": "PATxmvvd2hfukujdf",
+     "patient": "AGENT Luc",
+     "montant": 10000
+    }
+   ],
+   "notifications": [
+    {
+     "statut": "actif",
+     "type": "demande_imagerie",
+     "poste": "imagerie",
+     "destinataire": null,
+     "libelle": "Nouvelle demande d’imagerie — AGENT Luc",
+     "detail": "Radiographie du thorax — exécutable après passage en caisse",
+     "priorite": "normale",
+     "demandeId": null,
+     "factureId": null,
+     "ordonnanceId": null,
+     "patientId": "PATxmvvd2hfukujdf",
+     "reference": "FI-2026-00234",
+     "lue": false
+    }
+   ],
+   "patientsCrees": []
+  },
+  {
+   "entree": {
+    "nom": "trois examens, dont un urgent",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": true,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "examens": [
+      "IMG-ECHO-PEL",
+      "IMG-RX-THO",
+      "IMG-TDM-CER"
+     ]
+    },
+    "rangFactures": 234,
+    "rangPatients": 202,
+    "referencesExistantes": [
+     "IME-00018",
+     "IME-00017",
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 202
+   },
+   "patientsAvant": [
+    {
+     "id": "PATxmvvd2hfu67ohd",
+     "statut": "actif",
+     "code": "CNT/7001/26",
+     "nom": "NONASSURE",
+     "prenom": "Awa",
+     "sexe": "F",
+     "dateNaissance": "1990-01-01",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T19:24:24.906Z"
+    }
+   ],
+   "erreur": null,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00021",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patientCode": "CNT/7001/26",
+     "patient": "NONASSURE Awa",
+     "examenCode": "IMG-TDM-CER",
+     "examen": "Scanner cérébral",
+     "modalite": "scanner",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": true,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 70000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hg9pj23a",
+     "factureNumero": "FI-2026-00235",
+     "_archivee": false
+    },
+    {
+     "statut": "demandee",
+     "reference": "IME-00020",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patientCode": "CNT/7001/26",
+     "patient": "NONASSURE Awa",
+     "examenCode": "IMG-RX-THO",
+     "examen": "Radiographie du thorax",
+     "modalite": "radiographie",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": true,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 10000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hg9pj23a",
+     "factureNumero": "FI-2026-00235",
+     "_archivee": false
+    },
+    {
+     "statut": "demandee",
+     "reference": "IME-00019",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patientCode": "CNT/7001/26",
+     "patient": "NONASSURE Awa",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "modalite": "echographie",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": true,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 9000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hg9pj23a",
+     "factureNumero": "FI-2026-00235",
+     "_archivee": false
+    }
+   ],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "imagerie",
+       "designation": "Échographie pelvienne",
+       "quantite": 1,
+       "prixUnitaire": 9000,
+       "prixUnitaireNet": 9000,
+       "montantBrut": 9000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 9000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 9000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvd2hg91vpl5",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      },
+      {
+       "id": "L002",
+       "categorie": "imagerie",
+       "designation": "Radiographie du thorax",
+       "quantite": 1,
+       "prixUnitaire": 10000,
+       "prixUnitaireNet": 10000,
+       "montantBrut": 10000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 10000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 10000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvd2hg9rcy6t",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      },
+      {
+       "id": "L003",
+       "categorie": "imagerie",
+       "designation": "Scanner cérébral",
+       "quantite": 1,
+       "prixUnitaire": 70000,
+       "prixUnitaireNet": 70000,
+       "montantBrut": 70000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 70000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 70000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvd2hg93kmss",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FI-2026-00235",
+     "numeroMecef": null,
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patient": "NONASSURE Awa",
+     "patientCode": "CNT/7001/26",
+     "date": "2026-10-30",
+     "type": "Imagerie",
+     "montantHT": 89000,
+     "montantTTC": 89000,
+     "montantBrut": 89000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 89000,
+     "montantPaye": 0,
+     "reliquat": 89000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "imagerie",
+     "poste": "imagerie",
+     "libelle": "Examen d’imagerie — NONASSURE Awa",
+     "detail": "Échographie pelvienne, Radiographie du thorax, Scanner cérébral",
+     "reference": "FI-2026-00235",
+     "factureId": "FACxmvvd2hg9pj23a",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patient": "NONASSURE Awa"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Imagerie — NONASSURE Awa",
+     "detail": "3 examen(s) — 89 000",
+     "reference": "FI-2026-00235",
+     "factureId": "FACxmvvd2hg9pj23a",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patient": "NONASSURE Awa",
+     "montant": 89000
+    }
+   ],
+   "notifications": [
+    {
+     "statut": "actif",
+     "type": "demande_imagerie",
+     "poste": "imagerie",
+     "destinataire": null,
+     "libelle": "Nouvelle demande d’imagerie — NONASSURE Awa",
+     "detail": "Échographie pelvienne, Radiographie du thorax, Scanner cérébral — exécutable après passage en caisse",
+     "priorite": "haute",
+     "demandeId": null,
+     "factureId": null,
+     "ordonnanceId": null,
+     "patientId": "PATxmvvd2hfu67ohd",
+     "reference": "FI-2026-00235",
+     "lue": false
+    }
+   ],
+   "patientsCrees": []
+  },
+  {
+   "entree": {
+    "nom": "patient adressé de l’extérieur : le dossier naît (âge déclaré)",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "externe",
+     "nom": "externe",
+     "prenom": "Jean",
+     "sexe": "M",
+     "age": 40,
+     "telephone": "97000000",
+     "residence": "Quartier Nord",
+     "examens": [
+      "IMG-ECHO-PEL"
+     ]
+    },
+    "rangFactures": 235,
+    "rangPatients": 202,
+    "referencesExistantes": [
+     "IME-00021",
+     "IME-00020",
+     "IME-00019",
+     "IME-00018",
+     "IME-00017",
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 202
+   },
+   "patientsAvant": [],
+   "erreur": null,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00022",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hgag4i03",
+     "patientCode": "CNT/1102/26",
+     "patient": "EXTERNE Jean",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "modalite": "echographie",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "externe",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 9000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hga08c47",
+     "factureNumero": "FI-2026-00236",
+     "_archivee": false
+    }
+   ],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "imagerie",
+       "designation": "Échographie pelvienne",
+       "quantite": 1,
+       "prixUnitaire": 9000,
+       "prixUnitaireNet": 9000,
+       "montantBrut": 9000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 9000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 9000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvd2hgahq30s",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FI-2026-00236",
+     "numeroMecef": null,
+     "patientId": "PATxmvvd2hgag4i03",
+     "patient": "EXTERNE Jean",
+     "patientCode": "CNT/1102/26",
+     "date": "2026-10-30",
+     "type": "Imagerie",
+     "montantHT": 9000,
+     "montantTTC": 9000,
+     "montantBrut": 9000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 9000,
+     "montantPaye": 0,
+     "reliquat": 9000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "imagerie",
+     "poste": "imagerie",
+     "libelle": "Examen d’imagerie — EXTERNE Jean",
+     "detail": "Échographie pelvienne",
+     "reference": "FI-2026-00236",
+     "factureId": "FACxmvvd2hga08c47",
+     "patientId": "PATxmvvd2hgag4i03",
+     "patient": "EXTERNE Jean"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Imagerie — EXTERNE Jean",
+     "detail": "1 examen(s) — 9 000",
+     "reference": "FI-2026-00236",
+     "factureId": "FACxmvvd2hga08c47",
+     "patientId": "PATxmvvd2hgag4i03",
+     "patient": "EXTERNE Jean",
+     "montant": 9000
+    }
+   ],
+   "notifications": [
+    {
+     "statut": "actif",
+     "type": "demande_imagerie",
+     "poste": "imagerie",
+     "destinataire": null,
+     "libelle": "Nouvelle demande d’imagerie — EXTERNE Jean",
+     "detail": "Échographie pelvienne — exécutable après passage en caisse",
+     "priorite": "normale",
+     "demandeId": null,
+     "factureId": null,
+     "ordonnanceId": null,
+     "patientId": "PATxmvvd2hgag4i03",
+     "reference": "FI-2026-00236",
+     "lue": false
+    }
+   ],
+   "patientsCrees": [
+    {
+     "statut": "actif",
+     "code": "CNT/1102/26",
+     "nom": "EXTERNE",
+     "prenom": "Jean",
+     "sexe": "M",
+     "dateNaissance": null,
+     "age": 40,
+     "ageReferenceLe": "2026-10-30",
+     "telephone": "97000000",
+     "adresse": "Quartier Nord",
+     "quartier": "Quartier Nord",
+     "dateCreation": "2026-10-30",
+     "externe": true,
+     "origineDossier": "Patient externe — imagerie",
+     "prescripteurExterieur": "Dr TEST",
+     "assure": false,
+     "assureur": null,
+     "tauxPriseEnCharge": 0
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "externe avec prescripteur extérieur et date de naissance",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr Extérieur — CS Nord",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "externe",
+     "nom": "Autre",
+     "prenom": "Zoe",
+     "sexe": "F",
+     "dateNaissance": "2001-02-03",
+     "examens": [
+      "IMG-MAM-DEP"
+     ]
+    },
+    "rangFactures": 236,
+    "rangPatients": 203,
+    "referencesExistantes": [
+     "IME-00022",
+     "IME-00021",
+     "IME-00020",
+     "IME-00019",
+     "IME-00018",
+     "IME-00017",
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 203
+   },
+   "patientsAvant": [],
+   "erreur": null,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00023",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hgcxv42l",
+     "patientCode": "CNT/1103/26",
+     "patient": "AUTRE Zoe",
+     "examenCode": "IMG-MAM-DEP",
+     "examen": "Mammographie bilatérale de dépistage",
+     "modalite": "mammographie",
+     "prescripteur": "Dr Extérieur — CS Nord",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "externe",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 30000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hgc168pa",
+     "factureNumero": "FI-2026-00237",
+     "_archivee": false
+    }
+   ],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "imagerie",
+       "designation": "Mammographie bilatérale de dépistage",
+       "quantite": 1,
+       "prixUnitaire": 30000,
+       "prixUnitaireNet": 30000,
+       "montantBrut": 30000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 30000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 30000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvd2hgc6z60g",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FI-2026-00237",
+     "numeroMecef": null,
+     "patientId": "PATxmvvd2hgcxv42l",
+     "patient": "AUTRE Zoe",
+     "patientCode": "CNT/1103/26",
+     "date": "2026-10-30",
+     "type": "Imagerie",
+     "montantHT": 30000,
+     "montantTTC": 30000,
+     "montantBrut": 30000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 30000,
+     "montantPaye": 0,
+     "reliquat": 30000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "imagerie",
+     "poste": "imagerie",
+     "libelle": "Examen d’imagerie — AUTRE Zoe",
+     "detail": "Mammographie bilatérale de dépistage",
+     "reference": "FI-2026-00237",
+     "factureId": "FACxmvvd2hgc168pa",
+     "patientId": "PATxmvvd2hgcxv42l",
+     "patient": "AUTRE Zoe"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Imagerie — AUTRE Zoe",
+     "detail": "1 examen(s) — 30 000",
+     "reference": "FI-2026-00237",
+     "factureId": "FACxmvvd2hgc168pa",
+     "patientId": "PATxmvvd2hgcxv42l",
+     "patient": "AUTRE Zoe",
+     "montant": 30000
+    }
+   ],
+   "notifications": [
+    {
+     "statut": "actif",
+     "type": "demande_imagerie",
+     "poste": "imagerie",
+     "destinataire": null,
+     "libelle": "Nouvelle demande d’imagerie — AUTRE Zoe",
+     "detail": "Mammographie bilatérale de dépistage — exécutable après passage en caisse",
+     "priorite": "normale",
+     "demandeId": null,
+     "factureId": null,
+     "ordonnanceId": null,
+     "patientId": "PATxmvvd2hgcxv42l",
+     "reference": "FI-2026-00237",
+     "lue": false
+    }
+   ],
+   "patientsCrees": [
+    {
+     "statut": "actif",
+     "code": "CNT/1103/26",
+     "nom": "AUTRE",
+     "prenom": "Zoe",
+     "sexe": "F",
+     "dateNaissance": "2001-02-03",
+     "age": null,
+     "ageReferenceLe": null,
+     "telephone": null,
+     "adresse": null,
+     "quartier": null,
+     "dateCreation": "2026-10-30",
+     "externe": true,
+     "origineDossier": "Patient externe — imagerie",
+     "prescripteurExterieur": "Dr Extérieur — CS Nord",
+     "assure": false,
+     "assureur": null,
+     "tauxPriseEnCharge": 0
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "aucun examen coché : refusé",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "examens": []
+    },
+    "rangFactures": 237,
+    "rangPatients": 204,
+    "referencesExistantes": [
+     "IME-00023",
+     "IME-00022",
+     "IME-00021",
+     "IME-00020",
+     "IME-00019",
+     "IME-00018",
+     "IME-00017",
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 204
+   },
+   "patientsAvant": [
+    {
+     "id": "PATxmvvd2hfu67ohd",
+     "statut": "actif",
+     "code": "CNT/7001/26",
+     "nom": "NONASSURE",
+     "prenom": "Awa",
+     "sexe": "F",
+     "dateNaissance": "1990-01-01",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T19:24:24.906Z"
+    }
+   ],
+   "erreur": "Cocher au moins un examen d’imagerie.",
+   "demandes": [],
+   "factures": [],
+   "taches": [],
+   "notifications": [],
+   "patientsCrees": []
+  },
+  {
+   "entree": {
+    "nom": "examen sans tarif au catalogue : refusé en le nommant",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "examens": [
+      "IMG-INCONNU"
+     ]
+    },
+    "rangFactures": 237,
+    "rangPatients": 204,
+    "referencesExistantes": [
+     "IME-00023",
+     "IME-00022",
+     "IME-00021",
+     "IME-00020",
+     "IME-00019",
+     "IME-00018",
+     "IME-00017",
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 204
+   },
+   "patientsAvant": [
+    {
+     "id": "PATxmvvd2hfu67ohd",
+     "statut": "actif",
+     "code": "CNT/7001/26",
+     "nom": "NONASSURE",
+     "prenom": "Awa",
+     "sexe": "F",
+     "dateNaissance": "1990-01-01",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T19:24:24.906Z"
+    }
+   ],
+   "erreur": "Tarif non renseigné pour : IMG-INCONNU. Le renseigner au référentiel tarifaire avant de facturer.",
+   "demandes": [
+    {
+     "statut": "archive",
+     "reference": "IME-00024",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patientCode": "CNT/7001/26",
+     "patient": "NONASSURE Awa",
+     "examenCode": "IMG-INCONNU",
+     "examen": "IMG-INCONNU",
+     "modalite": "echographie",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": null,
+     "motifTarif": "Acte absent du catalogue tarifaire.",
+     "bloqueParPaiement": true,
+     "_motifArchivage": null,
+     "_archivee": true
+    }
+   ],
+   "factures": [],
+   "taches": [],
+   "notifications": [],
+   "patientsCrees": []
+  },
+  {
+   "entree": {
+    "nom": "un examen tarifé et un sans tarif : refusé, rien n’est facturé",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "examens": [
+      "IMG-ECHO-PEL",
+      "IMG-INCONNU"
+     ]
+    },
+    "rangFactures": 237,
+    "rangPatients": 204,
+    "referencesExistantes": [
+     "IME-00024",
+     "IME-00023",
+     "IME-00022",
+     "IME-00021",
+     "IME-00020",
+     "IME-00019",
+     "IME-00018",
+     "IME-00017",
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 204
+   },
+   "patientsAvant": [
+    {
+     "id": "PATxmvvd2hfu67ohd",
+     "statut": "actif",
+     "code": "CNT/7001/26",
+     "nom": "NONASSURE",
+     "prenom": "Awa",
+     "sexe": "F",
+     "dateNaissance": "1990-01-01",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T19:24:24.906Z"
+    }
+   ],
+   "erreur": "Tarif non renseigné pour : IMG-INCONNU. Le renseigner au référentiel tarifaire avant de facturer.",
+   "demandes": [
+    {
+     "statut": "archive",
+     "reference": "IME-00026",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patientCode": "CNT/7001/26",
+     "patient": "NONASSURE Awa",
+     "examenCode": "IMG-INCONNU",
+     "examen": "IMG-INCONNU",
+     "modalite": "echographie",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": null,
+     "motifTarif": "Acte absent du catalogue tarifaire.",
+     "bloqueParPaiement": true,
+     "_motifArchivage": null,
+     "_archivee": true
+    },
+    {
+     "statut": "archive",
+     "reference": "IME-00025",
+     "dateHeure": "2026-10-30T09:00:00.000Z",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patientCode": "CNT/7001/26",
+     "patient": "NONASSURE Awa",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "modalite": "echographie",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 9000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "_motifArchivage": null,
+     "_archivee": true
+    }
+   ],
+   "factures": [],
+   "taches": [],
+   "notifications": [],
+   "patientsCrees": []
+  },
+  {
+   "entree": {
+    "nom": "externe sans identité : refusé",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "externe",
+     "nom": "",
+     "prenom": "",
+     "examens": [
+      "IMG-ECHO-PEL"
+     ]
+    },
+    "rangFactures": 237,
+    "rangPatients": 204,
+    "referencesExistantes": [
+     "IME-00026",
+     "IME-00025",
+     "IME-00024",
+     "IME-00023",
+     "IME-00022",
+     "IME-00021",
+     "IME-00020",
+     "IME-00019",
+     "IME-00018",
+     "IME-00017",
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 204
+   },
+   "patientsAvant": [],
+   "erreur": "Nom et prénoms du patient obligatoires.",
+   "demandes": [],
+   "factures": [],
+   "taches": [],
+   "notifications": [],
+   "patientsCrees": []
+  },
+  {
+   "entree": {
+    "nom": "patient introuvable",
+    "v": {
+     "date": "2026-10-30T09:00:00.000Z",
+     "prescripteur": "Dr TEST",
+     "indication": "Douleurs",
+     "urgent": false,
+     "secteurDemandeur": "Consultation",
+     "origine": "consultation",
+     "patientId": "PATFANTOME",
+     "examens": [
+      "IMG-ECHO-PEL"
+     ]
+    },
+    "rangFactures": 237,
+    "rangPatients": 204,
+    "referencesExistantes": [
+     "IME-00026",
+     "IME-00025",
+     "IME-00024",
+     "IME-00023",
+     "IME-00022",
+     "IME-00021",
+     "IME-00020",
+     "IME-00019",
+     "IME-00018",
+     "IME-00017",
+     "IME-00016",
+     "IME-00015",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00010",
+     "IME-00009",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001",
+     "IME-00001",
+     "IME-00014",
+     "IME-00013",
+     "IME-00012",
+     "IME-00011",
+     "IME-00010",
+     "IME-00009",
+     "IME-00008",
+     "IME-00007",
+     "IME-00006",
+     "IME-00005",
+     "IME-00004",
+     "IME-00003",
+     "IME-00002",
+     "IME-00001"
+    ],
+    "nbPatients": 204
+   },
+   "patientsAvant": [],
+   "erreur": "Patient introuvable au répertoire.",
+   "demandes": [],
+   "factures": [],
+   "taches": [],
+   "notifications": [],
+   "patientsCrees": []
+  }
+ ],
+ "tarifs": {
+  "IMG-ECHO-PEL": {
+   "nonAssure": {
+    "montant": 9000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-ECHO-ABD": {
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-ECHO-ABP": {
+   "nonAssure": {
+    "montant": 20000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 11000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-ECHO-PRO": {
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-ECHO-OBS": {
+   "nonAssure": {
+    "montant": 9000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-ECHO-OBS1": {
+   "nonAssure": {
+    "montant": 9000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-ECHO-OBS1E": {
+   "nonAssure": {
+    "montant": 9000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-ECG": {
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-RX-THO": {
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-RX-BAS": {
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-RX-RAC": {
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 12000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-RX-MEM": {
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-RX-CRA": {
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-RX-ASP": {
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-MAM-DEP": {
+   "nonAssure": {
+    "montant": 30000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 25000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-MAM-DIA": {
+   "nonAssure": {
+    "montant": 35000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 30000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-TDM-CER": {
+   "nonAssure": {
+    "montant": 70000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 60000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-TDM-THO": {
+   "nonAssure": {
+    "montant": 85000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 75000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-TDM-ABP": {
+   "nonAssure": {
+    "montant": 100000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 90000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-TDM-RAC": {
+   "nonAssure": {
+    "montant": 85000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 75000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-IRM-CER": {
+   "nonAssure": {
+    "montant": 150000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 130000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-IRM-RAC": {
+   "nonAssure": {
+    "montant": 150000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 130000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-IRM-GEN": {
+   "nonAssure": {
+    "montant": 140000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 120000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  "IMG-IRM-PEL": {
+   "nonAssure": {
+    "montant": 160000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 140000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  }
+ },
+ "modale": [
+  {
+   "nom": "patient du répertoire, un examen, prescripteur de la maison",
+   "saisie": {
+    "patientCode": "CNT/7001/26",
+    "examens": [
+     "IMG-ECHO-PEL"
+    ],
+    "prescripteur": "BASSONGUI Chabi Séko",
+    "indication": "Douleurs pelviennes"
+   },
+   "champsVisibles": [
+    "patientCode",
+    "nom",
+    "prenom",
+    "sexe",
+    "naissanceConnue",
+    "dateNaissance",
+    "telephone",
+    "residence",
+    "examens",
+    "prescripteur",
+    "indication",
+    "urgent"
+   ],
+   "toast": "Demande émise — 1 examen(s). Facture FI-2026-00238 à la caisse ; l’examen sera exécutable après règlement.",
+   "modaleOuverte": false,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00027",
+     "dateHeure": "2026-10-30T19:24:25.130Z",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patientCode": "CNT/7001/26",
+     "patient": "NONASSURE Awa",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "modalite": "echographie",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "indication": "Douleurs pelviennes",
+     "urgent": false,
+     "secteurDemandeur": "ADMINISTRATION",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 9000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hm3zbacu",
+     "factureNumero": "FI-2026-00238"
+    }
+   ],
+   "patientsCrees": [],
+   "factures": [
+    {
+     "numero": "FI-2026-00238",
+     "montantTTC": 9000,
+     "partPatient": 9000
+    }
+   ]
+  },
+  {
+   "nom": "patient adressé de l’extérieur (âge déclaré), prescripteur EXTÉRIEUR nommé",
+   "saisie": {
+    "nom": "Kora",
+    "prenom": "Salou",
+    "sexe": "M",
+    "naissanceConnue": "age",
+    "age": 33,
+    "telephone": "96000000",
+    "residence": "Tchaourou",
+    "examens": [
+     "IMG-ECHO-PEL"
+    ],
+    "prescripteur": "EXTERNE",
+    "prescripteurExterne": "Dr SALIFOU Aminou, CS de Perma",
+    "indication": "Bilan"
+   },
+   "champsVisibles": [
+    "patientCode",
+    "nom",
+    "prenom",
+    "sexe",
+    "naissanceConnue",
+    "age",
+    "telephone",
+    "residence",
+    "examens",
+    "prescripteur",
+    "prescripteurExterne",
+    "indication",
+    "urgent"
+   ],
+   "toast": "Demande émise — 1 examen(s). Facture FI-2026-00239 à la caisse ; l’examen sera exécutable après règlement. Dossier ouvert : CNT/1104/26.",
+   "modaleOuverte": false,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00028",
+     "dateHeure": "2026-10-30T19:24:25.493Z",
+     "patientId": "PATxmvvd2hw50wb7d",
+     "patientCode": "CNT/1104/26",
+     "patient": "KORA Salou",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "modalite": "echographie",
+     "prescripteur": "Dr SALIFOU Aminou, CS de Perma (extérieur)",
+     "indication": "Bilan",
+     "urgent": false,
+     "secteurDemandeur": "ADMINISTRATION",
+     "origine": "externe",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 9000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2hw6285b1",
+     "factureNumero": "FI-2026-00239"
+    }
+   ],
+   "patientsCrees": [
+    {
+     "statut": "actif",
+     "code": "CNT/1104/26",
+     "nom": "KORA",
+     "prenom": "Salou",
+     "sexe": "M",
+     "dateNaissance": null,
+     "age": 33,
+     "ageReferenceLe": "2026-10-30",
+     "telephone": "96000000",
+     "adresse": "Tchaourou",
+     "quartier": "Tchaourou",
+     "dateCreation": "2026-10-30",
+     "externe": true,
+     "origineDossier": "Patient externe — imagerie",
+     "prescripteurExterieur": "Dr SALIFOU Aminou, CS de Perma (extérieur)",
+     "assure": false,
+     "assureur": null,
+     "tauxPriseEnCharge": 0
+    }
+   ],
+   "factures": [
+    {
+     "numero": "FI-2026-00239",
+     "montantTTC": 9000,
+     "partPatient": 9000
+    }
+   ]
+  },
+  {
+   "nom": "ni patient ni identité : refusé en le disant",
+   "saisie": {
+    "examens": [
+     "IMG-ECHO-PEL"
+    ],
+    "prescripteur": "BASSONGUI Chabi Séko",
+    "indication": "x"
+   },
+   "champsVisibles": [
+    "patientCode",
+    "nom",
+    "prenom",
+    "sexe",
+    "naissanceConnue",
+    "dateNaissance",
+    "telephone",
+    "residence",
+    "examens",
+    "prescripteur",
+    "indication",
+    "urgent"
+   ],
+   "toast": "Sélectionner un patient du répertoire, ou renseigner le nom et les prénoms du patient adressé de l’extérieur.",
+   "modaleOuverte": true,
+   "demandes": [],
+   "patientsCrees": [],
+   "factures": []
+  },
+  {
+   "nom": "formulaire incomplet (indication absente) : erreurs, rien n’est écrit",
+   "saisie": {
+    "patientCode": "CNT/7001/26",
+    "examens": [
+     "IMG-ECHO-PEL"
+    ],
+    "prescripteur": "BASSONGUI Chabi Séko"
+   },
+   "champsVisibles": [
+    "patientCode",
+    "nom",
+    "prenom",
+    "sexe",
+    "naissanceConnue",
+    "dateNaissance",
+    "telephone",
+    "residence",
+    "examens",
+    "prescripteur",
+    "indication",
+    "urgent"
+   ],
+   "toast": "Le formulaire comporte des erreurs.",
+   "modaleOuverte": true,
+   "demandes": [],
+   "patientsCrees": [],
+   "factures": []
+  },
+  {
+   "nom": "prescripteur extérieur sans nom libre : « Prescripteur extérieur »",
+   "saisie": {
+    "patientCode": "CNT/7001/26",
+    "examens": [
+     "IMG-ECHO-PEL"
+    ],
+    "prescripteur": "EXTERNE",
+    "indication": "Bilan"
+   },
+   "champsVisibles": [
+    "patientCode",
+    "nom",
+    "prenom",
+    "sexe",
+    "naissanceConnue",
+    "dateNaissance",
+    "telephone",
+    "residence",
+    "examens",
+    "prescripteur",
+    "prescripteurExterne",
+    "indication",
+    "urgent"
+   ],
+   "toast": "Demande émise — 1 examen(s). Facture FI-2026-00240 à la caisse ; l’examen sera exécutable après règlement.",
+   "modaleOuverte": false,
+   "demandes": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00029",
+     "dateHeure": "2026-10-30T19:24:26.522Z",
+     "patientId": "PATxmvvd2hfu67ohd",
+     "patientCode": "CNT/7001/26",
+     "patient": "NONASSURE Awa",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "modalite": "echographie",
+     "prescripteur": "Prescripteur extérieur",
+     "indication": "Bilan",
+     "urgent": false,
+     "secteurDemandeur": "ADMINISTRATION",
+     "origine": "consultation",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 9000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvd2iorksfkj",
+     "factureNumero": "FI-2026-00240"
+    }
+   ],
+   "patientsCrees": [],
+   "factures": [
+    {
+     "numero": "FI-2026-00240",
+     "montantTTC": 9000,
+     "partPatient": 9000
+    }
+   ]
+  }
+ ],
+ "nomsPrescripteur": [
+  {
+   "nom": "interne",
+   "v": {
+    "prescripteur": "Dr X"
+   },
+   "attendu": "Dr X"
+  },
+  {
+   "nom": "externe nommé",
+   "v": {
+    "prescripteur": "EXTERNE",
+    "prescripteurExterne": "  Dr Y, CS Z "
+   },
+   "attendu": "Dr Y, CS Z (extérieur)"
+  },
+  {
+   "nom": "externe sans nom",
+   "v": {
+    "prescripteur": "EXTERNE",
+    "prescripteurExterne": ""
+   },
+   "attendu": "Prescripteur extérieur"
+  },
+  {
+   "nom": "externe espaces",
+   "v": {
+    "prescripteur": "EXTERNE",
+    "prescripteurExterne": "   "
+   },
+   "attendu": "Prescripteur extérieur"
+  }
+ ],
+ "tarifPrix": [
+  {
+   "entree": {
+    "code": "CONS-GEN",
+    "prixNonAssure": 5000,
+    "prixAssure": 3000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 5000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "CONS-PRE",
+    "prixNonAssure": 5000,
+    "prixAssure": 1500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 5000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "CONS-SPE",
+    "prixNonAssure": 10000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "CONS-DOM-GEN",
+    "prixNonAssure": 25000,
+    "prixAssure": 20000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 25000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 20000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "CONS-DOM-SPE",
+    "prixNonAssure": 30000,
+    "prixAssure": 25000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 30000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 25000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "CONS-SPE-SRV",
+    "prixNonAssure": 15000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-ECG",
+    "prixNonAssure": 15000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-ECHO-ABD",
+    "prixNonAssure": 12000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-ECHO-ABP",
+    "prixNonAssure": 20000,
+    "prixAssure": 11000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 20000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 11000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-ECHO-PEL",
+    "prixNonAssure": 9000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 9000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-ECHO-PRO",
+    "prixNonAssure": 12000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-ECHO-OBS",
+    "prixNonAssure": 9000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 9000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-MAPA",
+    "prixNonAssure": 30000,
+    "prixAssure": 25000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 30000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 25000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-RX-THO",
+    "prixNonAssure": 10000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-RX-BAS",
+    "prixNonAssure": 12000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-RX-RAC",
+    "prixNonAssure": 15000,
+    "prixAssure": 12000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 12000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-RX-MEM",
+    "prixNonAssure": 10000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-RX-CRA",
+    "prixNonAssure": 12000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-RX-ASP",
+    "prixNonAssure": 10000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-MAM-DEP",
+    "prixNonAssure": 30000,
+    "prixAssure": 25000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 30000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 25000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-MAM-DIA",
+    "prixNonAssure": 35000,
+    "prixAssure": 30000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 35000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 30000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-TDM-CER",
+    "prixNonAssure": 70000,
+    "prixAssure": 60000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 70000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 60000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-TDM-THO",
+    "prixNonAssure": 85000,
+    "prixAssure": 75000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 85000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 75000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-TDM-ABP",
+    "prixNonAssure": 100000,
+    "prixAssure": 90000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 100000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 90000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-TDM-RAC",
+    "prixNonAssure": 85000,
+    "prixAssure": 75000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 85000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 75000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-IRM-CER",
+    "prixNonAssure": 150000,
+    "prixAssure": 130000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 150000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 130000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-IRM-RAC",
+    "prixNonAssure": 150000,
+    "prixAssure": 130000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 150000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 130000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-IRM-GEN",
+    "prixNonAssure": 140000,
+    "prixAssure": 120000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 140000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 120000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "IMG-IRM-PEL",
+    "prixNonAssure": 160000,
+    "prixAssure": 140000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 160000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 140000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-AKOP",
+    "prixNonAssure": 2500,
+    "prixAssure": 2000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-ASLO",
+    "prixNonAssure": 3800,
+    "prixAssure": 2800,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3800,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2800,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-AZOT",
+    "prixNonAssure": 2500,
+    "prixAssure": 1800,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1800,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-BILI",
+    "prixNonAssure": 4800,
+    "prixAssure": 3400,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 4800,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3400,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-BU",
+    "prixNonAssure": 1000,
+    "prixAssure": 500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-CALC",
+    "prixNonAssure": 3200,
+    "prixAssure": 2200,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2200,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-CHOT",
+    "prixNonAssure": 4500,
+    "prixAssure": 3200,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 4500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3200,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-CHOH",
+    "prixNonAssure": 4500,
+    "prixAssure": 3200,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 4500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3200,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-CREA",
+    "prixNonAssure": 2500,
+    "prixAssure": 1800,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1800,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-CRP",
+    "prixNonAssure": 4000,
+    "prixAssure": 3000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 4000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-ECBU",
+    "prixNonAssure": 3500,
+    "prixAssure": 2500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-EPHB",
+    "prixNonAssure": 6000,
+    "prixAssure": 4000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 6000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 4000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-GLY",
+    "prixNonAssure": 2200,
+    "prixAssure": 1700,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1700,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-GLYC",
+    "prixNonAssure": 1500,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-GEDP",
+    "prixNonAssure": 2000,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-GSRH",
+    "prixNonAssure": 3500,
+    "prixAssure": 2500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-HBC",
+    "prixNonAssure": 1500,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-HEPB",
+    "prixNonAssure": 3500,
+    "prixAssure": 2500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-HEPC",
+    "prixNonAssure": 3400,
+    "prixAssure": 3000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3400,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-HIV",
+    "prixNonAssure": 3500,
+    "prixAssure": 2500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-IONO",
+    "prixNonAssure": 8500,
+    "prixAssure": 6500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 6500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-MAGN",
+    "prixNonAssure": 3200,
+    "prixAssure": 2200,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2200,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-NFS",
+    "prixNonAssure": 6000,
+    "prixAssure": 4000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 6000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 4000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-PU",
+    "prixNonAssure": 3500,
+    "prixAssure": 2500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-PV",
+    "prixNonAssure": 3500,
+    "prixAssure": 2500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-PROT",
+    "prixNonAssure": 3200,
+    "prixAssure": 2200,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2200,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-SDW",
+    "prixNonAssure": 6500,
+    "prixAssure": 4500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 6500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 4500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-SPER",
+    "prixNonAssure": 5000,
+    "prixAssure": 3400,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 5000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3400,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-TBG",
+    "prixNonAssure": 2000,
+    "prixAssure": 1500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-TC",
+    "prixNonAssure": 2000,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-TCA",
+    "prixNonAssure": 3500,
+    "prixAssure": 3000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-EMMEL",
+    "prixNonAssure": 2000,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-TPINR",
+    "prixNonAssure": 8500,
+    "prixAssure": 6500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 6500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-TPHA",
+    "prixNonAssure": 3500,
+    "prixAssure": 2500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-TGO",
+    "prixNonAssure": 3200,
+    "prixAssure": 2200,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2200,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-TGP",
+    "prixNonAssure": 3200,
+    "prixAssure": 2200,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2200,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-GGT",
+    "prixNonAssure": 4500,
+    "prixAssure": 3500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 4500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-TRIG",
+    "prixNonAssure": 3200,
+    "prixAssure": 2200,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2200,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-TS",
+    "prixNonAssure": 2000,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-URIC",
+    "prixNonAssure": 3200,
+    "prixAssure": 2200,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2200,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAB-VS",
+    "prixNonAssure": 3000,
+    "prixAssure": 2000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ABCG",
+    "prixNonAssure": 14000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 14000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ABCM",
+    "prixNonAssure": 12000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ABCP",
+    "prixNonAssure": 8000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ABCTP",
+    "prixNonAssure": 5000,
+    "prixAssure": 3000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 5000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "AERO",
+    "prixNonAssure": 2500,
+    "prixAssure": 2000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "DEPM",
+    "prixNonAssure": 5000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 5000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "EXTN",
+    "prixNonAssure": 7000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "EXTO",
+    "prixNonAssure": 8000,
+    "prixAssure": 6000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 6000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "INFG",
+    "prixNonAssure": 12000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "INFM",
+    "prixNonAssure": 10000,
+    "prixAssure": 7000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 7000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "INFP",
+    "prixNonAssure": 7000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAVO",
+    "prixNonAssure": 4000,
+    "prixAssure": 3000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 4000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "LAVV",
+    "prixNonAssure": 7000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "OXY1-3",
+    "prixNonAssure": 4000,
+    "prixAssure": 2000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 4000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "OXY4-6",
+    "prixNonAssure": 6000,
+    "prixAssure": 4000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 6000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 4000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "OXY7-12",
+    "prixNonAssure": 8000,
+    "prixAssure": 6000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 6000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "OXY13-24",
+    "prixNonAssure": 15000,
+    "prixAssure": 12000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 12000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PAN",
+    "prixNonAssure": 9000,
+    "prixAssure": 6000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 9000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 6000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PANG",
+    "prixNonAssure": 8000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PANM",
+    "prixNonAssure": 5000,
+    "prixAssure": 3000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 5000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PANP",
+    "prixNonAssure": 2000,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PANTG",
+    "prixNonAssure": 12000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PANTP",
+    "prixNonAssure": 1000,
+    "prixAssure": 500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PONA",
+    "prixNonAssure": 7000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PONG",
+    "prixNonAssure": 8000,
+    "prixAssure": 6000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 6000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PONLA",
+    "prixNonAssure": 4000,
+    "prixAssure": 3000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 4000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PONLE",
+    "prixNonAssure": 3000,
+    "prixAssure": 2000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PONS",
+    "prixNonAssure": 3000,
+    "prixAssure": 2500,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 3000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2500,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "POSC",
+    "prixNonAssure": 7000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PSP",
+    "prixNonAssure": 1500,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "POT",
+    "prixNonAssure": 1500,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PSE",
+    "prixNonAssure": 1500,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "PVV",
+    "prixNonAssure": 1200,
+    "prixAssure": 800,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 800,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "SDI",
+    "prixNonAssure": 15000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "SIM",
+    "prixNonAssure": 1000,
+    "prixAssure": 800,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 800,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "SIV",
+    "prixNonAssure": 1200,
+    "prixAssure": 800,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1200,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 800,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "SC",
+    "prixNonAssure": 1000,
+    "prixAssure": 800,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 800,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "SNG",
+    "prixNonAssure": 5000,
+    "prixAssure": 3000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 5000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 3000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "SV",
+    "prixNonAssure": 7000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "SUT",
+    "prixNonAssure": 1500,
+    "prixAssure": 1000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 1500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ACCDC",
+    "prixNonAssure": 18000,
+    "prixAssure": 12000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 18000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 12000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ACCDL",
+    "prixNonAssure": 25000,
+    "prixAssure": 20000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 25000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 20000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ACCDM",
+    "prixNonAssure": 20000,
+    "prixAssure": 15000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 20000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 15000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ACCD",
+    "prixNonAssure": 20000,
+    "prixAssure": 15000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 20000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 15000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ACCE",
+    "prixNonAssure": 15000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ACCS1",
+    "prixNonAssure": 60000,
+    "prixAssure": 45000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 60000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 45000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "ACCS2",
+    "prixNonAssure": 75000,
+    "prixAssure": 60000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 75000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 60000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "AMIU",
+    "prixNonAssure": 20000,
+    "prixAssure": 15000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 20000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 15000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "BARI",
+    "prixNonAssure": 15000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "DECG",
+    "prixNonAssure": 15000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "DECP",
+    "prixNonAssure": 10000,
+    "prixAssure": 6000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 6000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "DEG",
+    "prixNonAssure": 12000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "DEM",
+    "prixNonAssure": 10000,
+    "prixAssure": 6000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 6000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "DEP",
+    "prixNonAssure": 8000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "DEA",
+    "prixNonAssure": 8000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "EPG",
+    "prixNonAssure": 12000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "EPM",
+    "prixNonAssure": 10000,
+    "prixAssure": 6000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 6000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "EPP",
+    "prixNonAssure": 8000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "EXAS",
+    "prixNonAssure": 8000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "EXPU",
+    "prixNonAssure": 12000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 12000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "HYD",
+    "prixNonAssure": 15000,
+    "prixAssure": null,
+    "nonCouvert": true,
+    "assurable": false
+   },
+   "nonAssure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 15000,
+    "tarif": "non assuré",
+    "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré."
+   }
+  },
+  {
+   "entree": {
+    "code": "PCGJ",
+    "prixNonAssure": 6000,
+    "prixAssure": 4000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 6000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 4000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "POSI",
+    "prixNonAssure": 1100,
+    "prixAssure": null,
+    "nonCouvert": true,
+    "assurable": false
+   },
+   "nonAssure": {
+    "montant": 1100,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1100,
+    "tarif": "non assuré",
+    "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré."
+   }
+  },
+  {
+   "entree": {
+    "code": "POSD",
+    "prixNonAssure": 2500,
+    "prixAssure": 1700,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 2500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1700,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "POSJ",
+    "prixNonAssure": 1100,
+    "prixAssure": null,
+    "nonCouvert": true,
+    "assurable": false
+   },
+   "nonAssure": {
+    "montant": 1100,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 1100,
+    "tarif": "non assuré",
+    "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré."
+   }
+  },
+  {
+   "entree": {
+    "code": "RETIM",
+    "prixNonAssure": 2000,
+    "prixAssure": null,
+    "nonCouvert": true,
+    "assurable": false
+   },
+   "nonAssure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré."
+   }
+  },
+  {
+   "entree": {
+    "code": "RETJ",
+    "prixNonAssure": 2000,
+    "prixAssure": null,
+    "nonCouvert": true,
+    "assurable": false
+   },
+   "nonAssure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré."
+   }
+  },
+  {
+   "entree": {
+    "code": "RETD",
+    "prixNonAssure": 2000,
+    "prixAssure": null,
+    "nonCouvert": true,
+    "assurable": false
+   },
+   "nonAssure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 2000,
+    "tarif": "non assuré",
+    "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré."
+   }
+  },
+  {
+   "entree": {
+    "code": "SIN",
+    "prixNonAssure": 450,
+    "prixAssure": null,
+    "nonCouvert": true,
+    "assurable": false
+   },
+   "nonAssure": {
+    "montant": 450,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 450,
+    "tarif": "non assuré",
+    "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré."
+   }
+  },
+  {
+   "entree": {
+    "code": "SIS",
+    "prixNonAssure": 500,
+    "prixAssure": null,
+    "nonCouvert": true,
+    "assurable": false
+   },
+   "nonAssure": {
+    "montant": 500,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 500,
+    "tarif": "non assuré",
+    "motif": "Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré."
+   }
+  },
+  {
+   "entree": {
+    "code": "SURT",
+    "prixNonAssure": 8000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": true
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "assuré",
+    "motif": null
+   }
+  },
+  {
+   "entree": {
+    "code": "CERT-DPS",
+    "prixNonAssure": 5000,
+    "prixAssure": 5000,
+    "nonCouvert": false,
+    "assurable": "sos"
+   },
+   "nonAssure": {
+    "montant": 5000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 5000,
+    "tarif": "non assuré",
+    "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+    "reserveSos": true
+   }
+  },
+  {
+   "entree": {
+    "code": "CERT-ATG",
+    "prixNonAssure": 7000,
+    "prixAssure": 7000,
+    "nonCouvert": false,
+    "assurable": "sos"
+   },
+   "nonAssure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+    "reserveSos": true
+   }
+  },
+  {
+   "entree": {
+    "code": "CERT-DEC",
+    "prixNonAssure": 10000,
+    "prixAssure": 10000,
+    "nonCouvert": false,
+    "assurable": "sos"
+   },
+   "nonAssure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 10000,
+    "tarif": "non assuré",
+    "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+    "reserveSos": true
+   }
+  },
+  {
+   "entree": {
+    "code": "CERT-CBV",
+    "prixNonAssure": 20000,
+    "prixAssure": 20000,
+    "nonCouvert": false,
+    "assurable": "sos"
+   },
+   "nonAssure": {
+    "montant": 20000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 20000,
+    "tarif": "non assuré",
+    "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+    "reserveSos": true
+   }
+  },
+  {
+   "entree": {
+    "code": "CERT-VC",
+    "prixNonAssure": 8000,
+    "prixAssure": 8000,
+    "nonCouvert": false,
+    "assurable": "sos"
+   },
+   "nonAssure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 8000,
+    "tarif": "non assuré",
+    "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+    "reserveSos": true
+   }
+  },
+  {
+   "entree": {
+    "code": "CERT-APT",
+    "prixNonAssure": 7000,
+    "prixAssure": 7000,
+    "nonCouvert": false,
+    "assurable": "sos"
+   },
+   "nonAssure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": null
+   },
+   "assure": {
+    "montant": 7000,
+    "tarif": "non assuré",
+    "motif": "Les certificats ne sont couverts que par SOS — vérifier la compagnie.",
+    "reserveSos": true
+   }
+  },
+  {
+   "entree": null,
+   "code": "ABSENT-DU-CATALOGUE",
+   "nonAssure": {
+    "montant": null,
+    "motif": "Acte absent du catalogue tarifaire."
+   },
+   "assure": {
+    "montant": null,
+    "motif": "Acte absent du catalogue tarifaire."
+   }
+  }
+ ],
+ "rendre": [
+  {
+   "nom": "conclusion absente : refusé",
+   "toast": "La conclusion est obligatoire avant de rendre le compte rendu.",
+   "crApres": {
+    "statut": "brouillon",
+    "reference": "IMG-0100",
+    "demandeImagerieId": "DEMxmvvd2isgmm5sq",
+    "demandeReference": "IME-00004",
+    "examenCode": "IMG-TDM-CER",
+    "examen": "Scanner cérébral",
+    "patientId": "PATxmvvd2hfu67ohd",
+    "patient": "NONASSURE Awa",
+    "patientCode": "CNT/7001/26",
+    "prescripteur": "Dr TEST",
+    "realisateur": "R",
+    "conclusion": "",
+    "date": "2026-10-30T09:00:00.000Z"
+   },
+   "demandeApres": {
+    "statut": "executee",
+    "reference": "IME-00004",
+    "dateHeure": "2026-08-22T15:00:00.000Z",
+    "patientId": "PATxmvvd2hfu67ohd",
+    "patientCode": "CNT/11/26",
+    "patient": "TIGRI Séraphine",
+    "examenCode": "IMG-TDM-CER",
+    "examen": "Scanner cérébral",
+    "prescripteur": "Dr TEST 0",
+    "indication": "Indication 3",
+    "urgent": false,
+    "origine": "consultation",
+    "prix": 13000,
+    "factureNumero": "FI-2026-00410",
+    "bloqueParPaiement": false
+   },
+   "notifications": 0
+  },
+  {
+   "nom": "conclusion posée : rendu au prescripteur, demande validée",
+   "crApres": {
+    "statut": "rendu",
+    "reference": "IMG-0100",
+    "demandeImagerieId": "DEMxmvvd2isgmm5sq",
+    "demandeReference": "IME-00004",
+    "examenCode": "IMG-TDM-CER",
+    "examen": "Scanner cérébral",
+    "patientId": "PATxmvvd2hfu67ohd",
+    "patient": "NONASSURE Awa",
+    "patientCode": "CNT/7001/26",
+    "prescripteur": "Dr TEST",
+    "realisateur": "R",
+    "conclusion": "Examen sans particularité.",
+    "date": "2026-10-30T09:00:00.000Z",
+    "renduLe": "2026-10-30T19:24:27.057Z"
+   },
+   "demandeApres": {
+    "statut": "validee",
+    "reference": "IME-00004",
+    "dateHeure": "2026-08-22T15:00:00.000Z",
+    "patientId": "PATxmvvd2hfu67ohd",
+    "patientCode": "CNT/11/26",
+    "patient": "TIGRI Séraphine",
+    "examenCode": "IMG-TDM-CER",
+    "examen": "Scanner cérébral",
+    "prescripteur": "Dr TEST 0",
+    "indication": "Indication 3",
+    "urgent": false,
+    "origine": "consultation",
+    "prix": 13000,
+    "factureNumero": "FI-2026-00410",
+    "bloqueParPaiement": false,
+    "valideLe": "2026-10-30T19:24:27.057Z"
+   },
+   "notifications": [
+    {
+     "statut": "actif",
+     "type": "imagerie_rendue",
+     "poste": "consultation",
+     "destinataire": null,
+     "libelle": "Compte rendu d’imagerie rendu — NONASSURE Awa",
+     "detail": "Scanner cérébral — IMG-0100 — prescripteur Dr TEST",
+     "priorite": "normale",
+     "demandeId": null,
+     "factureId": null,
+     "ordonnanceId": null,
+     "patientId": "PATxmvvd2hfu67ohd",
+     "reference": "IMG-0100",
+     "lue": false
+    }
+   ],
+   "toast": "Compte rendu rendu au prescripteur. IMG-0100 La conclusion est obligatoire avant de rendre le compte rendu.",
+   "maintenant": "2026-10-30"
+  }
+ ]
+}

@@ -1,0 +1,71 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile-suite.js : la fiche N1 de la page du simulateur mobile « orientation ». Ne pas éditer à la main.",
+ "titre": "Orienter un patient",
+ "sous": null,
+ "textes": [],
+ "champs": [
+  {
+   "section": null,
+   "id": "pat",
+   "libelle": "Patient",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "AKPO Marc — CNT/1241/26",
+    "HOUNKPATIN Ida — PROV-1"
+   ],
+   "valeur": "AKPO Marc — CNT/1241/26"
+  },
+  {
+   "section": null,
+   "id": "dest",
+   "libelle": "Orienter vers",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Médecin de garde",
+    "Laboratoire",
+    "Salle de soins",
+    "Maternité",
+    "Caisse (dès retour du courant)",
+    "Référence vers un autre établissement"
+   ],
+   "valeur": "Médecin de garde"
+  },
+  {
+   "section": null,
+   "id": "urg",
+   "libelle": "Degré",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Normal",
+    "Urgent",
+    "Très urgent"
+   ],
+   "valeur": "Normal"
+  }
+ ],
+ "boutons": [
+  "Envoyer l’orientation"
+ ],
+ "onglets": [
+  "Accueil",
+  "Synchro",
+  "À traiter",
+  "Réglages"
+ ],
+ "notes": [],
+ "cartes": [],
+ "items": [],
+ "kpis": []
+}

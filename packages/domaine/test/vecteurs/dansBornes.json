@@ -1,0 +1,109 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "date": [
+     2026,
+     7,
+     10
+    ],
+    "debut": [
+     2026,
+     7,
+     1
+    ],
+    "fin": [
+     2026,
+     7,
+     31
+    ]
+   },
+   "sortie": true
+  },
+  {
+   "entree": {
+    "date": [
+     2026,
+     7,
+     1
+    ],
+    "debut": [
+     2026,
+     7,
+     1
+    ],
+    "fin": [
+     2026,
+     7,
+     31
+    ]
+   },
+   "sortie": true
+  },
+  {
+   "entree": {
+    "date": [
+     2026,
+     7,
+     31,
+     0,
+     0
+    ],
+    "debut": [
+     2026,
+     7,
+     1
+    ],
+    "fin": [
+     2026,
+     7,
+     31,
+     0,
+     0
+    ]
+   },
+   "sortie": true
+  },
+  {
+   "entree": {
+    "date": [
+     2026,
+     8,
+     1
+    ],
+    "debut": [
+     2026,
+     7,
+     1
+    ],
+    "fin": [
+     2026,
+     7,
+     31
+    ]
+   },
+   "sortie": false
+  },
+  {
+   "entree": {
+    "date": [
+     2026,
+     6,
+     31
+    ],
+    "debut": [
+     2026,
+     7,
+     1
+    ],
+    "fin": [
+     2026,
+     7,
+     31
+    ]
+   },
+   "sortie": false
+  }
+ ]
+}

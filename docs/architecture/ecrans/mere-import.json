@@ -1,0 +1,47 @@
+{
+ "id": "mere-import",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Import de migration",
+ "acces": "ouvert",
+ "titre": "Import de migration",
+ "description": "Reprise des données existantes (SAGE, classeurs, jeux de départ) avec traçabilité complète.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Cycle de vie",
+  "Import de migration"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots importés",
+  "Lignes rejetées"
+ ],
+ "cartes": [
+  "Lots"
+ ],
+ "tableaux": [
+  [
+   "Lot",
+   "Source",
+   "Date",
+   "Lignes",
+   "Validé par",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Importer un fichier"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 2
+}

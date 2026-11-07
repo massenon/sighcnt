@@ -1,0 +1,84 @@
+{
+ "id": "m10-planning",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Planning & gardes",
+ "acces": "ouvert",
+ "titre": "Planning & gardes",
+ "description": "Planification des gardes, permanences et repos, avec contrôle des incompatibilités.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Planning & gardes"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "Légende :G — Garde 24hGH — Garde hospitalisationGS — Garde soinsP — PermanenceS — SoiréeEGJ — Entretien général de la journéeR — Repos 24hR48 — Repos 48hC — CongéA — AbsenceRp — RemplacementINC — Incinération des déchets",
+  "Ces répartitions portent sur les vacations travaillées — gardes, soirées, permanences et incinération. Les repos et congés en sont exclus : les compter ferait apparaître comme les plus chargés les agents les plus reposés. Le détail par période se consulte à l’écran Statistiques de garde."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Vacations planifiées",
+  "De garde aujourd’hui",
+  "En permanence",
+  "En repos"
+ ],
+ "cartes": [
+  "Régimes de travail par catégorie",
+  "Planning du 27/10/2026 au 02/11/2026",
+  "Registre des vacations",
+  "Gardes par agent — les dix premiers",
+  "Gardes par service",
+  "Gardes par type de vacation"
+ ],
+ "tableaux": [
+  [
+   "Catégorie",
+   "Vacations",
+   "Horaires",
+   "Repos",
+   "Honoraire",
+   "Cycle",
+   "Source"
+  ],
+  [
+   "Agent",
+   "mar.27/10",
+   "mer.28/10",
+   "jeu.29/10",
+   "ven.30/10",
+   "sam.31/10",
+   "dim.1/11",
+   "lun.2/11"
+  ],
+  [
+   "Date",
+   "Agent",
+   "Fonction",
+   "Service",
+   "Vacation",
+   "Régime appliqué",
+   "Statut"
+  ]
+ ],
+ "commandes": [
+  "Nouveau régime",
+  "Imprimer le planning",
+  "+",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 3,
+ "nbKpis": 4
+}

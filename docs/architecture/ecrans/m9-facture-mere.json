@@ -1,0 +1,52 @@
+{
+ "id": "m9-facture-mere",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Facture mère assurance",
+ "acces": "ouvert",
+ "titre": "Facture mère assurance",
+ "description": "Pièce unique adressée à une compagnie, consolidant toutes ses factures par souscripteur.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Facture mère assurance"
+ ],
+ "actions": [
+  "Relevé & facture mensuelle",
+  "Créances",
+  "Tableau de bord assurances"
+ ],
+ "regle": [
+  "MensuelleTrimestrielleSemestrielleAnnuelle",
+  "La facture mère ne peut pas être émise. Une mère qui ne se recoupe pas avec ses filles donnerait à la compagnie un montant que la clinique ne saurait pas justifier ligne à ligne le jour du litige."
+ ],
+ "onglets": [
+  "Consolidation",
+  "Détail par ligne d’assurance",
+  "Factures mères émises"
+ ],
+ "kpis": [
+  "Souscripteurs facturés",
+  "Pièces filles",
+  "Total à réclamer",
+  "Rapprochement"
+ ],
+ "cartes": [
+  "Compagnie et périodicité"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "AFRICAINE DES ASSURANCES",
+  "Aperçu de la facture mère",
+  "Consolidation0",
+  "Détail par ligne d’assurance0",
+  "Factures mères émises1"
+ ],
+ "champs": [
+  "Compagnie",
+  "Périodicité"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

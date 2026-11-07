@@ -1,0 +1,8 @@
+name: sigh_domaine
+description: Règles métier SIGH-CNT partagées par le poste, le mobile et le poste mère (Dart pur, sans Flutter).
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+dev_dependencies:
+  test: any   # figer la version au premier `dart pub get`

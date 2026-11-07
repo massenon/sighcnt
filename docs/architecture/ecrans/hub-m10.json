@@ -1,0 +1,28 @@
+{
+ "id": "hub-m10",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Ressources humaines",
+ "acces": "ouvert",
+ "titre": "Ressources humaines",
+ "description": "Tous les écrans du module M10 — Ressources humaines.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

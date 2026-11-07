@@ -1,0 +1,60 @@
+{
+ "id": "m1-patient-nouveau",
+ "module": "M1",
+ "domaine": "Accueil",
+ "libelleManifeste": "Ouvrir un dossier patient",
+ "acces": "ouvert",
+ "titre": "Ouvrir un dossier patient",
+ "description": "Identité, coordonnées, âge déclaré à défaut de date de naissance et couverture d’assurance — le premier acte du parcours.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "Patients & Dossier médical",
+  "Ouvrir un dossier patient"
+ ],
+ "actions": [
+  "Ouvrir le dossier"
+ ],
+ "regle": [
+  "RG-01 — le code est unique et non modifiable. Les dossiers antérieurs gardent l’ancien format : renuméroter romprait le lien avec l’archive papier.",
+  "RG-09 — une carte d’assurance n’ouvre droit à la prise en charge que si elle est valide à la date de facturation. Saisir la validité ici évite un litige au guichet.",
+  "« Je ne connais pas ma date de naissance » est la réponse ordinaire au guichet : l’âge déclaré est prévu pour cela. Inscrire un 1ᵉʳ janvier de fantaisie le ferait ressortir sur chaque pièce comme un fait établi."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Identité, coordonnées et couverture",
+  "Enchaînement du parcours",
+  "Ce que l’ouverture engage"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "— Sélectionner —",
+  "— Aucune sélection —",
+  "Annuler",
+  "Ouvrir le dossier"
+ ],
+ "champs": [
+  "Code dossier",
+  "Nom *",
+  "Prénom(s) *",
+  "Sexe *",
+  "Date de naissance *",
+  "Date de naissance *",
+  "Groupe sanguin",
+  "Téléphone *",
+  "Quartier",
+  "Adresse",
+  "Personne à prévenir",
+  "Antécédents",
+  "Autres antécédents (texte libre)",
+  "Allergies connues",
+  "Traitement en cours",
+  "Compagnie d’assurance",
+  "Numéro de police",
+  "Taux de prise en charge (%)",
+  "Expiration de la carte"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

@@ -14,7 +14,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit,
       PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   var SERVICES_DEMANDEURS = ['Pharmacie d’urgence', 'Laboratoire', 'Hospitalisation', 'Maternité',
     'Bloc opératoire', 'Accueil', 'Administration', 'Entretien'];
@@ -616,9 +616,14 @@
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
                 if (!lignes.length) { U.toast('Ajouter au moins un article.', { type: 'error' }); return; }
                 v.lignes = lignes;
+                /* E71 : le champ « étape » n'est pas offert à qui n'anime pas le circuit, donc absent de la saisie collectée — le bon était
+                   enregistré SANS étape et n'apparaissait dans aucune vue. Il part SOUMIS, comme le dit le défaut du formulaire. */
+                if (!record && !v.etape) v.etape = 'soumis';
                 v.montantEstime = C.sum(lignes, function (l) { return l.quantiteDemandee * l.prixAchat; });
-                if (!v.reference) v.reference = C.nextRef('BEB-2026-', 4);
-                if (['validation_da', 'accorde', 'prepare', 'livre', 'cloture'].indexOf(v.etape) !== -1 && !v.valideePar) {
+                /* E75 : le formulaire ne porte pas la référence ; à la modification, `!v.reference` était toujours vrai et le bon était RENUMÉROTÉ. */
+                if (!record) v.reference = C.referenceSuivante('BEB-2026-', 4, col.all());   /* E70 : série lue sur les bons existants, plus un compteur de page */
+                /* E74 : le formulaire ne porte pas le validateur ; sans cette garde, modifier un bon DÉJÀ validé écrasait le vrai validateur. */
+                if (['validation_da', 'accorde', 'prepare', 'livre', 'cloture'].indexOf(v.etape) !== -1 && !v.valideePar && !(record && record.valideePar)) {
                   v.valideePar = 'TAKI Alimatou';
                 }
                 var res = record ? col.update(record.id, v) : col.insert(v);
@@ -730,7 +735,7 @@
 
       table = U.dataTable({
         title: 'Bons de commande',
-        rows: function () { return col.active(); },
+        rows: function () { return col.active().filter(function (c) { return global.SIGH.exercice.dansExercice(c.date); }); },   /* suit l'exercice de la barre supérieure */
         exportName: 'bons-commande', pageSize: 12,
         defaultSort: 'date', defaultDir: 'desc',
         filters: [
@@ -781,7 +786,7 @@
           confirmLabel: 'Valider la commande',
         }).then(function (ok) {
           if (!ok) return;
-          var res = col.update(c.id, { statutCommande: 'validee', valideePar: 'TAKI Alimatou', dateValidation: C.iso(AUJ) });
+          var res = col.update(c.id, { statutCommande: 'validee', valideePar: 'TAKI Alimatou', dateValidation: C.iso(C.aujourdhui()) });
           table.refresh();
           U.toast('Commande validée par la Directrice Administrative.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
         });
@@ -875,8 +880,10 @@
                 v.fournisseurNom = four ? four.nom : v.fournisseur;
                 v.delaiLivraison = four ? four.delai : null;
                 v.lignes = lignes; v.montant = C.sum(lignes, 'montant');
-                if (!v.reference) v.reference = C.nextRef('BC-2026-', 4);
-                if (['validee', 'transmise', 'livree', 'soldee'].indexOf(v.statutCommande) !== -1 && !v.valideePar) {
+                /* E75 : idem — modifier une commande ne change pas son numéro. */
+                if (!record) v.reference = C.referenceSuivante('BC-2026-', 4, col.all());   /* E70 */
+                /* E74 : idem — ne jamais remplacer le validateur ni la date de validation d'une commande déjà validée. */
+                if (['validee', 'transmise', 'livree', 'soldee'].indexOf(v.statutCommande) !== -1 && !v.valideePar && !(record && record.valideePar)) {
                   v.valideePar = 'TAKI Alimatou'; v.dateValidation = C.iso(AUJ);
                 }
                 var res = record ? col.update(record.id, v) : col.insert(v);
@@ -1016,13 +1023,16 @@
            ou un écart constaté après coup ne doivent pas obliger à ressaisir. */
         rowActions: function (l) {
           return [K.iconBtn('printer', 'Imprimer', function () { etat(l); })]
-            .concat(K.actionsLigne(col, champsLivraison, { entite: 'bon de livraison' })(l));
+            .concat(K.actionsLigne(col, champsLivraison, { entite: 'bon de livraison',
+            /* E78 : le formulaire saisit les contrôleurs en TEXTE ; sans cette conversion, modifier un bon écrivait une chaîne là où l'écran lit une liste
+               (`.join` sur une chaîne : le détail du bon cassait au clic). */
+            transform: function (v) { v.controlePar = String(v.controlePar || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean); return v; } })(l));
         },
         actions: [K.creer(col, champsLivraison, {
           titre: 'Nouveau bon de livraison', entite: 'Bon de livraison',
           defauts: function () { return { date: C.iso(AUJ), statutReception: 'conforme' }; },
           transform: function (v) {
-            v.reference = C.nextRef('BL-', 5);
+            v.reference = C.referenceSuivante('BL-', 5, col.all());   /* E70 */
             var f = D.FOURNISSEURS.filter(function (x) { return x.code === v.fournisseur; })[0];
             v.fournisseurNom = f ? f.nom : v.fournisseur;
             v.lignes = v.lignes || [];
@@ -1141,7 +1151,9 @@
           { key: 'valideePar', label: 'Validée par' },
         ],
         rowActions: function (c) {
-          return [K.btn('Réceptionner', { size: 'sm', variant: 'primary', icon: 'package-check', onclick: function () { receptionner(c); } })];
+          /* E79 : réceptionner ÉCRIT (bordereau, entrée en stock, CUMP) — la commande est déclarée comme telle, donc absente pour un profil qui lit
+             l'écran (direction, comptable, biologiste). Elle était offerte à tous. */
+          return [K.commande('Réceptionner', { size: 'sm', variant: 'primary', icon: 'package-check', onclick: function () { receptionner(c); } })].filter(Boolean);
         },
       });
       host.appendChild(table);
@@ -1236,7 +1248,7 @@
                     stockGros: p.stockGros + x.recu, stock: nouvelleQte, cump: nouveauCump,
                   });
                   var mv = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({
-                    reference: C.nextRef('M', 6), date: v.date,
+                    reference: C.referenceSuivante('M', 6, S.collection('mouvements').all()), date: v.date,   /* E70 */
                     produitId: p.id, produit: p.designation,
                     type: 'entree', typeLabel: 'Entrée', quantite: x.recu, stockType: 'gros',
                     justificatif: 'Bon de livraison ' + v.referenceBL,
@@ -1456,7 +1468,7 @@
       amorcer();
       var col = S.collection('facturesFournisseurs', { module: 'M7', entite: 'FactureFournisseur' });
 
-      var rows = col.active();
+      var rows = col.active().filter(function (r) { return global.SIGH.exercice.dansExercice(r.date); });   /* suit l'exercice de la barre supérieure */
       var host = el('div.space-y-4');
       var anomalies = rows.filter(function (r) { return r.statutRappro === 'anomalie'; });
 
@@ -1474,10 +1486,13 @@
       host.appendChild(U.dataTable({
         title: 'Factures fournisseurs', rows: rows, exportName: 'factures-fournisseurs', pageSize: 12,
         rowActions: K.actionsLigne(col, [
-          { name: 'numero', label: 'N° de facture', required: true },
+          /* LES CHAMPS SONT CEUX DE LA FICHE (corrigé le 06/11/2026) : `numero` et `montant` n'existaient pas, l'édition les
+             écrivait sur des champs morts que rien ne relisait. Le fournisseur est un CODE (liste), son nom se déduit, et
+             changer le montant facturé recalcule l'écart et le rapprochement (transform ci-dessous). */
+          { name: 'numeroFournisseur', label: 'N° fournisseur', required: true },
           { name: 'date', label: 'Date de facture', type: 'date', required: true },
-          { name: 'fournisseur', label: 'Fournisseur', required: true },
-          { name: 'montant', label: 'Montant (FCFA)', type: 'number', min: 0 },
+          { name: 'fournisseur', label: 'Fournisseur', type: 'select', required: true, options: optionsFournisseurs() },
+          { name: 'montantFacture', label: 'Montant facturé (FCFA)', type: 'number', min: 0 },
           { name: 'echeance', label: 'Échéance', type: 'date' },
           {
             /* « payée » et non « soldée » : le registre, son filtre et son
@@ -1487,7 +1502,18 @@
             name: 'statutPaiement', label: 'Règlement', type: 'select',
             options: [{ value: 'impayee', label: 'Impayée' }, { value: 'partielle', label: 'Partielle' }, { value: 'payee', label: 'Payée' }],
           },
-        ]),
+        ], {
+          transform: function (v, r) {
+            var four = fournisseurs().filter(function (f) { return f.code === v.fournisseur; })[0];
+            if (four) v.fournisseurNom = four.nom;
+            if (v.montantFacture != null && v.montantFacture !== '') {
+              v.montantFacture = Number(v.montantFacture);
+              v.ecart = v.montantFacture - (r.montantLivraison || 0);
+              v.statutRappro = v.ecart === 0 ? 'rapproche' : 'anomalie';
+            }
+            return v;
+          },
+        }),
         defaultSort: 'date', defaultDir: 'desc',
         filters: [
           { name: 'statutRappro', label: 'Rapprochement', options: [{ value: 'rapproche', label: 'Rapprochée' }, { value: 'anomalie', label: 'Anomalie' }] },
@@ -1739,7 +1765,9 @@
                   var lignes = lignesDeNature(liv, nature);
                   var sess = S.session() || {};
                   var res = colPV().insert({
-                    reference: C.nextRef('PV-' + (nature === 'reactifs' ? 'REA' : 'CON') + '-2026-', 4),
+                    /* Série annuelle lue sur les PV EXISTANTS (écart E17, 30/10/2026) : le compteur de page `C.nextRef` repartait à 1
+                       à chaque chargement et réécrivait PV-CON-2026-0001 après les PV amorcés ; le millésime était écrit en dur. */
+                    reference: C.referenceSuivante('PV-' + (nature === 'reactifs' ? 'REA' : 'CON') + '-' + String(v.date).slice(0, 4) + '-', 4, colPV().all()),
                     nature: nature,
                     date: v.date,
                     livraisonRef: liv.reference, commandeRef: liv.commandeRef,

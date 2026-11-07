@@ -1,0 +1,63 @@
+{
+ "id": "m10-assurance-personnel",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Assurance du personnel",
+ "acces": "ouvert",
+ "titre": "Assurance du personnel",
+ "description": "Prestations dispensées aux agents de la clinique, prises en charge à 100 % — hors recettes et hors comptabilité.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Assurance du personnel"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "Ce tableau ne se saisit pas. Il se remplit dès qu’un agent est reçu en consultation, qu’une analyse lui est prescrite ou qu’il est hospitalisé — parce que son dossier patient porte son matricule. Pour corriger une ligne, il faut corriger la prestation d’origine dans son module : une saisie ici créerait une seconde vérité, divergente du dossier."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Agents ayant un dossier patient",
+  "Prestations prises en charge",
+  "Valeur de l’avantage",
+  "Agents effectivement soignés"
+ ],
+ "cartes": [
+  "Prestations prises en charge — Douze derniers mois",
+  "Valeur par nature de prestation",
+  "Prestations par fonction",
+  "Les dix agents les plus pris en charge",
+  "Valeur mensuelle de l’avantage"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Agent",
+   "Dossier",
+   "Nature",
+   "Détail",
+   "Praticien",
+   "Valeur",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Imprimer l’état",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [
+  "Période",
+  "Fonction"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

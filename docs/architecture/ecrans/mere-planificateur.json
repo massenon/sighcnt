@@ -1,0 +1,47 @@
+{
+ "id": "mere-planificateur",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Planificateur",
+ "acces": "ouvert",
+ "titre": "Planificateur",
+ "description": "Les tâches que le serveur évalue à heure fixe : échéances, stocks, péremptions, rendez-vous, créances, sauvegarde.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Plateforme locale",
+  "Planificateur"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Tâches actives",
+  "En erreur",
+  "Alertes ouvertes"
+ ],
+ "cartes": [
+  "Registre des tâches"
+ ],
+ "tableaux": [
+  [
+   "Tâche",
+   "Fréquence",
+   "Dernière exécution",
+   "Résultat",
+   "Alertes"
+  ]
+ ],
+ "commandes": [
+  "Exécuter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

@@ -1,0 +1,63 @@
+{
+ "id": "m4-soins-curatifs",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Soins curatifs & urgences maternité",
+ "acces": "ouvert",
+ "titre": "Soins curatifs & urgences maternité",
+ "description": "Registre des consultations curatives : MILDA, femmes référées d’urgence, devenir (Case 27).",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Soins curatifs & urgences maternité"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les soins curatifs",
+  "Archivés"
+ ],
+ "kpis": [
+  "Consultations curatives",
+  "MILDA délivrées",
+  "Femmes référées d’urgence",
+  "Hospitalisées (Case 27)"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Consultante",
+   "Diagnostic",
+   "MILDA",
+   "Urgence maternité",
+   "Devenir (Case 27)",
+   "Agent",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Aujourd’hui",
+  "Sept derniers jours",
+  "Toute la période",
+  "Tous les soins curatifs16",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

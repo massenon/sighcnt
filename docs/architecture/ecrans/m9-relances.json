@@ -1,0 +1,40 @@
+{
+ "id": "m9-relances",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Relances",
+ "acces": "ouvert",
+ "titre": "Relances",
+ "description": "Suivi des relances adressées aux compagnies pour les créances en souffrance.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Relances"
+ ],
+ "actions": [
+  "Tableau de bord assurances",
+  "Compagnies partenaires",
+  "Assurances & Créances"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Relances émises",
+  "En attente de réponse",
+  "Régularisées",
+  "Montant relancé"
+ ],
+ "cartes": [
+  "Registre des relances"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle relance"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

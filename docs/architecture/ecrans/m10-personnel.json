@@ -1,0 +1,58 @@
+{
+ "id": "m10-personnel",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Personnel",
+ "acces": "ouvert",
+ "titre": "Personnel",
+ "description": "Dossiers des agents : identité, fonction, catégorie, ancienneté, numéro CNSS et rémunération de base.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Personnel"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les agents",
+  "Archivés"
+ ],
+ "kpis": [
+  "Effectif",
+  "Masse salariale",
+  "Salaire moyen",
+  "Femmes / Hommes"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Mat.",
+   "Agent",
+   "Fonction",
+   "Service",
+   "Cat./Éch.",
+   "Ancienneté",
+   "N° CNSS",
+   "Salaire de base",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les agents44",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

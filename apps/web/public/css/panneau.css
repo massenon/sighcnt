@@ -1,0 +1,34 @@
+/* Panneau superadmin du relais — valeurs issues des jetons de design de la maquette (docs/design/design-tokens.json).
+   Aucune ressource externe : le panneau fonctionne sur un hébergement sans npm ni CDN. */
+:root {
+  --navy-50: #f1f5fb; --navy-100: #e0eaf6; --navy-700: #2e5187; --navy-900: #12315e; --navy-950: #0b1e3d;
+  --ok-100: #d6f5e3; --ok-700: #12684a; --alerte-100: #fee2e2; --alerte-700: #b91c1c; --attention-100: #ffedc6; --attention-700: #b74106;
+  --texte: #0f172a; --texte-doux: #475569; --bord: #e2e8f0; --fond: #f1f5f9; --blanc: #fff;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.5 "Segoe UI", Inter, system-ui, sans-serif; color: var(--texte); background: var(--fond); }
+a { color: var(--navy-700); }
+.entete { background: var(--navy-900); color: #fff; padding: 0 16px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; min-height: 56px; }
+.entete strong { font-size: 16px; letter-spacing: .02em; }
+.entete nav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+.entete nav a { color: #dbe6f5; text-decoration: none; padding: 16px 12px; border-bottom: 3px solid transparent; }
+.entete nav a[aria-current="page"] { color: #fff; border-bottom-color: #fff; }
+.entete button { background: transparent; color: #dbe6f5; border: 1px solid #4a7fc1; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 22px; margin: 0 0 4px; } .sous-titre { color: var(--texte-doux); margin: 0 0 20px; }
+.grille { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 20px; }
+.carte { background: var(--blanc); border: 1px solid var(--bord); border-radius: 12px; padding: 16px 18px; box-shadow: 0 1px 2px rgb(11 30 61 / .05); }
+.carte h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--texte-doux); margin: 0 0 8px; }
+.valeur { font-size: 28px; font-weight: 600; letter-spacing: -.01em; }
+.puce { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+.puce.ok { background: var(--ok-100); color: var(--ok-700); } .puce.alerte { background: var(--alerte-100); color: var(--alerte-700); } .puce.attention { background: var(--attention-100); color: var(--attention-700); }
+table { width: 100%; border-collapse: collapse; background: var(--blanc); border: 1px solid var(--bord); border-radius: 12px; overflow: hidden; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--bord); font-size: 14px; } th { background: var(--navy-50); color: var(--navy-900); font-weight: 600; }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; } code { font-family: Consolas, ui-monospace, monospace; font-size: 13px; }
+.note { background: var(--navy-50); border-left: 4px solid var(--navy-700); padding: 10px 14px; border-radius: 0 8px 8px 0; color: var(--navy-900); margin: 16px 0; }
+.message { background: var(--ok-100); color: var(--ok-700); padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; }
+.vide { color: var(--texte-doux); padding: 20px; text-align: center; }
+.btn { background: var(--navy-900); color: #fff; border: 0; border-radius: 8px; padding: 8px 14px; cursor: pointer; font: inherit; } .btn.danger { background: var(--alerte-700); } .btn:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--navy-700); outline-offset: 2px; }
+.formulaire { max-width: 380px; margin: 12vh auto; } .formulaire label { display: block; margin: 12px 0 4px; font-weight: 600; } .formulaire input { width: 100%; padding: 10px; border: 1px solid #94a3b8; border-radius: 8px; font: inherit; }
+.erreur { color: var(--alerte-700); margin-top: 6px; }
+@media (max-width: 640px) { th, td { padding: 8px 8px; font-size: 13px; } .valeur { font-size: 24px; } }

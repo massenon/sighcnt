@@ -1,0 +1,4633 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-m7-achats.js — les écrans de PV de réception pilotés dans la maquette. Ne pas éditer.",
+ "cas": [
+  {
+   "nom": "consommables : conforme sur un bon qui porte un écart (-> la conclusion n'est PAS dérivée des écarts)",
+   "nature": "consommables",
+   "entree": {
+    "nature": "consommables",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "reserves": "",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T02"
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T02 — NATI Fournitures",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": null,
+     "livraisonRef": "LV-T02"
+    }
+   },
+   "sortie": {
+    "pv": {
+     "statut": "actif",
+     "reference": "PV-CON-2026-0005",
+     "nature": "consommables",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T02",
+     "commandeRef": "BC-TEST-02",
+     "fournisseurNom": "NATI Fournitures",
+     "lignes": [
+      {
+       "produit": "EAU DE JAVEL EN POUDRE",
+       "unite": "Flacon",
+       "commandee": 10,
+       "livree": 10,
+       "ecart": 0
+      },
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 40,
+       "livree": 44,
+       "ecart": 4
+      },
+      {
+       "produit": "ARTICLE HORS CATALOGUE",
+       "unite": "Unité",
+       "commandee": 1,
+       "livree": 1,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS"
+    },
+    "nbNouveaux": 1,
+    "messages": [
+     {
+      "message": "PV PV-CON-2026-0005 établi.",
+      "type": "success",
+      "detail": "Conforme"
+     }
+    ],
+    "impression": {
+     "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+     "sousTitre": "Consommables — PV-CON-2026-0005",
+     "cartouche": [
+      [
+       "N° PV",
+       "PV-CON-2026-0005"
+      ],
+      [
+       "Date",
+       "30/10/2026"
+      ],
+      [
+       "Bon de livraison",
+       "LV-T02"
+      ],
+      [
+       "Commande",
+       "BC-TEST-02"
+      ],
+      [
+       "Fournisseur",
+       "NATI Fournitures"
+      ],
+      [
+       "Conclusion",
+       "Conforme"
+      ]
+     ],
+     "contenu": [
+      {
+       "table": {
+        "entetes": [
+         "Article",
+         "Unité",
+         "Qté commandée",
+         "Qté livrée",
+         "Écart"
+        ],
+        "lignes": [
+         [
+          "EAU DE JAVEL EN POUDRE",
+          "Flacon",
+          "10",
+          "10",
+          ""
+         ],
+         [
+          "ABAISSE LANGUE",
+          "Unité",
+          "40",
+          "44",
+          "4"
+         ],
+         [
+          "ARTICLE HORS CATALOGUE",
+          "Unité",
+          "1",
+          "1",
+          ""
+         ]
+        ],
+        "pied": []
+       }
+      },
+      {
+       "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+      }
+     ],
+     "signatures": [
+      {
+       "role": "Le Magasinier",
+       "nom": "MAMAN Zoukanéri"
+      },
+      {
+       "role": "La Directrice de l’Administration et des Finances",
+       "nom": "TAKI Alimatou"
+      },
+      {
+       "role": "Le représentant du fournisseur",
+       "nom": "Livreur SoBAPS"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "consommables : bon mixte, seules les lignes NON réactifs sont reprises",
+   "nature": "consommables",
+   "entree": {
+    "nature": "consommables",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "reserves": "",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T01"
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T02 — NATI Fournitures",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": null,
+     "livraisonRef": "LV-T02"
+    }
+   },
+   "sortie": {
+    "pv": {
+     "statut": "actif",
+     "reference": "PV-CON-2026-0006",
+     "nature": "consommables",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T01",
+     "commandeRef": "BC-TEST-01",
+     "fournisseurNom": "SoBAPS SA",
+     "lignes": [
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 100,
+       "livree": 100,
+       "ecart": 0
+      },
+      {
+       "produit": "AIGUILLE DE PL",
+       "unite": "Unité",
+       "commandee": 50,
+       "livree": 50,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS"
+    },
+    "nbNouveaux": 1,
+    "messages": [
+     {
+      "message": "PV PV-CON-2026-0006 établi.",
+      "type": "success",
+      "detail": "Conforme"
+     }
+    ],
+    "impression": {
+     "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+     "sousTitre": "Consommables — PV-CON-2026-0006",
+     "cartouche": [
+      [
+       "N° PV",
+       "PV-CON-2026-0006"
+      ],
+      [
+       "Date",
+       "30/10/2026"
+      ],
+      [
+       "Bon de livraison",
+       "LV-T01"
+      ],
+      [
+       "Commande",
+       "BC-TEST-01"
+      ],
+      [
+       "Fournisseur",
+       "SoBAPS SA"
+      ],
+      [
+       "Conclusion",
+       "Conforme"
+      ]
+     ],
+     "contenu": [
+      {
+       "table": {
+        "entetes": [
+         "Article",
+         "Unité",
+         "Qté commandée",
+         "Qté livrée",
+         "Écart"
+        ],
+        "lignes": [
+         [
+          "ABAISSE LANGUE",
+          "Unité",
+          "100",
+          "100",
+          ""
+         ],
+         [
+          "AIGUILLE DE PL",
+          "Unité",
+          "50",
+          "50",
+          ""
+         ]
+        ],
+        "pied": []
+       }
+      },
+      {
+       "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+      }
+     ],
+     "signatures": [
+      {
+       "role": "Le Magasinier",
+       "nom": "MAMAN Zoukanéri"
+      },
+      {
+       "role": "La Directrice de l’Administration et des Finances",
+       "nom": "TAKI Alimatou"
+      },
+      {
+       "role": "Le représentant du fournisseur",
+       "nom": "Livreur SoBAPS"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "consommables : « avec réserves » sans réserves -> refus nommé",
+   "nature": "consommables",
+   "entree": {
+    "nature": "consommables",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme avec réserves",
+     "reserves": "",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T01"
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T02 — NATI Fournitures",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": null,
+     "livraisonRef": "LV-T02"
+    }
+   },
+   "sortie": {
+    "pv": null,
+    "nbNouveaux": 0,
+    "messages": [
+     {
+      "message": "Une conclusion avec réserves ou non conforme EXIGE ses réserves écrites.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "impression": null
+   }
+  },
+  {
+   "nom": "consommables : réserves faites d'espaces -> refus (le texte est rogné)",
+   "nature": "consommables",
+   "entree": {
+    "nature": "consommables",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Non conforme",
+     "reserves": "   ",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T01"
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T02 — NATI Fournitures",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": null,
+     "livraisonRef": "LV-T02"
+    }
+   },
+   "sortie": {
+    "pv": null,
+    "nbNouveaux": 0,
+    "messages": [
+     {
+      "message": "Une conclusion avec réserves ou non conforme EXIGE ses réserves écrites.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "impression": null
+   }
+  },
+  {
+   "nom": "consommables : non conforme avec réserves écrites",
+   "nature": "consommables",
+   "entree": {
+    "nature": "consommables",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Non conforme",
+     "reserves": "Colis éventrés à la livraison.",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T01"
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T02 — NATI Fournitures",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": null,
+     "livraisonRef": "LV-T02"
+    }
+   },
+   "sortie": {
+    "pv": {
+     "statut": "actif",
+     "reference": "PV-CON-2026-0007",
+     "nature": "consommables",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T01",
+     "commandeRef": "BC-TEST-01",
+     "fournisseurNom": "SoBAPS SA",
+     "lignes": [
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 100,
+       "livree": 100,
+       "ecart": 0
+      },
+      {
+       "produit": "AIGUILLE DE PL",
+       "unite": "Unité",
+       "commandee": 50,
+       "livree": 50,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Non conforme",
+     "reserves": "Colis éventrés à la livraison.",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS"
+    },
+    "nbNouveaux": 1,
+    "messages": [
+     {
+      "message": "PV PV-CON-2026-0007 établi.",
+      "type": "success",
+      "detail": "Non conforme"
+     }
+    ],
+    "impression": {
+     "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+     "sousTitre": "Consommables — PV-CON-2026-0007",
+     "cartouche": [
+      [
+       "N° PV",
+       "PV-CON-2026-0007"
+      ],
+      [
+       "Date",
+       "30/10/2026"
+      ],
+      [
+       "Bon de livraison",
+       "LV-T01"
+      ],
+      [
+       "Commande",
+       "BC-TEST-01"
+      ],
+      [
+       "Fournisseur",
+       "SoBAPS SA"
+      ],
+      [
+       "Conclusion",
+       "Non conforme"
+      ]
+     ],
+     "contenu": [
+      {
+       "table": {
+        "entetes": [
+         "Article",
+         "Unité",
+         "Qté commandée",
+         "Qté livrée",
+         "Écart"
+        ],
+        "lignes": [
+         [
+          "ABAISSE LANGUE",
+          "Unité",
+          "100",
+          "100",
+          ""
+         ],
+         [
+          "AIGUILLE DE PL",
+          "Unité",
+          "50",
+          "50",
+          ""
+         ]
+        ],
+        "pied": []
+       }
+      },
+      {
+       "texte": "Réserves : Colis éventrés à la livraison."
+      },
+      {
+       "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+      }
+     ],
+     "signatures": [
+      {
+       "role": "Le Magasinier",
+       "nom": "MAMAN Zoukanéri"
+      },
+      {
+       "role": "La Directrice de l’Administration et des Finances",
+       "nom": "TAKI Alimatou"
+      },
+      {
+       "role": "Le représentant du fournisseur",
+       "nom": "Livreur SoBAPS"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "consommables : conforme AVEC un texte de réserves -> le texte est conservé",
+   "nature": "consommables",
+   "entree": {
+    "nature": "consommables",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "reserves": "Emballage extérieur légèrement humide.",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T02"
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-CON-2026-0007",
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T02 — NATI Fournitures",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": null,
+     "livraisonRef": "LV-T02"
+    }
+   },
+   "sortie": {
+    "pv": {
+     "statut": "actif",
+     "reference": "PV-CON-2026-0008",
+     "nature": "consommables",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T02",
+     "commandeRef": "BC-TEST-02",
+     "fournisseurNom": "NATI Fournitures",
+     "lignes": [
+      {
+       "produit": "EAU DE JAVEL EN POUDRE",
+       "unite": "Flacon",
+       "commandee": 10,
+       "livree": 10,
+       "ecart": 0
+      },
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 40,
+       "livree": 44,
+       "ecart": 4
+      },
+      {
+       "produit": "ARTICLE HORS CATALOGUE",
+       "unite": "Unité",
+       "commandee": 1,
+       "livree": 1,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "Emballage extérieur légèrement humide.",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS"
+    },
+    "nbNouveaux": 1,
+    "messages": [
+     {
+      "message": "PV PV-CON-2026-0008 établi.",
+      "type": "success",
+      "detail": "Conforme"
+     }
+    ],
+    "impression": {
+     "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+     "sousTitre": "Consommables — PV-CON-2026-0008",
+     "cartouche": [
+      [
+       "N° PV",
+       "PV-CON-2026-0008"
+      ],
+      [
+       "Date",
+       "30/10/2026"
+      ],
+      [
+       "Bon de livraison",
+       "LV-T02"
+      ],
+      [
+       "Commande",
+       "BC-TEST-02"
+      ],
+      [
+       "Fournisseur",
+       "NATI Fournitures"
+      ],
+      [
+       "Conclusion",
+       "Conforme"
+      ]
+     ],
+     "contenu": [
+      {
+       "table": {
+        "entetes": [
+         "Article",
+         "Unité",
+         "Qté commandée",
+         "Qté livrée",
+         "Écart"
+        ],
+        "lignes": [
+         [
+          "EAU DE JAVEL EN POUDRE",
+          "Flacon",
+          "10",
+          "10",
+          ""
+         ],
+         [
+          "ABAISSE LANGUE",
+          "Unité",
+          "40",
+          "44",
+          "4"
+         ],
+         [
+          "ARTICLE HORS CATALOGUE",
+          "Unité",
+          "1",
+          "1",
+          ""
+         ]
+        ],
+        "pied": []
+       }
+      },
+      {
+       "texte": "Réserves : Emballage extérieur légèrement humide."
+      },
+      {
+       "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+      }
+     ],
+     "signatures": [
+      {
+       "role": "Le Magasinier",
+       "nom": "MAMAN Zoukanéri"
+      },
+      {
+       "role": "La Directrice de l’Administration et des Finances",
+       "nom": "TAKI Alimatou"
+      },
+      {
+       "role": "Le représentant du fournisseur",
+       "nom": "Livreur SoBAPS"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "consommables : millésime de la date (2027) -> série 2027, rang 0001",
+   "nature": "consommables",
+   "entree": {
+    "nature": "consommables",
+    "saisie": {
+     "date": "2027-01-15",
+     "conclusion": "Conforme",
+     "reserves": "",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T02"
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-CON-2026-0008",
+     "PV-CON-2026-0007",
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T02 — NATI Fournitures",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": null,
+     "livraisonRef": "LV-T02"
+    }
+   },
+   "sortie": {
+    "pv": {
+     "statut": "actif",
+     "reference": "PV-CON-2027-0001",
+     "nature": "consommables",
+     "date": "2027-01-15",
+     "livraisonRef": "LV-T02",
+     "commandeRef": "BC-TEST-02",
+     "fournisseurNom": "NATI Fournitures",
+     "lignes": [
+      {
+       "produit": "EAU DE JAVEL EN POUDRE",
+       "unite": "Flacon",
+       "commandee": 10,
+       "livree": 10,
+       "ecart": 0
+      },
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 40,
+       "livree": 44,
+       "ecart": 4
+      },
+      {
+       "produit": "ARTICLE HORS CATALOGUE",
+       "unite": "Unité",
+       "commandee": 1,
+       "livree": 1,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS"
+    },
+    "nbNouveaux": 1,
+    "messages": [
+     {
+      "message": "PV PV-CON-2027-0001 établi.",
+      "type": "success",
+      "detail": "Conforme"
+     }
+    ],
+    "impression": {
+     "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+     "sousTitre": "Consommables — PV-CON-2027-0001",
+     "cartouche": [
+      [
+       "N° PV",
+       "PV-CON-2027-0001"
+      ],
+      [
+       "Date",
+       "15/01/2027"
+      ],
+      [
+       "Bon de livraison",
+       "LV-T02"
+      ],
+      [
+       "Commande",
+       "BC-TEST-02"
+      ],
+      [
+       "Fournisseur",
+       "NATI Fournitures"
+      ],
+      [
+       "Conclusion",
+       "Conforme"
+      ]
+     ],
+     "contenu": [
+      {
+       "table": {
+        "entetes": [
+         "Article",
+         "Unité",
+         "Qté commandée",
+         "Qté livrée",
+         "Écart"
+        ],
+        "lignes": [
+         [
+          "EAU DE JAVEL EN POUDRE",
+          "Flacon",
+          "10",
+          "10",
+          ""
+         ],
+         [
+          "ABAISSE LANGUE",
+          "Unité",
+          "40",
+          "44",
+          "4"
+         ],
+         [
+          "ARTICLE HORS CATALOGUE",
+          "Unité",
+          "1",
+          "1",
+          ""
+         ]
+        ],
+        "pied": []
+       }
+      },
+      {
+       "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+      }
+     ],
+     "signatures": [
+      {
+       "role": "Le Magasinier",
+       "nom": "MAMAN Zoukanéri"
+      },
+      {
+       "role": "La Directrice de l’Administration et des Finances",
+       "nom": "TAKI Alimatou"
+      },
+      {
+       "role": "Le représentant du fournisseur",
+       "nom": "Livreur SoBAPS"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "consommables : représentant du fournisseur absent -> formulaire en erreur, rien d'écrit",
+   "nature": "consommables",
+   "entree": {
+    "nature": "consommables",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "reserves": "",
+     "representantFournisseur": "",
+     "livraisonRef": "LV-T02"
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-CON-2027-0001",
+     "PV-CON-2026-0008",
+     "PV-CON-2026-0007",
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T02 — NATI Fournitures",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": null,
+     "livraisonRef": "LV-T02"
+    }
+   },
+   "sortie": {
+    "pv": null,
+    "nbNouveaux": 0,
+    "messages": [],
+    "impression": null
+   }
+  },
+  {
+   "nom": "réactifs : chaîne du froid respectée, seules les lignes réactif / conso_labo sont reprises",
+   "nature": "reactifs",
+   "entree": {
+    "nature": "reactifs",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "reserves": "",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T01",
+     "chaineFroid": true
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-CON-2027-0001",
+     "PV-CON-2026-0008",
+     "PV-CON-2026-0007",
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "chaineFroid",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T03 — LABOTECH Réactifs",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": true,
+     "livraisonRef": "LV-T03"
+    }
+   },
+   "sortie": {
+    "pv": {
+     "statut": "actif",
+     "reference": "PV-REA-2026-0007",
+     "nature": "reactifs",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T01",
+     "commandeRef": "BC-TEST-01",
+     "fournisseurNom": "SoBAPS SA",
+     "lignes": [
+      {
+       "produit": "GLYCEMIE CAPILLAIRE",
+       "unite": "Unité",
+       "commandee": 20,
+       "livree": 13,
+       "ecart": -7
+      },
+      {
+       "produit": "ECOUVILLON",
+       "unite": "Unité",
+       "commandee": 30,
+       "livree": 30,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": true,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS"
+    },
+    "nbNouveaux": 1,
+    "messages": [
+     {
+      "message": "PV PV-REA-2026-0007 établi.",
+      "type": "success",
+      "detail": "Conforme"
+     }
+    ],
+    "impression": {
+     "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+     "sousTitre": "Réactifs et consommables de laboratoire — PV-REA-2026-0007",
+     "cartouche": [
+      [
+       "N° PV",
+       "PV-REA-2026-0007"
+      ],
+      [
+       "Date",
+       "30/10/2026"
+      ],
+      [
+       "Bon de livraison",
+       "LV-T01"
+      ],
+      [
+       "Commande",
+       "BC-TEST-01"
+      ],
+      [
+       "Fournisseur",
+       "SoBAPS SA"
+      ],
+      [
+       "Conclusion",
+       "Conforme"
+      ]
+     ],
+     "contenu": [
+      {
+       "table": {
+        "entetes": [
+         "Article",
+         "Unité",
+         "Qté commandée",
+         "Qté livrée",
+         "Écart"
+        ],
+        "lignes": [
+         [
+          "GLYCEMIE CAPILLAIRE",
+          "Unité",
+          "20",
+          "13",
+          "-7"
+         ],
+         [
+          "ECOUVILLON",
+          "Unité",
+          "30",
+          "30",
+          ""
+         ]
+        ],
+        "pied": []
+       }
+      },
+      {
+       "texte": "Chaîne du froid à l’arrivée : respectée."
+      },
+      {
+       "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+      }
+     ],
+     "signatures": [
+      {
+       "role": "Le Magasinier",
+       "nom": "MAMAN Zoukanéri"
+      },
+      {
+       "role": "La Directrice de l’Administration et des Finances",
+       "nom": "TAKI Alimatou"
+      },
+      {
+       "role": "Le représentant du fournisseur",
+       "nom": "Livreur SoBAPS"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "réactifs : chaîne du froid ROMPUE mais conclusion « Conforme » -> acceptée (aucun couplage)",
+   "nature": "reactifs",
+   "entree": {
+    "nature": "reactifs",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "reserves": "",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T03",
+     "chaineFroid": false
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-REA-2026-0007",
+     "PV-CON-2027-0001",
+     "PV-CON-2026-0008",
+     "PV-CON-2026-0007",
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "chaineFroid",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T03 — LABOTECH Réactifs",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": true,
+     "livraisonRef": "LV-T03"
+    }
+   },
+   "sortie": {
+    "pv": {
+     "statut": "actif",
+     "reference": "PV-REA-2026-0008",
+     "nature": "reactifs",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T03",
+     "commandeRef": "BC-TEST-03",
+     "fournisseurNom": "LABOTECH Réactifs",
+     "lignes": [
+      {
+       "produit": "GLYCEMIE CAPILLAIRE",
+       "unite": "Unité",
+       "commandee": 12,
+       "livree": 12,
+       "ecart": 0
+      },
+      {
+       "produit": "ECOUVILLON",
+       "unite": "Unité",
+       "commandee": 6,
+       "livree": 6,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": false,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS"
+    },
+    "nbNouveaux": 1,
+    "messages": [
+     {
+      "message": "PV PV-REA-2026-0008 établi.",
+      "type": "success",
+      "detail": "Conforme"
+     }
+    ],
+    "impression": {
+     "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+     "sousTitre": "Réactifs et consommables de laboratoire — PV-REA-2026-0008",
+     "cartouche": [
+      [
+       "N° PV",
+       "PV-REA-2026-0008"
+      ],
+      [
+       "Date",
+       "30/10/2026"
+      ],
+      [
+       "Bon de livraison",
+       "LV-T03"
+      ],
+      [
+       "Commande",
+       "BC-TEST-03"
+      ],
+      [
+       "Fournisseur",
+       "LABOTECH Réactifs"
+      ],
+      [
+       "Conclusion",
+       "Conforme"
+      ]
+     ],
+     "contenu": [
+      {
+       "table": {
+        "entetes": [
+         "Article",
+         "Unité",
+         "Qté commandée",
+         "Qté livrée",
+         "Écart"
+        ],
+        "lignes": [
+         [
+          "GLYCEMIE CAPILLAIRE",
+          "Unité",
+          "12",
+          "12",
+          ""
+         ],
+         [
+          "ECOUVILLON",
+          "Unité",
+          "6",
+          "6",
+          ""
+         ]
+        ],
+        "pied": []
+       }
+      },
+      {
+       "texte": "Chaîne du froid à l’arrivée : ROMPUE — réserve majeure."
+      },
+      {
+       "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+      }
+     ],
+     "signatures": [
+      {
+       "role": "Le Magasinier",
+       "nom": "MAMAN Zoukanéri"
+      },
+      {
+       "role": "La Directrice de l’Administration et des Finances",
+       "nom": "TAKI Alimatou"
+      },
+      {
+       "role": "Le représentant du fournisseur",
+       "nom": "Livreur SoBAPS"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "réactifs : chaîne rompue, non conforme avec réserves",
+   "nature": "reactifs",
+   "entree": {
+    "nature": "reactifs",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Non conforme",
+     "reserves": "Réactifs arrivés à 14 °C.",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T03",
+     "chaineFroid": false
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-REA-2026-0008",
+     "PV-REA-2026-0007",
+     "PV-CON-2027-0001",
+     "PV-CON-2026-0008",
+     "PV-CON-2026-0007",
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "chaineFroid",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T03 — LABOTECH Réactifs",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": true,
+     "livraisonRef": "LV-T03"
+    }
+   },
+   "sortie": {
+    "pv": {
+     "statut": "actif",
+     "reference": "PV-REA-2026-0009",
+     "nature": "reactifs",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T03",
+     "commandeRef": "BC-TEST-03",
+     "fournisseurNom": "LABOTECH Réactifs",
+     "lignes": [
+      {
+       "produit": "GLYCEMIE CAPILLAIRE",
+       "unite": "Unité",
+       "commandee": 12,
+       "livree": 12,
+       "ecart": 0
+      },
+      {
+       "produit": "ECOUVILLON",
+       "unite": "Unité",
+       "commandee": 6,
+       "livree": 6,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": false,
+     "conclusion": "Non conforme",
+     "reserves": "Réactifs arrivés à 14 °C.",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS"
+    },
+    "nbNouveaux": 1,
+    "messages": [
+     {
+      "message": "PV PV-REA-2026-0009 établi.",
+      "type": "success",
+      "detail": "Non conforme"
+     }
+    ],
+    "impression": {
+     "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+     "sousTitre": "Réactifs et consommables de laboratoire — PV-REA-2026-0009",
+     "cartouche": [
+      [
+       "N° PV",
+       "PV-REA-2026-0009"
+      ],
+      [
+       "Date",
+       "30/10/2026"
+      ],
+      [
+       "Bon de livraison",
+       "LV-T03"
+      ],
+      [
+       "Commande",
+       "BC-TEST-03"
+      ],
+      [
+       "Fournisseur",
+       "LABOTECH Réactifs"
+      ],
+      [
+       "Conclusion",
+       "Non conforme"
+      ]
+     ],
+     "contenu": [
+      {
+       "table": {
+        "entetes": [
+         "Article",
+         "Unité",
+         "Qté commandée",
+         "Qté livrée",
+         "Écart"
+        ],
+        "lignes": [
+         [
+          "GLYCEMIE CAPILLAIRE",
+          "Unité",
+          "12",
+          "12",
+          ""
+         ],
+         [
+          "ECOUVILLON",
+          "Unité",
+          "6",
+          "6",
+          ""
+         ]
+        ],
+        "pied": []
+       }
+      },
+      {
+       "texte": "Chaîne du froid à l’arrivée : ROMPUE — réserve majeure."
+      },
+      {
+       "texte": "Réserves : Réactifs arrivés à 14 °C."
+      },
+      {
+       "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+      }
+     ],
+     "signatures": [
+      {
+       "role": "Le Magasinier",
+       "nom": "MAMAN Zoukanéri"
+      },
+      {
+       "role": "La Directrice de l’Administration et des Finances",
+       "nom": "TAKI Alimatou"
+      },
+      {
+       "role": "Le représentant du fournisseur",
+       "nom": "Livreur SoBAPS"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "réactifs : « avec réserves » sans réserves -> refus nommé",
+   "nature": "reactifs",
+   "entree": {
+    "nature": "reactifs",
+    "saisie": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme avec réserves",
+     "reserves": "",
+     "representantFournisseur": "Livreur SoBAPS",
+     "livraisonRef": "LV-T03",
+     "chaineFroid": true
+    },
+    "livraisons": [
+     {
+      "id": "LIVxmvv9sb0b91gdo",
+      "statut": "actif",
+      "reference": "LV-T03",
+      "commandeRef": "BC-TEST-03",
+      "date": "2026-10-28",
+      "fournisseur": "LABOTECH RÉACTIFS",
+      "fournisseurNom": "LABOTECH Réactifs",
+      "lignes": [
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 12,
+        "prixUnitaire": 100,
+        "montant": 1200,
+        "quantiteLivree": 12
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 6,
+        "prixUnitaire": 100,
+        "montant": 600,
+        "quantiteLivree": 6
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bizt81",
+      "statut": "actif",
+      "reference": "LV-T02",
+      "commandeRef": "BC-TEST-02",
+      "date": "2026-10-25",
+      "fournisseur": "NATI FOURNITURES",
+      "fournisseurNom": "NATI Fournitures",
+      "lignes": [
+       {
+        "produitId": "PRD0084",
+        "produit": "EAU DE JAVEL EN POUDRE",
+        "unite": "Flacon",
+        "quantite": 10,
+        "prixUnitaire": 100,
+        "montant": 1000,
+        "quantiteLivree": 10,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 40,
+        "prixUnitaire": 100,
+        "montant": 4000,
+        "quantiteLivree": 44,
+        "ecart": 4
+       },
+       {
+        "produitId": "PRD-INCONNU",
+        "produit": "ARTICLE HORS CATALOGUE",
+        "unite": "Unité",
+        "quantite": 1,
+        "prixUnitaire": 1,
+        "montant": 1,
+        "quantiteLivree": 1,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     },
+     {
+      "id": "LIVxmvv9sb0bg1dmu",
+      "statut": "actif",
+      "reference": "LV-T01",
+      "commandeRef": "BC-TEST-01",
+      "date": "2026-10-20",
+      "fournisseur": "SOBAPS SA",
+      "fournisseurNom": "SoBAPS SA",
+      "lignes": [
+       {
+        "produitId": "PRD0001",
+        "produit": "ABAISSE LANGUE",
+        "unite": "Unité",
+        "quantite": 100,
+        "prixUnitaire": 100,
+        "montant": 10000,
+        "quantiteLivree": 100,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0077",
+        "produit": "GLYCEMIE CAPILLAIRE",
+        "unite": "Unité",
+        "quantite": 20,
+        "prixUnitaire": 100,
+        "montant": 2000,
+        "quantiteLivree": 13,
+        "ecart": -7
+       },
+       {
+        "produitId": "PRD0006",
+        "produit": "AIGUILLE DE PL",
+        "unite": "Unité",
+        "quantite": 50,
+        "prixUnitaire": 100,
+        "montant": 5000,
+        "quantiteLivree": 50,
+        "ecart": 0
+       },
+       {
+        "produitId": "PRD0060",
+        "produit": "ECOUVILLON",
+        "unite": "Unité",
+        "quantite": 30,
+        "prixUnitaire": 100,
+        "montant": 3000,
+        "quantiteLivree": 30,
+        "ecart": 0
+       }
+      ],
+      "montant": 0,
+      "statutReception": "conforme",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:31.163Z"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD0001",
+      "designation": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0006",
+      "designation": "AIGUILLE DE PL",
+      "unite": "Unité",
+      "categorie": "conso_medical"
+     },
+     {
+      "id": "PRD0084",
+      "designation": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "categorie": "entretien"
+     },
+     {
+      "id": "PRD0077",
+      "designation": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "categorie": "reactif"
+     },
+     {
+      "id": "PRD0060",
+      "designation": "ECOUVILLON",
+      "unite": "Unité",
+      "categorie": "conso_labo"
+     }
+    ],
+    "references": [
+     "PV-REA-2026-0009",
+     "PV-REA-2026-0008",
+     "PV-REA-2026-0007",
+     "PV-CON-2027-0001",
+     "PV-CON-2026-0008",
+     "PV-CON-2026-0007",
+     "PV-CON-2026-0006",
+     "PV-CON-2026-0005",
+     "PV-CON-2026-0001",
+     "PV-CON-2026-0002",
+     "PV-CON-2026-0003",
+     "PV-CON-2026-0004",
+     "PV-REA-2026-0005",
+     "PV-REA-2026-0006"
+    ],
+    "magasinier": null
+   },
+   "modale": {
+    "champs": [
+     "livraisonRef",
+     "date",
+     "chaineFroid",
+     "conclusion",
+     "reserves",
+     "representantFournisseur"
+    ],
+    "optionsLivraison": [
+     "LV-T03 — LABOTECH Réactifs",
+     "LV-T01 — SoBAPS SA"
+    ],
+    "valeursInitiales": {
+     "date": "2026-10-30",
+     "conclusion": "Conforme",
+     "chaineFroid": true,
+     "livraisonRef": "LV-T03"
+    }
+   },
+   "sortie": {
+    "pv": null,
+    "nbNouveaux": 0,
+    "messages": [
+     {
+      "message": "Une conclusion avec réserves ou non conforme EXIGE ses réserves écrites.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "impression": null
+   }
+  }
+ ],
+ "registres": [
+  {
+   "nature": "consommables",
+   "pvs": [
+    {
+     "id": "PVRxmvv9sbuqxfte4",
+     "statut": "actif",
+     "reference": "PV-CON-2027-0001",
+     "nature": "consommables",
+     "date": "2027-01-15",
+     "livraisonRef": "LV-T02",
+     "commandeRef": "BC-TEST-02",
+     "fournisseurNom": "NATI Fournitures",
+     "lignes": [
+      {
+       "produit": "EAU DE JAVEL EN POUDRE",
+       "unite": "Flacon",
+       "commandee": 10,
+       "livree": 10,
+       "ecart": 0
+      },
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 40,
+       "livree": 44,
+       "ecart": 4
+      },
+      {
+       "produit": "ARTICLE HORS CATALOGUE",
+       "unite": "Unité",
+       "commandee": 1,
+       "livree": 1,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:52:32.258Z"
+    },
+    {
+     "id": "PVRxmvv9sbr0amro6",
+     "statut": "actif",
+     "reference": "PV-CON-2026-0008",
+     "nature": "consommables",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T02",
+     "commandeRef": "BC-TEST-02",
+     "fournisseurNom": "NATI Fournitures",
+     "lignes": [
+      {
+       "produit": "EAU DE JAVEL EN POUDRE",
+       "unite": "Flacon",
+       "commandee": 10,
+       "livree": 10,
+       "ecart": 0
+      },
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 40,
+       "livree": 44,
+       "ecart": 4
+      },
+      {
+       "produit": "ARTICLE HORS CATALOGUE",
+       "unite": "Unité",
+       "commandee": 1,
+       "livree": 1,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "Emballage extérieur légèrement humide.",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:52:32.124Z"
+    },
+    {
+     "id": "PVRxmvv9sbmisxuas",
+     "statut": "actif",
+     "reference": "PV-CON-2026-0007",
+     "nature": "consommables",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T01",
+     "commandeRef": "BC-TEST-01",
+     "fournisseurNom": "SoBAPS SA",
+     "lignes": [
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 100,
+       "livree": 100,
+       "ecart": 0
+      },
+      {
+       "produit": "AIGUILLE DE PL",
+       "unite": "Unité",
+       "commandee": 50,
+       "livree": 50,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Non conforme",
+     "reserves": "Colis éventrés à la livraison.",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:52:31.962Z"
+    },
+    {
+     "id": "PVRxmvv9sb65vckrh",
+     "statut": "actif",
+     "reference": "PV-CON-2026-0006",
+     "nature": "consommables",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T01",
+     "commandeRef": "BC-TEST-01",
+     "fournisseurNom": "SoBAPS SA",
+     "lignes": [
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 100,
+       "livree": 100,
+       "ecart": 0
+      },
+      {
+       "produit": "AIGUILLE DE PL",
+       "unite": "Unité",
+       "commandee": 50,
+       "livree": 50,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:52:31.373Z"
+    },
+    {
+     "id": "PVRxmvv9sb2llpevv",
+     "statut": "actif",
+     "reference": "PV-CON-2026-0005",
+     "nature": "consommables",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T02",
+     "commandeRef": "BC-TEST-02",
+     "fournisseurNom": "NATI Fournitures",
+     "lignes": [
+      {
+       "produit": "EAU DE JAVEL EN POUDRE",
+       "unite": "Flacon",
+       "commandee": 10,
+       "livree": 10,
+       "ecart": 0
+      },
+      {
+       "produit": "ABAISSE LANGUE",
+       "unite": "Unité",
+       "commandee": 40,
+       "livree": 44,
+       "ecart": 4
+      },
+      {
+       "produit": "ARTICLE HORS CATALOGUE",
+       "unite": "Unité",
+       "commandee": 1,
+       "livree": 1,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:52:31.245Z"
+    },
+    {
+     "id": "PVR0001",
+     "statut": "actif",
+     "reference": "PV-CON-2026-0001",
+     "nature": "consommables",
+     "date": "2026-06-26",
+     "livraisonRef": "26LNA18031",
+     "commandeRef": "BC-2026-0001",
+     "fournisseurNom": "NATI Fournitures",
+     "lignes": [
+      {
+       "produit": "CACL 1 G INJ",
+       "unite": "Ampoule",
+       "commandee": 136,
+       "livree": 136,
+       "ecart": 0
+      },
+      {
+       "produit": "COTON CARDE",
+       "unite": "Unité",
+       "commandee": 41,
+       "livree": 34,
+       "ecart": -7
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme avec réserves",
+     "reserves": "Écarts de quantité constatés sur 1 ligne(s).",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur NATI Fournitures"
+    },
+    {
+     "id": "PVR0002",
+     "statut": "actif",
+     "reference": "PV-CON-2026-0002",
+     "nature": "consommables",
+     "date": "2026-05-14",
+     "livraisonRef": "26LNA32344",
+     "commandeRef": "BC-2026-0002",
+     "fournisseurNom": "NATI Fournitures",
+     "lignes": [
+      {
+       "produit": "MORPHINE 10 MG INJ",
+       "unite": "Ampoule",
+       "commandee": 72,
+       "livree": 72,
+       "ecart": 0
+      },
+      {
+       "produit": "SONDE VESICALE 2 VOIES N°18",
+       "unite": "Unité",
+       "commandee": 129,
+       "livree": 129,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur NATI Fournitures"
+    },
+    {
+     "id": "PVR0003",
+     "statut": "actif",
+     "reference": "PV-CON-2026-0003",
+     "nature": "consommables",
+     "date": "2026-08-01",
+     "livraisonRef": "26LNA57906",
+     "commandeRef": "BC-2026-0003",
+     "fournisseurNom": "MEDIPLUS Équipements",
+     "lignes": [
+      {
+       "produit": "SPASFON 40 MG INJ",
+       "unite": "Ampoule",
+       "commandee": 71,
+       "livree": 71,
+       "ecart": 0
+      },
+      {
+       "produit": "FILTRE ANTI BACTERIEN ENFANT",
+       "unite": "Unité",
+       "commandee": 190,
+       "livree": 190,
+       "ecart": 0
+      },
+      {
+       "produit": "FILTRE ANTI BACTERIEN ADULTE",
+       "unite": "Unité",
+       "commandee": 129,
+       "livree": 129,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur MEDIPLUS Équipements"
+    },
+    {
+     "id": "PVR0004",
+     "statut": "actif",
+     "reference": "PV-CON-2026-0004",
+     "nature": "consommables",
+     "date": "2026-03-31",
+     "livraisonRef": "26LNA37378",
+     "commandeRef": "BC-2026-0004",
+     "fournisseurNom": "MEDIPLUS Équipements",
+     "lignes": [
+      {
+       "produit": "CANNULE DE GUEDELE N°2",
+       "unite": "Unité",
+       "commandee": 283,
+       "livree": 283,
+       "ecart": 0
+      },
+      {
+       "produit": "PERFUSEUR",
+       "unite": "Unité",
+       "commandee": 11,
+       "livree": 11,
+       "ecart": 0
+      },
+      {
+       "produit": "SONDE D’ASPIRATION N°06",
+       "unite": "Unité",
+       "commandee": 160,
+       "livree": 160,
+       "ecart": 0
+      },
+      {
+       "produit": "AMINOPHYLLINE 250 MG INJ",
+       "unite": "Ampoule",
+       "commandee": 161,
+       "livree": 161,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": null,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur MEDIPLUS Équipements"
+    }
+   ],
+   "kpis": [
+    [
+     "PV établis",
+     "9"
+    ],
+    [
+     "Conformes",
+     "7"
+    ],
+    [
+     "Avec réserves",
+     "1"
+    ],
+    [
+     "Non conformes",
+     "1"
+    ]
+   ],
+   "entetes": [
+    "N° PV",
+    "Date",
+    "Bon de livraison",
+    "Fournisseur",
+    "Lignes",
+    "Conclusion",
+    "Magasinier",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "PV-CON-2027-0001",
+     "15/01/2027",
+     "LV-T02",
+     "NATI Fournitures",
+     "3",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-CON-2026-0008",
+     "30/10/2026",
+     "LV-T02",
+     "NATI Fournitures",
+     "3",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-CON-2026-0007",
+     "30/10/2026",
+     "LV-T01",
+     "SoBAPS SA",
+     "2",
+     "Non conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-CON-2026-0006",
+     "30/10/2026",
+     "LV-T01",
+     "SoBAPS SA",
+     "2",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-CON-2026-0005",
+     "30/10/2026",
+     "LV-T02",
+     "NATI Fournitures",
+     "3",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-CON-2026-0003",
+     "01/08/2026",
+     "26LNA57906",
+     "MEDIPLUS Équipements",
+     "3",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-CON-2026-0001",
+     "26/06/2026",
+     "26LNA18031",
+     "NATI Fournitures",
+     "2",
+     "Conforme avec réserves",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-CON-2026-0002",
+     "14/05/2026",
+     "26LNA32344",
+     "NATI Fournitures",
+     "2",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-CON-2026-0004",
+     "31/03/2026",
+     "26LNA37378",
+     "MEDIPLUS Équipements",
+     "4",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ]
+   ],
+   "pvOuvert": {
+    "id": "PVRxmvv9sbuqxfte4",
+    "statut": "actif",
+    "reference": "PV-CON-2027-0001",
+    "nature": "consommables",
+    "date": "2027-01-15",
+    "livraisonRef": "LV-T02",
+    "commandeRef": "BC-TEST-02",
+    "fournisseurNom": "NATI Fournitures",
+    "lignes": [
+     {
+      "produit": "EAU DE JAVEL EN POUDRE",
+      "unite": "Flacon",
+      "commandee": 10,
+      "livree": 10,
+      "ecart": 0
+     },
+     {
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "commandee": 40,
+      "livree": 44,
+      "ecart": 4
+     },
+     {
+      "produit": "ARTICLE HORS CATALOGUE",
+      "unite": "Unité",
+      "commandee": 1,
+      "livree": 1,
+      "ecart": 0
+     }
+    ],
+    "chaineFroid": null,
+    "conclusion": "Conforme",
+    "reserves": "",
+    "magasinier": "MAMAN Zoukanéri",
+    "representantFournisseur": "Livreur SoBAPS",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:52:32.258Z"
+   },
+   "tiroir": [
+    "PV PV-CON-2027-0001",
+    "LV-T02 — NATI Fournitures",
+    "Référence",
+    "PV-CON-2027-0001",
+    "Date",
+    "15/01/2027",
+    "Bon de livraison",
+    "LV-T02",
+    "Commande",
+    "BC-TEST-02",
+    "Fournisseur",
+    "NATI Fournitures",
+    "Conclusion",
+    "Conforme",
+    "Magasinier",
+    "MAMAN Zoukanéri",
+    "Représentant fournisseur",
+    "Livreur SoBAPS",
+    "Lignes contrôlées",
+    "Article",
+    "Commandée",
+    "Livrée",
+    "Écart",
+    "EAU DE JAVEL EN POUDRE",
+    "10",
+    "10",
+    "—",
+    "ABAISSE LANGUE",
+    "40",
+    "44",
+    "4",
+    "ARTICLE HORS CATALOGUE",
+    "1",
+    "1",
+    "—",
+    "Imprimer le PV"
+   ],
+   "impression": {
+    "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+    "sousTitre": "Consommables — PV-CON-2027-0001",
+    "cartouche": [
+     [
+      "N° PV",
+      "PV-CON-2027-0001"
+     ],
+     [
+      "Date",
+      "15/01/2027"
+     ],
+     [
+      "Bon de livraison",
+      "LV-T02"
+     ],
+     [
+      "Commande",
+      "BC-TEST-02"
+     ],
+     [
+      "Fournisseur",
+      "NATI Fournitures"
+     ],
+     [
+      "Conclusion",
+      "Conforme"
+     ]
+    ],
+    "contenu": [
+     {
+      "table": {
+       "entetes": [
+        "Article",
+        "Unité",
+        "Qté commandée",
+        "Qté livrée",
+        "Écart"
+       ],
+       "lignes": [
+        [
+         "EAU DE JAVEL EN POUDRE",
+         "Flacon",
+         "10",
+         "10",
+         ""
+        ],
+        [
+         "ABAISSE LANGUE",
+         "Unité",
+         "40",
+         "44",
+         "4"
+        ],
+        [
+         "ARTICLE HORS CATALOGUE",
+         "Unité",
+         "1",
+         "1",
+         ""
+        ]
+       ],
+       "pied": []
+      }
+     },
+     {
+      "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+     }
+    ],
+    "signatures": [
+     {
+      "role": "Le Magasinier",
+      "nom": "MAMAN Zoukanéri"
+     },
+     {
+      "role": "La Directrice de l’Administration et des Finances",
+      "nom": "TAKI Alimatou"
+     },
+     {
+      "role": "Le représentant du fournisseur",
+      "nom": "Livreur SoBAPS"
+     }
+    ]
+   }
+  },
+  {
+   "nature": "reactifs",
+   "pvs": [
+    {
+     "id": "PVRxmvv9scafwh1na",
+     "statut": "actif",
+     "reference": "PV-REA-2026-0009",
+     "nature": "reactifs",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T03",
+     "commandeRef": "BC-TEST-03",
+     "fournisseurNom": "LABOTECH Réactifs",
+     "lignes": [
+      {
+       "produit": "GLYCEMIE CAPILLAIRE",
+       "unite": "Unité",
+       "commandee": 12,
+       "livree": 12,
+       "ecart": 0
+      },
+      {
+       "produit": "ECOUVILLON",
+       "unite": "Unité",
+       "commandee": 6,
+       "livree": 6,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": false,
+     "conclusion": "Non conforme",
+     "reserves": "Réactifs arrivés à 14 °C.",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:52:32.823Z"
+    },
+    {
+     "id": "PVRxmvv9sc6ep0mbj",
+     "statut": "actif",
+     "reference": "PV-REA-2026-0008",
+     "nature": "reactifs",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T03",
+     "commandeRef": "BC-TEST-03",
+     "fournisseurNom": "LABOTECH Réactifs",
+     "lignes": [
+      {
+       "produit": "GLYCEMIE CAPILLAIRE",
+       "unite": "Unité",
+       "commandee": 12,
+       "livree": 12,
+       "ecart": 0
+      },
+      {
+       "produit": "ECOUVILLON",
+       "unite": "Unité",
+       "commandee": 6,
+       "livree": 6,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": false,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:52:32.678Z"
+    },
+    {
+     "id": "PVRxmvv9sc2x1eo4e",
+     "statut": "actif",
+     "reference": "PV-REA-2026-0007",
+     "nature": "reactifs",
+     "date": "2026-10-30",
+     "livraisonRef": "LV-T01",
+     "commandeRef": "BC-TEST-01",
+     "fournisseurNom": "SoBAPS SA",
+     "lignes": [
+      {
+       "produit": "GLYCEMIE CAPILLAIRE",
+       "unite": "Unité",
+       "commandee": 20,
+       "livree": 13,
+       "ecart": -7
+      },
+      {
+       "produit": "ECOUVILLON",
+       "unite": "Unité",
+       "commandee": 30,
+       "livree": 30,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": true,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur SoBAPS",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:52:32.553Z"
+    },
+    {
+     "id": "PVR0005",
+     "statut": "actif",
+     "reference": "PV-REA-2026-0005",
+     "nature": "reactifs",
+     "date": "2026-05-14",
+     "livraisonRef": "26LNA32344",
+     "commandeRef": "BC-2026-0002",
+     "fournisseurNom": "NATI Fournitures",
+     "lignes": [
+      {
+       "produit": "TUBE BOUCHON ROUGE EN VERRE",
+       "unite": "Unité",
+       "commandee": 293,
+       "livree": 293,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": true,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur NATI Fournitures"
+    },
+    {
+     "id": "PVR0006",
+     "statut": "actif",
+     "reference": "PV-REA-2026-0006",
+     "nature": "reactifs",
+     "date": "2026-08-01",
+     "livraisonRef": "26LNA57906",
+     "commandeRef": "BC-2026-0003",
+     "fournisseurNom": "MEDIPLUS Équipements",
+     "lignes": [
+      {
+       "produit": "GLYCEMIE CAPILLAIRE",
+       "unite": "Unité",
+       "commandee": 183,
+       "livree": 183,
+       "ecart": 0
+      }
+     ],
+     "chaineFroid": true,
+     "conclusion": "Conforme",
+     "reserves": "",
+     "magasinier": "MAMAN Zoukanéri",
+     "representantFournisseur": "Livreur MEDIPLUS Équipements"
+    }
+   ],
+   "kpis": [
+    [
+     "PV établis",
+     "5"
+    ],
+    [
+     "Conformes",
+     "4"
+    ],
+    [
+     "Avec réserves",
+     "0"
+    ],
+    [
+     "Non conformes",
+     "1"
+    ]
+   ],
+   "entetes": [
+    "N° PV",
+    "Date",
+    "Bon de livraison",
+    "Fournisseur",
+    "Lignes",
+    "Conclusion",
+    "Magasinier",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "PV-REA-2026-0009",
+     "30/10/2026",
+     "LV-T03",
+     "LABOTECH Réactifs",
+     "2",
+     "Non conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-REA-2026-0008",
+     "30/10/2026",
+     "LV-T03",
+     "LABOTECH Réactifs",
+     "2",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-REA-2026-0007",
+     "30/10/2026",
+     "LV-T01",
+     "SoBAPS SA",
+     "2",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-REA-2026-0006",
+     "01/08/2026",
+     "26LNA57906",
+     "MEDIPLUS Équipements",
+     "1",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ],
+    [
+     "PV-REA-2026-0005",
+     "14/05/2026",
+     "26LNA32344",
+     "NATI Fournitures",
+     "1",
+     "Conforme",
+     "MAMAN Zoukanéri",
+     ""
+    ]
+   ],
+   "pvOuvert": {
+    "id": "PVRxmvv9scafwh1na",
+    "statut": "actif",
+    "reference": "PV-REA-2026-0009",
+    "nature": "reactifs",
+    "date": "2026-10-30",
+    "livraisonRef": "LV-T03",
+    "commandeRef": "BC-TEST-03",
+    "fournisseurNom": "LABOTECH Réactifs",
+    "lignes": [
+     {
+      "produit": "GLYCEMIE CAPILLAIRE",
+      "unite": "Unité",
+      "commandee": 12,
+      "livree": 12,
+      "ecart": 0
+     },
+     {
+      "produit": "ECOUVILLON",
+      "unite": "Unité",
+      "commandee": 6,
+      "livree": 6,
+      "ecart": 0
+     }
+    ],
+    "chaineFroid": false,
+    "conclusion": "Non conforme",
+    "reserves": "Réactifs arrivés à 14 °C.",
+    "magasinier": "MAMAN Zoukanéri",
+    "representantFournisseur": "Livreur SoBAPS",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:52:32.823Z"
+   },
+   "tiroir": [
+    "PV PV-REA-2026-0009",
+    "LV-T03 — LABOTECH Réactifs",
+    "Référence",
+    "PV-REA-2026-0009",
+    "Date",
+    "30/10/2026",
+    "Bon de livraison",
+    "LV-T03",
+    "Commande",
+    "BC-TEST-03",
+    "Fournisseur",
+    "LABOTECH Réactifs",
+    "Chaîne du froid",
+    "ROMPUE",
+    "Conclusion",
+    "Non conforme",
+    "Magasinier",
+    "MAMAN Zoukanéri",
+    "Représentant fournisseur",
+    "Livreur SoBAPS",
+    "Lignes contrôlées",
+    "Article",
+    "Commandée",
+    "Livrée",
+    "Écart",
+    "GLYCEMIE CAPILLAIRE",
+    "12",
+    "12",
+    "—",
+    "ECOUVILLON",
+    "6",
+    "6",
+    "—",
+    "Réserves : Réactifs arrivés à 14 °C.",
+    "Imprimer le PV"
+   ],
+   "impression": {
+    "titre": "PROCÈS-VERBAL DE RÉCEPTION",
+    "sousTitre": "Réactifs et consommables de laboratoire — PV-REA-2026-0009",
+    "cartouche": [
+     [
+      "N° PV",
+      "PV-REA-2026-0009"
+     ],
+     [
+      "Date",
+      "30/10/2026"
+     ],
+     [
+      "Bon de livraison",
+      "LV-T03"
+     ],
+     [
+      "Commande",
+      "BC-TEST-03"
+     ],
+     [
+      "Fournisseur",
+      "LABOTECH Réactifs"
+     ],
+     [
+      "Conclusion",
+      "Non conforme"
+     ]
+    ],
+    "contenu": [
+     {
+      "table": {
+       "entetes": [
+        "Article",
+        "Unité",
+        "Qté commandée",
+        "Qté livrée",
+        "Écart"
+       ],
+       "lignes": [
+        [
+         "GLYCEMIE CAPILLAIRE",
+         "Unité",
+         "12",
+         "12",
+         ""
+        ],
+        [
+         "ECOUVILLON",
+         "Unité",
+         "6",
+         "6",
+         ""
+        ]
+       ],
+       "pied": []
+      }
+     },
+     {
+      "texte": "Chaîne du froid à l’arrivée : ROMPUE — réserve majeure."
+     },
+     {
+      "texte": "Réserves : Réactifs arrivés à 14 °C."
+     },
+     {
+      "texte": "Le présent procès-verbal est établi contradictoirement entre la clinique et le représentant du fournisseur."
+     }
+    ],
+    "signatures": [
+     {
+      "role": "Le Magasinier",
+      "nom": "MAMAN Zoukanéri"
+     },
+     {
+      "role": "La Directrice de l’Administration et des Finances",
+      "nom": "TAKI Alimatou"
+     },
+     {
+      "role": "Le représentant du fournisseur",
+      "nom": "Livreur SoBAPS"
+     }
+    ]
+   }
+  }
+ ],
+ "sansLivraison": [
+  {
+   "nature": "consommables",
+   "messages": [
+    {
+     "message": "Aucune livraison ne porte de consommables.",
+     "type": "warning",
+     "detail": null
+    }
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nature": "reactifs",
+   "messages": [
+    {
+     "message": "Aucune livraison ne porte de réactifs.",
+     "type": "warning",
+     "detail": null
+    }
+   ],
+   "modaleOuverte": false
+  }
+ ]
+}

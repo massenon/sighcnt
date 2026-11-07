@@ -1,0 +1,50 @@
+{
+ "id": "dash-admin",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Administrateur",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Administration système",
+ "description": "Supervision technique : comptes, sessions, journal d’audit, sauvegardes et intégrité des référentiels.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Administrateur"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Comptes utilisateurs",
+  "Actions journalisées",
+  "Tentatives infructueuses",
+  "Dernière sauvegarde"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Journal d’audit — dernières actions",
+  "Intégrité des référentiels",
+  "Répartition des actions par module"
+ ],
+ "tableaux": [
+  [
+   "Horodatage",
+   "Utilisateur",
+   "Action",
+   "Module",
+   "Entité",
+   "Poste"
+  ]
+ ],
+ "commandes": [
+  "Tout consulter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

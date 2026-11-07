@@ -1,0 +1,40 @@
+{
+ "id": "rls-journal",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Journal d’audit du relais",
+ "acces": "ouvert",
+ "titre": "Journal d’audit du relais",
+ "description": "Qui a fait quoi sur le panneau : connexions, révocations, codes, changements de paramètres.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Journal d’audit du relais"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Journal"
+ ],
+ "tableaux": [
+  [
+   "Quand",
+   "Acteur",
+   "Action",
+   "Détail"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 0
+}

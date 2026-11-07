@@ -1,0 +1,54 @@
+{
+ "id": "m13-repertoire-ambulances",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Répertoire des ambulances",
+ "acces": "ouvert",
+ "titre": "Répertoire des ambulances",
+ "description": "Numéros d’ambulance tenus à jour par l’accueil, avec appel rapide et disponibilité.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Répertoire des ambulances"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [
+  "3 fiche(s) sans numéro : Sapeurs-pompiers · Zone sanitaire de Natitingou · CHD Atacora — ambulance. Ces structures sont connues de la clinique mais leur numéro n’a pas été relevé. Inventer un numéro d’urgence serait la faute la plus grave de tout ce prototype — la fiche reste donc vide et le dit.",
+  "Les moyens disponibles remontent en tête, ceux de la clinique avant l’extérieur. Un numéro qu’on appelle pour s’entendre dire « nous sommes en course » a coûté deux minutes qu’une urgence n’a pas."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Moyens répertoriés",
+  "Disponibles maintenant",
+  "Numéros à renseigner",
+  "Non vérifiés depuis 90 j"
+ ],
+ "cartes": [
+  "Appel rapide"
+ ],
+ "tableaux": [
+  [
+   "Désignation",
+   "Type",
+   "Téléphone",
+   "Demander",
+   "Base",
+   "Disponibilité",
+   "Vérifié le",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Ajouter une ambulance"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

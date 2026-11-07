@@ -1,0 +1,63 @@
+{
+ "id": "m1-reference",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Fiches de référence",
+ "acces": "ouvert",
+ "titre": "Fiches de référence",
+ "description": "Patients orientés vers un autre centre, et patients adressés à la clinique.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Fiches de référence"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Fiche patient",
+  "Patients & Dossier médical"
+ ],
+ "regle": [
+  "Une fiche entrante ouvre un dossier local sans effacer la pièce d’origine : celle-ci est numérisée et conservée au dossier, avec sa couverture d’assurance. Le patient référé arrive avec ses documents — les jeter reviendrait à perdre tout ce que le centre d’origine a déjà fait."
+ ],
+ "onglets": [
+  "Toutes",
+  "Sortantes",
+  "Entrantes",
+  "Contre-référence attendue"
+ ],
+ "kpis": [
+  "Fiches de référence",
+  "Sortantes",
+  "Entrantes",
+  "Sans contre-référence"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N° de référence",
+   "Sens",
+   "Patient",
+   "Centre destinataire",
+   "Date",
+   "Agent référent",
+   "Contre-référence",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Toutes30",
+  "Sortantes15",
+  "Entrantes15",
+  "Contre-référence attendue9",
+  "Colonnes",
+  "Exporter",
+  "Nouvelle fiche de référence",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

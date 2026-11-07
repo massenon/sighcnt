@@ -13,7 +13,133 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       N = global.SIGH.nav, P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
+
+  /* ==========================================================================
+   * CONFIGURATION FISCALE VALIDÉE ET DATÉE (Direction, 06/11/2026)
+   * --------------------------------------------------------------------------
+   * Outils partagés par cfg-branding, cfg-fiscalite, cfg-comptabilite et
+   * cfg-entetes. Le MOTEUR vit au socle (SIGH.configurationFiscale, parcours.js) ;
+   * les écrans ne font que le montrer et l'appeler. Une commande interdite est
+   * ABSENTE (K.commande), jamais grisée ; le moteur refait le contrôle.
+   * ======================================================================== */
+  function CF() { return global.SIGH.configurationFiscale; }
+  function peutValiderConfiguration() {
+    var role = (S.session() || {}).role;
+    return CF().ROLES_VALIDATION.indexOf(role) >= 0 && K.droits('CFG').editer && !CF().posteFileul();
+  }
+  /** Le bandeau d'état : à valider, validé le D par P, ou modifié depuis la validation (RG-12). */
+  function bandeauEtatConfiguration(nom, libelle) {
+    var e = CF().etatConfigurationFiscale(nom);
+    var texte, tone, icone;
+    if (e.etat === 'valide') {
+      texte = '<strong>' + libelle + ' validée</strong> le ' + C.dateHeure(e.valideLe) + ' par ' + e.validePar + '.';
+      tone = 'success'; icone = 'check-circle-2';
+    } else if (e.etat === 'modifie_depuis') {
+      texte = '<strong>' + libelle + ' modifiée</strong> le ' + (e.modifieLe ? C.dateHeure(e.modifieLe) : '(date inconnue)') + ' par '
+        + (e.modifiePar || 'un agent non identifié') + ' depuis la validation du ' + C.dateHeure(e.validationAnterieure.valideLe)
+        + ' par ' + e.validationAnterieure.validePar + ' : <strong>à revalider</strong>.';
+      tone = 'warning'; icone = 'alert-triangle';
+    } else {
+      texte = '<strong>' + libelle + ' à valider</strong> (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, '
+        + 'puis <strong>Valider</strong>. La validation appartient à la Direction, à la DAF ou à l’administrateur système.';
+      tone = 'warning'; icone = 'clipboard-check';
+    }
+    if (CF().posteFileul()) texte += ' <strong>Configuration tenue par la mère : lecture seule</strong> sur ce poste.';
+    var n = K.note(texte, { tone: tone, icon: icone });
+    n.setAttribute('data-etat-configuration', e.etat);
+    return n;
+  }
+  /** Les versions à venir de l'identité : une bascule datée du mois prochain ne change pas ce que la caisse imprime ce matin. */
+  function noteVersionsAVenir() {
+    var a = C.iso(AUJ);
+    var futures = S.collection('identiteLegale').active().filter(function (v) { return v.debut && String(v.debut) > a; })
+      .sort(function (x, y) { return String(x.debut).localeCompare(String(y.debut)); });
+    if (!futures.length) return null;
+    return K.note('<strong>' + C.num(futures.length) + ' version(s) à venir</strong> : '
+      + futures.map(function (v) { return 'version ' + v.version + ' à partir du ' + C.dateFR(v.debut) + (v.motif ? ' (' + v.motif + ')' : ''); }).join(' ; ')
+      + '. Jusque-là, les pièces portent la version en force aujourd’hui.', { tone: 'info', icon: 'calendar-clock' });
+  }
+  /** Le bouton « Valider » : absent sans droit (K.commande) ET réservé aux rôles de validation. */
+  function boutonValiderConfiguration(nom, libelle, apres) {
+    if (!peutValiderConfiguration()) return null;
+    return K.commande('Valider ' + libelle, {
+      variant: 'primary', icon: 'shield-check', moduleCode: 'CFG',
+      onclick: function () {
+        U.confirm({
+          title: 'Valider ' + libelle,
+          message: 'La validation atteste que chaque mention a été vérifiée par la Direction, la DAF ou l’administrateur. '
+            + 'Elle est <strong>journalisée</strong> (RG-12) et ne modifie aucune valeur. Toute modification ultérieure créera une '
+            + '<strong>version datée</strong> et remettra la configuration à l’état « à revalider ».',
+          confirmLabel: 'Valider',
+        }).then(function (ok) {
+          if (!ok) return;
+          var r = nom === 'identite' ? CF().validerIdentite() : CF().validerObligations();
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          U.toast(libelle.charAt(0).toUpperCase() + libelle.slice(1) + ' validée.', { type: 'success',
+            detail: 'Le ' + C.dateHeure(r.valideLe) + ' par ' + r.validePar + '.' });
+          if (apres) apres();
+        });
+      },
+    });
+  }
+  /* --------------------------------------------------------------------------
+   * LA MODALE « PORTÉE DE LA MODIFICATION » (reprise de la grille des primes)
+   * --------------------------------------------------------------------------
+   * Date d'effet (défaut : aujourd'hui, refusée dans un exercice clos et avant
+   * la version en vigueur) et motif OBLIGATOIRES. Pour une obligation, elle
+   * annonce ce que la régénération fera des échéances de l'exercice. AUCUNE
+   * option rétroactive : une échéance payée ne bouge jamais, une pièce émise
+   * garde son en-tête.
+   * ----------------------------------------------------------------------- */
+  function modalePortee(o) {
+    var f = U.form([
+      { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, value: C.iso(AUJ),
+        help: 'À partir de ce jour, la nouvelle version s’applique ; avant, l’ancienne reste en vigueur. Refusée dans un exercice clos'
+          + (o.minimum ? ' et avant le ' + C.dateFR(o.minimum) : '') + '.' },
+      { name: 'motif', label: 'Motif (consigné au journal)', type: 'textarea', rows: 2, required: true, col: 'full',
+        placeholder: o.placeholderMotif || 'Texte, décision ou constat qui justifie la modification' },
+    ], {});
+    var impact = el('div');
+    function peindreImpact() {
+      C.clear(impact);
+      if (!o.impact) return;
+      var t = o.impact(f.controls.dateEffet.value || C.iso(AUJ));
+      if (t) impact.appendChild(K.note(t, { tone: 'info', icon: 'calendar-clock' }));
+    }
+    f.controls.dateEffet.addEventListener('change', peindreImpact);
+    f.controls.dateEffet.addEventListener('input', peindreImpact);
+    peindreImpact();
+    var corps = el('div.space-y-3');
+    corps.appendChild(el('div.flex.items-start.gap-3.rounded-lg.border.border-warning-200.bg-warning-50.p-3', null, [
+      el('span.shrink-0.text-warning-600', null, C.icon('alert-triangle', 'h-5 w-5')),
+      el('div.min-w-0', null, [
+        el('p.text-sm.font-semibold.text-warning-900', { text: 'Cette modification a une portée : elle est datée.' }),
+        el('p.mt-1.text-xs.text-warning-800', { text: o.explication }),
+      ]),
+    ]));
+    if (o.resume) corps.appendChild(o.resume);
+    corps.appendChild(f);
+    corps.appendChild(impact);
+    U.icons(corps);
+    var m = U.modal({
+      title: 'Portée de la modification', subtitle: o.sousTitre || null, size: 'lg', body: corps,
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn(o.libelleAppliquer || 'Appliquer', {
+          variant: 'primary', icon: 'check',
+          onclick: function () {
+            var v = f.collect();
+            if (!v) { U.toast('Date d’effet et motif sont obligatoires.', { type: 'error' }); return; }
+            var r = o.appliquer(v.dateEffet, String(v.motif).trim());
+            if (r && r.ok === false) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            m.close();
+          },
+        }),
+      ],
+    });
+    return m;
+  }
 
   /* ==========================================================================
    * ORGANISATION & ORGANIGRAMME
@@ -385,116 +511,169 @@
   /* ==========================================================================
    * IDENTITÉ & PAPIER À EN-TÊTE
    * ======================================================================== */
+  /* --------------------------------------------------------------------------
+   * CFG-BRANDING ÉCRIT VRAIMENT (E2270, 06/11/2026). « Enregistrer » ne faisait
+   * qu'un S.log et un toast : rien n'était persisté, rien n'était relu, et
+   * C.BRAND restait une constante de core.js. L'identité vit désormais dans
+   * la collection `identiteLegale`, par versions datées ; cet écran en écrit la
+   * part VISIBLE (dénomination, slogan, logo, adresse, téléphones, courriel).
+   * Les mentions FISCALES (forme, IFU, RCCM, autorisation, adresse fiscale,
+   * devise, TVA) se saisissent et se VALIDENT à l'écran « Paramètres fiscaux » :
+   * c'est la MÊME fiche, chaque écran ses champs.
+   * ----------------------------------------------------------------------- */
+  var CHAMPS_BRANDING = ['nom', 'sigle', 'slogan', 'logo', 'adresse', 'pays', 'telephones', 'telephoneRdv', 'email'];
+  function enregistrerIdentiteDepuis(ecran, champs, apres) {
+    if (CF().identiteExigeVersion()) {
+      modalePortee({
+        sousTitre: 'Identité légale (version ' + ((CF().identiteEnForce() || {}).version || 1) + ' en force)',
+        explication: 'L’identité légale a déjà été validée : la modification crée une NOUVELLE VERSION, datée. Les pièces émises '
+          + 'avant la date d’effet gardent l’en-tête sous lequel elles ont été imprimées ; la nouvelle version devra être revalidée.',
+        minimum: (CF().identiteEnForce() || {}).debut || null,
+        placeholderMotif: 'Changement de RCCM, nouvelle adresse, nouveau numéro…',
+        libelleAppliquer: 'Créer la version',
+        appliquer: function (dateEffet, motif) {
+          var r = CF().nouvelleVersionIdentite(champs, { dateEffet: dateEffet, motif: motif, origine: ecran });
+          if (!r.ok) return r;
+          U.toast('Version ' + r.version + ' de l’identité légale créée.', { type: 'success',
+            detail: (r.enForceAujourdhui ? 'En force dès aujourd’hui.' : 'Prend effet le ' + C.dateFR(dateEffet) + '.') + ' À revalider par la Direction, la DAF ou l’administrateur.' });
+          if (apres) apres();
+          return r;
+        },
+      });
+      return;
+    }
+    var r = CF().enregistrerIdentite(champs, { origine: ecran });
+    if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+    U.toast('Identité enregistrée (version ' + r.version + ').', { type: 'success',
+      detail: 'Tous les états édités reprennent ces mentions. À valider par la Direction, la DAF ou l’administrateur (écran Paramètres fiscaux).' });
+    if (apres) apres();
+  }
+
   global.SIGH.screen('cfg-branding', {
     title: 'Identité & papier à en-tête',
-    description: 'Paramétrage de l’identité visuelle et des mentions légales reprises sur tous les documents édités.',
-    regle: 'Ces paramètres alimentent <strong>automatiquement tous les états imprimables</strong> : facture, ordonnance, bulletin de paie, bon de sortie, état comptable. Aucune mention légale n’est saisie document par document.',
+    description: 'Paramétrage de l’identité visuelle et des coordonnées reprises sur tous les documents édités.',
+    regle: 'Ces paramètres alimentent <strong>automatiquement tous les états imprimables</strong> : facture, ordonnance, bulletin de paie, bon de sortie, état comptable. Aucune mention légale n’est saisie document par document. L’identité est une donnée de référence <strong>datée</strong> : après validation, toute modification crée une version avec sa date d’effet.',
     render: function (root) {
-      var host = el('div.grid.gap-4.lg\\:grid-cols-2');
-
-      var f = U.form([
-        { type: 'section', label: 'Dénomination' },
-        { name: 'nom', label: 'Dénomination sociale', required: true, col: 'full', value: C.BRAND.nom },
-        { name: 'sigle', label: 'Sigle', value: C.BRAND.sigle },
-        { name: 'forme', label: 'Forme juridique', value: C.BRAND.forme },
-        { name: 'slogan', label: 'Devise ou slogan', col: 'full', value: C.BRAND.slogan },
-
-        { type: 'section', label: 'Coordonnées' },
-        { name: 'adresse', label: 'Adresse géographique', col: 'full', value: C.BRAND.adresse },
-        { name: 'bp', label: 'Adresse postale', col: 'full', value: C.BRAND.bp },
-        { name: 'telephones', label: 'Téléphones', value: C.BRAND.telephones.join(' / ') },
-        { name: 'email', label: 'Adresse électronique', type: 'email', value: C.BRAND.email },
-
-        { type: 'section', label: 'Mentions légales' },
-        { name: 'ifu', label: 'IFU', required: true, value: C.BRAND.ifu },
-        { name: 'rccm', label: 'RCCM', required: true, value: C.BRAND.rccm },
-        { name: 'autorisation', label: 'N° d’autorisation d’ouverture', col: 'full', value: C.BRAND.autorisation },
-
-        { type: 'section', label: 'Options d’impression' },
-        { name: 'doubleLogo', label: 'Logo de part et d’autre de la dénomination', type: 'checkbox', value: true },
-        { name: 'piedPage', label: 'Pied de page normalisé (utilisateur, date, identifiant)', type: 'checkbox', value: true },
-        { name: 'filigrane', label: 'Filigrane par défaut', type: 'select', options: ['', 'Document officiel', 'Confidentiel'] },
-      ], {});
-
-      var gauche = el('div');
-      gauche.appendChild(U.card('Paramètres de l’identité', el('div', null, [
-        f,
-        el('div.mt-4.flex.flex-wrap.gap-2', null, [
-          K.btn('Enregistrer', {
-            variant: 'primary', icon: 'save',
-            onclick: function () {
-              var v = f.collect();
-              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-              S.log('Modification', 'CFG', 'BrandConfiguration', 'BRAND', null, v);
-              U.toast('Identité enregistrée.', {
-                type: 'success',
-                detail: 'Tous les états édités reprendront désormais ces mentions.',
-              });
-            },
-          }),
-          K.btn('Prévisualiser un état', {
-            icon: 'eye',
-            onclick: function () {
-              P.etat({
-                titre: 'Aperçu du papier à en-tête',
-                sousTitre: 'Modèle appliqué à tous les documents édités',
-                contenu: el('div.space-y-3', null, [
-                  el('p', { text: 'Ce document illustre le gabarit officiel appliqué automatiquement à l’ensemble des états produits par le système : factures normalisées, ordonnances, bulletins de paie, bons de commande et de sortie, résultats de laboratoire, états comptables et rapports de direction.' }),
-                  P.tableau([{ label: 'Mention', key: 'k' }, { label: 'Valeur', key: 'v' }], [
-                    { k: 'Dénomination', v: C.BRAND.nom },
-                    { k: 'Adresse postale', v: C.BRAND.bp },
-                    { k: 'Téléphones', v: C.BRAND.telephones.join(' / ') },
-                    { k: 'Adresse électronique', v: C.BRAND.email },
-                    { k: 'Autorisation d’ouverture', v: C.BRAND.autorisation },
-                    { k: 'IFU', v: C.BRAND.ifu },
-                    { k: 'RCCM', v: C.BRAND.rccm },
-                  ]),
-                ]),
-                signatures: [{ role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
-              });
-            },
-          }),
-        ]),
-      ])));
-      host.appendChild(gauche);
-
-      var droite = el('div.space-y-4');
-
-      /* Aperçu visuel de l'entête */
-      var apercu = el('div.rounded-lg.border.border-slate-300.bg-white.p-4');
-      var top = el('div.flex.items-center.justify-center.gap-4');
-      [1, 2].forEach(function () {
-        top.appendChild(el('img.h-12.w-12.object-contain', {
-          src: global.SIGH.app.base() + C.BRAND.logo, alt: 'CNT',
-          onerror: function () { this.style.visibility = 'hidden'; },
-        }));
-      });
-      var mid = el('div.text-center');
-      mid.appendChild(el('p.text-base.font-bold.text-navy-950', { text: 'CLINIQUE NASSIERA TOO' }));
-      mid.appendChild(el('p.text-\\[9px\\].text-slate-700', { text: C.BRAND.bp + ' TÉL. : ' + C.BRAND.telephones.join(' / ') }));
-      mid.appendChild(el('p.text-\\[8px\\].text-slate-700', { text: 'AUTORISATION D’OUVERTURE ' + C.BRAND.autorisation }));
-      mid.appendChild(el('p.text-\\[8px\\].font-semibold.text-slate-800', { text: 'IFU : ' + C.BRAND.ifu + '   RCCM : ' + C.BRAND.rccm }));
-      mid.appendChild(el('p.text-\\[8px\\].text-slate-700', { text: 'E-mail : ' + C.BRAND.email }));
-      top.insertBefore(mid, top.childNodes[1]);
-      apercu.appendChild(top);
-      apercu.appendChild(el('div.mt-2.border-b-2.border-navy-900'));
-      apercu.appendChild(el('p.mt-4.text-center.text-xs.italic.text-slate-400', { text: '— corps du document —' }));
-      apercu.appendChild(el('div.mt-4.border-t.border-slate-300.pt-2', null,
-        el('p.text-\\[8px\\].text-slate-500', {
-          text: C.BRAND.nom + ' — ' + C.BRAND.rccm + ' — IFU ' + C.BRAND.ifu
-            + ' · Document généré par ' + S.currentUser() + ' le ' + C.dateHeure(AUJ) + ' · Réf. CNT-XXXXXXXX-0001',
-        })));
-      droite.appendChild(U.card('Aperçu du papier à en-tête', apercu));
-
-      var carteRessources = el('div');
-      droite.appendChild(carteRessources);
-      dessinerRessources(carteRessources);
-
-      droite.appendChild(K.note('Les états produits par le prototype reprennent déjà fidèlement l’entête réelle relevée sur les documents de la clinique.', { tone: 'success', icon: 'check-circle-2' }));
-
-      host.appendChild(droite);
-      root.appendChild(host);
+      peindre();
       return null;
+
+      function peindre() {
+        C.clear(root);
+        var I = CF().identiteEnForce() || C.BRAND;
+        var host = el('div.space-y-4');
+        host.appendChild(bandeauEtatConfiguration('identite', 'identité légale'));
+        var futures = noteVersionsAVenir();
+        if (futures) host.appendChild(futures);
+        var grille = el('div.grid.gap-4.lg\\:grid-cols-2');
+        host.appendChild(grille);
+
+        var f = U.form([
+          { type: 'section', label: 'Dénomination' },
+          { name: 'nom', label: 'Dénomination sociale', required: true, col: 'full', value: I.nom },
+          { name: 'sigle', label: 'Sigle', value: I.sigle },
+          { name: 'logo', label: 'Logo (chemin de la ressource)', value: I.logo, help: 'Un chemin de ressource, pas un fichier : le fichier se dépose dans « Ressources graphiques ».' },
+          { name: 'slogan', label: 'Devise ou slogan', col: 'full', value: I.slogan },
+
+          { type: 'section', label: 'Coordonnées' },
+          { name: 'adresse', label: 'Adresse géographique', col: 'full', value: I.adresse },
+          { name: 'pays', label: 'Pays', value: I.pays },
+          { name: 'email', label: 'Adresse électronique', type: 'email', value: I.email },
+          { name: 'telephones', label: 'Téléphones (séparés par « / »)', required: true, value: (I.telephones || []).join(' / ') },
+          { name: 'telephoneRdv', label: 'Ligne rendez-vous', value: I.telephoneRdv },
+
+          { type: 'section', label: 'Options d’impression (réglages d’exploitation, lus par le moteur d’impression)' },
+          { name: 'doubleLogo', label: 'Logo de part et d’autre de la dénomination', type: 'checkbox', value: S.reglage('impression.doubleLogo', true) !== false },
+          { name: 'filigrane', label: 'Filigrane par défaut', type: 'select', options: ['', 'Document officiel', 'Confidentiel'], value: S.reglage('impression.filigrane', '') },
+        ], {});
+
+        var gauche = el('div.space-y-4');
+        gauche.appendChild(U.card('Paramètres de l’identité (part visible)', el('div', null, [
+          f,
+          el('div.mt-4.flex.flex-wrap.gap-2', null, [
+            K.commande('Enregistrer', {
+              variant: 'primary', icon: 'save', moduleCode: 'CFG',
+              onclick: function () {
+                var v = f.collect();
+                if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+                /* Les options d'impression ne sont pas des champs de l'identité : des réglages, lus par print.js. */
+                S.setReglage('impression.doubleLogo', !!v.doubleLogo);
+                S.setReglage('impression.filigrane', v.filigrane || '');
+                var champs = {};
+                CHAMPS_BRANDING.forEach(function (k) { champs[k] = v[k]; });
+                enregistrerIdentiteDepuis('cfg-branding', champs, peindre);
+              },
+            }),
+            K.btn('Prévisualiser un état', {
+              icon: 'eye',
+              onclick: function () {
+                var J = CF().identiteEnForce() || C.BRAND;
+                P.etat({
+                  titre: 'Aperçu du papier à en-tête',
+                  sousTitre: 'Modèle appliqué à tous les documents édités',
+                  contenu: el('div.space-y-3', null, [
+                    el('p', { text: 'Ce document illustre le gabarit officiel appliqué automatiquement à l’ensemble des états produits par le système : factures normalisées, ordonnances, bulletins de paie, bons de commande et de sortie, résultats de laboratoire, états comptables et rapports de direction.' }),
+                    P.tableau([{ label: 'Mention', key: 'k' }, { label: 'Valeur', key: 'v' }], [
+                      { k: 'Dénomination', v: J.nom },
+                      { k: 'Adresse postale', v: J.bp },
+                      { k: 'Téléphones', v: (J.telephones || []).join(' / ') },
+                      { k: 'Adresse électronique', v: J.email },
+                      { k: 'Autorisation d’ouverture', v: J.autorisation },
+                      { k: 'IFU', v: J.ifu },
+                      { k: 'RCCM', v: J.rccm },
+                    ]),
+                  ]),
+                  signatures: [{ role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
+                });
+              },
+            }),
+          ]),
+        ])));
+        gauche.appendChild(K.note('Les <strong>mentions fiscales</strong> (forme juridique, IFU, RCCM, autorisation d’ouverture, adresse fiscale, devise, régime de TVA) '
+          + 'se saisissent et se <strong>valident</strong> à l’écran Paramètres fiscaux : c’est la même fiche, chaque écran y écrit ses champs.',
+        { tone: 'info', icon: 'landmark' }));
+        gauche.appendChild(el('div', null, K.lien('cfg-fiscalite', 'Paramètres fiscaux (IFU / RCCM) et validation', { size: 'sm', icon: 'arrow-right' })));
+        grille.appendChild(gauche);
+
+        var droite = el('div.space-y-4');
+
+        /* Aperçu visuel de l'entête, lu sur la version en force */
+        var apercu = el('div.rounded-lg.border.border-slate-300.bg-white.p-4');
+        var top = el('div.flex.items-center.justify-center.gap-4');
+        var logos = S.reglage('impression.doubleLogo', true) !== false ? [1, 2] : [1];
+        logos.forEach(function () {
+          top.appendChild(el('img.h-12.w-12.object-contain', {
+            src: global.SIGH.app.base() + I.logo, alt: 'CNT',
+            onerror: function () { this.style.visibility = 'hidden'; },
+          }));
+        });
+        var mid = el('div.text-center');
+        mid.appendChild(el('p.text-base.font-bold.text-navy-950', { text: 'CLINIQUE NASSIERA TOO' }));
+        mid.appendChild(el('p.text-\\[9px\\].text-slate-700', { text: I.bp + ' TÉL. : ' + (I.telephones || []).join(' / ') }));
+        mid.appendChild(el('p.text-\\[8px\\].text-slate-700', { text: 'AUTORISATION D’OUVERTURE ' + I.autorisation }));
+        mid.appendChild(el('p.text-\\[8px\\].font-semibold.text-slate-800', { text: 'IFU : ' + I.ifu + '   RCCM : ' + I.rccm }));
+        mid.appendChild(el('p.text-\\[8px\\].text-slate-700', { text: 'E-mail : ' + I.email }));
+        mid.appendChild(el('p.text-\\[8px\\].font-semibold.italic.text-navy-800', { text: I.slogan }));
+        top.insertBefore(mid, top.childNodes[1] || null);
+        apercu.appendChild(top);
+        apercu.appendChild(el('div.mt-2.border-b-2.border-navy-900'));
+        apercu.appendChild(el('p.mt-4.text-center.text-xs.italic.text-slate-400', { text: '(corps du document)' }));
+        apercu.appendChild(el('div.mt-4.border-t.border-slate-300.pt-2', null,
+          el('p.text-\\[8px\\].text-slate-500', {
+            text: I.nom + ' — ' + I.rccm + ' — IFU ' + I.ifu
+              + ' · Document généré par ' + S.currentUser() + ' le ' + C.dateHeure(AUJ) + ' · Réf. CNT-XXXXXXXX-0001',
+          })));
+        droite.appendChild(U.card('Aperçu du papier à en-tête (version ' + (I.version || 1) + ' en force)', apercu));
+
+        var carteRessources = el('div');
+        droite.appendChild(carteRessources);
+        dessinerRessources(carteRessources);
+
+        droite.appendChild(K.note('Le pied de page normalisé (dénomination, RCCM, IFU, utilisateur, date, identifiant du document) est <strong>obligatoire</strong> sur tout état (RG-12) : il ne se désactive pas.', { tone: 'info', icon: 'file-check-2' }));
+
+        grille.appendChild(droite);
+        root.appendChild(host);
+        U.icons(root);
+      }
     },
   });
 
@@ -635,7 +814,8 @@
         f,
         el('div', null, [el('label.label', { text: 'Fichier image *' }), input, apercu]),
         K.note('Le fichier est conservé <strong>dans le poste</strong>, avec le reste des données : '
-          + 'aucune requête réseau, conformément à la contrainte hors ligne de la clinique.', { tone: 'info' }),
+          + 'aucune requête réseau, conformément à la contrainte hors ligne de la clinique. '
+          + '<strong>Les états imprimés ne le reprennent pas encore</strong> : ils gardent l’en-tête officiel.', { tone: 'info' }),
       ]);
 
       var m = U.modal({
@@ -655,7 +835,7 @@
               m.close();
               dessinerRessources(hote);
               U.toast('Ressource « ' + v.libelle + ' » enregistrée.', {
-                type: 'success', detail: 'Elle alimentera les états imprimables.',
+                type: 'success', detail: 'Elle est conservée au poste. L’impression ne la reprend pas encore : les états gardent le logo de l’en-tête officiel.',
               });
             },
           }),
@@ -1354,7 +1534,8 @@
         }).then(function (ok) {
           if (!ok) return;
           var avant = methodeCourante();
-          S.storage.set(CLE_VALO, o.id);
+          /* E880 : une ancienne ligne `S.storage.set(CLE_VALO, …)` lisait une constante que personne ne déclare — ReferenceError dans la
+             promesse, donc ni bascule, ni journal, ni message : le paramètre de valorisation ne s'appliquait JAMAIS. La bascule vit au socle. */
           S.setValorisationSortie(o.id);
           S.log('Paramétrage', 'M6', 'Valorisation des sorties', o.id, { methode: avant }, { methode: o.id });
           dessinerValorisation();
@@ -1508,22 +1689,98 @@
   /* ==========================================================================
    * PARAMÈTRES FISCAUX
    * ======================================================================== */
+  /* --------------------------------------------------------------------------
+   * LA PART FISCALE DE L'IDENTITÉ SE SAISIT ET SE VALIDE ICI (06/11/2026). Le
+   * formulaire écrit la MÊME fiche que cfg-branding (ses champs à lui : forme,
+   * IFU, RCCM, autorisation, adresse fiscale, devise, régime de TVA). Avant la
+   * première validation, « Enregistrer » corrige la version en force ; après,
+   * il ouvre la modale de portée (date d'effet, motif) et crée une version.
+   * « Valider » est réservé à la Direction, à la DAF et à l'administrateur.
+   * ----------------------------------------------------------------------- */
+  var CHAMPS_FISCAUX = ['forme', 'ifu', 'rccm', 'autorisation', 'bp', 'devise', 'codeDevise', 'regimeTva'];
+  function tableVersionsIdentite() {
+    var versions = S.collection('identiteLegale').active().slice()
+      .sort(function (a, b) { return (b.version || 0) - (a.version || 0); });
+    var a = C.iso(AUJ);
+    return K.miniTable([
+      { label: 'Version', render: function (v) { return el('span.font-mono.text-xs.font-semibold', { text: 'v' + v.version }); } },
+      { label: 'En force', render: function (v) {
+        var enForce = (!v.debut || String(v.debut) <= a) && (!v.fin || String(v.fin) >= a);
+        return enForce ? U.badge('Aujourd’hui', 'success') : (v.debut && String(v.debut) > a ? U.badge('À venir', 'info') : U.badge('Antérieure', 'neutral'));
+      } },
+      { label: 'Du', render: function (v) { return v.debut ? C.dateFR(v.debut) : 'ouverture du dossier'; } },
+      { label: 'Au', render: function (v) { return v.fin ? C.dateFR(v.fin) : 'en force'; } },
+      { label: 'IFU / RCCM', render: function (v) { return v.ifu + ' / ' + v.rccm; } },
+      { label: 'Validée', render: function (v) { return v.valideLe ? C.dateHeure(v.valideLe) + ' par ' + v.validePar : U.badge('À valider', 'warning'); } },
+      { label: 'Motif', render: function (v) { return v.motif || (v.version === 1 ? 'semence (arbitrage du 31/08/2026)' : '—'); } },
+    ], versions, { empty: 'Aucune version : réinitialiser le jeu de démonstration.' });
+  }
+  /** La table des obligations déclaratives est DÉRIVÉE des obligations mensuelles en vigueur (E2273 : elle disait « CNSS le 15 » contre le calendrier). */
+  function tableObligationsDeclaratives() {
+    var mensuelles = D.obligationsALaDate(AUJ).filter(function (o) { return o.periodicite === 'mensuelle'; });
+    var lignes = mensuelles.map(function (o) {
+      return { d: o.libelle + ' (' + o.code + ')', p: 'Mensuelle', e: 'le ' + o.jour + ' du mois suivant', ecran: 'm11-cotisations' };
+    }).concat([
+      { d: 'Transmission des factures normalisées', p: 'Continue', e: 'À l’émission', ecran: 'mecef-transmission' },
+      { d: 'États financiers de synthèse', p: 'Annuelle', e: 'Clôture de l’exercice, dépôt au 30 avril', ecran: 'm12-etats-financiers' },
+    ]);
+    return K.miniTable([
+      { label: 'Déclaration', key: 'd' },
+      { label: 'Périodicité', key: 'p' },
+      { label: 'Échéance', key: 'e' },
+      { label: 'Écran producteur', render: function (x) { return el('a.btn.btn-secondary.btn-sm', { href: global.SIGH.app.href(x.ecran) }, 'Éditer'); } },
+    ], lignes);
+  }
+
   global.SIGH.screen('cfg-fiscalite', {
     title: 'Paramètres fiscaux (IFU / RCCM)',
-    description: 'Identifiants fiscaux, numérotation des documents et paramètres de la facturation normalisée.',
+    description: 'Identité fiscale de l’établissement (vérifiée et validée), numérotation des documents et calendrier des obligations.',
+    regle: 'L’identité légale se <strong>vérifie et se valide</strong> à la première configuration, puis se modifie par <strong>versions datées</strong> : '
+      + 'une pièce émise garde l’en-tête de sa date. La validation appartient à la Direction, à la DAF ou à l’administrateur système ; '
+      + 'elle est journalisée (RG-12) et ne modifie aucune valeur.',
     render: function (root) {
+      peindre();
+      return null;
+
+      function peindre() {
+      C.clear(root);
       var host = el('div.space-y-4');
-      host.appendChild(K.note('Ces paramètres sont partagés avec le module <strong>MECeF</strong>. Toute modification s’applique immédiatement aux prochains documents émis.', { tone: 'info' }));
-      host.appendChild(U.card('Identification fiscale de l’établissement', U.descList([
-        ['Dénomination sociale', C.BRAND.nom],
-        ['Forme juridique', C.BRAND.forme],
-        ['IFU', el('span.font-mono.text-base.font-semibold.text-navy-900', { text: C.BRAND.ifu })],
-        ['RCCM', el('span.font-mono.text-base.font-semibold.text-navy-900', { text: C.BRAND.rccm })],
-        ['Autorisation d’ouverture', C.BRAND.autorisation],
-        ['Adresse fiscale', C.BRAND.bp],
-        ['Devise', C.BRAND.devise + ' (' + C.BRAND.codeDevise + ')'],
-        ['Régime de TVA', 'Taux normal 18 %'],
-      ], 'grid-cols-1 sm:grid-cols-2'), [K.lien('mecef-config', 'Configuration MECeF', { size: 'sm', icon: 'arrow-right' })]));
+      var I = CF().identiteEnForce() || C.BRAND;
+      host.appendChild(bandeauEtatConfiguration('identite', 'identité légale'));
+      var futures = noteVersionsAVenir();
+      if (futures) host.appendChild(futures);
+      host.appendChild(K.note('Ces paramètres sont partagés avec le module <strong>MECeF</strong>. Une modification s’applique aux documents émis '
+        + 'à partir de sa <strong>date d’effet</strong> ; les pièces antérieures gardent leur en-tête.', { tone: 'info' }));
+
+      var f = U.form([
+        { type: 'section', label: 'Identification fiscale de l’établissement (version ' + (I.version || 1) + ' en force)' },
+        { name: 'nom', label: 'Dénomination sociale', col: 'full', value: I.nom, readonly: true, help: 'Se modifie à l’écran Identité & papier à en-tête.' },
+        { name: 'forme', label: 'Forme juridique', col: 'full', value: I.forme },
+        { name: 'ifu', label: 'IFU (13 chiffres)', required: true, value: I.ifu },
+        { name: 'rccm', label: 'RCCM', required: true, value: I.rccm },
+        { name: 'autorisation', label: 'Autorisation d’ouverture', col: 'full', value: I.autorisation },
+        { name: 'bp', label: 'Adresse fiscale (adresse postale imprimée)', col: 'full', value: I.bp },
+        { name: 'devise', label: 'Devise', type: 'text', col: 'third', value: I.devise },
+        { name: 'codeDevise', label: 'Code ISO de la devise', type: 'text', col: 'third', value: I.codeDevise },
+        { name: 'regimeTva', label: 'Régime de TVA', type: 'text', col: 'third', value: I.regimeTva || 'Taux normal 18 %',
+          help: 'Porté tel qu’affiché ; le MECeF applique l’exonération relevée sur la facture de référence (divergence signalée, E2272).' },
+      ], {});
+      var actions = el('div.mt-4.flex.flex-wrap.gap-2', null, [
+        K.commande('Enregistrer', {
+          variant: 'primary', icon: 'save', moduleCode: 'CFG',
+          onclick: function () {
+            var v = f.collect();
+            if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+            var champs = {};
+            CHAMPS_FISCAUX.forEach(function (k) { champs[k] = v[k]; });
+            enregistrerIdentiteDepuis('cfg-fiscalite', champs, peindre);
+          },
+        }),
+        boutonValiderConfiguration('identite', 'l’identité légale', peindre),
+        K.lien('mecef-config', 'Configuration MECeF', { size: 'sm', icon: 'arrow-right' }),
+      ]);
+      host.appendChild(U.card('Identification fiscale de l’établissement', el('div', null, [f, actions])));
+      host.appendChild(U.card('Versions de l’identité légale', tableVersionsIdentite()));
 
       host.appendChild(U.card('Numérotation des documents', K.miniTable([
         { label: 'Type de document', key: 'type' },
@@ -1541,18 +1798,7 @@
         { type: 'Écriture comptable', prefixe: '[JOURNAL]-2026-', format: 'JJJ-AAAA-NNNNN', sequence: 'Par journal' },
       ])));
 
-      host.appendChild(U.card('Obligations déclaratives', K.miniTable([
-        { label: 'Déclaration', key: 'd' },
-        { label: 'Périodicité', key: 'p' },
-        { label: 'Échéance', key: 'e' },
-        { label: 'Écran producteur', render: function (x) { return el('a.btn.btn-secondary.btn-sm', { href: global.SIGH.app.href(x.ecran) }, 'Éditer'); } },
-      ], [
-        { d: 'Cotisations CNSS', p: 'Mensuelle', e: '15 du mois suivant', ecran: 'm11-cotisations' },
-        { d: 'Impôt sur les traitements et salaires (ITS)', p: 'Mensuelle', e: '10 du mois suivant', ecran: 'm11-cotisations' },
-        { d: 'Versement patronal de solidarité (VPS)', p: 'Mensuelle', e: '10 du mois suivant', ecran: 'm11-cotisations' },
-        { d: 'Transmission des factures normalisées', p: 'Continue', e: 'À l’émission', ecran: 'mecef-transmission' },
-        { d: 'États financiers de synthèse', p: 'Annuelle', e: 'Clôture de l’exercice', ecran: 'm12-etats-financiers' },
-      ])));
+      host.appendChild(U.card('Obligations déclaratives (dérivées des obligations en vigueur)', tableObligationsDeclaratives()));
 
       /* --------------------------------------------------------------------
        * Calendrier fiscal et social — les échéances dictées par le comptable.
@@ -1578,7 +1824,7 @@
         return jourOuvrable(a);
       }
 
-      var echeances = D.CALENDRIER_FISCAL.map(function (e) {
+      var echeances = D.obligationsALaDate(AUJ).map(function (e) {
         var d = prochaineEcheance(e);
         var reporte = C.iso(d) !== C.iso(new Date(d.getFullYear(),
           e.periodicite === 'mensuelle' ? d.getMonth() : e.mois, e.jour));
@@ -1659,10 +1905,12 @@
           + '<strong>confirmé par la Direction le 25/08/2026</strong> : déclaration prévisionnelle de fin de '
           + 'mois, puis deux tranches de 50 % aux 10 mars et 10 juin pour la CCIB ; quatre acomptes aux '
           + '10 mars, 10 juin, 10 septembre et 10 décembre pour l’impôt sur les sociétés, liquidation du '
-          + 'solde et dépôt des états financiers au 30 avril de l’année suivante.'));
+          + 'solde et dépôt des états financiers au 30 avril de l’année suivante. Les obligations se modifient, datées, à l’écran '
+          + 'Paramètres comptables & obligations.'));
 
       root.appendChild(host);
-      return null;
+      U.icons(root);
+      }
     },
   });
 
@@ -1844,6 +2092,15 @@
         { id: 'sauvegarde', libelle: 'Échec de sauvegarde', detail: 'Alerte technique', dest: 'Administrateur système', app: true, sms: true, mail: true },
       ];
 
+      /* La matrice enregistrée l'emporte sur les valeurs d'origine : sans cette relecture,
+         tout décochage revenait à la constante au rechargement (fausse sauvegarde). */
+      var CLE_MATRICE = 'notifications.matrice';
+      var matriceEnregistree = S.reglage(CLE_MATRICE, null) || {};
+      NOTIFS.forEach(function (n) {
+        var m = matriceEnregistree[n.id];
+        if (m) ['app', 'sms', 'mail'].forEach(function (c) { if (typeof m[c] === 'boolean') n[c] = m[c]; });
+      });
+
       var etats = {};
       var liste = el('div.overflow-x-auto');
       var t = el('table.tbl');
@@ -1886,11 +2143,23 @@
           size: 'sm', variant: 'primary', icon: 'save',
           onclick: function () {
             var actifs = 0;
+            var apres = {};
             Object.keys(etats).forEach(function (id) {
-              ['app', 'sms', 'mail'].forEach(function (c) { if (etats[id][c].checked) actifs++; });
+              apres[id] = {};
+              ['app', 'sms', 'mail'].forEach(function (c) {
+                apres[id][c] = !!etats[id][c].checked;
+                if (apres[id][c]) actifs++;
+              });
             });
-            S.log('Modification', 'CFG', 'ParametrageNotifications', 'NOTIF', null, { canauxActifs: actifs });
-            U.toast('Paramétrage enregistré.', { type: 'success', detail: actifs + ' canal(aux) actif(s).' });
+            var avant = S.reglage(CLE_MATRICE, null);
+            S.setReglage(CLE_MATRICE, apres);
+            S.log('Modification', 'CFG', 'ParametrageNotifications', 'NOTIF',
+              avant ? { canauxActifs: null, matrice: avant } : null,
+              { canauxActifs: actifs, matrice: apres });
+            U.toast('Paramétrage enregistré.', {
+              type: 'success',
+              detail: actifs + ' canal(aux) actif(s). La grille est conservée ; le moteur d’alertes route encore par rôle et droits, et les envois SMS et courriel ne sont pas pilotés par la maquette.',
+            });
           },
         }),
       ]));
@@ -1915,45 +2184,25 @@
       var principal = el('div.space-y-4.lg\\:col-span-2');
 
       var profil = U.form([
-        { name: 'nom', label: 'Nom et prénoms', required: true, col: 'full', value: s.nom },
+        { name: 'nom', label: 'Nom et prénoms', readonly: true, col: 'full', value: s.nom },
         { name: 'identifiant', label: 'Identifiant de connexion', readonly: true, value: s.identifiant || 'admin.systeme' },
         { name: 'poste', label: 'Poste', readonly: true, value: N.ROLES[s.role] ? N.ROLES[s.role].label : '' },
-        { name: 'telephone', label: 'Téléphone', type: 'tel' },
-        { name: 'email', label: 'Adresse électronique', type: 'email' },
       ], {});
+      /* Aucune commande d'enregistrement : le nom, le téléphone et le courriel ne
+         s'écrivaient nulle part (la session est reconstruite depuis le serveur à la
+         connexion suivante). Une commande absente vaut mieux qu'un faux succès. */
       principal.appendChild(U.card('Informations personnelles', el('div', null, [
         profil,
-        el('div.mt-4', null, K.btn('Enregistrer', {
-          variant: 'primary', icon: 'save',
-          onclick: function () {
-            var v = profil.collect();
-            if (!v) return;
-            S.setSession(Object.assign({}, s, { nom: v.nom }));
-            U.toast('Informations enregistrées.', { type: 'success' });
-          },
-        })),
+        el('div.mt-3', null, K.note('Ces informations viennent du compte tenu par l’administrateur (écran « Utilisateurs »). Elles ne se modifient pas depuis cet écran dans la maquette.', { tone: 'info' })),
       ])));
 
-      var securite = U.form([
-        { name: 'actuel', label: 'Mot de passe actuel', type: 'password', required: true },
-        { name: 'nouveau', label: 'Nouveau mot de passe', type: 'password', required: true },
-        { name: 'confirmation', label: 'Confirmer le nouveau mot de passe', type: 'password', required: true },
-        { name: 'mfa', label: 'Activer l’authentification à deux facteurs', type: 'checkbox', col: 'full', value: ['admin', 'direction', 'dm', 'da'].indexOf(s.role) !== -1 },
-      ], {});
+      /* Pas de formulaire ni de bouton : aucune action serveur ne change un mot de passe
+         (api/auth.php : comptes, moi, deconnexion, connexion) et le double facteur n'est
+         pas persisté. Le geste existant vit à l'écran « Utilisateurs » (réinitialisation
+         par l'administrateur, haché côté serveur). */
       principal.appendChild(U.card('Sécurité du compte', el('div', null, [
-        securite,
-        el('div.mt-3', null, K.note('Politique en vigueur : 12 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses.', { tone: 'info' })),
-        el('div.mt-4', null, K.btn('Modifier le mot de passe', {
-          variant: 'primary', icon: 'key-round',
-          onclick: function () {
-            var v = securite.collect();
-            if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-            if (v.nouveau !== v.confirmation) { U.toast('Les deux mots de passe ne correspondent pas.', { type: 'error' }); return; }
-            if (String(v.nouveau).length < 12) { U.toast('Le mot de passe doit comporter au moins 12 caractères.', { type: 'error' }); return; }
-            S.log('Modification', 'M14', 'Utilisateur', s.identifiant || s.nom, null, { motDePasse: 'modifié' });
-            U.toast('Mot de passe modifié.', { type: 'success' });
-          },
-        })),
+        K.note('Le changement du mot de passe personnel et l’authentification à deux facteurs ne sont <strong>pas disponibles dans la maquette</strong> : rien ne serait enregistré. L’administrateur définit ou réinitialise le mot de passe depuis « Utilisateurs ».', { tone: 'warning' }),
+        el('div.mt-3', null, K.note('Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses.', { tone: 'info' })),
       ])));
 
       host.appendChild(principal);
@@ -2312,6 +2561,8 @@
           danger: fermer, requireMotif: fermer,
         }).then(function (rep) {
           if (!rep) return;
+          /* E881 : `update` modifie la fiche EN PLACE — le journal lisait `f.actif` APRÈS l'écriture et portait la même valeur avant et après. */
+          var actifAvant = f.actif;
           col().update(f.id, {
             actif: !fermer,
             motif: fermer ? (rep.motif || f.motif) : f.motif,
@@ -2322,7 +2573,7 @@
           });
           N.invaliderModules();
           S.log(fermer ? 'Fermeture d’une activité' : 'Réouverture d’une activité',
-            'CFG', 'Activité', f.code, { actif: f.actif }, { actif: !fermer });
+            'CFG', 'Activité', f.code, { actif: actifAvant }, { actif: !fermer });
           afficher();
           U.toast(fermer ? 'Activité fermée.' : 'Activité rouverte.', {
             type: 'success',
@@ -2347,10 +2598,20 @@
         { id: 'corbeille', label: 'Corbeille', badge: S.corbeille().length, render: ongletCorbeille },
         { id: 'bareme', label: 'Barème NS 131', render: ongletBaremeNS131 },
         { id: 'reinitialisation', label: 'Jeux de test', render: ongletReinitialisation },
+        { id: 'relais', label: 'Relais en ligne', render: ongletRelais },
       ]));
       return null;
     },
   });
+
+  /* --- Onglet « Relais en ligne » : les écrans du relais, en cartes de hub (ils ont quitté le ruban, arbitrage du 05/11/2026) --------------- */
+  function ongletRelais() {
+    var role = (S.session() || {}).role;
+    var hote = el('div.space-y-4');
+    hote.appendChild(K.note('Le <strong>relais en ligne</strong> (apps/web) est opaque : il transporte les opérations chiffrées entre la mère, les fileuls et les mobiles, sans jamais les lire. Ses écrans ne sont plus au ruban : ils sont ici.', { tone: 'info', icon: 'cloud' }));
+    hote.appendChild(K.groupesCartes(N.treeParametres(role, ['Relais en ligne'])));
+    return hote;
+  }
 
   /* --- Onglet « Installation et données » --------------------------------- */
   /* ==========================================================================
@@ -2447,30 +2708,6 @@
           + 'Servir le dossier via un petit serveur local rétablit la persistance.', { tone: 'warning', icon: 'hard-drive' }));
       }
 
-      /* ARCHITECTURE CIBLE — PROPOSITION, ET L'ÉCRAN LE DIT.
-       * La cible desktop en réseau local a été abandonnée au profit d'une
-       * application web hébergée. Tant que la Direction n'a pas arrêté la
-       * pile par écrit, cette fiche est une PROPOSITION : l'afficher comme
-       * un fait engagerait un choix que personne n'a signé. */
-      host.appendChild(U.card('Architecture cible — proposition', U.descList([
-        ['Application', 'Web — Laravel 12 (PHP 8.3) avec Vue 3 via Inertia'],
-        ['Postes de travail', 'Navigateur ; application installable (PWA) sur chaque poste'],
-        ['Base de données', 'PostgreSQL, hébergée avec l’application'],
-        ['Hébergement', 'Serveur mutualisé cPanel — déploiement Git, SSL automatique'],
-        ['Poste caisse', 'Enveloppe Tauri si l’imprimante ticket ou la MECeF l’exigent'],
-        ['Reporting', 'Gabarits d’impression du navigateur ; PDF archivés côté serveur'],
-        ['Sauvegarde', 'Export chiffré planifié HORS de l’hébergeur — jamais un seul dépositaire'],
-        ['Continuité électrique', 'Onduleurs aux postes critiques, box sur onduleur, secours 4G, mode dégradé papier'],
-        ['Ce prototype', 'HTML, CSS et JavaScript — sans dépendance réseau'],
-      ], 'grid-cols-1 sm:grid-cols-2')));
-
-      host.appendChild(K.note('Cette architecture est une <strong>proposition technique</strong>, pas une décision : '
-        + 'elle attend l’arbitrage écrit de la Direction. Deux conséquences y sont attachées et doivent être '
-        + 'assumées avec elle — l’exploitation dépend désormais de la connexion Internet de la clinique et de la '
-        + 'disponibilité de l’hébergeur, d’où les onduleurs, la liaison de secours et le mode dégradé papier ; '
-        + 'et les sauvegardes doivent sortir de chez l’hébergeur, des données de santé ne pouvant reposer sur un '
-        + 'seul prestataire.', { tone: 'warning', icon: 'flag' }));
-
       host.appendChild(U.card('Contenu du jeu de données', U.dataTable({
         rows: collections.map(function (k) {
           return {
@@ -2496,16 +2733,27 @@
         K.btn('Réinitialiser le jeu de données', {
           variant: 'danger', icon: 'rotate-ccw',
           onclick: function () {
+            /* RÉINITIALISER = RETIRER LES DONNÉES DE TEST, GARDER L'ESSENTIEL
+               (demande du 20/10/2026). Le bouton RÉGÉNÉRAIT le jeu de
+               démonstration complet : on cliquait, et tout revenait à
+               l'identique — « ça n'a pas marché ». Il vide désormais les
+               données d'activité et conserve paramétrage, référentiels,
+               comptes, droits et catalogues ; le vidage est journalisé et
+               tient au rechargement (drapeau `_jeuVide` du socle). */
             U.confirm({
               title: 'Réinitialiser toutes les données de démonstration ?',
-              message: 'Toutes les créations, modifications et archivages réalisés dans le prototype seront perdus '
-                + 'et le jeu de démonstration initial sera rétabli. Cette action est irréversible.',
-              confirmLabel: 'Réinitialiser', danger: true,
-            }).then(function (ok) {
-              if (!ok) return;
-              S.reset();
-              U.toast('Jeu de données réinitialisé.', { type: 'success' });
-              setTimeout(function () { global.location.reload(); }, 900);
+              message: 'Les données de test — patients, consultations, factures, mouvements, écritures — '
+                + 'seront retirées. Le paramétrage, les référentiels, les comptes, la matrice des droits '
+                + 'et les catalogues sont conservés. L’opération est journalisée et irréversible : '
+                + 'générer une sauvegarde d’abord.',
+              confirmLabel: 'Réinitialiser', danger: true, requireMotif: true,
+            }).then(function (r) {
+              if (!r) return;
+              var bilan = S.viderActivite(r.motif);
+              U.toast(bilan.tables + ' table(s) vidée(s) — ' + C.num(bilan.enregistrements) + ' enregistrements retirés.', {
+                type: 'success', detail: 'Paramétrage, référentiels, comptes et droits conservés.',
+              });
+              recharger();
             });
           },
         }),
@@ -2549,16 +2797,22 @@
    * --------------------------------------------------------------------- */
   var CLE_REINIT = 'sigh-cnt:reinit-autorisee';
 
-  /* Collections de PARAMÉTRAGE — jamais touchées par une réinitialisation. */
-  var COLLECTIONS_PARAMETRAGE = [
-    'actes', 'analyses', 'produits', 'assureurs', 'fournisseurs', 'comptes',
-    'naturesFacture', 'centresCouts', 'secteurs', 'postes', 'personnel',
-    'utilisateurs', 'ressources', 'banques', 'souscripteurs', 'garanties',
-    /* Les objectifs du pilotage sont un PARAMÉTRAGE de la Direction, pas des
-       données d'exploitation : une réinitialisation du jeu de test ne doit
-       pas effacer des cibles qu'elle a arrêtées. */
-    'certificats', 'objectifsPilotage',
-  ];
+  /* CE QUI EST CONSERVÉ VIT AU SOCLE (vague 68) : la liste est lue par le
+     magasin lui-même, qui bloque les ré-amorçages d'écran après un vidage.
+     Deux listes auraient divergé au premier référentiel ajouté. */
+  var COLLECTIONS_PARAMETRAGE = S.COLLECTIONS_ESSENTIELLES;
+
+  /* ON ATTEND QUE LE SERVEUR AIT REÇU le vidage avant de recharger : un
+     rechargement lancé pendant l'envoi relisait la base d'AVANT, et l'on
+     croyait que rien ne s'était passé. */
+  function recharger() {
+    S.pousserMaintenant();
+    var debut = Date.now();
+    (function attendre() {
+      if (S.fileEnAttente() === 0 || Date.now() - debut > 8000) { global.location.reload(); return; }
+      setTimeout(attendre, 150);
+    })();
+  }
 
   function ongletReinitialisation(panneau) {
     dessiner();
@@ -2666,7 +2920,7 @@
                 if (!ok) return;
                 S.reset();
                 U.toast('Jeu de démonstration régénéré.', { type: 'success' });
-                setTimeout(function () { global.location.reload(); }, 900);
+                recharger();
               });
             },
           }),
@@ -2690,20 +2944,13 @@
         confirmLabel: 'Vider les jeux de test', danger: true, requireMotif: true,
       }).then(function (r) {
         if (!r) return;
-        var db = S.raw();
-        var vidées = 0, lignes = 0;
-        activite.forEach(function (k) {
-          lignes += db[k].length;
-          db[k] = [];
-          vidées++;
+        /* Le vidage est un geste du SOCLE : la même fabrique sert ici et au
+           bouton de maintenance — deux vidages auraient divergé. */
+        var bilan = S.viderActivite(r.motif);
+        U.toast(bilan.tables + ' table(s) vidée(s) — ' + C.num(bilan.enregistrements) + ' enregistrements retirés.', {
+          type: 'success', detail: 'Paramétrage, référentiels, comptes et droits conservés.',
         });
-        S.save();
-        S.log('Réinitialisation des jeux de test', 'CFG', 'Base', C.iso(AUJ), null,
-          { tables: vidées, enregistrements: lignes, motif: r.motif });
-        U.toast(vidées + ' table(s) vidée(s) — ' + C.num(lignes) + ' enregistrements retirés.', {
-          type: 'success', detail: 'Paramétrage et référentiels conservés.',
-        });
-        setTimeout(function () { global.location.reload(); }, 1400);
+        recharger();
       });
     }
   }
@@ -3092,136 +3339,368 @@
    * L'écrire ici plutôt que dans un document extérieur a une raison : une règle
    * fiscale qui vit dans un fichier séparé cesse d'être lue.
    * ======================================================================== */
+  /* --------------------------------------------------------------------------
+   * LES OBLIGATIONS SE MODIFIENT ICI, DATÉES (E2273, 06/11/2026). Chaque ligne
+   * du calendrier est une fiche de `obligationsFiscales` ; une modification ou
+   * un retrait passe par la modale de portée (date d'effet, motif), copie la
+   * version sortante dans `historiqueObligations` et RÉGÉNÈRE les échéances non
+   * payées de l'exercice à partir de la date d'effet : les payées gardent leur
+   * quittance. Les paramètres ORTB (seuil, montants, mois) suivent la même
+   * règle (E2274). CNSS, VPS et ITS restent arrêtés par le CDCT : lecture seule.
+   * ----------------------------------------------------------------------- */
+  var MOIS_OPTIONS = C.MOIS.map(function (m, i) { return { value: String(i), label: m.charAt(0).toUpperCase() + m.slice(1) }; });
+  function libelleEcheanceObligation(o) {
+    return o.periodicite === 'mensuelle' ? 'le ' + o.jour + ' du mois suivant' : 'le ' + o.jour + ' ' + C.MOIS[o.mois];
+  }
+  function champsObligation(o, creation) {
+    o = o || {};
+    return [
+      { name: 'code', label: 'Code', required: creation, readonly: !creation, value: o.code || '',
+        help: creation ? 'Majuscules, chiffres et traits d’union (ex. : TPS-1). Il identifie l’obligation au journal et ne change plus.' : 'Le code identifie l’obligation : il ne change pas.' },
+      { name: 'libelle', label: 'Intitulé', required: true, col: 'full', value: o.libelle || '' },
+      { name: 'periodicite', label: 'Périodicité', type: 'select', required: true, col: 'third', value: o.periodicite || 'annuelle',
+        options: [{ value: 'mensuelle', label: 'Mensuelle' }, { value: 'annuelle', label: 'Annuelle' }] },
+      { name: 'jour', label: 'Jour de l’échéance', type: 'number', required: true, min: 1, max: 31, col: 'third', value: o.jour != null ? o.jour : 10 },
+      { name: 'mois', label: 'Mois (annuelle)', type: 'select', col: 'third', value: o.mois != null ? String(o.mois) : '', options: MOIS_OPTIONS,
+        condition: { controle: 'periodicite', quand: ['annuelle'] } },
+      { name: 'part', label: 'Part réglée à cette échéance (%)', type: 'number', min: 1, max: 100, col: 'third', value: o.part != null ? o.part : '', help: 'Vide si l’échéance règle l’obligation entière.' },
+      { name: 'declaration', label: 'Déclaration préalable', value: o.declaration || '' },
+      { name: 'note', label: 'Règle appliquée', type: 'textarea', rows: 2, col: 'full', value: o.note || '' },
+    ];
+  }
+  function noteImpactEcheances(code) {
+    return function (dateIso) {
+      var i = CF().echeancesImpactees(code, dateIso);
+      return 'Sur l’exercice ' + i.exercice + ' : <strong>' + C.num(i.payees) + ' échéance(s) payée(s) CONSERVÉE(S)</strong> (leur quittance ne bouge pas), '
+        + '<strong>' + C.num(i.nonPayees) + ' échéance(s) non payée(s) RÉGÉNÉRÉE(S)</strong> à partir du ' + C.dateFR(dateIso) + '. Le comptable en est informé.';
+    };
+  }
+  function annoncerEcheances(r, verbe) {
+    var e = r.echeances || {};
+    U.toast('Obligation ' + verbe + '.', { type: 'success',
+      detail: C.num(e.conservees || 0) + ' échéance(s) payée(s) conservée(s), ' + C.num(e.archivees || 0) + ' non payée(s) régénérée(s), '
+        + C.num(e.creees || 0) + ' recréée(s) depuis la version en vigueur au ' + C.dateFR(e.dateEffet) + '.' });
+  }
+  function modifierObligationUI(o, apres) {
+    var f = U.form(champsObligation(o, false), {});
+    var m = U.modal({
+      title: 'Modifier l’obligation ' + o.code, subtitle: o.libelle, size: 'lg',
+      body: el('div.space-y-3', null, [
+        K.note('La modification est <strong>datée</strong> : la version actuelle reste en vigueur jusqu’à la veille de la date d’effet, '
+          + 'et les échéances déjà payées ne bougent pas.', { tone: 'info', icon: 'calendar-clock' }),
+        f,
+      ]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Continuer', {
+          variant: 'primary', icon: 'arrow-right',
+          onclick: function () {
+            var v = f.collect();
+            if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+            m.close();
+            modalePortee({
+              sousTitre: o.code + ' : ' + o.libelle,
+              explication: 'L’échéance change pour l’avenir : à partir de la date d’effet, les échéances non payées sont régénérées ; avant, rien ne bouge.',
+              minimum: o.dateEffet || null,
+              impact: noteImpactEcheances(o.code),
+              appliquer: function (dateEffet, motif) {
+                var r = CF().modifierObligation({ id: o.id, valeurs: v, dateEffet: dateEffet, motif: motif });
+                if (!r.ok) return r;
+                annoncerEcheances(r, 'modifiée');
+                if (apres) apres();
+                return r;
+              },
+            });
+          },
+        }),
+      ],
+    });
+  }
+  function creerObligationUI(apres) {
+    var f = U.form(champsObligation(null, true), {});
+    var m = U.modal({
+      title: 'Nouvelle obligation fiscale ou sociale', size: 'lg',
+      body: el('div.space-y-3', null, [
+        K.note('Une obligation nouvelle prend effet à une <strong>date</strong> et cite le texte qui l’institue (motif). Ses échéances de l’exercice '
+          + 'sont engendrées à partir de la date d’effet, et elle devra être <strong>validée</strong>.', { tone: 'info', icon: 'calendar-plus' }),
+        f,
+      ]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Continuer', {
+          variant: 'primary', icon: 'arrow-right',
+          onclick: function () {
+            var v = f.collect();
+            if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+            m.close();
+            modalePortee({
+              sousTitre: String(v.code || '').toUpperCase() + ' : ' + v.libelle,
+              explication: 'L’obligation existe à partir de la date d’effet ; ses échéances antérieures ne sont pas créées.',
+              placeholderMotif: 'Texte de loi, note de la DGI, décision de la Direction…',
+              libelleAppliquer: 'Créer l’obligation',
+              appliquer: function (dateEffet, motif) {
+                var r = CF().creerObligation({ valeurs: v, dateEffet: dateEffet, motif: motif });
+                if (!r.ok) return r;
+                annoncerEcheances(r, String(v.code).toUpperCase() + ' créée');
+                if (apres) apres();
+                return r;
+              },
+            });
+          },
+        }),
+      ],
+    });
+  }
+  function retirerObligationUI(o, apres) {
+    modalePortee({
+      sousTitre: 'Retrait de ' + o.code + ' : ' + o.libelle,
+      explication: 'L’obligation cesse à la veille de la date d’effet : ses échéances non payées à partir de cette date sont archivées, '
+        + 'les payées restent. La dernière version va à l’historique, marquée retirée.',
+      minimum: o.dateEffet || null,
+      impact: noteImpactEcheances(o.code),
+      placeholderMotif: 'Texte qui supprime l’obligation, ou décision de la Direction',
+      libelleAppliquer: 'Retirer l’obligation',
+      appliquer: function (dateEffet, motif) {
+        var r = CF().retirerObligation({ id: o.id, dateEffet: dateEffet, motif: motif });
+        if (!r.ok) return r;
+        annoncerEcheances(r, o.code + ' retirée');
+        if (apres) apres();
+        return r;
+      },
+    });
+  }
+  function modifierOrtbUI(ortb, apres) {
+    var radio = (ortb.redevances || []).filter(function (x) { return x.id === 'radio'; })[0] || {};
+    var tele = (ortb.redevances || []).filter(function (x) { return x.id === 'tele'; })[0] || {};
+    var f = U.form([
+      { type: 'section', label: 'Redevance Radio (tous les salariés)' },
+      { name: 'radioMontant', label: 'Montant annuel (FCFA)', type: 'money', required: true, min: 0, value: radio.montant },
+      { name: 'radioMois', label: 'Mois de prélèvement', type: 'select', required: true, options: MOIS_OPTIONS, value: String(radio.mois) },
+      { type: 'section', label: 'Redevance Télé (au-delà du seuil de salaire brut)' },
+      { name: 'seuilTele', label: 'Seuil de salaire brut (FCFA)', type: 'money', required: true, min: 0, value: ortb.seuilTele,
+        help: 'La télé est due STRICTEMENT au-dessus de ce seuil, en sus de la radio.' },
+      { name: 'teleMontant', label: 'Montant annuel (FCFA)', type: 'money', required: true, min: 0, value: tele.montant },
+      { name: 'teleMois', label: 'Mois de prélèvement', type: 'select', required: true, options: MOIS_OPTIONS, value: String(tele.mois) },
+    ], {});
+    var m = U.modal({
+      title: 'Modifier les paramètres ORTB', subtitle: 'Deux redevances qui se cumulent', size: 'lg',
+      body: el('div.space-y-3', null, [
+        K.note('Les paramètres sont lus <strong>à la date du bulletin</strong> : un bulletin déjà émis garde ses lignes ORTB, '
+          + 'un seuil relevé en septembre ne touche pas le bulletin de juin.', { tone: 'info', icon: 'radio' }),
+        f,
+      ]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Continuer', {
+          variant: 'primary', icon: 'arrow-right',
+          onclick: function () {
+            var v = f.collect();
+            if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+            m.close();
+            modalePortee({
+              sousTitre: 'Paramètres ORTB',
+              explication: 'Les bulletins dont la période de paie commence à la date d’effet ou après lisent les nouveaux paramètres ; les bulletins antérieurs ne sont jamais recalculés.',
+              minimum: ortb.dateEffet || null,
+              placeholderMotif: 'Décision de la Direction, texte de l’ORTB…',
+              appliquer: function (dateEffet, motif) {
+                var r = CF().modifierOrtb({ valeurs: { seuilTele: v.seuilTele, radio: { montant: v.radioMontant, mois: v.radioMois }, tele: { montant: v.teleMontant, mois: v.teleMois } }, dateEffet: dateEffet, motif: motif });
+                if (!r.ok) return r;
+                U.toast('Paramètres ORTB modifiés.', { type: 'success', detail: 'En vigueur à partir du ' + C.dateFR(dateEffet) + ' ; à revalider.' });
+                if (apres) apres();
+                return r;
+              },
+            });
+          },
+        }),
+      ],
+    });
+  }
+  /** Les commandes d'une ligne d'obligation : Modifier (éditer), Retirer (annuler). Absentes sans droit. */
+  function commandesObligation(o, apres) {
+    if (CF().posteFileul()) return el('span.text-xs.text-slate-400', { text: 'tenue par la mère' });
+    return el('div.flex.items-center.justify-end.gap-1', null, [
+      K.commandeIcone('pencil', 'Modifier (version datée)', function () { modifierObligationUI(o, apres); }, { moduleCode: 'CFG' }),
+      K.commandeIcone('archive', 'Retirer (version datée)', function () { retirerObligationUI(o, apres); }, { moduleCode: 'CFG', droit: 'annuler' }),
+    ]);
+  }
+  function tableHistoriqueObligations() {
+    var rows = S.collection('historiqueObligations').active().slice()
+      .sort(function (a, b) { return String(b.remplaceeLe || '').localeCompare(String(a.remplaceeLe || '')); });
+    return K.miniTable([
+      { label: 'Code', render: function (h) { return el('span.font-mono.text-xs.font-semibold', { text: h.code }); } },
+      { label: 'Version', render: function (h) {
+        if (h.type === 'parametres') return 'Seuil télé ' + C.money(h.seuilTele, false) + ', cumul ' + C.money(h.cumulMaximum, false);
+        return libelleEcheanceObligation(h) + (h.part && h.part < 100 ? ', ' + h.part + ' %' : '');
+      } },
+      { label: 'En vigueur du', render: function (h) { return h.dateEffet ? C.dateFR(h.dateEffet) : 'ouverture'; } },
+      { label: 'Au', render: function (h) { return h.dateFin ? C.dateFR(h.dateFin) : '—'; } },
+      { label: 'Remplacée le', render: function (h) { return (h.remplaceeLe ? C.dateHeure(h.remplaceeLe) : '—') + ' par ' + (h.remplaceePar || '—'); } },
+      { label: 'Motif', render: function (h) { return [h.retiree ? U.badge('Retirée', 'danger') : null, el('span.text-xs', { text: ' ' + (h.motifRemplacement || '—') })]; } },
+    ], rows, { empty: 'Aucune version antérieure : les obligations sont celles du calendrier confirmé le 25/08/2026.' });
+  }
+
   global.SIGH.screen('cfg-comptabilite', {
     title: 'Paramètres comptables & obligations',
-    description: 'Obligations fiscales et sociales de la clinique : périodicités, tranches, déclarations préalables et redevances.',
-    regle: 'Cet écran est la <strong>référence documentaire</strong> des obligations. Il ne calcule ni ne paie — '
+    description: 'Obligations fiscales et sociales de la clinique : périodicités, tranches, déclarations préalables et redevances, vérifiées et validées, modifiables par versions datées.',
+    regle: 'Cet écran est la <strong>référence documentaire</strong> des obligations, <strong>validée</strong> par la Direction. Il ne calcule ni ne paie : '
       + 'le suivi des paiements et leur validation se tiennent à l’écran <strong>Échéances fiscales & paiements</strong>. '
+      + 'Une obligation se modifie à une <strong>date d’effet</strong> : les échéances payées sont conservées, les non payées régénérées. '
       + 'Toute échéance tombant un week-end est reportée au <strong>jour ouvrable suivant</strong>.',
     render: function (root) {
+      peindre();
+      return null;
+
+      function peindre() {
+      C.clear(root);
       var host = el('div.space-y-4');
-      var cal = D.CALENDRIER_FISCAL;
+      var cal = D.obligationsALaDate(AUJ);
       var mensuelles = cal.filter(function (e) { return e.periodicite === 'mensuelle'; });
       var annuelles = cal.filter(function (e) { return e.periodicite === 'annuelle'; });
+      var fileul = CF().posteFileul();
+
+      host.appendChild(bandeauEtatConfiguration('obligations', 'liste des obligations'));
+      var barre = el('div.flex.flex-wrap.gap-2', null, [
+        fileul ? null : K.commande('Nouvelle obligation', { icon: 'plus', moduleCode: 'CFG', onclick: function () { creerObligationUI(peindre); } }),
+        boutonValiderConfiguration('obligations', 'les obligations', peindre),
+        K.btn('Suivi des échéances', { icon: 'calendar-clock', onclick: function () { global.SIGH.app.go('m12-echeances'); } }),
+      ]);
+      host.appendChild(barre);
 
       host.appendChild(U.kpiGrid([
-        { label: 'Obligations suivies', value: C.num(cal.length), icon: 'book-open-check', tone: 'navy' },
-        { label: 'Mensuelles', value: C.num(mensuelles.length), icon: 'calendar-days', tone: 'info', hint: 'ITS, AIB, VPS, CNSS' },
+        { label: 'Obligations en vigueur', value: C.num(cal.length), icon: 'book-open-check', tone: 'navy' },
+        { label: 'Mensuelles', value: C.num(mensuelles.length), icon: 'calendar-days', tone: 'info', hint: mensuelles.map(function (e) { return e.code; }).join(', ') },
         { label: 'Annuelles', value: C.num(annuelles.length), icon: 'calendar-range', tone: 'neutral', hint: 'IS, patente, CCIB, TVM, ORTB' },
         { label: 'Réglées en tranches', value: C.num(cal.filter(function (e) { return e.part && e.part < 100; }).length), icon: 'divide', tone: 'warning' },
       ]));
 
       /* --- Obligations mensuelles --------------------------------------- */
-      host.appendChild(U.card('Obligations mensuelles — le 10 du mois suivant', el('div.space-y-3', null, [
-        K.note('<strong>ITS, AIB, VPS et CNSS se paient le 10 de chaque mois</strong>, pour le mois d’exercice '
-          + 'précédent. Une <strong>déclaration précède le paiement</strong>. Si le 10 tombe un samedi ou un '
+      var joursMensuels = [];
+      mensuelles.forEach(function (e) { if (joursMensuels.indexOf(e.jour) < 0) joursMensuels.push(e.jour); });
+      var titreMensuelles = 'Obligations mensuelles' + (joursMensuels.length === 1 ? ' : le ' + joursMensuels[0] + ' du mois suivant' : '');
+      host.appendChild(U.card(titreMensuelles, el('div.space-y-3', null, [
+        K.note('<strong>' + mensuelles.map(function (e) { return e.code; }).join(', ') + ' se paient chaque mois</strong>, pour le mois d’exercice '
+          + 'précédent, au jour porté par chaque obligation. Une <strong>déclaration précède le paiement</strong>. Si le jour tombe un samedi ou un '
           + 'dimanche, le jour ouvrable qui suit immédiatement fait foi.', { tone: 'info' }),
         K.miniTable([
           { label: 'Code', render: function (e) { return el('span.font-mono.text-xs.font-semibold', { text: e.code }); } },
           { label: 'Obligation', key: 'libelle' },
-          { label: 'Échéance', render: function () { return 'le 10 du mois suivant'; } },
+          { label: 'Échéance', render: libelleEcheanceObligation },
           { label: 'Déclaration préalable', render: function (e) { return e.declaration || '—'; } },
+          { label: 'Version', render: function (e) { return e.dateEffet ? 'depuis le ' + C.dateFR(e.dateEffet) : 'd’origine'; } },
+          { label: '', align: 'right', render: function (e) { return commandesObligation(e, peindre); } },
         ], mensuelles),
         el('div.rounded-lg.border.border-slate-200.bg-slate-50.p-3', null, [
-          el('p.text-xs.font-semibold.uppercase.tracking-wide.text-slate-500', { text: 'Assiettes' }),
+          el('p.text-xs.font-semibold.uppercase.tracking-wide.text-slate-500', { text: 'Assiettes arrêtées par le CDCT §10.10 (lecture seule)' }),
           el('p.mt-1.text-sm.text-slate-700', {
-            text: 'CNSS — part patronale ' + D.PARAM_PAIE.cnss.patronale + ' %, part ouvrière '
-              + D.PARAM_PAIE.cnss.ouvriere + ' %. VPS — ' + D.PARAM_PAIE.vps.taux + ' % du salaire brut. '
-              + 'ITS — barème progressif par tranches. AIB — acompte assis sur les bénéfices.',
+            text: 'CNSS : part patronale ' + D.PARAM_PAIE.cnss.patronale + ' %, part ouvrière '
+              + D.PARAM_PAIE.cnss.ouvriere + ' %. VPS : ' + D.PARAM_PAIE.vps.taux + ' % du salaire brut. '
+              + 'ITS : barème progressif par tranches. AIB : acompte assis sur les bénéfices. '
+              + 'Ces taux ne se modifient pas ici : ils sont arrêtés par le cahier des charges ; les rendre datés est un chantier nommé.',
           }),
         ]),
       ])));
 
       /* --- Impôt sur les sociétés --------------------------------------- */
       var acomptes = cal.filter(function (e) { return /^IS-\d$/.test(e.code); });
-      host.appendChild(U.card('Impôt sur les sociétés — quatre acomptes et une liquidation', el('div.space-y-3', null, [
+      host.appendChild(U.card('Impôt sur les sociétés : quatre acomptes et une liquidation', el('div.space-y-3', null, [
         K.note('L’impôt se paie <strong>par anticipation</strong> : l’impôt de l’exercice précédent est divisé '
-          + 'en quatre acomptes égaux, versés au cours de l’exercice courant. Exemple donné par le comptable — '
+          + 'en quatre acomptes égaux, versés au cours de l’exercice courant. Exemple donné par le comptable : '
           + 'un impôt de 2 000 000 FCFA en 2025 donne quatre acomptes de 500 000 FCFA en 2026.',
         { tone: 'info', icon: 'landmark' }),
         K.miniTable([
           { label: 'Acompte', key: 'libelle' },
-          { label: 'Échéance', render: function (e) { return 'le ' + e.jour + ' ' + C.MOIS[e.mois]; } },
+          { label: 'Échéance', render: libelleEcheanceObligation },
           { label: 'Part', render: function (e) { return e.part + ' % de l’impôt de l’exercice précédent'; } },
+          { label: '', align: 'right', render: function (e) { return commandesObligation(e, peindre); } },
         ], acomptes),
         el('div.rounded-lg.border.border-navy-200.bg-navy-50.p-3', null, [
           el('p.text-xs.font-semibold.uppercase.tracking-wide.text-navy-700', { text: 'Le 30 avril de l’année suivante' }),
           el('p.mt-1.text-sm.text-slate-700', {
-            text: 'Deux opérations, dans cet ordre : la liquidation du solde ajuste ce qui a été versé en acomptes — '
-              + 'la clinique complète si l’impôt réel dépasse les acomptes, l’État rembourse dans le cas inverse — '
+            text: 'Deux opérations, dans cet ordre : la liquidation du solde ajuste ce qui a été versé en acomptes '
+              + '(la clinique complète si l’impôt réel dépasse les acomptes, l’État rembourse dans le cas inverse), '
               + 'puis intervient le dépôt des états financiers de l’exercice clos.',
           }),
         ]),
+        K.miniTable([
+          { label: 'Code', render: function (e) { return el('span.font-mono.text-xs.font-semibold', { text: e.code }); } },
+          { label: 'Obligation', key: 'libelle' },
+          { label: 'Échéance', render: libelleEcheanceObligation },
+          { label: '', align: 'right', render: function (e) { return commandesObligation(e, peindre); } },
+        ], cal.filter(function (e) { return e.code === 'IS-SOLDE' || e.code === 'ETATS-FIN'; })),
       ])));
 
-      /* --- Obligations annuelles en tranches ---------------------------- */
-      host.appendChild(U.card('Patente, CCIB et TVM — une fois par an', el('div.space-y-3', null, [
+      /* --- Obligations annuelles en tranches (dérivées des obligations en vigueur) --- */
+      function lignesFamille(famille) {
+        return cal.filter(function (e) { return e.famille === famille; }).map(function (e) {
+          return [libelleEcheanceObligation(e).replace(/^le /, ''), e.libelle + (e.part ? ' (' + e.part + ' %)' : ''), e];
+        });
+      }
+      host.appendChild(U.card('Patente, CCIB et TVM : une fois par an', el('div.space-y-3', null, [
         el('div.grid.gap-3.md\\:grid-cols-3', null, [
-          bloc('Patente', 'Une fois par an, avec possibilité de régler en deux tranches.', [
-            ['31 janvier', 'Date limite de la déclaration prévisionnelle'],
-            ['10 février', '1er acompte — 50 %'],
-            ['30 avril', 'Solde — 50 %'],
-          ]),
+          bloc('Patente', 'Une fois par an, avec possibilité de régler en deux tranches.', lignesFamille('PATENTE')),
           bloc('CCIB', C.money(D.MONTANTS_FISCAUX.ccib.total) + ' par an, en deux tranches égales de '
-            + C.money(D.MONTANTS_FISCAUX.ccib.total / 2) + '.', [
-            ['Fin de mois', 'Déclaration prévisionnelle, avant le 1er acompte'],
-            ['10 mars', '1re tranche — 50 %'],
-            ['10 juin', '2e tranche — 50 %'],
-          ]),
-          bloc('TVM', 'Taxe sur véhicules à moteur. Une fois par an, en une seule fois.', [
-            ['30 avril', 'Paiement, au plus tard'],
-          ]),
+            + C.money(D.MONTANTS_FISCAUX.ccib.total / 2) + ' (montant à confirmer par le cabinet comptable).', lignesFamille('CCIB')),
+          bloc('TVM', 'Taxe sur véhicules à moteur. Une fois par an, en une seule fois.', lignesFamille('TVM')),
         ]),
       ])));
 
-      /* --- Redevances ORTB ---------------------------------------------- */
-      var ortb = D.PARAM_PAIE.ortb;
-      host.appendChild(U.card('Redevances ORTB — prélevées sur les salaires', el('div.space-y-3', null, [
-        K.note('<strong>Deux redevances distinctes, qui se cumulent</strong> — et non deux tranches '
+      /* --- Redevances ORTB (paramètres en vigueur à la date du jour) ---- */
+      var ortb = D.ortbALaDate(AUJ);
+      var radio = (ortb.redevances || []).filter(function (x) { return x.id === 'radio'; })[0] || { montant: 0, moisLabel: '—' };
+      var tele = (ortb.redevances || []).filter(function (x) { return x.id === 'tele'; })[0] || { montant: 0, moisLabel: '—' };
+      host.appendChild(U.card('Redevances ORTB : prélevées sur les salaires', el('div.space-y-3', null, [
+        K.note('<strong>Deux redevances distinctes, qui se cumulent</strong>, et non deux tranches '
           + 'exclusives d’un même barème. La <strong>radio est due par tous les salariés sans exception</strong> ; '
           + 'la <strong>télé s’y ajoute</strong> au-delà de ' + C.money(ortb.seuilTele, false) + ' de salaire brut. '
           + 'Un agent au-dessus du seuil acquitte donc ' + C.money(ortb.cumulMaximum, false) + ' sur l’exercice, '
-          + 'et non ' + C.money(3000, false) + ' seulement.', { tone: 'warning', icon: 'radio' }),
+          + 'et non ' + C.money(tele.montant, false) + ' seulement.', { tone: 'warning', icon: 'radio' }),
         K.miniTable([
           { label: 'Redevance', key: 'libelle' },
           { label: 'Catégorie', render: function (t) { return U.badge(t.categorie, t.id === 'radio' ? 'info' : 'navy'); } },
           { label: 'Assiette', key: 'assiette' },
           { label: 'Montant', align: 'right', render: function (t) { return C.money(t.montant, false); } },
           { label: 'Mois de prélèvement', render: function (t) { return t.moisLabel; } },
-        ], ortb.redevances),
+        ], ortb.redevances || []),
         el('div.rounded-lg.border.border-slate-200.bg-slate-50.p-3', null, [
           el('p.text-xs.font-semibold.uppercase.tracking-wide.text-slate-500', { text: 'Ce que supporte un agent' }),
           el('p.mt-1.text-sm.text-slate-700', {
-            text: 'Salaire brut jusqu’à ' + C.money(ortb.seuilTele, false) + ' — '
-              + C.money(1000, false) + ' au titre de la radio, en mars. '
-              + 'Salaire brut supérieur à ' + C.money(ortb.seuilTele, false) + ' — '
-              + C.money(1000, false) + ' en mars pour la radio, puis ' + C.money(3000, false)
-              + ' en juin pour la télé, soit ' + C.money(ortb.cumulMaximum, false) + ' sur l’année.',
+            text: 'Salaire brut jusqu’à ' + C.money(ortb.seuilTele, false) + ' : '
+              + C.money(radio.montant, false) + ' au titre de la radio, en ' + radio.moisLabel + '. '
+              + 'Salaire brut supérieur à ' + C.money(ortb.seuilTele, false) + ' : '
+              + C.money(radio.montant, false) + ' en ' + radio.moisLabel + ' pour la radio, puis ' + C.money(tele.montant, false)
+              + ' en ' + tele.moisLabel + ' pour la télé, soit ' + C.money(ortb.cumulMaximum, false) + ' sur l’année.',
           }),
         ]),
         K.note('Le prélèvement est <strong>annuel</strong>, non mensuel : chaque redevance n’apparaît que '
           + 'sur le bulletin de son mois. Les porter chaque mois majorerait les retenues de onze douzièmes. '
-          + 'Les deux parts restent distinguées jusqu’au bulletin et à l’état des cotisations.',
+          + 'Les deux parts restent distinguées jusqu’au bulletin et à l’état des cotisations. Paramètres '
+          + (ortb.dateEffet ? 'en vigueur depuis le ' + C.dateFR(ortb.dateEffet) : 'd’origine (précision de la Direction du 20/08/2026)') + '.',
         { tone: 'info' }),
       ]), [
+        fileul ? null : K.commande('Modifier les paramètres ORTB', { size: 'sm', icon: 'pencil', moduleCode: 'CFG', onclick: function () { modifierOrtbUI(ortb, peindre); } }),
         K.btn('Suivi nominatif', { size: 'sm', icon: 'radio', onclick: function () { global.SIGH.app.go('m11-ortb'); } }),
       ]));
+
+      /* --- Versions antérieures ----------------------------------------- */
+      host.appendChild(U.card('Versions antérieures des obligations et des paramètres ORTB', tableHistoriqueObligations()));
 
       /* --- Principes de tenue ------------------------------------------- */
       host.appendChild(U.card('Principes de tenue', U.descList([
         ['Report d’échéance', 'Une échéance tombant un samedi ou un dimanche est reportée au jour ouvrable suivant.'],
-        ['Déclaration préalable', 'Six obligations exigent une déclaration avant paiement — elle est signalée à l’échéance.'],
-        ['Équilibre des écritures', 'RG-10 — aucune écriture ne se valide si le débit ne balance pas le crédit.'],
+        ['Déclaration préalable', C.num(cal.filter(function (e) { return e.declaration; }).length) + ' obligations exigent une déclaration avant paiement : elle est signalée à l’échéance.'],
+        ['Versions datées', 'Une obligation modifiée ou retirée garde sa version antérieure à l’historique ; les échéances payées ne bougent jamais.'],
+        ['Équilibre des écritures', 'RG-10 : aucune écriture ne se valide si le débit ne balance pas le crédit.'],
         ['Continuité de l’exercice', 'Le logiciel ne se clôture pas en fin d’année : verrouiller une période empêche d’y saisir, pas d’y lire.'],
-        ['Valorisation des sorties', 'Paramétrable — prix de vente par défaut, conformément à l’annotation du 30/12/2024.'],
-        ['Journalisation', 'RG-12 — chaque paiement validé porte son auteur, sa date et son montant.'],
+        ['Valorisation des sorties', 'Paramétrable, prix de vente par défaut, conformément à l’annotation du 30/12/2024.'],
+        ['Journalisation', 'RG-12 : chaque paiement validé, chaque version et chaque validation porte son auteur et sa date.'],
       ], 'grid-cols-1')));
 
-      host.appendChild(K.source('Précisions du comptable de la clinique — réunion du 19 août 2026, '
-        + 'complétées des arbitrages de la Direction du 20 août 2026.'));
+      host.appendChild(K.source('Précisions du comptable de la clinique (réunion du 19 août 2026), '
+        + 'complétées des arbitrages de la Direction des 20 et 25 août 2026 ; validation et versions datées : décision de la Direction du 06/11/2026.'));
 
       root.appendChild(host);
-      return null;
+      U.icons(root);
+      }
 
       function bloc(titre, sousTitre, lignes) {
         var d = el('div.rounded-lg.border.border-slate-200.bg-white.p-3');
@@ -3230,7 +3709,8 @@
         lignes.forEach(function (l) {
           d.appendChild(el('div.flex.items-baseline.gap-2.border-t.border-slate-100.py-1\\.5', null, [
             el('span.shrink-0.font-mono.text-xs.font-semibold.text-navy-700', { text: l[0] }),
-            el('span.text-xs.text-slate-600', { text: l[1] }),
+            el('span.min-w-0.flex-1.text-xs.text-slate-600', { text: l[1] }),
+            l[2] ? commandesObligation(l[2], peindre) : null,
           ]));
         });
         return d;
@@ -3432,18 +3912,22 @@
     title: 'Papier à en-tête officiel',
     description: 'L’unique identité légale imprimée sur tous les états de la clinique.',
     regle: 'Depuis l’arbitrage de la Direction du 31/08/2026, <strong>tous les états portent le même '
-      + 'en-tête</strong> : IFU <strong>3201642748214</strong>, RCCM <strong>RB/NAT/2016-B-268</strong>. '
-      + 'L’identité se corrige en un seul endroit — le Brand Configuration Center — et chaque pièce '
-      + 'imprimée la reprend.',
+      + 'en-tête</strong> : celui de la version de l’identité légale <strong>en force à la date de la pièce</strong>. '
+      + 'L’identité se corrige en un seul endroit (Identité & papier à en-tête, Paramètres fiscaux), se valide, '
+      + 'et chaque pièce imprimée la reprend.',
     render: function (root) {
       var vue = el('div.space-y-4');
       root.appendChild(vue);
-      var B = C.BRAND;
+      /* L'en-tête RÉSULTANT : la version en force aujourd'hui, et son état de validation. */
+      var B = CF().identiteEnForce() || C.BRAND;
+      vue.appendChild(bandeauEtatConfiguration('identite', 'identité légale'));
+      var futures = noteVersionsAVenir();
+      if (futures) vue.appendChild(futures);
 
       vue.appendChild(U.kpiGrid([
         { label: 'IFU imprimé', value: '1', icon: 'hash', tone: 'success', hint: B.ifu },
         { label: 'RCCM imprimé', value: '1', icon: 'scale', tone: 'success', hint: B.rccm },
-        { label: 'Autorisation d’ouverture', value: '1', icon: 'stamp', tone: 'success' },
+        { label: 'Version en force', value: 'v' + (B.version || 1), icon: 'history', tone: 'navy', hint: B.debut ? 'depuis le ' + C.dateFR(B.debut) : 'depuis l’ouverture du dossier' },
         { label: 'États alimentés', value: 'Tous', icon: 'printer', tone: 'navy' },
       ]));
 
@@ -3459,7 +3943,13 @@
           ['RCCM', B.rccm],
           ['Autorisation d’ouverture', B.autorisation],
           ['Autorisation d’exercice', B.autorisationExercice || 'Non imprimée — ' + (B.autorisationExerciceMotif || '')],
+          ['Régime de TVA affiché', B.regimeTva || '—'],
+          ['Validation', B.valideLe ? 'Validée le ' + C.dateHeure(B.valideLe) + ' par ' + B.validePar : 'À valider (écran Paramètres fiscaux)'],
         ]))));
+      vue.appendChild(el('div.flex.flex-wrap.gap-2', null, [
+        K.lien('cfg-fiscalite', 'Paramètres fiscaux et validation', { size: 'sm', icon: 'landmark' }),
+        K.lien('cfg-branding', 'Identité & papier à en-tête', { size: 'sm', icon: 'image' }),
+      ]));
 
       vue.appendChild(K.note('Les pièces émises AVANT l’unification portent d’autres identités — trois IFU, '
         + 'trois RCCM et deux autorisations relevés sur les 37 documents collectés (certificats médico-légaux, '
@@ -3671,7 +4161,7 @@
             'Bonjour {{nom}}, un reliquat reste dû sur votre dossier à {{clinique}}. '
             + 'Nous vous remercions de bien vouloir passer à la caisse.'],
         ].forEach(function (m) {
-          col.insert({ occasion: m[0], libelle: m[1], texte: m[2], actif: true,
+          col.insert({ occasion: m[0], libelle: m[1], texte: m[2], actif: true, aValider: true,
             source: 'Modèle proposé — à valider par la Direction' });
         });
         S.save();
@@ -4050,11 +4540,14 @@
                     actes.push(K.iconBtn(v.actif === false ? 'eye' : 'eye-off',
                       v.actif === false ? 'Rouvrir la variable' : 'Fermer la variable',
                       function () {
-                        colVariablesIm().update(v.id, { actif: v.actif === false });
+                        /* E845 : l'état se lit AVANT l'écriture — `update` modifie la fiche en place, et le message
+                           disait « rouverte » au moment même de FERMER la variable. */
+                        var etaitFermee = v.actif === false;
+                        colVariablesIm().update(v.id, { actif: etaitFermee });
                         afficher();
-                        U.toast(v.actif === false ? 'Variable rouverte.' : 'Variable ferm\u00e9e.', {
+                        U.toast(etaitFermee ? 'Variable rouverte.' : 'Variable ferm\u00e9e.', {
                           type: 'success',
-                          detail: v.actif === false ? null : 'Les comptes rendus d\u00e9j\u00e0 rendus la conservent.',
+                          detail: etaitFermee ? null : 'Les comptes rendus d\u00e9j\u00e0 rendus la conservent.',
                         });
                       }));
                   }
@@ -4066,6 +4559,290 @@
         ]));
         U.icons(vue);
       }
+    },
+  });
+
+
+  /* ============================================================================
+   * CE POSTE — où se décide qu un poste est la MÈRE (30/10/2026)
+   * Un seul exécutable ; le mode est un réglage du poste, activé sur le serveur local.
+   * Prototype : aucune activation réelle (données de démonstration).
+   * ========================================================================== */
+  global.SIGH.screen('cfg-poste', {
+    title: 'Ce poste',
+    description: 'Mode du poste : fileul ou mère. La mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes).',
+    regle: 'Il ne peut y avoir <strong>qu’un seul poste mère par clinique</strong> : le relais refuse une seconde déclaration <strong>en nommant la première</strong>. L’activation est <strong>atomique</strong> : si le service ne démarre pas, le poste reste fileul.',
+    render: function (root) {
+      var el = C.el, hote = el('div.space-y-4');
+      var mere = false;
+      function peindre() {
+        C.clear(hote);
+        hote.appendChild(U.kpiGrid([
+          { label: 'Mode de ce poste', value: mere ? 'Mère' : 'Fileul', icon: mere ? 'server' : 'monitor', tone: mere ? 'success' : 'navy' },
+          { label: 'Service de synchronisation', value: mere ? 'En marche' : 'Arrêté', icon: 'power', tone: mere ? 'success' : 'neutral' },
+        ]));
+        if (!mere) {
+          hote.appendChild(K.note('À faire sur le <strong>serveur local</strong> uniquement. Exige l’adresse du relais, le <strong>secret de la mère</strong> et la <strong>clé de clinique</strong>.', { tone: 'info', icon: 'info' }));
+          var b = el('button.btn.btn-primary.btn-sm', { type: 'button', text: 'Activer le mode mère' });
+          hote.appendChild(K.note('<strong>Prototype : simulation.</strong> Aucune déclaration au relais ni démarrage de service n’a lieu, et rien n’est enregistré : le poste redevient fileul au rechargement de l’écran.', { tone: 'warning', icon: 'triangle-alert' }));
+          b.addEventListener('click', function () { U.toast('Simulation : aucun mode enregistré, l’état n’est tenu que le temps de cet écran.', { type: 'info' }); mere = true; peindre(); });
+          hote.appendChild(b);
+        } else {
+          hote.appendChild(K.note('Les modules du groupe <strong>Poste mère</strong> sont maintenant disponibles pour l’administrateur et la DAF.', { tone: 'success', icon: 'check' }));
+          var d = el('button.btn.btn-secondary.btn-sm', { type: 'button', text: 'Désactiver le mode mère' });
+          d.addEventListener('click', function () { mere = false; peindre(); });
+          hote.appendChild(d);
+        }
+      }
+      root.appendChild(hote); peindre(); return null;
+    },
+  });
+
+  /* ==========================================================================
+   * ÉCHANGES ENTRE POSTES (MODE PAIR) — ADR-0006
+   * --------------------------------------------------------------------------
+   * Le réglage PROPRE à ce poste : où se trouve le relais, sous quelle clé unique de la clinique les opérations sont chiffrées, sous quel nom ce poste
+   * s'annonce, et le code d'appairage à usage unique. Rien de tout cela ne voyage : un réglage de poste qui se synchroniserait enverrait la clé aux autres
+   * postes par le chemin même qu'elle protège. La clé s'affiche UNE SEULE FOIS, à sa génération ; ensuite l'écran ne la montre plus jamais. La récupération
+   * par courriel est un réglage FERMÉ par défaut : la clé n'y part que chiffrée par une phrase secrète que le système ne garde pas.
+   * Prototype : simulation locale (aucun relais joint), le geste et ses refus sont ceux du poste.
+   * ========================================================================== */
+  global.SIGH.screen('cfg-pair', {
+    title: 'Échanges entre postes (mode pair)',
+    description: 'Réglage de ce poste pour échanger ses opérations avec les autres postes par le relais, sans passer par la mère.',
+    regle: 'Les opérations sont <strong>chiffrées de bout en bout</strong> avec la clé unique de la clinique : le relais ne voit que des enveloppes. La clé <strong>ne s’affiche qu’une seule fois</strong>, à sa génération, et ne voyage jamais.',
+    render: function (root) {
+      var CLE = 'sigh-cnt:pair';
+      var lire = function () { try { return JSON.parse(S.storage.get(CLE) || '{}') || {}; } catch (e) { return {}; } };
+      var ecrire = function (o) { S.storage.set(CLE, JSON.stringify(o)); };
+      var hote = el('div.space-y-4');
+      var cleMontree = null; /* la clé en clair n'existe qu'en mémoire, le temps de l'écran */
+
+      function hex() {
+        var a = new Uint8Array(32); (global.crypto || global.msCrypto).getRandomValues(a);
+        return Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+      }
+
+      function peindre() {
+        var c = lire();
+        C.clear(hote);
+        hote.appendChild(U.kpiGrid([
+          { label: 'Mode pair', value: c.actif ? 'Activé' : 'Désactivé', icon: 'git-compare-arrows', tone: c.actif ? 'success' : 'neutral' },
+          { label: 'Appairage', value: c.appaire ? 'Appairé' : 'Non appairé', icon: 'link', tone: c.appaire ? 'success' : 'warning' },
+          { label: 'Conflits à trancher', value: 0, icon: 'git-merge', tone: 'neutral' },
+          { label: 'Opérations en attente', value: 0, icon: 'cloud-upload', tone: 'neutral' },
+        ]));
+
+        var f = U.form([
+          { name: 'relais', label: 'Adresse du relais', required: true, col: 'full', value: c.relais || '', help: 'Exemple : https://relais.exemple.bj' },
+          { name: 'nom', label: 'Nom de ce poste', required: true, value: c.nom || '' },
+          { name: 'code', label: 'Code d’appairage (usage unique)', value: '', help: 'Délivré par le relais. Consommé au premier lancement, jamais gardé.' },
+          { name: 'actif', label: 'Activer le mode pair sur ce poste', type: 'checkbox', col: 'full', value: !!c.actif },
+        ], {});
+        hote.appendChild(U.card('Configuration du mode pair', el('div', null, [
+          f,
+          el('div.mt-4', null, K.commande('Enregistrer la configuration', {
+            variant: 'primary', icon: 'save',
+            onclick: function () {
+              var v = f.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              if (!/^https?:\/\/[^\s/]+/.test(v.relais)) { U.toast('L’adresse du relais doit commencer par http:// ou https://.', { type: 'error' }); return; }
+              if (v.actif && !c.cleGeneree) { U.toast('Générer d’abord la clé unique de la clinique : sans elle, aucune opération ne peut être chiffrée.', { type: 'error' }); return; }
+              var n = Object.assign({}, c, { relais: v.relais.replace(/\/+$/, ''), nom: v.nom, actif: !!v.actif });
+              if (v.code) n.appaire = true; /* le code est consommé, jamais conservé */
+              ecrire(n);
+              S.log('Modification', 'CFG', 'Mode pair', n.nom, { actif: !!c.actif }, { actif: n.actif, relais: n.relais, appaire: !!n.appaire });
+              U.toast('Configuration enregistrée (simulation : aucun relais joint).', { type: 'success' });
+              peindre();
+            },
+          })),
+        ])));
+
+        var corpsCle = el('div.space-y-3');
+        corpsCle.appendChild(K.note('La clé est <strong>unique pour toute la clinique</strong> : tous les postes doivent porter la même. Notez-la ou copiez-la maintenant, elle ne sera plus affichée.', { tone: 'warning', icon: 'key-round' }));
+        if (cleMontree) {
+          var champ = el('input.input.font-mono.text-xs', { type: 'text', readonly: true, value: cleMontree, 'aria-label': 'Clé unique de la clinique' });
+          corpsCle.appendChild(champ);
+          corpsCle.appendChild(el('div.flex.gap-2', null, [
+            K.btn('Copier la clé', { variant: 'secondary', icon: 'copy', onclick: function () {
+              try { global.navigator.clipboard.writeText(cleMontree); } catch (e) { /* presse-papiers indisponible */ }
+              U.toast('Clé copiée.', { type: 'success' });
+            } }),
+            K.btn('J’ai noté la clé', { variant: 'primary', icon: 'check', onclick: function () { cleMontree = null; peindre(); } }),
+          ]));
+        } else {
+          corpsCle.appendChild(el('p.text-sm.text-slate-600', { text: c.cleGeneree ? 'La clé a été générée le ' + C.dateFR(c.cleLe) + '. Elle n’est plus affichée.' : 'Aucune clé n’a encore été générée sur ce poste.' }));
+          corpsCle.appendChild(K.commande(c.cleGeneree ? 'Générer une nouvelle clé' : 'Générer la clé', {
+            variant: c.cleGeneree ? 'danger' : 'primary', icon: 'key-round',
+            onclick: function () {
+              var faire = function () {
+                cleMontree = hex();
+                ecrire(Object.assign({}, lire(), { cleGeneree: true, cleLe: C.isoLocal ? C.isoLocal().slice(0, 10) : new Date().toISOString().slice(0, 10) }));
+                S.log('Création', 'CFG', 'Clé du mode pair', 'clé de la clinique', null, { generee: true });
+                peindre();
+              };
+              if (!c.cleGeneree) { faire(); return; }
+              U.confirm({ title: 'Générer une nouvelle clé ?', message: 'Les enveloppes déjà déposées au relais resteront chiffrées avec l’ancienne clé : tous les postes devront recevoir la nouvelle. Cette action ne peut pas être annulée.', confirmLabel: 'Générer une nouvelle clé', danger: true }).then(function (ok) { if (ok) faire(); });
+            },
+          }));
+        }
+        hote.appendChild(U.card('Clé unique de la clinique', corpsCle));
+
+        var r = U.form([
+          { name: 'recuperation', label: 'Permettre la récupération de la clé par courriel', type: 'checkbox', col: 'full', value: !!c.recuperation },
+          c.recuperation ? { name: 'courriel', label: 'Adresse de courriel de récupération', type: 'email', required: true, value: c.courriel || '' } : null,
+          c.recuperation ? { name: 'phrase', label: 'Phrase secrète', type: 'password', required: true, help: 'Chiffre la clé avant l’envoi. Le système ne la garde pas : la perdre rend la clé irrécupérable.' } : null,
+        ], {});
+        var cb = r.querySelector('#f_recuperation');
+        if (cb) cb.addEventListener('change', function () { ecrire(Object.assign({}, lire(), { recuperation: cb.checked })); peindre(); });
+        hote.appendChild(U.card('Récupération de la clé par courriel', el('div.space-y-3', null, [
+          K.note('Réglage <strong>fermé par défaut</strong> : tant qu’il l’est, la perte de la clé ne se rattrape que sur un autre poste de la clinique.', { tone: 'info', icon: 'mail' }),
+          r,
+          c.recuperation ? K.commande('Envoyer la clé par courriel', {
+            variant: 'primary', icon: 'send',
+            onclick: function () {
+              var v = r.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              if (String(v.phrase).length < 8) { U.toast('La phrase secrète doit comporter au moins 8 caractères.', { type: 'error' }); return; }
+              if (!c.cleGeneree) { U.toast('Aucune clé à envoyer : la générer d’abord.', { type: 'error' }); return; }
+              ecrire(Object.assign({}, lire(), { courriel: v.courriel }));
+              S.log('Modification', 'CFG', 'Récupération de la clé', v.courriel, null, { envoi: 'simulé' });
+              U.toast('Simulation : la clé, chiffrée par la phrase secrète, serait envoyée à ' + v.courriel + '.', { type: 'info' });
+            },
+          }) : null,
+        ])));
+
+        hote.appendChild(U.card('État du mode pair', U.descList([
+          ['Relais', c.relais || 'Non renseigné'],
+          ['Nom de ce poste', c.nom || 'Non renseigné'],
+          ['Clé de la clinique', c.cleGeneree ? 'Générée' : 'Absente'],
+          ['Derniers échanges', 'Aucun (simulation)'],
+        ])));
+      }
+      root.appendChild(hote); peindre(); return null;
+    },
+  });
+
+  /* ==========================================================================
+   * MESSAGERIE (SMTP) ET TEST D'ENVOI
+   * --------------------------------------------------------------------------
+   * Le logiciel n'avait AUCUNE messagerie : « Contactez l'éditeur » rangeait la demande dans une collection locale, sans rien envoyer. Cet écran règle le
+   * serveur SMTP de la clinique, et son bouton de test envoie VRAIMENT un message (api/smtp.php), en montrant la suite d'étapes : connecté, chiffré,
+   * authentifié, envoyé, ou l'étape où cela échoue. Le mot de passe est saisi, JAMAIS relu : il part au serveur, qui le garde chiffré dans un fichier à part ;
+   * il n'entre pas dans le magasin que l'on exporte. Sans serveur (navigateur seul), l'écran le dit au lieu de simuler un envoi.
+   * ========================================================================== */
+  global.SIGH.screen('cfg-smtp', {
+    title: 'Messagerie (SMTP)',
+    description: 'Serveur de courriel de la clinique et test d’envoi : sert à écrire à l’éditeur et, plus tard, à tout envoi de la clinique.',
+    regle: 'Le <strong>mot de passe n’est jamais relu</strong> : l’écran ne l’affiche pas, le magasin exporté ne le contient pas. Le test envoie un <strong>vrai message</strong> et dit à quelle étape il échoue.',
+    render: function (root) {
+      var hote = el('div.space-y-4');
+      root.appendChild(hote);
+      function jeton() { return S.jetonServeur ? S.jetonServeur() : null; }
+      function racine() { return (document.documentElement.getAttribute('data-root')) || ''; }
+      function appeler(action, corps) {
+        var get = !corps;
+        return global.fetch(racine() + 'api/smtp.php' + (get ? '?action=' + action : ''), {
+          method: get ? 'GET' : 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': jeton() || '' },
+          body: get ? undefined : JSON.stringify(Object.assign({ action: action }, corps)),
+        }).then(function (r) { return r.json().then(function (o) { if (!r.ok && !o.etapes) throw new Error(o.detail || o.erreur || String(r.status)); return o; }); });
+      }
+      /* LA CONFIGURATION FOURNIE PAR LA CLINIQUE (valeurs NON secrètes) : proposée dans le formulaire tant que rien n'est enregistré. Le mot de passe n'a AUCUNE valeur
+         par défaut : il se saisit, il n'est jamais écrit ici ni dans le dépôt. */
+      var DEFAUTS = {
+        serveur: 'mail.sigh.nassieratoo.com', port: 587, chiffrement: 'starttls', delai: 20,
+        identifiant: 'contact@sigh.nassieratoo.com', expediteur: 'contact@sigh.nassieratoo.com', nom: 'Clinique Nassièra Too',
+        repondreA: 'cliniquenassiera@gmail.com', repondreNom: 'Clinique Nassièra Too',
+      };
+      var ETAPES = { connexion: 'Connexion au serveur', salutation: 'Salutation', 'chiffrement': 'Chiffrement', authentification: 'Authentification', 'expéditeur': 'Expéditeur', destinataire: 'Destinataire', envoi: 'Envoi du message' };
+      var dernier = null, adresseTest = '';
+
+      function rendreEtapes(r) {
+        var liste = el('ol.space-y-1.text-sm', { 'data-testid': 'etapes-smtp' });
+        (r.etapes || []).forEach(function (e) {
+          liste.appendChild(el('li.flex.items-start.gap-2', null, [
+            el('span.mt-0\\.5.shrink-0.' + (e.ok ? 'text-success-600' : 'text-danger-600'), null, C.icon(e.ok ? 'check-circle-2' : 'x-circle', 'h-4 w-4')),
+            el('span', null, [el('strong', { text: (ETAPES[e.etape] || e.etape) + ' : ' }), el('span', { text: e.detail })]),
+          ]));
+        });
+        return el('div.space-y-2', null, [
+          K.note(r.ok ? '<strong>Message de test envoyé.</strong> Vérifier sa réception dans la boîte du destinataire.' : '<strong>Échec à l’étape « ' + (ETAPES[r.echec] || r.echec) + ' ».</strong> Corriger ce réglage puis refaire le test.', { tone: r.ok ? 'success' : 'danger', icon: r.ok ? 'mail-check' : 'mail-x' }),
+          liste,
+        ]);
+      }
+
+      function peindre(c) {
+        C.clear(hote);
+        if (!c) { hote.appendChild(K.note('Messagerie indisponible : aucun serveur n’est joint (navigateur seul). L’envoi réel exige le serveur du poste.', { tone: 'warning', icon: 'plug-zap' })); return; }
+        hote.appendChild(U.kpiGrid([
+          { label: 'Messagerie', value: c.configure ? 'Configurée' : 'Non configurée', icon: 'mail', tone: c.configure ? 'success' : 'warning' },
+          { label: 'Dernier test', value: c.testeOk === true ? 'Réussi' : (c.testeOk === false ? 'Échoué' : 'Jamais fait'), icon: 'send', tone: c.testeOk === true ? 'success' : (c.testeOk === false ? 'danger' : 'neutral') },
+          { label: 'Chiffrement', value: ({ aucun: 'Aucun', starttls: 'STARTTLS', ssl: 'SSL' })[c.chiffrement] || '', icon: 'lock', tone: c.chiffrement === 'aucun' ? 'warning' : 'navy' },
+          { label: 'Mot de passe', value: c.motDePasseDefini ? 'Défini' : 'Non défini', icon: 'key-round', tone: c.motDePasseDefini ? 'success' : 'neutral' },
+        ]));
+
+        /* tant que rien n'est enregistré, le formulaire propose la configuration de la clinique ; une fois enregistrée, c'est elle qui fait foi (un identifiant vidé
+           exprès ne se remplit pas de nouveau) */
+        var v0 = c.configure ? c : Object.assign({}, c, DEFAUTS);
+        var f = U.form([
+          { name: 'serveur', label: 'Serveur SMTP', required: true, value: v0.serveur || '', help: 'Exemple : smtp.exemple.bj' },
+          { name: 'port', label: 'Port', type: 'number', min: 1, required: true, col: 'third', value: v0.port || 587, help: '587 (STARTTLS), 465 (SSL), 25 (aucun)' },
+          { name: 'chiffrement', label: 'Chiffrement', type: 'select', required: true, col: 'third', value: v0.chiffrement || 'starttls', search: false,
+            options: [{ value: 'starttls', label: 'STARTTLS' }, { value: 'ssl', label: 'SSL' }, { value: 'aucun', label: 'Aucun (déconseillé)' }] },
+          { name: 'delai', label: 'Délai (secondes)', type: 'number', min: 3, col: 'third', value: v0.delai || 15 },
+          { name: 'identifiant', label: 'Identifiant', value: v0.identifiant || '', help: 'Laisser vide si le serveur n’exige aucune authentification.' },
+          { name: 'motDePasse', label: 'Mot de passe', type: 'password', value: '', help: c.motDePasseDefini ? 'Un mot de passe est enregistré. Laisser vide pour le conserver.' : 'Jamais relu après enregistrement.' },
+          { name: 'expediteur', label: 'Adresse d’expéditeur', type: 'email', required: true, value: v0.expediteur || '' },
+          { name: 'nom', label: 'Nom affiché de l’expéditeur', value: v0.nom || '' },
+          { name: 'repondreA', label: 'Répondre à (adresse)', type: 'email', value: v0.repondreA || '', help: 'Les réponses des destinataires iront à cette adresse (en-tête Reply-To).' },
+          { name: 'repondreNom', label: 'Répondre à (nom)', value: v0.repondreNom || '' },
+          { name: 'verifierCertificat', label: 'Vérifier le certificat du serveur', type: 'checkbox', col: 'full', value: c.verifierCertificat !== false },
+        ], {});
+        hote.appendChild(U.card('Serveur de courriel', el('div', null, [
+          f,
+          el('div.mt-4', null, K.commande('Enregistrer la messagerie', {
+            variant: 'primary', icon: 'save',
+            onclick: function () {
+              var v = f.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              appeler('enregistrer', v).then(function (n) {
+                S.log('Modification', 'CFG', 'Messagerie (SMTP)', v.serveur, null, { serveur: v.serveur, port: v.port, chiffrement: v.chiffrement, motDePasse: v.motDePasse ? 'changé' : 'inchangé' });
+                U.toast('Messagerie enregistrée. Le dernier test n’est plus valable : refaire un test d’envoi.', { type: 'success' });
+                dernier = null; peindre(n);
+              }).catch(function (e) { U.toast(e.message, { type: 'error' }); });
+            },
+          })),
+        ])));
+
+        var ft = U.form([{ name: 'destinataire', label: 'Adresse de test', type: 'email', required: true, col: 'full', value: adresseTest, help: 'Un message de test y sera envoyé avec les réglages ci-dessus, enregistrés ou non.' }], {});
+        var resultat = el('div', { 'data-testid': 'resultat-test-smtp' });
+        if (dernier) resultat.appendChild(rendreEtapes(dernier));
+        else if (c.testeOk !== null && c.testeOk !== undefined) resultat.appendChild(el('p.text-sm.text-slate-600', { text: 'Dernier test (' + C.dateFR(String(c.testeLe).slice(0, 10)) + ') : ' + (c.testeOk ? 'réussi.' : 'échoué à l’étape « ' + (ETAPES[c.testeEchec] || c.testeEchec) + ' ».') }));
+        hote.appendChild(U.card('Test d’envoi', el('div.space-y-3', null, [
+          ft,
+          K.commande('Envoyer un message de test', {
+            variant: 'primary', icon: 'send',
+            onclick: function () {
+              var v = f.collect(), t = ft.collect();
+              if (!v || !t) { U.toast('Renseigner les réglages du serveur et l’adresse de test.', { type: 'error' }); return; }
+              adresseTest = t.destinataire;
+              C.clear(resultat); resultat.appendChild(el('p.text-sm.text-slate-500', { text: 'Envoi en cours…' }));
+              appeler('tester', Object.assign({}, v, { destinataire: t.destinataire })).then(function (r) {
+                dernier = r;
+                S.log('Test d’envoi', 'CFG', 'Messagerie (SMTP)', v.serveur, null, { ok: r.ok, echec: r.echec });
+                appeler('etat').then(function (n) { peindre(n); }).catch(function () { C.clear(resultat); resultat.appendChild(rendreEtapes(r)); });
+              }).catch(function (e) { C.clear(resultat); resultat.appendChild(K.note(e.message, { tone: 'danger' })); });
+            },
+          }),
+          resultat,
+        ])));
+      }
+
+      if (!jeton()) { peindre(null); return null; }
+      hote.appendChild(el('p.text-sm.text-slate-500', { text: 'Lecture de la configuration…' }));
+      appeler('etat').then(peindre).catch(function (e) { C.clear(hote); hote.appendChild(K.note(e.message, { tone: 'danger' })); });
+      return null;
     },
   });
 

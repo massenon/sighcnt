@@ -1,0 +1,61 @@
+{
+ "id": "m4-naissances",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Registre des naissances",
+ "acces": "ouvert",
+ "titre": "Registre des naissances",
+ "description": "Déclaration des naissances : sexe, poids, taille, score d’Apgar et suivi de la déclaration à l’état civil.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Registre des naissances"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les naissances",
+  "Archivés"
+ ],
+ "kpis": [
+  "Naissances enregistrées",
+  "Garçons / Filles",
+  "Poids moyen",
+  "À déclarer à l’état civil"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date et heure",
+   "Mère",
+   "Dossier mère",
+   "Sexe",
+   "Poids (kg)",
+   "Apgar 1/5/10",
+   "PC / PT (cm)",
+   "État",
+   "État civil",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les naissances48",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

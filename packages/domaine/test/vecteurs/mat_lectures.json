@@ -1,0 +1,6228 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-maternite.js — ne pas éditer.",
+ "jour": "2026-08-16",
+ "lectures": {
+  "m4-maternite": {
+   "id": "m4-maternite",
+   "kpis": [
+    {
+     "label": "Grossesses suivies",
+     "valeur": "32",
+     "indice": null
+    },
+    {
+     "label": "Accouchements sous 15 jours",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "label": "Grossesses à risque",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "label": "CPN moyennes",
+     "valeur": "2.4",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les suivis de grossesse32",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "PATIENTE",
+    "TERME (SA)",
+    "DATE PRÉVUE",
+    "ÉCHÉANCE",
+    "CPN RÉALISÉES",
+    "GROUPE",
+    "RISQUE",
+    "SAGE-FEMME",
+    "OBSERVATIONS",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "BANI Zoukanéri CNT/62/25",
+     "39 SA",
+     "02/09/2026",
+     "17 j",
+     "4",
+     "AB+",
+     "Standard",
+     "BOUKARI Nadège",
+     "Diabète gestationnel",
+     ""
+    ],
+    [
+     "",
+     "PARAISO Rabiatou CNT/177/25",
+     "38 SA",
+     "09/09/2026",
+     "24 j",
+     "3",
+     "O+",
+     "Standard",
+     "TAKI Orou",
+     "Diabète gestationnel",
+     ""
+    ],
+    [
+     "",
+     "OROU YO Ramatou CNT/81/26",
+     "37 SA",
+     "16/09/2026",
+     "31 j",
+     "3",
+     "A+",
+     "Standard",
+     "ADAM Colette",
+     "Anémie modérée",
+     ""
+    ],
+    [
+     "",
+     "KASSA Adissa CNT/115/26",
+     "36 SA",
+     "23/09/2026",
+     "38 j",
+     "4",
+     "B-",
+     "Standard",
+     "AHOHOU Rodrigue",
+     "Anémie modérée",
+     ""
+    ],
+    [
+     "",
+     "TIGRI Séraphine CNT/11/26",
+     "35 SA",
+     "30/09/2026",
+     "45 j",
+     "3",
+     "AB-",
+     "Standard",
+     "TAKI Orou",
+     "Grossesse évolutive normale",
+     ""
+    ],
+    [
+     "",
+     "DOSSOU Colette CNT/36/26",
+     "35 SA",
+     "30/09/2026",
+     "45 j",
+     "1",
+     "O-",
+     "Élevé",
+     "TAKI Orou",
+     "Diabète gestationnel",
+     ""
+    ],
+    [
+     "",
+     "OURTCHA Kadidjatou CNT/99/26",
+     "34 SA",
+     "07/10/2026",
+     "52 j",
+     "1",
+     "O-",
+     "Standard",
+     "YENI M’PO Florent",
+     "HTA gravidique à surveiller",
+     ""
+    ],
+    [
+     "",
+     "OURTCHA Kadidjatou CNT/99/26",
+     "32 SA",
+     "21/10/2026",
+     "66 j",
+     "1",
+     "O-",
+     "Standard",
+     "YENI M’PO Florent",
+     "Grossesse évolutive normale",
+     ""
+    ],
+    [
+     "",
+     "MAMAN Chantal CNT/85/26",
+     "30 SA",
+     "04/11/2026",
+     "80 j",
+     "2",
+     "AB-",
+     "Standard",
+     "ADAM Colette",
+     "Grossesse évolutive normale",
+     ""
+    ],
+    [
+     "",
+     "GARBA Aïssatou CNT/13/26",
+     "25 SA",
+     "11/11/2026",
+     "87 j",
+     "3",
+     "AB+",
+     "Standard",
+     "BOUKARI Nadège",
+     "Grossesse évolutive, bruits du cœur fœtal perçus",
+     ""
+    ],
+    [
+     "",
+     "GARBA Aïssatou CNT/13/26",
+     "17 SA",
+     "11/11/2026",
+     "87 j",
+     "2",
+     "AB+",
+     "Standard",
+     "BADO BANI A. B. Zoulehath",
+     "Grossesse évolutive normale",
+     ""
+    ],
+    [
+     "",
+     "SOULE Bertine CNT/27/26",
+     "25 SA",
+     "11/11/2026",
+     "87 j",
+     "3",
+     "A+",
+     "Standard",
+     "BOUKARI Nadège",
+     "Grossesse évolutive, bruits du cœur fœtal perçus",
+     ""
+    ]
+   ],
+   "nb": 32,
+   "ids": [
+    "MAT0021",
+    "MAT0018",
+    "MAT0022",
+    "MAT0008",
+    "MAT0016",
+    "MAT0023",
+    "MAT0007",
+    "MAT0005",
+    "MAT0017",
+    "SUIxmvvhmfh05a3jp",
+    "SUIxmvvhmfh0tq1so",
+    "SUIxmvvhmfgxyzs7t",
+    "SUIxmvvhmfgx26azd",
+    "MAT0006",
+    "SUIxmvvhmfgwuzzru",
+    "SUIxmvvhmfgwsk2gg",
+    "MAT0012",
+    "MAT0026",
+    "MAT0011",
+    "MAT0010",
+    "MAT0014",
+    "MAT0019",
+    "MAT0004",
+    "MAT0003",
+    "MAT0009",
+    "MAT0002",
+    "MAT0020",
+    "MAT0001",
+    "MAT0013",
+    "MAT0015",
+    "MAT0024",
+    "MAT0025"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "Niveau de risque"
+      ],
+      [
+       "Standard",
+       "Standard"
+      ],
+      [
+       "Élevé",
+       "Élevé"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "Standard",
+       "nb": 28,
+       "ids": [
+        "MAT0021",
+        "MAT0018",
+        "MAT0022",
+        "MAT0008",
+        "MAT0016",
+        "MAT0007",
+        "MAT0005",
+        "MAT0017",
+        "SUIxmvvhmfh05a3jp",
+        "SUIxmvvhmfh0tq1so",
+        "SUIxmvvhmfgxyzs7t",
+        "SUIxmvvhmfgx26azd",
+        "SUIxmvvhmfgwuzzru",
+        "SUIxmvvhmfgwsk2gg",
+        "MAT0012",
+        "MAT0026",
+        "MAT0011",
+        "MAT0014",
+        "MAT0019",
+        "MAT0004",
+        "MAT0003",
+        "MAT0009",
+        "MAT0002",
+        "MAT0001",
+        "MAT0013",
+        "MAT0015",
+        "MAT0024",
+        "MAT0025"
+       ]
+      },
+      {
+       "valeur": "Élevé",
+       "nb": 4,
+       "ids": [
+        "MAT0023",
+        "MAT0006",
+        "MAT0010",
+        "MAT0020"
+       ]
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "BANI Zoukanéri CNT/62/25",
+    "titre": "BANI Zoukanéri",
+    "texte": "Patiente BANI Zoukanéri CNT/62/25 Terme (SA) 39 SA Date prévue 02/09/2026 Échéance 17 j CPN réalisées 4 Groupe AB+ Risque Standard Sage-femme BOUKARI Nadège Observations Diabète gestationnel Patiente CNT/62/25 — BANI Zoukanéri Poids de la patiente (kg) 74",
+    "boutons": [
+     "Fermer",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Tous les suivis de grossesse32",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2",
+    "3"
+   ]
+  },
+  "m4-accouchements": {
+   "id": "m4-accouchements",
+   "kpis": [
+    {
+     "label": "Accouchements",
+     "valeur": "48",
+     "indice": null
+    },
+    {
+     "label": "Césariennes",
+     "valeur": "9",
+     "indice": "18.8 % des accouchements"
+    },
+    {
+     "label": "Avec complications",
+     "valeur": "6",
+     "indice": null
+    },
+    {
+     "label": "Issues favorables",
+     "valeur": "100.0 %",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les accouchements48",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "DATE ET HEURE",
+    "PARTURIENTE",
+    "TYPE",
+    "ACTES ASSOCIÉS",
+    "DURÉE DU TRAVAIL",
+    "COMPLICATIONS",
+    "PRATICIEN",
+    "ISSUE",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "ACC-0020",
+     "20/08/2026 à 01h31",
+     "TIGRI Séraphine CNT/11/26",
+     "Dirigé",
+     "—",
+     "8 h",
+     "Aucune",
+     "TAKI Orou",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0041",
+     "19/08/2026 à 23h22",
+     "OURTCHA Bertine CNT914/25",
+     "Césarienne",
+     "Délivrance artificielle",
+     "15 h",
+     "Aucune",
+     "BADO BANI A. B. Zoulehath",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0018",
+     "16/08/2026 à 16h51",
+     "ZIME Ramatou CNT/163/25",
+     "Dystocique",
+     "Révision utérine",
+     "7 h",
+     "Aucune",
+     "YENI M’PO Florent",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0014",
+     "16/08/2026 à 12h49",
+     "OROU YO Ramatou CNT/81/26",
+     "Dystocique",
+     "—",
+     "16 h",
+     "Aucune",
+     "YENI M’PO Florent",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0043",
+     "16/08/2026 à 07h06",
+     "DAOUDA Zoukanéri CNT/165/26",
+     "Eutocique",
+     "Ventouse obstétricale",
+     "16 h",
+     "Aucune",
+     "YENI M’PO Florent",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0039",
+     "10/08/2026 à 22h09",
+     "ISSA Chantal CNT/22/26",
+     "Dystocique",
+     "—",
+     "16 h",
+     "Aucune",
+     "TAKI Orou",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0026",
+     "25/07/2026 à 02h46",
+     "AGOSSOU Foussena CNT/78/26",
+     "Césarienne",
+     "—",
+     "4 h",
+     "Aucune",
+     "BASSONGUI Chabi Séko",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0027",
+     "21/07/2026 à 23h13",
+     "SAMBIENI Rabiatou CNT/104/26",
+     "Césarienne",
+     "—",
+     "14 h",
+     "Souffrance fœtale",
+     "AHOHOU Rodrigue",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0038",
+     "21/07/2026 à 11h05",
+     "BAKO Zoukanéri CNT/89/26",
+     "Eutocique",
+     "Révision utérine",
+     "8 h",
+     "Aucune",
+     "ADAM Colette",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0012",
+     "20/07/2026 à 04h33",
+     "BOUKARI Ramatou CNT/146/26",
+     "Eutocique",
+     "—",
+     "4 h",
+     "Aucune",
+     "BADO BANI A. B. Zoulehath",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0003",
+     "17/07/2026 à 04h44",
+     "DIEYABIDI Ramatou CNT/25/26",
+     "Eutocique",
+     "—",
+     "13 h",
+     "Aucune",
+     "ADAM Colette",
+     "Favorable",
+     ""
+    ],
+    [
+     "",
+     "ACC-0009",
+     "16/07/2026 à 20h09",
+     "KORA Marguerite CNT/141/25",
+     "Eutocique",
+     "—",
+     "16 h",
+     "Aucune",
+     "BADO BANI A. B. Zoulehath",
+     "Favorable",
+     ""
+    ]
+   ],
+   "nb": 48,
+   "ids": [
+    "ACC0020",
+    "ACC0041",
+    "ACC0018",
+    "ACC0014",
+    "ACC0043",
+    "ACC0039",
+    "ACC0026",
+    "ACC0027",
+    "ACC0038",
+    "ACC0012",
+    "ACC0003",
+    "ACC0009",
+    "ACC0001",
+    "ACC0037",
+    "ACC0015",
+    "ACC0016",
+    "ACC0034",
+    "ACC0025",
+    "ACC0013",
+    "ACC0023",
+    "ACC0040",
+    "ACC0005",
+    "ACC0032",
+    "ACC0008",
+    "ACC0021",
+    "ACC0006",
+    "ACC0033",
+    "ACC0036",
+    "ACC0011",
+    "ACC0044",
+    "ACC0024",
+    "ACC0047",
+    "ACC0035",
+    "ACC0048",
+    "ACC0028",
+    "ACC0022",
+    "ACC0030",
+    "ACC0010",
+    "ACC0017",
+    "ACC0019",
+    "ACC0002",
+    "ACC0004",
+    "ACC0042",
+    "ACC0046",
+    "ACC0031",
+    "ACC0045",
+    "ACC0007",
+    "ACC0029"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "Type"
+      ],
+      [
+       "Eutocique",
+       "Eutocique"
+      ],
+      [
+       "Dystocique",
+       "Dystocique"
+      ],
+      [
+       "Dirigé",
+       "Dirigé"
+      ],
+      [
+       "Gemellaire",
+       "Gemellaire"
+      ],
+      [
+       "Trimellaire",
+       "Trimellaire"
+      ],
+      [
+       "Césarienne",
+       "Césarienne"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "Eutocique",
+       "nb": 24,
+       "ids": [
+        "ACC0043",
+        "ACC0038",
+        "ACC0012",
+        "ACC0003",
+        "ACC0009",
+        "ACC0001",
+        "ACC0037",
+        "ACC0034",
+        "ACC0005",
+        "ACC0008",
+        "ACC0021",
+        "ACC0033",
+        "ACC0036",
+        "ACC0044",
+        "ACC0028",
+        "ACC0030",
+        "ACC0017",
+        "ACC0019",
+        "ACC0004",
+        "ACC0042",
+        "ACC0046",
+        "ACC0031",
+        "ACC0045",
+        "ACC0007"
+       ]
+      },
+      {
+       "valeur": "Dystocique",
+       "nb": 9,
+       "ids": [
+        "ACC0018",
+        "ACC0014",
+        "ACC0039",
+        "ACC0015",
+        "ACC0032",
+        "ACC0006",
+        "ACC0047",
+        "ACC0035",
+        "ACC0022"
+       ]
+      },
+      {
+       "valeur": "Dirigé",
+       "nb": 6,
+       "ids": [
+        "ACC0020",
+        "ACC0040",
+        "ACC0024",
+        "ACC0048",
+        "ACC0010",
+        "ACC0029"
+       ]
+      },
+      {
+       "valeur": "Gemellaire",
+       "nb": 0,
+       "ids": []
+      },
+      {
+       "valeur": "Trimellaire",
+       "nb": 0,
+       "ids": []
+      },
+      {
+       "valeur": "Césarienne",
+       "nb": 9,
+       "ids": [
+        "ACC0041",
+        "ACC0026",
+        "ACC0027",
+        "ACC0016",
+        "ACC0025",
+        "ACC0013",
+        "ACC0023",
+        "ACC0011",
+        "ACC0002"
+       ]
+      }
+     ]
+    },
+    {
+     "options": [
+      [
+       "",
+       "Issue"
+      ],
+      [
+       "Favorable",
+       "Favorable"
+      ],
+      [
+       "Défavorable",
+       "Défavorable"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "Favorable",
+       "nb": 48,
+       "ids": [
+        "ACC0020",
+        "ACC0041",
+        "ACC0018",
+        "ACC0014",
+        "ACC0043",
+        "ACC0039",
+        "ACC0026",
+        "ACC0027",
+        "ACC0038",
+        "ACC0012",
+        "ACC0003",
+        "ACC0009",
+        "ACC0001",
+        "ACC0037",
+        "ACC0015",
+        "ACC0016",
+        "ACC0034",
+        "ACC0025",
+        "ACC0013",
+        "ACC0023",
+        "ACC0040",
+        "ACC0005",
+        "ACC0032",
+        "ACC0008",
+        "ACC0021",
+        "ACC0006",
+        "ACC0033",
+        "ACC0036",
+        "ACC0011",
+        "ACC0044",
+        "ACC0024",
+        "ACC0047",
+        "ACC0035",
+        "ACC0048",
+        "ACC0028",
+        "ACC0022",
+        "ACC0030",
+        "ACC0010",
+        "ACC0017",
+        "ACC0019",
+        "ACC0002",
+        "ACC0004",
+        "ACC0042",
+        "ACC0046",
+        "ACC0031",
+        "ACC0045",
+        "ACC0007",
+        "ACC0029"
+       ]
+      },
+      {
+       "valeur": "Défavorable",
+       "nb": 0,
+       "ids": []
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "ACC-0020",
+    "titre": "TIGRI Séraphine",
+    "texte": "RÉFÉRENCE ACC-0020 PARTURIENTE TIGRI Séraphine — CNT/11/26 DATE ET HEURE 20/08/2026 à 01h31 TYPE Dirigé ACTES ASSOCIÉS — DURÉE DU TRAVAIL 8 h COMPLICATIONS Aucune PRATICIEN TAKI Orou ISSUE Favorable Certificat de repos post-partum",
+    "boutons": [
+     "Fermer",
+     "Certificat de repos post-partum",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Tous les accouchements48",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2",
+    "3",
+    "4"
+   ]
+  },
+  "m4-naissances": {
+   "id": "m4-naissances",
+   "kpis": [
+    {
+     "label": "Naissances enregistrées",
+     "valeur": "48",
+     "indice": null
+    },
+    {
+     "label": "Garçons / Filles",
+     "valeur": "32 / 16",
+     "indice": null
+    },
+    {
+     "label": "Poids moyen",
+     "valeur": "3.34 kg",
+     "indice": null
+    },
+    {
+     "label": "À déclarer à l’état civil",
+     "valeur": "7",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les naissances48",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "DATE ET HEURE",
+    "MÈRE",
+    "DOSSIER MÈRE",
+    "SEXE",
+    "POIDS (KG)",
+    "APGAR 1/5/10",
+    "PC / PT (CM)",
+    "ÉTAT",
+    "ÉTAT CIVIL",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "NAI-0020",
+     "20/08/2026 à 01h31",
+     "TIGRI Séraphine",
+     "CNT/11/26",
+     "Masculin",
+     "2.94",
+     "5 / 7 / 8",
+     "36.9 / 33.7",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0041",
+     "19/08/2026 à 23h22",
+     "OURTCHA Bertine",
+     "CNT914/25",
+     "Féminin",
+     "2.42",
+     "7 / 7 / 8",
+     "35.3 / 35.1",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0018",
+     "16/08/2026 à 16h51",
+     "ZIME Ramatou",
+     "CNT/163/25",
+     "Masculin",
+     "4.17",
+     "8 / 9 / 10",
+     "36.2 / 33.1",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0014",
+     "16/08/2026 à 12h49",
+     "OROU YO Ramatou",
+     "CNT/81/26",
+     "Masculin",
+     "3.14",
+     "5 / 6 / 6",
+     "37.2 / 35.8",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0043",
+     "16/08/2026 à 07h06",
+     "DAOUDA Zoukanéri",
+     "CNT/165/26",
+     "Masculin",
+     "4.02",
+     "9 / 10 / 10",
+     "34.6 / 33",
+     "Né vivant",
+     "À déclarer",
+     ""
+    ],
+    [
+     "",
+     "NAI-0039",
+     "10/08/2026 à 22h09",
+     "ISSA Chantal",
+     "CNT/22/26",
+     "Féminin",
+     "3.89",
+     "6 / 7 / 8",
+     "33.3 / 35.2",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0026",
+     "25/07/2026 à 02h46",
+     "AGOSSOU Foussena",
+     "CNT/78/26",
+     "Masculin",
+     "2.38",
+     "4 / 6 / 8",
+     "34.3 / 32.9",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0027",
+     "21/07/2026 à 23h13",
+     "SAMBIENI Rabiatou",
+     "CNT/104/26",
+     "Féminin",
+     "3.85",
+     "8 / 10 / 10",
+     "34.5 / 35.9",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0038",
+     "21/07/2026 à 11h05",
+     "BAKO Zoukanéri",
+     "CNT/89/26",
+     "Masculin",
+     "3.76",
+     "9 / 10 / 10",
+     "37.2 / 31.1",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0012",
+     "20/07/2026 à 04h33",
+     "BOUKARI Ramatou",
+     "CNT/146/26",
+     "Féminin",
+     "2.99",
+     "7 / 9 / 10",
+     "35.9 / 33.3",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0003",
+     "17/07/2026 à 04h44",
+     "DIEYABIDI Ramatou",
+     "CNT/25/26",
+     "Féminin",
+     "3.95",
+     "9 / 9 / 10",
+     "37.3 / 30.3",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ],
+    [
+     "",
+     "NAI-0009",
+     "16/07/2026 à 20h09",
+     "KORA Marguerite",
+     "CNT/141/25",
+     "Masculin",
+     "4.18",
+     "9 / 10 / 10",
+     "36.8 / 33.6",
+     "Né vivant",
+     "Déclarée",
+     ""
+    ]
+   ],
+   "nb": 48,
+   "ids": [
+    "NAI0020",
+    "NAI0041",
+    "NAI0018",
+    "NAI0014",
+    "NAI0043",
+    "NAI0039",
+    "NAI0026",
+    "NAI0027",
+    "NAI0038",
+    "NAI0012",
+    "NAI0003",
+    "NAI0009",
+    "NAI0001",
+    "NAI0037",
+    "NAI0015",
+    "NAI0016",
+    "NAI0034",
+    "NAI0025",
+    "NAI0013",
+    "NAI0023",
+    "NAI0040",
+    "NAI0005",
+    "NAI0032",
+    "NAI0008",
+    "NAI0021",
+    "NAI0006",
+    "NAI0033",
+    "NAI0036",
+    "NAI0011",
+    "NAI0044",
+    "NAI0024",
+    "NAI0047",
+    "NAI0035",
+    "NAI0048",
+    "NAI0028",
+    "NAI0022",
+    "NAI0030",
+    "NAI0010",
+    "NAI0017",
+    "NAI0019",
+    "NAI0002",
+    "NAI0004",
+    "NAI0042",
+    "NAI0046",
+    "NAI0031",
+    "NAI0045",
+    "NAI0007",
+    "NAI0029"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "Sexe"
+      ],
+      [
+       "M",
+       "Masculin"
+      ],
+      [
+       "F",
+       "Féminin"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "M",
+       "nb": 32,
+       "ids": [
+        "NAI0020",
+        "NAI0018",
+        "NAI0014",
+        "NAI0043",
+        "NAI0026",
+        "NAI0038",
+        "NAI0009",
+        "NAI0001",
+        "NAI0037",
+        "NAI0016",
+        "NAI0025",
+        "NAI0023",
+        "NAI0040",
+        "NAI0032",
+        "NAI0008",
+        "NAI0021",
+        "NAI0006",
+        "NAI0033",
+        "NAI0036",
+        "NAI0011",
+        "NAI0044",
+        "NAI0022",
+        "NAI0030",
+        "NAI0010",
+        "NAI0017",
+        "NAI0019",
+        "NAI0002",
+        "NAI0004",
+        "NAI0046",
+        "NAI0031",
+        "NAI0007",
+        "NAI0029"
+       ]
+      },
+      {
+       "valeur": "F",
+       "nb": 16,
+       "ids": [
+        "NAI0041",
+        "NAI0039",
+        "NAI0027",
+        "NAI0012",
+        "NAI0003",
+        "NAI0015",
+        "NAI0034",
+        "NAI0013",
+        "NAI0005",
+        "NAI0024",
+        "NAI0047",
+        "NAI0035",
+        "NAI0048",
+        "NAI0028",
+        "NAI0042",
+        "NAI0045"
+       ]
+      }
+     ]
+    },
+    {
+     "options": [
+      [
+       "",
+       "État civil"
+      ],
+      [
+       "true",
+       "Déclarées"
+      ],
+      [
+       "false",
+       "À déclarer"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "true",
+       "nb": 41,
+       "ids": [
+        "NAI0020",
+        "NAI0041",
+        "NAI0018",
+        "NAI0014",
+        "NAI0039",
+        "NAI0026",
+        "NAI0027",
+        "NAI0038",
+        "NAI0012",
+        "NAI0003",
+        "NAI0009",
+        "NAI0001",
+        "NAI0037",
+        "NAI0015",
+        "NAI0016",
+        "NAI0034",
+        "NAI0025",
+        "NAI0013",
+        "NAI0040",
+        "NAI0032",
+        "NAI0008",
+        "NAI0021",
+        "NAI0006",
+        "NAI0033",
+        "NAI0036",
+        "NAI0011",
+        "NAI0044",
+        "NAI0024",
+        "NAI0047",
+        "NAI0035",
+        "NAI0048",
+        "NAI0028",
+        "NAI0030",
+        "NAI0010",
+        "NAI0019",
+        "NAI0002",
+        "NAI0004",
+        "NAI0031",
+        "NAI0045",
+        "NAI0007",
+        "NAI0029"
+       ]
+      },
+      {
+       "valeur": "false",
+       "nb": 7,
+       "ids": [
+        "NAI0043",
+        "NAI0023",
+        "NAI0005",
+        "NAI0022",
+        "NAI0017",
+        "NAI0042",
+        "NAI0046"
+       ]
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "NAI-0020",
+    "titre": "NAI-0020",
+    "texte": "N° NAI-0020 Date et heure 20/08/2026 à 01h31 Mère TIGRI Séraphine Dossier mère CNT/11/26 Sexe Masculin Poids (kg) 2.94 Apgar 1/5/10 5 / 7 / 8 PC / PT (cm) 36.9 / 33.7 État Né vivant État civil Déclarée Taille (cm) 48 Périmètre thoracique — PT (cm) 33.7 Apgar à 1 min (/10) 5 Apgar à 10 min (/10) 8 Réanimation néonatale effectuée Non Vitamine K1 administrée Oui Collyre tétracycline Oui Polio oral (VPO0) Non BCG Oui Hépatite B (J0) Oui",
+    "boutons": [
+     "Fermer",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Tous les naissances48",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2",
+    "3",
+    "4"
+   ]
+  },
+  "m4-deces": {
+   "id": "m4-deces",
+   "kpis": [
+    {
+     "label": "Décès enregistrés",
+     "valeur": "14",
+     "indice": null
+    },
+    {
+     "label": "Sur l’année 2026",
+     "valeur": "13",
+     "indice": null
+    },
+    {
+     "label": "À déclarer",
+     "valeur": "6",
+     "indice": null
+    },
+    {
+     "label": "Causes distinctes",
+     "valeur": "6",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les décès14",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "DATE ET HEURE",
+    "PATIENT",
+    "CAUSE DU DÉCÈS",
+    "LIEU",
+    "MÉDECIN CONSTATANT",
+    "DÉCLARATION",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "DEC-0002",
+     "16/08/2026 à 05h46",
+     "SOULE Adissa CNT/143/26",
+     "Cause naturelle — grand âge",
+     "Hospitalisation",
+     "BOUKARI Nadège",
+     "Déclaré",
+     ""
+    ],
+    [
+     "",
+     "DEC-0010",
+     "04/08/2026 à 03h27",
+     "YARO Zoukanéri CNT/70/26",
+     "Paludisme grave",
+     "Hospitalisation",
+     "BASSONGUI Chabi Séko",
+     "À déclarer",
+     ""
+    ],
+    [
+     "",
+     "DEC-0003",
+     "28/07/2026 à 10h05",
+     "HOUNKPATIN Tamou CNT/63/26",
+     "Insuffisance rénale aiguë",
+     "Maternité",
+     "ADAM Colette",
+     "Déclaré",
+     ""
+    ],
+    [
+     "",
+     "DEC-0004",
+     "24/06/2026 à 11h03",
+     "N’TCHA Alassane CNT/47/25",
+     "Accident vasculaire cérébral",
+     "Urgences",
+     "BADO BANI A. B. Zoulehath",
+     "Déclaré",
+     ""
+    ],
+    [
+     "",
+     "DEC-0012",
+     "12/04/2026 à 19h14",
+     "BAKO Zakari CNT/37/26",
+     "Insuffisance rénale aiguë",
+     "Hospitalisation",
+     "TAKI Orou",
+     "À déclarer",
+     ""
+    ],
+    [
+     "",
+     "DEC-0009",
+     "09/04/2026 à 22h14",
+     "WOROU Boukari CNT/119/26",
+     "Choc septique",
+     "Urgences",
+     "BADO BANI A. B. Zoulehath",
+     "Déclaré",
+     ""
+    ],
+    [
+     "",
+     "DEC-0011",
+     "24/03/2026 à 13h57",
+     "ADAM Edmond CNT/59/26",
+     "Accident vasculaire cérébral",
+     "Maternité",
+     "AHOHOU Rodrigue",
+     "À déclarer",
+     ""
+    ],
+    [
+     "",
+     "DEC-0005",
+     "24/03/2026 à 03h05",
+     "DAOUDA Zakari CNT/166/26",
+     "Paludisme grave",
+     "Bloc opératoire",
+     "BADO BANI A. B. Zoulehath",
+     "Déclaré",
+     ""
+    ],
+    [
+     "",
+     "DEC-0001",
+     "22/03/2026 à 18h47",
+     "DAOUDA Djibril CNT/124/25",
+     "Accident vasculaire cérébral",
+     "Hospitalisation",
+     "AHOHOU Rodrigue",
+     "À déclarer",
+     ""
+    ],
+    [
+     "",
+     "DEC-0007",
+     "15/03/2026 à 19h29",
+     "TCHOUKOUROU Zakari CNT/73/26",
+     "Cause naturelle — grand âge",
+     "Maternité",
+     "BOUKARI Nadège",
+     "Déclaré",
+     ""
+    ],
+    [
+     "",
+     "DEC-0008",
+     "05/03/2026 à 19h02",
+     "TAKI Alimatou CNT901/25",
+     "Détresse respiratoire",
+     "Urgences",
+     "BOUKARI Nadège",
+     "Déclaré",
+     ""
+    ],
+    [
+     "",
+     "DEC-0014",
+     "23/02/2026 à 16h10",
+     "KASSA Alassane CNT/60/26",
+     "Insuffisance rénale aiguë",
+     "Urgences",
+     "TAKI Orou",
+     "Déclaré",
+     ""
+    ]
+   ],
+   "nb": 14,
+   "ids": [
+    "DEC0002",
+    "DEC0010",
+    "DEC0003",
+    "DEC0004",
+    "DEC0012",
+    "DEC0009",
+    "DEC0011",
+    "DEC0005",
+    "DEC0001",
+    "DEC0007",
+    "DEC0008",
+    "DEC0014",
+    "DEC0006",
+    "DEC0013"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "Lieu"
+      ],
+      [
+       "Hospitalisation",
+       "Hospitalisation"
+      ],
+      [
+       "Urgences",
+       "Urgences"
+      ],
+      [
+       "Bloc opératoire",
+       "Bloc opératoire"
+      ],
+      [
+       "Maternité",
+       "Maternité"
+      ],
+      [
+       "Domicile",
+       "Domicile"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "Hospitalisation",
+       "nb": 4,
+       "ids": [
+        "DEC0002",
+        "DEC0010",
+        "DEC0012",
+        "DEC0001"
+       ]
+      },
+      {
+       "valeur": "Urgences",
+       "nb": 5,
+       "ids": [
+        "DEC0004",
+        "DEC0009",
+        "DEC0008",
+        "DEC0014",
+        "DEC0013"
+       ]
+      },
+      {
+       "valeur": "Bloc opératoire",
+       "nb": 1,
+       "ids": [
+        "DEC0005"
+       ]
+      },
+      {
+       "valeur": "Maternité",
+       "nb": 4,
+       "ids": [
+        "DEC0003",
+        "DEC0011",
+        "DEC0007",
+        "DEC0006"
+       ]
+      },
+      {
+       "valeur": "Domicile",
+       "nb": 0,
+       "ids": []
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "DEC-0002",
+    "titre": "SOULE Adissa",
+    "texte": "N° DEC-0002 Date et heure 16/08/2026 à 05h46 Patient SOULE Adissa CNT/143/26 Cause du décès Cause naturelle — grand âge Lieu Hospitalisation Médecin constatant BOUKARI Nadège Déclaration Déclaré Patient CNT/143/26 — SOULE Adissa Observations —",
+    "boutons": [
+     "Fermer",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Tous les décès14",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2"
+   ]
+  },
+  "m4-cpn": {
+   "id": "m4-cpn",
+   "kpis": [
+    {
+     "label": "Grossesses suivies",
+     "valeur": "18",
+     "indice": null
+    },
+    {
+     "label": "À risque (GAR)",
+     "valeur": "5",
+     "indice": null
+    },
+    {
+     "label": "Couverture SP3",
+     "valeur": "61.1 %",
+     "indice": "Indicateur DHIS2"
+    },
+    {
+     "label": "MILDA remises",
+     "valeur": "88.9 %",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les grossesses suivies18",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "PATIENTE",
+    "TERME",
+    "DPA",
+    "GAR",
+    "SP (TPI)",
+    "MILDA",
+    "MÉBENDAZOLE",
+    "CPN",
+    "SAGE-FEMME",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "CPN-0007",
+     "N’TCHA Alimatou CNT/23/26",
+     "37 SA",
+     "16/09/2026",
+     "—",
+     "SP1 SP2 SP3 SP4 SP5",
+     "Remise",
+     "Fait",
+     "4",
+     "TAKI Orou",
+     ""
+    ],
+    [
+     "",
+     "CPN-0017",
+     "GARBA Zoukanéri CNT/164/26",
+     "37 SA",
+     "16/09/2026",
+     "—",
+     "SP1 SP2 SP3 SP4 SP5",
+     "Non remise",
+     "Fait",
+     "4",
+     "TAKI Orou",
+     ""
+    ],
+    [
+     "",
+     "CPN-0008",
+     "GARBA Zoukanéri CNT/164/26",
+     "36 SA",
+     "23/09/2026",
+     "GROSSESSE À RISQUE",
+     "SP1 SP2 SP3 SP4 SP5",
+     "Remise",
+     "Fait",
+     "4",
+     "AHOHOU Rodrigue",
+     ""
+    ],
+    [
+     "",
+     "CPN-0014",
+     "KASSA Justine CNT/136/26",
+     "36 SA",
+     "23/09/2026",
+     "GROSSESSE À RISQUE",
+     "SP1 SP2 SP3 SP4 SP5",
+     "Remise",
+     "Fait",
+     "4",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ],
+    [
+     "",
+     "CPN-0001",
+     "KASSA Justine CNT/136/26",
+     "30 SA",
+     "04/11/2026",
+     "GROSSESSE À RISQUE",
+     "SP1 SP2 SP3 SP4",
+     "Remise",
+     "Fait",
+     "3",
+     "ADAM Colette",
+     ""
+    ],
+    [
+     "",
+     "CPN-0003",
+     "GARBA Aïssatou CNT/13/26",
+     "29 SA",
+     "11/11/2026",
+     "—",
+     "SP1 SP2 SP3 SP4",
+     "Remise",
+     "Fait",
+     "3",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "CPN-0013",
+     "SOULE Bertine CNT/27/26",
+     "29 SA",
+     "11/11/2026",
+     "—",
+     "SP1 SP2 SP3 SP4",
+     "Remise",
+     "Fait",
+     "3",
+     "ADAM Colette",
+     ""
+    ],
+    [
+     "",
+     "CPN-0005",
+     "KINNOU Salamatou CNT/28/25",
+     "27 SA",
+     "25/11/2026",
+     "—",
+     "SP1 SP2 SP3",
+     "Remise",
+     "Fait",
+     "3",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ],
+    [
+     "",
+     "CPN-0002",
+     "KORA Marguerite CNT/141/25",
+     "24 SA",
+     "16/12/2026",
+     "GROSSESSE À RISQUE",
+     "SP1 SP2 SP3",
+     "Remise",
+     "Fait",
+     "3",
+     "ADAM Colette",
+     ""
+    ],
+    [
+     "",
+     "CPN-0010",
+     "TAKI Marguerite CNT/125/25",
+     "22 SA",
+     "30/12/2026",
+     "—",
+     "SP1 SP2 SP3",
+     "Non remise",
+     "Fait",
+     "3",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "CPN-0004",
+     "DIEYABIDI Ramatou CNT/25/26",
+     "21 SA",
+     "06/01/2027",
+     "—",
+     "SP1 SP2 SP3",
+     "Remise",
+     "Fait",
+     "3",
+     "AHOHOU Rodrigue",
+     ""
+    ],
+    [
+     "",
+     "CPN-0006",
+     "YARO Zoukanéri CNT/70/26",
+     "18 SA",
+     "27/01/2027",
+     "—",
+     "SP1 SP2",
+     "Remise",
+     "Fait",
+     "2",
+     "AHOHOU Rodrigue",
+     ""
+    ]
+   ],
+   "nb": 18,
+   "ids": [
+    "GRO0007",
+    "GRO0017",
+    "GRO0008",
+    "GRO0014",
+    "GRO0001",
+    "GRO0003",
+    "GRO0013",
+    "GRO0005",
+    "GRO0002",
+    "GRO0010",
+    "GRO0004",
+    "GRO0006",
+    "GRO0016",
+    "GRO0009",
+    "GRO0011",
+    "GRO0018",
+    "GRO0015",
+    "GRO0012"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "Risque"
+      ],
+      [
+       "oui",
+       "Grossesses à risque"
+      ],
+      [
+       "non",
+       "Sans risque identifié"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "oui",
+       "nb": 5,
+       "ids": [
+        "GRO0008",
+        "GRO0014",
+        "GRO0001",
+        "GRO0002",
+        "GRO0018"
+       ]
+      },
+      {
+       "valeur": "non",
+       "nb": 13,
+       "ids": [
+        "GRO0007",
+        "GRO0017",
+        "GRO0003",
+        "GRO0013",
+        "GRO0005",
+        "GRO0010",
+        "GRO0004",
+        "GRO0006",
+        "GRO0016",
+        "GRO0009",
+        "GRO0011",
+        "GRO0015",
+        "GRO0012"
+       ]
+      }
+     ]
+    },
+    {
+     "options": [
+      [
+       "",
+       "MILDA"
+      ],
+      [
+       "oui",
+       "Remise"
+      ],
+      [
+       "non",
+       "Non remise"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "oui",
+       "nb": 16,
+       "ids": [
+        "GRO0007",
+        "GRO0008",
+        "GRO0014",
+        "GRO0001",
+        "GRO0003",
+        "GRO0013",
+        "GRO0005",
+        "GRO0002",
+        "GRO0004",
+        "GRO0006",
+        "GRO0016",
+        "GRO0009",
+        "GRO0011",
+        "GRO0018",
+        "GRO0015",
+        "GRO0012"
+       ]
+      },
+      {
+       "valeur": "non",
+       "nb": 2,
+       "ids": [
+        "GRO0017",
+        "GRO0010"
+       ]
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "CPN-0007",
+    "titre": "N’TCHA Alimatou",
+    "texte": "RÉFÉRENCE CPN-0007 PATIENTE N’TCHA Alimatou — CNT/23/26 DDR 10/12/2025 DPA 16/09/2026 TERME 37 SA GROUPE SANGUIN O- DOSES SP SP1, SP2, SP3, SP4, SP5 MILDA Remise MÉBENDAZOLE Administré VAT VAT3 FER / FOLATES Fer / folates SAGE-FEMME TAKI Orou Visites CPN — la grille du formulaire national CPN DATE TA POIDS (KG) HU (CM) BDCF ALBUMINE SUCRE CPN 1 04/02/2026 12/7 70 18 153 — — CPN 2 01/04/2026 12/6 59 22 136 — — CPN 3 27/05/2026 9/9 72 29 158 — — CPN 4 22/07/2026 9/6 79 34 143 — — Ajouter une visite CPN",
+    "boutons": [
+     "Fermer",
+     "Ajouter une visite CPN",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Tous les grossesses suivies18",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2"
+   ]
+  },
+  "m4-dossier-bebe": {
+   "id": "m4-dossier-bebe",
+   "kpis": [
+    {
+     "label": "Dossiers bébé",
+     "valeur": "48",
+     "indice": null
+    },
+    {
+     "label": "Mesures hors bornes",
+     "valeur": "13",
+     "indice": "PC 32–38 · PT 30–36 · Apgar 5 min ≥ 7"
+    },
+    {
+     "label": "Réanimations",
+     "valeur": "13",
+     "indice": "Fonction 7 SONU"
+    },
+    {
+     "label": "Vitamine K1",
+     "valeur": "100.0 %",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les dossiers bébé48",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "NOUVEAU-NÉ DE",
+    "POIDS (KG)",
+    "PC (CM)",
+    "PT (CM)",
+    "APGAR 1/5/10",
+    "RÉANIMATION",
+    "SOINS J0",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "NAI-0001",
+     "Nouveau-né de TCHANE Fatouma CNT/96/26 — 09/07/2026 à 11h11",
+     "3.38",
+     "34.8",
+     "31.9",
+     "6 / 6 / 8",
+     "Réanimé — fonction 7 SONU",
+     "Vit K1 VPO0 BCG",
+     ""
+    ],
+    [
+     "",
+     "NAI-0002",
+     "Nouveau-né de PARAISO Rabiatou CNT/177/25 — 09/01/2026 à 02h21",
+     "3.09",
+     "37.9",
+     "33.7",
+     "10 / 10 / 10",
+     "—",
+     "Vit K1 VPO0 Hép. B",
+     ""
+    ],
+    [
+     "",
+     "NAI-0003",
+     "Nouveau-né de DIEYABIDI Ramatou CNT/25/26 — 17/07/2026 à 04h44",
+     "3.95",
+     "37.3",
+     "30.3",
+     "9 / 9 / 10",
+     "—",
+     "Vit K1 VPO0 BCG Hép. B",
+     ""
+    ],
+    [
+     "",
+     "NAI-0004",
+     "Nouveau-né de BANI Salamatou CNT/41/26 — 02/01/2026 à 00h03",
+     "3.75",
+     "32.7",
+     "31",
+     "7 / 8 / 8",
+     "—",
+     "Vit K1 VPO0",
+     ""
+    ],
+    [
+     "",
+     "NAI-0005",
+     "Nouveau-né de GBEDJI Aïssatou CNT/87/26 — 27/04/2026 à 22h10",
+     "2.70",
+     "37.9",
+     "30.6",
+     "10 / 10 / 10",
+     "—",
+     "Vit K1 VPO0 BCG Hép. B",
+     ""
+    ],
+    [
+     "",
+     "NAI-0006",
+     "Nouveau-né de SAMBIENI Foussena CNT/168/26 — 11/04/2026 à 16h57",
+     "3.87",
+     "35.7",
+     "30.4",
+     "5 / 7 / 7",
+     "—",
+     "Vit K1 BCG Hép. B",
+     ""
+    ],
+    [
+     "",
+     "NAI-0007",
+     "Nouveau-né de ZIME Ramatou CNT/163/25 — 18/12/2025 à 19h37",
+     "2.52",
+     "34.4",
+     "33",
+     "5 / 6 / 6",
+     "Réanimé — fonction 7 SONU",
+     "Vit K1 VPO0 BCG Hép. B",
+     ""
+    ],
+    [
+     "",
+     "NAI-0008",
+     "Nouveau-né de N’TCHA Alimatou CNT/23/26 — 15/04/2026 à 17h47",
+     "2.29",
+     "32.4",
+     "33",
+     "6 / 6 / 7",
+     "Réanimé — fonction 7 SONU",
+     "Vit K1 VPO0 BCG Hép. B",
+     ""
+    ],
+    [
+     "",
+     "NAI-0009",
+     "Nouveau-né de KORA Marguerite CNT/141/25 — 16/07/2026 à 20h09",
+     "4.18",
+     "36.8",
+     "33.6",
+     "9 / 10 / 10",
+     "—",
+     "Vit K1 VPO0 BCG Hép. B",
+     ""
+    ],
+    [
+     "",
+     "NAI-0010",
+     "Nouveau-né de BAKO Zoukanéri CNT/111/26 — 01/02/2026 à 15h31",
+     "3.55",
+     "36.6",
+     "35.2",
+     "9 / 10 / 10",
+     "—",
+     "Vit K1 VPO0",
+     ""
+    ],
+    [
+     "",
+     "NAI-0011",
+     "Nouveau-né de ISSA Awaou CNT/128/25 — 25/03/2026 à 18h00",
+     "3.71",
+     "33.2",
+     "31.8",
+     "5 / 7 / 9",
+     "—",
+     "Vit K1 VPO0 BCG Hép. B",
+     ""
+    ],
+    [
+     "",
+     "NAI-0012",
+     "Nouveau-né de BOUKARI Ramatou CNT/146/26 — 20/07/2026 à 04h33",
+     "2.99",
+     "35.9",
+     "33.3",
+     "7 / 9 / 10",
+     "—",
+     "Vit K1 VPO0 BCG Hép. B",
+     ""
+    ]
+   ],
+   "nb": 48,
+   "ids": [
+    "NAI0001",
+    "NAI0002",
+    "NAI0003",
+    "NAI0004",
+    "NAI0005",
+    "NAI0006",
+    "NAI0007",
+    "NAI0008",
+    "NAI0009",
+    "NAI0010",
+    "NAI0011",
+    "NAI0012",
+    "NAI0013",
+    "NAI0014",
+    "NAI0015",
+    "NAI0016",
+    "NAI0017",
+    "NAI0018",
+    "NAI0019",
+    "NAI0020",
+    "NAI0021",
+    "NAI0022",
+    "NAI0023",
+    "NAI0024",
+    "NAI0025",
+    "NAI0026",
+    "NAI0027",
+    "NAI0028",
+    "NAI0029",
+    "NAI0030",
+    "NAI0031",
+    "NAI0032",
+    "NAI0033",
+    "NAI0034",
+    "NAI0035",
+    "NAI0036",
+    "NAI0037",
+    "NAI0038",
+    "NAI0039",
+    "NAI0040",
+    "NAI0041",
+    "NAI0042",
+    "NAI0043",
+    "NAI0044",
+    "NAI0045",
+    "NAI0046",
+    "NAI0047",
+    "NAI0048"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "Réanimation"
+      ],
+      [
+       "oui",
+       "Réanimés"
+      ],
+      [
+       "non",
+       "Sans réanimation"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "oui",
+       "nb": 13,
+       "ids": [
+        "NAI0001",
+        "NAI0007",
+        "NAI0008",
+        "NAI0013",
+        "NAI0014",
+        "NAI0015",
+        "NAI0021",
+        "NAI0026",
+        "NAI0028",
+        "NAI0029",
+        "NAI0036",
+        "NAI0037",
+        "NAI0048"
+       ]
+      },
+      {
+       "valeur": "non",
+       "nb": 35,
+       "ids": [
+        "NAI0002",
+        "NAI0003",
+        "NAI0004",
+        "NAI0005",
+        "NAI0006",
+        "NAI0009",
+        "NAI0010",
+        "NAI0011",
+        "NAI0012",
+        "NAI0016",
+        "NAI0017",
+        "NAI0018",
+        "NAI0019",
+        "NAI0020",
+        "NAI0022",
+        "NAI0023",
+        "NAI0024",
+        "NAI0025",
+        "NAI0027",
+        "NAI0030",
+        "NAI0031",
+        "NAI0032",
+        "NAI0033",
+        "NAI0034",
+        "NAI0035",
+        "NAI0038",
+        "NAI0039",
+        "NAI0040",
+        "NAI0041",
+        "NAI0042",
+        "NAI0043",
+        "NAI0044",
+        "NAI0045",
+        "NAI0046",
+        "NAI0047"
+       ]
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "NAI-0001",
+    "titre": "NAI-0001",
+    "texte": "N° NAI-0001 Nouveau-né de Nouveau-né de TCHANE Fatouma CNT/96/26 — 09/07/2026 à 11h11 Poids (kg) 3.38 PC (cm) 34.8 PT (cm) 31.9 Apgar 1/5/10 6 / 6 / 8 Réanimation Réanimé — fonction 7 SONU Soins J0 Vit K1 VPO0 BCG Dossier de la mère CNT/96/26 — TCHANE Fatouma Date et heure de naissance 09/07/2026 à 11h11 Sexe du nouveau-né Masculin Né vivant Oui Taille (cm) 50 Apgar à 1 min (/10) 6 Apgar à 10 min (/10) 8 Collyre tétracycline Oui Polio oral (VPO0) Oui BCG Oui Hépatite B (J0) Non Déclaré à l’état civil Oui",
+    "boutons": [
+     "Fermer",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Tous les dossiers bébé48",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2",
+    "3",
+    "4"
+   ]
+  },
+  "m4-cpon": {
+   "id": "m4-cpon",
+   "kpis": [
+    {
+     "label": "CPoN enregistrées",
+     "valeur": "20",
+     "indice": null
+    },
+    {
+     "label": "Hémorragies ante-partum",
+     "valeur": "2",
+     "indice": "★ variable nouvelle du rapport"
+    },
+    {
+     "label": "HPP",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "label": "Conseils PF donnés",
+     "valeur": "35.0 %",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les consultations post-natales20",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "DATE",
+    "ACCOUCHÉE",
+    "SÉANCE",
+    "HÉMORRAGIE ANTE-PARTUM",
+    "HPP",
+    "CONSEIL PF",
+    "SAGE-FEMME",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "CPO-0019",
+     "27/09/2026",
+     "ZIME Ramatou — CNT/163/25",
+     "CPoN 1",
+     "OUI — Rupture utérine",
+     "Non",
+     "—",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ],
+    [
+     "",
+     "CPO-0018",
+     "15/09/2026",
+     "TIGRI Séraphine — CNT/11/26",
+     "CPoN 2",
+     "Non",
+     "Non",
+     "Fait",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "CPO-0002",
+     "14/09/2026",
+     "ZIME Ramatou — CNT/163/25",
+     "CPoN 3",
+     "Non",
+     "HPP",
+     "—",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "CPO-0005",
+     "26/08/2026",
+     "BAKO Zoukanéri — CNT/89/26",
+     "CPoN 1",
+     "Non",
+     "Non",
+     "—",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ],
+    [
+     "",
+     "CPO-0015",
+     "07/08/2026",
+     "SAMBIENI Nadège — CNT/142/26",
+     "CPoN 1",
+     "Non",
+     "Non",
+     "Fait",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "CPO-0014",
+     "16/07/2026",
+     "SAMBIENI Nadège — CNT/142/26",
+     "CPoN 2",
+     "Non",
+     "HPP",
+     "—",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "CPO-0006",
+     "16/06/2026",
+     "BOUKARI Fatouma — CNT/66/26",
+     "CPoN 3",
+     "Non",
+     "HPP",
+     "—",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ],
+    [
+     "",
+     "CPO-0012",
+     "14/06/2026",
+     "GARBA Aïssatou — CNT/13/26",
+     "CPoN 3",
+     "Non",
+     "Non",
+     "—",
+     "YENI M’PO Florent",
+     ""
+    ],
+    [
+     "",
+     "CPO-0020",
+     "30/05/2026",
+     "GARBA Aïssatou — CNT/13/26",
+     "CPoN 2",
+     "Non",
+     "Non",
+     "Fait",
+     "AHOHOU Rodrigue",
+     ""
+    ],
+    [
+     "",
+     "CPO-0010",
+     "13/05/2026",
+     "N’TCHA Alimatou — CNT/23/26",
+     "CPoN 1",
+     "Non",
+     "Non",
+     "—",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "CPO-0007",
+     "24/04/2026",
+     "MAMAN Chantal — CNT/85/26",
+     "CPoN 2",
+     "Non",
+     "Non",
+     "Fait",
+     "YENI M’PO Florent",
+     ""
+    ],
+    [
+     "",
+     "CPO-0016",
+     "21/03/2026",
+     "SEIDOU Rachida — CNT/10/25",
+     "CPoN 2",
+     "Non",
+     "Non",
+     "—",
+     "ADAM Colette",
+     ""
+    ]
+   ],
+   "nb": 20,
+   "ids": [
+    "CPO0019",
+    "CPO0018",
+    "CPO0002",
+    "CPO0005",
+    "CPO0015",
+    "CPO0014",
+    "CPO0006",
+    "CPO0012",
+    "CPO0020",
+    "CPO0010",
+    "CPO0007",
+    "CPO0016",
+    "CPO0011",
+    "CPO0017",
+    "CPO0009",
+    "CPO0013",
+    "CPO0004",
+    "CPO0003",
+    "CPO0001",
+    "CPO0008"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "Séance"
+      ],
+      [
+       "cpon1",
+       "CPoN 1"
+      ],
+      [
+       "cpon2",
+       "CPoN 2"
+      ],
+      [
+       "cpon3",
+       "CPoN 3"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "cpon1",
+       "nb": 6,
+       "ids": [
+        "CPO0019",
+        "CPO0005",
+        "CPO0015",
+        "CPO0010",
+        "CPO0017",
+        "CPO0013"
+       ]
+      },
+      {
+       "valeur": "cpon2",
+       "nb": 9,
+       "ids": [
+        "CPO0018",
+        "CPO0014",
+        "CPO0020",
+        "CPO0007",
+        "CPO0016",
+        "CPO0009",
+        "CPO0004",
+        "CPO0001",
+        "CPO0008"
+       ]
+      },
+      {
+       "valeur": "cpon3",
+       "nb": 5,
+       "ids": [
+        "CPO0002",
+        "CPO0006",
+        "CPO0012",
+        "CPO0011",
+        "CPO0003"
+       ]
+      }
+     ]
+    },
+    {
+     "options": [
+      [
+       "",
+       "Hémorragie ante-partum"
+      ],
+      [
+       "oui",
+       "Oui"
+      ],
+      [
+       "non",
+       "Non"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "oui",
+       "nb": 2,
+       "ids": [
+        "CPO0019",
+        "CPO0017"
+       ]
+      },
+      {
+       "valeur": "non",
+       "nb": 18,
+       "ids": [
+        "CPO0018",
+        "CPO0002",
+        "CPO0005",
+        "CPO0015",
+        "CPO0014",
+        "CPO0006",
+        "CPO0012",
+        "CPO0020",
+        "CPO0010",
+        "CPO0007",
+        "CPO0016",
+        "CPO0011",
+        "CPO0009",
+        "CPO0013",
+        "CPO0004",
+        "CPO0003",
+        "CPO0001",
+        "CPO0008"
+       ]
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "CPO-0019",
+    "titre": "ZIME Ramatou",
+    "texte": "N° CPO-0019 Date 27/09/2026 Accouchée ZIME Ramatou — CNT/163/25 Séance CPoN 1 Hémorragie ANTE-partum OUI — Rupture utérine HPP Non Conseil PF — Sage-femme BADO BANI A. B. Zoulehath Accouchée CNT/163/25 — ZIME Ramatou Étiologie (si hémorragie ante-partum) Rupture utérine Examen clinique (TA, T°, utérus, lochies, seins) TA, T°, utérus, lochies, seins — sans particularité Supplémentation (Vit A, fer, folates) Vit A + Fer/Folates État du nouveau-né (poids, ictère, cordon, allaitement) Cordon propre, poids en hausse",
+    "boutons": [
+     "Fermer",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Tous les consultations post-natales20",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2"
+   ]
+  },
+  "m4-sonu": {
+   "id": "m4-sonu",
+   "kpis": [
+    {
+     "label": "Urgences enregistrées",
+     "valeur": "10",
+     "indice": null
+    },
+    {
+     "label": "Avec fonction SONUC",
+     "valeur": "8",
+     "indice": "transfusion, chirurgie, césarienne"
+    },
+    {
+     "label": "Réanimations nouveau-né (f7)",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "label": "Évolutions favorables",
+     "valeur": "60.0 %",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les urgences obstétricales10",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "ARRIVÉE",
+    "PATIENTE",
+    "PROVENANCE",
+    "FONCTIONS SONU POSÉES",
+    "ÉVOLUTION",
+    "AGENT",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "SONU-0003",
+     "24/08/2026 à 02h51",
+     "SOULE Adissa — CNT/143/26",
+     "Venue d’elle-même",
+     "2 — Anticonvulsivants parentéraux 5 — AMIU / curetage / curage 10 — Césarienne d’urgence",
+     "Favorable",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "SONU-0005",
+     "13/08/2026 à 06h40",
+     "KINNOU Salamatou — CNT/28/25",
+     "Évacuée — Venue d’elle-même",
+     "4 — Délivrance artificielle et révision utérine 8 — Transfusion sanguine d’urgence",
+     "Favorable",
+     "TAKI Orou",
+     ""
+    ],
+    [
+     "",
+     "SONU-0008",
+     "24/07/2026 à 03h12",
+     "WOROU Adissa — CNT/157/25",
+     "Évacuée — Venue d’elle-même",
+     "8 — Transfusion sanguine d’urgence",
+     "Favorable",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "SONU-0004",
+     "11/07/2026 à 14h24",
+     "YENI Salamatou — CNT/83/26",
+     "Évacuée — Venue d’elle-même",
+     "5 — AMIU / curetage / curage",
+     "Décédée",
+     "YENI M’PO Florent",
+     ""
+    ],
+    [
+     "",
+     "SONU-0010",
+     "29/04/2026 à 19h44",
+     "PARAISO Séraphine — CNT/45/26",
+     "Venue d’elle-même",
+     "1 — Antibiotiques parentéraux",
+     "Décédée",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ],
+    [
+     "",
+     "SONU-0009",
+     "16/03/2026 à 07h30",
+     "BASSONGUI Adissa — CNT/170/25",
+     "Venue d’elle-même",
+     "4 — Délivrance artificielle et révision utérine 5 — AMIU / curetage / curage 8 — Transfusion sanguine d’urgence",
+     "Favorable",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "SONU-0007",
+     "10/03/2026 à 06h25",
+     "SAMBIENI Rabiatou — CNT/104/26",
+     "Venue d’elle-même",
+     "10 — Césarienne d’urgence",
+     "Référée",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "SONU-0001",
+     "19/02/2026 à 23h57",
+     "BASSONGUI Marguerite — CNT/76/26",
+     "Évacuée — Venue d’elle-même",
+     "1 — Antibiotiques parentéraux 8 — Transfusion sanguine d’urgence 9 — PEC éclampsie compliquée / chirurgie obstétricale",
+     "Favorable",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "SONU-0006",
+     "30/01/2026 à 18h44",
+     "ISSA Zoukanéri — CNT/159/26",
+     "Venue d’elle-même",
+     "1 — Antibiotiques parentéraux 6 — Ventouse obstétricale 10 — Césarienne d’urgence",
+     "Référée",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "SONU-0002",
+     "19/01/2026 à 03h50",
+     "YENI Chantal — CNT/98/26",
+     "Venue d’elle-même",
+     "1 — Antibiotiques parentéraux 7 — Réanimation du nouveau-né 10 — Césarienne d’urgence",
+     "Favorable",
+     "ADAM Colette",
+     ""
+    ]
+   ],
+   "nb": 10,
+   "ids": [
+    "SNU0003",
+    "SNU0005",
+    "SNU0008",
+    "SNU0004",
+    "SNU0010",
+    "SNU0009",
+    "SNU0007",
+    "SNU0001",
+    "SNU0006",
+    "SNU0002"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "Niveau"
+      ],
+      [
+       "sonub",
+       "SONUB seulement (1-7)"
+      ],
+      [
+       "sonuc",
+       "Avec fonction SONUC (8-10)"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "sonub",
+       "nb": 2,
+       "ids": [
+        "SNU0004",
+        "SNU0010"
+       ]
+      },
+      {
+       "valeur": "sonuc",
+       "nb": 8,
+       "ids": [
+        "SNU0003",
+        "SNU0005",
+        "SNU0008",
+        "SNU0009",
+        "SNU0007",
+        "SNU0001",
+        "SNU0006",
+        "SNU0002"
+       ]
+      }
+     ]
+    },
+    {
+     "options": [
+      [
+       "",
+       "Évolution"
+      ],
+      [
+       "Favorable",
+       "Favorable"
+      ],
+      [
+       "Référée",
+       "Référée"
+      ],
+      [
+       "Décédée",
+       "Décédée"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "Favorable",
+       "nb": 6,
+       "ids": [
+        "SNU0003",
+        "SNU0005",
+        "SNU0008",
+        "SNU0009",
+        "SNU0001",
+        "SNU0002"
+       ]
+      },
+      {
+       "valeur": "Référée",
+       "nb": 2,
+       "ids": [
+        "SNU0007",
+        "SNU0006"
+       ]
+      },
+      {
+       "valeur": "Décédée",
+       "nb": 2,
+       "ids": [
+        "SNU0004",
+        "SNU0010"
+       ]
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "SONU-0003",
+    "titre": "SOULE Adissa",
+    "texte": "N° SONU-0003 Arrivée 24/08/2026 à 02h51 Patiente SOULE Adissa — CNT/143/26 Provenance Venue d’elle-même Fonctions SONU posées 2 — Anticonvulsivants parentéraux 5 — AMIU / curetage / curage 10 — Césarienne d’urgence Évolution Favorable Agent BOUKARI Nadège Patiente CNT/143/26 — SOULE Adissa Gestité 2 Parité 2 Provenance (CS / localité) Venue d’elle-même Diagnostic d’évacuation — Heure de l’abord veineux 02h03 Autre geste SONU (texte libre) — Heure de fin des gestes 04h51",
+    "boutons": [
+     "Fermer",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Tous les urgences obstétricales10",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner"
+   ]
+  },
+  "m4-ptme": {
+   "id": "m4-ptme",
+   "kpis": [
+    {
+     "label": "Mères suivies",
+     "valeur": "6",
+     "indice": null
+    },
+    {
+     "label": "Charges virales indétectables",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "label": "PCR-1 rendues",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "label": "Sous CTM",
+     "valeur": "5",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les fiches PTME6",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "MÈRE SUIVIE",
+    "CHARGE VIRALE",
+    "ALLAITEMENT",
+    "SUIVI ENFANT",
+    "DISPENSATIONS ARV",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "PTME-0001",
+     "TAKI Aïssatou — CNT/33/26",
+     "Indétectable",
+     "Artificiel",
+     "PCR naissance : Négatif PCR-1 (6 sem) : à faire · PCR-2 (9 mois) : Négatif",
+     "2 / 3",
+     ""
+    ],
+    [
+     "",
+     "PTME-0002",
+     "YARO Zoukanéri — CNT/70/26",
+     "Indétectable",
+     "Artificiel",
+     "PCR naissance : En attente PCR-1 (6 sem) : Négatif · PCR-2 (9 mois) : à faire",
+     "2 / 2",
+     ""
+    ],
+    [
+     "",
+     "PTME-0003",
+     "YARO Zoukanéri — CNT/70/26",
+     "1753 copies/ml",
+     "Mixte",
+     "PCR naissance : Négatif PCR-1 (6 sem) : Négatif · PCR-2 (9 mois) : à faire",
+     "5 / 5",
+     ""
+    ],
+    [
+     "",
+     "PTME-0004",
+     "OROU YO Ramatou — CNT/81/26",
+     "Indétectable",
+     "Artificiel",
+     "PCR naissance : Négatif PCR-1 (6 sem) : à faire · PCR-2 (9 mois) : à faire",
+     "2 / 2",
+     ""
+    ],
+    [
+     "",
+     "PTME-0005",
+     "DAOUDA Zoukanéri — CNT/165/26",
+     "2419 copies/ml",
+     "Exclusif",
+     "PCR naissance : Négatif PCR-1 (6 sem) : Négatif · PCR-2 (9 mois) : à faire",
+     "4 / 5",
+     ""
+    ],
+    [
+     "",
+     "PTME-0006",
+     "TEPA Nadège — CNT/30/26",
+     "Indétectable",
+     "Exclusif",
+     "PCR naissance : En attente PCR-1 (6 sem) : à faire · PCR-2 (9 mois) : à faire",
+     "2 / 2",
+     ""
+    ]
+   ],
+   "nb": 6,
+   "ids": [
+    "PTM0001",
+    "PTM0002",
+    "PTM0003",
+    "PTM0004",
+    "PTM0005",
+    "PTM0006"
+   ],
+   "filtres": [],
+   "fiche": {
+    "ref": "PTME-0001",
+    "titre": "TAKI Aïssatou",
+    "texte": "Fiche sensible — le détail reste derrière les permissions de M4 ; il ne figure ni dans les notifications, ni dans les alertes sonores. RÉFÉRENCE PTME-0001 MÈRE TAKI Aïssatou — CNT/33/26 DÉPISTAGE VIH VIH-1 (T2) · Ag HBs Négatif · Syphilis Négatif CHARGE VIRALE Indétectable PROTOCOLE TDF + 3TC + DTG — < 8 semaines ALLAITEMENT Artificiel PROPHYLAXIE NN 1 ENFANT EXPOSÉ PCR naissance Négatif · PCR-1 — · PCR-2 Négatif · Séro 18 m — CTM / HÉP. B J0 CTM / fait Volet 4 — dispensation mensuelle des ARV MOIS SERVIE 2026-08 MANQUÉE 2026-07 Oui 2026-06 Oui",
+    "boutons": [
+     "Fermer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Tous les fiches PTME6",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner"
+   ]
+  },
+  "m4-planification": {
+   "id": "m4-planification",
+   "kpis": [
+    {
+     "label": "Consultations PF",
+     "valeur": "24",
+     "indice": null
+    },
+    {
+     "label": "Nouvelles acceptantes (A)",
+     "valeur": "14",
+     "indice": "Indicateur DHIS2 — taux d’acceptation"
+    },
+    {
+     "label": "Méthodes longue durée",
+     "valeur": "8",
+     "indice": null
+    },
+    {
+     "label": "Méthodes distinctes",
+     "valeur": "11 / 15",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les consultations PF24",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "DATE",
+    "CLIENTE",
+    "A/N",
+    "MÉTHODE ADOPTÉE",
+    "PROCHAIN RDV",
+    "SAGE-FEMME",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "PF-0019",
+     "08/08/2026",
+     "YENI Salamatou — CNT/83/26",
+     "N — ancienne",
+     "DMPA-SC Sayana Press Courte durée",
+     "24/11/2026",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ],
+    [
+     "",
+     "PF-0021",
+     "07/08/2026",
+     "TAKI Hélène — CNT/176/26",
+     "A — nouvelle",
+     "DMPA-SC Sayana Press Courte durée",
+     "01/11/2026",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ],
+    [
+     "",
+     "PF-0010",
+     "05/08/2026",
+     "WOROU Rachida — CNT/155/25",
+     "A — nouvelle",
+     "Jadelle (2 bâtonnets) Longue durée",
+     "27/09/2026",
+     "TAKI Orou",
+     ""
+    ],
+    [
+     "",
+     "PF-0020",
+     "03/08/2026",
+     "TAKI Marguerite — CNT/125/25",
+     "A — nouvelle",
+     "Depo IM (Dépo-Provera) Courte durée",
+     "05/11/2026",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "PF-0005",
+     "06/07/2026",
+     "YARO Zoukanéri — CNT/70/26",
+     "A — nouvelle",
+     "CO (Contraceptifs Oraux) Courte durée",
+     "23/09/2026",
+     "TAKI Orou",
+     ""
+    ],
+    [
+     "",
+     "PF-0012",
+     "27/06/2026",
+     "SANNI Séraphine — CNT/160/26",
+     "N — ancienne",
+     "DIU PP Immédiat Longue durée",
+     "06/12/2026",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "PF-0003",
+     "08/06/2026",
+     "YARO Aïssatou — CNT/156/26",
+     "A — nouvelle",
+     "CO (Contraceptifs Oraux) Courte durée",
+     "16/11/2026",
+     "YENI M’PO Florent",
+     ""
+    ],
+    [
+     "",
+     "PF-0008",
+     "06/06/2026",
+     "SANNI Nadège — CNT/174/26",
+     "N — ancienne",
+     "DMPA-SC Sayana Press Courte durée",
+     "27/09/2026",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "PF-0011",
+     "06/06/2026",
+     "TAKI Marguerite — CNT/125/25",
+     "N — ancienne",
+     "Ligature des trompes Définitive",
+     "14/12/2026",
+     "AHOHOU Rodrigue",
+     ""
+    ],
+    [
+     "",
+     "PF-0004",
+     "25/05/2026",
+     "DOSSOU Colette — CNT/36/26",
+     "A — nouvelle",
+     "Préservatifs masculins / féminins Naturelle / barrière",
+     "25/09/2026",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ],
+    [
+     "",
+     "PF-0018",
+     "25/05/2026",
+     "ISSA Awaou — CNT/128/25",
+     "N — ancienne",
+     "CO (Contraceptifs Oraux) Courte durée",
+     "11/12/2026",
+     "YENI M’PO Florent",
+     ""
+    ],
+    [
+     "",
+     "PF-0001",
+     "12/05/2026",
+     "OROU YO Ramatou — CNT/81/26",
+     "A — nouvelle",
+     "DIU PP Immédiat Longue durée",
+     "22/11/2026",
+     "AHOHOU Rodrigue",
+     ""
+    ]
+   ],
+   "nb": 24,
+   "ids": [
+    "PF0019",
+    "PF0021",
+    "PF0010",
+    "PF0020",
+    "PF0005",
+    "PF0012",
+    "PF0003",
+    "PF0008",
+    "PF0011",
+    "PF0004",
+    "PF0018",
+    "PF0001",
+    "PF0023",
+    "PF0014",
+    "PF0007",
+    "PF0015",
+    "PF0022",
+    "PF0006",
+    "PF0009",
+    "PF0016",
+    "PF0024",
+    "PF0013",
+    "PF0017",
+    "PF0002"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "A/N"
+      ],
+      [
+       "A",
+       "Nouvelles acceptantes (A)"
+      ],
+      [
+       "N",
+       "Anciennes (N)"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "A",
+       "nb": 14,
+       "ids": [
+        "PF0021",
+        "PF0010",
+        "PF0020",
+        "PF0005",
+        "PF0003",
+        "PF0004",
+        "PF0001",
+        "PF0023",
+        "PF0014",
+        "PF0006",
+        "PF0009",
+        "PF0024",
+        "PF0013",
+        "PF0002"
+       ]
+      },
+      {
+       "valeur": "N",
+       "nb": 10,
+       "ids": [
+        "PF0019",
+        "PF0012",
+        "PF0008",
+        "PF0011",
+        "PF0018",
+        "PF0007",
+        "PF0015",
+        "PF0022",
+        "PF0016",
+        "PF0017"
+       ]
+      }
+     ]
+    },
+    {
+     "options": [
+      [
+       "",
+       "Méthode"
+      ],
+      [
+       "diu",
+       "DIU (cuivre / hormonal)"
+      ],
+      [
+       "diu_pp",
+       "DIU PP Immédiat"
+      ],
+      [
+       "noristerat",
+       "Noristérat"
+      ],
+      [
+       "depo_im",
+       "Depo IM (Dépo-Provera)"
+      ],
+      [
+       "dmpa_sc",
+       "DMPA-SC Sayana Press"
+      ],
+      [
+       "co",
+       "CO (Contraceptifs Oraux)"
+      ],
+      [
+       "jadelle",
+       "Jadelle (2 bâtonnets)"
+      ],
+      [
+       "implanon",
+       "Implanon / Nexplanon (1 bâtonnet)"
+      ],
+      [
+       "jadelle_pp",
+       "Jadelle PP Immédiat"
+      ],
+      [
+       "implanon_pp",
+       "Implanon PP Immédiat"
+      ],
+      [
+       "pilule",
+       "Pilule microprogestative"
+      ],
+      [
+       "ligature",
+       "Ligature des trompes"
+      ],
+      [
+       "vasectomie",
+       "Vasectomie"
+      ],
+      [
+       "collier",
+       "Collier du cycle / MAMA"
+      ],
+      [
+       "preservatif",
+       "Préservatifs masculins / féminins"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "diu",
+       "nb": 1,
+       "ids": [
+        "PF0024"
+       ]
+      },
+      {
+       "valeur": "diu_pp",
+       "nb": 3,
+       "ids": [
+        "PF0012",
+        "PF0001",
+        "PF0016"
+       ]
+      },
+      {
+       "valeur": "noristerat",
+       "nb": 1,
+       "ids": [
+        "PF0022"
+       ]
+      },
+      {
+       "valeur": "depo_im",
+       "nb": 2,
+       "ids": [
+        "PF0020",
+        "PF0017"
+       ]
+      },
+      {
+       "valeur": "dmpa_sc",
+       "nb": 4,
+       "ids": [
+        "PF0019",
+        "PF0021",
+        "PF0008",
+        "PF0015"
+       ]
+      },
+      {
+       "valeur": "co",
+       "nb": 3,
+       "ids": [
+        "PF0005",
+        "PF0003",
+        "PF0018"
+       ]
+      },
+      {
+       "valeur": "jadelle",
+       "nb": 1,
+       "ids": [
+        "PF0010"
+       ]
+      },
+      {
+       "valeur": "implanon",
+       "nb": 0,
+       "ids": []
+      },
+      {
+       "valeur": "jadelle_pp",
+       "nb": 0,
+       "ids": []
+      },
+      {
+       "valeur": "implanon_pp",
+       "nb": 3,
+       "ids": [
+        "PF0023",
+        "PF0009",
+        "PF0013"
+       ]
+      },
+      {
+       "valeur": "pilule",
+       "nb": 1,
+       "ids": [
+        "PF0014"
+       ]
+      },
+      {
+       "valeur": "ligature",
+       "nb": 2,
+       "ids": [
+        "PF0011",
+        "PF0002"
+       ]
+      },
+      {
+       "valeur": "vasectomie",
+       "nb": 0,
+       "ids": []
+      },
+      {
+       "valeur": "collier",
+       "nb": 0,
+       "ids": []
+      },
+      {
+       "valeur": "preservatif",
+       "nb": 3,
+       "ids": [
+        "PF0004",
+        "PF0007",
+        "PF0006"
+       ]
+      }
+     ]
+    }
+   ],
+   "plage": [
+    {
+     "bouton": "Sept derniers jours",
+     "nb": 0,
+     "ids": [],
+     "kpis": [
+      {
+       "label": "Consultations PF",
+       "valeur": "24",
+       "indice": null
+      },
+      {
+       "label": "Nouvelles acceptantes (A)",
+       "valeur": "14",
+       "indice": "Indicateur DHIS2 — taux d’acceptation"
+      },
+      {
+       "label": "Méthodes longue durée",
+       "valeur": "8",
+       "indice": null
+      },
+      {
+       "label": "Méthodes distinctes",
+       "valeur": "11 / 15",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "bouton": "Aujourd’hui",
+     "nb": 0,
+     "ids": [],
+     "kpis": [
+      {
+       "label": "Consultations PF",
+       "valeur": "24",
+       "indice": null
+      },
+      {
+       "label": "Nouvelles acceptantes (A)",
+       "valeur": "14",
+       "indice": "Indicateur DHIS2 — taux d’acceptation"
+      },
+      {
+       "label": "Méthodes longue durée",
+       "valeur": "8",
+       "indice": null
+      },
+      {
+       "label": "Méthodes distinctes",
+       "valeur": "11 / 15",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "bouton": "Toute la période",
+     "nb": 24,
+     "ids": [
+      "PF0019",
+      "PF0021",
+      "PF0010",
+      "PF0020",
+      "PF0005",
+      "PF0012",
+      "PF0003",
+      "PF0008",
+      "PF0011",
+      "PF0004",
+      "PF0018",
+      "PF0001",
+      "PF0023",
+      "PF0014",
+      "PF0007",
+      "PF0015",
+      "PF0022",
+      "PF0006",
+      "PF0009",
+      "PF0016",
+      "PF0024",
+      "PF0013",
+      "PF0017",
+      "PF0002"
+     ],
+     "kpis": [
+      {
+       "label": "Consultations PF",
+       "valeur": "24",
+       "indice": null
+      },
+      {
+       "label": "Nouvelles acceptantes (A)",
+       "valeur": "14",
+       "indice": "Indicateur DHIS2 — taux d’acceptation"
+      },
+      {
+       "label": "Méthodes longue durée",
+       "valeur": "8",
+       "indice": null
+      },
+      {
+       "label": "Méthodes distinctes",
+       "valeur": "11 / 15",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "bouton": "du 2026-07-01 au 2026-07-31",
+     "nb": 1,
+     "ids": [
+      "PF0005"
+     ],
+     "kpis": [
+      {
+       "label": "Consultations PF",
+       "valeur": "24",
+       "indice": null
+      },
+      {
+       "label": "Nouvelles acceptantes (A)",
+       "valeur": "14",
+       "indice": "Indicateur DHIS2 — taux d’acceptation"
+      },
+      {
+       "label": "Méthodes longue durée",
+       "valeur": "8",
+       "indice": null
+      },
+      {
+       "label": "Méthodes distinctes",
+       "valeur": "11 / 15",
+       "indice": null
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "PF-0019",
+    "titre": "YENI Salamatou",
+    "texte": "N° PF-0019 Date 08/08/2026 Cliente YENI Salamatou — CNT/83/26 A/N N — ancienne Méthode adoptée DMPA-SC Sayana Press Courte durée Prochain RDV 24/11/2026 Sage-femme BADO BANI A. B. Zoulehath Cliente CNT/83/26 — YENI Salamatou Méthode antérieure utilisée — Date des dernières règles (DDR) 20/08/2026 Constantes (poids, TA, IMC) 83 kg · 14/8",
+    "boutons": [
+     "Fermer",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Aujourd’hui",
+    "Sept derniers jours",
+    "Toute la période",
+    "Tous les consultations PF24",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2"
+   ]
+  },
+  "m4-soins-curatifs": {
+   "id": "m4-soins-curatifs",
+   "kpis": [
+    {
+     "label": "Consultations curatives",
+     "valeur": "16",
+     "indice": null
+    },
+    {
+     "label": "MILDA délivrées",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "label": "Femmes référées d’urgence",
+     "valeur": "1",
+     "indice": "les trois variables normalisées"
+    },
+    {
+     "label": "Hospitalisées (Case 27)",
+     "valeur": "6",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les soins curatifs16",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N°",
+    "DATE",
+    "CONSULTANTE",
+    "DIAGNOSTIC",
+    "MILDA",
+    "URGENCE MATERNITÉ",
+    "DEVENIR (CASE 27)",
+    "AGENT",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "SCM-0016",
+     "26/08/2026",
+     "WOROU Adissa — CNT/157/25",
+     "Anémie",
+     "—",
+     "—",
+     "Observée",
+     "YENI M’PO Florent",
+     ""
+    ],
+    [
+     "",
+     "SCM-0015",
+     "08/08/2026",
+     "HOUNKPATIN Aïssatou — CNT/117/26",
+     "Menace d’accouchement prématuré",
+     "Délivrée",
+     "—",
+     "Observée Hospitalisée — 2 j",
+     "ADAM Colette",
+     ""
+    ],
+    [
+     "",
+     "SCM-0013",
+     "15/07/2026",
+     "BASSONGUI Adissa — CNT/170/25",
+     "Paludisme simple",
+     "Délivrée",
+     "—",
+     "Retour à domicile",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "SCM-0005",
+     "01/07/2026",
+     "OURTCHA Kadidjatou — CNT/99/26",
+     "Anémie",
+     "—",
+     "—",
+     "Observée",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "SCM-0001",
+     "13/06/2026",
+     "OROU YO Chantal — CNT/162/26",
+     "Menace d’accouchement prématuré",
+     "—",
+     "—",
+     "Hospitalisée — 4 j",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "SCM-0014",
+     "01/06/2026",
+     "DAOUDA Justine — CNT/24/25",
+     "Paludisme simple",
+     "Délivrée",
+     "—",
+     "Observée Hospitalisée — 7 j",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "SCM-0010",
+     "12/05/2026",
+     "GARBA Zoukanéri — CNT/164/26",
+     "Infection urinaire",
+     "Délivrée",
+     "—",
+     "Hospitalisée — 5 j",
+     "BASSONGUI Chabi Séko",
+     ""
+    ],
+    [
+     "",
+     "SCM-0006",
+     "03/04/2026",
+     "BANI Zoukanéri — CNT/62/25",
+     "Paludisme simple",
+     "Délivrée",
+     "—",
+     "Observée Hospitalisée — 3 j",
+     "AHOHOU Rodrigue",
+     ""
+    ],
+    [
+     "",
+     "SCM-0003",
+     "25/03/2026",
+     "WOROU Marguerite — CNT/21/25",
+     "Menace d’accouchement prématuré",
+     "—",
+     "—",
+     "Observée",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "SCM-0002",
+     "24/03/2026",
+     "BOUKARI Rachida — CNT/172/26",
+     "Infection urinaire",
+     "Délivrée",
+     "—",
+     "Observée",
+     "ADAM Colette",
+     ""
+    ],
+    [
+     "",
+     "SCM-0012",
+     "24/03/2026",
+     "TAKI Aïssatou — CNT/33/26",
+     "Infection urinaire",
+     "—",
+     "—",
+     "Hospitalisée — 2 j",
+     "BOUKARI Nadège",
+     ""
+    ],
+    [
+     "",
+     "SCM-0004",
+     "07/03/2026",
+     "BASSONGUI Marguerite — CNT/76/26",
+     "Infection urinaire",
+     "—",
+     "—",
+     "Observée",
+     "BADO BANI A. B. Zoulehath",
+     ""
+    ]
+   ],
+   "nb": 16,
+   "ids": [
+    "SCM0016",
+    "SCM0015",
+    "SCM0013",
+    "SCM0005",
+    "SCM0001",
+    "SCM0014",
+    "SCM0010",
+    "SCM0006",
+    "SCM0003",
+    "SCM0002",
+    "SCM0012",
+    "SCM0004",
+    "SCM0009",
+    "SCM0008",
+    "SCM0007",
+    "SCM0011"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "Urgences"
+      ],
+      [
+       "referee",
+       "Femme en travail référée d’urgence"
+      ],
+      [
+       "referee_admise",
+       "Référée d’urgence ET admise à l’hôpital de référence"
+      ],
+      [
+       "referee_pec",
+       "Référée d’urgence ET prise en charge par l’hôpital de référence"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "referee",
+       "nb": 1,
+       "ids": [
+        "SCM0009"
+       ]
+      },
+      {
+       "valeur": "referee_admise",
+       "nb": 0,
+       "ids": []
+      },
+      {
+       "valeur": "referee_pec",
+       "nb": 0,
+       "ids": []
+      }
+     ]
+    },
+    {
+     "options": [
+      [
+       "",
+       "Devenir"
+      ],
+      [
+       "obs",
+       "Observées"
+      ],
+      [
+       "hosp",
+       "Hospitalisées"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "obs",
+       "nb": 10,
+       "ids": [
+        "SCM0016",
+        "SCM0015",
+        "SCM0005",
+        "SCM0014",
+        "SCM0006",
+        "SCM0003",
+        "SCM0002",
+        "SCM0004",
+        "SCM0008",
+        "SCM0011"
+       ]
+      },
+      {
+       "valeur": "hosp",
+       "nb": 6,
+       "ids": [
+        "SCM0015",
+        "SCM0001",
+        "SCM0014",
+        "SCM0010",
+        "SCM0006",
+        "SCM0012"
+       ]
+      }
+     ]
+    }
+   ],
+   "plage": [
+    {
+     "bouton": "Sept derniers jours",
+     "nb": 0,
+     "ids": [],
+     "kpis": [
+      {
+       "label": "Consultations curatives",
+       "valeur": "16",
+       "indice": null
+      },
+      {
+       "label": "MILDA délivrées",
+       "valeur": "7",
+       "indice": null
+      },
+      {
+       "label": "Femmes référées d’urgence",
+       "valeur": "1",
+       "indice": "les trois variables normalisées"
+      },
+      {
+       "label": "Hospitalisées (Case 27)",
+       "valeur": "6",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "bouton": "Aujourd’hui",
+     "nb": 0,
+     "ids": [],
+     "kpis": [
+      {
+       "label": "Consultations curatives",
+       "valeur": "16",
+       "indice": null
+      },
+      {
+       "label": "MILDA délivrées",
+       "valeur": "7",
+       "indice": null
+      },
+      {
+       "label": "Femmes référées d’urgence",
+       "valeur": "1",
+       "indice": "les trois variables normalisées"
+      },
+      {
+       "label": "Hospitalisées (Case 27)",
+       "valeur": "6",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "bouton": "Toute la période",
+     "nb": 16,
+     "ids": [
+      "SCM0016",
+      "SCM0015",
+      "SCM0013",
+      "SCM0005",
+      "SCM0001",
+      "SCM0014",
+      "SCM0010",
+      "SCM0006",
+      "SCM0003",
+      "SCM0002",
+      "SCM0012",
+      "SCM0004",
+      "SCM0009",
+      "SCM0008",
+      "SCM0007",
+      "SCM0011"
+     ],
+     "kpis": [
+      {
+       "label": "Consultations curatives",
+       "valeur": "16",
+       "indice": null
+      },
+      {
+       "label": "MILDA délivrées",
+       "valeur": "7",
+       "indice": null
+      },
+      {
+       "label": "Femmes référées d’urgence",
+       "valeur": "1",
+       "indice": "les trois variables normalisées"
+      },
+      {
+       "label": "Hospitalisées (Case 27)",
+       "valeur": "6",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "bouton": "du 2026-07-01 au 2026-07-31",
+     "nb": 2,
+     "ids": [
+      "SCM0013",
+      "SCM0005"
+     ],
+     "kpis": [
+      {
+       "label": "Consultations curatives",
+       "valeur": "16",
+       "indice": null
+      },
+      {
+       "label": "MILDA délivrées",
+       "valeur": "7",
+       "indice": null
+      },
+      {
+       "label": "Femmes référées d’urgence",
+       "valeur": "1",
+       "indice": "les trois variables normalisées"
+      },
+      {
+       "label": "Hospitalisées (Case 27)",
+       "valeur": "6",
+       "indice": null
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "SCM-0016",
+    "titre": "WOROU Adissa",
+    "texte": "N° SCM-0016 Date 26/08/2026 Consultante WOROU Adissa — CNT/157/25 Diagnostic Anémie MILDA — Urgence maternité — Devenir (Case 27) Observée Agent YENI M’PO Florent Consultante CNT/157/25 — WOROU Adissa Tranche d’âge 15–19 ans Symptômes et signes (si toux, préciser la durée) Toux depuis 5 jours Traitement / posologie Tocolyse et repos Femme observée Oui Nombre de jours d’hospitalisation —",
+    "boutons": [
+     "Fermer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Aujourd’hui",
+    "Sept derniers jours",
+    "Toute la période",
+    "Tous les soins curatifs16",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2"
+   ]
+  },
+  "m4-dossier-obstetrical": {
+   "id": "m4-dossier-obstetrical",
+   "kpis": [
+    {
+     "label": "Dossiers ouverts",
+     "valeur": "24",
+     "indice": null
+    },
+    {
+     "label": "Suivis en cours",
+     "valeur": "15",
+     "indice": null
+    },
+    {
+     "label": "Grossesses à risque (GAR)",
+     "valeur": "15",
+     "indice": "Au moins un facteur de surveillance coché"
+    },
+    {
+     "label": "Référées",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les dossiers obstétricaux24",
+    "Archivés0"
+   ],
+   "entetes": [
+    "",
+    "N° DOSSIER",
+    "PARTURIENTE",
+    "G / P",
+    "DDR",
+    "TERME PRÉVU",
+    "SURVEILLANCE",
+    "ÉTAT",
+    "ACTIONS"
+   ],
+   "page1": [
+    [
+     "",
+     "00001/26",
+     "KASSA Justine CNT/136/26 · 22 ans",
+     "G2 P0",
+     "28/01/2026",
+     "04/11/2026 dans 80 j",
+     "GAR — 1 facteur(s) Taille < 1,50 m",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00002/26",
+     "KORA Marguerite CNT/141/25 · 28 ans",
+     "G8 P7",
+     "11/03/2026",
+     "16/12/2026 dans 122 j",
+     "GAR — 3 facteur(s) Taille < 1,50 m…",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00003/26",
+     "GARBA Aïssatou CNT/13/26 · 77 ans",
+     "G6 P4",
+     "04/02/2026",
+     "11/11/2026 dans 87 j",
+     "GAR — 1 facteur(s) Âge > 35 ans",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00004/26",
+     "DIEYABIDI Ramatou CNT/25/26 · 52 ans",
+     "G7 P6",
+     "01/04/2026",
+     "06/01/2027 dans 143 j",
+     "GAR — 1 facteur(s) Âge > 35 ans",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00005/26",
+     "KINNOU Salamatou CNT/28/25 · 45 ans",
+     "G9 P7",
+     "18/02/2026",
+     "25/11/2026 dans 101 j",
+     "GAR — 2 facteur(s) Âge > 35 ans…",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00006/26",
+     "YARO Zoukanéri CNT/70/26 · 21 ans",
+     "G2 P1",
+     "22/04/2026",
+     "27/01/2027 dans 164 j",
+     "Sans facteur",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00007/26",
+     "N’TCHA Alimatou CNT/23/26 · 27 ans",
+     "G7 P5",
+     "10/12/2025",
+     "16/09/2026 dans 31 j",
+     "Sans facteur",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00008/26",
+     "GARBA Zoukanéri CNT/164/26 · 34 ans",
+     "G3 P2",
+     "17/12/2025",
+     "23/09/2026 dans 38 j",
+     "Sans facteur",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00009/26",
+     "DOSSOU Colette CNT/36/26 · 18 ans",
+     "G3 P1",
+     "27/05/2026",
+     "03/03/2027 dans 199 j",
+     "Sans facteur",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00010/26",
+     "TAKI Marguerite CNT/125/25 · 24 ans",
+     "G4 P3",
+     "25/03/2026",
+     "30/12/2026 dans 136 j",
+     "Sans facteur",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00011/26",
+     "KINNOU Bertine CNT/56/25 · 30 ans",
+     "G4 P2",
+     "27/05/2026",
+     "03/03/2027 dans 199 j",
+     "Sans facteur",
+     "Suivi en cours",
+     ""
+    ],
+    [
+     "",
+     "00012/26",
+     "BAKO Zoukanéri CNT/111/26 · 26 ans",
+     "G8 P7",
+     "01/07/2026",
+     "07/04/2027 dans 234 j",
+     "GAR — 1 facteur(s) Parité > 6",
+     "Suivi en cours",
+     ""
+    ]
+   ],
+   "nb": 24,
+   "ids": [
+    "DOB0001",
+    "DOB0002",
+    "DOB0003",
+    "DOB0004",
+    "DOB0005",
+    "DOB0006",
+    "DOB0007",
+    "DOB0008",
+    "DOB0009",
+    "DOB0010",
+    "DOB0011",
+    "DOB0012",
+    "DOB0013",
+    "DOB0014",
+    "DOB0015",
+    "DOB0016",
+    "DOB0017",
+    "DOB0018",
+    "DOB0019",
+    "DOB0020",
+    "DOB0021",
+    "DOB0022",
+    "DOB0023",
+    "DOB0024"
+   ],
+   "filtres": [
+    {
+     "options": [
+      [
+       "",
+       "État"
+      ],
+      [
+       "suivi",
+       "Suivi en cours"
+      ],
+      [
+       "accouchee",
+       "Accouchée"
+      ],
+      [
+       "clos",
+       "Clos"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "suivi",
+       "nb": 15,
+       "ids": [
+        "DOB0001",
+        "DOB0002",
+        "DOB0003",
+        "DOB0004",
+        "DOB0005",
+        "DOB0006",
+        "DOB0007",
+        "DOB0008",
+        "DOB0009",
+        "DOB0010",
+        "DOB0011",
+        "DOB0012",
+        "DOB0013",
+        "DOB0014",
+        "DOB0015"
+       ]
+      },
+      {
+       "valeur": "accouchee",
+       "nb": 9,
+       "ids": [
+        "DOB0016",
+        "DOB0017",
+        "DOB0018",
+        "DOB0019",
+        "DOB0020",
+        "DOB0021",
+        "DOB0022",
+        "DOB0023",
+        "DOB0024"
+       ]
+      },
+      {
+       "valeur": "clos",
+       "nb": 0,
+       "ids": []
+      }
+     ]
+    },
+    {
+     "options": [
+      [
+       "",
+       "Surveillance"
+      ],
+      [
+       "gar",
+       "Grossesse à risque"
+      ],
+      [
+       "normal",
+       "Sans facteur"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "gar",
+       "nb": 15,
+       "ids": [
+        "DOB0001",
+        "DOB0002",
+        "DOB0003",
+        "DOB0004",
+        "DOB0005",
+        "DOB0012",
+        "DOB0013",
+        "DOB0014",
+        "DOB0015",
+        "DOB0016",
+        "DOB0017",
+        "DOB0018",
+        "DOB0020",
+        "DOB0021",
+        "DOB0022"
+       ]
+      },
+      {
+       "valeur": "normal",
+       "nb": 9,
+       "ids": [
+        "DOB0006",
+        "DOB0007",
+        "DOB0008",
+        "DOB0009",
+        "DOB0010",
+        "DOB0011",
+        "DOB0019",
+        "DOB0023",
+        "DOB0024"
+       ]
+      }
+     ]
+    },
+    {
+     "options": [
+      [
+       "",
+       "Venue"
+      ],
+      [
+       "elle",
+       "Venue d’elle-même"
+      ],
+      [
+       "referee",
+       "Référée"
+      ]
+     ],
+     "effets": [
+      {
+       "valeur": "elle",
+       "nb": 22,
+       "ids": [
+        "DOB0001",
+        "DOB0002",
+        "DOB0003",
+        "DOB0004",
+        "DOB0005",
+        "DOB0006",
+        "DOB0007",
+        "DOB0008",
+        "DOB0009",
+        "DOB0011",
+        "DOB0012",
+        "DOB0013",
+        "DOB0014",
+        "DOB0015",
+        "DOB0016",
+        "DOB0017",
+        "DOB0018",
+        "DOB0019",
+        "DOB0020",
+        "DOB0021",
+        "DOB0023",
+        "DOB0024"
+       ]
+      },
+      {
+       "valeur": "referee",
+       "nb": 2,
+       "ids": [
+        "DOB0010",
+        "DOB0022"
+       ]
+      }
+     ]
+    }
+   ],
+   "plage": [
+    {
+     "bouton": "Sept derniers jours",
+     "nb": 0,
+     "ids": [],
+     "kpis": [
+      {
+       "label": "Dossiers ouverts",
+       "valeur": "24",
+       "indice": null
+      },
+      {
+       "label": "Suivis en cours",
+       "valeur": "15",
+       "indice": null
+      },
+      {
+       "label": "Grossesses à risque (GAR)",
+       "valeur": "15",
+       "indice": "Au moins un facteur de surveillance coché"
+      },
+      {
+       "label": "Référées",
+       "valeur": "2",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "bouton": "Aujourd’hui",
+     "nb": 0,
+     "ids": [],
+     "kpis": [
+      {
+       "label": "Dossiers ouverts",
+       "valeur": "24",
+       "indice": null
+      },
+      {
+       "label": "Suivis en cours",
+       "valeur": "15",
+       "indice": null
+      },
+      {
+       "label": "Grossesses à risque (GAR)",
+       "valeur": "15",
+       "indice": "Au moins un facteur de surveillance coché"
+      },
+      {
+       "label": "Référées",
+       "valeur": "2",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "bouton": "Toute la période",
+     "nb": 24,
+     "ids": [
+      "DOB0001",
+      "DOB0002",
+      "DOB0003",
+      "DOB0004",
+      "DOB0005",
+      "DOB0006",
+      "DOB0007",
+      "DOB0008",
+      "DOB0009",
+      "DOB0010",
+      "DOB0011",
+      "DOB0012",
+      "DOB0013",
+      "DOB0014",
+      "DOB0015",
+      "DOB0016",
+      "DOB0017",
+      "DOB0018",
+      "DOB0019",
+      "DOB0020",
+      "DOB0021",
+      "DOB0022",
+      "DOB0023",
+      "DOB0024"
+     ],
+     "kpis": [
+      {
+       "label": "Dossiers ouverts",
+       "valeur": "24",
+       "indice": null
+      },
+      {
+       "label": "Suivis en cours",
+       "valeur": "15",
+       "indice": null
+      },
+      {
+       "label": "Grossesses à risque (GAR)",
+       "valeur": "15",
+       "indice": "Au moins un facteur de surveillance coché"
+      },
+      {
+       "label": "Référées",
+       "valeur": "2",
+       "indice": null
+      }
+     ]
+    },
+    {
+     "bouton": "du 2026-06-01 au 2026-06-30",
+     "nb": 5,
+     "ids": [
+      "DOB0002",
+      "DOB0004",
+      "DOB0010",
+      "DOB0015",
+      "DOB0016"
+     ],
+     "kpis": [
+      {
+       "label": "Dossiers ouverts",
+       "valeur": "24",
+       "indice": null
+      },
+      {
+       "label": "Suivis en cours",
+       "valeur": "15",
+       "indice": null
+      },
+      {
+       "label": "Grossesses à risque (GAR)",
+       "valeur": "15",
+       "indice": "Au moins un facteur de surveillance coché"
+      },
+      {
+       "label": "Référées",
+       "valeur": "2",
+       "indice": null
+      }
+     ]
+    }
+   ],
+   "fiche": {
+    "ref": "00001/26",
+    "titre": "KASSA Justine",
+    "texte": "N° de dossier 00001/26 Gestité / Parité G2 P0 Terme prévu 04/11/2026 Facteurs de surveillance 1 Identité & antécédents Soins préventifs Consultations prénatales (2) Accouchement & nouveau-né Partogramme & suites Parturiente N° de dossier 00001/26 Nom KASSA Justine Dossier patient CNT/136/26 Âge 22 ans Taille 1.49 m Profession Aide-soignante Nationalité Béninoise Quartier Boukoumbé Téléphone 0377653549 Personne à contacter La mère · 97767368 Venue D’elle-même Date d’entrée 07/04/2026 Sage-femme référente ADAM Colette Procréateur Nom et prénoms N. Bio Profession Cultivateur Groupe sanguin / Rhésus O− Sérologie du conjoint Négative Antécédents Maladies et opérations Néant Traitements en cours Néant Allergies Non connues Gestité 2 Parité 0 Avortements 0 Enfants vivants 0 Enfants décédés 0 Transfusions antérieures 0 DDR 28/01/2026 Date probable de l’accouchement 04/11/2026 Facteurs de surveillance Grossesse à risque — 1 facteur(s) coché(s). C’est leur CUMUL qui classe, jamais un facteur isolé. FACTEUR RELEVÉ Taille < 1,50 m Examens complémentaires EXAMEN GROUPE RÉSULTAT Groupe sanguin Immuno-hématologie O Rhésus Immuno-hématologie Positif Test de Coombs indirect Immuno-hématologie Négatif Électrophorèse de l’hémoglobine Immuno-hématologie AS Taux d’hémoglobine Hématologie 11.8 g/dl Hématocrite Hématologie 34 % Plaquettes Hématologie 269 G/l TPHA Sérologie Négatif VDRL Sérologie Négatif HIV 1 Sérologie Négatif HIV 2 Sérologie Négatif Toxoplasmose IgG Sérologie Négatif Toxoplasmose IgM Sérologie Négatif Rubéole IgG Sérologie Négatif Rubéole IgM Sérologie Négatif Hépatite B (à partir de 6 mois) Sérologie Négatif ECBU Bactériologie Stérile Glycémie à jeun Biochimie 0.82 g/l GP 75 Biochimie Normale",
+    "boutons": [
+     "Fermer",
+     "Identité & antécédents",
+     "Soins préventifs",
+     "Consultations prénatales (2)",
+     "Accouchement & nouveau-né",
+     "Partogramme & suites",
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "actionsLigne": [
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "commandes": [
+    "Aujourd’hui",
+    "Sept derniers jours",
+    "Toute la période",
+    "Tous les dossiers obstétricaux24",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "1",
+    "2"
+   ]
+  }
+ },
+ "comptesRendus": {
+  "kpis": [
+   {
+    "label": "Comptes rendus",
+    "valeur": "65",
+    "indice": null
+   },
+   {
+    "label": "d’accouchement",
+    "valeur": "34",
+    "indice": null
+   },
+   {
+    "label": "de planning familial",
+    "valeur": "22",
+    "indice": null
+   },
+   {
+    "label": "d’AMIU",
+    "valeur": "9",
+    "indice": null
+   }
+  ],
+  "onglets": [
+   "d’accouchement34",
+   "de planning familial22",
+   "d’AMIU9"
+  ],
+  "notes": [
+   "Les actes de planification familiale — pose et retrait d’implant, de DIU, injectables — sont NON COUVERTS par les assurances selon la grille gynéco-obstétricale de la clinique. La patiente assurée les règle au tarif non assuré, et la facture en porte le motif."
+  ],
+  "parOnglet": [
+   {
+    "onglet": "d’accouchement34",
+    "entetes": [
+     "RÉFÉRENCE",
+     "ENREGISTRÉ LE",
+     "PATIENTE",
+     "RÉDIGÉ PAR",
+     "ACTIONS"
+    ],
+    "page1": [
+     [
+      "CRM-0019",
+      "26/08/2026 à 10h00",
+      "ZIME Ramatou — CNT/163/25",
+      "BOUKARI Nadège",
+      ""
+     ],
+     [
+      "CRM-0012",
+      "13/08/2026 à 10h00",
+      "N’TCHA Alimatou — CNT/23/26",
+      "BOUKARI Nadège",
+      ""
+     ],
+     [
+      "CRM-0030",
+      "13/08/2026 à 10h00",
+      "ZIME Ramatou — CNT/163/25",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0002",
+      "05/08/2026 à 10h00",
+      "BOUKARI Justine — CNT/43/26",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0022",
+      "01/08/2026 à 10h00",
+      "YENI Chantal — CNT/98/26",
+      "BOUKARI Nadège",
+      ""
+     ],
+     [
+      "CRM-0004",
+      "20/07/2026 à 10h00",
+      "YENI Zoukanéri — CNT/152/26",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0034",
+      "20/07/2026 à 10h00",
+      "PARAISO Rabiatou — CNT/177/25",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0014",
+      "10/07/2026 à 10h00",
+      "KINNOU Salamatou — CNT/28/25",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0027",
+      "09/07/2026 à 10h00",
+      "SEIDOU Rachida — CNT/10/25",
+      "BOUKARI Nadège",
+      ""
+     ],
+     [
+      "CRM-0009",
+      "19/06/2026 à 10h00",
+      "ISSA Awaou — CNT/128/25",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0016",
+      "13/06/2026 à 10h00",
+      "TCHANE Colette — CNT/54/26",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0028",
+      "11/06/2026 à 10h00",
+      "ISSA Awaou — CNT/171/25",
+      "BOUKARI Nadège",
+      ""
+     ]
+    ],
+    "nb": 34,
+    "note": null
+   },
+   {
+    "onglet": "de planning familial22",
+    "entetes": [
+     "RÉFÉRENCE",
+     "ENREGISTRÉ LE",
+     "PATIENTE",
+     "RÉDIGÉ PAR",
+     "ACTIONS"
+    ],
+    "page1": [
+     [
+      "CRM-0105",
+      "24/08/2026 à 10h00",
+      "BOUKARI Sylvie — CNT/35/25",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0121",
+      "18/08/2026 à 10h00",
+      "OURTCHA Bertine — CNT914/25",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0112",
+      "12/08/2026 à 10h00",
+      "ISSA Chantal — CNT/22/26",
+      "BOUKARI Nadège",
+      ""
+     ],
+     [
+      "CRM-0113",
+      "24/07/2026 à 10h00",
+      "WOROU Rachida — CNT/155/25",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0103",
+      "16/07/2026 à 10h00",
+      "SEIDOU Awaou — CNT/55/26",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0116",
+      "01/07/2026 à 10h00",
+      "BADO BANI A. B. Zoulehath — CNT917/25",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0110",
+      "23/06/2026 à 10h00",
+      "BAKO Nadège — CNT/133/26",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0114",
+      "16/06/2026 à 10h00",
+      "DAOUDA Zoukanéri — CNT/165/26",
+      "BOUKARI Nadège",
+      ""
+     ],
+     [
+      "CRM-0115",
+      "08/05/2026 à 10h00",
+      "TEPA Fatouma — CNT/145/25",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0108",
+      "07/05/2026 à 10h00",
+      "YARO Aïssatou — CNT/156/26",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0120",
+      "05/05/2026 à 10h00",
+      "WOROU Rachida — CNT/155/25",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0118",
+      "13/04/2026 à 10h00",
+      "YARO Zoukanéri — CNT/70/26",
+      "BOUKARI Nadège",
+      ""
+     ]
+    ],
+    "nb": 22,
+    "note": "Les actes de planification familiale sont TOUS non couverts par les assurances (grille gynéco-obstétricale)."
+   },
+   {
+    "onglet": "d’AMIU9",
+    "entetes": [
+     "RÉFÉRENCE",
+     "ENREGISTRÉ LE",
+     "PATIENTE",
+     "RÉDIGÉ PAR",
+     "ACTIONS"
+    ],
+    "page1": [
+     [
+      "CRM-0201",
+      "22/07/2026 à 10h00",
+      "YARO Bertine — CNT/42/26",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0208",
+      "12/05/2026 à 10h00",
+      "BAKO Chantal — CNT/100/25",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0202",
+      "07/05/2026 à 10h00",
+      "OROU YO Chantal — CNT/162/26",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0206",
+      "29/04/2026 à 10h00",
+      "SAMBIENI Rabiatou — CNT/104/26",
+      "BOUKARI Nadège",
+      ""
+     ],
+     [
+      "CRM-0209",
+      "22/04/2026 à 10h00",
+      "TCHOUKOUROU Chantal — CNT/50/26",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0203",
+      "21/04/2026 à 10h00",
+      "SOULE Adissa — CNT/143/26",
+      "ADAM Colette",
+      ""
+     ],
+     [
+      "CRM-0204",
+      "08/04/2026 à 10h00",
+      "BAKO Justine — CNT/9/26",
+      "BADO BANI A. B. Zoulehath",
+      ""
+     ],
+     [
+      "CRM-0207",
+      "09/02/2026 à 10h00",
+      "DIEYABIDI Bibata — CNT/6/25",
+      "BOUKARI Nadège",
+      ""
+     ],
+     [
+      "CRM-0205",
+      "04/02/2026 à 10h00",
+      "TIGRI Nadège — CNT/38/26",
+      "BOUKARI Nadège",
+      ""
+     ]
+    ],
+    "nb": 9,
+    "note": null
+   }
+  ],
+  "fiches": [
+   {
+    "onglet": "d’accouchement34",
+    "titre": "CRM-0019",
+    "texte": "RÉFÉRENCE CRM-0019 TYPE Compte rendu d’accouchement PATIENTE ZIME Ramatou — CNT/163/25 RÉDIGÉ PAR BOUKARI Nadège ENREGISTRÉ LE 26/08/2026 à 10h00 Compte rendu d’accouchement RUBRIQUE VALEUR Date et heure de l’accouchement 2026-05-23T13:10 Terme (semaines d’aménorrhée) 38 Présentation Autre Voie d’accouchement Voie basse eutocique Durée du travail (heures) 25 Délivrance Spontanée et complète Épisiotomie Oui Déchirure périnéale Degré 1 Pertes sanguines estimées (ml) 20 Sexe de l’enfant Féminin Poids de l’enfant (g) 3434 Apgar à 1 minute 10 Apgar à 5 minutes 9 État de la mère à l’issue Évolution favorable. Observations Surveillance rapprochée."
+   },
+   {
+    "onglet": "de planning familial22",
+    "titre": "CRM-0105",
+    "texte": "RÉFÉRENCE CRM-0105 TYPE Compte rendu de planning familial PATIENTE BOUKARI Sylvie — CNT/35/25 RÉDIGÉ PAR ADAM Colette ENREGISTRÉ LE 24/08/2026 à 10h00 Compte rendu de planning familial RUBRIQUE VALEUR Date de l’acte 30/12/2025 Méthode Autre Geste Pose Counseling délivré Non Effets secondaires expliqués Oui Prochain rendez-vous 11/03/2026 Observations Surveillance rapprochée."
+   },
+   {
+    "onglet": "d’AMIU9",
+    "titre": "CRM-0201",
+    "texte": "RÉFÉRENCE CRM-0201 TYPE Compte rendu d’AMIU PATIENTE YARO Bertine — CNT/42/26 RÉDIGÉ PAR ADAM Colette ENREGISTRÉ LE 22/07/2026 à 10h00 Compte rendu d’AMIU RUBRIQUE VALEUR Date et heure 2026-06-05T21:05 Indication Suites simples. Terme au moment du geste (SA) 29 Anesthésie / analgésie Évolution favorable. Déroulement du geste Évolution favorable. Produit aspiré Surveillance rapprochée. Complications Surveillance rapprochée. Suites et conduite à tenir Suites simples. Opérateur ADAM Colette"
+   }
+  ],
+  "creations": [
+   {
+    "nom": "planning",
+    "saisie": {
+     "patientCode": "CNT/1/25",
+     "sageFemmeId": "SOI01",
+     "dateActe": "2026-08-10",
+     "methode": "Implant",
+     "geste": "Pose",
+     "counseling": true,
+     "effetsSecondaires": true
+    },
+    "titre": "Compte rendu de planning familial",
+    "initial": [
+     [
+      "patientCode",
+      "CNT/1/25"
+     ],
+     [
+      "sageFemmeId",
+      "SOI01"
+     ],
+     [
+      "dateActe",
+      ""
+     ],
+     [
+      "methode",
+      "Implant"
+     ],
+     [
+      "geste",
+      "Pose"
+     ],
+     [
+      "counseling",
+      false
+     ],
+     [
+      "effetsSecondaires",
+      false
+     ],
+     [
+      "prochainRdv",
+      ""
+     ],
+     [
+      "observations",
+      ""
+     ]
+    ],
+    "nouvelles": [
+     {
+      "id": "CRMxmvvhmqm2jfaqd",
+      "statut": "actif",
+      "patientCode": "CNT/1/25",
+      "sageFemmeId": "SOI01",
+      "dateActe": "2026-08-10",
+      "methode": "Implant",
+      "geste": "Pose",
+      "counseling": true,
+      "effetsSecondaires": true,
+      "prochainRdv": "",
+      "observations": "",
+      "reference": "CRM-0210",
+      "typeCr": "planning_familial",
+      "typeLabel": "Compte rendu de planning familial",
+      "patientId": "PAT0001",
+      "patient": "TCHANE Bertine",
+      "sageFemme": "BASSONGUI Chabi Séko",
+      "creeLe": "2026-10-30T21:32:08.378Z"
+     }
+    ],
+    "toasts": [
+     [
+      "Compte rendu créé."
+     ]
+    ],
+    "modaleOuverte": false
+   },
+   {
+    "nom": "planning : méthode manquante (refus)",
+    "saisie": {
+     "patientCode": "CNT/1/25",
+     "sageFemmeId": "SOI01",
+     "dateActe": "2026-08-10",
+     "geste": "Pose"
+    },
+    "titre": "Compte rendu de planning familial",
+    "initial": [
+     [
+      "patientCode",
+      "CNT/1/25"
+     ],
+     [
+      "sageFemmeId",
+      "SOI01"
+     ],
+     [
+      "dateActe",
+      ""
+     ],
+     [
+      "methode",
+      "Implant"
+     ],
+     [
+      "geste",
+      "Pose"
+     ],
+     [
+      "counseling",
+      false
+     ],
+     [
+      "effetsSecondaires",
+      false
+     ],
+     [
+      "prochainRdv",
+      ""
+     ],
+     [
+      "observations",
+      ""
+     ]
+    ],
+    "nouvelles": [],
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "modaleOuverte": true
+   },
+   {
+    "nom": "amiu",
+    "saisie": {
+     "patientCode": "CNT/1/25",
+     "sageFemmeId": "SOI01",
+     "dateHeure": "2026-08-11T09:30",
+     "indication": "Avortement incomplet",
+     "deroulement": "RAS",
+     "suites": "Surveillance",
+     "operateurId": "SOI01"
+    },
+    "titre": "Compte rendu d’AMIU",
+    "initial": [
+     [
+      "patientCode",
+      "CNT/1/25"
+     ],
+     [
+      "sageFemmeId",
+      "SOI01"
+     ],
+     [
+      "dateHeure",
+      ""
+     ],
+     [
+      "indication",
+      ""
+     ],
+     [
+      "termeSA",
+      ""
+     ],
+     [
+      "anesthesie",
+      ""
+     ],
+     [
+      "deroulement",
+      ""
+     ],
+     [
+      "produitAspire",
+      ""
+     ],
+     [
+      "complications",
+      ""
+     ],
+     [
+      "suites",
+      ""
+     ],
+     [
+      "operateurId",
+      "SOI01"
+     ]
+    ],
+    "nouvelles": [
+     {
+      "id": "CRMxmvvhmrip2yxsd",
+      "statut": "actif",
+      "patientCode": "CNT/1/25",
+      "sageFemmeId": "SOI01",
+      "dateHeure": "2026-08-11T09:30",
+      "indication": "Avortement incomplet",
+      "termeSA": null,
+      "anesthesie": "",
+      "deroulement": "RAS",
+      "produitAspire": "",
+      "complications": "",
+      "suites": "Surveillance",
+      "operateurId": "SOI01",
+      "reference": "CRM-0211",
+      "typeCr": "amiu",
+      "typeLabel": "Compte rendu d’AMIU",
+      "patientId": "PAT0001",
+      "patient": "TCHANE Bertine",
+      "sageFemme": "BASSONGUI Chabi Séko",
+      "creeLe": "2026-10-30T21:32:09.553Z"
+     }
+    ],
+    "toasts": [
+     [
+      "Compte rendu créé."
+     ]
+    ],
+    "modaleOuverte": false
+   }
+  ],
+  "femme": "CNT/1/25",
+  "soignant": {
+   "id": "SOI01",
+   "nom": "BASSONGUI Chabi Séko"
+  }
+ },
+ "impressions": {
+  "m4-maternite": {
+   "titre": "Fiche de suivi de grossesse",
+   "sousTitre": null,
+   "filigrane": null,
+   "cartouche": [
+    [
+     "Patiente",
+     "BANI Zoukanéri"
+    ],
+    [
+     "Dossier",
+     "CNT/62/25"
+    ],
+    [
+     "Terme",
+     "39 SA"
+    ],
+    [
+     "Date prévue",
+     "02/09/2026"
+    ],
+    [
+     "Groupe sanguin",
+     "AB+"
+    ],
+    [
+     "Risque",
+     "Standard"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Sage-femme",
+     "nom": "BOUKARI Nadège"
+    },
+    {
+     "role": "Le Médecin"
+    }
+   ],
+   "contenu": [
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Information"
+      ],
+      "lignes": [
+       [
+        "Consultations prénatales réalisées",
+        "4"
+       ],
+       [
+        "Sage-femme référente",
+        "BOUKARI Nadège"
+       ],
+       [
+        "Observations cliniques",
+        "Diabète gestationnel"
+       ],
+       [
+        "Niveau de risque obstétrical",
+        "Standard"
+       ]
+      ],
+      "pied": null
+     }
+    }
+   ]
+  },
+  "m4-accouchements": {
+   "titre": "Fiche d’accouchement",
+   "sousTitre": "ACC-0003",
+   "filigrane": null,
+   "cartouche": [
+    [
+     "Parturiente",
+     "DIEYABIDI Ramatou"
+    ],
+    [
+     "Dossier",
+     "CNT/25/26"
+    ],
+    [
+     "Date et heure",
+     "17/07/2026 à 04h44"
+    ],
+    [
+     "Voie",
+     "Voie basse"
+    ],
+    [
+     "Praticien",
+     "ADAM Colette"
+    ],
+    [
+     "Issue",
+     "Favorable"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Sage-femme",
+     "nom": "ADAM Colette"
+    },
+    {
+     "role": "Le Médecin"
+    }
+   ],
+   "contenu": [
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Information"
+      ],
+      "lignes": [
+       [
+        "Durée du travail",
+        "13 h"
+       ],
+       [
+        "Complications constatées",
+        "Aucune"
+       ],
+       [
+        "Observations",
+        "—"
+       ]
+      ],
+      "pied": null
+     }
+    }
+   ]
+  },
+  "m4-naissances": {
+   "titre": "Attestation de naissance",
+   "sousTitre": "Établie par la maternité — NAI-0003",
+   "filigrane": "Document officiel",
+   "cartouche": [
+    [
+     "Référence",
+     "NAI-0003"
+    ],
+    [
+     "Date et heure",
+     "17/07/2026 à 04h44"
+    ],
+    [
+     "Mère",
+     "DIEYABIDI Ramatou"
+    ],
+    [
+     "Dossier mère",
+     "CNT/25/26"
+    ],
+    [
+     "Sexe",
+     "Féminin"
+    ],
+    [
+     "État",
+     "Né vivant"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Sage-femme"
+    },
+    {
+     "role": "Le Directeur Médical",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "contenu": [
+    {
+     "texte": "La direction de la CLINIQUE NASSIERA TOO SARL atteste que l’enfant désigné ci-après est né dans ses services :"
+    },
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Information"
+      ],
+      "lignes": [
+       [
+        "Date et heure de naissance",
+        "17/07/2026 à 04h44"
+       ],
+       [
+        "Sexe",
+        "Féminin"
+       ],
+       [
+        "Poids à la naissance",
+        "3.95 kg"
+       ],
+       [
+        "Taille",
+        "49 cm"
+       ],
+       [
+        "Périmètre crânien (PC)",
+        "37.3 cm"
+       ],
+       [
+        "Périmètre thoracique (PT)",
+        "30.3 cm"
+       ],
+       [
+        "Score d’Apgar (1 / 5 / 10 min)",
+        "9 / 9 / 10"
+       ],
+       [
+        "Vitamine K1 / collyre",
+        "K1 administrée · collyre fait"
+       ],
+       [
+        "Vaccins de naissance",
+        "VPO0, BCG, Hép. B J0"
+       ],
+       [
+        "Nom de la mère",
+        "DIEYABIDI Ramatou"
+       ]
+      ],
+      "pied": null
+     }
+    },
+    {
+     "texte": "La présente attestation est délivrée pour servir et valoir ce que de droit, en vue de la déclaration à l’état civil."
+    }
+   ]
+  },
+  "m4-deces": {
+   "titre": "Déclaration de décès",
+   "sousTitre": "DEC-0003",
+   "filigrane": "Document officiel",
+   "cartouche": [
+    [
+     "Patient",
+     "HOUNKPATIN Tamou"
+    ],
+    [
+     "Dossier",
+     "CNT/63/26"
+    ],
+    [
+     "Date et heure",
+     "28/07/2026 à 10h05"
+    ],
+    [
+     "Lieu",
+     "Maternité"
+    ],
+    [
+     "Médecin constatant",
+     "ADAM Colette"
+    ],
+    [
+     "Référence",
+     "DEC-0003"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Le Médecin constatant",
+     "nom": "ADAM Colette",
+     "mention": "Signature et cachet"
+    },
+    {
+     "role": "Le Directeur Médical",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "contenu": [
+    {
+     "texte": "Le médecin soussigné certifie avoir constaté le décès de la personne désignée ci-dessus."
+    },
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Information"
+      ],
+      "lignes": [
+       [
+        "Date et heure du décès",
+        "28/07/2026 à 10h05"
+       ],
+       [
+        "Lieu du décès",
+        "Maternité"
+       ],
+       [
+        "Cause du décès",
+        "Insuffisance rénale aiguë"
+       ],
+       [
+        "Observations",
+        "—"
+       ]
+      ],
+      "pied": null
+     }
+    }
+   ]
+  },
+  "m4-cpn": {
+   "titre": "Carte maternelle — suivi CPN",
+   "sousTitre": "CPN-0003",
+   "filigrane": null,
+   "cartouche": [
+    [
+     "Patiente",
+     "GARBA Aïssatou"
+    ],
+    [
+     "Dossier",
+     "CNT/13/26"
+    ],
+    [
+     "DDR",
+     "04/02/2026"
+    ],
+    [
+     "DPA",
+     "11/11/2026"
+    ],
+    [
+     "Groupe sanguin",
+     "AB+"
+    ],
+    [
+     "Sage-femme",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Sage-femme",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "contenu": [
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Valeur"
+      ],
+      "lignes": [
+       [
+        "Doses SP (TPI paludisme)",
+        "SP1, SP2, SP3, SP4"
+       ],
+       [
+        "MILDA remise",
+        "Oui"
+       ],
+       [
+        "Grossesse à risque (GAR)",
+        "Non"
+       ],
+       [
+        "Mébendazole",
+        "Oui"
+       ],
+       [
+        "VAT",
+        "VAT4"
+       ]
+      ],
+      "pied": null
+     }
+    },
+    {
+     "table": {
+      "entetes": [
+       "CPN",
+       "Date",
+       "TA",
+       "Poids (kg)",
+       "HU (cm)",
+       "BDCF"
+      ],
+      "lignes": [
+       [
+        "CPN 1",
+        "01/04/2026",
+        "9/8",
+        "75",
+        "18",
+        "132"
+       ],
+       [
+        "CPN 2",
+        "27/05/2026",
+        "12/6",
+        "67",
+        "22",
+        "131"
+       ],
+       [
+        "CPN 3",
+        "22/07/2026",
+        "10/7",
+        "58",
+        "31",
+        "140"
+       ]
+      ],
+      "pied": null
+     }
+    }
+   ]
+  },
+  "m4-dossier-bebe": {
+   "titre": "Volet nouveau-né",
+   "sousTitre": "Nouveau-né de BANI Salamatou — NAI-0004",
+   "filigrane": null,
+   "cartouche": [
+    [
+     "Mère",
+     "BANI Salamatou"
+    ],
+    [
+     "Dossier mère",
+     "CNT/41/26"
+    ],
+    [
+     "Naissance",
+     "02/01/2026 à 00h03"
+    ],
+    [
+     "Sexe",
+     "Masculin"
+    ],
+    [
+     "Statut",
+     "Né vivant"
+    ],
+    [
+     "Référence",
+     "NAI-0004"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Sage-femme"
+    }
+   ],
+   "contenu": [
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Valeur"
+      ],
+      "lignes": [
+       [
+        "Poids / taille",
+        "3.75 kg · 45 cm"
+       ],
+       [
+        "Périmètre crânien (PC)",
+        "32.7 cm"
+       ],
+       [
+        "Périmètre thoracique (PT)",
+        "31 cm"
+       ],
+       [
+        "Apgar 1 / 5 / 10 min",
+        "7 / 8 / 8"
+       ],
+       [
+        "Réanimation néonatale",
+        "Non"
+       ],
+       [
+        "Soins essentiels",
+        "Vitamine K1, Collyre"
+       ],
+       [
+        "Vaccins J0",
+        "VPO0"
+       ]
+      ],
+      "pied": null
+     }
+    }
+   ]
+  },
+  "m4-cpon": {
+   "titre": "Consultation post-natale",
+   "sousTitre": "CPoN 3 — CPO-0003",
+   "filigrane": null,
+   "cartouche": [
+    [
+     "Accouchée",
+     "GARBA Marguerite"
+    ],
+    [
+     "Dossier",
+     "CNT/134/25"
+    ],
+    [
+     "Date",
+     "07/02/2026"
+    ],
+    [
+     "Séance",
+     "CPoN 3 (6ᵉ semaine)"
+    ],
+    [
+     "Sage-femme",
+     "BOUKARI Nadège"
+    ],
+    [
+     "Accouchement",
+     "ACC-0019"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Sage-femme",
+     "nom": "BOUKARI Nadège"
+    }
+   ],
+   "contenu": [
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Valeur"
+      ],
+      "lignes": [
+       [
+        "Hémorragie ANTE-partum",
+        "Non"
+       ],
+       [
+        "Hémorragie du post-partum (HPP)",
+        "Non"
+       ],
+       [
+        "Examen clinique",
+        "TA, T°, utérus, lochies, seins — sans particularité"
+       ],
+       [
+        "Supplémentation",
+        "Vit A + Fer/Folates"
+       ],
+       [
+        "Conseil PF post-partum",
+        "Non"
+       ],
+       [
+        "État du nouveau-né",
+        "Ictère modéré à surveiller"
+       ]
+      ],
+      "pied": null
+     }
+    }
+   ]
+  },
+  "m4-planification": {
+   "titre": "Fiche de planification familiale",
+   "sousTitre": "PF-0003",
+   "filigrane": null,
+   "cartouche": [
+    [
+     "Cliente",
+     "YARO Aïssatou"
+    ],
+    [
+     "Dossier",
+     "CNT/156/26"
+    ],
+    [
+     "Date",
+     "08/06/2026"
+    ],
+    [
+     "Statut",
+     "A — nouvelle acceptante"
+    ],
+    [
+     "Sage-femme",
+     "YENI M’PO Florent"
+    ],
+    [
+     "Prochain RDV",
+     "16/11/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Sage-femme",
+     "nom": "YENI M’PO Florent"
+    }
+   ],
+   "contenu": [
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Valeur"
+      ],
+      "lignes": [
+       [
+        "Méthode adoptée",
+        "CO (Contraceptifs Oraux)"
+       ],
+       [
+        "Catégorie",
+        "Courte durée"
+       ],
+       [
+        "Spécification",
+        "Pilule œstro-progestative quotidienne"
+       ],
+       [
+        "Méthode antérieure",
+        "DIU (cuivre / hormonal)"
+       ],
+       [
+        "DDR",
+        "05/08/2026"
+       ],
+       [
+        "Constantes",
+        "50 kg · 10/9"
+       ]
+      ],
+      "pied": null
+     }
+    }
+   ]
+  },
+  "m4-sonu": {
+   "titre": "Registre SONUB / SONUC — fiche d’urgence",
+   "sousTitre": "SONU-0003",
+   "filigrane": null,
+   "cartouche": [
+    [
+     "Patiente",
+     "SOULE Adissa"
+    ],
+    [
+     "Dossier",
+     "CNT/143/26"
+    ],
+    [
+     "Arrivée",
+     "24/08/2026 à 02h51"
+    ],
+    [
+     "Gestité / parité",
+     "2 / 2"
+    ],
+    [
+     "Provenance",
+     "Venue d’elle-même"
+    ],
+    [
+     "Évolution",
+     "Favorable"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "L’Agent",
+     "nom": "BOUKARI Nadège",
+     "mention": "Nom, prénom et qualification"
+    }
+   ],
+   "contenu": [
+    {
+     "table": {
+      "entetes": [
+       "N°",
+       "Fonction SONU posée",
+       "Type"
+      ],
+      "lignes": [
+       [
+        "2",
+        "Anticonvulsivants parentéraux",
+        "SONUB"
+       ],
+       [
+        "5",
+        "AMIU / curetage / curage",
+        "SONUB"
+       ],
+       [
+        "10",
+        "Césarienne d’urgence",
+        "SONUC"
+       ]
+      ],
+      "pied": null
+     }
+    },
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Valeur"
+      ],
+      "lignes": [
+       [
+        "Diagnostic d’évacuation",
+        "—"
+       ],
+       [
+        "Heure de l’abord veineux",
+        "02h03"
+       ],
+       [
+        "Autre geste SONU",
+        "—"
+       ],
+       [
+        "Heure de fin des gestes",
+        "04h51"
+       ]
+      ],
+      "pied": null
+     }
+    }
+   ]
+  },
+  "m4-dossier-obstetrical": {
+   "titre": "Dossier obstétrical",
+   "sousTitre": "N° 00003/26 — GARBA Aïssatou",
+   "filigrane": null,
+   "cartouche": [
+    [
+     "N° de dossier",
+     "00003/26"
+    ],
+    [
+     "Parturiente",
+     "GARBA Aïssatou"
+    ],
+    [
+     "Dossier patient",
+     "CNT/13/26"
+    ],
+    [
+     "Âge",
+     "77 ans"
+    ],
+    [
+     "Date d’entrée",
+     "20/04/2026"
+    ],
+    [
+     "Gestité / Parité",
+     "G6 P4"
+    ],
+    [
+     "DDR",
+     "04/02/2026"
+    ],
+    [
+     "Date probable de l’accouchement",
+     "11/11/2026"
+    ],
+    [
+     "Sage-femme référente",
+     "BASSONGUI Chabi Séko"
+    ],
+    [
+     "Venue",
+     "D’elle-même"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Sage-femme",
+     "nom": "BASSONGUI Chabi Séko"
+    },
+    {
+     "role": "Le Médecin",
+     "mention": "Visa"
+    }
+   ],
+   "contenu": [
+    {
+     "texte": "Antécédents"
+    },
+    {
+     "table": {
+      "entetes": [
+       "Rubrique",
+       "Information"
+      ],
+      "lignes": [
+       [
+        "Maladies et opérations",
+        "Appendicectomie en 2019"
+       ],
+       [
+        "Traitements en cours",
+        "Néant"
+       ],
+       [
+        "Allergies",
+        "Non connues"
+       ],
+       [
+        "Avortements",
+        "0"
+       ],
+       [
+        "Enfants vivants",
+        "4"
+       ],
+       [
+        "Enfants décédés",
+        "0"
+       ],
+       [
+        "Transfusions antérieures",
+        "0"
+       ]
+      ],
+      "pied": null
+     }
+    },
+    {
+     "texte": "Facteurs de surveillance"
+    },
+    {
+     "table": {
+      "entetes": [
+       "Facteur relevé"
+      ],
+      "lignes": [
+       [
+        "Âge > 35 ans"
+       ]
+      ],
+      "pied": null
+     }
+    },
+    {
+     "texte": "Examens complémentaires"
+    },
+    {
+     "table": {
+      "entetes": [
+       "Examen",
+       "Groupe",
+       "Résultat"
+      ],
+      "lignes": [
+       [
+        "Groupe sanguin",
+        "Immuno-hématologie",
+        "A"
+       ],
+       [
+        "Rhésus",
+        "Immuno-hématologie",
+        "Positif"
+       ],
+       [
+        "Test de Coombs indirect",
+        "Immuno-hématologie",
+        "Négatif"
+       ],
+       [
+        "Électrophorèse de l’hémoglobine",
+        "Immuno-hématologie",
+        "AA"
+       ],
+       [
+        "Taux d’hémoglobine",
+        "Hématologie",
+        "10.6 g/dl"
+       ],
+       [
+        "Hématocrite",
+        "Hématologie",
+        "40 %"
+       ],
+       [
+        "Plaquettes",
+        "Hématologie",
+        "238 G/l"
+       ],
+       [
+        "TPHA",
+        "Sérologie",
+        "Négatif"
+       ],
+       [
+        "VDRL",
+        "Sérologie",
+        "Négatif"
+       ],
+       [
+        "HIV 1",
+        "Sérologie",
+        "Négatif"
+       ],
+       [
+        "HIV 2",
+        "Sérologie",
+        "Négatif"
+       ],
+       [
+        "Toxoplasmose IgG",
+        "Sérologie",
+        "Négatif"
+       ],
+       [
+        "Toxoplasmose IgM",
+        "Sérologie",
+        "Négatif"
+       ],
+       [
+        "Rubéole IgG",
+        "Sérologie",
+        "Négatif"
+       ],
+       [
+        "Rubéole IgM",
+        "Sérologie",
+        "Négatif"
+       ],
+       [
+        "Hépatite B (à partir de 6 mois)",
+        "Sérologie",
+        "Positif"
+       ],
+       [
+        "ECBU",
+        "Bactériologie",
+        "Stérile"
+       ],
+       [
+        "Glycémie à jeun",
+        "Biochimie",
+        "0.95 g/l"
+       ],
+       [
+        "GP 75",
+        "Biochimie",
+        "Normale"
+       ]
+      ],
+      "pied": null
+     }
+    },
+    {
+     "texte": "Formulaire national « DOSSIER OBSTÉTRICAL » — Ministère de la Santé, République du Bénin. Le numéro de dossier suit le registre papier de la maternité."
+    }
+   ]
+  },
+  "certificatRepos": {
+   "titre": "CERTIFICAT DE REPOS",
+   "sousTitre": "Post-partum — ACC-0020",
+   "filigrane": "Document officiel",
+   "cartouche": [
+    [
+     "Patiente",
+     "TIGRI Séraphine"
+    ],
+    [
+     "Dossier",
+     "CNT/11/26"
+    ],
+    [
+     "Accouchement du",
+     "20/08/2026 à 01h31"
+    ],
+    [
+     "Type",
+     "Dirigé"
+    ],
+    [
+     "Praticien",
+     "TAKI Orou"
+    ],
+    [
+     "Référence",
+     "ACC-0020"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Sage-femme",
+     "nom": "TAKI Orou",
+     "mention": "Signature et cachet"
+    },
+    {
+     "role": "Le Médecin"
+    }
+   ],
+   "contenu": [
+    {
+     "texte": "Le praticien soussigné certifie avoir assisté l’accouchement de la patiente désignée ci-dessus et prescrit un repos post-partum conforme aux suites de couches."
+    },
+    {
+     "texte": "Un repos est prescrit à compter du 20/08/2026, sauf complication nécessitant une réévaluation."
+    },
+    {
+     "texte": "Délivré pour servir et valoir ce que de droit."
+    }
+   ]
+  },
+  "certificatReposRef": "ACC-0020"
+ }
+}

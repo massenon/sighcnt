@@ -11,9 +11,17 @@
 (function (global) {
   'use strict';
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
-      P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
+      P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
+
+  /** L'IFU du CLIENT (E14, corrigé le 31/10/2026). La pièce nommait l'IFU de la clinique en « IFU client » pour tous les clients :
+      une pièce fiscale qui désigne le mauvais identifiant est un défaut réel. Le dossier du patient (ou la pièce) porte l'IFU
+      quand il est connu ; sinon la case reste VIDE. Jamais celui de la clinique. */
+  function ifuClientDe(f) {
+    var p = f && f.patientId ? S.collection('patients').get(f.patientId) : null;
+    return String((f && f.ifuClient) || (p && p.ifu) || '');
+  }
 
   var F = D.PARAM_FISCAL;
   /* Régime en vigueur : exonéré sur la facture de référence. Le taux normal
@@ -44,7 +52,11 @@
   }
 
   function factures() { return S.collection('factures').active(); }
-  function normalisees() { return factures().filter(function (f) { return !f.proforma; }); }
+  /* Le registre fiscal suit l'EXERCICE choisi (sélecteur de l'en-tête) : une déclaration à la DGI porte sur une année. */
+  function normalisees() {
+    var X = global.SIGH.exercice;
+    return factures().filter(function (f) { return !f.proforma && (!X || X.dansExercice(f.date)); });
+  }
 
   var STATUTS = {
     valide: ['Validée', 'success'],
@@ -358,10 +370,11 @@
         P.etat({
           titre: 'Facture de vente — normalisée',
           sousTitre: f.numero + (f.numeroMecef ? ' — ' + f.numeroMecef : ''),
+          date: f.date,
           cartouche: [
             ['Facture n°', f.numero], ['Date', C.dateFR(f.date)],
             ['Client', f.patient], ['Dossier client', f.patientCode],
-            ['IFU client', C.BRAND.ifu], ['Nature', f.type],
+            ['IFU client', ifuClientDe(f)], ['Nature', f.type],
           ],
           contenu: contenu,
           signatures: [
@@ -545,17 +558,21 @@
       var col = S.collection('avoirs', { module: 'MECEF', entite: 'Avoir' });
       var host = el('div.space-y-4');
       var table;
+      function avoirsExercice() {
+        var X = global.SIGH.exercice;
+        return col.active().filter(function (a) { return !X || X.dansExercice(a.date); });
+      }
 
       host.appendChild(U.kpiGrid([
-        { label: 'Avoirs émis', value: C.num(col.active().length), icon: 'undo-2', tone: 'navy' },
-        { label: 'Montant des avoirs', value: C.money(C.sum(col.active(), 'montant')), icon: 'wallet', tone: 'warning' },
-        { label: 'TVA régularisée', value: C.money(C.sum(col.active(), function (a) { return Math.round(a.montant * TAUX_TVA / (100 + TAUX_TVA)); })), icon: 'landmark', tone: 'info' },
+        { label: 'Avoirs émis', value: C.num(avoirsExercice().length), icon: 'undo-2', tone: 'navy' },
+        { label: 'Montant des avoirs', value: C.money(C.sum(avoirsExercice(), 'montant')), icon: 'wallet', tone: 'warning' },
+        { label: 'TVA régularisée', value: C.money(C.sum(avoirsExercice(), function (a) { return Math.round(a.montant * TAUX_TVA / (100 + TAUX_TVA)); })), icon: 'landmark', tone: 'info' },
         { label: 'Factures annulées', value: C.num(factures().filter(function (f) { return f.annulee; }).length), icon: 'file-x', tone: 'danger' },
       ]));
 
       table = U.dataTable({
         title: 'Registre des avoirs',
-        rows: function () { return col.active(); },
+        rows: function () { return avoirsExercice(); },
         exportName: 'avoirs-mecef', pageSize: 12,
         defaultSort: 'date', defaultDir: 'desc',
         emptyMessage: 'Aucun avoir émis.',
@@ -602,15 +619,27 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-                var fac = normalisees().filter(function (x) { return x.id === v.factureId; })[0];
-                if (fac) {
-                  v.factureNumero = fac.numero; v.patient = fac.patient; v.patientCode = fac.patientCode;
-                  if (v.montant > fac.montantTTC) { U.toast('Le montant de l’avoir ne peut excéder celui de la facture.', { type: 'error' }); return; }
+                /* B10 (31/10/2026) : l'avoir MECeF n'est PAS un canal à part. Il APPELLE le moteur unique `PR.emettreAvoir`
+                   (collection `avoirs`) : plafond CUMULÉ sur la facture (E15), montant strictement positif (E10), ligne nommée,
+                   contre-passation en brouillon. La transmission au dispositif est la SUITE de l'émission : le moteur écrit la
+                   pièce, ce geste lui pose l'identifiant MECeF et le statut transmis. */
+                if (!(Number(v.montant) > 0)) {
+                  U.toast('Avoir refusé.', { type: 'error', detail: 'Le montant doit être strictement supérieur à 0 FCFA.' });
+                  return;
                 }
-                v.reference = C.nextRef('AV-2026-', 4);
-                v.numeroMecef = 'MECEF' + C.between(C.seeded(Date.now() % 77777), 1000000, 9999999);
-                v.statutMecef = 'valide';
-                var res = col.insert(v);
+                var fac = normalisees().filter(function (x) { return x.id === v.factureId; })[0];
+                if (!fac) { U.toast('Choisir la facture à rectifier.', { type: 'error' }); return; }
+                var emis = PR.emettreAvoir(fac.id, {
+                  date: v.date,
+                  lignes: [{ designation: 'Rectification de la facture ' + fac.numero + ' : ' + v.motif, montant: Number(v.montant) }],
+                  motif: v.motif, observations: v.observations,
+                  remboursement: 'creance', origine: 'mecef',
+                });
+                if (emis.erreur) { U.toast('Avoir refusé.', { type: 'error', detail: emis.erreur, duration: 9000 }); return; }
+                var numeroMecef = 'MECEF' + C.between(C.seeded(Date.now() % 77777), 1000000, 9999999);
+                col.update(emis.record.id, { numeroMecef: numeroMecef, statutMecef: 'valide', dateTransmission: new Date().toISOString() });
+                v.reference = emis.record.reference;
+                var res = { record: col.get(emis.record.id), undo: function () { PR.retirerAvoir(emis.record.id); } };
                 m.close(); table.refresh();
                 U.toast('Avoir ' + v.reference + ' émis et transmis.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
                 etat(res.record);
@@ -626,6 +655,7 @@
         P.etat({
           titre: 'Avoir sur facture normalisée',
           sousTitre: a.reference + ' — rectifie la facture ' + a.factureNumero,
+          date: a.date,
           cartouche: [['N° avoir', a.reference], ['Identifiant MECeF', a.numeroMecef || '—'],
             ['Date', C.dateFR(a.date)], ['Facture rectifiée', a.factureNumero],
             ['Client', a.patient], ['Motif', a.motif]],
@@ -712,11 +742,11 @@
   global.SIGH.screen('mecef-config', {
     title: 'Configuration fiscale',
     description: 'Paramètres d’émission : identifiants légaux, numérotation, taux de TVA et préfixes.',
-    regle: 'Ces paramètres alimentent automatiquement toutes les factures normalisées : ils ne doivent jamais être saisis facture par facture.',
+    regle: 'Cet écran <strong>affiche</strong> la configuration fiscale en vigueur (identité de la clinique, régime de TVA, taux d’AIB, préfixes). Elle est lue des référentiels du logiciel et <strong>ne se modifie pas ici</strong> : l’identité se règle à « Identité & papier à en-tête », le régime de TVA est arrêté par la comptabilité. Rien n’est saisi facture par facture.',
     render: function (root) {
       var host = el('div.grid.gap-4.lg\\:grid-cols-2');
 
-      var f = U.form([
+      var champsConfig = [
         { type: 'section', label: 'Identification légale de l’émetteur' },
         { name: 'raisonSociale', label: 'Raison sociale', required: true, col: 'full', value: C.BRAND.nom },
         { name: 'ifu', label: 'IFU', required: true, value: C.BRAND.ifu },
@@ -744,27 +774,20 @@
         { name: 'modeTransmission', label: 'Mode de transmission', type: 'select', options: ['Automatique à l’émission', 'Manuelle groupée', 'Différée en fin de journée'], value: 'Automatique à l’émission' },
         { name: 'delaiRetransmission', label: 'Délai avant nouvelle tentative (minutes)', type: 'number', value: 15 },
         { name: 'archivageAuto', label: 'Archivage automatique des factures transmises', type: 'checkbox', value: true, col: 'full' },
-      ], {});
+      ];
+      /* LECTURE : aucun champ ne s'écrit nulle part (le bouton « Enregistrer » n'écrivait que le journal et annonçait
+         des valeurs « enregistrées » qui revenaient à la constante au rechargement). Les champs sont verrouillés et la
+         commande est ABSENTE : un geste qui ne conserve rien ne se propose pas. */
+      var f = U.form(champsConfig.map(function (c) {
+        return c.type === 'section' ? c : Object.assign({}, c, { disabled: true });
+      }), {});
 
       var carte = el('div');
       carte.appendChild(U.card('Paramètres fiscaux', el('div', null, [
+        K.note('<strong>Lecture seule.</strong> Ces valeurs sont celles des référentiels du logiciel : les modifier ici ne conserverait rien. '
+          + 'L’identité légale se règle à « Identité & papier à en-tête ».', { tone: 'info', icon: 'info' }),
         f,
         el('div.mt-4.flex.flex-wrap.gap-2', null, [
-          /* La configuration fiscale commande TOUTES les factures
-             normalisées à venir : elle ne se règle pas depuis un profil qui
-             ne fait que consulter la MECeF. */
-          K.commande('Enregistrer les paramètres', {
-            variant: 'primary', icon: 'save',
-            onclick: function () {
-              var v = f.collect();
-              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-              S.log('Modification', 'MECEF', 'ConfigurationFiscale', 'CONFIG', null, v);
-              U.toast('Paramètres fiscaux enregistrés.', {
-                type: 'success',
-                detail: 'Ces valeurs alimenteront toutes les prochaines factures normalisées.',
-              });
-            },
-          }),
           K.btn('Tester la connexion au dispositif', {
             icon: 'plug-zap',
             onclick: function () {

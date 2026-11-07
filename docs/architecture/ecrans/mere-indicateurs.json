@@ -1,0 +1,38 @@
+{
+ "id": "mere-indicateurs",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Indicateurs publiés",
+ "acces": "ouvert",
+ "titre": "Indicateurs publiés",
+ "description": "Ce que la mère publie au relais pour la supervision à distance : des compteurs, jamais un nom de patient.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Liaison avec le relais",
+  "Indicateurs publiés"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration.",
+  "Sert au superadmin en ligne : « la mère est-elle vivante, à jour, sauvegardée ? ». Pas à lire un dossier."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Fréquence",
+  "Champs publiés",
+  "Données de santé"
+ ],
+ "cartes": [
+  "Dernier envoi (aperçu exact)"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 3
+}

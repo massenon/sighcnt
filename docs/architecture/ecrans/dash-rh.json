@@ -1,0 +1,41 @@
+{
+ "id": "dash-rh",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Ressources humaines",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Ressources humaines",
+ "description": "Effectif, plannings, présences, évaluations NS 131, primes NS 132 et masse salariale.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Ressources humaines"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Effectif total",
+  "Masse salariale (base)",
+  "Agents de garde aujourd’hui",
+  "Évaluations du mois"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Effectif par fonction",
+  "Répartition du personnel par service",
+  "Planning du jour"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Gérer le personnel"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

@@ -1,0 +1,30 @@
+{
+ "id": "m2-visites",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "Registre des visites de suivi clinique",
+ "acces": "ouvert",
+ "titre": "Registre des visites de suivi clinique",
+ "description": "Fusionné dans « Rendez-vous & visites » — un seul écran tient les venues, avec ou sans rendez-vous.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "Registre des visites de suivi clinique"
+ ],
+ "actions": [],
+ "regle": [
+  "Le registre des visites est fusionné dans « Rendez-vous & visites » : les venues sur rendez-vous et les passages spontanés s’y tiennent ensemble, et le filtre Venue les sépare. C’est là aussi que s’enregistre une personne non enregistrée — nom, prénom, quartier, téléphone — sans lui ouvrir de dossier."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Ouvrir Rendez-vous & visites",
+  "Agenda"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

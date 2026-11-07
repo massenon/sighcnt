@@ -1,0 +1,42 @@
+{
+ "id": "dash-patient",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Espace patient",
+ "acces": "ouvert",
+ "titre": "Espace patient",
+ "description": "Vue synthétique remise au patient : parcours de soins, prescriptions, analyses et situation financière.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Espace patient"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Consultations",
+  "Hospitalisations",
+  "Total facturé",
+  "Reste à payer"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Parcours de soins"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "TCHANE Bertine",
+  "Remettre la fiche"
+ ],
+ "champs": [
+  "Patient"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

@@ -1,0 +1,90 @@
+{
+ "id": "m12-tableau-decisionnel",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Tableau de bord décisionnel",
+ "acces": "ouvert",
+ "titre": "Tableau de bord décisionnel",
+ "description": "Objectif fixé face au réel atteint, sur quatre axes : trésorerie et BFR, activité clinique, logistique et pharmacie, performance administrative.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Tableau de bord décisionnel"
+ ],
+ "actions": [
+  "Détail du BFR",
+  "Coût à l’activité",
+  "Direction"
+ ],
+ "regle": [
+  "8 cible(s) en attente d’arbitrage de la Direction. Aucun document de cadrage ne fixe d’objectif de DSO, de taux d’occupation ou de rotation : les valeurs affichées sont des propositions. L’onglet « Objectifs & seuils » les corrige.",
+  "Besoin en fonds de roulement au 30/10/2026 : 6 512 660 FCFA, soit 396 jours de chiffre d’affaires."
+ ],
+ "onglets": [
+  "Grille objectif / réel",
+  "Objectifs & seuils"
+ ],
+ "kpis": [
+  "Objectifs atteints",
+  "Sous surveillance",
+  "Seuils franchis",
+  "Non calculables"
+ ],
+ "cartes": [
+  "Trésorerie & BFR",
+  "Activité clinique",
+  "Logistique & pharmacie",
+  "Performance administrative",
+  "Compagnies au-delà du seuil d’ancienneté"
+ ],
+ "tableaux": [
+  [
+   "Indicateur",
+   "Objectif",
+   "Réel atteint",
+   "Écart",
+   "État"
+  ],
+  [
+   "Indicateur",
+   "Objectif",
+   "Réel atteint",
+   "Écart",
+   "État"
+  ],
+  [
+   "Indicateur",
+   "Objectif",
+   "Réel atteint",
+   "Écart",
+   "État"
+  ],
+  [
+   "Indicateur",
+   "Objectif",
+   "Réel atteint",
+   "Écart",
+   "État"
+  ],
+  [
+   "Compagnie",
+   "Factures",
+   "Ancienneté max.",
+   "Montant dû"
+  ]
+ ],
+ "commandes": [
+  "Grille objectif / réel",
+  "Objectifs & seuils",
+  "Colonnes",
+  "Exporter",
+  "Ouvrir les relances",
+  "1",
+  "2",
+  "Imprimer la grille"
+ ],
+ "champs": [],
+ "nbTableaux": 5,
+ "nbKpis": 4
+}

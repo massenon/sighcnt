@@ -1,0 +1,47 @@
+{
+ "id": "mere-journal-technique",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Journal technique",
+ "acces": "ouvert",
+ "titre": "Journal technique",
+ "description": "Évènements du service de la mère : démarrages, erreurs, alertes, sauvegardes, liaison avec le relais.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Sécurité et continuité",
+  "Journal technique"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Évènements (24 h)",
+  "Alertes",
+  "Erreurs"
+ ],
+ "cartes": [
+  "Évènements"
+ ],
+ "tableaux": [
+  [
+   "Quand",
+   "Niveau",
+   "Source",
+   "Message"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

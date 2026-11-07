@@ -1,0 +1,52 @@
+{
+ "id": "mere-sauvegardes",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Sauvegardes et restauration",
+ "acces": "ouvert",
+ "titre": "Sauvegardes et restauration",
+ "description": "Sauvegarde chiffrée quotidienne, vérification de restauration, restauration depuis le relais, remplacement de la mère.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Sécurité et continuité",
+  "Sauvegardes et restauration"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [
+  "Sauvegardes",
+  "Restaurer",
+  "Remplacer la mère"
+ ],
+ "kpis": [
+  "Dernière sauvegarde",
+  "Conservation",
+  "Dernière vérification"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Date",
+   "Taille",
+   "Nature",
+   "Vérification"
+  ]
+ ],
+ "commandes": [
+  "Sauvegardes",
+  "Restaurer",
+  "Remplacer la mère",
+  "Sauvegarder maintenant",
+  "Vérifier la dernière"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

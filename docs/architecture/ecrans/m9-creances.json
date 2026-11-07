@@ -1,0 +1,59 @@
+{
+ "id": "m9-creances",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Créances",
+ "acces": "ouvert",
+ "titre": "Créances assureurs",
+ "description": "Suivi des montants dus par les compagnies, par ancienneté et par compagnie.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Créances"
+ ],
+ "actions": [
+  "Tableau de bord assurances",
+  "Compagnies partenaires",
+  "Assurances & Créances"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Créances totales",
+  "Moins de 30 jours",
+  "30 à 90 jours",
+  "Plus de 90 jours"
+ ],
+ "cartes": [
+  "Balance âgée des créances par compagnie",
+  "Créances par compagnie",
+  "Répartition par ancienneté"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Compagnie",
+   "Factures",
+   "< 30 j",
+   "30 – 90 j",
+   "> 90 j",
+   "Total dû"
+  ]
+ ],
+ "commandes": [
+  "Réinitialiser",
+  "Colonnes",
+  "Exporter",
+  "Éditer l’état des créances"
+ ],
+ "champs": [
+  "Factures émises du",
+  "au",
+  "Compagnie",
+  "Ancienneté retenue",
+  "Créance minimale"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

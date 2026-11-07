@@ -1,0 +1,53 @@
+{
+ "id": "m7-livraisons",
+ "module": "M7",
+ "domaine": "Logistique",
+ "libelleManifeste": "Bons de livraison",
+ "acces": "ouvert",
+ "titre": "Bons de livraison",
+ "description": "Bordereaux de livraison fournisseurs, rapprochés des bons de commande correspondants.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Achats & Fournisseurs",
+  "Bons de livraison"
+ ],
+ "actions": [
+  "Bons d’expression de besoins",
+  "Bons de commande",
+  "Achats & Fournisseurs"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Bons de livraison",
+  "Réceptions conformes",
+  "Avec écart",
+  "Valeur livrée"
+ ],
+ "cartes": [
+  "Bons de livraison"
+ ],
+ "tableaux": [
+  [
+   "N° BL",
+   "Commande",
+   "Date",
+   "Fournisseur",
+   "Articles",
+   "Montant",
+   "Réception",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

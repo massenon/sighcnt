@@ -1,0 +1,70 @@
+{
+ "id": "dash-pharmacien",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Pharmacie",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Pharmacie",
+ "description": "Stock de détail, dispensation, alertes de rupture et suivi des péremptions selon le principe FEFO.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Pharmacie"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [
+  "51 produit(s) sous le seuil d’alerte",
+  "17 lot(s) périmé(s) à retourner",
+  "37 lot(s) à péremption proche (FEFO)"
+ ],
+ "onglets": [],
+ "kpis": [
+  "Références en pharmacie",
+  "Valeur du stock détail",
+  "Produits sous seuil",
+  "Lots à péremption proche"
+ ],
+ "cartes": [
+  "Ordonnances à délivrer — 51 à traiter, 42 en attente de caisse",
+  "Accès rapides",
+  "Produits à réapprovisionner en priorité",
+  "Mouvements de stock (12 mois)",
+  "Péremptions à venir"
+ ],
+ "tableaux": [
+  [
+   "Origine",
+   "Patient",
+   "À faire",
+   "Montant",
+   "État",
+   "Actions"
+  ],
+  [
+   "Code",
+   "Désignation",
+   "Stock",
+   "Seuil",
+   "Emplacement",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "Exprimer un besoin"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

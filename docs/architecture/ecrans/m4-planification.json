@@ -1,0 +1,62 @@
+{
+ "id": "m4-planification",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Planification familiale",
+ "acces": "ouvert",
+ "titre": "Planification familiale",
+ "description": "Registre PF : 15 méthodes contraceptives, codification A/N, rendez-vous de renouvellement.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Planification familiale"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les consultations PF",
+  "Archivés"
+ ],
+ "kpis": [
+  "Consultations PF",
+  "Nouvelles acceptantes (A)",
+  "Méthodes longue durée",
+  "Méthodes distinctes"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Cliente",
+   "A/N",
+   "Méthode adoptée",
+   "Prochain RDV",
+   "Sage-femme",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Aujourd’hui",
+  "Sept derniers jours",
+  "Toute la période",
+  "Tous les consultations PF24",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

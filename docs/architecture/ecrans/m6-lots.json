@@ -1,0 +1,61 @@
+{
+ "id": "m6-lots",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Lots & péremptions (FEFO)",
+ "acces": "ouvert",
+ "titre": "Lots & péremptions (FEFO)",
+ "description": "Suivi des lots par date de péremption, application du principe « premier périmé, premier sorti ».",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Lots & péremptions (FEFO)"
+ ],
+ "actions": [
+  "État des produits périmés",
+  "Pharmacie interne — urgences",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les lots",
+  "Ordre de sortie FEFO",
+  "Archivés"
+ ],
+ "kpis": [
+  "Lots suivis",
+  "Périmés",
+  "Péremption sous 90 j",
+  "Lots valides"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N° lot",
+   "Produit",
+   "Péremption",
+   "Échéance",
+   "Quantité",
+   "Emplacement",
+   "État FEFO",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les lots346",
+  "Ordre de sortie FEFO",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -76,7 +76,6 @@
        ARCHIVÉ : il n'ouvre plus de session et disparaît des écrans.
        Le parc technique, lui, reste : c'est un besoin réel, tenu par
        l'administration. */
-    biomedical: { id: 'biomedical', label: 'Ingénieur biomédical', short: 'Biomédical', color: 'navy', home: 'dash-biomedical', retire: true },
   };
 
   var ALL = '*';
@@ -356,7 +355,6 @@
             { id: 'm6-pertes', label: 'Pertes, casses & rebuts', icon: 'trash-2' },
             { id: 'm6-dispensation', label: 'Dispensation', icon: 'package-open' },
             { id: 'm6-etiquetage', label: 'Étiquetage & emplacements', icon: 'tags' },
-            { id: 'm6-reprise', label: 'Reprise SAGE 100', icon: 'database' },
             /* Les points du gestionnaire de stock. Ouverts aussi à la caisse,
                à la comptabilité et à la Direction : ce sont les mêmes chiffres
                que chacun recompose aujourd'hui à la main de son côté. */
@@ -364,6 +362,12 @@
               roles: ['stock', 'da', 'comptable', 'dm', 'caissier', 'admin', 'direction', 'assistant_comptable'] },
             { id: 'm6-point-stock', label: 'Point du stock valorisé', icon: 'warehouse',
               roles: ['stock', 'da', 'comptable', 'dm', 'pharmacien', 'admin', 'direction', 'assistant_comptable'] },
+            /* Premier jeu du module Importation (IMP) : il vit dans la rangée du Grand Stock, mais son moteur,
+               ses modèles .xlsx et son historique de lots sont ceux du module. `scripts` ajoute à la page les
+               fichiers dont elle a besoin en plus de celui de son module. */
+            { id: 'm6-import-grand-stock', label: 'Importation Grand Stock', icon: 'file-up',
+              roles: ['pharmacien', 'stock', 'da', 'comptable', 'medecin', 'admin', 'direction'],
+              scripts: ['vendor/xlsx-mini.js', 'modules/import.js'] },
           ],
         },
         {
@@ -535,7 +539,7 @@
           code: 'M11', label: 'Paie & Primes', icon: 'banknote',
           roles: ['rh', 'da', 'comptable', 'admin', 'direction'],
           items: [
-            { id: 'm11-prets-etudes', label: 'Prêts-études et avances', icon: 'graduation-cap' },
+            { id: 'm11-prets-etudes', label: 'Prêts et avances', icon: 'graduation-cap' },
             { id: 'm11-dashboard', label: 'Tableau de bord paie', icon: 'gauge' },
             { id: 'm11-calcul', label: 'Calcul de la paie', icon: 'calculator' },
             { id: 'm11-bulletins', label: 'Bulletins de paie', icon: 'file-text' },
@@ -574,12 +578,15 @@
                Ouvert au biomédical et au laboratoire — c'est le laboratoire
                qui constate qu'un automate ne répond plus. */
             { id: 'm13-maintenance', label: 'Parc technique & maintenance', icon: 'wrench',
-              roles: ['biomedical', 'admin', 'direction', 'da', 'laborantin', 'agentadmin'] },
+              roles: ['admin', 'direction', 'da', 'laborantin', 'agentadmin'] },
             /* Phase 10 — le questionnaire est une donnée : le formulaire naît
                du modèle (principe KoboCollect, hors ligne). L'accueil
                recueille, la direction lit. */
             { id: 'adm-validations', label: 'Validations en attente', icon: 'list-checks',
-              roles: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'] },
+              /* Le biologiste, l'échographiste et les praticiens du bloc y voient les SEULES familles de leur ressort
+                 (Direction, 07/11/2026) : l'écran filtre par rôle, le manifeste ouvre la porte. */
+              roles: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin',
+                'laborantin', 'echographiste', 'chirurgien', 'anesthesiste'] },
             { id: 'adm-enquetes', label: 'Enquêtes & questionnaires', icon: 'clipboard-list',
               roles: ['agentadmin', 'da', 'admin', 'direction', 'reception'] },
             { id: 'adm-satisfaction', label: 'Satisfaction des patients', icon: 'thumbs-up',
@@ -634,11 +641,13 @@
           roles: ['admin', 'direction', 'da'],
           items: [
             { id: 'm14-utilisateurs', label: 'Utilisateurs', icon: 'user-cog' },
+            { id: 'm14-securite-utilisateurs', label: 'Sécurité des utilisateurs', icon: 'shield-check', roles: ['admin'] },
             { id: 'm14-roles', label: 'Rôles & permissions (RBAC)', icon: 'key-round' },
             { id: 'm14-soignants', label: 'Prescripteurs & exécutants de soins', icon: 'user-round-cog' },
             { id: 'm14-sessions', label: 'Sessions actives', icon: 'monitor' },
             { id: 'm14-audit', label: 'Journal d’audit', icon: 'scroll-text' },
             { id: 'm14-sauvegardes', label: 'Sauvegardes & restauration', icon: 'database-backup' },
+            { id: 'm14-taches', label: 'Tâches planifiées', icon: 'timer' },
           ],
         },
         {
@@ -663,6 +672,117 @@
             { id: 'cfg-compte', label: 'Mon compte', icon: 'circle-user' },
             { id: 'cfg-modules', label: 'Activité des modules', icon: 'toggle-right' },
             { id: 'cfg-systeme', label: 'Paramètres système', icon: 'settings' },
+            { id: 'cfg-poste', label: 'Ce poste (mode fileul / mère)', icon: 'server-cog', roles: ['admin', 'da'] },
+            { id: 'cfg-pair', label: 'Échanges entre postes (mode pair)', icon: 'git-compare-arrows', roles: ['admin', 'da'] },
+            { id: 'cfg-smtp', label: 'Messagerie (SMTP)', icon: 'mail', roles: ['admin', 'da'] },
+          ],
+        },
+        /* IMPORTATION DE DONNÉES (01/11/2026) : un moteur, dix jeux. Chaque jeu a son écran et ses rôles ;
+           le module s'ouvre à l'union de ces rôles et chaque écran se referme sur les siens (commande absente
+           sinon). Le Grand Stock vit dans la rangée M6 (m6-import-grand-stock) et partage ce moteur. */
+        {
+          code: 'IMP', label: 'Importation de données', icon: 'file-up',
+          roles: ['admin', 'da', 'direction', 'stock', 'reception', 'agentadmin', 'comptable', 'laborantin'],
+          items: [
+            { id: 'imp-accueil', label: 'Jeux d’import et historique des lots', icon: 'files' },
+            { id: 'imp-patients', label: 'Importation du répertoire patients', icon: 'users', roles: ['reception', 'agentadmin', 'da', 'admin'] },
+            { id: 'imp-personnel', label: 'Importation du personnel', icon: 'id-card', roles: ['da', 'admin'] },
+            { id: 'imp-actes', label: 'Importation du catalogue des actes', icon: 'list-ordered', roles: ['da', 'admin', 'direction'] },
+            { id: 'imp-analyses', label: 'Importation du catalogue des analyses', icon: 'flask-conical', roles: ['laborantin', 'da', 'admin'] },
+            { id: 'imp-fournisseurs', label: 'Importation des fournisseurs', icon: 'truck', roles: ['stock', 'da', 'comptable', 'admin'] },
+            { id: 'imp-assureurs', label: 'Importation des compagnies d’assurance', icon: 'shield', roles: ['da', 'comptable', 'admin'] },
+            { id: 'imp-souscripteurs', label: 'Importation des souscripteurs', icon: 'building', roles: ['da', 'comptable', 'admin'] },
+            { id: 'imp-plan-comptable', label: 'Importation du plan comptable', icon: 'book-open', roles: ['comptable', 'da', 'admin'] },
+            { id: 'imp-soldes-ouverture', label: 'Importation des soldes d’ouverture', icon: 'scale', roles: ['comptable', 'da', 'admin'] },
+          ],
+        },
+      ],
+    },
+    /* ======================================================================
+     * POSTE MÈRE (30/10/2026) — les 22 modules complémentaires du mode mère.
+     * Un seul module (MERE), cinq rangées : la première est canonique, les
+     * autres sont secondaires (même code, aucun second hub). Réservé à
+     * l administrateur et à la DAF : c est le serveur de la clinique.
+     * Source : docs/architecture/MODULES-COMPLEMENTAIRES-MERE.md
+     * ==================================================================== */
+    {
+      domain: 'Poste mère',
+      icon: 'server',
+      modules: [
+        {
+          code: 'MERE', label: 'Exploitation de la synchronisation', icon: 'refresh-cw', roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-supervision', label: 'Supervision', icon: 'heart-pulse' },
+            { id: 'mere-appareils', label: 'Appareils et appairage', icon: 'monitor-smartphone' },
+            { id: 'mere-conflits', label: 'Conflits et doublons', icon: 'git-compare' },
+            { id: 'mere-a-traiter', label: '« À traiter » consolidé', icon: 'octagon-alert' },
+            { id: 'mere-journal-operations', label: 'Journal des opérations', icon: 'list-ordered' },
+            { id: 'mere-plages-baux', label: 'Plages de numéros et baux de stock', icon: 'hash' },
+            { id: 'mere-lots-tournee', label: 'Lots de tournée (mobiles)', icon: 'package' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Sécurité et continuité', icon: 'shield-check', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-journal-technique', label: 'Journal technique', icon: 'scroll-text' },
+            { id: 'mere-sauvegardes', label: 'Sauvegardes et restauration', icon: 'database-backup' },
+            { id: 'mere-cle-clinique', label: 'Clé de clinique', icon: 'key-round' },
+            { id: 'mere-integrite', label: 'Intégrité et altérations', icon: 'shield-alert' },
+            { id: 'mere-reinit', label: 'Réinitialisation de production', icon: 'trash-2' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Liaison avec le relais', icon: 'cloud', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-relais', label: 'Relais en ligne', icon: 'cloud' },
+            { id: 'mere-indicateurs', label: 'Indicateurs publiés', icon: 'eye-off' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Plateforme locale', icon: 'server-cog', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-service', label: 'Service et démarrage', icon: 'power' },
+            { id: 'mere-base', label: 'Base de données locale', icon: 'database' },
+            { id: 'mere-reseau', label: 'Réseau local', icon: 'network' },
+            { id: 'mere-planificateur', label: 'Planificateur', icon: 'timer' },
+            { id: 'mere-notifications', label: 'Notifications serveur', icon: 'bell-ring' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Cycle de vie', icon: 'rocket', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-mise-en-service', label: 'Assistant de première mise en service', icon: 'wand-sparkles' },
+            { id: 'mere-mises-a-jour', label: 'Mises à jour et compatibilité', icon: 'package-check' },
+            { id: 'mere-import', label: 'Import de migration', icon: 'file-up' },
+          ],
+        },
+      ],
+    },
+    /* ======================================================================
+     * RELAIS EN LIGNE (30/10/2026) — le panneau superadmin de apps/web.
+     * Quatre écrans existent déjà côté Laravel ; les autres sont ceux que
+     * l on attend d un relais exploité. Réservé à l administrateur système.
+     * Source : docs/architecture/MODULES-WEB-RELAIS.md
+     * ==================================================================== */
+    {
+      domain: 'Relais en ligne',
+      icon: 'cloud',
+      modules: [
+        {
+          code: 'RLS', label: 'Relais en ligne (apps/web)', icon: 'cloud', roles: ['admin'],
+          items: [
+            { id: 'rls-tableau', label: 'Tableau de bord du relais', icon: 'layout-dashboard' },
+            { id: 'rls-appareils', label: 'Appareils', icon: 'monitor-smartphone' },
+            { id: 'rls-boites', label: 'Boîtes aux lettres', icon: 'inbox' },
+            { id: 'rls-codes', label: 'Codes d’appairage', icon: 'ticket' },
+            { id: 'rls-indicateurs', label: 'Indicateurs reçus', icon: 'activity' },
+            { id: 'rls-alertes', label: 'Alertes et notifications', icon: 'bell-ring' },
+            { id: 'rls-journal', label: 'Journal d’audit du relais', icon: 'scroll-text' },
+            { id: 'rls-superadmin', label: 'Comptes superadmin', icon: 'user-cog' },
+            { id: 'rls-parametres', label: 'Paramètres du relais', icon: 'sliders-horizontal' },
+            { id: 'rls-hebergement', label: 'Hébergement', icon: 'server' },
+            { id: 'rls-sauvegarde', label: 'Sauvegarde du relais', icon: 'database-backup' },
+            { id: 'rls-opacite', label: 'Preuve d’opacité', icon: 'eye-off' },
           ],
         },
       ],
@@ -760,8 +880,6 @@
                L'intitulé cesse de nommer un rôle qui n'ouvre plus de session. */
             { id: 'dash-pharmacien', label: 'Pharmacie', icon: 'pill',
               roles: ['caissier', 'stock', 'da', 'admin', 'direction'] },
-            { id: 'dash-biomedical', label: 'Ingénieur biomédical', icon: 'wrench',
-              roles: ['biomedical', 'admin', 'dm'] },
             { id: 'dash-laborantin', label: 'Biologiste médical', icon: 'flask-conical', roles: ['laborantin', 'admin'] },
             { id: 'dash-stock', label: 'Gestionnaire de stock', icon: 'package', roles: ['stock', 'da', 'admin'] },
             { id: 'dash-caissier', label: 'Caisse', icon: 'banknote', roles: ['caissier', 'admin'] },
@@ -820,6 +938,10 @@
       module: 'SUP', moduleLabel: 'Aide & assistance', domain: 'Système', dansRecherche: true,
     },
     {
+      id: 'parametres-hub', label: 'Paramètres système', icon: 'settings',
+      module: 'SUP', moduleLabel: 'Aide & assistance', domain: 'Système', dansRecherche: false,
+    },
+    {
       id: 'contact-editeur', label: 'Contactez l’éditeur', icon: 'mail',
       module: 'SUP', moduleLabel: 'Aide & assistance', domain: 'Système', dansRecherche: true,
     },
@@ -870,7 +992,7 @@
        EXACTEMENT des droits du registre qu'elle alimente. */
     {
       id: 'm6-inventaire-feuille', label: 'Feuille d’inventaire — comptage', icon: 'clipboard-list',
-      servant: 'm6-inventaires',
+      servant: 'm6-inventaire',
       module: 'M6', moduleLabel: 'Pharmacie & Stocks', domain: 'Logistique',
     },
     /* L'ouverture d'un dossier patient : une page, parce qu'on la remplit
@@ -952,6 +1074,8 @@
       roles: item.roles || mod.roles || ALL,
       /* Un écran que TOUT poste peut ouvrir, quel que soit son module. */
       universel: !!item.universel,
+      /* Fichiers de script ajoutés à la page en plus de celui de son module. */
+      scripts: item.scripts || null,
     };
   }
 
@@ -1288,6 +1412,12 @@
    * La propriété entry.module (code) déclenche la consultation des surcharges ;
    * seul le manifeste s'applique — c'est le cas des écrans hors ruban.
    */
+  /** Une surcharge D'ÉCRAN pose-t-elle explicitement un droit ? (le module n'est pas consulté) */
+  function surchargeEcranExplicite(roleId, ecranId) {
+    var f = surcharges()[roleId];
+    var parEcran = f && f.droitsEcrans && ecranId && f.droitsEcrans[ecranId];
+    return parEcran && parEcran.voir != null ? !!parEcran.voir : null;
+  }
   /** Une surcharge pose-t-elle EXPLICITEMENT un droit pour cet écran ? */
   function surchargeExplicite(roleId, ecranId, code) {
     var f = surcharges()[roleId];
@@ -1361,7 +1491,14 @@
        matrice administrable qui ne saurait qu'enlever ne permettrait jamais
        de doter un rôle nouvellement créé : il n'apparaît dans aucune liste du
        manifeste, et resterait inutilisable quoi qu'on lui ouvre. */
-    var explicite = surchargeExplicite(roleId, entry.id, code);
+    /* UN ÉCRAN UNIVERSEL NE CÈDE QUE DEVANT UNE SURCHARGE D'ÉCRAN (29/10/2026). Il ne doit pas céder devant la
+       fermeture de son MODULE : un rôle créé « à zéro » reçoit une fiche qui ferme chaque module nommément, M7
+       compris, et perdait alors « exprimer un besoin » alors que cet écran appartient à TOUT agent. Défaut
+       relevé en extrayant la matrice de la maquette : six rôles (aide-soignante, échographiste, surveillant,
+       assistant de direction, chirurgien, anesthésiste) n'ouvraient pas l'écran des besoins. */
+    var explicite = entry.universel
+      ? surchargeEcranExplicite(roleId, entry.id)
+      : surchargeExplicite(roleId, entry.id, code);
     if (explicite === false) return false;
     if (explicite === true) return true;
 
@@ -1407,6 +1544,26 @@
       }).filter(Boolean);
       return modules.length ? { domain: domain.domain, icon: domain.icon, modules: modules } : null;
     }).filter(Boolean);
+  }
+
+  /* LE RUBAN ET « PARAMÈTRES SYSTÈME » (arbitrage du 05/11/2026).
+     - « Relais en ligne » QUITTE le ruban : ses écrans deviennent des cartes de hub dans « Paramètres système » (onglet Relais en ligne). Ses pages, ses droits et
+       ses adresses ne bougent pas : on le retire de l'AFFICHAGE du ruban, jamais du manifeste.
+     - L'onglet « Système » du ruban (menu et méga-menu) n'est affiché qu'à l'administrateur système et à la Directrice Administrative. Les autres profils
+       atteignent ce qu'ils ont le droit d'ouvrir par la page « Paramètres système » (cartes de hub, filtrées par droits). Masquer n'est pas fermer : les droits
+       d'un écran restent ceux de la matrice. */
+  var RUBAN_HORS = ['Relais en ligne'];
+  var RUBAN_SYSTEME_ROLES = ['admin', 'da'];
+  function treeRuban(roleId) {
+    return tree(roleId).filter(function (d) {
+      if (RUBAN_HORS.indexOf(d.domain) >= 0) return false;
+      if (d.domain === 'Système') return RUBAN_SYSTEME_ROLES.indexOf(roleId) >= 0;
+      return true;
+    });
+  }
+  /** Les domaines nommés, déjà filtrés par les droits du rôle : la matière des cartes de « Paramètres système ». */
+  function treeParametres(roleId, domaines) {
+    return tree(roleId).filter(function (d) { return domaines.indexOf(d.domain) >= 0; });
   }
 
   /** Module par son code (M6, MECEF…), enrichi de son domaine et de son hub. */
@@ -1529,6 +1686,41 @@
       motsCles: 'enquête lien partage jeton qr questionnaire tiers public satisfaction' },
   ];
 
+  /* ==========================================================================
+   * ACTIONS RAPIDES : le menu « Actions » de la barre supérieure
+   * --------------------------------------------------------------------------
+   * [libellé, icône, écran]. La liste est filtrée par les droits du profil au
+   * moment de l'afficher : un raccourci vers un écran interdit promet une porte
+   * fermée. Elle vit ici, avec le reste des points d'entrée, pour que le poste
+   * Flutter la lise depuis la même source.
+   * ======================================================================== */
+  var ACTIONS_RAPIDES = [
+    ['Nouveau dossier patient', 'user-plus', 'm1-patients'],
+    ['Patient externe : analyses', 'user-round-plus', 'm1-externe'],
+    ['Nouvelle consultation', 'stethoscope', 'm2-consultations'],
+    ['Nouvelle admission', 'bed-double', 'm3-admissions'],
+    ['Nouvelle facture', 'receipt', 'm8-facturation'],
+    ['Encaisser un paiement', 'banknote', 'm8-paiements'],
+    ['Assurés & cartes', 'id-card', 'm9-assures'],
+    ['Demande d’analyse', 'flask-conical', 'm5-demandes'],
+    ['Mouvement de stock', 'package', 'm6-mouvements'],
+    ['Bon d’expression de besoins', 'clipboard-list', 'm7-besoins'],
+    ['Éditer un état', 'printer', 'rapports-bibliotheque'],
+  ];
+
+  /* LES ÉCRANS « À ANNÉE » (arbitrage du 05/11/2026). Le sélecteur d'exercice de la barre supérieure n'apparaît que sur les écrans qui ont une notion d'année ET qui
+     la SUIVENT : un sélecteur sur un écran qui l'ignore promettrait une lecture qu'il ne fait pas. Les écrans du jour (caisse, points de vente, files, tableaux
+     de bord de poste) n'en ont pas besoin. La règle est déclarée ICI, jamais dans chaque écran. */
+  var EXERCICE_MODULES = ['M12'];
+  var EXERCICE_ECRANS = ['mecef-factures', 'mecef-avoirs', 'mecef-transmission', 'mecef-journal', 'm9-factures-assureur', 'm9-historique',
+    'm8-factures', 'm8-facture-avoir', 'm7-commandes', 'm7-factures-fournisseurs', 'm11-bulletins'];
+  var EXERCICE_SAUF = /dashboard|^dash-|^hub-|caisse$|point-ventes|point-stock|^m12-ouverture$/;
+  function aExercice(entry) {
+    if (!entry || !entry.id) return false;
+    if (EXERCICE_SAUF.test(entry.id)) return false;
+    return EXERCICE_MODULES.indexOf(entry.module) >= 0 || EXERCICE_ECRANS.indexOf(entry.id) >= 0;
+  }
+
   global.SIGH = global.SIGH || {};
   global.SIGH.nav = {
     ROLES: ROLES,
@@ -1539,7 +1731,9 @@
     ALL: ALL,
     RACCOURCIS: RACCOURCIS,
     RUBRIQUES: RUBRIQUES,
+    ACTIONS_RAPIDES: ACTIONS_RAPIDES,
     can: can,
+    treeRuban: treeRuban, treeParametres: treeParametres, RUBAN_HORS: RUBAN_HORS, RUBAN_SYSTEME_ROLES: RUBAN_SYSTEME_ROLES,
     droits: droits,
     droitsEcran: droitsEcran,
     droitsOrigine: droitsOrigine,
@@ -1550,6 +1744,7 @@
     invaliderModules: invaliderModules,
     invaliderRbac: invaliderRbac,
     appliquerRenommages: appliquerRenommages,
+    aExercice: aExercice,
     tree: tree,
     module: module,
     hubId: hubId,

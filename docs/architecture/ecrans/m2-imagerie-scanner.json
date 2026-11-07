@@ -1,0 +1,53 @@
+{
+ "id": "m2-imagerie-scanner",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Tableau Scanner",
+ "acces": "ouvert",
+ "titre": "Tableau Scanner",
+ "description": "Comptes rendus de tomodensitométrie — technique, injection de produit de contraste, résultats.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Imagerie médicale",
+  "Tableau Scanner"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Examens et variables proposés, à valider. Aucun modèle de compte rendu de scanner n’a été remis : le catalogue suit la pratique radiologique courante et reste administrable depuis le catalogue de l’imagerie. Les tarifs sont des tarifs d’attente, à arrêter par la Direction. Les images elles-mêmes ne sont pas stockées au format DICOM : le logiciel tient la demande, le compte rendu et les clichés joints à la galerie."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Comptes rendus",
+  "Rendus au prescripteur",
+  "En cours de rédaction",
+  "Avec injection"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Date",
+   "Patient",
+   "Examen",
+   "Prescripteur",
+   "Réalisé par",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau compte rendu",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

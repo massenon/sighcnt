@@ -1,0 +1,45 @@
+{
+ "id": "m2-agenda",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "Agenda",
+ "acces": "ouvert",
+ "titre": "Agenda",
+ "description": "Vue calendaire des rendez-vous et consultations, par praticien et par jour.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "Agenda"
+ ],
+ "actions": [
+  "Rendez-vous",
+  "Passage sans rendez-vous",
+  "Rendez-vous & visites"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Rendez-vous aujourd’hui",
+  "Cette semaine",
+  "À confirmer",
+  "Praticiens"
+ ],
+ "cartes": [
+  "Du 28/10/2026 au 03/11/2026 — 7 jour(s)",
+  "Charge par praticien (30 derniers jours)",
+  "Répartition par type"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Semaine en cours",
+  "Nouveau rendez-vous",
+  "Gérer les rendez-vous"
+ ],
+ "champs": [
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

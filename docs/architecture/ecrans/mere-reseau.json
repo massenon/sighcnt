@@ -1,0 +1,41 @@
+{
+ "id": "mere-reseau",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Réseau local",
+ "acces": "ouvert",
+ "titre": "Réseau local",
+ "description": "Adresses de la mère, accessibilité depuis les postes, certificat TLS du réseau local, aide pare-feu.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Plateforme locale",
+  "Réseau local"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Adresse locale",
+  "Port",
+  "Certificat TLS",
+  "Postes joignables"
+ ],
+ "cartes": [
+  "Aide pare-feu"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Tester depuis un poste",
+  "Renouveler le certificat"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

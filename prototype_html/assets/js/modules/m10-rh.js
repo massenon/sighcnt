@@ -16,7 +16,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   function personnel() { return S.collection('personnel').active(); }
   function planning() { return S.collection('planning').active(); }
@@ -70,8 +70,8 @@
         var auj = planning().filter(function (x) { return x.date === C.iso(AUJ); });
         return [
           { label: 'Effectif total', value: C.num(p.length), icon: 'users-round', tone: 'navy', hint: 'Organigramme de la clinique' },
-          { label: 'Masse salariale (base)', value: C.money(C.sum(p, 'salaireBase')), icon: 'banknote', tone: 'info' },
-          { label: 'Salaire moyen', value: C.money(p.length ? C.sum(p, 'salaireBase') / p.length : 0), icon: 'calculator', tone: 'neutral' },
+          { label: 'Masse salariale (base)', value: C.moneyOu(C.sumOuNul(p, 'salaireBase'), 'Non renseignée'), icon: 'banknote', tone: 'info' },
+          { label: 'Salaire moyen', value: C.moneyOu(C.moyenneOuNul(p, 'salaireBase'), 'Non renseigné'), icon: 'calculator', tone: 'neutral' },
           { label: 'Ancienneté moyenne', value: (p.length ? Math.round(C.sum(p, function (e) { return anciennete(e).ans; }) / p.length * 10) / 10 : 0) + ' ans', icon: 'award', tone: 'success' },
           { label: 'De garde aujourd’hui', value: C.num(auj.filter(function (x) { return x.type === 'garde'; }).length), icon: 'moon', tone: 'danger' },
           { label: 'En permanence', value: C.num(auj.filter(function (x) { return x.type === 'permanence'; }).length), icon: 'sun', tone: 'warning' },
@@ -111,6 +111,9 @@
                 render: function () {
                   var g = C.groupBy(personnel(), 'service');
                   var keys = Object.keys(g);
+                  if (C.sumOuNul(personnel(), 'salaireBase') === null) {
+                    return el('p.text-sm.text-slate-500', { text: 'Aucun salaire de base renseigné : la masse salariale par service n’est pas calculable.' });
+                  }
                   return G.barres(keys, [{ label: 'Masse salariale', data: keys.map(function (k) { return C.sum(g[k], 'salaireBase'); }) }],
                     { horizontal: true, height: 320 });
                 },
@@ -188,7 +191,7 @@
             ['Ancienneté', a.ans + ' an(s) ' + a.mois + ' mois'],
             ['Numéro CNSS', e.cnss], ['Téléphone', e.telephone],
             ['Situation matrimoniale', e.situation],
-            ['Salaire de base', C.money(e.salaireBase)],
+            ['Salaire de base', C.moneyOu(e.salaireBase, 'Non renseigné')],
           ]);
         },
       },
@@ -213,8 +216,8 @@
       {
         id: 'primes', label: 'Primes (NS 132)',
         render: function () {
-          var lignes = D.NS132.primes.map(function (pr) {
-            var montant = D.NS132.montant(pr.id, e.fonction);
+          var lignes = D.NS132.primesALaDate().map(function (pr) {
+            var montant = D.NS132.montantAgent(pr.id, e, C.iso(AUJ));
             if (!montant) return null;
             var nb = pr.mode === 'fixe' ? 1 : (pr.id === 'garde' ? gardes : (pr.id === 'permanence' ? permanences : 0));
             return { prime: pr.label, mode: pr.mode === 'fixe' ? 'Forfait mensuel' : 'Par occurrence', montant: montant, nb: nb, total: montant * nb };
@@ -248,10 +251,11 @@
             : U.empty('Aucun relevé de présence.', { icon: 'calendar-check' })));
           box.appendChild(U.card('Congés', cong.length
             ? K.miniTable([
-              { label: 'Type', render: function (x) { return x.type || x.typeConge || '—'; } },
+              /* E621 : les congés portent `nature` et `duree` — l’onglet lisait `type` et `jours`, donc « — » partout. */
+              { label: 'Type', render: function (x) { return x.nature || x.type || x.typeConge || '—'; } },
               { label: 'Du', render: function (x) { return C.dateFR(x.dateDebut); } },
               { label: 'Au', render: function (x) { return C.dateFR(x.dateFin); } },
-              { label: 'Jours', align: 'right', render: function (x) { return String(x.jours || '—'); } },
+              { label: 'Jours', align: 'right', render: function (x) { return String(x.duree || x.jours || '—'); } },
               { label: 'État', render: function (x) { return U.statut(x.statutConge || 'valide'); } },
             ], C.sortBy(cong, 'dateDebut', 'desc'))
             : U.empty('Aucun congé enregistré.', { icon: 'palmtree' })));
@@ -385,8 +389,8 @@
         { key: 'cnss', label: 'N° CNSS', nowrap: true, render: function (e) { return el('span.font-mono.text-xs.text-slate-500', { text: e.cnss }); } },
         {
           key: 'salaireBase', label: 'Salaire de base', align: 'right',
-          text: function (e) { return C.money(e.salaireBase, false); },
-          render: function (e) { return el('span.font-semibold', { text: C.money(e.salaireBase, false) }); },
+          text: function (e) { return C.moneyOu(e.salaireBase, 'Non renseigné', false); },
+          render: function (e) { return el('span.font-semibold', { text: C.moneyOu(e.salaireBase, 'Non renseigné', false) }); },
         },
       ],
       fields: [
@@ -417,8 +421,8 @@
       kpis: function (rows) {
         return [
           { label: 'Effectif', value: C.num(rows.length), icon: 'users-round', tone: 'navy' },
-          { label: 'Masse salariale', value: C.money(C.sum(rows, 'salaireBase')), icon: 'banknote', tone: 'info' },
-          { label: 'Salaire moyen', value: C.money(rows.length ? C.sum(rows, 'salaireBase') / rows.length : 0), icon: 'calculator', tone: 'neutral' },
+          { label: 'Masse salariale', value: C.moneyOu(C.sumOuNul(rows, 'salaireBase'), 'Non renseignée'), icon: 'banknote', tone: 'info' },
+          { label: 'Salaire moyen', value: C.moneyOu(C.moyenneOuNul(rows, 'salaireBase'), 'Non renseigné'), icon: 'calculator', tone: 'neutral' },
           { label: 'Femmes / Hommes', value: C.num(rows.filter(function (e) { return e.sexe === 'F'; }).length) + ' / ' + C.num(rows.filter(function (e) { return e.sexe === 'M'; }).length), icon: 'users', tone: 'success' },
         ];
       },
@@ -438,7 +442,7 @@
             { k: 'Date d’embauche', v: C.dateFR(e.dateEmbauche) },
             { k: 'Poste occupé', v: e.poste },
             { k: 'Numéro CNSS', v: e.cnss },
-            { k: 'Salaire de base', v: C.money(e.salaireBase) },
+            { k: 'Salaire de base', v: C.moneyOu(e.salaireBase, 'Non renseigné') },
           ]),
           signatures: [{ role: 'L’Agent', nom: e.nomComplet }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
         });
@@ -499,7 +503,7 @@
     description: 'Contrats de travail des agents : nature, durée, période d’essai et échéances.',
     render: function (root) {
       var col = S.collection('contrats', { module: 'M10', entite: 'Contrat' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('contrats')) {
         var rnd = C.seeded(1217);
         personnel().forEach(function (e, i) {
           var cdd = rnd() > 0.7;
@@ -553,10 +557,11 @@
             { name: 'salaire', label: 'Salaire mensuel (FCFA)', type: 'money', required: true, min: 0 },
           ];
         },
-        transform: function (v) {
+        transform: function (v, rec) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.poste = e.poste; v.fonction = e.fonction; }
-          if (!v.reference) v.reference = C.nextRef('CT-', 4);
+          /* E620 : la référence venait de C.nextRef (compteur de page → CT-0001 déjà pris) ET était réécrite à chaque modification. */
+          v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('CT-', 4, col.all());
           v.statutContrat = 'en_vigueur';
           return v;
         },
@@ -1604,7 +1609,7 @@
     regle: 'Le régime observé prévoit <strong>2 jours de repos hebdomadaire</strong> et <strong>10 jours de congés annuels</strong>.',
     render: function (root) {
       var col = S.collection('conges', { module: 'M10', entite: 'Conge' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('conges')) {
         var rnd = C.seeded(1423);
         personnel().slice(0, 22).forEach(function (e, i) {
           var debut = C.addDays(AUJ, C.between(rnd, -120, 60));
@@ -1705,11 +1710,12 @@
             { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, col: 'full' },
           ];
         },
-        transform: function (v) {
+        transform: function (v, rec) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.service = e.service; }
           v.duree = Math.max(1, C.daysBetween(v.dateDebut, v.dateFin));
-          if (!v.reference) v.reference = C.nextRef('CG-', 4);
+          /* E620 (suite) : même défaut que les contrats. */
+          v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('CG-', 4, col.all());
           return v;
         },
         beforeSave: function (v) {
@@ -1781,6 +1787,60 @@
   function colHistoriqueBareme() {
     return S.collection('historiqueBareme', { module: 'M10', entite: 'version de barème', prefix: 'HBA' });
   }
+
+  /* ------------------------------------------------------------------------
+   * LE BARÈME EN VIGUEUR À UNE DATE (E650).
+   * ------------------------------------------------------------------------
+   * Les évaluations, les retenues, les fiches imprimées et les sanctions lisent
+   * ce moteur, plus la note d'origine : le barème est VERSIONNÉ par date
+   * (baremeNS131 pour la version courante, historiqueBareme pour les sorties),
+   * comme la grille des primes. Une évaluation garde le barème de SA date
+   * (`dateBareme`) : relever un taux ne change pas une retenue prononcée.
+   * Sans fiche au magasin, la note d'origine reste le repli.
+   * ---------------------------------------------------------------------- */
+  function dateBaremeDe(e) {
+    return (e && e.dateBareme) || D.NS131.dateEffet;
+  }
+  function criteresBaremeALaDate(date) {
+    var courants = [], hist = [];
+    try { courants = S.collection('baremeNS131').active(); } catch (err) { courants = []; }
+    try { hist = S.collection('historiqueBareme').active(); } catch (err) { hist = []; }
+    var d = date || C.iso(AUJ);
+    var out = [];
+    var vus = {};
+    function entree(b, id) {
+      return { num: b.num, id: id, label: b.label, criteres: (b.criteres || []).slice(), sanctions: b.sanctions || {} };
+    }
+    courants.forEach(function (b) {
+      var id = b.critereId;
+      vus[id] = true;
+      if (!b.dateEffet || String(d) >= String(b.dateEffet)) { out.push(entree(b, id)); return; }
+      /* Antérieure à la version courante : la version sortante qui couvrait la date. */
+      var v = hist.filter(function (x) {
+        return x.critereId === id && (!x.dateEffet || String(d) >= String(x.dateEffet)) && (!x.dateFin || String(d) <= String(x.dateFin));
+      }).sort(function (x, y) { return String(y.dateEffet).localeCompare(String(x.dateEffet)); })[0];
+      if (v) { out.push(entree(v, id)); return; }
+      var o = D.NS131.criteres.filter(function (c) { return c.id === id; })[0];
+      if (o) out.push(entree(o, id));
+    });
+    /* Un critère retiré : encore en vigueur aux dates que sa version couvre. */
+    hist.forEach(function (x) {
+      if (vus[x.critereId]) return;
+      if ((!x.dateEffet || String(d) >= String(x.dateEffet)) && (!x.dateFin || String(d) <= String(x.dateFin))) {
+        vus[x.critereId] = true; out.push(entree(x, x.critereId));
+      }
+    });
+    if (!courants.length && !hist.length) {
+      D.NS131.criteres.forEach(function (c) { out.push(entree(c, c.id)); });
+    }
+    return out.sort(function (a, b) { return String(a.num).localeCompare(String(b.num)); });
+  }
+  function prelevementALaDate(criteresEval, date) {
+    return criteresBaremeALaDate(date).reduce(function (t, c) {
+      return t + ((c.sanctions || {})[(criteresEval || {})[c.id]] || 0);
+    }, 0);
+  }
+  global.SIGH.bareme131 = { criteres: criteresBaremeALaDate, prelevement: prelevementALaDate };
 
   function blocBaremeNS131(rafraichir) {
     var ouvert = global.SIGH.baremeModifiable && global.SIGH.baremeModifiable();
@@ -2086,25 +2146,25 @@
          été saisie. */
       (function amorcer() {
         var db = S.raw();
-        if (db.evaluations && db.evaluations.length) return;
+        if ((db.evaluations && db.evaluations.length) || !S.amorcable('evaluations')) return;
         var rnd = C.seeded(1131), n = 0;
         var mois = C.MOIS[AUJ.getMonth() - 1 < 0 ? 11 : AUJ.getMonth() - 1];
-        var periode = mois.charAt(0).toUpperCase() + mois.slice(1) + ' 2026';
+        var periode = mois.charAt(0).toUpperCase() + mois.slice(1) + ' ' + AUJ.getFullYear();
         db.evaluations = personnel().slice(0, 24).map(function (e) {
           var criteres = {};
-          D.NS131.criteres.forEach(function (c) {
+          criteresBaremeALaDate(C.iso(AUJ)).forEach(function (c) {
             criteres[c.id] = C.pick(rnd, ['bonne', 'bonne', 'bonne', 'moyenne', 'faible']);
           });
-          var pct = D.NS131.prelevement(criteres);
+          var pct = prelevementALaDate(criteres, C.iso(AUJ));
           return {
             id: 'EVAL' + C.pad(++n, 4),
-            reference: 'EV-2026-' + C.pad(n, 4),
+            reference: 'EV-' + AUJ.getFullYear() + '-' + C.pad(n, 4),
             employeId: e.id, employe: e.nomComplet, matricule: e.matricule,
             service: e.service, fonction: e.fonction, categorie: e.categorie,
             periode: periode, criteres: criteres,
             prelevementPct: pct,
             prelevementMontant: Math.round(e.salaireBase * pct / 100),
-            salaireBrut: e.salaireBase,
+            salaireBrut: e.salaireBase, dateBareme: C.iso(AUJ),
             observations: '',
             evaluateur: 'TAKI Alimatou',
             statut: 'actif',
@@ -2149,7 +2209,7 @@
           { key: 'matricule', label: 'Mat.', align: 'right', nowrap: true },
           { key: 'employe', label: 'Agent' },
           { key: 'service', label: 'Service' },
-        ].concat(D.NS131.criteres.map(function (c) {
+        ].concat(criteresBaremeALaDate(C.iso(AUJ)).map(function (c) {
           return {
             key: 'crit_' + c.id, label: c.label.split(' ')[0],
             value: function (e) { return (e.criteres || {})[c.id]; },
@@ -2180,8 +2240,8 @@
         rowActions: function (e) {
           return [
             K.iconBtn('printer', 'Imprimer la fiche', function () { etatFiche(e); }),
-            K.iconBtn('pencil', 'Modifier', function () { ouvrir(e); }),
-          ];
+            K.commandeIcone('pencil', 'Modifier', function () { ouvrir(e); }),
+          ].filter(Boolean);
         },
       });
       host.appendChild(table);
@@ -2189,12 +2249,16 @@
       return null;
 
       function ouvrir(record) {
+        /* Le barème en vigueur à la date de l'évaluation (E650) : celle de la
+           fiche existante, ou le jour de la saisie. */
+        var dateB = (record && record.dateBareme) || (record ? dateBaremeDe(record) : C.iso(AUJ));
+        var critsB = criteresBaremeALaDate(dateB);
         var champs = [
           { name: 'employeId', label: 'Agent', type: 'select', required: true, options: optionsEmployes(), col: 'full' },
-          { name: 'periode', label: 'Période évaluée', type: 'select', required: true, options: C.MOIS.map(function (m) { return m.charAt(0).toUpperCase() + m.slice(1) + ' 2026'; }) },
+          { name: 'periode', label: 'Période évaluée', type: 'select', required: true, options: C.MOIS.map(function (m) { return m.charAt(0).toUpperCase() + m.slice(1) + ' ' + AUJ.getFullYear(); }) },
           { type: 'section', label: 'Éléments d’évaluation — barème ' + D.NS131.reference },
         ];
-        D.NS131.criteres.forEach(function (c) {
+        critsB.forEach(function (c) {
           champs.push({
             name: 'crit_' + c.id, label: c.num + ' — ' + c.label, type: 'select', required: true,
             options: D.NS131.niveaux.map(function (n) {
@@ -2206,11 +2270,11 @@
         });
         champs.push({ name: 'observations', label: 'Observations de l’évaluateur', type: 'textarea', rows: 2, col: 'full' });
 
-        var valeurs = record ? Object.assign({}, record) : { periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' 2026' };
+        var valeurs = record ? Object.assign({}, record) : { periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' ' + AUJ.getFullYear() };
         if (record && record.criteres) {
-          D.NS131.criteres.forEach(function (c) { valeurs['crit_' + c.id] = record.criteres[c.id]; });
+          critsB.forEach(function (c) { valeurs['crit_' + c.id] = record.criteres[c.id]; });
         } else {
-          D.NS131.criteres.forEach(function (c) { valeurs['crit_' + c.id] = 'bonne'; });
+          critsB.forEach(function (c) { valeurs['crit_' + c.id] = 'bonne'; });
         }
 
         var f = U.form(champs, valeurs);
@@ -2218,11 +2282,11 @@
 
         function majApercu() {
           var evalv = {};
-          D.NS131.criteres.forEach(function (c) {
+          critsB.forEach(function (c) {
             var ctrl = f.controls['crit_' + c.id];
             evalv[c.id] = ctrl ? ctrl.value : 'bonne';
           });
-          var pct = D.NS131.prelevement(evalv);
+          var pct = prelevementALaDate(evalv, dateB);
           var emp = personnel().filter(function (x) { return x.id === f.controls.employeId.value; })[0];
           var brut = emp ? emp.salaireBase : 0;
           C.clear(apercu);
@@ -2235,7 +2299,7 @@
           U.icons(apercu);
         }
 
-        D.NS131.criteres.forEach(function (c) {
+        critsB.forEach(function (c) {
           var ctrl = f.controls['crit_' + c.id];
           if (ctrl) ctrl.addEventListener('change', majApercu);
         });
@@ -2257,8 +2321,8 @@
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
                 var emp = personnel().filter(function (x) { return x.id === v.employeId; })[0];
                 var criteres = {};
-                D.NS131.criteres.forEach(function (c) { criteres[c.id] = v['crit_' + c.id]; });
-                var pct = D.NS131.prelevement(criteres);
+                critsB.forEach(function (c) { criteres[c.id] = v['crit_' + c.id]; });
+                var pct = prelevementALaDate(criteres, dateB);
                 var enr = {
                   employeId: v.employeId,
                   employe: emp ? emp.nomComplet : '', matricule: emp ? emp.matricule : '',
@@ -2269,7 +2333,7 @@
                   prelevementMontant: emp ? Math.round(emp.salaireBase * pct / 100) : 0,
                   salaireBrut: emp ? emp.salaireBase : 0,
                   observations: v.observations,
-                  reference: (record && record.reference) || C.nextRef('EV-', 4),
+                  dateBareme: dateB, reference: (record && record.reference) || C.referenceSuivante('EV-' + AUJ.getFullYear() + '-', 4, col.all().concat(col.archived())),
                   evaluateur: S.currentUser(),
                 };
                 var res = record ? col.update(record.id, enr) : col.insert(enr);
@@ -2315,7 +2379,7 @@
                   return p ? el('span.font-semibold.text-danger-600', { text: '− ' + p + ' %' }) : '—';
                 },
               },
-            ], D.NS131.criteres)),
+            ], criteresBaremeALaDate(dateBaremeDe(e)))),
             e.observations ? U.card('Observations', el('p.text-sm.text-slate-700', { text: e.observations })) : null,
           ]),
           footer: [
@@ -2354,7 +2418,7 @@
             var p = c.sanctions[n] || 0;
             return '1) ' + lib + '   2) ' + (p ? p + ' %' : 'Aucune') + '   3) ' + (p ? C.money(Math.round(brut * p / 100), false) : '0');
           } },
-        ], D.NS131.criteres, {
+        ], criteresBaremeALaDate(dateBaremeDe(e)), {
           total: { num: '', label: '', '1) Résultat  2) Sanction  3) Prélèvement': '' },
           totalLabel: 'TOTAL À PRÉLEVER : ' + C.money(prelev, false),
         }));
@@ -2414,7 +2478,7 @@
               { label: 'Bonne', value: function () { return 'Aucune'; } },
               { label: 'Moyenne (1er niveau)', value: function (c) { return '1 à 2 — moins ' + c.sanctions.moyenne + ' % du salaire brut'; } },
               { label: 'Faible à mauvaise (2e niveau)', value: function (c) { return '3 et plus — ' + c.sanctions.faible + ' % du salaire brut'; } },
-            ], D.NS131.criteres),
+            ], criteresBaremeALaDate(dateBaremeDe(e))),
             el('p.mt-3', { text: D.NS131.mention + ' Entre en vigueur à compter de sa date de signature.' }),
             el('p.mt-2.text-\\[10px\\]', { text: 'Ampliation : ' + D.NS131.ampliation }),
           ]),
@@ -2459,11 +2523,11 @@
           {
             key: 'motifs', label: 'Critères sanctionnés', sortable: false,
             text: function (e) {
-              return D.NS131.criteres.filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; })
+              return criteresBaremeALaDate(dateBaremeDe(e)).filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; })
                 .map(function (c) { return c.label; }).join(', ');
             },
             render: function (e) {
-              var liste = D.NS131.criteres.filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; });
+              var liste = criteresBaremeALaDate(dateBaremeDe(e)).filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; });
               if (!liste.length) return '—';
               return el('div.flex.flex-wrap.gap-1', null, liste.map(function (c) {
                 return U.badge(c.label, 'danger');
@@ -2493,7 +2557,7 @@
                     var p = c.sanctions[(e.criteres || {})[c.id]] || 0;
                     return p ? p + ' %' : '—';
                   } },
-                ], D.NS131.criteres),
+                ], criteresBaremeALaDate(dateBaremeDe(e))),
                 e.observations ? el('p.mt-2.italic', { text: 'Observations : ' + e.observations }) : null,
               ]),
               signatures: [{ role: 'L’Agent', nom: e.employe, mention: 'Pris connaissance' },
@@ -2511,10 +2575,11 @@
         /* Un critère est « sanctionné » quand son résultat entraîne une retenue.
            C'est le croisement qui intéresse la Direction : sur quel axe du
            barème NS 131 la clinique perd-elle le plus de points ? */
-        var parCritere = D.NS131.criteres.map(function (c) {
+        var parCritere = criteresBaremeALaDate(C.iso(AUJ)).map(function (c) {
           var touchees = evals.filter(function (e) {
             var r = (e.criteres || {})[c.id];
-            return r && (c.sanctions[r] || 0) > 0;
+            var cv = criteresBaremeALaDate(dateBaremeDe(e)).filter(function (x) { return x.id === c.id; })[0];
+            return r && cv && (cv.sanctions[r] || 0) > 0;
           });
           return {
             label: c.label, n: touchees.length,
@@ -2621,6 +2686,7 @@
         tr.appendChild(el('td.text-right', null,
           el('span.text-xs.text-slate-500', { text: pr.dateEffet ? C.dateFR(pr.dateEffet) : '—' })));
         var actes = [];
+        if (pr.mode === 'fixe') actes.push(K.iconBtn('users', 'Bénéficiaires du forfait', function () { beneficiairesPrime(pr); }));
         if (K.droits('M10').editer) actes.push(K.iconBtn('pencil', 'Modifier cette prime', function () { editerPrime(pr); }));
         if (K.droits('M10').annuler) actes.push(K.iconBtn('archive', 'Retirer cette prime', function () { archiverPrime(pr); }, 'ghost'));
         tr.appendChild(el('td.text-right.whitespace-nowrap', null, el('div.flex.justify-end.gap-1', null, actes)));
@@ -2853,32 +2919,129 @@
         });
       }
 
+      /* --------------------------------------------------------------------
+       * LES BÉNÉFICIAIRES D'UN FORFAIT (E654) : une liste DATÉE d'agents.
+       * Un forfait se désigne ; tant qu'aucun agent n'est désigné, la règle
+       * d'attente (tous les agents de la fonction) s'applique et l'écran le dit.
+       * Une désignation ne se supprime pas : on y met fin à une date.
+       * ------------------------------------------------------------------ */
+      function colBeneficiaires() {
+        return S.collection('beneficiairesPrimes', { module: 'M10', entite: 'bénéficiaire de prime', prefix: 'BPR' });
+      }
+      function beneficiairesPrime(prime) {
+        var droit = K.droits('M10').editer;
+        var eligibles = personnel().filter(function (a) { return (prime.montants || {})[a.fonction] > 0; });
+        var corps = el('div.space-y-3');
+        var m = U.modal({
+          title: 'Bénéficiaires : ' + prime.label, subtitle: D.NS132.reference, size: 'lg', body: corps,
+          footer: [K.btn('Fermer', { onclick: function () { m.close(); } })],
+        });
+        dessinerBeneficiaires();
+
+        function dessinerBeneficiaires() {
+          C.clear(corps);
+          var liste = colBeneficiaires().active().filter(function (x) { return x.primeId === prime.primeId; });
+          corps.appendChild(K.note(liste.length
+            ? 'Seuls les agents désignés, aux dates indiquées, perçoivent ce forfait.'
+            : '<strong>Aucun bénéficiaire désigné.</strong> Règle d’attente : le forfait est versé à tous les agents '
+              + 'dont la fonction figure à la grille. Désigner un premier agent la remplace par la liste.',
+          { tone: liste.length ? 'info' : 'warning', icon: 'users' }));
+          if (liste.length) {
+            corps.appendChild(K.miniTable([
+              { label: 'Agent', render: function (x) { return x.agent; } },
+              { label: 'Depuis le', render: function (x) { return C.dateFR(x.debut); } },
+              { label: 'Jusqu’au', render: function (x) { return x.fin ? C.dateFR(x.fin) : 'en cours'; } },
+              { label: '', render: function (x) {
+                if (!droit || x.fin) return '';
+                return K.iconBtn('calendar-x', 'Mettre fin à la désignation', function () {
+                  var res = colBeneficiaires().update(x.id, { fin: C.iso(AUJ) });
+                  dessinerBeneficiaires(); rendreAcquises();
+                  U.toast('Désignation terminée.', { type: 'success', detail: x.agent + ' : jusqu’au ' + C.dateFR(C.iso(AUJ)) + '.',
+                    undo: function () { res.undo(); dessinerBeneficiaires(); rendreAcquises(); } });
+                }, 'ghost');
+              } },
+            ], C.sortBy(liste, 'agent')));
+          }
+          if (!droit) { U.icons(corps); return; }
+          var f = U.form([
+            { name: 'agents', label: 'Agents à désigner', type: 'multiselect', required: true, col: 'full',
+              options: eligibles.map(function (a) { return { value: a.id, label: a.nomComplet + ' (' + fonctionLabel(a.fonction) + ')' }; }) },
+            { name: 'debut', label: 'Depuis le', type: 'date', required: true },
+          ], { debut: C.iso(AUJ) });
+          corps.appendChild(U.card('Désigner des bénéficiaires', el('div.space-y-3', null, [
+            f,
+            K.btn('Désigner', { variant: 'primary', icon: 'user-plus', onclick: function () {
+              var v = f.collect();
+              if (!v) return;
+              var deja = {};
+              liste.forEach(function (x) { if (!x.fin) deja[x.agentId] = true; });
+              var ajoutes = [];
+              (v.agents || []).forEach(function (id) {
+                if (deja[id]) return;
+                var a = eligibles.filter(function (x) { return x.id === id; })[0];
+                if (!a) return;
+                colBeneficiaires().insert({ primeId: prime.primeId, primeLabel: prime.label, agentId: a.id, agent: a.nomComplet,
+                  matricule: a.matricule, debut: v.debut, fin: null, designePar: S.currentUser() });
+                ajoutes.push(a.nomComplet);
+              });
+              if (!ajoutes.length) { U.toast('Ces agents sont déjà désignés.', { type: 'warning' }); return; }
+              S.log('Désignation des bénéficiaires d’une prime fixe', 'M10', 'Prime', prime.primeId, null, { agents: ajoutes, debut: v.debut });
+              dessinerBeneficiaires(); rendreAcquises();
+              U.toast(ajoutes.length + ' bénéficiaire(s) désigné(s).', { type: 'success', detail: prime.label });
+            } }),
+          ])));
+          U.icons(corps);
+        }
+      }
+
       function archiverPrime(prime) {
-        U.confirm({
-          title: 'Retirer la prime « ' + prime.label + ' » ?',
-          message: '<strong>Attention.</strong> Cette prime cesse d’être calculée sur les bulletins à venir. '
-            + 'Les bulletins déjà édités ne changent pas — les versions antérieures de la grille restent '
-            + 'consultables.<br><br>'
-            + 'Conformément à <strong>RG-14</strong>, la prime est <strong>archivée</strong> et non supprimée : '
-            + 'elle reste restaurable depuis la corbeille. Une prime instituée par note de service ne peut '
-            + 'être retirée que par une note qui l’abroge.',
-          confirmLabel: 'Retirer la prime', danger: true, requireMotif: true,
-        }).then(function (rep) {
-          if (!rep) return;
-          colHistorique().insert({
-            primeId: prime.primeId, label: prime.label, mode: prime.mode,
-            montants: Object.assign({}, prime.montants),
-            dateEffet: prime.dateEffet || D.NS132.dateEffet,
-            dateFin: C.iso(C.addDays(AUJ, -1)),
-            remplaceePar: 'Prime retirée — ' + rep.motif,
-            archiveePar: S.currentUser(),
-          });
-          var res = colGrille().archive(prime.id, rep.motif);
-          rendreGrille(); rendreAcquises();
-          U.toast('Prime retirée de la grille.', {
-            type: 'success', detail: 'Archivage logique (RG-14) — restaurable depuis la corbeille.',
-            undo: function () { res.undo(); rendreGrille(); rendreAcquises(); },
-          });
+        /* Une prime retirée reçoit une DATE DE FIN (E651) : la paie la lit
+           jusqu'à ce jour inclus, et plus jamais après. */
+        var fRetrait = U.form([
+          { name: 'dateFin', label: 'Dernier jour de la prime', type: 'date', required: true,
+            hint: 'La paie lit la prime jusqu’à cette date incluse, et plus après.' },
+          { name: 'motif', label: 'Motif du retrait', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], { dateFin: C.iso(C.addDays(AUJ, -1)) });
+        var mRetrait = U.modal({
+          title: 'Retirer la prime « ' + prime.label + ' » ?', subtitle: D.NS132.reference, size: 'lg',
+          body: el('div.space-y-3', null, [
+            K.note('<strong>Attention.</strong> Cette prime cesse d’être calculée après sa date de fin. '
+              + 'Les bulletins déjà édités ne changent pas : les versions antérieures de la grille restent '
+              + 'consultables. Conformément à <strong>RG-14</strong>, la prime est <strong>archivée</strong> et non supprimée : '
+              + 'elle reste restaurable depuis la corbeille. Une prime instituée par note de service ne peut '
+              + 'être retirée que par une note qui l’abroge.', { tone: 'warning', icon: 'shield-alert' }),
+            fRetrait,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { mRetrait.close(); } }),
+            K.btn('Retirer la prime', {
+              variant: 'danger', icon: 'archive',
+              onclick: function () {
+                var rep = fRetrait.collect();
+                if (!rep) return;
+                if (prime.dateEffet && String(rep.dateFin) < String(prime.dateEffet)) {
+                  U.toast('La date de fin précède l’entrée en vigueur de la prime.', { type: 'error',
+                    detail: 'En vigueur depuis le ' + C.dateFR(prime.dateEffet) + '.' });
+                  return;
+                }
+                mRetrait.close();
+                colHistorique().insert({
+                  primeId: prime.primeId, label: prime.label, mode: prime.mode,
+                  montants: Object.assign({}, prime.montants),
+                  dateEffet: prime.dateEffet || D.NS132.dateEffet,
+                  dateFin: rep.dateFin, retiree: true,
+                  remplaceePar: 'Prime retirée : ' + rep.motif,
+                  archiveePar: S.currentUser(),
+                });
+                var res = colGrille().archive(prime.id, rep.motif);
+                rendreGrille(); rendreAcquises();
+                U.toast('Prime retirée de la grille.', {
+                  type: 'success', detail: 'Dernier jour : ' + C.dateFR(rep.dateFin) + '. Archivage logique (RG-14), restaurable depuis la corbeille.',
+                  undo: function () { res.undo(); rendreGrille(); rendreAcquises(); },
+                });
+              },
+            }),
+          ],
         });
       }
 
@@ -2892,8 +3055,11 @@
         var permanences = compter(e.id, annee, mois, 'permanence');
         var pGarde = D.NS132.montant('garde', e.fonction) * gardes;
         var pPerm = D.NS132.montant('permanence', e.fonction) * permanences;
-        var fixes = D.NS132.primes.filter(function (p) { return p.mode === 'fixe'; })
-          .reduce(function (s, p) { return s + D.NS132.montant(p.id, e.fonction); }, 0);
+        /* Les primes fixes : barème d'origine ET primes créées à l'écran (E651),
+           retirées exclues à partir de leur date de fin, forfait versé aux seuls
+           bénéficiaires désignés quand il y en a (E654). */
+        var fixes = D.NS132.primesALaDate().filter(function (p) { return p.mode === 'fixe'; })
+          .reduce(function (s, p) { return s + D.NS132.montantAgent(p.id, e, C.iso(AUJ)); }, 0);
         return {
           id: e.id, matricule: e.matricule, employe: e.nomComplet,
           fonction: e.fonction, service: e.service,
@@ -3005,7 +3171,7 @@
     description: 'Intervenants extérieurs rémunérés à l’acte : circoncision, hydrotubation, accouchement, analyses, hospitalisation.',
     render: function (root) {
       var col = S.collection('prestataires', { module: 'M10', entite: 'PrestataireExterne' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('prestataires')) {
         var rnd = C.seeded(1531);
         var ACTES = ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie'];
         for (var i = 0; i < 14; i++) {
@@ -3103,7 +3269,8 @@
           { name: 'ifu', label: 'IFU du prestataire' },
           { name: 'factureNormalisee', label: 'Facture normalisée fournie', type: 'checkbox', col: 'full' },
         ],
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('PE-', 4); return v; },
+        /* E620 (suite) : même défaut que les contrats. */
+        transform: function (v, rec) { v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('PE-', 4, col.all()); return v; },
         onCreate: function () { return { actesRealises: 0, factureNormalisee: false }; },
         filters: [{ name: 'specialite', label: 'Spécialité', options: ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie'] }],
         apresTableau: graphiquesPrestataires,
@@ -3431,7 +3598,7 @@
                 v.montantParAgent = Number(v.montantParAgent) || D.PARAM_EVENEMENTS.montantStandard;
                 var ben = personnel().filter(function (e) { return e.id === v.beneficiaireId; })[0];
                 v.beneficiaire = ben ? ben.nomComplet : null;
-                v.reference = C.nextRef('EVT-', 4);
+                v.reference = C.referenceSuivante('EVT-', 4, colEvenements().all());
                 var res = colEvenements().insert(v);
                 var n = engendrerParticipations(res.record);
                 S.log('Création d’un événement du personnel', 'M10', 'Événement', res.record.id, null,
@@ -3527,17 +3694,19 @@
           danger: b.regles > 0, requireMotif: true,
         }).then(function (rep) {
           if (!rep) return;
-          var archivees = 0;
+          var archivees = 0; var annulations = [];
           participationsDe(evt.id).forEach(function (x) {
             if (x.statutPaiement === 'paye') return;
-            colParticipations().archive(x.id, rep.motif); archivees++;
+            annulations.push(colParticipations().archive(x.id, rep.motif).undo); archivees++;
           });
           var res = colEvenements().archive(evt.id, rep.motif);
           afficher();
           U.toast('Événement annulé.', {
             type: 'success',
             detail: C.num(archivees) + ' participation(s) non réglée(s) archivée(s).',
-            undo: function () { res.undo(); afficher(); },
+            /* L'annulation restitue l'événement ET ses participations : ne restaurer que l'événement laissait ses participations archivées,
+               donc un événement vivant dont le montant attendu avait fondu (E741). */
+            undo: function () { res.undo(); annulations.forEach(function (u) { u(); }); afficher(); },
           });
         });
       }
@@ -3681,7 +3850,7 @@
               render: function (x) {
                 return el('div.min-w-0', null, [
                   el('p.truncate.text-sm.font-medium.text-slate-800', { text: x.agent }),
-                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + fonctionLabel(x.fonction) }),
+                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + (x.fonction ? fonctionLabel(x.fonction) : '—') }),
                 ]);
               },
             },
@@ -3817,7 +3986,7 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
-                var recu = C.nextRef('REC-PART-', 4);
+                var recu = C.referenceSuivante('REC-PART-', 4, colParticipations().all().map(function (p) { return { reference: p.recu }; }));
                 var res = colParticipations().update(x.id, {
                   statutPaiement: 'paye', mode: 'comptant',
                   montantVerse: Number(v.montantVerse), datePaiement: v.datePaiement,
@@ -4021,7 +4190,7 @@
         S.collection('demandesAnalyses').active().forEach(function (a) {
           var pat = parPatient[a.patientId];
           if (!pat) return;
-          var d = String(a.date || a.dateDemande || '').slice(0, 10);
+          var d = String(a.date || a.dateDemande || a.dateHeure || '').slice(0, 10);
           if (!d || (min && d < min)) return;
           var analyse = D.ANALYSES.filter(function (x) { return x.code === a.analyse || x.libelle === a.analyse; })[0];
           out.push({
@@ -4030,7 +4199,7 @@
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Analyse', detail: a.analyse || (analyse ? analyse.libelle : 'Analyse'),
             praticien: a.prescripteur || a.demandeur || '—',
-            valeur: Number(a.montant) || (analyse ? Number(analyse.prix) || 0 : 0),
+            valeur: Number(a.montant) || Number(a.prix) || (analyse ? Number(analyse.prix) || 0 : 0),
           });
         });
 
@@ -4128,7 +4297,8 @@
           ],
           rowActions: function (r) {
             return [K.iconBtn('folder-open', 'Ouvrir le dossier du patient', function () {
-              global.SIGH.app.go('m1-dossier', { patient: r.patientId });
+              /* Le dossier s'ouvre depuis le répertoire des patients (fusion du 31/08/2026) : « m1-dossier » n'a jamais existé. */
+              global.SIGH.app.go('m1-patients');
             })];
           },
         }));
@@ -4227,15 +4397,23 @@
       + 'Les vacations restent celles du <strong>planning validé</strong> — même collection que « Planning & gardes », '
       + 'donc toute modification y est immédiatement visible. Le repos de 24 h qui suit une garde reste opposable.',
     render: function (root) {
-      var agents = personnel().filter(function (e) { return e.fonction === 'securite' || e.fonction === 'entretien'; });
+      /* E749 : `agents` était lu UNE fois au rendu — un agent créé ou archivé ici ne paraissait ni dans la grille de rotation ni aux indicateurs avant le
+         rechargement de la page (« enregistré mais introuvable »). La liste est relue à chaque rafraîchissement. */
+      var agents = [];
+      function relireAgents() { agents = personnel().filter(function (e) { return e.fonction === 'securite' || e.fonction === 'entretien'; }); }
       var host = el('div.space-y-4');
-
-      host.appendChild(U.kpiGrid([
-        { label: 'Agents de sécurité', value: C.num(agents.filter(function (e) { return e.fonction === 'securite'; }).length), icon: 'shield', tone: 'navy' },
-        { label: 'Agents d’entretien', value: C.num(agents.filter(function (e) { return e.fonction === 'entretien'; }).length), icon: 'spray-can', tone: 'info' },
-        { label: 'En poste aujourd’hui', value: C.num(planning().filter(function (p) { return p.date === C.iso(AUJ) && (p.fonction === 'securite' || p.fonction === 'entretien') && p.type !== 'repos24' && p.type !== 'repos48'; }).length), icon: 'user-check', tone: 'success' },
-        { label: 'Masse salariale', value: C.money(C.sum(agents, 'salaireBase')), icon: 'banknote', tone: 'neutral' },
-      ]));
+      var blocKpi = el('div');
+      host.appendChild(blocKpi);
+      function rendreKpi() {
+        C.clear(blocKpi);
+        blocKpi.appendChild(U.kpiGrid([
+          { label: 'Agents de sécurité', value: C.num(agents.filter(function (e) { return e.fonction === 'securite'; }).length), icon: 'shield', tone: 'navy' },
+          { label: 'Agents d’entretien', value: C.num(agents.filter(function (e) { return e.fonction === 'entretien'; }).length), icon: 'spray-can', tone: 'info' },
+          { label: 'En poste aujourd’hui', value: C.num(planning().filter(function (p) { return p.date === C.iso(AUJ) && (p.fonction === 'securite' || p.fonction === 'entretien') && p.type !== 'repos24' && p.type !== 'repos48'; }).length), icon: 'user-check', tone: 'success' },
+          { label: 'Masse salariale', value: C.money(C.sum(agents, 'salaireBase')), icon: 'banknote', tone: 'neutral' },
+        ]));
+        U.icons(blocKpi);
+      }
 
       /* Légendes reprises telles quelles des plannings de la clinique */
       var legendes = el('div.grid.gap-3.sm\\:grid-cols-2');
@@ -4272,7 +4450,7 @@
       root.appendChild(host);
       return null;
 
-      function rendreTout() { rendreGrille(); rendreAgents(); rendreGraphes(); }
+      function rendreTout() { relireAgents(); rendreKpi(); rendreGrille(); rendreAgents(); rendreGraphes(); }
 
       function rendreGrille() {
       C.clear(blocGrille);
@@ -4442,7 +4620,7 @@
           entite: 'Agent',
           defauts: function () { return { fonction: 'securite', dateEmbauche: C.iso(AUJ), salaireBase: 40000 }; },
           transform: function (v) {
-            if (!v.matricule) v.matricule = C.nextRef('SE-', 3);
+            if (!v.matricule) v.matricule = C.referenceSuivante('SE-', 3, S.collection('personnel').all().map(function (e) { return { reference: e.matricule }; }));
             /* Sécurité, entretien et chauffeurs sont rattachés à la Direction :
                un seul intitulé de service, comme partout ailleurs. */
             v.service = 'Direction';
@@ -4459,7 +4637,7 @@
           { key: 'fonction', label: 'Fonction', text: fonctionLabel, render: function (e) { return U.badge(fonctionLabel(e.fonction), e.fonction === 'securite' ? 'navy' : 'info'); } },
           { key: 'poste', label: 'Poste' },
           { key: 'dateEmbauche', label: 'Embauche', nowrap: true, text: function (e) { return C.dateFR(e.dateEmbauche); }, render: function (e) { return C.dateFR(e.dateEmbauche); } },
-          { key: 'salaireBase', label: 'Salaire', align: 'right', text: function (e) { return C.money(e.salaireBase, false); }, render: function (e) { return C.money(e.salaireBase, false); } },
+          { key: 'salaireBase', label: 'Salaire', align: 'right', text: function (e) { return C.moneyOu(e.salaireBase, 'Non renseigné', false); }, render: function (e) { return C.moneyOu(e.salaireBase, 'Non renseigné', false); } },
         ],
         }));
         U.icons(blocAgents);
@@ -4554,7 +4732,7 @@
 
   function amorcerMissions() {
     var db = S.raw();
-    if (db.missions && db.missions.length) return;
+    if ((db.missions && db.missions.length) || !S.amorcable('missions')) return;
     var agents = S.collection('personnel').active();
     var rnd = C.seeded(1042);
     var OBJETS = [
@@ -4673,7 +4851,8 @@
           },
           transform: function (v) {
             var a = S.collection('personnel').get(v.agentId);
-            v.reference = 'OM-2026-' + C.pad(colMissions().all().length + 1, 4);
+            /* Millésime = année de la date de départ (la pièce), rang par année, archivés compris. */
+            v.reference = C.referenceSuivante('OM-' + String(v.dateDepart || C.iso(AUJ)).slice(0, 4) + '-', 4, colMissions().all().concat(colMissions().archived()));
             v.agent = a ? a.nomComplet : '—';
             v.fonction = a ? a.poste : '';
             return v;
@@ -4747,12 +4926,14 @@
           onRowClick: fiche,
           rowActions: function (m) {
             var actions = [];
+            /* E623 : valider, terminer et reporter ÉCRIVENT — commandes déclarées comme telles (absentes sans le droit d'édition). */
+            var ecrit = function (c) { if (c) actions.push(c); };
             if (m.statutMission === 'a_valider') {
-              actions.push(K.iconBtn('stamp', 'Valider (Directrice Administrative)', function () { valider(m); }));
+              ecrit(K.commandeIcone('stamp', 'Valider (Directrice Administrative)', function () { valider(m); }));
             }
             if (m.statutMission === 'validee' || m.statutMission === 'en_cours') {
-              actions.push(K.iconBtn('check', 'Marquer terminée', function () { changerEtat(m, 'terminee', 'Mission terminée.'); }));
-              actions.push(K.iconBtn('calendar-clock', 'Reporter', function () { changerEtat(m, 'reportee', 'Mission reportée.'); }));
+              ecrit(K.commandeIcone('check', 'Marquer terminée', function () { changerEtat(m, 'terminee', 'Mission terminée.'); }));
+              ecrit(K.commandeIcone('calendar-clock', 'Reporter', function () { changerEtat(m, 'reportee', 'Mission reportée.'); }));
             }
             actions.push(K.iconBtn('printer', 'Imprimer l’ordre', function () { imprimer(m); }));
             return actions.concat(K.actionsLigne(colMissions(), champsMission, { entite: 'ordre de mission' })(m));
@@ -5029,7 +5210,8 @@
       /* La collection est amorcée par CET écran : lui seul la lit. */
       function amorcer() {
         var col = colFichesPoste();
-        if (col.all().length) return;
+        /* Un jeu vidé ne recense plus les postes d'office : les fiches de démonstration ne renaissent pas. */
+        if (col.all().length || !S.amorcable('fichesPoste')) return;
         documentees().forEach(function (f) { col.insert(Object.assign({ redigee: true }, f)); });
         /* Les autres postes reçoivent une fiche VIDE, marquée : la clinique
            n'a remis que deux documents, en inventer douze donnerait des
@@ -5093,11 +5275,18 @@
             hint: 'ils rendent l’évaluation NS 131 mesurable' },
         ]));
 
-        vue.appendChild(K.note('Seules <strong>deux fiches</strong> proviennent d’un document remis par la '
-          + 'clinique. Les autres postes sont recensés depuis l’organigramme et leur fiche est '
-          + '<strong>vide, marquée « à rédiger »</strong> — les inventer donnerait à la clinique des missions '
-          + 'qu’elle n’a jamais écrites, et ces missions serviraient ensuite à évaluer des agents.',
-        { tone: 'warning', icon: 'file-question' }));
+        if (!rows.length) {
+          vue.appendChild(K.note('Aucune fiche de poste n’est enregistrée. Les fiches de démonstration (deux '
+            + 'descriptions remises par la clinique, vingt-six postes recensés « à rédiger ») reviennent avec '
+            + '« Régénérer le jeu de données » ; sinon, créer une fiche avec « Nouvelle fiche de poste ».',
+          { tone: 'info', icon: 'file-question' }));
+        } else {
+          vue.appendChild(K.note('Seules <strong>deux fiches</strong> proviennent d’un document remis par la '
+            + 'clinique. Les autres postes sont recensés depuis l’organigramme et leur fiche est '
+            + '<strong>vide, marquée « à rédiger »</strong> — les inventer donnerait à la clinique des missions '
+            + 'qu’elle n’a jamais écrites, et ces missions serviraient ensuite à évaluer des agents.',
+          { tone: 'warning', icon: 'file-question' }));
+        }
 
         vue.appendChild(U.dataTable({
           rows: C.sortBy(rows, 'intitule'),
@@ -5785,7 +5974,7 @@
     }
 
     var col = colBadges();
-    if (col.all().length) return;
+    if (col.all().length || !S.amorcable('badges')) return;
     var rnd = C.seeded(2609);
     var agents = C.sortBy(personnel(), 'matricule').slice(0, 14);
     var n = 0;
@@ -6087,7 +6276,7 @@
           confirmLabel: 'Remis',
         }).then(function (rep) {
           if (!rep) return;
-          var res = colBadges().update(b.id, { etat: 'remis', remisLe: C.iso(AUJ) });
+          var res = colBadges().update(b.id, { etat: 'remis', remisLe: C.iso(C.aujourdhui()) });
           afficher();
           U.toast('Badge remis.', { type: 'success',
             undo: function () { res.undo(); afficher(); } });

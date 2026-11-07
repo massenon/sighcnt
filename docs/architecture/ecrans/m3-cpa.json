@@ -1,0 +1,51 @@
+{
+ "id": "m3-cpa",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Consultation pré-anesthésique",
+ "acces": "ouvert",
+ "titre": "Consultation pré-anesthésique",
+ "description": "Évaluation avant anesthésie : classe ASA, score de Mallampati, technique proposée, conclusion d’aptitude.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Consultation pré-anesthésique"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "Les échelles ASA et Mallampati et la liste des techniques sont des arrêtées par les praticiens du bloc le 01/09/2026 — proposées à l’origine, aucun document de la clinique ne les fixait ; la provenance reste dite. Les fiches déjà saisies conservent leurs valeurs telles quelles."
+ ],
+ "onglets": [],
+ "kpis": [
+  "CPA enregistrées",
+  "Aptes sans réserve",
+  "Avec réserves ou report",
+  "Interventions sans CPA"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Date",
+   "Patient",
+   "ASA",
+   "Mallampati",
+   "Technique proposée",
+   "Conclusion",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle CPA"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

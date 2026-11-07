@@ -1,0 +1,37 @@
+{
+ "id": "mere-reinit",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Réinitialisation de production",
+ "acces": "ouvert",
+ "titre": "Réinitialisation de production",
+ "description": "Vider l’activité (tests de mise en service) en gardant les essentiels : tarifs, secteurs, comptes, droits, catalogues.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Sécurité et continuité",
+  "Réinitialisation de production"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration.",
+  "La fenêtre de réinitialisation est fermée."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Fenêtre de réinitialisation",
+  "Ce qui est conservé"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Ouvrir la fenêtre (30 min)"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

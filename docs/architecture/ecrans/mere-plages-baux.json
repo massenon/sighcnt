@@ -1,0 +1,55 @@
+{
+ "id": "mere-plages-baux",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Plages de numéros et baux de stock",
+ "acces": "ouvert",
+ "titre": "Plages de numéros et baux de stock",
+ "description": "Codes patients réservés à chaque appareil pour travailler hors ligne ; quotas de stock alloués par article.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Exploitation de la synchronisation",
+  "Plages de numéros et baux de stock"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Plages actives",
+  "Numéros PROV- à réconcilier",
+  "Baux ouverts"
+ ],
+ "cartes": [
+  "Plages de codes patients",
+  "Baux de stock"
+ ],
+ "tableaux": [
+  [
+   "Appareil",
+   "Plage",
+   "Restants",
+   "État"
+  ],
+  [
+   "Appareil",
+   "Article",
+   "Alloué",
+   "Consommé",
+   "Restant"
+  ]
+ ],
+ "commandes": [
+  "Allouer une plage",
+  "Accorder un bail"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 3
+}

@@ -1,0 +1,47 @@
+{
+ "id": "cfg-natures-facture",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Natures de facture",
+ "acces": "ouvert",
+ "titre": "Natures de facture",
+ "description": "Liste des natures proposées à l’émission d’une facture, administrable par la clinique.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Natures de facture"
+ ],
+ "actions": [
+  "Émettre une facture",
+  "Référentiel tarifaire",
+  "Organisation & organigramme"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Natures disponibles",
+  "Secteurs couverts",
+  "Natures archivées"
+ ],
+ "cartes": [
+  "Natures proposées à l’émission"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Nature",
+   "Secteur émetteur",
+   "Origine",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

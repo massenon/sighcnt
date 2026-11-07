@@ -1,0 +1,30 @@
+{
+ "id": "hub-m13",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Administration & Ambulance",
+ "acces": "ouvert",
+ "titre": "Administration & Ambulance",
+ "description": "Tous les écrans du module M13 — Administration & Ambulance.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [
+  "Rapports & Impression"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

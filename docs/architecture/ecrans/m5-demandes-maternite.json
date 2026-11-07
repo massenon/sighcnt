@@ -1,0 +1,39 @@
+{
+ "id": "m5-demandes-maternite",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Demandes — maternité",
+ "acces": "ouvert",
+ "titre": "Demandes — maternité",
+ "description": "Les demandes d’analyses prescrites par la maternité : CPN, bilans d’admission, suites de couches.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Demandes — maternité"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — hospitalisation",
+  "Laboratoire"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Demandes du service",
+  "En attente de règlement",
+  "À prélever / transmettre",
+  "Résultats rendus"
+ ],
+ "cartes": [
+  "Demandes — maternité"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

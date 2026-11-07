@@ -1,0 +1,5052 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-stock-mouvements.js — les écrans m6-transferts, m6-mouvements, m6-inventaire-feuille et m6-pertes pilotés. Ne pas éditer.",
+ "transferts": [
+  {
+   "entree": {
+    "nom": "une ligne : le magasin est débité, la pharmacie créditée, deux mouvements symétriques",
+    "produits": [
+     {
+      "id": "PRD-ZT5",
+      "statut": "actif",
+      "code": "ZT5",
+      "designation": "ZZ Test 5",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:26.470Z"
+     }
+    ],
+    "lots": [],
+    "bons": [],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": "Réapprovisionnement"
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT5",
+       "quantite": 12
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Transfert de 1 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00001 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 1 200 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "Réapprovisionnement",
+      "reference": "TR-00001",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT5",
+        "code": "ZT5",
+        "produit": "ZZ Test 5",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 12,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 1,
+      "quantiteTotale": 12,
+      "valeur": 1200,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "ZZ Test 5",
+      "unite": "Boîte",
+      "quantite": 12
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00001",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT5",
+      "produit": "ZZ Test 5",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 12,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00001",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00001",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT5",
+      "produit": "ZZ Test 5",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 12,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00001",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT5",
+      "stockGros": 38,
+      "stockDetail": 22,
+      "stock": 60
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "trois lignes : un seul bon, deux mouvements par ligne, en-tête sans motif",
+    "produits": [
+     {
+      "id": "PRD-ZT6",
+      "statut": "actif",
+      "code": "ZT6",
+      "designation": "ZZ Test 6",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 250,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:26.757Z"
+     },
+     {
+      "id": "PRD-ZT7",
+      "statut": "actif",
+      "code": "ZT7",
+      "designation": "ZZ Test 7",
+      "unite": "Flacon",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 40,
+      "seuilAlerte": 5,
+      "stockGros": 30,
+      "stockDetail": 0,
+      "stock": 30,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:26.757Z"
+     },
+     {
+      "id": "PRD-ZT8",
+      "statut": "actif",
+      "code": "ZT8",
+      "designation": "ZZ Test 8",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1000,
+      "seuilAlerte": 5,
+      "stockGros": 7,
+      "stockDetail": 3,
+      "stock": 10,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:26.757Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Pharmacie d’urgence",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT6",
+       "quantite": 10
+      }
+     },
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT7",
+       "quantite": 30
+      }
+     },
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT8",
+       "quantite": 7
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Transfert de 3 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00002 — Pharmacie d’urgence"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 2 500 FCFA",
+     "2 ligne(s) — valeur totale 3 700 FCFA",
+     "3 ligne(s) — valeur totale 10 700 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Pharmacie d’urgence",
+      "motif": "",
+      "reference": "TR-00002",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT6",
+        "code": "ZT6",
+        "produit": "ZZ Test 6",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 250,
+        "quantite": 10,
+        "lot": null,
+        "peremption": null
+       },
+       {
+        "produitId": "PRD-ZT7",
+        "code": "ZT7",
+        "produit": "ZZ Test 7",
+        "categorie": "immobilisation",
+        "unite": "Flacon",
+        "cump": 40,
+        "quantite": 30,
+        "lot": null,
+        "peremption": null
+       },
+       {
+        "produitId": "PRD-ZT8",
+        "code": "ZT8",
+        "produit": "ZZ Test 8",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 1000,
+        "quantite": 7,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 3,
+      "quantiteTotale": 47,
+      "valeur": 10700,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "3 articles",
+      "unite": "",
+      "quantite": 47
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00002",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT8",
+      "produit": "ZZ Test 8",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 7,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00002",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00002",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT8",
+      "produit": "ZZ Test 8",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 7,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00002",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00002",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT7",
+      "produit": "ZZ Test 7",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 30,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00002",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00002",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT7",
+      "produit": "ZZ Test 7",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 30,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00002",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00002",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT6",
+      "produit": "ZZ Test 6",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 10,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00002",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00002",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT6",
+      "produit": "ZZ Test 6",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 10,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00002",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT6",
+      "stockGros": 40,
+      "stockDetail": 20,
+      "stock": 60
+     },
+     {
+      "id": "PRD-ZT7",
+      "stockGros": 0,
+      "stockDetail": 30,
+      "stock": 30
+     },
+     {
+      "id": "PRD-ZT8",
+      "stockGros": 0,
+      "stockDetail": 10,
+      "stock": 10
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "le même article ajouté deux fois se CUMULE sur une seule ligne",
+    "produits": [
+     {
+      "id": "PRD-ZT9",
+      "statut": "actif",
+      "code": "ZT9",
+      "designation": "ZZ Test 9",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:27.117Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT9",
+       "quantite": 10
+      }
+     },
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT9",
+       "quantite": 15
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Transfert de 1 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00003 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 1 000 FCFA",
+     "1 ligne(s) — valeur totale 2 500 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00003",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT9",
+        "code": "ZT9",
+        "produit": "ZZ Test 9",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 25,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 1,
+      "quantiteTotale": 25,
+      "valeur": 2500,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "ZZ Test 9",
+      "unite": "Boîte",
+      "quantite": 25
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00003",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT9",
+      "produit": "ZZ Test 9",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 25,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00003",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00003",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT9",
+      "produit": "ZZ Test 9",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 25,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00003",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT9",
+      "stockGros": 25,
+      "stockDetail": 35,
+      "stock": 60
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "RG-03 : une ligne qui dépasse le stock est refusée en nommant l'article, rien n'est ajouté",
+    "produits": [
+     {
+      "id": "PRD-ZT10",
+      "statut": "actif",
+      "code": "ZT10",
+      "designation": "ZZ Test 10",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 8,
+      "stockDetail": 10,
+      "stock": 18,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:27.470Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT10",
+       "quantite": 9
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "RG-03 — « ZZ Test 10 » : 8 Boîte encore disponible(s) au magasin.",
+      "type": "error",
+      "detail": null
+     },
+     {
+      "message": "Ajouter au moins un article au bon.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "recapitulatifs": [
+     null
+    ],
+    "bons": [],
+    "mouvements": [],
+    "produits": [
+     {
+      "id": "PRD-ZT10",
+      "stockGros": 8,
+      "stockDetail": 10,
+      "stock": 18
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "RG-03 : le disponible tient compte de ce qui est DÉJÀ posé sur le bon (« déjà N sur ce bon »)",
+    "produits": [
+     {
+      "id": "PRD-ZT11",
+      "statut": "actif",
+      "code": "ZT11",
+      "designation": "ZZ Test 11",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 20,
+      "stockDetail": 10,
+      "stock": 30,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:27.774Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT11",
+       "quantite": 15
+      }
+     },
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT11",
+       "quantite": 6
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "RG-03 — « ZZ Test 11 » : 5 Boîte encore disponible(s) au magasin (déjà 15 sur ce bon).",
+      "type": "error",
+      "detail": null
+     },
+     {
+      "message": "Transfert de 1 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00004 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 1 500 FCFA",
+     "1 ligne(s) — valeur totale 1 500 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00004",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT11",
+        "code": "ZT11",
+        "produit": "ZZ Test 11",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 15,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 1,
+      "quantiteTotale": 15,
+      "valeur": 1500,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "ZZ Test 11",
+      "unite": "Boîte",
+      "quantite": 15
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00004",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT11",
+      "produit": "ZZ Test 11",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 15,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00004",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00004",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT11",
+      "produit": "ZZ Test 11",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 15,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00004",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT11",
+      "stockGros": 5,
+      "stockDetail": 25,
+      "stock": 30
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "RG-03 : le cumul exact du stock est accepté",
+    "produits": [
+     {
+      "id": "PRD-ZT12",
+      "statut": "actif",
+      "code": "ZT12",
+      "designation": "ZZ Test 12",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 20,
+      "stockDetail": 10,
+      "stock": 30,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:28.101Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT12",
+       "quantite": 15
+      }
+     },
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT12",
+       "quantite": 5
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Transfert de 1 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00005 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 1 500 FCFA",
+     "1 ligne(s) — valeur totale 2 000 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00005",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT12",
+        "code": "ZT12",
+        "produit": "ZZ Test 12",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 20,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 1,
+      "quantiteTotale": 20,
+      "valeur": 2000,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "ZZ Test 12",
+      "unite": "Boîte",
+      "quantite": 20
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00005",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT12",
+      "produit": "ZZ Test 12",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 20,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00005",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00005",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT12",
+      "produit": "ZZ Test 12",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 20,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00005",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT12",
+      "stockGros": 0,
+      "stockDetail": 30,
+      "stock": 30
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "quantité nulle : refusée",
+    "produits": [
+     {
+      "id": "PRD-ZT13",
+      "statut": "actif",
+      "code": "ZT13",
+      "designation": "ZZ Test 13",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:28.447Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT13",
+       "quantite": 0
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Indiquer une quantité supérieure à zéro.",
+      "type": "error",
+      "detail": null
+     },
+     {
+      "message": "Ajouter au moins un article au bon.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "recapitulatifs": [
+     null
+    ],
+    "bons": [],
+    "mouvements": [],
+    "produits": [
+     {
+      "id": "PRD-ZT13",
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "aucun article choisi : refusé",
+    "produits": [
+     {
+      "id": "PRD-ZT14",
+      "statut": "actif",
+      "code": "ZT14",
+      "designation": "ZZ Test 14",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:28.740Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "",
+       "quantite": 5
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Choisir un article.",
+      "type": "error",
+      "detail": null
+     },
+     {
+      "message": "Ajouter au moins un article au bon.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "recapitulatifs": [
+     null
+    ],
+    "bons": [],
+    "mouvements": [],
+    "produits": [
+     {
+      "id": "PRD-ZT14",
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "aucune ligne : « Valider » refusé, rien n'est écrit",
+    "produits": [
+     {
+      "id": "PRD-ZT15",
+      "statut": "actif",
+      "code": "ZT15",
+      "designation": "ZZ Test 15",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:29.039Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Ajouter au moins un article au bon.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "recapitulatifs": [],
+    "bons": [],
+    "mouvements": [],
+    "produits": [
+     {
+      "id": "PRD-ZT15",
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "modifier la quantité d'une ligne : contrôlée contre le disponible RESTANT (sans compter la ligne elle-même)",
+    "produits": [
+     {
+      "id": "PRD-ZT16",
+      "statut": "actif",
+      "code": "ZT16",
+      "designation": "ZZ Test 16",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 20,
+      "stockDetail": 10,
+      "stock": 30,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:29.289Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT16",
+       "quantite": 5
+      }
+     },
+     {
+      "modifier": {
+       "rang": 0,
+       "quantite": 20
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Transfert de 1 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00006 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 500 FCFA",
+     "1 ligne(s) — valeur totale 2 000 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00006",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT16",
+        "code": "ZT16",
+        "produit": "ZZ Test 16",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 20,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 1,
+      "quantiteTotale": 20,
+      "valeur": 2000,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "ZZ Test 16",
+      "unite": "Boîte",
+      "quantite": 20
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00006",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT16",
+      "produit": "ZZ Test 16",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 20,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00006",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00006",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT16",
+      "produit": "ZZ Test 16",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 20,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00006",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT16",
+      "stockGros": 0,
+      "stockDetail": 30,
+      "stock": 30
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "modifier la quantité au-delà du disponible : refusé",
+    "produits": [
+     {
+      "id": "PRD-ZT17",
+      "statut": "actif",
+      "code": "ZT17",
+      "designation": "ZZ Test 17",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 20,
+      "stockDetail": 10,
+      "stock": 30,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:29.665Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00006",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT17",
+       "quantite": 5
+      }
+     },
+     {
+      "modifier": {
+       "rang": 0,
+       "quantite": 21
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "RG-03 — « ZZ Test 17 » : 20 Boîte disponible(s) seulement.",
+      "type": "error",
+      "detail": null
+     },
+     {
+      "message": "Transfert de 1 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00007 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 500 FCFA",
+     "1 ligne(s) — valeur totale 500 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00007",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT17",
+        "code": "ZT17",
+        "produit": "ZZ Test 17",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 5,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 1,
+      "quantiteTotale": 5,
+      "valeur": 500,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "ZZ Test 17",
+      "unite": "Boîte",
+      "quantite": 5
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00007",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT17",
+      "produit": "ZZ Test 17",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 5,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00007",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00007",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT17",
+      "produit": "ZZ Test 17",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 5,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00007",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT17",
+      "stockGros": 15,
+      "stockDetail": 15,
+      "stock": 30
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "retirer une ligne puis la rétablir (« Annuler »)",
+    "produits": [
+     {
+      "id": "PRD-ZT18",
+      "statut": "actif",
+      "code": "ZT18",
+      "designation": "ZZ Test 18",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:30.031Z"
+     },
+     {
+      "id": "PRD-ZT19",
+      "statut": "actif",
+      "code": "ZT19",
+      "designation": "ZZ Test 19",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:30.031Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00007",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00006",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT18",
+       "quantite": 3
+      }
+     },
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT19",
+       "quantite": 4
+      }
+     },
+     {
+      "retirer": 0
+     },
+     {
+      "retablir": true
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Ligne retirée — ZZ Test 18.",
+      "type": "info",
+      "detail": null
+     },
+     {
+      "message": "Transfert de 2 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00008 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 300 FCFA",
+     "2 ligne(s) — valeur totale 700 FCFA",
+     "1 ligne(s) — valeur totale 400 FCFA",
+     "2 ligne(s) — valeur totale 700 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00008",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT18",
+        "code": "ZT18",
+        "produit": "ZZ Test 18",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 3,
+        "lot": null,
+        "peremption": null
+       },
+       {
+        "produitId": "PRD-ZT19",
+        "code": "ZT19",
+        "produit": "ZZ Test 19",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 4,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 2,
+      "quantiteTotale": 7,
+      "valeur": 700,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "2 articles",
+      "unite": "",
+      "quantite": 7
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00008",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT19",
+      "produit": "ZZ Test 19",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 4,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00008",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00008",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT19",
+      "produit": "ZZ Test 19",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 4,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00008",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00008",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT18",
+      "produit": "ZZ Test 18",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00008",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00008",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT18",
+      "produit": "ZZ Test 18",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 3,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00008",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT18",
+      "stockGros": 47,
+      "stockDetail": 13,
+      "stock": 60
+     },
+     {
+      "id": "PRD-ZT19",
+      "stockGros": 46,
+      "stockDetail": 14,
+      "stock": 60
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "retirer une ligne : le bon ne porte plus que l'autre",
+    "produits": [
+     {
+      "id": "PRD-ZT20",
+      "statut": "actif",
+      "code": "ZT20",
+      "designation": "ZZ Test 20",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:30.468Z"
+     },
+     {
+      "id": "PRD-ZT21",
+      "statut": "actif",
+      "code": "ZT21",
+      "designation": "ZZ Test 21",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:30.468Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00008",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00007",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00006",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT20",
+       "quantite": 3
+      }
+     },
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT21",
+       "quantite": 4
+      }
+     },
+     {
+      "retirer": 0
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Ligne retirée — ZZ Test 20.",
+      "type": "info",
+      "detail": null
+     },
+     {
+      "message": "Transfert de 1 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00009 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 300 FCFA",
+     "2 ligne(s) — valeur totale 700 FCFA",
+     "1 ligne(s) — valeur totale 400 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00009",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT21",
+        "code": "ZT21",
+        "produit": "ZZ Test 21",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 4,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 1,
+      "quantiteTotale": 4,
+      "valeur": 400,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "ZZ Test 21",
+      "unite": "Boîte",
+      "quantite": 4
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00009",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT21",
+      "produit": "ZZ Test 21",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 4,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00009",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00009",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT21",
+      "produit": "ZZ Test 21",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 4,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00009",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT20",
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60
+     },
+     {
+      "id": "PRD-ZT21",
+      "stockGros": 46,
+      "stockDetail": 14,
+      "stock": 60
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "le stock a bougé pendant la saisie : dernier contrôle RG-03 avant écriture, la ligne fautive est nommée",
+    "produits": [
+     {
+      "id": "PRD-ZT22",
+      "statut": "actif",
+      "code": "ZT22",
+      "designation": "ZZ Test 22",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 20,
+      "stockDetail": 10,
+      "stock": 30,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:30.919Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00009",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00008",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00007",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00006",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT22",
+       "quantite": 15
+      }
+     },
+     {
+      "stockBouge": {
+       "produitId": "PRD-ZT22",
+       "patch": {
+        "stockGros": 10
+       }
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "RG-03 — « ZZ Test 22 » : le stock du magasin ne couvre plus 15 Boîte.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 1 500 FCFA",
+     "1 ligne(s) — valeur totale 1 500 FCFA"
+    ],
+    "bons": [],
+    "mouvements": [],
+    "produits": [
+     {
+      "id": "PRD-ZT22",
+      "stockGros": 10,
+      "stockDetail": 10,
+      "stock": 30
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "lot FEFO : la ligne porte le lot qui périme le PREMIER (hors périmé et épuisé)",
+    "produits": [
+     {
+      "id": "PRD-ZT23",
+      "statut": "actif",
+      "code": "ZT23",
+      "designation": "ZZ Test 23",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 40,
+      "stockDetail": 10,
+      "stock": 40,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:31.214Z"
+     }
+    ],
+    "lots": [
+     {
+      "produitId": "PRD-ZT23",
+      "numeroLot": "L-TARD",
+      "datePeremption": "2028-05-01",
+      "quantiteRestante": 10,
+      "statut": "actif"
+     },
+     {
+      "produitId": "PRD-ZT23",
+      "numeroLot": "L-PERIME",
+      "datePeremption": "2025-01-01",
+      "quantiteRestante": 10,
+      "statut": "perime"
+     },
+     {
+      "produitId": "PRD-ZT23",
+      "numeroLot": "L-VIDE",
+      "datePeremption": "2026-12-01",
+      "quantiteRestante": 0,
+      "statut": "actif"
+     },
+     {
+      "produitId": "PRD-ZT23",
+      "numeroLot": "L-TOT",
+      "datePeremption": "2027-03-01",
+      "quantiteRestante": 5,
+      "statut": "actif"
+     }
+    ],
+    "bons": [
+     {
+      "reference": "TR-00009",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00008",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00007",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00006",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT23",
+       "quantite": 6
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Transfert de 1 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00010 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 600 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00010",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT23",
+        "code": "ZT23",
+        "produit": "ZZ Test 23",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 6,
+        "lot": "L-TOT",
+        "peremption": "2027-03-01"
+       }
+      ],
+      "nbLignes": 1,
+      "quantiteTotale": 6,
+      "valeur": 600,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "ZZ Test 23",
+      "unite": "Boîte",
+      "quantite": 6
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00010",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT23",
+      "produit": "ZZ Test 23",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 6,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00010",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00010",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT23",
+      "produit": "ZZ Test 23",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 6,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00010",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT23",
+      "stockGros": 34,
+      "stockDetail": 16,
+      "stock": 40
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "numérotation : TR-(plus grand rang EXISTANT + 1), archivés compris",
+    "produits": [
+     {
+      "id": "PRD-ZT24",
+      "statut": "actif",
+      "code": "ZT24",
+      "designation": "ZZ Test 24",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:31.511Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "AUTRE-9",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00012",
+      "statut": "archive"
+     },
+     {
+      "reference": "TR-00007",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00010",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00009",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00008",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00007",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00006",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT24",
+       "quantite": 2
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Transfert de 1 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00013 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 200 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00013",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT24",
+        "code": "ZT24",
+        "produit": "ZZ Test 24",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 2,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 1,
+      "quantiteTotale": 2,
+      "valeur": 200,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "ZZ Test 24",
+      "unite": "Boîte",
+      "quantite": 2
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00013",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT24",
+      "produit": "ZZ Test 24",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 2,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00013",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00013",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT24",
+      "produit": "ZZ Test 24",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 2,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00013",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT24",
+      "stockGros": 48,
+      "stockDetail": 12,
+      "stock": 60
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "annulation du message : TOUTES les lignes sont restituées (stocks, mouvements, bon)",
+    "produits": [
+     {
+      "id": "PRD-ZT25",
+      "statut": "actif",
+      "code": "ZT25",
+      "designation": "ZZ Test 25",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 50,
+      "stockDetail": 10,
+      "stock": 60,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:31.826Z"
+     },
+     {
+      "id": "PRD-ZT26",
+      "statut": "actif",
+      "code": "ZT26",
+      "designation": "ZZ Test 26",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 5,
+      "stockGros": 9,
+      "stockDetail": 10,
+      "stock": 19,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:31.826Z"
+     }
+    ],
+    "lots": [],
+    "bons": [
+     {
+      "reference": "TR-00013",
+      "statut": "actif"
+     },
+     {
+      "reference": "AUTRE-9",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00012",
+      "statut": "archive"
+     },
+     {
+      "reference": "TR-00007",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00010",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00009",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00008",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00007",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00006",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00005",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00004",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00003",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00002",
+      "statut": "actif"
+     },
+     {
+      "reference": "TR-00001",
+      "statut": "actif"
+     }
+    ],
+    "entete": {
+     "date": "2026-10-30",
+     "demandeur": "Maternité",
+     "motif": ""
+    },
+    "gestes": [
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT25",
+       "quantite": 4
+      }
+     },
+     {
+      "ajouter": {
+       "produitId": "PRD-ZT26",
+       "quantite": 9
+      }
+     }
+    ],
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Transfert de 2 article(s) enregistré.",
+      "type": "success",
+      "detail": "TR-00014 — Maternité"
+     }
+    ],
+    "recapitulatifs": [
+     "1 ligne(s) — valeur totale 400 FCFA",
+     "2 ligne(s) — valeur totale 1 300 FCFA"
+    ],
+    "bons": [
+     {
+      "statut": "actif",
+      "date": "2026-10-30",
+      "demandeur": "Maternité",
+      "motif": "",
+      "reference": "TR-00014",
+      "lignes": [
+       {
+        "produitId": "PRD-ZT25",
+        "code": "ZT25",
+        "produit": "ZZ Test 25",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 4,
+        "lot": null,
+        "peremption": null
+       },
+       {
+        "produitId": "PRD-ZT26",
+        "code": "ZT26",
+        "produit": "ZZ Test 26",
+        "categorie": "immobilisation",
+        "unite": "Boîte",
+        "cump": 100,
+        "quantite": 9,
+        "lot": null,
+        "peremption": null
+       }
+      ],
+      "nbLignes": 2,
+      "quantiteTotale": 13,
+      "valeur": 1300,
+      "operateur": "BASSONGUI Chabi Séko",
+      "etat": "receptionne",
+      "dateReception": "2026-10-30",
+      "produit": "2 articles",
+      "unite": "",
+      "quantite": 13
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "TR-00014",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT26",
+      "produit": "ZZ Test 26",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 9,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00014",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00014",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT26",
+      "produit": "ZZ Test 26",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 9,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00014",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00014",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT25",
+      "produit": "ZZ Test 25",
+      "type": "transfert",
+      "typeLabel": "Transfert — entrée pharmacie",
+      "quantite": 4,
+      "stockType": "detail",
+      "justificatif": "Bon de transfert TR-00014",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "statut": "actif",
+      "reference": "TR-00014",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT25",
+      "produit": "ZZ Test 25",
+      "type": "transfert",
+      "typeLabel": "Transfert — sortie magasin",
+      "quantite": 4,
+      "stockType": "gros",
+      "justificatif": "Bon de transfert TR-00014",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT25",
+      "stockGros": 46,
+      "stockDetail": 14,
+      "stock": 60
+     },
+     {
+      "id": "PRD-ZT26",
+      "stockGros": 0,
+      "stockDetail": 19,
+      "stock": 19
+     }
+    ],
+    "apresAnnulation": {
+     "produits": [
+      {
+       "id": "PRD-ZT25",
+       "stockGros": 50,
+       "stockDetail": 10,
+       "stock": 60
+      },
+      {
+       "id": "PRD-ZT26",
+       "stockGros": 9,
+       "stockDetail": 10,
+       "stock": 19
+      }
+     ],
+     "bonsActifs": 0,
+     "mouvementsActifs": 0,
+     "messages": [
+      {
+       "message": "Transfert de 2 article(s) enregistré.",
+       "type": "success",
+       "detail": "TR-00014 — Maternité"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "mouvements": [
+  {
+   "entree": {
+    "nom": "entrée : enregistrée au registre, SANS toucher au stock du produit",
+    "produit": {
+     "id": "PRD-ZT27",
+     "statut": "actif",
+     "code": "ZT27",
+     "designation": "ZZ Test 27",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:32.274Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT27",
+     "type": "entree",
+     "quantite": 6,
+     "date": "2026-10-30",
+     "stockType": "gros",
+     "justificatif": "BL-777"
+    },
+    "rangMax": 406,
+    "edition": null,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-30"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Nouveau mouvement créé.",
+      "type": "success",
+      "detail": "M000407"
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "produitId": "PRD-ZT27",
+      "type": "entree",
+      "quantite": 6,
+      "date": "2026-10-30",
+      "stockType": "gros",
+      "justificatif": "BL-777",
+      "produit": "ZZ Test 27",
+      "typeLabel": "Entrée",
+      "utilisateur": "BASSONGUI Chabi Séko",
+      "reference": "M000407"
+     }
+    ],
+    "modifie": null,
+    "produit": {
+     "id": "PRD-ZT27",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "sortie dans la limite du stock concerné (gros)",
+    "produit": {
+     "id": "PRD-ZT28",
+     "statut": "actif",
+     "code": "ZT28",
+     "designation": "ZZ Test 28",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:32.571Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT28",
+     "type": "sortie",
+     "quantite": 10,
+     "date": "2026-10-30",
+     "stockType": "gros",
+     "justificatif": "FAC-1"
+    },
+    "rangMax": 407,
+    "edition": null,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-30"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Nouveau mouvement créé.",
+      "type": "success",
+      "detail": "M000408"
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "produitId": "PRD-ZT28",
+      "type": "sortie",
+      "quantite": 10,
+      "date": "2026-10-30",
+      "stockType": "gros",
+      "justificatif": "FAC-1",
+      "produit": "ZZ Test 28",
+      "typeLabel": "Sortie",
+      "utilisateur": "BASSONGUI Chabi Séko",
+      "reference": "M000408"
+     }
+    ],
+    "modifie": null,
+    "produit": {
+     "id": "PRD-ZT28",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "RG-03 : sortie supérieure au stock GROS refusée",
+    "produit": {
+     "id": "PRD-ZT29",
+     "statut": "actif",
+     "code": "ZT29",
+     "designation": "ZZ Test 29",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:32.837Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT29",
+     "type": "sortie",
+     "quantite": 11,
+     "date": "2026-10-30",
+     "stockType": "gros",
+     "justificatif": "FAC-2"
+    },
+    "rangMax": 408,
+    "edition": null,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-30"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "RG-03 — sortie de 11 impossible : stock disponible de 10 seulement.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "mouvements": [],
+    "modifie": null,
+    "produit": {
+     "id": "PRD-ZT29",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "RG-03 : sortie supérieure au stock DÉTAIL refusée (le stock concerné est celui qui est choisi)",
+    "produit": {
+     "id": "PRD-ZT30",
+     "statut": "actif",
+     "code": "ZT30",
+     "designation": "ZZ Test 30",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:33.095Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT30",
+     "type": "sortie",
+     "quantite": 5,
+     "date": "2026-10-30",
+     "stockType": "detail",
+     "justificatif": "FAC-3"
+    },
+    "rangMax": 408,
+    "edition": null,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-30"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "RG-03 — sortie de 5 impossible : stock disponible de 4 seulement.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "mouvements": [],
+    "modifie": null,
+    "produit": {
+     "id": "PRD-ZT30",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "perte : même contrôle qu'une sortie (sens négatif)",
+    "produit": {
+     "id": "PRD-ZT31",
+     "statut": "actif",
+     "code": "ZT31",
+     "designation": "ZZ Test 31",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:33.369Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT31",
+     "type": "perte",
+     "quantite": 5,
+     "date": "2026-10-30",
+     "stockType": "detail",
+     "justificatif": "PV-1"
+    },
+    "rangMax": 408,
+    "edition": null,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-30"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "RG-03 — sortie de 5 impossible : stock disponible de 4 seulement.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "mouvements": [],
+    "modifie": null,
+    "produit": {
+     "id": "PRD-ZT31",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "transfert (sens nul) : jamais refusé, même supérieur au stock",
+    "produit": {
+     "id": "PRD-ZT32",
+     "statut": "actif",
+     "code": "ZT32",
+     "designation": "ZZ Test 32",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:33.610Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT32",
+     "type": "transfert",
+     "quantite": 99,
+     "date": "2026-10-30",
+     "stockType": "gros",
+     "justificatif": "TR-X"
+    },
+    "rangMax": 408,
+    "edition": null,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-30"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Nouveau mouvement créé.",
+      "type": "success",
+      "detail": "M000409"
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "produitId": "PRD-ZT32",
+      "type": "transfert",
+      "quantite": 99,
+      "date": "2026-10-30",
+      "stockType": "gros",
+      "justificatif": "TR-X",
+      "produit": "ZZ Test 32",
+      "typeLabel": "Transfert",
+      "utilisateur": "BASSONGUI Chabi Séko",
+      "reference": "M000409"
+     }
+    ],
+    "modifie": null,
+    "produit": {
+     "id": "PRD-ZT32",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "stock « laboratoire » proposé par la liste : sortie contrôlée contre le stock DÉTAIL (la maquette ne connaît que gros et détail)",
+    "produit": {
+     "id": "PRD-ZT33",
+     "statut": "actif",
+     "code": "ZT33",
+     "designation": "ZZ Test 33",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:33.873Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT33",
+     "type": "sortie",
+     "quantite": 5,
+     "date": "2026-10-30",
+     "stockType": "labo",
+     "justificatif": "FAC-4"
+    },
+    "rangMax": 409,
+    "edition": null,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-30"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "RG-03 — sortie de 5 impossible : stock disponible de 4 seulement.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "mouvements": [],
+    "modifie": null,
+    "produit": {
+     "id": "PRD-ZT33",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "justificatif vide : formulaire en erreur, rien n'est écrit",
+    "produit": {
+     "id": "PRD-ZT34",
+     "statut": "actif",
+     "code": "ZT34",
+     "designation": "ZZ Test 34",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:34.143Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT34",
+     "type": "entree",
+     "quantite": 1,
+     "date": "2026-10-30",
+     "stockType": "gros",
+     "justificatif": ""
+    },
+    "rangMax": 409,
+    "edition": null,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-30"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Le formulaire comporte des erreurs.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "mouvements": [],
+    "modifie": null,
+    "produit": {
+     "id": "PRD-ZT34",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "édition : les champs transformés sont recalculés, l'opérateur devient l'agent connecté",
+    "produit": {
+     "id": "PRD-ZT35",
+     "statut": "actif",
+     "code": "ZT35",
+     "designation": "ZZ Test 35",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:34.391Z"
+    },
+    "saisie": {
+     "type": "sortie",
+     "quantite": 3,
+     "justificatif": "FAC-5",
+     "stockType": "detail"
+    },
+    "rangMax": 900036,
+    "edition": {
+     "statut": "actif",
+     "reference": "M900036",
+     "produitId": "PRD-ZT35",
+     "produit": "ZZ Test 35",
+     "type": "entree",
+     "typeLabel": "Entrée",
+     "quantite": 5,
+     "stockType": "gros",
+     "date": "2026-10-01",
+     "justificatif": "BL-TEST",
+     "utilisateur": "Ancien"
+    },
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-01"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Modifications enregistrées.",
+      "type": "success",
+      "detail": "M900036"
+     }
+    ],
+    "mouvements": [],
+    "modifie": {
+     "statut": "actif",
+     "reference": "M900036",
+     "produitId": "PRD-ZT35",
+     "produit": "ZZ Test 35",
+     "type": "sortie",
+     "typeLabel": "Sortie",
+     "quantite": 3,
+     "stockType": "detail",
+     "date": "2026-10-01",
+     "justificatif": "FAC-5",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    },
+    "produit": {
+     "id": "PRD-ZT35",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "édition : RG-03 contrôlé aussi à la modification",
+    "produit": {
+     "id": "PRD-ZT37",
+     "statut": "actif",
+     "code": "ZT37",
+     "designation": "ZZ Test 37",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:35.037Z"
+    },
+    "saisie": {
+     "type": "sortie",
+     "quantite": 50,
+     "justificatif": "FAC-6",
+     "stockType": "detail"
+    },
+    "rangMax": 900038,
+    "edition": {
+     "statut": "actif",
+     "reference": "M900038",
+     "produitId": "PRD-ZT37",
+     "produit": "ZZ Test 37",
+     "type": "entree",
+     "typeLabel": "Entrée",
+     "quantite": 5,
+     "stockType": "gros",
+     "date": "2026-10-01",
+     "justificatif": "BL-TEST",
+     "utilisateur": "Ancien"
+    },
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "valeursParDefaut": {
+     "type": "entree",
+     "stockType": "gros",
+     "date": "2026-10-01"
+    }
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "RG-03 — sortie de 50 impossible : stock disponible de 4 seulement.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "mouvements": [],
+    "modifie": {
+     "statut": "actif",
+     "reference": "M900038",
+     "produitId": "PRD-ZT37",
+     "produit": "ZZ Test 37",
+     "type": "entree",
+     "typeLabel": "Entrée",
+     "quantite": 5,
+     "stockType": "gros",
+     "date": "2026-10-01",
+     "justificatif": "BL-TEST",
+     "utilisateur": "Ancien"
+    },
+    "produit": {
+     "id": "PRD-ZT37",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  }
+ ],
+ "inventaires": [
+  {
+   "entree": {
+    "nom": "magasin GROS : surplus et manquant régularisés sur le stock gros ; le détail n'est pas touché",
+    "entete": {
+     "magasin": "gros",
+     "type": "Mensuel",
+     "date": "2026-10-30",
+     "perimetre": "Immobilisations",
+     "operateur": "Testeur Inventaire"
+    },
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "statut": "actif",
+      "code": "ZT1",
+      "designation": "ZZ Test 1",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 500,
+      "seuilAlerte": 5,
+      "stockGros": 20,
+      "stockDetail": 8,
+      "stock": 28,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z"
+     },
+     {
+      "id": "PRD-ZT2",
+      "statut": "actif",
+      "code": "ZT2",
+      "designation": "ZZ Test 2",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1200,
+      "seuilAlerte": 5,
+      "stockGros": 5,
+      "stockDetail": 0,
+      "stock": 5,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z"
+     },
+     {
+      "id": "PRD-ZT3",
+      "statut": "actif",
+      "code": "ZT3",
+      "designation": "ZZ Test 3",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 80,
+      "seuilAlerte": 5,
+      "stockGros": 12,
+      "stockDetail": 6,
+      "stock": 18,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z"
+     },
+     {
+      "id": "PRD-ZT4",
+      "statut": "actif",
+      "code": "ZT4",
+      "designation": "ZZ Test 4",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 300,
+      "seuilAlerte": 5,
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z"
+     }
+    ],
+    "comptes": {
+     "ZT1": 23,
+     "ZT2": 2
+    },
+    "inventairesExistants": [],
+    "rangMax": 400,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "lignesAffichees": 4,
+    "enDirect": [
+     {
+      "code": "ZT1",
+      "ecart": "+3",
+      "valeur": "1 500"
+     },
+     {
+      "code": "ZT2",
+      "ecart": "-3",
+      "valeur": "-3 600"
+     }
+    ],
+    "resume": [
+     "Articles inventoriés4",
+     "Articles inventoriés",
+     "4",
+     "Écarts constatés2",
+     "Écarts constatés",
+     "2",
+     "Valeur des écarts-2 100 FCFA",
+     "Valeur des écarts",
+     "-2 100 FCFA"
+    ],
+    "inventaires": [
+     {
+      "statut": "actif",
+      "reference": "INV-0001",
+      "date": "2026-10-30",
+      "type": "Mensuel",
+      "perimetre": "Immobilisations",
+      "magasin": "gros",
+      "magasinLabel": "Stock gros (magasin central)",
+      "operateur": "Testeur Inventaire",
+      "statutInv": "valide",
+      "nbArticles": 4,
+      "nbEcarts": 2,
+      "valeurEcart": -2100,
+      "lignes": [
+       {
+        "code": "ZT1",
+        "designation": "ZZ Test 1",
+        "unite": "Boîte",
+        "theorique": 20,
+        "physique": 23,
+        "ecart": 3,
+        "cump": 500,
+        "valeur": 1500
+       },
+       {
+        "code": "ZT2",
+        "designation": "ZZ Test 2",
+        "unite": "Boîte",
+        "theorique": 5,
+        "physique": 2,
+        "ecart": -3,
+        "cump": 1200,
+        "valeur": -3600
+       },
+       {
+        "code": "ZT3",
+        "designation": "ZZ Test 3",
+        "unite": "Boîte",
+        "theorique": 12,
+        "physique": 12,
+        "ecart": 0,
+        "cump": 80,
+        "valeur": 0
+       },
+       {
+        "code": "ZT4",
+        "designation": "ZZ Test 4",
+        "unite": "Boîte",
+        "theorique": 10,
+        "physique": 10,
+        "ecart": 0,
+        "cump": 300,
+        "valeur": 0
+       }
+      ]
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "M000402",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT2",
+      "produit": "ZZ Test 2",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 3,
+      "stockType": "gros",
+      "justificatif": "Inventaire INV-0001",
+      "utilisateur": "Testeur Inventaire"
+     },
+     {
+      "statut": "actif",
+      "reference": "M000401",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT1",
+      "produit": "ZZ Test 1",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 3,
+      "stockType": "gros",
+      "justificatif": "Inventaire INV-0001",
+      "utilisateur": "Testeur Inventaire"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "stockGros": 23,
+      "stockDetail": 8,
+      "stock": 31
+     },
+     {
+      "id": "PRD-ZT2",
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2
+     },
+     {
+      "id": "PRD-ZT3",
+      "stockGros": 12,
+      "stockDetail": 6,
+      "stock": 18
+     },
+     {
+      "id": "PRD-ZT4",
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2
+     }
+    ],
+    "messages": [
+     {
+      "message": "Inventaire INV-0001 validé — 2 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "type": "success",
+      "detail": null
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "magasin DÉTAIL : la régularisation porte sur le détail seul",
+    "entete": {
+     "magasin": "detail",
+     "type": "Mensuel",
+     "date": "2026-10-30",
+     "perimetre": "Immobilisations",
+     "operateur": "Testeur Inventaire"
+    },
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "statut": "actif",
+      "code": "ZT1",
+      "designation": "ZZ Test 1",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 500,
+      "seuilAlerte": 5,
+      "stockGros": 23,
+      "stockDetail": 8,
+      "stock": 31,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:24.998Z"
+     },
+     {
+      "id": "PRD-ZT2",
+      "statut": "actif",
+      "code": "ZT2",
+      "designation": "ZZ Test 2",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1200,
+      "seuilAlerte": 5,
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:24.998Z"
+     },
+     {
+      "id": "PRD-ZT3",
+      "statut": "actif",
+      "code": "ZT3",
+      "designation": "ZZ Test 3",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 80,
+      "seuilAlerte": 5,
+      "stockGros": 12,
+      "stockDetail": 6,
+      "stock": 18,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z"
+     },
+     {
+      "id": "PRD-ZT4",
+      "statut": "actif",
+      "code": "ZT4",
+      "designation": "ZZ Test 4",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 300,
+      "seuilAlerte": 5,
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z"
+     }
+    ],
+    "comptes": {
+     "ZT1": 5,
+     "ZT3": 9
+    },
+    "inventairesExistants": [
+     "INV-0001"
+    ],
+    "rangMax": 402,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "lignesAffichees": 4,
+    "enDirect": [
+     {
+      "code": "ZT1",
+      "ecart": "-3",
+      "valeur": "-1 500"
+     },
+     {
+      "code": "ZT3",
+      "ecart": "+3",
+      "valeur": "240"
+     }
+    ],
+    "resume": [
+     "Articles inventoriés4",
+     "Articles inventoriés",
+     "4",
+     "Écarts constatés2",
+     "Écarts constatés",
+     "2",
+     "Valeur des écarts-1 260 FCFA",
+     "Valeur des écarts",
+     "-1 260 FCFA"
+    ],
+    "inventaires": [
+     {
+      "statut": "actif",
+      "reference": "INV-0002",
+      "date": "2026-10-30",
+      "type": "Mensuel",
+      "perimetre": "Immobilisations",
+      "magasin": "detail",
+      "magasinLabel": "Stock détail (pharmacie d’urgence)",
+      "operateur": "Testeur Inventaire",
+      "statutInv": "valide",
+      "nbArticles": 4,
+      "nbEcarts": 2,
+      "valeurEcart": -1260,
+      "lignes": [
+       {
+        "code": "ZT1",
+        "designation": "ZZ Test 1",
+        "unite": "Boîte",
+        "theorique": 8,
+        "physique": 5,
+        "ecart": -3,
+        "cump": 500,
+        "valeur": -1500
+       },
+       {
+        "code": "ZT2",
+        "designation": "ZZ Test 2",
+        "unite": "Boîte",
+        "theorique": 0,
+        "physique": 0,
+        "ecart": 0,
+        "cump": 1200,
+        "valeur": 0
+       },
+       {
+        "code": "ZT3",
+        "designation": "ZZ Test 3",
+        "unite": "Boîte",
+        "theorique": 6,
+        "physique": 9,
+        "ecart": 3,
+        "cump": 80,
+        "valeur": 240
+       },
+       {
+        "code": "ZT4",
+        "designation": "ZZ Test 4",
+        "unite": "Boîte",
+        "theorique": 8,
+        "physique": 8,
+        "ecart": 0,
+        "cump": 300,
+        "valeur": 0
+       }
+      ]
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "M000404",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT3",
+      "produit": "ZZ Test 3",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Inventaire INV-0002",
+      "utilisateur": "Testeur Inventaire"
+     },
+     {
+      "statut": "actif",
+      "reference": "M000403",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT1",
+      "produit": "ZZ Test 1",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Inventaire INV-0002",
+      "utilisateur": "Testeur Inventaire"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28
+     },
+     {
+      "id": "PRD-ZT2",
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2
+     },
+     {
+      "id": "PRD-ZT3",
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21
+     },
+     {
+      "id": "PRD-ZT4",
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2
+     }
+    ],
+    "messages": [
+     {
+      "message": "Inventaire INV-0002 validé — 2 écart(s) régularisé(s) sur le stock détail (pharmacie d’urgence).",
+      "type": "success",
+      "detail": null
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "aucun écart : inventaire enregistré, aucun mouvement",
+    "entete": {
+     "magasin": "gros",
+     "type": "Mensuel",
+     "date": "2026-10-30",
+     "perimetre": "Immobilisations",
+     "operateur": "Testeur Inventaire"
+    },
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "statut": "actif",
+      "code": "ZT1",
+      "designation": "ZZ Test 1",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 500,
+      "seuilAlerte": 5,
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:25.365Z"
+     },
+     {
+      "id": "PRD-ZT2",
+      "statut": "actif",
+      "code": "ZT2",
+      "designation": "ZZ Test 2",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1200,
+      "seuilAlerte": 5,
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:24.998Z"
+     },
+     {
+      "id": "PRD-ZT3",
+      "statut": "actif",
+      "code": "ZT3",
+      "designation": "ZZ Test 3",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 80,
+      "seuilAlerte": 5,
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:25.366Z"
+     },
+     {
+      "id": "PRD-ZT4",
+      "statut": "actif",
+      "code": "ZT4",
+      "designation": "ZZ Test 4",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 300,
+      "seuilAlerte": 5,
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z"
+     }
+    ],
+    "comptes": {},
+    "inventairesExistants": [
+     "INV-0002",
+     "INV-0001"
+    ],
+    "rangMax": 404,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "lignesAffichees": 4,
+    "enDirect": [],
+    "resume": [
+     "Articles inventoriés4",
+     "Articles inventoriés",
+     "4",
+     "Écarts constatés0",
+     "Écarts constatés",
+     "0",
+     "Valeur des écarts0 FCFA",
+     "Valeur des écarts",
+     "0 FCFA"
+    ],
+    "inventaires": [
+     {
+      "statut": "actif",
+      "reference": "INV-0003",
+      "date": "2026-10-30",
+      "type": "Mensuel",
+      "perimetre": "Immobilisations",
+      "magasin": "gros",
+      "magasinLabel": "Stock gros (magasin central)",
+      "operateur": "Testeur Inventaire",
+      "statutInv": "valide",
+      "nbArticles": 4,
+      "nbEcarts": 0,
+      "valeurEcart": 0,
+      "lignes": [
+       {
+        "code": "ZT1",
+        "designation": "ZZ Test 1",
+        "unite": "Boîte",
+        "theorique": 23,
+        "physique": 23,
+        "ecart": 0,
+        "cump": 500,
+        "valeur": 0
+       },
+       {
+        "code": "ZT2",
+        "designation": "ZZ Test 2",
+        "unite": "Boîte",
+        "theorique": 2,
+        "physique": 2,
+        "ecart": 0,
+        "cump": 1200,
+        "valeur": 0
+       },
+       {
+        "code": "ZT3",
+        "designation": "ZZ Test 3",
+        "unite": "Boîte",
+        "theorique": 12,
+        "physique": 12,
+        "ecart": 0,
+        "cump": 80,
+        "valeur": 0
+       },
+       {
+        "code": "ZT4",
+        "designation": "ZZ Test 4",
+        "unite": "Boîte",
+        "theorique": 10,
+        "physique": 10,
+        "ecart": 0,
+        "cump": 300,
+        "valeur": 0
+       }
+      ]
+     }
+    ],
+    "mouvements": [],
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28
+     },
+     {
+      "id": "PRD-ZT2",
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2
+     },
+     {
+      "id": "PRD-ZT3",
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21
+     },
+     {
+      "id": "PRD-ZT4",
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2
+     }
+    ],
+    "messages": [
+     {
+      "message": "Inventaire INV-0003 validé — 0 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "type": "success",
+      "detail": null
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "stock total inférieur au stock du magasin (après des pertes) : le total ne passe jamais sous zéro",
+    "entete": {
+     "magasin": "detail",
+     "type": "Mensuel",
+     "date": "2026-10-30",
+     "perimetre": "Immobilisations",
+     "operateur": "Testeur Inventaire"
+    },
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "statut": "actif",
+      "code": "ZT1",
+      "designation": "ZZ Test 1",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 500,
+      "seuilAlerte": 5,
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:25.365Z"
+     },
+     {
+      "id": "PRD-ZT2",
+      "statut": "actif",
+      "code": "ZT2",
+      "designation": "ZZ Test 2",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1200,
+      "seuilAlerte": 5,
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:24.998Z"
+     },
+     {
+      "id": "PRD-ZT3",
+      "statut": "actif",
+      "code": "ZT3",
+      "designation": "ZZ Test 3",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 80,
+      "seuilAlerte": 5,
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:25.366Z"
+     },
+     {
+      "id": "PRD-ZT4",
+      "statut": "actif",
+      "code": "ZT4",
+      "designation": "ZZ Test 4",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 300,
+      "seuilAlerte": 5,
+      "stockGros": 10,
+      "stockDetail": 8,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z"
+     }
+    ],
+    "comptes": {
+     "ZT4": 0
+    },
+    "inventairesExistants": [
+     "INV-0003",
+     "INV-0002",
+     "INV-0001"
+    ],
+    "rangMax": 404,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "lignesAffichees": 4,
+    "enDirect": [
+     {
+      "code": "ZT4",
+      "ecart": "-8",
+      "valeur": "-2 400"
+     }
+    ],
+    "resume": [
+     "Articles inventoriés4",
+     "Articles inventoriés",
+     "4",
+     "Écarts constatés1",
+     "Écarts constatés",
+     "1",
+     "Valeur des écarts-2 400 FCFA",
+     "Valeur des écarts",
+     "-2 400 FCFA"
+    ],
+    "inventaires": [
+     {
+      "statut": "actif",
+      "reference": "INV-0004",
+      "date": "2026-10-30",
+      "type": "Mensuel",
+      "perimetre": "Immobilisations",
+      "magasin": "detail",
+      "magasinLabel": "Stock détail (pharmacie d’urgence)",
+      "operateur": "Testeur Inventaire",
+      "statutInv": "valide",
+      "nbArticles": 4,
+      "nbEcarts": 1,
+      "valeurEcart": -2400,
+      "lignes": [
+       {
+        "code": "ZT1",
+        "designation": "ZZ Test 1",
+        "unite": "Boîte",
+        "theorique": 5,
+        "physique": 5,
+        "ecart": 0,
+        "cump": 500,
+        "valeur": 0
+       },
+       {
+        "code": "ZT2",
+        "designation": "ZZ Test 2",
+        "unite": "Boîte",
+        "theorique": 0,
+        "physique": 0,
+        "ecart": 0,
+        "cump": 1200,
+        "valeur": 0
+       },
+       {
+        "code": "ZT3",
+        "designation": "ZZ Test 3",
+        "unite": "Boîte",
+        "theorique": 9,
+        "physique": 9,
+        "ecart": 0,
+        "cump": 80,
+        "valeur": 0
+       },
+       {
+        "code": "ZT4",
+        "designation": "ZZ Test 4",
+        "unite": "Boîte",
+        "theorique": 8,
+        "physique": 0,
+        "ecart": -8,
+        "cump": 300,
+        "valeur": -2400
+       }
+      ]
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "M000405",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT4",
+      "produit": "ZZ Test 4",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 8,
+      "stockType": "detail",
+      "justificatif": "Inventaire INV-0004",
+      "utilisateur": "Testeur Inventaire"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28
+     },
+     {
+      "id": "PRD-ZT2",
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2
+     },
+     {
+      "id": "PRD-ZT3",
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21
+     },
+     {
+      "id": "PRD-ZT4",
+      "stockGros": 10,
+      "stockDetail": 0,
+      "stock": 0
+     }
+    ],
+    "messages": [
+     {
+      "message": "Inventaire INV-0004 validé — 1 écart(s) régularisé(s) sur le stock détail (pharmacie d’urgence).",
+      "type": "success",
+      "detail": null
+     }
+    ]
+   }
+  },
+  {
+   "entree": {
+    "nom": "annulation du message : stocks, mouvements et inventaire restitués",
+    "entete": {
+     "magasin": "gros",
+     "type": "Mensuel",
+     "date": "2026-10-30",
+     "perimetre": "Immobilisations",
+     "operateur": "Testeur Inventaire"
+    },
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "statut": "actif",
+      "code": "ZT1",
+      "designation": "ZZ Test 1",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 500,
+      "seuilAlerte": 5,
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:25.365Z"
+     },
+     {
+      "id": "PRD-ZT2",
+      "statut": "actif",
+      "code": "ZT2",
+      "designation": "ZZ Test 2",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1200,
+      "seuilAlerte": 5,
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:24.998Z"
+     },
+     {
+      "id": "PRD-ZT3",
+      "statut": "actif",
+      "code": "ZT3",
+      "designation": "ZZ Test 3",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 80,
+      "seuilAlerte": 5,
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:25.366Z"
+     },
+     {
+      "id": "PRD-ZT4",
+      "statut": "actif",
+      "code": "ZT4",
+      "designation": "ZZ Test 4",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 300,
+      "seuilAlerte": 5,
+      "stockGros": 10,
+      "stockDetail": 0,
+      "stock": 0,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:25.863Z"
+     }
+    ],
+    "comptes": {
+     "ZT1": 0,
+     "ZT2": 9
+    },
+    "inventairesExistants": [
+     "INV-0004",
+     "INV-0003",
+     "INV-0002",
+     "INV-0001"
+    ],
+    "rangMax": 405,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "lignesAffichees": 4,
+    "enDirect": [
+     {
+      "code": "ZT1",
+      "ecart": "-23",
+      "valeur": "-11 500"
+     },
+     {
+      "code": "ZT2",
+      "ecart": "+7",
+      "valeur": "8 400"
+     }
+    ],
+    "resume": [
+     "Articles inventoriés4",
+     "Articles inventoriés",
+     "4",
+     "Écarts constatés2",
+     "Écarts constatés",
+     "2",
+     "Valeur des écarts-3 100 FCFA",
+     "Valeur des écarts",
+     "-3 100 FCFA"
+    ],
+    "inventaires": [
+     {
+      "statut": "actif",
+      "reference": "INV-0005",
+      "date": "2026-10-30",
+      "type": "Mensuel",
+      "perimetre": "Immobilisations",
+      "magasin": "gros",
+      "magasinLabel": "Stock gros (magasin central)",
+      "operateur": "Testeur Inventaire",
+      "statutInv": "valide",
+      "nbArticles": 4,
+      "nbEcarts": 2,
+      "valeurEcart": -3100,
+      "lignes": [
+       {
+        "code": "ZT1",
+        "designation": "ZZ Test 1",
+        "unite": "Boîte",
+        "theorique": 23,
+        "physique": 0,
+        "ecart": -23,
+        "cump": 500,
+        "valeur": -11500
+       },
+       {
+        "code": "ZT2",
+        "designation": "ZZ Test 2",
+        "unite": "Boîte",
+        "theorique": 2,
+        "physique": 9,
+        "ecart": 7,
+        "cump": 1200,
+        "valeur": 8400
+       },
+       {
+        "code": "ZT3",
+        "designation": "ZZ Test 3",
+        "unite": "Boîte",
+        "theorique": 12,
+        "physique": 12,
+        "ecart": 0,
+        "cump": 80,
+        "valeur": 0
+       },
+       {
+        "code": "ZT4",
+        "designation": "ZZ Test 4",
+        "unite": "Boîte",
+        "theorique": 10,
+        "physique": 10,
+        "ecart": 0,
+        "cump": 300,
+        "valeur": 0
+       }
+      ]
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "M000407",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT2",
+      "produit": "ZZ Test 2",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 7,
+      "stockType": "gros",
+      "justificatif": "Inventaire INV-0005",
+      "utilisateur": "Testeur Inventaire"
+     },
+     {
+      "statut": "actif",
+      "reference": "M000406",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT1",
+      "produit": "ZZ Test 1",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 23,
+      "stockType": "gros",
+      "justificatif": "Inventaire INV-0005",
+      "utilisateur": "Testeur Inventaire"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "stockGros": 0,
+      "stockDetail": 5,
+      "stock": 5
+     },
+     {
+      "id": "PRD-ZT2",
+      "stockGros": 9,
+      "stockDetail": 0,
+      "stock": 9
+     },
+     {
+      "id": "PRD-ZT3",
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21
+     },
+     {
+      "id": "PRD-ZT4",
+      "stockGros": 10,
+      "stockDetail": 0,
+      "stock": 0
+     }
+    ],
+    "messages": [
+     {
+      "message": "Inventaire INV-0005 validé — 2 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "type": "success",
+      "detail": null
+     }
+    ],
+    "apresAnnulation": {
+     "produits": [
+      {
+       "id": "PRD-ZT1",
+       "stockGros": 23,
+       "stockDetail": 5,
+       "stock": 28
+      },
+      {
+       "id": "PRD-ZT2",
+       "stockGros": 2,
+       "stockDetail": 0,
+       "stock": 2
+      },
+      {
+       "id": "PRD-ZT3",
+       "stockGros": 12,
+       "stockDetail": 9,
+       "stock": 21
+      },
+      {
+       "id": "PRD-ZT4",
+       "stockGros": 10,
+       "stockDetail": 0,
+       "stock": 0
+      }
+     ],
+     "inventairesActifs": 0,
+     "mouvementsActifs": 0
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "type annuel : le type est porté tel quel sur la pièce",
+    "entete": {
+     "magasin": "gros",
+     "type": "Annuel",
+     "date": "2026-10-30",
+     "perimetre": "Immobilisations",
+     "operateur": "Testeur Inventaire"
+    },
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "statut": "actif",
+      "code": "ZT1",
+      "designation": "ZZ Test 1",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 500,
+      "seuilAlerte": 5,
+      "stockGros": 23,
+      "stockDetail": 5,
+      "stock": 28,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:26.187Z"
+     },
+     {
+      "id": "PRD-ZT2",
+      "statut": "actif",
+      "code": "ZT2",
+      "designation": "ZZ Test 2",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 1200,
+      "seuilAlerte": 5,
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:26.187Z"
+     },
+     {
+      "id": "PRD-ZT3",
+      "statut": "actif",
+      "code": "ZT3",
+      "designation": "ZZ Test 3",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 80,
+      "seuilAlerte": 5,
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:25.366Z"
+     },
+     {
+      "id": "PRD-ZT4",
+      "statut": "actif",
+      "code": "ZT4",
+      "designation": "ZZ Test 4",
+      "unite": "Boîte",
+      "categorie": "immobilisation",
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 300,
+      "seuilAlerte": 5,
+      "stockGros": 10,
+      "stockDetail": 0,
+      "stock": 0,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:58:24.833Z",
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:58:25.863Z"
+     }
+    ],
+    "comptes": {
+     "ZT1": 21
+    },
+    "inventairesExistants": [
+     "INV-0004",
+     "INV-0003",
+     "INV-0002",
+     "INV-0001"
+    ],
+    "rangMax": 405,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "lignesAffichees": 4,
+    "enDirect": [
+     {
+      "code": "ZT1",
+      "ecart": "-2",
+      "valeur": "-1 000"
+     }
+    ],
+    "resume": [
+     "Articles inventoriés4",
+     "Articles inventoriés",
+     "4",
+     "Écarts constatés1",
+     "Écarts constatés",
+     "1",
+     "Valeur des écarts-1 000 FCFA",
+     "Valeur des écarts",
+     "-1 000 FCFA"
+    ],
+    "inventaires": [
+     {
+      "statut": "actif",
+      "reference": "INV-0005",
+      "date": "2026-10-30",
+      "type": "Annuel",
+      "perimetre": "Immobilisations",
+      "magasin": "gros",
+      "magasinLabel": "Stock gros (magasin central)",
+      "operateur": "Testeur Inventaire",
+      "statutInv": "valide",
+      "nbArticles": 4,
+      "nbEcarts": 1,
+      "valeurEcart": -1000,
+      "lignes": [
+       {
+        "code": "ZT1",
+        "designation": "ZZ Test 1",
+        "unite": "Boîte",
+        "theorique": 23,
+        "physique": 21,
+        "ecart": -2,
+        "cump": 500,
+        "valeur": -1000
+       },
+       {
+        "code": "ZT2",
+        "designation": "ZZ Test 2",
+        "unite": "Boîte",
+        "theorique": 2,
+        "physique": 2,
+        "ecart": 0,
+        "cump": 1200,
+        "valeur": 0
+       },
+       {
+        "code": "ZT3",
+        "designation": "ZZ Test 3",
+        "unite": "Boîte",
+        "theorique": 12,
+        "physique": 12,
+        "ecart": 0,
+        "cump": 80,
+        "valeur": 0
+       },
+       {
+        "code": "ZT4",
+        "designation": "ZZ Test 4",
+        "unite": "Boîte",
+        "theorique": 10,
+        "physique": 10,
+        "ecart": 0,
+        "cump": 300,
+        "valeur": 0
+       }
+      ]
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "M000406",
+      "date": "2026-10-30",
+      "produitId": "PRD-ZT1",
+      "produit": "ZZ Test 1",
+      "type": "inventaire",
+      "typeLabel": "Régularisation inventaire",
+      "quantite": 2,
+      "stockType": "gros",
+      "justificatif": "Inventaire INV-0005",
+      "utilisateur": "Testeur Inventaire"
+     }
+    ],
+    "produits": [
+     {
+      "id": "PRD-ZT1",
+      "stockGros": 21,
+      "stockDetail": 5,
+      "stock": 26
+     },
+     {
+      "id": "PRD-ZT2",
+      "stockGros": 2,
+      "stockDetail": 0,
+      "stock": 2
+     },
+     {
+      "id": "PRD-ZT3",
+      "stockGros": 12,
+      "stockDetail": 9,
+      "stock": 21
+     },
+     {
+      "id": "PRD-ZT4",
+      "stockGros": 10,
+      "stockDetail": 0,
+      "stock": 0
+     }
+    ],
+    "messages": [
+     {
+      "message": "Inventaire INV-0005 validé — 1 écart(s) régularisé(s) sur le stock gros (magasin central).",
+      "type": "success",
+      "detail": null
+     }
+    ]
+   }
+  }
+ ],
+ "pertes": [
+  {
+   "entree": {
+    "nom": "casse de 3 unités : un mouvement valorisé au CUMP, le stock total décroît",
+    "produit": {
+     "id": "PRD-ZT39",
+     "statut": "actif",
+     "code": "ZT39",
+     "designation": "ZZ Test 39",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 250,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:35.679Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT39",
+     "type": "casse",
+     "quantite": 3,
+     "date": "2026-10-30",
+     "justificatif": "PV-100",
+     "constatePar": "Magasinier",
+     "observation": "Chute du carton"
+    },
+    "rangMax": 0,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Perte déclarée.",
+      "type": "success",
+      "detail": "ZZ Test 39 — 3 Boîte, 750 FCFA au CUMP. Stock ramené à 11."
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "MVT-00001",
+      "date": "2026-10-30",
+      "type": "casse",
+      "typeLabel": "Casse / bris",
+      "produitId": "PRD-ZT39",
+      "produit": "ZZ Test 39",
+      "unite": "Boîte",
+      "quantite": 3,
+      "sens": "sortie",
+      "valeur": 750,
+      "cump": 250,
+      "justificatif": "PV-100",
+      "constatePar": "Magasinier",
+      "observation": "Chute du carton",
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produit": {
+     "id": "PRD-ZT39",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 11
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "péremption",
+    "produit": {
+     "id": "PRD-ZT40",
+     "statut": "actif",
+     "code": "ZT40",
+     "designation": "ZZ Test 40",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 250,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:35.936Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT40",
+     "type": "peremption",
+     "quantite": 14,
+     "date": "2026-10-30",
+     "justificatif": "Lot L-9",
+     "constatePar": "Pharmacien"
+    },
+    "rangMax": 1,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Perte déclarée.",
+      "type": "success",
+      "detail": "ZZ Test 40 — 14 Boîte, 3 500 FCFA au CUMP. Stock ramené à 0."
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "MVT-00002",
+      "date": "2026-10-30",
+      "type": "peremption",
+      "typeLabel": "Péremption",
+      "produitId": "PRD-ZT40",
+      "produit": "ZZ Test 40",
+      "unite": "Boîte",
+      "quantite": 14,
+      "sens": "sortie",
+      "valeur": 3500,
+      "cump": 250,
+      "justificatif": "Lot L-9",
+      "constatePar": "Pharmacien",
+      "observation": null,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produit": {
+     "id": "PRD-ZT40",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 0
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "perte supérieure au stock : refusée en nommant l'article",
+    "produit": {
+     "id": "PRD-ZT41",
+     "statut": "actif",
+     "code": "ZT41",
+     "designation": "ZZ Test 41",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 250,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:36.184Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT41",
+     "type": "perte",
+     "quantite": 15,
+     "date": "2026-10-30",
+     "justificatif": "PV-101",
+     "constatePar": "Magasinier"
+    },
+    "rangMax": 2,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Perte supérieure au stock.",
+      "type": "error",
+      "detail": "ZZ Test 41 — 14 en stock, 15 déclaré(s). RG-03 : le stock ne peut pas devenir négatif."
+     }
+    ],
+    "mouvements": [],
+    "produit": {
+     "id": "PRD-ZT41",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "justificatif vide : formulaire en erreur",
+    "produit": {
+     "id": "PRD-ZT42",
+     "statut": "actif",
+     "code": "ZT42",
+     "designation": "ZZ Test 42",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 250,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:36.460Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT42",
+     "type": "perte",
+     "quantite": 1,
+     "date": "2026-10-30",
+     "justificatif": "",
+     "constatePar": "Magasinier"
+    },
+    "rangMax": 2,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [],
+    "mouvements": [],
+    "produit": {
+     "id": "PRD-ZT42",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "annulation : le stock est rétabli, le mouvement retiré",
+    "produit": {
+     "id": "PRD-ZT43",
+     "statut": "actif",
+     "code": "ZT43",
+     "designation": "ZZ Test 43",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 250,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:36.707Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT43",
+     "type": "casse",
+     "quantite": 4,
+     "date": "2026-10-30",
+     "justificatif": "PV-102",
+     "constatePar": "Magasinier"
+    },
+    "rangMax": 2,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Perte déclarée.",
+      "type": "success",
+      "detail": "ZZ Test 43 — 4 Boîte, 1 000 FCFA au CUMP. Stock ramené à 10."
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "MVT-00003",
+      "date": "2026-10-30",
+      "type": "casse",
+      "typeLabel": "Casse / bris",
+      "produitId": "PRD-ZT43",
+      "produit": "ZZ Test 43",
+      "unite": "Boîte",
+      "quantite": 4,
+      "sens": "sortie",
+      "valeur": 1000,
+      "cump": 250,
+      "justificatif": "PV-102",
+      "constatePar": "Magasinier",
+      "observation": null,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produit": {
+     "id": "PRD-ZT43",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 10
+    },
+    "apresAnnulation": {
+     "produit": {
+      "id": "PRD-ZT43",
+      "stockGros": 10,
+      "stockDetail": 4,
+      "stock": 14
+     },
+     "mouvementsActifs": 0,
+     "messages": [
+      {
+       "message": "Perte déclarée.",
+       "type": "success",
+       "detail": "ZZ Test 43 — 4 Boîte, 1 000 FCFA au CUMP. Stock ramené à 10."
+      }
+     ]
+    }
+   }
+  },
+  {
+   "entree": {
+    "nom": "référence : suit les mouvements existants (série MVT-)",
+    "produit": {
+     "id": "PRD-ZT44",
+     "statut": "actif",
+     "code": "ZT44",
+     "designation": "ZZ Test 44",
+     "unite": "Boîte",
+     "categorie": "immobilisation",
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 250,
+     "seuilAlerte": 5,
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 14,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T17:58:37.006Z"
+    },
+    "saisie": {
+     "produitId": "PRD-ZT44",
+     "type": "perte",
+     "quantite": 1,
+     "date": "2026-10-30",
+     "justificatif": "PV-103",
+     "constatePar": "Magasinier"
+    },
+    "rangMax": 2,
+    "jour": "2026-10-30",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   "sortie": {
+    "messages": [
+     {
+      "message": "Perte déclarée.",
+      "type": "success",
+      "detail": "ZZ Test 44 — 1 Boîte, 250 FCFA au CUMP. Stock ramené à 13."
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "reference": "MVT-00003",
+      "date": "2026-10-30",
+      "type": "perte",
+      "typeLabel": "Perte",
+      "produitId": "PRD-ZT44",
+      "produit": "ZZ Test 44",
+      "unite": "Boîte",
+      "quantite": 1,
+      "sens": "sortie",
+      "valeur": 250,
+      "cump": 250,
+      "justificatif": "PV-103",
+      "constatePar": "Magasinier",
+      "observation": null,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produit": {
+     "id": "PRD-ZT44",
+     "stockGros": 10,
+     "stockDetail": 4,
+     "stock": 13
+    }
+   }
+  }
+ ],
+ "erreursPage": []
+}

@@ -1,0 +1,53 @@
+{
+ "id": "m10-missions",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Ordres de mission",
+ "acces": "ouvert",
+ "titre": "Ordres de mission",
+ "description": "Missions et formations du personnel : affectation, prise en charge, validation et états signés.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Ordres de mission"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "2 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la signature de la Directrice Administrative."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Ordres de mission",
+  "En attente de validation",
+  "Missions en cours",
+  "Terminées"
+ ],
+ "cartes": [
+  "Registre des ordres de mission"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Mission",
+   "Agent affecté",
+   "Prise en charge",
+   "Période",
+   "État",
+   "Validation",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

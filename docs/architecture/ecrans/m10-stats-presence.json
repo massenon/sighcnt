@@ -1,0 +1,44 @@
+{
+ "id": "m10-stats-presence",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Taux de présence par service",
+ "acces": "ouvert",
+ "titre": "Taux de présence par service",
+ "description": "Présences, retards et absences par service et par agent, sur la période choisie.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Taux de présence par service"
+ ],
+ "actions": [
+  "Registre des présences",
+  "Fiches de poste",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "0 journée(s) pointée(s) sur la période, pour 0 service(s). Le taux porte sur ces journées effectivement renseignées — un pourcentage calculé sur le calendrier ferait passer pour absents des jours qu’on n’a simplement pas pointés."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Taux de présence global",
+  "Retards",
+  "Absences",
+  "Service le plus assidu"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Trente derniers jours",
+  "Imprimer l’état",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

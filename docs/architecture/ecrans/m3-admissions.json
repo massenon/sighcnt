@@ -1,0 +1,61 @@
+{
+ "id": "m3-admissions",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Admissions",
+ "acces": "ouvert",
+ "titre": "Admissions",
+ "description": "Enregistrement des admissions, affectation d’un lit et ouverture du registre d’hospitalisation.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Admissions"
+ ],
+ "actions": [
+  "Mise en observation",
+  "Plan des lits",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les admissions",
+  "Archivés"
+ ],
+ "kpis": [
+  "Admissions enregistrées",
+  "Hospitalisations en cours",
+  "Taux d’occupation",
+  "Durée moyenne de séjour"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Patient",
+   "Lit",
+   "Chambre",
+   "Entrée",
+   "Durée",
+   "Diagnostic",
+   "Prise en charge",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les admissions91",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

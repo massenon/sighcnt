@@ -1,0 +1,58 @@
+{
+ "id": "m2-imagerie-demandes",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Demandes d’imagerie médicale",
+ "acces": "ouvert",
+ "titre": "Demandes d’imagerie médicale",
+ "description": "Le registre des examens demandés, aux mêmes états que le laboratoire : demandé, payé, exécuté, validé.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Imagerie médicale",
+  "Demandes d’imagerie médicale"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Demandée — attente caisse",
+  "Payée — à exécuter",
+  "Exécutée — CR en rédaction",
+  "Validée — CR rendu"
+ ],
+ "cartes": [
+  "Registre des demandes"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Patient",
+   "Examen",
+   "Modalité",
+   "Prescripteur",
+   "Tarif",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle demande",
+  "Saisir le CR",
+  "Poursuivre le CR",
+  "Rendre",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

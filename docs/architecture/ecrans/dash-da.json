@@ -1,0 +1,76 @@
+{
+ "id": "dash-da",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Statistiques de la Direction",
+ "acces": "ouvert",
+ "titre": "Statistiques de la Direction",
+ "description": "Caisse du jour et cumuls par périodicité : médicaments, actes, analyses, soins, par service.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Statistiques de la Direction"
+ ],
+ "actions": [
+  "Direction",
+  "Tableau de bord dynamique croisé",
+  "Pilotage & analyse"
+ ],
+ "regle": [
+  "5 indicateur(s) au-delà du seuil d’alerte : DSO — délai moyen de règlement client / assureur · Ancienneté maximale d’une créance assureur · BFR exprimé en jours de chiffre d’affaires · Rotation annuelle du stock · Couverture du stock.",
+  "Le facturé et l’encaissé sont deux grandeurs distinctes : la première est un chiffre d’affaires, la seconde de la trésorerie. Les confondre ferait prendre une créance pour de l’argent en caisse.",
+  "Période retenue : journée du 30/10/2026 — du 30/10/2026 au 30/10/2026. Comparée à journée du 29/10/2026 (du 29/10/2026 au 29/10/2026)."
+ ],
+ "onglets": [
+  "Jour",
+  "Semaine",
+  "Mois",
+  "Trimestre",
+  "Semestre",
+  "Année"
+ ],
+ "kpis": [
+  "Besoin en fonds de roulement",
+  "En-cours clients",
+  "Stocks",
+  "Dettes fournisseurs",
+  "Encaissé aujourd’hui",
+  "Facturé aujourd’hui",
+  "Reste dû du jour",
+  "Analyses du jour"
+ ],
+ "cartes": [
+  "Trésorerie & besoin en fonds de roulement",
+  "Répartition du chiffre d’affaires — journée du 30/10/2026"
+ ],
+ "tableaux": [
+  [
+   "Grandeur",
+   "Période courante",
+   "Période précédente",
+   "Variation"
+  ]
+ ],
+ "commandes": [
+  "Tableau décisionnel",
+  "Détail du BFR",
+  "Jour",
+  "Semaine",
+  "Mois",
+  "Trimestre",
+  "Semestre",
+  "Année",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2"
+ ],
+ "champs": [
+  "Analyse libre — du",
+  "au",
+  "Jour analysé"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 8
+}

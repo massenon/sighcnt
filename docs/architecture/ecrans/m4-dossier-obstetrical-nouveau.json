@@ -1,0 +1,80 @@
+{
+ "id": "m4-dossier-obstetrical-nouveau",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Ouvrir un dossier obstétrical",
+ "acces": "ouvert",
+ "titre": "Ouvrir un dossier obstétrical",
+ "description": "Identité, antécédents gynéco-obstétricaux, facteurs de surveillance et plan d’accouchement — le cahier de la parturiente s’ouvre ici.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Ouvrir un dossier obstétrical"
+ ],
+ "actions": [
+  "Ouvrir le dossier"
+ ],
+ "regle": [
+  "Le risque se déduit du CUMUL des facteurs cochés, jamais d’un facteur isolé. Cocher, c’est classer la grossesse à risque et la faire remonter au tableau de bord de la maternité.",
+  "La date probable ne se saisit pas : elle vient de la DDR, à 280 jours. C’est la règle que la sage-femme applique de tête, et la tenir à un seul endroit évite deux termes qui ne se recoupent pas.",
+  "Le numéro suit le registre papier (NNNNN/AA) : le renuméroter romprait la correspondance avec les cahiers tenus depuis des années."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Le cahier de la parturiente",
+  "Enchaînement du parcours",
+  "Ce que le cahier engage"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "CNT/1/25 — TCHANE Bertine",
+  "Annuler",
+  "Ouvrir le dossier"
+ ],
+ "champs": [
+  "N° de dossier (registre papier) *",
+  "Date d’entrée *",
+  "Parturiente (dossier patient) *",
+  "Profession",
+  "Nationalité",
+  "Village / quartier de ville",
+  "Téléphone",
+  "Personne à contacter",
+  "Téléphone de la personne à contacter",
+  "Référée par un autre centre",
+  "Si référée, par qui",
+  "Nom et prénoms",
+  "Profession",
+  "Groupe sanguin / Rhésus",
+  "Sérologie du conjoint",
+  "Maladies et opérations",
+  "Traitements en cours",
+  "Allergies",
+  "Gestité *",
+  "Parité *",
+  "Nombre d’avortements",
+  "Nombre d’enfants vivants",
+  "Nombre d’enfants décédés",
+  "Transfusions antérieures",
+  "Date des dernières règles (DDR) *",
+  "Taille (m)",
+  "Âge < 16 ans",
+  "Âge > 35 ans",
+  "Taille < 1,50 m",
+  "Boiterie",
+  "Parité > 6",
+  "Césarienne au dernier accouchement",
+  "Mort-né au dernier accouchement",
+  "Drépanocytose SS ou SC",
+  "HTA connue",
+  "Fausses couches répétées",
+  "Diabète",
+  "Autres facteurs",
+  "Sage-femme référente",
+  "État du dossier *"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

@@ -1,0 +1,94 @@
+{
+ "_doc": "vues par service demandeur sur des fiches posées",
+ "fiches": [
+  {
+   "reference": "LAB-90001",
+   "secteurDemandeur": "MATERNITÉ",
+   "etatAnalyse": "en_attente",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90002",
+   "secteurDemandeur": "Maternité",
+   "etatAnalyse": "attente_prelevement",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90003",
+   "serviceDemandeur": "maternite",
+   "etatAnalyse": "preleve",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90004",
+   "serviceDemandeur": "Maternité",
+   "etatAnalyse": "valide",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90005",
+   "serviceDemandeur": "Médecine",
+   "etatAnalyse": "valide",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90006",
+   "hospitalise": true,
+   "etatAnalyse": "en_attente",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90007",
+   "secteurDemandeur": "Hospitalisation et soins",
+   "etatAnalyse": "rectifie",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90008",
+   "secteurDemandeur": "MISE EN OBSERVATION",
+   "etatAnalyse": "attente_prelevement",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90009",
+   "secteurDemandeur": "MATERNITÉ",
+   "hospitalise": true,
+   "etatAnalyse": "en_cours",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90010",
+   "secteurDemandeur": "CHIRURGIE",
+   "hospitalise": false,
+   "etatAnalyse": "en_attente",
+   "statut": "actif"
+  },
+  {
+   "reference": "LAB-90011",
+   "secteurDemandeur": "MATERNITÉ",
+   "etatAnalyse": "valide",
+   "statut": "archive"
+  }
+ ],
+ "vues": {
+  "m5-demandes-maternite": {
+   "kpiTexte": "Demandes du service 5 En attente de règlement 1 À prélever / transmettre 2 Résultats rendus 1 Demandes — maternité Colonnes Exporter N° ORIGINE DATE PATIENT ANALYSE ÉCHANTILLON PRESCRIPTEUR PRIORITÉ ÉTAT LAB-90001 Saisie laboratoire Manuelle 30/10/2026 PAT S0001 CNT/01/26 AKOP Parasitologie Selles — Normale En attente LAB-90002 ",
+   "lignes": [
+    "LAB-90001",
+    "LAB-90002",
+    "LAB-90003",
+    "LAB-90004",
+    "LAB-90009"
+   ]
+  },
+  "m5-demandes-hospitalisation": {
+   "kpiTexte": "Demandes du service 4 En attente de règlement 1 À prélever / transmettre 1 Résultats rendus 1 Demandes — hospitalisation Colonnes Exporter N° ORIGINE DATE PATIENT ANALYSE ÉCHANTILLON PRESCRIPTEUR PRIORITÉ ÉTAT LAB-90006 Saisie laboratoire Manuelle 30/10/2026 PAT S0006 CNT/06/26 AKOP Parasitologie Selles — Normale En attente LAB-",
+   "lignes": [
+    "LAB-90006",
+    "LAB-90007",
+    "LAB-90008",
+    "LAB-90009"
+   ]
+  }
+ }
+}

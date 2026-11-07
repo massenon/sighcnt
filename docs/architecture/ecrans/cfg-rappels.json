@@ -1,0 +1,55 @@
+{
+ "id": "cfg-rappels",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Rappels & messages",
+ "acces": "ouvert",
+ "titre": "Rappels & messages",
+ "description": "Modèles de message administrables et rappels à échéance : anniversaires, nouvel an, fêtes, rendez-vous.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Rappels & messages"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Le prototype compose les messages et les met en file. Il ne les envoie pas : la solution fonctionne hors ligne, sans passerelle SMS ni serveur de messagerie. Prétendre l’envoi serait mentir sur ce qui se passe — et la clinique croirait ses patients prévenus."
+ ],
+ "onglets": [
+  "Modèles de message",
+  "Rappels préparés",
+  "Variables"
+ ],
+ "kpis": [
+  "Modèles de message",
+  "Modèles actifs",
+  "Rappels préparés",
+  "En file d’envoi"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Modèle",
+   "Occasion",
+   "Texte",
+   "Actif",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Modèles de message6",
+  "Rappels préparés0",
+  "Variables5",
+  "Colonnes",
+  "Exporter",
+  "Nouveau modèle"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -133,7 +133,29 @@
         courant = st.collection('grillePrimes').active()
           .filter(function (x) { return x.primeId === primeId; })[0];
       } catch (e) { return NS132.montantOrigine(primeId, fonctionId); }
-      if (!courant) return NS132.montantOrigine(primeId, fonctionId);
+      if (!courant) {
+        /* Aucune fiche en vigueur : la prime est soit inconnue du magasin
+           (barème d'origine), soit RETIRÉE (E651). Une prime retirée reçoit une
+           date de fin : jusqu'à elle, la version sortante s'applique ; après,
+           ou sans date, la paie ne la lit plus. */
+        var traces = [];
+        try {
+          traces = st.collection('historiquePrimes').active()
+            .filter(function (x) { return x.primeId === primeId; });
+        } catch (e) { traces = []; }
+        if (!traces.length) return NS132.montantOrigine(primeId, fonctionId);
+        var couvrante = date ? traces.filter(function (v) {
+          return (!v.dateEffet || String(date) >= String(v.dateEffet))
+            && (!v.dateFin || String(date) <= String(v.dateFin));
+        }).sort(function (x, y) { return String(y.dateEffet).localeCompare(String(x.dateEffet)); })[0] : null;
+        if (couvrante) return (couvrante.montants || {})[fonctionId] || 0;
+        var retiree = traces.some(function (v) { return v.retiree; });
+        if (retiree) {
+          var debut = traces.map(function (v) { return String(v.dateEffet || ''); }).sort()[0];
+          if (!date || String(date) >= debut) return 0;
+        }
+        return NS132.montantOrigine(primeId, fonctionId);
+      }
 
       /* Sans date, ou si la version courante était déjà en vigueur : la grille
          du jour s'applique. */
@@ -155,6 +177,59 @@
         .sort(function (a, b) { return String(b.dateEffet).localeCompare(String(a.dateEffet)); })[0];
       if (enVigueur) return (enVigueur.montants || {})[fonctionId] || 0;
       return NS132.montantOrigine(primeId, fonctionId);
+    },
+
+    /**
+     * LES PRIMES À UNE DATE (E651) : le barème d'origine PLUS les primes créées
+     * à l'écran. Une prime créée dans l'application entre ainsi dans les primes
+     * fixes du mois ; la liste statique `primes` ne la connaît pas.
+     */
+    primesALaDate: function () {
+      var st = global.SIGH && global.SIGH.store;
+      var out = NS132.primes.map(function (p) { return { id: p.id, label: p.label, mode: p.mode }; });
+      if (!st) return out;
+      var ids = {};
+      out.forEach(function (p) { ids[p.id] = p; });
+      var actives = [], hist = [];
+      try { actives = st.collection('grillePrimes').active(); } catch (e) { actives = []; }
+      try { hist = st.collection('historiquePrimes').active(); } catch (e) { hist = []; }
+      actives.concat(hist).forEach(function (x) {
+        if (!x.primeId || ids[x.primeId]) return;
+        var p = { id: x.primeId, label: x.label, mode: x.mode };
+        ids[x.primeId] = p; out.push(p);
+      });
+      return out;
+    },
+
+    /**
+     * LES BÉNÉFICIAIRES D'UNE PRIME FIXE (E654). Un forfait se DÉSIGNE : une liste
+     * datée d'agents (`beneficiairesPrimes` : primeId, agentId, debut, fin).
+     * Tant qu'une prime fixe n'a AUCUNE désignation, la règle d'attente demeure
+     * (tous les agents de la fonction) et l'écran le dit ; dès la première,
+     * seuls les agents désignés à la date la perçoivent.
+     * Renvoie null (aucune désignation) ou le tableau des identifiants.
+     */
+    beneficiaires: function (primeId, date) {
+      var st = global.SIGH && global.SIGH.store;
+      if (!st) return null;
+      var l = [];
+      try { l = st.collection('beneficiairesPrimes').active().filter(function (x) { return x.primeId === primeId; }); } catch (e) { return null; }
+      if (!l.length) return null;
+      return l.filter(function (x) {
+        return (!date || !x.debut || String(date) >= String(x.debut)) && (!date || !x.fin || String(date) <= String(x.fin));
+      }).map(function (x) { return x.agentId; });
+    },
+
+    /** Montant d'une prime pour UN agent à une date : désignation comprise pour les forfaits. */
+    montantAgent: function (primeId, agent, date) {
+      var m = NS132.montant(primeId, agent.fonction, date);
+      if (!m) return 0;
+      var def = NS132.primesALaDate().filter(function (p) { return p.id === primeId; })[0];
+      if (def && def.mode === 'fixe') {
+        var liste = NS132.beneficiaires(primeId, date);
+        if (liste && liste.indexOf(agent.id) < 0) return 0;
+      }
+      return m;
     },
 
     /** Le barème d'origine de la note, indépendant du magasin. */
@@ -791,6 +866,9 @@
     { code: 'VTE', libelle: 'Journal des ventes', contrepartie: '411000' },
     { code: 'CAI', libelle: 'Journal de caisse-dépenses', contrepartie: '571000' },
     { code: 'BQ', libelle: 'Journal de banque', contrepartie: '521000' },
+    /* E719 : une dépense réglée par banque s'écrit au journal BQE ; le code
+       manquait au référentiel et la pièce n'apparaissait dans aucun journal. */
+    { code: 'BQE', libelle: 'Journal de banque, dépenses', contrepartie: '521000' },
     { code: 'SAL', libelle: 'Journal des salaires', contrepartie: '422000' },
     { code: 'IMM', libelle: 'Journal des immobilisations', contrepartie: '241000' },
     { code: 'OD', libelle: 'Journal des opérations diverses', contrepartie: null },
@@ -817,7 +895,7 @@
     { id: 'laboratoire', label: 'Laboratoire', type: 'exploitation' },
     { id: 'pharmacie', label: 'Pharmacie', type: 'exploitation' },
     { id: 'consultation', label: 'Consultation', type: 'exploitation' },
-    { id: 'imagerie', label: 'Échographie', type: 'exploitation' },
+    { id: 'imagerie', label: 'Imagerie médicale', type: 'exploitation' },
     { id: 'maternite', label: 'Maternité', type: 'exploitation' },
     { id: 'hospitalisation', label: 'Hospitalisation et soins', type: 'exploitation' },
     /* Un seul centre de coût. Les deux libellés désignaient le même service ;
@@ -1524,6 +1602,109 @@
     ortbRadio: 1000, ortbTele: 3000, ortbCumul: 4000,
   };
 
+  /* ==========================================================================
+   * LES OBLIGATIONS FISCALES VIVENT AU MAGASIN, DATÉES (Direction, 06/11/2026)
+   * --------------------------------------------------------------------------
+   * `CALENDRIER_FISCAL` et `PARAM_PAIE.ortb` restent les SEMENCES : la
+   * collection `obligationsFiscales` porte la version en vigueur de chaque
+   * obligation (type 'obligation') et une fiche de paramètres ORTB (type
+   * 'parametres', code 'ORTB-PARAMETRES') ; `historiqueObligations` garde les
+   * versions antérieures, retrouvées par leur date d'effet. C'est le modèle de
+   * la grille des primes (grillePrimes / historiquePrimes) : une échéance
+   * engendrée sous l'ancienne version ne bouge pas quand la Direction change
+   * la suivante.
+   *
+   * `obligationsALaDate(date)` et `ortbALaDate(date)` lisent le magasin À
+   * L'APPEL et retombent sur la semence tant qu'il n'est pas chargé (premier
+   * amorçage, page ouverte sans serveur). Elles ne CRÉENT jamais la collection :
+   * un `collection()` posé pendant le semis ferait semer en boucle.
+   * ======================================================================== */
+  var SOURCE_OBLIGATIONS = 'Précisions du comptable (réunion du 19/08/2026) ; calendrier confirmé par la Direction le 25/08/2026';
+
+  function semenceObligations() {
+    var out = CALENDRIER_FISCAL.map(function (o) {
+      return {
+        id: o.id, statut: 'actif', type: 'obligation',
+        code: o.code, libelle: o.libelle, famille: o.famille,
+        periodicite: o.periodicite, jour: o.jour, mois: o.mois, part: o.part,
+        declaration: o.declaration, note: o.note,
+        source: SOURCE_OBLIGATIONS,
+        dateEffet: null, modifieLe: null, modifiePar: null, motif: null,
+        valideLe: null, validePar: null,
+      };
+    });
+    out.push(semenceOrtbParametres());
+    return out;
+  }
+  function semenceOrtbParametres() {
+    var o = PARAM_PAIE.ortb;
+    return {
+      id: 'ORTB-PARAMETRES', statut: 'actif', type: 'parametres',
+      code: 'ORTB-PARAMETRES', libelle: o.libelle, famille: 'ORTB',
+      seuilTele: o.seuilTele,
+      redevances: o.redevances.map(function (r) { return Object.assign({}, r); }),
+      cumulMaximum: o.cumulMaximum,
+      source: o.source,
+      dateEffet: null, modifieLe: null, modifiePar: null, motif: null,
+      valideLe: null, validePar: null,
+    };
+  }
+
+  /** Le magasin est-il chargé et lisible sans déclencher un semis ? */
+  function magasinPret() {
+    var st = global.SIGH && global.SIGH.store;
+    if (!st || typeof st.etatServeur !== 'function') return false;
+    try { return !!st.etatServeur().magasinCharge && (!st.faitAutorite || st.faitAutorite() || !st.surServeur()); } catch (e) { return false; }
+  }
+  function lireCollection(nom) {
+    try { return global.SIGH.store.collection(nom).active(); } catch (e) { return []; }
+  }
+  function dateIso(date) {
+    if (!date) return C.iso(C.aujourdhui());
+    if (typeof date === 'string') return date.slice(0, 10);
+    return C.iso(date);
+  }
+  /** La version d'une fiche (courante ou historique) en vigueur à `d` (ISO). */
+  function versionEnVigueur(courante, historique, d) {
+    if (courante && (!courante.dateEffet || d >= String(courante.dateEffet))) return courante;
+    var couvrante = historique.filter(function (h) {
+      return (!h.dateEffet || d >= String(h.dateEffet)) && (!h.dateFin || d <= String(h.dateFin));
+    }).sort(function (a, b) { return String(b.dateEffet || '').localeCompare(String(a.dateEffet || '')); })[0];
+    return couvrante || null;
+  }
+
+  /**
+   * Les obligations fiscales en vigueur à une date : une fiche par code.
+   * Un code sans version couvrante à cette date est ABSENT (obligation créée
+   * plus tard, ou retirée avant). Sans magasin : la semence.
+   */
+  function obligationsALaDate(date) {
+    var d = dateIso(date);
+    if (!magasinPret()) return semenceObligations().filter(function (o) { return o.type === 'obligation'; });
+    var actives = lireCollection('obligationsFiscales').filter(function (o) { return o.type !== 'parametres'; });
+    var hist = lireCollection('historiqueObligations').filter(function (o) { return o.type !== 'parametres'; });
+    if (!actives.length && !hist.length) return semenceObligations().filter(function (o) { return o.type === 'obligation'; });
+    var codes = [], vus = {};
+    actives.concat(hist).forEach(function (o) { if (o.code && !vus[o.code]) { vus[o.code] = true; codes.push(o.code); } });
+    var out = [];
+    codes.forEach(function (code) {
+      var courante = actives.filter(function (o) { return o.code === code; })[0] || null;
+      var v = versionEnVigueur(courante, hist.filter(function (h) { return h.code === code; }), d);
+      if (v) out.push(v);
+    });
+    return out;
+  }
+
+  /** Les paramètres ORTB (seuil, redevances, cumul) en vigueur à une date ; repli PARAM_PAIE.ortb. */
+  function ortbALaDate(date) {
+    var d = dateIso(date);
+    if (!magasinPret()) return PARAM_PAIE.ortb;
+    var courante = lireCollection('obligationsFiscales').filter(function (o) { return o.type === 'parametres' && o.code === 'ORTB-PARAMETRES'; })[0] || null;
+    var hist = lireCollection('historiqueObligations').filter(function (o) { return o.type === 'parametres' && o.code === 'ORTB-PARAMETRES'; });
+    var v = versionEnVigueur(courante, hist, d);
+    return v || PARAM_PAIE.ortb;
+  }
+
 
   /* ==========================================================================
    * VALORISATION DES SORTIES DE STOCK
@@ -1729,6 +1910,7 @@
     { id: 'contrat', label: 'Contrats RH', rattachement: 'Employé', icon: 'file-signature' },
     { id: 'bulletin', label: 'Bulletins de paie', rattachement: 'Employé', icon: 'banknote' },
     { id: 'courrier', label: 'Courriers administratifs', rattachement: 'Administration', icon: 'mail' },
+    { id: 'cloture_exercice', label: 'Clôtures d’exercice', rattachement: 'Administration', icon: 'lock' },
   ];
 
   /* ==========================================================================
@@ -1815,7 +1997,7 @@
     { id: 'laboratoire', label: 'Laboratoire', categories: ['analyse'], icone: 'flask-conical' },
     { id: 'pharmacie', label: 'Pharmacie', categories: ['medicament'], icone: 'pill' },
     { id: 'consultation', label: 'Consultation', categories: ['consultation'], icone: 'stethoscope' },
-    { id: 'echographie', label: 'Échographie', categories: ['imagerie'], icone: 'scan-line',
+    { id: 'echographie', label: 'Imagerie médicale', categories: ['imagerie'], icone: 'scan-line',
       secteurs: ['Imagerie médicale'] },
     { id: 'maternite', label: 'Maternité', categories: [], icone: 'baby',
       secteurs: ['Maternité', 'Gynéco-obstétrique'] },
@@ -1847,7 +2029,7 @@
     if (/labo/.test(k)) return 'Laboratoire';
     if (/pharma|dispensation|medicament/.test(k)) return 'Pharmacie';
     if (/maternit|obstetr|gyneco|accouch|cpn|pf\b/.test(k)) return 'Maternité';
-    if (/imagerie|echograph|radio|ecg/.test(k)) return 'Échographie';
+    if (/imagerie|echograph|radio|ecg|scanner|irm|mammo/.test(k)) return 'Imagerie médicale';
     if (/consultation|medecine|accueil/.test(k)) return 'Consultation';
     if (/hospit|observation|soins|chirurgie|bloc|urgence/.test(k)) return 'Hospitalisation et soins';
     return null;
@@ -1961,7 +2143,7 @@
     { document: 'Fiche d’évaluation et de solde (juillet 2026)', devient: 'Modèle d’état imprimable', module: 'M10 / RAP', ecran: 'm10-evaluations', statut: 'Intégré' },
     { document: 'Tarifs des analyses de laboratoire (48)', devient: 'Catalogue laboratoire', module: 'M5', ecran: 'm5-catalogue', statut: 'Intégré — tarifs à confirmer' },
     { document: 'Tarifs des médicaments et accessoires (144)', devient: 'Catalogue tarifaire pharmacie', module: 'M6', ecran: 'cfg-tarifs', statut: 'Intégré — tarifs à confirmer' },
-    { document: 'Inventaire « Grand Stock » (SAGE 100)', devient: 'Stock initial — 175 articles repris', module: 'M6', ecran: 'm6-reprise', statut: 'Intégré' },
+    { document: 'Inventaire « Grand Stock » (SAGE 100)', devient: 'Stock initial — 175 articles repris', module: 'M6', ecran: 'm6-import-grand-stock', statut: 'Intégré' },
     { document: 'Facture fournisseur SoBAPS (BL 26LNA00026)', devient: 'Modèle du workflow achat', module: 'M7', ecran: 'm7-receptions', statut: 'Intégré' },
     { document: 'Bon d’expression de besoins (modèle vierge)', devient: 'Workflow de demande interne', module: 'M7', ecran: 'm7-besoins', statut: 'Intégré' },
     { document: 'Classeur comptable SYSCOHADA', devient: 'Plan comptable + journaux', module: 'M12', ecran: 'm12-plan-comptable', statut: 'Intégré — partiel' },
@@ -2003,6 +2185,8 @@
     SECTEURS_RECETTE: SECTEURS_RECETTE, secteurNormalise: secteurNormalise,
     groupeDuSecteur: groupeDuSecteur,
     CALENDRIER_FISCAL: CALENDRIER_FISCAL, MONTANTS_FISCAUX: MONTANTS_FISCAUX,
+    semenceObligations: semenceObligations, semenceOrtbParametres: semenceOrtbParametres,
+    obligationsALaDate: obligationsALaDate, ortbALaDate: ortbALaDate,
     CAPACITES: CAPACITES, NATURES_PRESCRIPTION: NATURES_PRESCRIPTION,
     BAREME_REFERENCE: BAREME_REFERENCE, CATEGORIES_GARANTIE: CATEGORIES_GARANTIE, UNITES_PLAFOND: UNITES_PLAFOND,
   };

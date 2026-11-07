@@ -1,0 +1,85 @@
+{
+ "id": "m6-import-grand-stock",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Importation Grand Stock",
+ "acces": "ouvert",
+ "titre": "Importation Grand Stock",
+ "description": "Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire SAGE « Grand Stock »).",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Importation Grand Stock"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "Le stock initial n’a pas été saisi manuellement : il provient de l’import de l’inventaire « Grand Stock ». Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises des mouvements opérationnels ultérieurs. Les références que le document ne tarife pas se valorisent ici, à part, datées et signées."
+ ],
+ "onglets": [
+  "Articles repris",
+  "Points à traiter",
+  "Rapprochement au catalogue tarifaire"
+ ],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu",
+  "Articles repris",
+  "Unités en stock",
+  "Valeur reprise",
+  "Articles non valorisés",
+  "Valorisés par la clinique"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu",
+  "Stock repris : traçabilité et valorisation",
+  "Lot de migration"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ],
+  [
+   "Référence SAGE",
+   "Désignation",
+   "Catégorie affectée",
+   "Unité",
+   "Qté reprise",
+   "P.R. unitaire (CMUP)",
+   "P.R. global",
+   "Seuil proposé"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter",
+  "Valider la reprise",
+  "Éditer le bordereau",
+  "Articles repris184",
+  "Points à traiter0",
+  "Rapprochement au catalogue tarifaire",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 9
+}

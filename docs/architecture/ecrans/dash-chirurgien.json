@@ -1,0 +1,44 @@
+{
+ "id": "dash-chirurgien",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Chirurgien",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Chirurgien",
+ "description": "Bloc opératoire : check-listes, comptes rendus, transfusion et suites opératoires.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Chirurgien"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [
+  "Ce profil n’ouvre ni la maternité, ni la caisse, ni le stock — matrice cible des Instructions. Le dossier obstétrical relève de la sage-femme ; une césarienne se documente au bloc (compte rendu opératoire), son suivi obstétrical en maternité."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Interventions du mois",
+  "Comptes rendus opératoires",
+  "Sans aide-opérateur",
+  "Patients hospitalisés"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Périmètre du profil"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Check-listes du bloc",
+  "Check-listes",
+  "Surveillance"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

@@ -1,0 +1,63 @@
+{
+ "id": "m6-produits",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Référentiel produits",
+ "acces": "ouvert",
+ "titre": "Référentiel produits",
+ "description": "Catalogue de tous les articles gérés : médicaments, réactifs, consommables, fournitures, entretien, petit matériel et immobilisations.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Référentiel produits"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les produits",
+  "Archivés"
+ ],
+ "kpis": [
+  "Références",
+  "Valeur du stock",
+  "Sous le seuil",
+  "En rupture"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Code",
+   "Désignation",
+   "Unité",
+   "Prix d’achat",
+   "CUMP",
+   "Stock gros",
+   "Stock détail",
+   "Total",
+   "Seuil",
+   "Valeur",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les produits184",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

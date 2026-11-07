@@ -1,0 +1,29 @@
+{
+ "id": "parametres-hub",
+ "module": "SUP",
+ "domaine": "Système",
+ "libelleManifeste": "Paramètres système",
+ "acces": "ouvert",
+ "titre": "Paramètres système",
+ "description": "Les écrans du système que votre profil peut ouvrir, en cartes.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Aide & assistance",
+  "Paramètres système"
+ ],
+ "actions": [],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Sécurité & Utilisateurs 8 écran(s)",
+  "Configuration Clinique 21 écran(s)",
+  "Importation de données 10 écran(s)"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

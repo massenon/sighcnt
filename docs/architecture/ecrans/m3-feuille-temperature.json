@@ -1,0 +1,59 @@
+{
+ "id": "m3-feuille-temperature",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Feuille de température",
+ "acces": "ouvert",
+ "titre": "Feuille de température",
+ "description": "Relevé numérique des constantes : tension, fréquence cardiaque, saturation, diurèse, poids, taille, fréquence respiratoire et traitement.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Feuille de température"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Patient",
+  "Courbe de température (°C)",
+  "Fréquence cardiaque et saturation",
+  "Relevés de constantes"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Heure",
+   "T° (°C)",
+   "TA",
+   "FC",
+   "SpO₂",
+   "FR",
+   "Diurèse (ml)",
+   "Poids (kg)",
+   "Traitement",
+   "Saisi par",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "SAMBIENI Bibata",
+  "Nouveau relevé",
+  "Imprimer la feuille",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2"
+ ],
+ "champs": [
+  "Patient hospitalisé"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 0
+}

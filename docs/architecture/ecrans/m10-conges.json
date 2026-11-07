@@ -1,0 +1,65 @@
+{
+ "id": "m10-conges",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Congés",
+ "acces": "ouvert",
+ "titre": "Congés",
+ "description": "Demandes, validation et suivi des congés annuels et exceptionnels.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Congés"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "La répartition par nature distingue le congé annuel des congés de maternité et de maladie : ces derniers ne s’imputent pas sur le solde annuel et ne se compensent pas de la même manière au planning."
+ ],
+ "onglets": [
+  "Tous les congés",
+  "Archivés"
+ ],
+ "kpis": [
+  "Demandes enregistrées",
+  "En congé aujourd’hui",
+  "En attente de décision",
+  "Jours accordés"
+ ],
+ "cartes": [
+  "Congés par service",
+  "Répartition par nature",
+  "Décisions",
+  "Jours de congé accordés par mois"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Agent",
+   "Service",
+   "Nature",
+   "Du",
+   "Au",
+   "Jours",
+   "Remplaçant",
+   "Décision",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les congés22",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

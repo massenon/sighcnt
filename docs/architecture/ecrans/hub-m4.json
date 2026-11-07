@@ -1,0 +1,31 @@
+{
+ "id": "hub-m4",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Maternité, Naissances & Décès",
+ "acces": "ouvert",
+ "titre": "Maternité, Naissances & Décès",
+ "description": "Tous les écrans du module M4 — Maternité, Naissances & Décès.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [
+  "Patients & Dossier médical",
+  "Consultations & prescriptions"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

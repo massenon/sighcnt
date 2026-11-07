@@ -1,0 +1,52 @@
+{
+ "id": "m3-sorties",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Sorties d’hospitalisation",
+ "acces": "ouvert",
+ "titre": "Sorties d’hospitalisation",
+ "description": "Préparation et finalisation des sorties : vérification financière, signatures et édition du bon de sortie.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Sorties d’hospitalisation"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Patients hospitalisés",
+  "Sorties finalisables",
+  "Bloquées par le solde",
+  "Sorties réalisées"
+ ],
+ "cartes": [
+  "Patients en cours d’hospitalisation"
+ ],
+ "tableaux": [
+  [
+   "Lit",
+   "Patient",
+   "Entrée",
+   "Séjour",
+   "Diagnostic",
+   "Solde (RG-06)",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Préparer la sortie",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

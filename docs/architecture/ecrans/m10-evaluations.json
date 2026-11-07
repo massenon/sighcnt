@@ -1,0 +1,70 @@
+{
+ "id": "m10-evaluations",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Évaluations (NS 131)",
+ "acces": "ouvert",
+ "titre": "Évaluations mensuelles (NS 131)",
+ "description": "Évaluation du rendement selon les quatre critères de la note de service, avec calcul automatique du prélèvement sur salaire brut.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Évaluations (NS 131)"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "Le barème est consultable. Pour le modifier, ouvrir la porte depuis « Paramètres système », onglet Barème NS 131. Un barème de sanctions ne se retouche pas au détour d’un écran d’évaluation."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Évaluations enregistrées",
+  "Agents à évaluer",
+  "Avec prélèvement",
+  "Montant prélevé"
+ ],
+ "cartes": [
+  "Barème d’évaluation — NS 131/07/DM/DA/CNT/2026",
+  "Évaluations mensuelles"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Critère",
+   "Bonne",
+   "Moyenne",
+   "Faible à mauvaise",
+   "En vigueur depuis",
+   "Actions"
+  ],
+  [
+   "Période",
+   "Mat.",
+   "Agent",
+   "Service",
+   "Ponctualité",
+   "Exécution",
+   "Attitude",
+   "Respect",
+   "Prélèvement",
+   "Montant",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Paramètres système",
+  "Imprimer la note",
+  "Nouvelle évaluation",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

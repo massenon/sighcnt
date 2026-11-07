@@ -1,0 +1,55 @@
+{
+ "id": "m7-fournisseurs",
+ "module": "M7",
+ "domaine": "Logistique",
+ "libelleManifeste": "Fournisseurs",
+ "acces": "ouvert",
+ "titre": "Fournisseurs",
+ "description": "Référentiel des fournisseurs, habilitation pour les retours de produits périmés et historique des commandes.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Achats & Fournisseurs",
+  "Fournisseurs"
+ ],
+ "actions": [
+  "Bons d’expression de besoins",
+  "Bons de commande",
+  "Achats & Fournisseurs"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les fournisseurs",
+  "Archivés"
+ ],
+ "kpis": [
+  "Fournisseurs référencés",
+  "Habilités aux retours",
+  "Volume d’achats",
+  "Délai moyen"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Code",
+   "Raison sociale",
+   "Type",
+   "Ville",
+   "Téléphone",
+   "Délai (j)",
+   "Retours périmés",
+   "Commandes",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les fournisseurs6",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,55 @@
+{
+ "id": "cfg-notifications",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Notifications",
+ "acces": "ouvert",
+ "titre": "Notifications",
+ "description": "Paramétrage des alertes adressées au personnel, par événement et par canal.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Notifications"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "0 alerte(s) en attente pour votre poste. Le moteur route chaque alerte selon les rôles et les droits déjà définis : une alerte qui renverrait vers un écran interdit à votre profil ne vous est pas présentée.",
+  "Les envois par SMS et par courriel nécessitent une connexion Internet. En son absence, les notifications restent disponibles dans l’application et sont transmises dès le rétablissement de la liaison."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Événements paramétrés",
+  "Notifications dans l’application",
+  "Notifications par SMS",
+  "Notifications par courriel"
+ ],
+ "cartes": [
+  "Matrice des notifications"
+ ],
+ "tableaux": [
+  [
+   "Événement déclencheur",
+   "Destinataires",
+   "Dans l’application",
+   "SMS",
+   "Courriel"
+  ]
+ ],
+ "commandes": [
+  "Tester la sonorisation",
+  "Enregistrer le paramétrage"
+ ],
+ "champs": [
+  "Notifications visuellesMessage à l’écran lorsqu’une alerte nouvelle apparaît. La cloche et le badge restent actifs même sans cette option.",
+  "Sons d’alerteDÉSACTIVER LE SON NE DÉSACTIVE PAS L’ALERTE : cloche, badge, message et historique continuent de fonctionner.",
+  "Profil sonore",
+  "Ne pas resonner la même alerte avant"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

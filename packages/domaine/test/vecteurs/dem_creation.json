@@ -1,0 +1,587 @@
+{
+ "_doc": "m5-demandes : « Nouveau » → « Enregistrer », formulaire rempli comme l'agent",
+ "catalogue": [
+  {
+   "code": "L01",
+   "designation": "AKOP",
+   "categorie": "Parasitologie",
+   "echantillon": "Selles",
+   "delai": "24 h",
+   "prix": 2000
+  },
+  {
+   "code": "L02",
+   "designation": "ASLO",
+   "categorie": "Sérologie",
+   "echantillon": "Sang",
+   "delai": "24 h",
+   "prix": 4000
+  },
+  {
+   "code": "L03",
+   "designation": "AZOTEMIE (UREMIE)",
+   "categorie": "Biochimie",
+   "echantillon": "Sang",
+   "delai": "4 h",
+   "prix": 2500
+  },
+  {
+   "code": "L04",
+   "designation": "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+   "categorie": "Biochimie",
+   "echantillon": "Sang",
+   "delai": "4 h",
+   "prix": 3500
+  },
+  {
+   "code": "L05",
+   "designation": "BU",
+   "categorie": "Biochimie",
+   "echantillon": "Urine",
+   "delai": "1 h",
+   "prix": 1000
+  },
+  {
+   "code": "L06",
+   "designation": "CALCEMIE",
+   "categorie": "Biochimie",
+   "echantillon": "Sang",
+   "delai": "4 h",
+   "prix": 3000
+  }
+ ],
+ "patientRepertoire": {
+  "code": "CNT/1/25",
+  "id": "PAT0001",
+  "nom": "TCHANE",
+  "prenom": "Bertine"
+ },
+ "medecin": "BASSONGUI Chabi Séko",
+ "laborantin": "KINNOU A. Ganiou",
+ "cas": [
+  {
+   "entree": {
+    "nom": "patient du répertoire, une analyse, urgente",
+    "saisie": {
+     "analyseCode": "L02",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "etatAnalyse": "en_attente",
+     "patientCode": "CNT/1/25",
+     "urgent": true
+    },
+    "refsExistantes": [
+     "LAB-00158",
+     "LAB-00159",
+     "LAB-00160"
+    ],
+    "nbDemandes": 160,
+    "nbPatients": 198,
+    "jour": "2026-10-30",
+    "codesAnalyse": [
+     "00158-2026",
+     "00159-2026",
+     "00160-2026"
+    ]
+   },
+   "demandes": [
+    {
+     "id": "DEMxmvvd2xizt2tuw",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "analyseCode": "L02",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "urgent": true,
+     "etatAnalyse": "en_attente",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "analyse": "ASLO",
+     "categorie": "Sérologie",
+     "echantillon": "Sang",
+     "delai": "24 h",
+     "prix": 4000,
+     "reference": "LAB-00161",
+     "codeAnalyse": "00161-2026"
+    }
+   ],
+   "patients": [],
+   "toasts": [
+    [
+     "Nouveau demande d’analyse créé.",
+     "LAB-00161"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "entree": {
+    "nom": "même écran, deuxième création : la référence suit le registre",
+    "saisie": {
+     "analyseCode": "L03",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "etatAnalyse": "en_attente",
+     "patientCode": "CNT/1/25"
+    },
+    "refsExistantes": [
+     "LAB-00159",
+     "LAB-00160",
+     "LAB-00161"
+    ],
+    "nbDemandes": 161,
+    "nbPatients": 198,
+    "jour": "2026-10-30",
+    "codesAnalyse": [
+     "00159-2026",
+     "00160-2026",
+     "00161-2026"
+    ]
+   },
+   "demandes": [
+    {
+     "id": "DEMxmvvd2xul4vqzu",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "analyseCode": "L03",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "analyse": "AZOTEMIE (UREMIE)",
+     "categorie": "Biochimie",
+     "echantillon": "Sang",
+     "delai": "4 h",
+     "prix": 2500,
+     "reference": "LAB-00162",
+     "codeAnalyse": "00162-2026"
+    }
+   ],
+   "patients": [],
+   "toasts": [
+    [
+     "Nouveau demande d’analyse créé.",
+     "LAB-00162"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "entree": {
+    "nom": "patient adressé de l'extérieur : le dossier naît (âge déclaré)",
+    "saisie": {
+     "analyseCode": "L02",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "etatAnalyse": "en_attente",
+     "nom": "Kassa",
+     "prenom": "Imorou",
+     "sexe": "M",
+     "naissanceConnue": "age",
+     "age": "41",
+     "telephone": "97000000",
+     "residence": "Boriyoure"
+    },
+    "refsExistantes": [
+     "LAB-00160",
+     "LAB-00161",
+     "LAB-00162"
+    ],
+    "nbDemandes": 162,
+    "nbPatients": 198,
+    "jour": "2026-10-30",
+    "codesAnalyse": [
+     "00160-2026",
+     "00161-2026",
+     "00162-2026"
+    ]
+   },
+   "demandes": [
+    {
+     "id": "DEMxmvvd2y1m8mozs",
+     "statut": "actif",
+     "patientCode": "CNT/1098/26",
+     "analyseCode": "L02",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "origineDemande": "externe",
+     "patientId": "PATxmvvd2y1m7c6dq",
+     "patient": "KASSA Imorou",
+     "analyse": "ASLO",
+     "categorie": "Sérologie",
+     "echantillon": "Sang",
+     "delai": "24 h",
+     "prix": 4000,
+     "reference": "LAB-00163",
+     "codeAnalyse": "00163-2026"
+    }
+   ],
+   "patients": [
+    {
+     "id": "PATxmvvd2y1m7c6dq",
+     "statut": "actif",
+     "code": "CNT/1098/26",
+     "nom": "KASSA",
+     "prenom": "Imorou",
+     "sexe": "M",
+     "dateNaissance": null,
+     "age": 41,
+     "ageReferenceLe": "2026-10-30",
+     "telephone": "97000000",
+     "adresse": "Boriyoure",
+     "quartier": "Boriyoure",
+     "dateCreation": "2026-10-30",
+     "externe": true,
+     "origineDossier": "Patient externe — laboratoire",
+     "prescripteurExterieur": "BASSONGUI Chabi Séko",
+     "assure": false,
+     "assureur": null,
+     "tauxPriseEnCharge": 0
+    }
+   ],
+   "toasts": [
+    [
+     "Nouveau demande d’analyse créé.",
+     "LAB-00163"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "entree": {
+    "nom": "patient externe, date de naissance connue",
+    "saisie": {
+     "analyseCode": "L04",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "etatAnalyse": "en_attente",
+     "nom": "Boni",
+     "prenom": "Yaya",
+     "sexe": "F",
+     "naissanceConnue": "date",
+     "dateNaissance": "1990-05-12"
+    },
+    "refsExistantes": [
+     "LAB-00161",
+     "LAB-00162",
+     "LAB-00163"
+    ],
+    "nbDemandes": 163,
+    "nbPatients": 199,
+    "jour": "2026-10-30",
+    "codesAnalyse": [
+     "00161-2026",
+     "00162-2026",
+     "00163-2026"
+    ]
+   },
+   "demandes": [
+    {
+     "id": "DEMxmvvd2y8rj8xid",
+     "statut": "actif",
+     "patientCode": "CNT/1099/26",
+     "analyseCode": "L04",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "origineDemande": "externe",
+     "patientId": "PATxmvvd2y8r78y52",
+     "patient": "BONI Yaya",
+     "analyse": "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+     "categorie": "Biochimie",
+     "echantillon": "Sang",
+     "delai": "4 h",
+     "prix": 3500,
+     "reference": "LAB-00164",
+     "codeAnalyse": "00164-2026"
+    }
+   ],
+   "patients": [
+    {
+     "id": "PATxmvvd2y8r78y52",
+     "statut": "actif",
+     "code": "CNT/1099/26",
+     "nom": "BONI",
+     "prenom": "Yaya",
+     "sexe": "F",
+     "dateNaissance": "1990-05-12",
+     "age": null,
+     "ageReferenceLe": null,
+     "telephone": null,
+     "adresse": null,
+     "quartier": null,
+     "dateCreation": "2026-10-30",
+     "externe": true,
+     "origineDossier": "Patient externe — laboratoire",
+     "prescripteurExterieur": "BASSONGUI Chabi Séko",
+     "assure": false,
+     "assureur": null,
+     "tauxPriseEnCharge": 0
+    }
+   ],
+   "toasts": [
+    [
+     "Nouveau demande d’analyse créé.",
+     "LAB-00164"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "entree": {
+    "nom": "dossier choisi ET identité saisie : le dossier du répertoire l'emporte, l'identité est ignorée",
+    "saisie": {
+     "analyseCode": "L02",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "etatAnalyse": "en_attente",
+     "patientCode": "CNT/1/25",
+     "nom": "Ignoré",
+     "prenom": "Aussi"
+    },
+    "refsExistantes": [
+     "LAB-00162",
+     "LAB-00163",
+     "LAB-00164"
+    ],
+    "nbDemandes": 164,
+    "nbPatients": 200,
+    "jour": "2026-10-30",
+    "codesAnalyse": [
+     "00162-2026",
+     "00163-2026",
+     "00164-2026"
+    ]
+   },
+   "demandes": [
+    {
+     "id": "DEMxmvvd2yel9b775",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "analyseCode": "L02",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "analyse": "ASLO",
+     "categorie": "Sérologie",
+     "echantillon": "Sang",
+     "delai": "24 h",
+     "prix": 4000,
+     "reference": "LAB-00165",
+     "codeAnalyse": "00165-2026"
+    }
+   ],
+   "patients": [],
+   "toasts": [
+    [
+     "Nouveau demande d’analyse créé.",
+     "LAB-00165"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "entree": {
+    "nom": "ni dossier ni identité : refus nommé",
+    "saisie": {
+     "analyseCode": "L02",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "etatAnalyse": "en_attente"
+    },
+    "refsExistantes": [
+     "LAB-00163",
+     "LAB-00164",
+     "LAB-00165"
+    ],
+    "nbDemandes": 165,
+    "nbPatients": 200,
+    "jour": "2026-10-30",
+    "codesAnalyse": [
+     "00163-2026",
+     "00164-2026",
+     "00165-2026"
+    ]
+   },
+   "demandes": [],
+   "patients": [],
+   "toasts": [
+    [
+     "Sélectionner un patient du répertoire, ou renseigner le nom ET les prénoms du patient adressé de l’extérieur."
+    ]
+   ],
+   "modaleOuverte": true
+  },
+  {
+   "entree": {
+    "nom": "nom sans prénom : refus nommé",
+    "saisie": {
+     "analyseCode": "L02",
+     "dateHeure": "2026-10-30T09:30",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "etatAnalyse": "en_attente",
+     "nom": "Seul"
+    },
+    "refsExistantes": [
+     "LAB-00163",
+     "LAB-00164",
+     "LAB-00165"
+    ],
+    "nbDemandes": 165,
+    "nbPatients": 200,
+    "jour": "2026-10-30",
+    "codesAnalyse": [
+     "00163-2026",
+     "00164-2026",
+     "00165-2026"
+    ]
+   },
+   "demandes": [],
+   "patients": [],
+   "toasts": [
+    [
+     "Sélectionner un patient du répertoire, ou renseigner le nom ET les prénoms du patient adressé de l’extérieur."
+    ]
+   ],
+   "modaleOuverte": true
+  },
+  {
+   "entree": {
+    "nom": "demande datée de 2027 : le code repart à 00001-2027",
+    "saisie": {
+     "analyseCode": "L02",
+     "dateHeure": "2027-02-03T08:15",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "etatAnalyse": "en_attente",
+     "patientCode": "CNT/1/25"
+    },
+    "refsExistantes": [
+     "LAB-00163",
+     "LAB-00164",
+     "LAB-00165"
+    ],
+    "nbDemandes": 165,
+    "nbPatients": 200,
+    "jour": "2026-10-30",
+    "codesAnalyse": [
+     "00163-2026",
+     "00164-2026",
+     "00165-2026"
+    ]
+   },
+   "demandes": [
+    {
+     "id": "DEMxmvvd2ywipjbfa",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "analyseCode": "L02",
+     "dateHeure": "2027-02-03T08:15",
+     "prescripteur": "BASSONGUI Chabi Séko",
+     "laborantin": "KINNOU A. Ganiou",
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "analyse": "ASLO",
+     "categorie": "Sérologie",
+     "echantillon": "Sang",
+     "delai": "24 h",
+     "prix": 4000,
+     "reference": "LAB-00166",
+     "codeAnalyse": "00001-2027"
+    }
+   ],
+   "patients": [],
+   "toasts": [
+    [
+     "Nouveau demande d’analyse créé.",
+     "LAB-00166"
+    ]
+   ],
+   "modaleOuverte": false
+  }
+ ],
+ "modifications": [
+  {
+   "nom": "modifier : la référence et le code d'analyse sont CONSERVÉS, l'analyse est reprise du catalogue",
+   "ref": "LAB-00161",
+   "saisie": {
+    "analyseCode": "L04",
+    "urgent": false
+   },
+   "prerempli": {
+    "patientCode": "CNT/1/25",
+    "nom": "",
+    "prenom": "",
+    "sexe": "",
+    "naissanceConnue": "date",
+    "dateNaissance": "",
+    "age": "",
+    "telephone": "",
+    "residence": "",
+    "analyseCode": "L02",
+    "dateHeure": "2026-10-30T09:30",
+    "prescripteur": "BASSONGUI Chabi Séko",
+    "prescripteurExterne": "",
+    "laborantin": "KINNOU A. Ganiou",
+    "urgent": true,
+    "etatAnalyse": "en_attente"
+   },
+   "avant": {
+    "id": "DEMxmvvd2xizt2tuw",
+    "statut": "actif",
+    "patientCode": "CNT/1/25",
+    "analyseCode": "L02",
+    "dateHeure": "2026-10-30T09:30",
+    "prescripteur": "BASSONGUI Chabi Séko",
+    "laborantin": "KINNOU A. Ganiou",
+    "urgent": true,
+    "etatAnalyse": "en_attente",
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "analyse": "ASLO",
+    "categorie": "Sérologie",
+    "echantillon": "Sang",
+    "delai": "24 h",
+    "prix": 4000,
+    "reference": "LAB-00161",
+    "codeAnalyse": "00161-2026"
+   },
+   "patch": {
+    "analyseCode": "L04",
+    "urgent": false,
+    "analyse": "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+    "categorie": "Biochimie",
+    "delai": "4 h",
+    "prix": 3500
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "LAB-00161"
+    ]
+   ]
+  }
+ ]
+}

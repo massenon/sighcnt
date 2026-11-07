@@ -1,0 +1,41 @@
+{
+ "id": "m9-factures-assureur",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Factures mensuelles assureur",
+ "acces": "ouvert",
+ "titre": "Relevé & facture mensuelle assureur",
+ "description": "Relevé détaillé des prestations par souscripteur et facture consolidée transmise à la compagnie.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Factures mensuelles assureur"
+ ],
+ "actions": [
+  "Conventions",
+  "Créances",
+  "Tableau de bord assurances"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Souscripteurs du mois",
+  "Assurés concernés",
+  "Montant total facturé",
+  "Réclamé à la compagnie"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "AFRICAINE DES ASSURANCES",
+  "Éditer le relevé",
+  "Éditer la facture mensuelle"
+ ],
+ "champs": [
+  "Compagnie",
+  "Mois"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

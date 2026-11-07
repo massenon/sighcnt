@@ -1,0 +1,57 @@
+{
+ "id": "mecef-config",
+ "module": "MECEF",
+ "domaine": "Financier",
+ "libelleManifeste": "Configuration fiscale",
+ "acces": "ouvert",
+ "titre": "Configuration fiscale",
+ "description": "Paramètres d’émission : identifiants légaux, numérotation, taux de TVA et préfixes.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "MECeF — Facture normalisée",
+  "Configuration fiscale"
+ ],
+ "actions": [
+  "Tableau de bord fiscal",
+  "Factures normalisées",
+  "MECeF — Facture normalisée"
+ ],
+ "regle": [
+  "Le régime exonéré est celui relevé sur la facture de référence certifiée MECeF, où la TVA est portée à zéro et le net à payer vaut le hors-taxes augmenté du seul AIB. Ce choix doit être confirmé par le service comptable pour les prestations de la clinique.",
+  "Le prototype simule les échanges avec le dispositif fiscal. L’interfaçage réel s’effectuera avec la machine électronique certifiée de facturation lors de la mise en œuvre."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Paramètres fiscaux",
+  "Mentions portées sur chaque facture",
+  "Contrôles automatiques à l’émission"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Enregistrer les paramètres",
+  "Tester la connexion au dispositif"
+ ],
+ "champs": [
+  "Raison sociale *",
+  "IFU *",
+  "RCCM *",
+  "N° d’autorisation d’ouverture",
+  "Adresse",
+  "Téléphones",
+  "Adresse électronique",
+  "Préfixe des factures",
+  "Préfixe des avoirs",
+  "Préfixe des pro-forma",
+  "Prochain numéro",
+  "Régime de TVA *",
+  "Taux d’AIB (%)",
+  "Devise",
+  "Mode de transmission",
+  "Délai avant nouvelle tentative (minutes)",
+  "Archivage automatique des factures transmises"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

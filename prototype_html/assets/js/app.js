@@ -39,8 +39,191 @@
      la préférence durable de l'utilisateur n'est jamais écrasée. */
   function go(id, opts) {
     try { S.storage.set(RUBAN_TRANSIT, '1'); } catch (e) { /* stockage indisponible */ }
+    if (naviguerSansRecharger(id, opts)) return;
     global.location.href = href(id, opts);
   }
+
+  /* ==========================================================================
+   * NAVIGATION SANS RECHARGEMENT (vague 69)
+   * --------------------------------------------------------------------------
+   * Le document reste le même d'un écran à l'autre : le magasin n'est pas
+   * re-téléchargé, les scripts ne sont pas ré-évalués. Quatre garanties :
+   *  - le module de l'écran visé se charge À LA DEMANDE, une seule fois ;
+   *  - tout ce que l'écran précédent a posé (écouteurs du document, minuteries,
+   *    tiroirs, modales, messages) est DÉMONTÉ avant de peindre le suivant ;
+   *  - l'adresse change (pushState) : le retour arrière et les liens profonds
+   *    gardent leur sens ;
+   *  - au moindre doute — pas de session, écran autonome, module introuvable,
+   *    fichier ouvert en local — on RECHARGE comme avant. Le repli est la règle.
+   * ======================================================================== */
+  var NETTOYAGES = [];
+  var _spaOccupe = false;
+  var _spaChargés = {};
+  /** Pose un écouteur que le démontage retirera. */
+  function ecoute(cible, ev, fn, opts) {
+    cible.addEventListener(ev, fn, opts);
+    NETTOYAGES.push(function () { cible.removeEventListener(ev, fn, opts); });
+  }
+  function enDernier(fn) { NETTOYAGES.push(fn); }
+  function demonter() {
+    var racine = document.getElementById('page-content');
+    if (racine) { try { racine.dispatchEvent(new Event('sigh:unmount')); } catch (e) { /* sans importance */ } }
+    if (U && U.fermerCouches) { try { U.fermerCouches(); } catch (e) { /* sans importance */ } }
+    var nets = NETTOYAGES; NETTOYAGES = [];
+    nets.forEach(function (n) { try { n(); } catch (e) { /* un nettoyage ne bloque pas les autres */ } });
+    Array.prototype.slice.call(document.body.children).forEach(function (n) {
+      if (n.tagName !== 'SCRIPT') document.body.removeChild(n);
+    });
+  }
+  function spaPermise() {
+    if (global.__SIGH_SANS_SPA || _spaOccupe) return false;
+    if (global.location.protocol === 'file:') return false;
+    try { if (S.storage.get('sigh-cnt:spa') === 'off') return false; } catch (e) { /* stockage indisponible */ }
+    return !!(PAGE && !PAGE.standalone && S.session() && global.fetch && global.history && global.history.pushState);
+  }
+  function chargerScript(src) {
+    if (_spaChargés[src]) return _spaChargés[src];
+    _spaChargés[src] = new Promise(function (ok, ko) {
+      var deja = Array.prototype.some.call(document.scripts, function (x) { return x.src && x.src.replace(/\?.*$/, '').slice(-src.length) === src; });
+      if (deja) return ok();
+      var sc = document.createElement('script');
+      sc.src = base() + src; sc.async = false;
+      sc.onload = function () { ok(); };
+      sc.onerror = function () { delete _spaChargés[src]; ko(new Error('module introuvable : ' + src)); };
+      document.body.appendChild(sc);
+    });
+    return _spaChargés[src];
+  }
+  /** Le fichier de module d'un écran se lit dans SA page engendrée : une seule source (gen-pages). */
+  var _fichiersParEcran = {};
+  function fichiersDeModule(id) {
+    if (_fichiersParEcran[id]) return global.Promise.resolve(_fichiersParEcran[id]);
+    return global.fetch(href(id), { credentials: 'same-origin' }).then(function (r) {
+      if (!r.ok) throw new Error('page ' + id + ' : ' + r.status);
+      return r.text();
+    }).then(function (html) {
+      var out = [], re = /assets\/js\/(modules\/[\w-]+\.js)/g, m;
+      while ((m = re.exec(html))) out.push(m[1]);
+      _fichiersParEcran[id] = out;
+      return out;
+    });
+  }
+  function ecranEntier(id, opts, pousser, garderDefilement) {
+    var entry = N.get(id);
+    return fichiersDeModule(id).then(function (fichiers) {
+      return fichiers.reduce(function (p, f) { return p.then(function () { return chargerScript('assets/js/' + f); }); }, Promise.resolve());
+    }).then(function () {
+      var def = SCREENS[id];
+      if (def && def.standalone) throw new Error('écran autonome');
+      if (!N.can(S.session().role, entry)) throw new Error('accès refusé');
+      demonter();
+      PAGE = null; _boote = false;
+      if (pousser) global.history.pushState({ sigh: id }, '', href(id, opts));
+      var y = garderDefilement ? (global.scrollY || 0) : 0;
+      if (!garderDefilement) global.scrollTo(0, 0);
+      monterVraiment(id);
+      boot();
+      if (garderDefilement) global.scrollTo(0, y);
+      return true;
+    });
+  }
+  function naviguerSansRecharger(id, opts) {
+    var entry = N.get(id);
+    if (!entry || id === 'index' || !spaPermise()) return false;
+    if (/^(auth-|error-|enquete-publique)/.test(id)) return false;
+    _spaOccupe = true;
+    ecranEntier(id, opts, true).then(function () { _spaOccupe = false; }, function (e) {
+      _spaOccupe = false;
+      if (global.console && global.console.warn) global.console.warn('[SIGH] Navigation sans rechargement impossible, rechargement :', e);
+      global.location.href = href(id, opts);
+    });
+    return true;
+  }
+  /* ==========================================================================
+   * DONNÉES VENUES D'UN AUTRE POSTE (vague 70)
+   * --------------------------------------------------------------------------
+   * Le magasin vient de relire des collections qu'un autre poste a modifiées.
+   * L'écran ouvert les montre-t-il ? On le repeint SEULEMENT si cela ne coûte
+   * rien à l'agent : pas de boîte de dialogue ouverte, pas de champ en cours de
+   * saisie, pas deux repeints à moins de quatre secondes. Sinon un bandeau
+   * discret le dit et laisse l'agent actualiser quand il le décide — repeindre
+   * sous les doigts de quelqu'un qui tape est le plus sûr moyen de perdre sa saisie.
+   * ======================================================================== */
+  var _derniereRelecture = 0;
+  function rafraichirEcran() {
+    if (!PAGE || PAGE.standalone || !spaPermise()) return false;
+    _spaOccupe = true;
+    ecranEntier(PAGE.id, optsDeLien(global.location), false, true).then(function () { _spaOccupe = false; }, function () {
+      _spaOccupe = false; global.location.reload();
+    });
+    _derniereRelecture = Date.now();
+    return true;
+  }
+  function surDonneesDistantes(noms) {
+    if (!PAGE || PAGE.standalone) return;
+    var racine = document.getElementById('page-content');
+    var a = document.activeElement;
+    var saisie = !!(a && racine && racine.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+    var dialogue = !!document.querySelector('[role="dialog"]');
+    if (!dialogue && !saisie && Date.now() - _derniereRelecture > 4000 && rafraichirEcran()) return;
+    if (document.getElementById('bandeau-donnees-distantes')) return;
+    var b = el('div#bandeau-donnees-distantes.no-print', { role: 'status',
+      style: 'position:fixed;right:16px;bottom:16px;z-index:60;max-width:320px;padding:10px 14px;border-radius:10px;background:#0b2a4a;color:#fff;font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center' },
+    [el('span', { text: 'Des données ont été modifiées sur un autre poste.' }),
+      el('button', { type: 'button', text: 'Actualiser', style: 'background:#fff;color:#0b2a4a;border-radius:6px;padding:4px 10px;font-weight:600;white-space:nowrap',
+        onclick: function () { if (b.parentNode) b.parentNode.removeChild(b); rafraichirEcran(); } })]);
+    document.body.appendChild(b);
+  }
+  /** La pastille d'état de la synchronisation : toujours là, jamais muette. */
+  function pastilleSync() {
+    var p = el('span#pastille-sync', { role: 'status',
+      style: 'display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(255,255,255,.12);color:#fff' });
+    var point = el('span', { style: 'width:8px;height:8px;border-radius:50%;background:#94a3b8' });
+    var texte = el('span', { text: 'Mode local' });
+    p.appendChild(point); p.appendChild(texte);
+    function peindre() {
+      var e = S.etatSync ? S.etatSync() : null;
+      var couleur = '#94a3b8', libelle = 'Mode local', titre = 'Les données restent dans ce navigateur : aucun serveur joint.';
+      if (e && e.actif) {
+        var age = e.dernierSucces ? Math.round((Date.now() - e.dernierSucces) / 1000) : null;
+        if (e.ok === false) {
+          var min = e.depuisKO ? Math.max(1, Math.round((Date.now() - e.depuisKO) / 60000)) : 1;
+          couleur = '#ef4444'; libelle = 'Hors ligne depuis ' + min + ' min' + (e.enAttente ? ' — ' + e.enAttente + ' geste(s) en attente' : '');
+          titre = 'Le serveur de la clinique ne répond pas. Vos saisies sont gardées et partiront au retour du serveur.';
+        } else if (age !== null && age > 20) {
+          couleur = '#f59e0b'; libelle = 'Synchronisé il y a ' + age + ' s'; titre = 'Dernier échange avec le serveur il y a ' + age + ' secondes.';
+        } else {
+          couleur = '#22c55e'; libelle = e.enAttente ? 'Envoi en cours…' : 'Synchronisé';
+          titre = 'Les données de ce poste suivent celles des autres postes (échange toutes les 3 secondes).';
+        }
+      }
+      point.style.background = couleur; texte.textContent = libelle; p.setAttribute('title', titre);
+      /* Sur téléphone, le point seul : la barre du haut ne doit pas déborder (le libellé reste dans l'infobulle). */
+      texte.style.display = global.innerWidth < 640 ? 'none' : '';
+    }
+    peindre();
+    var t = global.setInterval(peindre, 2000);
+    enDernier(function () { global.clearInterval(t); });
+    return p;
+  }
+
+  function idDeLien(a) {
+    var m = /\/pages\/([\w-]+)\.[a-z]+(?:[?#].*)?$/i.exec(a.pathname + (a.hash || ''));
+    return m && N.get(m[1]) ? m[1] : null;
+  }
+  function optsDeLien(a) {
+    var h = (a.hash || '').replace(/^#/, ''), o = {};
+    h.split('&').forEach(function (kv) { var p = kv.split('='); if (p[0]) o[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || ''); });
+    return o;
+  }
+  /* Retour / avance du navigateur : l'écran de l'adresse revient, sans rechargement. */
+  global.addEventListener('popstate', function (ev) {
+    if (!(ev.state && ev.state.sigh) || !spaPermise()) return;
+    _spaOccupe = true;
+    ecranEntier(ev.state.sigh, optsDeLien(global.location), false).then(function () { _spaOccupe = false; }, function () {
+      _spaOccupe = false; global.location.reload();
+    });
+  });
 
   /* --- Session ------------------------------------------------------------ */
   function requireSession() {
@@ -90,7 +273,38 @@
 
   function delaiVerrou() {
     var v = Number(S.storage.get(VERROU_DELAI));
-    return v > 0 ? v : VERROU_DELAI_DEFAUT;
+    if (v > 0) return v;
+    /* La politique de sécurité (écran « Sécurité des utilisateurs ») fixe le délai quand elle est écrite. */
+    try {
+      var pol = (S.raw().politiqueSecurite || []).filter(function (f) { return f.statut !== 'archive'; })[0];
+      if (pol && Number(pol.inactiviteMin) > 0) return Number(pol.inactiviteMin) * 60000;
+    } catch (e) { /* le délai de référence s'applique */ }
+    return VERROU_DELAI_DEFAUT;
+  }
+
+  /**
+   * La session de ce poste a-t-elle été clôturée ? Si oui : journal (RG-12), session fermée, retour à la connexion
+   * avec le motif. Rend vrai quand la redirection est partie. Une session clôturée ne se rouvre pas.
+   */
+  var _clotureEnCours = false;
+  function controlerCloture() {
+    var M = global.SIGH.sessions;
+    if (_clotureEnCours || !M || !S.session()) return false;
+    var f;
+    try { f = M.cloturee(); } catch (e) { return false; }
+    if (!f) return false;
+    _clotureEnCours = true;
+    S.log('Session fermée par clôture', 'M14', 'Session', f.identifiant, { etat: 'ouverte' },
+      { sessionId: f.id, cloturePar: f.cloturePar, clotureLe: f.clotureLe });
+    /* Le journal part AVANT que la session (donc le jeton d'écriture) disparaisse : on attend la fin de la file, quatre secondes au plus. */
+    S.pousserMaintenant();
+    var debut = Date.now();
+    (function attendre() {
+      if (S.fileEnAttente && S.fileEnAttente() > 0 && Date.now() - debut < 4000) { global.setTimeout(attendre, 50); return; }
+      S.setSession(null);
+      global.location.href = href('index') + '?motif=session-cloturee';
+    })();
+    return true;
   }
 
   /** Arme la surveillance d'inactivité sur la page courante. */
@@ -102,6 +316,7 @@
       if (!s2) return;
       /* L'adresse complète, ancre comprise : c'est elle qui porte l'onglet. */
       S.storage.set(VERROU_RETOUR, global.location.pathname.split('/').pop() + global.location.hash);
+      if (global.SIGH.sessions) { try { global.SIGH.sessions.changerEtat('suspendue'); } catch (e) { /* sans effet */ } }
       S.log('Verrouillage pour inactivité', 'M14', 'Session', s2.identifiant || s2.nom,
         null, { ecran: entry.id, delaiMinutes: Math.round(delaiVerrou() / 60000) });
       global.location.href = href('auth-lock');
@@ -111,8 +326,9 @@
       minuteur = global.setTimeout(verrouiller, delaiVerrou());
     }
     ['mousedown', 'keydown', 'touchstart', 'scroll', 'focus'].forEach(function (ev) {
-      global.addEventListener(ev, relancer, { passive: true, capture: true });
+      ecoute(global, ev, relancer, { passive: true, capture: true });
     });
+    enDernier(function () { if (minuteur) global.clearTimeout(minuteur); });
     relancer();
   }
 
@@ -182,9 +398,9 @@
 
   function buildMenubar(session, currentId) {
     var header = el('header#app-menubar.no-print.sticky.top-0.z-40.bg-navy-950.shadow-lg');
-    header.appendChild(buildTopbar(session));
+    header.appendChild(buildTopbar(session, currentId));
 
-    var arbre = N.tree(session.role);
+    var arbre = N.treeRuban(session.role);
     if (!arbre.length) return header;
 
     var entry = N.get(currentId);
@@ -279,7 +495,7 @@
        page, le panneau se replie de lui-même et rend toute la hauteur au
        contenu. Ce repli automatique ne modifie pas la préférence enregistrée. */
     var dernierY = 0;
-    global.addEventListener('scroll', function () {
+    ecoute(global, 'scroll', function () {
       var y = global.scrollY || document.documentElement.scrollTop || 0;
       if (y > 120 && y > dernierY && !panneau.hidden) basculer(false, false);
       dernierY = y;
@@ -287,7 +503,7 @@
 
     /* Échap referme le panneau — sauf si une boîte de dialogue est ouverte,
        auquel cas la touche lui revient. */
-    document.addEventListener('keydown', function (e) {
+    ecoute(document, 'keydown', function (e) {
       if (e.key !== 'Escape' || panneau.hidden) return;
       if (document.querySelector('[role="dialog"]')) return;
       basculer(false);
@@ -312,7 +528,7 @@
   /* ==========================================================================
    * TOPBAR
    * ======================================================================== */
-  function buildTopbar(session) {
+  function buildTopbar(session, currentId) {
     var bar = el('div#app-topbar.flex.h-14.items-center.gap-3.px-3');
 
     /* Marque */
@@ -340,6 +556,10 @@
     ]);
     bar.appendChild(searchBtn);
     bar.appendChild(el('div.flex-1'));
+
+    /* EXERCICE COMPTABLE : choisir ce que l'on lit, jamais où l'on écrit. Seulement sur les écrans qui ont une notion d'année et la suivent. */
+    var selExoBar = selecteurExercice(N.get(currentId));
+    if (selExoBar) bar.appendChild(selExoBar);
 
     /* Actions rapides */
     bar.appendChild(el('button.ribbon-tool.hidden.lg\\:inline-flex.gap-2.px-3.w-auto.text-sm', {
@@ -374,9 +594,10 @@
       peindreBadge(NT.enAttente());
       /* La cloche suit le moteur en continu : elle ne se met pas à jour au
          seul rechargement de la page. */
-      NT.abonner(peindreBadge);
+      enDernier(NT.abonner(peindreBadge));
       NT.demarrer();
     }
+    bar.appendChild(pastilleSync());
     bar.appendChild(notifBtn);
 
     /* Profil */
@@ -426,25 +647,23 @@
       } catch (e) { U.toast('Plein écran indisponible sur ce poste.', { type: 'error' }); }
     });
 
-    document.addEventListener('fullscreenchange', peindre);
+    ecoute(document, 'fullscreenchange', peindre);
     peindre();
     return b;
   }
 
   /* --- Recherche globale --------------------------------------------------- */
-  function openSearch() {
-    var input = el('input.input', { type: 'search', placeholder: 'Patient, produit, employé, écran, acte, analyse, compte…', autocomplete: 'off' });
-    var results = el('div.mt-3.max-h-\\[24rem\\].overflow-y-auto');
-
-    function search() {
-      var q = input.value.trim();
-      C.clear(results);
-      if (q.length < 2) {
-        results.appendChild(el('p.px-1.py-6.text-center.text-xs.text-slate-400', { text: 'Saisir au moins 2 caractères.' }));
-        return;
-      }
-      var groups = [];
-      var role = (S.session() || {}).role;
+  /**
+   * LA RECHERCHE GLOBALE, SANS INTERFACE. Elle rend les groupes de résultats d'une
+   * requête pour un rôle : `[[titre, [{label, detail, icon, ecran, onglet}]]]`. Le modal
+   * ne fait que les peindre ; la cible (poste Flutter) les lit tels quels, ce qui
+   * permet de les comparer résultat par résultat (vecteurs).
+   * Un résultat ne mène jamais où le profil n'a pas accès (RG-13).
+   */
+  function rechercher(q, role) {
+    q = String(q || '').trim();
+    if (q.length < 2) return [];
+    var groups = [];
       /* Un résultat ne doit jamais mener où le profil n'a pas accès (RG-13). */
       function autorise(id) {
         var e = N.get(id);
@@ -459,7 +678,7 @@
         return !e.standalone && C.matches(e.label + ' ' + e.moduleLabel, q) && autorise(e.id);
       }).slice(0, 6);
       if (ecrans.length) groups.push(['Écrans', ecrans.map(function (e) {
-        return { label: e.label, detail: e.moduleLabel, icon: e.icon, go: function () { go(e.id); } };
+        return { label: e.label, detail: e.moduleLabel, icon: e.icon, ecran: e.id };
       })]);
 
       /* Rubriques : la recherche ouvre la page ET l'onglet concerné. */
@@ -469,8 +688,8 @@
       if (rubriques.length) groups.push(['Rubriques', rubriques.map(function (r) {
         var e = N.get(r.ecran);
         return {
-          label: r.label, detail: (e ? e.label : r.ecran) + ' — onglet', icon: e ? e.icon : 'panel-top',
-          go: function () { go(r.ecran, { onglet: r.onglet }); },
+          label: r.label, detail: (e ? e.label : r.ecran) + ', onglet', icon: e ? e.icon : 'panel-top',
+          ecran: r.ecran, onglet: r.onglet,
         };
       })]);
 
@@ -478,22 +697,22 @@
         var pats = S.collection('patients').active().filter(function (p) {
           return C.matches(p.nom + ' ' + p.prenom + ' ' + p.code, q);
         }).slice(0, 5);
-        if (pats.length) groups.push(['Patients', pats.map(function (p) {
-          return { label: p.nom + ' ' + p.prenom, detail: p.code + ' — ' + p.quartier, icon: 'user', go: function () { go('m1-patients'); } };
+        if (pats.length && autorise('m1-patients')) groups.push(['Patients', pats.map(function (p) {
+          return { label: p.nom + ' ' + p.prenom, detail: p.code + ', ' + p.quartier, icon: 'user', ecran: 'm1-patients' };
         })]);
 
         var prods = S.collection('produits').active().filter(function (p) {
           return C.matches(p.designation + ' ' + p.code, q);
         }).slice(0, 5);
-        if (prods.length) groups.push(['Produits', prods.map(function (p) {
-          return { label: p.designation, detail: p.code + ' — stock ' + p.stock + ' ' + p.unite, icon: 'pill', go: function () { go('m6-produits'); } };
+        if (prods.length && autorise('m6-produits')) groups.push(['Produits', prods.map(function (p) {
+          return { label: p.designation, detail: p.code + ', stock ' + p.stock + ' ' + p.unite, icon: 'pill', ecran: 'm6-produits' };
         })]);
 
         var emps = S.collection('personnel').active().filter(function (e) {
           return C.matches(e.nomComplet + ' ' + e.matricule + ' ' + e.poste, q);
         }).slice(0, 5);
-        if (emps.length) groups.push(['Personnel', emps.map(function (e) {
-          return { label: e.nomComplet, detail: 'Mat. ' + e.matricule + ' — ' + e.poste, icon: 'id-card', go: function () { go('m10-personnel'); } };
+        if (emps.length && autorise('m10-personnel')) groups.push(['Personnel', emps.map(function (e) {
+          return { label: e.nomComplet, detail: 'Mat. ' + e.matricule + ', ' + e.poste, icon: 'id-card', ecran: 'm10-personnel' };
         })]);
 
         /* Les deux prix de la grille, en une ligne. C'est la question du
@@ -520,8 +739,8 @@
         if (actes.length && autorise('cfg-tarifs')) groups.push(['Actes & prestations', actes.map(function (a) {
           return {
             label: a.libelle, icon: 'stethoscope',
-            detail: a.secteur + ' — ' + tarifCourt(a),
-            go: function () { go('cfg-tarifs', { onglet: 'actes' }); },
+            detail: a.secteur + ', ' + tarifCourt(a),
+            ecran: 'cfg-tarifs', onglet: 'actes',
           };
         })]);
 
@@ -531,8 +750,8 @@
         if (anas.length && autorise('cfg-tarifs')) groups.push(['Analyses', anas.map(function (a) {
           return {
             label: a.designation, icon: 'flask-conical',
-            detail: a.categorie + ' — ' + C.money(a.prix, false) + ' · ' + a.echantillon,
-            go: function () { go('cfg-tarifs', { onglet: 'analyses' }); },
+            detail: a.categorie + ', ' + C.money(a.prix, false) + ' · ' + a.echantillon,
+            ecran: 'cfg-tarifs', onglet: 'analyses',
           };
         })]);
 
@@ -540,17 +759,32 @@
           return C.matches(a.nom + ' ' + (a.sigle || ''), q);
         }).slice(0, 4);
         if (assur.length && autorise('m9-compagnies')) groups.push(['Assureurs', assur.map(function (a) {
-          return { label: a.nom, detail: 'Convention ' + (a.convention || '—'), icon: 'shield', go: function () { go('m9-compagnies'); } };
+          return { label: a.nom, detail: 'Convention ' + (a.convention || 'non renseignée'), icon: 'shield', ecran: 'm9-compagnies' };
         })]);
 
         var cpts = S.collection('comptes').active().filter(function (c) {
           return C.matches(c.numero + ' ' + c.intitule, q);
         }).slice(0, 4);
         if (cpts.length && autorise('m12-plan-comptable')) groups.push(['Plan comptable', cpts.map(function (c) {
-          return { label: c.numero + ' — ' + c.intitule, detail: 'SYSCOHADA', icon: 'book-open', go: function () { go('m12-plan-comptable'); } };
+          return { label: c.numero + ' : ' + c.intitule, detail: 'SYSCOHADA', icon: 'book-open', ecran: 'm12-plan-comptable' };
         })]);
       } catch (e) { /* recherche partielle acceptable */ }
 
+    return groups;
+  }
+
+  function openSearch() {
+    var input = el('input.input', { type: 'search', placeholder: 'Patient, produit, employé, écran, acte, analyse, compte…', autocomplete: 'off' });
+    var results = el('div.mt-3.max-h-\\[24rem\\].overflow-y-auto');
+
+    function search() {
+      var q = input.value.trim();
+      C.clear(results);
+      if (q.length < 2) {
+        results.appendChild(el('p.px-1.py-6.text-center.text-xs.text-slate-400', { text: 'Saisir au moins 2 caractères.' }));
+        return;
+      }
+      var groups = rechercher(q, (S.session() || {}).role);
       if (!groups.length) {
         results.appendChild(U.empty('Aucun résultat pour « ' + q + ' ».', { icon: 'search-x' }));
         return;
@@ -558,7 +792,7 @@
       groups.forEach(function (g) {
         results.appendChild(el('p.px-1.pb-1.pt-3.text-\\[10px\\].font-semibold.uppercase.tracking-wider.text-slate-400', { text: g[0] }));
         g[1].forEach(function (r) {
-          var row = el('button.flex.w-full.items-center.gap-3.rounded-lg.px-2.py-2.text-left.transition-colors.hover\\:bg-slate-100', { type: 'button', onclick: r.go });
+          var row = el('button.flex.w-full.items-center.gap-3.rounded-lg.px-2.py-2.text-left.transition-colors.hover\\:bg-slate-100', { type: 'button', onclick: function () { go(r.ecran, r.onglet ? { onglet: r.onglet } : undefined); } });
           row.appendChild(el('span.grid.h-8.w-8.shrink-0.place-items-center.rounded-lg.bg-slate-100.text-slate-500', null, C.icon(r.icon, 'h-4 w-4')));
           row.appendChild(el('span.min-w-0.flex-1', null, [
             el('span.block.truncate.text-sm.font-medium.text-slate-800', { text: r.label }),
@@ -578,27 +812,20 @@
   }
 
   /* --- Actions rapides ----------------------------------------------------- */
-  function openQuickActions() {
-    var actions = [
-      ['Nouveau dossier patient', 'user-plus', 'm1-patients'],
-      ['Patient externe — analyses', 'user-round-plus', 'm1-externe'],
-      ['Nouvelle consultation', 'stethoscope', 'm2-consultations'],
-      ['Nouvelle admission', 'bed-double', 'm3-admissions'],
-      ['Nouvelle facture', 'receipt', 'm8-facturation'],
-      ['Encaisser un paiement', 'banknote', 'm8-paiements'],
-      ['Assurés & cartes', 'id-card', 'm9-assures'],
-      ['Demande d’analyse', 'flask-conical', 'm5-demandes'],
-      ['Mouvement de stock', 'package', 'm6-mouvements'],
-      ['Bon d’expression de besoins', 'clipboard-list', 'm7-besoins'],
-      ['Éditer un état', 'printer', 'rapports-bibliotheque'],
-    ];
-    /* Un raccourci vers un écran interdit promet une porte fermée : la liste
-       est filtrée par les droits du profil, comme le méga-menu. */
-    var session = S.session() || {};
-    actions = actions.filter(function (a) {
+  /* Les actions rapides se déclarent au manifeste (nav.js : N.ACTIONS_RAPIDES), avec les rubriques de recherche. */
+  var ACTIONS_RAPIDES = N.ACTIONS_RAPIDES;
+
+  /** Les actions rapides OUVERTES à un rôle : la liste ci-dessus, filtrée par les droits (un raccourci vers un écran interdit promet une porte fermée). */
+  function actionsRapides(role) {
+    return ACTIONS_RAPIDES.filter(function (a) {
       var e = N.get(a[2]);
-      return e && N.can(session.role, e);
+      return e && N.can(role, e);
     });
+  }
+
+  function openQuickActions() {
+    var session = S.session() || {};
+    var actions = actionsRapides(session.role);
     var grid = el('div.grid.grid-cols-1.gap-2.sm\\:grid-cols-2');
     if (!actions.length) {
       U.modal({
@@ -630,7 +857,11 @@
    *
    * Il lit désormais le moteur, qui route par poste et par RBAC.
    */
-  function openNotifications() {
+  function openNotifications(opts) {
+    /* Branchée sur un clic, la fonction reçoit l'événement : seul un objet
+       `{ ouverture: true }` change son comportement. */
+    var ouverture = !!(opts && opts.ouverture === true);
+    var titreModal = ouverture ? 'À votre arrivée' : 'Notifications';
     var NT = global.SIGH.notifications;
     var body = el('div');
 
@@ -649,10 +880,12 @@
       var actuelles = NT.collecter();
 
       if (!actuelles.length) {
+        /* UN MODAL VIDE ET MUET EST INTERDIT : à l'ouverture de session, rien à
+           faire se DIT par une phrase. */
         host.appendChild(el('div.flex.items-start.gap-3.rounded-lg.border.border-success-200.bg-success-50.p-3', null, [
           el('span.shrink-0.text-success-600', null, C.icon('check-circle-2', 'h-5 w-5')),
           el('div', null, [
-            el('p.text-sm.font-medium.text-success-900', { text: 'Aucune alerte en cours' }),
+            el('p.text-sm.font-medium.text-success-900', { text: ouverture ? 'Rien ne vous attend' : 'Aucune alerte en cours' }),
             el('p.text-xs.text-success-700', { text: 'Rien ne requiert votre attention à ce poste.' }),
           ]),
         ]));
@@ -661,9 +894,24 @@
 
       /* Métier et système restent SÉPARÉS : ce sont deux natures d'information,
          et les mélanger ferait chercher une panne de son parmi les ruptures de
-         stock. C'est une classification d'affichage, pas une règle métier. */
-      [['metier', 'Alertes métier'], ['systeme', 'Système']].forEach(function (grp) {
-        var sous = actuelles.filter(function (n) { return n.categorie === grp[0]; });
+         stock. C'est une classification d'affichage, pas une règle métier.
+         À l'ouverture de session, le métier se range par FAMILLE (stock,
+         comptabilité, à valider, laboratoire…) : l'agent lit ce qu'il a à faire
+         poste par poste. */
+      var groupes = [];
+      if (ouverture) {
+        var domaines = [];
+        actuelles.filter(function (n) { return n.categorie === 'metier'; }).forEach(function (n) {
+          if (domaines.indexOf(n.domaine) < 0) domaines.push(n.domaine);
+        });
+        domaines.forEach(function (d) { groupes.push([function (n) { return n.categorie === 'metier' && n.domaine === d; }, d]); });
+        groupes.push([function (n) { return n.categorie === 'systeme'; }, 'Système']);
+      } else {
+        groupes = [[function (n) { return n.categorie === 'metier'; }, 'Alertes métier'],
+          [function (n) { return n.categorie === 'systeme'; }, 'Système']];
+      }
+      groupes.forEach(function (grp) {
+        var sous = actuelles.filter(grp[0]);
         if (!sous.length) return;
         host.appendChild(el('p.mt-2.text-\\[10px\\].font-semibold.uppercase.tracking-wide.text-slate-400',
           { text: grp[1] + ' — ' + sous.length }));
@@ -722,8 +970,24 @@
         'Paramétrer'),
     ]));
 
-    m = U.modal({ title: 'Notifications', size: 'md', body: body });
+    m = U.modal({ title: titreModal, size: 'md', body: body });
     U.icons(body);
+  }
+
+  /* Ouverture de session : le modal de notifications s'ouvre de lui-même, UNE
+     fois, sur la page d'accueil du profil. Le drapeau est posé par la
+     connexion (auth.js) ; le consommer ici garantit qu'un simple rechargement
+     ne le rouvre pas. */
+  function notificationsDOuverture() {
+    var cle = 'sigh-cnt:notifs-ouverture';
+    var pose = false;
+    try { pose = global.sessionStorage.getItem(cle) === '1'; global.sessionStorage.removeItem(cle); } catch (e) { pose = false; }
+    if (!pose) return;
+    /* Les alertes du planificateur serveur arrivent par un sondage : on l'attend
+       (sinon le modal s'ouvrirait « vide » alors que la cloche en porte dix). */
+    var NT = global.SIGH.notifications;
+    function ouvrir() { openNotifications({ ouverture: true }); }
+    if (NT && NT.sonderServeur) NT.sonderServeur().then(ouvrir, ouvrir); else ouvrir();
   }
 
   /* --- Profil -------------------------------------------------------------- */
@@ -738,21 +1002,9 @@
     ]));
     body.appendChild(head);
 
-    /* Changement de rôle — permet de parcourir tous les tableaux de bord. */
-    var sel = el('select.select');
-    Object.keys(N.ROLES).forEach(function (r) {
-      var o = el('option', { value: r }, N.ROLES[r].label);
-      if (r === s.role) o.selected = true;
-      sel.appendChild(o);
-    });
-    body.appendChild(el('div', null, [
-      el('label.label', { text: 'Profil de connexion (démonstration)' }),
-      sel,
-      el('p.mt-1.text-xs.text-slate-400', { text: 'Change le périmètre RBAC : le méga-menu et les tableaux de bord sont filtrés en conséquence.' }),
-    ]));
-
     var links = el('div.grid.grid-cols-2.gap-2');
-    [['Mon compte', 'cfg-compte', 'user-cog'], ['Notifications', 'cfg-notifications', 'bell'],
+    [['Paramètres système', N.RUBAN_SYSTEME_ROLES.indexOf(s.role) >= 0 ? 'cfg-systeme' : 'parametres-hub', 'settings'],
+     ['Mon compte', 'cfg-compte', 'user-cog'], ['Notifications', 'cfg-notifications', 'bell'],
      ['Aide & À propos', 'aide-apropos', 'life-buoy'], ['Contactez l’éditeur', 'contact-editeur', 'mail'],
      ['Journal d’audit', 'm14-audit', 'scroll-text'], ['Écran verrouillé', 'auth-lock', 'lock']].forEach(function (l) {
       links.appendChild(el('a.flex.items-center.gap-2.rounded-lg.border.border-slate-200.px-3.py-2.text-sm.text-slate-700.hover\\:bg-slate-50', { href: href(l[1]) },
@@ -766,16 +1018,6 @@
         el('button.btn.btn-secondary', {
           type: 'button', onclick: function () { S.setSession(null); global.location.href = base() + 'index' + N.EXT; },
         }, [C.icon('log-out', 'h-4 w-4'), 'Se déconnecter']),
-        el('button.btn.btn-primary', {
-          type: 'button',
-          onclick: function () {
-            var r = sel.value;
-            var role = N.ROLES[r];
-            S.setSession({ role: r, nom: s.nom, poste: role.label });
-            m.close();
-            go(role.home);
-          },
-        }, 'Appliquer'),
       ],
     });
   }
@@ -853,8 +1095,12 @@
     var session = S.session();
     crumbs.appendChild(el('a.hover\\:text-navy-700', { href: href(N.ROLES[session.role].home), text: 'Accueil' }));
     crumbs.appendChild(C.icon('chevron-right', 'h-3 w-3 text-slate-300'));
-    crumbs.appendChild(el('span', { text: entry.domain }));
-    crumbs.appendChild(C.icon('chevron-right', 'h-3 w-3 text-slate-300'));
+    /* Le domaine ACCUEIL est déjà nommé par le premier maillon : le répéter
+       donnait « Accueil > Accueil > … » (retour de terrain du 01/11/2026). */
+    if (entry.domain !== 'Accueil') {
+      crumbs.appendChild(el('span', { text: entry.domain }));
+      crumbs.appendChild(C.icon('chevron-right', 'h-3 w-3 text-slate-300'));
+    }
     /* L'intitulé du module ouvre sa page d'accueil : on circule d'un écran à
        l'autre du module sans repasser par le menu. */
     var hub = N.get(N.hubId(entry.module));
@@ -899,6 +1145,7 @@
       return (b && (b.textContent || b.getAttribute && b.getAttribute('title'))) || '';
     });
     var deduites = accesRapides(entry, liste.length, libellesDeclares);
+    var selExo = N.aExercice(entry);   /* le sélecteur est dans la barre supérieure ; ici seulement le bandeau d'état */
     if (liste.length || deduites.length) {
       var acts = el('div#page-actions.flex.flex-wrap.items-center.gap-2');
       C.append(acts, liste);
@@ -940,6 +1187,31 @@
       }
     }
 
+    /* Un exercice CLOS est en lecture seule : l'écran le DIT, il n'attend pas qu'une écriture soit refusée. */
+    if (selExo && global.SIGH.exercice) {
+      var xc = global.SIGH.exercice.de(global.SIGH.exercice.choisi());
+      if (xc && xc.etat === 'clos') {
+        head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
+          el('span.shrink-0.text-warning-600', null, C.icon('lock', 'h-4 w-4')),
+          el('p.text-xs.text-warning-900', { html: '<strong>Exercice ' + xc.annee + ' clôturé</strong>'
+            + (xc.valideLe ? ' le ' + C.dateFR(xc.valideLe) : '') + (xc.validePar ? ' par ' + U.texteEnrichi(xc.validePar) : '')
+            + ' : <strong>lecture seule</strong>. Seule la réouverture par le comptable (motif obligatoire, à l’écran « Exercices & clôtures ») permet de corriger.' }),
+        ]));
+      } else if (xc && xc.etat === 'en_cloture') {
+        head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-info-200.bg-info-50.px-3.py-2', null, [
+          el('span.shrink-0.text-info-600', null, C.icon('hourglass', 'h-4 w-4')),
+          el('p.text-xs.text-info-900', { html: '<strong>Exercice ' + xc.annee + ' en clôture</strong> : les modules n’y écrivent plus, seul le comptable y passe ses écritures d’inventaire. '
+            + 'La clôture définitive revient à la Direction ou à la DAF (démarrée par ' + U.texteEnrichi(xc.demandePar || 'le comptable') + ').' }),
+        ]));
+      } else if (xc && global.SIGH.exercice.provisoires(xc.annee).length) {
+        head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-slate-200.bg-slate-50.px-3.py-2', null, [
+          el('span.shrink-0.text-slate-500', null, C.icon('info', 'h-4 w-4')),
+          el('p.text-xs.text-slate-700', { html: '<strong>À-nouveaux provisoires</strong> — l’exercice ' + (xc.annee - 1)
+            + ' n’est pas encore clos : le report est recalculé à chaque consultation et sera figé à la clôture.' }),
+        ]));
+      }
+    }
+
     /* Rappel de règle métier, le cas échéant */
     if (def.regle) {
       head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-info-200.bg-info-50.px-3.py-2', null, [
@@ -948,6 +1220,33 @@
       ]));
     }
     return head;
+  }
+
+  /**
+   * SÉLECTEUR D’EXERCICE : dans la BARRE SUPÉRIEURE, sur les écrans à année (N.aExercice).
+   * Le choix vit en session (SIGH.exercice.choisi), le plus récent exercice ouvert par défaut. Les
+   * exercices clos sont marqués : le choix dit déjà ce qu'on pourra y faire.
+   */
+  function selecteurExercice(entry) {
+    if (!global.SIGH.exercice || !N.aExercice(entry)) return null;
+    var X = global.SIGH.exercice, liste = X.liste(), courant = X.choisi();
+    if (!liste.length) return null;
+    var sel = el('select.select.w-auto.py-1.text-sm', { id: 'selecteur-exercice', 'aria-label': 'Exercice comptable', title: 'Exercice comptable : ce que l’on lit, jamais où l’on écrit' });
+    liste.forEach(function (x) {
+      var et = { ouvert: 'ouvert', en_cloture: 'en clôture', clos: 'clôturé' }[x.etat] || x.etat;
+      var o = el('option', { value: String(x.annee) }, 'Exercice ' + x.annee + ' — ' + et);
+      if (x.annee === courant) o.selected = true;
+      sel.appendChild(o);
+    });
+    function aller(annee) { X.choisir(annee); global.location.reload(); }
+    sel.addEventListener('change', function () { aller(sel.value); });
+    var prec = X.voisin(-1), suiv = X.voisin(1);
+    /* Une borne atteinte : le bouton est ABSENT, pas grisé sans explication. */
+    var boutons = [];
+    if (prec) boutons.push(el('button.ribbon-tool.px-2.w-auto.text-xs', { type: 'button', id: 'exercice-precedent', title: 'Exercice ' + prec, onclick: function () { aller(prec); } }, '‹ ' + prec));
+    if (suiv) boutons.push(el('button.ribbon-tool.px-2.w-auto.text-xs', { type: 'button', id: 'exercice-suivant', title: 'Exercice ' + suiv, onclick: function () { aller(suiv); } }, suiv + ' ›'));
+    return el('div#bloc-exercice.hidden.items-center.gap-1.md\\:flex', null,
+      [C.icon('calendar', 'h-4 w-4 text-navy-200')].concat(boutons.slice(0, 1), [sel], boutons.slice(1)));
   }
 
   /**
@@ -1095,6 +1394,9 @@
       if (PAGE.standalone) {
         var host0 = $('#page') || document.body;
         if (PAGE.render) PAGE.render(host0);
+        /* Le pied légal figure aussi sur les pages autonomes (Direction, 01/11/2026). */
+        document.body.appendChild(el('footer.no-print.bg-slate-100.px-4.pb-6.pt-2.text-center', null,
+          el('p.text-xs.text-slate-500', { text: C.mentionLegale(), 'data-pied-legal': '1' })));
         U.icons(document.body);
         return;
       }
@@ -1124,9 +1426,16 @@
         return;
       }
 
+      /* Une session CLOTUREE depuis l'écran des sessions (de ce poste ou d'un autre) ne travaille plus :
+         au prochain écran ouvert, la connexion reprend la main. */
+      if (controlerCloture()) return;
+      if (global.SIGH.sessions) { try { global.SIGH.sessions.assurer(); } catch (e) { /* le registre ne bloque pas le travail */ } }
+
       document.body.className = 'min-h-screen bg-slate-100';
       document.body.appendChild(buildMenubar(session, PAGE.id));
       armerVerrou(entry);
+      /* ... et au prochain CLIC, sans attendre un changement d'écran. */
+      ecoute(document, 'click', function () { controlerCloture(); }, { capture: true });
 
       var main = el('div#app-main');
 
@@ -1143,7 +1452,7 @@
          conteneur et lui échappaient, ce qui laissait le menu déployé sur
          Patients, Consultations, Pharmacie et Facturation.
          Les boutons, eux, sont couverts par go() — voir plus haut. */
-      document.addEventListener('click', function (ev) {
+      ecoute(document, 'click', function (ev) {
         var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
         if (!a) return;
         var href_ = a.getAttribute('href') || '';
@@ -1153,13 +1462,18 @@
         if (/^(https?:|mailto:|tel:|data:|blob:)/i.test(href_)) return;
         if (a.target && a.target !== '_self') return;
         replierApresNavigation();
+        /* Un lien vers un écran du manifeste ne recharge pas le document. */
+        if (ev.defaultPrevented || ev.button || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey) return;
+        var cible = idDeLien(a);
+        if (cible && spaPermise() && naviguerSansRecharger(cible, optsDeLien(a))) ev.preventDefault();
       });
 
       main.appendChild(container);
 
       main.appendChild(el('footer.no-print.mx-auto.w-full.max-w-\\[100rem\\].px-4.pb-8.pt-4.sm\\:px-6', null,
         el('p.border-t.border-slate-200.pt-4.text-xs.text-slate-400', {
-          text: C.BRAND.nom + ' — IFU ' + C.BRAND.ifu + ' — RCCM ' + C.BRAND.rccm + '. Prototype SIGH-CNT, jeu de données de démonstration.',
+          text: C.mentionLegale(),
+          'data-pied-legal': '1',
         })));
       document.body.appendChild(main);
 
@@ -1189,9 +1503,10 @@
        * consomme UNE fois, comme le drapeau de repli du ruban.
        * ================================================================== */
       U.consommerMessageDiffere();
+      notificationsDOuverture();
 
       /* Raccourcis clavier — postes à forte saisie (CDCT §10.3). */
-      document.addEventListener('keydown', function (e) {
+      ecoute(document, 'keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSearch(); }
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p' && PAGE.print) { e.preventDefault(); PAGE.print(); }
       });
@@ -1202,6 +1517,10 @@
     }
   }
 
+  try { if (global.history && global.history.replaceState && !(global.history.state && global.history.state.sigh)) {
+    var _m = /\/pages\/([\w-]+)\.[a-z]+$/i.exec(global.location.pathname);
+    if (_m) global.history.replaceState({ sigh: _m[1] }, '', global.location.href);
+  } } catch (e) { /* historique indisponible */ }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else setTimeout(boot, 0);
 
@@ -1230,10 +1549,13 @@
   global.SIGH.app = {
     href: href, go: go, base: base,
     openSearch: openSearch, openProfile: openProfile, openNotifications: openNotifications,
-    droits: droitsCourants,
+    rechercher: rechercher, actionsRapides: actionsRapides,
+    droits: droitsCourants, controlerCloture: controlerCloture,
     entry: function () { return PAGE ? N.get(PAGE.id) : null; },
     VERROU_RETOUR: VERROU_RETOUR, VERROU_DELAI: VERROU_DELAI,
     delaiVerrou: delaiVerrou,
     replierRuban: replierApresNavigation,
+    ecoute: ecoute, enDernier: enDernier, sansRecharger: naviguerSansRecharger,
+    surDonneesDistantes: surDonneesDistantes, rafraichir: rafraichirEcran,
   };
 })(window);

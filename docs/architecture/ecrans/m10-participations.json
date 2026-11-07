@@ -1,0 +1,61 @@
+{
+ "id": "m10-participations",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Frais de participation",
+ "acces": "ouvert",
+ "titre": "Frais de participation",
+ "description": "Participations dues par chaque agent : mode de règlement, encaissement au comptant et retenue sur salaire.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Frais de participation"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Participations",
+  "Réglées",
+  "À retenir sur salaire",
+  "Reste dû"
+ ],
+ "cartes": [
+  "Registre des participations",
+  "Modes de règlement",
+  "État du recouvrement",
+  "Participations par service"
+ ],
+ "tableaux": [
+  [
+   "Agent",
+   "Événement",
+   "Montant",
+   "Mode de règlement",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Imprimer l’état",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [
+  "Événement",
+  "Mode de règlement",
+  "État"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

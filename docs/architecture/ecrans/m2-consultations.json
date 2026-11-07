@@ -1,0 +1,59 @@
+{
+ "id": "m2-consultations",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "Consultations",
+ "acces": "ouvert",
+ "titre": "Consultations",
+ "description": "Enregistrement des consultations, diagnostics et actes réalisés, avec édition du compte rendu.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "Consultations"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les consultations",
+  "Archivés"
+ ],
+ "kpis": [
+  "Consultations totales",
+  "Ce mois-ci",
+  "Recette consultations",
+  "Tarif moyen"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Date",
+   "Patient",
+   "Motif",
+   "Diagnostic",
+   "Praticien",
+   "Tarif",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les consultations282",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

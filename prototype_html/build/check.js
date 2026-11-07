@@ -154,9 +154,14 @@ function listPages() {
       /* ON ATTEND LA PEINTURE. `networkidle2` ne se calme pas derrière un
          serveur PHP mono-processus qui sert 4,9 Mo par page, et deux pages
          saines étaient déclarées en erreur de navigation. */
+      /* Une page SANS COQUILLE (connexion, mot de passe oublié, réinitialisation, double facteur, verrou, erreurs, plan du site, enquête
+         publique) n'a pas de `#page-content` : l'attendre faisait patienter 180 s sur chacune (E2285). On attend alors qu'un titre, un
+         formulaire ou un contenu principal soit peint. */
       await page.waitForFunction(() => {
         const c = document.getElementById('page-content');
-        return !!(window.SIGH && window.SIGH.store && c && c.children.length > 0);
+        if (!(window.SIGH && window.SIGH.store)) return false;
+        if (c) return c.children.length > 0;
+        return !!document.querySelector('form, main, h1, h2');
       }, { timeout: 180000 }).catch(() => null);
       await new Promise((r) => setTimeout(r, 350)); // laisse le rendu différé (graphiques) s'exécuter
     } catch (e) {

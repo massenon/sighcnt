@@ -59,7 +59,9 @@ const PROFILS = [
   ['comptable', 'comptable'], ['da', 'direction'], ['dm', 'medecin'],
   ['aide_soignant', 'aide_soignant'], ['echographiste', 'medecin'],
   ['surveillant', 'infirmier'], ['assistant_comptable', 'comptable'],
-  ['biomedical', 'stock'], ['agentadmin', 'entretien'], ['ambulancier', 'chauffeur'],
+  ['agentadmin', 'entretien'], ['ambulancier', 'chauffeur'],
+  /* Ajoutés le 07/11/2026 : l'audit ne sondait que 15 des 22 rôles, et les trois créés à la phase 2 (31/08) n'avaient jamais été sondés. */
+  ['direction', 'direction'], ['chirurgien', 'medecin'], ['anesthesiste', 'medecin'], ['aide_comptable', 'comptable'],
 ];
 
 /* Ce qu'on considère comme une commande d'ÉCRITURE. */
@@ -119,7 +121,10 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
   const cachees = [];     /* droit accordé, aucune commande */
   let sondes = 0;
 
+  /* --roles=admin,da : ne sonder que ces profils (l'audit complet dépasse la demi-heure sous charge). */
+  const SEULS = ((process.argv.find((a) => a.startsWith('--roles=')) || '').slice(8)).split(',').filter(Boolean);
   for (const [role, fonction] of PROFILS) {
+    if (SEULS.length && SEULS.indexOf(role) < 0) continue;
     await page.evaluate((r, f) => localStorage.setItem('sigh-cnt:session', JSON.stringify({
       role: r, nom: 'Audit ' + r, nomComplet: 'Audit ' + r, identifiant: 'audit', fonction: f,
     })), role, fonction);
@@ -137,7 +142,19 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
     }, { timeout: 180000 }).catch(() => null);
 
     /* Les écrans que ce profil peut ouvrir, et ses droits sur chacun. */
-    const accessibles = await page.evaluate((r) => {
+    /* Une page que le profil n'ouvre pas rebondit (403, son propre tableau) APRÈS le
+       premier rendu : le contexte est alors détruit en plein évaluate. On
+       attend la page d'arrivée et on réessaie, au lieu de faire tomber l'audit. */
+    for (let essai = 0; essai < 5; essai++) {
+      try { await page.evaluate(() => !!window.SIGH); break; }
+      catch (e) { await new Promise((r) => setTimeout(r, 1500)); }
+    }
+    /* Le cadre peut être détaché par le rebond lui-même : l'attente lève alors de façon SYNCHRONE, que `.catch` ne rattrape pas. */
+    for (let essai = 0; essai < 5; essai++) {
+      try { await page.waitForFunction(() => !!(window.SIGH && window.SIGH.store && window.SIGH.nav), { timeout: 60000 }); break; }
+      catch (e) { await new Promise((r) => setTimeout(r, 1500)); }
+    }
+    const sonderAccessibles = (r) => {
       const N = window.SIGH.nav;
       const out = [];
       (N.NAV || []).forEach((dom) => (dom.modules || []).forEach((mod) => {
@@ -159,7 +176,13 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
         });
       }));
       return out;
-    }, role);
+    };
+    let accessibles = null;
+    for (let essai = 0; essai < 6 && accessibles === null; essai++) {
+      try { accessibles = await page.evaluate(sonderAccessibles, role); }
+      catch (e) { await new Promise((r) => setTimeout(r, 2000)); await page.waitForFunction(() => !!(window.SIGH && window.SIGH.nav), { timeout: 60000 }).catch(() => null); }
+    }
+    if (accessibles === null) throw new Error('profil ' + role + ' : page instable, sondage impossible');
 
     for (const e of accessibles) {
       await page.goto('http://127.0.0.1:' + PORT + '/pages/' + e.id + '.php', { waitUntil: 'domcontentloaded' });

@@ -1,0 +1,48 @@
+{
+ "id": "cfg-centres-couts",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Centres de coûts",
+ "acces": "ouvert",
+ "titre": "Centres de coûts",
+ "description": "Axes d’imputation analytique des écritures comptables, administrables par la clinique.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Centres de coûts"
+ ],
+ "actions": [
+  "Saisie des écritures",
+  "Comptabilité analytique",
+  "Organisation & organigramme"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Centres de coûts",
+  "Centres d’exploitation",
+  "Centres de support",
+  "Sans responsable"
+ ],
+ "cartes": [
+  "Axes analytiques"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Centre",
+   "Type",
+   "Responsable",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

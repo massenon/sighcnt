@@ -1,0 +1,85 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "du": [
+     2026,
+     7,
+     1
+    ],
+    "au": [
+     2026,
+     7,
+     31
+    ]
+   },
+   "sortie": {
+    "debut": "2026-08-01T00:00",
+    "fin": "2026-08-31T00:00",
+    "jours": 31,
+    "libelle": "Du 01/08/2026 au 31/08/2026"
+   }
+  },
+  {
+   "entree": {
+    "du": [
+     2026,
+     7,
+     31
+    ],
+    "au": [
+     2026,
+     7,
+     1
+    ]
+   },
+   "sortie": {
+    "debut": "2026-08-01T00:00",
+    "fin": "2026-08-31T00:00",
+    "jours": 31,
+    "libelle": "Du 01/08/2026 au 31/08/2026"
+   }
+  },
+  {
+   "entree": {
+    "du": [
+     2026,
+     0,
+     1
+    ],
+    "au": [
+     2026,
+     0,
+     1
+    ]
+   },
+   "sortie": {
+    "debut": "2026-01-01T00:00",
+    "fin": "2026-01-01T00:00",
+    "jours": 1,
+    "libelle": "Journée du 01/01/2026"
+   }
+  },
+  {
+   "entree": {
+    "du": [
+     2025,
+     11,
+     25
+    ],
+    "au": [
+     2026,
+     0,
+     5
+    ]
+   },
+   "sortie": {
+    "debut": "2025-12-25T00:00",
+    "fin": "2026-01-05T00:00",
+    "jours": 12,
+    "libelle": "Du 25/12/2025 au 05/01/2026"
+   }
+  }
+ ]
+}

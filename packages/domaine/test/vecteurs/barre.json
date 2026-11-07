@@ -1,0 +1,3739 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-barre.js depuis la maquette RÉELLE (horloge figée au 16/08/2026 12:00), ne pas éditer.",
+ "horloge": "2026-08-16T12:00:00",
+ "jeu": {
+  "patients": [
+   {
+    "id": "PAT1",
+    "code": "CNT/1/26",
+    "nom": "PADONOU",
+    "prenom": "Amina",
+    "quartier": "Péporiyakou"
+   },
+   {
+    "id": "PAT2",
+    "code": "CNT/2/26",
+    "nom": "KOUAGOU",
+    "prenom": "Paulin",
+    "quartier": "Natitingou"
+   },
+   {
+    "id": "PAT3",
+    "code": "CNT/3/26",
+    "nom": "TAMOU",
+    "prenom": "Sanni",
+    "quartier": "Yimporima"
+   },
+   {
+    "id": "PAT4",
+    "code": "CNT/4/26",
+    "nom": "ARCHIVÉ",
+    "prenom": "Pascal",
+    "quartier": "Boriyoure",
+    "statut": "archive"
+   }
+  ],
+  "personnel": [
+   {
+    "id": "PER1",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "matricule": "M001",
+    "poste": "Médecin chirurgien"
+   },
+   {
+    "id": "PER2",
+    "nomComplet": "PADONOU Rachidatou",
+    "matricule": "M014",
+    "poste": "Sage-femme"
+   },
+   {
+    "id": "PER3",
+    "nomComplet": "GBEDJI Hervé",
+    "matricule": "M020",
+    "poste": "Assistant de Direction"
+   }
+  ],
+  "actes": [
+   {
+    "id": "ACT1",
+    "code": "CS-GEN",
+    "libelle": "Consultation généraliste",
+    "secteur": "Consultation",
+    "prix": 3000,
+    "prixAssure": 4000
+   },
+   {
+    "id": "ACT2",
+    "code": "AC-1",
+    "libelle": "Accouchement par voie basse",
+    "secteur": "Maternité",
+    "prix": 35000,
+    "tarifProvisoire": true
+   },
+   {
+    "id": "ACT3",
+    "code": "PF-1",
+    "libelle": "Pose d’implant",
+    "secteur": "Maternité",
+    "prix": 8000,
+    "nonCouvert": true
+   },
+   {
+    "id": "ACT4",
+    "code": "RX-1",
+    "libelle": "Radiographie du thorax",
+    "secteur": "Imagerie médicale",
+    "prix": null
+   }
+  ],
+  "assureurs": [
+   {
+    "id": "ASS1",
+    "nom": "SANLAM ASSURANCE",
+    "sigle": "SANLAM",
+    "convention": "CNV-2026-01"
+   },
+   {
+    "id": "ASS2",
+    "nom": "NSIA ASSURANCE",
+    "sigle": "NSIA"
+   }
+  ],
+  "comptes": [
+   {
+    "id": "CPT1",
+    "numero": "411000",
+    "intitule": "Clients assurance"
+   },
+   {
+    "id": "CPT2",
+    "numero": "571000",
+    "intitule": "Caisse"
+   },
+   {
+    "id": "CPT3",
+    "numero": "706000",
+    "intitule": "Prestations de services"
+   }
+  ],
+  "produits": [
+   {
+    "id": "P1",
+    "code": "MED001",
+    "designation": "AMOXICILLINE 500 MG",
+    "unite": "boîte",
+    "stock": 0,
+    "seuilAlerte": 10
+   },
+   {
+    "id": "P2",
+    "code": "MED002",
+    "designation": "PARACETAMOL 500 MG",
+    "unite": "boîte",
+    "stock": 3,
+    "seuilAlerte": 20
+   },
+   {
+    "id": "P3",
+    "code": "MED003",
+    "designation": "SÉRUM GLUCOSÉ 5 %",
+    "unite": "poche",
+    "stock": 5,
+    "seuilAlerte": 5
+   },
+   {
+    "id": "P4",
+    "code": "CON001",
+    "designation": "GANTS D’EXAMEN",
+    "unite": "boîte",
+    "stock": 2,
+    "seuilAlerte": 30
+   },
+   {
+    "id": "P5",
+    "code": "CON002",
+    "designation": "COMPRESSES STÉRILES",
+    "unite": "paquet",
+    "stock": 100,
+    "seuilAlerte": 10
+   },
+   {
+    "id": "P6",
+    "code": "CON003",
+    "designation": "ALCOOL 70°",
+    "unite": "flacon",
+    "stock": 4,
+    "seuilAlerte": null
+   }
+  ],
+  "lots": [
+   {
+    "id": "L1",
+    "produit": "AMOXICILLINE 500 MG",
+    "numeroLot": "A1",
+    "statut": "perime"
+   },
+   {
+    "id": "L2",
+    "produit": "PARACETAMOL 500 MG",
+    "numeroLot": "P7",
+    "statut": "alerte"
+   },
+   {
+    "id": "L3",
+    "numero": "Z9",
+    "numeroLot": "Z9",
+    "statut": "alerte"
+   },
+   {
+    "id": "L4",
+    "produit": "GANTS D’EXAMEN",
+    "numeroLot": "G2",
+    "statut": "actif"
+   }
+  ],
+  "factures": [
+   {
+    "id": "F1",
+    "numero": "FAC-2026-00001",
+    "statutMecef": "rejete",
+    "date": "2026-08-10"
+   },
+   {
+    "id": "F2",
+    "numero": "FAC-2026-00002",
+    "statutMecef": "valide",
+    "date": "2026-04-01",
+    "assureur": "SANLAM",
+    "partAssurance": 5000
+   },
+   {
+    "id": "F3",
+    "numero": "FAC-2026-00003",
+    "statutMecef": "valide",
+    "date": "2026-03-10",
+    "assureur": "NSIA",
+    "partAssurance": 3000
+   },
+   {
+    "id": "F4",
+    "numero": "FAC-2026-00004",
+    "statutMecef": "valide",
+    "date": "2026-08-01",
+    "assureur": "NSIA",
+    "partAssurance": 9000
+   }
+  ],
+  "echeancesFiscales": [
+   {
+    "id": "E1",
+    "libelle": "ITS de juillet",
+    "echeance": "2026-08-10",
+    "paye": false
+   },
+   {
+    "id": "E2",
+    "libelle": "AIB de juillet",
+    "echeance": "2026-07-20",
+    "paye": false
+   },
+   {
+    "id": "E3",
+    "libelle": "ITS d’août",
+    "echeance": "2026-09-10",
+    "paye": false
+   },
+   {
+    "id": "E4",
+    "libelle": "CNSS de juillet",
+    "echeance": "2026-08-01",
+    "paye": true
+   }
+  ],
+  "demandesAnalyses": [
+   {
+    "id": "D1",
+    "analyse": "NFS",
+    "etatAnalyse": "attente_prelevement"
+   },
+   {
+    "id": "D2",
+    "analyse": "Glycémie",
+    "etatAnalyse": "attente_prelevement"
+   },
+   {
+    "id": "D3",
+    "analyse": "Widal",
+    "etatAnalyse": "attente_prelevement"
+   },
+   {
+    "id": "D4",
+    "analyse": "CRP",
+    "etatAnalyse": "en_cours",
+    "recuLaboLe": "2026-08-15"
+   },
+   {
+    "id": "D5",
+    "analyse": "Groupe sanguin",
+    "etatAnalyse": "en_attente"
+   }
+  ],
+  "notifications": [
+   {
+    "id": "N1",
+    "type": "demande_imagerie",
+    "poste": "imagerie",
+    "libelle": "Nouvelle demande d’imagerie",
+    "detail": "Échographie pelvienne",
+    "priorite": "normale",
+    "lue": false
+   },
+   {
+    "id": "N2",
+    "type": "prescription_soins",
+    "poste": "salle_soins",
+    "libelle": "Prescription de soins",
+    "detail": "Pansement",
+    "priorite": "normale",
+    "lue": false
+   },
+   {
+    "id": "N3",
+    "type": "information",
+    "poste": "tous",
+    "libelle": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "priorite": "normale",
+    "lue": false
+   },
+   {
+    "id": "N4",
+    "type": "cloture",
+    "poste": "direction",
+    "libelle": "Clôture 2025 à valider",
+    "detail": "Demandée par le comptable.",
+    "priorite": "haute",
+    "lue": false
+   },
+   {
+    "id": "N5",
+    "type": "demande_imagerie",
+    "poste": "imagerie",
+    "libelle": "Demande déjà lue",
+    "priorite": "normale",
+    "lue": true
+   }
+  ],
+  "besoins": [
+   {
+    "id": "B1",
+    "reference": "BEX-001",
+    "etape": "soumis",
+    "service": "Laboratoire",
+    "motif": "Réactifs"
+   },
+   {
+    "id": "B2",
+    "reference": "BEX-002",
+    "etape": "validation_da",
+    "service": "Pharmacie",
+    "motif": "Gants"
+   },
+   {
+    "id": "B3",
+    "reference": "BEX-003",
+    "etape": "accorde",
+    "service": "Maternité",
+    "motif": "Draps"
+   }
+  ],
+  "ecritures": [
+   {
+    "id": "W1",
+    "numero": "OD-2026-00001",
+    "statut": "brouillon",
+    "libelle": "Achat de marchandises",
+    "compte": "601100",
+    "debit": 1000,
+    "credit": 0
+   },
+   {
+    "id": "W2",
+    "numero": "OD-2026-00001",
+    "statut": "brouillon",
+    "libelle": "Achat de marchandises",
+    "compte": "401000",
+    "debit": 0,
+    "credit": 1000
+   },
+   {
+    "id": "W3",
+    "numero": "OD-2026-00002",
+    "statut": "brouillon",
+    "libelle": "Loyer",
+    "compte": "622000",
+    "debit": 500,
+    "credit": 0
+   },
+   {
+    "id": "W4",
+    "numero": "OD-2026-00002",
+    "statut": "brouillon",
+    "libelle": "Loyer",
+    "compte": "571000",
+    "debit": 0,
+    "credit": 500
+   },
+   {
+    "id": "W5",
+    "numero": "OD-2026-00003",
+    "statut": "validee",
+    "libelle": "Recette",
+    "compte": "571000",
+    "debit": 300,
+    "credit": 0
+   },
+   {
+    "id": "W6",
+    "numero": "OD-2026-00003",
+    "statut": "validee",
+    "libelle": "Recette",
+    "compte": "706000",
+    "debit": 0,
+    "credit": 300
+   }
+  ]
+ },
+ "roles": [
+  "admin",
+  "direction",
+  "dm",
+  "da",
+  "medecin",
+  "infirmier",
+  "pharmacien",
+  "laborantin",
+  "stock",
+  "caissier",
+  "comptable",
+  "rh",
+  "reception",
+  "agentadmin",
+  "ambulancier",
+  "aide_soignant",
+  "echographiste",
+  "surveillant",
+  "assistant_comptable",
+  "chirurgien",
+  "anesthesiste",
+  "aide_comptable"
+ ],
+ "notifications": {
+  "admin": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "direction": [
+   {
+    "source": "echeance_fiscale",
+    "domaine": "Comptabilité",
+    "priorite": "critique",
+    "titre": "AIB de juillet : échéance dépassée",
+    "detail": "Échéance au 20/07/2026. Une pénalité court.",
+    "lien": "m12-echeances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "critique",
+    "titre": "Clôture 2025 à valider",
+    "detail": "Demandée par le comptable.",
+    "lien": "m12-cloture",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "echeance_fiscale",
+    "domaine": "Comptabilité",
+    "priorite": "critique",
+    "titre": "ITS de juillet : échéance dépassée",
+    "detail": "Échéance au 10/08/2026. Une pénalité court.",
+    "lien": "m12-echeances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "creance_agee",
+    "domaine": "Recouvrement",
+    "priorite": "critique",
+    "titre": "NSIA ASSURANCE : 3 000 en souffrance",
+    "detail": "1 facture(s), jusqu’à 159 jours d’ancienneté (seuil retenu : 60 jours). Cette créance pèse sur le besoin en fonds de roulement.",
+    "lien": "m9-relances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "creance_agee",
+    "domaine": "Recouvrement",
+    "priorite": "critique",
+    "titre": "SANLAM ASSURANCE : 5 000 en souffrance",
+    "detail": "1 facture(s), jusqu’à 137 jours d’ancienneté (seuil retenu : 60 jours). Cette créance pèse sur le besoin en fonds de roulement.",
+    "lien": "m9-relances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_besoins",
+    "domaine": "À valider",
+    "priorite": "important",
+    "titre": "Bon de besoins à valider : BEX-001",
+    "detail": "Laboratoire : Réactifs. La validation est un geste de la DAF.",
+    "lien": "m7-besoins",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_besoins",
+    "domaine": "À valider",
+    "priorite": "important",
+    "titre": "Bon de besoins à valider : BEX-002",
+    "detail": "Pharmacie : Gants. La validation est un geste de la DAF.",
+    "lien": "m7-besoins",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "dm": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "da": [
+   {
+    "source": "echeance_fiscale",
+    "domaine": "Comptabilité",
+    "priorite": "critique",
+    "titre": "AIB de juillet : échéance dépassée",
+    "detail": "Échéance au 20/07/2026. Une pénalité court.",
+    "lien": "m12-echeances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "stock_seuil",
+    "domaine": "Stock",
+    "priorite": "critique",
+    "titre": "AMOXICILLINE 500 MG : 0 en stock",
+    "detail": "Seuil d’alerte fixé à 10. Établir un bon de commande, validation de la Direction requise (RG-04).",
+    "lien": "m6-alertes",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "critique",
+    "titre": "Clôture 2025 à valider",
+    "detail": "Demandée par le comptable.",
+    "lien": "m12-cloture",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "echeance_fiscale",
+    "domaine": "Comptabilité",
+    "priorite": "critique",
+    "titre": "ITS de juillet : échéance dépassée",
+    "detail": "Échéance au 10/08/2026. Une pénalité court.",
+    "lien": "m12-echeances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "creance_agee",
+    "domaine": "Recouvrement",
+    "priorite": "critique",
+    "titre": "NSIA ASSURANCE : 3 000 en souffrance",
+    "detail": "1 facture(s), jusqu’à 159 jours d’ancienneté (seuil retenu : 60 jours). Cette créance pèse sur le besoin en fonds de roulement.",
+    "lien": "m9-relances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "creance_agee",
+    "domaine": "Recouvrement",
+    "priorite": "critique",
+    "titre": "SANLAM ASSURANCE : 5 000 en souffrance",
+    "detail": "1 facture(s), jusqu’à 137 jours d’ancienneté (seuil retenu : 60 jours). Cette créance pèse sur le besoin en fonds de roulement.",
+    "lien": "m9-relances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "stock_seuil",
+    "domaine": "Stock",
+    "priorite": "important",
+    "titre": "3 article(s) sous leur seuil d’alerte",
+    "detail": "Établir un bon de commande, validation de la Direction requise (RG-04).",
+    "lien": "m6-alertes",
+    "groupe": true,
+    "nombre": 3
+   },
+   {
+    "source": "a_valider_besoins",
+    "domaine": "À valider",
+    "priorite": "important",
+    "titre": "Bon de besoins à valider : BEX-001",
+    "detail": "Laboratoire : Réactifs. La validation est un geste de la DAF.",
+    "lien": "m7-besoins",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_besoins",
+    "domaine": "À valider",
+    "priorite": "important",
+    "titre": "Bon de besoins à valider : BEX-002",
+    "detail": "Pharmacie : Gants. La validation est un geste de la DAF.",
+    "lien": "m7-besoins",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "mecef_rejet",
+    "domaine": "Facturation",
+    "priorite": "important",
+    "titre": "Facture FAC-2026-00001 rejetée par la MECeF",
+    "detail": "Corriger puis réémettre auprès de l’administration fiscale.",
+    "lien": "mecef-transmission",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_ecritures",
+    "domaine": "À valider",
+    "priorite": "information",
+    "titre": "Pièce comptable en brouillon : OD-2026-00001",
+    "detail": "Achat de marchandises. La validation comptable reste un geste humain.",
+    "lien": "m12-ecritures",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_ecritures",
+    "domaine": "À valider",
+    "priorite": "information",
+    "titre": "Pièce comptable en brouillon : OD-2026-00002",
+    "detail": "Loyer. La validation comptable reste un geste humain.",
+    "lien": "m12-ecritures",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "medecin": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "infirmier": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Prescription de soins",
+    "detail": "Pansement",
+    "lien": "m2-salle-soins",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "pharmacien": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "laborantin": [
+   {
+    "source": "labo_a_traiter",
+    "domaine": "Laboratoire",
+    "priorite": "important",
+    "titre": "3 analyse(s) réglée(s), prélèvement à faire",
+    "detail": "Les patients ont payé : ils peuvent être appelés en salle de prélèvement.",
+    "lien": "m5-prelevement",
+    "groupe": true,
+    "nombre": 3
+   },
+   {
+    "source": "labo_a_saisir",
+    "domaine": "Laboratoire",
+    "priorite": "information",
+    "titre": "Échantillon reçu, résultat à saisir",
+    "detail": "CRP : reçu le 15/08/2026.",
+    "lien": "m5-resultats",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "stock": [
+   {
+    "source": "stock_seuil",
+    "domaine": "Stock",
+    "priorite": "critique",
+    "titre": "AMOXICILLINE 500 MG : 0 en stock",
+    "detail": "Seuil d’alerte fixé à 10. Établir un bon de commande, validation de la Direction requise (RG-04).",
+    "lien": "m6-alertes",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "lots_peremption",
+    "domaine": "Pharmacie",
+    "priorite": "critique",
+    "titre": "Lot périmé : AMOXICILLINE 500 MG",
+    "detail": "À sortir du rayon et à déclarer en perte.",
+    "lien": "m6-lots",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "stock_seuil",
+    "domaine": "Stock",
+    "priorite": "important",
+    "titre": "3 article(s) sous leur seuil d’alerte",
+    "detail": "Établir un bon de commande, validation de la Direction requise (RG-04).",
+    "lien": "m6-alertes",
+    "groupe": true,
+    "nombre": 3
+   },
+   {
+    "source": "lots_peremption",
+    "domaine": "Pharmacie",
+    "priorite": "important",
+    "titre": "Péremption proche : PARACETAMOL 500 MG",
+    "detail": "Appliquer le principe FEFO (RG-05).",
+    "lien": "m6-lots",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "lots_peremption",
+    "domaine": "Pharmacie",
+    "priorite": "important",
+    "titre": "Péremption proche : Z9",
+    "detail": "Appliquer le principe FEFO (RG-05).",
+    "lien": "m6-lots",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "caissier": [
+   {
+    "source": "stock_seuil",
+    "domaine": "Stock",
+    "priorite": "critique",
+    "titre": "AMOXICILLINE 500 MG : 0 en stock",
+    "detail": "Seuil d’alerte fixé à 10. Établir un bon de commande, validation de la Direction requise (RG-04).",
+    "lien": "m6-alertes",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "stock_seuil",
+    "domaine": "Stock",
+    "priorite": "important",
+    "titre": "3 article(s) sous leur seuil d’alerte",
+    "detail": "Établir un bon de commande, validation de la Direction requise (RG-04).",
+    "lien": "m6-alertes",
+    "groupe": true,
+    "nombre": 3
+   },
+   {
+    "source": "mecef_rejet",
+    "domaine": "Facturation",
+    "priorite": "important",
+    "titre": "Facture FAC-2026-00001 rejetée par la MECeF",
+    "detail": "Corriger puis réémettre auprès de l’administration fiscale.",
+    "lien": "mecef-transmission",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "comptable": [
+   {
+    "source": "echeance_fiscale",
+    "domaine": "Comptabilité",
+    "priorite": "critique",
+    "titre": "AIB de juillet : échéance dépassée",
+    "detail": "Échéance au 20/07/2026. Une pénalité court.",
+    "lien": "m12-echeances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "echeance_fiscale",
+    "domaine": "Comptabilité",
+    "priorite": "critique",
+    "titre": "ITS de juillet : échéance dépassée",
+    "detail": "Échéance au 10/08/2026. Une pénalité court.",
+    "lien": "m12-echeances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "creance_agee",
+    "domaine": "Recouvrement",
+    "priorite": "critique",
+    "titre": "NSIA ASSURANCE : 3 000 en souffrance",
+    "detail": "1 facture(s), jusqu’à 159 jours d’ancienneté (seuil retenu : 60 jours). Cette créance pèse sur le besoin en fonds de roulement.",
+    "lien": "m9-relances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "creance_agee",
+    "domaine": "Recouvrement",
+    "priorite": "critique",
+    "titre": "SANLAM ASSURANCE : 5 000 en souffrance",
+    "detail": "1 facture(s), jusqu’à 137 jours d’ancienneté (seuil retenu : 60 jours). Cette créance pèse sur le besoin en fonds de roulement.",
+    "lien": "m9-relances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "mecef_rejet",
+    "domaine": "Facturation",
+    "priorite": "important",
+    "titre": "Facture FAC-2026-00001 rejetée par la MECeF",
+    "detail": "Corriger puis réémettre auprès de l’administration fiscale.",
+    "lien": "mecef-transmission",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_ecritures",
+    "domaine": "À valider",
+    "priorite": "information",
+    "titre": "Pièce comptable en brouillon : OD-2026-00001",
+    "detail": "Achat de marchandises. La validation comptable reste un geste humain.",
+    "lien": "m12-ecritures",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_ecritures",
+    "domaine": "À valider",
+    "priorite": "information",
+    "titre": "Pièce comptable en brouillon : OD-2026-00002",
+    "detail": "Loyer. La validation comptable reste un geste humain.",
+    "lien": "m12-ecritures",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "rh": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "reception": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "agentadmin": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "ambulancier": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "aide_soignant": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "echographiste": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Nouvelle demande d’imagerie",
+    "detail": "Échographie pelvienne",
+    "lien": "m2-imagerie-demandes",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "surveillant": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "assistant_comptable": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "chirurgien": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "anesthesiste": [
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ],
+  "aide_comptable": [
+   {
+    "source": "creance_agee",
+    "domaine": "Recouvrement",
+    "priorite": "critique",
+    "titre": "NSIA ASSURANCE : 3 000 en souffrance",
+    "detail": "1 facture(s), jusqu’à 159 jours d’ancienneté (seuil retenu : 60 jours). Cette créance pèse sur le besoin en fonds de roulement.",
+    "lien": "m9-relances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "creance_agee",
+    "domaine": "Recouvrement",
+    "priorite": "critique",
+    "titre": "SANLAM ASSURANCE : 5 000 en souffrance",
+    "detail": "1 facture(s), jusqu’à 137 jours d’ancienneté (seuil retenu : 60 jours). Cette créance pèse sur le besoin en fonds de roulement.",
+    "lien": "m9-relances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_ecritures",
+    "domaine": "À valider",
+    "priorite": "information",
+    "titre": "Pièce comptable en brouillon : OD-2026-00001",
+    "detail": "Achat de marchandises. La validation comptable reste un geste humain.",
+    "lien": "m12-ecritures",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "a_valider_ecritures",
+    "domaine": "À valider",
+    "priorite": "information",
+    "titre": "Pièce comptable en brouillon : OD-2026-00002",
+    "detail": "Loyer. La validation comptable reste un geste humain.",
+    "lien": "m12-ecritures",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "poste",
+    "domaine": "Poste",
+    "priorite": "information",
+    "titre": "Réunion de service",
+    "detail": "Vendredi à 8 h",
+    "lien": null,
+    "groupe": false,
+    "nombre": 1
+   }
+  ]
+ },
+ "actions": {
+  "admin": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Nouvelle consultation",
+    "icone": "stethoscope",
+    "ecran": "m2-consultations"
+   },
+   {
+    "libelle": "Nouvelle admission",
+    "icone": "bed-double",
+    "ecran": "m3-admissions"
+   },
+   {
+    "libelle": "Nouvelle facture",
+    "icone": "receipt",
+    "ecran": "m8-facturation"
+   },
+   {
+    "libelle": "Encaisser un paiement",
+    "icone": "banknote",
+    "ecran": "m8-paiements"
+   },
+   {
+    "libelle": "Assurés & cartes",
+    "icone": "id-card",
+    "ecran": "m9-assures"
+   },
+   {
+    "libelle": "Demande d’analyse",
+    "icone": "flask-conical",
+    "ecran": "m5-demandes"
+   },
+   {
+    "libelle": "Mouvement de stock",
+    "icone": "package",
+    "ecran": "m6-mouvements"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "direction": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Nouvelle consultation",
+    "icone": "stethoscope",
+    "ecran": "m2-consultations"
+   },
+   {
+    "libelle": "Nouvelle admission",
+    "icone": "bed-double",
+    "ecran": "m3-admissions"
+   },
+   {
+    "libelle": "Nouvelle facture",
+    "icone": "receipt",
+    "ecran": "m8-facturation"
+   },
+   {
+    "libelle": "Encaisser un paiement",
+    "icone": "banknote",
+    "ecran": "m8-paiements"
+   },
+   {
+    "libelle": "Assurés & cartes",
+    "icone": "id-card",
+    "ecran": "m9-assures"
+   },
+   {
+    "libelle": "Demande d’analyse",
+    "icone": "flask-conical",
+    "ecran": "m5-demandes"
+   },
+   {
+    "libelle": "Mouvement de stock",
+    "icone": "package",
+    "ecran": "m6-mouvements"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "dm": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Nouvelle consultation",
+    "icone": "stethoscope",
+    "ecran": "m2-consultations"
+   },
+   {
+    "libelle": "Nouvelle admission",
+    "icone": "bed-double",
+    "ecran": "m3-admissions"
+   },
+   {
+    "libelle": "Nouvelle facture",
+    "icone": "receipt",
+    "ecran": "m8-facturation"
+   },
+   {
+    "libelle": "Encaisser un paiement",
+    "icone": "banknote",
+    "ecran": "m8-paiements"
+   },
+   {
+    "libelle": "Demande d’analyse",
+    "icone": "flask-conical",
+    "ecran": "m5-demandes"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "da": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Nouvelle facture",
+    "icone": "receipt",
+    "ecran": "m8-facturation"
+   },
+   {
+    "libelle": "Encaisser un paiement",
+    "icone": "banknote",
+    "ecran": "m8-paiements"
+   },
+   {
+    "libelle": "Assurés & cartes",
+    "icone": "id-card",
+    "ecran": "m9-assures"
+   },
+   {
+    "libelle": "Mouvement de stock",
+    "icone": "package",
+    "ecran": "m6-mouvements"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "medecin": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Nouvelle consultation",
+    "icone": "stethoscope",
+    "ecran": "m2-consultations"
+   },
+   {
+    "libelle": "Nouvelle admission",
+    "icone": "bed-double",
+    "ecran": "m3-admissions"
+   },
+   {
+    "libelle": "Demande d’analyse",
+    "icone": "flask-conical",
+    "ecran": "m5-demandes"
+   },
+   {
+    "libelle": "Mouvement de stock",
+    "icone": "package",
+    "ecran": "m6-mouvements"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "infirmier": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Nouvelle consultation",
+    "icone": "stethoscope",
+    "ecran": "m2-consultations"
+   },
+   {
+    "libelle": "Nouvelle admission",
+    "icone": "bed-double",
+    "ecran": "m3-admissions"
+   },
+   {
+    "libelle": "Demande d’analyse",
+    "icone": "flask-conical",
+    "ecran": "m5-demandes"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "pharmacien": [],
+  "laborantin": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Demande d’analyse",
+    "icone": "flask-conical",
+    "ecran": "m5-demandes"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "stock": [
+   {
+    "libelle": "Mouvement de stock",
+    "icone": "package",
+    "ecran": "m6-mouvements"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "caissier": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Nouvelle facture",
+    "icone": "receipt",
+    "ecran": "m8-facturation"
+   },
+   {
+    "libelle": "Encaisser un paiement",
+    "icone": "banknote",
+    "ecran": "m8-paiements"
+   },
+   {
+    "libelle": "Assurés & cartes",
+    "icone": "id-card",
+    "ecran": "m9-assures"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "comptable": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Nouvelle facture",
+    "icone": "receipt",
+    "ecran": "m8-facturation"
+   },
+   {
+    "libelle": "Encaisser un paiement",
+    "icone": "banknote",
+    "ecran": "m8-paiements"
+   },
+   {
+    "libelle": "Assurés & cartes",
+    "icone": "id-card",
+    "ecran": "m9-assures"
+   },
+   {
+    "libelle": "Mouvement de stock",
+    "icone": "package",
+    "ecran": "m6-mouvements"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "rh": [],
+  "reception": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Nouvelle consultation",
+    "icone": "stethoscope",
+    "ecran": "m2-consultations"
+   },
+   {
+    "libelle": "Nouvelle admission",
+    "icone": "bed-double",
+    "ecran": "m3-admissions"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "agentadmin": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "ambulancier": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "aide_soignant": [
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "echographiste": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Nouvelle consultation",
+    "icone": "stethoscope",
+    "ecran": "m2-consultations"
+   },
+   {
+    "libelle": "Demande d’analyse",
+    "icone": "flask-conical",
+    "ecran": "m5-demandes"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "surveillant": [
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "assistant_comptable": [
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "chirurgien": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Nouvelle consultation",
+    "icone": "stethoscope",
+    "ecran": "m2-consultations"
+   },
+   {
+    "libelle": "Nouvelle admission",
+    "icone": "bed-double",
+    "ecran": "m3-admissions"
+   },
+   {
+    "libelle": "Demande d’analyse",
+    "icone": "flask-conical",
+    "ecran": "m5-demandes"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "anesthesiste": [
+   {
+    "libelle": "Nouveau dossier patient",
+    "icone": "user-plus",
+    "ecran": "m1-patients"
+   },
+   {
+    "libelle": "Patient externe : analyses",
+    "icone": "user-round-plus",
+    "ecran": "m1-externe"
+   },
+   {
+    "libelle": "Nouvelle admission",
+    "icone": "bed-double",
+    "ecran": "m3-admissions"
+   },
+   {
+    "libelle": "Demande d’analyse",
+    "icone": "flask-conical",
+    "ecran": "m5-demandes"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ],
+  "aide_comptable": [
+   {
+    "libelle": "Nouvelle facture",
+    "icone": "receipt",
+    "ecran": "m8-facturation"
+   },
+   {
+    "libelle": "Encaisser un paiement",
+    "icone": "banknote",
+    "ecran": "m8-paiements"
+   },
+   {
+    "libelle": "Assurés & cartes",
+    "icone": "id-card",
+    "ecran": "m9-assures"
+   },
+   {
+    "libelle": "Bon d’expression de besoins",
+    "icone": "clipboard-list",
+    "ecran": "m7-besoins"
+   },
+   {
+    "libelle": "Éditer un état",
+    "icone": "printer",
+    "ecran": "rapports-bibliotheque"
+   }
+  ]
+ },
+ "recherche": {
+  "admin": {
+   "411": [
+    {
+     "groupe": "Plan comptable",
+     "resultats": [
+      {
+       "label": "411000 : Clients assurance",
+       "detail": "SYSCOHADA",
+       "icone": "book-open",
+       "ecran": "m12-plan-comptable",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "pa": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "File par cabinet",
+       "detail": "RDV, Visites & Consultations",
+       "icone": "door-open",
+       "ecran": "m2-file-cabinet",
+       "onglet": null
+      },
+      {
+       "label": "Écran d’appel des patients",
+       "detail": "RDV, Visites & Consultations",
+       "icone": "monitor",
+       "ecran": "m2-affichage",
+       "onglet": null
+      },
+      {
+       "label": "Patients & Dossier médical",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "hub-m1",
+       "onglet": null
+      },
+      {
+       "label": "Répertoire des patients",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "Fiche patient",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-round",
+       "ecran": "m1-patient-profil",
+       "onglet": null
+      },
+      {
+       "label": "Patient externe",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-plus",
+       "ecran": "m1-externe",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Secteurs de la clinique (NS 145)",
+       "detail": "Organisation & organigramme, onglet",
+       "icone": "network",
+       "ecran": "cfg-organisation",
+       "onglet": "secteurs"
+      },
+      {
+       "label": "Organigramme et postes",
+       "detail": "Organisation & organigramme, onglet",
+       "icone": "network",
+       "ecran": "cfg-organisation",
+       "onglet": "organigramme"
+      },
+      {
+       "label": "Factures à encaisser",
+       "detail": "Paiements, onglet",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": "aregler"
+      },
+      {
+       "label": "Historique des règlements",
+       "detail": "Paiements, onglet",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": "historique"
+      },
+      {
+       "label": "Assurés d’une compagnie",
+       "detail": "Compagnies partenaires, onglet",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": "assures"
+      },
+      {
+       "label": "Factures d’une compagnie",
+       "detail": "Compagnies partenaires, onglet",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": "factures"
+      }
+     ]
+    },
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "PARACETAMOL 500 MG",
+       "detail": "MED002, stock 3 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Personnel",
+     "resultats": [
+      {
+       "label": "PADONOU Rachidatou",
+       "detail": "Mat. M014, Sage-femme",
+       "icone": "id-card",
+       "ecran": "m10-personnel",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Actes & prestations",
+     "resultats": [
+      {
+       "label": "Accouchement par voie basse",
+       "detail": "Maternité, 35 000 (valeur d’attente)",
+       "icone": "stethoscope",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    },
+    {
+     "groupe": "Analyses",
+     "resultats": [
+      {
+       "label": "AKOP",
+       "detail": "Parasitologie, 2 000 · Selles",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "GE-DP / FROTTIS SANGUIN",
+       "detail": "Parasitologie, 1 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "HEPATITE B",
+       "detail": "Sérologie, 3 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "HEPATITE C",
+       "detail": "Sérologie, 4 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      }
+     ]
+    }
+   ],
+   "actes": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Importation du catalogue des actes",
+       "detail": "Importation de données",
+       "icone": "list-ordered",
+       "ecran": "imp-actes",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Actes & hospitalisation",
+       "detail": "Référentiel tarifaire, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    }
+   ],
+   "bilan": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Bilan d’ouverture & à-nouveaux",
+       "detail": "Comptabilité SYSCOHADA",
+       "icone": "calendar-plus",
+       "ecran": "m12-ouverture",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Bilan",
+       "detail": "États financiers, onglet",
+       "icone": "file-spreadsheet",
+       "ecran": "m12-etats-financiers",
+       "onglet": "bilan"
+      }
+     ]
+    }
+   ],
+   "cnt": [
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "TAMOU Sanni",
+       "detail": "CNT/3/26, Yimporima",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "amox": [
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "AMOXICILLINE 500 MG",
+       "detail": "MED001, stock 0 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "sage": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Rappels & messages",
+       "detail": "Configuration Clinique",
+       "icone": "bell-ring",
+       "ecran": "cfg-rappels",
+       "onglet": null
+      },
+      {
+       "label": "Messagerie (SMTP)",
+       "detail": "Configuration Clinique",
+       "icone": "mail",
+       "ecran": "cfg-smtp",
+       "onglet": null
+      },
+      {
+       "label": "Infirmier / Sage-femme",
+       "detail": "Tableaux de bord par poste",
+       "icone": "heart-pulse",
+       "ecran": "dash-infirmier",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Personnel",
+     "resultats": [
+      {
+       "label": "PADONOU Rachidatou",
+       "detail": "Mat. M014, Sage-femme",
+       "icone": "id-card",
+       "ecran": "m10-personnel",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "accou": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Accouchements",
+       "detail": "Maternité, Naissances & Décès",
+       "icone": "heart-handshake",
+       "ecran": "m4-accouchements",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Actes & hospitalisation",
+       "detail": "Référentiel tarifaire, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      },
+      {
+       "label": "Primes (NS 132)",
+       "detail": "Tableau de bord RH, onglet",
+       "icone": "gauge",
+       "ecran": "m10-dashboard",
+       "onglet": "primes"
+      }
+     ]
+    },
+    {
+     "groupe": "Actes & prestations",
+     "resultats": [
+      {
+       "label": "Accouchement par voie basse",
+       "detail": "Maternité, 35 000 (valeur d’attente)",
+       "icone": "stethoscope",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    }
+   ],
+   "hemo": [
+    {
+     "groupe": "Analyses",
+     "resultats": [
+      {
+       "label": "D-DIMERE",
+       "detail": "Hémostase, 12 000 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "ELECTROPHORESE DE L’HEMOGLOBINE",
+       "detail": "Hématologie, 8 000 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "HEMOGLOBINE CAPILLAIRE",
+       "detail": "Hématologie, 1 000 · Capillaire",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "NFS COMPLETE (HEMOGRAMME)",
+       "detail": "Hématologie, 4 000 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "TEMPS DE COAGULATION (TC)",
+       "detail": "Hémostase, 1 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      }
+     ]
+    }
+   ],
+   "paludisme": [],
+   "radio": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Tableau Radiographie",
+       "detail": "Imagerie médicale",
+       "icone": "bone",
+       "ecran": "m2-imagerie-radiographie",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Radiographie",
+       "detail": "Tableau Radiographie, onglet",
+       "icone": "bone",
+       "ecran": "m2-imagerie-radiographie",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Actes & prestations",
+     "resultats": [
+      {
+       "label": "Radiographie du thorax",
+       "detail": "Imagerie médicale, tarif à valider",
+       "icone": "stethoscope",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    }
+   ],
+   "x": []
+  },
+  "caissier": {
+   "411": [],
+   "pa": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Patients & Dossier médical",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "hub-m1",
+       "onglet": null
+      },
+      {
+       "label": "Répertoire des patients",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "Fiche patient",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-round",
+       "ecran": "m1-patient-profil",
+       "onglet": null
+      },
+      {
+       "label": "Paiements",
+       "detail": "Facturation & Caisse",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": null
+      },
+      {
+       "label": "Recettes par période",
+       "detail": "Facturation & Caisse",
+       "icone": "trending-up",
+       "ecran": "m8-recettes",
+       "onglet": null
+      },
+      {
+       "label": "Compagnies partenaires",
+       "detail": "Assurances & Créances",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Factures à encaisser",
+       "detail": "Paiements, onglet",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": "aregler"
+      },
+      {
+       "label": "Historique des règlements",
+       "detail": "Paiements, onglet",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": "historique"
+      },
+      {
+       "label": "Assurés d’une compagnie",
+       "detail": "Compagnies partenaires, onglet",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": "assures"
+      },
+      {
+       "label": "Factures d’une compagnie",
+       "detail": "Compagnies partenaires, onglet",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": "factures"
+      }
+     ]
+    },
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "PARACETAMOL 500 MG",
+       "detail": "MED002, stock 3 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "actes": [],
+   "bilan": [],
+   "cnt": [
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "TAMOU Sanni",
+       "detail": "CNT/3/26, Yimporima",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "amox": [
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "AMOXICILLINE 500 MG",
+       "detail": "MED001, stock 0 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "sage": [],
+   "accou": [],
+   "hemo": [],
+   "paludisme": [],
+   "radio": [],
+   "x": []
+  },
+  "reception": {
+   "411": [],
+   "pa": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "File par cabinet",
+       "detail": "RDV, Visites & Consultations",
+       "icone": "door-open",
+       "ecran": "m2-file-cabinet",
+       "onglet": null
+      },
+      {
+       "label": "Écran d’appel des patients",
+       "detail": "RDV, Visites & Consultations",
+       "icone": "monitor",
+       "ecran": "m2-affichage",
+       "onglet": null
+      },
+      {
+       "label": "Patients & Dossier médical",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "hub-m1",
+       "onglet": null
+      },
+      {
+       "label": "Répertoire des patients",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "Fiche patient",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-round",
+       "ecran": "m1-patient-profil",
+       "onglet": null
+      },
+      {
+       "label": "Patient externe",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-plus",
+       "ecran": "m1-externe",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Liens de partage d’une enquête",
+       "detail": "Enquêtes & questionnaires, onglet",
+       "icone": "clipboard-list",
+       "ecran": "adm-enquetes",
+       "onglet": "partage"
+      }
+     ]
+    },
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Actes & prestations",
+     "resultats": [
+      {
+       "label": "Accouchement par voie basse",
+       "detail": "Maternité, 35 000 (valeur d’attente)",
+       "icone": "stethoscope",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    },
+    {
+     "groupe": "Analyses",
+     "resultats": [
+      {
+       "label": "AKOP",
+       "detail": "Parasitologie, 2 000 · Selles",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "GE-DP / FROTTIS SANGUIN",
+       "detail": "Parasitologie, 1 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "HEPATITE B",
+       "detail": "Sérologie, 3 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "HEPATITE C",
+       "detail": "Sérologie, 4 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      }
+     ]
+    }
+   ],
+   "actes": [
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Actes & hospitalisation",
+       "detail": "Référentiel tarifaire, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    }
+   ],
+   "bilan": [],
+   "cnt": [
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "TAMOU Sanni",
+       "detail": "CNT/3/26, Yimporima",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "amox": [],
+   "sage": [],
+   "accou": [
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Actes & hospitalisation",
+       "detail": "Référentiel tarifaire, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    },
+    {
+     "groupe": "Actes & prestations",
+     "resultats": [
+      {
+       "label": "Accouchement par voie basse",
+       "detail": "Maternité, 35 000 (valeur d’attente)",
+       "icone": "stethoscope",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    }
+   ],
+   "hemo": [
+    {
+     "groupe": "Analyses",
+     "resultats": [
+      {
+       "label": "D-DIMERE",
+       "detail": "Hémostase, 12 000 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "ELECTROPHORESE DE L’HEMOGLOBINE",
+       "detail": "Hématologie, 8 000 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "HEMOGLOBINE CAPILLAIRE",
+       "detail": "Hématologie, 1 000 · Capillaire",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "NFS COMPLETE (HEMOGRAMME)",
+       "detail": "Hématologie, 4 000 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "TEMPS DE COAGULATION (TC)",
+       "detail": "Hémostase, 1 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      }
+     ]
+    }
+   ],
+   "paludisme": [],
+   "radio": [
+    {
+     "groupe": "Actes & prestations",
+     "resultats": [
+      {
+       "label": "Radiographie du thorax",
+       "detail": "Imagerie médicale, tarif à valider",
+       "icone": "stethoscope",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    }
+   ],
+   "x": []
+  },
+  "laborantin": {
+   "411": [],
+   "pa": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Patients & Dossier médical",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "hub-m1",
+       "onglet": null
+      },
+      {
+       "label": "Répertoire des patients",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "Fiche patient",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-round",
+       "ecran": "m1-patient-profil",
+       "onglet": null
+      },
+      {
+       "label": "Patient externe",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-plus",
+       "ecran": "m1-externe",
+       "onglet": null
+      },
+      {
+       "label": "Comparatif des résultats",
+       "detail": "Laboratoire",
+       "icone": "git-compare-arrows",
+       "ecran": "m5-resultats-comparatif",
+       "onglet": null
+      },
+      {
+       "label": "Tableaux de bord par poste",
+       "detail": "Tableaux de bord par poste",
+       "icone": "gauge",
+       "ecran": "hub-dash",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "actes": [],
+   "bilan": [],
+   "cnt": [
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "TAMOU Sanni",
+       "detail": "CNT/3/26, Yimporima",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "amox": [],
+   "sage": [],
+   "accou": [],
+   "hemo": [],
+   "paludisme": [],
+   "radio": [],
+   "x": []
+  },
+  "comptable": {
+   "411": [
+    {
+     "groupe": "Plan comptable",
+     "resultats": [
+      {
+       "label": "411000 : Clients assurance",
+       "detail": "SYSCOHADA",
+       "icone": "book-open",
+       "ecran": "m12-plan-comptable",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "pa": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Patients & Dossier médical",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "hub-m1",
+       "onglet": null
+      },
+      {
+       "label": "Répertoire des patients",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "Fiche patient",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-round",
+       "ecran": "m1-patient-profil",
+       "onglet": null
+      },
+      {
+       "label": "Paiements",
+       "detail": "Facturation & Caisse",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": null
+      },
+      {
+       "label": "Recettes par période",
+       "detail": "Facturation & Caisse",
+       "icone": "trending-up",
+       "ecran": "m8-recettes",
+       "onglet": null
+      },
+      {
+       "label": "Compagnies partenaires",
+       "detail": "Assurances & Créances",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Factures à encaisser",
+       "detail": "Paiements, onglet",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": "aregler"
+      },
+      {
+       "label": "Historique des règlements",
+       "detail": "Paiements, onglet",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": "historique"
+      },
+      {
+       "label": "Assurés d’une compagnie",
+       "detail": "Compagnies partenaires, onglet",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": "assures"
+      },
+      {
+       "label": "Factures d’une compagnie",
+       "detail": "Compagnies partenaires, onglet",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": "factures"
+      },
+      {
+       "label": "Bilan",
+       "detail": "États financiers, onglet",
+       "icone": "file-spreadsheet",
+       "ecran": "m12-etats-financiers",
+       "onglet": "bilan"
+      },
+      {
+       "label": "Grille objectif / réel",
+       "detail": "Tableau de bord décisionnel, onglet",
+       "icone": "gauge",
+       "ecran": "m12-tableau-decisionnel",
+       "onglet": "grille"
+      }
+     ]
+    },
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "PARACETAMOL 500 MG",
+       "detail": "MED002, stock 3 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "actes": [],
+   "bilan": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Bilan d’ouverture & à-nouveaux",
+       "detail": "Comptabilité SYSCOHADA",
+       "icone": "calendar-plus",
+       "ecran": "m12-ouverture",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Bilan",
+       "detail": "États financiers, onglet",
+       "icone": "file-spreadsheet",
+       "ecran": "m12-etats-financiers",
+       "onglet": "bilan"
+      }
+     ]
+    }
+   ],
+   "cnt": [
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "TAMOU Sanni",
+       "detail": "CNT/3/26, Yimporima",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "amox": [
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "AMOXICILLINE 500 MG",
+       "detail": "MED001, stock 0 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "sage": [],
+   "accou": [],
+   "hemo": [],
+   "paludisme": [],
+   "radio": [],
+   "x": []
+  },
+  "medecin": {
+   "411": [],
+   "pa": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "File par cabinet",
+       "detail": "RDV, Visites & Consultations",
+       "icone": "door-open",
+       "ecran": "m2-file-cabinet",
+       "onglet": null
+      },
+      {
+       "label": "Écran d’appel des patients",
+       "detail": "RDV, Visites & Consultations",
+       "icone": "monitor",
+       "ecran": "m2-affichage",
+       "onglet": null
+      },
+      {
+       "label": "Patients & Dossier médical",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "hub-m1",
+       "onglet": null
+      },
+      {
+       "label": "Répertoire des patients",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "Fiche patient",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-round",
+       "ecran": "m1-patient-profil",
+       "onglet": null
+      },
+      {
+       "label": "Patient externe",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-plus",
+       "ecran": "m1-externe",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "PARACETAMOL 500 MG",
+       "detail": "MED002, stock 3 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "actes": [],
+   "bilan": [],
+   "cnt": [
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "TAMOU Sanni",
+       "detail": "CNT/3/26, Yimporima",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "amox": [
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "AMOXICILLINE 500 MG",
+       "detail": "MED001, stock 0 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "sage": [],
+   "accou": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Accouchements",
+       "detail": "Maternité, Naissances & Décès",
+       "icone": "heart-handshake",
+       "ecran": "m4-accouchements",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "hemo": [],
+   "paludisme": [],
+   "radio": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Tableau Radiographie",
+       "detail": "Imagerie médicale",
+       "icone": "bone",
+       "ecran": "m2-imagerie-radiographie",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Radiographie",
+       "detail": "Tableau Radiographie, onglet",
+       "icone": "bone",
+       "ecran": "m2-imagerie-radiographie",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "x": []
+  },
+  "direction": {
+   "411": [
+    {
+     "groupe": "Plan comptable",
+     "resultats": [
+      {
+       "label": "411000 : Clients assurance",
+       "detail": "SYSCOHADA",
+       "icone": "book-open",
+       "ecran": "m12-plan-comptable",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "pa": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "File par cabinet",
+       "detail": "RDV, Visites & Consultations",
+       "icone": "door-open",
+       "ecran": "m2-file-cabinet",
+       "onglet": null
+      },
+      {
+       "label": "Écran d’appel des patients",
+       "detail": "RDV, Visites & Consultations",
+       "icone": "monitor",
+       "ecran": "m2-affichage",
+       "onglet": null
+      },
+      {
+       "label": "Patients & Dossier médical",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "hub-m1",
+       "onglet": null
+      },
+      {
+       "label": "Répertoire des patients",
+       "detail": "Patients & Dossier médical",
+       "icone": "users",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "Fiche patient",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-round",
+       "ecran": "m1-patient-profil",
+       "onglet": null
+      },
+      {
+       "label": "Patient externe",
+       "detail": "Patients & Dossier médical",
+       "icone": "user-plus",
+       "ecran": "m1-externe",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Secteurs de la clinique (NS 145)",
+       "detail": "Organisation & organigramme, onglet",
+       "icone": "network",
+       "ecran": "cfg-organisation",
+       "onglet": "secteurs"
+      },
+      {
+       "label": "Organigramme et postes",
+       "detail": "Organisation & organigramme, onglet",
+       "icone": "network",
+       "ecran": "cfg-organisation",
+       "onglet": "organigramme"
+      },
+      {
+       "label": "Factures à encaisser",
+       "detail": "Paiements, onglet",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": "aregler"
+      },
+      {
+       "label": "Historique des règlements",
+       "detail": "Paiements, onglet",
+       "icone": "banknote",
+       "ecran": "m8-paiements",
+       "onglet": "historique"
+      },
+      {
+       "label": "Assurés d’une compagnie",
+       "detail": "Compagnies partenaires, onglet",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": "assures"
+      },
+      {
+       "label": "Factures d’une compagnie",
+       "detail": "Compagnies partenaires, onglet",
+       "icone": "building-2",
+       "ecran": "m9-compagnies",
+       "onglet": "factures"
+      }
+     ]
+    },
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "PARACETAMOL 500 MG",
+       "detail": "MED002, stock 3 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Personnel",
+     "resultats": [
+      {
+       "label": "PADONOU Rachidatou",
+       "detail": "Mat. M014, Sage-femme",
+       "icone": "id-card",
+       "ecran": "m10-personnel",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Actes & prestations",
+     "resultats": [
+      {
+       "label": "Accouchement par voie basse",
+       "detail": "Maternité, 35 000 (valeur d’attente)",
+       "icone": "stethoscope",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    },
+    {
+     "groupe": "Analyses",
+     "resultats": [
+      {
+       "label": "AKOP",
+       "detail": "Parasitologie, 2 000 · Selles",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "GE-DP / FROTTIS SANGUIN",
+       "detail": "Parasitologie, 1 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "HEPATITE B",
+       "detail": "Sérologie, 3 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "HEPATITE C",
+       "detail": "Sérologie, 4 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      }
+     ]
+    }
+   ],
+   "actes": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Importation du catalogue des actes",
+       "detail": "Importation de données",
+       "icone": "list-ordered",
+       "ecran": "imp-actes",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Actes & hospitalisation",
+       "detail": "Référentiel tarifaire, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    }
+   ],
+   "bilan": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Bilan d’ouverture & à-nouveaux",
+       "detail": "Comptabilité SYSCOHADA",
+       "icone": "calendar-plus",
+       "ecran": "m12-ouverture",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Bilan",
+       "detail": "États financiers, onglet",
+       "icone": "file-spreadsheet",
+       "ecran": "m12-etats-financiers",
+       "onglet": "bilan"
+      }
+     ]
+    }
+   ],
+   "cnt": [
+    {
+     "groupe": "Patients",
+     "resultats": [
+      {
+       "label": "PADONOU Amina",
+       "detail": "CNT/1/26, Péporiyakou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "KOUAGOU Paulin",
+       "detail": "CNT/2/26, Natitingou",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      },
+      {
+       "label": "TAMOU Sanni",
+       "detail": "CNT/3/26, Yimporima",
+       "icone": "user",
+       "ecran": "m1-patients",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "amox": [
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "AMOXICILLINE 500 MG",
+       "detail": "MED001, stock 0 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "sage": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Rappels & messages",
+       "detail": "Configuration Clinique",
+       "icone": "bell-ring",
+       "ecran": "cfg-rappels",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Personnel",
+     "resultats": [
+      {
+       "label": "PADONOU Rachidatou",
+       "detail": "Mat. M014, Sage-femme",
+       "icone": "id-card",
+       "ecran": "m10-personnel",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "accou": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Accouchements",
+       "detail": "Maternité, Naissances & Décès",
+       "icone": "heart-handshake",
+       "ecran": "m4-accouchements",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Actes & hospitalisation",
+       "detail": "Référentiel tarifaire, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      },
+      {
+       "label": "Primes (NS 132)",
+       "detail": "Tableau de bord RH, onglet",
+       "icone": "gauge",
+       "ecran": "m10-dashboard",
+       "onglet": "primes"
+      }
+     ]
+    },
+    {
+     "groupe": "Actes & prestations",
+     "resultats": [
+      {
+       "label": "Accouchement par voie basse",
+       "detail": "Maternité, 35 000 (valeur d’attente)",
+       "icone": "stethoscope",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    }
+   ],
+   "hemo": [
+    {
+     "groupe": "Analyses",
+     "resultats": [
+      {
+       "label": "D-DIMERE",
+       "detail": "Hémostase, 12 000 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "ELECTROPHORESE DE L’HEMOGLOBINE",
+       "detail": "Hématologie, 8 000 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "HEMOGLOBINE CAPILLAIRE",
+       "detail": "Hématologie, 1 000 · Capillaire",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "NFS COMPLETE (HEMOGRAMME)",
+       "detail": "Hématologie, 4 000 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      },
+      {
+       "label": "TEMPS DE COAGULATION (TC)",
+       "detail": "Hémostase, 1 500 · Sang",
+       "icone": "flask-conical",
+       "ecran": "cfg-tarifs",
+       "onglet": "analyses"
+      }
+     ]
+    }
+   ],
+   "paludisme": [],
+   "radio": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Tableau Radiographie",
+       "detail": "Imagerie médicale",
+       "icone": "bone",
+       "ecran": "m2-imagerie-radiographie",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Radiographie",
+       "detail": "Tableau Radiographie, onglet",
+       "icone": "bone",
+       "ecran": "m2-imagerie-radiographie",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Actes & prestations",
+     "resultats": [
+      {
+       "label": "Radiographie du thorax",
+       "detail": "Imagerie médicale, tarif à valider",
+       "icone": "stethoscope",
+       "ecran": "cfg-tarifs",
+       "onglet": "actes"
+      }
+     ]
+    }
+   ],
+   "x": []
+  },
+  "stock": {
+   "411": [],
+   "pa": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Recettes par période",
+       "detail": "Facturation & Caisse",
+       "icone": "trending-up",
+       "ecran": "m8-recettes",
+       "onglet": null
+      },
+      {
+       "label": "Tableaux de bord par poste",
+       "detail": "Tableaux de bord par poste",
+       "icone": "gauge",
+       "ecran": "hub-dash",
+       "onglet": null
+      },
+      {
+       "label": "Pharmacie",
+       "detail": "Tableaux de bord par poste",
+       "icone": "pill",
+       "ecran": "dash-pharmacien",
+       "onglet": null
+      },
+      {
+       "label": "Gestionnaire de stock",
+       "detail": "Tableaux de bord par poste",
+       "icone": "package",
+       "ecran": "dash-stock",
+       "onglet": null
+      }
+     ]
+    },
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "PARACETAMOL 500 MG",
+       "detail": "MED002, stock 3 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "actes": [],
+   "bilan": [],
+   "cnt": [],
+   "amox": [
+    {
+     "groupe": "Produits",
+     "resultats": [
+      {
+       "label": "AMOXICILLINE 500 MG",
+       "detail": "MED001, stock 0 boîte",
+       "icone": "pill",
+       "ecran": "m6-produits",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "sage": [],
+   "accou": [],
+   "hemo": [],
+   "paludisme": [],
+   "radio": [],
+   "x": []
+  },
+  "aide_soignant": {
+   "411": [],
+   "pa": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Constantes à l’accueil",
+       "detail": "Patients & Dossier médical",
+       "icone": "thermometer",
+       "ecran": "m1-constantes",
+       "onglet": null
+      },
+      {
+       "label": "Tableaux de bord par poste",
+       "detail": "Tableaux de bord par poste",
+       "icone": "gauge",
+       "ecran": "hub-dash",
+       "onglet": null
+      },
+      {
+       "label": "Aide-soignante",
+       "detail": "Tableaux de bord par poste",
+       "icone": "hand-heart",
+       "ecran": "dash-aide-soignant",
+       "onglet": null
+      }
+     ]
+    }
+   ],
+   "actes": [],
+   "bilan": [],
+   "cnt": [],
+   "amox": [],
+   "sage": [],
+   "accou": [],
+   "hemo": [],
+   "paludisme": [],
+   "radio": [],
+   "x": []
+  }
+ },
+ "version": null,
+ "fil": {
+  "m2-agenda": [
+   "Accueil",
+   "RDV, Visites & Consultations",
+   "Agenda"
+  ],
+  "m1-patients": [
+   "Accueil",
+   "Soins",
+   "Patients & Dossier médical",
+   "Répertoire des patients"
+  ],
+  "m6-lots": [
+   "Accueil",
+   "Logistique",
+   "Pharmacie & Stocks",
+   "Lots & péremptions (FEFO)"
+  ],
+  "m8-caisse": [
+   "Accueil",
+   "Financier",
+   "Facturation & Caisse",
+   "État de caisse journalier"
+  ],
+  "dash-admin": [
+   "Accueil",
+   "Pilotage",
+   "Pilotage & analyse",
+   "Administrateur"
+  ],
+  "hub-m2": [
+   "Accueil",
+   "RDV, Visites & Consultations"
+  ],
+  "m12-ecritures": [
+   "Accueil",
+   "Financier",
+   "Comptabilité SYSCOHADA",
+   "Écritures comptables"
+  ],
+  "cfg-tarifs": [
+   "Accueil",
+   "Système",
+   "Configuration Clinique",
+   "Référentiel tarifaire"
+  ],
+  "m14-roles": [
+   "Accueil",
+   "Système",
+   "Sécurité & Utilisateurs",
+   "Rôles & permissions (RBAC)"
+  ]
+ }
+}

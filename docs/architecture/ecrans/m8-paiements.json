@@ -1,0 +1,59 @@
+{
+ "id": "m8-paiements",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Paiements",
+ "acces": "ouvert",
+ "titre": "Paiements",
+ "description": "Encaissements par espèces, terminal de paiement électronique, MTN Mobile Money et Moov Money.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Paiements"
+ ],
+ "actions": [
+  "Tableau de bord facturation",
+  "Nouvelle facture",
+  "Facturation & Caisse"
+ ],
+ "regle": [],
+ "onglets": [
+  "À encaisser",
+  "Historique des règlements"
+ ],
+ "kpis": [
+  "Espèces",
+  "TPE (carte bancaire)",
+  "MTN Mobile Money",
+  "Moov Money"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N° facture",
+   "Date",
+   "Patient",
+   "Montant",
+   "Déjà réglé",
+   "Reste dû",
+   "Règlement",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "À encaisser106",
+  "Historique des règlements",
+  "Colonnes",
+  "Exporter",
+  "Encaisser",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

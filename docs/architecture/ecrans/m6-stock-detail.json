@@ -1,0 +1,63 @@
+{
+ "id": "m6-stock-detail",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Stock détail (pharmacie)",
+ "acces": "ouvert",
+ "titre": "Stock détail (pharmacie d’urgence)",
+ "description": "Situation de la pharmacie d’urgence : dispensation aux patients et aux services de soins.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Stock détail (pharmacie)"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "La pharmacie de détail dispense aux patients et aux services. Toute sortie est rattachée à une facture ou à un bon de service (RG-03)."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Références présentes",
+  "Quantité totale",
+  "Valeur (CUMP)",
+  "Sous le seuil"
+ ],
+ "cartes": [
+  "Stock détail (pharmacie d’urgence)",
+  "Mouvements de la période — le flux, pas l’état"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Désignation",
+   "Unité",
+   "Quantité",
+   "Seuil",
+   "CUMP",
+   "Valeur",
+   "Emplacement",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Éditer l’état",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [
+  "Mouvements du",
+  "au"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

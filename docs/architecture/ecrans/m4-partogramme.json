@@ -1,0 +1,55 @@
+{
+ "id": "m4-partogramme",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Partogramme",
+ "acces": "ouvert",
+ "titre": "Partogramme",
+ "description": "Suivi dynamique du travail : dilatation, lignes d’alerte et d’action, BDF, contractions.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Partogramme"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Partogrammes",
+  "Travaux en cours",
+  "Ligne d’action franchie",
+  "Dilatations complètes"
+ ],
+ "cartes": [
+  "Dilatation cervicale — TIGRI Séraphine (PARTO-0001)",
+  "Mesures horaires"
+ ],
+ "tableaux": [
+  [
+   "Heure (h)",
+   "Dilatation (cm)",
+   "Descente (/5)",
+   "BDF (bpm)",
+   "CU / 10 min",
+   "TA",
+   "Pouls",
+   "Liquide"
+  ]
+ ],
+ "commandes": [
+  "TIGRI Séraphine",
+  "Ouvrir un partogramme",
+  "Ajouter une mesure",
+  "Imprimer"
+ ],
+ "champs": [
+  "Travail suivi"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,42 @@
+{
+ "id": "rls-alertes",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Alertes et notifications",
+ "acces": "ouvert",
+ "titre": "Alertes et notifications",
+ "description": "Règles d’alerte du relais et canaux de notification du superadmin (courriel).",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Alertes et notifications"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Règles"
+ ],
+ "tableaux": [
+  [
+   "Alerte",
+   "Seuil",
+   "Canal",
+   "Active"
+  ]
+ ],
+ "commandes": [
+  "Envoyer un courriel de test"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 0
+}

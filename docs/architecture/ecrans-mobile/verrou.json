@@ -1,0 +1,17 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile-suite.js : la fiche N1 de la page du simulateur mobile « verrou ». Ne pas éditer à la main.",
+ "titre": "Code PIN",
+ "sous": null,
+ "textes": [
+  "Saisissez votre code à 4 chiffres.",
+  "Démonstration : 1234",
+  "Démonstration : 1234"
+ ],
+ "champs": [],
+ "boutons": [],
+ "onglets": [],
+ "notes": [],
+ "cartes": [],
+ "items": [],
+ "kpis": []
+}

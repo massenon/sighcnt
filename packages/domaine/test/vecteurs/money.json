@@ -1,0 +1,653 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "valeur": 0,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "0 FCFA",
+    "pointsDeCode": "30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 0,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "0",
+    "pointsDeCode": "30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "1 FCFA",
+    "pointsDeCode": "31 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "1",
+    "pointsDeCode": "31"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 7,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "7 FCFA",
+    "pointsDeCode": "37 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 7,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "7",
+    "pointsDeCode": "37"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 12,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "12 FCFA",
+    "pointsDeCode": "31 32 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 12,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "12",
+    "pointsDeCode": "31 32"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 999,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "999 FCFA",
+    "pointsDeCode": "39 39 39 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 999,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "999",
+    "pointsDeCode": "39 39 39"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1000,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "1 000 FCFA",
+    "pointsDeCode": "31 202f 30 30 30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1000,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "1 000",
+    "pointsDeCode": "31 202f 30 30 30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1001,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "1 001 FCFA",
+    "pointsDeCode": "31 202f 30 30 31 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1001,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "1 001",
+    "pointsDeCode": "31 202f 30 30 31"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 9999,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "9 999 FCFA",
+    "pointsDeCode": "39 202f 39 39 39 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 9999,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "9 999",
+    "pointsDeCode": "39 202f 39 39 39"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 10000,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "10 000 FCFA",
+    "pointsDeCode": "31 30 202f 30 30 30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 10000,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "10 000",
+    "pointsDeCode": "31 30 202f 30 30 30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 12345,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "12 345 FCFA",
+    "pointsDeCode": "31 32 202f 33 34 35 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 12345,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "12 345",
+    "pointsDeCode": "31 32 202f 33 34 35"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 100000,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "100 000 FCFA",
+    "pointsDeCode": "31 30 30 202f 30 30 30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 100000,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "100 000",
+    "pointsDeCode": "31 30 30 202f 30 30 30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 999999,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "999 999 FCFA",
+    "pointsDeCode": "39 39 39 202f 39 39 39 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 999999,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "999 999",
+    "pointsDeCode": "39 39 39 202f 39 39 39"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1000000,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "1 000 000 FCFA",
+    "pointsDeCode": "31 202f 30 30 30 202f 30 30 30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1000000,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "1 000 000",
+    "pointsDeCode": "31 202f 30 30 30 202f 30 30 30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1234567,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "1 234 567 FCFA",
+    "pointsDeCode": "31 202f 32 33 34 202f 35 36 37 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1234567,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "1 234 567",
+    "pointsDeCode": "31 202f 32 33 34 202f 35 36 37"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 190830994,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "190 830 994 FCFA",
+    "pointsDeCode": "31 39 30 202f 38 33 30 202f 39 39 34 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 190830994,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "190 830 994",
+    "pointsDeCode": "31 39 30 202f 38 33 30 202f 39 39 34"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 2147483647,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "2 147 483 647 FCFA",
+    "pointsDeCode": "32 202f 31 34 37 202f 34 38 33 202f 36 34 37 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 2147483647,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "2 147 483 647",
+    "pointsDeCode": "32 202f 31 34 37 202f 34 38 33 202f 36 34 37"
+   }
+  },
+  {
+   "entree": {
+    "valeur": -1,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "-1 FCFA",
+    "pointsDeCode": "2d 31 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": -1,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "-1",
+    "pointsDeCode": "2d 31"
+   }
+  },
+  {
+   "entree": {
+    "valeur": -1500,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "-1 500 FCFA",
+    "pointsDeCode": "2d 31 202f 35 30 30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": -1500,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "-1 500",
+    "pointsDeCode": "2d 31 202f 35 30 30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": -1234567,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "-1 234 567 FCFA",
+    "pointsDeCode": "2d 31 202f 32 33 34 202f 35 36 37 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": -1234567,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "-1 234 567",
+    "pointsDeCode": "2d 31 202f 32 33 34 202f 35 36 37"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 0.4,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "0 FCFA",
+    "pointsDeCode": "30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 0.4,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "0",
+    "pointsDeCode": "30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 0.5,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "1 FCFA",
+    "pointsDeCode": "31 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 0.5,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "1",
+    "pointsDeCode": "31"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1.5,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "2 FCFA",
+    "pointsDeCode": "32 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1.5,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "2",
+    "pointsDeCode": "32"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 2.5,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "3 FCFA",
+    "pointsDeCode": "33 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 2.5,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "3",
+    "pointsDeCode": "33"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 999.5,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "1 000 FCFA",
+    "pointsDeCode": "31 202f 30 30 30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 999.5,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "1 000",
+    "pointsDeCode": "31 202f 30 30 30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1000000000,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "1 000 000 000 FCFA",
+    "pointsDeCode": "31 202f 30 30 30 202f 30 30 30 202f 30 30 30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 1000000000,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "1 000 000 000",
+    "pointsDeCode": "31 202f 30 30 30 202f 30 30 30 202f 30 30 30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 3000000005,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "3 000 000 005 FCFA",
+    "pointsDeCode": "33 202f 30 30 30 202f 30 30 30 202f 30 30 35 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": 3000000005,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "3 000 000 005",
+    "pointsDeCode": "33 202f 30 30 30 202f 30 30 30 202f 30 30 35"
+   }
+  },
+  {
+   "entree": {
+    "valeur": "12000",
+    "devise": true
+   },
+   "sortie": {
+    "texte": "12 000 FCFA",
+    "pointsDeCode": "31 32 202f 30 30 30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": "12000",
+    "devise": false
+   },
+   "sortie": {
+    "texte": "12 000",
+    "pointsDeCode": "31 32 202f 30 30 30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": "",
+    "devise": true
+   },
+   "sortie": {
+    "texte": "0 FCFA",
+    "pointsDeCode": "30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": "",
+    "devise": false
+   },
+   "sortie": {
+    "texte": "0",
+    "pointsDeCode": "30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": null,
+    "devise": true
+   },
+   "sortie": {
+    "texte": "0 FCFA",
+    "pointsDeCode": "30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": null,
+    "devise": false
+   },
+   "sortie": {
+    "texte": "0",
+    "pointsDeCode": "30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": {
+     "indefini": true
+    },
+    "devise": true
+   },
+   "sortie": {
+    "texte": "0 FCFA",
+    "pointsDeCode": "30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": {
+     "indefini": true
+    },
+    "devise": false
+   },
+   "sortie": {
+    "texte": "0",
+    "pointsDeCode": "30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": "abc",
+    "devise": true
+   },
+   "sortie": {
+    "texte": "0 FCFA",
+    "pointsDeCode": "30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": "abc",
+    "devise": false
+   },
+   "sortie": {
+    "texte": "0",
+    "pointsDeCode": "30"
+   }
+  },
+  {
+   "entree": {
+    "valeur": {
+     "nombre": "NaN"
+    },
+    "devise": true
+   },
+   "sortie": {
+    "texte": "0 FCFA",
+    "pointsDeCode": "30 a0 46 43 46 41"
+   }
+  },
+  {
+   "entree": {
+    "valeur": {
+     "nombre": "NaN"
+    },
+    "devise": false
+   },
+   "sortie": {
+    "texte": "0",
+    "pointsDeCode": "30"
+   }
+  }
+ ]
+}

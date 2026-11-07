@@ -1,0 +1,56 @@
+{
+ "id": "dash-comptable",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Comptabilité",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Comptabilité",
+ "description": "Écritures SYSCOHADA, équilibre des journaux, créances, dettes et rapprochements bancaires.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Comptabilité"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Écritures de l’exercice",
+  "Total débit",
+  "Total crédit",
+  "Équilibre (RG-10)"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Dernières écritures",
+  "Écritures par journal",
+  "Charges par centre de coûts"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Journal",
+   "Compte",
+   "Libellé",
+   "Débit",
+   "Crédit"
+  ]
+ ],
+ "commandes": [
+  "Valider les écritures",
+  "Écritures",
+  "Échéances",
+  "États",
+  "Toutes les écritures"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

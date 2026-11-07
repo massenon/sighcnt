@@ -1,0 +1,32 @@
+{
+ "id": "hub-m2",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "RDV, Visites & Consultations",
+ "acces": "ouvert",
+ "titre": "RDV, Visites & Consultations",
+ "description": "Tous les écrans du module M2 — RDV, Visites & Consultations.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Patients & constantes",
+  "Courriers & orientation",
+  "Tarification & information patient"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

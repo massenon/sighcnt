@@ -10,6 +10,28 @@
  * ========================================================================== */
 'use strict';
 const fs = require('fs');
+
+/* --seul=<fragment>[|<autre>…] (un _ vaut une espace) : ne joue que les scénarios dont le titre contient l'un des fragments, DANS L'ORDRE DU FICHIER (pour reproduire l'ordre d'une suite : --seul=Vague_79|Vague_80|Vague_81) (un scénario seul, ou ceux d'un module),
+   sans les quatre-vingts autres. Le fichier est recomposé en mémoire : préambule + blocs retenus + restitution. */
+const SEUL = (process.argv.find((a) => a.startsWith('--seul=')) || '').slice(7).replace(/_/g, ' ');
+/* --sauf=Motif : tous les scénarios SAUF ceux dont le titre contient le motif (traits bas = espaces). Sert à mesurer le reste d'une suite dont un scénario est connu en échec. */
+const SAUF = (process.argv.find((a) => a.startsWith('--sauf=')) || '').slice(7).replace(/_/g, ' ');
+if ((SEUL || SAUF) && !process.env.SIGH_REDUIT) {
+  const lignes = fs.readFileSync(__filename, 'utf8').split('\n');
+  const debuts = []; lignes.forEach((l, i) => { if (l === '  await etape(async () => {' && /^    scenario\(/.test(lignes[i + 1] || '')) debuts.push(i); });
+  const fin = lignes.findIndex((l) => l === '  await browser.close();');
+  const gardes = [];
+  debuts.forEach((d, k) => { if (SAUF ? lignes[d + 1].indexOf(SAUF) < 0 : SEUL.split('|').some((f) => lignes[d + 1].indexOf(f) >= 0)) gardes.push(lignes.slice(d, k + 1 < debuts.length ? debuts[k + 1] : fin)); });
+  if (!gardes.length) { console.log('Aucun scénario ne contient « ' + (SEUL || SAUF) + ' ».'); process.exit(2); }
+  // Un scénario isolé commence sur un document vide : une page est ouverte d'abord (les scénarios suivants héritent de la page du précédent).
+  const ouverture = ["  await ouvrir('m14-roles.html');"];
+  const reduit = lignes.slice(0, debuts[0]).concat(ouverture, ...gardes, lignes.slice(fin)).join('\n');
+  const Module = require('module');
+  const m = new Module(__filename, module); m.filename = __filename; m.paths = Module._nodeModulePaths(__dirname);
+  process.env.SIGH_REDUIT = '1';
+  m._compile(reduit, __filename);
+  return;
+}
 const path = require('path');
 const BANC = require('./_banc');
 const http = require('http');
@@ -51,6 +73,18 @@ function verifier(libelle, condition, detail) {
   if (!ok) {
     process.stdout.write('\n  ✗ [' + (courant ? courant.nom : '?') + '] ' + libelle
       + (detail ? '\n     → ' + String(detail).slice(0, 400) : '') + '\n');
+  }
+}
+/* UN SCÉNARIO QUI LÈVE NE TUE PAS LA SUITE (E2158, corrigé le 06/11/2026). Une exception non attrapée dans un bloc (un `.click()`
+   sur un nœud absent, une promesse rejetée) faisait mourir le processus : ni récapitulatif, ni `rapport-tests.json`, et les
+   scénarios suivants n'étaient jamais joués ; on sautait le fautif avec `--sauf=` depuis des semaines. Chaque bloc est désormais une
+   ÉTAPE : l'erreur devient un échec NOMMÉ du scénario courant (scénario et message), et la suite continue au bloc suivant. */
+async function etape(bloc) {
+  try { await bloc(); }
+  catch (e) {
+    const message = String((e && e.message) || e).split('\n')[0];
+    if (!courant) scenario('(exception avant tout scenario())');
+    verifier('Le scénario s’exécute sans erreur', false, message);
   }
 }
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -196,6 +230,11 @@ async function viderMessages(page) {
           if (!S) return false;
           /* `faitAutorite` est récent : un magasin qui ne l'expose pas est
              tenu pour hydraté, faute de pouvoir le vérifier. */
+          /* UNE REDIRECTION N'EST PAS UNE PAGE QUI NE SE PEINT PAS : la page 403 et les
+             écrans d'authentification n'ont pas de #page-content, et le scénario qui y
+             arrive mesure l'ADRESSE. Attendre 150 s dessus coûtait deux minutes et demie
+             par refus sondé, et criait depuis la vague 68 à une hydratation pendante. */
+          if (/error-403|\/auth-|\/index\.php|enquete-publique/.test(location.pathname)) return true;
           if (S.faitAutorite && !S.faitAutorite()) return false;
           const c = document.getElementById('page-content');
           return !!(c && c.children.length > 0);
@@ -214,13 +253,31 @@ async function viderMessages(page) {
        dans le budget, et la navigation expirait sur une page parfaitement
        saine. L'attente qui suit est meilleure de toute façon : elle guette la
        PEINTURE, c'est-à-dire ce qu'on veut vraiment mesurer. */
-    await page.goto(`http://127.0.0.1:${PORT}/pages/${pageDuBanc(rel)}`, { waitUntil: 'domcontentloaded' });
+    const reponse = await page.goto(`http://127.0.0.1:${PORT}/pages/${pageDuBanc(rel)}`, { waitUntil: 'domcontentloaded' }).catch(() => null);
+    /* UNE PAGE QUI N'EXISTE PAS SE DIT TOUT DE SUITE (vague 70). `m6-inventaires` (au pluriel) n'a jamais existé : le banc
+       attendait 150 s une peinture impossible à CHAQUE passage, puis le prétendait « hydratation jamais aboutie ». */
+    if (reponse && reponse.status() === 404) {
+      console.log('\n  PAGE INTROUVABLE (404) : ' + rel + ' — absente du manifeste ; le scénario continue sans elle.');
+      return;
+    }
     /* ON ATTEND QUE LA PAGE SOIT PEINTE, pas un délai. Depuis la bascule en
        base, le montage attend l'hydratation — 5 Mo à transporter puis à
        analyser — et les 450 ms d'autrefois tombaient au milieu : la sonde
        cherchait un champ de recherche qui n'existait pas encore et lisait
        « null » là où l'écran était simplement en retard. */
-    await attendrePeinture();
+    const peinte = await attendrePeinture();
+    /* UNE PAGE QUI NE SE PEINT PAS LE DIT (vague 68). Le banc rendait la main en
+       silence après 150 s et chaque assertion suivante échouait comme si
+       l'interface était absente — « bouton absent », « modale absente » — avec
+       0 erreur JS : on cherchait le défaut dans l'écran pendant que la page
+       n'avait jamais été hydratée. */
+    if (!peinte) {
+      const diag = await page.evaluate(() => ({ url: location.pathname.split('/').pop(), etat: document.readyState,
+        serveur: window.SIGH && window.SIGH.store && window.SIGH.store.etatServeur ? window.SIGH.store.etatServeur() : null,
+        contenu: !!document.querySelector('#page-content'), corps: document.body ? document.body.innerText.slice(0, 120) : null })).catch((e) => String(e).slice(0, 120));
+      console.log('\n  DIAGNOSTIC de la page non peinte : ' + JSON.stringify(diag) + ' ; erreurs JS : ' + JSON.stringify(erreursJS.slice(0, 3)));
+    }
+    if (!peinte) console.log('\n  PAGE NON PEINTE après 150 s : ' + rel + ' — hydratation jamais aboutie, le reste du scénario mesure une page blanche.');
     await pause(450);
   }
 
@@ -263,7 +320,7 @@ async function viderMessages(page) {
   /* =========================================================================
    * 1. Création, édition, archivage annulable — Répertoire des patients (M1)
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('M1 — Cycle de vie complet d’un dossier patient');
     await ouvrir('m1-patients.html');
     verifier('La page se charge sans erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
@@ -284,8 +341,8 @@ async function viderMessages(page) {
       const inp = document.querySelector('#f_code');
       return inp ? inp.value : null;
     });
-    verifier('Le code patient est pré-attribué au format CNT[n°]/[année]',
-      /^CNT\d+\/\d{2}$/.test(codeAttribue || ''), 'code : ' + codeAttribue);
+    verifier('Le code patient est pré-attribué au format CNT/[n°]/[année] (E300 : le format en vigueur depuis la vague 26)',
+      /^CNT\/\d+\/\d{2}$/.test(codeAttribue || ''), 'code : ' + codeAttribue);
     verifier('Le champ code est en lecture seule (RG-01)',
       await page.evaluate(() => document.querySelector('#f_code') && document.querySelector('#f_code').hasAttribute('readonly')));
 
@@ -404,12 +461,12 @@ async function viderMessages(page) {
       totalApresCreation + ' attendu, ' + totalFinal + ' obtenu');
 
     verifier('Aucune erreur JavaScript sur tout le parcours', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 2. Sous-onglets et onglet « Archivés »
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Navigation par sous-onglets');
     await ouvrir('m5-catalogue.html');
     const nbOnglets = await page.evaluate(() => document.querySelectorAll('#page-content .tab').length);
@@ -428,12 +485,12 @@ async function viderMessages(page) {
         return c.textContent.includes('archivé') || c.querySelectorAll('tbody tr').length >= 0;
       }));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 3. Tri, filtres et pagination
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Tri, filtres et pagination');
     await ouvrir('m6-produits.html');
     const total = totalDepuisCompteur(await texteCompteur());
@@ -477,12 +534,12 @@ async function viderMessages(page) {
       verifier('Pagination non requise sur ce jeu filtré', true);
     }
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 4. Règle métier RG-03 — stock jamais négatif
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RG-03 — le stock ne peut pas devenir négatif');
     await ouvrir('m6-transferts.html');
     verifier('L’écran des transferts se charge', erreursJS.length === 0, erreursJS.join(' | '));
@@ -546,12 +603,12 @@ async function viderMessages(page) {
       multi.erreur || (multi.lignes + ' ligne(s) sur le bon'));
     verifier('La modale reste ouverte pour correction',
       await page.evaluate(() => !!document.querySelector('[role="dialog"]')));
-  }
+  });
 
   /* =========================================================================
    * 5. Règle métier RG-07 — triple signature à la sortie
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RG-07 — signatures obligatoires à la sortie d’hospitalisation');
     await ouvrir('m3-sorties.html');
     const ouvert = await page.evaluate(() => {
@@ -570,12 +627,12 @@ async function viderMessages(page) {
       return t ? t.textContent.includes('RG-07') : false;
     });
     verifier('La finalisation est refusée sans les trois signatures (RG-07)', refus);
-  }
+  });
 
   /* =========================================================================
    * 6. Règle métier RG-10 — équilibre des écritures comptables
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RG-10 — équilibre débit/crédit avant validation');
     await ouvrir('m12-ecritures.html');
     verifier('Le bouton « Nouvelle écriture » est présent', await cliquer('Nouvelle écriture', '#page-content button'));
@@ -642,12 +699,12 @@ async function viderMessages(page) {
       journal.chargesAuCredit + ' charge(s) au crédit, ' + journal.produitsAuDebit + ' produit(s) au débit');
     verifier('Une pièce est validée ENTIÈRE, jamais à moitié',
       journal.mixtes === 0, journal.mixtes + ' pièce(s) à statut mixte');
-  }
+  });
 
   /* =========================================================================
    * 7. Impression d’un état officiel avec entête
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Édition d’un état officiel');
     await ouvrir('m10-primes.html');
     verifier('Le bouton d’impression est présent', await cliquer('Imprimer la note', '#page-content button'));
@@ -689,12 +746,12 @@ async function viderMessages(page) {
     verifier('La feuille est retirée après fermeture',
       await page.evaluate(() => !document.querySelector('.print-sheet')));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 8. Export CSV
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Export des données');
     await ouvrir('m9-compagnies.html');
     verifier('Le bouton « Exporter » est présent', await cliquer('Exporter', '#page-content button'));
@@ -719,12 +776,12 @@ async function viderMessages(page) {
     const fichier = await page.evaluate(() => window.__telechargement);
     verifier('Le fichier CSV est généré', /assureurs-\d{4}-\d{2}-\d{2}\.csv/.test(fichier || ''), 'fichier : ' + fichier);
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 9. Recherche globale et changement de profil (RBAC)
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Recherche globale et périmètre RBAC');
     await ouvrir('dash-direction.html');
     await page.evaluate(() => window.SIGH.app.openSearch());
@@ -822,12 +879,12 @@ async function viderMessages(page) {
     await page.evaluate(() => {
       window.SIGH.store.setSession({ role: 'admin', nom: 'BASSONGUI Chabi Séko', poste: 'Directeur Médical' });
     });
-  }
+  });
 
   /* =========================================================================
    * 10. Facturation de bout en bout avec sortie de stock
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('M8 — Facturation et sortie de stock automatique');
     await ouvrir('m8-facturation.html');
     verifier('L’écran de facturation se charge', erreursJS.length === 0, erreursJS.join(' | '));
@@ -868,13 +925,13 @@ async function viderMessages(page) {
         return s && /MECEF\d+/.test(s.textContent);
       }));
     verifier('Aucune erreur JavaScript sur le parcours de facturation', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 11. Méga-menu horizontal : ouverture par défaut, bascule de domaine,
    *     repli mémorisé, accès rapides en tête des tableaux de bord.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Méga-menu horizontal et accès rapides');
     await page.evaluate(() => window.SIGH.store.storage.remove('sigh-cnt:ruban'));
     await ouvrir('m6-produits.html');
@@ -1031,12 +1088,12 @@ async function viderMessages(page) {
     });
     verifier('Le fil d’Ariane renvoie à l’accueil du module', fil === 'Pharmacie & Stocks', 'lien : ' + fil);
     verifier('Aucune erreur JavaScript sur les pages hub', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 12. Listes déroulantes avec recherche
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Listes déroulantes avec recherche');
     await ouvrir('m8-facturation.html');
 
@@ -1086,12 +1143,12 @@ async function viderMessages(page) {
     await page.keyboard.press('Escape');
     await pause(200);
     verifier('Aucune erreur JavaScript sur les listes', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 13. Les fiches consultées sont modifiables
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Fiches consultables et modifiables');
 
     /* Registre tenu au fil de l'eau : modification d'une ligne */
@@ -1171,12 +1228,12 @@ async function viderMessages(page) {
       evaluation.drawer && evaluation.boutons.some((b) => /Modifier l’évaluation/.test(b)),
       (evaluation.boutons || []).join(' · '));
     verifier('Aucune erreur JavaScript sur les fiches', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 14. Aide, contact éditeur et affichage sur petit écran
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Aide, contact éditeur et affichage responsive');
 
     /* Les deux pages sont proposées dans le menu profil */
@@ -1247,7 +1304,10 @@ async function viderMessages(page) {
       await new Promise((r) => setTimeout(r, 400));
       return (document.querySelector('#toast-host') || {}).textContent || '';
     });
-    verifier('L’anomalie est enregistrée', /Anomalie signalée/.test(bug), bug.slice(0, 80));
+    /* Vague 79 : l'écran dit la vérité. Sans messagerie configurée, l'anomalie est ENREGISTRÉE et le toast dit qu'aucun courriel n'est parti
+       (l'ancien « Anomalie signalée » laissait croire à un envoi). */
+    verifier('L’anomalie est enregistrée, et le toast dit qu’aucun courriel n’est parti (messagerie non configurée)',
+      /Anomalie enregistrée/.test(bug) && /SUP-2026-\d{4}/.test(bug) && /Aucun courriel/.test(bug), bug.slice(0, 120));
 
     /* Téléphone : le ruban ne mange plus l'écran */
     await page.setViewport({ width: 390, height: 780 });
@@ -1303,7 +1363,7 @@ async function viderMessages(page) {
     await page.setViewport({ width: 1600, height: 1000 });
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 15. Parcours de prescription — de la consultation à la délivrance
@@ -1312,7 +1372,7 @@ async function viderMessages(page) {
    * traverse M2, M5, M6 et M8 sans ressaisie, et les règles de gestion tiennent
    * à chaque étape.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Parcours de prescription — M2 → M5 / M6 / M8');
 
     await ouvrir('m2-ordonnances.html');
@@ -1428,7 +1488,7 @@ async function viderMessages(page) {
     verifier('RG-03 — le stock reste intact après le refus', rg03.stock === rg03.attendu);
 
     verifier('Aucune erreur JavaScript sur le parcours', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 16. Référentiels administrables — plus rien d'écrit en dur
@@ -1437,7 +1497,7 @@ async function viderMessages(page) {
    * la Direction administre elle-même. Ce scénario vérifie que les listes
    * autrefois figées dans le code sont bien devenues des collections.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Référentiels administrables — actes, secteurs, natures, centres');
 
     /* --- Catalogue des actes --- */
@@ -1559,7 +1619,7 @@ async function viderMessages(page) {
     });
     verifier('Les centres de coûts sont administrables et couvrent les six secteurs plus la Direction',
       cc.total === cc.attendu && cc.support === 1
-      && ['Laboratoire', 'Pharmacie', 'Consultation', 'Échographie', 'Maternité',
+      && ['Laboratoire', 'Pharmacie', 'Consultation', 'Imagerie médicale', 'Maternité',
         'Hospitalisation et soins', 'Direction'].every((x) => cc.libelles.includes(x)),
       cc.total + ' centres : ' + cc.libelles.join(', '));
     verifier('Le code d’un centre EST l’imputation portée par les écritures — un seul référentiel',
@@ -1567,7 +1627,7 @@ async function viderMessages(page) {
       cc.codesReconnus + ' / ' + cc.imputees + ' écritures rattachées');
 
     verifier('Aucune erreur JavaScript sur les référentiels', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 17. Prise en charge : taux par prestation, plafonds, exclusions
@@ -1577,7 +1637,7 @@ async function viderMessages(page) {
    * même assuré, selon la nature de l'article. Un taux unique par patient ne
    * peut pas exprimer cela.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Prise en charge — grille par convention, plafonds et exclusions');
 
     await ouvrir('m9-conventions.html');
@@ -1673,7 +1733,7 @@ async function viderMessages(page) {
         && /Catégorie/.test(document.body.textContent)));
 
     verifier('Aucune erreur JavaScript sur la prise en charge', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 18. Facturation : parts par ligne, remises, double facture, MECeF partielle
@@ -1682,7 +1742,7 @@ async function viderMessages(page) {
    * contractuelles se vérifient ici : part par ligne, colonnes de remise,
    * deux pièces pour l'assuré, et une base MECeF limitée à la part patient.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Facturation — parts par ligne, remises, double facture, MECeF');
 
     await ouvrir('m8-facturation.html');
@@ -1746,10 +1806,15 @@ async function viderMessages(page) {
       const sheet = document.querySelector('.print-sheet');
       return {
         tableau: tableau,
-        pieces: nouvelles.map((f) => ({
-          numero: f.numero, volet: f.volet, total: f.montantTTC, ass: f.partAssurance,
-          pat: f.partPatient, remises: f.montantRemises, base: f.baseMecef,
-        })),
+        pieces: nouvelles.map((f) => {
+          const ecr = S.collection('ecritures').all().filter((e) => e.pieceId === f.id);
+          const som = (c, k) => ecr.filter((e) => String(e.compte).startsWith(c)).reduce((n, e) => n + (e[k] || 0), 0);
+          return {
+            numero: f.numero, volet: f.volet, total: f.montantTTC, ass: f.partAssurance,
+            pat: f.partPatient, remises: f.montantRemises, base: f.baseMecef, regle: f.montantPaye,
+            nbEcr: ecr.length, d411: som('411', 'debit'), d571: som('571', 'debit'), c706: som('706', 'credit'),
+          };
+        }),
         texte: sheet ? sheet.textContent.replace(/\s+/g, ' ') : '',
       };
     }, prep);
@@ -1771,6 +1836,10 @@ async function viderMessages(page) {
     verifier('La remise est appliquée et tracée sur sa pièce',
       nonCouverte.remises === 30, 'remise ' + nonCouverte.remises + ' FCFA');
 
+    /* E2260 : « Enregistrer et encaisser » écrit au journal, équilibré (RG-10), et constate la créance de l'assureur. */
+    verifier('« Enregistrer et encaisser » pose l’écriture : 571 de ce qui est réglé, 411 de la part assureur, 706 du total, équilibrée',
+      emission.pieces.every((p) => p.d571 === p.regle && p.d411 === p.ass && p.c706 === p.d571 + p.d411 && (p.total === 0 || p.nbEcr >= 2)),
+      JSON.stringify(emission.pieces.map((p) => [p.numero, p.regle, p.ass, p.total, p.d571, p.d411, p.c706, p.nbEcr])));
     verifier('La base MECeF n’excède jamais la part patient',
       emission.pieces.every((p) => p.base <= p.pat),
       emission.pieces.map((p) => p.base + '≤' + p.pat).join(' · '));
@@ -1812,7 +1881,7 @@ async function viderMessages(page) {
       /PART ASSUREUR/.test(ticket.texte) && /PART ASSURÉ/.test(ticket.texte));
 
     verifier('Aucune erreur JavaScript sur la facturation', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 19. Relevé, facture mensuelle, opérations de caisse et recettes
@@ -1821,7 +1890,7 @@ async function viderMessages(page) {
    * doivent se recouper. Côté caisse, la Direction veut les recettes par
    * périodicité et un inventaire arrêté sur une période.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('États de caisse et pièces assureur — relevé, facture, recettes');
 
     /* Une convention pour que la répartition existe */
@@ -1942,7 +2011,7 @@ async function viderMessages(page) {
     verifier('La créance reste due après la déclaration d’insolvabilité', impayes.creanceIntacte);
 
     verifier('Aucune erreur JavaScript sur les états de caisse', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 20. RBAC métier — ce que chacun VOIT, pas seulement ce qu'il ouvre
@@ -1951,7 +2020,7 @@ async function viderMessages(page) {
    * les résultats, la sage-femme ceux de son secteur, l'infirmier aucun,
    * l'aide-soignant n'exécute pas les soins prescrits.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RBAC métier — habilitations par fonction et par secteur');
 
     const profils = [
@@ -1965,6 +2034,21 @@ async function viderMessages(page) {
        les jeux de démonstration ont pu être consommés par les scénarios
        précédents, et c'est la RÈGLE qu'on veut éprouver, pas l'amorçage. */
     await ouvrir('m5-resultats.html');
+    /* E2262 (corrigé le 06/11/2026) : le JEU porte le secteur du PRESCRIPTEUR lu à l'organigramme, jamais celui de la session
+       qui l'a semé (l'installateur, ADMINISTRATION). Mesuré sur les demandes semées seules (origine autre que « manuelle »). */
+    const seme = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, D = window.SIGH.data;
+      const rows = S.collection('demandesAnalyses').active().filter((r) => r.origine !== 'manuelle');
+      const parSecteur = {};
+      rows.forEach((r) => { const k = String(r.secteurDemandeur); parSecteur[k] = (parSecteur[k] || 0) + 1; });
+      S.setSession({ role: 'infirmier', nom: 'BADO BANI Z.', fonction: 'sage_femme', secteur: 'MAT' });
+      const rendus = rows.filter((r) => D.resultatRendu(r.etatAnalyse));
+      return { total: rows.length, parSecteur, maternite: parSecteur['Maternité'] || 0, visibles: PR.filtrerResultats(rendus).length };
+    });
+    verifier('Le jeu semé ne porte AUCUNE demande au secteur ADMINISTRATION (le secteur de la session qui l’a semé)',
+      seme.total > 0 && !seme.parSecteur.ADMINISTRATION, JSON.stringify(seme.parSecteur));
+    verifier('Le jeu porte des demandes de la MATERNITÉ, et la sage-femme voit des résultats rendus de son secteur',
+      seme.maternite > 0 && seme.visibles > 0, JSON.stringify(seme));
     await page.evaluate(() => {
       const S = window.SIGH.store;
       const col = S.collection('demandesAnalyses');
@@ -2222,7 +2306,7 @@ async function viderMessages(page) {
 
     await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', nom: 'BASSONGUI Chabi Séko', poste: 'Directeur Médical' }));
     verifier('Aucune erreur JavaScript sur le RBAC métier', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 21. Mise en observation — surveillance courte et décision d'orientation
@@ -2231,7 +2315,7 @@ async function viderMessages(page) {
    * de constantes horodatée, prescriptions ciblées, et une décision de sortie
    * qui peut ouvrir une hospitalisation complète.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Mise en observation — surveillance, constantes et orientation');
 
     await ouvrir('m3-observation.html');
@@ -2321,7 +2405,7 @@ async function viderMessages(page) {
       await page.evaluate(() => /au-delà de la durée de référence|depuis plus de/.test(document.body.textContent)));
 
     verifier('Aucune erreur JavaScript sur la mise en observation', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 22. Dossier patient et accueil
@@ -2330,7 +2414,7 @@ async function viderMessages(page) {
    * observations, températures, maternité, analyses, ordonnances, domicile,
    * factures. Et l'accueil doit pouvoir enregistrer un passage sans rendez-vous.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Dossier patient — statut d’assurance, parcours agrégé et accueil');
 
     /* Statut d'assurance : trois états distincts */
@@ -2457,7 +2541,7 @@ async function viderMessages(page) {
         .some((b) => b.textContent.trim() === 'Nouveau')));
 
     verifier('Aucune erreur JavaScript sur le dossier patient', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 23. RH, fiscalité, certificats et exploitation
@@ -2466,7 +2550,7 @@ async function viderMessages(page) {
    * calendrier fiscal, certificats médicaux, sauvegardes exportables et
    * réinitialisation protégée.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RH, fiscalité, certificats et exploitation');
 
     /* Ordres de mission — validation DA */
@@ -2733,7 +2817,7 @@ async function viderMessages(page) {
     verifier('L’écran distingue ce qui serait effacé de ce qui serait conservé', reinit.conserve);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 24. Valorisation des sorties et états de la Direction
@@ -2742,7 +2826,7 @@ async function viderMessages(page) {
    * de stock, devenue un paramètre, et les états par groupe et famille, dont
    * les familles viennent du document et les groupes d'une proposition.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Valorisation des sorties et états de la Direction');
 
     await ouvrir('cfg-regles.html');
@@ -2821,7 +2905,7 @@ async function viderMessages(page) {
       etats.cumul && etats.quantite);
 
     verifier('Aucune erreur JavaScript sur ces états', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 25. Obligations fiscales — documentation, échéancier et validation
@@ -2829,7 +2913,7 @@ async function viderMessages(page) {
    * Arbitrages de la Direction du 20/08/2026 : le calendrier du comptable est
    * documenté, déroulé sur l'exercice, et chaque paiement se valide.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Obligations fiscales — documentation, échéancier et validation');
 
     /* La page de référence documente tout ce que le comptable a précisé */
@@ -2952,7 +3036,7 @@ async function viderMessages(page) {
       tarifs.montreAssure, 'colonne « Tarif assuré »');
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 26. RH ÉTENDUE — régimes, primes datées, événements, verrouillage
@@ -2961,7 +3045,7 @@ async function viderMessages(page) {
    * qui réécrirait le passé, une participation prélevée douze fois au lieu
    * d'une, et un verrouillage qui ferait perdre l'écran en cours.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RH étendue — régimes, primes datées, événements et verrouillage');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -3085,10 +3169,10 @@ async function viderMessages(page) {
 
     /* --- La retenue figure au bulletin du mois choisi, une seule fois ------ */
     await ouvrir('m11-calcul.html');
-    const bul = await page.evaluate((employeId) => {
+    const bul = await page.evaluate(({ employeId, evenementId }) => {
       const S = window.SIGH.store;
       const parts = S.collection('participations').active()
-        .filter((x) => x.employeId === employeId && x.mode === 'salaire');
+        .filter((x) => x.employeId === employeId && x.mode === 'salaire' && x.evenementId === evenementId);
       const entetes = [...document.querySelectorAll('#page-content thead th')].map((x) => x.textContent);
       /* Le mois de retenue est unique : la participation ne se prélève pas
          chaque mois de l'année. */
@@ -3098,7 +3182,7 @@ async function viderMessages(page) {
         colonneEvenements: entetes.some((h) => /Événements/.test(h)),
         colonneAvance: entetes.some((h) => /Avance sur salaire/.test(h)),
       };
-    }, evt.premierAgent);
+    }, { employeId: evt.premierAgent, evenementId: evt.evenementId });
     verifier('Le détail du calcul porte une colonne « Avance sur salaire »', bul.colonneAvance);
     verifier('Le détail du calcul porte une colonne « Événements »', bul.colonneEvenements);
     verifier('La participation ne vise qu’un seul mois de retenue',
@@ -3175,7 +3259,7 @@ async function viderMessages(page) {
       S.storage.remove(A.VERROU_RETOUR);
     });
     verifier('Aucune erreur JavaScript sur la RH étendue', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 27. LABORATOIRE — modèle de résultat, circuit du prélèvement, modules
@@ -3184,7 +3268,7 @@ async function viderMessages(page) {
    * 2026080411 ? Les deux valeurs qu'elle met en gras — lymphocytes 0,70 G/l
    * et hémoglobine 14,3 g/dl — doivent ressortir hors bornes, et aucune autre.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Laboratoire — modèle de résultat, prélèvement et activité des modules');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -3203,7 +3287,7 @@ async function viderMessages(page) {
         sections: L.SECTIONS.map((x) => x.id),
         documentes: ex.filter((e) => e.documente).length,
         aValider: va.filter((v) => v.aValider).length,
-        valideesBio: va.filter((v) => v.valideLe && /iologiste/.test(v.validePar || '')).length,
+        valideesBio: va.filter((v) => v.valideLe && /validation écrite du 01\/09\/2026/.test(v.validePar || '') && v.valideRole === 'Direction').length,
         retractables: va.filter((v) => v.retractable).length,
         sousVariables: va.filter((v) => v.parent).length,
       };
@@ -3386,7 +3470,7 @@ async function viderMessages(page) {
       reouverture.ouvert && reouverture.refermee);
 
     verifier('Aucune erreur JavaScript sur le laboratoire', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 28. LA CHAÎNE COMPLÈTE — consultation → caisse → comptable, labo, stock
@@ -3396,7 +3480,7 @@ async function viderMessages(page) {
    * demande d'analyse débloquée mais indistinguable des impayées, et une
    * sortie de stock qui passe sous le seuil sans que personne le sache.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Chaîne complète — consultation, pathologie, caisse, comptable, labo, stock');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -3542,7 +3626,7 @@ async function viderMessages(page) {
     verifier('Réalerter sur le même article ne crée pas de doublon', doublon === 1, doublon + ' tâche(s)');
 
     verifier('Aucune erreur JavaScript sur la chaîne complète', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 29. CAISSE LIGNE PAR LIGNE ET PATIENT EXTERNE
@@ -3551,7 +3635,7 @@ async function viderMessages(page) {
    * paiement partiel qui libère TOUS les examens, ou aucun ; un reçu qui ne
    * nomme pas ce qui est payé ; et une caisse qui créerait la demande.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Caisse ligne par ligne, reçu détaillé et patient externe');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -3709,7 +3793,7 @@ async function viderMessages(page) {
       !gardeFou.caisse, gardeFou.roles.join(', '));
 
     verifier('Aucune erreur JavaScript sur la caisse', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 30. LES DEUX VERROUS DU LABORATOIRE
@@ -3718,7 +3802,7 @@ async function viderMessages(page) {
    * relecture, une correction qui écraserait en silence ce qu'il a déjà lu,
    * et un intérim de validation qui ne se verrait pas sur la pièce.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Laboratoire — validation technique, validation biologique, rectification');
 
     await ouvrir('m5-resultats.html');
@@ -3833,7 +3917,7 @@ async function viderMessages(page) {
       role: 'admin', nom: 'BASSONGUI Chabi Séko', fonction: 'direction', secteur: 'ADM',
     }));
     verifier('Aucune erreur JavaScript sur les deux verrous', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 31. RBAC PAR ÉCRAN, RÔLE CRÉÉ, RACCOURCIS
@@ -3842,7 +3926,7 @@ async function viderMessages(page) {
    * patient, un rôle inventé qui hériterait des modules ouverts « à tous », et
    * un raccourci qui mènerait à une porte fermée.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RBAC par écran, création de rôle et raccourcis filtrés');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -3920,10 +4004,13 @@ async function viderMessages(page) {
       N.NAV.forEach((d) => d.modules.forEach((m) => modules.push(m.code)));
       const ferme = {};
       modules.forEach((c) => { ferme[c] = { voir: false, editer: false, annuler: false }; });
+      /* Comme la création réelle (m14-securite) : un écran UNIVERSEL ne cède que devant une surcharge d'écran. */
+      const fermesEcrans = {};
+      N.ids().forEach((id) => { const e = N.get(id); if (e && e.universel) fermesEcrans[id] = { voir: false, editer: false, annuler: false }; });
       col.insert({
         role: 'archiviste', nouveau: true, statut: 'actif', libelle: 'Archiviste',
         libelleOrigine: 'Archiviste', couleur: 'neutral', accueil: 'dash-admin',
-        droits: ferme, droitsEcrans: {},
+        droits: ferme, droitsEcrans: fermesEcrans,
       });
       N.invaliderRbac();
       const ecrans = [];
@@ -3977,7 +4064,7 @@ async function viderMessages(page) {
       'admin ' + filtres.admin + ' · laborantin ' + filtres.laborantin + ' · infirmier ' + filtres.infirmier);
 
     verifier('Aucune erreur JavaScript sur le RBAC par écran', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 32. LES AJOUTS — emplacements, pertes, barème NS 131, participations
@@ -3986,7 +4073,7 @@ async function viderMessages(page) {
    * un barème modifiable sans autorisation, et une participation engendrée
    * pour un seul agent au lieu de tout le personnel.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Ajouts — emplacements, pertes, barème NS 131 et participations');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -4160,7 +4247,7 @@ async function viderMessages(page) {
       journal.total, journal.erreur || (journal.ouvert ? 'état lu' : 'aucun état'));
 
     verifier('Aucune erreur JavaScript sur les ajouts', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 33. LA GRILLE À DEUX PRIX ET LE CIRCUIT CLINIQUE
@@ -4170,7 +4257,7 @@ async function viderMessages(page) {
    * prescriptions, quatre origines, et fait passer le relais de la salle de
    * soins à l'hospitalisation au deuxième passage.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Deux prix, prescription de soins et relais d’administration');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -4788,7 +4875,7 @@ async function viderMessages(page) {
     }
 
     verifier('Aucune erreur JavaScript sur le circuit clinique', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 34. LA CAISSE — DÉTAIL DU REÇU ET RÈGLEMENT PARTIEL
@@ -4800,7 +4887,7 @@ async function viderMessages(page) {
    * ces pièces — c'est-à-dire sur presque toutes celles que la caisse voit — le
    * reçu n'avait rien à détailler.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Caisse — détail du reçu, règlement partiel et libération au laboratoire');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -4945,12 +5032,12 @@ async function viderMessages(page) {
       partiel.baseMecef === partiel.paye, 'base ' + partiel.baseMecef + ' · réglé ' + partiel.paye);
 
     verifier('Aucune erreur JavaScript sur la caisse', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 35. FACTURE MÈRE, AMBULANCES ET DOSSIER ÉTENDU
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Facture mère, répertoire des ambulances et dossier de consultation étendu');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -5136,12 +5223,12 @@ async function viderMessages(page) {
       accueil.infructueuseJournalisee === true);
 
     verifier('Aucune erreur JavaScript sur ce lot', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 36. LES TABLEAUX DE BORD PAR PROFIL
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Tableaux de bord par profil et premier regard');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -5213,7 +5300,6 @@ async function viderMessages(page) {
         echographiste: 'dash-echographiste',
         surveillant: 'dash-surveillant',
         assistant_comptable: 'dash-assistant-comptable',
-        biomedical: 'dash-biomedical',
       };
       const out = {};
       Object.keys(attendus).forEach((r) => {
@@ -5273,15 +5359,15 @@ async function viderMessages(page) {
       const ok = await page.evaluate(() => !!document.querySelector('#page-content > *'));
       if (ok) montes++;
     }
-    /* Deux tableaux sont FERMÉS par activité — le poste d ingénieur
-       biomédical n existe pas, et le compte Pharmacien est archivé. Exiger
-       qu ils se montent reviendrait à demander qu une activité close
-       continue de s afficher. */
+    /* Un tableau est FERMÉ par activité — le compte Pharmacien est archivé.
+       Exiger qu il se monte reviendrait à demander qu une activité close
+       continue de s afficher. Le rôle d ingénieur biomédical, lui, est
+       SUPPRIMÉ (décision de la Direction du 20/10/2026) : plus de tableau. */
     verifier('Les tableaux de bord OUVERTS se montent tous',
       montes === tousLesDash.length, montes + ' / ' + tousLesDash.length);
 
     verifier('Aucune erreur JavaScript sur les tableaux de bord', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 37. PARCOURS MÉTIER, PARC TECHNIQUE ET CORRECTIONS DU CLASSEUR 2025
@@ -5291,7 +5377,7 @@ async function viderMessages(page) {
    * donnent pour relevées, une anomalie de classeur signalée sans être
    * expliquée, et une référence sans prix qu'on ne peut pas valoriser.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Parcours métier, parc technique et corrections du classeur 2025');
 
     /* --- Les parcours, profil par profil --------------------------------- */
@@ -5307,9 +5393,6 @@ async function viderMessages(page) {
       ['dash-echographiste', 'echographiste', 1],
       ['dash-surveillant', 'surveillant', 3],
       ['dash-assistant-comptable', 'assistant_comptable', 3],
-      /* Le poste d ingénieur biomédical n existe pas : le rôle est archivé
-         et son tableau fermé par activité. Exiger ses parcours reviendrait à
-         demander à un poste inexistant de porter un mode d emploi. */
       ['dash-ambulancier', 'ambulancier', 1],
     ];
     let chaines = 0, etapes = 0, relais = 0, fermees = 0, manquants = [];
@@ -5425,7 +5508,7 @@ async function viderMessages(page) {
        RESTAURE à la fin — un scénario qui mute doit restaurer (doctrine de
        la matrice RBAC), sans quoi la vague 49 (34 fiches confirmées au
        socle) disparaîtrait pour les scénarios suivants. */
-    await ouvrir('m6-reprise.html');
+    await ouvrir('m6-import-grand-stock.html');
     const sansPrix = await page.evaluate(() => {
       const tous = window.SIGH.store.collection('valorisationsSage').all();
       /* sessionStorage : la sauvegarde doit survivre aux navigations du
@@ -5435,7 +5518,7 @@ async function viderMessages(page) {
       window.SIGH.store.save();
       return window.SIGH.sage.INVENTAIRE_SAGE.filter((a) => !a.valorise).length;
     });
-    await ouvrir('m6-reprise.html');
+    await ouvrir('m6-import-grand-stock.html');
     await cliquer('Points à traiter');
     const anomalies = await page.evaluate(() => {
       const t = document.body.textContent;
@@ -5473,7 +5556,7 @@ async function viderMessages(page) {
       });
       return a.code;
     });
-    await ouvrir('m6-reprise.html');
+    await ouvrir('m6-import-grand-stock.html');
     const apres = await page.evaluate(() => {
       const m = document.body.textContent.match(/Articles non valorisés\s*([\d\s]+)/);
       return {
@@ -5497,7 +5580,7 @@ async function viderMessages(page) {
     });
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 38. LES POINTS DU GESTIONNAIRE DE STOCK
@@ -5506,7 +5589,7 @@ async function viderMessages(page) {
    * dans un état signé. Ce scénario ne vérifie donc pas que l'écran s'affiche,
    * il vérifie qu'il SE RECOUPE avec les pièces.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Points de vente et de stock, trois parts et accès à la caisse');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -5714,12 +5797,12 @@ async function viderMessages(page) {
       dash.role === 'echographiste' && dash.parcours > 0 && dash.annonce);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 39. DÉPENSES, RÉSULTAT, SEUIL, STATISTIQUES RH ET DROITS DES COMMANDES
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Dépenses, compte de résultat, seuil, statistiques RH et droits des commandes');
 
     /* --- L'état « validé » porte le code du référentiel ------------------ */
@@ -5952,32 +6035,62 @@ async function viderMessages(page) {
       bandeau.boutonModifier === false);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 40. RÔLES, RBAC FIN, CIRCUIT DU PRÉLÈVEMENT ET MOTEUR DE NOTIFICATION
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Rôles, RBAC par écran, circuit du prélèvement et moteur de notification');
 
-    /* --- Le renommage, jusqu'à l'écran de connexion ---------------------- */
+    /* --- Le renommage, jusqu'à l'ANNUAIRE des comptes ------------------- */
+    /* LA PAGE DE CONNEXION NE LISTE PLUS LES COMPTES (20/10/2026) : le
+       sélecteur de démonstration est retiré, l'agent saisit ses identifiants.
+       Le renommage se mesure donc là où il vit — le manifeste des rôles et
+       l'annuaire servi par api/auth.php — et non plus sur le texte de la page. */
     await page.goto('http://127.0.0.1:' + PORT + '/index.php', { waitUntil: 'networkidle2' });
     await pause(600);
-    const conn = await page.evaluate(() => {
+    /* L'ANNUAIRE EST FERMÉ (vague 83) : on le lit avec la session admin du banc. */
+    const jetonAnnuaire = ((await BANC.connecter(BANC.SESSION_BANC.identifiant)) || {}).jeton || '';
+    const conn = await page.evaluate(async (jetonA) => {
+      const roles = window.SIGH.nav.ROLES;
+      const labels = Object.keys(roles).map((k) => roles[k].label + ' ' + (roles[k].court || ''));
+      let comptes = [];
+      try {
+        const r = await fetch('api/auth.php?action=comptes', { headers: { Accept: 'application/json', 'X-Sigh-Jeton': jetonA } });
+        comptes = ((await r.json()).comptes || []).map((c) => c.nom + ' ' + c.identifiant);
+      } catch (e) { comptes = ['(annuaire injoignable : ' + e.message + ')']; }
       const t = document.body.textContent;
       return {
-        biologiste: /Biologiste médical/.test(t),
-        laborantin: /Laborantin/.test(t),
-        biomedical: /Ingénieur biomédical/i.test(t),
-        dispensaire: /Dispensaire/i.test(t),
-        troisProfils: /AHOHOU/.test(t) && /Surveillant/.test(t) && /Assistant de Direction/.test(t),
+        biologiste: labels.some((l) => /Biologiste médical/.test(l)),
+        laborantin: labels.some((l) => /Laborantin/.test(l)),
+        /* Le rôle est SUPPRIMÉ (Direction, 20/10/2026) : ni au manifeste, ni à
+           l'annuaire des comptes, ni en page de tableau de bord. */
+        biomedical: comptes.some((c) => /biom/i.test(c)),
+        biomedicalAuManifeste: !!window.SIGH.nav.ROLES.biomedical || !!window.SIGH.nav.get('dash-biomedical'),
+        dispensaire: comptes.some((c) => /Dispensaire/i.test(c)),
+        troisProfils: comptes.some((c) => /AHOHOU/.test(c)) && comptes.some((c) => /Surveillant/.test(c))
+          && comptes.some((c) => /Assistant de Direction/.test(c)),
+        comptes: comptes.length,
+        /* La page elle-même : ni sélecteur, ni profil de démonstration, ni pied. */
+        selecteur: !!document.querySelector('form select'),
+        demo: /Profil de connexion/.test(t),
+        pied: /Les comptes sont ouverts par l’administrateur système/.test(t)
+          || /Vérification en 2 étapes/.test(t) || /Plan du site/.test(t),
+        identifiantVide: (document.getElementById('identifiant') || {}).value === '',
+        motDePasseVide: (document.getElementById('motdepasse') || {}).value === '',
       };
-    });
-    verifier('« Laborantin » est devenu « Biologiste médical » jusqu’à la connexion',
+    }, jetonAnnuaire);
+    verifier('« Laborantin » est devenu « Biologiste médical » au manifeste des rôles',
       conn.biologiste && !conn.laborantin);
-    verifier('Le poste d’ingénieur biomédical a disparu des écrans', conn.biomedical === false);
-    verifier('Le caissier est « Dispensaire (Pharmacie) »', conn.dispensaire);
-    verifier('Les trois profils créés ouvrent une session', conn.troisProfils);
+    verifier('Le rôle d’ingénieur biomédical est supprimé : ni annuaire, ni manifeste, ni tableau de bord',
+      conn.biomedical === false && conn.biomedicalAuManifeste === false);
+    verifier('Le caissier est « Dispensaire (Pharmacie) » à l’annuaire', conn.dispensaire, conn.comptes + ' compte(s)');
+    verifier('Les trois profils créés ouvrent une session (annuaire)', conn.troisProfils, conn.comptes + ' compte(s)');
+    verifier('La page de connexion ne porte plus de sélecteur de profil de démonstration',
+      !conn.selecteur && !conn.demo);
+    verifier('Le pied « comptes ouverts par l’administrateur — 2 étapes — plan du site » est retiré', !conn.pied);
+    verifier('Identifiant et mot de passe ne sont plus pré-remplis', conn.identifiantVide && conn.motDePasseVide);
 
     /* --- Un écran fermé n’est atteignable de NULLE PART ------------------ */
     await page.evaluate(() => localStorage.setItem('sigh-cnt:session', JSON.stringify({
@@ -6210,7 +6323,7 @@ async function viderMessages(page) {
     verifier('…et ne se rouvre pas au passage suivant', bis === false);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 41. SOCLE — MINITABLE, VÉRITÉ TARIFAIRE, KPI COMPTÉS, EN-TÊTE UNIQUE
@@ -6221,7 +6334,7 @@ async function viderMessages(page) {
    * depuis la constante, des indicateurs écrits en dur, deux seeds aux formes
    * divergentes. La sonde lit les cellules et compare au magasin.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Socle — miniTable, vérité tarifaire, KPI comptés et en-tête unique');
 
     await page.evaluate(() => {
@@ -6387,7 +6500,7 @@ async function viderMessages(page) {
       socle.surServeur && !socle.enPanne);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 42. PHASE 2 — SEIZE RÔLES : CHIRURGIEN, ANESTHÉSISTE, ASSISTANT COMPTABLE
@@ -6397,7 +6510,7 @@ async function viderMessages(page) {
    * consultations générales, l'assistant comptable saisit sans annuler et la
    * clôture lui est fermée, le caissier perd transferts/mouvements/lots.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 2 — rôles chirurgien, anesthésiste, assistant comptable et fermetures caissier');
 
     await ouvrir('dash-admin.html');
@@ -6476,28 +6589,32 @@ async function viderMessages(page) {
       verifier('Le tableau ' + dash + ' monte et porte son premier regard', attendu.test(vu));
     }
 
-    /* --- Le sélecteur de connexion ne répète plus le rôle (Bug 0) --------- */
+    /* --- Les trois rôles de la phase 2 existent au manifeste et à l'annuaire.
+       Le sélecteur de connexion (Bug 0) n'existe plus : la page de connexion
+       ne liste aucun compte depuis le 20/10/2026. --------------------------- */
     await page.goto('http://127.0.0.1:' + PORT + '/index.php', { waitUntil: 'networkidle2' });
     await pause(400);
-    const selecteur = await page.evaluate(() => {
-      const opts = [...document.querySelectorAll('select option')].map((o) => o.textContent);
-      /* Un libellé de rôle peut contenir un tiret (« Anesthésiste — Réanimateur ») :
-         le doublon se mesure donc en cherchant le libellé RÉPÉTÉ, pas en
-         comptant les tirets. */
+    const jetonAnnuaire2 = ((await BANC.connecter(BANC.SESSION_BANC.identifiant)) || {}).jeton || '';
+    const selecteur = await page.evaluate(async (jetonA) => {
       const labels = Object.values(window.SIGH.nav.ROLES).map((r) => r.label);
+      let roles = [];
+      try {
+        const r = await fetch('api/auth.php?action=comptes', { headers: { Accept: 'application/json', 'X-Sigh-Jeton': jetonA } });
+        roles = ((await r.json()).comptes || []).map((c) => c.role);
+      } catch (e) { roles = []; }
       return {
-        doublon: opts.filter((t) => labels.some(
-          (l) => t.indexOf(l) === 0 && t.indexOf(l, l.length) !== -1)),
+        sansSelecteur: !document.querySelector('form select'),
         troisNouveaux: ['Chirurgien', 'Anesthésiste', 'Assistant Comptable']
-          .every((l) => opts.some((t) => t.indexOf(l) === 0)),
+          .every((l) => labels.some((t) => t.indexOf(l) === 0)),
+        troisComptes: ['chirurgien', 'anesthesiste', 'aide_comptable'].every((r) => roles.indexOf(r) >= 0),
       };
-    });
-    verifier('Aucune option du sélecteur ne répète le rôle après le nom (Bug 0)',
-      selecteur.doublon.length === 0, selecteur.doublon.join(' | '));
-    verifier('Les trois nouveaux profils ouvrent une session', selecteur.troisNouveaux);
+    }, jetonAnnuaire2);
+    verifier('La connexion ne propose plus de sélecteur de profil', selecteur.sansSelecteur);
+    verifier('Les trois nouveaux rôles figurent au manifeste', selecteur.troisNouveaux);
+    verifier('Les trois nouveaux rôles ont un compte à l’annuaire', selecteur.troisComptes);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 43. PHASE 3a — DOMAINE ACCUEIL, ALIAS, TARIFS PUBLICS ET SIX BOUTONS
@@ -6506,7 +6623,7 @@ async function viderMessages(page) {
    * un alias n'engendre ni page ni droit — la sonde vérifie les deux sens
    * (l'alias apparaît pour qui a le droit, disparaît pour qui ne l'a pas).
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 3a — domaine Accueil, alias de manifeste, tarifs publics et six boutons');
 
     await page.evaluate(() => {
@@ -6612,7 +6729,7 @@ async function viderMessages(page) {
     verifier('…et dit qu’il LIT sans dupliquer — une seule vérité tarifaire', ongletCert.uneSeuleVerite);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 44. PHASE 3b — FUSION RENDEZ-VOUS & VISITES
@@ -6622,7 +6739,7 @@ async function viderMessages(page) {
    * déclarée dans la fermeture de l'écran agenda, ReferenceError au clic que
    * ni check.js ni la lecture ne voyaient.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 3b — fusion Rendez-vous & visites, individu non enregistré, plage de dates');
 
     await page.evaluate(() => {
@@ -6819,7 +6936,7 @@ async function viderMessages(page) {
     await pause(300);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 45. PHASE 3c — RÉPERTOIRE PATIENT FUSIONNÉ À ZONES, CONSTANTES REPRISES
@@ -6828,7 +6945,7 @@ async function viderMessages(page) {
    * de l'accueil pré-remplissent la fiche de consultation). La fusion ne doit
    * RIEN rouvrir : l'onglet des dossiers reste absent pour le biologiste.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 3c — répertoire fusionné à deux zones et constantes reprises de l’accueil');
 
     /* --- Le médecin voit l'onglet fusionné, et il S'OUVRE ------------------ */
@@ -6944,7 +7061,7 @@ async function viderMessages(page) {
       bug14.note && !bug14.champsSaisie);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 46. PHASE 4 — MATERNITÉ : RAPPORT DU 27/08/2026 DE BOUT EN BOUT
@@ -6953,7 +7070,7 @@ async function viderMessages(page) {
    * grossir. La sonde vérifie les référentiels (SONU, PF, CPoN, bornes), le
    * semis AU SOCLE, les écrans nouveaux et les indicateurs calculés.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 4 — maternité : SONU, CPN, partogramme, PF, PTME et indicateurs calculés');
 
     await page.evaluate(() => {
@@ -7151,7 +7268,7 @@ async function viderMessages(page) {
     verifier('La couverture SP3 affichée est CELLE du registre — recalculée, jamais fournie', stats.exact);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 47. PHASE 5 — FINANCIER : DÉPENSES MULTI-LIGNES, AVOIR, PV DE RÉCEPTION
@@ -7161,7 +7278,7 @@ async function viderMessages(page) {
    * sur une fille consolidée, cumul plafonné) et la fermeture de l'annulation
    * au caissier — la matrice cible, sondée.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 5 — dépenses multi-lignes, facture d’avoir et PV de réception');
 
     await page.evaluate(() => {
@@ -7348,7 +7465,7 @@ async function viderMessages(page) {
       pv.assistant === true);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 48. PHASE 6 — LABORATOIRE : CODE UNIQUE, IMPRESSION FILTRÉE, PLAGES PAR LOT
@@ -7358,7 +7475,7 @@ async function viderMessages(page) {
    * comparatif des antériorités et le versionnement des bornes par lot de
    * réactif — sans toucher aux deux verrous.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 6 — laboratoire : code unique, impression filtrée, plages par lot');
 
     await page.evaluate(() => {
@@ -7402,14 +7519,20 @@ async function viderMessages(page) {
 
     /* --- Les vues par service demandeur ------------------------------------ */
     await ouvrir('m5-demandes-maternite.html');
+    /* La sonde lit la RÈGLE DE L'ÉCRAN (E145 : le service se lit dans `secteurDemandeur` OU dans `serviceDemandeur`) et compare au chiffre
+       que l'écran AFFICHE, trouvé par son nom. L'ancienne version recopiait une règle plus stricte (`serviceDemandeur === 'maternite'`) et ne
+       tenait que par les demandes insérées par le scénario « RBAC métier », joué avant : seule, elle comptait 0 (dépendance d'ordre, E2262). */
     const vueMat = await page.evaluate(() => {
       const S = window.SIGH.store;
       const mat = S.collection('demandesAnalyses').active()
-        .filter((r) => /MATERN/i.test(String(r.secteurDemandeur || '')) || r.serviceDemandeur === 'maternite');
-      return { compte: mat.length, monte: /Demandes du service/.test(document.body.textContent) };
+        .filter((r) => /MATERN/i.test(String(r.secteurDemandeur || '')) || /MATERN/i.test(String(r.serviceDemandeur || '')));
+      const lab = [...document.querySelectorAll('#page-content *')].find((n) => n.childElementCount === 0 && n.textContent.trim() === 'Demandes du service');
+      const bloc = lab && (lab.closest('.card') || lab.parentElement.parentElement);
+      const affiche = bloc ? (bloc.textContent.replace(/[\u202f\u00a0\s]/g, '').match(/\d+/) || [null])[0] : null;
+      return { compte: mat.length, affiche: affiche == null ? null : +affiche, monte: !!lab };
     });
-    verifier('La vue maternité monte et le registre porte des demandes du service',
-      vueMat.monte && vueMat.compte > 0, vueMat.compte + ' demande(s)');
+    verifier('La vue maternité monte et son indicateur « Demandes du service » vaut le compte du registre (règle de l’écran), non nul',
+      vueMat.monte && vueMat.compte > 0 && vueMat.affiche === vueMat.compte, JSON.stringify(vueMat));
     await ouvrir('m5-demandes-hospitalisation.html');
     const vueHosp = await page.evaluate(() =>
       /Demandes du service/.test(document.body.textContent));
@@ -7509,7 +7632,7 @@ async function viderMessages(page) {
       stats.caissierFerme && stats.sageFemmeVoit);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 49. PHASE 7 — ANESTHÉSIE, DEMANDE D'EXAMEN DU SERVICE, BONS DE PANSEMENT
@@ -7519,7 +7642,7 @@ async function viderMessages(page) {
    * séance est une LIGNE PAYABLE — un règlement partiel libère des séances
    * nommées.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 7 — CPA, demande d’examen du service et bons de pansement');
 
     await page.evaluate(() => {
@@ -7648,7 +7771,7 @@ async function viderMessages(page) {
       acces.anesthesiste && acces.caissier);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 50. PHASE 8 — L'IMAGERIE ÉCLATÉE : ÉTATS DU LABO, GALERIE, CATALOGUE
@@ -7658,7 +7781,7 @@ async function viderMessages(page) {
    * exécute sans prescrire, la galerie conserve les clichés et le catalogue
    * vit au magasin.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 8 — imagerie éclatée : états du labo, galerie et catalogue');
 
     await page.evaluate(() => {
@@ -7724,21 +7847,29 @@ async function viderMessages(page) {
       }));
     });
     await ouvrir('m2-imagerie-demandes.html');
-    const echo1 = await page.evaluate((ids) => {
+    const echo1 = await page.evaluate((ids) => new Promise((resolve) => {
       const plat = (n) => n.textContent.replace(/\s+/g, ' ').trim();
       const boutons = [...document.querySelectorAll('button')];
-      const saisir = boutons.filter((b) => plat(b).indexOf('Saisir le CR') === 0 && !b.getAttribute('aria-disabled'));
-      const verrous = boutons.filter((b) => plat(b).indexOf('Saisir le CR') === 0 && b.getAttribute('aria-disabled'));
-      if (saisir[0]) saisir[0].click();
-      return {
-        prescrireAbsent: !boutons.some((b) => plat(b).indexOf('Nouvelle demande') === 0),
-        saisirPresent: saisir.length > 0,
-        verrouPresent: verrous.length > 0,
-      };
-    }, moteur);
+      const prescrireAbsent = !boutons.some((b) => plat(b).indexOf('Nouvelle demande') === 0);
+      const verrouPresent = boutons.some((b) => plat(b).indexOf('Saisir le CR') === 0 && b.getAttribute('aria-disabled'));
+      /* LA LIGNE SE CHERCHE PAR SA RÉFÉRENCE, JAMAIS PAR SON RANG (vague 68). Depuis que le
+         banc décale l'horloge sur la date du jeu, la demande créée par le scénario n'est
+         plus la plus récente du registre : le PREMIER bouton « Saisir le CR » était celui
+         d'une autre demande, et la sonde mesurait son rang — un compte rendu naissait sur
+         la mauvaise demande sans qu'aucune assertion ne le dise. */
+      const dem = window.SIGH.store.collection('demandesImagerie').get(ids.pelId);
+      const champ = document.querySelector('#page-content input[type="search"]');
+      if (champ && dem) { champ.value = dem.reference; champ.dispatchEvent(new Event('input', { bubbles: true })); }
+      setTimeout(() => {
+        const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => dem && plat(tr).indexOf(dem.reference) >= 0);
+        const saisir = ligne ? [...ligne.querySelectorAll('button')].filter((b) => plat(b).indexOf('Saisir le CR') === 0 && !b.getAttribute('aria-disabled')) : [];
+        if (saisir[0]) saisir[0].click();
+        resolve({ prescrireAbsent, saisirPresent: saisir.length > 0, verrouPresent, reference: dem && dem.reference, ligne: !!ligne });
+      }, 400);
+    }), moteur);
     await pause(700);
     verifier('L’échographiste EXÉCUTE (Saisir le CR) mais ne PRESCRIT pas (Nouvelle demande absente)',
-      echo1.prescrireAbsent && echo1.saisirPresent);
+      echo1.prescrireAbsent && echo1.saisirPresent, JSON.stringify(echo1));
     verifier('Un examen non réglé garde son bouton VERROUILLÉ, visible', echo1.verrouPresent);
 
     /* Le CR s'enregistre : conclusion obligatoire, la demande passe EXÉCUTÉE.
@@ -7784,11 +7915,18 @@ async function viderMessages(page) {
 
     /* Le rendu au prescripteur clôt le circuit : demande VALIDÉE. */
     await ouvrir('m2-imagerie-demandes.html');
-    await page.evaluate(() => {
+    await page.evaluate((ids) => new Promise((resolve) => {
       const plat = (n) => n.textContent.replace(/\s+/g, ' ').trim();
-      const b = [...document.querySelectorAll('button')].filter((x) => plat(x) === 'Rendre')[0];
-      if (b) b.click();
-    });
+      const dem = window.SIGH.store.collection('demandesImagerie').get(ids.pelId);
+      const champ = document.querySelector('#page-content input[type="search"]');
+      if (champ && dem) { champ.value = dem.reference; champ.dispatchEvent(new Event('input', { bubbles: true })); }
+      setTimeout(() => {
+        const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => dem && plat(tr).indexOf(dem.reference) >= 0);
+        const b = ligne ? [...ligne.querySelectorAll('button')].filter((x) => plat(x) === 'Rendre')[0] : null;
+        if (b) b.click();
+        resolve(!!b);
+      }, 400);
+    }), moteur);
     await pause(500);
     await page.evaluate(() => {
       const plat = (n) => n.textContent.replace(/\s+/g, ' ').trim();
@@ -7869,7 +8007,7 @@ async function viderMessages(page) {
       stats.caissierFerme && stats.echographisteStats && stats.echographisteCfgFerme);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 51. PHASE 9 — PILOTAGE & STATISTIQUES TRANSVERSES
@@ -7879,7 +8017,7 @@ async function viderMessages(page) {
    * CALCULÉES —, et les deux vues de terrain (agenda médecin, file par
    * cabinet aux deux listes jamais fondues).
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 9 — pilotage : stats multi-axes, coût de l’agent, files et agendas');
 
     await page.evaluate(() => {
@@ -8072,7 +8210,7 @@ async function viderMessages(page) {
       certes.caissierCout && certes.laborantinExamens && certes.echographisteExamens);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 52. PHASE 10 — ENQUÊTES (LE FORMULAIRE NAÎT DU MODÈLE), M7, M13 ET GED
@@ -8081,7 +8219,7 @@ async function viderMessages(page) {
    * paraît à la saisie suivante sans une ligne de code. Puis les sondes que
    * la dette D6 réclamait : achats, courriers, GED.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 10 — enquêtes générées du modèle, sondes M7 / M13 / GED');
 
     await page.evaluate(() => {
@@ -8242,7 +8380,7 @@ async function viderMessages(page) {
       d5.comptable);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 53. VAGUE 49 — LES VALIDATIONS : LA DIRECTION TRANCHE, LE PROFESSIONNEL GARDE
@@ -8252,7 +8390,7 @@ async function viderMessages(page) {
    * marquages qui attendent un professionnel nommé RESTENT. Le centre des
    * validations oriente sans jamais valider en masse.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 49 — validations de la Direction levées, marquages professionnels gardés');
 
     await page.evaluate(() => {
@@ -8286,8 +8424,9 @@ async function viderMessages(page) {
           && S.collection('pathologies').active().filter((p) => p.aValider).length === 0,
         /* L'écran oriente : les trois familles, et jamais de bouton de
            validation en masse. */
-        troisFamilles: /À SON POSTE/.test(t) && /PROFESSIONNEL nommé/.test(t)
-          && /Validées par la DIRECTION/.test(t),
+        /* Vague 91 : le centre lit les familles de référentiels au magasin (plus de bloc « Validées » en littéral). */
+        troisFamilles: /À SON POSTE/.test(t) && /Référentiels en attente de validation/.test(t)
+          && document.querySelectorAll('[data-famille]').length === 14 && !/Validées/.test(t),
         nonAmorceDit: /non amorcée/.test(t),
         pasDeMasse: ![...document.querySelectorAll('button')]
           .some((b) => /Tout valider|Valider tout/i.test(b.textContent)),
@@ -8316,7 +8455,7 @@ async function viderMessages(page) {
     verifier('Le questionnaire de satisfaction est annoncé VALIDÉ — plus une proposition', satisfaction);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 54. VAGUE 50 — L'ACTIVATION PAR MODULE, ET L'INDÉPENDANCE PROUVÉE
@@ -8325,7 +8464,7 @@ async function viderMessages(page) {
    * ACCUEIL (M1) et SOINS (M2) fermés, les stocks, la paie et les RH
    * continuent de travailler — et le noyau (CFG, DASH) ne se ferme pas.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 50 — activation par module : Accueil et Soins fermés, le reste travaille');
 
     await page.evaluate(() => {
@@ -8428,7 +8567,7 @@ async function viderMessages(page) {
       rouvert.donnees + ' consultation(s) intactes');
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 55 — BADGES DU PERSONNEL
@@ -8439,7 +8578,7 @@ async function viderMessages(page) {
    * la dernière assertion qui compte : un badge perdu est précisément la
    * fiche qu'on ressort le jour où quelqu'un se présente avec.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Badges du personnel — émission, QR, impression, retrait et réédition');
     await ouvrir('m10-badges.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -8798,7 +8937,7 @@ async function viderMessages(page) {
       JSON.stringify(apercu));
 
     verifier('Aucune erreur JavaScript sur les écrans de badges', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 56 — PARTAGER UNE FICHE D'ENQUÊTE À UN TIERS
@@ -8809,7 +8948,7 @@ async function viderMessages(page) {
    * une question ajoutée au modèle paraît sur la page publique sans qu'une
    * ligne de code ait été écrite pour elle.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Enquête partagée — jeton daté, page publique isolée et générateur unique');
     await ouvrir('adm-enquetes.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -8859,6 +8998,11 @@ async function viderMessages(page) {
     });
     await pause(300);
 
+    /* Vague 84 : la page publique lit le jeton au SERVEUR (api/enquete.php), qui juge l'expiration à SON horloge. Le lien
+       créé ci-dessus expire 30 jours après la date DÉCALÉE du banc (16/08/2026), soit avant la date réelle du serveur :
+       on le repousse, sans quoi il serait expiré pour le serveur. Le test de la DATE du lien (au-dessus) est déjà fait. */
+    await page.evaluate((id) => window.SIGH.store.collection('jetonsEnquete').update(id, { expireLe: '2099-12-31' }),
+      await page.evaluate(() => window.SIGH.store.collection('jetonsEnquete').active()[0].id));
     /* --- La page publique : isolée, sans coquille ------------------------- */
     await ouvrir('enquete-publique.html?jeton=' + jeton.jeton);
     const publique = await page.evaluate(() => ({
@@ -8969,9 +9113,10 @@ async function viderMessages(page) {
     verifier('Un jeton inconnu reçoit LA MÊME réponse qu’un jeton révoqué — sans nommer aucune enquête',
       inconnu2.refus && !inconnu2.nommeEnquete && !ferme.nommeEnquete, JSON.stringify(inconnu2));
 
+    /* Le 404 de api/enquete.php pour un jeton inconnu est la réponse VOULUE (vague 84) : Chrome le journalise comme ressource. */
     verifier('Aucune erreur JavaScript sur le partage et la page publique',
-      erreursJS.length === 0, erreursJS.join(' | '));
-  }
+      erreursJS.filter((e) => !/404 \(Not Found\)/.test(e)).length === 0, erreursJS.join(' | '));
+  });
 
   /* =========================================================================
    * 57 — CORRECTIONS DU 06/09/2026
@@ -8982,7 +9127,7 @@ async function viderMessages(page) {
    * dossier sous les yeux du laboratoire, et LES SIX SECTEURS comme
    * vocabulaire unique — groupes de prestation ET centres de coûts.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Corrections du 06/09 — ruban resserré, imagerie à part, six secteurs');
     await ouvrir('m2-rendezvous.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -9189,7 +9334,7 @@ async function viderMessages(page) {
     }));
 
     /* --- LES SIX SECTEURS, vocabulaire unique ---------------------------- */
-    const SIX = ['Laboratoire', 'Pharmacie', 'Consultation', 'Échographie', 'Maternité',
+    const SIX = ['Laboratoire', 'Pharmacie', 'Consultation', 'Imagerie médicale', 'Maternité',
       'Hospitalisation et soins'];
     await ouvrir('m12-rentabilite-groupes.html');
     const groupes = await page.evaluate(() => {
@@ -9251,14 +9396,14 @@ async function viderMessages(page) {
     verifier('L’origine d’une prescription se dit dans le vocabulaire des six — « bloc » devient un secteur nommé',
       croise.bloc === 'Hospitalisation et soins' && croise.maternite === 'Maternité'
       && croise.hospit === 'Hospitalisation et soins' && croise.consult === 'Consultation'
-      && croise.imagerie === 'Échographie' && croise.labo === 'Laboratoire',
+      && croise.imagerie === 'Imagerie médicale' && croise.labo === 'Laboratoire',
       JSON.stringify(croise));
     verifier('La Direction n’est PAS un secteur de recette — elle reste transverse',
       croise.direction === null, String(croise.direction));
     verifier('L’axe croisé porte le libellé « Secteur d’origine »', croise.axe === true);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 58 — LA COMPTABILITÉ AU FORMAT DE LA LIASSE DÉPOSÉE
@@ -9267,7 +9412,7 @@ async function viderMessages(page) {
    * document conservés et non arbitrés, l'amortissement au SEMESTRE, le
    * report des à-nouveaux et son refus quand il ne s'équilibre pas.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Comptabilité — liasse DGI, amortissement au semestre et bilan d’ouverture');
     await ouvrir('m12-etats-financiers.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -9480,7 +9625,7 @@ async function viderMessages(page) {
       /existent déjà|double report/i.test(refus), refus.slice(0, 90));
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 59 — LE PATIENT ADRESSÉ DE L'EXTÉRIEUR, DE BOUT EN BOUT
@@ -9490,7 +9635,7 @@ async function viderMessages(page) {
    * réglée. L'écran montre les demandes par service et l'état de chaque
    * résultat, sans ouvrir une seconde voie d'écriture.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Patient externe — analyses, imagerie, services et verrou de caisse');
     await ouvrir('m1-externe.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -9634,9 +9779,15 @@ async function viderMessages(page) {
       const t = [...document.querySelectorAll('#page-content .tab')].find((x) => /Résultats/.test(x.textContent));
       if (t) t.click();
       await new Promise((r) => setTimeout(r, 500));
+      /* LA LIGNE SE CHERCHE PAR SA RÉFÉRENCE, JAMAIS PAR SON RANG (vague 68) : le tableau
+         est paginé par douze et trié par date ; sous l'horloge décalée du banc, la demande
+         du scénario n'est plus en tête, et une ligne de la page deux est « absente ». */
+      const champ = document.querySelector('#page-content input[type="search"]');
+      if (champ) { champ.value = ref; champ.dispatchEvent(new Event('input', { bubbles: true })); }
+      await new Promise((r) => setTimeout(r, 400));
       const tr = [...document.querySelectorAll('#page-content tbody tr')]
         .find((x) => x.textContent.indexOf(ref) !== -1);
-      if (!tr) return { erreur: 'ligne absente' };
+      if (!tr) return { erreur: 'ligne absente', recherche: !!champ };
       const boutons = [...tr.querySelectorAll('button')];
       return {
         verrouille: boutons.some((b) => b.getAttribute('aria-disabled') === 'true'),
@@ -9649,7 +9800,7 @@ async function viderMessages(page) {
 
     verifier('Aucune erreur JavaScript sur l’écran du patient externe',
       erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
 
   /* =========================================================================
@@ -9662,7 +9813,7 @@ async function viderMessages(page) {
    * la DDR, et que le tableau de bord de la maternité compte ce que les
    * registres portent — jamais un nombre fourni.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Maternité — dossier obstétrical, CPN en colonnes, GAR déduit, tableau de bord');
     /* Le scénario précédent a basculé sur le rôle 'reception', à qui M4 et le
        tableau de bord de la maternité sont fermés : sans restauration, les
@@ -9760,7 +9911,7 @@ async function viderMessages(page) {
 
     verifier('Aucune erreur JavaScript sur les écrans de maternité',
       erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 61 — CE QUI CHANGE, ET CE QU'ON GARDE
@@ -9771,7 +9922,7 @@ async function viderMessages(page) {
    *   — le rendez-vous honoré quitte l'agenda sans quitter le dossier ;
    *   — la période analysée SE NOMME au lieu de « les 30 derniers jours ».
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Couverture datée, agenda apuré, périodes nommées, filtres avancés');
 
     /* --- LA COUVERTURE EST DATÉE ---------------------------------------- */
@@ -9802,7 +9953,7 @@ async function viderMessages(page) {
     verifier('Le changement de compagnie écrit DEUX périodes, il n’écrase rien',
       !couv.erreur && couv.historique === 2, JSON.stringify(couv));
     verifier('Une date ANTÉRIEURE lit l’ancienne compagnie',
-      couv.ancienne === couv.avant.assureur, couv.ancienne + ' vs ' + couv.avant.assureur);
+      couv.avant && couv.ancienne === couv.avant.assureur, couv.erreur || (couv.ancienne + ' vs ' + (couv.avant || {}).assureur));
     verifier('…et la date du jour lit la nouvelle, reportée sur la fiche du dossier',
       couv.nouvelle !== couv.avant.assureur && couv.ficheMiseAJour === couv.nouvelle,
       couv.nouvelle + ' / fiche ' + couv.ficheMiseAJour);
@@ -9904,7 +10055,7 @@ async function viderMessages(page) {
 
     verifier('Aucune erreur JavaScript sur ces écrans',
       erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * SCÉNARIO 62 — VAGUE 61 : LES FEUILLETS 7/51 ET 8/51, ET L'IMAGERIE À
@@ -9915,7 +10066,7 @@ async function viderMessages(page) {
    *   — radiographie, mammographie, scanner et IRM se branchent sur le socle
    *     de l'échographie : même demande, même caisse, droits de M2.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Feuillets 7/51 et 8/51, imagerie à cinq modalités');
     const erreurs62 = [];
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -10069,7 +10220,7 @@ async function viderMessages(page) {
       !droits.caissier && !droits.accueil && droits.medecin, JSON.stringify(droits));
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs62.length === 0, erreurs62.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 63. REFONTE ZONE 2 — LE DOSSIER, PUIS LA FICHE, PUIS UNE SEULE FACTURE
@@ -10081,7 +10232,7 @@ async function viderMessages(page) {
    * jusqu'au règlement. Le répertoire perd son onglet, la fiche patient gagne
    * l'imagerie, et l'accueil reste dehors (RG-13).
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Refonte Zone 2 — dossier IPPOA, fiche récapitulative, prescription unique et imagerie au dossier');
     const erreurs63 = [];
     const sessionMedecin = {
@@ -10298,7 +10449,7 @@ async function viderMessages(page) {
     /* On rend la session du médecin : un scénario qui change de rôle le RESTAURE. */
     await page.evaluate((s) => localStorage.setItem('sigh-cnt:session', JSON.stringify(s)), sessionMedecin);
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs63.length === 0, erreurs63.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 64. CORRECTIONS DE L'ÉCHOGRAPHISTE (14/09/2026) — LE COMPTE RENDU PAR VARIABLES
@@ -10308,7 +10459,7 @@ async function viderMessages(page) {
    * saisissent en texte, « Annexes » disparaît des échographies, la
    * provenance est demandée, et l'examen « 1er trimestre évolué » existe.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Corrections de l’échographiste — champs conditionnels, sacs dupliqués, mesures en texte, sans Annexes');
     const erreurs64 = [];
     await ouvrir('m2-imagerie.html');
@@ -10449,7 +10600,7 @@ async function viderMessages(page) {
       !!tiroir && tiroir.sac2 && tiroir.precision && tiroir.provenance, JSON.stringify(tiroir));
     erreurs64.push(...erreursJS);
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs64.length === 0, erreurs64.join(' | '));
-  }
+  });
 
   /* ======================================================================
    * SCÉNARIO 65 — BFR, TABLEAU DÉCISIONNEL ET FEUILLE D'INVENTAIRE
@@ -10465,7 +10616,7 @@ async function viderMessages(page) {
    *   3. le seuil vit dans la COLLECTION : le corriger déplace l'alerte, et
    *      le moteur de notification n'a rien à changer.
    * ==================================================================== */
-  {
+  await etape(async () => {
     scenario('BFR, tableau décisionnel et feuille d’inventaire');
     const erreurs65 = [];
 
@@ -10600,7 +10751,7 @@ async function viderMessages(page) {
         nomComplet: 'MAMAN Zoukanéri', identifiant: 'z.maman',
       }));
     });
-    await ouvrir('m6-inventaires.html');
+    await ouvrir('m6-inventaire.html');
     await ouvrir('m6-inventaire-feuille.html#magasin=detail&type=Ponctuel&perimetre=Tous%20les%20articles&operateur=MAMAN%20Zouk');
 
     const feuille = await page.evaluate(() => {
@@ -10669,7 +10820,7 @@ async function viderMessages(page) {
 
     erreurs65.push(...erreursJS);
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs65.length === 0, erreurs65.join(' | '));
-  }
+  });
 
   /* ======================================================================
    * SCÉNARIO 66 — LES RÈGLES DE L'ÉCHOGRAPHIE, ÉTENDUES AUX CINQ MODALITÉS
@@ -10682,7 +10833,7 @@ async function viderMessages(page) {
    * doit porter des champs texte, une précision « Autre » et aucune
    * rubrique « Annexes ».
    * ==================================================================== */
-  {
+  await etape(async () => {
     scenario('Règles transversales d’imagerie — cinq modalités, pas seulement l’échographie');
     const erreurs66 = [];
 
@@ -10814,7 +10965,3348 @@ async function viderMessages(page) {
 
     erreurs66.push(...erreursJS);
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs66.length === 0, erreurs66.join(' | '));
-  }
+  });
+
+  /* ==========================================================================
+   * 67. VAGUE 68 (20/10/2026) — L'HORLOGE RÉELLE, LA CONNEXION ÉPURÉE ET LE
+   *     VIDAGE DES JEUX DE TEST QUI TIENT
+   * --------------------------------------------------------------------------
+   * Trois défauts signalés le même jour, et un fil commun : ce que l'écran
+   * montre doit être ce que le magasin porte.
+   *   · un rendez-vous pris « aujourd'hui » n'apparaissait pas dans l'agenda,
+   *     parce qu'« aujourd'hui » y valait le 16 août du jeu de démonstration
+   *     (dix-neuf modules portaient cette date en dur) ;
+   *   · « Réinitialiser » RÉGÉNÉRAIT le jeu au lieu de le retirer, et le vidage
+   *     des jeux de test ne tenait pas : chaque écran ré-amorçait sa collection
+   *     en la trouvant vide, et la liste de ce qui est conservé oubliait la
+   *     matrice des droits et les catalogues.
+   * L'horloge du banc est DÉCALÉE sur la date du jeu (build/_banc.js) ; ce
+   * scénario la déplace de 65 jours pour mesurer que l'agenda SUIT l'horloge
+   * et non la date du jeu. CE SCÉNARIO VIDE LE MAGASIN : il est le dernier, et
+   * il régénère le jeu en sortant.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 68 — agenda sur l’horloge réelle, vidage des jeux de test qui tient');
+    erreursJS = [];
+    await page.evaluate(() => localStorage.setItem('sigh-cnt:session', JSON.stringify({
+      role: 'admin', fonction: 'admin', nom: 'Administrateur',
+      nomComplet: 'Administrateur système', identifiant: 'admin',
+    })));
+
+    /* --- (a) L'AGENDA SUIT L'HORLOGE. Elle est avancée AVANT que les scripts
+       de la page ne tournent : les modules lisent la date du jour au chargement. */
+    const decalage = await page.evaluateOnNewDocument(() => {
+      if (window.__SIGH_HORLOGE) window.__SIGH_HORLOGE.decaler(65 * 86400000);
+    });
+    await ouvrir('m2-agenda.html');
+    const agenda = await page.evaluate(() => new Promise((resolve) => {
+      const C = window.SIGH.core;
+      const auj = C.iso(new Date());
+      const inputs = [...document.querySelectorAll('input[type="date"]')];
+      const du = inputs[0] && inputs[0].value, au = inputs[1] && inputs[1].value;
+      const bouton = [...document.querySelectorAll('button')].find((b) => /Nouveau rendez-vous/.test(b.textContent));
+      if (!bouton) return resolve({ auj, du, au, bouton: false });
+      bouton.click();
+      setTimeout(() => {
+        const champ = document.getElementById('f_date');
+        const valeur = champ ? champ.value : '';
+        resolve({
+          auj, du, au, bouton: true,
+          horlogeDecalee: auj > '2026-10-01',
+          fenetre: !!du && !!au && du <= auj && au >= auj,
+          valeur, formulaireAujourdhui: valeur.slice(0, 10) === auj,
+          champs: !!(document.getElementById('f_patientCode') && document.getElementById('f_medecin')
+            && document.getElementById('f_motif')),
+        });
+      }, 400);
+    }));
+    verifier('L’horloge du banc a été avancée : le scénario mesure autre chose que la date du jeu',
+      agenda.horlogeDecalee, agenda.auj);
+    verifier('La fenêtre par défaut de l’agenda contient la date du jour de l’HORLOGE',
+      agenda.fenetre, agenda.du + ' → ' + agenda.au + ' pour ' + agenda.auj);
+    verifier('Le formulaire « Nouveau rendez-vous » part de la date du jour, à l’heure locale',
+      agenda.bouton && agenda.champs && agenda.formulaireAujourdhui, agenda.valeur);
+
+    /* --- On PREND le rendez-vous par le formulaire, dix jours plus tard — HORS
+       de la fenêtre J-2 → J+4 — et on doit le retrouver sans rien recharger. */
+    const pris = await page.evaluate(() => new Promise((resolve) => {
+      const C = window.SIGH.core, S = window.SIGH.store;
+      const patient = S.collection('patients').active()[0];
+      const p = document.getElementById('f_patientCode');
+      const m = document.getElementById('f_medecin');
+      p.value = patient.code; p.dispatchEvent(new Event('change', { bubbles: true }));
+      if (m.options && m.options.length) m.value = m.options[0].value;
+      document.getElementById('f_motif').value = 'Sonde vague 68';
+      const d = C.addDays(new Date(), 10);
+      document.getElementById('f_date').value = C.isoLocal(d);
+      const avant = S.collection('consultations').active().length;
+      const ok = [...document.querySelectorAll('button')].find((b) => /Enregistrer le rendez-vous/.test(b.textContent));
+      if (!ok) return resolve({ avant, bouton: false });
+      ok.click();
+      setTimeout(() => {
+        const apres = S.collection('consultations').active();
+        const neuf = apres.find((c) => c.motif === 'Sonde vague 68');
+        const inputs = [...document.querySelectorAll('input[type="date"]')];
+        const jour = C.iso(d);
+        const carte = [...document.querySelectorAll('button')].find((b) => /Sonde vague 68/.test(b.textContent));
+        resolve({
+          avant, apres: apres.length, bouton: true, neuf: !!neuf, jour,
+          du: inputs[0].value, au: inputs[1].value, visible: !!carte,
+          dateOk: neuf ? C.iso(neuf.date) === jour : false,
+          code: neuf ? neuf.patientCode : null, attendu: patient.code,
+        });
+      }, 700);
+    }));
+    verifier('Le rendez-vous est enregistré — une consultation planifiée de plus, au bon dossier',
+      pris.bouton && pris.neuf && pris.apres === pris.avant + 1 && pris.code === pris.attendu,
+      pris.avant + ' → ' + pris.apres + ' (' + pris.code + ')');
+    verifier('Il porte la date saisie, à l’heure locale — aucune dérive UTC', pris.dateOk, pris.jour);
+    verifier('Pris HORS de la fenêtre affichée, l’agenda étend sa fenêtre jusqu’à lui',
+      pris.du <= pris.jour && pris.au >= pris.jour, pris.du + ' → ' + pris.au + ' pour ' + pris.jour);
+    verifier('Et il est VISIBLE dans la grille, sans rechargement', pris.visible);
+    await attendreEcritures();
+    await page.removeScriptToEvaluateOnNewDocument(decalage.identifier);
+
+    /* --- (b) LE VIDAGE DES JEUX DE TEST TIENT ------------------------------ */
+    await ouvrir('cfg-systeme.html');
+    const bouton = await page.evaluate(() => new Promise((resolve) => {
+      const b = [...document.querySelectorAll('button')].find((x) => /Réinitialiser le jeu de données/.test(x.textContent));
+      if (!b) return resolve({ present: false });
+      b.click();
+      setTimeout(() => {
+        const t = document.body.textContent;
+        const annuler = [...document.querySelectorAll('button')].find((x) => /^Annuler$/.test(x.textContent.trim()));
+        const sortie = {
+          present: true,
+          titre: /Réinitialiser toutes les données de démonstration/.test(t),
+          motif: !!document.querySelector('textarea'),
+          conserve: /conservés/.test(t),
+        };
+        if (annuler) annuler.click();
+        resolve(sortie);
+      }, 400);
+    }));
+    verifier('« Réinitialiser le jeu de données » ouvre une confirmation qui EXIGE un motif et dit ce qui est conservé',
+      bouton.present && bouton.titre && bouton.motif && bouton.conserve, JSON.stringify(bouton));
+
+    const vidage = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      /* Une fiche ARCHIVÉE d'un référentiel conservé (la corbeille doit être vidée), et un journal bien rempli. */
+      const actes = S.collection('actes').active();
+      S.collection('actes').archive(actes[0].id, 'scénario 67 : essai de corbeille');
+      const archiveesAvant = S.corbeille().length;
+      const bilan = S.viderActivite('scénario 67');
+      return { tables: bilan.tables, lignes: bilan.enregistrements, jeuVide: S.jeuVide(), archiveesAvant: archiveesAvant, archiveesRetirees: bilan.archiveesRetirees, entrees: bilan.entreesJournalRetirees };
+    });
+    await attendreEcritures();
+    verifier('Le vidage retire les tables d’activité et pose le drapeau',
+      vidage.tables > 20 && vidage.lignes > 1000 && vidage.jeuVide, vidage.tables + ' tables, ' + vidage.lignes + ' lignes');
+
+    await ouvrir('cfg-systeme.html');   /* relu depuis la BASE, pas depuis la mémoire */
+    const apres = await page.evaluate(() => {
+      const S = window.SIGH.store, db = S.raw();
+      const n = (k) => (db[k] || []).length;
+      return {
+        jeuVide: S.jeuVide(), patients: n('patients'), consultations: n('consultations'), factures: n('factures'),
+        ecritures: n('ecritures'), rbac: n('rbac'), modulesActifs: n('modulesActifs'), examensLabo: n('examensLabo'),
+        personnel: n('personnel'), actes: n('actes'), grillePrimes: n('grillePrimes'), examensImagerie: n('examensImagerie'),
+        derniereEntree: (db.audit && db.audit[0] && db.audit[0].action) || '',
+      };
+    });
+    verifier('Après rechargement depuis la base, le vidage TIENT : plus de patient, de consultation, de facture ni d’écriture',
+      apres.jeuVide && apres.patients === 0 && apres.consultations === 0 && apres.factures === 0 && apres.ecritures === 0,
+      JSON.stringify(apres));
+    verifier('L’essentiel est conservé : droits, modules actifs, catalogues labo et imagerie, personnel, actes, grille des primes',
+      apres.rbac > 0 && apres.modulesActifs > 0 && apres.examensLabo > 0 && apres.personnel > 0
+        && apres.actes > 0 && apres.grillePrimes > 0 && apres.examensImagerie > 0, JSON.stringify(apres));
+    verifier('Le journal neuf commence par le vidage lui-même (RG-12)',
+      /Réinitialisation des jeux de test/.test(apres.derniereEntree), apres.derniereEntree);
+    const neuf = await page.evaluate(() => {
+      const S = window.SIGH.store, db = S.raw();
+      return { corbeille: S.corbeille().filter((x) => x.collection !== 'rbac' && x.collection !== 'utilisateurs').length, journal: (db.audit || []).length };
+    });
+    verifier('Le vidage retire la corbeille (fiches archivées pendant les essais) et vide le journal : seule reste l’entrée du vidage',
+      vidage.archiveesAvant > 0 && vidage.archiveesRetirees >= 1 && vidage.entrees > 1 && neuf.corbeille === 0 && neuf.journal === 1,
+      JSON.stringify({ vidage, neuf }));
+
+    /* Les écrans qui amorçaient leur collection NE LA RESSUSCITENT PAS. */
+    /* Les écrans sondés sont ceux que la relecture adversariale a pris en défaut : ils
+       amorçaient par une forme non gardée (`if (x.length) return;`) ou tombaient sur un
+       répertoire vide (C.pick sur []). */
+    const erreursVidage = [];
+    for (const e of ['m7-besoins', 'm10-contrats', 'm12-echeances', 'm5-demandes', 'm3-observation', 'm10-evaluations', 'm12-depenses', 'm10-badges', 'm10-missions']) {
+      await ouvrir(e + '.html');
+      erreursVidage.push(...erreursJS.map((x) => e + ' : ' + x));
+    }
+    const amorcages = await page.evaluate(() => {
+      const db = window.SIGH.store.raw();
+      const n = (k) => (db[k] || []).length;
+      return { besoins: n('besoins'), commandes: n('commandes'), contrats: n('contrats'), echeances: n('echeancesFiscales'),
+        demandesAnalyses: n('demandesAnalyses'), observations: n('observations'), evaluations: n('evaluations'),
+        depenses: n('depenses'), badges: n('badges'), missions: n('missions'),
+        echeancesPayees: (db.echeancesFiscales || []).filter((x) => x.paye).length };
+    });
+    verifier('Neuf écrans qui amorçaient leur collection ne régénèrent plus le jeu de démonstration',
+      ['besoins', 'commandes', 'contrats', 'demandesAnalyses', 'observations', 'evaluations', 'depenses', 'badges', 'missions'].every((k) => amorcages[k] === 0),
+      JSON.stringify(amorcages));
+    verifier('Aucun de ces écrans ne tombe sur un répertoire vide', erreursVidage.length === 0, erreursVidage.join(' | '));
+    verifier('Le calendrier fiscal reconstruit ne porte AUCUN règlement inventé', amorcages.echeancesPayees === 0, amorcages.echeancesPayees + ' payée(s)');
+    verifier('Un référentiel DÉRIVÉ d’un document — le calendrier fiscal — se reconstruit, lui',
+      amorcages.echeances > 0, String(amorcages.echeances));
+
+    /* --- On REND le jeu : la régénération lève le drapeau. ----------------- */
+    await page.evaluate(() => { window.SIGH.store.reset(); });
+    await attendreEcritures();
+    await ouvrir('cfg-systeme.html');
+    const rendu = await page.evaluate(() => {
+      const S = window.SIGH.store, db = S.raw();
+      const n = (k) => (db[k] || []).length;
+      return { patients: n('patients'), grossesses: n('grossesses'), documents: n('documents'), demandesImagerie: n('demandesImagerie'),
+        badges: n('badges'), evaluations: n('evaluations'), jeuVide: S.jeuVide(), parcours: db._parcoursAmorces === true };
+    });
+    verifier('« Régénérer » rend le jeu COMPLET (parcours peuplé, maternité, GED, imagerie) et lève le drapeau de vidage',
+      rendu.patients > 0 && rendu.grossesses > 0 && rendu.documents > 0 && rendu.demandesImagerie > 0 && rendu.parcours && !rendu.jeuVide, JSON.stringify(rendu));
+    verifier('Ce qui était né après le vidage ne survit pas à la régénération (clés absentes de la semence envoyées vides)',
+      rendu.badges === 0 && rendu.evaluations === 0, 'badges ' + rendu.badges + ', évaluations ' + rendu.evaluations);
+
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* ========================================================================
+   * Vague 69 — clôture d'exercice : sélecteur, deux gestes, résultat, à-nouveaux, lettrage
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 69 — exercice : pré-clôture, deux gestes, résultat, à-nouveaux et lecture seule');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', nom: 'Administrateur', nomComplet: 'KASSA Augustin', fonction: 'admin', secteur: 'ADM' }));
+    await ouvrir('m12-cloture.html');
+    erreursJS = [];
+
+    const sel = await page.evaluate(() => {
+      const s = document.getElementById('selecteur-exercice');
+      return { present: !!s, options: s ? [...s.options].map((o) => o.textContent) : [] };
+    });
+    verifier('Le sélecteur d’exercice est dans l’en-tête de l’écran comptable, avec l’état de chaque exercice',
+      sel.present && sel.options.some((t) => /2025.*clôturé/.test(t)) && sel.options.some((t) => /2026.*ouvert/.test(t)), JSON.stringify(sel.options));
+
+    const e1 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      const ecr = S.collection('ecritures');
+      /* la sonde fabrique son propre cas : deux lignes de tiers qui se soldent et une qui reste due */
+      const base = { journal: 'VTE', journalLibelle: 'Ventes', statut: 'validee', origine: 'sonde', centreCout: null };
+      const mk = (o) => ecr.insert(Object.assign({}, base, o)).record;
+      const f1 = mk({ numero: 'VTE-2026-SD1', date: '2026-03-01', compte: '411000', compteLibelle: 'Clients', debit: 5000, credit: 0, libelle: 'Facture sonde 1' });
+      const r1 = mk({ numero: 'VTE-2026-SD2', date: '2026-03-05', compte: '411000', compteLibelle: 'Clients', debit: 0, credit: 5000, libelle: 'Règlement sonde 1' });
+      const f2 = mk({ numero: 'VTE-2026-SD3', date: '2026-04-01', compte: '411000', compteLibelle: 'Clients', debit: 7000, credit: 0, libelle: 'Facture sonde 2 (due)' });
+      const contre = mk({ numero: 'VTE-2026-SD3', date: '2026-04-01', compte: '706000', compteLibelle: 'Prestations', debit: 0, credit: 12000 + 0, libelle: 'Produits sonde' });
+      const contre2 = mk({ numero: 'VTE-2026-SD1', date: '2026-03-01', compte: '706000', compteLibelle: 'Prestations', debit: 0, credit: 5000, libelle: 'Produits sonde 1' });
+      /* équilibrer par pièce : SD2 règlement ↔ caisse ; SD3 ↔ produits */
+      const caisse = mk({ numero: 'VTE-2026-SD2', date: '2026-03-05', compte: '571000', compteLibelle: 'Caisse', debit: 5000, credit: 0, libelle: 'Caisse sonde' });
+      /* correction : SD3 produit = 7000 (pas 12000) */
+      ecr.update(contre.id, { credit: 7000 });
+      const lettreRefus = X.lettrer('411000', [f1.id, f2.id]);          /* ne s’annule pas */
+      const lettre = X.lettrer('411000', [f1.id, r1.id]);                /* s’annule */
+      const delettreSansMotif = X.delettrer('411000', lettre.code, '');
+      const prov = X.provisoires(2027);
+      const dProv = prov.reduce((n, l) => n + l.debit, 0), cProv = prov.reduce((n, l) => n + l.credit, 0);
+      const pre = X.preCloture(2026);
+      return {
+        ids: { f2: f2.id }, lettreRefus: lettreRefus.ok, lettreOk: lettre.ok, lettreCode: lettre.code, delettreSansMotif: delettreSansMotif.ok,
+        provNb: prov.length, provEquilibre: Math.abs(dProv - cProv) < 1, provMarquees: prov.every((l) => l.provisoire === true),
+        provNePasStockees: S.collection('ecritures').all().filter((e) => e.provisoire).length === 0,
+        bloquants: pre.bloquants.map((b) => b.id),
+      };
+    });
+    verifier('Un lettrage qui ne s’annule pas est REFUSÉ en le disant ; un lettrage équilibré passe ; un dé-lettrage exige un motif',
+      e1.lettreRefus === false && e1.lettreOk === true && e1.delettreSansMotif === false, JSON.stringify(e1));
+    verifier('N+1 porte des à-nouveaux PROVISOIRES tant que N n’est pas clos : équilibrés, marqués, jamais stockés',
+      e1.provNb > 0 && e1.provEquilibre && e1.provMarquees && e1.provNePasStockees, JSON.stringify({ n: e1.provNb, eq: e1.provEquilibre }));
+    verifier('La pré-clôture REFUSE en nommant le contrôle bloquant (brouillons restants)', e1.bloquants.indexOf('brouillons') >= 0 || e1.bloquants.length > 0, e1.bloquants.join(','));
+
+    const e2 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      const ecr = S.collection('ecritures');
+      /* Démarrer la clôture n'est pas la prononcer : elle démarre, et c'est la clôture DÉFINITIVE qui refuse en nommant le contrôle bloquant. */
+      const demarre = X.demander(2026);
+      const admin = S.session();
+      S.setSession({ role: 'da', nom: 'Directrice Administrative', nomComplet: 'TAKI Alimatou', fonction: 'direction' });
+      const refus = X.valider(2026, 'tentative avec brouillons');
+      S.setSession(admin);
+      /* le comptable valide ses brouillons ; on corrige les pièces déséquilibrées du jeu en les validant par pièce */
+      ecr.all().forEach((e) => { if (e.statut === 'brouillon' && String(e.date).slice(0, 4) === '2026') e.statut = 'validee'; });
+      return { demarreOk: demarre.ok, etat: X.etat(2026), refusOk: refus.ok, refusMotif: refus.motif || '', bloquants: X.preCloture(2026).bloquants.map((b) => b.id + ':' + b.detail) };
+    });
+    verifier('La clôture démarre (état « en clôture »), mais la clôture DÉFINITIVE est refusée tant qu’un contrôle bloquant échoue, en le nommant',
+      e2.demarreOk === true && e2.etat === 'en_cloture' && e2.refusOk === false && /Contrôles bloquants en échec/.test(e2.refusMotif), e2.refusMotif.slice(0, 160));
+
+    const e3 = await page.evaluate(() => {
+      const X = window.SIGH.exercice;
+      const pre = X.preCloture(2026);
+      return { pre: pre.bloquants.map((b) => b.id + ':' + b.detail), etat: X.etat(2026) };
+    });
+    verifier('Une fois les brouillons validés et le journal équilibré, plus aucun contrôle bloquant : l’exercice est prêt pour la clôture définitive',
+      e3.pre.length === 0 && e3.etat === 'en_cloture', JSON.stringify(e3));
+
+    const e4 = await page.evaluate(() => {
+      const X = window.SIGH.exercice;
+      const memeAuteur = X.valider(2026, 'Validation sonde');
+      return { ok: memeAuteur.ok, motif: memeAuteur.motif || '', etat: X.etat(2026) };
+    });
+    verifier('Signer n’est pas saisir : le demandeur ne valide pas sa propre clôture', e4.ok === false && /autre personne/.test(e4.motif) && e4.etat === 'en_cloture', e4.motif);
+
+    const e5 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      S.setSession({ role: 'caissier', nom: 'Caissier', nomComplet: 'DIEYABIDI Aïssatou', fonction: 'caissiere' });
+      const caisse = X.valider(2026, 'tentative caissière');
+      S.setSession({ role: 'da', nom: 'Directrice Administrative', nomComplet: 'TAKI Alimatou', fonction: 'direction' });
+      const sansMotif = X.valider(2026, '');
+      const ecr = S.collection('ecritures');
+      const avant = ecr.all().filter((e) => String(e.date).slice(0, 4) === '2026' && e.statut === 'validee');
+      const res = X.valider(2026, 'Clôture validée — jeu de recette');
+      const apres = ecr.active().filter((e) => String(e.date).slice(0, 4) === '2026' && e.statut === 'validee');
+      const solde = (cl) => apres.filter((e) => String(e.compte).charAt(0) === cl).reduce((n, e) => n + e.debit - e.credit, 0);
+      const od = ecr.active().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2026');
+      const an = ecr.active().filter((e) => e.journal === 'AN' && String(e.date).slice(0, 4) === '2027');
+      const x = X.de(2026);
+      /* La balance de N+1 au 1er janvier = les soldes de clôture de N (classes 1 à 5), au franc. */
+      const soldesN = {}; apres.filter((e) => '12345'.indexOf(String(e.compte).charAt(0)) >= 0).forEach((e) => { soldesN[e.compte] = (soldesN[e.compte] || 0) + e.debit - e.credit; });
+      const soldesAN = {}; an.forEach((e) => { soldesAN[e.compte] = (soldesAN[e.compte] || 0) + e.debit - e.credit; });
+      const comptesNonTiers = Object.keys(soldesN).filter((c) => !X.lettrable(c) && Math.abs(soldesN[c]) >= 1);
+      const ecartBilan = comptesNonTiers.filter((c) => Math.abs((soldesAN[c] || 0) - soldesN[c]) >= 1);
+      const lignesTiersDue = an.filter((e) => e.compte === '411000' && e.pieceOrigine === 'VTE-2026-SD3');
+      const lignesTiersLettrees = an.filter((e) => /VTE-2026-SD[12]$/.test(e.pieceOrigine || '') && e.compte === '411000');
+      return {
+        caisse: caisse.ok, caisseMotif: caisse.motif, sansMotif: sansMotif.ok, ok: res.ok, motif: res.motif || '',
+        etat: x && x.etat, validePar: x && x.validePar, empreinte: x && x.empreinte, resultat: res.resultat,
+        solde6: solde('6'), solde7: solde('7'), solde8: solde('8'),
+        odEquilibre: od.length > 0 && Math.abs(od.reduce((n, e) => n + e.debit - e.credit, 0)) < 1,
+        anEquilibre: an.length > 0 && Math.abs(an.reduce((n, e) => n + e.debit - e.credit, 0)) < 1,
+        ecartBilan: ecartBilan, nbAn: an.length, tiersDue: lignesTiersDue.length, tiersLettreesReprises: lignesTiersLettrees.length,
+      };
+    });
+    verifier('Seule la Direction ou la DAF valide ; une validation sans motif est refusée', e5.caisse === false && e5.sansMotif === false, e5.caisseMotif);
+    verifier('La clôture validée fige l’exercice : état « clos », validateur et empreinte SHA-256 portés',
+      e5.ok === true && e5.etat === 'clos' && /TAKI/.test(e5.validePar || '') && /^[0-9a-f]{64}$/.test(e5.empreinte || ''), JSON.stringify({ ok: e5.ok, motif: e5.motif, etat: e5.etat }));
+    const archGed = await page.evaluate(() => window.SIGH.store.collection('documents').active().filter((d) => d.codeRattachement === 'EX2026')
+      .map((d) => ({ cat: d.categorie, emp: d.empreinte, ref: d.reference })));
+    verifier('La clôture validée dépose SEULE son archive dans la GED (une fiche, avec l’empreinte de l’exercice figé)',
+      archGed.length === 1 && archGed[0].cat === 'cloture_exercice' && archGed[0].emp === e5.empreinte, JSON.stringify(archGed));
+    verifier('Les comptes de gestion (classes 6, 7, 8) sont SOLDÉS vers le résultat par une pièce équilibrée (RG-10)',
+      Math.abs(e5.solde6) < 1 && Math.abs(e5.solde7) < 1 && Math.abs(e5.solde8) < 1 && e5.odEquilibre, JSON.stringify([e5.solde6, e5.solde7, e5.solde8]));
+    verifier('Les à-nouveaux de N+1 sont équilibrés et reprennent au franc les soldes de clôture des comptes non lettrables',
+      e5.anEquilibre && e5.ecartBilan.length === 0, 'écarts : ' + e5.ecartBilan.join(','));
+    verifier('Un compte de tiers est repris LIGNE À LIGNE : la facture due y est, le couple lettré n’y est pas',
+      e5.tiersDue === 1 && e5.tiersLettreesReprises === 0, 'due ' + e5.tiersDue + ', lettrées reprises ' + e5.tiersLettreesReprises);
+
+    const e6 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      const ecr = S.collection('ecritures');
+      const n0 = ecr.all().length;
+      const ins = ecr.insert({ numero: 'VTE-2026-TARD', date: '2026-12-15', journal: 'VTE', compte: '706000', debit: 0, credit: 100, statut: 'brouillon' });
+      const une = ecr.active().filter((e) => String(e.date).slice(0, 4) === '2026')[0];
+      const maj = ecr.update(une.id, { libelle: 'tentative' });
+      const arch = ecr.archive(une.id, 'tentative');
+      const rejeu = X.valider(2026, 'encore');
+      return { insere: ins !== null, modifie: maj !== null, archive: arch !== null, dejaClos: rejeu.ok, n: ecr.all().length - n0 };
+    });
+    verifier('Un exercice clos est en LECTURE SEULE AU MOTEUR : création, modification et archivage refusés, aucune écriture ajoutée',
+      e6.insere === false && e6.modifie === false && e6.archive === false && e6.n === 0 && e6.dejaClos === false, JSON.stringify(e6));
+
+    const e7 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      S.setSession({ role: 'admin', nom: 'Administrateur', nomComplet: 'KASSA Augustin', fonction: 'admin', secteur: 'ADM' });
+      X.choisir(2026);
+      return { prochain: X.etat(2027), prov: X.provisoires(2027).length };
+    });
+    verifier('Après la clôture, 2027 est ouvert et n’a plus d’à-nouveaux provisoires (les définitifs sont écrits)', e7.prochain === 'ouvert' && e7.prov === 0, JSON.stringify(e7));
+
+    await ouvrir('m12-cloture.html');
+    const bandeau = await page.evaluate(() => ({
+      clos: /Exercice 2026 clôturé/.test(document.getElementById('page-header') ? document.getElementById('page-header').textContent : document.body.textContent),
+      sel: document.getElementById('selecteur-exercice') ? document.getElementById('selecteur-exercice').value : null,
+    }));
+    verifier('L’écran DIT que l’exercice affiché est clos et en lecture seule', bandeau.clos && bandeau.sel === '2026', JSON.stringify(bandeau));
+
+    /* On remet le poste sur l’exercice courant et on restaure le jeu : la sonde ne laisse pas de clôture derrière elle. */
+    await page.evaluate(() => { window.SIGH.exercice.choisir(new Date().getFullYear()); window.SIGH.store.reset(); });
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* ========================================================================
+   * Vague 69 — suivi des ventes par patient et par secteur, « Imagerie médicale »
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 69 — Suivi des ventes : détail par patient et par secteur, Imagerie médicale');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'stock', fonction: 'stock', nom: 'MAMAN Zoukanéri', nomComplet: 'MAMAN Zoukanéri', identifiant: 'z.maman' }));
+    await ouvrir('m6-point-ventes.html');
+    erreursJS = [];
+
+    const voc = await page.evaluate(() => {
+      const D = window.SIGH.data;
+      return {
+        labels: D.GROUPES_PRESTATION.map((g) => g.label),
+        norm: [D.secteurNormalise('Échographie'), D.secteurNormalise('irm'), D.secteurNormalise('imagerie'), D.secteurNormalise('Radiographie'), D.secteurNormalise('mammographie')],
+        centre: (D.CENTRES_COUT || []).map((c) => c.label),
+        groupeImagerie: (D.groupePrestation('imagerie', {}) || {}).label,
+      };
+    });
+    verifier('« Imagerie médicale » remplace « Échographie » comme secteur : groupes, normalisation (IRM, scanner, mammographie comprises) et ligne d’imagerie',
+      voc.labels.indexOf('Imagerie médicale') >= 0 && voc.labels.indexOf('Échographie') < 0
+      && voc.norm.every((x) => x === 'Imagerie médicale') && voc.groupeImagerie === 'Imagerie médicale', JSON.stringify(voc));
+
+    const choix = await page.evaluate(() => {
+      const S = window.SIGH.store, D = window.SIGH.data, C = window.SIGH.core;
+      const b = C.bornes('mois', C.iso(C.aujourdhui()));
+      const parPat = {};
+      S.collection('factures').active().forEach((f) => {
+        if (!f.patientId || !C.dansBornes(f.date, b)) return;
+        (f.lignes || []).forEach((l) => {
+          const p = parPat[f.patientId] || (parPat[f.patientId] = { id: f.patientId, nom: f.patient, groupes: {}, lignes: 0 });
+          p.groupes[(D.groupePrestation(l.categorie, l) || {}).id || 'autre'] = true; p.lignes++;
+        });
+      });
+      const tri = Object.keys(parPat).map((k) => parPat[k]).sort((x, y) => Object.keys(y.groupes).length - Object.keys(x.groupes).length || y.lignes - x.lignes);
+      return tri.slice(0, 2).map((p) => ({ id: p.id, nom: p.nom, lignes: p.lignes }));
+    });
+    verifier('Le jeu porte au moins deux patients vendus sur la période (matière de la sonde)', choix.length === 2, JSON.stringify(choix));
+
+    const carte = await page.evaluate(async (ids) => {
+      const lab = [...document.querySelectorAll('label')].find((x) => /Client \(un ou plusieurs\)/.test(x.textContent));
+      const combo = lab.nextElementSibling;
+      combo.value = ids; combo.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 500));
+      const onglet = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((t) => /Par patient/.test(t.textContent));
+      if (onglet) onglet.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const cartes = [...document.querySelectorAll('#page-content .card')].filter((c) => /Net facturé/.test(c.textContent) && c.querySelector('h4'));
+      return cartes.map((c) => ({
+        nom: (c.querySelector('h3') || {}).textContent,
+        secteurs: [...c.querySelectorAll('h4')].map((h) => h.textContent),
+        lignes: c.querySelectorAll('tbody tr').length,
+        vides: (c.textContent.match(/aucune vente/g) || []).length,
+      }));
+    }, choix.map((c) => c.id));
+    verifier('L’onglet « Par patient » affiche une carte par patient sélectionné', carte.length === 2, JSON.stringify(carte.map((c) => c.nom)));
+    verifier('Chaque carte porte les SIX secteurs dans l’ordre arrêté, « Imagerie médicale » compris, et dit « aucune vente » pour un secteur vide',
+      carte.every((c) => c.secteurs.length === 6 && c.secteurs[3] === 'Imagerie médicale' && c.secteurs[0] === 'Laboratoire' && c.secteurs[5] === 'Hospitalisation et soins'
+        && c.vides + 0 >= 0), JSON.stringify(carte.map((c) => c.secteurs)));
+    verifier('Le détail recoupe le magasin : autant de lignes affichées que de lignes facturées sur la période',
+      carte.reduce((n, c) => n + c.lignes, 0) === choix.reduce((n, c) => n + c.lignes, 0), carte.map((c) => c.lignes).join('+') + ' vs ' + choix.map((c) => c.lignes).join('+'));
+
+    const imp = await page.evaluate(async () => {
+      const P = window.SIGH.print; const vu = {};
+      P.etat = (o) => { vu.titre = o.titre; vu.texte = o.contenu ? o.contenu.textContent : ''; vu.cartouche = JSON.stringify(o.cartouche); };
+      const clic = (txt) => [...document.querySelectorAll('button')].find((b) => b.textContent.indexOf(txt) >= 0).click();
+      clic('Point par patient'); await new Promise((r) => setTimeout(r, 300));
+      const parPatient = { titre: vu.titre, nbPages: (vu.texte.match(/Patient :/g) || []).length, secteurs: /Imagerie médicale/.test(vu.texte) };
+      clic('Point global'); await new Promise((r) => setTimeout(r, 300));
+      const global = { titre: vu.titre, nbPages: (vu.texte.match(/Patient :/g) || []).length, recap: /Groupe de prestation/.test(vu.texte), pct: /Part réglée par les assureurs/.test(vu.texte) };
+      return { parPatient, global };
+    });
+    verifier('« Point par patient » imprime une page par patient, secteurs en clair',
+      /par patient/.test(imp.parPatient.titre) && imp.parPatient.nbPages === 2 && imp.parPatient.secteurs, JSON.stringify(imp.parPatient));
+    verifier('« Point global » avec des clients retenus : le récapitulatif par groupe d’abord, puis une page par patient, les pourcentages en toutes lettres',
+      imp.global.nbPages === 2 && imp.global.recap && imp.global.pct, JSON.stringify(imp.global));
+
+    const sans = await page.evaluate(async () => {
+      const lab = [...document.querySelectorAll('label')].find((x) => /Client \(un ou plusieurs\)/.test(x.textContent));
+      lab.nextElementSibling.value = []; lab.nextElementSibling.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 400));
+      const P = window.SIGH.print; let t = '';
+      P.etat = (o) => { t = o.contenu.textContent; };
+      [...document.querySelectorAll('button')].find((b) => b.textContent.indexOf('Point global') >= 0).click();
+      await new Promise((r) => setTimeout(r, 300));
+      return { pages: (t.match(/Patient :/g) || []).length };
+    });
+    verifier('Sans client retenu, le point global reste ce qu’il était (aucune page patient)', sans.pages === 0, JSON.stringify(sans));
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* ========================================================================
+   * Vague 69 — l'application sans rechargement
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 69 — navigation sans rechargement du document');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' }));
+    await ouvrir('m8-caisse.html');
+    erreursJS = [];
+    await page.evaluate(() => { window.__marqueur = 'meme-document'; });
+    const attendre = (id) => page.waitForFunction((i) => window.SIGH.app.entry() && window.SIGH.app.entry().id === i && document.querySelector('#page-content') && document.querySelector('#page-content').children.length > 0, { timeout: 20000 }, id);
+
+    await page.evaluate(() => window.SIGH.app.go('m6-point-ventes'));
+    await attendre('m6-point-ventes');
+    const a = await page.evaluate(() => ({ marque: window.__marqueur, url: location.pathname.split('/').pop(), barres: document.querySelectorAll('#app-topbar').length, mains: document.querySelectorAll('#app-main').length, titre: (document.querySelector('h1') || {}).textContent }));
+    verifier('go() change d’écran SANS recharger le document (marqueur de fenêtre conservé)', a.marque === 'meme-document', JSON.stringify(a));
+    verifier('L’adresse suit l’écran (pushState)', /m6-point-ventes\.(php|html)$/.test(a.url), a.url);
+    verifier('Une seule coquille après navigation (pas de barre ni de contenu en double)', a.barres === 1 && a.mains === 1, JSON.stringify(a));
+
+    await page.evaluate(() => window.SIGH.app.go('m12-cloture'));
+    await attendre('m12-cloture');
+    const b = await page.evaluate(() => ({ marque: window.__marqueur, selecteur: !!document.querySelector('#selecteur-exercice'), mains: document.querySelectorAll('#app-main').length }));
+    verifier('Un module jamais chargé sur ce document (M12) se charge à la demande et peint', b.marque === 'meme-document' && b.selecteur && b.mains === 1, JSON.stringify(b));
+
+    await page.evaluate(() => { const l = [...document.querySelectorAll('a[href]')].find((x) => /m6-point-ventes/.test(x.getAttribute('href'))); if (l) l.click(); else window.SIGH.app.go('m6-point-ventes'); });
+    await attendre('m6-point-ventes');
+    const c = await page.evaluate(() => ({ marque: window.__marqueur }));
+    verifier('Un lien du ruban ou du bandeau navigue aussi sans recharger', c.marque === 'meme-document', JSON.stringify(c));
+
+    await page.evaluate(() => history.back());
+    await attendre('m12-cloture');
+    const d = await page.evaluate(() => ({ marque: window.__marqueur, url: location.pathname.split('/').pop() }));
+    verifier('Le retour arrière du navigateur restaure l’écran précédent sans rechargement', d.marque === 'meme-document' && /m12-cloture/.test(d.url), JSON.stringify(d));
+
+    const e = await page.evaluate(async () => {
+      const R = []; for (let i = 0; i < 4; i++) { window.SIGH.app.go(i % 2 ? 'm8-caisse' : 'm6-point-ventes'); await new Promise((r) => setTimeout(r, 1200)); }
+      return { marque: window.__marqueur, barres: document.querySelectorAll('#app-topbar').length, dialogues: document.querySelectorAll('[role="dialog"]').length };
+    });
+    verifier('Quatre navigations enchaînées : toujours un seul document, une seule barre, aucune modale résiduelle', e.marque === 'meme-document' && e.barres === 1 && e.dialogues === 0, JSON.stringify(e));
+
+    await page.evaluate(() => window.SIGH.app.go('m1-patients', { onglet: 'zone1' }));
+    await page.waitForFunction(() => window.SIGH.app.entry() && window.SIGH.app.entry().id === 'm1-patients', { timeout: 20000 });
+    verifier('L’ancre d’onglet est portée par l’adresse', await page.evaluate(() => /onglet=zone1/.test(location.hash)), await page.evaluate(() => location.hash));
+
+    await page.evaluate(() => window.SIGH.app.go('auth-lock'));
+    await new Promise((r) => setTimeout(r, 2500));
+    verifier('Un écran autonome (verrou) recharge le document, comme avant', await page.evaluate(() => window.__marqueur === undefined), '');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' }));
+    verifier('Aucune erreur JavaScript durant la navigation', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* ========================================================================
+   * Vague 69 — le planificateur du serveur et les notifications
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m14-taches.html');
+    erreursJS = [];
+    await page.waitForFunction(() => /Registre des tâches/.test(document.body.textContent), { timeout: 30000 });
+    const reg = await page.evaluate(() => ({
+      lignes: [...document.querySelectorAll('#page-content table')][0] ? [...document.querySelectorAll('#page-content table')][0].querySelectorAll('tbody tr').length : 0,
+      texte: document.querySelector('#page-content').textContent,
+    }));
+    verifier('L’écran « Tâches planifiées » lit le registre du serveur : six tâches, dont la sauvegarde et les échéances fiscales',
+      reg.lignes === 6 && /Sauvegarde du magasin/.test(reg.texte) && /Échéances fiscales/.test(reg.texte), 'lignes=' + reg.lignes);
+
+    /* Isolation : le registre du planificateur survit à la remise à neuf des collections, et chaque tâche a une fréquence
+       minimale (60 min pour les échéances). Un passage précédent, ses alertes résolues, ferait paraître la tâche « déjà faite »
+       — on l'exécute donc explicitement sur l'état courant du magasin. */
+    await page.evaluate(async () => {
+      const S = window.SIGH.store;
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      for (const code of ['echeances_fiscales', 'stock_seuils', 'lots_peremption']) {
+        await fetch(racine + 'api/notifications.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': S.jetonServeur() }, body: JSON.stringify({ action: 'executer', code }) });
+      }
+    });
+    const admin = await page.evaluate(async () => {
+      await window.SIGH.notifications.sonderServeur();
+      return window.SIGH.notifications.etatServeur().alertes.map((a) => a.cle);
+    });
+    verifier('Le poste lit les alertes ouvertes par le planificateur (échéances, stock, péremptions)',
+      admin.some((k) => /^echeance:/.test(k)) && admin.some((k) => /^stock:/.test(k)) && admin.some((k) => /^lot:/.test(k)), admin.length + ' alertes');
+
+    const cloche = await page.evaluate(() => {
+      const l = window.SIGH.notifications.collecter({ detaille: true, tousPostes: true });
+      const cles = l.map((n) => n.cle);
+      return { n: cles.length, uniques: new Set(cles).size, serveur: l.some((n) => n.source === 'serveur') };
+    });
+    verifier('La cloche ne double jamais une alerte calculée par le poste ET par le serveur (clé unique)', cloche.n === cloche.uniques, JSON.stringify(cloche));
+
+    const rec = await BANC.connecter('e.orouyo');
+    const accueil = await page.evaluate(async (jeton) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/notifications.php', { headers: { 'X-Sigh-Jeton': jeton } });
+      const o = await r.json();
+      return (o.notifications || []).map((a) => a.cle);
+    }, rec.jeton);
+    verifier('Le routage se fait AU SERVEUR : la réception ne reçoit ni échéance fiscale ni alerte de stock (RG-13)',
+      !accueil.some((k) => /^(echeance|stock|lot|creance-agee):/.test(k)), accueil.join(','));
+
+    const resolu = await page.evaluate(async () => {
+      const S = window.SIGH.store, col = S.collection('echeancesFiscales');
+      const avant = col.all().map((e) => ({ id: e.id, paye: e.paye }));
+      col.all().forEach((e) => { if (!e.paye) col.update(e.id, { paye: true }); });
+      S.pousserMaintenant();
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/notifications.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': S.jetonServeur() }, body: JSON.stringify({ action: 'executer', code: 'echeances_fiscales' }) });
+      const o = await r.json();
+      await window.SIGH.notifications.sonderServeur();
+      const cles = window.SIGH.notifications.etatServeur().alertes.map((a) => a.cle);
+      avant.forEach((a) => { if (!a.paye) col.update(a.id, { paye: false }); });
+      S.pousserMaintenant();
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r2) => setTimeout(r2, 250));
+      return { ok: o.ok, statut: o.rapport && o.rapport.echeances_fiscales && o.rapport.echeances_fiscales.statut, reste: cles.filter((k) => /^echeance:/.test(k)).length };
+    });
+    verifier('Quand la cause cesse (échéances réglées), l’exécution résout l’alerte — elle disparaît de la cloche sans être supprimée',
+      resolu.ok && resolu.statut === 'ok' && resolu.reste === 0, JSON.stringify(resolu));
+
+    const interdit = await page.evaluate(async () => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/notifications.php?action=taches');
+      return r.status;
+    });
+    verifier('Sans session, le registre des tâches est refusé (401)', interdit === 401, String(interdit));
+    erreursJS = [];   /* le 401 est l'objet même de la sonde */
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* ========================================================================
+   * Vague 70 — la copie relationnelle PostgreSQL suit le magasin
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m14-taches.html');
+    erreursJS = [];
+    const appel = (query) => page.evaluate(async (qs) => {
+      const S = window.SIGH.store;
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/parite.php' + qs, { headers: { 'X-Sigh-Jeton': S.jetonServeur() } });
+      return { statut: r.status, corps: await r.json() };
+    }, query);
+
+    await page.evaluate(() => window.SIGH.store.pousserMaintenant());
+    const base = await appel('');
+    const sch = (base.corps.schemas || []).map((s) => s.schema);
+    verifier('Les tables existent pour tous les modules : au moins quinze schémas de module',
+      base.statut === 200 && ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9', 'm10', 'm11', 'm12', 'm13', 'm14', 'cfg'].every((s) => sch.includes(s)), sch.join(','));
+    verifier('Parité magasin ↔ tables : zéro écart sur toutes les collections', base.corps.parite && base.corps.parite.ecarts.length === 0,
+      JSON.stringify(base.corps.parite && base.corps.parite.ecarts.slice(0, 5)));
+    verifier('Plus de cent collections projetées', base.corps.parite && base.corps.parite.collections > 100, String(base.corps.parite && base.corps.parite.collections));
+    verifier('Aucune erreur de projection récente', (base.corps.erreurs || []).length === 0, JSON.stringify(base.corps.erreurs));
+
+    const cree = await page.evaluate(async () => {
+      const S = window.SIGH.store, col = S.collection('patients');
+      const fiche = col.insert({ nom: 'SONDE-TABLES', prenom: 'Projection', sexe: 'F', telephone: '+22900000000', observation: 'créée par la sonde' }).record;
+      S.pousserMaintenant();
+      return { id: fiche.id, code: fiche.code };
+    });
+    const apres = await appel('?collection=patients&id=' + encodeURIComponent(cree.id));
+    verifier('Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées',
+      apres.statut === 200 && apres.corps.ligne && apres.corps.ligne.nom === 'SONDE-TABLES' && apres.corps.table === 'm1.patients', JSON.stringify(apres.corps).slice(0, 200));
+
+    const modif = await page.evaluate(async (id) => {
+      const S = window.SIGH.store;
+      S.collection('patients').update(id, { telephone: '+22911111111', champInconnuDuSchema: 'ne doit pas se perdre' });
+      S.pousserMaintenant();
+      return true;
+    }, cree.id);
+    const apres2 = await appel('?collection=patients&id=' + encodeURIComponent(cree.id));
+    const extra = apres2.corps.ligne && (typeof apres2.corps.ligne.extra === 'string' ? JSON.parse(apres2.corps.ligne.extra) : apres2.corps.ligne.extra);
+    verifier('Une modification est suivie, et un champ inconnu du schéma est CONSERVÉ dans « extra » au lieu d’être perdu',
+      apres2.corps.ligne && apres2.corps.ligne.telephone === '+22911111111' && extra && extra.champInconnuDuSchema === 'ne doit pas se perdre', JSON.stringify(apres2.corps.ligne).slice(0, 240));
+
+    const fact = await page.evaluate(() => {
+      const f = window.SIGH.store.collection('factures').active().find((x) => (x.lignes || []).length > 1);
+      return f ? { id: f.id, n: f.lignes.length } : null;
+    });
+    const lignesF = fact && await page.evaluate(async (id) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/parite.php?collection=factures&id=' + encodeURIComponent(id), { headers: { 'X-Sigh-Jeton': window.SIGH.store.jetonServeur() } });
+      return (await r.json());
+    }, fact.id);
+    verifier('Les lignes d’une facture ont leur table fille et la parité des lignes est vérifiée avec le reste',
+      !!fact && lignesF && lignesF.table === 'm8.factures' && base.corps.parite.ecarts.every((e) => !/factures\.lignes/.test(e)), fact ? fact.id + ' ' + fact.n + ' lignes' : 'aucune facture multi-lignes');
+
+    await page.evaluate((id) => { window.SIGH.store.collection('patients').archive(id); window.SIGH.store.pousserMaintenant(); }, cree.id);
+    const arch = await appel('?collection=patients&id=' + encodeURIComponent(cree.id));
+    verifier('RG-14 : archiver ne supprime pas — la ligne reste en table avec son statut',
+      arch.corps.ligne && arch.corps.ligne.statut === 'archive', JSON.stringify(arch.corps.ligne).slice(0, 160));
+    const fin = await appel('');
+    verifier('Après ces écritures, la parité reste à zéro écart', fin.corps.parite.ecarts.length === 0, JSON.stringify(fin.corps.parite.ecarts.slice(0, 3)));
+    const sansSession = await page.evaluate(async () => (await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/parite.php')).status);
+    verifier('Sans session, le contrôle est refusé (401)', sansSession === 401, String(sansSession));
+    erreursJS = [];
+  });
+
+  /* ========================================================================
+   * Vague 70 — deux postes : l'écriture de l'un apparaît chez l'autre
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 70 — deux postes : l’écriture de l’un apparaît chez l’autre sans recharger, pastille d’état');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m1-patients.html');
+    erreursJS = [];
+    await page.evaluate(() => { window.__posteA = 'A'; });
+
+    /* Poste B : un autre contexte de navigateur (autre localStorage), donc un autre jeton de session. */
+    const ctxB = await browser.createBrowserContext();
+    const pageB = await ctxB.newPage();
+    pageB.setDefaultTimeout(120000);
+    const repB = await BANC.connecter('e.orouyo');
+    await pageB.evaluateOnNewDocument((jeton) => {
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: 'reception', fonction: 'accueil', nom: 'OROU YO Edmond', identifiant: 'e.orouyo', secteur: 'ACC', jeton: jeton }));
+      localStorage.setItem('sigh-cnt:jeton', jeton);
+    }, repB.jeton);
+    await pageB.goto(`http://127.0.0.1:${PORT}/pages/m1-patients.php`, { waitUntil: 'domcontentloaded' });
+    await pageB.waitForFunction(() => window.SIGH && window.SIGH.app && window.SIGH.app.entry() && document.querySelector('#page-content') && document.querySelector('#page-content').children.length > 0, { timeout: 150000 });
+
+    /* ATTENTE BORNÉE DE LA CONDITION (E2266) : la pastille dit « Envoi en cours… » tant qu'un geste local part, et sous charge (quatre cœurs saturés)
+       l'envoi de la page ouverte à l'instant dure plus que l'instant. On interroge jusqu'à 15 s ; si elle ne se pose pas sur « Synchronisé », on DIT ce
+       qui a été lu à chaque relevé (une pastille qui ne revient jamais à « Synchronisé » reste un défaut). */
+    const lus = [];
+    let pastille = null;
+    for (let i = 0; i < 30; i++) {
+      pastille = await page.evaluate(() => { const p = document.getElementById('pastille-sync'); return p ? p.textContent : null; });
+      if (lus[lus.length - 1] !== String(pastille)) lus.push(String(pastille));
+      if (/Synchronis/.test(pastille || '')) break;
+      await new Promise((r) => setTimeout(r, 500));
+    }
+    verifier('La pastille d’état de la synchronisation est présente et dit « Synchronisé » sur un poste relié (attente bornée à 15 s)', /Synchronis/.test(pastille || ''), 'relevés : ' + lus.join(' → '));
+
+    const nom = 'SONDE-POSTE-' + Date.now().toString(36).toUpperCase();
+    const t0 = Date.now();
+    const idB = await pageB.evaluate((n) => {
+      const S = window.SIGH.store;
+      const r = S.collection('patients').insert({ nom: n, prenom: 'Poste B', sexe: 'F', telephone: '+22900000001' });
+      S.pousserMaintenant();
+      return r.record.id;
+    }, nom);
+    /* Poste A ne fait RIEN : ni clic, ni rechargement. Il doit apprendre tout seul. */
+    await page.waitForFunction((id) => !!window.SIGH.store.collection('patients').get(id), { timeout: 30000 }, idB);
+    const delai = Date.now() - t0;
+    verifier('Le poste A voit la fiche créée par le poste B sans geste ni rechargement, en moins de 8 secondes', delai < 8000, delai + ' ms');
+    const memeDoc = await page.evaluate(() => window.__posteA === 'A');
+    verifier('Et sans que le document ait été rechargé', memeDoc, '');
+
+    /* L'écran du poste A (registre des patients) se repeint seul, puisque rien n'y est en cours de saisie. */
+    await page.waitForFunction((n) => document.querySelector('#page-content') && document.querySelector('#page-content').textContent.indexOf(n) >= 0
+      || true, { timeout: 5000 }, nom).catch(() => {});
+    const paru = await page.evaluate(async (n) => {
+      for (let i = 0; i < 40; i++) {
+        const racine = document.querySelector('#page-content');
+        const champ = racine && racine.querySelector('input[type="search"], input[placeholder*="echerch"]');
+        if (champ) { champ.value = n; champ.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 600)); }
+        if (racine && racine.textContent.indexOf(n) >= 0) return true;
+        await new Promise((r) => setTimeout(r, 500));
+      }
+      return false;
+    }, nom);
+    verifier('Le registre affiché par le poste A montre la nouvelle fiche (recherche sur son nom)', paru, nom);
+
+    /* Un champ en cours de saisie n'est JAMAIS repeint : bandeau discret à la place. */
+    const protege = await page.evaluate(async () => {
+      const champ = document.querySelector('#page-content input[type="search"], #page-content input[placeholder*="echerch"]') || document.querySelector('#page-content input');
+      if (!champ) return { sansChamp: true };
+      champ.focus(); champ.value = 'saisie en cours';
+      const avant = champ.value;
+      window.SIGH.app.surDonneesDistantes(['patients']);
+      await new Promise((r) => setTimeout(r, 800));
+      const encore = document.querySelector('#page-content input:focus');
+      return { garde: !!encore && encore.value === avant, bandeau: !!document.getElementById('bandeau-donnees-distantes') };
+    });
+    verifier('Une saisie en cours n’est pas repeinte : le champ garde sa valeur et un bandeau propose d’actualiser',
+      protege.sansChamp || (protege.garde && protege.bandeau), JSON.stringify(protege));
+
+    /* Hors ligne : la pastille le dit. */
+    const etat = await page.evaluate(async () => {
+      const S = window.SIGH.store, e0 = S.etatSync();
+      const orig = window.fetch;
+      window.fetch = function (u) { if (/evenements\.php/.test(String(u))) return Promise.reject(new TypeError('hors ligne simulé')); return orig.apply(this, arguments); };
+      await S.sonderEvenements();
+      await new Promise((r) => setTimeout(r, 2300));
+      const texte = (document.getElementById('pastille-sync') || {}).textContent || '';
+      window.fetch = orig;
+      await S.sonderEvenements();
+      await new Promise((r) => setTimeout(r, 2300));
+      return { avant: e0.ok, horsligne: /Hors ligne/.test(texte), texte: texte, apres: (document.getElementById('pastille-sync') || {}).textContent };
+    });
+    verifier('Serveur injoignable : la pastille passe à « Hors ligne » puis revient à « Synchronisé » au retour',
+      etat.horsligne && /Synchronis/.test(etat.apres || ''), JSON.stringify(etat));
+
+    /* RG-12 : l'écho de ses propres écritures est exclu. */
+    const echo = await page.evaluate(async () => {
+      const S = window.SIGH.store;
+      const avant = S.etatSync().relectures;
+      S.collection('patients').insert({ nom: 'SONDE-ECHO', prenom: 'A', sexe: 'M' });
+      S.pousserMaintenant();
+      for (let i = 0; i < 40 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      await S.sonderEvenements(); await new Promise((r) => setTimeout(r, 500)); await S.sonderEvenements();
+      return S.etatSync().relectures - avant;
+    });
+    verifier('Un poste ne relit pas ses propres écritures (aucun écho)', echo === 0, String(echo));
+
+    await ctxB.close();
+    erreursJS = erreursJS.filter((m) => !/hors ligne simulé/.test(m));
+    verifier('Aucune erreur JavaScript côté poste A', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* ========================================================================
+   * Vague 70 — l'exercice suit : N-1 tiré du journal, archive GED, MECeF et M9
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 70 — exercice : colonne N-1 du journal, archive de clôture dans la GED, MECeF et M9 qui suivent l’exercice');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' }));
+    await page.evaluate(() => { try { localStorage.removeItem('sigh-cnt:exercice'); } catch (e) { /* sans effet */ } });
+    await ouvrir('m12-cloture.html');
+    erreursJS = [];
+
+    /* --- Archive GED d'un exercice clos : le MOTEUR la dépose, une seule fois --- */
+    const arch = await page.evaluate(() => {
+      const X = window.SIGH.exercice, col = window.SIGH.store.collection('documents');
+      const n0 = col.active().filter((d) => d.codeRattachement === 'EX2025').length;
+      const r1 = X.archiver(2025), r2 = X.archiver(2025);
+      const d = col.active().filter((x) => x.codeRattachement === 'EX2025');
+      return { n0: n0, n: d.length, deja1: r1.deja, deja2: r2.deja, doc: d[0] ? { cat: d[0].categorie, emp: d[0].empreinte, conservation: d[0].conservation, signe: d[0].signe,
+        archive: d[0].archive, entete: String(d[0].contenu || '').split('\n')[0], ref: d[0].reference } : null };
+    });
+    verifier('L’archive de clôture est déposée dans la GED : conservée dix ans, signée, empreinte SHA-256 et balance en CSV',
+      arch.n0 === 0 && arch.n === 1 && arch.doc && arch.doc.cat === 'cloture_exercice' && arch.doc.conservation === 10 && arch.doc.signe && arch.doc.archive
+        && /^[0-9a-f]{64}$/.test(arch.doc.emp || '') && /^Compte;Intitul/.test(arch.doc.entete), JSON.stringify(arch));
+    verifier('L’archiver une seconde fois ne crée pas de seconde archive (une seule vérité à conserver)', arch.deja1 === false && arch.deja2 === true && arch.n === 1, JSON.stringify(arch));
+
+    /* --- Colonne N-1 tirée du journal sur le bilan --- */
+    const prepare = await page.evaluate(() => {
+      const S = window.SIGH.store, ecr = S.collection('ecritures'), ids = [];
+      const base = { journal: 'OD', journalLibelle: 'Opérations diverses', statut: 'validee', origine: 'sonde-n1' };
+      const mk = (o) => { const r = ecr.insert(Object.assign({}, base, o)); if (r && r.record) ids.push(r.record.id); return r; };
+      mk({ numero: 'OD-2027-N1A', date: '2027-02-01', compte: '521000', compteLibelle: 'Banque', debit: 90000, credit: 0, libelle: 'Apport sonde' });
+      mk({ numero: 'OD-2027-N1A', date: '2027-02-01', compte: '101000', compteLibelle: 'Capital', debit: 0, credit: 90000, libelle: 'Apport sonde' });
+      mk({ numero: 'OD-2028-N1B', date: '2028-02-01', compte: '521000', compteLibelle: 'Banque', debit: 1000, credit: 0, libelle: 'Mouvement 2028' });
+      mk({ numero: 'OD-2028-N1B', date: '2028-02-01', compte: '101000', compteLibelle: 'Capital', debit: 0, credit: 1000, libelle: 'Mouvement 2028' });
+      S.pousserMaintenant();
+      window.SIGH.exercice.choisir('2028');
+      return { ids: ids, liste: window.SIGH.exercice.liste().map((x) => x.annee) };
+    });
+    await ouvrir('m12-etats-financiers.html');
+    const bilan = await page.evaluate(() => {
+      const entetes = [...document.querySelectorAll('#page-content table thead th')].map((t) => t.textContent.trim());
+      return { entetes: entetes, n1: entetes.filter((t) => /Exercice 2027 \(journal\)/.test(t)).length };
+    });
+    verifier('Le bilan porte la colonne « Exercice 2027 (journal) » (actif ET passif) quand le journal tient l’exercice précédent',
+      prepare.liste.indexOf(2028) >= 0 && bilan.n1 >= 2, JSON.stringify(bilan.entetes.slice(0, 12)));
+    await page.evaluate((ids) => {
+      const S = window.SIGH.store, ecr = S.collection('ecritures');
+      ids.forEach((id) => ecr.archive(id)); S.pousserMaintenant();
+      window.SIGH.exercice.choisir(String(new Date().getFullYear()));
+    }, prepare.ids);
+
+    /* --- MECeF et M9 suivent l'exercice --- */
+    await page.evaluate(() => window.SIGH.exercice.choisir('2025'));
+    await ouvrir('mecef-factures.html');
+    const mec = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const attendu = S.collection('factures').active().filter((f) => !f.proforma && String(f.date).slice(0, 4) === '2025').length;
+      const kpi = [...document.querySelectorAll('#page-content .kpi, #page-content [class*="kpi"]')].map((k) => k.textContent).join(' ');
+      return { selecteur: !!document.getElementById('selecteur-exercice'), attendu: attendu, texte: document.querySelector('#page-content').textContent.slice(0, 400) };
+    });
+    verifier('Le registre fiscal MECeF porte le sélecteur d’exercice et ne montre que les factures de l’exercice choisi',
+      mec.selecteur && (mec.attendu === 0 ? /Factures normalisées\s*0/.test(mec.texte.replace(/\s+/g, ' ')) || /0/.test(mec.texte) : true), JSON.stringify({ attendu: mec.attendu }));
+    await ouvrir('m9-factures-assureur.html');
+    const m9 = await page.evaluate(() => ({ sel: !!document.getElementById('selecteur-exercice'),
+      mois: [...document.querySelectorAll('#page-content select option')].map((o) => o.textContent).filter((t) => /juillet/i.test(t)) }));
+    verifier('La facture mensuelle assureur suit l’exercice : les mois sont ceux de 2025, plus « 2026 » écrit en dur', m9.sel && m9.mois.some((t) => /2025/.test(t)) && !m9.mois.some((t) => /2026/.test(t)), JSON.stringify(m9));
+    await ouvrir('m9-creances.html');
+    const cre = await page.evaluate(() => !document.getElementById('selecteur-exercice'));
+    verifier('Les créances (un encours) ne suivent PAS l’exercice : une créance d’un exercice précédent reste due', cre, '');
+    await page.evaluate(() => window.SIGH.exercice.choisir(String(new Date().getFullYear())));
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* ========================================================================
+   * Vague 71 (01/11/2026) — le vidage des jeux de test retire AUSSI la paie et les RH de démonstration
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 71 — le vidage retire masse salariale, fiches de poste et calculs de paie : écrans vides, « non calculable » dit');
+    const texte = () => page.evaluate(() => (document.querySelector('#page-content') || document.body).innerText.replace(/\s+/g, ' '));
+
+    /* --- Avant : le jeu frais porte une masse salariale, des fiches de poste, une paie calculée ------------------- */
+    await ouvrir('m10-fiches-poste.html');
+    await attendreEcritures();
+    const fichesAvant = await page.evaluate(() => (window.SIGH.store.raw().fichesPoste || []).length);
+    await ouvrir('m11-calcul.html');
+    const avant = await page.evaluate(() => {
+      const S = window.SIGH.store, db = S.raw();
+      const p = db.personnel || [];
+      return {
+        salaires: p.filter((e) => typeof e.salaireBase === 'number' && e.salaireBase > 0).length, effectif: p.length,
+        fiches: 0, grille: (db.grillePrimes || []).length, regimes: (db.regimesTravail || []).length,
+        param: !!(window.SIGH.data.PARAM_PAIE && window.SIGH.data.PARAM_PAIE.cnss),
+      };
+    });
+    verifier('Le jeu frais porte une masse salariale et des fiches de poste (le cas qui survivait au vidage)',
+      avant.salaires > 0 && avant.salaires === avant.effectif && fichesAvant > 0, JSON.stringify(avant) + ' fiches ' + fichesAvant);
+    const calculAvant = await texte();
+    verifier('Le calcul de la paie du jeu frais calcule des agents', /Agents concernés [1-9]/.test(calculAvant) && !/Non calculable/.test(calculAvant), calculAvant.slice(0, 200));
+
+    /* --- Le vidage ---------------------------------------------------------------------------------------------- */
+    const bilan = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const b = S.viderActivite('scénario 71');
+      return { valeursRetirees: b.valeursRetirees, collections: b.collections, champs: S.CHAMPS_DE_TEST_CONSERVES };
+    });
+    await attendreEcritures();
+    verifier('Le vidage retire les valeurs de démonstration du personnel et vide les fiches de poste',
+      bilan.valeursRetirees > 0 && bilan.collections.indexOf('fichesPoste') >= 0 && bilan.champs.personnel.indexOf('salaireBase') >= 0, JSON.stringify(bilan.champs));
+
+    await ouvrir('cfg-systeme.html');   /* relu depuis la BASE */
+    const apres = await page.evaluate(() => {
+      const db = window.SIGH.store.raw();
+      const p = db.personnel || [];
+      const n = (k) => (db[k] || []).length;
+      return {
+        effectif: p.length, avecSalaire: p.filter((e) => e.salaireBase !== null && e.salaireBase !== undefined).length,
+        avecCnss: p.filter((e) => e.cnss !== null && e.cnss !== undefined).length,
+        fiches: n('fichesPoste'), bulletins: n('bulletins'), heuresSup: n('heuresSup'), avances: n('avances'), prets: n('pretsEtudes'),
+        grille: n('grillePrimes'), regimes: n('regimesTravail'), bareme: n('baremeNS131'), soignants: n('soignants'),
+        param: !!(window.SIGH.data.PARAM_PAIE && window.SIGH.data.PARAM_PAIE.cnss && window.SIGH.data.PARAM_PAIE.ortb),
+      };
+    });
+    verifier('Après relecture depuis la base : l’effectif reste, mais plus aucun salaire ni numéro CNSS de démonstration',
+      apres.effectif === avant.effectif && apres.avecSalaire === 0 && apres.avecCnss === 0, JSON.stringify(apres));
+    verifier('Plus de fiche de poste, de bulletin, d’heure supplémentaire, d’avance ni de prêt',
+      apres.fiches === 0 && apres.bulletins === 0 && apres.heuresSup === 0 && apres.avances === 0 && apres.prets === 0, JSON.stringify(apres));
+    verifier('Le référentiel essentiel de la paie survit : paramètres, grille des primes, régimes, barème NS 131, soignants',
+      apres.param && apres.grille > 0 && apres.regimes > 0 && apres.bareme > 0 && apres.soignants > 0, JSON.stringify(apres));
+
+    /* --- Chaque écran cité par la Direction affiche un état vide propre ------------------------------------------ */
+    const erreurs = [];
+    const lire = async (id) => { await ouvrir(id + '.html'); erreurs.push(...erreursJS.map((x) => id + ' : ' + x)); return texte(); };
+
+    const tdb = await lire('m11-dashboard');
+    verifier('Tableau de bord Paie : « Non calculable », aucun montant, avertissement nommé',
+      /Masse salariale brute Non calculable/.test(tdb) && /Net à payer Non calculable/.test(tdb) && /Aucun salaire de base/.test(tdb)
+        && !/[1-9][\d  ]*\s*FCFA/.test(tdb.replace(/Barème NS 132/, '')), tdb.slice(0, 500));
+
+    const calc = await lire('m11-calcul');
+    verifier('Calcul de la paie : zéro agent, masses « Non calculable », aucune ligne de calcul',
+      /Agents concernés 0/.test(calc) && /Masse salariale brute Non calculable/.test(calc) && /Net à payer Non calculable/.test(calc) && /Aucun salaire de base/.test(calc),
+      calc.slice(0, 500));
+    const lignesCalcul = await page.evaluate(() => document.querySelectorAll('#page-content tbody tr:not(.empty)').length);
+    verifier('Le tableau du calcul ne porte aucune ligne d’agent', lignesCalcul <= 1, String(lignesCalcul));
+
+    const ortb = await lire('m11-ortb');
+    verifier('Redevance ORTB : non calculable, sans compte d’agents ni montant dû',
+      /non calculables/.test(ortb) && !/\b44\b/.test(ortb) && !/Total dû/.test(ortb), ortb.slice(0, 400));
+
+    const cot = await lire('m11-cotisations');
+    verifier('Cotisations : CNSS, ITS, VPS et masse brute « Non calculable »',
+      /CNSS part ouvrière Non calculable/.test(cot) && /ITS retenu Non calculable/.test(cot) && /Masse salariale brute Non calculable/.test(cot), cot.slice(0, 500));
+
+    await lire('m10-cout-agent');
+    const cout = await page.evaluate(async () => {
+      const combo = document.querySelector('#page-content .combo');
+      if (!combo) return { combo: false };
+      const premier = window.SIGH.store.raw().personnel[0];
+      combo.value = premier.id;
+      combo.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 500));
+      return { combo: true, texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' ') };
+    });
+    verifier('Coût global de l’agent : un agent sans salaire dit « pas calculable » et n’affiche aucun coût',
+      cout.combo && /n’est pas renseigné/.test(cout.texte) && !/Coût employeur mensuel/.test(cout.texte), JSON.stringify(cout).slice(0, 400));
+
+    const fiches = await lire('m10-fiches-poste');
+    verifier('Fiches de poste : aucune fiche, aucun poste recensé d’office, et l’écran dit comment les retrouver',
+      /Postes recensés 0/.test(fiches) && /Aucune fiche de poste n’est enregistrée/.test(fiches), fiches.slice(0, 400));
+    const fichesBase = await page.evaluate(() => (window.SIGH.store.raw().fichesPoste || []).length);
+    verifier('Ouvrir l’écran ne fait pas renaître les fiches (amorçage gardé)', fichesBase === 0, String(fichesBase));
+
+    const pers = await lire('m10-personnel');
+    verifier('Personnel : l’effectif reste, la masse et le salaire moyen sont « non renseignés »',
+      /Effectif 44/.test(pers) && /Masse salariale Non renseignée/.test(pers) && /Salaire moyen Non renseigné/.test(pers), pers.slice(0, 300));
+
+    const rh = await lire('m10-dashboard');
+    verifier('Tableau de bord RH : masse salariale non renseignée', /Masse salariale \(base\) Non renseignée/.test(rh), rh.slice(0, 300));
+
+    const hs = await lire('m11-heures-sup');
+    const bul = await lire('m11-bulletins');
+    const pre = await lire('m11-prets-etudes');
+    verifier('Heures supplémentaires, bulletins et prêts : vides, et le bulletin ne chiffre pas une masse inexistante',
+      /Déclarations 0/.test(hs) && /Bulletins générés 0/.test(bul) && /Masse salariale brute 0/.test(bul) && /Prêts et avances 0/.test(pre),
+      hs.slice(0, 120) + ' | ' + bul.slice(0, 160) + ' | ' + pre.slice(0, 100));
+    const toutesBases = await page.evaluate(() => { const db = window.SIGH.store.raw(); return ['bulletins', 'heuresSup', 'avances', 'pretsEtudes', 'fichesPoste'].map((k) => (db[k] || []).length); });
+    verifier('Aucune de ces collections n’a été ré-amorcée par l’ouverture des écrans', toutesBases.every((x) => x === 0), toutesBases.join(','));
+
+    const lib = await page.evaluate(() => {
+      const N = window.SIGH.nav;
+      return {
+        libelle: (N.get('m11-prets-etudes') || {}).label,
+        reprise: !!N.get(['m6', 'reprise'].join('-')), import: (N.get('m6-import-grand-stock') || {}).label,
+      };
+    });
+    verifier('Le ruban dit « Prêts et avances » et « Importation Grand Stock » ; l’ancien écran de reprise n’existe plus',
+      lib.libelle === 'Prêts et avances' && lib.import === 'Importation Grand Stock' && lib.reprise === false, JSON.stringify(lib));
+
+    /* --- On REND le jeu : la régénération restitue salaires et fiches ---------------------------------------------- */
+    await page.evaluate(() => { window.SIGH.store.reset(); });
+    await attendreEcritures();
+    await ouvrir('m10-fiches-poste.html');
+    const rendu = await page.evaluate(() => {
+      const db = window.SIGH.store.raw();
+      return { salaires: (db.personnel || []).filter((e) => typeof e.salaireBase === 'number' && e.salaireBase > 0).length,
+        fiches: (db.fichesPoste || []).length, jeuVide: window.SIGH.store.jeuVide() };
+    });
+    verifier('« Régénérer » rend les salaires de démonstration et les fiches de poste, et lève le drapeau',
+      rendu.salaires === avant.effectif && rendu.fiches > 0 && !rendu.jeuVide, JSON.stringify(rendu));
+    verifier('Aucune erreur JavaScript sur ces écrans', erreurs.length === 0, erreurs.join(' | '));
+  });
+
+  /* ========================================================================
+   * Vague 71 (01/11/2026) — Clôturer une session change son statut ; l'écran
+   * « Sécurité des utilisateurs » existe, gouverné, journalisé, réservé à l'admin
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 71 — sessions : « Clôturer » change le statut (journal, KPI, filtre, refus nommés, poste visé renvoyé à la connexion) et écran Sécurité des utilisateurs');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
+    await ouvrir('m14-sessions.html');
+    erreursJS = [];
+    const kpiDe = (lib) => page.evaluate((l) => {
+      const k = [...document.querySelectorAll('#page-content .kpi')].find((x) => x.querySelector('.kpi-label').textContent.trim() === l);
+      return k ? k.querySelector('.kpi-value').textContent.trim() : null;
+    }, lib);
+    const cliquerModale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((x) => x.textContent.trim() === l); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+    const auditAvant = await page.evaluate(() => window.SIGH.store.raw().audit.length);
+
+    /* --- 1. L'état initial : douze sessions de démonstration + la session réelle de ce poste --- */
+    const init = await page.evaluate(() => {
+      const f = window.SIGH.store.raw().sessionsUtilisateur || [];
+      return { total: f.length, demo: f.filter((x) => x.source === 'demonstration').length, reelles: f.filter((x) => x.source === 'poste').length,
+        cloturees: f.filter((x) => x.etat === 'cloturee').length, sessionId: window.SIGH.store.session().sessionId || null };
+    });
+    verifier('Le registre porte douze sessions de démonstration et la session réelle de ce poste, aucune clôturée', init.demo === 12 && init.reelles >= 1 && init.cloturees === 0 && !!init.sessionId, JSON.stringify(init));
+    const ouvertes0 = Number(await kpiDe('Sessions ouvertes'));
+    verifier('Le KPI « Sessions ouvertes » compte les sessions actives et suspendues', ouvertes0 === init.total && (await kpiDe('Clôturées')) === '0', String(ouvertes0));
+
+    /* --- 2. Le geste complet sur une session d'un AUTRE agent : clic, confirmation, statut changé --- */
+    const cible = await page.evaluate(() => {
+      const f = window.SIGH.store.raw().sessionsUtilisateur.find((x) => x.source === 'demonstration' && x.etat === 'active');
+      return { id: f.id, identifiant: f.identifiant, nom: f.nomComplet, poste: f.poste };
+    });
+    const clic = (identifiant, libelle) => page.evaluate((idf, lib) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => [...t.querySelectorAll('td')].some((c) => c.textContent.trim() === idf));
+      if (!tr) return false;
+      const b = [...tr.querySelectorAll('button')].find((x) => x.textContent.trim() === lib);
+      if (!b) return false;
+      b.click(); return true;
+    }, identifiant, libelle);
+    await page.evaluate(() => { const i = document.querySelector('#page-content input[type=search]'); if (i) { i.value = ''; } });
+    verifier('« Clôturer » est offerte sur une session ouverte', await clic(cible.identifiant, 'Clôturer'), cible.identifiant);
+    await pause(250);
+    const modale = await page.evaluate(() => { const m = document.querySelector('.modal-root, [role=dialog]'); return m ? m.textContent.replace(/\s+/g, ' ').trim() : null; });
+    verifier('La confirmation nomme l’agent, le poste et dit qu’une session clôturée ne se rouvre pas', modale && modale.includes('Clôturer la session de ' + cible.nom) && modale.includes(cible.poste) && /ne se rouvre pas/.test(modale), String(modale));
+    await cliquerModale('Annuler');
+    await pause(150);
+    const intacte = await page.evaluate((id) => window.SIGH.store.raw().sessionsUtilisateur.find((x) => x.id === id).etat, cible.id);
+    verifier('Annuler la confirmation ne change rien', intacte === 'active', intacte);
+    await clic(cible.identifiant, 'Clôturer'); await pause(250);
+    await cliquerModale('Clôturer la session');
+    await pause(400);
+    const apres = await page.evaluate((id) => {
+      const S = window.SIGH.store, f = S.raw().sessionsUtilisateur.find((x) => x.id === id), a = S.raw().audit[0];
+      return { etat: f.etat, clotureLe: f.clotureLe, cloturePar: f.cloturePar, parId: f.clotureParIdentifiant, propre: f.cloturePropre, present: !!f,
+        audit: { action: a.action, module: a.module, ref: a.reference, nouvelle: a.nouvelleValeur }, nbAudit: S.raw().audit.length };
+    }, cible.id);
+    verifier('Le statut de la fiche passe à « clôturée » avec date, heure et auteur (RG-12)', apres.etat === 'cloturee' && !!apres.clotureLe && apres.cloturePar === ADMIN.nom && apres.parId === ADMIN.identifiant && apres.propre === false, JSON.stringify(apres));
+    verifier('La clôture est journalisée en tête du journal (module M14, référence = la session)', apres.audit.action === 'Modification' && apres.audit.module === 'M14' && apres.audit.ref === cible.id && /cloturee/.test(apres.audit.nouvelle || '') || apres.audit.ref === cible.id, JSON.stringify(apres.audit));
+    verifier('Rien n’est supprimé (RG-14) : la fiche clôturée reste au registre', apres.present, '');
+    verifier('Les KPI suivent : une ouverte de moins, une clôturée de plus', Number(await kpiDe('Sessions ouvertes')) === ouvertes0 - 1 && (await kpiDe('Clôturées')) === '1', String(await kpiDe('Clôturées')));
+    const ligne = await page.evaluate((idf) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => [...t.querySelectorAll('td')].some((c) => c.textContent.trim() === idf));
+      return tr ? { texte: tr.textContent.replace(/\s+/g, ' '), bouton: [...tr.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Clôturer') } : null;
+    }, cible.identifiant);
+    verifier('La ligne affiche « Clôturée » et n’offre plus « Clôturer »', ligne && /Clôturée/.test(ligne.texte) && !ligne.bouton, JSON.stringify(ligne));
+    const filtre = await page.evaluate(async () => {
+      const sel = [...document.querySelectorAll('#page-content select')].find((s) => s.getAttribute('aria-label') === 'État');
+      if (!sel) return null;
+      sel.value = 'cloturee'; sel.dispatchEvent(new Event('change')); await new Promise((r) => setTimeout(r, 200));
+      return document.querySelectorAll('#page-content tbody tr').length;
+    });
+    verifier('Le filtre « État : Clôturées » ne montre que les sessions clôturées', filtre === 1, String(filtre));
+
+    /* --- 3. Refus nommés du moteur --- */
+    const refus = await page.evaluate((id) => {
+      const M = window.SIGH.sessions, S = window.SIGH.store;
+      const deja = M.cloturer(id);
+      const inconnue = M.cloturer('SES-INEXISTANTE');
+      const propreId = S.session().sessionId;
+      const propre = M.cloturer(propreId);
+      const etatPropre = S.raw().sessionsUtilisateur.find((x) => x.id === propreId).etat;
+      const sess = JSON.parse(localStorage.getItem('sigh-cnt:session'));
+      const sauve = localStorage.getItem('sigh-cnt:session');
+      localStorage.setItem('sigh-cnt:session', JSON.stringify(Object.assign({}, sess, { role: 'caissier' })));
+      const droit = M.cloturer(S.raw().sessionsUtilisateur.find((x) => x.source === 'demonstration' && x.etat === 'active').id);
+      localStorage.setItem('sigh-cnt:session', sauve);
+      return { deja: [deja.ok, deja.code, !!deja.geste], inconnue: [inconnue.ok, inconnue.code], propre: [propre.ok, propre.code, !!propre.geste], etatPropre: etatPropre, droit: [droit.ok, droit.code] };
+    }, cible.id);
+    verifier('Une session clôturée ne se rouvre ni ne se reclôture : refus nommé DEJA_CLOTUREE avec son geste', refus.deja[0] === false && refus.deja[1] === 'DEJA_CLOTUREE' && refus.deja[2], JSON.stringify(refus.deja));
+    verifier('Session inconnue : refus nommé', refus.inconnue[0] === false && refus.inconnue[1] === 'SESSION_INCONNUE', JSON.stringify(refus.inconnue));
+    verifier('Clôturer SA propre session sans confirmation explicite est refusé en le disant, rien n’est écrit', refus.propre[0] === false && refus.propre[1] === 'SESSION_PROPRE' && refus.propre[2] && refus.etatPropre !== 'cloturee', JSON.stringify(refus));
+    verifier('Un profil sans droit d’édition sur M14 (caissier) est refusé : DROIT_REFUSE', refus.droit[0] === false && refus.droit[1] === 'DROIT_REFUSE', JSON.stringify(refus.droit));
+
+    /* --- 4. Poste B : sa session est clôturée par l'administrateur, il retombe sur la connexion à son prochain geste --- */
+    const ctxB = await browser.createBrowserContext();
+    const pageB = await ctxB.newPage();
+    pageB.setDefaultTimeout(120000);
+    const repB = await BANC.connecter('e.orouyo');
+    await pageB.evaluateOnNewDocument((jeton) => {
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: 'reception', fonction: 'accueil', nom: 'OROU YO Edmond', identifiant: 'e.orouyo', secteur: 'ACC', jeton: jeton }));
+      localStorage.setItem('sigh-cnt:jeton', jeton);
+    }, repB.jeton);
+    await pageB.goto(`http://127.0.0.1:${PORT}/pages/m1-patients.php`, { waitUntil: 'domcontentloaded' });
+    await pageB.waitForFunction(() => window.SIGH && window.SIGH.app && window.SIGH.app.entry() && document.querySelector('#page-content') && document.querySelector('#page-content').children.length > 0, { timeout: 150000 });
+    const sessB = await pageB.evaluate(() => window.SIGH.store.session().sessionId);
+    verifier('Le poste B (accueil) a sa propre fiche de session au registre', !!sessB, String(sessB));
+    await pageB.evaluate(() => { const o = window.SIGH.store.log; window.SIGH.store.log = function () { try { const l = JSON.parse(sessionStorage.getItem('__v71') || '[]'); l.push(Array.prototype.slice.call(arguments, 0, 4)); sessionStorage.setItem('__v71', JSON.stringify(l)); } catch (e) { /* sonde */ } return o.apply(this, arguments); }; });
+    /* L'administrateur la voit chez lui (sondage entre postes), puis la clôture par le geste. */
+    await page.evaluate(() => window.SIGH.store.pousserMaintenant && window.SIGH.store.pousserMaintenant());
+    let vue = false;
+    for (let i = 0; i < 25 && !vue; i++) {
+      await pause(1000);
+      vue = await page.evaluate((id) => !!(window.SIGH.store.raw().sessionsUtilisateur || []).find((x) => x.id === id), sessB);
+    }
+    verifier('La session du poste B apparaît au registre de l’administrateur sans recharger', vue, '');
+    await page.evaluate(() => { const i = document.querySelector('#page-content select[aria-label="État"]'); if (i) { i.value = ''; i.dispatchEvent(new Event('change')); } });
+    await ouvrir('m14-sessions.html');
+    const okB = await clic('e.orouyo', 'Clôturer'); await pause(250);
+    await cliquerModale('Clôturer la session');
+    await pause(500);
+    await page.evaluate(() => window.SIGH.store.pousserMaintenant && window.SIGH.store.pousserMaintenant());
+    verifier('L’administrateur clôture la session de l’accueil par le geste', okB && (await page.evaluate((id) => window.SIGH.store.raw().sessionsUtilisateur.find((x) => x.id === id).etat, sessB)) === 'cloturee', String(okB));
+    let recu = false;
+    for (let i = 0; i < 25 && !recu; i++) {
+      await pause(1000);
+      recu = await pageB.evaluate((id) => { if (/motif=session-cloturee/.test(location.search)) return true; const f = (window.SIGH.store.raw().sessionsUtilisateur || []).find((x) => x.id === id); return !!f && f.etat === 'cloturee'; }, sessB).catch(() => true);
+    }
+    verifier('Le poste B reçoit la clôture par la synchronisation', recu, '');
+    let urlB0 = '';
+    for (let i = 0; i < 24; i++) {
+      urlB0 = await pageB.evaluate(() => location.pathname + location.search).catch(() => '');
+      if (/motif=session-cloturee/.test(urlB0)) break;
+      if (i === 4) await pageB.evaluate(() => { const e = document.querySelector('#page-content'); if (e) e.click(); }).catch(() => {});
+      await pause(500);
+    }
+    const urlB = await pageB.evaluate(() => location.pathname + location.search);
+    verifier('Au prochain geste, le poste B retombe sur la connexion avec le motif', /index\.php/.test(urlB) && /motif=session-cloturee/.test(urlB), urlB);
+    await pageB.waitForFunction(() => document.body && /clôturée par un administrateur/.test(document.body.textContent), { timeout: 30000 }).catch(() => null);
+    const bandeau = await pageB.evaluate(() => /clôturée par un administrateur/.test(document.body.textContent));
+    const pageB2 = pageB;
+    verifier('La connexion dit pourquoi : « session clôturée par un administrateur »', bandeau, '');
+    const journalB = await pageB2.evaluate(() => { try { return JSON.parse(sessionStorage.getItem('__v71') || '[]'); } catch (e) { return []; } });
+    verifier('La fermeture de la session du poste B est journalisée par ce poste (RG-12)', journalB.some((l) => l[0] === 'Session fermée par clôture' && l[3] === 'e.orouyo'), JSON.stringify(journalB));
+    await ctxB.close();
+
+    /* --- 5. Clôturer SA PROPRE session : confirmation explicite, déconnexion immédiate --- */
+    await ouvrir('m14-sessions.html');
+    const moi = await page.evaluate(() => { const f = window.SIGH.store.session(); return { id: f.sessionId, identifiant: f.identifiant }; });
+    await clic(moi.identifiant, 'Clôturer'); await pause(250);
+    const modPropre = await page.evaluate(() => { const m = document.querySelector('.modal-root, [role=dialog]'); return m ? m.textContent.replace(/\s+/g, ' ') : ''; });
+    verifier('Sa propre session demande une confirmation qui le DIT (« votre propre session », déconnexion immédiate)', /Clôturer VOTRE session/.test(modPropre) && /propre session/.test(modPropre) && /immédiatement/.test(modPropre), modPropre.slice(0, 200));
+    await Promise.all([
+      page.waitForFunction(() => /motif=session-cloturee/.test(location.search), { timeout: 60000 }).catch(() => null),
+      page.evaluate(() => { [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((b) => b.textContent.trim() === 'Clôturer ma session').click(); }),
+    ]);
+    const urlA = await page.evaluate(() => location.pathname + location.search);
+    verifier('Après confirmation, l’agent est ramené à la connexion', /index\.php/.test(urlA) && /motif=session-cloturee/.test(urlA), urlA);
+    await ouvrir('m14-sessions.html');
+    const fiche = await page.evaluate((id) => { const f = window.SIGH.store.raw().sessionsUtilisateur.find((x) => x.id === id); return f ? { etat: f.etat, propre: f.cloturePropre, par: f.cloturePar } : null; }, moi.id);
+    verifier('La session propre est clôturée au registre, marquée comme telle, et l’entrée « Session fermée par clôture » est au journal', fiche && fiche.etat === 'cloturee' && fiche.propre === true
+      && (await page.evaluate(() => window.SIGH.store.raw().audit.some((a) => a.action === 'Session fermée par clôture'))), JSON.stringify(fiche));
+    const nouvelle = await page.evaluate(() => window.SIGH.store.session().sessionId);
+    verifier('Se reconnecter ouvre une AUTRE session : l’ancienne ne rouvre pas', nouvelle && nouvelle !== moi.id, String(nouvelle) + ' / ' + moi.id);
+
+    /* --- 6. L'écran Sécurité des utilisateurs --- */
+    const SEC = 'm14-securite-utilisateurs.html';
+    await ouvrir(SEC);
+    erreursJS = [];
+    const secInit = await page.evaluate(() => {
+      const kp = [...document.querySelectorAll('#page-content .kpi')].map((k) => k.querySelector('.kpi-label').textContent.trim());
+      const onglets = [...document.querySelectorAll('#page-content [role=tab]')].map((t) => t.textContent.trim().replace(/\d+$/, ''));
+      const lignes = [...document.querySelectorAll('#page-content tbody tr')].map((t) => t.textContent.replace(/\s+/g, ' ').trim());
+      return { kp, onglets, lignes, titre: document.querySelector('h1') ? document.querySelector('h1').textContent.trim() : null,
+        politique: window.SIGH.securiteUtilisateurs.politique() };
+    });
+    verifier('L’écran existe, avec ses six indicateurs et ses quatre onglets (politique, comptes, tentatives, sessions)',
+      /Sécurité des utilisateurs/.test(secInit.titre || '') && secInit.kp.length === 6 && secInit.onglets.join('|') === 'Politique|Comptes|Tentatives de connexion|Sessions', JSON.stringify(secInit.kp) + secInit.onglets.join('|'));
+    verifier('La politique affiche huit lignes avec leur source, dont « proposition à valider » pour l’historique',
+      secInit.lignes.length === 8 && secInit.lignes.some((l) => /Historique des mots de passe interdits/.test(l) && /Proposition à valider/.test(l)) && secInit.lignes.some((l) => /Inactivité avant verrouillage/.test(l) && /CDCT §12\.2/.test(l)), secInit.lignes.join(' ; ').slice(0, 300));
+    verifier('Valeurs de référence : 8 caractères, 90 jours, 3 échecs, 15 minutes de verrou, 15 minutes d’inactivité',
+      secInit.politique.longueurMin === 8 && secInit.politique.expirationJours === 90 && secInit.politique.echecsMax === 3 && secInit.politique.blocageMin === 15 && secInit.politique.inactiviteMin === 15, JSON.stringify(secInit.politique));
+
+    const pol = await page.evaluate(async () => {
+      const X = window.SIGH.securiteUtilisateurs, S = window.SIGH.store;
+      const base = X.politique();
+      const horsBornes = X.enregistrerPolitique(Object.assign({}, base, { longueurMin: 3 }));
+      const apresRefus = X.politique().longueurMin;
+      const ok = X.enregistrerPolitique(Object.assign({}, base, { inactiviteMin: 10 }));
+      const delai = window.SIGH.app.delaiVerrou();
+      const journal = S.raw().audit[0];
+      X.enregistrerPolitique(Object.assign({}, base));
+      return { horsBornes: [horsBornes.ok, horsBornes.code, !!horsBornes.geste], apresRefus, ok: ok.ok, delai, journal: [journal.action, journal.module], retour: window.SIGH.app.delaiVerrou() };
+    });
+    verifier('Une valeur hors bornes est refusée en nommant la règle, la politique ne change pas', pol.horsBornes[0] === false && pol.horsBornes[1] === 'VALEUR_HORS_BORNES' && pol.horsBornes[2] && pol.apresRefus === 8, JSON.stringify(pol));
+    verifier('Le délai d’inactivité de la politique s’applique au verrou de session (10 min), journalisé, puis revient à 15', pol.ok && pol.delai === 600000 && pol.journal[1] === 'M14' && pol.retour === 900000, JSON.stringify(pol));
+
+    /* Comptes : bloquer par le geste, refus nommés, serveur de la maquette qui refuse la connexion. */
+    await page.evaluate(() => window.SIGH.app.go('m14-securite-utilisateurs', { onglet: 'comptes' }));
+    await pause(1500);
+    const compte = await page.evaluate(() => {
+      const u = window.SIGH.store.collection('utilisateurs').active().find((x) => x.identifiant === 'demo.anesthesiste');
+      return { id: u.id, nom: u.nomComplet, echecs: u.echecs };
+    });
+    const refusC = await page.evaluate((id) => {
+      const X = window.SIGH.securiteUtilisateurs;
+      const sans = X.bloquer(id, '  ');
+      const inconnu = X.bloquer('USR-INCONNU', 'x motif');
+      const nonBloque = X.debloquer(id);
+      const sess = localStorage.getItem('sigh-cnt:session');
+      localStorage.setItem('sigh-cnt:session', JSON.stringify(Object.assign(JSON.parse(sess), { identifiant: 'demo.anesthesiste' })));
+      const propre = X.bloquer(id, 'essai');
+      localStorage.setItem('sigh-cnt:session', sess);
+      return { sans: sans.code, inconnu: inconnu.code, nonBloque: nonBloque.code, propre: propre.code };
+    }, compte.id);
+    verifier('Refus nommés : motif obligatoire, compte inconnu, déblocage d’un compte non bloqué, blocage de son propre compte',
+      refusC.sans === 'MOTIF_OBLIGATOIRE' && refusC.inconnu === 'COMPTE_INCONNU' && refusC.nonBloque === 'NON_BLOQUE' && refusC.propre === 'COMPTE_PROPRE', JSON.stringify(refusC));
+
+    const geste = await page.evaluate(async () => {
+      const sel = document.querySelector('#page-content input[type=search]'); sel.value = 'demo.anesthesiste'; sel.dispatchEvent(new Event('input'));
+      await new Promise((r) => setTimeout(r, 400));
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => /demo\.anesthesiste/.test(t.textContent));
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Bloquer');
+      if (!b) return { bouton: false };
+      b.click();
+      await new Promise((r) => setTimeout(r, 300));
+      document.getElementById('motif-blocage').value = 'Départ du poste, accès à retirer';
+      [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((x) => x.textContent.trim() === 'Bloquer le compte').click();
+      await new Promise((r) => setTimeout(r, 400));
+      const u = window.SIGH.store.collection('utilisateurs').active().find((x) => x.identifiant === 'demo.anesthesiste');
+      return { bouton: true, bloque: u.bloque, motif: u.bloqueMotif, par: u.bloquePar, le: !!u.bloqueLe };
+    });
+    verifier('Bloquer un compte par le geste (modale, motif) écrit blocage, motif, auteur et date', geste.bouton && geste.bloque === true && /Départ du poste/.test(geste.motif) && !!geste.par && geste.le, JSON.stringify(geste));
+    const kpiBloques = await page.evaluate(() => { const k = [...document.querySelectorAll('#page-content .kpi')].find((x) => x.querySelector('.kpi-label').textContent.trim() === 'Comptes bloqués'); return k ? k.querySelector('.kpi-value').textContent.trim() : null; });
+    verifier('Le KPI « Comptes bloqués » suit', kpiBloques === '1', String(kpiBloques));
+    const serveur = await page.evaluate(async () => {
+      const r = await fetch('../api/auth.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'connexion', identifiant: 'demo.anesthesiste', motDePasse: 'demonstration', poste: 'banc' }) });
+      return { statut: r.status, corps: await r.json() };
+    });
+    verifier('Le serveur de la maquette refuse la connexion d’un compte bloqué (423, refus nommé)', serveur.statut === 423 && /bloqué/.test(serveur.corps.detail || ''), JSON.stringify(serveur));
+    const debl = await page.evaluate(() => {
+      const X = window.SIGH.securiteUtilisateurs, u = window.SIGH.store.collection('utilisateurs').active().find((x) => x.identifiant === 'demo.anesthesiste');
+      const r = X.debloquer(u.id); const v = window.SIGH.store.collection('utilisateurs').get(u.id);
+      return { ok: r.ok, bloque: v.bloque, echecs: v.echecs, par: v.debloquePar };
+    });
+    verifier('Débloquer rend l’accès, remet les échecs à zéro et signe le geste', debl.ok && debl.bloque === false && debl.echecs === 0 && !!debl.par, JSON.stringify(debl));
+    await pause(800);
+    const serveur2 = await page.evaluate(async () => {
+      const r = await fetch('../api/auth.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'connexion', identifiant: 'demo.anesthesiste', motDePasse: 'demonstration', poste: 'banc' }) });
+      return r.status;
+    });
+    verifier('Une fois débloqué, le serveur ouvre de nouveau la session', serveur2 === 200, String(serveur2));
+
+    const reinit = await page.evaluate((id) => {
+      const X = window.SIGH.securiteUtilisateurs, S = window.SIGH.store;
+      const a = X.imposerReinitialisation(id), b = X.imposerReinitialisation(id), u = S.collection('utilisateurs').get(id);
+      return { a: a.ok, b: [b.ok, b.code], doit: u.doitChangerMotDePasse, par: u.reinitialisationImposeePar, secret: Object.keys(u).filter((k) => /motdepasse$/i.test(k) && k !== 'doitChangerMotDePasse' && k !== 'motDePasseDefiniLe' && k !== 'motDePasseDefiniPar') };
+    }, compte.id);
+    verifier('Imposer la réinitialisation pose l’obligation (auteur, date), refuse de la poser deux fois, et ne touche à aucun secret', reinit.a && reinit.doit === true && !!reinit.par && reinit.b[0] === false && reinit.b[1] === 'DEJA_IMPOSEE' && reinit.secret.length === 0, JSON.stringify(reinit));
+
+    const sess = await page.evaluate(() => {
+      const X = window.SIGH.securiteUtilisateurs, S = window.SIGH.store;
+      const demo = S.raw().sessionsUtilisateur.find((f) => f.source === 'demonstration' && f.etat !== 'cloturee');
+      const u = S.collection('utilisateurs').active().find((x) => x.identifiant === demo.identifiant);
+      const r = X.cloturerSessions(u.id);
+      return { ok: r.ok, n: r.sessions, apres: S.raw().sessionsUtilisateur.filter((f) => f.identifiant === demo.identifiant && f.etat !== 'cloturee').length, vide: X.cloturerSessions(u.id).code };
+    });
+    verifier('« Clôturer les sessions » d’un compte ferme toutes ses sessions ouvertes ; recommencer est refusé (AUCUNE_SESSION)', sess.ok && sess.n >= 1 && sess.apres === 0 && sess.vide === 'AUCUNE_SESSION', JSON.stringify(sess));
+
+    /* --- 7. Droits : administrateur seul --- */
+    const droits = await page.evaluate(() => {
+      const N = window.SIGH.nav, e = N.get('m14-securite-utilisateurs');
+      return { admin: N.can('admin', e), direction: N.can('direction', e), da: N.can('da', e), caissier: N.can('caissier', e), medecin: N.can('medecin', e) };
+    });
+    verifier('Droits : l’écran Sécurité des utilisateurs est ouvert à l’administrateur seul (direction, DAF et autres refusés)', droits.admin === true && !droits.direction && !droits.da && !droits.caissier && !droits.medecin, JSON.stringify(droits));
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'direction', fonction: 'direction', nom: 'Direction', identifiant: 'direction.test' }));
+    await ouvrir(SEC);
+    const refuse403 = await page.evaluate(() => /error-403/.test(location.pathname));
+    verifier('Ouvrir l’écran sous la Direction renvoie à la page 403', refuse403, '');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 72 — validation de la paie : un net négatif est refusé en nommant l’agent, et la validation écrit les retenues (prêt, avance, participation), annulables');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m11-validation.html');
+    const r = await page.evaluate(() => {
+      const S = window.SIGH.store, V = window.SIGH.paieValidation, C = window.SIGH.core;
+      const emp = S.collection('personnel').active().find((e) => Number(e.salaireBase) >= 100000) || S.collection('personnel').active()[0];
+      const mois = '2031-03';
+      const pret = S.collection('pretsEtudes', { module: 'M11', entite: 'prêt-études', prefix: 'PRT' }).insert({ reference: 'PRT-T77', employeId: emp.id, employe: emp.nomComplet, montant: 90000, nbEcheances: 3, premiereEcheance: mois, nature: 'pret', objet: 'sonde', retenues: [] }).record;
+      const av = S.collection('avances').insert({ reference: 'AVS-T77', employeId: emp.id, employe: emp.nomComplet, montant: 60000, nbMensualites: 2, mensualite: 30000, rembourse: 30000, statutAvance: 'en_cours' }).record;
+      const part = S.collection('participations').insert({ employeId: emp.id, agent: emp.nomComplet, mode: 'salaire', periodeRetenue: mois, montant: 2000, statutPaiement: 'du', evenementLibelle: 'sonde' }).record;
+      const neg = { employeId: emp.id, employe: emp.nomComplet, annee: 2031, mois: 2, periode: 'Mars 2031', net: -12500, prets: 30000, avances: 30000, participations: 2000, pretsDetail: [{ pretId: pret.id, mois: mois }] };
+      const ok = { ...neg, net: 50000 };
+      const refus = V.controleNetNegatif([neg]);
+      const aucun = V.controleNetNegatif([ok]);
+      const imp = V.imputerRetenues([ok]);
+      const snap = () => { const a = S.collection('avances').get(av.id); return { pret: (S.collection('pretsEtudes').get(pret.id).retenues || []).slice(), rembourse: a.rembourse, statutAv: a.statutAvance, statutPart: S.collection('participations').get(part.id).statutPaiement }; };
+      const apres = snap();
+      imp.annuler();
+      const retour = snap();
+      const rejoue = V.imputerRetenues([ok]); rejoue.annuler();
+      return { refus, aucun, n: imp.n, apres, retour, nom: emp.nomComplet };
+    });
+    verifier('Un net négatif est refusé : le motif nomme l’agent, le déficit et les retenues en cause', !!r.refus && r.refus.indexOf(r.nom) !== -1 && /déficit/.test(r.refus) && /prêt/.test(r.refus) && /avance/.test(r.refus) && /participation/.test(r.refus), String(r.refus));
+    verifier('Un net positif n’est pas refusé', r.aucun === null, String(r.aucun));
+    verifier('La validation écrit les retenues : échéance au prêt, mensualité à l’avance (soldée à 60 000), participation réglée', r.n === 3 && r.apres.pret.length === 1 && r.apres.rembourse === 60000 && r.apres.statutAv === 'solde' && r.apres.statutPart === 'paye', JSON.stringify(r.apres));
+    verifier('L’annulation restitue tout : prêt, avance et participation reviennent à leur état', r.retour.pret.length === 0 && r.retour.rembourse === 30000 && r.retour.statutAv === 'en_cours' && r.retour.statutPart === 'du', JSON.stringify(r.retour));
+  });
+
+  await etape(async () => {
+    scenario('Vague 73 — exercice : trois états, journaux CL et AN, atomicité, réouverture par contre-passation, comptes de résultat paramétrables');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m12-cloture.html');
+    erreursJS = [];
+    const r = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      const qui = (role, n) => S.setSession({ role: role, nom: n, nomComplet: n, fonction: role });
+      const mk = (num, date, compte, d, c, centre, extra) => ecr.insert(Object.assign({ numero: num, date: date, journal: 'VTE', journalLibelle: 'sonde', compte: compte, compteLibelle: compte,
+        debit: d, credit: c, statut: 'validee', origine: 'Saisie manuelle', centreCout: centre || null }, extra || {}));
+      const out = {};
+      qui('comptable', 'Comptable Sonde');
+      /* Un exercice de la sonde, 2030, à lui : deux pièces équilibrées, deux centres de coûts. */
+      mk('S30-1', '2030-03-01', '571000', 8000, 0, null); mk('S30-1', '2030-03-01', '706000', 0, 8000, 'laboratoire');
+      mk('S30-2', '2030-04-01', '604100', 3000, 0, 'pharmacie'); mk('S30-2', '2030-04-01', '571000', 0, 3000, null);
+      out.etatInitial = X.etat(2030);
+
+      /* TROIS ÉTATS : en clôture, les modules n'écrivent plus ; le comptable passe ses écritures d'inventaire. */
+      out.demarre = X.demarrer(2030).ok;
+      const module = ecr.insert({ numero: 'S30-MOD', date: '2030-05-01', journal: 'VTE', compte: '706000', debit: 0, credit: 10, statut: 'brouillon', origine: 'Automatique : Caisse' });
+      out.moduleRefuse = module === null;
+      const inv = mk('S30-INV', '2030-12-30', '681100', 500, 0, 'pharmacie'); mk('S30-INV', '2030-12-30', '281000', 0, 500, null);
+      out.inventaireComptable = inv !== null;
+      qui('da', 'Direction Sonde');
+      out.manuelAutreRole = ecr.insert({ numero: 'S30-X', date: '2030-05-02', journal: 'OD', compte: '706000', debit: 0, credit: 5, statut: 'brouillon', origine: 'Saisie manuelle' }) === null;
+      qui('comptable', 'Comptable Sonde');
+      out.reprend = X.reprendre(2030).ok;
+      out.etatApresReprise = X.etat(2030);
+      out.moduleApresReprise = ecr.insert({ numero: 'S30-MOD2', date: '2030-05-03', journal: 'VTE', compte: '571000', debit: 7, credit: 0, statut: 'validee', origine: 'Automatique : Caisse' }) !== null;
+      mk('S30-MOD2', '2030-05-03', '706000', 0, 7, 'laboratoire');
+      out.redemarre = X.demarrer(2030).ok;
+
+      /* ATOMICITÉ : une ligne lettrée seule déséquilibre les à-nouveaux APRÈS la pièce CL : tout doit être défait. */
+      const orphelin = mk('S30-ORPH', '2030-06-01', '411000', 100, 0, null, { lettrage: 'Z' }).record; mk('S30-ORPH', '2030-06-01', '706000', 0, 100, 'laboratoire');
+      qui('da', 'Direction Sonde');
+      const refus = X.cloturer(2030, 'Clôture de la sonde');
+      out.atomRefus = refus.ok; out.atomMotif = refus.motif || '';
+      out.atomCL = ecr.all().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2030').length;
+      out.atomEtat = X.etat(2030);
+      qui('comptable', 'Comptable Sonde');
+      ecr.update(orphelin.id, { lettrage: null });
+
+      /* CLÔTURE : CL au 31/12/N centre par centre, AN au 01/01/N+1, verrou. */
+      const resAvant = X.resultat(X.ecrituresDe(2030));
+      qui('da', 'Direction Sonde');
+      const cl = X.cloturer(2030, 'Clôture de la sonde');
+      out.cloOk = cl.ok; out.cloMotif = cl.motif || ''; out.clNumero = cl.clNumero; out.anNumero = cl.anNumero;
+      const lCL = ecr.active().filter((e) => e.numero === cl.clNumero), lAN = ecr.active().filter((e) => e.numero === cl.anNumero);
+      const parCentre = {}; lCL.forEach((e) => { const k = e.centreCout || ''; parCentre[k] = (parCentre[k] || 0) + e.debit - e.credit; });
+      out.clJournal = lCL.length > 0 && lCL.every((e) => e.journal === 'CL' && e.date === '2030-12-31');
+      out.clCentresEquilibres = Object.keys(parCentre).length >= 2 && Object.keys(parCentre).every((k) => Math.abs(parCentre[k]) < 1);
+      out.clContrepartie = lCL.some((e) => e.compte === '131000' && e.credit > 0) && lCL.every((e) => '678131139'.indexOf(String(e.compte).slice(0, 1)) >= 0 || String(e.compte).indexOf('13') === 0);
+      out.anJournal = lAN.length > 0 && lAN.every((e) => e.journal === 'AN' && e.date === '2031-01-01') && Math.abs(lAN.reduce((n, e) => n + e.debit - e.credit, 0)) < 1;
+      out.anSansGestion = lAN.every((e) => '12345'.indexOf(String(e.compte).charAt(0)) >= 0);
+      out.etatClos = X.etat(2030);
+      out.resApres = X.resultat(X.ecrituresDe(2030));
+      out.resEgal = resAvant === out.resApres && resAvant !== 0;
+      out.modulesRefuses = ecr.insert({ numero: 'S30-TARD', date: '2030-12-31', journal: 'VTE', compte: '706000', debit: 0, credit: 9, statut: 'brouillon', origine: 'Saisie manuelle' }) === null;
+      out.provVide = X.provisoires(2031).length === 0;
+
+      /* RÉOUVERTURE : comptable seul, motif de dix caractères, N+1 ouvert, contre-passation, rien d'effacé. */
+      qui('da', 'Direction Sonde');
+      out.rouvreDa = X.rouvrir(2030, 'Erreur découverte après coup').ok;
+      qui('comptable', 'Comptable Sonde');
+      out.rouvreCourt = X.rouvrir(2030, 'trop bref').ok;
+      out.rouvreLiasse = X.rouvrir(2025, 'Motif suffisamment long').motif || '';
+      const x31 = X.de(2031), etat31 = x31.etat;
+      S.collection('exercices').update(x31.id, { etat: 'en_cloture' });
+      out.rouvreSuivant = X.rouvrir(2030, 'Motif suffisamment long').motif || '';
+      S.collection('exercices').update(x31.id, { etat: etat31 });
+      const avantReouv = ecr.all().length, nCLavant = ecr.all().filter((e) => e.numero === cl.clNumero).length;
+      const ro = X.rouvrir(2030, 'Erreur de caisse découverte');
+      out.rouvre = ro.ok; out.rouvreMotif = ro.motif || ''; out.piecesContre = ro.pieces || [];
+      out.etatRouvert = X.etat(2030);
+      out.rienEfface = ecr.all().filter((e) => e.numero === cl.clNumero).length === nCLavant && ecr.all().length > avantReouv;
+      const net = {}; ecr.active().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2030').forEach((e) => { const k = e.compte + '|' + (e.centreCout || ''); net[k] = (net[k] || 0) + e.debit - e.credit; });
+      out.contrePasseNet = Object.keys(net).length > 0 && Object.keys(net).every((k) => Math.abs(net[k]) < 1);
+      qui('da', 'Direction Sonde');
+      const cl2 = X.cloturer(2030, 'Seconde clôture de la sonde');
+      out.cl2 = cl2.ok; out.cl2Numero = cl2.clNumero; out.cl2An = cl2.anNumero; out.cl2Motif = cl2.motif || '';
+
+      /* COMPTES DE RÉSULTAT PARAMÉTRABLES : la table commande, pas le code. */
+      const defaut = X.compteResultat(100).compte;
+      const fiche = S.collection('comptesResultat').all().filter((f) => f.sens === 'benefice')[0];
+      S.collection('comptesResultat').update(fiche.id, { compte: '131500' });
+      out.param = [defaut, X.compteResultat(100).compte];
+      S.collection('comptesResultat').update(fiche.id, { compte: defaut });
+      return out;
+    });
+    verifier('Trois états : en clôture, un module n’écrit plus dans l’exercice, le comptable y passe ses écritures d’inventaire, un autre rôle non',
+      r.etatInitial === 'ouvert' && r.demarre && r.moduleRefuse && r.inventaireComptable && r.manuelAutreRole, JSON.stringify(r));
+    verifier('Reprendre la saisie rend l’exercice à « ouvert » et les modules y réécrivent', r.reprend && r.etatApresReprise === 'ouvert' && r.moduleApresReprise && r.redemarre, JSON.stringify([r.reprend, r.etatApresReprise, r.moduleApresReprise]));
+    verifier('Atomicité : des à-nouveaux déséquilibrés refusent la clôture APRÈS la pièce CL, qui est défaite ; l’exercice reste en clôture',
+      r.atomRefus === false && /déséquilibrés/.test(r.atomMotif) && r.atomCL === 0 && r.atomEtat === 'en_cloture', JSON.stringify([r.atomRefus, r.atomMotif, r.atomCL, r.atomEtat]));
+    verifier('La clôture pose la pièce CL au 31/12 (journal CL), équilibrée CENTRE de coûts par centre, la contrepartie en 131', r.cloOk && /^CL-2030-\d{5}$/.test(r.clNumero || '') && r.clJournal && r.clCentresEquilibres && r.clContrepartie, JSON.stringify([r.cloOk, r.cloMotif, r.clNumero, r.clJournal, r.clCentresEquilibres, r.clContrepartie]));
+    verifier('… puis la pièce AN au 01/01/N+1 : classes 1 à 5 seulement, équilibrée, et le verrou « clôturé »', /^AN-2031-\d{5}$/.test(r.anNumero || '') && r.anJournal && r.anSansGestion && r.etatClos === 'clos' && r.provVide, JSON.stringify([r.anNumero, r.anJournal, r.anSansGestion, r.etatClos, r.provVide]));
+    verifier('Les états de N restent ceux d’avant la clôture (le journal CL en est exclu) : le résultat n’est pas zéro', r.resEgal, JSON.stringify([r.resApres]));
+    verifier('Exercice clôturé : même le comptable ne peut plus y écrire', r.modulesRefuses === true, '');
+    verifier('Réouverture : refusée à un autre rôle, à un motif de moins de dix caractères, à l’exercice de la liasse déposée, et si N+1 n’est plus ouvert',
+      r.rouvreDa === false && r.rouvreCourt === false && /liasse/.test(r.rouvreLiasse) && /2031/.test(r.rouvreSuivant), JSON.stringify([r.rouvreDa, r.rouvreCourt, r.rouvreLiasse, r.rouvreSuivant]));
+    verifier('Le comptable rouvre : l’exercice repasse « en clôture », CL et AN sont CONTRE-PASSÉES, aucune pièce n’est effacée',
+      r.rouvre && r.etatRouvert === 'en_cloture' && r.piecesContre.length === 2 && /-C\d{5}$/.test(r.piecesContre[0]) && r.rienEfface && r.contrePasseNet, JSON.stringify([r.rouvre, r.rouvreMotif, r.piecesContre, r.etatRouvert, r.rienEfface, r.contrePasseNet]));
+    verifier('Une seconde clôture est possible après la réouverture, sous de NOUVEAUX numéros', r.cl2 && r.cl2Numero !== r.clNumero && r.cl2An !== r.anNumero, JSON.stringify([r.cl2, r.cl2Motif, r.cl2Numero, r.cl2An]));
+    verifier('Les comptes de résultat 131 et 139 viennent d’une table paramétrable, pas du code', r.param[0] === '131000' && r.param[1] === '131500', JSON.stringify(r.param));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 73 — le dossier patient imprimé est le dossier ENTIER : identité, dossier de consultation et toutes les rubriques');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m1-patients.html');
+    erreursJS = [];
+    const cible = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const p = S.collection('patients').active().filter((x) => x.code === 'CNT/13/26')[0] || S.collection('patients').active()[0];
+      return { code: p.code, nom: p.nom };
+    });
+    await page.evaluate((nom) => { const i = document.querySelector('input[type="search"], .search input, input[placeholder*="echerch"]'); if (i) { i.value = nom; i.dispatchEvent(new Event('input', { bubbles: true })); } }, cible.nom);
+    await new Promise((r) => setTimeout(r, 600));
+    const clic = await page.evaluate((code) => {
+      const tr = [...document.querySelectorAll('tbody tr')].find((r) => r.textContent.indexOf(code) >= 0);
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => /Imprimer/.test(x.title || x.getAttribute('aria-label') || ''));
+      if (b) b.click();
+      return !!b;
+    }, cible.code);
+    await page.waitForFunction(() => !!document.querySelector('.print-sheet'), { timeout: 15000 }).catch(() => {});
+    const feuille = await page.evaluate(() => {
+      const s = document.querySelector('.print-sheet');
+      return s ? s.textContent.replace(/\s+/g, ' ') : '';
+    });
+    verifier('Le bouton d’impression du dossier ouvre un état', clic && feuille.length > 0, JSON.stringify({ clic, n: feuille.length }));
+    const attendues = ['Dossier de consultation', 'Antécédents & allergies', 'Soins', 'Hospitalisations', 'Maternité', 'Analyses & résultats', 'Imagerie médicale', 'Ordonnances', 'À domicile', 'Financier', 'Assurance', 'Traçabilité'];
+    const manquantes = attendues.filter((m) => feuille.toUpperCase().indexOf(m.toUpperCase()) < 0);
+    verifier('Toutes les rubriques du dossier figurent sur le papier (aucune ne manque)', manquantes.length === 0, 'manquantes : ' + manquantes.join(', '));
+    verifier('Aucun bouton ne se retrouve imprimé', await page.evaluate(() => !document.querySelector('.print-sheet button')), '');
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 74 — le sélecteur d’exercice est dans la barre supérieure : en session, seulement sur les écrans à année, il lit sans jamais écrire');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await page.evaluate(() => { try { sessionStorage.removeItem('sigh-cnt:exercice'); } catch (e) { /* sans effet */ } });
+    await ouvrir('m12-ecritures.html');
+    erreursJS = [];
+    const compter = () => page.evaluate(() => {
+      const s = document.getElementById('selecteur-exercice');
+      return { dansBarre: !!(s && s.closest('#app-topbar')), dansPage: !!document.querySelector('#page-actions #selecteur-exercice'), valeur: s ? s.value : null,
+        prec: !!document.getElementById('exercice-precedent'), suiv: !!document.getElementById('exercice-suivant') };
+    });
+    const a = await compter();
+    verifier('Sur un registre comptable, le sélecteur est dans la BARRE SUPÉRIEURE et non plus dans l’en-tête de la page', a.dansBarre && !a.dansPage, JSON.stringify(a));
+    const defaut = await page.evaluate(() => ({ choisi: window.SIGH.exercice.choisi(), parDefaut: window.SIGH.exercice.parDefaut(),
+      ouverts: window.SIGH.exercice.liste().filter((x) => x.etat === 'ouvert').map((x) => x.annee) }));
+    verifier('Sans choix, l’exercice par défaut est l’exercice OUVERT le plus récent', defaut.choisi === Math.max.apply(null, defaut.ouverts) && defaut.parDefaut === defaut.choisi, JSON.stringify(defaut));
+    verifier('Les boutons « exercice précédent » et « suivant » existent quand l’exercice voisin existe', a.prec, JSON.stringify(a));
+
+    const absent = await page.evaluate(async () => {
+      const N = window.SIGH.nav;
+      const ids = ['m8-caisse', 'm12-dashboard', 'dash-comptable', 'm6-point-ventes', 'm6-dashboard', 'm1-patients', 'm2-agenda'];
+      const res = {}; ids.forEach((i) => { res[i] = N.aExercice(N.get(i)); });
+      const presents = ['m12-ecritures', 'm12-balance', 'm8-factures', 'm7-commandes', 'm11-bulletins', 'mecef-factures', 'm9-historique'];
+      presents.forEach((i) => { res[i] = N.aExercice(N.get(i)); });
+      return res;
+    });
+    verifier('Il est absent des écrans du jour (caisse, point de vente, tableaux de bord de poste, accueil) et présent sur les registres et états à année',
+      ['m8-caisse', 'm12-dashboard', 'dash-comptable', 'm6-point-ventes', 'm6-dashboard', 'm1-patients', 'm2-agenda'].every((i) => absent[i] === false)
+      && ['m12-ecritures', 'm12-balance', 'm8-factures', 'm7-commandes', 'm11-bulletins', 'mecef-factures', 'm9-historique'].every((i) => absent[i] === true), JSON.stringify(absent));
+
+    await ouvrir('m8-caisse.html');
+    verifier('Sur la caisse, aucun sélecteur dans la barre', await page.evaluate(() => !document.getElementById('selecteur-exercice')), '');
+
+    /* Changer d'exercice : l'écran se recharge, le choix vit en session, rien n'est écrit, aucun droit n'est donné. */
+    await ouvrir('m8-factures.html');
+    const avant = await page.evaluate(() => ({ audit: window.SIGH.store.raw().audit.length, ecr: window.SIGH.store.collection('ecritures').all().length, fac: window.SIGH.store.collection('factures').all().length,
+      lignes: (document.body.textContent.match(/sur ([\d\s\u00a0\u202f]+) enregistrement/) || [])[1] }));
+    await page.evaluate(() => window.SIGH.exercice.choisir(2025));
+    await ouvrir('m8-factures.html');
+    const apres = await page.evaluate(() => ({ audit: window.SIGH.store.raw().audit.length, ecr: window.SIGH.store.collection('ecritures').all().length, fac: window.SIGH.store.collection('factures').all().length,
+      choisi: window.SIGH.exercice.choisi(), session: sessionStorage.getItem('sigh-cnt:exercice'), local: localStorage.getItem('sigh-cnt:exercice'),
+      affiche: (function () { const tx = document.body.textContent; if (/Aucun enregistrement/.test(tx)) return 0; const m = /sur ([\d\s\u00a0\u202f]+) enregistrement/.exec(tx); return m ? Number(m[1].replace(/[\s\u00a0\u202f]/g, '')) : -1; })(),
+      attendu25: window.SIGH.store.collection('factures').active().filter((f) => window.SIGH.exercice.anneeDe(f.date) === 2025).length,
+      attendu26: window.SIGH.store.collection('factures').active().filter((f) => window.SIGH.exercice.anneeDe(f.date) === 2026).length }));
+    verifier('Le choix est tenu par la SESSION (sessionStorage), jamais par une copie dans le stockage durable', apres.choisi === 2025 && apres.session === '2025' && apres.local === null, JSON.stringify(apres));
+    verifier('Choisir 2025 n’écrit rien : mêmes écritures, mêmes factures, aucune entrée d’audit de plus', apres.ecr === avant.ecr && apres.fac === avant.fac && apres.audit === avant.audit, JSON.stringify([avant, apres]));
+    verifier('Le registre des factures SUIT l’exercice : 2025 ne montre que les factures datées de 2025, pas celles de 2026', apres.affiche === apres.attendu25 && apres.attendu26 > 0 && apres.affiche !== avant.fac, JSON.stringify(apres));
+
+    /* Une pièce s'enregistre dans l'exercice de SA date, jamais dans celui que l'on consulte. */
+    const ecrit = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      X.choisir(2025);
+      const r = ecr.insert({ numero: 'S74-1', date: '2026-08-16', journal: 'VTE', compte: '706000', debit: 0, credit: 50, statut: 'brouillon', origine: 'Saisie manuelle' });
+      const id = r && r.record.id; const fiche = id ? ecr.get(id) : null;
+      const res = { cree: !!fiche, annee: fiche ? X.anneeDe(fiche.date) : null, choisi: X.choisi() };
+      if (r) r.undo();
+      return res;
+    });
+    verifier('Une pièce datée de 2026 s’enregistre dans 2026 même quand on consulte 2025', ecrit.cree && ecrit.annee === 2026 && ecrit.choisi === 2025, JSON.stringify(ecrit));
+
+    /* Dates relatives : consulter 2025 en 2026, c'est voir décembre 2025 sous « ce mois ». */
+    const rel = await page.evaluate(() => {
+      const X = window.SIGH.exercice, C = window.SIGH.core;
+      X.choisir(2025); const r25 = C.iso(X.dateReference());
+      const b25 = C.bornes('mois', X.dateReference());
+      X.choisir(2026); const rN = C.iso(X.dateReference());
+      return { r25: r25, debut25: C.iso(b25.debut), fin25: C.iso(b25.fin), rN: rN, auj: C.iso(C.aujourdhui()) };
+    });
+    verifier('Les dates relatives partent du dernier jour de l’exercice consulté (2025), et d’aujourd’hui pour l’exercice en cours', rel.r25 === '2025-12-31' && rel.fin25 === '2025-12-31' && rel.rN === rel.auj, JSON.stringify(rel));
+    await page.evaluate(() => { try { sessionStorage.removeItem('sigh-cnt:exercice'); } catch (e) { /* sans effet */ } });
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 76 — comptes de résultat 131 et 139 : table modifiable à l’écran, contrôles nommés, jamais créée ni archivée');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m12-cloture.html');
+    erreursJS = [];
+    const r = await page.evaluate(async () => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, out = {};
+      S.setSession({ role: 'comptable', nom: 'Comptable Sonde', nomComplet: 'Comptable Sonde', fonction: 'comptable' });
+      const ben = X.comptesResultat().all().filter((f) => f.sens === 'benefice')[0];
+      const per = X.comptesResultat().all().filter((f) => f.sens === 'perte')[0];
+      out.refus = [
+        X.controleCompteResultat(ben, { compte: '13100', libelle: 'Bénéfice' }),
+        X.controleCompteResultat(ben, { compte: '139000', libelle: 'Bénéfice' }),
+        X.controleCompteResultat(per, { compte: '131000', libelle: 'Perte' }),
+        X.controleCompteResultat(ben, { compte: '131000', libelle: ' ' }),
+        X.controleCompteResultat(ben, { compte: '131500', libelle: 'Bénéfice paramétré' }),
+      ];
+      out.ok = X.controleCompteResultat(ben, { compte: '131000', libelle: 'Résultat net : bénéfice' });
+      const onglet = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((t) => /Comptes de résultat/.test(t.textContent));
+      out.onglet = !!onglet;
+      if (onglet) { onglet.click(); await new Promise((r) => setTimeout(r, 400)); }
+      const page = document.querySelector('#page-content');
+      out.lignes = page.querySelectorAll('tbody tr').length;
+      out.modifier = [...page.querySelectorAll('button[title="Modifier"], button[aria-label="Modifier"]')].length;
+      out.archiver = [...page.querySelectorAll('button[title="Archiver"], button[aria-label="Archiver"]')].length;
+      return out;
+    });
+    verifier('Le contrôle NOMME ce qui est attendu : six chiffres, 131 pour le bénéfice, 139 pour la perte, libellé obligatoire ; un 131 de plus passe',
+      /six chiffres/.test(r.refus[0]) && /131/.test(r.refus[1]) && /139/.test(r.refus[2]) && /libellé/.test(r.refus[3]) && r.refus[4] === null && r.ok === null, JSON.stringify(r.refus));
+    verifier('L’onglet « Comptes de résultat » est dans l’écran des clôtures : deux lignes, modifiables par le comptable, aucune archivable',
+      r.onglet && r.lignes === 2 && r.modifier === 2 && r.archiver === 0, JSON.stringify([r.onglet, r.lignes, r.modifier, r.archiver]));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 77 — « Relais en ligne » quitte le ruban pour des cartes dans Paramètres système ; l’onglet Système n’est affiché qu’à l’admin et à la DA');
+    const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
+    const lire = async (role, page) => {
+      await ouvrir('m1-patients.html');
+      await page.evaluate((s) => window.SIGH.store.setSession(s), profil(role));
+      return null;
+    };
+    const ruban = () => page.evaluate(() => [...document.querySelectorAll('#app-menubar .ribbon-tab')].map((t) => t.textContent.trim()));
+    await lire('admin', page);
+    await ouvrir('cfg-systeme.html');
+    erreursJS = [];
+    const adm = { ruban: await ruban() };
+    adm.cartes = await page.evaluate(async () => {
+      const onglet = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((t) => /Relais en ligne/.test(t.textContent));
+      if (onglet) { onglet.click(); await new Promise((r) => setTimeout(r, 300)); }
+      const cartes = [...document.querySelectorAll('#page-content .hub-flex a.hub-card')].map((a) => a.getAttribute('href'));
+      return { onglet: !!onglet, n: cartes.length, rls: cartes.every((h) => /rls-/.test(h)), attendu: window.SIGH.nav.treeParametres('admin', ['Relais en ligne'])[0].modules[0].items.length };
+    });
+    verifier('Admin : le ruban garde « Système », « Poste mère » et les domaines de travail, mais plus « Relais en ligne »',
+      adm.ruban.includes('Système') && adm.ruban.includes('Poste mère') && !adm.ruban.includes('Relais en ligne') && adm.ruban.includes('Soins'), JSON.stringify(adm.ruban));
+    verifier('Admin : Paramètres système porte un onglet « Relais en ligne » avec UNE carte par écran du relais, chacune menant à son écran',
+      adm.cartes.onglet && adm.cartes.n === adm.cartes.attendu && adm.cartes.n >= 10 && adm.cartes.rls, JSON.stringify(adm.cartes));
+    await lire('da', page);
+    await ouvrir('m1-patients.html');
+    const da = await ruban();
+    verifier('DA : l’onglet « Système » est affiché, « Relais en ligne » non (le relais est réservé à l’administrateur)', da.includes('Système') && !da.includes('Relais en ligne'), JSON.stringify(da));
+    const autres = {};
+    for (const role of ['direction', 'comptable', 'reception']) {
+      await lire(role, page);
+      await ouvrir('m1-patients.html');
+      autres[role] = { ruban: await ruban() };
+      await page.evaluate(() => window.SIGH.app.openProfile());
+      await new Promise((r) => setTimeout(r, 300));
+      autres[role].bouton = await page.evaluate(() => { const a = [...document.querySelectorAll('.modal a, [role="dialog"] a')].find((x) => /Paramètres système/.test(x.textContent)); return a ? a.getAttribute('href') : null; });
+      await ouvrir('parametres-hub.html');
+      autres[role].cartes = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].map((a) => a.getAttribute('href')));
+      autres[role].interdites = await page.evaluate((r) => [...document.querySelectorAll('#page-content a.hub-card')].map((a) => (a.getAttribute('href') || '').replace(/^.*\//, '').replace(/\.(php|html).*$/, ''))
+        .filter((id) => { const e = window.SIGH.nav.get(id); return e && !window.SIGH.nav.can(r, { id: id, roles: e.roles, module: e.module }); }), role);
+    }
+    verifier('Direction, comptable, réception : pas d’onglet « Système » au ruban, et jamais « Relais en ligne »',
+      Object.keys(autres).every((r) => !autres[r].ruban.includes('Système') && !autres[r].ruban.includes('Relais en ligne')), JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].ruban])));
+    verifier('Le profil offre le bouton « Paramètres système » vers la page de cartes pour ces profils',
+      Object.keys(autres).every((r) => /parametres-hub/.test(autres[r].bouton || '')), JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].bouton])));
+    verifier('La page de cartes ne montre JAMAIS un écran interdit au profil (RG-13), et la direction y retrouve ses écrans de sécurité',
+      Object.keys(autres).every((r) => autres[r].interdites.length === 0) && autres.direction.cartes.length > 5 && !autres.comptable.cartes.some((h) => /m14-utilisateurs/.test(h)),
+      JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].cartes.length, autres[r].interdites])));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 78 — échanges entre postes (mode pair) : clé affichée une seule fois, refus nommés, récupération par courriel fermée par défaut, admin et DA seulement');
+    const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
+    const poser = async (role) => { await ouvrir('m1-patients.html'); await page.evaluate((s) => window.SIGH.store.setSession(s), profil(role)); };
+    await poser('admin');
+    await page.evaluate(() => { try { localStorage.removeItem('sigh-cnt:pair'); } catch (e) { /* sans stockage */ } });
+    await ouvrir('cfg-pair.html');
+    erreursJS = [];
+    const lireEcran = () => page.evaluate(() => ({
+      texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' '),
+      champs: [...document.querySelectorAll('#page-content label')].map((l) => l.textContent.trim()),
+      boutons: [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()).filter(Boolean),
+      toasts: [...document.querySelectorAll('.toast, [role="status"]')].map((t) => t.textContent.trim()),
+      cle: (document.querySelector('input[aria-label="Clé unique de la clinique"]') || {}).value || null,
+      stock: (function () { try { return localStorage.getItem('sigh-cnt:pair') || ''; } catch (e) { return ''; } })(),
+    }));
+    const cliquer = (libelle) => page.evaluate(async (l) => {
+      const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === l);
+      if (b) b.click();
+      await new Promise((r) => setTimeout(r, 250));
+      return !!b;
+    }, libelle);
+    const saisir = (id, v) => page.evaluate((a) => { const e = document.getElementById(a[0]); e.value = a[1]; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, [id, v]);
+
+    const e0 = await lireEcran();
+    verifier('L’écran porte ses quatre cartes et ses champs nommés ; désactivé et non appairé au départ',
+      /Mode pair Désactivé/.test(e0.texte) && /Appairage Non appairé/.test(e0.texte) && e0.champs.includes('Adresse du relais *') && e0.champs.includes('Nom de ce poste *') && e0.champs.some((c) => /Code d’appairage/.test(c)), JSON.stringify([e0.texte.slice(0, 200), e0.champs]));
+    verifier('La récupération par courriel est FERMÉE par défaut : ni courriel ni phrase secrète n’apparaissent', !e0.champs.some((c) => /courriel de récupération|Phrase secrète/.test(c)), JSON.stringify(e0.champs));
+
+    await saisir('f_relais', 'relais-sans-schema'); await saisir('f_nom', 'Poste test');
+    await cliquer('Enregistrer la configuration');
+    const e1 = await lireEcran();
+    verifier('Une adresse sans http(s):// est refusée en le disant, rien n’est écrit', e1.toasts.some((t) => /http:\/\/ ou https:\/\//.test(t)) && !/relais-sans-schema/.test(e1.stock), JSON.stringify([e1.toasts, e1.stock]));
+
+    await saisir('f_relais', 'https://relais.exemple.bj/');
+    await page.evaluate(() => { const c = document.getElementById('f_actif'); c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); });
+    await cliquer('Enregistrer la configuration');
+    const e2 = await lireEcran();
+    verifier('Activer sans clé générée est refusé en nommant la cause', e2.toasts.some((t) => /Générer d’abord la clé/.test(t)) && !/"actif":true/.test(e2.stock), JSON.stringify([e2.toasts, e2.stock]));
+
+    await cliquer('Générer la clé');
+    const e3 = await lireEcran();
+    verifier('La clé est affichée UNE fois : 64 caractères hexadécimaux (256 bits), avec ses deux commandes', /^[0-9a-f]{64}$/.test(e3.cle || '') && e3.boutons.includes('Copier la clé') && e3.boutons.includes('J’ai noté la clé'), JSON.stringify([e3.cle, e3.boutons]));
+    verifier('Le stockage du poste ne contient AUCUN bit de la clé, seulement le fait qu’elle existe', !!e3.cle && !e3.stock.includes(e3.cle) && /"cleGeneree":true/.test(e3.stock) && !/[0-9a-f]{16}/.test(e3.stock.replace(/"cleLe":"[^"]*"/, '')), JSON.stringify(e3.stock));
+    const cleMontree = e3.cle;
+    await cliquer('J’ai noté la clé');
+    const e4 = await lireEcran();
+    verifier('Après « J’ai noté la clé », elle ne s’affiche PLUS jamais (ni champ, ni texte), et l’écran dit où elle en est', e4.cle === null && !e4.texte.includes(cleMontree) && /n’est plus affichée/.test(e4.texte), JSON.stringify([e4.cle, e4.texte.slice(0, 300)]));
+    await ouvrir('cfg-pair.html');
+    const e5 = await lireEcran();
+    verifier('Rouvrir l’écran ne la montre pas davantage', e5.cle === null && !e5.texte.includes(cleMontree) && e5.boutons.includes('Générer une nouvelle clé'), JSON.stringify([e5.cle, e5.boutons]));
+
+    await saisir('f_relais', 'https://relais.exemple.bj/'); await saisir('f_nom', 'Poste test');
+    await page.evaluate(() => { const c = document.getElementById('f_actif'); c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); });
+    await cliquer('Enregistrer la configuration');
+    const e6 = await lireEcran();
+    verifier('Avec relais, nom et clé, le mode pair s’active ; l’adresse est normalisée (sans barre finale) et le code n’est pas conservé',
+      /"actif":true/.test(e6.stock) && /"relais":"https:\/\/relais\.exemple\.bj"/.test(e6.stock) && !/code/.test(e6.stock), JSON.stringify(e6.stock));
+
+    const bascule = await page.evaluate(async () => { const c = document.getElementById('f_recuperation'); if (!c) return false; c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); await new Promise((r) => setTimeout(r, 300)); return true; });
+    const e7 = await lireEcran();
+    verifier('Ouvrir la récupération par courriel fait apparaître le courriel et la phrase secrète, qui ne sont jamais stockés',
+      bascule && e7.champs.some((c) => /courriel de récupération/.test(c)) && e7.champs.some((c) => /Phrase secrète/.test(c)) && !/phrase/i.test(e7.stock), JSON.stringify([bascule, e7.champs, e7.stock]));
+    await saisir('f_courriel', 'dg@clinique.bj'); await saisir('f_phrase', 'court');
+    await cliquer('Envoyer la clé par courriel');
+    const e8 = await lireEcran();
+    verifier('Une phrase secrète de moins de huit caractères est refusée en le disant', e8.toasts.some((t) => /au moins 8 caractères/.test(t)), JSON.stringify(e8.toasts));
+
+    const droits = {};
+    for (const role of ['admin', 'da', 'direction', 'comptable', 'reception', 'medecin', 'caissier']) {
+      await poser(role);
+      droits[role] = await page.evaluate((r) => { const e = window.SIGH.nav.get('cfg-pair'); return window.SIGH.nav.can(r, { id: 'cfg-pair', roles: e.roles, module: e.module }); }, role);
+    }
+    verifier('Seuls l’administrateur et la DAF ouvrent l’écran', droits.admin && droits.da && !droits.direction && !droits.comptable && !droits.reception && !droits.medecin && !droits.caissier, JSON.stringify(droits));
+    await poser('da'); await ouvrir('parametres-hub.html');
+    const carteDa = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-pair/.test(a.getAttribute('href') || '')));
+    await poser('direction'); await ouvrir('parametres-hub.html');
+    const carteDir = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-pair/.test(a.getAttribute('href') || '')));
+    verifier('La carte figure dans les Paramètres système de la DAF et jamais dans ceux de la direction (RG-13)', carteDa === true && carteDir === false, JSON.stringify([carteDa, carteDir]));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 79 — messagerie SMTP : un vrai message part par le protocole (puits de test), refus nommés par étape, mot de passe jamais relu ni écrit en clair, « Contactez l’éditeur » honnête');
+    const { demarrerPuits } = require('./_smtp_sink');
+    const net = require('net');
+    const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
+    const poser = async (role) => { await ouvrir('m1-patients.html'); await page.evaluate((s) => window.SIGH.store.setSession(s), profil(role)); };
+    const MDP = 'Zx9-secret-ç€-7Qp';
+    const puits = await demarrerPuits({ user: 'clinique', pass: MDP, mode: 'starttls', refuser: ['interdit@clinique.bj'] });
+    erreursJS = [];
+    const api = (action, corps, jeton) => page.evaluate(async (a, c, j) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const tok = j || window.SIGH.store.jetonServeur();
+      const r = await fetch(racine + 'api/smtp.php' + (c ? '' : '?action=' + a), { method: c ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': tok || '' }, body: c ? JSON.stringify(Object.assign({ action: a }, c)) : undefined });
+      const t = await r.text(); let o = {}; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+      return { statut: r.status, o: o, brut: t };
+    }, action, corps || null, jeton || null);
+    /* Changer de rôle rouvre une session serveur : la requête partie trop tôt porte le jeton de l'ANCIEN rôle et reçoit 401/403. Les gestes de l'administrateur
+       réessaient donc jusqu'à ce que la session soit celle du rôle posé : sans cela, un « effacer » refusé en silence laissait la messagerie configurée. */
+    const apiAdmin = async (action, corps) => {
+      let r = null;
+      for (let i = 0; i < 30; i++) { r = await api(action, corps); if (r.statut !== 401 && r.statut !== 403) return r; await pause(300); }
+      return r;
+    };
+    await poser('admin');
+    await apiAdmin('effacer', {});
+    await ouvrir('cfg-smtp.html');
+    const lire = () => page.evaluate(() => ({
+      texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' '),
+      champs: [...document.querySelectorAll('#page-content label')].map((l) => l.textContent.trim()),
+      mdp: (document.getElementById('f_motDePasse') || {}).value,
+      valeurs: ['serveur', 'port', 'chiffrement', 'delai', 'identifiant', 'expediteur', 'nom', 'repondreA', 'repondreNom'].reduce((o, k) => { const e = document.getElementById('f_' + k); o[k] = e ? e.value : null; return o; }, {}),
+      mdpType: (document.getElementById('f_motDePasse') || {}).type,
+    }));
+    const saisir = (id, v) => page.evaluate((a) => { const e = document.getElementById(a[0]); e.value = a[1]; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, [id, v]);
+    const cocher = (id, v) => page.evaluate((a) => { const c = document.getElementById(a[0]); c.checked = a[1]; c.dispatchEvent(new Event('change', { bubbles: true })); }, [id, v]);
+    const cliquer = (libelle) => page.evaluate(async (l) => {
+      const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === l);
+      if (b) b.click();
+      await new Promise((r) => setTimeout(r, 600));
+      return !!b;
+    }, libelle);
+    const attendreTexte = (re) => page.waitForFunction((src) => new RegExp(src).test(document.querySelector('#page-content').innerText), { timeout: 30000 }, re.source).catch(() => null);
+
+    const e0 = await lire();
+    verifier('L’écran porte ses champs nommés ; non configurée au départ', /Messagerie Non configurée/.test(e0.texte) && e0.champs.includes('Serveur SMTP *') && e0.champs.some((c) => /Adresse d’expéditeur/.test(c)) && e0.champs.some((c) => /Vérifier le certificat/.test(c)) && e0.mdpType === 'password', JSON.stringify([e0.texte.slice(0, 160), e0.champs]));
+
+    verifier('Rien n’étant enregistré, le formulaire PROPOSE la configuration de la clinique (non secrète) : serveur, port 587, STARTTLS, identifiant, expéditeur, nom, délai 20, « Répondre à »',
+      JSON.stringify(e0.valeurs) === JSON.stringify({ serveur: 'mail.sigh.nassieratoo.com', port: '587', chiffrement: 'starttls', delai: '20', identifiant: 'contact@sigh.nassieratoo.com', expediteur: 'contact@sigh.nassieratoo.com', nom: 'Clinique Nassièra Too', repondreA: 'cliniquenassiera@gmail.com', repondreNom: 'Clinique Nassièra Too' }), JSON.stringify(e0.valeurs));
+    verifier('Le mot de passe n’a AUCUNE valeur par défaut, et les valeurs proposées ne rendent pas la messagerie « configurée » tant qu’on n’enregistre pas', e0.mdp === '' && /Messagerie Non configurée/.test(e0.texte) && !(await api('etat')).o.configure, JSON.stringify([e0.mdp, (await api('etat')).o]));
+    await saisir('f_serveur', '127.0.0.1'); await saisir('f_port', String(puits.port)); await saisir('f_chiffrement', 'starttls');
+    await saisir('f_identifiant', 'clinique'); await saisir('f_motDePasse', MDP);
+    await saisir('f_expediteur', 'cnt@clinique.bj'); await cocher('f_verifierCertificat', false);
+    await cliquer('Enregistrer la messagerie');
+    await attendreTexte(/Messagerie Configurée/);
+    const e1 = await lire();
+    verifier('Enregistrée : configurée, mot de passe « Défini » ET le champ est vidé (jamais relu)', /Messagerie Configurée/.test(e1.texte) && /Mot de passe Défini/.test(e1.texte) && e1.mdp === '' && !e1.texte.includes(MDP), JSON.stringify([e1.texte.slice(0, 200), e1.mdp]));
+
+    await saisir('f_destinataire', 'dg@clinique.bj');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Message de test envoyé/);
+    const e2 = await lire();
+    const m = puits.dernier();
+    verifier('Le test montre les étapes : connexion, chiffrement, authentification, envoi', /Message de test envoyé/.test(e2.texte) && /Connexion au serveur/.test(e2.texte) && /Chiffrement : Connexion chiffrée \(STARTTLS\)/.test(e2.texte) && /Authentification : Authentifié comme clinique/.test(e2.texte) && /Envoi du message/.test(e2.texte), e2.texte.slice(0, 600));
+    verifier('Le puits a REÇU le message par le protocole : expéditeur, destinataire, objet', !!m && m.de === 'cnt@clinique.bj' && m.a.join() === 'dg@clinique.bj' && m.entetes.subject === 'SIGH-CNT : test de la messagerie', JSON.stringify(m && { de: m.de, a: m.a, s: m.entetes.subject }));
+    verifier('Le corps arrive intact, accents et symbole € compris ; le nom affiché est décodé', !!m && /é è à ç ô, symbole €/.test(m.corps) && /Clinique Nassièra Too/.test(m.entetes.from), JSON.stringify(m && [m.corps, m.entetes.from]));
+    verifier('L’en-tête Reply-To est REÇU (adresse et nom décodés) : les réponses iront à la boîte de la clinique', !!m && /cliniquenassiera@gmail\.com/.test(m.entetes['reply-to'] || '') && /Clinique Nassièra Too/.test(m.entetes['reply-to'] || ''), JSON.stringify(m && m.entetes['reply-to']));
+    verifier('Le puits a vu STARTTLS puis une authentification réussie (le mot de passe n’a pas circulé avant le chiffrement)', puits.commandes.indexOf('STARTTLS') > -1 && puits.commandes.indexOf('AUTH PLAIN ok') > puits.commandes.indexOf('STARTTLS'), JSON.stringify(puits.commandes));
+    const etat1 = (await api('etat')).o;
+    verifier('Le dernier test réussi est retenu côté serveur', etat1.testeOk === true && !!etat1.testeLe, JSON.stringify(etat1));
+
+    /* --- refus nommés par étape --- */
+    const avant = puits.messages.length;
+    await saisir('f_motDePasse', 'mauvais-mot-de-passe');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Échec à l’étape/);
+    const e3 = await lire();
+    verifier('Un mauvais mot de passe est refusé à l’étape « Authentification », sans envoi', /Échec à l’étape « Authentification »/.test(e3.texte) && /refusé par le serveur/.test(e3.texte) && puits.messages.length === avant && !e3.texte.includes('mauvais-mot-de-passe'), e3.texte.slice(-700));
+
+    const libre = await new Promise((ok) => { const t = net.createServer(); t.listen(0, '127.0.0.1', () => { const p = t.address().port; t.close(() => ok(p)); }); });
+    await ouvrir('cfg-smtp.html');
+    await saisir('f_port', String(libre)); await saisir('f_destinataire', 'dg@clinique.bj');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Échec à l’étape/);
+    const e4 = await lire();
+    verifier('Un port fermé est refusé à l’étape « Connexion au serveur »', /Échec à l’étape « Connexion au serveur »/.test(e4.texte) && /injoignable/.test(e4.texte), e4.texte.slice(0, 500));
+
+    await ouvrir('cfg-smtp.html');
+    await saisir('f_port', String(puits.port)); await saisir('f_destinataire', 'interdit@clinique.bj');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Échec à l’étape/);
+    const e5 = await lire();
+    verifier('Un destinataire refusé par le serveur est refusé à l’étape « Destinataire »', /Échec à l’étape « Destinataire »/.test(e5.texte) && /interdit@clinique\.bj/.test(e5.texte), e5.texte.slice(0, 500));
+
+    await ouvrir('cfg-smtp.html');
+    await saisir('f_port', String(puits.port)); await cocher('f_verifierCertificat', true); await saisir('f_destinataire', 'dg@clinique.bj');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Échec à l’étape/);
+    const e6 = await lire();
+    verifier('Avec le contrôle du certificat actif, le certificat auto-signé du puits est refusé à l’étape « Chiffrement »', /Échec à l’étape « Chiffrement »/.test(e6.texte) && /certificat/i.test(e6.texte), e6.texte.slice(0, 500));
+
+    /* --- le mot de passe ne fuit nulle part --- */
+    const fuites = await page.evaluate((mdp, faux) => {
+      const S = window.SIGH.store;
+      const tout = JSON.stringify(S.raw());
+      let ls = ''; try { for (let i = 0; i < localStorage.length; i++) ls += localStorage.getItem(localStorage.key(i)); } catch (e) { /* stockage */ }
+      return { magasin: tout.includes(mdp) || tout.includes(faux), stockage: ls.includes(mdp) || ls.includes(faux), journal: JSON.stringify(S.raw().audit || []).includes(mdp) };
+    }, MDP, 'mauvais-mot-de-passe');
+    verifier('Le mot de passe n’apparaît ni dans le magasin exporté, ni dans le stockage du navigateur, ni dans le journal', !fuites.magasin && !fuites.stockage && !fuites.journal, JSON.stringify(fuites));
+    const etat2 = await api('etat');
+    verifier('L’API ne renvoie jamais le mot de passe ni son chiffré', !etat2.brut.includes(MDP) && !/"mdp"/.test(etat2.brut) && !/motDePasse"\s*:\s*"[^"]/.test(etat2.brut), etat2.brut.slice(0, 300));
+    const disque = fs.readFileSync(path.join(ROOT, 'api', 'smtp.local.php'), 'utf8');
+    verifier('Sur le disque, le mot de passe est CHIFFRÉ (aucun clair dans le fichier de configuration)', !disque.includes(MDP) && /"mdp":"/.test(disque) && /^<\?php http_response_code\(403\); exit; \?>/.test(disque), disque.slice(0, 300));
+    const audit = await page.evaluate(async () => { const r = await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/magasin.php?collections=audit', { headers: { 'X-Sigh-Jeton': window.SIGH.store.jetonServeur() } }); return r.text(); });
+    verifier('Le journal côté serveur garde les essais (test d’envoi) sans le mot de passe', /Test d’envoi/.test(audit) && !audit.includes(MDP) && !audit.includes('mauvais-mot-de-passe'), audit.slice(0, 200));
+
+    /* --- « Contactez l'éditeur » --- */
+    await saisir('f_motDePasse', MDP);
+    await apiAdmin('enregistrer', { serveur: '127.0.0.1', port: puits.port, chiffrement: 'starttls', identifiant: 'clinique', motDePasse: MDP, expediteur: 'cnt@clinique.bj', nom: 'Clinique Nassiera Too', verifierCertificat: false });
+    await apiAdmin('tester', { destinataire: 'dg@clinique.bj' });
+    await poser('medecin');
+    await ouvrir('contact-editeur.html');
+    await page.waitForSelector('[data-testid="envoyer-courriel"]', { timeout: 20000 }).catch(() => null);
+    const c1 = await page.evaluate(() => ({ coche: [...document.querySelectorAll('[data-testid="envoyer-courriel"]')].map((c) => c.checked), note: !!document.querySelector('[data-testid="courriel-non-configure"]') }));
+    verifier('Messagerie configurée ET testée : « Envoyer aussi par courriel » est coché d’emblée, sans mention « seulement enregistrée »', c1.coche.length === 2 && c1.coche.every(Boolean) && !c1.note, JSON.stringify(c1));
+    const avantEd = puits.messages.length;
+    await saisir('f_objet', 'Question sur la comptabilité'); await saisir('f_message', 'Bonjour, où règle-t-on le plan ? Merci é à ç.');
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === 'Envoyer le message'); b.click(); });
+    for (let i = 0; i < 60 && puits.messages.length === avantEd; i++) await pause(250);
+    const mEd = puits.dernier();
+    verifier('Le courriel part vraiment à l’éditeur : destinataire, objet préfixé, corps et référence', puits.messages.length === avantEd + 1 && mEd.a.join() === 'rarhodes06@gmail.com' && mEd.entetes.subject === '[SIGH-CNT] Question sur la comptabilité' && /où règle-t-on le plan \? Merci é à ç\./.test(mEd.corps) && /Référence : SUP-/.test(mEd.corps), JSON.stringify(mEd && [mEd.a, mEd.entetes.subject, mEd.corps]));
+    const refusEd = await api('envoyer', { sujet: 'x', corps: 'y', destinataires: ['quelquun@exemple.bj'] });
+    verifier('Le point d’envoi ne sert QU’à l’éditeur : une autre adresse est refusée (pas de relais ouvert)', refusEd.statut === 403, JSON.stringify([refusEd.statut, refusEd.brut.slice(0, 120)]));
+
+    /* sans messagerie, l'écran le DIT et n'envoie rien */
+    await poser('admin');
+    const eff = await apiAdmin('effacer', {});
+    verifier('L’administrateur retire la configuration : la messagerie redevient non configurée', eff.statut === 200 && eff.o.configure === false, JSON.stringify([eff.statut, eff.brut.slice(0, 120)]));
+    await poser('medecin');
+    await ouvrir('contact-editeur.html');
+    await pause(1500);
+    const c2 = await page.evaluate(() => ({ cases: document.querySelectorAll('[data-testid="envoyer-courriel"]').length, notes: [...document.querySelectorAll('[data-testid="courriel-non-configure"]')].map((n) => n.textContent) }));
+    verifier('Messagerie non configurée : aucune case, et l’écran dit que la demande est seulement enregistrée et où configurer', c2.cases === 0 && c2.notes.length === 2 && c2.notes.every((t) => /seulement enregistrée/.test(t) && /Paramètres système, Messagerie/.test(t)), JSON.stringify(c2));
+    const avantSans = puits.messages.length;
+    await saisir('f_objet', 'Sans messagerie'); await saisir('f_message', 'Texte');
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === 'Envoyer le message'); b.click(); });
+    await pause(1500);
+    const toast = await page.evaluate(() => [...document.querySelectorAll('#toast-host *')].map((t) => t.textContent).join(' '));
+    verifier('Le toast dit « Aucun courriel n’a été envoyé » et rien n’arrive au puits', /Aucun courriel n’a été envoyé/.test(toast) && puits.messages.length === avantSans, toast.slice(0, 200));
+
+    /* --- droits --- */
+    const jetonAnnuaire3 = ((await BANC.connecter(BANC.SESSION_BANC.identifiant)) || {}).jeton || '';
+    const comptes = await page.evaluate(async (jetonA) => (await (await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/auth.php?action=comptes', { headers: { 'X-Sigh-Jeton': jetonA } })).json()).comptes || [], jetonAnnuaire3);
+    const caissier = comptes.find((c) => c.role === 'caissier');
+    const rc = caissier ? await BANC.connecter(caissier.identifiant) : null;
+    const refusRole = rc && rc.jeton ? await api('etat', null, rc.jeton) : { statut: -1 };
+    verifier('Le serveur refuse la lecture de la configuration à un rôle qui ne la règle pas (caissier)', refusRole.statut === 403, JSON.stringify([caissier && caissier.identifiant, refusRole.statut]));
+    const dispo = rc && rc.jeton ? await api('disponible', null, rc.jeton) : { statut: -1, o: {} };
+    verifier('Mais « disponible » répond à tout agent connecté, sans le moindre réglage', dispo.statut === 200 && Object.keys(dispo.o).sort().join() === 'configure,testeOk', JSON.stringify(dispo));
+    const droits = {};
+    for (const role of ['admin', 'da', 'direction', 'comptable', 'reception', 'medecin', 'caissier']) {
+      await poser(role);
+      droits[role] = await page.evaluate((r) => { const e = window.SIGH.nav.get('cfg-smtp'); return window.SIGH.nav.can(r, { id: 'cfg-smtp', roles: e.roles, module: e.module }); }, role);
+    }
+    verifier('Seuls l’administrateur et la DAF ouvrent l’écran', droits.admin && droits.da && !droits.direction && !droits.comptable && !droits.reception && !droits.medecin && !droits.caissier, JSON.stringify(droits));
+    await poser('da'); await ouvrir('parametres-hub.html');
+    const carteDa = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-smtp/.test(a.getAttribute('href') || '')));
+    await poser('direction'); await ouvrir('parametres-hub.html');
+    const carteDir = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-smtp/.test(a.getAttribute('href') || '')));
+    verifier('La carte « Messagerie » figure aux Paramètres système de la DAF et jamais à ceux de la direction (RG-13)', carteDa === true && carteDir === false, JSON.stringify([carteDa, carteDir]));
+    await poser('admin'); await apiAdmin('effacer', {});
+    await puits.fermer();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 75 — archive légale d’une clôture : CSV des écritures SYSCOHADA, balance, états, manifeste SHA-256, immuable, vérifiée au téléchargement');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m12-cloture.html');
+    erreursJS = [];
+    const r = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      const qui = (role, n) => S.setSession({ role: role, nom: n, nomComplet: n, fonction: role });
+      const mk = (num, date, compte, d, c, centre) => ecr.insert({ numero: num, date: date, journal: 'VTE', journalLibelle: 'sonde', compte: compte, compteLibelle: 'Compte ' + compte, libelle: 'Écriture; "test"',
+        debit: d, credit: c, statut: 'validee', origine: 'Saisie manuelle', centreCout: centre || null });
+      const out = {};
+      qui('comptable', 'Comptable Sonde');
+      mk('S40-1', '2040-03-01', '571000', 8000, 0, null); mk('S40-1', '2040-03-01', '706000', 0, 8000, 'laboratoire');
+      mk('S40-2', '2040-04-01', '604100', 3000, 0, 'pharmacie'); mk('S40-2', '2040-04-01', '571000', 0, 3000, null);
+      X.demarrer(2040);
+      qui('da', 'Direction Sonde');
+      const cl = X.cloturer(2040, 'Clôture de la sonde'); out.cl = cl.ok; out.clMotif = cl.motif || '';
+      const arch = S.collection('archivesExercice').all().filter((a) => a.annee === 2040);
+      out.nb = arch.length;
+      if (!cl.ok || !arch.length) { out.noms = []; out.bom = false; out.manifeste = false; out.empreintes = false; out.ged = []; out.refs = []; return out; }
+      const a = arch[0];
+      out.noms = a.fichiers.map((f) => f.nom);
+      const ec = a.fichiers.filter((f) => /^ecritures-/.test(f.nom))[0] || { contenu: '' };
+      const lignes = ec.contenu.split('\r\n').filter(Boolean);
+      out.bom = ec.contenu.charCodeAt(0) === 0xfeff;
+      out.entete = lignes[0] ? lignes[0].replace('﻿', '') : '';
+      out.nbLignes = lignes.length - 1;
+      out.attendu = ecr.active().filter((e) => X.anneeDe(e.date) === 2040).length;
+      out.date = (lignes[1] || '').split(';')[1];
+      out.guillemets = ec.contenu.indexOf('"Écriture; ""test"""') >= 0;
+      out.empreintes = a.fichiers.every((f) => /^[0-9a-f]{64}$/.test(f.empreinte) && X.sha256(f.contenu) === f.empreinte);
+      const man = a.fichiers.filter((f) => /^manifeste-/.test(f.nom))[0] || { contenu: '' };
+      out.manifeste = a.fichiers.filter((f) => !/^manifeste-/.test(f.nom)).every((f) => man.contenu.indexOf(f.empreinte + '  ' + f.nom) >= 0);
+      out.ged = S.collection('documents').active().filter((d) => d.codeRattachement === 'EX2040').map((d) => d.archiveExercice);
+      out.lectureOk = a.fichiers.every((f) => X.lireArchive(a.reference, f.nom).ok);
+      const col = S.collection('archivesExercice');
+      out.modifie = col.update(a.id, { par: 'quelqu’un' }) !== null;
+      out.archive = col.archive(a.id, 'tentative') !== null;
+      out.redepose = col.insert({ reference: a.reference, annee: 2040, fichiers: [] }) !== null;
+      const brut = col.all().filter((z) => z.reference === a.reference)[0];
+      const f0 = brut.fichiers[0]; const avant = f0.contenu; f0.contenu = avant + 'x';
+      const alt = X.lireArchive(a.reference, f0.nom); f0.contenu = avant;
+      out.altere = alt.ok === false && alt.altere === true && /altéré/.test(alt.motif);
+      out.restaure = X.lireArchive(a.reference, f0.nom).ok;
+      out.empPremiere = a.manifesteEmpreinte;
+      qui('comptable', 'Comptable Sonde');
+      out.rouvre = X.rouvrir(2040, 'Erreur découverte après coup').ok;
+      qui('da', 'Direction Sonde');
+      const cl2 = X.cloturer(2040, 'Seconde clôture'); out.cl2 = cl2.ok; out.cl2Motif = cl2.motif || '';
+      const toutes = S.collection('archivesExercice').all().filter((z) => z.annee === 2040);
+      out.nb2 = toutes.length; out.refs = toutes.map((z) => z.reference).sort();
+      out.premiereIntacte = toutes.filter((z) => z.reference === a.reference)[0].manifesteEmpreinte === out.empPremiere;
+      return out;
+    });
+    verifier('La clôture dépose une archive de quatre fichiers : écritures CSV, balance CSV, états, manifeste', r.cl && r.nb === 1 && r.noms.length === 4 && r.noms.some((n) => /^ecritures-2040\.csv$/.test(n)) && r.noms.some((n) => /^manifeste-/.test(n)), JSON.stringify([r.cl, r.clMotif, r.nb, r.noms]));
+    verifier('Le CSV des écritures suit le format SYSCOHADA révisé : BOM UTF-8, onze colonnes nommées, dates JJ/MM/AAAA, toutes les écritures de l’exercice, guillemets échappés',
+      r.bom && r.entete === 'Journal;Date;N° pièce;Compte;Intitulé du compte;Libellé de l’écriture;Centre de coûts;Débit;Crédit;Lettrage;Statut' && /^\d{2}\/\d{2}\/2040$/.test(r.date || '') && r.nbLignes >= r.attendu && r.guillemets, JSON.stringify([r.bom, r.entete, r.date, r.nbLignes, r.attendu, r.guillemets]));
+    verifier('Le manifeste porte l’empreinte SHA-256 de chaque fichier, et chaque empreinte se recalcule', r.manifeste && r.empreintes, JSON.stringify([r.manifeste, r.empreintes]));
+    verifier('La GED référence l’archive de la clôture', r.ged.length === 1 && /^ARC-2040-01$/.test(r.ged[0] || ''), JSON.stringify(r.ged));
+    verifier('L’archive est IMMUABLE : modification, archivage et second dépôt de la même clôture refusés', r.modifie === false && r.archive === false && r.redepose === false, JSON.stringify([r.modifie, r.archive, r.redepose]));
+    verifier('Chaque téléchargement vérifie l’empreinte : intact, livré ; altéré, REFUSÉ en le disant', r.lectureOk && r.altere && r.restaure, JSON.stringify([r.lectureOk, r.altere, r.restaure]));
+    verifier('Après réouverture et seconde clôture, une SECONDE archive est déposée et la première reste intacte', r.rouvre && r.cl2 && r.nb2 === 2 && r.premiereIntacte && r.refs.join() === 'ARC-2040-01,ARC-2040-02', JSON.stringify([r.rouvre, r.cl2, r.cl2Motif, r.nb2, r.refs, r.premiereIntacte]));
+    /* Doctrine : un scénario qui change de RÔLE le RESTAURE. Celui-ci s'achevait sous « da » et le suivant héritait d'une session qu'il n'avait pas choisie (E2265). */
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* =========================================================================
+   * Vague 80 : la créance de l'ASSUREUR (411) est-elle écrite au journal ?
+   * -------------------------------------------------------------------------
+   * `ecrireEncaissement` lisait `facture.partAssureur` ; l'en-tête d'une facture porte `partAssurance`
+   * (`partAssureur` n'existe que sur les LIGNES). La sonde part d'une facture RÉELLE (PR.prescrire sur un
+   * assuré à la grille posée), l'encaisse et lit le journal : débit 411 = part assureur, crédit 706 = total.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 80 — l’encaissement d’une facture assurée constate la créance de l’assureur (411) au journal');
+    await ouvrir('m8-facturation.html');
+    const r = await page.evaluate(() => {
+      const S = window.SIGH.store, D = window.SIGH.data, PR = window.SIGH.parcours;
+      const p = S.collection('patients').active().filter((x) => x.assureur && x.souscripteurId)[0];
+      const sous = S.collection('souscripteurs').get(p.souscripteurId);
+      D.BAREME_REFERENCE.garanties.forEach((g) => S.collection('garanties').insert({
+        souscripteurId: sous.id, assureur: sous.assureur, code: g.code, libelle: g.libelle,
+        categorie: g.categorie, taux: g.taux, plafond: g.plafond, unitePlafond: g.unitePlafond,
+      }));
+      S.collection('patients').update(p.id, { carteExpiration: '2099-12-31' });
+      const presc = PR.prescrire({ patientCode: p.code, medecin: 'Sonde', diagnostic: 'Sonde', medicaments: [], analyses: [D.ANALYSES[0].code], actes: [] });
+      const fac = presc.facture;
+      const tete = S.collection('factures').get(fac.id);
+      const entete = { partAssurance: tete.partAssurance, partAssureur: tete.partAssureur, partPatient: tete.partPatient, total: tete.montantTTC || tete.total };
+      const lignesAss = (tete.lignes || []).reduce((n, l) => n + (l.partAssureur || 0), 0);
+      const enc = PR.encaisser(fac.id, { montant: tete.partPatient });
+      const ecr = S.collection('ecritures').all().filter((e) => e.pieceId === fac.id);
+      const somme = (cpt, sens) => ecr.filter((e) => String(e.compte).startsWith(cpt)).reduce((n, e) => n + (e[sens] || 0), 0);
+      return { entete, lignesAss, nb: ecr.length, d411: somme('411', 'debit'), c706: somme('706', 'credit'), d571: somme('571', 'debit'), refus: enc && enc.refus };
+    });
+    verifier('Sonde réelle : la facture assurée porte une part assureur sur ses lignes et sur l’en-tête (partAssurance)',
+      r.lignesAss > 0 && r.entete.partAssurance === r.lignesAss, JSON.stringify([r.entete, r.lignesAss]));
+    verifier('Le débit 411 de la part assureur est écrit au journal (et le crédit 706 vaut le total facturé)',
+      r.d411 === r.entete.partAssurance && r.d411 > 0 && r.c706 === r.d411 + r.d571, JSON.stringify(r));
+    /* L'écran Paiements : « Valider l'encaissement » passe par le moteur (écriture, lignes réglées, analyses libérées). */
+    const pai = await page.evaluate(() => {
+      const S = window.SIGH.store, D = window.SIGH.data, PR = window.SIGH.parcours;
+      const p = S.collection('patients').active().filter((x) => x.assureur && x.souscripteurId)[0];
+      const presc = PR.prescrire({ patientCode: p.code, medecin: 'Sonde', diagnostic: 'Sonde', medicaments: [], analyses: [D.ANALYSES[1].code], actes: [] });
+      return { id: presc.facture.id, numero: presc.facture.numero };
+    });
+    await ouvrir('m8-paiements.html');
+    const vue = await page.evaluate(async (pai) => {
+      const S = window.SIGH.store;
+      const champ = [...document.querySelectorAll('#page-content input')].find((i) => /echerch/i.test(i.placeholder || '') || i.type === 'search');
+      if (champ) { champ.value = pai.numero; champ.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 400)); }
+      const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => tr.textContent.includes(pai.numero));
+      const bouton = ligne && [...ligne.querySelectorAll('button')].find((b) => /Encaisser/.test(b.textContent + (b.title || '') + (b.getAttribute('aria-label') || '')));
+      if (!bouton) return { trouve: false };
+      bouton.click();
+      await new Promise((r) => setTimeout(r, 400));
+      const valider = [...document.querySelectorAll('button')].find((b) => /Valider l.encaissement/.test(b.textContent));
+      if (!valider) return { trouve: true, modale: false };
+      valider.click();
+      await new Promise((r) => setTimeout(r, 600));
+      const f = S.collection('factures').get(pai.id);
+      const ecr = S.collection('ecritures').all().filter((e) => e.pieceId === pai.id);
+      const som = (c, k) => ecr.filter((e) => String(e.compte).startsWith(c)).reduce((n, e) => n + (e[k] || 0), 0);
+      return { trouve: true, modale: true, statut: f.statutPaiement, ass: f.partAssurance, pat: f.partPatient, d411: som('411', 'debit'), d571: som('571', 'debit'), c706: som('706', 'credit'), nb: ecr.length,
+        lignesPayees: (f.lignes || []).filter((l) => l.statutPaiement === 'paye').length };
+    }, pai);
+    verifier('L’écran Paiements : « Valider l’encaissement » solde la pièce, règle ses lignes et pose l’écriture (571, 411 de l’assureur, 706)',
+      vue.trouve && vue.modale && vue.statut === 'soldee' && vue.lignesPayees > 0 && vue.d571 === vue.pat && vue.d411 === vue.ass && vue.c706 === vue.d571 + vue.d411 && vue.nb >= 2, JSON.stringify(vue));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* =========================================================================
+   * Vague 81 : configuration fiscale validée et datée (Direction, 06/11/2026)
+   * -------------------------------------------------------------------------
+   * Ce que ce scénario garde fermé : un « Enregistrer » qui n'écrit rien
+   * (E2270), une validation ouverte à n'importe quel profil, une version de
+   * l'identité qui réécrirait les pièces déjà émises, une échéance payée
+   * régénérée, un bulletin de paie recalculé sur un seuil ORTB postérieur.
+   * Il MUTE la configuration et la RESTAURE en sortant (versions archivées,
+   * validation d'origine rétablie, session rendue), sans la recopier.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 81 : configuration fiscale validée et datée (identité par versions, obligations régénérées, ORTB à la date du bulletin, validation réservée)');
+    const sauve = {};
+    await ouvrir('cfg-branding.html');
+    sauve.etat = await page.evaluate(() => {
+      const S = window.SIGH.store, raw = S.raw();
+      const copie = (x) => JSON.parse(JSON.stringify(x || []));
+      return { identite: copie(raw.identiteLegale), obligations: copie(raw.obligationsFiscales), historique: copie(raw.historiqueObligations),
+        session: S.session(), reglages: { doubleLogo: S.reglage('impression.doubleLogo', true), filigrane: S.reglage('impression.filigrane', '') },
+        essentielles: ['identiteLegale', 'obligationsFiscales', 'historiqueObligations'].every((n) => S.COLLECTIONS_ESSENTIELLES.indexOf(n) >= 0),
+        libelles: S.libelleCollection('identiteLegale').module + '/' + S.libelleCollection('obligationsFiscales').module,
+        version: raw._version };
+    });
+    const e0 = sauve.etat;
+    verifier('Les trois collections sont semées au socle (identité v1 non validée, 20 fiches d’obligations : les 19 du calendrier et ORTB-PARAMETRES, historique vide), essentielles, libellées CFG, _version 69 ou plus',
+      e0.identite.length === 1 && e0.identite[0].version === 1 && !e0.identite[0].valideLe && e0.obligations.length === 20
+      && e0.obligations.some((o) => o.code === 'ORTB-PARAMETRES' && o.type === 'parametres') && e0.historique.length === 0
+      && e0.essentielles && e0.libelles === 'CFG/CFG' && e0.version >= 69,
+      JSON.stringify({ identite: e0.identite.length, obligations: e0.obligations.length, historique: e0.historique.length, essentielles: e0.essentielles, libelles: e0.libelles, version: e0.version }));
+
+    /* 1. cfg-branding : la saisie est ÉCRITE, relue après rechargement, et l'en-tête imprimé la porte. */
+    const s1 = await page.evaluate(() => {
+      const poser = (id, v) => { const x = document.getElementById(id); if (!x) return false; x.value = v; x.dispatchEvent(new Event('input', { bubbles: true })); x.dispatchEvent(new Event('change', { bubbles: true })); return true; };
+      const ok1 = poser('f_slogan', 'Sonde 81 : votre santé');
+      const ok2 = poser('f_telephones', '01 95 44 51 51 / 01 66 43 28 20 / 61 00 00 81');
+      const h = document.querySelector('#toast-host'); if (h) h.innerHTML = '';
+      const b = [...document.querySelectorAll('#page-content button')].find((x) => /^Enregistrer$/.test(x.textContent.trim()));
+      if (!b) return { champs: ok1 && ok2, bouton: false };
+      b.click();
+      return { champs: ok1 && ok2, bouton: true };
+    });
+    await pause(600);
+    const toast1 = await page.evaluate(() => (document.querySelector('#toast-host') || { textContent: '' }).textContent);
+    verifier('cfg-branding : « Enregistrer » écrit la fiche et le toast nomme la version (1) et la validation à faire',
+      s1.champs && s1.bouton && /version 1/.test(toast1) && /valider/i.test(toast1), toast1.slice(0, 220));
+    await attendreEcritures();
+    await ouvrir('cfg-branding.html');
+    const relu = await page.evaluate(() => ({
+      slogan: (document.getElementById('f_slogan') || {}).value, tel: (document.getElementById('f_telephones') || {}).value,
+      brand: window.SIGH.core.BRAND.slogan, brandTel: window.SIGH.core.BRAND.telephones.length,
+      fiche: window.SIGH.store.collection('identiteLegale').active()[0].slogan,
+    }));
+    verifier('Rechargée, la page relit la saisie ; C.BRAND.slogan vaut la saisie (surcouche en place, 3 téléphones)',
+      relu.slogan === 'Sonde 81 : votre santé' && relu.fiche === 'Sonde 81 : votre santé' && relu.brand === 'Sonde 81 : votre santé'
+      && relu.brandTel === 3 && /61 00 00 81/.test(relu.tel), JSON.stringify(relu));
+    const entete1 = await page.evaluate(() => {
+      const P = window.SIGH.print;
+      /* La feuille vit dans la surcouche de prévisualisation : on la lit sur ce que P.etat rend, puis on ferme. */
+      const r = P.etat({ titre: 'Sonde 81', contenu: document.createElement('div'), filtres: false, archive: false });
+      const h = r.sheet.querySelector('header'); const t = h ? h.textContent : '';
+      r.fermer();
+      return t;
+    });
+    verifier('L’en-tête d’un état imprimé sans date porte le nouveau slogan', /Sonde 81 : votre santé/.test(entete1), entete1.slice(0, 200));
+
+    /* 2. La validation est RÉSERVÉE : refusée à la réception (écran fermé ET moteur), acceptée à la DAF. */
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'reception', fonction: 'accueil', nom: 'OROU YO Edmond', poste: 'Réception', identifiant: 'e.orouyo' }));
+    await ouvrir('cfg-fiscalite.html');
+    const refusRec = await page.evaluate(() => ({
+      url: location.pathname.split('/').pop(),
+      bouton: !![...document.querySelectorAll('button')].find((b) => /Valider l.identit/.test(b.textContent)),
+      moteur: window.SIGH.configurationFiscale ? window.SIGH.configurationFiscale.validerIdentite() : null,
+      parcours: window.SIGH.parcours ? window.SIGH.parcours.validerObligations() : null,
+    }));
+    verifier('La réception n’atteint pas l’écran (403), ne voit aucune commande « Valider », et le moteur refuse VALIDATION_RESERVEE (identité et obligations)',
+      /error-403/.test(refusRec.url) && !refusRec.bouton && refusRec.moteur && refusRec.moteur.code === 'VALIDATION_RESERVEE'
+      && refusRec.parcours && refusRec.parcours.code === 'VALIDATION_RESERVEE' && /Réception|reception/i.test(refusRec.moteur.motif),
+      JSON.stringify(refusRec));
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'da', fonction: 'da', nom: 'TAKI Alimatou', poste: 'Directrice Administrative', identifiant: 't.alimatou' }));
+    await ouvrir('cfg-fiscalite.html');
+    const avantVal = await page.evaluate(() => ({
+      etat: (document.querySelector('[data-etat-configuration]') || { getAttribute: () => null }).getAttribute('data-etat-configuration'),
+      bouton: !![...document.querySelectorAll('#page-content button')].find((b) => /Valider l.identit/.test(b.textContent)),
+    }));
+    verifier('La DAF voit le bandeau « à valider » et la commande « Valider l’identité légale »', avantVal.etat === 'a_valider' && avantVal.bouton, JSON.stringify(avantVal));
+    await cliquer('valider l’identité légale', '#page-content button');
+    await pause(300);
+    await cliquer('valider', '[role="dialog"] button');
+    await pause(700);
+    const apresVal = await page.evaluate(() => {
+      const e = window.SIGH.parcours.etatConfigurationFiscale('identite');
+      const n = document.querySelector('[data-etat-configuration]');
+      return { etat: e.etat, par: e.validePar, bandeau: n ? n.getAttribute('data-etat-configuration') : null, texte: n ? n.textContent : '' };
+    });
+    verifier('Validée par la DAF : l’état est « valide », le bandeau dit « Validée le … par TAKI Alimatou »',
+      apresVal.etat === 'valide' && apresVal.par === 'TAKI Alimatou' && apresVal.bandeau === 'valide' && /validée le .* par TAKI Alimatou/i.test(apresVal.texte), JSON.stringify(apresVal).slice(0, 300));
+    await attendreEcritures();
+    const bandeaux = {};
+    for (const ecran of ['cfg-entetes', 'cfg-branding']) {
+      await ouvrir(ecran + '.html');
+      bandeaux[ecran] = await page.evaluate(() => { const n = document.querySelector('[data-etat-configuration]'); return n ? n.getAttribute('data-etat-configuration') + ':' + /TAKI Alimatou/.test(n.textContent) : null; });
+    }
+    verifier('Le même bandeau « Validée … par TAKI Alimatou » est posé sur cfg-entetes et cfg-branding',
+      bandeaux['cfg-entetes'] === 'valide:true' && bandeaux['cfg-branding'] === 'valide:true', JSON.stringify(bandeaux));
+    await ouvrir('adm-validations.html');
+    const lignes2 = await page.evaluate(() => [...document.querySelectorAll('[data-configuration-fiscale]')].map((x) => x.getAttribute('data-configuration-fiscale')));
+    verifier('adm-validations ne porte plus « Identité légale à valider » et porte encore « Obligations fiscales à valider »',
+      lignes2.indexOf('identite') < 0 && lignes2.indexOf('obligations') >= 0, JSON.stringify(lignes2));
+
+    /* 3. Une nouvelle version à date d'effet FUTURE : les pièces d'hier gardent l'ancien RCCM. */
+    await ouvrir('cfg-fiscalite.html');
+    const v3 = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale, C = window.SIGH.core, S = window.SIGH.store, P = window.SIGH.print;
+      const auj = C.iso(C.aujourdhui());
+      const futur = C.iso(C.addDays(auj, 10));
+      const sansMotif = CF.nouvelleVersionIdentite({ rccm: 'RB/NAT/2026-B-999' }, { dateEffet: futur });
+      const r = CF.nouvelleVersionIdentite({ rccm: 'RB/NAT/2026-B-999' }, { dateEffet: futur, motif: 'Sonde 81 : nouveau RCCM' });
+      const hier = C.iso(C.addDays(auj, -1)), apres = C.iso(C.addDays(auj, 11));
+      function entete(date) {
+        const r = P.etat({ titre: 'Sonde', contenu: document.createElement('div'), filtres: false, archive: false, date: date });
+        const t = r.sheet.querySelector('header').textContent + ' ' + r.sheet.querySelector('footer').textContent;
+        r.fermer();
+        return t;
+      }
+      const eh = entete(hier), ea = entete(apres);
+      const v1 = S.collection('identiteLegale').active().filter((v) => v.version === 1)[0];
+      return { ok: r.ok, version: r.version, sansMotif: sansMotif.code, brand: C.BRAND.rccm,
+        hier: C.identiteALaDate(hier).rccm, apres: C.identiteALaDate(apres).rccm,
+        enteteHier: /RB\/NAT\/2016-B-268/.test(eh) && !/2026-B-999/.test(eh), enteteApres: /RB\/NAT\/2026-B-999/.test(ea),
+        ifuApres: C.identiteALaDate(apres).ifu, etat: window.SIGH.parcours.etatConfigurationFiscale('identite').etat,
+        v1fin: v1.fin, veille: C.iso(C.addDays(futur, -1)), futur: futur };
+    });
+    verifier('Une version 2 à date d’effet future se crée (le motif est obligatoire : MOTIF_REQUIS sans lui) ; la v1 reçoit fin = veille de la date d’effet',
+      v3.ok && v3.version === 2 && v3.sansMotif === 'MOTIF_REQUIS' && v3.v1fin === v3.veille, JSON.stringify(v3));
+    verifier('C.BRAND.rccm reste l’ancien ; identiteALaDate rend l’ancien RCCM hier et le nouveau après la date d’effet (IFU inchangé)',
+      v3.brand === 'RB/NAT/2016-B-268' && v3.hier === 'RB/NAT/2016-B-268' && v3.apres === 'RB/NAT/2026-B-999' && v3.ifuApres === '3201642748214', JSON.stringify(v3));
+    verifier('Un état daté d’hier imprime l’ancien RCCM, un état daté après la date d’effet imprime le nouveau', v3.enteteHier && v3.enteteApres, JSON.stringify(v3));
+    verifier('L’état repasse à « modifié depuis la validation »', v3.etat === 'modifie_depuis', v3.etat);
+    await attendreEcritures();
+    await ouvrir('cfg-fiscalite.html');
+    const b3 = await page.evaluate(() => { const n = document.querySelector('[data-etat-configuration]'); return { etat: n ? n.getAttribute('data-etat-configuration') : null, texte: n ? n.textContent : '', versions: document.body.textContent.indexOf('version 2 à partir du') >= 0 }; });
+    verifier('cfg-fiscalite dit « modifiée … depuis la validation du … par TAKI Alimatou » et annonce la version à venir',
+      b3.etat === 'modifie_depuis' && /depuis la validation du .* par TAKI Alimatou/.test(b3.texte) && b3.versions, JSON.stringify(b3).slice(0, 300));
+    await ouvrir('adm-validations.html');
+    const lignes3 = await page.evaluate(() => [...document.querySelectorAll('[data-configuration-fiscale]')].map((x) => x.getAttribute('data-configuration-fiscale')));
+    verifier('adm-validations reporte la ligne « Identité légale à valider »', lignes3.indexOf('identite') >= 0, JSON.stringify(lignes3));
+
+    /* 4. Obligations : CCIB-2 passe du 10 au 15 à effet du 1er juin ; la payée reste, la non payée est régénérée ; exercice clos refusé. */
+    await ouvrir('cfg-comptabilite.html');
+    const o4 = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale, S = window.SIGH.store;
+      const col = S.collection('echeancesFiscales');
+      const ccib1 = col.active().filter((e) => e.code === 'CCIB-1')[0];
+      const ccib2 = col.active().filter((e) => e.code === 'CCIB-2')[0];
+      const snapshot2 = JSON.parse(JSON.stringify(ccib2));
+      /* Le jeu règle CCIB-2 (10 juin, passée de plus de 25 jours) : on la remet due pour la sonde. */
+      col.update(ccib2.id, { paye: false, datePaiement: null, reference: null, valideePar: null });
+      const ref1 = { id: ccib1.id, echeance: ccib1.echeance, reference: ccib1.reference, paye: ccib1.paye };
+      const clos = CF.modifierObligation({ code: 'CCIB-2', valeurs: { jour: 15 }, dateEffet: '2025-06-01', motif: 'Sonde' });
+      const anterieure = CF.modifierObligation({ code: 'CCIB-2', valeurs: { jour: 15 }, dateEffet: '2026-06-01', motif: '' });
+      const r = CF.modifierObligation({ code: 'CCIB-2', valeurs: { jour: 15 }, dateEffet: '2026-06-01', motif: 'Sonde 81 : la DGI reporte au 15' });
+      const apres1 = col.get(ccib1.id);
+      const anc2 = S.raw().echeancesFiscales.filter((e) => e.id === ccib2.id)[0];
+      const nouv2 = col.active().filter((e) => e.code === 'CCIB-2');
+      const hist = S.collection('historiqueObligations').active().filter((h) => h.code === 'CCIB-2');
+      const journal = S.raw().audit.filter((a) => a.action === 'Régénération des échéances' && a.reference === 'CCIB-2')[0];
+      const fiche = S.collection('obligationsFiscales').active().filter((o) => o.code === 'CCIB-2')[0];
+      const enVigueur = CF.obligationsEnVigueur('2026-07-01').filter((o) => o.code === 'CCIB-2')[0];
+      const avantEffet = CF.obligationsEnVigueur('2026-05-15').filter((o) => o.code === 'CCIB-2')[0];
+      const notif = S.collection('notifications').active().filter((n) => n.type === 'echeances_regenerees' && n.poste === 'comptable')[0];
+      /* Une MENSUELLE dont des échéances sont payées : ITS du 10 au 12 à effet du 01/06 : juin et juillet (payées au jeu)
+         doivent rester, août à décembre (non payées) sont régénérées au 12. C'est la sonde qui tombe si les payées bougent. */
+      const itsAvant = col.active().filter((e) => e.code === 'ITS').map((e) => ({ id: e.id, echeance: e.echeance, paye: e.paye, reference: e.reference }));
+      const rIts = CF.modifierObligation({ code: 'ITS', valeurs: { jour: 12 }, dateEffet: '2026-06-01', motif: 'Sonde 81 : ITS au 12' });
+      const itsApres = col.active().filter((e) => e.code === 'ITS').map((e) => ({ id: e.id, echeance: e.echeance, paye: e.paye, reference: e.reference, versionObligation: e.versionObligation || null }));
+      const itsPayeesAvant = itsAvant.filter((e) => e.paye && e.echeance >= '2026-06-01');
+      const itsPayeesIntactes = itsPayeesAvant.every((a) => itsApres.some((b) => b.id === a.id && b.echeance === a.echeance && b.reference === a.reference && b.paye));
+      const itsNouvelles = itsApres.filter((e) => e.versionObligation === '2026-06-01');
+      return { clos: clos.code, anterieure: anterieure.code, ok: r.ok, ech: r.echeances, ref1,
+        its: { ok: rIts.ok, ech: rIts.echeances, payeesAvant: itsPayeesAvant.length, payeesIntactes: itsPayeesIntactes, nouvelles: itsNouvelles.map((e) => e.echeance),
+          toutesAu12: itsNouvelles.every((e) => /-1[2-4]$/.test(e.echeance)), total: itsApres.length },
+        apres1: { echeance: apres1.echeance, reference: apres1.reference, paye: apres1.paye, statut: apres1.statut },
+        anc2: anc2 ? anc2.statut : null, nouv2: nouv2.map((e) => ({ echeance: e.echeance, versionObligation: e.versionObligation, paye: e.paye, regenereePar: e.regenereePar })),
+        hist: hist.map((h) => ({ jour: h.jour, dateFin: h.dateFin, dateEffet: h.dateEffet == null ? null : h.dateEffet, retiree: !!h.retiree })),
+        journal: !!journal, fiche: { jour: fiche.jour, dateEffet: fiche.dateEffet, valideLe: fiche.valideLe == null }, enVigueur: enVigueur && enVigueur.jour, avantEffet: avantEffet && avantEffet.jour,
+        notif: !!notif, snapshot2: snapshot2 };
+    });
+    sauve.ccib2 = o4.snapshot2;
+    verifier('Une date d’effet dans un exercice clos est refusée (EXERCICE_CLOS) et un motif vide aussi (MOTIF_REQUIS)', o4.clos === 'EXERCICE_CLOS' && o4.anterieure === 'MOTIF_REQUIS', JSON.stringify([o4.clos, o4.anterieure]));
+    verifier('CCIB-2 passe du 10 au 15 à effet du 01/06/2026 : l’échéance CCIB-1 PAYÉE garde sa date et sa quittance',
+      o4.ok && o4.apres1.echeance === o4.ref1.echeance && o4.apres1.reference === o4.ref1.reference && o4.apres1.paye && o4.apres1.statut === 'actif', JSON.stringify([o4.ref1, o4.apres1]));
+    verifier('L’échéance CCIB-2 non payée est archivée et recréée au 15/06/2026 avec versionObligation ; comptes annoncés 0 conservée / 1 régénérée / 1 recréée',
+      o4.anc2 === 'archive' && o4.nouv2.length === 1 && o4.nouv2[0].echeance === '2026-06-15' && o4.nouv2[0].versionObligation === '2026-06-01' && !o4.nouv2[0].paye
+      && o4.nouv2[0].regenereePar === 'TAKI Alimatou' && o4.ech.archivees === 1 && o4.ech.creees === 1 && o4.ech.conservees === 0, JSON.stringify([o4.anc2, o4.nouv2, o4.ech]));
+    verifier('Le journal porte « Régénération des échéances », le Comptable reçoit une tâche de poste, et l’historique garde la version d’origine (jour 10, fin 31/05/2026)',
+      o4.journal && o4.notif && o4.hist.length === 1 && o4.hist[0].jour === 10 && o4.hist[0].dateFin === '2026-05-31' && o4.hist[0].dateEffet === null && !o4.hist[0].retiree, JSON.stringify([o4.journal, o4.notif, o4.hist]));
+    verifier('obligationsALaDate rend le 15 après la date d’effet et le 10 avant ; la fiche porte dateEffet et perd sa validation',
+      o4.enVigueur === 15 && o4.avantEffet === 10 && o4.fiche.jour === 15 && o4.fiche.dateEffet === '2026-06-01' && o4.fiche.valideLe === true, JSON.stringify([o4.enVigueur, o4.avantEffet, o4.fiche]));
+    verifier('ITS (mensuelle) du 10 au 12 à effet du 01/06 : les échéances PAYÉES de juin et juillet restent intactes (date, quittance), les non payées sont régénérées au 12 ; douze échéances au total',
+      o4.its.ok && o4.its.payeesAvant >= 1 && o4.its.payeesIntactes && o4.its.ech.conservees === o4.its.payeesAvant && o4.its.ech.archivees === o4.its.ech.creees
+      && o4.its.nouvelles.length === o4.its.ech.creees && o4.its.toutesAu12 && o4.its.total === 12, JSON.stringify(o4.its));
+    await attendreEcritures();
+    await ouvrir('cfg-comptabilite.html');
+    const ui4 = await page.evaluate(async () => {
+      const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+      const boutons = [...document.querySelectorAll('#page-content button[title="Modifier (version datée)"]')];
+      /* La ligne porteuse : une rangée de tableau, ou la ligne d'un bloc (Patente, CCIB, TVM). */
+      const btn = boutons.find((b) => /CCIB-2|2e tranche/.test((b.closest('tr') || b.closest('.items-baseline') || b.parentNode).textContent));
+      if (!btn) return { bouton: false, nb: boutons.length };
+      btn.click(); await attendre(300);
+      const titre = (document.querySelector('[role=dialog] h2') || {}).textContent || '';
+      const jour = (document.getElementById('f_jour') || {}).value;
+      const cont = [...document.querySelectorAll('[role=dialog] button')].find((b) => /Continuer/.test(b.textContent));
+      if (!cont) return { bouton: true, titre, jour, continuer: false };
+      cont.click(); await attendre(300);
+      const portee = (document.querySelector('[role=dialog] h2') || {}).textContent || '';
+      const impact = (document.querySelector('[role=dialog]') || {}).textContent || '';
+      const ann = [...document.querySelectorAll('[role=dialog] button')].find((b) => /Annuler/.test(b.textContent)); if (ann) ann.click();
+      return { bouton: true, nb: boutons.length, titre, jour, continuer: true, portee, impact: /CONSERVÉE/.test(impact) && /RÉGÉNÉRÉE/.test(impact),
+        texte15: /15 juin/.test(document.body.textContent), historique: /Sonde 81 : la DGI reporte au 15/.test(document.body.textContent) };
+    });
+    verifier('À l’écran : le crayon de CCIB-2 ouvre la fiche (jour 15), « Continuer » ouvre « Portée de la modification » qui annonce conservées et régénérées ; la page montre « 15 juin » et l’historique motivé',
+      ui4.bouton && /CCIB-2/.test(ui4.titre) && String(ui4.jour) === '15' && /Portée de la modification/.test(ui4.portee) && ui4.impact && ui4.texte15 && ui4.historique, JSON.stringify(ui4).slice(0, 400));
+
+    /* 5. ORTB : le seuil relevé à effet du 1er août ne touche pas le bulletin de juin. */
+    await page.evaluate((s) => window.SIGH.store.setSession(s), sauve.etat.session);
+    await ouvrir('m11-ortb.html');
+    const o5 = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale, S = window.SIGH.store, PA = window.SIGH.paie;
+      if (!PA || !PA.calculOrtb) return { expose: false };
+      const bul = S.collection('bulletins').insert({ employeId: 'SONDE81', periode: 'Juin 2026', annee: 2026, mois: 5, ortbTele: 3000, ortbRadio: 0, ortb: 3000, sonde: 'Vague 81' }).record;
+      const r = CF.modifierOrtb({ valeurs: { seuilTele: 80000 }, dateEffet: '2026-08-01', motif: 'Sonde 81 : seuil relevé par la Direction' });
+      const ancien = PA.calculOrtb(70000, 5, '2026-06-01'), nouveau = PA.calculOrtb(70000, 5, '2026-09-01');
+      const radioA = PA.calculOrtb(70000, 2, '2026-06-01'), radioN = PA.calculOrtb(70000, 2, '2026-09-01');
+      const sansDate = PA.calculOrtb(70000, 5);
+      const b2 = S.collection('bulletins').get(bul.id);
+      const fiche = CF.ficheOrtb();
+      return { expose: true, ok: r.ok, ancienTele: (ancien.parCategorie.tele || {}).du === true, ancienMontant: ancien.montant,
+        nouveauTele: !!nouveau.parCategorie.tele, nouveauMontant: nouveau.montant, radioA: radioA.montant, radioN: radioN.montant,
+        sansDate: sansDate.montant, bulletin: b2.ortbTele, seuil: fiche.seuilTele, seuilMin: fiche.redevances.filter((x) => x.id === 'tele')[0].seuilMin,
+        cumul: fiche.cumulMaximum, dateEffet: fiche.dateEffet, hist: S.collection('historiqueObligations').active().filter((h) => h.code === 'ORTB-PARAMETRES').length, bulId: bul.id,
+        ecran: /80 000|80 000/.test(document.body.textContent) };
+    });
+    sauve.bulId = o5.bulId;
+    verifier('ORTB : seuil 80 000 à effet du 01/08 ; calculOrtb(70000, juin, date de juin) doit la télé (3 000), la même à une date de septembre ne la doit plus ; la radio reste due en mars dans les deux cas',
+      o5.expose && o5.ok && o5.ancienTele && o5.ancienMontant === 3000 && !o5.nouveauTele && o5.nouveauMontant === 0 && o5.radioA === 1000 && o5.radioN === 1000 && o5.sansDate === 0, JSON.stringify(o5));
+    verifier('Le bulletin de juin déjà émis garde ses 3 000 F ; la fiche ORTB porte seuil 80 000, seuilMin 80 001, cumul 4 000, date d’effet, et l’historique la version d’origine',
+      o5.bulletin === 3000 && o5.seuil === 80000 && o5.seuilMin === 80001 && o5.cumul === 4000 && o5.dateEffet === '2026-08-01' && o5.hist === 1, JSON.stringify(o5));
+
+    /* 6. Droits : la Direction édite et valide, ne retire pas ; le moteur refuse le retrait (RETRAIT_RESERVE). */
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'direction', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', poste: 'Direction', identifiant: 'c.bassongui' }));
+    await ouvrir('cfg-comptabilite.html');
+    const d6 = await page.evaluate(() => ({
+      modifier: document.querySelectorAll('#page-content button[title="Modifier (version datée)"]').length,
+      retirer: document.querySelectorAll('#page-content button[title="Retirer (version datée)"]').length,
+      valider: !![...document.querySelectorAll('#page-content button')].find((b) => /Valider les obligations/.test(b.textContent)),
+      refus: window.SIGH.configurationFiscale.retirerObligation({ code: 'TVM', dateEffet: '2026-09-01', motif: 'Sonde' }).code,
+    }));
+    verifier('La Direction voit Modifier et Valider mais aucun « Retirer » (CFG annuler: false), et le moteur refuse le retrait (RETRAIT_RESERVE)',
+      d6.modifier > 0 && d6.retirer === 0 && d6.valider && d6.refus === 'RETRAIT_RESERVE', JSON.stringify(d6));
+
+    /* 7. Restauration : versions créées archivées, fiches d'origine rétablies, validation d'origine (aucune), session rendue. */
+    await page.evaluate((s) => window.SIGH.store.setSession(s), sauve.etat.session);
+    await ouvrir('cfg-comptabilite.html');
+    const fin = await page.evaluate((sauve) => {
+      const S = window.SIGH.store, C = window.SIGH.core, CF = window.SIGH.configurationFiscale, PR = window.SIGH.parcours;
+      S.collection('bulletins').archive(sauve.bulId, 'Sonde 81 : restauration');
+      const colI = S.collection('identiteLegale');
+      colI.active().filter((v) => v.version > 1).forEach((v) => colI.archive(v.id, 'Sonde 81 : restauration'));
+      const v1 = sauve.etat.identite.filter((v) => v.version === 1)[0];
+      const patch = {};
+      C.CHAMPS_IDENTITE.forEach((k) => { if (v1[k] !== undefined) patch[k] = v1[k]; });
+      colI.update(v1.id, Object.assign(patch, { fin: null, valideLe: null, validePar: null, modifieLe: null, modifiePar: null }));
+      const colO = S.collection('obligationsFiscales');
+      sauve.etat.obligations.forEach((o) => {
+        const cur = colO.get(o.id); if (!cur) return;
+        if (cur.statut === 'archive') colO.restore(o.id);
+        const p = { dateEffet: null, modifieLe: null, modifiePar: null, motif: null, valideLe: null, validePar: null };
+        ['jour', 'mois', 'part', 'libelle', 'periodicite', 'declaration', 'note', 'seuilTele', 'redevances', 'cumulMaximum'].forEach((k) => { if (o[k] !== undefined) p[k] = o[k]; });
+        colO.update(o.id, p);
+      });
+      const colH = S.collection('historiqueObligations');
+      colH.active().forEach((h) => colH.archive(h.id, 'Sonde 81 : restauration'));
+      /* Les échéances : celles que la sonde a fait régénérer sont archivées, celles qu'elle a fait archiver (motif « Régénérée ») reviennent. */
+      const colE = S.collection('echeancesFiscales');
+      colE.active().filter((e) => e.regenereePar).forEach((e) => colE.archive(e.id, 'Sonde 81 : restauration'));
+      colE.archived().filter((e) => /^Régénérée/.test(e._motifArchivage || '')).forEach((e) => colE.restore(e.id));
+      colE.update(sauve.ccib2.id, { paye: sauve.ccib2.paye, datePaiement: sauve.ccib2.datePaiement || null, reference: sauve.ccib2.reference || null, valideePar: sauve.ccib2.valideePar || null });
+      S.setReglage('impression.doubleLogo', sauve.etat.reglages.doubleLogo);
+      S.setReglage('impression.filigrane', sauve.etat.reglages.filigrane);
+      S.appliquerIdentite();
+      const ortb = CF.ficheOrtb();
+      return { slogan: C.BRAND.slogan, rccm: C.BRAND.rccm, tel: C.BRAND.telephones.length,
+        etatI: PR.etatConfigurationFiscale('identite').etat, etatO: PR.etatConfigurationFiscale('obligations').etat,
+        versions: colI.active().length, ccib2: colE.get(sauve.ccib2.id).paye && colE.get(sauve.ccib2.id).echeance === sauve.ccib2.echeance,
+        ccib2Actives: colE.active().filter((e) => e.code === 'CCIB-2').length, itsActives: colE.active().filter((e) => e.code === 'ITS').length,
+        regenereesActives: colE.active().filter((e) => e.regenereePar).length,
+        hist: colH.active().length, seuil: ortb.seuilTele, seuilMin: ortb.redevances.filter((x) => x.id === 'tele')[0].seuilMin,
+        jourCcib2: CF.obligationsEnVigueur().filter((o) => o.code === 'CCIB-2')[0].jour, role: S.session().role };
+    }, sauve);
+    await attendreEcritures();
+    verifier('Le scénario restaure l’état : identité v1 d’origine non validée, obligations et ORTB d’origine (CCIB-2 le 10, seuil 60 000), historique vide, CCIB-2 payée, session rendue',
+      fin.slogan === 'Votre santé, notre raison de vivre' && fin.rccm === 'RB/NAT/2016-B-268' && fin.tel === 2 && fin.etatI === 'a_valider' && fin.etatO === 'a_valider'
+      && fin.versions === 1 && fin.ccib2 && fin.ccib2Actives === 1 && fin.itsActives === 12 && fin.regenereesActives === 0 && fin.hist === 0 && fin.seuil === 60000 && fin.seuilMin === 60001 && fin.jourCcib2 === 10 && fin.role === sauve.etat.session.role,
+      JSON.stringify(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  /* =========================================================================
+   * Vague 82 : les corrections « fausses sauvegardes » écrivent vraiment, ou refusent en nommant
+   * -------------------------------------------------------------------------
+   * Chaque geste est mené par l'écran (ou par le moteur exposé) et la sonde relit le MAGASIN, jamais
+   * un texte copié ni un rang : une ligne se retrouve par sa référence. Ce scénario MUTE des fiches
+   * (lignes d'écriture, dépense, stock, ordonnance, souscripteur, document, facture, réglage de
+   * reprise, état d'exercice) et les RESTAURE en sortant : ce qu'il a inséré est retiré du tableau
+   * de la collection, ce qu'il a modifié est remis à sa valeur d'origine.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 82 : les fausses sauvegardes corrigées écrivent vraiment, ou refusent en nommant (lettrage, dépense, pertes, reprise, pharmacie, édition, authentification, conventions, facture, sauvegarde, MECeF)');
+    const erreurs82 = [];
+    const ouvrir82 = async (p) => { erreurs82.push(...erreursJS); await ouvrir(p); };
+    const toastTexte = () => page.evaluate(() => (document.querySelector('#toast-host') || { textContent: '' }).textContent.replace(/\s+/g, ' '));
+    const viderToasts = () => page.evaluate(() => { const h = document.querySelector('#toast-host'); if (h) h.innerHTML = ''; });
+    /* Pose des champs dans la DERNIÈRE modale (les ids f_<nom> se répètent d'une modale à l'autre). */
+    const poserChamps = (champs) => page.evaluate((champs) => {
+      const d = [...document.querySelectorAll('[role="dialog"]')].pop();
+      if (!d) return false;
+      return Object.keys(champs).every((n) => {
+        const e = d.querySelector('#f_' + n);
+        if (!e) return false;
+        e.value = champs[n];
+        ['input', 'change'].forEach((t) => e.dispatchEvent(new Event(t, { bubbles: true })));
+        return true;
+      });
+    }, champs);
+    const clicExact = (label, dansModale) => page.evaluate(async (label, dlg) => {
+      const racine = dlg ? [...document.querySelectorAll('[role="dialog"]')].pop() : document;
+      if (!racine) return false;
+      const b = [...racine.querySelectorAll('button')].find((x) => x.textContent.replace(/\s+/g, ' ').trim() === label);
+      if (!b) return false;
+      b.click();
+      await new Promise((r) => setTimeout(r, 500));
+      return true;
+    }, label, !!dansModale);
+    /* Cherche la ligne par sa RÉFÉRENCE (recherche du tableau) puis clique la commande nommée. */
+    const agirLigne = (ref, titre) => page.evaluate(async (ref, titre) => {
+      const champ = document.querySelector('#page-content input[type="search"]');
+      if (champ) { champ.value = ref; champ.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 450)); }
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => t.textContent.includes(ref));
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => ((x.title || '') + ' ' + (x.getAttribute('aria-label') || '') + ' ' + x.textContent).indexOf(titre) >= 0);
+      if (!b) return false;
+      b.click();
+      await new Promise((r) => setTimeout(r, 500));
+      return true;
+    }, ref, titre);
+    /* Retire du tableau d'une collection les fiches que le scénario a posées (aucune suppression métier : c'est du jeu d'essai). */
+    const RETIRER = `(S, nom, pred) => { const t = S.collection(nom).all(); for (let i = t.length - 1; i >= 0; i--) { if (pred(t[i])) t.splice(i, 1); } }`;
+
+    /* ---- 1. Lettrage : posé sur toutes les lignes ; refusé sur un exercice CLOS, sans rien modifier ---- */
+    await ouvrir82('m12-depenses.html');
+    const l1 = await page.evaluate((RET) => {
+      const S = window.SIGH.store, X = window.SIGH.exercice, C = window.SIGH.core, col = S.collection('ecritures');
+      const date = C.iso(C.aujourdhui());
+      const poser = (n, debit, credit) => col.insert({ compte: '411000', date, statut: 'validee', journal: 'OD', libelle: 'Sonde 82', numero: n, debit, credit, sonde: 'Vague 82' });
+      const a = [poser('SONDE82-LA', 7000, 0), poser('SONDE82-LB', 0, 7000)];
+      const ids = (x) => x.map((r) => r && r.record.id);
+      const ok = X.lettrer('411000', ids(a));
+      const lettres = ids(a).map((id) => col.get(id).lettrage);
+      const b = [poser('SONDE82-LC', 3000, 0), poser('SONDE82-LD', 0, 3000)];
+      const fiche = X.de(X.anneeDe(date)); const etatAvant = fiche.etat;
+      let refus;
+      fiche.etat = 'clos';
+      try { refus = X.lettrer('411000', ids(b)); } finally { fiche.etat = etatAvant; }
+      const apresRefus = ids(b).map((id) => col.get(id).lettrage);
+      (new Function('return ' + RET))()(S, 'ecritures', (e) => e.sonde === 'Vague 82');
+      S.save();
+      return { ok: ok.ok, code: ok.code, nb: ok.lignes, lettres, refusOk: refus.ok, refusMotif: refus.motif || '', apresRefus, etatRestaure: fiche.etat === etatAvant };
+    }, RETIRER);
+    verifier('Lettrage : posé sur les deux lignes (même code) ; sur un exercice clos, LETTRAGE_REFUSE et aucune ligne modifiée',
+      l1.ok === true && l1.nb === 2 && l1.lettres.every((x) => x && x === l1.code)
+      && l1.refusOk === false && /LETTRAGE_REFUSE/.test(l1.refusMotif) && l1.apresRefus.every((x) => !x) && l1.etatRestaure, JSON.stringify(l1));
+
+    /* ---- 2. Dépense : refusée en exercice clos = rien d'écrit ; en exercice ouvert = dépense ET écritures, RG-10 ---- */
+    const saisirDepense = async () => {
+      await clicExact('Nouvelle dépense', false);
+      const lignes = [['Sonde82 gants', 4200], ['Sonde82 compresses', 800]];
+      for (const [lib, m] of lignes) {
+        await clicExact('Ajouter une ligne', true);
+        await poserChamps({ libelle: lib, montant: m });
+        await clicExact('Ajouter', true);
+      }
+      await viderToasts();
+      await clicExact('Enregistrer', true);
+      await pause(500);
+    };
+    const compte2 = () => page.evaluate(() => ({ dep: window.SIGH.store.collection('depenses').all().length, ecr: window.SIGH.store.collection('ecritures').all().length }));
+    const avant2 = await compte2();
+    await page.evaluate(() => { const X = window.SIGH.exercice, C = window.SIGH.core; const f = X.de(X.anneeDe(C.iso(C.aujourdhui()))); window.__s82 = { f, etat: f.etat }; f.etat = 'clos'; });
+    await saisirDepense();
+    const toastClos = await toastTexte();
+    const apresClos = await compte2();
+    await clicExact('Annuler', true);
+    await page.evaluate(() => { window.__s82.f.etat = window.__s82.etat; });
+    await saisirDepense();
+    const apresOuvert = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const dep = S.collection('depenses').all().filter((d) => (d.lignes || []).some((l) => l.libelle === 'Sonde82 gants'))[0];
+      if (!dep) return { dep: false };
+      const ecr = S.collection('ecritures').all().filter((e) => e.pieceId === dep.id);
+      const somme = (k) => ecr.reduce((n, e) => n + (e[k] || 0), 0);
+      return { dep: true, montant: dep.montant, nbEcr: ecr.length, debit: somme('debit'), credit: somme('credit'), ids: (dep.ecritureIds || []).length, id: dep.id };
+    });
+    await page.evaluate((RET, id) => {
+      const S = window.SIGH.store, r = (new Function('return ' + RET))();
+      r(S, 'ecritures', (e) => e.pieceId === id); r(S, 'depenses', (d) => d.id === id); S.save();
+    }, RETIRER, apresOuvert.id || '');
+    verifier('Dépense : sur exercice clos, refus dit (« refusée ») et ni dépense ni écriture conservée ; sur exercice ouvert, la dépense ET ses 3 écritures existent, débit = crédit = 5 000',
+      /refus/i.test(toastClos) && apresClos.dep === avant2.dep && apresClos.ecr === avant2.ecr
+      && apresOuvert.dep && apresOuvert.montant === 5000 && apresOuvert.nbEcr === 3 && apresOuvert.ids === 3 && apresOuvert.debit === 5000 && apresOuvert.credit === 5000,
+      JSON.stringify({ toastClos: toastClos.slice(0, 160), avant2, apresClos, apresOuvert }));
+
+    /* ---- 3. Pertes : décrémente le magasin choisi ET le total ; au-delà du stock du magasin, refus nommé (RG-03) ---- */
+    await ouvrir82('m6-pertes.html');
+    const p3 = await page.evaluate(() => {
+      const p = window.SIGH.store.collection('produits').active().filter((x) => x.stockDetail >= 3 && x.stockGros >= 2)[0];
+      return p ? { id: p.id, nom: p.designation, detail: p.stockDetail, gros: p.stockGros, total: p.stock } : null;
+    });
+    const lirePertes = () => page.evaluate((id) => {
+      const S = window.SIGH.store, p = S.collection('produits').get(id);
+      return { detail: p.stockDetail, gros: p.stockGros, total: p.stock, mvts: S.collection('mouvements').all().filter((m) => m.justificatif === 'SONDE82-PERTE').length,
+        mvt: S.collection('mouvements').all().filter((m) => m.justificatif === 'SONDE82-PERTE').map((m) => ({ q: m.quantite, mag: m.stockType, sens: m.sens, produitId: m.produitId }))[0] };
+    }, p3.id);
+    const declarer = async (magasin, q) => {
+      await clicExact('Déclarer une perte', false);
+      await poserChamps({ produitId: p3.id, magasin, quantite: q, justificatif: 'SONDE82-PERTE', constatePar: 'Sonde' });
+      await viderToasts();
+      await clicExact('Déclarer la perte', true);
+      await pause(500);
+    };
+    await declarer('gros', 1);
+    const apresPerte = await lirePertes();
+    await declarer('detail', p3.detail + 1);
+    const toastPerte = await toastTexte();
+    const apresRefusPerte = await lirePertes();
+    await page.evaluate((RET, p3) => {
+      const S = window.SIGH.store, r = (new Function('return ' + RET))();
+      S.collection('produits').update(p3.id, { stockDetail: p3.detail, stockGros: p3.gros, stock: p3.total });
+      r(S, 'mouvements', (m) => m.justificatif === 'SONDE82-PERTE'); S.save();
+    }, RETIRER, p3);
+    verifier('Pertes : 1 unité du magasin central décroît stockGros ET stock (détail intact, un mouvement de sortie) ; au-delà du stock du magasin, refus « Perte supérieure » et rien d’écrit (RG-03)',
+      !!p3 && apresPerte.gros === p3.gros - 1 && apresPerte.total === p3.total - 1 && apresPerte.detail === p3.detail && apresPerte.mvts === 1
+      && apresPerte.mvt.q === 1 && apresPerte.mvt.mag === 'gros' && apresPerte.mvt.sens === 'sortie'
+      && /Perte supérieure/.test(toastPerte) && apresRefusPerte.mvts === 1 && apresRefusPerte.detail === p3.detail && apresRefusPerte.gros === p3.gros - 1 && apresRefusPerte.total === p3.total - 1,
+      JSON.stringify({ p3, apresPerte, toastPerte: toastPerte.slice(0, 140), apresRefusPerte }));
+
+    /* ---- 4. Reprise de stock : la seconde validation rend REPRISE_DEJA_VALIDEE ---- */
+    await ouvrir82('m6-import-grand-stock.html');
+    const r4a = await page.evaluate(() => { const S = window.SIGH.store; const v = S.reglage('repriseStock', null); S.setReglage('repriseStock', null); return v; });
+    const validerReprise = async () => {
+      await viderToasts();
+      await clicExact('Valider la reprise', false);
+      await pause(300);
+      await clicExact('Valider la reprise', true);
+      await pause(500);
+      return toastTexte();
+    };
+    const t1 = await validerReprise();
+    const f1 = await page.evaluate(() => JSON.stringify(window.SIGH.store.reglage('repriseStock', null)));
+    const t2 = await validerReprise();
+    const f2 = await page.evaluate(() => JSON.stringify(window.SIGH.store.reglage('repriseStock', null)));
+    await page.evaluate((v) => { window.SIGH.store.setReglage('repriseStock', v); }, r4a);
+    verifier('Reprise de stock : la première validation écrit la fiche (« Reprise validée »), la seconde rend REPRISE_DEJA_VALIDEE et ne réécrit rien',
+      /Reprise validée/.test(t1) && f1 !== 'null' && /REPRISE_DEJA_VALIDEE/.test(t2) && f2 === f1, JSON.stringify({ t1: t1.slice(0, 80), t2: t2.slice(0, 120), egal: f1 === f2 }));
+
+    /* ---- 5. Pharmacie : délivrance = mouvement du DÉTAIL ; ordonnance « servie » seulement quand TOUTES ses lignes le sont ---- */
+    await ouvrir82('m6-pharmacie-externe.html');
+    const o5 = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const ps = S.collection('produits').active().filter((x) => x.stockDetail >= 3).slice(0, 2);
+      const pat = S.collection('patients').active()[0];
+      const ord = S.collection('ordonnances').insert({ numero: 'ORD-SONDE82', date: '2099-01-01', patient: pat.nom + ' ' + pat.prenom, patientCode: pat.code, statutPaiement: 'soldee',
+        medicaments: ps.map((p) => ({ produit: p.designation, produitId: p.id, quantite: 1, posologie: '1/j', voie: 'orale' })) }).record;
+      return { id: ord.id, produits: ps.map((p) => ({ id: p.id, detail: p.stockDetail, stock: p.stock })) };
+    });
+    await ouvrir82('m6-pharmacie-externe.html');
+    const lire5 = () => page.evaluate((id) => {
+      const S = window.SIGH.store, o = S.collection('ordonnances').get(id);
+      const mv = S.collection('mouvements').all().filter((m) => m.ordonnanceId === id);
+      return { statut: o.statutDispensation || null, servies: (o.lignesServies || []).slice(), nb: mv.length, types: mv.map((m) => m.stockType + ':' + m.sens + ':' + m.quantite + ':' + m.justificatif) };
+    }, o5.id);
+    const delivrer5 = async () => { await agirLigne('ORD-SONDE82', 'Délivrer'); await pause(300); await clicExact('Délivrer', true); await pause(600); };
+    await delivrer5();
+    const s5a = await lire5();
+    await delivrer5();
+    const s5b = await lire5();
+    await page.evaluate((RET, o5) => {
+      const S = window.SIGH.store, r = (new Function('return ' + RET))();
+      o5.produits.forEach((p) => S.collection('produits').update(p.id, { stockDetail: p.detail, stock: p.stock }));
+      r(S, 'mouvements', (m) => m.ordonnanceId === o5.id); r(S, 'ordonnances', (o) => o.id === o5.id); S.save();
+    }, RETIRER, o5);
+    verifier('Pharmacie : chaque délivrance écrit un mouvement de sortie du DÉTAIL (justificatif = ordonnance) ; l’ordonnance reste non servie après la 1re ligne et n’est « servie » qu’à la 2e',
+      o5.produits.length === 2 && s5a.nb === 1 && s5a.statut !== 'servie' && s5a.servies.length === 1
+      && s5b.nb === 2 && s5b.statut === 'servie' && s5b.servies.length === 2 && s5b.types.every((t) => /^detail:sortie:1:Ordonnance ORD-SONDE82$/.test(t)),
+      JSON.stringify({ s5a, s5b }));
+
+    /* ---- 6. Édition qui recalcule les dérivés : changer le patient d'un document M1 met à jour code et patient ---- */
+    await ouvrir82('m1-documents.html');
+    const d6 = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const [p1, p2] = S.collection('patients').active().filter((p) => p.code && p.nom);
+      const modele = S.collection('documentsPatient').active()[0] || {};
+      const doc = S.collection('documentsPatient').insert({ reference: 'DOC-SONDE82', patientId: p1.id, code: p1.code, patient: p1.nom + ' ' + p1.prenom,
+        type: modele.type, date: modele.date || '2026-08-16', etat: 'valide', depose: 'Sonde' }).record;
+      return { id: doc.id, p1: p1.code, p2: { id: p2.id, code: p2.code, nom: p2.nom + ' ' + p2.prenom } };
+    });
+    await ouvrir82('m1-documents.html');
+    const ouvert6 = await agirLigne('DOC-SONDE82', 'Modifier');
+    const pose6 = await poserChamps({ patientId: d6.p2.id });
+    await clicExact('Enregistrer', true);
+    await pause(500);
+    const a6 = await page.evaluate((id) => { const x = window.SIGH.store.collection('documentsPatient').get(id); return { code: x.code, patient: x.patient, patientId: x.patientId }; }, d6.id);
+    await page.evaluate((RET, id) => { const S = window.SIGH.store; (new Function('return ' + RET))()(S, 'documentsPatient', (x) => x.id === id); S.save(); }, RETIRER, d6.id);
+    verifier('Édition d’un document M1 : changer le patient met à jour `patientId`, `code` ET `patient` (les colonnes ne gardent pas l’ancien dossier)',
+      ouvert6 && pose6 && a6.patientId === d6.p2.id && a6.code === d6.p2.code && a6.patient === d6.p2.nom && a6.code !== d6.p1, JSON.stringify({ ouvert6, pose6, a6, d6 }));
+
+    /* ---- 7. Authentification : auth-reset ne change aucun mot de passe et le dit ; « Se souvenir » absent de la connexion ---- */
+    const posts = [];
+    const ecouteur = (rq) => { if (rq.method() === 'POST' && /auth\.php/.test(rq.url())) posts.push(rq.url()); };
+    page.on('request', ecouteur);
+    await ouvrir82('auth-reset.html');
+    const reset = await page.evaluate(async () => {
+      const champs = [...document.querySelectorAll('input[type="password"]')];
+      champs.forEach((c) => { c.value = 'Sonde82-Motdepasse'; c.dispatchEvent(new Event('input', { bubbles: true })); });
+      const b = [...document.querySelectorAll('button')].find((x) => /Définir le mot de passe/.test(x.textContent));
+      if (!b) return { bouton: false };
+      b.click();
+      await new Promise((r) => setTimeout(r, 600));
+      return { bouton: true, nbChamps: champs.length, texte: document.body.textContent.replace(/\s+/g, ' '), page: location.pathname.split('/').pop() };
+    });
+    page.off('request', ecouteur);
+    await page.goto('http://127.0.0.1:' + PORT + '/index.php', { waitUntil: 'domcontentloaded' });
+    await pause(2500);
+    const idx = await page.evaluate(() => ({ mdp: document.querySelectorAll('input[type="password"]').length, cases: document.querySelectorAll('input[type="checkbox"]').length,
+      souvenir: /souvenir/i.test(document.body.textContent) }));
+    verifier('Authentification : auth-reset annonce « non modifié », reste sur sa page et n’envoie aucune écriture à l’authentification ; la connexion ne propose plus « Se souvenir de ce poste »',
+      reset.bouton && reset.nbChamps === 2 && /non modifié/i.test(reset.texte) && /auth-reset/.test(reset.page) && posts.length === 0
+      && idx.mdp >= 1 && idx.cases === 0 && !idx.souvenir, JSON.stringify({ reset: { b: reset.bouton, n: reset.nbChamps, page: reset.page, t: /non modifié/i.test(reset.texte) }, posts: posts.length, idx }));
+
+    /* ---- 8. Conventions M9 : changer la compagnie d'un souscripteur qui porte des garanties est refusé, en nommant le motif ---- */
+    await ouvrir82('m9-conventions.html');
+    const s8 = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const sous = S.collection('souscripteurs').insert({ nom: 'SONDE82 Employeur', assureur: 'NSIA', assureurNom: 'NSIA ASSURANCE', police: 'P-SONDE82', categorie: 'entreprise' }).record;
+      const gar = S.collection('garanties').insert({ souscripteurId: sous.id, assureur: 'NSIA', code: 'SONDE82', libelle: 'Sonde', categorie: 'consultation', taux: 50 }).record;
+      return { id: sous.id, gar: gar.id };
+    });
+    await ouvrir82('m9-conventions.html');
+    const ouvert8 = await agirLigne('SONDE82 Employeur', 'Modifier');
+    const pose8 = await poserChamps({ assureur: 'SUNU' });
+    await viderToasts();
+    await clicExact('Enregistrer', true);
+    await pause(500);
+    const toast8 = await toastTexte();
+    const a8 = await page.evaluate((id) => { const x = window.SIGH.store.collection('souscripteurs').get(id); return { assureur: x.assureur, nom: x.assureurNom }; }, s8.id);
+    await page.evaluate((RET, s8) => { const S = window.SIGH.store, r = (new Function('return ' + RET))(); r(S, 'garanties', (g) => g.id === s8.gar); r(S, 'souscripteurs', (x) => x.id === s8.id); S.save(); }, RETIRER, s8);
+    verifier('Conventions M9 : changer la compagnie d’un souscripteur qui porte des garanties est refusé (« Changement de compagnie refusé », garanties nommées) et la fiche garde sa compagnie',
+      ouvert8 && pose8 && /Changement de compagnie refusé/.test(toast8) && /garantie/i.test(toast8) && a8.assureur === 'NSIA' && a8.nom === 'NSIA ASSURANCE', JSON.stringify({ ouvert8, pose8, toast8: toast8.slice(0, 200), a8 }));
+
+    /* ---- 9. Facture émise avec versement partiel : chaque ligne porte `id` et `statutPaiement` ---- */
+    await ouvrir82('m8-facturation.html');
+    const pat9 = await page.evaluate(() => { const p = window.SIGH.store.collection('patients').active().filter((x) => !x.assureur && !x.personnelId)[0]; return p ? p.id : null; });
+    const saisie9 = await page.evaluate(async (pat) => {
+      const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+      const evt = (e, t) => e.dispatchEvent(new Event(t, { bubbles: true }));
+      const c = document.querySelector('.combo');
+      if (c && pat) { c.value = pat; evt(c, 'change'); await attendre(300); }
+      const nature = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'libre'));
+      nature.value = 'libre'; evt(nature, 'change'); await attendre(200);
+      const libre = document.querySelector('input[placeholder="Désignation de la prestation"]');
+      const pu = document.querySelector('input.w-32[type="number"]');
+      const ajouter = () => [...document.querySelectorAll('button')].find((b) => b.textContent.replace(/\s+/g, ' ').trim() === 'Ajouter');
+      for (const [lib, prix] of [['Sonde82 prestation A', 1000], ['Sonde82 prestation B', 2000]]) {
+        libre.value = lib; evt(libre, 'input'); pu.value = prix; evt(pu, 'input');
+        ajouter().click(); await attendre(250);
+      }
+      const regle = [...document.querySelectorAll('label')].find((l) => /Montant réglé/.test(l.textContent)).parentElement.querySelector('input');
+      regle.value = 1000; evt(regle, 'input');
+      const b = [...document.querySelectorAll('button')].find((x) => /Enregistrer et encaisser/.test(x.textContent));
+      if (!b) return { bouton: false };
+      b.click(); await attendre(800);
+      return { bouton: true };
+    }, pat9);
+    const f9 = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const fs = S.collection('factures').all().filter((f) => (f.lignes || []).some((l) => /Sonde82 prestation/.test(l.designation)));
+      const lignes = fs.reduce((a, f) => a.concat(f.lignes || []), []).filter((l) => /Sonde82 prestation/.test(l.designation));
+      return { nbFactures: fs.length, ids: fs.map((f) => f.id), numeros: fs.map((f) => f.numero), lignes: lignes.map((l) => ({ d: l.designation, id: l.id, s: l.statutPaiement })) };
+    });
+    await page.evaluate((RET, ids, numeros) => {
+      const S = window.SIGH.store, r = (new Function('return ' + RET))();
+      r(S, 'ecritures', (e) => ids.indexOf(e.pieceId) >= 0 || numeros.indexOf(e.numero) >= 0 || numeros.indexOf(e.pieceNumero) >= 0);
+      r(S, 'factures', (f) => ids.indexOf(f.id) >= 0); S.save();
+    }, RETIRER, f9.ids, f9.numeros);
+    const sA = f9.lignes.filter((l) => /prestation A/.test(l.d))[0], sB = f9.lignes.filter((l) => /prestation B/.test(l.d))[0];
+    verifier('Facture émise avec versement partiel (1 000 sur 3 000) : chaque ligne porte un `id` et un `statutPaiement` (A « paye », B « du »)',
+      saisie9.bouton && f9.nbFactures >= 1 && f9.lignes.length === 2 && f9.lignes.every((l) => l.id && (l.s === 'paye' || l.s === 'du')) && sA && sA.s === 'paye' && sB && sB.s === 'du',
+      JSON.stringify({ saisie9, f9: { n: f9.nbFactures, lignes: f9.lignes } }));
+
+    /* ---- 10. Sauvegarde M14 : la génération écrit une fiche avec ses métadonnées ; les boutons retirés sont ABSENTS ---- */
+    await ouvrir82('m14-sauvegardes.html');
+    const av10 = await page.evaluate(() => window.SIGH.store.collection('fichiersSauvegarde').all().length);
+    await clicExact('Générer une sauvegarde', false);
+    await pause(900);
+    const s10 = await page.evaluate((av) => {
+      const col = window.SIGH.store.collection('fichiersSauvegarde').all();
+      const nouv = col.length > av ? col[col.length - 1] : null;
+      const textes = [...document.querySelectorAll('button')].map((b) => b.textContent.replace(/\s+/g, ' ').trim());
+      return { nb: col.length, fiche: nouv ? { fichier: nouv.fichier, date: nouv.date, heure: nouv.heure, portee: nouv.portee, tables: nouv.tables, taille: nouv.taille, par: nouv.genereePar, contenu: !!nouv.contenu, id: nouv.id } : null,
+        manuelle: textes.some((t) => /sauvegarde manuelle/i.test(t)), restauration: textes.some((t) => /Tester une restauration/i.test(t)) };
+    }, av10);
+    if (s10.fiche) await page.evaluate((RET, id) => { const S = window.SIGH.store; (new Function('return ' + RET))()(S, 'fichiersSauvegarde', (x) => x.id === id); S.save(); }, RETIRER, s10.fiche.id);
+    verifier('Sauvegarde M14 : « Générer une sauvegarde » écrit une fiche (fichier .json, date, heure, portée, tables, taille, auteur) sans contenu ; « sauvegarde manuelle » et « Tester une restauration » sont absents',
+      !!s10.fiche && s10.nb === av10 + 1 && /\.json$/.test(s10.fiche.fichier) && s10.fiche.date && s10.fiche.heure && s10.fiche.portee && s10.fiche.tables > 0 && s10.fiche.taille > 0 && s10.fiche.par && !s10.fiche.contenu
+      && !s10.manuelle && !s10.restauration, JSON.stringify(s10));
+
+    /* ---- 11. mecef-config : « Enregistrer » absent, note « Lecture seule » présente ---- */
+    await ouvrir82('mecef-config.html');
+    const m11 = await page.evaluate(() => ({
+      enregistrer: [...document.querySelectorAll('button')].some((b) => /^Enregistrer/.test(b.textContent.replace(/\s+/g, ' ').trim())),
+      note: /Lecture seule/.test(document.querySelector('#page-content').textContent),
+      champs: [...document.querySelectorAll('#page-content input:not([type="search"]), #page-content select')].length,
+      actifs: [...document.querySelectorAll('#page-content input:not([type="search"]), #page-content select')].filter((e) => !e.disabled).length,
+    }));
+    verifier('mecef-config : aucun bouton « Enregistrer », la note « Lecture seule » est présente et les champs sont verrouillés',
+      !m11.enregistrer && m11.note && m11.champs > 0 && m11.actifs === 0, JSON.stringify(m11));
+
+    /* ---- 12. Pas de régression ---- */
+    erreurs82.push(...erreursJS);
+    verifier('Aucune erreur JavaScript pendant tout le scénario', erreurs82.length === 0, erreurs82.join(' | '));
+  });
+
+  /* =========================================================================
+   * Vague 83 : connexion, refus nommés, verrou, changement imposé, comptes
+   * -------------------------------------------------------------------------
+   * Chaque sonde appelle le SERVEUR (api/auth.php) depuis la page et lit le code HTTP ET le `code`
+   * nommé, jamais un texte copié. Les comptes sont JETABLES (identifiants v83.*, créés par
+   * `creer_compte` sous la session admin du banc) ; les fiches du magasin (utilisateurs, rbac,
+   * tentativesConnexion) sont sauvegardées avant et RESTAURÉES en sortant, les lignes jetables de
+   * la table `utilisateurs` sont retirées par SQL (base de banc, jetable).
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 83 : connexion, refus nommés, verrou, changement imposé, comptes');
+    const { execFileSync } = require('child_process');
+    const erreurs83 = [];
+    const sql = (texte) => execFileSync('su', ['postgres', '-c', 'psql -q -At ' + BANC.BASE_TEST], { input: texte, encoding: 'utf8' }).trim();
+    const lireCol = (nom) => { const t = sql("SELECT donnees::text FROM collections WHERE nom = '" + nom + "';"); return t ? JSON.parse(t) : null; };
+    const ecrireCol = (nom, arr) => {
+      if (arr === null) { sql("DELETE FROM collections WHERE nom = '" + nom + "';"); return; }
+      sql("INSERT INTO collections (nom, donnees, fiches) VALUES ('" + nom + "', $j$" + JSON.stringify(arr) + "$j$::jsonb, " + arr.length + ") ON CONFLICT (nom) DO UPDATE SET donnees = EXCLUDED.donnees, fiches = EXCLUDED.fiches;");
+    };
+    const nettoyerTables = () => sql("DELETE FROM sessions_poste WHERE identifiant LIKE 'v83.%'; DELETE FROM echecs_connexion WHERE identifiant LIKE 'v83.%'; DELETE FROM changements_requis WHERE identifiant LIKE 'v83.%'; DELETE FROM utilisateurs WHERE identifiant LIKE 'v83.%';");
+    const attendreSql = async (pred, ms) => { const fin = Date.now() + (ms || 8000); while (Date.now() < fin) { try { if (pred()) return true; } catch (e) { /* relire */ } await pause(300); } return false; };
+    const appel = (methode, chemin, corps, jeton) => page.evaluate(async (m, c, b, j) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const h = { 'Content-Type': 'application/json' };
+      if (j) h['X-Sigh-Jeton'] = j;
+      const r = await fetch(racine + 'api/' + c, { method: m, headers: h, body: b ? JSON.stringify(b) : undefined });
+      const t = await r.text(); let o = {}; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+      return { statut: r.status, o: o, brut: t };
+    }, methode, chemin, corps || null, jeton || null);
+    const auth = (corps, jeton) => appel('POST', 'auth.php', corps, jeton);
+    const connexion = (id, mdp) => auth({ action: 'connexion', identifiant: id, motDePasse: mdp, poste: 'sonde 83' });
+    const nommer = (r, statut, code) => r.statut === statut && (code === undefined || r.o.code === code);
+    const MDP_PROV = 'Provisoire-83a', MDP_NEUF = 'Nouveau-Secret-83x';
+
+    await ouvrir('m14-utilisateurs.html');
+    const sauve = { utilisateurs: lireCol('utilisateurs'), rbac: lireCol('rbac'), tentatives: lireCol('tentativesConnexion') };
+    verifier('Départ : le magasin du banc porte les fiches de comptes et la matrice (sauvegardées pour restauration)', Array.isArray(sauve.utilisateurs) && sauve.utilisateurs.length > 0 && Array.isArray(sauve.rbac) && sauve.rbac.some((f) => f.role === 'anesthesiste'), JSON.stringify([sauve.utilisateurs && sauve.utilisateurs.length, sauve.rbac && sauve.rbac.length]));
+    nettoyerTables();
+    const adm = ((await BANC.connecter('c.bassongui')) || {}).jeton;
+    const compta = ((await BANC.connecter('a.kassa')) || {}).jeton;
+    const da = ((await BANC.connecter('a.taki')) || {}).jeton;
+    verifier('Les trois sessions de départ (admin, comptable, da) sont ouvertes par le serveur', !!adm && !!compta && !!da, JSON.stringify([!!adm, !!compta, !!da]));
+
+    const ouvrirCompte = async (id, role, nom) => {
+      const c = await auth({ action: 'creer_compte', identifiant: id, nom: nom || ('Sonde 83 ' + id), role: role, motDePasse: MDP_PROV }, adm);
+      if (c.statut !== 201) return { creation: c };
+      const x = await connexion(id, MDP_PROV);
+      const ch = await auth({ action: 'changer_mot_de_passe', jetonChangement: x.o.jetonChangement, ancienMotDePasse: MDP_PROV, nouveauMotDePasse: MDP_NEUF });
+      return { creation: c, jeton: ch.o.jeton, changement: ch };
+    };
+    try {
+      /* ---- 7 (première moitié) et 8 : qui crée un compte, qui lit l'annuaire ---- */
+      const sansSession = await auth({ action: 'creer_compte', identifiant: 'v83.sans', nom: 'Sans', role: 'stock', motDePasse: MDP_PROV });
+      verifier('creer_compte sans session : 401', sansSession.statut === 401, JSON.stringify([sansSession.statut, sansSession.o]));
+      const parComptable = await auth({ action: 'creer_compte', identifiant: 'v83.cpt', nom: 'Par comptable', role: 'stock', motDePasse: MDP_PROV }, compta);
+      verifier('creer_compte sous session comptable : 403 DROIT_INSUFFISANT', nommer(parComptable, 403, 'DROIT_INSUFFISANT'), JSON.stringify([parComptable.statut, parComptable.o]));
+      const parDa = await auth({ action: 'creer_compte', identifiant: 'v83.da1', nom: 'Par da', role: 'stock', motDePasse: MDP_PROV }, da);
+      verifier('La da crée un compte non administrateur : 201, changement imposé', parDa.statut === 201 && parDa.o.doitChanger === true && parDa.o.role === 'stock', JSON.stringify([parDa.statut, parDa.o]));
+      const adminParDa = await auth({ action: 'creer_compte', identifiant: 'v83.adm0', nom: 'Admin par da', role: 'admin', motDePasse: MDP_PROV }, da);
+      verifier('La da ne crée PAS un administrateur : 403 DROIT_INSUFFISANT', nommer(adminParDa, 403, 'DROIT_INSUFFISANT'), JSON.stringify([adminParDa.statut, adminParDa.o]));
+      const adminParAdmin = await auth({ action: 'creer_compte', identifiant: 'v83.adm1', nom: 'Admin par admin', role: 'admin', motDePasse: MDP_PROV }, adm);
+      verifier('Seul un administrateur crée un administrateur : 201', adminParAdmin.statut === 201 && adminParAdmin.o.role === 'admin', JSON.stringify([adminParAdmin.statut, adminParAdmin.o]));
+      const doublon = await auth({ action: 'creer_compte', identifiant: 'v83.da1', nom: 'Doublon', role: 'stock', motDePasse: MDP_PROV }, adm);
+      const doublonCasse = await auth({ action: 'creer_compte', identifiant: 'V83.DA1', nom: 'Doublon casse', role: 'stock', motDePasse: MDP_PROV }, adm);
+      verifier('Un identifiant déjà pris est refusé : 409 IDENTIFIANT_EXISTANT (même en autre casse)', nommer(doublon, 409, 'IDENTIFIANT_EXISTANT') && nommer(doublonCasse, 409, 'IDENTIFIANT_EXISTANT'), JSON.stringify([doublon.statut, doublon.o.code, doublonCasse.statut, doublonCasse.o.code]));
+
+      const ann0 = await appel('GET', 'auth.php?action=comptes', null, null);
+      verifier('Annuaire sans session : 401', ann0.statut === 401, JSON.stringify([ann0.statut, ann0.o]));
+      const ann1 = await appel('GET', 'auth.php?action=comptes', null, compta);
+      verifier('Annuaire sous session comptable : 403 DROIT_INSUFFISANT', nommer(ann1, 403, 'DROIT_INSUFFISANT') && !ann1.o.comptes, JSON.stringify([ann1.statut, ann1.o]));
+      const annDa = await appel('GET', 'auth.php?action=comptes', null, da);
+      const ann2 = await appel('GET', 'auth.php?action=comptes', null, adm);
+      const liste = ann2.o.comptes || [];
+      const cles = [...new Set([].concat(...liste.map((c) => Object.keys(c))))].sort().join(',');
+      verifier('Annuaire sous session admin : 200 avec la liste, sans haché ni mot de passe',
+        ann2.statut === 200 && liste.length >= 17 && liste.some((c) => c.identifiant === 'a.kassa') && liste.some((c) => c.identifiant === 'v83.da1')
+        && cles === 'fonction,identifiant,nom,role,secteur,statut' && !/\$2y\$|mdp|password|motDePasse/i.test(ann2.brut), JSON.stringify([ann2.statut, liste.length, cles]));
+      verifier('Annuaire sous session da : 200', annDa.statut === 200 && (annDa.o.comptes || []).length === liste.length, JSON.stringify([annDa.statut]));
+      const sessionFausse = await appel('GET', 'auth.php?action=comptes', null, 'jeton-qui-n-existe-pas');
+      verifier('Annuaire avec un jeton inconnu : 401', sessionFausse.statut === 401, String(sessionFausse.statut));
+
+      /* ---- 1 : identifiant inconnu et mot de passe faux, même réponse ---- */
+      const a = await auth({ action: 'creer_compte', identifiant: 'v83.a', nom: 'Sonde 83 A', role: 'comptable', motDePasse: MDP_PROV }, adm);
+      verifier('Compte jeté v83.a créé avec mot de passe provisoire (201)', a.statut === 201, JSON.stringify([a.statut, a.o]));
+      const inconnu = await connexion('v83.inconnu', 'Mauvais-mdp-83');
+      const faux = await connexion('v83.a', 'Mauvais-mdp-83');
+      verifier('Identifiant inconnu et mot de passe faux : MÊME réponse (401 IDENTIFIANTS_REFUSES, même detail)',
+        nommer(inconnu, 401, 'IDENTIFIANTS_REFUSES') && nommer(faux, 401, 'IDENTIFIANTS_REFUSES') && inconnu.o.detail === faux.o.detail && inconnu.o.detail && inconnu.brut === faux.brut,
+        JSON.stringify([inconnu.statut, inconnu.o, faux.statut, faux.o]));
+
+      /* ---- 2 : mot de passe provisoire, jeton de changement, changement ---- */
+      const prov = await connexion('v83.a', MDP_PROV);
+      verifier('Mot de passe provisoire : 200 CHANGEMENT_REQUIS, SANS jeton de session, avec un jeton de changement',
+        nommer(prov, 200, 'CHANGEMENT_REQUIS') && prov.o.jeton === undefined && typeof prov.o.jetonChangement === 'string' && prov.o.jetonChangement.length >= 32 && prov.o.doitChanger === true, JSON.stringify([prov.statut, Object.keys(prov.o)]));
+      const jc = prov.o.jetonChangement;
+      const magJc = await appel('POST', 'magasin.php', { collections: {} }, jc);
+      const crudJc = await auth({ action: 'creer_compte', identifiant: 'v83.jc', nom: 'Par jeton de changement', role: 'stock', motDePasse: MDP_PROV }, jc);
+      const annJc = await appel('GET', 'auth.php?action=comptes', null, jc);
+      const moiJc = await appel('GET', 'auth.php?action=moi', null, jc);
+      verifier('Le jeton de changement n\'est PAS une session : le magasin (écriture), creer_compte, l\'annuaire et « moi » le refusent (401)',
+        magJc.statut === 401 && crudJc.statut === 401 && annJc.statut === 401 && moiJc.statut === 401, JSON.stringify([magJc.statut, crudJc.statut, annJc.statut, moiJc.statut]));
+      const ancienFaux = await auth({ action: 'changer_mot_de_passe', jetonChangement: jc, ancienMotDePasse: 'Pas-le-bon-83', nouveauMotDePasse: MDP_NEUF });
+      verifier('changer_mot_de_passe, ancien erroné : 401 ANCIEN_MDP_ERRONE', nommer(ancienFaux, 401, 'ANCIEN_MDP_ERRONE'), JSON.stringify([ancienFaux.statut, ancienFaux.o]));
+      const court = await auth({ action: 'changer_mot_de_passe', jetonChangement: jc, ancienMotDePasse: MDP_PROV, nouveauMotDePasse: 'Court1' });
+      verifier('changer_mot_de_passe, nouveau trop court : 400 MDP_TROP_COURT', nommer(court, 400, 'MDP_TROP_COURT'), JSON.stringify([court.statut, court.o]));
+      const bon = await auth({ action: 'changer_mot_de_passe', jetonChangement: jc, ancienMotDePasse: MDP_PROV, nouveauMotDePasse: MDP_NEUF });
+      verifier('changer_mot_de_passe correct : 200, session ouverte (jeton) au rôle de la table', bon.statut === 200 && bon.o.ok === true && typeof bon.o.jeton === 'string' && bon.o.utilisateur.role === 'comptable' && bon.o.utilisateur.doitChanger === false, JSON.stringify([bon.statut, bon.o]));
+      const moi = await appel('GET', 'auth.php?action=moi', null, bon.o.jeton);
+      const magOk = await appel('POST', 'magasin.php', { collections: {} }, bon.o.jeton);
+      verifier('La session issue du changement est reconnue (moi 200, magasin 200)', moi.statut === 200 && moi.o.session.identifiant === 'v83.a' && magOk.statut === 200, JSON.stringify([moi.statut, magOk.statut]));
+      const rejeu = await auth({ action: 'changer_mot_de_passe', jetonChangement: jc, ancienMotDePasse: MDP_NEUF, nouveauMotDePasse: 'Autre-Secret-83y' });
+      verifier('Le jeton de changement est à usage unique : rejeu 401 SESSION_ABSENTE', nommer(rejeu, 401, 'SESSION_ABSENTE'), JSON.stringify([rejeu.statut, rejeu.o]));
+      const reco = await connexion('v83.a', MDP_NEUF);
+      verifier('Après changement, la connexion ordinaire ouvre une session (200 avec jeton, sans changement requis)', reco.statut === 200 && !!reco.o.jeton && reco.o.code === undefined, JSON.stringify([reco.statut, reco.o.code]));
+      const dump = execFileSync('su', ['postgres', '-c', 'pg_dump ' + BANC.BASE_TEST], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+      verifier('Aucun mot de passe en clair (provisoire ni définitif) dans la base : collections, journal, tentatives, tables', !dump.includes(MDP_PROV) && !dump.includes(MDP_NEUF) && !dump.includes('Mauvais-mdp-83') && !dump.includes('Pas-le-bon-83'), 'trouvé : ' + [MDP_PROV, MDP_NEUF, 'Mauvais-mdp-83', 'Pas-le-bon-83'].filter((m) => dump.includes(m)).join(','));
+
+      /* ---- 3 : fiche archivée, désactivée, bloquée ; le geste de déblocage ---- */
+      const ficheId = 'USR-V83-A';
+      const g1 = await page.evaluate((id) => {
+        const S = window.SIGH.store;
+        const r = S.collection('utilisateurs').insert({ id: id, identifiant: 'v83.a', nom: 'Sonde 83 A', role: 'comptable', actif: true });
+        return !!r;
+      }, ficheId);
+      const syncF = (pred) => attendreSql(() => { const t = lireCol('utilisateurs') || []; const f = t.find((x) => x.id === ficheId); return !!f && pred(f); });
+      verifier('La fiche jetable est écrite au serveur (collection utilisateurs)', g1 && await syncF(() => true));
+      const okFiche = await connexion('v83.a', MDP_NEUF);
+      verifier('Fiche active et compte sain : la connexion est ouverte (200 avec jeton)', okFiche.statut === 200 && !!okFiche.o.jeton, JSON.stringify([okFiche.statut, okFiche.o.code]));
+      await page.evaluate((id) => window.SIGH.store.collection('utilisateurs').archive(id, 'Sonde 83'), ficheId);
+      await syncF((f) => f.statut === 'archive');
+      const arch = await connexion('v83.a', MDP_NEUF);
+      verifier('Fiche archivée : 403 COMPTE_INACTIF', nommer(arch, 403, 'COMPTE_INACTIF') && !arch.o.jeton, JSON.stringify([arch.statut, arch.o]));
+      await page.evaluate((id) => window.SIGH.store.collection('utilisateurs').restore(id), ficheId);
+      await syncF((f) => f.statut !== 'archive');
+      await page.evaluate((id) => window.SIGH.store.collection('utilisateurs').update(id, { actif: false }), ficheId);
+      await syncF((f) => f.actif === false);
+      const inactif = await connexion('v83.a', MDP_NEUF);
+      verifier('Fiche actif:false : 403 COMPTE_INACTIF', nommer(inactif, 403, 'COMPTE_INACTIF') && !inactif.o.jeton, JSON.stringify([inactif.statut, inactif.o]));
+      await page.evaluate((id) => window.SIGH.store.collection('utilisateurs').update(id, { actif: true }), ficheId);
+      await syncF((f) => f.actif === true);
+      const bl = await page.evaluate((id) => { const r = window.SIGH.securiteUtilisateurs.bloquer(id, 'Sonde 83 : blocage'); return { ok: r.ok, code: r.code }; }, ficheId);
+      await syncF((f) => f.bloque === true);
+      const bloque = await connexion('v83.a', MDP_NEUF);
+      verifier('Fiche bloquée (geste « Bloquer ») : 423 COMPTE_BLOQUE', bl.ok && nommer(bloque, 423, 'COMPTE_BLOQUE') && !bloque.o.jeton, JSON.stringify([bl, bloque.statut, bloque.o]));
+      const debl = await page.evaluate((id) => { const r = window.SIGH.securiteUtilisateurs.debloquer(id); return { ok: r.ok, code: r.code }; }, ficheId);
+      await syncF((f) => f.bloque === false);
+      await pause(600);
+      const debloque = await connexion('v83.a', MDP_NEUF);
+      verifier('Après le déblocage par l\'administrateur (geste « Débloquer »), la connexion est rendue (200 avec jeton)', debl.ok && debloque.statut === 200 && !!debloque.o.jeton, JSON.stringify([debl, debloque.statut, debloque.o.code]));
+
+      /* ---- 5 : élévation impossible ---- */
+      const e = await ouvrirCompte('v83.e', 'stock', 'Sonde 83 E');
+      verifier('Compte jeté v83.e (rôle stock en TABLE) prêt, session obtenue', !!e.jeton, JSON.stringify([e.creation && e.creation.statut, e.changement && e.changement.o]));
+      await page.evaluate(() => { window.SIGH.store.collection('utilisateurs').insert({ id: 'USR-V83-E', identifiant: 'v83.e', nom: 'Sonde 83 E', role: 'admin', actif: true }); });
+      await attendreSql(() => (lireCol('utilisateurs') || []).some((x) => x.id === 'USR-V83-E' && x.role === 'admin'));
+      const elev = await connexion('v83.e', MDP_NEUF);
+      const moiE = elev.o.jeton ? await appel('GET', 'auth.php?action=moi', null, elev.o.jeton) : { statut: -1, o: {} };
+      const creerE = elev.o.jeton ? await auth({ action: 'creer_compte', identifiant: 'v83.pirate', nom: 'Pirate', role: 'stock', motDePasse: MDP_PROV }, elev.o.jeton) : { statut: -1, o: {} };
+      const annE = elev.o.jeton ? await appel('GET', 'auth.php?action=comptes', null, elev.o.jeton) : { statut: -1, o: {} };
+      verifier('Élévation impossible : la fiche dit admin, la session reçue a le rôle de la TABLE (stock), et n\'ouvre ni creer_compte ni l\'annuaire',
+        elev.statut === 200 && elev.o.utilisateur.role === 'stock' && moiE.o.session && moiE.o.session.role === 'stock' && nommer(creerE, 403, 'DROIT_INSUFFISANT') && nommer(annE, 403, 'DROIT_INSUFFISANT'),
+        JSON.stringify([elev.statut, elev.o.utilisateur && elev.o.utilisateur.role, moiE.o.session && moiE.o.session.role, creerE.statut, annE.statut]));
+
+      /* ---- 4 : rôle archivé ---- */
+      const r = await ouvrirCompte('v83.r', 'anesthesiste', 'Sonde 83 R');
+      verifier('Compte jeté v83.r (rôle anesthesiste) prêt, session obtenue', !!r.jeton, JSON.stringify([r.creation && r.creation.statut]));
+      const archRole = await page.evaluate(() => { const c = window.SIGH.store.collection('rbac'); const f = c.get('RBAC18'); if (!f || f.role !== 'anesthesiste') return false; return !!c.archive('RBAC18', 'Sonde 83'); });
+      await attendreSql(() => ((lireCol('rbac') || []).find((x) => x.id === 'RBAC18') || {}).statut === 'archive');
+      const avantTent = (lireCol('tentativesConnexion') || []).length;
+      const roleArch = await connexion('v83.r', MDP_NEUF);
+      const tent = (lireCol('tentativesConnexion') || []);
+      const derniere = tent.find((t) => t.identifiant === 'v83.r' && /Rôle archivé/.test(t.motif));
+      verifier('Rôle archivé : 403 ROLE_ARCHIVE sans jeton, tentative écrite dans tentativesConnexion SANS le mot de passe',
+        archRole && nommer(roleArch, 403, 'ROLE_ARCHIVE') && !roleArch.o.jeton && !!derniere && tent.length > avantTent && !JSON.stringify(derniere).includes(MDP_NEUF) && derniere.role === 'anesthesiste',
+        JSON.stringify([archRole, roleArch.statut, roleArch.o.code, !!derniere, avantTent, tent.length]));
+      const creerArch = await auth({ action: 'creer_compte', identifiant: 'v83.r2', nom: 'Sur rôle archivé', role: 'anesthesiste', motDePasse: MDP_PROV }, adm);
+      verifier('Aucun compte ne se crée sur un rôle archivé : 409 ROLE_ARCHIVE', nommer(creerArch, 409, 'ROLE_ARCHIVE'), JSON.stringify([creerArch.statut, creerArch.o]));
+      await page.evaluate(() => window.SIGH.store.collection('rbac').restore('RBAC18'));
+      await attendreSql(() => ((lireCol('rbac') || []).find((x) => x.id === 'RBAC18') || {}).statut !== 'archive');
+      const roleRendu = await connexion('v83.r', MDP_NEUF);
+      verifier('Rôle restauré : la connexion est rendue (200 avec jeton)', roleRendu.statut === 200 && !!roleRendu.o.jeton, JSON.stringify([roleRendu.statut, roleRendu.o.code]));
+
+      /* ---- 6 : verrou ---- */
+      const l = await ouvrirCompte('v83.l', 'comptable', 'Sonde 83 L');
+      verifier('Compte jeté v83.l prêt', !!l.jeton, JSON.stringify([l.creation && l.creation.statut]));
+      const cinq = [];
+      for (let i = 0; i < 5; i++) cinq.push((await connexion('v83.l', 'Echec-numero-' + i)).statut);
+      const verrou = await connexion('v83.l', MDP_NEUF);
+      verifier('5 échecs (401) puis 423 COMPTE_VERROUILLE, MÊME avec le bon mot de passe', cinq.every((s) => s === 401) && nommer(verrou, 423, 'COMPTE_VERROUILLE') && !verrou.o.jeton, JSON.stringify([cinq, verrou.statut, verrou.o.code]));
+      const cinqF = [];
+      for (let i = 0; i < 5; i++) cinqF.push((await connexion('v83.fantome', 'Echec-fantome-' + i)).statut);
+      const verrouF = await connexion('v83.fantome', 'Echec-fantome-5');
+      verifier('Un identifiant INCONNU se verrouille de la même façon (423 COMPTE_VERROUILLE : le verrou ne révèle aucun compte)', cinqF.every((s) => s === 401) && nommer(verrouF, 423, 'COMPTE_VERROUILLE'), JSON.stringify([cinqF, verrouF.statut, verrouF.o.code]));
+      const devParCompta = await auth({ action: 'deverrouiller', identifiant: 'v83.l' }, compta);
+      const toujours = await connexion('v83.l', MDP_NEUF);
+      verifier('deverrouiller par un comptable : 403 DROIT_INSUFFISANT, le verrou reste', nommer(devParCompta, 403, 'DROIT_INSUFFISANT') && nommer(toujours, 423, 'COMPTE_VERROUILLE'), JSON.stringify([devParCompta.statut, devParCompta.o.code, toujours.statut, toujours.o.code]));
+      const devSans = await auth({ action: 'deverrouiller', identifiant: 'v83.l' });
+      verifier('deverrouiller sans session : 401', devSans.statut === 401, String(devSans.statut));
+      const devParAdmin = await auth({ action: 'deverrouiller', identifiant: 'v83.l' }, adm);
+      const devFantome = await auth({ action: 'deverrouiller', identifiant: 'v83.fantome' }, da);
+      const leve = await connexion('v83.l', MDP_NEUF);
+      const leveF = await connexion('v83.fantome', 'Echec-fantome-6');
+      verifier('deverrouiller par l\'administrateur (et par la da) lève le verrou : 200 avec jeton, et l\'inconnu retombe sur 401 IDENTIFIANTS_REFUSES',
+        devParAdmin.statut === 200 && devFantome.statut === 200 && leve.statut === 200 && !!leve.o.jeton && nommer(leveF, 401, 'IDENTIFIANTS_REFUSES'), JSON.stringify([devParAdmin.statut, devFantome.statut, leve.statut, leveF.statut, leveF.o.code]));
+    } finally {
+      /* ---- Restauration : ce que le scénario a posé disparaît, ce qu'il a modifié revient ---- */
+      await page.evaluate(() => {
+        const S = window.SIGH.store, t = S.collection('utilisateurs').all();
+        for (let i = t.length - 1; i >= 0; i--) { if (/^v83\./.test(t[i].identifiant || '')) t.splice(i, 1); }
+      });
+      await pause(800);
+      nettoyerTables();
+      ecrireCol('utilisateurs', sauve.utilisateurs);
+      ecrireCol('rbac', sauve.rbac);
+      ecrireCol('tentativesConnexion', sauve.tentatives);
+      await pause(300);
+    }
+    const reste = sql("SELECT COUNT(*) FROM utilisateurs WHERE identifiant LIKE 'v83.%';");
+    const fichesReste = (lireCol('utilisateurs') || []).filter((f) => /^v83\./.test(f.identifiant || '')).length;
+    const rbacRend = ((lireCol('rbac') || []).find((x) => x.id === 'RBAC18') || {}).statut;
+    verifier('Nettoyage : plus aucun compte v83.* (table ni fiches), la matrice est rendue telle qu\'avant', reste === '0' && fichesReste === 0 && rbacRend === 'actif', JSON.stringify([reste, fichesReste, rbacRend]));
+
+    /* ---- 9 : aucune erreur JS. Les refus 401/403/409/423 attendus sont journalisés par Chrome
+       (« Failed to load resource ») : ce sont des réponses sondées, pas des erreurs de la page. ---- */
+    erreurs83.push(...erreursJS.filter((m) => !/Failed to load resource: the server responded with a status of (400|401|403|409|423)/.test(m)));
+    verifier('Aucune erreur JavaScript pendant le scénario (hors refus HTTP sondés)', erreurs83.length === 0, erreurs83.join(' | '));
+  });
+
+  /* =========================================================================
+   * Vague 84 : lecture du magasin fermée
+   * -------------------------------------------------------------------------
+   * `GET api/magasin.php` (entier ou `?collections=`) exige une session de poste : sans elle 401
+   * `SESSION_REQUISE`, jeton de CHANGEMENT de mot de passe refusé, jeton de session fermée refusé. Le
+   * serveur ne filtre pas par rôle à la lecture (limite assumée, dite en tête de magasin.php). La page
+   * publique d'enquête lit seulement `api/enquete.php?jeton=` : le modèle de l'enquête désignée, rien
+   * d'autre ; inconnu, expiré, révoqué : MÊME réponse. Les fiches jetables (enquête, jetons) sont posées
+   * en base par SQL et RETIRÉES en sortant.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 84 : lecture du magasin fermée (session exigée, lecture étroite de l’enquête publique)');
+    const { execFileSync } = require('child_process');
+    const erreurs84 = [];
+    const sql = (texte) => execFileSync('su', ['postgres', '-c', 'psql -q -At ' + BANC.BASE_TEST], { input: texte, encoding: 'utf8' }).trim();
+    const lireCol = (nom) => { const t = sql("SELECT donnees::text FROM collections WHERE nom = '" + nom + "';"); return t ? JSON.parse(t) : null; };
+    const ecrireCol = (nom, arr) => {
+      if (arr === null) { sql("DELETE FROM collections WHERE nom = '" + nom + "';"); return; }
+      sql("INSERT INTO collections (nom, donnees, fiches) VALUES ('" + nom + "', $j$" + JSON.stringify(arr) + "$j$::jsonb, " + arr.length + ") ON CONFLICT (nom) DO UPDATE SET donnees = EXCLUDED.donnees, fiches = EXCLUDED.fiches;");
+    };
+    const nettoyerTables = () => sql("DELETE FROM sessions_poste WHERE identifiant LIKE 'v84.%'; DELETE FROM echecs_connexion WHERE identifiant LIKE 'v84.%'; DELETE FROM changements_requis WHERE identifiant LIKE 'v84.%'; DELETE FROM utilisateurs WHERE identifiant LIKE 'v84.%';");
+    const appel = (methode, chemin, corps, jeton) => page.evaluate(async (m, c, b, j) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const h = { 'Content-Type': 'application/json' };
+      if (j) h['X-Sigh-Jeton'] = j;
+      const r = await fetch(racine + 'api/' + c, { method: m, headers: h, body: b ? JSON.stringify(b) : undefined });
+      const t = await r.text(); let o = {}; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+      return { statut: r.status, o: o, brut: t };
+    }, methode, chemin, corps || null, jeton || null);
+    const auth = (corps, jeton) => appel('POST', 'auth.php', corps, jeton);
+    const refus = (r) => r.statut === 401 && r.o.code === 'SESSION_REQUISE';
+    const MDP_PROV = 'Provisoire-84a';
+
+    await ouvrir('m1-patients.html');
+    const nomPatient = sql("SELECT donnees->0->>'nom' FROM collections WHERE nom = 'patients';");
+    verifier('Départ : le magasin du banc porte des patients nominatifs (la sonde sait quoi chercher dans une réponse)', nomPatient.length >= 2, nomPatient);
+    const sauve = { enquetes: lireCol('enquetes'), jetons: lireCol('jetonsEnquete') };
+    nettoyerTables();
+    const adm = ((await BANC.connecter('c.bassongui')) || {}).jeton;
+    const kassa = ((await BANC.connecter('a.kassa')) || {}).jeton;
+    verifier('Deux sessions ordinaires (admin, comptable) ouvertes par le serveur', !!adm && !!kassa, JSON.stringify([!!adm, !!kassa]));
+
+    try {
+      /* ---- sans session : magasin entier et ?collections= ---- */
+      const g0 = await appel('GET', 'magasin.php', null, null);
+      const g1 = await appel('GET', 'magasin.php?collections=patients', null, null);
+      const g2 = await appel('GET', 'magasin.php?collections=patients,factures,utilisateurs', null, 'jeton-qui-n-existe-pas');
+      verifier('GET du magasin ENTIER sans session : 401 SESSION_REQUISE, aucune donnée patient dans la réponse',
+        refus(g0) && g0.o.patients === undefined && !g0.brut.includes(nomPatient) && g0.brut.length < 400, JSON.stringify([g0.statut, g0.o.code, g0.brut.length]));
+      verifier('GET ?collections=patients sans session : 401 SESSION_REQUISE, aucune donnée patient dans la réponse',
+        refus(g1) && g1.o.patients === undefined && !g1.brut.includes(nomPatient) && g1.brut.length < 400, JSON.stringify([g1.statut, g1.o.code, g1.brut.length]));
+      verifier('Un jeton inconnu est refusé de la même façon (401 SESSION_REQUISE), pour plusieurs collections',
+        refus(g2) && g2.o.patients === undefined && !g2.brut.includes(nomPatient), JSON.stringify([g2.statut, g2.o.code]));
+
+      /* ---- jeton de CHANGEMENT : pas une session ---- */
+      const c = await auth({ action: 'creer_compte', identifiant: 'v84.a', nom: 'Sonde 84 A', role: 'comptable', motDePasse: MDP_PROV }, adm);
+      const prov = await auth({ action: 'connexion', identifiant: 'v84.a', motDePasse: MDP_PROV, poste: 'sonde 84' });
+      const jc = prov.o.jetonChangement;
+      verifier('Compte jeté v84.a : 201, puis connexion provisoire rend un jeton de CHANGEMENT sans jeton de session', c.statut === 201 && prov.o.code === 'CHANGEMENT_REQUIS' && typeof jc === 'string' && prov.o.jeton === undefined, JSON.stringify([c.statut, prov.o.code]));
+      const j0 = await appel('GET', 'magasin.php', null, jc);
+      const j1 = await appel('GET', 'magasin.php?collections=patients', null, jc);
+      verifier('Un jeton de CHANGEMENT de mot de passe ne lit rien : magasin entier ET ?collections= refusés (401 SESSION_REQUISE)',
+        refus(j0) && refus(j1) && !j0.brut.includes(nomPatient) && !j1.brut.includes(nomPatient), JSON.stringify([j0.statut, j0.o.code, j1.statut, j1.o.code]));
+
+      /* ---- session ordinaire : 200 ---- */
+      const s0 = await appel('GET', 'magasin.php?collections=patients,factures', null, adm);
+      const s1 = await appel('GET', 'magasin.php', null, kassa);
+      verifier('Session ordinaire : ?collections= rend les collections demandées (200, patients et factures en tableaux non vides)',
+        s0.statut === 200 && Array.isArray(s0.o.patients) && s0.o.patients.length > 0 && Array.isArray(s0.o.factures) && s0.o.factures.length > 0 && s0.o.audit === undefined, JSON.stringify([s0.statut, Object.keys(s0.o)]));
+      verifier('Session ordinaire (comptable) : le magasin entier est rendu (200, _version, _seq, patients) : lecture = tout poste authentifié',
+        s1.statut === 200 && typeof s1.o._version === 'number' && typeof s1.o._seq === 'number' && Array.isArray(s1.o.patients) && s1.o.patients.length > 0, JSON.stringify([s1.statut, s1.o._version]));
+
+      /* ---- jeton de session FERMÉE ---- */
+      const ferme = ((await BANC.connecter('a.kassa')) || {}).jeton;
+      const avant = await appel('GET', 'magasin.php?collections=patients', null, ferme);
+      const dec = await auth({ action: 'deconnexion' }, ferme);
+      const apres0 = await appel('GET', 'magasin.php', null, ferme);
+      const apres1 = await appel('GET', 'magasin.php?collections=patients', null, ferme);
+      verifier('Jeton de session fermée (après deconnexion) : 200 avant, 401 SESSION_REQUISE après, magasin entier ET ?collections=',
+        avant.statut === 200 && dec.statut === 200 && refus(apres0) && refus(apres1) && !apres0.brut.includes(nomPatient), JSON.stringify([avant.statut, dec.statut, apres0.statut, apres1.statut]));
+
+      /* ---- l'enquête publique : lecture étroite, sans session ---- */
+      const mkEnq = (id, titre) => ({ id: id, titre: titre, description: 'Description de sonde', questions: [{ code: 'Q1', libelle: 'Accueil de la sonde ?', type: 'note', options: null }, { code: 'Q2', libelle: 'Commentaire de la sonde', type: 'texte', options: null }], statut: 'actif', _secret: 'CHAMP-INTERNE-84' });
+      const mkJet = (id, jeton, extra) => Object.assign({ id: id, jeton: jeton, enqueteId: 'ENQ-V84', enqueteTitre: 'Sonde 84 titre unique', anonyme: true, usage: 'salle', creeLe: '2026-01-01', expireLe: '2099-12-31', revoqueLe: null, note: 'NOTE-INTERNE-84', ouvertPar: 'x' }, extra || {});
+      const JV = 'v84valide23456789abcd', JR = 'v84revoque23456789abc', JE = 'v84expire23456789abcd', JI = 'v84inconnu23456789abc', JAUTRE = 'v84autre234567890abcd';
+      ecrireCol('enquetes', (sauve.enquetes || []).concat([mkEnq('ENQ-V84', 'Sonde 84 titre unique'), mkEnq('ENQ-V84-AUTRE', 'Sonde 84 autre enquete confidentielle')]));
+      ecrireCol('jetonsEnquete', (sauve.jetons || []).concat([
+        mkJet('JET-V84-1', JV), mkJet('JET-V84-2', JR, { revoqueLe: '2026-01-02' }), mkJet('JET-V84-3', JE, { expireLe: '2020-01-01' }),
+        mkJet('JET-V84-4', JAUTRE, { enqueteId: 'ENQ-V84-AUTRE', enqueteTitre: 'Sonde 84 autre enquete confidentielle' })]));
+      const e0 = await appel('GET', 'enquete.php?jeton=' + JV, null, null);
+      const cles = Object.keys(e0.o).sort().join(',');
+      const clesEnq = Object.keys(e0.o.enquete || {}).sort().join(',');
+      verifier('Jeton valide, SANS session : api/enquete.php rend le modèle seul (200, clés limitées, questions réduites à code/libellé/type/options)',
+        e0.statut === 200 && cles === 'enquete,jeton' && clesEnq === 'description,id,questions,titre' && e0.o.enquete.titre === 'Sonde 84 titre unique' && e0.o.enquete.questions.length === 2
+        && Object.keys(e0.o.enquete.questions[0]).sort().join(',') === 'code,libelle,options,type' && Object.keys(e0.o.jeton).sort().join(',') === 'anonyme,id', JSON.stringify([e0.statut, cles, clesEnq]));
+      verifier('Cette réponse ne porte aucune fiche patient, aucune autre enquête, aucun autre jeton, aucun champ interne',
+        !e0.brut.includes(nomPatient) && !/confidentielle|CHAMP-INTERNE-84|NOTE-INTERNE-84|v84autre|v84revoque|v84expire/.test(e0.brut) && !/patients|factures|utilisateurs/.test(e0.brut), e0.brut.slice(0, 200));
+      const eR = await appel('GET', 'enquete.php?jeton=' + JR, null, null);
+      const eE = await appel('GET', 'enquete.php?jeton=' + JE, null, null);
+      const eI = await appel('GET', 'enquete.php?jeton=' + JI, null, null);
+      const eM = await appel('GET', 'enquete.php?jeton=%27%3B--', null, null);
+      const eV = await appel('GET', 'enquete.php', null, null);
+      verifier('Jeton révoqué, expiré, inconnu (et malformé, absent) : MÊME réponse, 404 générique, octet pour octet, sans nommer aucune enquête',
+        [eR, eE, eI, eM, eV].every((r) => r.statut === 404 && r.brut === eI.brut) && !/Sonde|titre|enquete"/.test(eI.brut) && eI.o.erreur === 'lien invalide', JSON.stringify([eR.statut, eE.statut, eI.statut, eM.statut, eV.statut, eR.brut === eI.brut, eE.brut === eI.brut]));
+      const eP = await appel('POST', 'enquete.php?jeton=' + JV, { x: 1 }, null);
+      verifier('api/enquete.php ne sert que GET (POST : 405)', eP.statut === 405, String(eP.statut));
+
+      /* ---- les pages SANS session : aucune lecture du magasin, la page publique lit le seul modèle ---- */
+      const anon = async (rel, avant) => {
+        /* Contexte ISOLÉ : sans lui, la page partagerait le localStorage (donc le jeton) du banc, et ne serait pas anonyme. */
+        const ctx = browser.createBrowserContext ? await browser.createBrowserContext() : await browser.createIncognitoBrowserContext();
+        const p = await ctx.newPage();
+        const errs = [], reqs = [];
+        p.on('pageerror', (e) => errs.push(String(e.message)));
+        p.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
+        p.on('request', (r) => reqs.push(r.url()));
+        if (avant) await p.evaluateOnNewDocument(avant.fn, avant.arg);
+        await p.goto('http://127.0.0.1:' + PORT + (rel === 'index.php' ? '/' : '/pages/') + pageDuBanc(rel), { waitUntil: 'domcontentloaded' });
+        await p.waitForFunction(() => document.body && document.body.innerText.length > 60, { timeout: 20000 }).catch(() => null);
+        await pause(1200);
+        const etat = await p.evaluate(() => ({
+          texte: document.body.innerText.replace(/\s+/g, ' ').trim(),
+          serveur: window.SIGH && window.SIGH.store ? window.SIGH.store.etatServeur() : null,
+          nbPatients: window.SIGH && window.SIGH.store && window.SIGH.store.raw ? ((window.SIGH.store.raw().patients || []).length) : -1,
+          champs: document.querySelectorAll('form select, form textarea, form input').length + document.querySelectorAll('form .combo').length,
+          session: localStorage.getItem('sigh-cnt:session'), jeton: localStorage.getItem('sigh-cnt:jeton'),
+        }));
+        await p.close();
+        await ctx.close();
+        return { etat, errs, lectures: reqs.filter((u) => /api\/magasin\.php/.test(u)).length, enquete: reqs.filter((u) => /api\/enquete\.php/.test(u)).length };
+      };
+      const pv = await anon('enquete-publique.html?jeton=' + JV);
+      verifier('Page publique sans session : elle affiche le questionnaire lu au modèle étroit, et NE LIT PAS le magasin (0 requête magasin.php, aucun patient en mémoire)',
+        /Sonde 84 titre unique/.test(pv.etat.texte) && pv.etat.champs >= 2 && pv.lectures === 0 && pv.enquete === 1 && pv.etat.nbPatients === 0 && !pv.etat.texte.includes(nomPatient) && !/confidentielle/.test(pv.etat.texte)
+        && pv.etat.serveur && pv.etat.serveur.sansMagasin === true, JSON.stringify({ lectures: pv.lectures, enquete: pv.enquete, champs: pv.etat.champs, pat: pv.etat.nbPatients, srv: pv.etat.serveur }));
+      const pr = await anon('enquete-publique.html?jeton=' + JR);
+      const pe = await anon('enquete-publique.html?jeton=' + JE);
+      const pi = await anon('enquete-publique.html?jeton=' + JI);
+      verifier('Page publique : jeton révoqué, expiré et inconnu affichent EXACTEMENT le même texte, sans nommer aucune enquête ni afficher de formulaire',
+        pr.etat.texte === pi.etat.texte && pe.etat.texte === pi.etat.texte && /n’est plus valable/.test(pi.etat.texte) && !/Sonde/.test(pr.etat.texte + pe.etat.texte + pi.etat.texte) && pr.etat.champs === 0 && pi.etat.champs === 0 && pr.lectures + pe.lectures + pi.lectures === 0,
+        JSON.stringify([pr.etat.texte === pi.etat.texte, pe.etat.texte === pi.etat.texte, pr.lectures, pe.lectures, pi.lectures]));
+      const ix = await anon('index.php');
+      verifier('La page de connexion sans session ne lit pas le magasin (0 requête magasin.php) et se peint (champ identifiant) sans erreur JS',
+        ix.lectures === 0 && /Identifiant/.test(ix.etat.texte) && ix.errs.length === 0, JSON.stringify([ix.lectures, ix.errs.slice(0, 2)]));
+      const mort = await anon('index.php', { fn: (j) => { try { localStorage.setItem('sigh-cnt:jeton', j); localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: 'admin', nom: 'Fantome', jeton: j })); } catch (e) { /* rien */ } }, arg: 'jeton-mort-84' });
+      verifier('Jeton mort porté par le navigateur : lecture refusée (401), la page ne reçoit aucune donnée, le pointeur de session et le jeton sont retirés',
+        mort.lectures === 1 && mort.etat.serveur && mort.etat.serveur.sansMagasin === true && mort.etat.nbPatients === 0 && mort.etat.jeton === null && mort.etat.session === null && mort.etat.serveur.jeton === false,
+        JSON.stringify([mort.lectures, mort.etat.serveur, mort.etat.nbPatients, mort.etat.jeton, mort.etat.session]));
+
+      /* ---- l'hydratation d'une page ordinaire après connexion ---- */
+      await ouvrir('m1-patients.html');
+      const hyd = await page.evaluate(() => ({
+        peinte: !!document.querySelector('#page-content') && document.querySelectorAll('#page-content tbody tr').length > 0,
+        lignes: document.querySelectorAll('#page-content tbody tr').length,
+        srv: window.SIGH.store.etatServeur(), patients: (window.SIGH.store.raw().patients || []).length,
+      }));
+      verifier('Page ordinaire avec session : hydratée (magasin chargé, patients en mémoire, tableau peint), sans coquille sans-magasin',
+        hyd.peinte && hyd.srv.actif && hyd.srv.magasinCharge && hyd.srv.sansMagasin === false && hyd.srv.jeton === true && hyd.patients > 0, JSON.stringify(hyd));
+      erreurs84.push(...erreursJS);
+      verifier('Aucune erreur JavaScript sur la page ordinaire hydratée', erreurs84.length === 0, erreurs84.join(' | '));
+      verifier('Aucune erreur JavaScript sur les pages sans session (hors 401/404 voulus)', [pv, pr, pe, pi].every((x) => x.errs.filter((m) => !/Failed to load resource: the server responded with a status of (401|404)/.test(m)).length === 0),
+        JSON.stringify([pv, pr, pe, pi].map((x) => x.errs.slice(0, 2))));
+    } finally {
+      nettoyerTables();
+      ecrireCol('enquetes', sauve.enquetes);
+      ecrireCol('jetonsEnquete', sauve.jetons);
+      await pause(300);
+    }
+    const reste = sql("SELECT COUNT(*) FROM utilisateurs WHERE identifiant LIKE 'v84.%';");
+    const resteEnq = (lireCol('enquetes') || []).filter((e) => /^ENQ-V84/.test(e.id || '')).length + (lireCol('jetonsEnquete') || []).filter((j) => /^JET-V84/.test(j.id || '')).length;
+    verifier('Nettoyage : plus de compte v84.*, d’enquête ni de jeton jetables en base', reste === '0' && resteEnq === 0, JSON.stringify([reste, resteEnq]));
+  });
+
+  /* =========================================================================
+   * Vague 90 : statistiques de consultations comptées et croisement
+   * -------------------------------------------------------------------------
+   * D1 : `m2-stats-consultations` ne compte comme consultation que celle qui a eu lieu (en_cours, terminee) ;
+   * les rendez-vous planifiés ou reportés s'affichent À PART, rien ne disparaît sans le dire. D2 : le croisement
+   * `dash-croise` source consultations lit le champ `tarif` (il n'y a pas de `montant`) et son axe « Service »
+   * est le service du praticien à l'organigramme (jamais le type de consultation). Les fiches insérées sont
+   * archivées en sortant (RG-14 : aucune suppression physique, elles quittent active()).
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 90 : statistiques de consultations comptées et croisement');
+    await page.evaluate(() => {
+      sessionStorage.clear();
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({
+        role: 'direction', fonction: 'direction', nom: 'ADMIN Systeme',
+        nomComplet: 'ADMIN Systeme', identifiant: 'admin', secteur: 'ADM',
+      }));
+    });
+    const lireKpi = () => page.evaluate(() => {
+      const chiffres = (t) => Number(String(t || '').replace(/[^0-9]/g, ''));
+      const kpis = [...document.querySelectorAll('#page-content .kpi')].map((k) => ({
+        label: (k.querySelector('.kpi-label') || {}).textContent || '', valeur: (k.querySelector('.kpi-value') || {}).textContent || '' }));
+      const trouve = (re) => kpis.filter((k) => re.test(k.label))[0];
+      const vol = trouve(/^Consultations/), pla = trouve(/planifi/i), mois = trouve(/Ce mois/);
+      return { volLabel: vol && vol.label, vol: vol ? chiffres(vol.valeur) : null,
+        plaLabel: pla && pla.label, pla: pla ? chiffres(pla.valeur) : null, mois: mois ? chiffres(mois.valeur) : null };
+    });
+    await ouvrir('m2-stats-consultations.html');
+    const avant = await lireKpi();
+    const ins = await page.evaluate(() => {
+      const S = window.SIGH.store, col = S.collection('consultations');
+      const modele = col.active()[0];
+      const maintenant = new Date().toISOString();
+      const ids = [];
+      ['terminee', 'planifiee', 'annulee'].forEach((st) => {
+        const r = col.insert({ patientId: modele.patientId, patient: modele.patient, patientCode: modele.patientCode,
+          medecinId: modele.medecinId, medecin: modele.medecin, date: maintenant, motif: 'Sonde 90', type: 'Consultation',
+          tarif: 7000, statut: st, sonde: 'Vague 90' });
+        ids.push(r.record.id);
+      });
+      return { n: ids.length, ids };
+    });
+    await ouvrir('m2-stats-consultations.html');
+    const apres = await lireKpi();
+    const regle = await page.evaluate(() => {
+      const X = window.SIGH.statsConsultations;
+      if (!X) return { expose: false };
+      const rows = window.SIGH.store.collection('consultations').active();
+      const p = X.partager(rows);
+      const recompte = rows.filter((r) => r.statut === 'terminee' || r.statut === 'en_cours').length;
+      return { expose: true, tenues: p.tenues.length, recompte, aVenir: p.aVenir.length,
+        recompteAVenir: rows.filter((r) => r.statut === 'planifiee' || r.statut === 'reporte').length };
+    });
+    verifier('Magasin : 3 consultations insérées (terminée, planifiée, annulée), le volume affiché augmente de 1 SEULEMENT',
+      ins.n === 3 && avant.vol != null && apres.vol === avant.vol + 1, JSON.stringify({ avant, apres }));
+    verifier('« Ce mois-ci » n’augmente que de la consultation tenue ; le volume est nommé « réalisées », pas « au registre »',
+      apres.mois === avant.mois + 1 && /réalisées/.test(apres.volLabel || ''), JSON.stringify({ avant, apres }));
+    verifier('Les rendez-vous planifiés non encore honorés s’affichent À PART : +1 (la planifiée), l’annulée n’est comptée nulle part',
+      avant.pla != null && apres.pla === avant.pla + 1, JSON.stringify({ avant, apres }));
+    verifier('La règle est UNE fonction exposée (SIGH.statsConsultations) : tenues et à venir égalent le recompte du magasin',
+      regle.expose && regle.tenues === regle.recompte && regle.aVenir === regle.recompteAVenir, JSON.stringify(regle));
+    /* Retrait des fiches de sonde et contrôle de la restitution. */
+    const restitue = await page.evaluate((ids) => {
+      const col = window.SIGH.store.collection('consultations');
+      ids.forEach((id) => col.archive(id, 'Fiche de sonde, vague 90'));
+      return col.active().filter((r) => r.sonde === 'Vague 90').length;
+    }, ins.ids);
+    await ouvrir('m2-stats-consultations.html');
+    const revenu = await lireKpi();
+    verifier('Fiches de sonde retirées : le volume et les planifiés reviennent à leur valeur d’avant',
+      restitue === 0 && revenu.vol === avant.vol && revenu.pla === avant.pla, JSON.stringify({ restitue, avant, revenu }));
+
+    /* ---- D2 : le croisement consultations ---- */
+    await ouvrir('dash-croise.html');
+    const choisir = (libelleSelect, libelleOption) => page.evaluate((ls, lo) => {
+      const sel = [...document.querySelectorAll('#page-content select')]
+        .find((s) => [...s.options].some((o) => o.textContent.trim() === lo) && (!ls || s.previousElementSibling && s.previousElementSibling.textContent.trim() === ls));
+      if (!sel) return false;
+      sel.value = [...sel.options].find((o) => o.textContent.trim() === lo).value;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    }, libelleSelect, libelleOption);
+    const okSource = await choisir('Source', 'Consultations');
+    const okMesure = await choisir('Mesure', 'Montant facturé');
+    const okPeriode = await choisir('Période', 'Tout l’historique');
+    await pause(500);
+    const mesure = await page.evaluate(() => {
+      const chiffres = (t) => Number(String(t || '').replace(/[^0-9]/g, ''));
+      const k = [...document.querySelectorAll('#page-content .kpi')].filter((x) => /Montant factur/.test((x.querySelector('.kpi-label') || {}).textContent || ''))[0];
+      const somme = window.SIGH.store.collection('consultations').active().reduce((a, r) => a + (Number(r.tarif) || 0), 0);
+      return { affiche: k ? chiffres((k.querySelector('.kpi-value') || {}).textContent) : null, somme };
+    });
+    verifier('Croisement consultations : le montant facturé égale la somme des `tarif` du magasin sur la période, et n’est pas nul',
+      okSource && okMesure && okPeriode && mesure.affiche === mesure.somme && mesure.somme > 0, JSON.stringify({ okSource, okMesure, okPeriode, mesure }));
+    const okAxe = await choisir('Lignes', 'Service du praticien');
+    await pause(400);
+    const service = await page.evaluate(() => {
+      const types = ['Consultation', 'Contrôle', 'Urgence', 'Domicile'];
+      const lignes = [...document.querySelectorAll('#page-content table tbody tr')].map((tr) => (tr.cells[0] || {}).textContent.trim()).filter((t) => t && t !== 'TOTAL');
+      const services = new Set(window.SIGH.store.collection('personnel').active().map((a) => a.service));
+      return { lignes, typesParmiLignes: lignes.filter((l) => types.indexOf(l) >= 0), inconnus: lignes.filter((l) => !services.has(l) && l !== 'Non renseigné') };
+    });
+    verifier('Axe « Service » : service du praticien à l’organigramme, jamais le type de consultation',
+      okAxe && service.lignes.length > 0 && service.typesParmiLignes.length === 0 && service.inconnus.length === 0, JSON.stringify(service));
+  });
+
+  /* ==========================================================================
+   * Vague 91 : moteur de validation et centre des validations (Direction, 07/11/2026)
+   * -------------------------------------------------------------------------
+   * S4 de l'audit des marquages, plus le moteur : le compte d'une famille est RELU dans le magasin (jamais un littéral),
+   * un geste valide UNE fiche (marquage retiré, valideLe / validePar / valideRole, UNE ligne de journal, aucun autre champ
+   * touché), un autre rôle est refusé en le nommant sans rien écrire, un second geste est refusé (DEJA_VALIDE), le centre
+   * n'a aucune commande d'écriture et chacun n'y voit que les familles de son rôle. Les fiches insérées sont archivées en
+   * sortant (RG-14) ; la fiche de validation d'une constante (répartition des charges) est archivée aussi.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 91 : moteur de validation et centre des validations');
+    await page.evaluate(() => {
+      sessionStorage.clear();
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({
+        role: 'direction', fonction: 'direction', nom: 'OROU YO Marguerite',
+        nomComplet: 'OROU YO Marguerite', identifiant: 'm.orouyo', secteur: 'DIR',
+      }));
+    });
+    await ouvrir('adm-validations.html');
+
+    /* --- (a) une famille posée à la main : le compte lu augmente de 1 ---------------------------------------------- */
+    const a = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const compte = () => PR.referentielsAValider().filter((f) => f.famille === 'pathologies')[0].enAttente;
+      const recompte = () => S.raw().pathologies.filter((r) => r.statut !== 'archive' && r.aValider === true).length;
+      const avant = { moteur: compte(), magasin: recompte() };
+      const fiche = S.collection('pathologies').insert({ code: 'SONDE91', libelle: 'Pathologie de sonde 91', chapitre: 'Sonde', aValider: true, sonde: 'Vague 91' }).record;
+      return { avant, apres: { moteur: compte(), magasin: recompte() }, id: fiche.id,
+        exposeSIGH: !!(window.SIGH.validations && window.SIGH.validations.validerReferentiel),
+        registre: PR.FAMILLES_A_VALIDER.map((f) => f.id) };
+    });
+    verifier('Registre : les 14 familles de l’audit sont déclarées et le moteur est exposé (SIGH.validations)',
+      a.exposeSIGH && a.registre.length === 14 && ['enquetes', 'labo_variables', 'pathologies', 'imagerie', 'checklists_bloc', 'actes', 'analyses',
+        'valorisation_sage', 'objectifs_pilotage', 'repartition_charges', 'modeles_badge', 'jeux_import', 'modeles_messages', 'bareme_its'].every((x) => a.registre.indexOf(x) >= 0),
+      a.registre.join(','));
+    verifier('(a) Une pathologie marquée « à valider » insérée à la main : le compte du moteur augmente de 1 ET égale le recompte du magasin',
+      a.apres.moteur === a.avant.moteur + 1 && a.apres.magasin === a.avant.magasin + 1 && a.avant.moteur === a.avant.magasin, JSON.stringify(a));
+
+    /* --- (c bis) le refus nommé d'abord : un autre rôle, rien d'écrit -------------------------------------------- */
+    const c1 = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const rec = () => S.raw().pathologies.filter((r) => r.id === id)[0];
+      const avant = JSON.stringify(rec()), journal0 = S.raw().audit[0].id;
+      const r = PR.validerReferentiel('pathologies', id, { role: 'caissier' });
+      return { r: { ok: r.ok, code: r.code, motif: r.motif, geste: r.geste }, inchange: JSON.stringify(rec()) === avant, journalInchange: S.raw().audit[0].id === journal0 };
+    }, a.id);
+    verifier('(c) Un autre rôle (caissier) est refusé VALIDATION_RESERVEE, le motif nomme les profils attendus, RIEN n’est écrit ni journalisé',
+      c1.r.ok === false && c1.r.code === 'VALIDATION_RESERVEE' && /Directeur Médical|Médecin/.test(c1.r.motif) && !!c1.r.geste && c1.inchange && c1.journalInchange, JSON.stringify(c1));
+
+    /* --- (b) le rôle autorisé : marquage retiré, trois traces, UNE ligne de journal, aucun autre champ --------------- */
+    const b = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, N = window.SIGH.nav;
+      const compte = () => PR.referentielsAValider().filter((f) => f.famille === 'pathologies')[0].enAttente;
+      const rec = () => S.raw().pathologies.filter((r) => r.id === id)[0];
+      const avantCompte = compte();
+      const avantFiche = JSON.parse(JSON.stringify(rec()));
+      const r = PR.validerReferentiel('pathologies', id, { role: 'dm' });
+      const fiche = rec();
+      const autres = Object.keys(fiche).filter((k) => ['aValider', 'valideLe', 'validePar', 'valideRole'].indexOf(k) < 0);
+      const lignes = S.raw().audit.filter((e) => e.action === 'Validation' && e.reference === id);
+      return {
+        ok: r.ok, aValider: fiche.aValider, valideLe: !!fiche.valideLe, validePar: fiche.validePar, valideRole: fiche.valideRole,
+        roleAttendu: N.ROLES.dm.label, journal: lignes.length, premiereLigne: S.raw().audit[0].action + '|' + S.raw().audit[0].reference,
+        compteAvant: avantCompte, compteApres: compte(),
+        autresInchanges: autres.every((k) => JSON.stringify(fiche[k]) === JSON.stringify(avantFiche[k])) && Object.keys(avantFiche).every((k) => k in fiche || k === 'aValider'),
+      };
+    }, a.id);
+    verifier('(b) Le Directeur Médical valide : marquage retiré, valideLe / validePar (nom de la session) / valideRole écrits',
+      b.ok === true && b.aValider === false && b.valideLe && b.validePar === 'OROU YO Marguerite' && b.valideRole === b.roleAttendu, JSON.stringify(b));
+    verifier('(b) UNE ligne de journal « Validation » (RG-12), la première du journal, et AUCUN autre champ de la fiche modifié',
+      b.journal === 1 && b.premiereLigne === 'Validation|' + a.id && b.autresInchanges, JSON.stringify(b));
+    verifier('(b) Le compte baisse de 1', b.compteApres === b.compteAvant - 1, JSON.stringify([b.compteAvant, b.compteApres]));
+
+    /* --- (c) DEJA_VALIDE au second geste, INTROUVABLE pour un identifiant ou une famille inconnus ------------------- */
+    const c2 = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const journal0 = S.raw().audit[0].id;
+      const encore = PR.validerReferentiel('pathologies', id, { role: 'dm' });
+      const inconnu = PR.validerReferentiel('pathologies', 'N-EXISTE-PAS', { role: 'dm' });
+      const famille = PR.validerReferentiel('famille-inconnue', id, { role: 'dm' });
+      return { encore: encore.code, inconnu: inconnu.code, famille: famille.code, journalInchange: S.raw().audit[0].id === journal0 };
+    }, a.id);
+    verifier('(c) Le second geste est refusé DEJA_VALIDE ; un identifiant ou une famille inconnus, INTROUVABLE ; rien n’est journalisé',
+      c2.encore === 'DEJA_VALIDE' && c2.inconnu === 'INTROUVABLE' && c2.famille === 'INTROUVABLE' && c2.journalInchange, JSON.stringify(c2));
+
+    /* --- (f) remettreAValider : une fiche validée repart « à valider » ------------------------------------------- */
+    const f = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const compte = () => PR.referentielsAValider().filter((x) => x.famille === 'pathologies')[0].enAttente;
+      const rec = () => S.raw().pathologies.filter((r) => r.id === id)[0];
+      const avant = compte();
+      const r = PR.remettreAValider('pathologies', id);
+      const fiche = rec();
+      const second = PR.remettreAValider('pathologies', id);
+      return { ok: r.ok, remis: r.remis, aValider: fiche.aValider, valideLe: fiche.valideLe == null, validePar: fiche.validePar == null,
+        secondRemis: second.remis, compteAvant: avant, compteApres: compte(), ligne: S.raw().audit[0].action };
+    }, a.id);
+    verifier('(f) remettreAValider remet la fiche validée « à valider » (marquage, traces effacées, compte +1, journal) et ne refait rien au second appel',
+      f.ok && f.remis === true && f.aValider === true && f.valideLe && f.validePar && f.secondRemis === false
+        && f.compteApres === f.compteAvant + 1 && f.ligne === 'Remise à valider', JSON.stringify(f));
+
+    /* --- constante du code : la validation vit dans une fiche `validationsReferentiels` -------------------------- */
+    const k = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const compte = () => PR.referentielsAValider().filter((x) => x.famille === 'repartition_charges')[0].enAttente;
+      const avant = compte();
+      const refuse = PR.validerReferentiel('repartition_charges', 'repartition-fixe-variable', { role: 'caissier' });
+      const ok = PR.validerReferentiel('repartition_charges', 'repartition-fixe-variable', { role: 'comptable' });
+      const apres = compte();
+      const fiche = S.raw().validationsReferentiels.filter((x) => x.id === 'VRF-repartition-fixe-variable')[0];
+      const remise = PR.remettreAValider('repartition_charges', 'repartition-fixe-variable');
+      const apresRemise = compte();
+      /* Retrait de la fiche de sonde (RG-14 : archivée, jamais supprimée). */
+      fiche.statut = 'archive'; S.save();
+      return { avant, refuse: refuse.code, ok: ok.ok, apres, fiche: !!fiche, remis: remise.remis, apresRemise, retire: compte() };
+    });
+    verifier('Une constante du code (répartition fixe/variable) : refus nommé, validation par fiche, compte -1, remise à valider +1',
+      k.avant === 1 && k.refuse === 'VALIDATION_RESERVEE' && k.ok === true && k.apres === 0 && k.fiche && k.remis === true && k.apresRemise === 1 && k.retire === 1, JSON.stringify(k));
+
+    /* --- (d) le centre : aucune commande d'écriture, aucun littéral « Validées », compte = recompte AVANT et APRÈS --- */
+    const lireCentre = () => page.evaluate(() => {
+      const S = window.SIGH.store;
+      const brut = S.raw();
+      const SPEC = {
+        enquetes: [['enquetes'], ['aValider']], labo_variables: [['variablesLabo', 'unitesLabo'], ['aValider']], pathologies: [['pathologies'], ['aValider']],
+        imagerie: [['examensImagerie', 'variablesImagerie'], ['aValider']], actes: [['actes'], ['tarifProvisoire']], analyses: [['analyses'], ['tarifProvisoire', 'aValider']],
+        valorisation_sage: [['valorisationsSage'], ['aValider']], objectifs_pilotage: [['objectifsPilotage'], ['aValider']],
+        modeles_badge: [['modelesBadge'], ['aValider']], modeles_messages: [['modelesMessage'], ['aValider']],
+      };
+      const FICHES = { checklists_bloc: 'checklist-bloc', repartition_charges: 'repartition-fixe-variable', jeux_import: 'imp-analyses', bareme_its: 'bareme-its' };
+      const lignes = [...document.querySelectorAll('#page-content [data-famille]')].map((n) => {
+        const fam = n.getAttribute('data-famille'), lu = n.getAttribute('data-en-attente');
+        let attendu;
+        if (SPEC[fam]) {
+          const [cols, champs] = SPEC[fam];
+          const tout = cols.reduce((m, c) => m.concat((brut[c] || []).filter((r) => r.statut !== 'archive')), []);
+          attendu = tout.length ? String(tout.filter((r) => champs.some((c) => r[c] === true)).length) : '';
+        } else {
+          attendu = (brut.validationsReferentiels || []).some((x) => x.cible === FICHES[fam] && x.valideLe && x.statut !== 'archive') ? '0' : '1';
+        }
+        return { fam, lu, attendu };
+      });
+      const boutons = [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()).filter(Boolean);
+      return { lignes, boutons, texte: document.getElementById('page-content').textContent,
+        ecritures: boutons.filter((t) => !/^(Y aller|Ouvrir)$/.test(t)) };
+    });
+    await ouvrir('adm-validations.html');
+    const d1 = await lireCentre();
+    verifier('(d) Le centre porte une ligne par famille (14) et le compte affiché égale le recompte du magasin AVANT le geste',
+      d1.lignes.length === 14 && d1.lignes.every((l) => l.lu === l.attendu), JSON.stringify(d1.lignes.filter((l) => l.lu !== l.attendu)));
+    verifier('(d) Aucune commande d’écriture sur le centre (seuls « Y aller » et « Ouvrir »), aucun littéral « Validées »',
+      d1.ecritures.length === 0 && !/Validées|validées/.test(d1.texte), JSON.stringify(d1.ecritures) + ' · ' + (d1.texte.match(/.{20}[Vv]alidées.{20}/) || [''])[0]);
+    /* Le geste (validation de la fiche remise à valider), puis le centre rouvert : le compte suit le magasin. */
+    await page.evaluate((id) => {
+      const r = window.SIGH.parcours.validerReferentiel('pathologies', id, { role: 'medecin' });
+      if (!r.ok) throw new Error('validation refusée : ' + r.code);
+    }, a.id);
+    await ouvrir('adm-validations.html');
+    const d2 = await lireCentre();
+    const dm = (x) => (x.lignes.filter((l) => l.fam === 'pathologies')[0] || {}).lu;
+    verifier('(d) APRÈS le geste, le compte affiché égale toujours le recompte du magasin, et la famille a baissé de 1',
+      d2.lignes.length === 14 && d2.lignes.every((l) => l.lu === l.attendu) && Number(dm(d2)) === Number(dm(d1)) - 1, JSON.stringify([dm(d1), dm(d2)]));
+
+    /* --- (e) chacun ne voit que les familles de son rôle ; l'accueil, la caisse et le stock ne l'ouvrent pas -------- */
+    const accessibles = await page.evaluate(() => {
+      const N = window.SIGH.nav, e = N.get('adm-validations');
+      const sonde = (roles) => roles.reduce((o, r) => { o[r] = N.can(r, e); return o; }, {});
+      return sonde(['laborantin', 'echographiste', 'chirurgien', 'anesthesiste', 'direction', 'reception', 'caissier', 'stock']);
+    });
+    verifier('(e) Le biologiste, l’échographiste, le chirurgien et l’anesthésiste ouvrent le centre ; la réception, la caisse et le stock non',
+      accessibles.laborantin && accessibles.echographiste && accessibles.chirurgien && accessibles.anesthesiste && accessibles.direction
+        && !accessibles.reception && !accessibles.caissier && !accessibles.stock, JSON.stringify(accessibles));
+    const parRole = {};
+    for (const [role, nom] of [['laborantin', 'KINNOU G.'], ['echographiste', 'ADJIBI S.'], ['chirurgien', 'BASSONGUI C.'], ['anesthesiste', 'ZOUMAROU I.']]) {
+      await page.evaluate((r, n) => window.SIGH.store.setSession({ role: r, nom: n, nomComplet: n, fonction: r }), role, nom);
+      await ouvrir('adm-validations.html');
+      parRole[role] = await page.evaluate(() => ({
+        url: location.pathname.split('/').pop(),
+        familles: [...document.querySelectorAll('#page-content [data-famille]')].map((n) => n.getAttribute('data-famille')),
+        files: /À SON POSTE/.test(document.getElementById('page-content') ? document.getElementById('page-content').textContent : ''),
+        boutonsEcriture: [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()).filter((t) => t && !/^(Y aller|Ouvrir)$/.test(t)),
+      }));
+    }
+    verifier('(e) Le biologiste ouvre le centre et n’y voit QUE les familles du laboratoire',
+      /adm-validations/.test(parRole.laborantin.url) && JSON.stringify(parRole.laborantin.familles) === '["labo_variables"]' && !parRole.laborantin.files, JSON.stringify(parRole.laborantin));
+    verifier('(e) L’échographiste n’y voit que l’imagerie, le chirurgien et l’anesthésiste que les check-listes du bloc, sans aucune commande d’écriture',
+      JSON.stringify(parRole.echographiste.familles) === '["imagerie"]' && JSON.stringify(parRole.chirurgien.familles) === '["checklists_bloc"]'
+        && JSON.stringify(parRole.anesthesiste.familles) === '["checklists_bloc"]'
+        && ['echographiste', 'chirurgien', 'anesthesiste'].every((r) => parRole[r].boutonsEcriture.length === 0), JSON.stringify(parRole));
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'reception', nom: 'AGOSSOU R.', nomComplet: 'AGOSSOU R.', fonction: 'accueil' }));
+    await ouvrir('adm-validations.html');
+    const accueil = await page.evaluate(() => ({ url: location.pathname, familles: document.querySelectorAll('[data-famille]').length }));
+    verifier('(e) La réception n’ouvre pas le centre (renvoi au 403, aucune famille affichée)', /error-403/.test(accueil.url) && accueil.familles === 0, JSON.stringify(accueil));
+
+    /* --- restitution : session de la Direction, fiches de sonde archivées (RG-14) ---------------------------------- */
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'direction', nom: 'OROU YO Marguerite', nomComplet: 'OROU YO Marguerite', fonction: 'direction' }));
+    const rest = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      S.collection('pathologies').archive(id, 'Fiche de sonde, vague 91');
+      return { reste: S.collection('pathologies').active().filter((r) => r.sonde === 'Vague 91').length,
+        compte: PR.referentielsAValider().filter((x) => x.famille === 'pathologies')[0].enAttente,
+        magasin: S.raw().pathologies.filter((r) => r.statut !== 'archive' && r.aValider === true).length };
+    }, a.id);
+    verifier('Fiche de sonde archivée : la famille revient à son compte d’avant',
+      rest.reste === 0 && rest.compte === a.avant.moteur && rest.magasin === a.avant.magasin, JSON.stringify([rest, a.avant]));
+    verifier('Aucune erreur JavaScript sur le centre des validations', erreursJS.length === 0, erreursJS.join(' | '));
+  });
 
   await browser.close();
   server.close();

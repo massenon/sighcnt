@@ -1,0 +1,3552 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-catalogue-labo.js — ne pas éditer.",
+ "jour": "2026-10-30",
+ "valeurs": {
+  "_doc": "m5-valeurs-reference : jeu de la maquette",
+  "kpis": [
+   {
+    "label": "Variables paramétrées",
+    "valeur": "163",
+    "indice": null
+   },
+   {
+    "label": "Documentées",
+    "valeur": "102",
+    "indice": "Fiche de résultats du 21/08/2026"
+   },
+   {
+    "label": "Validées par le biologiste",
+    "valeur": "61",
+    "indice": "Validation écrite du 01/09/2026"
+   },
+   {
+    "label": "Variables fermées",
+    "valeur": "0",
+    "indice": "Retirées du compte rendu"
+   }
+  ],
+  "options": [
+   [
+    "|Toutes les sections",
+    "hematologie|Hématologie",
+    "serologie|Sérologie",
+    "parasitologie|Parasitologie",
+    "biochimie|Biochimie",
+    "bacteriologie|Bactériologie",
+    "hormonologie|Hormonologie"
+   ],
+   [
+    "|Tous les examens",
+    "NFS|NFS complète (hémogramme)",
+    "RETIC|Taux de réticulocytes",
+    "TS|Temps de saignement",
+    "TC|Temps de coagulation",
+    "TP|Temps de prothrombine — INR",
+    "TCA|Temps de céphaline activée (TCA / TCK)",
+    "VS|Vitesse de sédimentation",
+    "GSRH|Groupage sanguin — facteur Rhésus",
+    "EHB|Électrophorèse de l’hémoglobine",
+    "AGHBS|Recherche AgHBs (hépatite B par test rapide)",
+    "ACHCV|Anticorps anti-HCV",
+    "ASLO|Antistreptolysine O (ASLO)",
+    "TPHA|TPHA (syphilis)",
+    "VDRL|VDRL",
+    "VIH|VIH",
+    "TOXO|Toxoplasmose",
+    "RUB|Rubéole",
+    "CHLAM|Chlamydiase",
+    "CRP|Protéine C-réactive (CRP)",
+    "TBG|Test biologique de grossesse",
+    "GEDP|Goutte épaisse — densité parasitaire",
+    "SDW|Sérodiagnostic de Widal",
+    "AKOP|AKOP — examen parasitologique des selles",
+    "MICRO|Recherche de microfilaires",
+    "BILH|Recherche d’œufs de bilharzie",
+    "GLYAJ|Glycémie à jeun",
+    "GLYPP|Glycémie post-prandiale",
+    "CREA|Créatinine",
+    "AZOT|Azotémie (urée)",
+    "CA|Calcémie",
+    "MG|Magnésémie",
+    "IONO|Ionogramme sanguin (Na, K, Cl)",
+    "TGO|Transaminases TGO / TGP",
+    "GGT|Gamma-GT",
+    "CHOLT|Cholestérol total",
+    "CHOLH|Cholestérol HDL",
+    "CHOLL|Cholestérol LDL",
+    "TG|Triglycérides",
+    "BILI|Bilirubine totale, conjuguée et non conjuguée",
+    "PROT|Protidémie",
+    "LIPA|Lipasémie",
+    "PHOS|Phosphorémie",
+    "PAL|Phosphatase alcaline",
+    "G6PD|G6PD",
+    "GLUCO|Glucorachie",
+    "PROTR|Protéinorachie",
+    "DDIM|D-dimères",
+    "HBA1C|Hémoglobine glyquée (HbA1c)",
+    "URIC|Uricémie (acide urique)",
+    "ECBU|ECBU — examen cytobactériologique des urines",
+    "PV|Prélèvement vaginal (PV)",
+    "ECBLCR|ECB du liquide céphalo-rachidien",
+    "ECBLP|ECB du liquide pleural",
+    "ECBLA|ECB du liquide d’ascite",
+    "ECBPUS|ECB du pus",
+    "PU|Prélèvement urétral (PU)",
+    "BHCG|ß-HCG (dosage sérique)",
+    "FSH|FSH",
+    "LH|LH",
+    "OEST|Œstradiol",
+    "PROG|Progestérone",
+    "PSAT|PSA total",
+    "PSAL|PSA libre",
+    "TESTO|Testostérone",
+    "AMH|AMH — hormone antimüllérienne",
+    "PRL|Prolactinémie",
+    "TBGS|TBG sérique",
+    "TSH|TSH",
+    "T3|T3",
+    "T4|T4"
+   ],
+   [
+    "|Toutes les variables",
+    "documente|Documentées",
+    "valider|À valider",
+    "ferme|Fermées"
+   ]
+  ],
+  "entetes": [
+   "EXAMEN",
+   "VARIABLE",
+   "TYPE",
+   "UNITÉ",
+   "RÉFÉRENCE",
+   "ÉTAT",
+   "ACTIONS"
+  ],
+  "cartes": [],
+  "note": "Une variable d’accompagnement — réactif, lot, expiration, commentaire — se ferme sans se supprimer : le jour où un changement de réactif rend l’interprétation inutile, elle disparaît du compte rendu et les résultats déjà rendus la conservent. C’est la demande du biologiste, mot pour mot : « on peut les fermer ».",
+  "page1": [
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Globules blancs GB",
+    "Valeur numérique",
+    "G/l",
+    "4 - 8",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "↳ Lymphocytes LY",
+    "Valeur numérique",
+    "G/l",
+    "1 - 4.5",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "↳ Monocytes MO",
+    "Valeur numérique",
+    "G/l",
+    "0.2 - 1",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "↳ Polynucléaires éosinophiles PNE",
+    "Valeur numérique",
+    "G/l",
+    "0.1 - 0.4",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "↳ Polynucléaires basophiles PNB",
+    "Valeur numérique",
+    "G/l",
+    "0 - 0.1",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "↳ Polynucléaires neutrophiles PNN",
+    "Valeur numérique",
+    "G/l",
+    "1.5 - 6",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Globules rouges GR",
+    "Valeur numérique",
+    "T/l",
+    "3.5 - 5.3",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Hémoglobine HB",
+    "Valeur numérique",
+    "g/dl",
+    "11 - 14",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Hématocrite HTE",
+    "Valeur numérique",
+    "%",
+    "35 - 49",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "VGM VGM",
+    "Valeur numérique",
+    "fl",
+    "80 - 100",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "CCMH CCMH",
+    "Valeur numérique",
+    "g/dl",
+    "32 - 36",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "TCMH TCMH",
+    "Valeur numérique",
+    "pg",
+    "28 - 32",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Plaquettes PLQ",
+    "Valeur numérique",
+    "G/l",
+    "150 - 400",
+    "Documentée",
+    ""
+   ],
+   [
+    "Taux de réticulocytes Hématologie",
+    "Réticulocytes RET",
+    "Valeur numérique",
+    "G/l",
+    "25 - 100",
+    "Validée (biologiste)",
+    ""
+   ],
+   [
+    "Temps de saignement Hématologie",
+    "Temps de saignement TSV",
+    "Valeur numérique",
+    "min",
+    "2 - 4",
+    "Validée (biologiste)",
+    ""
+   ],
+   [
+    "Temps de coagulation Hématologie",
+    "Temps de coagulation TCV",
+    "Valeur numérique",
+    "min",
+    "5 - 10",
+    "Validée (biologiste)",
+    ""
+   ],
+   [
+    "Temps de prothrombine — INR Hématologie",
+    "INR INR",
+    "Valeur numérique",
+    "—",
+    "0.8 - 1.2",
+    "Documentée",
+    ""
+   ],
+   [
+    "Temps de prothrombine — INR Hématologie",
+    "Taux de prothrombine TP",
+    "Valeur numérique",
+    "%",
+    "80 - 100",
+    "Documentée",
+    ""
+   ],
+   [
+    "Temps de céphaline activée (TCA / TCK) Hématologie",
+    "Temps du malade TCAM",
+    "Valeur numérique",
+    "s",
+    "25 - 40",
+    "Validée (biologiste)",
+    ""
+   ],
+   [
+    "Temps de céphaline activée (TCA / TCK) Hématologie",
+    "↳ Temps du témoin TCAT",
+    "Valeur numérique",
+    "s",
+    "25 - 40",
+    "Validée (biologiste)",
+    ""
+   ],
+   [
+    "Temps de céphaline activée (TCA / TCK) Hématologie",
+    "↳ Rapport malade / témoin TCAR",
+    "Valeur numérique",
+    "—",
+    "0.8 - 1.2",
+    "Validée (biologiste)",
+    ""
+   ],
+   [
+    "Vitesse de sédimentation Hématologie",
+    "Première heure H1",
+    "Valeur numérique",
+    "mm",
+    "< 6",
+    "Documentée",
+    ""
+   ],
+   [
+    "Vitesse de sédimentation Hématologie",
+    "Deuxième heure H2",
+    "Valeur numérique",
+    "mm",
+    "< 10",
+    "Documentée",
+    ""
+   ],
+   [
+    "Groupage sanguin — facteur Rhésus Hématologie",
+    "Groupe sanguin — Rhésus GSRH",
+    "Choix dans une liste",
+    "—",
+    "—",
+    "Documentée",
+    ""
+   ],
+   [
+    "Groupage sanguin — facteur Rhésus Hématologie",
+    "↳ DU (Rhésus faible) DU",
+    "Positif / Négatif",
+    "—",
+    "Attendu : Négatif",
+    "Documentée",
+    ""
+   ]
+  ],
+  "ids": [
+   "VAR-NFS-GB",
+   "VAR-NFS-LY",
+   "VAR-NFS-MO",
+   "VAR-NFS-PNE",
+   "VAR-NFS-PNB",
+   "VAR-NFS-PNN",
+   "VAR-NFS-GR",
+   "VAR-NFS-HB",
+   "VAR-NFS-HTE",
+   "VAR-NFS-VGM",
+   "VAR-NFS-CCMH",
+   "VAR-NFS-TCMH",
+   "VAR-NFS-PLQ",
+   "VAR-RETIC-RET",
+   "VAR-TS-TSV",
+   "VAR-TC-TCV",
+   "VAR-TP-INR",
+   "VAR-TP-TP",
+   "VAR-TCA-TCAM",
+   "VAR-TCA-TCAT",
+   "VAR-TCA-TCAR",
+   "VAR-VS-H1",
+   "VAR-VS-H2",
+   "VAR-GSRH-GSRH",
+   "VAR-GSRH-DU",
+   "VAR-EHB-PHENO",
+   "VAR-AGHBS-AGHBS",
+   "VAR-ACHCV-ACHCV",
+   "VAR-ASLO-ASLO",
+   "VAR-TPHA-TPHA",
+   "VAR-VDRL-VDRL",
+   "VAR-VIH-T1",
+   "VAR-VIH-T1R",
+   "VAR-VIH-T1L",
+   "VAR-VIH-T1E",
+   "VAR-VIH-T2",
+   "VAR-VIH-T2R",
+   "VAR-VIH-T2L",
+   "VAR-VIH-T2E",
+   "VAR-VIH-T3",
+   "VAR-VIH-T3R",
+   "VAR-VIH-T3L",
+   "VAR-VIH-T3E",
+   "VAR-VIH-CONC",
+   "VAR-TOXO-IGG",
+   "VAR-TOXO-IGM",
+   "VAR-RUB-RIGG",
+   "VAR-RUB-RIGM",
+   "VAR-CHLAM-CHL",
+   "VAR-CRP-CRPQ",
+   "VAR-CRP-CRPT",
+   "VAR-TBG-TBG",
+   "VAR-GEDP-GE",
+   "VAR-GEDP-DENS",
+   "VAR-SDW-REACT",
+   "VAR-SDW-TO",
+   "VAR-SDW-AO",
+   "VAR-SDW-BO",
+   "VAR-SDW-CO",
+   "VAR-SDW-TH",
+   "VAR-SDW-AH",
+   "VAR-SDW-BH",
+   "VAR-SDW-CH",
+   "VAR-SDW-COMM",
+   "VAR-AKOP-ASP",
+   "VAR-AKOP-COUL",
+   "VAR-AKOP-FLORE",
+   "VAR-AKOP-LEV",
+   "VAR-AKOP-PARA",
+   "VAR-MICRO-MF",
+   "VAR-BILH-OB",
+   "VAR-GLYAJ-GLY",
+   "VAR-GLYPP-GLYP",
+   "VAR-CREA-CREA",
+   "VAR-AZOT-AZO",
+   "VAR-CA-CAL",
+   "VAR-MG-MAG",
+   "VAR-IONO-NA",
+   "VAR-IONO-K",
+   "VAR-IONO-CL",
+   "VAR-TGO-TGO",
+   "VAR-TGO-TGP",
+   "VAR-GGT-GGTH",
+   "VAR-CHOLT-CT",
+   "VAR-CHOLH-CH",
+   "VAR-CHOLL-CLD",
+   "VAR-TG-TGL",
+   "VAR-BILI-BT",
+   "VAR-BILI-BC",
+   "VAR-BILI-BNC",
+   "VAR-PROT-PRO",
+   "VAR-LIPA-LIP",
+   "VAR-PHOS-PHO",
+   "VAR-PAL-PALV",
+   "VAR-G6PD-G6",
+   "VAR-GLUCO-GLC",
+   "VAR-PROTR-PRR",
+   "VAR-DDIM-DD",
+   "VAR-HBA1C-A1C",
+   "VAR-URIC-ACU",
+   "VAR-ECBU-ASPU",
+   "VAR-ECBU-LEUC",
+   "VAR-ECBU-HEMU",
+   "VAR-ECBU-CELL",
+   "VAR-ECBU-CRIS",
+   "VAR-ECBU-CYL",
+   "VAR-ECBU-LEVU",
+   "VAR-ECBU-GRAM",
+   "VAR-ECBU-COMM",
+   "VAR-PV-ASPV",
+   "VAR-PV-ASPV2",
+   "VAR-PV-TRIC",
+   "VAR-PV-CELV",
+   "VAR-PV-LEUV",
+   "VAR-PV-LEVV",
+   "VAR-PV-HEMV",
+   "VAR-PV-GRAMV",
+   "VAR-PV-COMMV",
+   "VAR-ECBLCR-ASPX",
+   "VAR-ECBLCR-LEUX",
+   "VAR-ECBLCR-DIRX",
+   "VAR-ECBLCR-CULX",
+   "VAR-ECBLCR-ATBX",
+   "VAR-ECBLCR-COMX",
+   "VAR-ECBLP-ASPX",
+   "VAR-ECBLP-LEUX",
+   "VAR-ECBLP-DIRX",
+   "VAR-ECBLP-CULX",
+   "VAR-ECBLP-ATBX",
+   "VAR-ECBLP-COMX",
+   "VAR-ECBLA-ASPX",
+   "VAR-ECBLA-LEUX",
+   "VAR-ECBLA-DIRX",
+   "VAR-ECBLA-CULX",
+   "VAR-ECBLA-ATBX",
+   "VAR-ECBLA-COMX",
+   "VAR-ECBPUS-ASPX",
+   "VAR-ECBPUS-LEUX",
+   "VAR-ECBPUS-DIRX",
+   "VAR-ECBPUS-CULX",
+   "VAR-ECBPUS-ATBX",
+   "VAR-ECBPUS-COMX",
+   "VAR-PU-ASPX",
+   "VAR-PU-LEUX",
+   "VAR-PU-DIRX",
+   "VAR-PU-CULX",
+   "VAR-PU-ATBX",
+   "VAR-PU-COMX",
+   "VAR-BHCG-HCG",
+   "VAR-FSH-FSHV",
+   "VAR-LH-LHV",
+   "VAR-OEST-OES",
+   "VAR-PROG-PRG",
+   "VAR-PSAT-TPSA",
+   "VAR-PSAL-PSAL",
+   "VAR-PSAL-RATIO",
+   "VAR-TESTO-TST",
+   "VAR-AMH-AMHV",
+   "VAR-PRL-PROL",
+   "VAR-TBGS-TBGV",
+   "VAR-TSH-TSHV",
+   "VAR-T3-T3V",
+   "VAR-T4-T4V"
+  ],
+  "nbTotal": 163,
+  "nbActives": 163,
+  "exemplesFermables": [
+   "VAR-VIH-T1R",
+   "VAR-VIH-T1L",
+   "VAR-VIH-T1E"
+  ],
+  "plagesVide": "Plages de référence par lot de réactif Colonnes Exporter Nouvelle plage de lot Aucune plage par lot enregistrée : les bornes des variables ci-dessus font foi. À l’arrivée d’un lot dont la notice déplace les bornes, l’enregistrer ici — les saisies à venir s’y compareront, les résultats déjà rendus gardent leurs références. Aucun enregistrement",
+  "filtres": [
+   {
+    "nom": "section hématologie",
+    "section": "hematologie",
+    "examen": "",
+    "etat": "",
+    "optionsExamen": [
+     "|Tous les examens",
+     "NFS|NFS complète (hémogramme)",
+     "RETIC|Taux de réticulocytes",
+     "TS|Temps de saignement",
+     "TC|Temps de coagulation",
+     "TP|Temps de prothrombine — INR",
+     "TCA|Temps de céphaline activée (TCA / TCK)",
+     "VS|Vitesse de sédimentation",
+     "GSRH|Groupage sanguin — facteur Rhésus",
+     "EHB|Électrophorèse de l’hémoglobine"
+    ],
+    "ids": [
+     "VAR-NFS-GB",
+     "VAR-NFS-LY",
+     "VAR-NFS-MO",
+     "VAR-NFS-PNE",
+     "VAR-NFS-PNB",
+     "VAR-NFS-PNN",
+     "VAR-NFS-GR",
+     "VAR-NFS-HB",
+     "VAR-NFS-HTE",
+     "VAR-NFS-VGM",
+     "VAR-NFS-CCMH",
+     "VAR-NFS-TCMH",
+     "VAR-NFS-PLQ",
+     "VAR-RETIC-RET",
+     "VAR-TS-TSV",
+     "VAR-TC-TCV",
+     "VAR-TP-INR",
+     "VAR-TP-TP",
+     "VAR-TCA-TCAM",
+     "VAR-TCA-TCAT",
+     "VAR-TCA-TCAR",
+     "VAR-VS-H1",
+     "VAR-VS-H2",
+     "VAR-GSRH-GSRH",
+     "VAR-GSRH-DU",
+     "VAR-EHB-PHENO"
+    ],
+    "kpis": [
+     {
+      "label": "Variables paramétrées",
+      "valeur": "163",
+      "indice": null
+     },
+     {
+      "label": "Documentées",
+      "valeur": "102",
+      "indice": "Fiche de résultats du 21/08/2026"
+     },
+     {
+      "label": "Validées par le biologiste",
+      "valeur": "61",
+      "indice": "Validation écrite du 01/09/2026"
+     },
+     {
+      "label": "Variables fermées",
+      "valeur": "0",
+      "indice": "Retirées du compte rendu"
+     }
+    ]
+   },
+   {
+    "nom": "section parasitologie",
+    "section": "parasitologie",
+    "examen": "",
+    "etat": "",
+    "optionsExamen": [
+     "|Tous les examens",
+     "GEDP|Goutte épaisse — densité parasitaire",
+     "SDW|Sérodiagnostic de Widal",
+     "AKOP|AKOP — examen parasitologique des selles",
+     "MICRO|Recherche de microfilaires",
+     "BILH|Recherche d’œufs de bilharzie"
+    ],
+    "ids": [
+     "VAR-GEDP-GE",
+     "VAR-GEDP-DENS",
+     "VAR-SDW-REACT",
+     "VAR-SDW-TO",
+     "VAR-SDW-AO",
+     "VAR-SDW-BO",
+     "VAR-SDW-CO",
+     "VAR-SDW-TH",
+     "VAR-SDW-AH",
+     "VAR-SDW-BH",
+     "VAR-SDW-CH",
+     "VAR-SDW-COMM",
+     "VAR-AKOP-ASP",
+     "VAR-AKOP-COUL",
+     "VAR-AKOP-FLORE",
+     "VAR-AKOP-LEV",
+     "VAR-AKOP-PARA",
+     "VAR-MICRO-MF",
+     "VAR-BILH-OB"
+    ],
+    "kpis": [
+     {
+      "label": "Variables paramétrées",
+      "valeur": "163",
+      "indice": null
+     },
+     {
+      "label": "Documentées",
+      "valeur": "102",
+      "indice": "Fiche de résultats du 21/08/2026"
+     },
+     {
+      "label": "Validées par le biologiste",
+      "valeur": "61",
+      "indice": "Validation écrite du 01/09/2026"
+     },
+     {
+      "label": "Variables fermées",
+      "valeur": "0",
+      "indice": "Retirées du compte rendu"
+     }
+    ]
+   },
+   {
+    "nom": "examen VIH",
+    "section": "",
+    "examen": "VIH",
+    "etat": "",
+    "optionsExamen": [
+     "|Tous les examens",
+     "NFS|NFS complète (hémogramme)",
+     "RETIC|Taux de réticulocytes",
+     "TS|Temps de saignement",
+     "TC|Temps de coagulation",
+     "TP|Temps de prothrombine — INR",
+     "TCA|Temps de céphaline activée (TCA / TCK)",
+     "VS|Vitesse de sédimentation",
+     "GSRH|Groupage sanguin — facteur Rhésus",
+     "EHB|Électrophorèse de l’hémoglobine",
+     "AGHBS|Recherche AgHBs (hépatite B par test rapide)",
+     "ACHCV|Anticorps anti-HCV",
+     "ASLO|Antistreptolysine O (ASLO)",
+     "TPHA|TPHA (syphilis)",
+     "VDRL|VDRL",
+     "VIH|VIH",
+     "TOXO|Toxoplasmose",
+     "RUB|Rubéole",
+     "CHLAM|Chlamydiase",
+     "CRP|Protéine C-réactive (CRP)",
+     "TBG|Test biologique de grossesse",
+     "GEDP|Goutte épaisse — densité parasitaire",
+     "SDW|Sérodiagnostic de Widal",
+     "AKOP|AKOP — examen parasitologique des selles",
+     "MICRO|Recherche de microfilaires",
+     "BILH|Recherche d’œufs de bilharzie",
+     "GLYAJ|Glycémie à jeun",
+     "GLYPP|Glycémie post-prandiale",
+     "CREA|Créatinine",
+     "AZOT|Azotémie (urée)",
+     "CA|Calcémie",
+     "MG|Magnésémie",
+     "IONO|Ionogramme sanguin (Na, K, Cl)",
+     "TGO|Transaminases TGO / TGP",
+     "GGT|Gamma-GT",
+     "CHOLT|Cholestérol total",
+     "CHOLH|Cholestérol HDL",
+     "CHOLL|Cholestérol LDL",
+     "TG|Triglycérides",
+     "BILI|Bilirubine totale, conjuguée et non conjuguée",
+     "PROT|Protidémie",
+     "LIPA|Lipasémie",
+     "PHOS|Phosphorémie",
+     "PAL|Phosphatase alcaline",
+     "G6PD|G6PD",
+     "GLUCO|Glucorachie",
+     "PROTR|Protéinorachie",
+     "DDIM|D-dimères",
+     "HBA1C|Hémoglobine glyquée (HbA1c)",
+     "URIC|Uricémie (acide urique)",
+     "ECBU|ECBU — examen cytobactériologique des urines",
+     "PV|Prélèvement vaginal (PV)",
+     "ECBLCR|ECB du liquide céphalo-rachidien",
+     "ECBLP|ECB du liquide pleural",
+     "ECBLA|ECB du liquide d’ascite",
+     "ECBPUS|ECB du pus",
+     "PU|Prélèvement urétral (PU)",
+     "BHCG|ß-HCG (dosage sérique)",
+     "FSH|FSH",
+     "LH|LH",
+     "OEST|Œstradiol",
+     "PROG|Progestérone",
+     "PSAT|PSA total",
+     "PSAL|PSA libre",
+     "TESTO|Testostérone",
+     "AMH|AMH — hormone antimüllérienne",
+     "PRL|Prolactinémie",
+     "TBGS|TBG sérique",
+     "TSH|TSH",
+     "T3|T3",
+     "T4|T4"
+    ],
+    "ids": [
+     "VAR-VIH-T1",
+     "VAR-VIH-T1R",
+     "VAR-VIH-T1L",
+     "VAR-VIH-T1E",
+     "VAR-VIH-T2",
+     "VAR-VIH-T2R",
+     "VAR-VIH-T2L",
+     "VAR-VIH-T2E",
+     "VAR-VIH-T3",
+     "VAR-VIH-T3R",
+     "VAR-VIH-T3L",
+     "VAR-VIH-T3E",
+     "VAR-VIH-CONC"
+    ],
+    "kpis": [
+     {
+      "label": "Variables paramétrées",
+      "valeur": "163",
+      "indice": null
+     },
+     {
+      "label": "Documentées",
+      "valeur": "102",
+      "indice": "Fiche de résultats du 21/08/2026"
+     },
+     {
+      "label": "Validées par le biologiste",
+      "valeur": "61",
+      "indice": "Validation écrite du 01/09/2026"
+     },
+     {
+      "label": "Variables fermées",
+      "valeur": "0",
+      "indice": "Retirées du compte rendu"
+     }
+    ]
+   },
+   {
+    "nom": "examen NFS",
+    "section": "",
+    "examen": "NFS",
+    "etat": "",
+    "optionsExamen": [
+     "|Tous les examens",
+     "NFS|NFS complète (hémogramme)",
+     "RETIC|Taux de réticulocytes",
+     "TS|Temps de saignement",
+     "TC|Temps de coagulation",
+     "TP|Temps de prothrombine — INR",
+     "TCA|Temps de céphaline activée (TCA / TCK)",
+     "VS|Vitesse de sédimentation",
+     "GSRH|Groupage sanguin — facteur Rhésus",
+     "EHB|Électrophorèse de l’hémoglobine",
+     "AGHBS|Recherche AgHBs (hépatite B par test rapide)",
+     "ACHCV|Anticorps anti-HCV",
+     "ASLO|Antistreptolysine O (ASLO)",
+     "TPHA|TPHA (syphilis)",
+     "VDRL|VDRL",
+     "VIH|VIH",
+     "TOXO|Toxoplasmose",
+     "RUB|Rubéole",
+     "CHLAM|Chlamydiase",
+     "CRP|Protéine C-réactive (CRP)",
+     "TBG|Test biologique de grossesse",
+     "GEDP|Goutte épaisse — densité parasitaire",
+     "SDW|Sérodiagnostic de Widal",
+     "AKOP|AKOP — examen parasitologique des selles",
+     "MICRO|Recherche de microfilaires",
+     "BILH|Recherche d’œufs de bilharzie",
+     "GLYAJ|Glycémie à jeun",
+     "GLYPP|Glycémie post-prandiale",
+     "CREA|Créatinine",
+     "AZOT|Azotémie (urée)",
+     "CA|Calcémie",
+     "MG|Magnésémie",
+     "IONO|Ionogramme sanguin (Na, K, Cl)",
+     "TGO|Transaminases TGO / TGP",
+     "GGT|Gamma-GT",
+     "CHOLT|Cholestérol total",
+     "CHOLH|Cholestérol HDL",
+     "CHOLL|Cholestérol LDL",
+     "TG|Triglycérides",
+     "BILI|Bilirubine totale, conjuguée et non conjuguée",
+     "PROT|Protidémie",
+     "LIPA|Lipasémie",
+     "PHOS|Phosphorémie",
+     "PAL|Phosphatase alcaline",
+     "G6PD|G6PD",
+     "GLUCO|Glucorachie",
+     "PROTR|Protéinorachie",
+     "DDIM|D-dimères",
+     "HBA1C|Hémoglobine glyquée (HbA1c)",
+     "URIC|Uricémie (acide urique)",
+     "ECBU|ECBU — examen cytobactériologique des urines",
+     "PV|Prélèvement vaginal (PV)",
+     "ECBLCR|ECB du liquide céphalo-rachidien",
+     "ECBLP|ECB du liquide pleural",
+     "ECBLA|ECB du liquide d’ascite",
+     "ECBPUS|ECB du pus",
+     "PU|Prélèvement urétral (PU)",
+     "BHCG|ß-HCG (dosage sérique)",
+     "FSH|FSH",
+     "LH|LH",
+     "OEST|Œstradiol",
+     "PROG|Progestérone",
+     "PSAT|PSA total",
+     "PSAL|PSA libre",
+     "TESTO|Testostérone",
+     "AMH|AMH — hormone antimüllérienne",
+     "PRL|Prolactinémie",
+     "TBGS|TBG sérique",
+     "TSH|TSH",
+     "T3|T3",
+     "T4|T4"
+    ],
+    "ids": [
+     "VAR-NFS-GB",
+     "VAR-NFS-LY",
+     "VAR-NFS-MO",
+     "VAR-NFS-PNE",
+     "VAR-NFS-PNB",
+     "VAR-NFS-PNN",
+     "VAR-NFS-GR",
+     "VAR-NFS-HB",
+     "VAR-NFS-HTE",
+     "VAR-NFS-VGM",
+     "VAR-NFS-CCMH",
+     "VAR-NFS-TCMH",
+     "VAR-NFS-PLQ"
+    ],
+    "kpis": [
+     {
+      "label": "Variables paramétrées",
+      "valeur": "163",
+      "indice": null
+     },
+     {
+      "label": "Documentées",
+      "valeur": "102",
+      "indice": "Fiche de résultats du 21/08/2026"
+     },
+     {
+      "label": "Validées par le biologiste",
+      "valeur": "61",
+      "indice": "Validation écrite du 01/09/2026"
+     },
+     {
+      "label": "Variables fermées",
+      "valeur": "0",
+      "indice": "Retirées du compte rendu"
+     }
+    ]
+   },
+   {
+    "nom": "état documentées",
+    "section": "",
+    "examen": "",
+    "etat": "documente",
+    "optionsExamen": [
+     "|Tous les examens",
+     "NFS|NFS complète (hémogramme)",
+     "RETIC|Taux de réticulocytes",
+     "TS|Temps de saignement",
+     "TC|Temps de coagulation",
+     "TP|Temps de prothrombine — INR",
+     "TCA|Temps de céphaline activée (TCA / TCK)",
+     "VS|Vitesse de sédimentation",
+     "GSRH|Groupage sanguin — facteur Rhésus",
+     "EHB|Électrophorèse de l’hémoglobine",
+     "AGHBS|Recherche AgHBs (hépatite B par test rapide)",
+     "ACHCV|Anticorps anti-HCV",
+     "ASLO|Antistreptolysine O (ASLO)",
+     "TPHA|TPHA (syphilis)",
+     "VDRL|VDRL",
+     "VIH|VIH",
+     "TOXO|Toxoplasmose",
+     "RUB|Rubéole",
+     "CHLAM|Chlamydiase",
+     "CRP|Protéine C-réactive (CRP)",
+     "TBG|Test biologique de grossesse",
+     "GEDP|Goutte épaisse — densité parasitaire",
+     "SDW|Sérodiagnostic de Widal",
+     "AKOP|AKOP — examen parasitologique des selles",
+     "MICRO|Recherche de microfilaires",
+     "BILH|Recherche d’œufs de bilharzie",
+     "GLYAJ|Glycémie à jeun",
+     "GLYPP|Glycémie post-prandiale",
+     "CREA|Créatinine",
+     "AZOT|Azotémie (urée)",
+     "CA|Calcémie",
+     "MG|Magnésémie",
+     "IONO|Ionogramme sanguin (Na, K, Cl)",
+     "TGO|Transaminases TGO / TGP",
+     "GGT|Gamma-GT",
+     "CHOLT|Cholestérol total",
+     "CHOLH|Cholestérol HDL",
+     "CHOLL|Cholestérol LDL",
+     "TG|Triglycérides",
+     "BILI|Bilirubine totale, conjuguée et non conjuguée",
+     "PROT|Protidémie",
+     "LIPA|Lipasémie",
+     "PHOS|Phosphorémie",
+     "PAL|Phosphatase alcaline",
+     "G6PD|G6PD",
+     "GLUCO|Glucorachie",
+     "PROTR|Protéinorachie",
+     "DDIM|D-dimères",
+     "HBA1C|Hémoglobine glyquée (HbA1c)",
+     "URIC|Uricémie (acide urique)",
+     "ECBU|ECBU — examen cytobactériologique des urines",
+     "PV|Prélèvement vaginal (PV)",
+     "ECBLCR|ECB du liquide céphalo-rachidien",
+     "ECBLP|ECB du liquide pleural",
+     "ECBLA|ECB du liquide d’ascite",
+     "ECBPUS|ECB du pus",
+     "PU|Prélèvement urétral (PU)",
+     "BHCG|ß-HCG (dosage sérique)",
+     "FSH|FSH",
+     "LH|LH",
+     "OEST|Œstradiol",
+     "PROG|Progestérone",
+     "PSAT|PSA total",
+     "PSAL|PSA libre",
+     "TESTO|Testostérone",
+     "AMH|AMH — hormone antimüllérienne",
+     "PRL|Prolactinémie",
+     "TBGS|TBG sérique",
+     "TSH|TSH",
+     "T3|T3",
+     "T4|T4"
+    ],
+    "ids": [
+     "VAR-NFS-GB",
+     "VAR-NFS-LY",
+     "VAR-NFS-MO",
+     "VAR-NFS-PNE",
+     "VAR-NFS-PNB",
+     "VAR-NFS-PNN",
+     "VAR-NFS-GR",
+     "VAR-NFS-HB",
+     "VAR-NFS-HTE",
+     "VAR-NFS-VGM",
+     "VAR-NFS-CCMH",
+     "VAR-NFS-TCMH",
+     "VAR-NFS-PLQ",
+     "VAR-RETIC-RET",
+     "VAR-TS-TSV",
+     "VAR-TC-TCV",
+     "VAR-TP-INR",
+     "VAR-TP-TP",
+     "VAR-TCA-TCAM",
+     "VAR-TCA-TCAT",
+     "VAR-TCA-TCAR",
+     "VAR-VS-H1",
+     "VAR-VS-H2",
+     "VAR-GSRH-GSRH",
+     "VAR-GSRH-DU",
+     "VAR-EHB-PHENO",
+     "VAR-AGHBS-AGHBS",
+     "VAR-ACHCV-ACHCV",
+     "VAR-ASLO-ASLO",
+     "VAR-TPHA-TPHA",
+     "VAR-VDRL-VDRL",
+     "VAR-VIH-T1",
+     "VAR-VIH-T1R",
+     "VAR-VIH-T1L",
+     "VAR-VIH-T1E",
+     "VAR-VIH-T2",
+     "VAR-VIH-T2R",
+     "VAR-VIH-T2L",
+     "VAR-VIH-T2E",
+     "VAR-VIH-T3",
+     "VAR-VIH-T3R",
+     "VAR-VIH-T3L",
+     "VAR-VIH-T3E",
+     "VAR-VIH-CONC",
+     "VAR-TOXO-IGG",
+     "VAR-TOXO-IGM",
+     "VAR-RUB-RIGG",
+     "VAR-RUB-RIGM",
+     "VAR-CHLAM-CHL",
+     "VAR-CRP-CRPQ",
+     "VAR-CRP-CRPT",
+     "VAR-TBG-TBG",
+     "VAR-GEDP-GE",
+     "VAR-GEDP-DENS",
+     "VAR-SDW-REACT",
+     "VAR-SDW-TO",
+     "VAR-SDW-AO",
+     "VAR-SDW-BO",
+     "VAR-SDW-CO",
+     "VAR-SDW-TH",
+     "VAR-SDW-AH",
+     "VAR-SDW-BH",
+     "VAR-SDW-CH",
+     "VAR-SDW-COMM",
+     "VAR-AKOP-ASP",
+     "VAR-AKOP-COUL",
+     "VAR-AKOP-FLORE",
+     "VAR-AKOP-LEV",
+     "VAR-AKOP-PARA",
+     "VAR-MICRO-MF",
+     "VAR-BILH-OB",
+     "VAR-GLYAJ-GLY",
+     "VAR-GLYPP-GLYP",
+     "VAR-CREA-CREA",
+     "VAR-AZOT-AZO",
+     "VAR-CA-CAL",
+     "VAR-MG-MAG",
+     "VAR-IONO-NA",
+     "VAR-IONO-K",
+     "VAR-IONO-CL",
+     "VAR-TGO-TGO",
+     "VAR-TGO-TGP",
+     "VAR-GGT-GGTH",
+     "VAR-CHOLT-CT",
+     "VAR-CHOLH-CH",
+     "VAR-CHOLL-CLD",
+     "VAR-TG-TGL",
+     "VAR-BILI-BT",
+     "VAR-BILI-BC",
+     "VAR-BILI-BNC",
+     "VAR-PROT-PRO",
+     "VAR-LIPA-LIP",
+     "VAR-PHOS-PHO",
+     "VAR-PAL-PALV",
+     "VAR-G6PD-G6",
+     "VAR-GLUCO-GLC",
+     "VAR-PROTR-PRR",
+     "VAR-DDIM-DD",
+     "VAR-HBA1C-A1C",
+     "VAR-URIC-ACU",
+     "VAR-ECBU-ASPU",
+     "VAR-ECBU-LEUC",
+     "VAR-ECBU-HEMU",
+     "VAR-ECBU-CELL",
+     "VAR-ECBU-CRIS",
+     "VAR-ECBU-CYL",
+     "VAR-ECBU-LEVU",
+     "VAR-ECBU-GRAM",
+     "VAR-ECBU-COMM",
+     "VAR-PV-ASPV",
+     "VAR-PV-ASPV2",
+     "VAR-PV-TRIC",
+     "VAR-PV-CELV",
+     "VAR-PV-LEUV",
+     "VAR-PV-LEVV",
+     "VAR-PV-HEMV",
+     "VAR-PV-GRAMV",
+     "VAR-PV-COMMV",
+     "VAR-ECBLCR-ASPX",
+     "VAR-ECBLCR-LEUX",
+     "VAR-ECBLCR-DIRX",
+     "VAR-ECBLCR-CULX",
+     "VAR-ECBLCR-ATBX",
+     "VAR-ECBLCR-COMX",
+     "VAR-ECBLP-ASPX",
+     "VAR-ECBLP-LEUX",
+     "VAR-ECBLP-DIRX",
+     "VAR-ECBLP-CULX",
+     "VAR-ECBLP-ATBX",
+     "VAR-ECBLP-COMX",
+     "VAR-ECBLA-ASPX",
+     "VAR-ECBLA-LEUX",
+     "VAR-ECBLA-DIRX",
+     "VAR-ECBLA-CULX",
+     "VAR-ECBLA-ATBX",
+     "VAR-ECBLA-COMX",
+     "VAR-ECBPUS-ASPX",
+     "VAR-ECBPUS-LEUX",
+     "VAR-ECBPUS-DIRX",
+     "VAR-ECBPUS-CULX",
+     "VAR-ECBPUS-ATBX",
+     "VAR-ECBPUS-COMX",
+     "VAR-PU-ASPX",
+     "VAR-PU-LEUX",
+     "VAR-PU-DIRX",
+     "VAR-PU-CULX",
+     "VAR-PU-ATBX",
+     "VAR-PU-COMX",
+     "VAR-BHCG-HCG",
+     "VAR-FSH-FSHV",
+     "VAR-LH-LHV",
+     "VAR-OEST-OES",
+     "VAR-PROG-PRG",
+     "VAR-PSAT-TPSA",
+     "VAR-PSAL-PSAL",
+     "VAR-PSAL-RATIO",
+     "VAR-TESTO-TST",
+     "VAR-AMH-AMHV",
+     "VAR-PRL-PROL",
+     "VAR-TBGS-TBGV",
+     "VAR-TSH-TSHV",
+     "VAR-T3-T3V",
+     "VAR-T4-T4V"
+    ],
+    "kpis": [
+     {
+      "label": "Variables paramétrées",
+      "valeur": "163",
+      "indice": null
+     },
+     {
+      "label": "Documentées",
+      "valeur": "102",
+      "indice": "Fiche de résultats du 21/08/2026"
+     },
+     {
+      "label": "Validées par le biologiste",
+      "valeur": "61",
+      "indice": "Validation écrite du 01/09/2026"
+     },
+     {
+      "label": "Variables fermées",
+      "valeur": "0",
+      "indice": "Retirées du compte rendu"
+     }
+    ]
+   },
+   {
+    "nom": "état à valider",
+    "section": "",
+    "examen": "",
+    "etat": "valider",
+    "optionsExamen": [
+     "|Tous les examens",
+     "NFS|NFS complète (hémogramme)",
+     "RETIC|Taux de réticulocytes",
+     "TS|Temps de saignement",
+     "TC|Temps de coagulation",
+     "TP|Temps de prothrombine — INR",
+     "TCA|Temps de céphaline activée (TCA / TCK)",
+     "VS|Vitesse de sédimentation",
+     "GSRH|Groupage sanguin — facteur Rhésus",
+     "EHB|Électrophorèse de l’hémoglobine",
+     "AGHBS|Recherche AgHBs (hépatite B par test rapide)",
+     "ACHCV|Anticorps anti-HCV",
+     "ASLO|Antistreptolysine O (ASLO)",
+     "TPHA|TPHA (syphilis)",
+     "VDRL|VDRL",
+     "VIH|VIH",
+     "TOXO|Toxoplasmose",
+     "RUB|Rubéole",
+     "CHLAM|Chlamydiase",
+     "CRP|Protéine C-réactive (CRP)",
+     "TBG|Test biologique de grossesse",
+     "GEDP|Goutte épaisse — densité parasitaire",
+     "SDW|Sérodiagnostic de Widal",
+     "AKOP|AKOP — examen parasitologique des selles",
+     "MICRO|Recherche de microfilaires",
+     "BILH|Recherche d’œufs de bilharzie",
+     "GLYAJ|Glycémie à jeun",
+     "GLYPP|Glycémie post-prandiale",
+     "CREA|Créatinine",
+     "AZOT|Azotémie (urée)",
+     "CA|Calcémie",
+     "MG|Magnésémie",
+     "IONO|Ionogramme sanguin (Na, K, Cl)",
+     "TGO|Transaminases TGO / TGP",
+     "GGT|Gamma-GT",
+     "CHOLT|Cholestérol total",
+     "CHOLH|Cholestérol HDL",
+     "CHOLL|Cholestérol LDL",
+     "TG|Triglycérides",
+     "BILI|Bilirubine totale, conjuguée et non conjuguée",
+     "PROT|Protidémie",
+     "LIPA|Lipasémie",
+     "PHOS|Phosphorémie",
+     "PAL|Phosphatase alcaline",
+     "G6PD|G6PD",
+     "GLUCO|Glucorachie",
+     "PROTR|Protéinorachie",
+     "DDIM|D-dimères",
+     "HBA1C|Hémoglobine glyquée (HbA1c)",
+     "URIC|Uricémie (acide urique)",
+     "ECBU|ECBU — examen cytobactériologique des urines",
+     "PV|Prélèvement vaginal (PV)",
+     "ECBLCR|ECB du liquide céphalo-rachidien",
+     "ECBLP|ECB du liquide pleural",
+     "ECBLA|ECB du liquide d’ascite",
+     "ECBPUS|ECB du pus",
+     "PU|Prélèvement urétral (PU)",
+     "BHCG|ß-HCG (dosage sérique)",
+     "FSH|FSH",
+     "LH|LH",
+     "OEST|Œstradiol",
+     "PROG|Progestérone",
+     "PSAT|PSA total",
+     "PSAL|PSA libre",
+     "TESTO|Testostérone",
+     "AMH|AMH — hormone antimüllérienne",
+     "PRL|Prolactinémie",
+     "TBGS|TBG sérique",
+     "TSH|TSH",
+     "T3|T3",
+     "T4|T4"
+    ],
+    "ids": [],
+    "kpis": [
+     {
+      "label": "Variables paramétrées",
+      "valeur": "163",
+      "indice": null
+     },
+     {
+      "label": "Documentées",
+      "valeur": "102",
+      "indice": "Fiche de résultats du 21/08/2026"
+     },
+     {
+      "label": "Validées par le biologiste",
+      "valeur": "61",
+      "indice": "Validation écrite du 01/09/2026"
+     },
+     {
+      "label": "Variables fermées",
+      "valeur": "0",
+      "indice": "Retirées du compte rendu"
+     }
+    ]
+   },
+   {
+    "nom": "état fermées",
+    "section": "",
+    "examen": "",
+    "etat": "ferme",
+    "optionsExamen": [
+     "|Tous les examens",
+     "NFS|NFS complète (hémogramme)",
+     "RETIC|Taux de réticulocytes",
+     "TS|Temps de saignement",
+     "TC|Temps de coagulation",
+     "TP|Temps de prothrombine — INR",
+     "TCA|Temps de céphaline activée (TCA / TCK)",
+     "VS|Vitesse de sédimentation",
+     "GSRH|Groupage sanguin — facteur Rhésus",
+     "EHB|Électrophorèse de l’hémoglobine",
+     "AGHBS|Recherche AgHBs (hépatite B par test rapide)",
+     "ACHCV|Anticorps anti-HCV",
+     "ASLO|Antistreptolysine O (ASLO)",
+     "TPHA|TPHA (syphilis)",
+     "VDRL|VDRL",
+     "VIH|VIH",
+     "TOXO|Toxoplasmose",
+     "RUB|Rubéole",
+     "CHLAM|Chlamydiase",
+     "CRP|Protéine C-réactive (CRP)",
+     "TBG|Test biologique de grossesse",
+     "GEDP|Goutte épaisse — densité parasitaire",
+     "SDW|Sérodiagnostic de Widal",
+     "AKOP|AKOP — examen parasitologique des selles",
+     "MICRO|Recherche de microfilaires",
+     "BILH|Recherche d’œufs de bilharzie",
+     "GLYAJ|Glycémie à jeun",
+     "GLYPP|Glycémie post-prandiale",
+     "CREA|Créatinine",
+     "AZOT|Azotémie (urée)",
+     "CA|Calcémie",
+     "MG|Magnésémie",
+     "IONO|Ionogramme sanguin (Na, K, Cl)",
+     "TGO|Transaminases TGO / TGP",
+     "GGT|Gamma-GT",
+     "CHOLT|Cholestérol total",
+     "CHOLH|Cholestérol HDL",
+     "CHOLL|Cholestérol LDL",
+     "TG|Triglycérides",
+     "BILI|Bilirubine totale, conjuguée et non conjuguée",
+     "PROT|Protidémie",
+     "LIPA|Lipasémie",
+     "PHOS|Phosphorémie",
+     "PAL|Phosphatase alcaline",
+     "G6PD|G6PD",
+     "GLUCO|Glucorachie",
+     "PROTR|Protéinorachie",
+     "DDIM|D-dimères",
+     "HBA1C|Hémoglobine glyquée (HbA1c)",
+     "URIC|Uricémie (acide urique)",
+     "ECBU|ECBU — examen cytobactériologique des urines",
+     "PV|Prélèvement vaginal (PV)",
+     "ECBLCR|ECB du liquide céphalo-rachidien",
+     "ECBLP|ECB du liquide pleural",
+     "ECBLA|ECB du liquide d’ascite",
+     "ECBPUS|ECB du pus",
+     "PU|Prélèvement urétral (PU)",
+     "BHCG|ß-HCG (dosage sérique)",
+     "FSH|FSH",
+     "LH|LH",
+     "OEST|Œstradiol",
+     "PROG|Progestérone",
+     "PSAT|PSA total",
+     "PSAL|PSA libre",
+     "TESTO|Testostérone",
+     "AMH|AMH — hormone antimüllérienne",
+     "PRL|Prolactinémie",
+     "TBGS|TBG sérique",
+     "TSH|TSH",
+     "T3|T3",
+     "T4|T4"
+    ],
+    "ids": [],
+    "kpis": [
+     {
+      "label": "Variables paramétrées",
+      "valeur": "163",
+      "indice": null
+     },
+     {
+      "label": "Documentées",
+      "valeur": "102",
+      "indice": "Fiche de résultats du 21/08/2026"
+     },
+     {
+      "label": "Validées par le biologiste",
+      "valeur": "61",
+      "indice": "Validation écrite du 01/09/2026"
+     },
+     {
+      "label": "Variables fermées",
+      "valeur": "0",
+      "indice": "Retirées du compte rendu"
+     }
+    ]
+   },
+   {
+    "nom": "section sérologie + à valider",
+    "section": "serologie",
+    "examen": "",
+    "etat": "valider",
+    "optionsExamen": [
+     "|Tous les examens",
+     "AGHBS|Recherche AgHBs (hépatite B par test rapide)",
+     "ACHCV|Anticorps anti-HCV",
+     "ASLO|Antistreptolysine O (ASLO)",
+     "TPHA|TPHA (syphilis)",
+     "VDRL|VDRL",
+     "VIH|VIH",
+     "TOXO|Toxoplasmose",
+     "RUB|Rubéole",
+     "CHLAM|Chlamydiase",
+     "CRP|Protéine C-réactive (CRP)",
+     "TBG|Test biologique de grossesse"
+    ],
+    "ids": [],
+    "kpis": [
+     {
+      "label": "Variables paramétrées",
+      "valeur": "163",
+      "indice": null
+     },
+     {
+      "label": "Documentées",
+      "valeur": "102",
+      "indice": "Fiche de résultats du 21/08/2026"
+     },
+     {
+      "label": "Validées par le biologiste",
+      "valeur": "61",
+      "indice": "Validation écrite du 01/09/2026"
+     },
+     {
+      "label": "Variables fermées",
+      "valeur": "0",
+      "indice": "Retirées du compte rendu"
+     }
+    ]
+   },
+   {
+    "nom": "retour à tout",
+    "section": "",
+    "examen": "",
+    "etat": "",
+    "optionsExamen": [
+     "|Tous les examens",
+     "NFS|NFS complète (hémogramme)",
+     "RETIC|Taux de réticulocytes",
+     "TS|Temps de saignement",
+     "TC|Temps de coagulation",
+     "TP|Temps de prothrombine — INR",
+     "TCA|Temps de céphaline activée (TCA / TCK)",
+     "VS|Vitesse de sédimentation",
+     "GSRH|Groupage sanguin — facteur Rhésus",
+     "EHB|Électrophorèse de l’hémoglobine",
+     "AGHBS|Recherche AgHBs (hépatite B par test rapide)",
+     "ACHCV|Anticorps anti-HCV",
+     "ASLO|Antistreptolysine O (ASLO)",
+     "TPHA|TPHA (syphilis)",
+     "VDRL|VDRL",
+     "VIH|VIH",
+     "TOXO|Toxoplasmose",
+     "RUB|Rubéole",
+     "CHLAM|Chlamydiase",
+     "CRP|Protéine C-réactive (CRP)",
+     "TBG|Test biologique de grossesse",
+     "GEDP|Goutte épaisse — densité parasitaire",
+     "SDW|Sérodiagnostic de Widal",
+     "AKOP|AKOP — examen parasitologique des selles",
+     "MICRO|Recherche de microfilaires",
+     "BILH|Recherche d’œufs de bilharzie",
+     "GLYAJ|Glycémie à jeun",
+     "GLYPP|Glycémie post-prandiale",
+     "CREA|Créatinine",
+     "AZOT|Azotémie (urée)",
+     "CA|Calcémie",
+     "MG|Magnésémie",
+     "IONO|Ionogramme sanguin (Na, K, Cl)",
+     "TGO|Transaminases TGO / TGP",
+     "GGT|Gamma-GT",
+     "CHOLT|Cholestérol total",
+     "CHOLH|Cholestérol HDL",
+     "CHOLL|Cholestérol LDL",
+     "TG|Triglycérides",
+     "BILI|Bilirubine totale, conjuguée et non conjuguée",
+     "PROT|Protidémie",
+     "LIPA|Lipasémie",
+     "PHOS|Phosphorémie",
+     "PAL|Phosphatase alcaline",
+     "G6PD|G6PD",
+     "GLUCO|Glucorachie",
+     "PROTR|Protéinorachie",
+     "DDIM|D-dimères",
+     "HBA1C|Hémoglobine glyquée (HbA1c)",
+     "URIC|Uricémie (acide urique)",
+     "ECBU|ECBU — examen cytobactériologique des urines",
+     "PV|Prélèvement vaginal (PV)",
+     "ECBLCR|ECB du liquide céphalo-rachidien",
+     "ECBLP|ECB du liquide pleural",
+     "ECBLA|ECB du liquide d’ascite",
+     "ECBPUS|ECB du pus",
+     "PU|Prélèvement urétral (PU)",
+     "BHCG|ß-HCG (dosage sérique)",
+     "FSH|FSH",
+     "LH|LH",
+     "OEST|Œstradiol",
+     "PROG|Progestérone",
+     "PSAT|PSA total",
+     "PSAL|PSA libre",
+     "TESTO|Testostérone",
+     "AMH|AMH — hormone antimüllérienne",
+     "PRL|Prolactinémie",
+     "TBGS|TBG sérique",
+     "TSH|TSH",
+     "T3|T3",
+     "T4|T4"
+    ],
+    "ids": [
+     "VAR-NFS-GB",
+     "VAR-NFS-LY",
+     "VAR-NFS-MO",
+     "VAR-NFS-PNE",
+     "VAR-NFS-PNB",
+     "VAR-NFS-PNN",
+     "VAR-NFS-GR",
+     "VAR-NFS-HB",
+     "VAR-NFS-HTE",
+     "VAR-NFS-VGM",
+     "VAR-NFS-CCMH",
+     "VAR-NFS-TCMH",
+     "VAR-NFS-PLQ",
+     "VAR-RETIC-RET",
+     "VAR-TS-TSV",
+     "VAR-TC-TCV",
+     "VAR-TP-INR",
+     "VAR-TP-TP",
+     "VAR-TCA-TCAM",
+     "VAR-TCA-TCAT",
+     "VAR-TCA-TCAR",
+     "VAR-VS-H1",
+     "VAR-VS-H2",
+     "VAR-GSRH-GSRH",
+     "VAR-GSRH-DU",
+     "VAR-EHB-PHENO",
+     "VAR-AGHBS-AGHBS",
+     "VAR-ACHCV-ACHCV",
+     "VAR-ASLO-ASLO",
+     "VAR-TPHA-TPHA",
+     "VAR-VDRL-VDRL",
+     "VAR-VIH-T1",
+     "VAR-VIH-T1R",
+     "VAR-VIH-T1L",
+     "VAR-VIH-T1E",
+     "VAR-VIH-T2",
+     "VAR-VIH-T2R",
+     "VAR-VIH-T2L",
+     "VAR-VIH-T2E",
+     "VAR-VIH-T3",
+     "VAR-VIH-T3R",
+     "VAR-VIH-T3L",
+     "VAR-VIH-T3E",
+     "VAR-VIH-CONC",
+     "VAR-TOXO-IGG",
+     "VAR-TOXO-IGM",
+     "VAR-RUB-RIGG",
+     "VAR-RUB-RIGM",
+     "VAR-CHLAM-CHL",
+     "VAR-CRP-CRPQ",
+     "VAR-CRP-CRPT",
+     "VAR-TBG-TBG",
+     "VAR-GEDP-GE",
+     "VAR-GEDP-DENS",
+     "VAR-SDW-REACT",
+     "VAR-SDW-TO",
+     "VAR-SDW-AO",
+     "VAR-SDW-BO",
+     "VAR-SDW-CO",
+     "VAR-SDW-TH",
+     "VAR-SDW-AH",
+     "VAR-SDW-BH",
+     "VAR-SDW-CH",
+     "VAR-SDW-COMM",
+     "VAR-AKOP-ASP",
+     "VAR-AKOP-COUL",
+     "VAR-AKOP-FLORE",
+     "VAR-AKOP-LEV",
+     "VAR-AKOP-PARA",
+     "VAR-MICRO-MF",
+     "VAR-BILH-OB",
+     "VAR-GLYAJ-GLY",
+     "VAR-GLYPP-GLYP",
+     "VAR-CREA-CREA",
+     "VAR-AZOT-AZO",
+     "VAR-CA-CAL",
+     "VAR-MG-MAG",
+     "VAR-IONO-NA",
+     "VAR-IONO-K",
+     "VAR-IONO-CL",
+     "VAR-TGO-TGO",
+     "VAR-TGO-TGP",
+     "VAR-GGT-GGTH",
+     "VAR-CHOLT-CT",
+     "VAR-CHOLH-CH",
+     "VAR-CHOLL-CLD",
+     "VAR-TG-TGL",
+     "VAR-BILI-BT",
+     "VAR-BILI-BC",
+     "VAR-BILI-BNC",
+     "VAR-PROT-PRO",
+     "VAR-LIPA-LIP",
+     "VAR-PHOS-PHO",
+     "VAR-PAL-PALV",
+     "VAR-G6PD-G6",
+     "VAR-GLUCO-GLC",
+     "VAR-PROTR-PRR",
+     "VAR-DDIM-DD",
+     "VAR-HBA1C-A1C",
+     "VAR-URIC-ACU",
+     "VAR-ECBU-ASPU",
+     "VAR-ECBU-LEUC",
+     "VAR-ECBU-HEMU",
+     "VAR-ECBU-CELL",
+     "VAR-ECBU-CRIS",
+     "VAR-ECBU-CYL",
+     "VAR-ECBU-LEVU",
+     "VAR-ECBU-GRAM",
+     "VAR-ECBU-COMM",
+     "VAR-PV-ASPV",
+     "VAR-PV-ASPV2",
+     "VAR-PV-TRIC",
+     "VAR-PV-CELV",
+     "VAR-PV-LEUV",
+     "VAR-PV-LEVV",
+     "VAR-PV-HEMV",
+     "VAR-PV-GRAMV",
+     "VAR-PV-COMMV",
+     "VAR-ECBLCR-ASPX",
+     "VAR-ECBLCR-LEUX",
+     "VAR-ECBLCR-DIRX",
+     "VAR-ECBLCR-CULX",
+     "VAR-ECBLCR-ATBX",
+     "VAR-ECBLCR-COMX",
+     "VAR-ECBLP-ASPX",
+     "VAR-ECBLP-LEUX",
+     "VAR-ECBLP-DIRX",
+     "VAR-ECBLP-CULX",
+     "VAR-ECBLP-ATBX",
+     "VAR-ECBLP-COMX",
+     "VAR-ECBLA-ASPX",
+     "VAR-ECBLA-LEUX",
+     "VAR-ECBLA-DIRX",
+     "VAR-ECBLA-CULX",
+     "VAR-ECBLA-ATBX",
+     "VAR-ECBLA-COMX",
+     "VAR-ECBPUS-ASPX",
+     "VAR-ECBPUS-LEUX",
+     "VAR-ECBPUS-DIRX",
+     "VAR-ECBPUS-CULX",
+     "VAR-ECBPUS-ATBX",
+     "VAR-ECBPUS-COMX",
+     "VAR-PU-ASPX",
+     "VAR-PU-LEUX",
+     "VAR-PU-DIRX",
+     "VAR-PU-CULX",
+     "VAR-PU-ATBX",
+     "VAR-PU-COMX",
+     "VAR-BHCG-HCG",
+     "VAR-FSH-FSHV",
+     "VAR-LH-LHV",
+     "VAR-OEST-OES",
+     "VAR-PROG-PRG",
+     "VAR-PSAT-TPSA",
+     "VAR-PSAL-PSAL",
+     "VAR-PSAL-RATIO",
+     "VAR-TESTO-TST",
+     "VAR-AMH-AMHV",
+     "VAR-PRL-PROL",
+     "VAR-TBGS-TBGV",
+     "VAR-TSH-TSHV",
+     "VAR-T3-T3V",
+     "VAR-T4-T4V"
+    ],
+    "kpis": [
+     {
+      "label": "Variables paramétrées",
+      "valeur": "163",
+      "indice": null
+     },
+     {
+      "label": "Documentées",
+      "valeur": "102",
+      "indice": "Fiche de résultats du 21/08/2026"
+     },
+     {
+      "label": "Validées par le biologiste",
+      "valeur": "61",
+      "indice": "Validation écrite du 01/09/2026"
+     },
+     {
+      "label": "Variables fermées",
+      "valeur": "0",
+      "indice": "Retirées du compte rendu"
+     }
+    ]
+   }
+  ]
+ },
+ "etats": {
+  "_doc": "variables posées pour tous les états",
+  "fiches": [
+   {
+    "id": "X1",
+    "statut": "actif",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X1",
+    "libelle": "Var X1",
+    "type": "numerique",
+    "unite": "g_l_hb",
+    "min": 1,
+    "max": 2,
+    "ordre": 1,
+    "actif": true,
+    "accompagnement": false,
+    "retractable": false,
+    "aValider": false
+   },
+   {
+    "id": "X2",
+    "statut": "actif",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X2",
+    "libelle": "Var X2",
+    "type": "numerique",
+    "unite": "g_l_hb",
+    "min": 1,
+    "max": 2,
+    "ordre": 1,
+    "actif": true,
+    "accompagnement": false,
+    "retractable": false,
+    "aValider": false,
+    "valideLe": "2026-09-01",
+    "validePar": "Biologiste"
+   },
+   {
+    "id": "X3",
+    "statut": "actif",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X3",
+    "libelle": "Var X3",
+    "type": "numerique",
+    "unite": "g_l_hb",
+    "min": 1,
+    "max": 2,
+    "ordre": 1,
+    "actif": true,
+    "accompagnement": false,
+    "retractable": false,
+    "aValider": true
+   },
+   {
+    "id": "X4",
+    "statut": "actif",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X4",
+    "libelle": "Var X4",
+    "type": "commentaire",
+    "unite": "g_l_hb",
+    "min": 1,
+    "max": 2,
+    "ordre": 1,
+    "actif": false,
+    "accompagnement": true,
+    "retractable": true,
+    "aValider": false
+   },
+   {
+    "id": "X5",
+    "statut": "actif",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X5",
+    "libelle": "Var X5",
+    "type": "numerique",
+    "unite": "g_l_hb",
+    "min": 1,
+    "max": 2,
+    "ordre": 1,
+    "actif": true,
+    "accompagnement": false,
+    "retractable": false,
+    "aValider": true,
+    "valideLe": "2026-09-01"
+   },
+   {
+    "id": "X6",
+    "statut": "archive",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X6",
+    "libelle": "Var X6",
+    "type": "numerique",
+    "unite": "g_l_hb",
+    "min": 1,
+    "max": 2,
+    "ordre": 1,
+    "actif": true,
+    "accompagnement": false,
+    "retractable": false,
+    "aValider": false
+   },
+   {
+    "id": "X7",
+    "statut": "actif",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X7",
+    "libelle": "Var X7",
+    "type": "numerique",
+    "unite": "g_l_hb",
+    "min": 1,
+    "max": 2,
+    "ordre": 1,
+    "actif": false,
+    "accompagnement": false,
+    "retractable": false,
+    "aValider": true
+   },
+   {
+    "id": "X8",
+    "statut": "actif",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X8",
+    "libelle": "Var X8",
+    "type": "numerique",
+    "unite": "g_l_hb",
+    "min": 1,
+    "max": 2,
+    "ordre": 1,
+    "accompagnement": false,
+    "retractable": false,
+    "aValider": false
+   },
+   {
+    "id": "X9",
+    "statut": "actif",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X9",
+    "libelle": "Var X9",
+    "type": "binaire",
+    "unite": "zzz",
+    "ordre": 1,
+    "actif": true,
+    "accompagnement": false,
+    "retractable": false,
+    "aValider": false,
+    "parent": "X1",
+    "normal": "Négatif"
+   },
+   {
+    "id": "X10",
+    "statut": "actif",
+    "examen": "NFS",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "code": "X10",
+    "libelle": "Var X10",
+    "type": "lot",
+    "unite": "sans",
+    "min": 1,
+    "max": 2,
+    "ordre": 1,
+    "actif": true,
+    "accompagnement": true,
+    "retractable": true,
+    "aValider": false
+   }
+  ],
+  "kpis": [
+   {
+    "label": "Variables paramétrées",
+    "valeur": "9",
+    "indice": null
+   },
+   {
+    "label": "Documentées",
+    "valeur": "5",
+    "indice": "Fiche de résultats du 21/08/2026"
+   },
+   {
+    "label": "Validées par le biologiste",
+    "valeur": "2",
+    "indice": "Validation écrite du 01/09/2026"
+   },
+   {
+    "label": "Variables fermées",
+    "valeur": "2",
+    "indice": "Retirées du compte rendu"
+   }
+  ],
+  "ids": [
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "X5",
+   "X7",
+   "X8",
+   "X9",
+   "X10"
+  ],
+  "lignes": [
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Var X1 X1",
+    "Valeur numérique",
+    "G/l",
+    "1 - 2",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Var X2 X2",
+    "Valeur numérique",
+    "G/l",
+    "1 - 2",
+    "Validée (biologiste)",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Var X3 X3",
+    "Valeur numérique",
+    "G/l",
+    "1 - 2",
+    "À valider",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Var X4 X4",
+    "Commentaire de l’examen",
+    "G/l",
+    "—",
+    "Fermée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Var X5 X5",
+    "Valeur numérique",
+    "G/l",
+    "1 - 2",
+    "À valider",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Var X7 X7",
+    "Valeur numérique",
+    "G/l",
+    "1 - 2",
+    "Fermée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Var X8 X8",
+    "Valeur numérique",
+    "G/l",
+    "1 - 2",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "↳ Var X9 X9",
+    "Positif / Négatif",
+    "—",
+    "Attendu : Négatif",
+    "Documentée",
+    ""
+   ],
+   [
+    "NFS complète (hémogramme) Hématologie",
+    "Var X10 X10",
+    "Lot de réactif",
+    "—",
+    "—",
+    "Documentée",
+    ""
+   ]
+  ],
+  "filtres": [
+   {
+    "nom": "documentées",
+    "etat": "documente",
+    "ids": [
+     "X1",
+     "X2",
+     "X6",
+     "X9",
+     "X10"
+    ]
+   },
+   {
+    "nom": "à valider",
+    "etat": "valider",
+    "ids": [
+     "X3",
+     "X5",
+     "X7"
+    ]
+   },
+   {
+    "nom": "fermées",
+    "etat": "ferme",
+    "ids": [
+     "X4",
+     "X7"
+    ]
+   }
+  ]
+ },
+ "impression": {
+  "_doc": "« Imprimer le référentiel » (section sérologie)",
+  "filtre": "serologie",
+  "imprime": [
+   {
+    "titre": "Référentiel des valeurs de référence",
+    "sousTitre": "Laboratoire d’analyses biomédicales — situation au 30/10/2026",
+    "cartouche": [
+     [
+      "Variables",
+      "26"
+     ],
+     [
+      "Documentées",
+      "26"
+     ],
+     [
+      "À valider",
+      "0"
+     ],
+     [
+      "Établi par",
+      "BASSONGUI Chabi Séko"
+     ],
+     [
+      "Date d’édition",
+      "30/10/2026"
+     ]
+    ],
+    "signatures": [
+     {
+      "role": "Le Biologiste médical"
+     },
+     {
+      "role": "Le Directeur Médical",
+      "nom": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "contenu": [
+     {
+      "table": {
+       "entetes": [
+        "Section",
+        "Examen",
+        "Variable",
+        "Type",
+        "Unité",
+        "Références",
+        "Provenance"
+       ],
+       "lignes": [
+        [
+         "Sérologie",
+         "Anticorps anti-HCV",
+         "Anticorps anti-HCV",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "Antistreptolysine O (ASLO)",
+         "Antistreptolysine O (ASLO)",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "Chlamydiase",
+         "Chlamydia trachomatis",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Validée (biologiste, 01/09/2026)"
+        ],
+        [
+         "Sérologie",
+         "Protéine C-réactive (CRP)",
+         "CRP",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "Protéine C-réactive (CRP)",
+         "Taux sérique",
+         "Valeur numérique",
+         "mg/l",
+         "< 6",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "Recherche AgHBs (hépatite B par test rapide)",
+         "Recherche AgHBs (hépatite B par test rapide)",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "Rubéole",
+         "IgG anti-rubéole",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Validée (biologiste, 01/09/2026)"
+        ],
+        [
+         "Sérologie",
+         "Rubéole",
+         "IgM anti-rubéole",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Validée (biologiste, 01/09/2026)"
+        ],
+        [
+         "Sérologie",
+         "Test biologique de grossesse",
+         "Test biologique de grossesse",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "Toxoplasmose",
+         "IgG anti-toxoplasme",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Validée (biologiste, 01/09/2026)"
+        ],
+        [
+         "Sérologie",
+         "Toxoplasmose",
+         "IgM anti-toxoplasme",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Validée (biologiste, 01/09/2026)"
+        ],
+        [
+         "Sérologie",
+         "TPHA (syphilis)",
+         "TPHA (syphilis)",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VDRL",
+         "VDRL",
+         "Positif / Négatif",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "VIH 1er test",
+         "Positif / Négatif / Indéterminé",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Réactif 1er test",
+         "Réactif employé",
+         "—",
+         "—",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Lot réactif 1er test",
+         "Lot de réactif",
+         "—",
+         "—",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Expiration réactif 1er test",
+         "Expiration du réactif",
+         "—",
+         "—",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "VIH 2e test",
+         "Positif / Négatif / Indéterminé",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Réactif 2e test",
+         "Réactif employé",
+         "—",
+         "—",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Lot réactif 2e test",
+         "Lot de réactif",
+         "—",
+         "—",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Expiration réactif 2e test",
+         "Expiration du réactif",
+         "—",
+         "—",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "VIH 3e test",
+         "Positif / Négatif / Indéterminé",
+         "—",
+         "Attendu : Négatif",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Réactif 3e test",
+         "Réactif employé",
+         "—",
+         "—",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Lot réactif 3e test",
+         "Lot de réactif",
+         "—",
+         "—",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Expiration réactif 3e test",
+         "Expiration du réactif",
+         "—",
+         "—",
+         "Documentée"
+        ],
+        [
+         "Sérologie",
+         "VIH",
+         "Conclusion",
+         "Choix dans une liste",
+         "—",
+         "Attendu : TEST NÉGATIF",
+         "Documentée"
+        ]
+       ],
+       "pied": null
+      }
+     },
+     {
+      "texte": "Les valeurs marquées « documentées » sont reprises de la fiche de résultats de la clinique éditée le 21/08/2026. Celles marquées « à valider » sont des valeurs usuelles de la biologie médicale, portées à titre d’attente : elles dépendent du réactif et de l’automate employés et doivent être arrêtées par le biologiste médical avant mise en service."
+     }
+    ],
+    "filtres": [
+     [
+      "Section",
+      "Sérologie"
+     ]
+    ]
+   }
+  ],
+  "nb": 26
+ },
+ "gestes": {
+  "_doc": "variables : « Nouvelle variable », « Modifier les paramètres », fermer / rouvrir",
+  "creations": [
+   {
+    "nom": "variable numérique complète",
+    "saisie": {
+     "examen": "VIH",
+     "code": "ZZ1",
+     "libelle": "Variable test",
+     "type": "numerique",
+     "unite": "mg_l",
+     "min": "1.5",
+     "max": "9",
+     "decimales": "1",
+     "ordre": "5"
+    },
+    "initial": [
+     [
+      "examen",
+      "NFS"
+     ],
+     [
+      "code",
+      ""
+     ],
+     [
+      "libelle",
+      ""
+     ],
+     [
+      "type",
+      "numerique"
+     ],
+     [
+      "unite",
+      "sans"
+     ],
+     [
+      "min",
+      ""
+     ],
+     [
+      "max",
+      ""
+     ],
+     [
+      "normal",
+      ""
+     ],
+     [
+      "decimales",
+      ""
+     ],
+     [
+      "ordre",
+      "99"
+     ],
+     [
+      "parent",
+      ""
+     ],
+     [
+      "regle",
+      ""
+     ]
+    ],
+    "modaleTexte": "Nouvelle variable de résultat Examen * NFS complète (hémogramme) Code de la variable * Intitulé * Type de résultat * Valeur numérique Le type commande la saisie et le contrôle de normalité. Unité — — sans unité Borne basse Vide si la référence n’a pas de borne basse Borne haute Vide si la référence n’a pas de borne haute Issue attendue Pour un résultat qualitatif : Négatif, Absent… Décimales Rang ",
+    "nouvelles": [
+     {
+      "id": "VARxmvve7xjbzb0wt",
+      "statut": "actif",
+      "examen": "VIH",
+      "code": "ZZ1",
+      "libelle": "Variable test",
+      "type": "numerique",
+      "unite": "mg_l",
+      "min": 1.5,
+      "max": 9,
+      "normal": "",
+      "decimales": 1,
+      "ordre": 5,
+      "parent": "",
+      "regle": "",
+      "examenLibelle": "VIH",
+      "section": "serologie",
+      "accompagnement": false,
+      "retractable": false,
+      "actif": true,
+      "aValider": true,
+      "source": "Créée dans l’application le 30/10/2026 — à valider"
+     }
+    ],
+    "toasts": [
+     [
+      "Variable créée.",
+      "Variable test — 1.5 - 9"
+     ]
+    ],
+    "modaleOuverte": false,
+    "audit": {
+     "action": "Création d’une variable de résultat",
+     "module": "M5",
+     "entite": "Variable",
+     "reference": "ZZ1",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    }
+   },
+   {
+    "nom": "variable de type réactif (accompagnement, rétractable)",
+    "saisie": {
+     "examen": "VIH",
+     "code": "ZZ2",
+     "libelle": "Réactif test",
+     "type": "reactif",
+     "ordre": "6"
+    },
+    "initial": [
+     [
+      "examen",
+      "NFS"
+     ],
+     [
+      "code",
+      ""
+     ],
+     [
+      "libelle",
+      ""
+     ],
+     [
+      "type",
+      "numerique"
+     ],
+     [
+      "unite",
+      "sans"
+     ],
+     [
+      "min",
+      ""
+     ],
+     [
+      "max",
+      ""
+     ],
+     [
+      "normal",
+      ""
+     ],
+     [
+      "decimales",
+      ""
+     ],
+     [
+      "ordre",
+      "99"
+     ],
+     [
+      "parent",
+      ""
+     ],
+     [
+      "regle",
+      ""
+     ]
+    ],
+    "modaleTexte": "Nouvelle variable de résultat Examen * NFS complète (hémogramme) Code de la variable * Intitulé * Type de résultat * Valeur numérique Le type commande la saisie et le contrôle de normalité. Unité — — sans unité Borne basse Vide si la référence n’a pas de borne basse Borne haute Vide si la référence n’a pas de borne haute Issue attendue Pour un résultat qualitatif : Négatif, Absent… Décimales Rang ",
+    "nouvelles": [
+     {
+      "id": "VARxmvve7xtik6fyb",
+      "statut": "actif",
+      "examen": "VIH",
+      "code": "ZZ2",
+      "libelle": "Réactif test",
+      "type": "reactif",
+      "unite": "sans",
+      "min": null,
+      "max": null,
+      "normal": "",
+      "decimales": null,
+      "ordre": 6,
+      "parent": "",
+      "regle": "",
+      "examenLibelle": "VIH",
+      "section": "serologie",
+      "accompagnement": true,
+      "retractable": true,
+      "actif": true,
+      "aValider": true,
+      "source": "Créée dans l’application le 30/10/2026 — à valider"
+     }
+    ],
+    "toasts": [
+     [
+      "Variable créée.",
+      "Réactif test — sans référence"
+     ]
+    ],
+    "modaleOuverte": false,
+    "audit": {
+     "action": "Création d’une variable de résultat",
+     "module": "M5",
+     "entite": "Variable",
+     "reference": "ZZ2",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    }
+   },
+   {
+    "nom": "sans intitulé : refus",
+    "saisie": {
+     "examen": "VIH",
+     "code": "ZZ3",
+     "type": "numerique",
+     "ordre": "7"
+    },
+    "initial": [
+     [
+      "examen",
+      "NFS"
+     ],
+     [
+      "code",
+      ""
+     ],
+     [
+      "libelle",
+      ""
+     ],
+     [
+      "type",
+      "numerique"
+     ],
+     [
+      "unite",
+      "sans"
+     ],
+     [
+      "min",
+      ""
+     ],
+     [
+      "max",
+      ""
+     ],
+     [
+      "normal",
+      ""
+     ],
+     [
+      "decimales",
+      ""
+     ],
+     [
+      "ordre",
+      "99"
+     ],
+     [
+      "parent",
+      ""
+     ],
+     [
+      "regle",
+      ""
+     ]
+    ],
+    "modaleTexte": "Nouvelle variable de résultat Examen * NFS complète (hémogramme) Code de la variable * Intitulé * Type de résultat * Valeur numérique Le type commande la saisie et le contrôle de normalité. Unité — — sans unité Borne basse Vide si la référence n’a pas de borne basse Borne haute Vide si la référence n’a pas de borne haute Issue attendue Pour un résultat qualitatif : Négatif, Absent… Décimales Rang ",
+    "nouvelles": [],
+    "toasts": [],
+    "modaleOuverte": true,
+    "audit": {
+     "action": "Création d’une variable de résultat",
+     "module": "M5",
+     "entite": "Variable",
+     "reference": "ZZ2",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    }
+   },
+   {
+    "nom": "sous-variable avec règle",
+    "saisie": {
+     "examen": "VIH",
+     "code": "ZZ4",
+     "libelle": "Sous-variable",
+     "type": "numerique",
+     "parent": "ZZ1",
+     "regle": "inférieure à la moitié de la glycémie",
+     "ordre": "8"
+    },
+    "initial": [
+     [
+      "examen",
+      "NFS"
+     ],
+     [
+      "code",
+      ""
+     ],
+     [
+      "libelle",
+      ""
+     ],
+     [
+      "type",
+      "numerique"
+     ],
+     [
+      "unite",
+      "sans"
+     ],
+     [
+      "min",
+      ""
+     ],
+     [
+      "max",
+      ""
+     ],
+     [
+      "normal",
+      ""
+     ],
+     [
+      "decimales",
+      ""
+     ],
+     [
+      "ordre",
+      "99"
+     ],
+     [
+      "parent",
+      ""
+     ],
+     [
+      "regle",
+      ""
+     ]
+    ],
+    "modaleTexte": "Nouvelle variable de résultat Examen * NFS complète (hémogramme) Code de la variable * Intitulé * Type de résultat * Valeur numérique Le type commande la saisie et le contrôle de normalité. Unité — — sans unité Borne basse Vide si la référence n’a pas de borne basse Borne haute Vide si la référence n’a pas de borne haute Issue attendue Pour un résultat qualitatif : Négatif, Absent… Décimales Rang ",
+    "nouvelles": [
+     {
+      "id": "VARxmvve7ye4zm46e",
+      "statut": "actif",
+      "examen": "VIH",
+      "code": "ZZ4",
+      "libelle": "Sous-variable",
+      "type": "numerique",
+      "unite": "sans",
+      "min": null,
+      "max": null,
+      "normal": "",
+      "decimales": null,
+      "ordre": 8,
+      "parent": "ZZ1",
+      "regle": "inférieure à la moitié de la glycémie",
+      "examenLibelle": "VIH",
+      "section": "serologie",
+      "accompagnement": false,
+      "retractable": false,
+      "actif": true,
+      "aValider": true,
+      "source": "Créée dans l’application le 30/10/2026 — à valider"
+     }
+    ],
+    "toasts": [
+     [
+      "Variable créée.",
+      "Sous-variable — inférieure à la moitié de la glycémie"
+     ]
+    ],
+    "modaleOuverte": false,
+    "audit": {
+     "action": "Création d’une variable de résultat",
+     "module": "M5",
+     "entite": "Variable",
+     "reference": "ZZ4",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    }
+   },
+   {
+    "nom": "qualitative avec issue attendue",
+    "saisie": {
+     "examen": "VIH",
+     "code": "ZZ5",
+     "libelle": "Qualitative",
+     "type": "binaire",
+     "normal": "Négatif",
+     "ordre": "9"
+    },
+    "initial": [
+     [
+      "examen",
+      "NFS"
+     ],
+     [
+      "code",
+      ""
+     ],
+     [
+      "libelle",
+      ""
+     ],
+     [
+      "type",
+      "numerique"
+     ],
+     [
+      "unite",
+      "sans"
+     ],
+     [
+      "min",
+      ""
+     ],
+     [
+      "max",
+      ""
+     ],
+     [
+      "normal",
+      ""
+     ],
+     [
+      "decimales",
+      ""
+     ],
+     [
+      "ordre",
+      "99"
+     ],
+     [
+      "parent",
+      ""
+     ],
+     [
+      "regle",
+      ""
+     ]
+    ],
+    "modaleTexte": "Nouvelle variable de résultat Examen * NFS complète (hémogramme) Code de la variable * Intitulé * Type de résultat * Valeur numérique Le type commande la saisie et le contrôle de normalité. Unité — — sans unité Borne basse Vide si la référence n’a pas de borne basse Borne haute Vide si la référence n’a pas de borne haute Issue attendue Pour un résultat qualitatif : Négatif, Absent… Décimales Rang ",
+    "nouvelles": [
+     {
+      "id": "VARxmvve7yp10dqus",
+      "statut": "actif",
+      "examen": "VIH",
+      "code": "ZZ5",
+      "libelle": "Qualitative",
+      "type": "binaire",
+      "unite": "sans",
+      "min": null,
+      "max": null,
+      "normal": "Négatif",
+      "decimales": null,
+      "ordre": 9,
+      "parent": "",
+      "regle": "",
+      "examenLibelle": "VIH",
+      "section": "serologie",
+      "accompagnement": false,
+      "retractable": false,
+      "actif": true,
+      "aValider": true,
+      "source": "Créée dans l’application le 30/10/2026 — à valider"
+     }
+    ],
+    "toasts": [
+     [
+      "Variable créée.",
+      "Qualitative — Attendu : Négatif"
+     ]
+    ],
+    "modaleOuverte": false,
+    "audit": {
+     "action": "Création d’une variable de résultat",
+     "module": "M5",
+     "entite": "Variable",
+     "reference": "ZZ5",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    }
+   }
+  ],
+  "modifications": [
+   {
+    "nom": "borne documentée déplacée : la source le dit",
+    "id": "VAR-NFS-GB",
+    "saisie": {
+     "min": "3.8",
+     "max": "8.5"
+    },
+    "prerempli": [
+     [
+      "examen",
+      "NFS"
+     ],
+     [
+      "code",
+      "GB"
+     ],
+     [
+      "libelle",
+      "Globules blancs"
+     ],
+     [
+      "type",
+      "numerique"
+     ],
+     [
+      "unite",
+      "g_l_hb"
+     ],
+     [
+      "min",
+      "4"
+     ],
+     [
+      "max",
+      "8"
+     ],
+     [
+      "normal",
+      ""
+     ],
+     [
+      "decimales",
+      "2"
+     ],
+     [
+      "ordre",
+      "1"
+     ],
+     [
+      "parent",
+      ""
+     ],
+     [
+      "regle",
+      ""
+     ]
+    ],
+    "note": "Paramètres de « Globules blancs » NFS complète (hémogramme) Cette borne est reprise de la fiche de résultats du 21/08/2026. La modifier fera diverger le logiciel du document de référence — à ne faire que sur décision du biologiste, par exemple après un changem",
+    "avant": {
+     "id": "VAR-NFS-GB",
+     "examen": "NFS",
+     "examenLibelle": "NFS complète (hémogramme)",
+     "section": "hematologie",
+     "code": "GB",
+     "libelle": "Globules blancs",
+     "type": "numerique",
+     "unite": "g_l_hb",
+     "min": 4,
+     "max": 8,
+     "parent": null,
+     "valeurs": null,
+     "decimales": 2,
+     "normal": null,
+     "regle": null,
+     "ordre": 1,
+     "actif": true,
+     "accompagnement": false,
+     "retractable": false,
+     "aValider": false,
+     "source": "Fiche de résultats CNT du 21/08/2026",
+     "statut": "actif"
+    },
+    "patch": {
+     "min": 3.8,
+     "max": 8.5,
+     "parent": "",
+     "normal": "",
+     "regle": "",
+     "source": "Modifiée par BASSONGUI Chabi Séko le 30/10/2026 — précédemment : 4 - 8"
+    },
+    "toasts": [
+     [
+      "Paramètres enregistrés.",
+      "Globules blancs — 3.8 - 8.5"
+     ]
+    ],
+    "audit": {
+     "action": "Modification d’une valeur de référence",
+     "module": "M5",
+     "entite": "Variable",
+     "reference": "GB",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    }
+   },
+   {
+    "nom": "intitulé seul modifié : la source ne bouge pas",
+    "id": "VAR-NFS-LY",
+    "saisie": {
+     "libelle": "Lymphocytes (corrigé)"
+    },
+    "prerempli": [
+     [
+      "examen",
+      "NFS"
+     ],
+     [
+      "code",
+      "LY"
+     ],
+     [
+      "libelle",
+      "Lymphocytes"
+     ],
+     [
+      "type",
+      "numerique"
+     ],
+     [
+      "unite",
+      "g_l_hb"
+     ],
+     [
+      "min",
+      "1"
+     ],
+     [
+      "max",
+      "4.5"
+     ],
+     [
+      "normal",
+      ""
+     ],
+     [
+      "decimales",
+      "2"
+     ],
+     [
+      "ordre",
+      "2"
+     ],
+     [
+      "parent",
+      "GB"
+     ],
+     [
+      "regle",
+      ""
+     ]
+    ],
+    "note": "Paramètres de « Lymphocytes » NFS complète (hémogramme) Cette borne est reprise de la fiche de résultats du 21/08/2026. La modifier fera diverger le logiciel du document de référence — à ne faire que sur décision du biologiste, par exemple après un changement ",
+    "avant": {
+     "id": "VAR-NFS-LY",
+     "examen": "NFS",
+     "examenLibelle": "NFS complète (hémogramme)",
+     "section": "hematologie",
+     "code": "LY",
+     "libelle": "Lymphocytes",
+     "type": "numerique",
+     "unite": "g_l_hb",
+     "min": 1,
+     "max": 4.5,
+     "parent": "GB",
+     "valeurs": null,
+     "decimales": 2,
+     "normal": null,
+     "regle": null,
+     "ordre": 2,
+     "actif": true,
+     "accompagnement": false,
+     "retractable": false,
+     "aValider": false,
+     "source": "Fiche de résultats CNT du 21/08/2026",
+     "statut": "actif"
+    },
+    "patch": {
+     "libelle": "Lymphocytes (corrigé)",
+     "normal": "",
+     "regle": ""
+    },
+    "toasts": [
+     [
+      "Paramètres enregistrés.",
+      "Lymphocytes (corrigé) — 1 - 4.5"
+     ]
+    ],
+    "audit": {
+     "action": "Modification d’une valeur de référence",
+     "module": "M5",
+     "entite": "Variable",
+     "reference": "LY",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    }
+   },
+   {
+    "nom": "borne vidée",
+    "id": "VAR-NFS-MO",
+    "saisie": {
+     "max": ""
+    },
+    "prerempli": [
+     [
+      "examen",
+      "NFS"
+     ],
+     [
+      "code",
+      "MO"
+     ],
+     [
+      "libelle",
+      "Monocytes"
+     ],
+     [
+      "type",
+      "numerique"
+     ],
+     [
+      "unite",
+      "g_l_hb"
+     ],
+     [
+      "min",
+      "0.2"
+     ],
+     [
+      "max",
+      "1"
+     ],
+     [
+      "normal",
+      ""
+     ],
+     [
+      "decimales",
+      "2"
+     ],
+     [
+      "ordre",
+      "3"
+     ],
+     [
+      "parent",
+      "GB"
+     ],
+     [
+      "regle",
+      ""
+     ]
+    ],
+    "note": "Paramètres de « Monocytes » NFS complète (hémogramme) Cette borne est reprise de la fiche de résultats du 21/08/2026. La modifier fera diverger le logiciel du document de référence — à ne faire que sur décision du biologiste, par exemple après un changement de",
+    "avant": {
+     "id": "VAR-NFS-MO",
+     "examen": "NFS",
+     "examenLibelle": "NFS complète (hémogramme)",
+     "section": "hematologie",
+     "code": "MO",
+     "libelle": "Monocytes",
+     "type": "numerique",
+     "unite": "g_l_hb",
+     "min": 0.2,
+     "max": 1,
+     "parent": "GB",
+     "valeurs": null,
+     "decimales": 2,
+     "normal": null,
+     "regle": null,
+     "ordre": 3,
+     "actif": true,
+     "accompagnement": false,
+     "retractable": false,
+     "aValider": false,
+     "source": "Fiche de résultats CNT du 21/08/2026",
+     "statut": "actif"
+    },
+    "patch": {
+     "max": null,
+     "normal": "",
+     "regle": "",
+     "source": "Modifiée par BASSONGUI Chabi Séko le 30/10/2026 — précédemment : 0.2 - 1"
+    },
+    "toasts": [
+     [
+      "Paramètres enregistrés.",
+      "Monocytes — > 0.2"
+     ]
+    ],
+    "audit": {
+     "action": "Modification d’une valeur de référence",
+     "module": "M5",
+     "entite": "Variable",
+     "reference": "MO",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    }
+   }
+  ],
+  "fermetures": [
+   {
+    "nom": "fermer une variable d'accompagnement",
+    "id": "VARxmvve7xtik6fyb",
+    "boutons": [
+     "Modifier les paramètres",
+     "Fermer cette variable"
+    ],
+    "libelleBouton": "Fermer cette variable",
+    "libelleFinal": "Fermer la variable",
+    "modale": "Fermer « Réactif test » ? Cette variable disparaîtra des nouvelles saisies et des comptes rendus à venir. Les résultats déjà rendus la conservent — un compte rendu ancien doit rester reproductible. C’est le geste prévu pour un changement de réactif qui rend l’interprétation inutile. La variable n’est pas supprimée : elle se rouvre d’un clic. Annuler Fermer la variable",
+    "confirmer": true,
+    "patch": {
+     "actif": false,
+     "fermeeLe": "2026-10-30",
+     "fermeePar": "BASSONGUI Chabi Séko"
+    },
+    "toasts": [
+     [
+      "Variable fermée.",
+      "Retirée des comptes rendus à venir ; les anciens la conservent."
+     ]
+    ],
+    "etatAffiche": "VIHSérologieRéactif testZZ2Réactif employé——À valider"
+   },
+   {
+    "nom": "rouvrir",
+    "id": "VARxmvve7xtik6fyb",
+    "boutons": [
+     "Modifier les paramètres",
+     "Rouvrir cette variable"
+    ],
+    "libelleBouton": "Rouvrir cette variable",
+    "libelleFinal": "Rouvrir",
+    "modale": "Rouvrir « Réactif test » ? La variable réapparaîtra dans les saisies et les comptes rendus à venir. Annuler Rouvrir",
+    "confirmer": true,
+    "patch": {
+     "actif": true,
+     "fermeeLe": null,
+     "fermeePar": null
+    },
+    "toasts": [
+     [
+      "Variable rouverte."
+     ]
+    ],
+    "etatAffiche": "VIHSérologieRéactif testZZ2Réactif employé——Fermée"
+   },
+   {
+    "nom": "fermer puis annuler : rien ne change",
+    "id": "VARxmvve7xtik6fyb",
+    "boutons": [
+     "Modifier les paramètres",
+     "Fermer cette variable"
+    ],
+    "libelleBouton": "Fermer cette variable",
+    "libelleFinal": "Fermer la variable",
+    "modale": "Fermer « Réactif test » ? Cette variable disparaîtra des nouvelles saisies et des comptes rendus à venir. Les résultats déjà rendus la conservent — un compte rendu ancien doit rester reproductible. C’est le geste prévu pour un changement de réactif qui rend l’interprétation inutile. La variable n’est pas supprimée : elle se rouvre d’un clic. Annuler Fermer la variable",
+    "confirmer": false,
+    "patch": {},
+    "toasts": [],
+    "etatAffiche": "VIH Sérologie Réactif test ZZ2 Réactif employé — — À valider"
+   }
+  ],
+  "retractableId": "VARxmvve7xtik6fyb",
+  "nonRetractable": {
+   "id": "VARxmvve7yp10dqus",
+   "boutons": [
+    "Modifier les paramètres"
+   ]
+  }
+ },
+ "plages": {
+  "_doc": "plages par lot de réactif : création, refus, modification, archivage",
+  "nbNumeriques": 72,
+  "premieres": [
+   {
+    "id": "VAR-NFS-GB",
+    "label": "NFS complète (hémogramme) — Globules blancs"
+   },
+   {
+    "id": "VAR-NFS-LY",
+    "label": "NFS complète (hémogramme) — Lymphocytes"
+   }
+  ],
+  "creations": [
+   {
+    "nom": "plage valide",
+    "saisie": {
+     "variableId": "VAR-NFS-GB",
+     "lot": "LOT-2026-A",
+     "dateDebut": "2026-09-01",
+     "min": "3.5",
+     "max": "9.5",
+     "source": "Notice du réactif Sysmex"
+    },
+    "initial": [
+     [
+      "variableId",
+      "VAR-NFS-GB"
+     ],
+     [
+      "lot",
+      ""
+     ],
+     [
+      "dateDebut",
+      "2026-10-30"
+     ],
+     [
+      "min",
+      ""
+     ],
+     [
+      "max",
+      ""
+     ],
+     [
+      "source",
+      ""
+     ]
+    ],
+    "options": [],
+    "nouvelles": [
+     {
+      "id": "PLGxmvve817353wjl",
+      "statut": "actif",
+      "variableId": "VAR-NFS-GB",
+      "lot": "LOT-2026-A",
+      "dateDebut": "2026-09-01",
+      "min": 3.5,
+      "max": 9.5,
+      "source": "Notice du réactif Sysmex",
+      "variableLibelle": "Globules blancs",
+      "examenLibelle": "NFS complète (hémogramme)",
+      "examen": "NFS"
+     }
+    ],
+    "toasts": [
+     [
+      "Plage enregistrée.",
+      "Globules blancs — lot LOT-2026-A, en service depuis le 01/09/2026"
+     ]
+    ],
+    "modaleOuverte": false,
+    "audit": {
+     "action": "Plage par lot créée",
+     "module": "M5",
+     "entite": "PlageReactif",
+     "reference": "LOT-2026-A",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    },
+    "tableau": [
+     [
+      "Globules blancs NFS complète (hémogramme)",
+      "LOT-2026-A",
+      "3.5 – 9.5",
+      "01/09/2026",
+      "Notice du réactif Sysmex",
+      ""
+     ]
+    ]
+   },
+   {
+    "nom": "aucune borne : refus nommé",
+    "saisie": {
+     "variableId": "VAR-NFS-GB",
+     "lot": "LOT-VIDE",
+     "dateDebut": "2026-09-02",
+     "source": "Notice"
+    },
+    "initial": [
+     [
+      "variableId",
+      "VAR-NFS-GB"
+     ],
+     [
+      "lot",
+      ""
+     ],
+     [
+      "dateDebut",
+      "2026-10-30"
+     ],
+     [
+      "min",
+      ""
+     ],
+     [
+      "max",
+      ""
+     ],
+     [
+      "source",
+      ""
+     ]
+    ],
+    "options": [],
+    "nouvelles": [],
+    "toasts": [
+     [
+      "Une plage sans aucune borne ne compare rien.",
+      "Renseigner au moins une borne, ou ne pas enregistrer de plage."
+     ]
+    ],
+    "modaleOuverte": true,
+    "audit": {
+     "action": "Plage par lot créée",
+     "module": "M5",
+     "entite": "PlageReactif",
+     "reference": "LOT-2026-A",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    },
+    "tableau": [
+     [
+      "Globules blancs NFS complète (hémogramme)",
+      "LOT-2026-A",
+      "3.5 – 9.5",
+      "01/09/2026",
+      "Notice du réactif Sysmex",
+      ""
+     ]
+    ]
+   },
+   {
+    "nom": "borne haute seule",
+    "saisie": {
+     "variableId": "VAR-NFS-GB",
+     "lot": "LOT-2026-B",
+     "dateDebut": "2026-10-01",
+     "max": "10",
+     "source": "Validation de méthode"
+    },
+    "initial": [
+     [
+      "variableId",
+      "VAR-NFS-GB"
+     ],
+     [
+      "lot",
+      ""
+     ],
+     [
+      "dateDebut",
+      "2026-10-30"
+     ],
+     [
+      "min",
+      ""
+     ],
+     [
+      "max",
+      ""
+     ],
+     [
+      "source",
+      ""
+     ]
+    ],
+    "options": [],
+    "nouvelles": [
+     {
+      "id": "PLGxmvve81sac5axb",
+      "statut": "actif",
+      "variableId": "VAR-NFS-GB",
+      "lot": "LOT-2026-B",
+      "dateDebut": "2026-10-01",
+      "min": null,
+      "max": 10,
+      "source": "Validation de méthode",
+      "variableLibelle": "Globules blancs",
+      "examenLibelle": "NFS complète (hémogramme)",
+      "examen": "NFS"
+     }
+    ],
+    "toasts": [
+     [
+      "Plage enregistrée.",
+      "Globules blancs — lot LOT-2026-B, en service depuis le 01/10/2026"
+     ]
+    ],
+    "modaleOuverte": false,
+    "audit": {
+     "action": "Plage par lot créée",
+     "module": "M5",
+     "entite": "PlageReactif",
+     "reference": "LOT-2026-B",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    },
+    "tableau": [
+     [
+      "Globules blancs NFS complète (hémogramme)",
+      "LOT-2026-B",
+      "– 10",
+      "01/10/2026",
+      "Validation de méthode",
+      ""
+     ],
+     [
+      "Globules blancs NFS complète (hémogramme)",
+      "LOT-2026-A",
+      "3.5 – 9.5",
+      "01/09/2026",
+      "Notice du réactif Sysmex",
+      ""
+     ]
+    ]
+   },
+   {
+    "nom": "source manquante : refus",
+    "saisie": {
+     "variableId": "VAR-NFS-GB",
+     "lot": "LOT-X",
+     "dateDebut": "2026-10-02",
+     "min": "1"
+    },
+    "initial": [
+     [
+      "variableId",
+      "VAR-NFS-GB"
+     ],
+     [
+      "lot",
+      ""
+     ],
+     [
+      "dateDebut",
+      "2026-10-30"
+     ],
+     [
+      "min",
+      ""
+     ],
+     [
+      "max",
+      ""
+     ],
+     [
+      "source",
+      ""
+     ]
+    ],
+    "options": [],
+    "nouvelles": [],
+    "toasts": [],
+    "modaleOuverte": true,
+    "audit": {
+     "action": "Plage par lot créée",
+     "module": "M5",
+     "entite": "PlageReactif",
+     "reference": "LOT-2026-B",
+     "utilisateur": "BASSONGUI Chabi Séko"
+    },
+    "tableau": [
+     [
+      "Globules blancs NFS complète (hémogramme)",
+      "LOT-2026-B",
+      "– 10",
+      "01/10/2026",
+      "Validation de méthode",
+      ""
+     ],
+     [
+      "Globules blancs NFS complète (hémogramme)",
+      "LOT-2026-A",
+      "3.5 – 9.5",
+      "01/09/2026",
+      "Notice du réactif Sysmex",
+      ""
+     ]
+    ]
+   }
+  ],
+  "vide": null,
+  "lignes": [
+   [
+    "Globules blancs NFS complète (hémogramme)",
+    "LOT-2026-B",
+    "– 10",
+    "01/10/2026",
+    "Validation de méthode",
+    ""
+   ],
+   [
+    "Globules blancs NFS complète (hémogramme)",
+    "LOT-2026-A",
+    "3.5 – 9.5",
+    "01/09/2026",
+    "Notice du réactif Sysmex",
+    ""
+   ]
+  ],
+  "modification": {
+   "avant": {
+    "id": "PLGxmvve817353wjl",
+    "statut": "actif",
+    "variableId": "VAR-NFS-GB",
+    "lot": "LOT-2026-A",
+    "dateDebut": "2026-09-01",
+    "min": 3.5,
+    "max": 9.5,
+    "source": "Notice du réactif Sysmex",
+    "variableLibelle": "Globules blancs",
+    "examenLibelle": "NFS complète (hémogramme)",
+    "examen": "NFS"
+   },
+   "prerempli": [
+    [
+     "variableId",
+     "VAR-NFS-GB"
+    ],
+    [
+     "lot",
+     "LOT-2026-A"
+    ],
+    [
+     "dateDebut",
+     "2026-09-01"
+    ],
+    [
+     "min",
+     "3.5"
+    ],
+    [
+     "max",
+     "9.5"
+    ],
+    [
+     "source",
+     "Notice du réactif Sysmex"
+    ]
+   ],
+   "patch": {
+    "max": 9.8
+   },
+   "toasts": [
+    [
+     "Plage modifiée.",
+     "Globules blancs — lot LOT-2026-A, en service depuis le 01/09/2026"
+    ]
+   ],
+   "audit": {
+    "action": "Plage par lot modifiée",
+    "module": "M5",
+    "entite": "PlageReactif",
+    "reference": "LOT-2026-A",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   }
+  },
+  "archivage": {
+   "modale": "Archiver la plage du lot LOT-2026-B ? Les saisies à venir se compareront de nouveau aux bornes de la variable (ou à la plage antérieure). Les résultats déjà rendus ne changent pas. Annuler Archiver",
+   "statut": "archive",
+   "toasts": [
+    [
+     "Plage archivée."
+    ]
+   ],
+   "restantes": 1
+  }
+ }
+}

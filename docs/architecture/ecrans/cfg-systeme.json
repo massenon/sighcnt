@@ -1,0 +1,66 @@
+{
+ "id": "cfg-systeme",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Paramètres système",
+ "acces": "ouvert",
+ "titre": "Paramètres système",
+ "description": "Configuration technique, environnement d’exécution et outils de maintenance du prototype.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Paramètres système"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Ce prototype fonctionne intégralement hors ligne : la feuille de style, les polices, la bibliothèque de graphiques et les icônes sont hébergées dans le dossier du projet. Aucune requête réseau n’est émise."
+ ],
+ "onglets": [
+  "Installation et données",
+  "Corbeille",
+  "Barème NS",
+  "Jeux de test"
+ ],
+ "kpis": [
+  "Collections de données",
+  "Enregistrements",
+  "Persistance",
+  "Version du prototype"
+ ],
+ "cartes": [
+  "Contenu du jeu de données",
+  "Maintenance du prototype"
+ ],
+ "tableaux": [
+  [
+   "Collection",
+   "Enregistrements",
+   "Actifs",
+   "Archivés"
+  ]
+ ],
+ "commandes": [
+  "Installation et données",
+  "Corbeille2",
+  "Barème NS 131",
+  "Jeux de test",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "Réinitialiser le jeu de données",
+  "Exporter les données",
+  "Plan du site",
+  "Sauvegardes"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

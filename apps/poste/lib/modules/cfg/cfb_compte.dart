@@ -1,0 +1,252 @@
+import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:sigh_domaine/sigh_domaine.dart';
+
+import '../../core/identifiants.dart';
+import '../../donnees/magasin.dart' show Fiche;
+import '../../core/jetons_shell.dart';
+import '../../kit/kit.dart';
+import '../../shell/contexte_ecran.dart';
+import '../m14/commun_m14.dart' show initiales, libelleRole;
+import 'cfa_commun.dart';
+import 'cfb_commun.dart';
+import 'cfb_perimetre.dart';
+
+/// `cfg-compte` — « Mon compte » : l'identité de l'agent connecté, la sécurité de SON compte (mot de passe, authentification à deux facteurs), son périmètre
+/// d'accès (les modules que son rôle ouvre) et son activité récente. Le mot de passe est SAISI, il n'est jamais gardé : seul le geste est journalisé.
+class EcranCompte extends StatefulWidget with EcranMaquette {
+  const EcranCompte({super.key});
+  @override
+  String get titre => 'Mon compte';
+  @override
+  String get description => 'Informations personnelles, sécurité du compte et préférences d’affichage.';
+
+  @override
+  State<EcranCompte> createState() => _EtatCompte();
+}
+
+class _EtatCompte extends State<EcranCompte> {
+  ControleurFormulaire? _identite, _contact, _securite;
+  String _nom = '';
+  bool _pret = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_pret) return;
+    _pret = true;
+    final c = ContexteEcran.of(context);
+    // Les valeurs se RELISENT sur la fiche du compte (utilisateurs), pas seulement sur le nom de la session.
+    final fiche = _ficheCompte(c);
+    final nomFiche = fiche == null ? '' : '${fiche['nomComplet'] ?? ''}'.trim();
+    _nom = nomFiche.isNotEmpty ? nomFiche : acteur(c).nom;
+    _identite = ControleurFormulaire(const [ChampDef(nom: 'nom', libelle: 'Nom et prénoms', requis: true, col: ColChamp.plein)], {'nom': _nom});
+    _contact = ControleurFormulaire(const [
+      ChampDef(nom: 'telephone', libelle: 'Téléphone', type: TypeChamp.tel),
+      ChampDef(nom: 'email', libelle: 'Adresse électronique', type: TypeChamp.email),
+      ChampDef(nom: 'mfa', libelle: 'Activer l’authentification à deux facteurs', type: TypeChamp.case_, col: ColChamp.plein),
+    ], {
+      'telephone': fiche?['telephone'] ?? '',
+      'email': fiche?['email'] ?? '',
+      'mfa': fiche != null && fiche.containsKey('mfa') ? cfaVrai(fiche['mfa']) : cfbMfaParDefaut(c.role),
+    });
+    _securite = ControleurFormulaire(const [
+      ChampDef(nom: 'actuel', libelle: 'Mot de passe actuel', type: TypeChamp.motDePasse, requis: true),
+      ChampDef(nom: 'nouveau', libelle: 'Nouveau mot de passe', type: TypeChamp.motDePasse, requis: true),
+      ChampDef(nom: 'confirmation', libelle: 'Confirmer le nouveau mot de passe', type: TypeChamp.motDePasse, requis: true),
+    ]);
+  }
+
+  @override
+  void dispose() {
+    _identite?.dispose();
+    _contact?.dispose();
+    _securite?.dispose();
+    super.dispose();
+  }
+
+  /// L'identifiant de connexion : celui du compte qui porte ce rôle, « admin.systeme » à défaut (la maquette fait de même).
+  String _identifiant(ContexteEcran c) {
+    // A1 : l'identifiant du compte de l'AGENT de la session, pas celui du premier compte qui porte son rôle.
+    final propre = acteur(c).identifiant;
+    if (propre.isNotEmpty) return propre;
+    final u = c.magasin.collection('utilisateurs').actives.where((x) => x['role'] == c.role && cfaVrai(x['identifiant'])).firstOrNull;
+    return u != null ? '${u['identifiant']}' : 'admin.systeme';
+  }
+
+  /// Un champ en LECTURE SEULE (`readonly: true` de la maquette) : sa valeur se lit, elle ne se saisit pas.
+  Widget _champLecture(String libelle, String valeur) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(libelle, style: const TextStyle(fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w500, color: JetonsShell.slate600))),
+        Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+            decoration: BoxDecoration(color: JetonsShell.slate50, borderRadius: BorderRadius.circular(8), border: Border.all(color: JetonsShell.slate300)),
+            child: Text(valeur, style: const TextStyle(fontSize: 14, height: 20 / 14, color: JetonsShell.slate500))),
+      ]);
+
+  /// La fiche du compte de l'agent de la session (collection `utilisateurs`), nulle pour l'agent de démonstration ou sans compte.
+  Fiche? _ficheCompte(ContexteEcran c) {
+    final id = acteur(c).utilisateurId;
+    if (id.isEmpty) return null;
+    return c.magasin.collection('utilisateurs').parId(id);
+  }
+
+  void _enregistrer(BuildContext ctx, ContexteEcran c) {
+    final v = _identite!.valider();
+    if (v == null) return; // le formulaire dit lui-même quel champ manque (la maquette ne parle pas non plus)
+    final w = _contact!.valider();
+    if (w == null) return;
+    final nom = '${v['nom']}'.trim();
+    final fiche = _ficheCompte(c);
+    if (fiche == null) {
+      // Compte sans fiche (démonstration, développement) : seul le nom de la SESSION change, et l'écran le DIT (jamais « enregistrées »).
+      final avant = _nom;
+      c.magasin.utilisateur = nom;
+      c.magasin.journaliser('Modification', 'CFG', 'Compte', _identifiant(c), {'nom': avant}, {'nom': nom});
+      setState(() => _nom = nom);
+      ToastsSigh.afficher(ctx, 'Nom changé pour cette session seulement.',
+          type: TypeToast.attention, detail: 'Compte sans fiche utilisateur : le téléphone, le courriel et le second facteur ne sont pas conservés.');
+      return;
+    }
+    // ÉCRITURE RÉELLE dans la fiche du compte (le journal RG-12 est tenu par la collection), relue au prochain affichage.
+    c.magasin.collection('utilisateurs').mettreAJour(fiche['id'], {
+      'nomComplet': nom,
+      'telephone': '${w['telephone'] ?? ''}'.trim(),
+      'email': '${w['email'] ?? ''}'.trim(),
+      'mfa': cfaVrai(w['mfa']),
+    });
+    c.magasin.utilisateur = nom;
+    setState(() => _nom = nom);
+    ToastsSigh.afficher(ctx, 'Informations enregistrées.', type: TypeToast.succes);
+  }
+
+  Future<void> _modifierMotDePasse(BuildContext ctx, ContexteEcran c) async {
+    final v = _securite!.valider();
+    if (v == null) {
+      ToastsSigh.afficher(ctx, 'Le formulaire comporte des erreurs.', type: TypeToast.erreur);
+      return;
+    }
+    // A5 : un agent qui a un mot de passe défini le change POUR DE VRAI. La politique est appliquée, le mot de passe actuel est vérifié contre le haché, le
+    // nouveau est haché (Argon2id, sel neuf) et remplace l'ancien. Le secret n'entre ni au magasin ni au journal. Sans identifiant (agent de démonstration,
+    // poste de développement), le geste garde son comportement d'origine : saisie contrôlée, rien n'est conservé.
+    final a = acteur(c);
+    final svc = ServiceIdentifiants.de(c.magasin);
+    if (!a.demonstration && svc.possede(a.utilisateurId)) {
+      final refusReel = accControlerNouveauMotDePasse('${v['nouveau']}', '${v['confirmation']}', identifiant: a.identifiant, ancien: '${v['actuel']}');
+      if (refusReel != null) {
+        ToastsSigh.afficher(ctx, refusReel, type: TypeToast.erreur);
+        return;
+      }
+      if (!await svc.motDePasseActuel(a.utilisateurId, '${v['actuel']}')) {
+        c.magasin.journaliser('Changement de mot de passe refusé', 'M14', 'Identifiant', a.utilisateurId, null, {'motif': 'mot de passe actuel incorrect'}, succes: false);
+        if (ctx.mounted) ToastsSigh.afficher(ctx, 'Le mot de passe actuel est incorrect.', type: TypeToast.erreur);
+        return;
+      }
+      await svc.definir(a.utilisateurId, '${v['nouveau']}', par: a.nom, doitChanger: false, maintenant: c.aujourdhui);
+      for (final k in const ['actuel', 'nouveau', 'confirmation']) {
+        _securite!.poser(k, '');
+      }
+      if (ctx.mounted) ToastsSigh.afficher(ctx, 'Mot de passe modifié.', type: TypeToast.succes, detail: 'Il est conservé haché (Argon2id), jamais en clair.');
+      return;
+    }
+    final refus = cfbRefusMotDePasse('${v['nouveau']}', '${v['confirmation']}');
+    if (refus != null) {
+      ToastsSigh.afficher(ctx, refus, type: TypeToast.erreur);
+      return;
+    }
+    // Compte sans haché (démonstration, développement) : rien n'est conservé, et l'écran le DIT au lieu d'annoncer « modifié ».
+    c.magasin.journaliser('Tentative de changement de mot de passe', 'M14', 'Utilisateur', _identifiant(c), null, {'motif': 'compte sans mot de passe défini : rien conservé'});
+    for (final k in const ['actuel', 'nouveau', 'confirmation']) {
+      _securite!.poser(k, '');
+    }
+    ToastsSigh.afficher(ctx, 'Compte de démonstration : aucun mot de passe n’est conservé.', type: TypeToast.attention);
+  }
+
+  Widget _perimetre(ContexteEcran c) {
+    Widget badges(List<CfbRangeeRoles> r) =>
+        Wrap(spacing: 4, runSpacing: 4, children: [for (final code in cfbPerimetre(c.magasin, c.role, r)) BadgeSigh(code, ton: TonSigh.navy)]);
+    final prete = cfbRangeesRolesChargees;
+    if (prete != null) return badges(prete);
+    return FutureBuilder<List<CfbRangeeRoles>>(
+        future: cfbChargerRangeesRoles(),
+        builder: (ctx, snap) => snap.hasData ? badges(snap.data!) : const SizedBox(height: 24, child: Center(child: CircularProgressIndicator(strokeWidth: 2))));
+  }
+
+  Widget _chronologie(ContexteEcran c) {
+    final lignes = [for (final a in c.magasin.collection('audit').toutes) if (a['utilisateur'] == _nom) a].take(6).toList();
+    if (lignes.isEmpty) return const VideSigh('Aucun événement enregistré.', icone: LucideIcons.history);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      for (final a in lignes)
+        Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(margin: const EdgeInsets.only(top: 5, right: 10), width: 10, height: 10, decoration: const BoxDecoration(color: JetonsShell.navy500, shape: BoxShape.circle)),
+              Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('${a['action']} — ${a['entite']}', style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500, color: JetonsShell.slate800)),
+                Text('Module ${a['module']}', style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate500)),
+                Text(secHorodatage(a['dateHeure']) == null ? '' : secIlYA(secHorodatage(a['dateHeure'])!, c.aujourdhui), style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate400)),
+              ])),
+            ])),
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = ContexteEcran.of(context);
+    return ListenableBuilder(
+        listenable: c.magasin.collection('audit'),
+        builder: (ctx, _) {
+          final principal = cfaPile([
+            CarteSigh(
+                titre: 'Informations personnelles',
+                child: cfaPile([
+                  FormulaireSigh(controleur: _identite!),
+                  LayoutBuilder(builder: (_, k) {
+                    final a = _champLecture('Identifiant de connexion', _identifiant(c));
+                    final b = _champLecture('Poste', libelleRole(c.magasin, c.role));
+                    return k.maxWidth >= 640
+                        ? Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: a), const SizedBox(width: 16), Expanded(child: b)])
+                        : cfaPile([a, b]);
+                  }),
+                  FormulaireSigh(controleur: _contact!),
+                  Align(alignment: Alignment.centerLeft, child: BoutonSigh(libelle: 'Enregistrer', icone: LucideIcons.save, onPressed: () => _enregistrer(ctx, c))),
+                ])),
+            CarteSigh(
+                titre: 'Sécurité du compte',
+                child: cfaPile([
+                  FormulaireSigh(controleur: _securite!),
+                  cfbNote('Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses.'),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: BoutonSigh(libelle: 'Modifier le mot de passe', icone: LucideIcons.keyRound, onPressed: () => _modifierMotDePasse(ctx, c))),
+                ])),
+          ]);
+          final lateral = cfaPile([
+            CarteSigh(
+                child: Column(children: [
+              Container(
+                  width: 64,
+                  height: 64,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(color: JetonsShell.navy900, shape: BoxShape.circle),
+                  child: Text(initiales(_nom), style: const TextStyle(fontSize: 18, height: 28 / 18, fontWeight: FontWeight.w600, color: Colors.white))),
+              const SizedBox(height: 12),
+              Text(_nom, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, color: JetonsShell.slate900)),
+              Text(libelleRole(c.magasin, c.role), textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate500)),
+              const SizedBox(height: 12),
+              const BadgeSigh('Compte actif', ton: TonSigh.succes),
+            ])),
+            CarteSigh(
+                titre: 'Périmètre d’accès',
+                actions: [cfbLien(c, 'm14-roles', 'Matrice RBAC')],
+                child: _perimetre(c)),
+            CarteSigh(titre: 'Activité récente', child: _chronologie(c)),
+          ]);
+          return LayoutBuilder(
+              builder: (_, k) => k.maxWidth >= 1024
+                  ? Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(flex: 2, child: principal), const SizedBox(width: 16), Expanded(child: lateral)])
+                  : cfaPile([principal, lateral]));
+        });
+  }
+}

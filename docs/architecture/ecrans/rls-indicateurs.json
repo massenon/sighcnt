@@ -1,0 +1,42 @@
+{
+ "id": "rls-indicateurs",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Indicateurs reçus",
+ "acces": "ouvert",
+ "titre": "Indicateurs reçus",
+ "description": "Les compteurs publiés par la mère à chaque battement. Aucun nom, aucun motif.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Indicateurs reçus"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Dernier envoi",
+  "Historique (24 h)"
+ ],
+ "tableaux": [
+  [
+   "Heure",
+   "Séquence",
+   "Appareils actifs",
+   "Conflits",
+   "Bloqués"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 0
+}

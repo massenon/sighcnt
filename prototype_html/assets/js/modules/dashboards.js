@@ -10,7 +10,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
 
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* --- Accès mémorisés aux collections ------------------------------------- */
   function col(n) { return S.collection(n); }
@@ -34,6 +34,38 @@
       return d.getFullYear() === AUJ.getFullYear() && d.getMonth() === AUJ.getMonth();
     });
   }
+
+  /* --- Une consultation COMPTÉE est une consultation qui a eu lieu (vague 90) ------
+     Le registre `consultations` porte aussi les rendez-vous : planifiés, reportés, non honorés. Les
+     compter comme des consultations surévaluait le volume. La règle vit ICI, en UNE fonction, lue par
+     les indicateurs, les graphiques et le tableau de l'écran (et portée à l'identique en Dart,
+     `consultationsPartagees` de pil_clinique.dart). Un rendez-vous planifié ou reporté n'est pas perdu :
+     il se compte à part. Un rendez-vous non honoré ne compte nulle part comme consultation : il est
+     annoncé sous le volume, jamais retiré en silence. */
+  var STATUTS_CONSULTATION_TENUE = ['en_cours', 'terminee'];
+  var STATUTS_RDV_A_VENIR = ['planifiee', 'reporte'];
+  function partagerConsultations(rows) {
+    var out = { tenues: [], aVenir: [], nonHonores: [], autres: [] };
+    (rows || []).forEach(function (r) {
+      if (STATUTS_CONSULTATION_TENUE.indexOf(r.statut) >= 0) out.tenues.push(r);
+      else if (STATUTS_RDV_A_VENIR.indexOf(r.statut) >= 0) out.aVenir.push(r);
+      else if (r.statut === 'non_honore') out.nonHonores.push(r);
+      else out.autres.push(r);
+    });
+    return out;
+  }
+  /* Le service d'une consultation est celui du praticien à l'organigramme : la consultation ne porte
+     pas de service propre. Praticien introuvable : « Non renseigné », jamais le type de consultation. */
+  function serviceDuPraticien(r, agents) {
+    var a = null;
+    (agents || []).forEach(function (x) {
+      if (!a && ((r.medecinId && x.id === r.medecinId) || (!r.medecinId && r.medecin && x.nomComplet === r.medecin))) a = x;
+    });
+    if (!a && r.medecin) (agents || []).forEach(function (x) { if (!a && x.nomComplet === r.medecin) a = x; });
+    return (a && a.service) || 'Non renseigné';
+  }
+  global.SIGH.statsConsultations = { partager: partagerConsultations, service: serviceDuPraticien,
+    statutsTenus: STATUTS_CONSULTATION_TENUE, statutsAVenir: STATUTS_RDV_A_VENIR };
 
   /* --- Indicateurs partagés ------------------------------------------------ */
   function caDuMois() { return C.sum(duMois(factures(), 'date'), 'montantTTC'); }
@@ -188,7 +220,7 @@
               { k: 'Valeur du stock', v: C.money(C.sum(produits(), function (p) { return p.stock * p.cump; })) },
               { k: 'Produits sous seuil d’alerte', v: C.num(ruptures().length) },
               { k: 'Effectif', v: C.num(personnel().length) + ' agents' },
-              { k: 'Masse salariale mensuelle', v: C.money(C.sum(personnel(), 'salaireBase')) },
+              { k: 'Masse salariale mensuelle', v: C.moneyOu(C.sumOuNul(personnel(), 'salaireBase'), 'non renseignée') },
             ]),
             signatures: [{ role: 'Le Directeur Médical', nom: 'BASSONGUI Chabi Séko' },
               { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
@@ -230,7 +262,7 @@
           { label: 'Patients au répertoire', value: C.num(patients().length), icon: 'users', tone: 'navy' },
           { label: 'Consultations du mois', value: C.num(duMois(consultations(), 'date').length), icon: 'stethoscope', tone: 'info', delta: 5.2 },
           { label: 'Lits occupés', value: litsOccupes().length + ' / ' + totalLits(), icon: 'bed-double', tone: 'navy', hint: C.pct(litsOccupes().length / totalLits() * 100) + ' d’occupation' },
-          { label: 'Effectif', value: C.num(personnel().length), icon: 'users-round', tone: 'neutral', hint: 'Masse salariale ' + C.money(C.sum(personnel(), 'salaireBase')) },
+          { label: 'Effectif', value: C.num(personnel().length), icon: 'users-round', tone: 'neutral', hint: 'Masse salariale ' + C.moneyOu(C.sumOuNul(personnel(), 'salaireBase'), 'non renseignée') },
         ];
       },
       kpiCols: 'grid-cols-2 lg:grid-cols-4',
@@ -1595,7 +1627,7 @@
         var p = personnel();
         return [
           { label: 'Effectif total', value: C.num(p.length), icon: 'users-round', tone: 'navy', hint: 'Organigramme : 44 agents' },
-          { label: 'Masse salariale (base)', value: C.money(C.sum(p, 'salaireBase')), icon: 'banknote', tone: 'info' },
+          { label: 'Masse salariale (base)', value: C.moneyOu(C.sumOuNul(p, 'salaireBase'), 'Non renseignée'), icon: 'banknote', tone: 'info' },
           { label: 'Agents de garde aujourd’hui', value: C.num(col('planning').active().filter(function (x) { return x.date === C.iso(AUJ) && x.type === 'garde'; }).length), icon: 'moon', tone: 'warning' },
           { label: 'Évaluations du mois', value: C.num(p.length), icon: 'clipboard-check', tone: 'success', hint: 'Barème NS 131' },
         ];
@@ -2516,12 +2548,12 @@
         axes: {
           mois: { label: 'Mois', valeur: function (r) { return mois(r.date); } },
           medecin: { label: 'Médecin', valeur: function (r) { return r.medecin || '—'; } },
-          service: { label: 'Service', valeur: function (r) { return r.service || r.type || '—'; } },
+          service: { label: 'Service du praticien', valeur: function (r) { return serviceDuPraticien(r, S.collection('personnel').active()); } },
           motif: { label: 'Motif', valeur: function (r) { return r.motif || '—'; } },
         },
         mesures: {
           nombre: { label: 'Nombre de consultations', unite: null, valeur: function () { return 1; } },
-          montant: { label: 'Montant facturé', unite: 'FCFA', valeur: function (r) { return r.montant || 0; } },
+          montant: { label: 'Montant facturé', unite: 'FCFA', valeur: function (r) { return Number(r.tarif) || 0; } },
         },
       },
       {
@@ -2632,7 +2664,7 @@
         },
         mesures: {
           nombre: { label: 'Effectif', unite: null, valeur: function () { return 1; } },
-          masse: { label: 'Masse salariale de base', unite: 'FCFA', valeur: function (r) { return r.salaireBase || 0; } },
+          masse: { label: 'Masse salariale de base', unite: 'FCFA', valeur: function (r) { return r.salaireBase == null ? 0 : r.salaireBase; } },
         },
       },
       {
@@ -3332,7 +3364,7 @@
         var adm = S.collection('admissions').active().filter(function (a) { return !a.dateSortie; });
         var rel = S.collection('releves', { module: 'M3', entite: 'FeuilleTemperature' }).active()
           .filter(function (r) { return r.date === C.iso(AUJ); });
-        var visites = S.collection('visitesPatients').active().filter(function (v) {
+        var visites = S.collection('visitesHospi').active().filter(function (v) {
           return String(v.date || '').slice(0, 10) === C.iso(AUJ);
         });
         return [
@@ -3406,7 +3438,7 @@
           question: 'restent à terminer et à rendre',
           vide: 'Aucun compte rendu en attente.',
           ton: 'warning', icone: 'scan-line',
-          ecran: 'm2-imagerie', lienLabel: 'Échographie & imagerie',
+          ecran: 'm2-imagerie', lienLabel: 'Imagerie médicale',
           note: 'La conclusion est obligatoire avant de rendre : c’est elle que le prescripteur lit.',
         };
       },
@@ -3420,7 +3452,7 @@
           { label: 'Comptes rendus au total', value: C.num(tous.length), icon: 'scan-line', tone: 'navy' },
           { label: 'Rendus au prescripteur', value: C.num(rendus.length), icon: 'send', tone: 'success' },
           { label: 'Ce mois-ci', value: C.num(mois.length), icon: 'calendar', tone: 'info' },
-          { label: 'Examens au catalogue', value: C.num((D.IMAGERIE && D.IMAGERIE.EXAMENS || []).length),
+          { label: 'Examens au catalogue', value: C.num(S.collection('examensImagerie').active().length),
             icon: 'list', tone: 'neutral' },
         ];
       },
@@ -3453,7 +3485,7 @@
           title: 'Accès rapides',
           render: function () {
             return K.shortcuts([
-              { id: 'm2-imagerie', icon: 'scan-line', label: 'Échographie & imagerie', detail: 'Saisie des comptes rendus' },
+              { id: 'm2-imagerie', icon: 'scan-line', label: 'Imagerie médicale', detail: 'Saisie des comptes rendus' },
               { id: 'm1-patients', icon: 'users', label: 'Répertoire des patients', detail: 'Lecture seule' },
               { id: 'm2-prescriptions', icon: 'clipboard-plus', label: 'Prescriptions', detail: 'Lecture seule' },
             ]);
@@ -3490,7 +3522,7 @@
         var pres = S.collection('presences').active().filter(function (x) {
           return String(x.date || '').slice(0, 10) === C.iso(AUJ);
         });
-        var retards = pres.filter(function (x) { return x.retard || x.statut === 'retard'; });
+        var retards = pres.filter(function (x) { return x.etat === 'retard'; });
         return {
           valeur: retards.length, unite: 'retard(s)',
           question: 'constatés aujourd’hui',
@@ -3509,8 +3541,8 @@
           return String(x.date || '').slice(0, 10) === C.iso(AUJ);
         });
         var conges = S.collection('conges').active().filter(function (x) {
-          return x.statut !== 'archive' && String(x.debut || '') <= C.iso(AUJ)
-            && String(x.fin || '') >= C.iso(AUJ);
+          return x.statutConge === 'valide' && String(x.dateDebut || '') <= C.iso(AUJ)
+            && String(x.dateFin || '') >= C.iso(AUJ);
         });
         return [
           { label: 'Présences pointées aujourd’hui', value: C.num(pres.length), icon: 'user-check', tone: 'success' },
@@ -3678,119 +3710,6 @@
               { id: 'm8-caisse', icon: 'banknote', label: 'Point de caisse', detail: 'Activité 25 — lecture seule' },
               { id: 'm12-ecritures', icon: 'book-open', label: 'Écritures comptables', detail: 'Livres de compte — activité 1' },
             ]);
-          },
-        },
-      ],
-    }),
-  });
-
-  /* ==========================================================================
-   * INGÉNIEUR BIOMÉDICAL
-   * --------------------------------------------------------------------------
-   * Poste rectifié par la Direction le 25/08/2026. Il entretient les automates
-   * et le parc technique ; il ne rend AUCUN résultat — la validation biologique
-   * engage la responsabilité du biologiste, pas celle du technicien qui a
-   * étalonné la machine.
-   * ======================================================================== */
-  global.SIGH.screen('dash-biomedical', {
-    title: 'Tableau de bord — Ingénieur biomédical',
-    description: 'Maintenance du parc technique, réactifs et consommables de laboratoire.',
-    render: K.dash({
-      premierRegard: function () {
-        var mat = S.collection('materiel').active().filter(function (m) {
-          return m.etat === 'panne' || m.statutMaintenance === 'en_panne';
-        });
-        return {
-          valeur: mat.length, unite: 'matériel(s)',
-          question: 'sont signalés en panne',
-          vide: 'Aucune panne signalée sur le parc technique.',
-          ton: 'danger', icone: 'wrench',
-          ecran: 'm13-maintenance', lienLabel: 'Maintenance',
-          note: 'Un automate en panne arrête le laboratoire : c’est la première chose à voir. '
-            + 'Votre profil n’accède pas aux résultats — la validation biologique engage le biologiste.',
-        };
-      },
-      kpis: function () {
-        var reactifs = S.collection('produits').active().filter(function (x) {
-          return /reactif|réactif|consommable/i.test(x.famille || '');
-        });
-        var sous = reactifs.filter(function (x) { return x.seuilAlerte != null && x.stock <= x.seuilAlerte; });
-        var sansSeuil = reactifs.filter(function (x) { return x.seuilAlerte == null; });
-        return [
-          { label: 'Réactifs et consommables', value: C.num(reactifs.length), icon: 'flask-conical', tone: 'navy' },
-          { label: 'Sous leur seuil', value: C.num(sous.length), icon: 'package-x',
-            tone: sous.length ? 'danger' : 'success' },
-          { label: 'Sans seuil fixé', value: C.num(sansSeuil.length), icon: 'circle-help',
-            tone: sansSeuil.length ? 'warning' : 'success',
-            hint: 'sans seuil, aucune alerte n’est possible' },
-          { label: 'Analyses au catalogue', value: C.num(S.collection('examensLabo').active().length),
-            icon: 'list', tone: 'neutral' },
-        ];
-      },
-      sections: [
-        {
-          title: 'Ce que vous faites ici — vos parcours',
-          /* Remonté avant les indicateurs : c'est par là qu'on commence sa
-             journée. Un mode d'emploi placé sous les tableaux ne se lit pas. */
-          rapide: true,
-          render: function () {
-            return K.parcours([
-              {
-                titre: 'Tenir les réactifs des automates', icone: 'flask-conical', action: 'Réactifs',
-                detail: 'Ce qui fait tourner le laboratoire au quotidien.',
-                etapes: [
-                  { label: 'Contrôler les seuils et les péremptions', ecran: 'm5-reactifs',
-                    detail: 'Une référence sans seuil ne peut déclencher aucune alerte : elle est comptée à part.' },
-                  { label: 'Fixer le seuil des références qui n’en ont pas', ecran: 'm5-reactifs',
-                    detail: 'Le document SAGE ne renseigne pas cette colonne — c’est à la clinique de la fixer.' },
-                  { label: 'Exprimer le besoin', ecran: 'm7-besoins' },
-                  { label: 'La Direction accorde', poste: 'DAF', detail: 'RG-04.' },
-                ],
-              },
-              {
-                titre: 'Traiter une panne', icone: 'triangle-alert', action: 'Voir le parc',
-                detail: 'Un automate ne répond plus.',
-                etapes: [
-                  { label: 'Passer l’équipement en panne', ecran: 'm13-maintenance',
-                    detail: 'Un automate en panne arrête le laboratoire : l’état de marche est la première colonne.' },
-                  { label: 'Prévenir le service concerné par note', ecran: 'm13-notes-service' },
-                  { label: 'Faire appel au réparateur', poste: 'DAF' },
-                  { label: 'Remettre en service et dater l’entretien', ecran: 'm13-maintenance' },
-                ],
-              },
-              {
-                titre: 'Tenir le parc à jour', icone: 'wrench', action: 'Compléter les fiches',
-                detail: 'Entretiens périodiques et fiches incomplètes.',
-                etapes: [
-                  { label: 'Relever les entretiens échus', ecran: 'm13-maintenance',
-                    detail: 'La périodicité vaut six mois sur les automates et l’énergie, douze ailleurs.' },
-                  { label: 'Compléter marque, n° de série et mise en service', ecran: 'm13-maintenance',
-                    detail: 'Le parc amorcé est une proposition : aucun document ne l’inventorie.' },
-                  { label: 'Le registre comptable suit', ecran: 'm12-immobilisations',
-                    poste: 'Comptabilité', detail: 'Les amortissements se calculent là, pas ici.' },
-                ],
-              },
-            ]);
-          },
-        },
-        {
-          title: 'Accès rapides',
-          render: function () {
-            return K.shortcuts([
-              { id: 'm5-reactifs', icon: 'flask-conical', label: 'Réactifs & consommables', detail: 'Seuils et alertes' },
-              { id: 'm13-maintenance', icon: 'wrench', label: 'Maintenance', detail: 'Parc technique' },
-              { id: 'm6-produits', icon: 'package', label: 'Référentiel produits', detail: 'Lecture' },
-              { id: 'm7-commandes', icon: 'shopping-cart', label: 'Commandes', detail: 'Lecture' },
-            ]);
-          },
-        },
-        {
-          title: 'Ce que votre profil ne voit pas',
-          render: function () {
-            return K.note('Vous entretenez les automates ; vous ne rendez <strong>aucun résultat</strong>. '
-              + 'La validation biologique engage la responsabilité du biologiste, pas celle du technicien qui '
-              + 'a étalonné la machine — l’écran des résultats vous est donc fermé.',
-            { tone: 'info', icon: 'shield' });
           },
         },
       ],
@@ -4064,7 +3983,9 @@
     description: 'L\u2019activit\u00e9 de consultation par praticien, par type et dans le temps \u2014 calcul\u00e9e depuis le registre.',
     regle: 'Par praticien et par type, depuis le registre des consultations. Le \u00ab secteur \u00bb affich\u00e9 est '
       + 'le <strong>service du praticien \u00e0 l\u2019organigramme</strong> \u2014 la consultation ne porte pas de '
-      + 'secteur propre, et l\u2019\u00e9cran le dit plut\u00f4t que d\u2019inventer une donn\u00e9e.',
+      + 'secteur propre, et l\u2019\u00e9cran le dit plut\u00f4t que d\u2019inventer une donn\u00e9e. '
+      + 'Seules les consultations <strong>qui ont eu lieu</strong> (en cours, termin\u00e9es) sont compt\u00e9es : '
+      + 'les rendez-vous planifi\u00e9s ou report\u00e9s s\u2019affichent \u00e0 part, les non honor\u00e9s sont annonc\u00e9s sous le volume.',
     render: function (root) {
       var host = el('div.space-y-4');
       root.appendChild(host);
@@ -4086,25 +4007,31 @@
 
       function afficher() {
       var hostReel = host; var host2 = vueStats; C.clear(vueStats);
-      var rows = S.collection('consultations').active().filter(function (r) {
+      var registre = S.collection('consultations').active().filter(function (r) {
         var d = String(r.date || '').slice(0, 10);
         if (dDebut.value && d < dDebut.value) return false;
         if (dFin.value && d > dFin.value) return false;
         return true;
       });
+      /* La règle de comptage est UNE fonction : indicateurs, graphiques et tableau lisent `rows`. */
+      var partage = partagerConsultations(registre);
+      var rows = partage.tenues;
       var agents = {};
       S.collection('personnel').active().forEach(function (a) { agents[a.nomComplet] = a; });
       var moisCourant = C.iso(new Date()).slice(0, 7);
 
       vueStats.appendChild(U.kpiGrid([
-        { label: 'Consultations au registre', value: C.num(rows.length), icon: 'stethoscope', tone: 'navy' },
+        { label: 'Consultations r\u00e9alis\u00e9es', value: C.num(rows.length), icon: 'stethoscope', tone: 'navy',
+          hint: 'en cours ou termin\u00e9es' },
         { label: 'Ce mois-ci', value: C.num(rows.filter(function (r) { return String(r.date || '').slice(0, 7) === moisCourant; }).length),
           icon: 'calendar', tone: 'info' },
         { label: 'Praticiens actifs', value: C.num(Object.keys(rows.reduce(function (a, r) { a[r.medecin] = 1; return a; }, {})).length),
           icon: 'users', tone: 'neutral' },
         { label: '\u00c0 domicile', value: C.num(rows.filter(function (r) { return r.type === 'Domicile'; }).length),
           icon: 'house', tone: 'neutral' },
-      ]));
+        { label: 'Rendez-vous planifi\u00e9s, non encore honor\u00e9s', value: C.num(partage.aVenir.length),
+          icon: 'calendar-clock', tone: 'warning', hint: 'planifi\u00e9s ou report\u00e9s, hors volume' },
+      ], 'grid-cols-2 lg:grid-cols-5'));
 
       var parPraticien = {};
       rows.forEach(function (r) { parPraticien[r.medecin || '\u2014'] = (parPraticien[r.medecin || '\u2014'] || 0) + 1; });
@@ -4131,7 +4058,10 @@
           return G.barres(mois, [{ label: 'Consultations', data: mois.map(function (m) { return parMois[m]; }) }], { height: 240 });
         } },
       ]));
-      vueStats.appendChild(K.source('Registre des consultations du magasin \u2014 indicateurs recalcul\u00e9s \u00e0 chaque affichage.'));
+      vueStats.appendChild(K.source('Registre des consultations du magasin \u2014 indicateurs recalcul\u00e9s \u00e0 chaque affichage. '
+        + 'Compt\u00e9es : ' + C.num(rows.length) + ' consultation(s) tenue(s). \u00c0 part : ' + C.num(partage.aVenir.length)
+        + ' rendez-vous planifi\u00e9(s) ou report\u00e9(s). Hors volume : ' + C.num(partage.nonHonores.length) + ' non honor\u00e9(s)'
+        + (partage.autres.length ? ' et ' + C.num(partage.autres.length) + ' de statut inconnu' : '') + '.'));
       U.icons(host);
       U.icons(vueStats);
       }
@@ -4267,6 +4197,13 @@
         var a = agents.filter(function (x) { return x.id === sel.value; })[0];
         C.clear(vue);
         if (!a) return;
+        /* Sans salaire de base (jeu vidé de ses valeurs de démonstration), le coût n'est pas calculable :
+           un zéro se lirait comme un agent qui ne coûte rien. */
+        if (a.salaireBase === null || a.salaireBase === undefined || a.salaireBase === '') {
+          vue.appendChild(K.note('Le salaire de base de ' + a.nomComplet + ' n’est pas renseigné : son coût global n’est pas '
+            + 'calculable. Le renseigner à la fiche de l’agent (Personnel, M10).', { tone: 'warning', icon: 'wallet' }));
+          return;
+        }
         var brut = a.salaireBase || 0;
         var patronale = Math.round(brut * ((PP.cnss && PP.cnss.patronale) || 16.4) / 100);
         var vps = Math.round(brut * ((PP.vps && PP.vps.taux) || 4) / 100);

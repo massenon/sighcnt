@@ -1,0 +1,71 @@
+{
+ "id": "m5-demandes",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Demandes d’analyses",
+ "acces": "ouvert",
+ "titre": "Demandes d’analyses",
+ "description": "File des prescriptions de laboratoire, rattachées au dossier patient et à la facturation.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Demandes d’analyses"
+ ],
+ "actions": [
+  "Saisie des résultats",
+  "Ordonnances",
+  "Demandes — maternité"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les demandes d’analyses",
+  "Archivés"
+ ],
+ "kpis": [
+  "Demandes enregistrées",
+  "En attente de prélèvement",
+  "Urgentes",
+  "Recette laboratoire"
+ ],
+ "cartes": [
+  "Prélèvements à réaliser — 78 à traiter, 66 en attente de caisse"
+ ],
+ "tableaux": [
+  [
+   "Origine",
+   "Patient",
+   "À faire",
+   "Montant",
+   "État",
+   "Actions"
+  ],
+  [
+   "N°",
+   "Origine",
+   "Date",
+   "Patient",
+   "Analyse",
+   "Échantillon",
+   "Prescripteur",
+   "Priorité",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "Tous les demandes d’analyses358",
+  "Archivés0",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

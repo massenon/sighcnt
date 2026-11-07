@@ -1,0 +1,41 @@
+{
+ "id": "dash-surveillant",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Surveillant",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Surveillant",
+ "description": "Retards, absences, présences et planning du personnel paramédical.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Surveillant"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Présences pointées aujourd’hui",
+  "Vacations planifiées",
+  "Agents en congé",
+  "Effectif paramédical"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Présences du jour",
+  "Planning",
+  "Vérifier"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

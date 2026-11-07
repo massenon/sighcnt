@@ -1,0 +1,47 @@
+{
+ "id": "m10-employe-profil",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Fiche employé",
+ "acces": "ouvert",
+ "titre": "Fiche employé",
+ "description": "Vue consolidée d’un agent : informations, planning, primes applicables et historique.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Fiche employé"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [
+  "Informations",
+  "Planning du mois",
+  "Primes (NS 132)",
+  "Présences & congés",
+  "Évaluations & sanctions",
+  "Assurances"
+ ],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "BASSONGUI Chabi Séko",
+  "Retour à la liste",
+  "Informations",
+  "Planning du mois",
+  "Primes (NS 132)",
+  "Présences & congés",
+  "Évaluations & sanctions",
+  "Assurances"
+ ],
+ "champs": [
+  "Agent"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

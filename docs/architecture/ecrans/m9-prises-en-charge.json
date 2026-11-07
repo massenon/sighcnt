@@ -1,0 +1,57 @@
+{
+ "id": "m9-prises-en-charge",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Prises en charge",
+ "acces": "ouvert",
+ "titre": "Prises en charge",
+ "description": "Factures comportant une part assurance, avec répartition entre le patient et le tiers payeur.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Prises en charge"
+ ],
+ "actions": [
+  "Tableau de bord assurances",
+  "Compagnies partenaires",
+  "Assurances & Créances"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Prises en charge",
+  "Montant total facturé",
+  "Part assureurs",
+  "Part patients"
+ ],
+ "cartes": [
+  "Factures avec prise en charge"
+ ],
+ "tableaux": [
+  [
+   "N° facture",
+   "Date",
+   "Assuré",
+   "Compagnie",
+   "Taux",
+   "Total",
+   "Part assureur",
+   "Part patient",
+   "Règlement patient",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

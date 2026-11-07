@@ -99,6 +99,21 @@
    * Un seul geste engendre l'ordonnance, les demandes d'analyses, la facture et
    * les trois files d'attente. Rien n'est laissé à une ressaisie.
    * ======================================================================== */
+  /** Rang suivant d'une SÉRIE ANNUELLE de pièces de caisse (`FN-2026-`, `PRO-2026-`, `FP-2026-`) : le plus grand rang déjà porté
+      par les factures du même préfixe, plus un. Les deux volets d'une même émission (-A, -B) portent deux rangs consécutifs. Les archivées comptent
+      (une pièce archivée garde son numéro, RG-14). Écart E6, corrigé le 31/10/2026 : le rang était le nombre TOTAL de factures. */
+  function rangSerieFactures(prefixe) {
+    var max = 0;
+    col('factures').all().forEach(function (f) {
+      var n = String(f.numero || '');
+      if (n.indexOf(prefixe) !== 0) return;
+      var r = parseInt(n.slice(prefixe.length), 10);
+      if (r > max) max = r;
+    });
+    return max + 1;
+  }
+  function numeroSerieFacture(prefixe) { return prefixe + C.pad(rangSerieFactures(prefixe), 5); }
+
   function prescrire(v) {
     var p = patientParCode(v.patientCode);
     if (!p) throw new Error('Patient introuvable : ' + v.patientCode);
@@ -126,10 +141,20 @@
         echantillon: a.echantillon || '', delai: a.delai || '', prix: a.prix || 0 };
     });
 
+    /* C3 (corrigé le 31/10/2026) : le tarif ASSURÉ d'un acte (pansement : 6 000 contre 9 000, colonnes inversées, décision du
+       26/08) s'applique réellement. Il était ANNONCÉ par l'écran des bons de pansement mais jamais appliqué : l'acte se facturait
+       au prix du catalogue (non assuré) et la garantie s'y appliquait. RG-09 décide, comme pour l'imagerie et les analyses :
+       carte valide à la date de la prescription => colonne assurée de la grille ; sinon colonne non assuré. */
+    var assureActes = !!(p.assureur && carteValide(p, date));
     var actes = (v.actes || []).map(function (code) {
       var a = acteParCode(code) || {};
-      return { code: code, libelle: a.libelle || code, secteur: a.secteur || '', prix: a.prix || 0,
-        tarifValide: a.prix != null };
+      /* Seule la colonne ASSURÉE de la grille change le prix : l'acte du catalogue la porte (`prixAssure`, rapprochée de la grille, SO09 => 6 000).
+         Sans carte valide, ou pour un acte que la grille exclut de l'assurance (`nonCouvert`, certificats `sos`), le prix du catalogue
+         administrable (cfg-tarifs) reste la référence. */
+      var tarifAssure = assureActes && a.assurable === true && !a.nonCouvert && a.prixAssure != null;
+      var prixActe = tarifAssure ? a.prixAssure : a.prix;
+      return { code: code, libelle: a.libelle || code, secteur: a.secteur || '', prix: prixActe || 0,
+        tarifValide: prixActe != null };
     });
 
     var mMed = C.sum(medicaments, 'total');
@@ -181,7 +206,7 @@
     /* --- Le laboratoire : demandes établies d'office ----------------------- */
     var demandes = analyses.map(function (a) {
       return col('demandesAnalyses').insert({
-        reference: C.nextRef('LAB-', 5),
+        reference: C.referenceSuivante('LAB-', 5, S.collection('demandesAnalyses').all()),
         codeAnalyse: codeAnalyse(date),
         patientId: p.id, patientCode: p.code, patient: p.nom + ' ' + p.prenom,
         analyseCode: a.code, analyse: a.designation, categorie: a.categorie,
@@ -202,7 +227,9 @@
     });
 
     /* --- La caisse : facture en attente de règlement ------------------------ */
-    var taux = p.assureur ? (p.tauxPriseEnCharge || 0) : 0;
+    /* RG-09 — la prise en charge ne s'applique que si la carte est valide À LA DATE de la prescription (écart E340 : le taux du
+       dossier s'appliquait même carte expirée, alors que l'imagerie de la même pièce était déjà tarifée « non assuré »). */
+    var taux = (p.assureur && carteValide(p, date)) ? (p.tauxPriseEnCharge || 0) : 0;
     var montant = mMed + mAna + mAct + mImg;
     var partAssurance = Math.round(montant * taux / 100);
 
@@ -230,7 +257,7 @@
 
     var facture = col('factures').insert({
       lignes: lignesFacture,
-      numero: 'FP-' + String(new Date(date).getFullYear()) + '-' + C.pad(col('factures').all().length + 1, 5),
+      numero: numeroSerieFacture('FP-' + String(new Date(date).getFullYear()) + '-'),   /* E6 : rang de la série de l'année */
       numeroMecef: null,
       patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code,
       date: C.iso(new Date(date)), type: 'Prescription',
@@ -313,6 +340,107 @@
       demandesImagerie: demandesImagerie.map(function (d) { return S.collection('demandesImagerie').get(d.id); }),
       facture: facture, taches: taches,
     };
+  }
+
+  /* ==========================================================================
+   * LA TRANSCRIPTION D'UNE PRESCRIPTION DU MOBILE (E1559, E1561, 01/11/2026)
+   * --------------------------------------------------------------------------
+   * Le téléphone d'un soignant écrit une PIÈCE `prescriptions` (famille C, émise, immuable) que la mère accepte et distribue ; elle ne devient une
+   * ordonnance, une facture de caisse et des files d'aval que lorsqu'un POSTE de la clinique la TRANSCRIT. La transcription passe par `PR.prescrire`
+   * (le même moteur que la fiche de consultation du poste) : rien n'est recalculé à côté. Ce qu'elle ajoute, ce sont les REFUS, nommés, parce qu'une
+   * pièce reçue du terrain n'a pas été saisie devant le catalogue de la clinique :
+   *   - le prix ne vient jamais du téléphone : prix d'achat du catalogue, sans marge (RG-02) ;
+   *   - la quantité sortie ne dépasse pas le stock de la pharmacie (RG-03) : refus nommé, jamais un stock négatif ;
+   *   - la carte d'assurance se lit À LA DATE de la prescription (RG-09), pas à celle de la transcription ;
+   *   - une pièce transcriptible est transcrite UNE FOIS (`pieceMobileId` sur l'ordonnance) ;
+   *   - une pièce qui ne l'est pas (patient inconnu, médicament hors catalogue, examen sans correspondance) est REFUSÉE EN LE DISANT : elle n'est ni
+   *     perdue ni transcrite à moitié.
+   * La phrase « Prescrire génère l'ordonnance et la facture de la caisse » du simulateur n'est donc vraie qu'APRÈS cette transcription.
+   * ======================================================================== */
+
+  /** Les six examens du simulateur mobile et l'analyse du catalogue du laboratoire qui les porte. PROPOSITION à valider par le biologiste : le
+      simulateur nomme des examens courants, le catalogue de la clinique les nomme autrement (« NFS COMPLETE (HEMOGRAMME) »). « Goutte épaisse / TDR
+      paludisme » est rapprochée de « GE-DP / FROTTIS SANGUIN » : le test de diagnostic rapide n'a pas de ligne propre au catalogue. */
+  var CORRESPONDANCE_EXAMENS_MOBILE = {
+    'NFS': 'L24',
+    'Glycémie': 'L14',
+    'Goutte épaisse / TDR paludisme': 'L16',
+    'CRP': 'L10',
+    'Test de grossesse (TBG)': 'L35',
+    'Créatininémie': 'L09',
+  };
+
+  function refusMobile(code, motif, geste) {
+    var e = new Error(motif); e.code = code; e.motif = motif; e.geste = geste; return e;
+  }
+
+  /** `transcrireMobile(piece, { note, session })` : transcrit une pièce `prescriptions` émise par un mobile (médicaments ou analyses). Lève un refus nommé
+      (`code`, `motif`, `geste`) sans rien écrire ; rend `{ deja, ordonnance, facture, taches, demandes }` sinon. */
+  function transcrireMobile(piece, opts) {
+    opts = opts || {};
+    var pieceId = piece.id || piece.pieceId;
+    /* Idempotence : une pièce n'est transcrite qu'une fois. */
+    var deja = col('ordonnances').active().filter(function (o) { return o.pieceMobileId && o.pieceMobileId === pieceId; })[0];
+    if (deja) return { deja: true, ordonnance: deja, facture: col('factures').get(deja.factureId), taches: [], demandes: [] };
+
+    var nature = String(piece.nature || '');
+    if (nature !== 'medicament' && nature !== 'analyse') {
+      throw refusMobile('NATURE_NON_PORTEE', 'Le mobile ne prescrit pas « ' + nature + ' ».', 'Prescrire depuis un poste de la clinique');
+    }
+    var fonction = String(piece.fonction || '');
+    if (!peutPrescrire(nature, { fonction: fonction })) {
+      /* Formulation de la maquette (`prescrireSoins` : « X n’est pas habilité à prescrire. »), complétée de la nature refusée. */
+      var libFonction = (D.CAPACITES[fonction] || {}).label || fonction;
+      var libNature = (D.NATURES_PRESCRIPTION.filter(function (n) { return n.id === nature; })[0] || {}).label || nature;
+      throw refusMobile('FONCTION_NON_HABILITEE', libFonction + ' n’est pas habilité à prescrire « ' + libNature + ' ».', 'Demander la prescription à un médecin');
+    }
+    var p = patientParCode(piece.patientCode);
+    if (!p) {
+      throw refusMobile('PATIENT_INTROUVABLE', 'Le dossier « ' + (piece.patientCode || 'sans code') + ' » n’existe pas à la clinique : la prescription ne peut pas être facturée.', 'Rapprocher le dossier du patient avant de transcrire');
+    }
+
+    var medicaments = [], analyses = [];
+    if (nature === 'medicament') {
+      var lignes = piece.lignes || [];
+      if (!lignes.length) throw refusMobile('ORDONNANCE_VIDE', 'L’ordonnance ne porte aucune ligne.', 'Refaire la prescription depuis le téléphone');
+      var demande = {};
+      lignes.forEach(function (l) {
+        var prod = l.produitId ? produitParId(l.produitId) : null;
+        if (!prod) {
+          throw refusMobile('PRODUIT_INCONNU', 'Médicament absent du catalogue de la clinique : « ' + (l.medicament || 'sans nom') + ' ».', 'Choisir le médicament dans la liste du lot et refaire la prescription');
+        }
+        var q = Number(l.quantite);
+        if (!(q >= 1) || q !== Math.floor(q)) {
+          throw refusMobile('QUANTITE_INVALIDE', 'Quantité invalide pour « ' + prod.designation + ' » : un entier d’au moins 1 est attendu.', 'Refaire la prescription depuis le téléphone');
+        }
+        demande[prod.id] = (demande[prod.id] || 0) + q;
+        var dispo = prod.stockDetail != null ? prod.stockDetail : prod.stock;
+        if (demande[prod.id] > dispo) {
+          throw refusMobile('STOCK_INSUFFISANT', 'Stock insuffisant pour « ' + prod.designation + ' » : disponible : ' + dispo + ' ; demandé : ' + demande[prod.id] + ' (RG-03).', 'Corriger la quantité ou demander un transfert du gros.');
+        }
+        medicaments.push({ produitId: prod.id, quantite: q, posologie: l.posologie || '', duree: l.dureeJours != null ? l.dureeJours + (Number(l.dureeJours) > 1 ? ' jours' : ' jour') : '' });
+      });
+    } else {
+      var examens = piece.examens || [];
+      if (!examens.length) throw refusMobile('ORDONNANCE_VIDE', 'La demande ne porte aucun examen.', 'Refaire la demande depuis le téléphone');
+      examens.forEach(function (nom) {
+        var code = CORRESPONDANCE_EXAMENS_MOBILE[nom];
+        if (!code || !analyseParCode(code)) {
+          throw refusMobile('EXAMEN_INCONNU', 'Examen sans correspondance au catalogue du laboratoire : ' + nom + '.', 'Demander l’examen depuis un poste de la clinique');
+        }
+        analyses.push(code);
+      });
+    }
+
+    var date = new Date(String(piece.date || '').indexOf('T') > 0 ? piece.date : Date.now()).toISOString();
+    var res = prescrire({
+      patientCode: p.code, medecin: piece.prescripteur || '', diagnostic: (opts.note && opts.note.diagnostic) || '',
+      date: date, urgent: nature === 'analyse' && String(piece.urgence || 'Non urgent') !== 'Non urgent',
+      medicaments: medicaments, analyses: analyses, actes: [], origine: 'mobile',
+      secteurDemandeur: (capacites({ fonction: fonction }).secteurs || [])[0] || 'Consultation',
+    });
+    col('ordonnances').update(res.ordonnance.id, { origine: 'mobile', pieceMobileId: pieceId, fonctionPrescripteur: fonction });
+    return { deja: false, ordonnance: col('ordonnances').get(res.ordonnance.id), facture: res.facture, taches: res.taches, demandes: res.demandes };
   }
 
   function resumeLignes(med, ana, act, img) {
@@ -613,7 +741,7 @@
     /* Les demandes, marquées EXTERNE : le résultat se remet au patient. */
     var demandes = analyses.map(function (a) {
       return S.collection('demandesAnalyses').insert({
-        reference: C.nextRef('LAB-', 5),
+        reference: C.referenceSuivante('LAB-', 5, S.collection('demandesAnalyses').all()),
         codeAnalyse: codeAnalyse(date),
         patientId: p.id, patientCode: p.code, patient: p.nom + ' ' + p.prenom,
         analyseCode: a.code, analyse: a.designation, categorie: a.categorie,
@@ -634,6 +762,9 @@
         secteurDemandeur: v.secteurDemandeur || null,
         indication: v.indication || null,
         hospitalise: !!v.hospitalise,
+        /* La résidence saisie sur la fiche papier est portée par la demande : sans cela elle ne vivait que le temps de l'impression.
+           Le dossier du patient (Zone 1) n'est pas modifié : c'est une donnée de la demande. */
+        residence: v.residence || null,
         bloqueParPaiement: true,
       }).record;
     });
@@ -738,7 +869,8 @@
       /* RG-09 : la validité de la carte À LA DATE décide du tarif. */
       var pr = D.tarifPrix ? D.tarifPrix((ex && ex.tarifCode) || code, assure) : { montant: null };
       return col_.insert({
-        reference: C.nextRef('IME-', 5),
+        /* Lue sur les demandes EXISTANTES (écart E100) : le compteur de page de nextRef repartait à 1 à chaque chargement. */
+        reference: C.referenceSuivante('IME-', 5, col_.all()),
         dateHeure: date,
         patientId: p.id, patientCode: p.code, patient: p.nom + ' ' + p.prenom,
         examenCode: code, examen: ex ? ex.label : code,
@@ -796,7 +928,9 @@
     var cree = creerDemandesImagerie(p, v.examens, date, v);
     var demandes = cree.demandes;
 
-    var taux = p.assureur ? (p.tauxPriseEnCharge || 0) : 0;
+    /* RG-09 (écart E101) : la part de l'assureur ne se calcule QUE si la carte est valide à la date — le tarif non assuré était bien
+       appliqué sur carte expirée, mais 80 % de la pièce partaient quand même à l'assureur. */
+    var taux = (p.assureur && carteValide(p, date)) ? (p.tauxPriseEnCharge || 0) : 0;
     var lignes = construireLignes({
       taux: taux, personnelId: p.personnelId || null,
       autres: cree.lignes,
@@ -1175,15 +1309,51 @@
     prestations: { num: '706000', libelle: 'Services vendus — prestations de soins' },
   };
 
+  /* LA PART ASSUREUR SE CONSTATE UNE SEULE FOIS (correction du 30/10/2026, écart E1 de ECARTS-MAQUETTE.md).
+     Elle était ré-inscrite à CHAQUE versement partiel : une facture assurée réglée en deux fois par le patient posait
+     deux fois la créance sur la compagnie (411) et deux fois le produit correspondant (706). Désormais le PREMIER
+     versement constate la créance assureur ; les suivants ne constatent que ce que le patient verse.
+     Au total, sur la vie de la facture : 706 = montant facturé, 411 = part assureur, 571 = part patient. */
+  function creanceAssureurDejaConstatee(facture) {
+    return col('ecritures').all().some(function (e) {
+      return e.pieceId === facture.id && e.compte === COMPTES_CAISSE.clientsAssurance.num && e.statut !== 'archive';
+    });
+  }
+
+  /* LE NUMÉRO DE PIÈCE EST UNE SÉRIE ANNUELLE (correction du 30/10/2026, écart E3). Il prenait les cinq derniers chiffres
+     du numéro de facture — deux factures de deux années pouvaient se heurter, une facture sans chiffres donnait « CAI-2026-8 »
+     — et le millésime était écrit en dur. Désormais : le millésime est celui de la date de l'écriture, le rang est le
+     suivant de la série de l'année, et les versements d'une même facture REPRENNENT le numéro de sa première écriture. */
+  function numeroPieceCaisse(facture, date) {
+    var existante = col('ecritures').all().filter(function (e) {
+      return e.pieceId === facture.id && e.journal === 'CAI' && e.numero;
+    })[0];
+    if (existante) return existante.numero;
+    var annee = String(date).slice(0, 4);
+    var prefixe = 'CAI-' + annee + '-';
+    var max = 0;
+    col('ecritures').all().forEach(function (e) {
+      if (typeof e.numero === 'string' && e.numero.indexOf(prefixe) === 0) {
+        var n = parseInt(e.numero.slice(prefixe.length), 10);
+        if (n > max) max = n;
+      }
+    });
+    return prefixe + C.pad(max + 1, 5);
+  }
+
   function ecrireEncaissement(facture, montantRegle) {
     var lignes = [];
-    var partAssureur = Number(facture.partAssureur) || 0;
+    var constatee = creanceAssureurDejaConstatee(facture);
+    /* L'EN-TÊTE d'une facture porte `partAssurance` ; `partAssureur` n'existe que sur les LIGNES (correction du 06/11/2026, E2260) :
+       lire ce dernier champ sur l'en-tête donnait toujours zéro, et la créance de l'assureur (débit 411, crédit 706) n'entrait jamais au journal. */
+    var partAssureur = constatee ? 0 : (Number(facture.partAssurance != null ? facture.partAssurance : facture.partAssureur) || 0);
     var total = montantRegle + partAssureur;
     if (total <= 0) return [];
 
-    var numero = 'CAI-2026-' + String(facture.numero || facture.id).replace(/[^0-9]/g, '').slice(-5);
+    var date = C.iso(new Date());
+    var numero = numeroPieceCaisse(facture, date);
     var base = {
-      numero: numero, date: C.iso(new Date()),
+      numero: numero, date: date,
       journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
       libelle: 'Encaissement facture ' + (facture.numero || facture.id)
         + ' — ' + (facture.patient || ''),
@@ -1325,8 +1495,20 @@
       });
     } else {
       /* Facture sans lignes — pièce antérieure au modèle. On conserve le
-         comportement par montant plutôt que de la rendre inencaissable. */
-      paye = opts.montant != null ? Number(opts.montant) : duTotal;
+         comportement par montant plutôt que de la rendre inencaissable, mais JAMAIS au-delà du dû
+         (écart E2, corrigé le 31/10/2026) : sans ligne pour borner le versement, 99 999 sur 5 000 dus
+         faisaient dépasser le TTC à `montantPaye` et à la base MECeF. Le refus NOMME le défaut. */
+      var restantPiece = Math.max(0, duTotal - (fac.montantPaye || 0));
+      var voulu = opts.montant != null ? Number(opts.montant) : restantPiece;
+      if (!(voulu >= 0) || voulu > restantPiece) {
+        return {
+          facture: fac, refus: 'Versement de ' + C.money(voulu) + ' refusé : la pièce ' + (fac.numero || fac.id)
+            + ' ne porte aucune ligne et ne doit plus que ' + C.money(restantPiece) + '. Un versement ne dépasse jamais le dû.',
+          debloquees: [], ecritures: [], lignesReglees: [], montantRegle: 0, restantDu: restantPiece,
+          demandesLiberees: [],
+        };
+      }
+      paye = voulu;
     }
 
     /* --- Report sur la facture ------------------------------------------- */
@@ -1445,6 +1627,134 @@
   }
 
   /* ==========================================================================
+   * LE CANAL UNIQUE DE L'AVOIR (décision de la Direction du 31/10/2026, B10)
+   * --------------------------------------------------------------------------
+   * Une pièce émise ne se réécrit jamais : un seul mécanisme la corrige. Il vivait dans m8-facturation.js ; il vit AU SOCLE
+   * depuis le 31/10/2026 parce que l'écran de facturation (nature « Facture avoir »), l'avoir MECeF et l'écran des avoirs
+   * l'APPELLENT tous, et qu'une page ne charge que le module de son écran. Trois canaux (E12, E15) n'en font plus qu'un :
+   * la collection `avoirs`, plafond CUMULÉ partout, montant strictement positif, lignes nommées, contre-passation plate en
+   * brouillon (RG-10). La DATE d'une pièce est un JOUR ; l'instant d'émission est porté à part (`horodatage`, E4).
+   * ======================================================================== */
+  META.avoirs = { module: 'M8', entite: 'facture d’avoir', prefix: 'AVR' };
+  META.ecritures = { module: 'M12', entite: 'écriture' };
+
+  /** Référence d'un avoir : série annuelle lue sur les avoirs déjà émis (millésime de la DATE de l'avoir, rang de l'année). */
+  function referenceAvoir(date) {
+    return C.referenceSuivante('AV-' + String(date).slice(0, 4) + '-', 4, col('avoirs').all());
+  }
+
+  /** Émet un avoir. Retourne { record, ecritureIds } ou { erreur } : un refus se lit, il ne se devine pas.
+      params : { lignes:[{designation, montant}], motif, remboursement:'creance'|'especes', observations, date, origine }. */
+  function emettreAvoir(factureId, params) {
+    params = params || {};
+    var fac = col('factures').get(factureId);
+    if (!fac) return { erreur: 'Facture introuvable.' };
+    if (fac.type === 'Avoir' || (fac.montantTTC || 0) < 0) {
+      return { erreur: 'La pièce ' + fac.numero + ' est elle-même un avoir : on ne rectifie pas un avoir.' };
+    }
+
+    /* UNE FILLE CONSOLIDÉE EST FIGÉE : la mère émise porte son numéro, et la compagnie détient la pièce. */
+    var mere = S.collection('facturesMere').active().filter(function (m) {
+      return (m.piecesFilles || []).indexOf(fac.numero) !== -1;
+    })[0];
+    if (mere) {
+      return { erreur: 'La facture ' + fac.numero + ' est consolidée dans la facture mère '
+        + mere.numero + ' (' + (mere.compagnie || '') + '), déjà émise : la corriger passerait '
+        + 'derrière le dos de la compagnie. Émettre l’avoir au niveau de la mère, par avenant.' };
+    }
+
+    var lignes = params.lignes || [];
+    if (!lignes.length) return { erreur: 'Un avoir se rapporte à des LIGNES nommées — en cocher au moins une.' };
+    var montant = C.sum(lignes, 'montant');
+    if (!(montant > 0)) return { erreur: 'Le montant de l’avoir doit être strictement supérieur à 0 FCFA.' };
+
+    var dejaMontant = C.sum(col('avoirs').active().filter(function (a) { return a.factureId === fac.id; }), 'montant');
+    if (montant + dejaMontant > (fac.montantTTC || 0)) {
+      return { erreur: 'Le cumul des avoirs (' + C.money(montant + dejaMontant)
+        + ') excéderait la facture (' + C.money(fac.montantTTC) + ').' };
+    }
+
+    var date = jourDe(params.date || new Date());
+    var rec = col('avoirs').insert({
+      reference: referenceAvoir(date),
+      date: date,
+      horodatage: new Date().toISOString(),
+      factureId: fac.id, factureNumero: fac.numero,
+      patientId: fac.patientId, patient: fac.patient, patientCode: fac.patientCode,
+      montant: montant,
+      motif: params.motif,
+      observations: params.observations || '',
+      lignesAnnulees: lignes,
+      remboursement: params.remboursement || 'creance',
+      origine: params.origine || 'caisse',
+      /* Le registre fiscal : une facture normalisée validée exige la régularisation MECeF ; une pièce non transmise n'en relève pas. */
+      statutMecef: fac.statutMecef === 'valide' ? 'en_attente' : 'sans_objet',
+      emisPar: S.currentUser(),
+    }).record;
+
+    /* LA CONTRE-PASSATION : écritures PLATES en brouillon, débit 706 (la recette diminue), crédit 571 si l'on rembourse en
+       espèces, crédit 411 sinon (la créance diminue). */
+    var base = {
+      numero: rec.reference, date: rec.date,
+      journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
+      pieceId: rec.id, pieceNumero: rec.reference,
+      origine: 'Facture d’avoir',
+      statut: 'brouillon',
+    };
+    var contre = rec.remboursement === 'especes'
+      ? { compte: '571000', libelle: 'Remboursement en espèces — avoir ' + rec.reference }
+      : { compte: '411000', libelle: 'Créance réduite — avoir ' + rec.reference };
+    var ecritures = [
+      Object.assign({}, base, {
+        compte: '706000', compteLibelle: 'Prestations de services',
+        libelle: 'Contre-passation — ' + fac.numero + ' (' + params.motif + ')',
+        debit: montant, credit: 0,
+      }),
+      Object.assign({}, base, {
+        compte: contre.compte, compteLibelle: contre.compte === '571000' ? 'Caisse' : 'Clients',
+        libelle: contre.libelle,
+        debit: 0, credit: montant,
+      }),
+    ];
+    var debit = C.sum(ecritures, 'debit'), credit = C.sum(ecritures, 'credit');
+    if (debit !== credit) {
+      col('avoirs').archive(rec.id);
+      return { erreur: 'RG-10 — contre-passation déséquilibrée (débit ' + C.money(debit)
+        + ', crédit ' + C.money(credit) + ') : rien n’est écrit.' };
+    }
+    var ids = ecritures.map(function (l) { return col('ecritures').insert(l).record.id; });
+    col('avoirs').update(rec.id, { ecritureIds: ids });
+
+    /* La facture PORTE ses avoirs, elle n'est jamais réécrite : la pièce d'origine et sa correction se lisent côte à côte. */
+    col('factures').update(fac.id, {
+      avoirIds: (fac.avoirIds || []).concat([rec.id]),
+      montantAvoirs: (fac.montantAvoirs || 0) + montant,
+    });
+
+    S.log('Facture d’avoir émise', 'M8', 'Avoir', rec.reference, null,
+      { facture: fac.numero, montant: montant, motif: params.motif, origine: rec.origine });
+    return { record: col('avoirs').get(rec.id), ecritureIds: ids };
+  }
+
+  /** Retire un avoir qu'on vient d'émettre (annulation visible d'un geste) : archivé avec ses écritures, jamais supprimé (RG-14),
+      et la facture rend le montant du plafond cumulé. */
+  function retirerAvoir(avoirId) {
+    var a = col('avoirs').get(avoirId);
+    if (!a) return false;
+    (a.ecritureIds || []).forEach(function (id) { col('ecritures').archive(id); });
+    col('avoirs').archive(a.id);
+    var fac = col('factures').get(a.factureId);
+    if (fac) {
+      col('factures').update(fac.id, {
+        avoirIds: (fac.avoirIds || []).filter(function (x) { return x !== a.id; }),
+        montantAvoirs: Math.max(0, (fac.montantAvoirs || 0) - (a.montant || 0)),
+      });
+    }
+    S.log('Facture d’avoir retirée', 'M8', 'Avoir', a.reference, null, { montant: a.montant });
+    return true;
+  }
+
+  /* ==========================================================================
    * 3. LA PHARMACIE DÉLIVRE
    * --------------------------------------------------------------------------
    * RG-03 : chaque sortie porte son justificatif — le numéro d'ordonnance — et
@@ -1454,9 +1764,14 @@
   function verifierStock(ordonnanceId) {
     var ord = col('ordonnances').get(ordonnanceId);
     if (!ord) throw new Error('Ordonnance introuvable.');
+    /* RG-03 : le CUMUL des lignes d'un même produit est contrôlé — deux lignes de 5 sur un stock de 8 passaient chacune seule et laissaient
+       un stock NÉGATIF (écart E42, corrigé le 30/10/2026). `disponible` est ce qui reste APRÈS les lignes précédentes du même produit. */
+    var prises = {};
     return (ord.medicaments || []).map(function (l) {
       var prod = produitParId(l.produitId);
-      var dispo = prod ? (prod.stockDetail != null ? prod.stockDetail : prod.stock) : 0;
+      var total = prod ? (prod.stockDetail != null ? prod.stockDetail : prod.stock) : 0;
+      var dispo = total - (prises[l.produitId] || 0);
+      if (prod) prises[l.produitId] = (prises[l.produitId] || 0) + l.quantite;
       return { ligne: l, produit: prod, disponible: dispo, suffisant: prod && dispo >= l.quantite };
     });
   }
@@ -1506,7 +1821,8 @@
       });
       var val = valoriserSortie(prod, x.ligne.quantite);
       return col('mouvements').insert({
-        reference: C.nextRef('M', 6),
+        /* Série lue sur les mouvements EXISTANTS, jamais sur un compteur de page qui repart à 1 à chaque chargement (écart E41b, cf. E8). */
+        reference: C.referenceSuivante('M', 6, col('mouvements').all()),
         date: new Date().toISOString(),
         produitId: prod.id, produit: prod.designation,
         type: 'sortie', typeLabel: 'Sortie',
@@ -1763,7 +2079,14 @@
     if (!patient) return false;
     var c = couvertureALaDate(patient, date);
     if (!c || !c.assureur || !c.carteExpiration) return false;
-    return C.toDate(c.carteExpiration).getTime() >= C.toDate(date || new Date()).getTime();
+    /* E4 (corrigé le 31/10/2026) : une date de pièce est un JOUR. Comparer des millisecondes rendait la même carte valide le
+       dernier jour pour une date « 2026-08-16 » et invalide pour l'instant « 2026-08-16T12:00:00Z » : les deux jours se comparent. */
+    return jourDe(c.carteExpiration) >= jourDe(date || new Date());
+  }
+  /** Le JOUR (AAAA-MM-JJ) d'une date : celui qui est ÉCRIT quand la valeur commence par une date, sinon le jour local. */
+  function jourDe(d) {
+    var m = typeof d === 'string' ? /^(\d{4}-\d{2}-\d{2})/.exec(d) : null;
+    return m ? m[1] : C.iso(d);
   }
 
   /* Nombre de mots significatifs partagés par deux libellés : « consultation
@@ -2240,7 +2563,7 @@
     }
 
     var rec = col('administrations').insert({
-      reference: C.nextRef('ADM-', 5),
+      reference: C.referenceSuivante('ADM-', 5, col('administrations').all()),   /* E363 : série lue sur le registre, jamais un compteur de page */
       prescriptionId: prescriptionId, prescriptionRef: pres.reference,
       ligneIndex: ligneIndex, libelle: ligne.libelle,
       patientId: pres.patientId, patientCode: pres.patientCode, patient: pres.patient,
@@ -2423,7 +2746,6 @@
    * l'affichent. Un BFR amputé de ses dettes est SURESTIMÉ, et un chiffre
    * faux qui a l'air juste est ce que ce prototype refuse partout ailleurs.
    * ======================================================================== */
-  var REF_PILOTAGE = new Date(2026, 7, 16);
 
   function objectifsPilotage() {
     var col = S.collection('objectifsPilotage', { module: 'M12', entite: 'ObjectifPilotage' });
@@ -2441,7 +2763,7 @@
   /** La fenêtre d'observation : 90 jours glissants par défaut, bornes nommées. */
   function fenetrePilotage(opts) {
     var o = opts || {};
-    var fin = o.fin ? C.toDate(o.fin) : REF_PILOTAGE;
+    var fin = o.fin ? C.toDate(o.fin) : C.aujourdhui();   /* la fenêtre glissante suit l'horloge (vague 68) */
     var debut = o.debut ? C.toDate(o.debut) : C.addDays(fin, -(o.jours || 90));
     return { debut: C.iso(debut), fin: C.iso(fin), jours: Math.max(1, C.daysBetween(debut, fin)) };
   }
@@ -2639,6 +2961,8 @@
     administrer: administrer, soinsDuSecteur: soinsDuSecteur,
     rangSuivant: rangSuivant,
     ecrireEncaissement: ecrireEncaissement, alerterStock: alerterStock,
+    emettreAvoir: emettreAvoir, retirerAvoir: retirerAvoir, referenceAvoir: referenceAvoir,
+    rangSerieFactures: rangSerieFactures,
     construireLignes: construireLignes, lignesDues: lignesDues, lignesReglees: lignesReglees,
     facturerPiece: facturerPiece, statutPiece: statutPiece,
     ouvrirDemandeExterne: ouvrirDemandeExterne,
@@ -2662,9 +2986,753 @@
     changerCouverture: changerCouverture,
     TACHES: TACHES,
     prescrire: prescrire, encaisser: encaisser, delivrer: delivrer,
+    transcrireMobile: transcrireMobile, CORRESPONDANCE_EXAMENS_MOBILE: CORRESPONDANCE_EXAMENS_MOBILE,
     verifierStock: verifierStock,
     taches: taches, aFaire: aFaire, terminer: terminer, compteurs: compteurs,
     dossier: dossier,
+  };
+
+
+  /* ==========================================================================
+   * EXERCICES COMPTABLES — sélecteur, lecture seule au moteur, clôture en deux
+   * gestes (PRD-M12-cloture-exercice).
+   * --------------------------------------------------------------------------
+   * LE MOTEUR VIT AU SOCLE : le sélecteur d'exercice est lu par tous les écrans
+   * de M12, de M9 et des tableaux de bord, et une page ne charge que le module
+   * de son écran. Une clôture est un acte DÉFINITIF : un exercice clos ne se
+   * rouvre pas (obligation légale), il se corrige par une écriture de l'exercice
+   * suivant. La garde de lecture seule est posée sur la COLLECTION, pas sur
+   * l'écran — un champ désactivé dans le navigateur ne protège rien.
+   * ======================================================================== */
+  var CLE_EXERCICE = 'sigh-cnt:exercice';
+  var LETTRABLES = ['40', '41', '42', '43', '44', '47'];
+
+  function anneeDe(date) { var d = C.toDate(date); return d && !isNaN(d) ? d.getFullYear() : null; }
+  function anneeCourante() { return C.aujourdhui().getFullYear(); }
+
+  /* Les exercices sont DÉRIVÉS : une fiche par année portée par les écritures,
+     plus l'année courante, plus celle de la liasse déposée (close d'office —
+     c'est un fait déposé à la DGI, non un exercice du logiciel). */
+  function exercices() {
+    var col = S.collection('exercices', { module: 'M12', entite: 'Exercice' });
+    var annees = {};
+    S.collection('ecritures').all().forEach(function (e) { var a = anneeDe(e.date); if (a) annees[a] = true; });
+    annees[anneeCourante()] = true;
+    if (global.SIGH.liasse && global.SIGH.liasse.DEPOT) {
+      annees[global.SIGH.liasse.DEPOT.exerciceN] = true;
+      annees[global.SIGH.liasse.DEPOT.exerciceN1] = true;
+    }
+    var ajoute = false;
+    Object.keys(annees).forEach(function (a) {
+      a = Number(a);
+      if (col.all().some(function (x) { return x.annee === a; })) return;
+      var deposee = !!(global.SIGH.liasse && global.SIGH.liasse.DEPOT && (global.SIGH.liasse.DEPOT.exerciceN === a || global.SIGH.liasse.DEPOT.exerciceN1 === a));
+      col.all().unshift({
+        id: 'EXO-' + a, annee: a, debut: a + '-01-01', fin: a + '-12-31', statut: 'actif',
+        etat: deposee ? 'clos' : 'ouvert',
+        source: deposee ? 'liasse' : 'journal',
+        valideLe: deposee ? global.SIGH.liasse.DEPOT.dateDepot : null,
+        validePar: deposee ? 'Liasse déposée à la DGI' : null,
+        motif: deposee ? 'Exercice antérieur à la mise en service : fait par la liasse déposée.' : null,
+      });
+      ajoute = true;
+    });
+    /* Le 05/11/2026 l'état « en attente de clôture » devient « en clôture » (la demande verrouille les modules) : les fiches d'avant sont reprises. */
+    col.all().forEach(function (x) { if (x.etat === 'en_attente_cloture') { x.etat = 'en_cloture'; ajoute = true; } });
+    if (ajoute) S.save();
+    return col.all().filter(function (x) { return x.statut !== 'archive'; })
+      .sort(function (a, b) { return b.annee - a.annee; });
+  }
+  function exercice(annee) { return exercices().filter(function (x) { return x.annee === Number(annee); })[0] || null; }
+  function etatExercice(annee) { var x = exercice(annee); return x ? x.etat : 'ouvert'; }
+
+  /* LE CHOIX DE L'EXERCICE VIT DANS LA SESSION DE L'UTILISATEUR, en un seul endroit : cette fonction. Tous les écrans la lisent, aucun ne garde de copie.
+     Il ne fait que CHOISIR CE QUE L'ON LIT : il n'écrit rien, ne donne aucun droit, et une pièce s'enregistre toujours dans l'exercice de SA date.
+     Par défaut : l'exercice ouvert le plus récent, sinon le plus récent tout court. */
+  function exerciceParDefaut() {
+    var liste = exercices();
+    var ouverts = liste.filter(function (x) { return x.etat === 'ouvert'; });
+    return (ouverts[0] || liste[0] || { annee: anneeCourante() }).annee;
+  }
+  function exerciceChoisi() {
+    var v = null;
+    try { v = Number(global.sessionStorage.getItem(CLE_EXERCICE)); } catch (e) { /* stockage refusé */ }
+    return v && exercice(v) ? v : exerciceParDefaut();
+  }
+  function choisirExercice(annee) {
+    try { global.sessionStorage.setItem(CLE_EXERCICE, String(annee)); } catch (e) { /* sans effet */ }
+    return Number(annee);
+  }
+  /* « Ce mois », « ce trimestre » : calculés depuis aujourd'hui si l'exercice consulté le contient, sinon depuis son dernier jour. Consulter 2025 en 2026,
+     c'est voir décembre 2025 sous « ce mois ». */
+  function dateReference() {
+    var a = exerciceChoisi(), auj = C.aujourdhui();
+    return anneeDe(auj) === a ? auj : new Date(a, 11, 31);
+  }
+  function exerciceVoisin(sens) {
+    var cible = exerciceChoisi() + sens;
+    return exercice(cible) ? cible : null;
+  }
+
+  /* La garde de lecture seule : posée sur la collection, refusée AVANT l'écriture. */
+  /* Drapeau posé par lettrer/delettrer : poser un lettrage est le geste attendu d'un exercice en clôture, quelle que soit l'origine. */
+  var lettrageEnCours = false;
+  S.garder('ecritures', function (op, rec) {
+    var a = anneeDe(rec && rec.date);
+    if (!a) return null;
+    /* Les pièces de la clôture elle-même (CL, AN, contre-passations) passent : c'est elles qui font l'état. */
+    if (rec && rec.origineCloture && op === 'inserer') return null;
+    var etat = etatExercice(a);
+    if (etat === 'clos') {
+      var x = exercice(a);
+      return 'Exercice ' + a + ' clôturé' + (x && x.valideLe ? ' le ' + C.dateFR(x.valideLe) : '')
+        + ' : lecture seule. La correction passe par la réouverture par le comptable (motif obligatoire), ou par une écriture de l’exercice en cours.';
+    }
+    if (etat === 'en_cloture') {
+      if (lettrageEnCours && op === 'modifier') return null;
+      /* En clôture : les modules n'écrivent plus ; seul le comptable passe ses écritures d'inventaire (saisie manuelle). */
+      var role = roleCourant();
+      if ((rec && rec.origine === 'Saisie manuelle') && (role === 'comptable' || role === 'admin')) return null;
+      return 'Exercice ' + a + ' en clôture : les modules n’y écrivent plus. Seul le comptable y passe ses écritures d’inventaire (saisie manuelle) ; sinon dater la pièce de l’exercice ouvert.';
+    }
+    return null;
+  });
+
+  function sensLettrable(compte) {
+    return LETTRABLES.some(function (p) { return String(compte).indexOf(p) === 0; });
+  }
+
+  /* Écritures VALIDÉES d'un exercice (un brouillon n'est pas un fait comptable). */
+  function ecrituresDe(annee, inclureBrouillons, avecCL) {
+    /* Le journal CL (clôture) est EXCLU par défaut : les états de N restent ceux d'avant la clôture, le compte de résultat montre le résultat de l'année et non zéro. */
+    return S.collection('ecritures').active().filter(function (e) {
+      return anneeDe(e.date) === Number(annee) && (inclureBrouillons || e.statut === 'validee') && (avecCL || e.journal !== 'CL');
+    });
+  }
+
+  function soldesParCompte(lignes) {
+    var m = {};
+    lignes.forEach(function (e) {
+      var k = String(e.compte);
+      if (!m[k]) m[k] = { compte: k, libelle: e.compteLibelle || k, debit: 0, credit: 0 };
+      m[k].debit += Number(e.debit) || 0; m[k].credit += Number(e.credit) || 0;
+    });
+    return Object.keys(m).sort().map(function (k) { m[k].solde = m[k].debit - m[k].credit; return m[k]; });
+  }
+
+  /* Le résultat : classes 7 (+) moins 6 (−), HAO (8) compris. Positif = bénéfice. */
+  function resultatDe(lignes) {
+    var r = 0;
+    lignes.forEach(function (e) {
+      var cl = String(e.compte).charAt(0);
+      if (cl === '6' || cl === '7' || cl === '8') r += (Number(e.credit) || 0) - (Number(e.debit) || 0);
+    });
+    return r;
+  }
+
+  /* Lignes de report (classes 1 à 5) vers N+1. Comptes NON lettrables : un solde
+     global. Comptes de TIERS : ligne par ligne, uniquement les lignes NON lettrées —
+     c'est ce qui permet de suivre sur le nouvel exercice les factures en attente. */
+  function lignesDeReport(lignes) {
+    var out = [];
+    var bilan = lignes.filter(function (e) { return '12345'.indexOf(String(e.compte).charAt(0)) >= 0; });
+    var tiers = bilan.filter(function (e) { return sensLettrable(e.compte); });
+    var autres = bilan.filter(function (e) { return !sensLettrable(e.compte); });
+    soldesParCompte(autres).forEach(function (s) {
+      if (Math.abs(s.solde) < 1) return;
+      out.push({ compte: s.compte, compteLibelle: s.libelle, debit: s.solde > 0 ? s.solde : 0, credit: s.solde < 0 ? -s.solde : 0, lettrable: false });
+    });
+    tiers.filter(function (e) { return !e.lettrage; }).forEach(function (e) {
+      var net = (Number(e.debit) || 0) - (Number(e.credit) || 0);
+      if (Math.abs(net) < 1) return;
+      out.push({ compte: String(e.compte), compteLibelle: e.compteLibelle, debit: net > 0 ? net : 0, credit: net < 0 ? -net : 0,
+        lettrable: true, pieceOrigine: e.numero, libelle: 'Report — ' + (e.libelle || e.numero) });
+    });
+    return out;
+  }
+
+  /* À-NOUVEAUX PROVISOIRES : tant que N n'est pas clos, N+1 voit un report calculé
+     des soldes validés de N, RECALCULÉ à chaque lecture et jamais stocké. Le
+     résultat de N (non encore soldé) est porté au compte 131 / 139. */
+  function aNouveauxProvisoires(annee) {
+    var prec = Number(annee) - 1;
+    var ex = exercice(prec);
+    if (!ex || ex.etat === 'clos' || ex.source === 'liasse') return [];
+    var base = ecrituresDe(prec);
+    var lignes = lignesDeReport(base);
+    var res = resultatDe(base);
+    if (Math.abs(res) >= 1) {
+      var cr = compteResultat(res);
+      lignes.push({ compte: cr.compte, compteLibelle: cr.libelle,
+        debit: res < 0 ? -res : 0, credit: res > 0 ? res : 0, lettrable: false });
+    }
+    return lignes.map(function (l) {
+      return Object.assign({ id: 'PROV-' + annee + '-' + l.compte + '-' + (l.pieceOrigine || 'S'), numero: 'AN-PROV-' + annee,
+        date: annee + '-01-01', journal: 'AN', journalLibelle: 'Journal des à-nouveaux (provisoire)',
+        libelle: l.libelle || 'À-nouveau provisoire', statut: 'validee', provisoire: true, origine: 'Provisoire — calculé' }, l);
+    });
+  }
+
+  /* PRÉ-CLÔTURE : contrôles nommés, chacun avec les pièces en cause et l'écran où corriger. */
+  function preCloture(annee) {
+    annee = Number(annee);
+    var tous = ecrituresDe(annee, true);
+    var validees = tous.filter(function (e) { return e.statut === 'validee'; });
+    var brouillons = tous.filter(function (e) { return e.statut === 'brouillon'; });
+    var controles = [];
+    controles.push({ id: 'brouillons', bloquant: true, ok: brouillons.length === 0,
+      libelle: 'Aucune écriture en brouillon', ecran: 'm12-ecritures',
+      detail: brouillons.length ? brouillons.length + ' ligne(s) en brouillon, dont ' + brouillons.slice(0, 4).map(function (e) { return e.numero; })
+        .filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', ') + '.' : '' });
+    var d = C.sum(validees, 'debit'), c = C.sum(validees, 'credit');
+    controles.push({ id: 'equilibre', bloquant: true, ok: Math.abs(d - c) < 1,
+      libelle: 'Journal équilibré (RG-10)', ecran: 'm12-balance',
+      detail: Math.abs(d - c) < 1 ? '' : 'Écart de ' + C.money(Math.abs(d - c)) + ' entre débit et crédit.' });
+    var pieces = {};
+    validees.forEach(function (e) { var p = pieces[e.numero] || (pieces[e.numero] = { d: 0, c: 0 }); p.d += Number(e.debit) || 0; p.c += Number(e.credit) || 0; });
+    var boiteuses = Object.keys(pieces).filter(function (k) { return Math.abs(pieces[k].d - pieces[k].c) >= 1; });
+    controles.push({ id: 'pieces', bloquant: true, ok: boiteuses.length === 0,
+      libelle: 'Chaque pièce validée est équilibrée', ecran: 'm12-ecritures',
+      detail: boiteuses.length ? boiteuses.length + ' pièce(s) déséquilibrée(s) : ' + boiteuses.slice(0, 4).join(', ') + '.' : '' });
+    var prec = exercice(annee - 1), suiv = exercice(annee + 1);
+    controles.push({ id: 'precedent-clos', bloquant: true, ok: !prec || prec.etat === 'clos',
+      libelle: 'Exercice ' + (annee - 1) + ' déjà clôturé', ecran: 'm12-cloture',
+      detail: prec && prec.etat !== 'clos' ? 'L’exercice ' + (annee - 1) + ' est ' + (prec.etat === 'en_cloture' ? 'en clôture' : 'ouvert') + ' : le clôturer d’abord.' : '' });
+    controles.push({ id: 'suivant-non-clos', bloquant: true, ok: !suiv || suiv.etat !== 'clos',
+      libelle: 'Exercice ' + (annee + 1) + ' non clôturé', ecran: 'm12-cloture',
+      detail: suiv && suiv.etat === 'clos' ? 'L’exercice ' + (annee + 1) + ' est déjà clôturé : impossible de clôturer ' + annee + ' après lui.' : '' });
+    var enAttente = (S.fileEnAttente && S.fileEnAttente()) || 0;
+    controles.push({ id: 'postes-a-envoyer', bloquant: false, ok: enAttente === 0,
+      libelle: 'Aucune opération en attente d’envoi sur ce poste', ecran: 'm12-cloture',
+      detail: enAttente ? enAttente + ' opération(s) à envoyer : synchroniser d’abord, car une fois ' + annee + ' en clôture la mère refuse les pièces datées de ' + annee + '. Les autres postes sont à vérifier de la même façon.' : '' });
+    var contrePassees = {};
+    S.collection('ecritures').active().forEach(function (e) { if (e.contrePasseDe) contrePassees[e.contrePasseDe] = true; });
+    var an = S.collection('ecritures').active().filter(function (e) { return anneeDe(e.date) === annee + 1 && e.journal === 'AN' && !e.contrePasseDe && !contrePassees[e.numero] && !e.provisoire; });
+    controles.push({ id: 'an-existants', bloquant: true, ok: an.length === 0,
+      libelle: 'Aucun à-nouveau déjà écrit sur ' + (annee + 1), ecran: 'm12-ouverture',
+      detail: an.length ? 'Des à-nouveaux existent (' + an[0].numero + ') : les archiver avant de clôturer, la clôture écrit les définitifs.' : '' });
+    var attente = validees.filter(function (e) { return String(e.compte).indexOf('47') === 0; });
+    var solde47 = C.sum(attente, 'debit') - C.sum(attente, 'credit');
+    controles.push({ id: 'compte-47', bloquant: false, ok: Math.abs(solde47) < 1,
+      libelle: 'Comptes d’attente (47x) soldés', ecran: 'm12-grand-livre',
+      detail: Math.abs(solde47) < 1 ? '' : 'Solde de ' + C.money(Math.abs(solde47)) + ' à régulariser.' });
+    controles.push({ id: 'ecritures', bloquant: true, ok: validees.length > 0,
+      libelle: 'L’exercice porte des écritures validées', ecran: 'm12-ecritures', detail: validees.length ? '' : 'Aucune écriture validée en ' + annee + '.' });
+    return { annee: annee, controles: controles, bloquants: controles.filter(function (x) { return x.bloquant && !x.ok; }),
+      resultat: resultatDe(validees), nbEcritures: validees.length };
+  }
+
+  function acteur() { var s = S.session && S.session(); return (s && (s.nomComplet || s.nom)) || 'Utilisateur'; }
+  function roleCourant() { var s = S.session && S.session(); return (s && s.role) || ''; }
+
+  /* LA TABLE DES COMPTES DE RÉSULTAT (131 bénéfice, 139 perte) : un référentiel paramétrable, jamais deux constantes du code. */
+  function comptesResultat() {
+    var col = S.collection('comptesResultat', { module: 'M12', entite: 'Compte de résultat' });
+    if (!col.all().length && S.amorcable('comptesResultat')) {
+      col.all().push({ id: 'CR-BEN', statut: 'actif', sens: 'benefice', compte: '131000', libelle: 'Résultat net : bénéfice' });
+      col.all().push({ id: 'CR-PER', statut: 'actif', sens: 'perte', compte: '139000', libelle: 'Résultat net : perte' });
+      S.save();
+    }
+    return col;
+  }
+  /* Contrôle d'une modification de la table : un compte de bénéfice est un 131, un compte de perte un 139 (SYSCOHADA), six chiffres (les comptes 131000 et 139000 d'origine ne figurent pas au plan statique : on ne contrôle donc pas l'appartenance au plan).
+     Retourne le motif du refus, ou null. Le motif NOMME ce qui est attendu. */
+  function controleCompteResultat(fiche, valeurs) {
+    var compte = String(valeurs.compte == null ? '' : valeurs.compte).trim();
+    var libelle = String(valeurs.libelle == null ? '' : valeurs.libelle).trim();
+    var prefixe = fiche.sens === 'benefice' ? '131' : '139';
+    var nom = fiche.sens === 'benefice' ? 'bénéfice' : 'perte';
+    if (!/^\d{6}$/.test(compte)) return 'Le compte de ' + nom + ' doit comporter six chiffres (reçu « ' + compte + ' »).';
+    if (compte.indexOf(prefixe) !== 0) return 'Le compte de ' + nom + ' doit appartenir au compte ' + prefixe + ' du SYSCOHADA (reçu ' + compte + ').';
+    if (libelle.length < 3) return 'Le libellé du compte de ' + nom + ' est obligatoire.';
+    return null;
+  }
+  function compteResultat(res) {
+    var sens = res >= 0 ? 'benefice' : 'perte';
+    var f = comptesResultat().active().filter(function (x) { return x.sens === sens; })[0];
+    return f ? { compte: String(f.compte), libelle: f.libelle } : { compte: sens === 'benefice' ? '131000' : '139000', libelle: sens === 'benefice' ? 'Résultat net : bénéfice' : 'Résultat net : perte' };
+  }
+
+  /* Prochain numéro d'une pièce de clôture (CL-2026-00001, AN-2027-00001, …-C00001 pour les contre-passations) : lu du journal, jamais d'un compteur de page. */
+  function numeroPiece(prefixe, annee) {
+    var motif = new RegExp('^' + prefixe + '-' + annee + '-?[A-Z]?(\\d+)$'), rang = 0;
+    S.collection('ecritures').all().forEach(function (e) { var m = motif.exec(String(e.numero || '')); if (m) rang = Math.max(rang, Number(m[1])); });
+    return rang + 1;
+  }
+  function pad5(n) { return ('00000' + n).slice(-5); }
+
+  function peutDemarrer() { return ['comptable', 'da', 'admin'].indexOf(roleCourant()) >= 0; }
+
+  /* TRANSITION 1 : démarrer la clôture (ouvert → en clôture). Les modules n'écrivent plus dans N ; le comptable passe ses écritures d'inventaire. */
+  function demarrerCloture(annee) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x) return { ok: false, motif: 'Exercice ' + annee + ' inconnu.' };
+    if (x.source === 'liasse') return { ok: false, motif: 'L’exercice ' + annee + ' est celui de la liasse déposée : il est clôturé et ne se rouvre pas ici.' };
+    if (x.etat === 'clos') return { ok: false, motif: 'Exercice ' + annee + ' déjà clôturé : le rouvrir (comptable, motif obligatoire) pour le corriger.' };
+    if (x.etat === 'en_cloture') return { ok: false, motif: 'L’exercice ' + annee + ' est déjà en clôture.' };
+    if (!peutDemarrer()) return { ok: false, motif: 'Démarrer la clôture est réservé au comptable, à la Directrice Administrative et à l’administrateur.' };
+    var pre = preCloture(annee);
+    S.collection('exercices').update(x.id, { etat: 'en_cloture', demandeLe: new Date().toISOString(), demandePar: acteur(), resultatPrevu: pre.resultat });
+    S.log('Démarrage de la clôture', 'M12', 'Exercice', String(annee), { etat: 'ouvert' }, { etat: 'en_cloture', resultat: pre.resultat });
+    notifier({ type: 'cloture', poste: 'direction', libelle: 'Clôture ' + annee + ' à valider', detail: 'Le comptable a démarré la clôture de l’exercice ' + annee + ' : les modules n’y écrivent plus.', priorite: 'haute', reference: String(annee) });
+    return { ok: true, pre: pre };
+  }
+  var demanderCloture = demarrerCloture;   /* ancien nom du geste, conservé pour les appelants et les sondes */
+
+  /* TRANSITION 2 : reprendre la saisie (en clôture → ouvert), tant que rien n'est clôturé. */
+  function reprendreSaisie(annee) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x || x.etat !== 'en_cloture') return { ok: false, motif: 'L’exercice ' + annee + ' n’est pas en clôture : rien à reprendre.' };
+    if (!peutDemarrer()) return { ok: false, motif: 'Reprendre la saisie est réservé au comptable, à la Directrice Administrative et à l’administrateur.' };
+    S.collection('exercices').update(x.id, { etat: 'ouvert', demandeLe: null, demandePar: null, reprisLe: new Date().toISOString(), reprisPar: acteur() });
+    S.log('Reprise de la saisie', 'M12', 'Exercice', String(annee), { etat: 'en_cloture' }, { etat: 'ouvert' });
+    return { ok: true };
+  }
+
+  /* Empreinte SHA-256 synchrone (FIPS 180-4) de l'export d'archive. */
+  function sha256(texte) {
+    var K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    var b = unescape(encodeURIComponent(texte)), l = b.length, w = [], i, j;
+    for (i = 0; i < l; i++) w[i >> 2] |= b.charCodeAt(i) << (24 - (i % 4) * 8);
+    w[l >> 2] |= 0x80 << (24 - (l % 4) * 8);
+    var n = (((l + 8) >> 6) + 1) * 16; w[n - 1] = l * 8; for (i = 0; i < n; i++) w[i] = w[i] | 0;
+    var rotr = function (x, k) { return (x >>> k) | (x << (32 - k)); };
+    for (i = 0; i < n; i += 16) {
+      var s = w.slice(i, i + 16), a = H.slice();
+      for (j = 16; j < 64; j++) {
+        var s0 = rotr(s[j - 15], 7) ^ rotr(s[j - 15], 18) ^ (s[j - 15] >>> 3), s1 = rotr(s[j - 2], 17) ^ rotr(s[j - 2], 19) ^ (s[j - 2] >>> 10);
+        s[j] = (s[j - 16] + s0 + s[j - 7] + s1) | 0;
+      }
+      for (j = 0; j < 64; j++) {
+        var S1 = rotr(a[4], 6) ^ rotr(a[4], 11) ^ rotr(a[4], 25), ch = (a[4] & a[5]) ^ (~a[4] & a[6]);
+        var t1 = (a[7] + S1 + ch + K[j] + s[j]) | 0, S0 = rotr(a[0], 2) ^ rotr(a[0], 13) ^ rotr(a[0], 22);
+        var mj = (a[0] & a[1]) ^ (a[0] & a[2]) ^ (a[1] & a[2]), t2 = (S0 + mj) | 0;
+        a = [(t1 + t2) | 0, a[0], a[1], a[2], (a[3] + t1) | 0, a[4], a[5], a[6]];
+      }
+      for (j = 0; j < 8; j++) H[j] = (H[j] + a[j]) | 0;
+    }
+    return H.map(function (v) { return ('00000000' + (v >>> 0).toString(16)).slice(-8); }).join('');
+  }
+
+  /* TRANSITION 3 : clôturer définitivement (en clôture → clôturé). Par la Direction, la DAF ou l'administrateur, une AUTRE personne que celle qui a démarré
+     la clôture (« signer n'est pas saisir »). Dans l'ordre et d'un seul tenant : pièce CL au 31/12/N, pièce AN au 01/01/N+1, verrou, archive. Un échec en
+     cours de route défait tout ce qui a été posé : l'exercice reste en clôture, rien n'est écrit à moitié. */
+  function validerCloture(annee, motif) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x || x.etat !== 'en_cloture') return { ok: false, motif: 'L’exercice ' + annee + ' n’est pas en clôture : démarrer la clôture d’abord.' };
+    if (['da', 'direction', 'admin'].indexOf(roleCourant()) < 0) return { ok: false, motif: 'La clôture définitive est prononcée par la Direction ou la Directrice Administrative.' };
+    if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour clôturer un exercice.' };
+    if (x.demandePar === acteur()) return { ok: false, motif: 'Signer n’est pas saisir : la clôture définitive doit venir d’une autre personne que celle qui a démarré la clôture (' + x.demandePar + ').' };
+    var pre = preCloture(annee);
+    if (pre.bloquants.length) return { ok: false, motif: 'Contrôles bloquants en échec : ' + pre.bloquants.map(function (b) { return b.libelle + (b.detail ? ' (' + b.detail + ')' : ''); }).join(' ; '), pre: pre };
+
+    var col = S.collection('ecritures', { module: 'M12', entite: 'Écriture' });
+    var base = ecrituresDe(annee);
+    var res = resultatDe(base);
+    var posees = [];
+    function defaire() { posees.slice().reverse().forEach(function (u) { try { u.undo(); } catch (e) { /* déjà retirée */ } }); }
+    function poser(l) { var r = col.insert(l); if (!r) throw new Error('Écriture refusée par le journal.'); posees.push(r); return r; }
+
+    try {
+      /* (1) PIÈCE DE CLÔTURE, journal CL, au 31/12/N : chaque compte des classes 6, 7 et 8 est soldé CENTRE DE COÛTS par centre de coûts ; la contrepartie de
+         chaque centre va en 131 (bénéfice) ou 139 (perte), lus de la table des comptes de résultat. */
+      var numCL = 'CL-' + annee + '-' + pad5(numeroPiece('CL', annee));
+      var clBase = { numero: numCL, date: annee + '-12-31', journal: 'CL', journalLibelle: 'Journal de clôture',
+        libelle: 'Clôture de l’exercice ' + annee + ' : détermination du résultat', origine: 'Clôture : résultat', statut: 'validee', origineCloture: 'cl' };
+      var parCentre = {};
+      base.filter(function (e) { return '678'.indexOf(String(e.compte).charAt(0)) >= 0; }).forEach(function (e) {
+        var k = e.centreCout || ''; (parCentre[k] = parCentre[k] || []).push(e);
+      });
+      var lignesCL = [];
+      Object.keys(parCentre).sort().forEach(function (centre) {
+        var resCentre = 0;
+        soldesParCompte(parCentre[centre]).forEach(function (sd) {
+          if (Math.abs(sd.solde) < 1) return;
+          resCentre += -sd.solde;
+          lignesCL.push(Object.assign({}, clBase, { compte: sd.compte, compteLibelle: sd.libelle, centreCout: centre || null,
+            debit: sd.solde < 0 ? -sd.solde : 0, credit: sd.solde > 0 ? sd.solde : 0 }));
+        });
+        if (Math.abs(resCentre) >= 1) {
+          var cr = compteResultat(resCentre);
+          lignesCL.push(Object.assign({}, clBase, { compte: cr.compte, compteLibelle: cr.libelle, centreCout: centre || null,
+            debit: resCentre < 0 ? -resCentre : 0, credit: resCentre > 0 ? resCentre : 0 }));
+        }
+      });
+      var dCL = C.sum(lignesCL, 'debit'), cCL = C.sum(lignesCL, 'credit');
+      if (Math.abs(dCL - cCL) >= 1) throw new Error('Pièce de clôture déséquilibrée (' + C.money(Math.abs(dCL - cCL)) + ') : clôture refusée (RG-10).');
+      lignesCL.forEach(poser);
+
+      /* (2) PIÈCE D'À-NOUVEAUX, journal AN, au 01/01/N+1 : soldes des classes 1 à 5, résultat compris (calculés APRÈS la pièce CL). */
+      var report = lignesDeReport(ecrituresDe(annee, false, true));
+      var numAN = 'AN-' + (annee + 1) + '-' + pad5(numeroPiece('AN', annee + 1));
+      var anBase = { numero: numAN, date: (annee + 1) + '-01-01', journal: 'AN', journalLibelle: 'Journal des à-nouveaux',
+        libelle: 'À-nouveaux au 1er janvier ' + (annee + 1), origine: 'Clôture : à-nouveaux', statut: 'validee', origineCloture: 'an', centreCout: null };
+      var dAN = C.sum(report, 'debit'), cAN = C.sum(report, 'credit');
+      if (Math.abs(dAN - cAN) >= 1) throw new Error('À-nouveaux déséquilibrés (' + C.money(Math.abs(dAN - cAN)) + ') : vérifier les lettrages.');
+      report.forEach(function (l) {
+        poser(Object.assign({}, anBase, { compte: l.compte, compteLibelle: l.compteLibelle, debit: l.debit, credit: l.credit,
+          libelle: l.libelle || anBase.libelle, pieceOrigine: l.pieceOrigine || null }));
+      });
+
+      /* (3) VERROU puis (4) ARCHIVE : l'empreinte du journal ARRÊTÉ, puis l'état « clôturé » en dernier. */
+      var arret = ecrituresDe(annee, false, true);
+      var texte = arret.map(function (e) { return [e.numero, e.date, e.journal, e.compte, e.debit, e.credit].join('|'); }).sort().join('\n');
+      var empreinte = sha256(texte);
+      S.collection('exercices').update(x.id, { etat: 'clos', valideLe: new Date().toISOString(), validePar: acteur(), motif: String(motif).trim(),
+        resultat: res, empreinte: empreinte, nbEcrituresArchivees: arret.length, clNumero: numCL, anNumero: numAN });
+      S.collection('clotures', { module: 'M12', entite: 'Clôture' }).insert({ annee: annee, type: 'cloture', clNumero: numCL, anNumero: numAN, resultat: res,
+        par: acteur(), le: new Date().toISOString(), motif: String(motif).trim(), empreinte: empreinte });
+    } catch (e) {
+      defaire();
+      return { ok: false, motif: String((e && e.message) || e) + ' L’exercice reste en clôture, rien n’a été écrit.' };
+    }
+    if (!exercice(annee + 1)) {
+      S.collection('exercices').all().unshift({ id: 'EXO-' + (annee + 1), annee: annee + 1, debut: (annee + 1) + '-01-01', fin: (annee + 1) + '-12-31',
+        statut: 'actif', etat: 'ouvert', source: 'journal' });
+    }
+    S.log('Clôture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'en_cloture' }, { etat: 'clos', resultat: res, cl: numCL, an: numAN });
+    notifier({ type: 'cloture', poste: 'comptable', libelle: 'Exercice ' + annee + ' clôturé', detail: 'Résultat ' + C.money(res) + ' ; pièces ' + numCL + ' et ' + numAN + ' écrites.', reference: String(annee) });
+    S.save();
+    /* L'archive de conservation naît AVEC la clôture, par quelque porte qu'elle soit prononcée. */
+    var archive = null;
+    try { archive = archiverExercice(annee); } catch (e2) { if (global.console) global.console.error('[SIGH] archive de clôture', e2); }
+    return { ok: true, resultat: res, empreinte: empreinte, lignesAN: report.length, lignesCL: lignesCL.length, clNumero: numCL, anNumero: numAN, archive: archive ? archive.reference : null };
+  }
+  var cloturerDefinitivement = validerCloture;
+
+  /* TRANSITION 4 : rouvrir (clôturé → en clôture). Le COMPTABLE seul, avec un motif d'au moins dix caractères. Rien ne s'efface : la pièce CL et la pièce AN
+     sont CONTRE-PASSÉES (mêmes lignes, sens inversé, marquées `contrePasseDe`). Refusée si N+1 n'est plus ouvert (il a déjà consommé l'à-nouveau). */
+  function rouvrirExercice(annee, motif) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x || x.etat !== 'clos') return { ok: false, motif: 'L’exercice ' + annee + ' n’est pas clôturé : rien à rouvrir.' };
+    if (x.source === 'liasse') return { ok: false, motif: 'L’exercice ' + annee + ' est celui de la liasse déposée à la DGI : il ne se rouvre pas dans le logiciel.' };
+    if (['comptable', 'admin'].indexOf(roleCourant()) < 0) return { ok: false, motif: 'La réouverture est réservée au comptable.' };
+    if (!motif || String(motif).trim().length < 10) return { ok: false, motif: 'Le motif de réouverture doit compter au moins dix caractères.' };
+    var suiv = exercice(annee + 1);
+    if (suiv && suiv.etat !== 'ouvert') return { ok: false, motif: 'L’exercice ' + (annee + 1) + ' est ' + (suiv.etat === 'clos' ? 'clôturé' : 'en clôture') + ' : il a consommé les à-nouveaux de ' + annee + '. Le rouvrir ou le reprendre d’abord.' };
+    var col = S.collection('ecritures', { module: 'M12', entite: 'Écriture' });
+    var origines = col.active().filter(function (e) { return (e.numero === x.clNumero || e.numero === x.anNumero) && !e.contrePasseDe; });
+    if (!origines.length) return { ok: false, motif: 'Les pièces de clôture de ' + annee + ' sont introuvables : réouverture refusée.' };
+    var posees = [];
+    function defaire() { posees.slice().reverse().forEach(function (u) { try { u.undo(); } catch (e) { /* déjà retirée */ } }); }
+    try {
+      var nCL = 'CL-' + annee + '-C' + pad5(numeroPiece('CL', annee)), nAN = 'AN-' + (annee + 1) + '-C' + pad5(numeroPiece('AN', annee + 1));
+      origines.forEach(function (o) {
+        var estCL = o.numero === x.clNumero;
+        var r = col.insert({ numero: estCL ? nCL : nAN, date: o.date, journal: o.journal, journalLibelle: o.journalLibelle, compte: o.compte, compteLibelle: o.compteLibelle,
+          centreCout: o.centreCout || null, debit: Number(o.credit) || 0, credit: Number(o.debit) || 0, statut: 'validee',
+          libelle: 'Contre-passation de ' + o.numero + ' : réouverture de ' + annee, origine: 'Clôture : contre-passation', origineCloture: estCL ? 'cl-contre' : 'an-contre',
+          contrePasseDe: o.numero, pieceOrigine: o.pieceOrigine || null });
+        if (!r) throw new Error('Contre-passation refusée par le journal.');
+        posees.push(r);
+      });
+      S.collection('exercices').update(x.id, { etat: 'en_cloture', rouvertLe: new Date().toISOString(), rouvertPar: acteur(), motifReouverture: String(motif).trim(),
+        valideLe: null, validePar: null, resultat: null });
+      S.collection('clotures', { module: 'M12', entite: 'Clôture' }).insert({ annee: annee, type: 'reouverture', clNumero: nCL, anNumero: nAN, contrePasse: [x.clNumero, x.anNumero],
+        par: acteur(), le: new Date().toISOString(), motif: String(motif).trim() });
+    } catch (e) {
+      defaire();
+      return { ok: false, motif: String((e && e.message) || e) + ' L’exercice reste clôturé, rien n’a été écrit.' };
+    }
+    S.log('Réouverture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'clos' }, { etat: 'en_cloture', motif: String(motif).trim(), contrePasse: [x.clNumero, x.anNumero] });
+    notifier({ type: 'cloture', poste: 'direction', libelle: 'Exercice ' + annee + ' rouvert', detail: acteur() + ' a rouvert l’exercice ' + annee + ' : ' + String(motif).trim(), priorite: 'haute', reference: String(annee) });
+    S.save();
+    return { ok: true, pieces: [nCL, nAN], lignes: posees.length };
+  }
+
+  /**
+   * L'ARCHIVE DE CLÔTURE DANS LA GED. L'obligation de conservation (dix ans, OHADA) se tient là où la
+   * clinique range ses pièces. La fiche porte la balance générale de l'exercice figé et son EMPREINTE
+   * SHA-256 : l'exercice étant en lecture seule au moteur, le grand livre se rééditera à l'identique, et
+   * l'empreinte le prouve. UNE archive par exercice : en déposer deux créerait deux « vérités » à conserver.
+   * Retourne la fiche (existante ou nouvelle) ; `.deja` dit qu'elle existait.
+   */
+  function archiverExercice(annee) {
+    var col = S.collection('documents', { module: 'GED', entite: 'Document' });
+    var f = exercice(annee) || { annee: annee };
+    /* UNE archive PAR CLÔTURE : une réouverture suivie d'une seconde clôture dépose une seconde archive, sans toucher à la première (piste d'audit). */
+    var nbClotures = S.collection('clotures', { module: 'M12', entite: 'Clôture' }).active().filter(function (c) { return c.annee === Number(annee) && c.type === 'cloture'; }).length;
+    var version = Math.max(1, nbClotures);
+    var code = 'EX' + annee + (version > 1 ? '-V' + version : '');
+    var deja = col.active().filter(function (d) { return d.codeRattachement === code; })[0];
+    if (deja) return Object.assign({}, deja, { deja: true });
+    var esc = function (v) { v = v == null ? '' : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var csv = ['Compte;Intitulé;Débit;Crédit'].concat(soldesParCompte(ecrituresDe(annee)).map(function (l) {
+      return [l.compte, l.libelle, l.debit, l.credit].map(esc).join(';');
+    })).join('\n');
+    var an = String(C.aujourdhui().getFullYear()), rang = 0;
+    col.all().forEach(function (d) {
+      var m = new RegExp('^DOC-' + an + '-(\\d+)$').exec(String(d.reference || ''));
+      if (m) rang = Math.max(rang, Number(m[1]));
+    });
+    var empBalance = sha256(csv);
+    var paquet = deposerArchive(annee, version, f);
+    var r = col.insert({
+      reference: 'DOC-' + an + '-' + ('00000' + (rang + 1)).slice(-5),
+      libelle: 'Clôture de l’exercice ' + annee + (version > 1 ? ' (clôture n° ' + version + ')' : '') + ' : archive légale, ' + paquet.fichiers.length + ' fichiers (empreinte du manifeste ' + paquet.manifesteEmpreinte.slice(0, 12) + '…)',
+      categorie: 'cloture_exercice', rattachement: 'Administration', rattacheA: 'Exercice ' + annee, codeRattachement: code,
+      format: 'CSV', taille: csv.length, version: version, signe: true, archive: true, etatValidation: 'valide', conservation: 10,
+      consultations: 0, date: C.iso(C.aujourdhui()), deposePar: (S.session() || {}).nom || '—',
+      empreinte: f.empreinte || empBalance, empreinteBalance: empBalance, resultat: f.resultat == null ? null : f.resultat, contenu: csv,
+      archiveExercice: paquet.reference, manifesteEmpreinte: paquet.manifesteEmpreinte,
+    });
+    return Object.assign({}, r.record, { deja: false });
+  }
+
+  /* =========================================================================
+   * L'ARCHIVE LÉGALE D'UNE CLÔTURE (arbitrage du 05/11/2026)
+   * -------------------------------------------------------------------------
+   * Les écritures et la balance en CSV, les états de synthèse imprimables (HTML : « Enregistrer en PDF » se fait à l'impression), et un MANIFESTE portant
+   * l'empreinte SHA-256 de chaque fichier. Immuable : la collection `archivesExercice` refuse toute modification, tout archivage et tout second dépôt pour la
+   * même clôture ; JAMAIS régénérée. Chaque téléchargement VÉRIFIE l'empreinte avant de livrer : un fichier altéré est un refus nommé, pas un fichier livré.
+   *
+   * LE FORMAT DU CSV DES ÉCRITURES est isolé ICI, en un seul point (`formatEcrituresCsv`) : colonnes du journal SYSCOHADA révisé, séparateur « ; »,
+   * UTF-8 avec BOM, dates JJ/MM/AAAA, montants entiers en FCFA (la monnaie n'a pas de subdivision). Validé par la Direction le 05/11/2026.
+   * ======================================================================= */
+  var ENTETE_ECRITURES = ['Journal', 'Date', 'N° pièce', 'Compte', 'Intitulé du compte', 'Libellé de l’écriture', 'Centre de coûts', 'Débit', 'Crédit', 'Lettrage', 'Statut'];
+  function csvCellule(v) { v = v == null ? '' : String(v); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function dateJJMMAAAA(d) { var x = C.toDate(d); return x && !isNaN(x) ? C.pad(x.getDate(), 2) + '/' + C.pad(x.getMonth() + 1, 2) + '/' + x.getFullYear() : ''; }
+  function formatEcrituresCsv(lignes) {
+    var corps = lignes.slice().sort(function (a, b) {
+      return String(a.date).localeCompare(String(b.date)) || String(a.numero).localeCompare(String(b.numero)) || String(a.compte).localeCompare(String(b.compte));
+    }).map(function (e) {
+      return [e.journal, dateJJMMAAAA(e.date), e.numero, e.compte, e.compteLibelle, e.libelle, e.centreCout, Math.round(Number(e.debit) || 0), Math.round(Number(e.credit) || 0), e.lettrage, e.statut].map(csvCellule).join(';');
+    });
+    return '﻿' + [ENTETE_ECRITURES.join(';')].concat(corps).join('\r\n') + '\r\n';
+  }
+  function formatBalanceCsv(soldes) {
+    return '﻿' + ['Compte;Intitulé;Débit;Crédit;Solde'].concat(soldes.map(function (l) {
+      return [l.compte, l.libelle, Math.round(l.debit), Math.round(l.credit), Math.round(l.solde)].map(csvCellule).join(';');
+    })).join('\r\n') + '\r\n';
+  }
+  function htmlEchappe(v) { return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function etatsHtml(annee, f, soldes, lignes) {
+    var classe = function (c) { return soldes.filter(function (l) { return String(l.compte).charAt(0) === c; }); };
+    var somme = function (l, k) { return l.reduce(function (n, x) { return n + x[k]; }, 0); };
+    var bloc = function (titre, l) {
+      return '<h2>' + htmlEchappe(titre) + '</h2><table><tr><th>Compte</th><th>Intitulé</th><th>Débit</th><th>Crédit</th><th>Solde</th></tr>'
+        + l.map(function (x) { return '<tr><td>' + htmlEchappe(x.compte) + '</td><td>' + htmlEchappe(x.libelle) + '</td><td>' + Math.round(x.debit) + '</td><td>' + Math.round(x.credit) + '</td><td>' + Math.round(x.solde) + '</td></tr>'; }).join('')
+        + '<tr><th colspan="2">Total</th><th>' + Math.round(somme(l, 'debit')) + '</th><th>' + Math.round(somme(l, 'credit')) + '</th><th>' + Math.round(somme(l, 'solde')) + '</th></tr></table>';
+    };
+    return '<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>États de l’exercice ' + annee + '</title><style>body{font-family:Arial,sans-serif;font-size:11pt}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:3px 6px;text-align:right}td:nth-child(-n+2),th:nth-child(-n+2){text-align:left}h2{margin-top:18pt}</style></head><body>'
+      + '<h1>États de synthèse : exercice ' + annee + '</h1><p>Résultat net : <strong>' + Math.round(f.resultat == null ? resultatDe(lignes) : f.resultat) + ' FCFA</strong>. Journal arrêté, clôture ' + htmlEchappe(f.clNumero || '') + '. Les états de la liasse (bilan, compte de résultat, flux) se rééditent à l’identique depuis l’exercice figé ; « Enregistrer en PDF » se fait à l’impression.</p>'
+      + bloc('Classes 1 à 5 : bilan (soldes)', soldes.filter(function (l) { return '12345'.indexOf(String(l.compte).charAt(0)) >= 0; }))
+      + bloc('Classes 6 et 7 : charges et produits', classe('6').concat(classe('7')))
+      + bloc('Classe 8 : hors activités ordinaires', classe('8'))
+      + '</body></html>';
+  }
+  function deposerArchive(annee, version, f) {
+    var archives = S.collection('archivesExercice', { module: 'M12', entite: 'Archive de clôture' });
+    var ref = 'ARC-' + annee + '-' + ('0' + version).slice(-2);
+    var existante = archives.all().filter(function (a) { return a.reference === ref; })[0];
+    if (existante) return existante;
+    var lignes = ecrituresDe(annee, true, true);
+    var soldes = soldesParCompte(ecrituresDe(annee));
+    var fichiers = [
+      { nom: 'ecritures-' + annee + '.csv', type: 'text/csv;charset=utf-8', contenu: formatEcrituresCsv(lignes) },
+      { nom: 'balance-' + annee + '.csv', type: 'text/csv;charset=utf-8', contenu: formatBalanceCsv(soldes) },
+      { nom: 'etats-' + annee + '.html', type: 'text/html;charset=utf-8', contenu: etatsHtml(annee, f, soldes, ecrituresDe(annee)) },
+    ].map(function (x) { return { nom: x.nom, type: x.type, contenu: x.contenu, taille: x.contenu.length, empreinte: sha256(x.contenu) }; });
+    var manifeste = fichiers.map(function (x) { return x.empreinte + '  ' + x.nom; }).join('\n') + '\n';
+    var man = { nom: 'manifeste-' + annee + '.txt', type: 'text/plain;charset=utf-8', contenu: manifeste, taille: manifeste.length, empreinte: sha256(manifeste) };
+    var r = archives.insert({ reference: ref, annee: Number(annee), version: version, creeLe: new Date().toISOString(), par: acteur(),
+      clNumero: f.clNumero || null, anNumero: f.anNumero || null, fichiers: fichiers.concat([man]), manifesteEmpreinte: man.empreinte });
+    return r.record;
+  }
+
+  /* TÉLÉCHARGEMENT : l'empreinte est RECALCULÉE et comparée à celle du manifeste avant de livrer. Un fichier altéré est refusé en le nommant. */
+  function lireArchive(reference, nomFichier) {
+    var a = S.collection('archivesExercice').all().filter(function (x) { return x.reference === reference; })[0];
+    if (!a) return { ok: false, motif: 'Archive ' + reference + ' introuvable.' };
+    var fich = (a.fichiers || []).filter(function (x) { return x.nom === nomFichier; })[0];
+    if (!fich) return { ok: false, motif: 'Le fichier « ' + nomFichier + ' » ne figure pas dans l’archive ' + reference + '.' };
+    var recalc = sha256(fich.contenu);
+    if (recalc !== fich.empreinte) return { ok: false, motif: 'Archive ' + reference + ', fichier ' + nomFichier + ' : l’empreinte ne correspond plus (attendue ' + fich.empreinte.slice(0, 12) + '…, calculée ' + recalc.slice(0, 12) + '…). Le fichier a été altéré : téléchargement refusé.', altere: true };
+    var manifeste = (a.fichiers || []).filter(function (x) { return /^manifeste-/.test(x.nom); })[0];
+    if (manifeste && nomFichier !== manifeste.nom && manifeste.contenu.indexOf(fich.empreinte + '  ' + fich.nom) < 0) {
+      return { ok: false, motif: 'Archive ' + reference + ' : le manifeste ne porte pas l’empreinte de ' + nomFichier + '. Téléchargement refusé.', altere: true };
+    }
+    return { ok: true, fichier: fich, archive: a };
+  }
+  S.garder('archivesExercice', function (op, rec) {
+    if (op === 'inserer') {
+      var deja = S.collection('archivesExercice').all().filter(function (a) { return a.reference === (rec && rec.reference); })[0];
+      return deja ? 'L’archive ' + rec.reference + ' existe déjà : une archive de clôture n’est jamais régénérée.' : null;
+    }
+    return 'Une archive de clôture est immuable : elle ne se modifie ni ne s’archive. Une nouvelle clôture dépose une nouvelle archive.';
+  });
+  S.garder('clotures', function (op) {
+    return op === 'inserer' ? null : 'Le registre des clôtures et réouvertures est une piste d’audit : il ne se modifie ni ne s’archive.';
+  });
+
+  /* LETTRAGE : un ensemble de lignes d'UN compte de tiers dont le total s'annule. */
+  function lettrer(compte, ids) {
+    if (!sensLettrable(compte)) return { ok: false, motif: 'Le compte ' + compte + ' n’est pas lettrable (comptes de tiers seulement).' };
+    var col = S.collection('ecritures');
+    var lignes = (ids || []).map(function (id) { return col.get(id); });
+    if (lignes.length < 2 || lignes.some(function (l) { return !l || String(l.compte) !== String(compte) || l.lettrage; }))
+      return { ok: false, motif: 'Sélection invalide : au moins deux lignes, du même compte, non encore lettrées.' };
+    var net = C.sum(lignes, 'debit') - C.sum(lignes, 'credit');
+    if (Math.abs(net) >= 1) return { ok: false, motif: 'Lettrage refusé — l’ensemble ne s’annule pas (écart ' + C.money(Math.abs(net)) + ').' };
+    var code = String.fromCharCode(65 + (col.all().filter(function (e) { return e.lettrage; }).map(function (e) { return e.lettrage; })
+      .filter(function (v, i, a) { return a.indexOf(v) === i; }).length % 26));
+    /* Le retour de update est lu : un refus de la garde rend null. On défait les lignes déjà posées et on le dit (code, motif, geste). */
+    var res = [];
+    lettrageEnCours = true;
+    try {
+      lignes.forEach(function (l) { res.push(col.update(l.id, { lettrage: code, lettreLe: new Date().toISOString(), lettrePar: acteur() })); });
+    } finally { lettrageEnCours = false; }
+    if (res.some(function (r) { return !r; })) {
+      res.forEach(function (r) { if (r) r.undo(); });
+      return { ok: false, motif: 'LETTRAGE_REFUSE : une ligne est refusée par la garde de l’exercice (clos). Rouvrir l’exercice par le comptable (motif obligatoire) ; aucun lettrage n’a été posé.' };
+    }
+    return { ok: true, code: code, lignes: res.length };
+  }
+  function delettrer(compte, code, motif) {
+    if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour dé-lettrer.' };
+    var col = S.collection('ecritures'), n = 0;
+    var cibles = col.all().filter(function (e) { return String(e.compte) === String(compte) && e.lettrage === code; });
+    var res = [];
+    lettrageEnCours = true;
+    try {
+      cibles.forEach(function (l) { res.push(col.update(l.id, { lettrage: null, delettreLe: new Date().toISOString(), delettreMotif: String(motif).trim() })); });
+    } finally { lettrageEnCours = false; }
+    if (res.some(function (r) { return !r; })) {
+      res.forEach(function (r) { if (r) r.undo(); });
+      return { ok: false, motif: 'DELETTRAGE_REFUSE : une ligne est refusée par la garde de l’exercice (clos). Rouvrir l’exercice par le comptable (motif obligatoire) ; aucune ligne n’a été dé-lettrée.' };
+    }
+    n = res.length;
+    return n ? { ok: true, lignes: n } : { ok: false, motif: 'Aucune ligne lettrée « ' + code + ' » sur ce compte.' };
+  }
+
+  /** La date tombe-t-elle dans l'exercice choisi ? (écrans de flux : registre fiscal, avoirs…) */
+  function dansExerciceChoisi(date) {
+    if (!date) return true;
+    var n = Number(date);   /* une année seule (bulletins de paie) */
+    return (n >= 1900 && n < 3000 && String(date).length === 4 ? n : anneeDe(date)) === exerciceChoisi();
+  }
+  /** La fenêtre de l'exercice choisi : du 1er janvier au 31 décembre, ou à aujourd'hui pour l'année en cours. */
+  function fenetreExercice() {
+    var a = exerciceChoisi(), auj = C.aujourdhui(), fin = a >= auj.getFullYear() ? auj : new Date(a, 11, 31);
+    return { annee: a, debut: C.iso(new Date(a, 0, 1)), fin: C.iso(fin) };
+  }
+
+  /* ==========================================================================
+   * SESSIONS DE POSTE : ACTIVES, SUSPENDUES, CLOTURÉES (01/11/2026)
+   * --------------------------------------------------------------------------
+   * La Direction a demandé que « Clôturer » change le statut d'une session. Le
+   * registre vit au magasin (`sessionsUtilisateur`, une fiche par session) :
+   * la clôture y est ÉCRITE, avec sa date, son auteur et son motif, et le poste
+   * visé la lit au PROCHAIN GESTE (ouverture d'écran, clic) pour retomber sur
+   * la connexion.
+   *
+   * Trois principes, tous nés d'un défaut évité :
+   *  - une session clôturée NE ROUVRE PAS : l'agent se reconnecte et obtient
+   *    une AUTRE session ; rouvrir la fiche ferait mentir l'heure de clôture ;
+   *  - RIEN n'est supprimé (RG-14) : la fiche clôturée reste au registre, avec
+   *    qui l'a fermée et quand (RG-12) ;
+   *  - un agent qui clôture SA PROPRE session le DIT : refus nommé tant que la
+   *    confirmation explicite n'est pas donnée, puis déconnexion immédiate.
+   * `etat` et non `statut` : `statut` est le champ d'archivage du magasin.
+   * ======================================================================== */
+  var ETATS_SESSION = { active: 'Active', suspendue: 'Suspendue', cloturee: 'Clôturée' };
+  function colSessions() { return S.collection('sessionsUtilisateur', { module: 'M14', entite: 'session', prefix: 'SES' }); }
+  function refusSession(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
+  function sessionDuPoste() {
+    var s = S.session();
+    if (!s || !s.sessionId) return null;
+    return colSessions().get(s.sessionId) || null;
+  }
+  /** La fiche de la session courante, créée à la première occasion (connexion, banc). */
+  function assurerSession() {
+    var s = S.session();
+    if (!s || !s.role) return null;
+    var col = colSessions();
+    if (s.sessionId && col.get(s.sessionId)) return s.sessionId;
+    var poste = (global.location && global.location.hostname) || 'poste';
+    var identifiant = s.identifiant || s.role;
+    var reprise = s.nouvelleSession ? null : col.all().filter(function (f) {
+      return f.source === 'poste' && f.identifiant === identifiant && f.poste === poste && f.etat !== 'cloturee';
+    })[0];
+    var id = reprise ? reprise.id : null;
+    if (!id) {
+      /* L'ouverture d'une session n'est pas un geste de l'agent : elle s'écrit au registre SANS entrée de journal (comme un amorçage),
+         la connexion étant déjà journalisée par le serveur. Seules la suspension et la clôture, elles, sont des gestes journalisés. */
+      var maintenant = new Date().toISOString();
+      col.all();
+      id = 'SES' + C.uid();
+      S.raw().sessionsUtilisateur.unshift({
+        id: id, statut: 'actif', identifiant: identifiant, nomComplet: s.nom || identifiant, role: s.role, poste: poste, adresseIp: null,
+        source: 'poste', debut: maintenant, derniereActivite: maintenant, inactivite: 0, etat: 'active',
+        _creePar: S.currentUser(), _creeLe: maintenant,
+      });
+      S.save();
+    }
+    s.sessionId = id; delete s.nouvelleSession;
+    S.storage.set('sigh-cnt:session', JSON.stringify(s));
+    return id;
+  }
+  /** La session courante a-t-elle été clôturée depuis un autre écran ou un autre poste ? */
+  function clotureeDuPoste() {
+    var f = sessionDuPoste();
+    return f && f.etat === 'cloturee' ? f : null;
+  }
+  /** Suspend (verrou d'inactivité) ou reprend la session courante. Une session clôturée n'en change plus. */
+  function changerEtatSession(etat) {
+    var f = sessionDuPoste();
+    if (!f || f.etat === 'cloturee' || f.etat === etat) return false;
+    colSessions().update(f.id, { etat: etat, derniereActivite: new Date().toISOString() });
+    return true;
+  }
+  /**
+   * CLOTURER. Rend { ok:true, fiche, propre } ou un refus NOMMÉ { ok:false, code, motif, geste }.
+   * opts : { confirmePropre, motif }.
+   */
+  function cloturerSession(id, opts) {
+    var o = opts || {}, s = S.session() || {};
+    var f = colSessions().get(id);
+    if (!f) return refusSession('SESSION_INCONNUE', 'Cette session n’existe pas au registre.', 'Actualiser la liste des sessions.');
+    if (f.etat === 'cloturee') {
+      return refusSession('DEJA_CLOTUREE', 'Cette session est déjà clôturée (le ' + C.dateHeure(f.clotureLe) + ', par ' + (f.cloturePar || 'un administrateur') + '). Une session clôturée ne se rouvre pas.',
+        'L’agent ouvre une nouvelle session en se reconnectant.');
+    }
+    var d = global.SIGH.nav.droitsEcran(s.role, 'm14-sessions', 'M14');
+    if (!d.editer) {
+      return refusSession('DROIT_REFUSE', 'Le profil courant ne peut pas clôturer de session.', 'Demander la clôture à l’administrateur système.');
+    }
+    var propre = !!s.sessionId && s.sessionId === f.id;
+    if (propre && !o.confirmePropre) {
+      return refusSession('SESSION_PROPRE', 'C’est VOTRE session : la clôturer vous déconnecte aussitôt de ce poste.',
+        'Confirmer explicitement la clôture de votre propre session.');
+    }
+    var patch = {
+      etat: 'cloturee', clotureLe: new Date().toISOString(), cloturePar: S.currentUser(),
+      clotureParIdentifiant: s.identifiant || s.role, clotureMotif: o.motif || null, cloturePropre: propre,
+    };
+    var r = colSessions().update(id, patch);
+    if (!r) return refusSession('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Réessayer, puis consulter le journal d’audit.');
+    return { ok: true, fiche: r.record, propre: propre };
+  }
+
+  global.SIGH.sessions = {
+    ETATS: ETATS_SESSION, collection: colSessions, courante: sessionDuPoste, assurer: assurerSession,
+    cloturee: clotureeDuPoste, changerEtat: changerEtatSession, cloturer: cloturerSession,
+  };
+
+  global.SIGH.exercice = {
+    dansExercice: dansExerciceChoisi, fenetre: fenetreExercice,
+    liste: exercices, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,
+    dateReference: dateReference, voisin: exerciceVoisin, parDefaut: exerciceParDefaut,
+    anneeDe: anneeDe, ecrituresDe: ecrituresDe, soldes: soldesParCompte, resultat: resultatDe,
+    provisoires: aNouveauxProvisoires, preCloture: preCloture, demander: demanderCloture, demarrer: demarrerCloture, reprendre: reprendreSaisie,
+    valider: validerCloture, cloturer: validerCloture, comptesResultat: comptesResultat, controleCompteResultat: controleCompteResultat, rouvrir: rouvrirExercice, compteResultat: compteResultat,
+    lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256, archiver: archiverExercice, lireArchive: lireArchive,
+    formatEcrituresCsv: formatEcrituresCsv,
   };
 
   /* Le moteur du BFR est EXPOSÉ pour être SONDÉ, jamais recopié : le scénario
@@ -2673,4 +3741,555 @@
     calculer: bfr, indicateurs: indicateursPilotage,
     alertes: alertesRecouvrement, objectifs: objectifsPilotage,
   };
+
+  /* ==========================================================================
+   * CONFIGURATION FISCALE VALIDÉE ET DATÉE (Direction, 06/11/2026)
+   * --------------------------------------------------------------------------
+   * L'identité légale (cfg-branding, cfg-fiscalite) et les obligations
+   * fiscales (cfg-comptabilite) se VÉRIFIENT et se VALIDENT à la première
+   * configuration, puis se modifient par VERSIONS DATÉES avec historique : une
+   * pièce émise sous l'ancienne version garde son en-tête, une échéance payée
+   * garde sa quittance. Le moteur vit AU SOCLE (lu par CFG, print.js, M8, M11,
+   * M12, M13, l'assistant d'installation) et il est EXPOSÉ pour être SONDÉ,
+   * jamais recopié. Chaque refus se nomme : code, motif, geste.
+   * ======================================================================== */
+  var ROLES_VALIDATION = ['direction', 'da', 'admin'];
+  function colIdentite() { return S.collection('identiteLegale', { module: 'CFG', entite: 'identité légale', prefix: 'IDL' }); }
+  function colObligations() { return S.collection('obligationsFiscales', { module: 'CFG', entite: 'obligation fiscale', prefix: 'OBL' }); }
+  function colHistoriqueObligations() { return S.collection('historiqueObligations', { module: 'CFG', entite: 'version antérieure d’obligation fiscale', prefix: 'HOB' }); }
+
+  function refusCfg(code, motif, geste, extra) {
+    return Object.assign({ ok: false, code: code, motif: motif, geste: geste || null }, extra || {});
+  }
+  function aujIso() { return C.iso(C.aujourdhui()); }
+  function isoJour(d) { return typeof d === 'string' ? d.slice(0, 10) : C.iso(d); }
+  function veille(iso) { return C.iso(C.addDays(isoJour(iso), -1)); }
+  function libelleRole(r) {
+    var N = global.SIGH.nav;
+    return (N && N.ROLES && N.ROLES[r] && N.ROLES[r].label) || r || 'aucun';
+  }
+  /* La maquette n'a pas de vrai mode fileul : le réglage `posteFileul` tient lieu de drapeau, pour que la règle
+     existe et se sonde. Au poste, c'est le mode du poste qui décide (famille R publiée par la mère seule). */
+  function posteFileul() { return S.reglage('posteFileul', false) === true; }
+  function controleEcritureCfg() {
+    if (posteFileul()) {
+      return refusCfg('FILEUL_LECTURE_SEULE', 'Cette configuration est tenue par la mère ; modifiez-la sur le poste mère.',
+        'Ouvrir le même écran sur le poste mère : la modification arrivera ici par la synchronisation.');
+    }
+    return null;
+  }
+  function controleDateEffet(d, minimum) {
+    if (!d) return refusCfg('DATE_EFFET_REQUISE', 'La date d’effet est obligatoire.', 'Choisir la date à partir de laquelle la nouvelle version s’applique.');
+    var annee = Number(String(d).slice(0, 4));
+    var etat = global.SIGH.exercice && global.SIGH.exercice.etat ? global.SIGH.exercice.etat(annee) : 'ouvert';
+    if (etat === 'clos') {
+      return refusCfg('EXERCICE_CLOS', 'La date d’effet tombe dans un exercice clos (' + annee + ') ; choisissez une date de l’exercice ouvert.',
+        'Choisir une date d’effet dans l’exercice ' + C.aujourdhui().getFullYear() + '.');
+    }
+    if (minimum && d < isoJour(minimum)) {
+      return refusCfg('DATE_EFFET_ANTERIEURE', 'La date d’effet (' + C.dateFR(d) + ') est antérieure à la version en vigueur (' + C.dateFR(isoJour(minimum)) + ').',
+        'Choisir une date d’effet au plus tôt le ' + C.dateFR(isoJour(minimum)) + '.');
+    }
+    return null;
+  }
+  function controleValidation() {
+    var r = controleEcritureCfg(); if (r) return r;
+    var role = roleCourant();
+    if (ROLES_VALIDATION.indexOf(role) < 0) {
+      return refusCfg('VALIDATION_RESERVEE', 'La validation de la configuration fiscale est réservée à la Direction, à la DAF et à l’administrateur système. Profil : ' + libelleRole(role) + '.',
+        'Demander à la Direction ou à la DAF de valider depuis son poste.');
+    }
+    return null;
+  }
+  /* Écrit plusieurs fiches d'un coup, UNE ligne de journal : vingt validations ne font pas vingt gestes. */
+  function marquerToutes(nom, fiches, patch) {
+    var brut = S.raw()[nom] || [];
+    fiches.forEach(function (f) {
+      var rec = brut.filter(function (x) { return x.id === f.id; })[0];
+      if (rec) Object.assign(rec, patch);
+    });
+    S.save(); S.emit(nom);
+  }
+
+  /* --- Identité légale ------------------------------------------------------ */
+  function normaliserIdentite(champs) {
+    var c = {};
+    (C.CHAMPS_IDENTITE || []).forEach(function (k) {
+      if (champs[k] === undefined) return;
+      var v = champs[k];
+      if (k === 'telephones') {
+        v = Array.isArray(v) ? v : String(v || '').split(/[\/,;]/);
+        v = v.map(function (t) { return String(t).trim(); }).filter(Boolean);
+      } else if (typeof v === 'string') v = v.trim();
+      c[k] = v;
+    });
+    return c;
+  }
+  function controleIdentite(c) {
+    if (c.nom !== undefined && !c.nom) return refusCfg('NOM_REQUIS', 'La dénomination sociale est obligatoire.', 'Saisir la dénomination telle qu’elle figure au RCCM.');
+    if (c.ifu !== undefined && !/^\d{13}$/.test(String(c.ifu).replace(/\s/g, ''))) return refusCfg('IFU_FORMAT', 'L’IFU compte 13 chiffres.', 'Relever l’IFU sur l’attestation d’immatriculation fiscale.');
+    if (c.rccm !== undefined && !c.rccm) return refusCfg('RCCM_REQUIS', 'Le RCCM est obligatoire.', 'Relever le RCCM sur l’extrait du registre du commerce.');
+    if (c.telephones !== undefined && !c.telephones.length) return refusCfg('TELEPHONE_REQUIS', 'Au moins un téléphone est requis sur l’en-tête.', 'Saisir le ou les numéros, séparés par « / ».');
+    return null;
+  }
+  function identiteEnForce() { return S.identiteALaDate(aujIso()); }
+  function identiteJamaisValidee() { return !colIdentite().all().some(function (v) { return v.valideLe; }); }
+  function identiteExigeVersion() { return !identiteJamaisValidee(); }
+  function versionsIdentiteAValider() {
+    var a = aujIso();
+    return colIdentite().active().filter(function (v) { return !v.fin || isoJour(v.fin) >= a; });
+  }
+  /** AVANT la première validation : « Enregistrer » corrige la version en force (la première configuration est un brouillon). */
+  function enregistrerIdentite(champs, opts) {
+    opts = opts || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var c = normaliserIdentite(champs || {});
+    r = controleIdentite(c); if (r) return r;
+    var enForce = identiteEnForce();
+    if (!enForce) return refusCfg('IDENTITE_ABSENTE', 'Aucune version de l’identité légale au magasin.', 'Réinitialiser le jeu de démonstration (Paramètres système).');
+    if (identiteExigeVersion()) {
+      return refusCfg('VERSION_REQUISE', 'L’identité légale a déjà été validée : toute modification crée une version datée.',
+        'Indiquer la date d’effet et le motif (modale « Portée de la modification »).', { versionRequise: true });
+    }
+    var res = colIdentite().update(enForce.id, Object.assign({}, c, { modifieLe: new Date().toISOString(), modifiePar: acteur() }));
+    if (!res) return refusCfg('ECRITURE_REFUSEE', 'La fiche n’a pas pu être écrite.', 'Voir le journal.');
+    S.log('Identité légale enregistrée', 'CFG', 'IdentiteLegale', enForce.id, null, { version: enForce.version, champs: Object.keys(c), origine: opts.origine || null });
+    return { ok: true, mode: 'en_place', version: enForce.version, fiche: res.record, aValider: true };
+  }
+  /** APRÈS une validation : une nouvelle version, datée, motivée ; l'ancienne reçoit sa date de fin et reste. */
+  function nouvelleVersionIdentite(champs, opts) {
+    opts = opts || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var c = normaliserIdentite(champs || {});
+    r = controleIdentite(c); if (r) return r;
+    if (!opts.motif || !String(opts.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif est obligatoire dès la version 2.', 'Dire pourquoi l’identité change (changement de RCCM, nouvelle adresse…).');
+    var d = isoJour(opts.dateEffet || aujIso());
+    var col = colIdentite();
+    var toutes = col.active();
+    var couverte = S.identiteALaDate(d);
+    r = controleDateEffet(d, couverte && couverte.debut); if (r) return r;
+    if (toutes.some(function (v) { return v.debut && isoJour(v.debut) === d; })) {
+      return refusCfg('VERSION_EXISTANTE', 'Une version prend déjà effet le ' + C.dateFR(d) + '.', 'Choisir une autre date d’effet.');
+    }
+    var suivante = toutes.filter(function (v) { return v.debut && isoJour(v.debut) > d; })
+      .sort(function (a, b) { return String(a.debut).localeCompare(String(b.debut)); })[0] || null;
+    var numero = Math.max.apply(null, col.all().map(function (v) { return v.version || 0; }).concat([0])) + 1;
+    var fiche = Object.assign({}, C.champsIdentite(couverte || C.BRAND_ORIGINE), c, {
+      version: numero, debut: d, fin: suivante ? veille(suivante.debut) : null,
+      creeLe: new Date().toISOString(), creePar: acteur(), motif: String(opts.motif).trim(),
+      valideLe: null, validePar: null,
+      source: 'Saisie à l’écran (' + (opts.origine || 'cfg-fiscalite') + ')',
+    });
+    if (couverte) col.update(couverte.id, { fin: veille(d) });
+    var res = col.insert(fiche);
+    S.log('Nouvelle version de l’identité légale', 'CFG', 'IdentiteLegale', res.record.id,
+      { version: couverte ? couverte.version : null }, { version: numero, debut: d, motif: fiche.motif });
+    return { ok: true, mode: 'version', version: numero, fiche: res.record, precedente: couverte || null, enForceAujourdhui: d <= aujIso() };
+  }
+  function validerIdentite() {
+    var r = controleValidation(); if (r) return r;
+    var cibles = versionsIdentiteAValider();
+    if (!cibles.length) return refusCfg('IDENTITE_ABSENTE', 'Aucune version de l’identité légale à valider.', 'Réinitialiser le jeu de démonstration (Paramètres système).');
+    var quand = new Date().toISOString(), qui = acteur();
+    marquerToutes('identiteLegale', cibles, { valideLe: quand, validePar: qui });
+    S.log('Validation', 'CFG', 'IdentiteLegale', cibles.map(function (v) { return v.id; }).join(','), null, { valideLe: quand, validePar: qui });
+    return { ok: true, valideLe: quand, validePar: qui, versions: cibles.map(function (v) { return v.version; }) };
+  }
+
+  /* --- Obligations fiscales et paramètres ORTB ------------------------------ */
+  function obligationActive(ref) {
+    var col = colObligations();
+    var f = ref && ref.id ? col.get(ref.id) : null;
+    if (!f && ref && ref.code) f = col.active().filter(function (x) { return x.code === ref.code && x.type !== 'parametres'; })[0] || null;
+    return f && f.statut !== 'archive' ? f : null;
+  }
+  function ficheOrtb() {
+    return colObligations().active().filter(function (x) { return x.type === 'parametres' && x.code === 'ORTB-PARAMETRES'; })[0] || null;
+  }
+  function controleValeursObligation(v) {
+    if (!v.libelle || !String(v.libelle).trim()) return refusCfg('LIBELLE_REQUIS', 'L’intitulé de l’obligation est obligatoire.', 'Nommer l’obligation comme la déclaration la nomme.');
+    if (['mensuelle', 'annuelle'].indexOf(v.periodicite) < 0) return refusCfg('PERIODICITE_INVALIDE', 'La périodicité est mensuelle ou annuelle.', 'Choisir l’une des deux.');
+    var jour = Number(v.jour);
+    if (!(jour >= 1 && jour <= 31 && jour === Math.floor(jour))) return refusCfg('JOUR_INVALIDE', 'Le jour de l’échéance est compris entre 1 et 31.', 'Saisir le jour du mois.');
+    if (v.periodicite === 'annuelle') {
+      var mois = Number(v.mois);
+      if (v.mois === null || v.mois === undefined || v.mois === '' || !(mois >= 0 && mois <= 11)) return refusCfg('MOIS_INVALIDE', 'Une obligation annuelle porte son mois (janvier à décembre).', 'Choisir le mois de l’échéance.');
+    }
+    if (v.part !== null && v.part !== undefined && v.part !== '') {
+      var part = Number(v.part);
+      if (!(part >= 1 && part <= 100)) return refusCfg('PART_INVALIDE', 'La part est un pourcentage entre 1 et 100, ou vide.', 'Saisir la fraction réglée à cette échéance.');
+    }
+    return null;
+  }
+  function valeursObligation(v) {
+    var annuelle = v.periodicite === 'annuelle';
+    return {
+      libelle: String(v.libelle).trim(), periodicite: v.periodicite, jour: Number(v.jour),
+      mois: annuelle ? Number(v.mois) : null,
+      part: v.part === null || v.part === undefined || v.part === '' ? null : Number(v.part),
+      declaration: v.declaration ? String(v.declaration).trim() : null,
+      note: v.note ? String(v.note).trim() : null,
+    };
+  }
+  function copieHistorique(fiche, d, motif, retiree) {
+    var copie = Object.assign({}, fiche);
+    ['id', 'statut', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', '_archivePar', '_archiveLe', '_motifArchivage'].forEach(function (k) { delete copie[k]; });
+    return colHistoriqueObligations().insert(Object.assign(copie, {
+      obligationId: fiche.id, dateFin: veille(d), remplaceeLe: new Date().toISOString(), remplaceePar: acteur(),
+      motifRemplacement: motif, retiree: !!retiree,
+    })).record;
+  }
+  function echeancesImpactees(code, dateEffet) {
+    var d = isoJour(dateEffet || aujIso());
+    var rows = S.collection('echeancesFiscales').active().filter(function (e) {
+      return e.code === code && e.exercice >= Number(d.slice(0, 4)) && (e.echeanceTheorique || e.echeance) >= d;
+    });
+    return { payees: rows.filter(function (e) { return e.paye; }).length, nonPayees: rows.filter(function (e) { return !e.paye; }).length, exercice: Number(d.slice(0, 4)) };
+  }
+  function annoncerRegeneration(code, reg) {
+    try {
+      notifier({ type: 'echeances_regenerees', poste: 'comptable', priorite: 'normale',
+        libelle: 'Échéances régénérées : ' + code + ', ' + C.num(reg.creees),
+        detail: C.num(reg.conservees) + ' payée(s) conservée(s), ' + C.num(reg.archivees) + ' non payée(s) régénérée(s) à partir du ' + C.dateFR(reg.dateEffet) + '.',
+        reference: code });
+    } catch (e) { /* la notification n'empêche pas le geste */ }
+  }
+  function modifierObligation(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var fiche = obligationActive(o);
+    if (!fiche) return refusCfg('OBLIGATION_INCONNUE', 'Aucune obligation en vigueur ne porte cette référence.', 'Choisir une obligation du tableau.');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de la modification est obligatoire.', 'Dire ce qui change et pourquoi (texte de loi, note de la DGI…).');
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDateEffet(d, fiche.dateEffet); if (r) return r;
+    var fusion = Object.assign({}, fiche, o.valeurs || {});
+    r = controleValeursObligation(fusion); if (r) return r;
+    var apres = valeursObligation(fusion);
+    copieHistorique(fiche, d, String(o.motif).trim(), false);
+    var patch = Object.assign(apres, { dateEffet: d, modifieLe: new Date().toISOString(), modifiePar: acteur(), motif: String(o.motif).trim(), valideLe: null, validePar: null });
+    var res = colObligations().update(fiche.id, patch);
+    if (!res) return refusCfg('ECRITURE_REFUSEE', 'La fiche n’a pas pu être écrite.', 'Voir le journal.');
+    var reg = S.regenererEcheances({ code: fiche.code, dateEffet: d, auteur: acteur() });
+    annoncerRegeneration(fiche.code, reg);
+    S.log('Modification d’obligation fiscale', 'CFG', 'ObligationsFiscales', fiche.id,
+      { jour: fiche.jour, mois: fiche.mois, part: fiche.part }, { jour: apres.jour, mois: apres.mois, part: apres.part, dateEffet: d, motif: patch.motif });
+    return { ok: true, fiche: colObligations().get(fiche.id), echeances: reg };
+  }
+  function creerObligation(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var v = o.valeurs || {};
+    var code = String(v.code || '').trim().toUpperCase();
+    if (!/^[A-Z0-9][A-Z0-9-]*$/.test(code)) return refusCfg('CODE_INVALIDE', 'Le code est en majuscules, chiffres et traits d’union (ex. : TPS-1).', 'Choisir un code court et stable : il identifie l’obligation au journal.');
+    var existe = colObligations().all().concat(colHistoriqueObligations().all()).some(function (x) { return x.code === code; });
+    if (existe) return refusCfg('CODE_EXISTANT', 'Le code ' + code + ' existe déjà.', 'Modifier l’obligation existante, ou choisir un autre code.');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de la création est obligatoire.', 'Citer le texte qui institue l’obligation.');
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDateEffet(d); if (r) return r;
+    r = controleValeursObligation(v); if (r) return r;
+    var fiche = Object.assign({ type: 'obligation', code: code, famille: code.split('-')[0] }, valeursObligation(v), {
+      source: 'Saisie à l’écran (cfg-comptabilite)', dateEffet: d,
+      modifieLe: new Date().toISOString(), modifiePar: acteur(), motif: String(o.motif).trim(), valideLe: null, validePar: null,
+    });
+    var res = colObligations().insert(fiche);
+    var reg = S.regenererEcheances({ code: code, dateEffet: d, auteur: acteur() });
+    annoncerRegeneration(code, reg);
+    S.log('Création d’obligation fiscale', 'CFG', 'ObligationsFiscales', res.record.id, null, { code: code, dateEffet: d, motif: fiche.motif });
+    return { ok: true, fiche: res.record, echeances: reg };
+  }
+  function retirerObligation(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var app = global.SIGH.app;
+    if (app && typeof app.droits === 'function' && !app.droits('CFG').annuler) {
+      return refusCfg('RETRAIT_RESERVE', 'Le retrait d’une obligation appartient à la DAF ou à l’administrateur système. Profil : ' + libelleRole(roleCourant()) + '.',
+        'Demander à la DAF de retirer l’obligation.');
+    }
+    var fiche = obligationActive(o);
+    if (!fiche) return refusCfg('OBLIGATION_INCONNUE', 'Aucune obligation en vigueur ne porte cette référence.', 'Choisir une obligation du tableau.');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif du retrait est obligatoire.', 'Citer le texte qui supprime l’obligation.');
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDateEffet(d, fiche.dateEffet); if (r) return r;
+    copieHistorique(fiche, d, String(o.motif).trim(), true);
+    colObligations().archive(fiche.id, String(o.motif).trim());
+    var reg = S.regenererEcheances({ code: fiche.code, dateEffet: d, auteur: acteur() });
+    annoncerRegeneration(fiche.code, reg);
+    S.log('Retrait d’obligation fiscale', 'CFG', 'ObligationsFiscales', fiche.id, { code: fiche.code }, { dateFin: veille(d), motif: String(o.motif).trim() });
+    return { ok: true, fiche: colObligations().get(fiche.id), echeances: reg };
+  }
+  function espaceMilliers(n) { return String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function modifierOrtb(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var fiche = ficheOrtb();
+    if (!fiche) return refusCfg('ORTB_ABSENT', 'La fiche des paramètres ORTB est absente du magasin.', 'Réinitialiser le jeu de démonstration (Paramètres système).');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de la modification est obligatoire.', 'Citer la décision ou le texte qui fixe le nouveau seuil.');
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDateEffet(d, fiche.dateEffet); if (r) return r;
+    var v = o.valeurs || {};
+    var seuil = v.seuilTele === undefined ? fiche.seuilTele : Number(v.seuilTele);
+    if (!(seuil >= 0)) return refusCfg('SEUIL_INVALIDE', 'Le seuil de la redevance Télé est un montant positif ou nul.', 'Saisir le salaire brut au-delà duquel la télé est due.');
+    var redevances = (fiche.redevances || []).map(function (x) { return Object.assign({}, x); });
+    var invalide = null;
+    ['radio', 'tele'].forEach(function (id) {
+      var saisie = v[id] || {};
+      var red = redevances.filter(function (x) { return x.id === id; })[0];
+      if (!red) return;
+      if (saisie.montant !== undefined && saisie.montant !== null && saisie.montant !== '') red.montant = Number(saisie.montant);
+      if (saisie.mois !== undefined && saisie.mois !== null && saisie.mois !== '') { red.mois = Number(saisie.mois); red.moisLabel = C.MOIS[red.mois]; }
+      if (!(red.montant >= 0)) invalide = refusCfg('MONTANT_INVALIDE', 'Le montant de la redevance ' + red.categorie + ' est un montant positif ou nul.', 'Saisir le montant annuel par agent.');
+      else if (!(red.mois >= 0 && red.mois <= 11)) invalide = refusCfg('MOIS_INVALIDE', 'Le mois de prélèvement de la redevance ' + red.categorie + ' va de janvier à décembre.', 'Choisir le mois du bulletin qui porte la retenue.');
+      if (id === 'tele') { red.seuilMin = seuil + 1; red.assiette = 'Salaire brut supérieur à ' + espaceMilliers(seuil) + ' FCFA'; }
+    });
+    if (invalide) return invalide;
+    var cumul = redevances.reduce(function (n, x) { return n + (x.montant || 0); }, 0);
+    copieHistorique(fiche, d, String(o.motif).trim(), false);
+    var res = colObligations().update(fiche.id, {
+      seuilTele: seuil, redevances: redevances, cumulMaximum: cumul, dateEffet: d,
+      modifieLe: new Date().toISOString(), modifiePar: acteur(), motif: String(o.motif).trim(), valideLe: null, validePar: null,
+    });
+    if (!res) return refusCfg('ECRITURE_REFUSEE', 'La fiche n’a pas pu être écrite.', 'Voir le journal.');
+    S.log('Modification des paramètres ORTB', 'CFG', 'ObligationsFiscales', fiche.id,
+      { seuilTele: fiche.seuilTele, cumul: fiche.cumulMaximum }, { seuilTele: seuil, cumul: cumul, dateEffet: d, motif: String(o.motif).trim() });
+    return { ok: true, fiche: colObligations().get(fiche.id) };
+  }
+  function validerObligations() {
+    var r = controleValidation(); if (r) return r;
+    var cibles = colObligations().active();
+    if (!cibles.length) return refusCfg('OBLIGATIONS_ABSENTES', 'Aucune obligation à valider.', 'Réinitialiser le jeu de démonstration (Paramètres système).');
+    var quand = new Date().toISOString(), qui = acteur();
+    marquerToutes('obligationsFiscales', cibles, { valideLe: quand, validePar: qui });
+    S.log('Validation', 'CFG', 'ObligationsFiscales', 'toutes', null, { valideLe: quand, validePar: qui, nombre: cibles.length });
+    return { ok: true, valideLe: quand, validePar: qui, nombre: cibles.length };
+  }
+  function versionsObligation(code) {
+    return colHistoriqueObligations().active().filter(function (h) { return h.code === code; })
+      .sort(function (a, b) { return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')); });
+  }
+
+  /* --- L'état affiché, une seule fonction ------------------------------------ */
+  function etatConfigurationFiscale(nom) {
+    var fiches, toutes;
+    if (nom === 'identite') { fiches = versionsIdentiteAValider(); toutes = colIdentite().all(); }
+    else { fiches = colObligations().active(); toutes = colObligations().all().concat(colHistoriqueObligations().all()); }
+    var validees = fiches.filter(function (f) { return f.valideLe; })
+      .sort(function (a, b) { return String(b.valideLe).localeCompare(String(a.valideLe)); });
+    var nonValidees = fiches.filter(function (f) { return !f.valideLe; });
+    var anterieure = toutes.filter(function (f) { return f.valideLe; })
+      .sort(function (a, b) { return String(b.valideLe).localeCompare(String(a.valideLe)); })[0] || null;
+    var dates = nonValidees.map(function (f) { return f._modifieLe || f.modifieLe || f.creeLe || f._creeLe || null; }).filter(Boolean).sort();
+    var derniereModif = nonValidees.filter(function (f) { return (f._modifieLe || f.modifieLe || f.creeLe || f._creeLe) === dates[dates.length - 1]; })[0] || nonValidees[0] || null;
+    var etat = fiches.length && !nonValidees.length ? 'valide' : (anterieure ? 'modifie_depuis' : 'a_valider');
+    return {
+      etat: etat, nombre: fiches.length, nonValidees: nonValidees.length,
+      valideLe: etat === 'valide' ? validees[0].valideLe : null,
+      validePar: etat === 'valide' ? validees[0].validePar : null,
+      modifieLe: dates.length ? dates[dates.length - 1] : null,
+      modifiePar: derniereModif ? (derniereModif._modifiePar || derniereModif.modifiePar || derniereModif.creePar || derniereModif._creePar || null) : null,
+      validationAnterieure: anterieure ? { valideLe: anterieure.valideLe, validePar: anterieure.validePar } : null,
+    };
+  }
+
+  /* ==========================================================================
+   * MOTEUR DE VALIDATION COMMUN DES RÉFÉRENTIELS (Direction, 07/11/2026)
+   * --------------------------------------------------------------------------
+   * Tout ce qui porte un marquage « à valider » (modèle d'enquête, borne du
+   * laboratoire, pathologie, catalogue d'imagerie, check-liste du bloc, tarif
+   * d'attente, valorisation, objectif de pilotage, répartition des charges,
+   * modèle de badge, jeu d'import, modèle de message, barème ITS) se valide par
+   * UN geste, le même partout : `validerReferentiel`. Même doctrine que la
+   * configuration fiscale : refus NOMMÉ (code, motif, geste), écriture de
+   * `valideLe`, `validePar`, `valideRole`, UNE ligne de journal (RG-12), et
+   * JAMAIS de validation en masse : un appel valide une fiche.
+   *
+   * LE COMPTE EST LU, JAMAIS ÉCRIT : `referentielsAValider()` relit les
+   * marquages dans le magasin à chaque appel. Une validation ne modifie AUCUN
+   * autre champ que le marquage et ses trois traces ; modifier un artefact déjà
+   * validé le remet « à valider » (`remettreAValider`, appelé par l'écran qui
+   * modifie), comme la configuration fiscale.
+   *
+   * Deux formes d'artefact : (1) une FICHE du magasin qui porte son marquage
+   * (`aValider`, `tarifProvisoire`) : la validation l'écrit sur la fiche ;
+   * (2) une CONSTANTE du code (check-listes du bloc, répartition fixe/variable,
+   * barème ITS, jeu d'import) qui ne peut pas porter de marquage : sa
+   * validation vit dans une fiche de la collection `validationsReferentiels`,
+   * une par cible (`VRF-<cible>`). Un artefact de forme 2 est « à valider »
+   * tant qu'aucune fiche porteuse d'un `valideLe` ne le couvre.
+   * ======================================================================== */
+  var VUE_COMPLETE_VALIDATIONS = ['direction', 'da', 'admin'];
+  var FAMILLES_A_VALIDER = [
+    { id: 'enquetes', libelle: 'Modèles d’enquête', module: 'M13', collections: ['enquetes'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'adm-enquetes' },
+    { id: 'labo_variables', libelle: 'Variables et unités du laboratoire (bornes suppléées)', module: 'M5',
+      collections: ['variablesLabo', 'unitesLabo'], champs: ['aValider'],
+      roles: ['laborantin'], ecran: 'm5-valeurs-reference' },
+    { id: 'pathologies', libelle: 'Pathologies (tableau de morbidité)', module: 'M2', collections: ['pathologies'], champs: ['aValider'],
+      roles: ['dm', 'medecin'], ecran: 'm2-pathologies' },
+    { id: 'imagerie', libelle: 'Catalogue de l’imagerie (examens et variables)', module: 'CFG',
+      collections: ['examensImagerie', 'variablesImagerie'], champs: ['aValider'],
+      roles: ['echographiste', 'dm'], ecran: 'cfg-imagerie-catalogue' },
+    { id: 'checklists_bloc', libelle: 'Check-listes du bloc, échelles ASA et Mallampati', module: 'M3', mode: 'fiche',
+      cibles: [{ id: 'checklist-bloc', libelle: 'Check-listes d’entrée et de sortie du bloc' }],
+      roles: ['chirurgien', 'anesthesiste'], ecran: 'm3-bloc-checklist' },
+    { id: 'actes', libelle: 'Tarifs des actes (valeurs d’attente)', module: 'CFG', collections: ['actes'], champs: ['tarifProvisoire'],
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs' },
+    { id: 'analyses', libelle: 'Tarifs des analyses', module: 'CFG', collections: ['analyses'], champs: ['tarifProvisoire', 'aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs' },
+    { id: 'valorisation_sage', libelle: 'Valorisation des références SAGE', module: 'M6', collections: ['valorisationsSage'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'm6-produits' },
+    { id: 'objectifs_pilotage', libelle: 'Objectifs de pilotage', module: 'M12', collections: ['objectifsPilotage'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'm12-tableau-decisionnel' },
+    { id: 'repartition_charges', libelle: 'Répartition fixe et variable des charges', module: 'M12', mode: 'fiche',
+      cibles: [{ id: 'repartition-fixe-variable', libelle: 'Répartition proposée des comptes de charge' }],
+      roles: ['comptable', 'direction', 'da', 'admin'], ecran: 'm12-seuil-rentabilite' },
+    { id: 'modeles_badge', libelle: 'Modèles de badge', module: 'M10', collections: ['modelesBadge'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'm10-badges-modeles' },
+    { id: 'jeux_import', libelle: 'Jeux d’import en proposition', module: 'IMP', mode: 'fiche',
+      cibles: [{ id: 'imp-analyses', libelle: 'Importation du catalogue des analyses' }],
+      roles: ['direction', 'da', 'admin'], ecran: 'imp-analyses' },
+    { id: 'modeles_messages', libelle: 'Modèles de messages', module: 'CFG', collections: ['modelesMessage'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-notifications' },
+    { id: 'bareme_its', libelle: 'Barème de l’ITS', module: 'M11', mode: 'fiche',
+      cibles: [{ id: 'bareme-its', libelle: 'Barème de l’impôt sur les traitements et salaires' }],
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-comptabilite' },
+  ];
+  FAMILLES_A_VALIDER.forEach(function (f) { f.mode = f.mode || 'fiche-marquee'; });
+
+  function colValidationsReferentiels() {
+    return S.collection('validationsReferentiels', { module: 'CFG', entite: 'validation de référentiel', prefix: 'VRF' });
+  }
+  function familleAValider(id) {
+    return FAMILLES_A_VALIDER.filter(function (f) { return f.id === id; })[0] || null;
+  }
+  function profilsFamille(f) { return f.roles.map(libelleRole).join(', '); }
+  function ficheDeValidation(cible) {
+    return colValidationsReferentiels().all().filter(function (x) { return x.id === 'VRF-' + cible && x.statut !== 'archive'; })[0] || null;
+  }
+  /* Les artefacts d'une famille, chacun avec son état LU : { id, libelle, enAttente, valideLe, rec, col }. */
+  function artefactsDe(f) {
+    var brut = S.raw();
+    if (f.mode === 'fiche') {
+      return f.cibles.map(function (c) {
+        var fiche = ficheDeValidation(c.id);
+        return { id: c.id, libelle: c.libelle, enAttente: !(fiche && fiche.valideLe), valideLe: fiche ? fiche.valideLe : null, rec: fiche, col: null };
+      });
+    }
+    var out = [];
+    f.collections.forEach(function (nom) {
+      (brut[nom] || []).forEach(function (rec) {
+        if (!rec || rec.statut === 'archive') return;
+        out.push({
+          id: rec.id, col: nom, rec: rec, valideLe: rec.valideLe || null,
+          libelle: rec.libelle || rec.label || rec.designation || rec.nom || rec.reference || rec.id,
+          enAttente: f.champs.some(function (c) { return rec[c] === true; }),
+        });
+      });
+    });
+    return out;
+  }
+  /** Les familles avec leur compte RÉEL. `{ role }` ne garde que les familles que ce profil valide. */
+  function referentielsAValider(opts) {
+    var role = opts && opts.role;
+    var brut = S.raw();
+    return FAMILLES_A_VALIDER.filter(function (f) { return !role || f.roles.indexOf(role) >= 0; }).map(function (f) {
+      var arts = artefactsDe(f);
+      var nonAmorce = f.mode !== 'fiche' && !arts.length
+        && f.collections.every(function (nom) { return !(brut[nom] || []).length; }) && S.amorcable(f.collections[0]);
+      var attente = arts.filter(function (a) { return a.enAttente; });
+      return {
+        famille: f.id, libelle: f.libelle, module: f.module, mode: f.mode,
+        collections: f.collections || ['validationsReferentiels'], champs: f.champs || ['valideLe'],
+        roles: f.roles.slice(), profil: profilsFamille(f), ecran: f.ecran,
+        enAttente: nonAmorce ? null : attente.length,
+        total: nonAmorce ? null : arts.length,
+        nonAmorce: nonAmorce,
+        ids: attente.map(function (a) { return a.id; }),
+      };
+    });
+  }
+  function refusValidation(code, motif, geste) { return refusCfg(code, motif, geste); }
+  function validerReferentiel(familleId, id, opts) {
+    opts = opts || {};
+    var f = familleAValider(familleId);
+    if (!f) return refusValidation('INTROUVABLE', 'Famille de référentiel inconnue : ' + familleId + '.', 'Choisir une famille du registre des validations.');
+    var role = opts.role || roleCourant();
+    if (f.roles.indexOf(role) < 0) {
+      return refusValidation('VALIDATION_RESERVEE', 'La validation de « ' + f.libelle + ' » est réservée à : ' + profilsFamille(f) + '. Profil : ' + libelleRole(role) + '.',
+        'Demander à ' + libelleRole(f.roles[0]) + ' de valider depuis son poste.');
+    }
+    var cible = artefactsDe(f).filter(function (a) { return a.id === id; })[0];
+    if (!cible) return refusValidation('INTROUVABLE', 'Aucun élément « ' + id + ' » dans « ' + f.libelle + ' ».', 'Ouvrir l’écran de la famille et choisir l’élément à valider.');
+    if (!cible.enAttente) {
+      return refusValidation('DEJA_VALIDE', cible.valideLe
+        ? '« ' + cible.libelle + ' » est déjà validé (' + C.dateFR(String(cible.valideLe).slice(0, 10)) + ').'
+        : '« ' + cible.libelle + ' » ne porte aucun marquage à valider.',
+      'Rien à faire : toute modification ultérieure le remettra à valider.');
+    }
+    var quand = new Date().toISOString(), qui = acteur(), libRole = libelleRole(role);
+    var avant;
+    if (f.mode === 'fiche') {
+      var col = colValidationsReferentiels();
+      var fiche = ficheDeValidation(id);
+      avant = { valideLe: fiche ? fiche.valideLe : null };
+      if (fiche) Object.assign(fiche, { valideLe: quand, validePar: qui, valideRole: libRole });
+      else col.all().push({ id: 'VRF-' + id, statut: 'actif', famille: f.id, cible: id, libelle: cible.libelle, valideLe: quand, validePar: qui, valideRole: libRole });
+      S.save(); S.emit('validationsReferentiels');
+    } else {
+      var rec = cible.rec;
+      avant = {};
+      f.champs.forEach(function (c) { if (rec[c] === true) { avant[c] = true; rec[c] = false; } });
+      rec.valideLe = quand; rec.validePar = qui; rec.valideRole = libRole;
+      S.save(); S.emit(cible.col);
+    }
+    S.log('Validation', f.module, f.libelle, id, avant, { valideLe: quand, validePar: qui, valideRole: libRole });
+    return { ok: true, famille: f.id, id: id, valideLe: quand, validePar: qui, valideRole: libRole };
+  }
+  /* Appelé par l'écran qui MODIFIE un artefact validé : le marquage revient, les traces de validation tombent. */
+  function remettreAValider(familleId, id) {
+    var f = familleAValider(familleId);
+    if (!f) return refusValidation('INTROUVABLE', 'Famille de référentiel inconnue : ' + familleId + '.', 'Choisir une famille du registre des validations.');
+    var cible = artefactsDe(f).filter(function (a) { return a.id === id; })[0];
+    if (!cible) return refusValidation('INTROUVABLE', 'Aucun élément « ' + id + ' » dans « ' + f.libelle + ' ».', 'Ouvrir l’écran de la famille.');
+    if (cible.enAttente) return { ok: true, remis: false, famille: f.id, id: id };
+    var avant = { valideLe: cible.valideLe };
+    if (f.mode === 'fiche') {
+      Object.assign(cible.rec, { valideLe: null, validePar: null, valideRole: null });
+      S.save(); S.emit('validationsReferentiels');
+    } else {
+      cible.rec[f.champs[0]] = true;
+      Object.assign(cible.rec, { valideLe: null, validePar: null, valideRole: null });
+      S.save(); S.emit(cible.col);
+    }
+    S.log('Remise à valider', f.module, f.libelle, id, avant, { motif: 'modifié depuis la validation' });
+    return { ok: true, remis: true, famille: f.id, id: id };
+  }
+  /** Les familles qu'un profil VOIT au centre des validations : la Direction et la DAF voient tout, les autres leur ressort. */
+  function referentielsVisiblesPar(role) {
+    return referentielsAValider(VUE_COMPLETE_VALIDATIONS.indexOf(role) >= 0 ? null : { role: role });
+  }
+
+  global.SIGH.configurationFiscale = {
+    ROLES_VALIDATION: ROLES_VALIDATION,
+    identiteEnForce: identiteEnForce, identiteExigeVersion: identiteExigeVersion,
+    enregistrerIdentite: enregistrerIdentite, nouvelleVersionIdentite: nouvelleVersionIdentite, validerIdentite: validerIdentite,
+    obligationsEnVigueur: function (date) { return D.obligationsALaDate(date); },
+    ortbEnVigueur: function (date) { return D.ortbALaDate(date); },
+    ficheOrtb: ficheOrtb,
+    modifierObligation: modifierObligation, creerObligation: creerObligation, retirerObligation: retirerObligation,
+    modifierOrtb: modifierOrtb, validerObligations: validerObligations,
+    echeancesImpactees: echeancesImpactees, versionsObligation: versionsObligation,
+    etatConfigurationFiscale: etatConfigurationFiscale, posteFileul: posteFileul,
+  };
+  global.SIGH.parcours.validerIdentite = validerIdentite;
+  global.SIGH.parcours.validerObligations = validerObligations;
+  global.SIGH.parcours.etatConfigurationFiscale = etatConfigurationFiscale;
+  global.SIGH.validations = {
+    FAMILLES_A_VALIDER: FAMILLES_A_VALIDER, VUE_COMPLETE: VUE_COMPLETE_VALIDATIONS,
+    referentielsAValider: referentielsAValider, referentielsVisiblesPar: referentielsVisiblesPar,
+    validerReferentiel: validerReferentiel, remettreAValider: remettreAValider,
+  };
+  global.SIGH.parcours.FAMILLES_A_VALIDER = FAMILLES_A_VALIDER;
+  global.SIGH.parcours.referentielsAValider = referentielsAValider;
+  global.SIGH.parcours.validerReferentiel = validerReferentiel;
+  global.SIGH.parcours.remettreAValider = remettreAValider;
 })(window);

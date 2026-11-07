@@ -1,0 +1,51 @@
+{
+ "id": "m2-imagerie-mammographie",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Tableau Mammographie",
+ "acces": "ouvert",
+ "titre": "Tableau Mammographie",
+ "description": "Comptes rendus de mammographie — densité, masses, microcalcifications, classification ACR par sein.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Imagerie médicale",
+  "Tableau Mammographie"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Examens et variables proposés, à valider. Aucun modèle de compte rendu de mammographie n’a été remis : le catalogue suit la pratique radiologique courante et reste administrable depuis le catalogue de l’imagerie. Les tarifs sont des tarifs d’attente, à arrêter par la Direction. Les images elles-mêmes ne sont pas stockées au format DICOM : le logiciel tient la demande, le compte rendu et les clichés joints à la galerie."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Comptes rendus",
+  "Rendus au prescripteur",
+  "En cours de rédaction",
+  "ACR 4 ou plus"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Date",
+   "Patient",
+   "Examen",
+   "Prescripteur",
+   "Réalisé par",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau compte rendu"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

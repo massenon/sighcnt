@@ -1,0 +1,59 @@
+{
+ "id": "m10-contrats",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Contrats",
+ "acces": "ouvert",
+ "titre": "Contrats",
+ "description": "Contrats de travail des agents : nature, durée, période d’essai et échéances.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Contrats"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les contrats",
+  "Archivés"
+ ],
+ "kpis": [
+  "Contrats en vigueur",
+  "CDI",
+  "CDD",
+  "Échéances sous 90 jours"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Mat.",
+   "Agent",
+   "Poste",
+   "Nature",
+   "Début",
+   "Échéance",
+   "Période d’essai",
+   "Salaire",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les contrats44",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

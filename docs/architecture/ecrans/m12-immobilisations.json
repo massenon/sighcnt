@@ -1,0 +1,59 @@
+{
+ "id": "m12-immobilisations",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Immobilisations & amortissements",
+ "acces": "ouvert",
+ "titre": "Immobilisations & amortissements",
+ "description": "Registre des immobilisations, plan d’amortissement SEMESTRIEL, cessions et report au bilan.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Immobilisations & amortissements"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les immobilisations",
+  "Report au bilan",
+  "Archivés"
+ ],
+ "kpis": [
+  "Immobilisations",
+  "Valeur d’acquisition (BRUT)",
+  "Amortissements cumulés",
+  "Valeur nette comptable"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Désignation",
+   "Catégorie",
+   "Date d’acquisition",
+   "Valeur d’acquisition",
+   "Durée",
+   "Cession / sortie",
+   "Amort. cumulé",
+   "Valeur nette",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les immobilisations10",
+  "Report au bilan",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

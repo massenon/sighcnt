@@ -1,0 +1,1745 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-achats.js — les écrans de m7-achats.js pilotés dans Chrome. Ne pas éditer.",
+ "jour": "2026-10-30",
+ "produits": [
+  {
+   "valorisationProvisoire": true,
+   "sourceValorisation": "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer",
+   "id": "PRD0001",
+   "code": "ABA",
+   "designation": "ABAISSE LANGUE",
+   "unite": "Unité",
+   "categorie": "conso_medical",
+   "prixAchat": 650,
+   "prixVente": 650,
+   "cump": 650,
+   "seuilAlerte": 5,
+   "seuilConfirmeLe": "2026-09-01",
+   "stockGros": 2,
+   "stockDetail": 0,
+   "stock": 2,
+   "emplacement": "Rayon A — Casier 1",
+   "fournisseur": "CAME",
+   "source": "SAGE_100_GESTION_COMMERCIALE_15.01",
+   "lotImport": "IMPORT-SAGE-20260715",
+   "dateImport": "2026-07-15",
+   "quantiteImportee": 2,
+   "valoriseSage": false,
+   "seuilAValider": false,
+   "statut": "actif"
+  },
+  {
+   "id": "PRD0002",
+   "code": "ACC",
+   "designation": "ACCUZON",
+   "unite": "Unité",
+   "categorie": "medicament",
+   "prixAchat": 1000,
+   "prixVente": 1000,
+   "cump": 999.92,
+   "seuilAlerte": 10,
+   "seuilConfirmeLe": "2026-09-01",
+   "stockGros": 37,
+   "stockDetail": 13,
+   "stock": 50,
+   "emplacement": "Rayon B — Casier 2",
+   "fournisseur": "UBIPHARM",
+   "source": "SAGE_100_GESTION_COMMERCIALE_15.01",
+   "lotImport": "IMPORT-SAGE-20260715",
+   "dateImport": "2026-07-15",
+   "quantiteImportee": 50,
+   "valoriseSage": true,
+   "seuilAValider": false,
+   "statut": "actif"
+  },
+  {
+   "id": "PRD0003",
+   "code": "ACE",
+   "designation": "ACE MISO 200 µg 1 CP",
+   "unite": "Comprimé",
+   "categorie": "medicament",
+   "prixAchat": 250,
+   "prixVente": 250,
+   "cump": 250,
+   "seuilAlerte": 5,
+   "seuilConfirmeLe": "2026-09-01",
+   "stockGros": 16,
+   "stockDetail": 8,
+   "stock": 24,
+   "emplacement": "Rayon C — Casier 3",
+   "fournisseur": "NATIFOURN",
+   "source": "SAGE_100_GESTION_COMMERCIALE_15.01",
+   "lotImport": "IMPORT-SAGE-20260715",
+   "dateImport": "2026-07-15",
+   "quantiteImportee": 24,
+   "valoriseSage": true,
+   "seuilAValider": false,
+   "statut": "actif"
+  }
+ ],
+ "validations": [
+  {
+   "role": "da",
+   "actions": [
+    "Consulter",
+    "Valider (DA)",
+    "Imprimer",
+    "Modifier"
+   ],
+   "avant": {
+    "id": "COMxmvvapny7olvg6",
+    "statut": "actif",
+    "reference": "BC-2098-0112",
+    "date": "2098-02-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "statutCommande": "attente_validation",
+    "delaiLivraison": 7
+   },
+   "apres": {
+    "id": "COMxmvvapny7olvg6",
+    "statut": "actif",
+    "reference": "BC-2098-0112",
+    "date": "2098-02-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "statutCommande": "validee",
+    "delaiLivraison": 7,
+    "valideePar": "TAKI Alimatou",
+    "dateValidation": "2026-10-30"
+   },
+   "message": "Valider la commande BC-2098-0112 ?En application de la règle RG-04, cette validation autorise la transmission au fournisseur CAME — Centrale d'Achat des Médicaments Essentiels pour un montant de 6 500 FCFA. L’opération est journalisée.AnnulerValider la commande",
+   "toasts": [
+    {
+     "message": "Commande validée par la Directrice Administrative.",
+     "type": "success",
+     "detail": null
+    }
+   ],
+   "kpisAvant": [
+    [
+     "Commandes enregistrées",
+     "16"
+    ],
+    [
+     "En attente de validation",
+     "3"
+    ],
+    [
+     "Montant commandé",
+     "7 750 835 FCFA"
+    ],
+    [
+     "Livrées",
+     "11"
+    ]
+   ]
+  },
+  {
+   "role": "comptable",
+   "actions": [
+    "Consulter",
+    "Imprimer"
+   ],
+   "avant": {
+    "id": "COMxmvvapo5aiaor9",
+    "statut": "actif",
+    "reference": "BC-2098-0113",
+    "date": "2098-02-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "statutCommande": "attente_validation",
+    "delaiLivraison": 7
+   },
+   "apres": null,
+   "message": null,
+   "toasts": [],
+   "kpisAvant": [
+    [
+     "Commandes enregistrées",
+     "17"
+    ],
+    [
+     "En attente de validation",
+     "3"
+    ],
+    [
+     "Montant commandé",
+     "7 757 335 FCFA"
+    ],
+    [
+     "Livrées",
+     "11"
+    ]
+   ]
+  },
+  {
+   "role": "stock",
+   "actions": [
+    "Consulter",
+    "Valider (DA)",
+    "Imprimer",
+    "Modifier"
+   ],
+   "avant": {
+    "id": "COMxmvvapo7swp2bp",
+    "statut": "actif",
+    "reference": "BC-2098-0114",
+    "date": "2098-02-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "statutCommande": "attente_validation",
+    "delaiLivraison": 7
+   },
+   "apres": {
+    "id": "COMxmvvapo7swp2bp",
+    "statut": "actif",
+    "reference": "BC-2098-0114",
+    "date": "2098-02-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "statutCommande": "validee",
+    "delaiLivraison": 7,
+    "valideePar": "TAKI Alimatou",
+    "dateValidation": "2026-10-30"
+   },
+   "message": "Valider la commande BC-2098-0114 ?En application de la règle RG-04, cette validation autorise la transmission au fournisseur CAME — Centrale d'Achat des Médicaments Essentiels pour un montant de 6 500 FCFA. L’opération est journalisée.AnnulerValider la commande",
+   "toasts": [
+    {
+     "message": "Commande validée par la Directrice Administrative.",
+     "type": "success",
+     "detail": null
+    }
+   ],
+   "kpisAvant": [
+    [
+     "Commandes enregistrées",
+     "18"
+    ],
+    [
+     "En attente de validation",
+     "4"
+    ],
+    [
+     "Montant commandé",
+     "7 763 835 FCFA"
+    ],
+    [
+     "Livrées",
+     "11"
+    ]
+   ]
+  }
+ ],
+ "creations": [
+  {
+   "nom": "brouillon, prix proposé = prix d'achat du référentiel",
+   "defauts": {
+    "date": "2026-10-30",
+    "fournisseur": "SOBAPS",
+    "statutCommande": "brouillon",
+    "observations": ""
+   },
+   "champs": {
+    "date": "2026-10-30",
+    "fournisseur": "CAME",
+    "statutCommande": "brouillon"
+   },
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "q": 12,
+     "pu": null,
+     "puDefaut": "650"
+    },
+    {
+     "produitId": "PRD0002",
+     "q": 3,
+     "pu": 1000,
+     "puDefaut": "650"
+    }
+   ],
+   "commande": {
+    "id": "COMxmvvaponvqij8u",
+    "statut": "actif",
+    "date": "2026-10-30",
+    "fournisseur": "CAME",
+    "statutCommande": "brouillon",
+    "observations": "",
+    "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "delaiLivraison": 7,
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 12,
+      "prixUnitaire": 650,
+      "montant": 7800
+     },
+     {
+      "produitId": "PRD0002",
+      "produit": "ACCUZON",
+      "unite": "Unité",
+      "quantite": 3,
+      "prixUnitaire": 1000,
+      "montant": 3000
+     }
+    ],
+    "montant": 10800,
+    "reference": "BC-2026-0016"
+   },
+   "ouverte": false,
+   "toasts": [
+    {
+     "message": "Commande créée — BC-2026-0016",
+     "type": "success",
+     "detail": null
+    }
+   ]
+  },
+  {
+   "nom": "en attente de validation : pas de validateur",
+   "defauts": {
+    "date": "2026-10-30",
+    "fournisseur": "SOBAPS",
+    "statutCommande": "brouillon",
+    "observations": ""
+   },
+   "champs": {
+    "date": "2026-10-30",
+    "fournisseur": "MEDIPLUS",
+    "statutCommande": "attente_validation"
+   },
+   "lignes": [
+    {
+     "produitId": "PRD0003",
+     "q": 5,
+     "pu": 400,
+     "puDefaut": "650"
+    }
+   ],
+   "commande": {
+    "id": "COMxmvvapoyk3mhjl",
+    "statut": "actif",
+    "date": "2026-10-30",
+    "fournisseur": "MEDIPLUS",
+    "statutCommande": "attente_validation",
+    "observations": "",
+    "fournisseurNom": "MEDIPLUS Équipements",
+    "delaiLivraison": 14,
+    "lignes": [
+     {
+      "produitId": "PRD0003",
+      "produit": "ACE MISO 200 µg 1 CP",
+      "unite": "Comprimé",
+      "quantite": 5,
+      "prixUnitaire": 400,
+      "montant": 2000
+     }
+    ],
+    "montant": 2000,
+    "reference": "BC-2026-0017"
+   },
+   "ouverte": false,
+   "toasts": [
+    {
+     "message": "Commande créée — BC-2026-0017",
+     "type": "success",
+     "detail": null
+    }
+   ]
+  },
+  {
+   "nom": "« Transmise » choisie à la saisie : le validateur est posé d'office (E72, RG-04)",
+   "defauts": {
+    "date": "2026-10-30",
+    "fournisseur": "SOBAPS",
+    "statutCommande": "brouillon",
+    "observations": ""
+   },
+   "champs": {
+    "date": "2026-10-30",
+    "fournisseur": "SOBAPS",
+    "statutCommande": "transmise"
+   },
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "q": 2,
+     "pu": 700,
+     "puDefaut": "650"
+    }
+   ],
+   "commande": {
+    "id": "COMxmvvapp9utgvf7",
+    "statut": "actif",
+    "date": "2026-10-30",
+    "fournisseur": "SOBAPS",
+    "statutCommande": "transmise",
+    "observations": "",
+    "fournisseurNom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+    "delaiLivraison": 5,
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 2,
+      "prixUnitaire": 700,
+      "montant": 1400
+     }
+    ],
+    "montant": 1400,
+    "reference": "BC-2026-0018",
+    "valideePar": "TAKI Alimatou",
+    "dateValidation": "2026-10-30"
+   },
+   "ouverte": false,
+   "toasts": [
+    {
+     "message": "Commande créée — BC-2026-0018",
+     "type": "success",
+     "detail": null
+    }
+   ]
+  },
+  {
+   "nom": "« Soldée » à la saisie : idem",
+   "defauts": {
+    "date": "2026-10-30",
+    "fournisseur": "SOBAPS",
+    "statutCommande": "brouillon",
+    "observations": ""
+   },
+   "champs": {
+    "date": "2026-10-30",
+    "fournisseur": "NATIFOURN",
+    "statutCommande": "soldee"
+   },
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "q": 1,
+     "pu": 500,
+     "puDefaut": "650"
+    }
+   ],
+   "commande": {
+    "id": "COMxmvvappl7jwm7j",
+    "statut": "actif",
+    "date": "2026-10-30",
+    "fournisseur": "NATIFOURN",
+    "statutCommande": "soldee",
+    "observations": "",
+    "fournisseurNom": "NATI Fournitures",
+    "delaiLivraison": 2,
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 1,
+      "prixUnitaire": 500,
+      "montant": 500
+     }
+    ],
+    "montant": 500,
+    "reference": "BC-2026-0019",
+    "valideePar": "TAKI Alimatou",
+    "dateValidation": "2026-10-30"
+   },
+   "ouverte": false,
+   "toasts": [
+    {
+     "message": "Commande créée — BC-2026-0019",
+     "type": "success",
+     "detail": null
+    }
+   ]
+  },
+  {
+   "nom": "SANS ligne : refusée",
+   "defauts": {
+    "date": "2026-10-30",
+    "fournisseur": "SOBAPS",
+    "statutCommande": "brouillon",
+    "observations": ""
+   },
+   "champs": {
+    "date": "2026-10-30",
+    "fournisseur": "CAME",
+    "statutCommande": "brouillon"
+   },
+   "lignes": [],
+   "commande": null,
+   "ouverte": true,
+   "toasts": [
+    {
+     "message": "Ajouter au moins un article.",
+     "type": "error",
+     "detail": null
+    }
+   ]
+  }
+ ],
+ "gardes": [
+  {
+   "role": "admin",
+   "nouvelle": true,
+   "kpis": [
+    [
+     "Commandes enregistrées",
+     "25"
+    ],
+    [
+     "En attente de validation",
+     "5"
+    ],
+    [
+     "Montant commandé",
+     "7 798 035 FCFA"
+    ],
+    [
+     "Livrées",
+     "12"
+    ]
+   ],
+   "refs": [
+    "BC-2095-0117",
+    "BC-2095-0116",
+    "BC-2095-0115",
+    "BC-2098-0114",
+    "BC-2098-0113",
+    "BC-2098-0112",
+    "BC-2026-0019",
+    "BC-2026-0018",
+    "BC-2026-0017",
+    "BC-2026-0016",
+    "BC-2026-0012",
+    "BC-2026-0007"
+   ],
+   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+  },
+  {
+   "role": "da",
+   "nouvelle": true,
+   "kpis": [
+    [
+     "Commandes enregistrées",
+     "25"
+    ],
+    [
+     "En attente de validation",
+     "5"
+    ],
+    [
+     "Montant commandé",
+     "7 798 035 FCFA"
+    ],
+    [
+     "Livrées",
+     "12"
+    ]
+   ],
+   "refs": [
+    "BC-2095-0117",
+    "BC-2095-0116",
+    "BC-2095-0115",
+    "BC-2098-0114",
+    "BC-2098-0113",
+    "BC-2098-0112",
+    "BC-2026-0019",
+    "BC-2026-0018",
+    "BC-2026-0017",
+    "BC-2026-0016",
+    "BC-2026-0012",
+    "BC-2026-0007"
+   ],
+   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+  },
+  {
+   "role": "direction",
+   "nouvelle": false,
+   "kpis": [
+    [
+     "Commandes enregistrées",
+     "25"
+    ],
+    [
+     "En attente de validation",
+     "5"
+    ],
+    [
+     "Montant commandé",
+     "7 798 035 FCFA"
+    ],
+    [
+     "Livrées",
+     "12"
+    ]
+   ],
+   "refs": [
+    "BC-2095-0117",
+    "BC-2095-0116",
+    "BC-2095-0115",
+    "BC-2098-0114",
+    "BC-2098-0113",
+    "BC-2098-0112",
+    "BC-2026-0019",
+    "BC-2026-0018",
+    "BC-2026-0017",
+    "BC-2026-0016",
+    "BC-2026-0012",
+    "BC-2026-0007"
+   ],
+   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+  },
+  {
+   "role": "comptable",
+   "nouvelle": false,
+   "kpis": [
+    [
+     "Commandes enregistrées",
+     "25"
+    ],
+    [
+     "En attente de validation",
+     "5"
+    ],
+    [
+     "Montant commandé",
+     "7 798 035 FCFA"
+    ],
+    [
+     "Livrées",
+     "12"
+    ]
+   ],
+   "refs": [
+    "BC-2095-0117",
+    "BC-2095-0116",
+    "BC-2095-0115",
+    "BC-2098-0114",
+    "BC-2098-0113",
+    "BC-2098-0112",
+    "BC-2026-0019",
+    "BC-2026-0018",
+    "BC-2026-0017",
+    "BC-2026-0016",
+    "BC-2026-0012",
+    "BC-2026-0007"
+   ],
+   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+  },
+  {
+   "role": "stock",
+   "nouvelle": true,
+   "kpis": [
+    [
+     "Commandes enregistrées",
+     "25"
+    ],
+    [
+     "En attente de validation",
+     "5"
+    ],
+    [
+     "Montant commandé",
+     "7 798 035 FCFA"
+    ],
+    [
+     "Livrées",
+     "12"
+    ]
+   ],
+   "refs": [
+    "BC-2095-0117",
+    "BC-2095-0116",
+    "BC-2095-0115",
+    "BC-2098-0114",
+    "BC-2098-0113",
+    "BC-2098-0112",
+    "BC-2026-0019",
+    "BC-2026-0018",
+    "BC-2026-0017",
+    "BC-2026-0016",
+    "BC-2026-0012",
+    "BC-2026-0007"
+   ],
+   "note": "5 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04).Comman"
+  }
+ ],
+ "modifications": [
+  {
+   "nom": "brouillon → « Validée » : la DAF est portée validatrice (E72)",
+   "avant": {
+    "id": "COMxmvvappx4o9qlc",
+    "statut": "actif",
+    "reference": "BC-2095-0115",
+    "date": "2099-06-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "brouillon"
+   },
+   "defauts": {
+    "date": "2099-06-01",
+    "fournisseur": "CAME",
+    "statutCommande": "brouillon",
+    "observations": ""
+   },
+   "statut": "validee",
+   "apres": {
+    "id": "COMxmvvappx4o9qlc",
+    "statut": "actif",
+    "reference": "BC-2095-0115",
+    "date": "2099-06-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "validee",
+    "observations": "",
+    "valideePar": "TAKI Alimatou",
+    "dateValidation": "2026-10-30"
+   },
+   "toasts": [
+    {
+     "message": "Commande mise à jour.",
+     "type": "success",
+     "detail": null
+    }
+   ]
+  },
+  {
+   "nom": "déjà validée par quelqu'un d'autre → « Transmise » : le validateur reste",
+   "avant": {
+    "id": "COMxmvvapq5gw0s8t",
+    "statut": "actif",
+    "reference": "BC-2095-0116",
+    "date": "2099-06-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "validee",
+    "valideePar": "AUTRE Personne",
+    "dateValidation": "2026-01-02"
+   },
+   "defauts": {
+    "date": "2099-06-01",
+    "fournisseur": "CAME",
+    "statutCommande": "validee",
+    "observations": ""
+   },
+   "statut": "transmise",
+   "apres": {
+    "id": "COMxmvvapq5gw0s8t",
+    "statut": "actif",
+    "reference": "BC-2095-0116",
+    "date": "2099-06-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "transmise",
+    "valideePar": "AUTRE Personne",
+    "dateValidation": "2026-01-02",
+    "observations": ""
+   },
+   "toasts": [
+    {
+     "message": "Commande mise à jour.",
+     "type": "success",
+     "detail": null
+    }
+   ]
+  },
+  {
+   "nom": "brouillon → en attente : aucun validateur",
+   "avant": {
+    "id": "COMxmvvapqduq03ti",
+    "statut": "actif",
+    "reference": "BC-2095-0117",
+    "date": "2099-06-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "brouillon"
+   },
+   "defauts": {
+    "date": "2099-06-01",
+    "fournisseur": "CAME",
+    "statutCommande": "brouillon",
+    "observations": ""
+   },
+   "statut": "attente_validation",
+   "apres": {
+    "id": "COMxmvvapqduq03ti",
+    "statut": "actif",
+    "reference": "BC-2095-0117",
+    "date": "2099-06-01",
+    "fournisseur": "CAME",
+    "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "lignes": [
+     {
+      "produitId": "PRD0001",
+      "produit": "ABAISSE LANGUE",
+      "unite": "Unité",
+      "quantite": 10,
+      "prixUnitaire": 650,
+      "montant": 6500
+     }
+    ],
+    "montant": 6500,
+    "delaiLivraison": 7,
+    "statutCommande": "attente_validation",
+    "observations": ""
+   },
+   "toasts": [
+    {
+     "message": "Commande mise à jour.",
+     "type": "success",
+     "detail": null
+    }
+   ]
+  }
+ ],
+ "serieBC": [
+  "BC-2026-0001",
+  "BC-2026-0002",
+  "BC-2026-0003",
+  "BC-2026-0004",
+  "BC-2026-0005",
+  "BC-2026-0006",
+  "BC-2026-0007",
+  "BC-2026-0008",
+  "BC-2026-0009",
+  "BC-2026-0010",
+  "BC-2026-0011",
+  "BC-2026-0012",
+  "BC-2026-0013",
+  "BC-2026-0014",
+  "BC-2026-0015",
+  "BC-2026-0016",
+  "BC-2026-0017",
+  "BC-2026-0018",
+  "BC-2026-0019"
+ ],
+ "commandes": [
+  {
+   "id": "COMxmvvapqduq03ti",
+   "statut": "actif",
+   "reference": "BC-2095-0117",
+   "date": "2099-06-01",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 10,
+     "prixUnitaire": 650,
+     "montant": 6500
+    }
+   ],
+   "montant": 6500,
+   "delaiLivraison": 7,
+   "statutCommande": "attente_validation",
+   "observations": ""
+  },
+  {
+   "id": "COMxmvvapq5gw0s8t",
+   "statut": "actif",
+   "reference": "BC-2095-0116",
+   "date": "2099-06-01",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 10,
+     "prixUnitaire": 650,
+     "montant": 6500
+    }
+   ],
+   "montant": 6500,
+   "delaiLivraison": 7,
+   "statutCommande": "transmise",
+   "valideePar": "AUTRE Personne",
+   "dateValidation": "2026-01-02",
+   "observations": ""
+  },
+  {
+   "id": "COMxmvvappx4o9qlc",
+   "statut": "actif",
+   "reference": "BC-2095-0115",
+   "date": "2099-06-01",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 10,
+     "prixUnitaire": 650,
+     "montant": 6500
+    }
+   ],
+   "montant": 6500,
+   "delaiLivraison": 7,
+   "statutCommande": "validee",
+   "observations": "",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-10-30"
+  },
+  {
+   "id": "COMxmvvappl7jwm7j",
+   "statut": "actif",
+   "date": "2026-10-30",
+   "fournisseur": "NATIFOURN",
+   "statutCommande": "soldee",
+   "observations": "",
+   "fournisseurNom": "NATI Fournitures",
+   "delaiLivraison": 2,
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 1,
+     "prixUnitaire": 500,
+     "montant": 500
+    }
+   ],
+   "montant": 500,
+   "reference": "BC-2026-0019",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-10-30"
+  },
+  {
+   "id": "COMxmvvapp9utgvf7",
+   "statut": "actif",
+   "date": "2026-10-30",
+   "fournisseur": "SOBAPS",
+   "statutCommande": "transmise",
+   "observations": "",
+   "fournisseurNom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+   "delaiLivraison": 5,
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 2,
+     "prixUnitaire": 700,
+     "montant": 1400
+    }
+   ],
+   "montant": 1400,
+   "reference": "BC-2026-0018",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-10-30"
+  },
+  {
+   "id": "COMxmvvapoyk3mhjl",
+   "statut": "actif",
+   "date": "2026-10-30",
+   "fournisseur": "MEDIPLUS",
+   "statutCommande": "attente_validation",
+   "observations": "",
+   "fournisseurNom": "MEDIPLUS Équipements",
+   "delaiLivraison": 14,
+   "lignes": [
+    {
+     "produitId": "PRD0003",
+     "produit": "ACE MISO 200 µg 1 CP",
+     "unite": "Comprimé",
+     "quantite": 5,
+     "prixUnitaire": 400,
+     "montant": 2000
+    }
+   ],
+   "montant": 2000,
+   "reference": "BC-2026-0017"
+  },
+  {
+   "id": "COMxmvvaponvqij8u",
+   "statut": "actif",
+   "date": "2026-10-30",
+   "fournisseur": "CAME",
+   "statutCommande": "brouillon",
+   "observations": "",
+   "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+   "delaiLivraison": 7,
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 12,
+     "prixUnitaire": 650,
+     "montant": 7800
+    },
+    {
+     "produitId": "PRD0002",
+     "produit": "ACCUZON",
+     "unite": "Unité",
+     "quantite": 3,
+     "prixUnitaire": 1000,
+     "montant": 3000
+    }
+   ],
+   "montant": 10800,
+   "reference": "BC-2026-0016"
+  },
+  {
+   "id": "COMxmvvapo7swp2bp",
+   "statut": "actif",
+   "reference": "BC-2098-0114",
+   "date": "2098-02-01",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 10,
+     "prixUnitaire": 650,
+     "montant": 6500
+    }
+   ],
+   "montant": 6500,
+   "statutCommande": "validee",
+   "delaiLivraison": 7,
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-10-30"
+  },
+  {
+   "id": "COMxmvvapo5aiaor9",
+   "statut": "actif",
+   "reference": "BC-2098-0113",
+   "date": "2098-02-01",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 10,
+     "prixUnitaire": 650,
+     "montant": 6500
+    }
+   ],
+   "montant": 6500,
+   "statutCommande": "attente_validation",
+   "delaiLivraison": 7
+  },
+  {
+   "id": "COMxmvvapny7olvg6",
+   "statut": "actif",
+   "reference": "BC-2098-0112",
+   "date": "2098-02-01",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d'Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0001",
+     "produit": "ABAISSE LANGUE",
+     "unite": "Unité",
+     "quantite": 10,
+     "prixUnitaire": 650,
+     "montant": 6500
+    }
+   ],
+   "montant": 6500,
+   "statutCommande": "validee",
+   "delaiLivraison": 7,
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-10-30"
+  },
+  {
+   "id": "BC0001",
+   "statut": "actif",
+   "reference": "BC-2026-0001",
+   "date": "2026-07-24",
+   "fournisseur": "NATIFOURN",
+   "fournisseurNom": "NATI Fournitures",
+   "lignes": [
+    {
+     "produitId": "PRD0026",
+     "produit": "CACL 1 G INJ",
+     "unite": "Ampoule",
+     "quantite": 136,
+     "prixUnitaire": 500,
+     "montant": 68000
+    },
+    {
+     "produitId": "PRD0050",
+     "produit": "COTON CARDE",
+     "unite": "Unité",
+     "quantite": 41,
+     "prixUnitaire": 650,
+     "montant": 26650
+    }
+   ],
+   "montant": 94650,
+   "statutCommande": "livree",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-08-13",
+   "delaiLivraison": 2
+  },
+  {
+   "id": "BC0002",
+   "statut": "actif",
+   "reference": "BC-2026-0002",
+   "date": "2026-05-06",
+   "fournisseur": "NATIFOURN",
+   "fournisseurNom": "NATI Fournitures",
+   "lignes": [
+    {
+     "produitId": "PRD0105",
+     "produit": "MORPHINE 10 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 72,
+     "prixUnitaire": 1270,
+     "montant": 91440
+    },
+    {
+     "produitId": "PRD0159",
+     "produit": "SONDE VESICALE 2 VOIES N°18",
+     "unite": "Unité",
+     "quantite": 129,
+     "prixUnitaire": 700,
+     "montant": 90300
+    },
+    {
+     "produitId": "PRD0175",
+     "produit": "TUBE BOUCHON ROUGE EN VERRE",
+     "unite": "Unité",
+     "quantite": 293,
+     "prixUnitaire": 3400,
+     "montant": 996200
+    }
+   ],
+   "montant": 1177940,
+   "statutCommande": "soldee",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-06-03",
+   "delaiLivraison": 2
+  },
+  {
+   "id": "BC0003",
+   "statut": "actif",
+   "reference": "BC-2026-0003",
+   "date": "2026-04-19",
+   "fournisseur": "MEDIPLUS",
+   "fournisseurNom": "MEDIPLUS Équipements",
+   "lignes": [
+    {
+     "produitId": "PRD0147",
+     "produit": "SPASFON 40 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 71,
+     "prixUnitaire": 538,
+     "montant": 38198
+    },
+    {
+     "produitId": "PRD0066",
+     "produit": "FILTRE ANTI BACTERIEN ENFANT",
+     "unite": "Unité",
+     "quantite": 190,
+     "prixUnitaire": 2000,
+     "montant": 380000
+    },
+    {
+     "produitId": "PRD0065",
+     "produit": "FILTRE ANTI BACTERIEN ADULTE",
+     "unite": "Unité",
+     "quantite": 129,
+     "prixUnitaire": 2000,
+     "montant": 258000
+    },
+    {
+     "produitId": "PRD0077",
+     "produit": "GLYCEMIE CAPILLAIRE",
+     "unite": "Unité",
+     "quantite": 183,
+     "prixUnitaire": 1000,
+     "montant": 183000
+    }
+   ],
+   "montant": 859198,
+   "statutCommande": "livree",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-06-07",
+   "delaiLivraison": 14
+  },
+  {
+   "id": "BC0004",
+   "statut": "actif",
+   "reference": "BC-2026-0004",
+   "date": "2026-03-29",
+   "fournisseur": "MEDIPLUS",
+   "fournisseurNom": "MEDIPLUS Équipements",
+   "lignes": [
+    {
+     "produitId": "PRD0029",
+     "produit": "CANNULE DE GUEDELE N°2",
+     "unite": "Unité",
+     "quantite": 283,
+     "prixUnitaire": 500,
+     "montant": 141500
+    },
+    {
+     "produitId": "PRD0115",
+     "produit": "PERFUSEUR",
+     "unite": "Unité",
+     "quantite": 11,
+     "prixUnitaire": 150,
+     "montant": 1650
+    },
+    {
+     "produitId": "PRD0135",
+     "produit": "SONDE D’ASPIRATION N°06",
+     "unite": "Unité",
+     "quantite": 160,
+     "prixUnitaire": 396,
+     "montant": 63360
+    },
+    {
+     "produitId": "PRD0009",
+     "produit": "AMINOPHYLLINE 250 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 161,
+     "prixUnitaire": 500,
+     "montant": 80500
+    }
+   ],
+   "montant": 287010,
+   "statutCommande": "soldee",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-03-31",
+   "delaiLivraison": 14
+  },
+  {
+   "id": "BC0005",
+   "statut": "actif",
+   "reference": "BC-2026-0005",
+   "date": "2026-06-10",
+   "fournisseur": "MEDIPLUS",
+   "fournisseurNom": "MEDIPLUS Équipements",
+   "lignes": [
+    {
+     "produitId": "PRD0009",
+     "produit": "AMINOPHYLLINE 250 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 289,
+     "prixUnitaire": 500,
+     "montant": 144500
+    },
+    {
+     "produitId": "PRD0087",
+     "produit": "KETAMINE 50MG/ML 10ML INJ",
+     "unite": "Ampoule",
+     "quantite": 299,
+     "prixUnitaire": 3961,
+     "montant": 1184339
+    },
+    {
+     "produitId": "PRD0069",
+     "produit": "SERUM GLUCOSE 10% 250 ML",
+     "unite": "Poche",
+     "quantite": 219,
+     "prixUnitaire": 550,
+     "montant": 120450
+    }
+   ],
+   "montant": 1449289,
+   "statutCommande": "livree",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-04-12",
+   "delaiLivraison": 14
+  },
+  {
+   "id": "BC0006",
+   "statut": "actif",
+   "reference": "BC-2026-0006",
+   "date": "2026-02-03",
+   "fournisseur": "NATIFOURN",
+   "fournisseurNom": "NATI Fournitures",
+   "lignes": [
+    {
+     "produitId": "PRD0055",
+     "produit": "DICLOFENAC 75 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 232,
+     "prixUnitaire": 145,
+     "montant": 33640
+    },
+    {
+     "produitId": "PRD0131",
+     "produit": "SONDE D’ASPIRATION N°10",
+     "unite": "Unité",
+     "quantite": 247,
+     "prixUnitaire": 250,
+     "montant": 61750
+    },
+    {
+     "produitId": "PRD0053",
+     "produit": "DEXAMETHASONE 4 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 25,
+     "prixUnitaire": 350,
+     "montant": 8750
+    }
+   ],
+   "montant": 104140,
+   "statutCommande": "soldee",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-08-10",
+   "delaiLivraison": 2
+  },
+  {
+   "id": "BC0007",
+   "statut": "actif",
+   "reference": "BC-2026-0007",
+   "date": "2026-08-05",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0105",
+     "produit": "MORPHINE 10 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 200,
+     "prixUnitaire": 1270,
+     "montant": 254000
+    },
+    {
+     "produitId": "PRD0032",
+     "produit": "CANNUL DE GUEDELLE N°5",
+     "unite": "Unité",
+     "quantite": 288,
+     "prixUnitaire": 500,
+     "montant": 144000
+    },
+    {
+     "produitId": "PRD0025",
+     "produit": "BUPIVACAINE HYPERBARE/4ML",
+     "unite": "Unité",
+     "quantite": 208,
+     "prixUnitaire": 549,
+     "montant": 114192
+    }
+   ],
+   "montant": 512192,
+   "statutCommande": "livree",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-05-25",
+   "delaiLivraison": 7
+  },
+  {
+   "id": "BC0008",
+   "statut": "actif",
+   "reference": "BC-2026-0008",
+   "date": "2026-05-05",
+   "fournisseur": "LABOTECH",
+   "fournisseurNom": "LABOTECH Réactifs",
+   "lignes": [
+    {
+     "produitId": "PRD0066",
+     "produit": "FILTRE ANTI BACTERIEN ENFANT",
+     "unite": "Unité",
+     "quantite": 217,
+     "prixUnitaire": 2000,
+     "montant": 434000
+    },
+    {
+     "produitId": "PRD0120",
+     "produit": "PRIMPERAN 10 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 113,
+     "prixUnitaire": 150,
+     "montant": 16950
+    },
+    {
+     "produitId": "PRD0145",
+     "produit": "SONDE NASOGASTRIQUE N°08",
+     "unite": "Unité",
+     "quantite": 157,
+     "prixUnitaire": 700,
+     "montant": 109900
+    },
+    {
+     "produitId": "PRD0050",
+     "produit": "COTON CARDE",
+     "unite": "Unité",
+     "quantite": 81,
+     "prixUnitaire": 650,
+     "montant": 52650
+    }
+   ],
+   "montant": 613500,
+   "statutCommande": "soldee",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-05-12",
+   "delaiLivraison": 10
+  },
+  {
+   "id": "BC0009",
+   "statut": "actif",
+   "reference": "BC-2026-0009",
+   "date": "2026-06-22",
+   "fournisseur": "NATIFOURN",
+   "fournisseurNom": "NATI Fournitures",
+   "lignes": [
+    {
+     "produitId": "PRD0020",
+     "produit": "BILPATRIX 10 CM",
+     "unite": "Unité",
+     "quantite": 114,
+     "prixUnitaire": 1900,
+     "montant": 216600
+    },
+    {
+     "produitId": "PRD0074",
+     "produit": "GENTAMICINE 80 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 91,
+     "prixUnitaire": 150,
+     "montant": 13650
+    },
+    {
+     "produitId": "PRD0003",
+     "produit": "ACE MISO 200 µg 1 CP",
+     "unite": "Comprimé",
+     "quantite": 49,
+     "prixUnitaire": 250,
+     "montant": 12250
+    }
+   ],
+   "montant": 242500,
+   "statutCommande": "soldee",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-06-23",
+   "delaiLivraison": 2
+  },
+  {
+   "id": "BC0010",
+   "statut": "actif",
+   "reference": "BC-2026-0010",
+   "date": "2026-03-21",
+   "fournisseur": "CAME",
+   "fournisseurNom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+   "lignes": [
+    {
+     "produitId": "PRD0091",
+     "produit": "LAMELLE COUVRE OBJET B/100",
+     "unite": "Boîte",
+     "quantite": 252,
+     "prixUnitaire": 2500,
+     "montant": 630000
+    },
+    {
+     "produitId": "PRD0162",
+     "produit": "SONDE VESICALE 3 VOIES N°20",
+     "unite": "Unité",
+     "quantite": 122,
+     "prixUnitaire": 1500,
+     "montant": 183000
+    }
+   ],
+   "montant": 813000,
+   "statutCommande": "validee",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-06-09",
+   "delaiLivraison": 7
+  },
+  {
+   "id": "BC0011",
+   "statut": "actif",
+   "reference": "BC-2026-0011",
+   "date": "2026-07-17",
+   "fournisseur": "MEDIPLUS",
+   "fournisseurNom": "MEDIPLUS Équipements",
+   "lignes": [
+    {
+     "produitId": "PRD0153",
+     "produit": "SERINGUE 10 CC",
+     "unite": "Unité",
+     "quantite": 293,
+     "prixUnitaire": 100,
+     "montant": 29300
+    },
+    {
+     "produitId": "PRD0177",
+     "produit": "VECURO-M",
+     "unite": "Unité",
+     "quantite": 72,
+     "prixUnitaire": 1350,
+     "montant": 97200
+    }
+   ],
+   "montant": 126500,
+   "statutCommande": "validee",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-02-19",
+   "delaiLivraison": 14
+  },
+  {
+   "id": "BC0012",
+   "statut": "actif",
+   "reference": "BC-2026-0012",
+   "date": "2026-08-09",
+   "fournisseur": "NATIFOURN",
+   "fournisseurNom": "NATI Fournitures",
+   "lignes": [
+    {
+     "produitId": "PRD0073",
+     "produit": "GEL ECHO",
+     "unite": "Flacon",
+     "quantite": 182,
+     "prixUnitaire": 650,
+     "montant": 118300
+    },
+    {
+     "produitId": "PRD0142",
+     "produit": "SONDE NASOGASTRIQUE N°16",
+     "unite": "Unité",
+     "quantite": 17,
+     "prixUnitaire": 700,
+     "montant": 11900
+    }
+   ],
+   "montant": 130200,
+   "statutCommande": "livree",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-07-03",
+   "delaiLivraison": 2
+  },
+  {
+   "id": "BC0013",
+   "statut": "actif",
+   "reference": "BC-2026-0013",
+   "date": "2026-06-24",
+   "fournisseur": "NATIFOURN",
+   "fournisseurNom": "NATI Fournitures",
+   "lignes": [
+    {
+     "produitId": "PRD0012",
+     "produit": "ARTESUNATE 60 MG INJ",
+     "unite": "Ampoule",
+     "quantite": 186,
+     "prixUnitaire": 1084,
+     "montant": 201624
+    },
+    {
+     "produitId": "PRD0121",
+     "produit": "PROTECTION ADULTE",
+     "unite": "Unité",
+     "quantite": 160,
+     "prixUnitaire": 1000,
+     "montant": 160000
+    },
+    {
+     "produitId": "PRD0107",
+     "produit": "NORISTERAT/LAAFIA INJ",
+     "unite": "Ampoule",
+     "quantite": 65,
+     "prixUnitaire": 450,
+     "montant": 29250
+    }
+   ],
+   "montant": 390874,
+   "statutCommande": "attente_validation",
+   "valideePar": null,
+   "dateValidation": null,
+   "delaiLivraison": 2
+  },
+  {
+   "id": "BC0014",
+   "statut": "actif",
+   "reference": "BC-2026-0014",
+   "date": "2026-07-31",
+   "fournisseur": "LABOTECH",
+   "fournisseurNom": "LABOTECH Réactifs",
+   "lignes": [
+    {
+     "produitId": "PRD0018",
+     "produit": "BECTACEF 1G INJ",
+     "unite": "Ampoule",
+     "quantite": 83,
+     "prixUnitaire": 2350,
+     "montant": 195050
+    },
+    {
+     "produitId": "PRD0005",
+     "produit": "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+     "unite": "Ampoule",
+     "quantite": 148,
+     "prixUnitaire": 549,
+     "montant": 81252
+    },
+    {
+     "produitId": "PRD0113",
+     "produit": "PARACETAMOL 1G INJ",
+     "unite": "Ampoule",
+     "quantite": 292,
+     "prixUnitaire": 1350,
+     "montant": 394200
+    }
+   ],
+   "montant": 670502,
+   "statutCommande": "livree",
+   "valideePar": "TAKI Alimatou",
+   "dateValidation": "2026-03-11",
+   "delaiLivraison": 10
+  },
+  {
+   "id": "BC0015",
+   "statut": "actif",
+   "reference": "BC-2026-0015",
+   "date": "2026-06-01",
+   "fournisseur": "SOBAPS",
+   "fournisseurNom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+   "lignes": [
+    {
+     "produitId": "PRD0176",
+     "produit": "TUBE BOUCHON VIOLET",
+     "unite": "Unité",
+     "quantite": 260,
+     "prixUnitaire": 839,
+     "montant": 218140
+    },
+    {
+     "produitId": "PRD0058",
+     "produit": "DRAIN DE REDON N°16",
+     "unite": "Unité",
+     "quantite": 25,
+     "prixUnitaire": 2188,
+     "montant": 54700
+    }
+   ],
+   "montant": 272840,
+   "statutCommande": "attente_validation",
+   "valideePar": null,
+   "dateValidation": null,
+   "delaiLivraison": 5
+  }
+ ]
+}

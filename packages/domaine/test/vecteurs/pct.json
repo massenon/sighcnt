@@ -1,0 +1,131 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "valeur": 0,
+    "decimales": null
+   },
+   "sortie": "0.0 %"
+  },
+  {
+   "entree": {
+    "valeur": 0,
+    "decimales": 0
+   },
+   "sortie": "0 %"
+  },
+  {
+   "entree": {
+    "valeur": 0,
+    "decimales": 2
+   },
+   "sortie": "0.00 %"
+  },
+  {
+   "entree": {
+    "valeur": 5,
+    "decimales": null
+   },
+   "sortie": "5.0 %"
+  },
+  {
+   "entree": {
+    "valeur": 5,
+    "decimales": 0
+   },
+   "sortie": "5 %"
+  },
+  {
+   "entree": {
+    "valeur": 5,
+    "decimales": 2
+   },
+   "sortie": "5.00 %"
+  },
+  {
+   "entree": {
+    "valeur": 12.345,
+    "decimales": null
+   },
+   "sortie": "12.3 %"
+  },
+  {
+   "entree": {
+    "valeur": 12.345,
+    "decimales": 0
+   },
+   "sortie": "12 %"
+  },
+  {
+   "entree": {
+    "valeur": 12.345,
+    "decimales": 2
+   },
+   "sortie": "12.35 %"
+  },
+  {
+   "entree": {
+    "valeur": 100,
+    "decimales": null
+   },
+   "sortie": "100.0 %"
+  },
+  {
+   "entree": {
+    "valeur": 100,
+    "decimales": 0
+   },
+   "sortie": "100 %"
+  },
+  {
+   "entree": {
+    "valeur": 100,
+    "decimales": 2
+   },
+   "sortie": "100.00 %"
+  },
+  {
+   "entree": {
+    "valeur": 0.04,
+    "decimales": null
+   },
+   "sortie": "0.0 %"
+  },
+  {
+   "entree": {
+    "valeur": 0.04,
+    "decimales": 0
+   },
+   "sortie": "0 %"
+  },
+  {
+   "entree": {
+    "valeur": 0.04,
+    "decimales": 2
+   },
+   "sortie": "0.04 %"
+  },
+  {
+   "entree": {
+    "valeur": -3,
+    "decimales": null
+   },
+   "sortie": "-3.0 %"
+  },
+  {
+   "entree": {
+    "valeur": -3,
+    "decimales": 0
+   },
+   "sortie": "-3 %"
+  },
+  {
+   "entree": {
+    "valeur": -3,
+    "decimales": 2
+   },
+   "sortie": "-3.00 %"
+  }
+ ]
+}

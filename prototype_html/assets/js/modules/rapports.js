@@ -11,7 +11,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* Rattachement de chaque état à l'écran qui sait le produire. */
   var ECRANS = {
@@ -301,8 +301,8 @@
           ],
           rh: [
             { k: 'Effectif total', v: C.num(personnel.length) },
-            { k: 'Masse salariale de base', v: C.money(C.sum(personnel, 'salaireBase')) },
-            { k: 'Salaire moyen', v: C.money(personnel.length ? C.sum(personnel, 'salaireBase') / personnel.length : 0) },
+            { k: 'Masse salariale de base', v: C.moneyOu(C.sumOuNul(personnel, 'salaireBase'), 'Non renseignée') },
+            { k: 'Salaire moyen', v: C.moneyOu(C.moyenneOuNul(personnel, 'salaireBase'), 'Non renseigné') },
             { k: 'Services représentés', v: C.num(Object.keys(C.groupBy(personnel, 'service')).length) },
           ],
           comptable: [

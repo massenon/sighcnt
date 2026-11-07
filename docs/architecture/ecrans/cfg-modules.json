@@ -1,0 +1,60 @@
+{
+ "id": "cfg-modules",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Activité des modules",
+ "acces": "ouvert",
+ "titre": "Activité des modules",
+ "description": "Ouvrir ou fermer les activités que la clinique exerce. Un module fermé disparaît du menu sans rien perdre.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Activité des modules"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Une activité fermée n’est pas supprimée. Ses écrans, ses données de démonstration et son paramétrage restent en place : rouvrir l’activité les rend en l’état. C’est ce qui distingue cette page d’une suppression, et ce qui permet de fermer sans crainte.",
+  "Fermer un module n’empêche jamais un autre de travailler. Les stocks, la paie ou les ressources humaines fonctionnent Accueil et Soins fermés : les files que le module fermé alimentait cessent simplement de se remplir, ses données restent en place, et la saisie directe des autres postes demeure ouverte — c’est la doctrine du laboratoire (saisie manuelle) et de l’accueil externe, appliquée partout."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Écrans au périmètre",
+  "Activités fermées",
+  "Écrans retirés du menu",
+  "Écrans ouverts"
+ ],
+ "cartes": [
+  "Activités pilotées",
+  "Modules du logiciel — activer seulement ce que l’établissement exerce",
+  "Écrans actuellement retirés du méga-menu"
+ ],
+ "tableaux": [
+  [
+   "Activité",
+   "Module",
+   "État",
+   "Motif",
+   "Depuis le",
+   "Actions"
+  ],
+  [
+   "Écran",
+   "Module",
+   "Domaine",
+   "Motif"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Piloter une activité"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

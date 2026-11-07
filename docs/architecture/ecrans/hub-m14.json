@@ -1,0 +1,30 @@
+{
+ "id": "hub-m14",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Sécurité & Utilisateurs",
+ "acces": "ouvert",
+ "titre": "Sécurité & Utilisateurs",
+ "description": "Tous les écrans du module M14 — Sécurité & Utilisateurs.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs"
+ ],
+ "actions": [
+  "Utilisateurs",
+  "Rôles & permissions (RBAC)",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [
+  "Configuration Clinique"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

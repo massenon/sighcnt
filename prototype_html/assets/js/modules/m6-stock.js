@@ -16,7 +16,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
   var SEUIL_PEREMPTION = 90; /* jours — paramétrable (RG-05) */
 
   /* ==========================================================================
@@ -1361,13 +1361,14 @@
         ];
       },
       onCreate: function () { return { date: C.iso(AUJ), type: 'entree', stockType: 'gros' }; },
-      transform: function (v) {
+      transform: function (v, record) {
         var p = produits().filter(function (x) { return x.id === v.produitId; })[0];
         if (p) v.produit = p.designation;
         var t = D.TYPES_MOUVEMENT.filter(function (x) { return x.id === v.type; })[0];
         if (t) v.typeLabel = t.label;
         v.utilisateur = S.currentUser();
-        if (!v.reference) v.reference = C.nextRef('M', 6);
+        /* Un mouvement ÉDITÉ garde son numéro : la maquette en attribuait un nouveau à chaque modification (E19). */
+        if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('M', 6, S.collection('mouvements').all()); /* série lue sur les mouvements existants (E17) */
         return v;
       },
       beforeSave: function (v) {
@@ -1835,7 +1836,7 @@
     render: function (root) {
       var p = C.params();
       var col = S.collection('inventaires', { module: 'M6', entite: 'Inventaire' });
-      var retour = p.retour || 'm6-inventaires';
+      var retour = p.retour || 'm6-inventaire';
 
       var entete = {
         magasin: p.magasin === 'detail' ? 'detail' : 'gros',
@@ -1984,7 +1985,7 @@
         var vals = toutes();
         var ecarts = vals.filter(function (x) { return x.ecart !== 0; });
         var enr = {
-          reference: C.nextRef('INV-', 4),
+          reference: C.referenceSuivante('INV-', 4, col.all()), /* série lue sur les inventaires existants (E17) */
           date: entete.date, type: entete.type, perimetre: entete.perimetre,
           magasin: entete.magasin, magasinLabel: magasinLabel,
           operateur: entete.operateur, statutInv: 'valide',
@@ -2010,7 +2011,7 @@
           else maj.stockGros = Math.max(0, (pr.stockGros || 0) + x.ecart);
           S.collection('produits').update(pr.id, maj);
           var mv = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({
-            reference: C.nextRef('M', 6), date: entete.date,
+            reference: C.referenceSuivante('M', 6, S.collection('mouvements').all()), date: entete.date, /* (E17) */
             produitId: pr.id, produit: pr.designation,
             type: 'inventaire', typeLabel: 'Régularisation inventaire',
             quantite: Math.abs(x.ecart), stockType: entete.magasin,
@@ -2108,6 +2109,11 @@
               { value: 'peremption', label: 'Péremption' },
               { value: 'perte', label: 'Perte ou disparition' }],
           },
+          {
+            name: 'magasin', label: 'Magasin concerné', type: 'select', required: true,
+            options: [{ value: 'detail', label: 'Pharmacie (détail)' }, { value: 'gros', label: 'Magasin central (gros)' }],
+            hint: 'La perte décroît le stock de CE magasin, et le total qui en découle.',
+          },
           { name: 'quantite', label: 'Quantité perdue', type: 'number', required: true, min: 1 },
           { name: 'date', label: 'Date du constat', type: 'date', required: true },
           {
@@ -2116,7 +2122,7 @@
           },
           { name: 'constatePar', label: 'Constaté par', type: 'text', required: true },
           { name: 'observation', label: 'Circonstances', type: 'textarea', rows: 2, col: 'full' },
-        ], { date: C.iso(AUJ), type: 'casse', quantite: 1, constatePar: S.currentUser() });
+        ], { date: C.iso(AUJ), type: 'casse', magasin: 'detail', quantite: 1, constatePar: S.currentUser() });
 
         var m = U.modal({
           title: 'Déclarer une perte', size: 'lg',
@@ -2137,41 +2143,48 @@
                 var prod = prods.filter(function (x) { return x.id === v.produitId; })[0];
                 if (!prod) return;
                 var q = Number(v.quantite) || 0;
-                var dispo = prod.stock != null ? prod.stock : 0;
+                var champMag = v.magasin === 'gros' ? 'stockGros' : 'stockDetail';
+                var dispo = prod[champMag] != null ? prod[champMag] : 0;
+                var totalAvant = prod.stock != null ? prod.stock : 0;
                 /* RG-03 : le stock ne peut jamais devenir négatif. Refuser en
                    NOMMANT la ligne, plutôt que de laisser passer un stock
                    impossible qu'un inventaire découvrirait des mois plus tard. */
                 if (q > dispo) {
                   U.toast('Perte supérieure au stock.', {
                     type: 'error',
-                    detail: prod.designation + ' — ' + C.num(dispo) + ' en stock, ' + C.num(q) + ' déclaré(s). '
+                    detail: prod.designation + ' — ' + C.num(dispo) + ' en stock (' + (v.magasin === 'gros' ? 'magasin central' : 'pharmacie') + '), ' + C.num(q) + ' déclaré(s). '
                       + 'RG-03 : le stock ne peut pas devenir négatif.',
                   });
                   return;
                 }
                 var valeurPerte = q * (prod.cump || 0);
                 var res = colMouvements().insert({
-                  reference: C.nextRef('MVT-', 5),
+                  reference: C.referenceSuivante('MVT-', 5, colMouvements().all()), /* (E17) */
                   date: v.date, type: v.type,
+                  typeLabel: (D.TYPES_MOUVEMENT.filter(function (x) { return x.id === v.type; })[0] || {}).label, /* sans lui, la colonne « Nature » du registre restait vide (E18) */
                   produitId: prod.id, produit: prod.designation, unite: prod.unite,
-                  quantite: q, sens: 'sortie',
+                  quantite: q, sens: 'sortie', stockType: v.magasin,
                   valeur: valeurPerte, cump: prod.cump || 0,
                   justificatif: v.justificatif, constatePar: v.constatePar,
                   observation: v.observation || null,
                   utilisateur: S.currentUser(),
                 });
-                S.collection('produits').update(prod.id, { stock: dispo - q });
+                var majPerte = { stock: Math.max(0, totalAvant - q) };
+                majPerte[champMag] = dispo - q;
+                var avantPerte = { stock: totalAvant };
+                avantPerte[champMag] = dispo;
+                S.collection('produits').update(prod.id, majPerte);
                 S.log('Déclaration de perte', 'M6', 'MouvementStock', res.record.reference,
-                  { stock: dispo }, { stock: dispo - q, type: v.type, valeur: valeurPerte });
+                  avantPerte, Object.assign({ type: v.type, valeur: valeurPerte, magasin: v.magasin }, majPerte));
                 m.close();
                 afficherPertes();
                 U.toast('Perte déclarée.', {
                   type: 'success', duration: 8000,
                   detail: prod.designation + ' — ' + C.num(q) + ' ' + (prod.unite || '')
-                    + ', ' + C.money(valeurPerte) + ' au CUMP. Stock ramené à ' + C.num(dispo - q) + '.',
+                    + ', ' + C.money(valeurPerte) + ' au CUMP. Stock du magasin ramené à ' + C.num(dispo - q) + '.',
                   undo: function () {
                     res.undo();
-                    S.collection('produits').update(prod.id, { stock: dispo });
+                    S.collection('produits').update(prod.id, avantPerte);
                     afficherPertes();
                   },
                   undoMessage: 'Déclaration annulée — le stock est rétabli.',
@@ -2499,7 +2512,7 @@
                 if (!panier.length) { U.toast('Ajouter au moins un produit.', { type: 'error' }); return; }
                 var p = pats.filter(function (x) { return x.id === selPatient.value; })[0];
                 var enr = {
-                  reference: C.nextRef('DISP-', 5), date: C.iso(AUJ),
+                  reference: C.nextRef('DISP-', 5), date: C.iso(C.aujourdhui()),
                   patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code,
                   lignes: panier.slice(), montant: C.sum(panier, function (l) { return l.quantite * l.prix; }),
                   dispensePar: S.currentUser(),
@@ -2669,8 +2682,10 @@
       var grille = el('div.grid.gap-3', { class: 'sm:grid-cols-2 lg:grid-cols-3' });
       C.sortBy(Object.keys(parEmplacement).map(function (k) { return { k: k, items: parEmplacement[k] }; }), 'k').forEach(function (x) {
         var carte = el('div.rounded-xl.border.border-slate-200.bg-white.p-3.shadow-card');
+        /* `groupBy` fait de l'absence d'emplacement la CHAÎNE « undefined » : la carte s'intitulait « undefined » (écart E48, corrigé le 30/10/2026). */
+        var casier = (x.k && x.k !== 'undefined') ? x.k : 'Sans emplacement';
         carte.appendChild(el('div.mb-2.flex.items-center.justify-between', null, [
-          el('span.text-sm.font-semibold.text-slate-800', { text: x.k || 'Sans emplacement' }),
+          el('span.text-sm.font-semibold.text-slate-800', { text: casier }),
           U.badge(x.items.length + ' article' + (x.items.length > 1 ? 's' : ''), 'navy'),
         ]));
         var ul = el('ul.space-y-1');
@@ -2683,7 +2698,7 @@
         if (x.items.length > 6) ul.appendChild(el('li.text-xs.text-slate-400', { text: '+ ' + (x.items.length - 6) + ' autre(s)' }));
         carte.appendChild(ul);
         carte.appendChild(K.btn('Étiquettes', {
-          size: 'sm', icon: 'tag', onclick: function () { etiquettes(x.items, x.k); },
+          size: 'sm', icon: 'tag', onclick: function () { etiquettes(x.items, casier); },
         }));
         grille.appendChild(carte);
       });
@@ -2740,13 +2755,13 @@
   /* ==========================================================================
    * REPRISE SAGE 100 — traçabilité du stock initial
    * ======================================================================== */
-  global.SIGH.screen('m6-reprise', {
-    title: 'Reprise SAGE 100',
-    description: 'Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock.',
-    regle: 'Le stock initial n’a pas été saisi manuellement : il provient de l’<strong>import de l’inventaire SAGE 100</strong>. '
-      + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises '
-      + 'des mouvements opérationnels ultérieurs.',
-    render: function (root) {
+  /* LE STOCK REPRIS : TRAÇABILITÉ ET VALORISATION (E2158, corrigé le 06/11/2026). Deux lots du 01/11 avaient enregistré le MÊME
+     identifiant d'écran `m6-import-grand-stock` : celui-ci (la reprise renommée « Importation Grand Stock », E1956) et le jeu
+     d'import du module IMP (E2000). Le dernier script chargé effaçait l'autre : la valorisation du stock repris n'était plus
+     atteignable nulle part, et le scénario qui l'éprouvait tombait sur un onglet absent. Le rendu est désormais une FONCTION,
+     exposée au module IMP qui la pose SOUS le téléversement : un seul écran, deux faces (l'import écrit le Grand Stock, la
+     reprise le suit et le valorise). L'enregistrement d'écran plus bas reste le repli d'une page où `import.js` ne serait pas chargé. */
+  function rendreRepriseGrandStock(conteneur) {
       /* L'écran se redessine après une valorisation : sans cela le compteur
          resterait à 32 alors que la référence vient d'être tarifée, et l'agent
          croirait sa saisie perdue. */
@@ -2754,12 +2769,16 @@
       return null;
 
       function dessiner() {
-      C.clear(root);
+      C.clear(conteneur);
       var SG = global.SIGH.sage;
       var lot = SG.LOT_IMPORT;
       var articles = SG.INVENTAIRE_SAGE;
       var prods = produits();
       var host = el('div.space-y-4');
+      /* La validation est ÉCRITE au magasin (réglage) et relue ici : la constante du
+         lot (data-sage) ne porte jamais l'état de validation. */
+      var validationLot = S.reglage('repriseStock', null);
+      if (validationLot && validationLot.lotReference !== lot.reference) validationLot = null;
 
       var valorises = articles.filter(function (a) { return a.valorise; });
       /* « Non valorisé » veut dire : ni par le document, ni par la clinique.
@@ -2796,7 +2815,7 @@
         ['Contrôle de cohérence', C.sum(articles, 'quantite') === lot.totalUnites
           ? U.badge('Quantités concordantes', 'success')
           : U.badge('Écart de ' + C.num(Math.abs(C.sum(articles, 'quantite') - lot.totalUnites)) + ' unités', 'danger')],
-        ['Validation Gestionnaire de Stock', lot.valideePar ? U.badge(lot.valideePar, 'success') : U.badge('En attente', 'warning')],
+        ['Validation Gestionnaire de Stock', validationLot ? U.badge(validationLot.valideePar + ', le ' + C.dateFR(validationLot.valideeLe), 'success') : U.badge('En attente', 'warning')],
       ], 'grid-cols-1 sm:grid-cols-2'), [
         /* La validation de la reprise ENGAGE le Gestionnaire de Stock et
            est journalisée : elle n'est pas offerte à qui ne fait que lire. */
@@ -2811,7 +2830,20 @@
               confirmLabel: 'Valider la reprise',
             }).then(function (ok) {
               if (!ok) return;
-              S.log('Validation', 'M6', 'LotImportStock', lot.reference, null, { valideePar: S.currentUser() });
+              var deja = S.reglage('repriseStock', null);
+              if (deja && deja.lotReference === lot.reference) {
+                U.toast('Reprise déjà validée.', {
+                  type: 'error',
+                  detail: 'REPRISE_DEJA_VALIDEE : le lot ' + lot.reference + ' a été validé par ' + deja.valideePar
+                    + ' le ' + C.dateFR(deja.valideeLe) + '. Une validation ne se rejoue pas.',
+                });
+                dessiner();
+                return;
+              }
+              var fiche = { lotReference: lot.reference, valideePar: S.currentUser(), valideeLe: new Date().toISOString().slice(0, 10) };
+              S.setReglage('repriseStock', fiche);
+              S.log('Validation', 'M6', 'LotImportStock', lot.reference, null, { valideePar: fiche.valideePar, valideeLe: fiche.valideeLe });
+              dessiner();
               U.toast('Reprise validée.', { type: 'success', detail: 'Le stock initial devient la situation de référence.' });
             });
           },
@@ -3018,9 +3050,18 @@
       ]));
 
       host.appendChild(K.source('Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026.'));
-      root.appendChild(host);
+      conteneur.appendChild(host);
       }
-    },
+  }
+  global.SIGH.rendreRepriseGrandStock = rendreRepriseGrandStock;
+
+  global.SIGH.screen('m6-import-grand-stock', {
+    title: 'Importation Grand Stock',
+    description: 'Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock.',
+    regle: 'Le stock initial n’a pas été saisi manuellement : il provient de l’<strong>import de l’inventaire SAGE 100</strong>. '
+      + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises '
+      + 'des mouvements opérationnels ultérieurs.',
+    render: rendreRepriseGrandStock,
   });
 
   /* ==========================================================================
@@ -3057,7 +3098,9 @@
   function voieDe(ligne, produit) {
     if (ligne && ligne.voie) return ligne.voie;
     var f = String((produit && (produit.forme || produit.designation)) || '').toLowerCase();
-    if (/inject|amp\.|ampoule|perfus|solut|iv\b|im\b|flacon/.test(f)) return 'parenterale';
+    /* « inj » : c'est ainsi que le catalogue désigne un injectable (48 désignations sur 184). Sans lui, aucun injectable n'arrivait en
+       pharmacie interne — ils tombaient tous en voie orale (écart E41, corrigé le 30/10/2026). */
+    if (/inject|\binj\b|amp\.|ampoule|perfus|solut|iv\b|im\b|flacon/.test(f)) return 'parenterale';
     return 'orale';
   }
 
@@ -3086,10 +3129,14 @@
                 id: o.id + ':' + i, ordonnance: o, index: i, ligne: l, produit: pr,
                 numero: o.numero, date: o.date, patient: o.patient, patientCode: o.patientCode,
                 designation: l.produit, quantite: l.quantite, posologie: l.posologie,
-                paye: o.statutPaiement === 'payee',
-                delivre: o.statutDispensation === 'delivree',
-                stock: pr ? pr.stock : null,
-                couvert: pr ? pr.stock >= l.quantite : false,
+                /* Les états que le parcours ÉCRIT sont « soldee » (PR.encaisser) et « servie » (PR.delivrer) : comparer à « payee » /
+                   « delivree » laissait toute ordonnance réglée « Non réglée » à jamais (écart E40, corrigé le 30/10/2026). */
+                paye: o.statutPaiement === 'soldee',
+                /* Servie : toute l'ordonnance (PR.delivrer) OU cette ligne (délivrance ligne à ligne ci-dessous). */
+                delivre: o.statutDispensation === 'servie' || (o.lignesServies || []).indexOf(i) !== -1,
+                /* La pharmacie sert sur le stock du DÉTAIL, comme PR.verifierStock. */
+                stock: pr ? (pr.stockDetail != null ? pr.stockDetail : pr.stock) : null,
+                couvert: pr ? (pr.stockDetail != null ? pr.stockDetail : pr.stock) >= l.quantite : false,
               });
             });
           });
@@ -3170,22 +3217,44 @@
             confirmLabel: 'Délivrer',
           }).then(function (ok) {
             if (!ok) return;
-            var avant = r.produit.stock;
-            S.collection('produits').update(r.produit.id, { stock: avant - r.quantite });
+            var avant = r.stock;
+            var prodMaj = { stock: Math.max(0, (r.produit.stock || 0) - r.quantite) };
+            if (r.produit.stockDetail != null) prodMaj.stockDetail = r.produit.stockDetail - r.quantite;
+            S.collection('produits').update(r.produit.id, prodMaj);
+            var valSortie = PR.valoriserSortie ? PR.valoriserSortie(r.produit, r.quantite) : null;
             S.collection('mouvements', { module: 'M6', entite: 'MouvementStock', prefix: 'MVT' }).insert({
-              reference: C.nextRef('MVT-', 5), date: C.iso(new Date()),
+              reference: C.referenceSuivante('MVT-', 5, S.collection('mouvements').all()), date: C.iso(new Date()),
               type: voie === 'parenterale' ? 'delivrance_interne' : 'delivrance_externe',
               produitId: r.produit.id, produit: r.designation,
-              quantite: r.quantite, sens: 'sortie',
-              valeur: r.quantite * (r.produit.prixAchat || 0),
+              quantite: r.quantite, sens: 'sortie', stockType: 'detail',
+              valeur: valSortie ? valSortie.valeur : r.quantite * (r.produit.prixAchat || 0),
+              ordonnanceId: r.ordonnance.id,
+              utilisateur: S.currentUser(),
               /* RG-03 : le justificatif est le numéro d'ordonnance. */
               justificatif: 'Ordonnance ' + r.numero,
               destination: voie === 'parenterale' ? 'Salle de soins' : 'Patient',
             });
-            colOrdonnances6().update(r.ordonnance.id, { statutDispensation: 'delivree' });
-            if (PR.alerterStock) PR.alerterStock(r.produit.id);
+            /* Un statut PAR LIGNE : l'ordonnance n'est « servie » que lorsque TOUTES ses lignes le sont
+               (les lignes de l'autre pharmacie restent à délivrer, sinon elles disparaissaient sans sortie de stock). */
+            var ordCourante = colOrdonnances6().get(r.ordonnance.id) || r.ordonnance;
+            var servies = (ordCourante.lignesServies || []).filter(function (n) { return n !== r.index; }).concat([r.index]);
+            var toutes = (ordCourante.medicaments || []).every(function (_l, n) { return servies.indexOf(n) !== -1; });
+            var majOrd = { lignesServies: servies };
+            if (toutes) {
+              majOrd.statutDispensation = 'servie';
+              majOrd.dispenseLe = new Date().toISOString();
+              majOrd.dispensePar = S.currentUser();
+              PR.taches().filter(function (t) { return t.ordonnanceId === r.ordonnance.id && t.type === 'dispensation'; })
+                .forEach(function (t) { PR.terminer(t.id); });
+            }
+            colOrdonnances6().update(r.ordonnance.id, majOrd);
+            S.log('Dispensation', 'M6', 'ordonnance', r.numero, { ligne: r.index, servies: servies.length - 1 },
+              { ligne: r.index, produit: r.designation, quantite: r.quantite, servies: servies.length, ordonnanceServie: toutes });
+            /* `alerterStock` attend une LISTE d'identifiants : passer l'identifiant nu levait « forEach is not a function » APRÈS l'écriture du
+               mouvement — la vue ne se rafraîchissait pas et le message de succès ne paraissait jamais (écart E44, corrigé le 30/10/2026). */
+            if (PR.alerterStock) PR.alerterStock([r.produit.id], r.numero);
             afficher();
-            U.toast('Délivré — stock ramené à ' + C.num(avant - r.quantite) + '.', {
+            U.toast('Délivré — stock de la pharmacie ramené à ' + C.num(avant - r.quantite) + '.', {
               type: 'success', detail: r.designation + ' — ' + r.patient,
             });
           });
@@ -3352,6 +3421,7 @@
         el('div.flex.flex-wrap.gap-2', null, [
           K.btn('Point détaillé', { variant: 'primary', icon: 'printer', onclick: function () { imprimer(true); } }),
           K.btn('Point global', { icon: 'printer', onclick: function () { imprimer(false); } }),
+          K.btn('Point par patient', { icon: 'users', onclick: function () { imprimer('patient'); } }),
           K.btn('Réinitialiser les filtres', { icon: 'rotate-ccw', size: 'sm', onclick: reinit }),
         ]),
       ]));
@@ -3453,10 +3523,98 @@
         vue.appendChild(U.tabs([
           { id: 'journal', label: 'Journal des ventes', badge: t.pieces, render: function () { return ongletJournal(lignes); } },
           { id: 'clients', label: 'Par client', render: function () { return ongletClients(lignes); } },
+          { id: 'patients', label: 'Par patient', badge: valeurs(comboClient).length || undefined, render: function () { return ongletPatients(lignes); } },
           { id: 'articles', label: 'Par article', render: function () { return ongletArticles(lignes); } },
           { id: 'groupes', label: 'Par groupe et famille', render: function () { return ongletGroupes(lignes); } },
           { id: 'evolution', label: 'Évolution', render: function () { return ongletEvolution(lignes, b); } },
         ]));
+      }
+
+      /* 6. PAR PATIENT — ce qui a été VENDU à chaque patient sélectionné, secteur par
+            secteur : quelles analyses, quels articles, quelles consultations, quels examens
+            d'imagerie médicale. C'est la désignation FACTURÉE (libellé de catalogue), jamais
+            ce qui a été trouvé : un état de ventes ne porte aucune donnée médicale (RG-13).
+            Le rattachement au secteur passe par la fabrique unique du référentiel
+            (`D.groupePrestation`, déjà posée sur chaque ligne) — jamais une seconde règle. */
+      function resteLigne(l) { return Math.max(0, l.partPatient - (l.regle ? l.montantRegle : 0)); }
+      function blocsParPatient(lignes) {
+        var parPatient = C.groupBy(lignes.filter(function (l) { return l.patientId; }), 'patientId');
+        return C.sortBy(Object.keys(parPatient).map(function (id) {
+          var g = parPatient[id], parGroupe = C.groupBy(g, 'groupe');
+          return {
+            id: id, patient: g[0].patient, code: g[0].patientCode, assureur: g[0].assureur,
+            total: cumuler(g),
+            secteurs: D.GROUPES_PRESTATION.map(function (gr) {
+              var l = C.sortBy(parGroupe[gr.id] || [], 'date');
+              return { groupe: gr, lignes: l, total: cumuler(l) };
+            }),
+          };
+        }), 'patient');
+      }
+      function ongletPatients(lignes) {
+        var choisis = valeurs(comboClient);
+        var host = el('div.space-y-4');
+        if (!choisis.length) {
+          host.appendChild(K.note('<strong>Choisissez un ou plusieurs clients</strong> dans le filtre ci-dessus : cet onglet détaille, pour '
+            + 'chacun, ce qui lui a été vendu <em>secteur par secteur</em>.', { tone: 'info', icon: 'user-search' }));
+          return host;
+        }
+        var blocs = blocsParPatient(lignes);
+        if (!blocs.length) { host.appendChild(K.note('Aucune vente sur la période pour les clients retenus.', { tone: 'warning', icon: 'inbox' })); return host; }
+        blocs.forEach(function (p) {
+          var carte = el('div.card');
+          carte.appendChild(el('div.card-head', null, [
+            el('div', null, [el('h3.text-sm.font-semibold.text-slate-900', { text: p.patient }),
+              el('p.text-xs.text-slate-500', { text: (p.code || '—') + (p.assureur ? ' — assuré ' + p.assureur : ' — non assuré') })]),
+            el('div.text-right', null, [el('p.text-xs.text-slate-500', { text: 'Net facturé' }), el('p.text-sm.font-semibold', { text: C.money(p.total.net) })]),
+          ]));
+          var corps = el('div.card-body.space-y-4');
+          p.secteurs.forEach(function (sec) {
+            var entete = el('div.flex.items-center.gap-2', null, [C.icon(sec.groupe.icone || 'tag', 'h-4 w-4 text-navy-600'),
+              el('h4.text-sm.font-semibold.text-slate-800', { text: sec.groupe.label }),
+              el('span.text-xs.text-slate-500', { text: sec.lignes.length ? sec.lignes.length + ' ligne(s) — ' + C.money(sec.total.net) : 'aucune vente' })]);
+            corps.appendChild(entete);
+            if (sec.lignes.length) {
+              corps.appendChild(K.miniTable(['Date', 'Pièce', 'Désignation', 'Qté', 'Net', 'Part assureur', 'Payé', 'Reste dû'],
+                sec.lignes.map(function (l) {
+                  return [C.dateFR(l.date), l.numero, l.designation, C.num(l.quantite), C.money(l.montant, false),
+                    C.money(l.partAssureur, false), C.money(l.regle ? l.montantRegle : 0, false), C.money(resteLigne(l), false)];
+                })));
+            }
+          });
+          carte.appendChild(corps);
+          host.appendChild(carte);
+        });
+        return host;
+      }
+      /* Les pages imprimées : une par patient, six blocs, les secteurs vides DITS. */
+      function pagesPatients(lignes) {
+        var racine = el('div.space-y-4');
+        var blocs = blocsParPatient(lignes);
+        if (!blocs.length) { racine.appendChild(el('p', { text: 'Aucune vente sur la période pour les clients retenus.' })); return racine; }
+        blocs.forEach(function (p) {
+          var page = el('div.space-y-2', { style: 'page-break-before: always' });
+          page.appendChild(el('h3.text-base.font-semibold', { text: 'Patient : ' + p.patient + ' (' + (p.code || '—') + ')' }));
+          page.appendChild(el('p.text-xs', { text: (p.assureur ? 'Assuré ' + p.assureur : 'Non assuré') + ' — ' + p.total.lignes + ' ligne(s), net facturé '
+            + C.money(p.total.net, false) + ', encaissé ' + C.money(p.total.encaisse, false) + '.' }));
+          p.secteurs.forEach(function (sec) {
+            page.appendChild(el('p.font-semibold.mt-2', { text: sec.groupe.label }));
+            if (!sec.lignes.length) { page.appendChild(el('p.text-xs', { text: 'Aucune vente.' })); return; }
+            page.appendChild(P.tableau([
+              { label: 'Date', value: function (l) { return C.dateFR(l.date); } },
+              { label: 'Pièce', value: function (l) { return l.numero; } },
+              { label: 'Désignation', value: function (l) { return l.designation; } },
+              { label: 'Qté', align: 'right', value: function (l) { return C.num(l.quantite); }, somme: function (l) { return l.quantite; }, formatTotal: function (v) { return C.num(v); } },
+              { label: 'Brut', align: 'right', value: function (l) { return C.money(l.montantBrut, false); }, somme: function (l) { return l.montantBrut; } },
+              { label: 'Remise', align: 'right', value: function (l) { return C.money(l.remise, false); }, somme: function (l) { return l.remise; } },
+              { label: 'Part assureur', align: 'right', value: function (l) { return C.money(l.partAssureur, false); }, somme: function (l) { return l.partAssureur; } },
+              { label: 'Payé', align: 'right', value: function (l) { return C.money(l.regle ? l.montantRegle : 0, false); }, somme: function (l) { return l.regle ? l.montantRegle : 0; } },
+              { label: 'Reste dû', align: 'right', value: function (l) { return C.money(resteLigne(l), false); }, somme: function (l) { return resteLigne(l); } },
+            ], sec.lignes, { total: true }));
+          });
+          racine.appendChild(page);
+        });
+        return racine;
       }
 
       /* 1. Le journal — une ligne par pièce, avec le détail des montants payés
@@ -3720,19 +3878,22 @@
 
         var contenu = el('div.space-y-3');
 
-        if (detaille) {
+        if (detaille === 'patient') {
+          contenu.appendChild(pagesPatients(lignes));
+        } else if (detaille) {
           /* Le point DÉTAILLÉ : une ligne par pièce, avec le détail des
              montants payés par chaque client — demande n° 2. */
           var parPiece = C.groupBy(lignes, 'factureId');
           var rows = C.sortBy(Object.keys(parPiece).map(function (k) {
             var g = parPiece[k], tt = cumuler(g), pp = pourcentages(tt);
             return {
-              date: C.dateFR(g[0].date), numero: g[0].numero, client: g[0].patient,
+              date: C.dateFR(g[0].date), dateIso: g[0].date, numero: g[0].numero, client: g[0].patient,
               brut: tt.brut, remise: tt.remise, assureur: tt.assureur,
               personnel: tt.personnel, paye: tt.encaisse, reste: tt.patient - tt.encaisse,
               pcRemise: pp.remise, pcAssureur: pp.assureur, pcPersonnel: pp.personnel,
             };
-          }), 'date');
+          /* Tri sur la date ISO, jamais sur son texte « jj/mm/aaaa » : trié comme texte, le 02/07 précédait le 01/08 (écart E40). */
+          }), 'dateIso');
           /* La cellule imprime son texte, la colonne sait rendre son nombre :
              c'est ce couple qui laisse le pied totaliser ce qui est REELLEMENT
              imprimé, sans que l'appelant fournisse un total. */
@@ -3806,8 +3967,11 @@
             + C.money(t.patient - t.encaisse, false) + ' encore dus.' }),
         ]));
 
+        /* Le point GLOBAL avec des clients retenus : le récapitulatif reste la première page, les pages patient suivent. */
+        if (detaille === false && valeurs(comboClient).length) contenu.appendChild(pagesPatients(lignes));
+
         P.etat({
-          titre: detaille ? 'Point détaillé des ventes' : 'Point global des ventes',
+          titre: detaille === 'patient' ? 'Point des ventes par patient' : (detaille ? 'Point détaillé des ventes' : 'Point global des ventes'),
           sousTitre: C.libellePeriode(b),
           cartouche: [
             ['Période', C.libellePeriode(b)],

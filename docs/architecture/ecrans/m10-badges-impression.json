@@ -1,0 +1,45 @@
+{
+ "id": "m10-badges-impression",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Planche d’impression des badges",
+ "acces": "ouvert",
+ "titre": "Planche d’impression des badges",
+ "description": "Sélection multiple puis pose sur feuille A4 avec repères de découpe, ou impression carte par carte.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Planche d’impression des badges"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "La planche pose dix badges par feuille (2 × 5 au format CR80). Sélectionner davantage de cartes engendre les feuilles nécessaires, dans l’ordre du tableau."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Badges imprimables"
+ ],
+ "tableaux": [
+  [
+   "N° de série",
+   "Agent",
+   "Service",
+   "État",
+   "Photographie",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 0
+}

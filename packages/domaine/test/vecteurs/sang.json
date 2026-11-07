@@ -1,0 +1,2738 @@
+{
+ "groupes": [
+  "O+",
+  "O-",
+  "A+",
+  "A-",
+  "B+",
+  "B-",
+  "AB+",
+  "AB-"
+ ],
+ "sections": [
+  {
+   "id": "hematologie",
+   "label": "Hématologie"
+  },
+  {
+   "id": "serologie",
+   "label": "Sérologie"
+  },
+  {
+   "id": "parasitologie",
+   "label": "Parasitologie"
+  },
+  {
+   "id": "biochimie",
+   "label": "Biochimie"
+  },
+  {
+   "id": "bacteriologie",
+   "label": "Bactériologie"
+  },
+  {
+   "id": "hormonologie",
+   "label": "Hormonologie"
+  }
+ ],
+ "examens": [
+  {
+   "code": "NFS",
+   "designation": "NFS complète (hémogramme)",
+   "section": "hematologie"
+  },
+  {
+   "code": "RETIC",
+   "designation": "Taux de réticulocytes",
+   "section": "hematologie"
+  },
+  {
+   "code": "TS",
+   "designation": "Temps de saignement",
+   "section": "hematologie"
+  },
+  {
+   "code": "TC",
+   "designation": "Temps de coagulation",
+   "section": "hematologie"
+  },
+  {
+   "code": "TP",
+   "designation": "Temps de prothrombine — INR",
+   "section": "hematologie"
+  },
+  {
+   "code": "TCA",
+   "designation": "Temps de céphaline activée (TCA / TCK)",
+   "section": "hematologie"
+  },
+  {
+   "code": "VS",
+   "designation": "Vitesse de sédimentation",
+   "section": "hematologie"
+  },
+  {
+   "code": "GSRH",
+   "designation": "Groupage sanguin — facteur Rhésus",
+   "section": "hematologie"
+  },
+  {
+   "code": "EHB",
+   "designation": "Électrophorèse de l’hémoglobine",
+   "section": "hematologie"
+  },
+  {
+   "code": "AGHBS",
+   "designation": "Recherche AgHBs (hépatite B par test rapide)",
+   "section": "serologie"
+  },
+  {
+   "code": "ACHCV",
+   "designation": "Anticorps anti-HCV",
+   "section": "serologie"
+  },
+  {
+   "code": "ASLO",
+   "designation": "Antistreptolysine O (ASLO)",
+   "section": "serologie"
+  },
+  {
+   "code": "TPHA",
+   "designation": "TPHA (syphilis)",
+   "section": "serologie"
+  },
+  {
+   "code": "VDRL",
+   "designation": "VDRL",
+   "section": "serologie"
+  },
+  {
+   "code": "VIH",
+   "designation": "VIH",
+   "section": "serologie"
+  },
+  {
+   "code": "TOXO",
+   "designation": "Toxoplasmose",
+   "section": "serologie"
+  },
+  {
+   "code": "RUB",
+   "designation": "Rubéole",
+   "section": "serologie"
+  },
+  {
+   "code": "CHLAM",
+   "designation": "Chlamydiase",
+   "section": "serologie"
+  },
+  {
+   "code": "CRP",
+   "designation": "Protéine C-réactive (CRP)",
+   "section": "serologie"
+  },
+  {
+   "code": "TBG",
+   "designation": "Test biologique de grossesse",
+   "section": "serologie"
+  },
+  {
+   "code": "GEDP",
+   "designation": "Goutte épaisse — densité parasitaire",
+   "section": "parasitologie"
+  },
+  {
+   "code": "SDW",
+   "designation": "Sérodiagnostic de Widal",
+   "section": "parasitologie"
+  },
+  {
+   "code": "AKOP",
+   "designation": "AKOP — examen parasitologique des selles",
+   "section": "parasitologie"
+  },
+  {
+   "code": "MICRO",
+   "designation": "Recherche de microfilaires",
+   "section": "parasitologie"
+  },
+  {
+   "code": "BILH",
+   "designation": "Recherche d’œufs de bilharzie",
+   "section": "parasitologie"
+  },
+  {
+   "code": "GLYAJ",
+   "designation": "Glycémie à jeun",
+   "section": "biochimie"
+  },
+  {
+   "code": "GLYPP",
+   "designation": "Glycémie post-prandiale",
+   "section": "biochimie"
+  },
+  {
+   "code": "CREA",
+   "designation": "Créatinine",
+   "section": "biochimie"
+  },
+  {
+   "code": "AZOT",
+   "designation": "Azotémie (urée)",
+   "section": "biochimie"
+  },
+  {
+   "code": "CA",
+   "designation": "Calcémie",
+   "section": "biochimie"
+  },
+  {
+   "code": "MG",
+   "designation": "Magnésémie",
+   "section": "biochimie"
+  },
+  {
+   "code": "IONO",
+   "designation": "Ionogramme sanguin (Na, K, Cl)",
+   "section": "biochimie"
+  },
+  {
+   "code": "TGO",
+   "designation": "Transaminases TGO / TGP",
+   "section": "biochimie"
+  },
+  {
+   "code": "GGT",
+   "designation": "Gamma-GT",
+   "section": "biochimie"
+  },
+  {
+   "code": "CHOLT",
+   "designation": "Cholestérol total",
+   "section": "biochimie"
+  },
+  {
+   "code": "CHOLH",
+   "designation": "Cholestérol HDL",
+   "section": "biochimie"
+  },
+  {
+   "code": "CHOLL",
+   "designation": "Cholestérol LDL",
+   "section": "biochimie"
+  },
+  {
+   "code": "TG",
+   "designation": "Triglycérides",
+   "section": "biochimie"
+  },
+  {
+   "code": "BILI",
+   "designation": "Bilirubine totale, conjuguée et non conjuguée",
+   "section": "biochimie"
+  },
+  {
+   "code": "PROT",
+   "designation": "Protidémie",
+   "section": "biochimie"
+  },
+  {
+   "code": "LIPA",
+   "designation": "Lipasémie",
+   "section": "biochimie"
+  },
+  {
+   "code": "PHOS",
+   "designation": "Phosphorémie",
+   "section": "biochimie"
+  },
+  {
+   "code": "PAL",
+   "designation": "Phosphatase alcaline",
+   "section": "biochimie"
+  },
+  {
+   "code": "G6PD",
+   "designation": "G6PD",
+   "section": "biochimie"
+  },
+  {
+   "code": "GLUCO",
+   "designation": "Glucorachie",
+   "section": "biochimie"
+  },
+  {
+   "code": "PROTR",
+   "designation": "Protéinorachie",
+   "section": "biochimie"
+  },
+  {
+   "code": "DDIM",
+   "designation": "D-dimères",
+   "section": "biochimie"
+  },
+  {
+   "code": "HBA1C",
+   "designation": "Hémoglobine glyquée (HbA1c)",
+   "section": "biochimie"
+  },
+  {
+   "code": "URIC",
+   "designation": "Uricémie (acide urique)",
+   "section": "biochimie"
+  },
+  {
+   "code": "ECBU",
+   "designation": "ECBU — examen cytobactériologique des urines",
+   "section": "bacteriologie"
+  },
+  {
+   "code": "PV",
+   "designation": "Prélèvement vaginal (PV)",
+   "section": "bacteriologie"
+  },
+  {
+   "code": "ECBLCR",
+   "designation": "ECB du liquide céphalo-rachidien",
+   "section": "bacteriologie"
+  },
+  {
+   "code": "ECBLP",
+   "designation": "ECB du liquide pleural",
+   "section": "bacteriologie"
+  },
+  {
+   "code": "ECBLA",
+   "designation": "ECB du liquide d’ascite",
+   "section": "bacteriologie"
+  },
+  {
+   "code": "ECBPUS",
+   "designation": "ECB du pus",
+   "section": "bacteriologie"
+  },
+  {
+   "code": "PU",
+   "designation": "Prélèvement urétral (PU)",
+   "section": "bacteriologie"
+  },
+  {
+   "code": "BHCG",
+   "designation": "ß-HCG (dosage sérique)",
+   "section": "hormonologie"
+  },
+  {
+   "code": "FSH",
+   "designation": "FSH",
+   "section": "hormonologie"
+  },
+  {
+   "code": "LH",
+   "designation": "LH",
+   "section": "hormonologie"
+  },
+  {
+   "code": "OEST",
+   "designation": "Œstradiol",
+   "section": "hormonologie"
+  },
+  {
+   "code": "PROG",
+   "designation": "Progestérone",
+   "section": "hormonologie"
+  },
+  {
+   "code": "PSAT",
+   "designation": "PSA total",
+   "section": "hormonologie"
+  },
+  {
+   "code": "PSAL",
+   "designation": "PSA libre",
+   "section": "hormonologie"
+  },
+  {
+   "code": "TESTO",
+   "designation": "Testostérone",
+   "section": "hormonologie"
+  },
+  {
+   "code": "AMH",
+   "designation": "AMH — hormone antimüllérienne",
+   "section": "hormonologie"
+  },
+  {
+   "code": "PRL",
+   "designation": "Prolactinémie",
+   "section": "hormonologie"
+  },
+  {
+   "code": "TBGS",
+   "designation": "TBG sérique",
+   "section": "hormonologie"
+  },
+  {
+   "code": "TSH",
+   "designation": "TSH",
+   "section": "hormonologie"
+  },
+  {
+   "code": "T3",
+   "designation": "T3",
+   "section": "hormonologie"
+  },
+  {
+   "code": "T4",
+   "designation": "T4",
+   "section": "hormonologie"
+  }
+ ],
+ "stats": [
+  {
+   "nom": "jeu mixte : seuils, sans seuil, valeur, lots périmés et en alerte, demandes par section",
+   "produits": [
+    {
+     "id": "R1",
+     "statut": "actif",
+     "code": "R1",
+     "designation": "Réactif NFS",
+     "categorie": "reactif",
+     "prixAchat": 1000,
+     "stock": 5,
+     "seuilAlerte": 10
+    },
+    {
+     "id": "R2",
+     "statut": "actif",
+     "code": "R2",
+     "designation": "Réactif glycémie",
+     "categorie": "reactif",
+     "prixAchat": 200,
+     "stock": 50,
+     "seuilAlerte": 10
+    },
+    {
+     "id": "C1",
+     "statut": "actif",
+     "code": "C1",
+     "designation": "Tubes EDTA",
+     "categorie": "conso_labo",
+     "prixAchat": 500,
+     "stock": 3
+    },
+    {
+     "id": "C2",
+     "statut": "actif",
+     "code": "C2",
+     "designation": "Gants labo",
+     "categorie": "conso_labo",
+     "prixAchat": 100,
+     "stock": 0,
+     "seuilAlerte": 0
+    },
+    {
+     "id": "C3",
+     "statut": "actif",
+     "code": "C3",
+     "designation": "Pipettes",
+     "categorie": "conso_labo",
+     "prixAchat": 250,
+     "stock": 5,
+     "seuilAlerte": 10
+    },
+    {
+     "id": "M1",
+     "statut": "actif",
+     "code": "M1",
+     "designation": "Paracétamol",
+     "categorie": "medicament",
+     "prixAchat": 50,
+     "stock": 5,
+     "seuilAlerte": 100
+    },
+    {
+     "id": "R3",
+     "statut": "actif",
+     "code": "R3",
+     "designation": "Réactif sans stock",
+     "categorie": "reactif",
+     "prixAchat": 300,
+     "seuilAlerte": 5
+    },
+    {
+     "id": "R4",
+     "statut": "actif",
+     "code": "R4",
+     "designation": "Réactif sans prix",
+     "categorie": "reactif",
+     "stock": 7,
+     "seuilAlerte": 7
+    }
+   ],
+   "lots": [
+    {
+     "id": "LT1",
+     "statut": "perime",
+     "produitId": "R1",
+     "numeroLot": "L-LT1"
+    },
+    {
+     "id": "LT2",
+     "statut": "perime",
+     "produitId": "R2",
+     "numeroLot": "L-LT2"
+    },
+    {
+     "id": "LT3",
+     "statut": "alerte",
+     "produitId": "R2",
+     "numeroLot": "L-LT3"
+    },
+    {
+     "id": "LT4",
+     "statut": "actif",
+     "produitId": "C1",
+     "numeroLot": "L-LT4"
+    },
+    {
+     "id": "LT5",
+     "statut": "perime",
+     "produitId": "M1",
+     "numeroLot": "L-LT5"
+    },
+    {
+     "id": "LT6",
+     "statut": "archive",
+     "produitId": "R1",
+     "numeroLot": "L-LT6"
+    }
+   ],
+   "demandes": [
+    {
+     "id": "1",
+     "statut": "actif",
+     "reference": "LAB-1",
+     "analyse": "NFS complète (hémogramme)"
+    },
+    {
+     "id": "2",
+     "statut": "actif",
+     "reference": "LAB-2",
+     "analyse": "NFS complète (hémogramme)"
+    },
+    {
+     "id": "3",
+     "statut": "actif",
+     "reference": "LAB-3",
+     "analyse": "NFS complète (hémogramme)"
+    },
+    {
+     "id": "4",
+     "statut": "actif",
+     "reference": "LAB-4",
+     "analyse": "Taux de réticulocytes"
+    },
+    {
+     "id": "5",
+     "statut": "actif",
+     "reference": "LAB-5",
+     "analyse": "Taux de réticulocytes"
+    },
+    {
+     "id": "6",
+     "statut": "actif",
+     "reference": "LAB-6",
+     "analyse": "Temps de saignement"
+    },
+    {
+     "id": "7",
+     "statut": "actif",
+     "reference": "LAB-7",
+     "analyse": "Examen inconnu",
+     "categorie": "Parasitologie"
+    },
+    {
+     "id": "8",
+     "statut": "actif",
+     "reference": "LAB-8",
+     "analyse": "Autre examen inconnu"
+    },
+    {
+     "id": "9",
+     "statut": "actif",
+     "reference": "LAB-9",
+     "analyse": "Dernier inconnu",
+     "categorie": "Parasitologie"
+    },
+    {
+     "id": "10",
+     "statut": "actif",
+     "reference": "LAB-10",
+     "analyse": "temps de coagulation"
+    },
+    {
+     "id": "11",
+     "statut": "actif",
+     "reference": "LAB-11",
+     "analyse": "Temps de prothrombine — INR (suite)"
+    },
+    {
+     "id": "12",
+     "statut": "actif",
+     "reference": "LAB-12",
+     "analyse": ""
+    },
+    {
+     "id": "13",
+     "statut": "actif",
+     "reference": "LAB-13",
+     "analyse": "x",
+     "examenCode": "TCA"
+    },
+    {
+     "id": "14",
+     "statut": "archive",
+     "reference": "LAB-14",
+     "analyse": "NFS complète (hémogramme)"
+    }
+   ],
+   "kpis": [
+    {
+     "libelle": "Références suivies",
+     "valeur": "7",
+     "indice": "Réactifs et consommables de laboratoire"
+    },
+    {
+     "libelle": "Valeur du stock",
+     "valeur": "17 750 FCFA",
+     "indice": null
+    },
+    {
+     "libelle": "Sous le seuil d’alerte",
+     "valeur": "4",
+     "indice": "1 référence(s) sans seuil fixé"
+    },
+    {
+     "libelle": "Lots périmés / en alerte",
+     "valeur": "2 / 1",
+     "indice": "Alerte : péremption sous 90 jours"
+    }
+   ],
+   "notes": [
+    "1 référence(s) sans seuil d’alerte. Sans seuil, aucune alerte n’est possible : le seuil se fixe référence par référence à l’écran « Réactifs & consommables » — le document SAGE ne renseigne pas cette colonne."
+   ],
+   "cartes": [
+    "Demandes d’analyses par section — activité qui consomme les réactifs",
+    "Références de laboratoire — état du stock"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "DÉSIGNATION",
+      "CATÉGORIE",
+      "STOCK",
+      "SEUIL",
+      "VALEUR (P.A.)"
+     ],
+     "lignes": [
+      [
+       "Gants labo",
+       "Consommable labo",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "Réactif sans stock",
+       "Réactif",
+       "0",
+       "5",
+       "0"
+      ],
+      [
+       "Tubes EDTA",
+       "Consommable labo",
+       "3",
+       "non fixé",
+       "1 500"
+      ],
+      [
+       "Réactif NFS",
+       "Réactif",
+       "5",
+       "10",
+       "5 000"
+      ],
+      [
+       "Pipettes",
+       "Consommable labo",
+       "5",
+       "10",
+       "1 250"
+      ],
+      [
+       "Réactif sans prix",
+       "Réactif",
+       "7",
+       "7",
+       "0"
+      ],
+      [
+       "Réactif glycémie",
+       "Réactif",
+       "50",
+       "10",
+       "10 000"
+      ]
+     ]
+    }
+   ],
+   "graphiques": [
+    {
+     "type": "barres",
+     "args": [
+      [
+       "Hématologie",
+       "Parasitologie",
+       "Autres"
+      ],
+      [
+       {
+        "label": "Demandes",
+        "data": [
+         9,
+         2,
+         2
+        ]
+       }
+      ],
+      {
+       "horizontal": true,
+       "height": 260
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "aucune référence de laboratoire",
+   "produits": [
+    {
+     "id": "M1",
+     "statut": "actif",
+     "code": "M1",
+     "designation": "Paracétamol",
+     "categorie": "medicament",
+     "prixAchat": 50,
+     "stock": 5,
+     "seuilAlerte": 100
+    }
+   ],
+   "lots": [
+    {
+     "id": "LT1",
+     "statut": "perime",
+     "produitId": "M1",
+     "numeroLot": "L-LT1"
+    }
+   ],
+   "demandes": [
+    {
+     "id": "A1",
+     "statut": "archive",
+     "reference": "LAB-A1",
+     "analyse": "archivée"
+    }
+   ],
+   "kpis": [
+    {
+     "libelle": "Références suivies",
+     "valeur": "0",
+     "indice": "Réactifs et consommables de laboratoire"
+    },
+    {
+     "libelle": "Valeur du stock",
+     "valeur": "0 FCFA",
+     "indice": null
+    },
+    {
+     "libelle": "Sous le seuil d’alerte",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "libelle": "Lots périmés / en alerte",
+     "valeur": "0 / 0",
+     "indice": "Alerte : péremption sous 90 jours"
+    }
+   ],
+   "notes": [],
+   "cartes": [
+    "Demandes d’analyses par section — activité qui consomme les réactifs",
+    "Références de laboratoire — état du stock"
+   ],
+   "tableaux": [],
+   "graphiques": [
+    {
+     "type": "barres",
+     "args": [
+      [],
+      [
+       {
+        "label": "Demandes",
+        "data": []
+       }
+      ],
+      {
+       "horizontal": true,
+       "height": 260
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "tout est sous contrôle : seuils fixés, aucun lot en défaut",
+   "produits": [
+    {
+     "id": "R1",
+     "statut": "actif",
+     "code": "R1",
+     "designation": "Réactif A",
+     "categorie": "reactif",
+     "prixAchat": 100,
+     "stock": 40,
+     "seuilAlerte": 10
+    },
+    {
+     "id": "C1",
+     "statut": "actif",
+     "code": "C1",
+     "designation": "Tubes",
+     "categorie": "conso_labo",
+     "prixAchat": 20,
+     "stock": 11,
+     "seuilAlerte": 10
+    }
+   ],
+   "lots": [
+    {
+     "id": "LT1",
+     "statut": "actif",
+     "produitId": "R1",
+     "numeroLot": "L-LT1"
+    }
+   ],
+   "demandes": [
+    {
+     "id": "1",
+     "statut": "actif",
+     "reference": "LAB-1",
+     "analyse": "Temps de saignement"
+    }
+   ],
+   "kpis": [
+    {
+     "libelle": "Références suivies",
+     "valeur": "2",
+     "indice": "Réactifs et consommables de laboratoire"
+    },
+    {
+     "libelle": "Valeur du stock",
+     "valeur": "4 220 FCFA",
+     "indice": null
+    },
+    {
+     "libelle": "Sous le seuil d’alerte",
+     "valeur": "0",
+     "indice": null
+    },
+    {
+     "libelle": "Lots périmés / en alerte",
+     "valeur": "0 / 0",
+     "indice": "Alerte : péremption sous 90 jours"
+    }
+   ],
+   "notes": [],
+   "cartes": [
+    "Demandes d’analyses par section — activité qui consomme les réactifs",
+    "Références de laboratoire — état du stock"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "DÉSIGNATION",
+      "CATÉGORIE",
+      "STOCK",
+      "SEUIL",
+      "VALEUR (P.A.)"
+     ],
+     "lignes": [
+      [
+       "Tubes",
+       "Consommable labo",
+       "11",
+       "10",
+       "220"
+      ],
+      [
+       "Réactif A",
+       "Réactif",
+       "40",
+       "10",
+       "4 000"
+      ]
+     ]
+    }
+   ],
+   "graphiques": [
+    {
+     "type": "barres",
+     "args": [
+      [
+       "Hématologie"
+      ],
+      [
+       {
+        "label": "Demandes",
+        "data": [
+         1
+        ]
+       }
+      ],
+      {
+       "horizontal": true,
+       "height": 260
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "égalité de stock : le tri est stable, stock = seuil compte comme sous le seuil",
+   "produits": [
+    {
+     "id": "R1",
+     "statut": "actif",
+     "code": "R1",
+     "designation": "Zèbre",
+     "categorie": "reactif",
+     "prixAchat": 10,
+     "stock": 4,
+     "seuilAlerte": 4
+    },
+    {
+     "id": "R2",
+     "statut": "actif",
+     "code": "R2",
+     "designation": "Alpha",
+     "categorie": "reactif",
+     "prixAchat": 10,
+     "stock": 4,
+     "seuilAlerte": 3
+    },
+    {
+     "id": "R3",
+     "statut": "actif",
+     "code": "R3",
+     "designation": "Mu",
+     "categorie": "conso_labo",
+     "prixAchat": 10,
+     "stock": 2,
+     "seuilAlerte": 5
+    },
+    {
+     "id": "R4",
+     "statut": "actif",
+     "code": "R4",
+     "designation": "Beta",
+     "categorie": "reactif",
+     "prixAchat": 10,
+     "stock": 4,
+     "seuilAlerte": 9
+    }
+   ],
+   "lots": [],
+   "demandes": [
+    {
+     "id": "A1",
+     "statut": "archive",
+     "reference": "LAB-A1",
+     "analyse": "archivée"
+    }
+   ],
+   "kpis": [
+    {
+     "libelle": "Références suivies",
+     "valeur": "4",
+     "indice": "Réactifs et consommables de laboratoire"
+    },
+    {
+     "libelle": "Valeur du stock",
+     "valeur": "140 FCFA",
+     "indice": null
+    },
+    {
+     "libelle": "Sous le seuil d’alerte",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Lots périmés / en alerte",
+     "valeur": "0 / 0",
+     "indice": "Alerte : péremption sous 90 jours"
+    }
+   ],
+   "notes": [],
+   "cartes": [
+    "Demandes d’analyses par section — activité qui consomme les réactifs",
+    "Références de laboratoire — état du stock"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "DÉSIGNATION",
+      "CATÉGORIE",
+      "STOCK",
+      "SEUIL",
+      "VALEUR (P.A.)"
+     ],
+     "lignes": [
+      [
+       "Mu",
+       "Consommable labo",
+       "2",
+       "5",
+       "20"
+      ],
+      [
+       "Zèbre",
+       "Réactif",
+       "4",
+       "4",
+       "40"
+      ],
+      [
+       "Alpha",
+       "Réactif",
+       "4",
+       "3",
+       "40"
+      ],
+      [
+       "Beta",
+       "Réactif",
+       "4",
+       "9",
+       "40"
+      ]
+     ]
+    }
+   ],
+   "graphiques": [
+    {
+     "type": "barres",
+     "args": [
+      [],
+      [
+       {
+        "label": "Demandes",
+        "data": []
+       }
+      ],
+      {
+       "horizontal": true,
+       "height": 260
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "banque": {
+  "poches": [
+   {
+    "id": "PS1",
+    "statut": "actif",
+    "reference": "PS-0001",
+    "groupe": "O+",
+    "volume": 450,
+    "datePrelevement": "2026-07-25",
+    "datePeremption": "2026-09-05",
+    "donneur": "Donneur 001",
+    "etat": "actif",
+    "reserve": false
+   },
+   {
+    "id": "PS2",
+    "statut": "actif",
+    "reference": "PS-0002",
+    "groupe": "O+",
+    "volume": 450,
+    "datePrelevement": "2026-07-08",
+    "datePeremption": "2026-08-19",
+    "donneur": "Donneur 002",
+    "etat": "alerte",
+    "reserve": false
+   },
+   {
+    "id": "PS3",
+    "statut": "actif",
+    "reference": "PS-0003",
+    "groupe": "O+",
+    "volume": 450,
+    "datePrelevement": "2026-07-03",
+    "datePeremption": "2026-08-14",
+    "donneur": "Donneur 003",
+    "etat": "perime",
+    "reserve": false
+   },
+   {
+    "id": "PS4",
+    "statut": "actif",
+    "reference": "PS-0004",
+    "groupe": "O+",
+    "volume": 450,
+    "datePrelevement": "2026-08-04",
+    "datePeremption": "2026-09-15",
+    "donneur": "Donneur 004",
+    "etat": "actif",
+    "reserve": true
+   },
+   {
+    "id": "PS5",
+    "statut": "actif",
+    "reference": "PS-0005",
+    "groupe": "A+",
+    "volume": 450,
+    "datePrelevement": "2026-07-17",
+    "datePeremption": "2026-08-28",
+    "donneur": "Donneur 005",
+    "etat": "actif",
+    "reserve": false
+   },
+   {
+    "id": "PS6",
+    "statut": "actif",
+    "reference": "PS-0006",
+    "groupe": "A+",
+    "volume": 450,
+    "datePrelevement": "2026-07-30",
+    "datePeremption": "2026-09-10",
+    "donneur": "Donneur 006",
+    "etat": "actif",
+    "reserve": false
+   },
+   {
+    "id": "PS7",
+    "statut": "actif",
+    "reference": "PS-0007",
+    "groupe": "A+",
+    "volume": 450,
+    "datePrelevement": "2026-07-13",
+    "datePeremption": "2026-08-24",
+    "donneur": "Donneur 007",
+    "etat": "actif",
+    "reserve": false
+   },
+   {
+    "id": "PS8",
+    "statut": "actif",
+    "reference": "PS-0008",
+    "groupe": "B-",
+    "volume": 450,
+    "datePrelevement": "2026-07-20",
+    "datePeremption": "2026-08-31",
+    "donneur": "Donneur 008",
+    "etat": "actif",
+    "reserve": false
+   },
+   {
+    "id": "PS9",
+    "statut": "actif",
+    "reference": "PS-0009",
+    "groupe": "B-",
+    "volume": 450,
+    "datePrelevement": "2026-07-11",
+    "datePeremption": "2026-08-22",
+    "donneur": "Donneur 009",
+    "etat": "alerte",
+    "reserve": true
+   },
+   {
+    "id": "PS10",
+    "statut": "actif",
+    "reference": "PS-0010",
+    "groupe": "AB+",
+    "volume": 450,
+    "datePrelevement": "2026-07-05",
+    "datePeremption": "2026-08-16",
+    "donneur": "Donneur 010",
+    "etat": "alerte",
+    "reserve": false
+   },
+   {
+    "id": "PS11",
+    "statut": "actif",
+    "reference": "PS-0011",
+    "groupe": "AB+",
+    "volume": 450,
+    "datePrelevement": "2026-07-12",
+    "datePeremption": "2026-08-23",
+    "donneur": "Donneur 011",
+    "etat": "actif",
+    "reserve": false
+   },
+   {
+    "id": "PS12",
+    "statut": "actif",
+    "reference": "PS-0012",
+    "groupe": "O-",
+    "volume": 250,
+    "datePrelevement": "2026-07-14",
+    "datePeremption": "2026-08-25",
+    "donneur": "Donneur 012",
+    "etat": "alerte",
+    "reserve": false
+   },
+   {
+    "id": "PS13",
+    "statut": "actif",
+    "reference": "PS-0013",
+    "groupe": "O-",
+    "volume": 350,
+    "datePrelevement": "2026-08-14",
+    "datePeremption": "2026-09-25",
+    "donneur": "Donneur 013",
+    "etat": "actif",
+    "reserve": false
+   },
+   {
+    "id": "PS14",
+    "statut": "actif",
+    "reference": "PS-0014",
+    "groupe": "O-",
+    "volume": 450,
+    "datePrelevement": "2026-06-25",
+    "datePeremption": "2026-08-06",
+    "donneur": "Donneur 014",
+    "etat": "perime",
+    "reserve": true
+   },
+   {
+    "id": "PS15",
+    "statut": "archive",
+    "reference": "PS-0015",
+    "groupe": "A-",
+    "volume": 450,
+    "datePrelevement": "2026-07-10",
+    "datePeremption": "2026-08-21",
+    "donneur": "Donneur 015",
+    "etat": "actif",
+    "reserve": false
+   }
+  ],
+  "kpis": [
+   {
+    "libelle": "Poches en stock",
+    "valeur": "14",
+    "indice": null
+   },
+   {
+    "libelle": "Disponibles",
+    "valeur": "10",
+    "indice": null
+   },
+   {
+    "libelle": "Péremption sous 7 jours",
+    "valeur": "4",
+    "indice": null
+   },
+   {
+    "libelle": "Périmées à détruire",
+    "valeur": "2",
+    "indice": null
+   }
+  ],
+  "cartes": [
+   "Disponibilité par groupe sanguin Bon de demande de sang",
+   "Poches de sang"
+  ],
+  "grille": [
+   {
+    "groupe": "O+",
+    "nombre": "2",
+    "mot": "poches",
+    "ton": "warning"
+   },
+   {
+    "groupe": "O-",
+    "nombre": "2",
+    "mot": "poches",
+    "ton": "warning"
+   },
+   {
+    "groupe": "A+",
+    "nombre": "3",
+    "mot": "poches",
+    "ton": "success"
+   },
+   {
+    "groupe": "A-",
+    "nombre": "0",
+    "mot": "poche",
+    "ton": "danger"
+   },
+   {
+    "groupe": "B+",
+    "nombre": "0",
+    "mot": "poche",
+    "ton": "danger"
+   },
+   {
+    "groupe": "B-",
+    "nombre": "1",
+    "mot": "poche",
+    "ton": "warning"
+   },
+   {
+    "groupe": "AB+",
+    "nombre": "2",
+    "mot": "poches",
+    "ton": "warning"
+   },
+   {
+    "groupe": "AB-",
+    "nombre": "0",
+    "mot": "poche",
+    "ton": "danger"
+   }
+  ],
+  "tableaux": [
+   {
+    "entetes": [
+     "N° POCHE",
+     "GROUPE",
+     "VOLUME",
+     "PRÉLÈVEMENT",
+     "PÉREMPTION",
+     "RESTE",
+     "DONNEUR",
+     "RÉSERVÉE",
+     "ACTIONS"
+    ],
+    "lignes": [
+     [
+      "PS-0014",
+      "O-",
+      "450 ml",
+      "25/06/2026",
+      "06/08/2026",
+      "Périmée",
+      "Donneur 014",
+      "Réservée",
+      ""
+     ],
+     [
+      "PS-0003",
+      "O+",
+      "450 ml",
+      "03/07/2026",
+      "14/08/2026",
+      "Périmée",
+      "Donneur 003",
+      "—",
+      ""
+     ],
+     [
+      "PS-0010",
+      "AB+",
+      "450 ml",
+      "05/07/2026",
+      "16/08/2026",
+      "0 j",
+      "Donneur 010",
+      "—",
+      ""
+     ],
+     [
+      "PS-0002",
+      "O+",
+      "450 ml",
+      "08/07/2026",
+      "19/08/2026",
+      "3 j",
+      "Donneur 002",
+      "—",
+      ""
+     ],
+     [
+      "PS-0009",
+      "B-",
+      "450 ml",
+      "11/07/2026",
+      "22/08/2026",
+      "6 j",
+      "Donneur 009",
+      "Réservée",
+      ""
+     ],
+     [
+      "PS-0011",
+      "AB+",
+      "450 ml",
+      "12/07/2026",
+      "23/08/2026",
+      "7 j",
+      "Donneur 011",
+      "—",
+      ""
+     ],
+     [
+      "PS-0007",
+      "A+",
+      "450 ml",
+      "13/07/2026",
+      "24/08/2026",
+      "8 j",
+      "Donneur 007",
+      "—",
+      ""
+     ],
+     [
+      "PS-0012",
+      "O-",
+      "250 ml",
+      "14/07/2026",
+      "25/08/2026",
+      "9 j",
+      "Donneur 012",
+      "—",
+      ""
+     ],
+     [
+      "PS-0005",
+      "A+",
+      "450 ml",
+      "17/07/2026",
+      "28/08/2026",
+      "12 j",
+      "Donneur 005",
+      "—",
+      ""
+     ],
+     [
+      "PS-0008",
+      "B-",
+      "450 ml",
+      "20/07/2026",
+      "31/08/2026",
+      "15 j",
+      "Donneur 008",
+      "—",
+      ""
+     ],
+     [
+      "PS-0001",
+      "O+",
+      "450 ml",
+      "25/07/2026",
+      "05/09/2026",
+      "20 j",
+      "Donneur 001",
+      "—",
+      ""
+     ],
+     [
+      "PS-0006",
+      "A+",
+      "450 ml",
+      "30/07/2026",
+      "10/09/2026",
+      "25 j",
+      "Donneur 006",
+      "—",
+      ""
+     ],
+     [
+      "PS-0004",
+      "O+",
+      "450 ml",
+      "04/08/2026",
+      "15/09/2026",
+      "30 j",
+      "Donneur 004",
+      "Réservée",
+      ""
+     ],
+     [
+      "PS-0013",
+      "O-",
+      "350 ml",
+      "14/08/2026",
+      "25/09/2026",
+      "40 j",
+      "Donneur 013",
+      "—",
+      ""
+     ]
+    ]
+   }
+  ],
+  "filtres": [
+   [
+    [
+     "",
+     "Groupe"
+    ],
+    [
+     "O+",
+     "O+"
+    ],
+    [
+     "O-",
+     "O-"
+    ],
+    [
+     "A+",
+     "A+"
+    ],
+    [
+     "A-",
+     "A-"
+    ],
+    [
+     "B+",
+     "B+"
+    ],
+    [
+     "B-",
+     "B-"
+    ],
+    [
+     "AB+",
+     "AB+"
+    ],
+    [
+     "AB-",
+     "AB-"
+    ]
+   ],
+   [
+    [
+     "",
+     "État"
+    ],
+    [
+     "actif",
+     "Disponible"
+    ],
+    [
+     "alerte",
+     "Péremption proche"
+    ],
+    [
+     "perime",
+     "Périmée"
+    ]
+   ]
+  ],
+  "boutons": [
+   "Bon de demande de sang",
+   "Colonnes",
+   "Exporter",
+   "Tout désélectionner",
+   "Modifier",
+   "Archiver",
+   "Modifier",
+   "Archiver",
+   "Modifier",
+   "Archiver",
+   "Modifier",
+   "Archiver"
+  ],
+  "bon": {
+   "titre": "Bon de demande de sang",
+   "sousTitre": null,
+   "cartouche": [
+    [
+     "Service demandeur",
+     ""
+    ],
+    [
+     "Date",
+     "16/08/2026"
+    ],
+    [
+     "Patient",
+     ""
+    ],
+    [
+     "Groupe requis",
+     ""
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Le Médecin prescripteur"
+    },
+    {
+     "role": "Le Laborantin",
+     "nom": "KINNOU Addoul Ganiou"
+    },
+    {
+     "role": "Le Directeur Médical",
+     "mention": "Agrément"
+    }
+   ],
+   "texte": "Groupe sanguinNombre de poches demandéesIndicationDisponibilité au 16/08/2026 : O+ (2), O- (2), A+ (3), A- (0), B+ (0), B- (1), AB+ (2), AB- (0)",
+   "tableaux": [
+    {
+     "entetes": [
+      "Groupe sanguin",
+      "Nombre de poches demandées",
+      "Indication"
+     ],
+     "lignes": [
+      [
+       "",
+       "",
+       ""
+      ],
+      [
+       "",
+       "",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  "modification": {
+   "champs": [
+    "Groupe sanguin *",
+    "Volume (ml)",
+    "Date de prélèvement",
+    "Date de péremption *",
+    "Donneur",
+    "Observations"
+   ],
+   "refusSansPeremption": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "fiche": {
+     "id": "PS1",
+     "statut": "actif",
+     "reference": "PS-0001",
+     "groupe": "O+",
+     "volume": 450,
+     "datePrelevement": "2026-07-25",
+     "datePeremption": "2026-09-05",
+     "donneur": "Donneur 001",
+     "etat": "actif",
+     "reserve": false
+    }
+   },
+   "enregistre": {
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "fiche": {
+     "id": "PS1",
+     "statut": "actif",
+     "reference": "PS-0001",
+     "groupe": "O+",
+     "volume": 350,
+     "datePrelevement": "2026-07-25",
+     "datePeremption": "2026-08-11",
+     "donneur": "Donneur modifié",
+     "etat": "actif",
+     "reserve": false,
+     "observations": "Contrôle"
+    }
+   }
+  },
+  "apresModification": {
+   "kpis": [
+    {
+     "libelle": "Poches en stock",
+     "valeur": "14",
+     "indice": null
+    },
+    {
+     "libelle": "Disponibles",
+     "valeur": "10",
+     "indice": null
+    },
+    {
+     "libelle": "Péremption sous 7 jours",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Périmées à détruire",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "N° POCHE",
+      "GROUPE",
+      "VOLUME",
+      "PRÉLÈVEMENT",
+      "PÉREMPTION",
+      "RESTE",
+      "DONNEUR",
+      "RÉSERVÉE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "PS-0014",
+       "O-",
+       "450 ml",
+       "25/06/2026",
+       "06/08/2026",
+       "Périmée",
+       "Donneur 014",
+       "Réservée",
+       ""
+      ],
+      [
+       "PS-0001",
+       "O+",
+       "350 ml",
+       "25/07/2026",
+       "11/08/2026",
+       "Périmée",
+       "Donneur modifié",
+       "—",
+       ""
+      ],
+      [
+       "PS-0003",
+       "O+",
+       "450 ml",
+       "03/07/2026",
+       "14/08/2026",
+       "Périmée",
+       "Donneur 003",
+       "—",
+       ""
+      ],
+      [
+       "PS-0010",
+       "AB+",
+       "450 ml",
+       "05/07/2026",
+       "16/08/2026",
+       "0 j",
+       "Donneur 010",
+       "—",
+       ""
+      ],
+      [
+       "PS-0002",
+       "O+",
+       "450 ml",
+       "08/07/2026",
+       "19/08/2026",
+       "3 j",
+       "Donneur 002",
+       "—",
+       ""
+      ],
+      [
+       "PS-0009",
+       "B-",
+       "450 ml",
+       "11/07/2026",
+       "22/08/2026",
+       "6 j",
+       "Donneur 009",
+       "Réservée",
+       ""
+      ],
+      [
+       "PS-0011",
+       "AB+",
+       "450 ml",
+       "12/07/2026",
+       "23/08/2026",
+       "7 j",
+       "Donneur 011",
+       "—",
+       ""
+      ],
+      [
+       "PS-0007",
+       "A+",
+       "450 ml",
+       "13/07/2026",
+       "24/08/2026",
+       "8 j",
+       "Donneur 007",
+       "—",
+       ""
+      ],
+      [
+       "PS-0012",
+       "O-",
+       "250 ml",
+       "14/07/2026",
+       "25/08/2026",
+       "9 j",
+       "Donneur 012",
+       "—",
+       ""
+      ],
+      [
+       "PS-0005",
+       "A+",
+       "450 ml",
+       "17/07/2026",
+       "28/08/2026",
+       "12 j",
+       "Donneur 005",
+       "—",
+       ""
+      ],
+      [
+       "PS-0008",
+       "B-",
+       "450 ml",
+       "20/07/2026",
+       "31/08/2026",
+       "15 j",
+       "Donneur 008",
+       "—",
+       ""
+      ],
+      [
+       "PS-0006",
+       "A+",
+       "450 ml",
+       "30/07/2026",
+       "10/09/2026",
+       "25 j",
+       "Donneur 006",
+       "—",
+       ""
+      ],
+      [
+       "PS-0004",
+       "O+",
+       "450 ml",
+       "04/08/2026",
+       "15/09/2026",
+       "30 j",
+       "Donneur 004",
+       "Réservée",
+       ""
+      ],
+      [
+       "PS-0013",
+       "O-",
+       "350 ml",
+       "14/08/2026",
+       "25/09/2026",
+       "40 j",
+       "Donneur 013",
+       "—",
+       ""
+      ]
+     ]
+    }
+   ]
+  },
+  "grand": {
+   "poches": [
+    {
+     "id": "PS1",
+     "statut": "actif",
+     "reference": "PS-0001",
+     "groupe": "O-",
+     "volume": 450,
+     "datePrelevement": "2026-07-08",
+     "datePeremption": "2026-08-19",
+     "donneur": "Donneur 001",
+     "etat": "alerte",
+     "reserve": false
+    },
+    {
+     "id": "PS2",
+     "statut": "actif",
+     "reference": "PS-0002",
+     "groupe": "A+",
+     "volume": 450,
+     "datePrelevement": "2026-07-15",
+     "datePeremption": "2026-08-26",
+     "donneur": "Donneur 002",
+     "etat": "actif",
+     "reserve": false
+    },
+    {
+     "id": "PS3",
+     "statut": "actif",
+     "reference": "PS-0003",
+     "groupe": "A-",
+     "volume": 450,
+     "datePrelevement": "2026-07-22",
+     "datePeremption": "2026-09-02",
+     "donneur": "Donneur 003",
+     "etat": "actif",
+     "reserve": false
+    },
+    {
+     "id": "PS4",
+     "statut": "actif",
+     "reference": "PS-0004",
+     "groupe": "B+",
+     "volume": 450,
+     "datePrelevement": "2026-07-06",
+     "datePeremption": "2026-08-17",
+     "donneur": "Donneur 004",
+     "etat": "alerte",
+     "reserve": false
+    },
+    {
+     "id": "PS5",
+     "statut": "actif",
+     "reference": "PS-0005",
+     "groupe": "B-",
+     "volume": 450,
+     "datePrelevement": "2026-07-13",
+     "datePeremption": "2026-08-24",
+     "donneur": "Donneur 005",
+     "etat": "actif",
+     "reserve": true
+    },
+    {
+     "id": "PS6",
+     "statut": "actif",
+     "reference": "PS-0006",
+     "groupe": "AB+",
+     "volume": 450,
+     "datePrelevement": "2026-07-20",
+     "datePeremption": "2026-08-31",
+     "donneur": "Donneur 006",
+     "etat": "actif",
+     "reserve": false
+    },
+    {
+     "id": "PS7",
+     "statut": "actif",
+     "reference": "PS-0007",
+     "groupe": "AB-",
+     "volume": 450,
+     "datePrelevement": "2026-07-04",
+     "datePeremption": "2026-08-15",
+     "donneur": "Donneur 007",
+     "etat": "perime",
+     "reserve": false
+    },
+    {
+     "id": "PS8",
+     "statut": "actif",
+     "reference": "PS-0008",
+     "groupe": "O+",
+     "volume": 450,
+     "datePrelevement": "2026-07-11",
+     "datePeremption": "2026-08-22",
+     "donneur": "Donneur 008",
+     "etat": "alerte",
+     "reserve": false
+    },
+    {
+     "id": "PS9",
+     "statut": "actif",
+     "reference": "PS-0009",
+     "groupe": "O-",
+     "volume": 450,
+     "datePrelevement": "2026-07-18",
+     "datePeremption": "2026-08-29",
+     "donneur": "Donneur 009",
+     "etat": "actif",
+     "reserve": false
+    },
+    {
+     "id": "PS10",
+     "statut": "actif",
+     "reference": "PS-0010",
+     "groupe": "A+",
+     "volume": 450,
+     "datePrelevement": "2026-07-02",
+     "datePeremption": "2026-08-13",
+     "donneur": "Donneur 010",
+     "etat": "perime",
+     "reserve": true
+    },
+    {
+     "id": "PS11",
+     "statut": "actif",
+     "reference": "PS-0011",
+     "groupe": "A-",
+     "volume": 450,
+     "datePrelevement": "2026-07-09",
+     "datePeremption": "2026-08-20",
+     "donneur": "Donneur 011",
+     "etat": "alerte",
+     "reserve": false
+    },
+    {
+     "id": "PS12",
+     "statut": "actif",
+     "reference": "PS-0012",
+     "groupe": "B+",
+     "volume": 450,
+     "datePrelevement": "2026-07-16",
+     "datePeremption": "2026-08-27",
+     "donneur": "Donneur 012",
+     "etat": "actif",
+     "reserve": false
+    },
+    {
+     "id": "PS13",
+     "statut": "actif",
+     "reference": "PS-0013",
+     "groupe": "B-",
+     "volume": 450,
+     "datePrelevement": "2026-07-23",
+     "datePeremption": "2026-09-03",
+     "donneur": "Donneur 013",
+     "etat": "actif",
+     "reserve": false
+    },
+    {
+     "id": "PS14",
+     "statut": "actif",
+     "reference": "PS-0014",
+     "groupe": "AB+",
+     "volume": 450,
+     "datePrelevement": "2026-07-07",
+     "datePeremption": "2026-08-18",
+     "donneur": "Donneur 014",
+     "etat": "alerte",
+     "reserve": false
+    },
+    {
+     "id": "PS15",
+     "statut": "actif",
+     "reference": "PS-0015",
+     "groupe": "AB-",
+     "volume": 450,
+     "datePrelevement": "2026-07-14",
+     "datePeremption": "2026-08-25",
+     "donneur": "Donneur 015",
+     "etat": "actif",
+     "reserve": true
+    },
+    {
+     "id": "PS16",
+     "statut": "actif",
+     "reference": "PS-0016",
+     "groupe": "O+",
+     "volume": 450,
+     "datePrelevement": "2026-07-21",
+     "datePeremption": "2026-09-01",
+     "donneur": "Donneur 016",
+     "etat": "actif",
+     "reserve": false
+    },
+    {
+     "id": "PS17",
+     "statut": "actif",
+     "reference": "PS-0017",
+     "groupe": "O-",
+     "volume": 450,
+     "datePrelevement": "2026-07-05",
+     "datePeremption": "2026-08-16",
+     "donneur": "Donneur 017",
+     "etat": "alerte",
+     "reserve": false
+    }
+   ],
+   "kpis": [
+    {
+     "libelle": "Poches en stock",
+     "valeur": "17",
+     "indice": null
+    },
+    {
+     "libelle": "Disponibles",
+     "valeur": "13",
+     "indice": null
+    },
+    {
+     "libelle": "Péremption sous 7 jours",
+     "valeur": "6",
+     "indice": null
+    },
+    {
+     "libelle": "Périmées à détruire",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "N° POCHE",
+      "GROUPE",
+      "VOLUME",
+      "PRÉLÈVEMENT",
+      "PÉREMPTION",
+      "RESTE",
+      "DONNEUR",
+      "RÉSERVÉE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "PS-0010",
+       "A+",
+       "450 ml",
+       "02/07/2026",
+       "13/08/2026",
+       "Périmée",
+       "Donneur 010",
+       "Réservée",
+       ""
+      ],
+      [
+       "PS-0007",
+       "AB-",
+       "450 ml",
+       "04/07/2026",
+       "15/08/2026",
+       "Périmée",
+       "Donneur 007",
+       "—",
+       ""
+      ],
+      [
+       "PS-0017",
+       "O-",
+       "450 ml",
+       "05/07/2026",
+       "16/08/2026",
+       "0 j",
+       "Donneur 017",
+       "—",
+       ""
+      ],
+      [
+       "PS-0004",
+       "B+",
+       "450 ml",
+       "06/07/2026",
+       "17/08/2026",
+       "1 j",
+       "Donneur 004",
+       "—",
+       ""
+      ],
+      [
+       "PS-0014",
+       "AB+",
+       "450 ml",
+       "07/07/2026",
+       "18/08/2026",
+       "2 j",
+       "Donneur 014",
+       "—",
+       ""
+      ],
+      [
+       "PS-0001",
+       "O-",
+       "450 ml",
+       "08/07/2026",
+       "19/08/2026",
+       "3 j",
+       "Donneur 001",
+       "—",
+       ""
+      ],
+      [
+       "PS-0011",
+       "A-",
+       "450 ml",
+       "09/07/2026",
+       "20/08/2026",
+       "4 j",
+       "Donneur 011",
+       "—",
+       ""
+      ],
+      [
+       "PS-0008",
+       "O+",
+       "450 ml",
+       "11/07/2026",
+       "22/08/2026",
+       "6 j",
+       "Donneur 008",
+       "—",
+       ""
+      ],
+      [
+       "PS-0005",
+       "B-",
+       "450 ml",
+       "13/07/2026",
+       "24/08/2026",
+       "8 j",
+       "Donneur 005",
+       "Réservée",
+       ""
+      ],
+      [
+       "PS-0015",
+       "AB-",
+       "450 ml",
+       "14/07/2026",
+       "25/08/2026",
+       "9 j",
+       "Donneur 015",
+       "Réservée",
+       ""
+      ],
+      [
+       "PS-0002",
+       "A+",
+       "450 ml",
+       "15/07/2026",
+       "26/08/2026",
+       "10 j",
+       "Donneur 002",
+       "—",
+       ""
+      ],
+      [
+       "PS-0012",
+       "B+",
+       "450 ml",
+       "16/07/2026",
+       "27/08/2026",
+       "11 j",
+       "Donneur 012",
+       "—",
+       ""
+      ],
+      [
+       "PS-0009",
+       "O-",
+       "450 ml",
+       "18/07/2026",
+       "29/08/2026",
+       "13 j",
+       "Donneur 009",
+       "—",
+       ""
+      ],
+      [
+       "PS-0006",
+       "AB+",
+       "450 ml",
+       "20/07/2026",
+       "31/08/2026",
+       "15 j",
+       "Donneur 006",
+       "—",
+       ""
+      ],
+      [
+       "PS-0016",
+       "O+",
+       "450 ml",
+       "21/07/2026",
+       "01/09/2026",
+       "16 j",
+       "Donneur 016",
+       "—",
+       ""
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ "donneurs": {
+  "donneurs": [
+   {
+    "id": "DON0001",
+    "statut": "actif",
+    "reference": "DON-0001",
+    "nom": "ADAM Karim",
+    "telephone": "97000001",
+    "groupe": "O+",
+    "dernierDon": "2026-01-28",
+    "nbDons": 3,
+    "eligible": true,
+    "type": "Bénévole"
+   },
+   {
+    "id": "DON0002",
+    "statut": "actif",
+    "reference": "DON-0002",
+    "nom": "BIO Salamatou",
+    "telephone": "97000002",
+    "groupe": "A+",
+    "dernierDon": "2026-05-18",
+    "nbDons": 1,
+    "eligible": true,
+    "type": "Familial"
+   },
+   {
+    "id": "DON0003",
+    "statut": "actif",
+    "reference": "DON-0003",
+    "nom": "CHABI Rock",
+    "telephone": "97000003",
+    "groupe": "B-",
+    "dernierDon": "2026-05-19",
+    "nbDons": 12,
+    "eligible": true,
+    "type": "Familial"
+   },
+   {
+    "id": "DON0004",
+    "statut": "actif",
+    "reference": "DON-0004",
+    "nom": "DOSSOU Ida",
+    "telephone": "97000004",
+    "groupe": "AB+",
+    "dernierDon": "2026-07-17",
+    "nbDons": 5,
+    "eligible": true,
+    "type": "Compensation"
+   },
+   {
+    "id": "DON0005",
+    "statut": "actif",
+    "reference": "DON-0005",
+    "nom": "EDAH Paul",
+    "telephone": "97000005",
+    "groupe": "O-",
+    "dernierDon": "2025-07-12",
+    "nbDons": 2,
+    "eligible": false,
+    "type": "Bénévole"
+   },
+   {
+    "id": "DON0006",
+    "statut": "actif",
+    "reference": "DON-0006",
+    "nom": "FASSINOU Léa",
+    "telephone": "97000006",
+    "groupe": "O+",
+    "dernierDon": "2026-08-06",
+    "nbDons": 7,
+    "eligible": false,
+    "type": "Bénévole"
+   },
+   {
+    "id": "DON0007",
+    "statut": "actif",
+    "reference": "DON-0007",
+    "nom": "GBEGNON Eric",
+    "telephone": "97000007",
+    "groupe": "A-",
+    "dernierDon": "2026-05-17",
+    "nbDons": 4,
+    "eligible": true,
+    "type": "Compensation"
+   },
+   {
+    "id": "DON0008",
+    "statut": "actif",
+    "reference": "DON-0008",
+    "nom": "HOUNKPATIN Ana",
+    "telephone": "97000008",
+    "groupe": "B+",
+    "dernierDon": "2026-08-16",
+    "nbDons": 9,
+    "eligible": true,
+    "type": "Familial"
+   },
+   {
+    "id": "DON0009",
+    "statut": "archive",
+    "reference": "DON-0009",
+    "nom": "ILLA Zita",
+    "telephone": "97000009",
+    "groupe": "B+",
+    "dernierDon": "2026-06-27",
+    "nbDons": 2,
+    "eligible": true,
+    "type": "Bénévole"
+   }
+  ],
+  "kpis": [
+   {
+    "libelle": "Donneurs enregistrés",
+    "valeur": "8",
+    "indice": null
+   },
+   {
+    "libelle": "Éligibles",
+    "valeur": "3",
+    "indice": null
+   },
+   {
+    "libelle": "Dons cumulés",
+    "valeur": "43",
+    "indice": null
+   },
+   {
+    "libelle": "Donneurs bénévoles",
+    "valeur": "3",
+    "indice": null
+   }
+  ],
+  "onglets": [
+   "Tous les donneurs8",
+   "Archivés1"
+  ],
+  "tableaux": [
+   {
+    "entetes": [
+     "",
+     "N°",
+     "DONNEUR",
+     "GROUPE",
+     "TÉLÉPHONE",
+     "TYPE DE DON",
+     "DONS",
+     "DERNIER DON",
+     "ÉLIGIBILITÉ",
+     "ACTIONS"
+    ],
+    "lignes": [
+     [
+      "",
+      "DON-0008",
+      "HOUNKPATIN Ana",
+      "B+",
+      "97000008",
+      "Familial",
+      "9",
+      "16/08/2026",
+      "Délai 90 j",
+      ""
+     ],
+     [
+      "",
+      "DON-0006",
+      "FASSINOU Léa",
+      "O+",
+      "97000006",
+      "Bénévole",
+      "7",
+      "06/08/2026",
+      "Non éligible",
+      ""
+     ],
+     [
+      "",
+      "DON-0004",
+      "DOSSOU Ida",
+      "AB+",
+      "97000004",
+      "Compensation",
+      "5",
+      "17/07/2026",
+      "Délai 60 j",
+      ""
+     ],
+     [
+      "",
+      "DON-0003",
+      "CHABI Rock",
+      "B-",
+      "97000003",
+      "Familial",
+      "12",
+      "19/05/2026",
+      "Délai 1 j",
+      ""
+     ],
+     [
+      "",
+      "DON-0002",
+      "BIO Salamatou",
+      "A+",
+      "97000002",
+      "Familial",
+      "1",
+      "18/05/2026",
+      "Éligible",
+      ""
+     ],
+     [
+      "",
+      "DON-0007",
+      "GBEGNON Eric",
+      "A-",
+      "97000007",
+      "Compensation",
+      "4",
+      "17/05/2026",
+      "Éligible",
+      ""
+     ],
+     [
+      "",
+      "DON-0001",
+      "ADAM Karim",
+      "O+",
+      "97000001",
+      "Bénévole",
+      "3",
+      "28/01/2026",
+      "Éligible",
+      ""
+     ],
+     [
+      "",
+      "DON-0005",
+      "EDAH Paul",
+      "O-",
+      "97000005",
+      "Bénévole",
+      "2",
+      "12/07/2025",
+      "Non éligible",
+      ""
+     ]
+    ]
+   }
+  ],
+  "filtres": [
+   [
+    [
+     "",
+     "Groupe"
+    ],
+    [
+     "O+",
+     "O+"
+    ],
+    [
+     "O-",
+     "O-"
+    ],
+    [
+     "A+",
+     "A+"
+    ],
+    [
+     "A-",
+     "A-"
+    ],
+    [
+     "B+",
+     "B+"
+    ],
+    [
+     "B-",
+     "B-"
+    ],
+    [
+     "AB+",
+     "AB+"
+    ],
+    [
+     "AB-",
+     "AB-"
+    ]
+   ],
+   [
+    [
+     "",
+     "Type de don"
+    ],
+    [
+     "Bénévole",
+     "Bénévole"
+    ],
+    [
+     "Familial",
+     "Familial"
+    ],
+    [
+     "Compensation",
+     "Compensation"
+    ]
+   ]
+  ],
+  "boutons": [
+   "Tous les donneurs8",
+   "Archivés1",
+   "Colonnes",
+   "Exporter",
+   "Nouveau",
+   "Imprimer la sélection",
+   "Archiver",
+   "Tout désélectionner",
+   "Consulter",
+   "Imprimer l’état",
+   "Modifier",
+   "Archiver",
+   "Consulter",
+   "Imprimer l’état"
+  ],
+  "tiroir": {
+   "texte": "DON-0003 DON-0003 N° DON-0003 Donneur CHABI Rock Groupe B- Téléphone 97000003 Type de don Familial Dons 12 Dernier don 19/05/2026 Éligibilité Délai 1 j Imprimer Modifier Archiver",
+   "boutons": [
+    "Fermer",
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "carte": {
+   "titre": "Carte de donneur de sang",
+   "sousTitre": null,
+   "cartouche": [
+    [
+     "Donneur",
+     "CHABI Rock"
+    ],
+    [
+     "Référence",
+     "DON-0003"
+    ],
+    [
+     "Groupe sanguin",
+     "B-"
+    ],
+    [
+     "Type de don",
+     "Familial"
+    ],
+    [
+     "Dons réalisés",
+     "12"
+    ],
+    [
+     "Dernier don",
+     "19/05/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Le Laborantin",
+     "nom": "KINNOU Addoul Ganiou"
+    },
+    {
+     "role": "Le Directeur Médical"
+    }
+   ],
+   "texte": "La CLINIQUE NASSIERA TOO SARL remercie chaleureusement ce donneur pour son engagement au service de la collectivité.",
+   "tableaux": []
+  },
+  "creation": {
+   "champs": [
+    "Nom et prénoms *",
+    "Téléphone *",
+    "Groupe sanguin *",
+    "Type de don *",
+    "Date du dernier don",
+    "Nombre total de dons",
+    "Donneur éligible"
+   ],
+   "defauts": {
+    "nom": "",
+    "telephone": "",
+    "groupe": "O+",
+    "type": "Bénévole",
+    "dernierDon": "2026-08-16",
+    "nbDons": "1",
+    "eligible": true
+   },
+   "refusVide": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 9
+   },
+   "cree": {
+    "toasts": [
+     [
+      "Nouveau donneur créé.",
+      "DON-0010"
+     ]
+    ],
+    "fiche": {
+     "id": "DONxmvve8cutk1rxq",
+     "statut": "actif",
+     "nom": "IMOROU Zaki",
+     "telephone": "97111111",
+     "groupe": "AB-",
+     "type": "Compensation",
+     "dernierDon": "2026-07-01",
+     "nbDons": 6,
+     "eligible": false,
+     "reference": "DON-0010"
+    },
+    "total": 10
+   },
+   "creeDefauts": {
+    "fiche": {
+     "id": "DONxmvve8dapydb7o",
+     "statut": "actif",
+     "nom": "JOHNSON Mary",
+     "telephone": "97222222",
+     "groupe": "O+",
+     "type": "Bénévole",
+     "dernierDon": "2026-08-16",
+     "nbDons": 1,
+     "eligible": true,
+     "reference": "DON-0011"
+    }
+   }
+  },
+  "modification": {
+   "champs": [
+    "Nom et prénoms *",
+    "Téléphone *",
+    "Groupe sanguin *",
+    "Type de don *",
+    "Date du dernier don",
+    "Nombre total de dons",
+    "Donneur éligible"
+   ],
+   "enregistre": {
+    "toasts": [
+     [
+      "Modifications enregistrées.",
+      "DON-0012"
+     ]
+    ],
+    "fiche": {
+     "id": "DON0003",
+     "statut": "actif",
+     "reference": "DON-0012",
+     "nom": "CHABI Rock",
+     "telephone": "97999999",
+     "groupe": "B-",
+     "dernierDon": "2026-05-19",
+     "nbDons": 13,
+     "eligible": true,
+     "type": "Familial"
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,652 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-graphiques.js — échelle X des barres horizontales Chart.js. Ne pas éditer.",
+ "cas": [
+  {
+   "series": [
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1
+   ],
+   "largeurAxe": 328.91,
+   "gauche": 20.94,
+   "etiquetteMax": 16.94
+  },
+  {
+   "series": [
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    0.5,
+    1,
+    1.5,
+    2,
+    2.5,
+    3
+   ],
+   "largeurAxe": 327.87,
+   "gauche": 20.94,
+   "etiquetteMax": 16.54
+  },
+  {
+   "series": [
+    [
+     5,
+     12,
+     7,
+     20
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    5,
+    10,
+    15,
+    20
+   ],
+   "largeurAxe": 329.24,
+   "gauche": 20.94,
+   "etiquetteMax": 13.65
+  },
+  {
+   "series": [
+    [
+     100,
+     250,
+     175
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    50,
+    100,
+    150,
+    200,
+    250
+   ],
+   "largeurAxe": 325.97,
+   "gauche": 20.94,
+   "etiquetteMax": 20.59
+  },
+  {
+   "series": [
+    [
+     1250000,
+     980000,
+     1500000
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    200000,
+    400000,
+    600000,
+    800000,
+    1000000,
+    1200000,
+    1400000,
+    1600000
+   ],
+   "largeurAxe": 329.48,
+   "gauche": 20.94,
+   "etiquetteMax": 52.06
+  },
+  {
+   "series": [
+    [
+     0.2,
+     0.5,
+     0.35
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5
+   ],
+   "largeurAxe": 327.96,
+   "gauche": 20.94,
+   "etiquetteMax": 16.94
+  },
+  {
+   "series": [
+    [
+     3,
+     3,
+     3
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    0.5,
+    1,
+    1.5,
+    2,
+    2.5,
+    3
+   ],
+   "largeurAxe": 327.87,
+   "gauche": 20.94,
+   "etiquetteMax": 16.54
+  },
+  {
+   "series": [
+    [
+     7
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "largeurAxe": 332.95,
+   "gauche": 20.94,
+   "etiquetteMax": 7.11
+  },
+  {
+   "series": [
+    [
+     12,
+     48,
+     33,
+     91,
+     60,
+     77
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    20,
+    40,
+    60,
+    80,
+    100
+   ],
+   "largeurAxe": 326.72,
+   "gauche": 21.11,
+   "etiquetteMax": 18.35
+  },
+  {
+   "series": [
+    [
+     1000,
+     2000
+    ],
+    [
+     1500,
+     500
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    500,
+    1000,
+    1500,
+    2000
+   ],
+   "largeurAxe": 320.85,
+   "gauche": 20.94,
+   "etiquetteMax": 30.42
+  },
+  {
+   "series": [
+    [
+     4200,
+     300,
+     150
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    1000,
+    2000,
+    3000,
+    4000,
+    5000
+   ],
+   "largeurAxe": 321.09,
+   "gauche": 20.94,
+   "etiquetteMax": 30.44
+  },
+  {
+   "series": [
+    [
+     999,
+     1001
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    200,
+    400,
+    600,
+    800,
+    1000,
+    1200
+   ],
+   "largeurAxe": 321.95,
+   "gauche": 20.94,
+   "etiquetteMax": 28.23
+  },
+  {
+   "series": [
+    [
+     17,
+     2,
+     0,
+     9
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    5,
+    10,
+    15,
+    20
+   ],
+   "largeurAxe": 329.24,
+   "gauche": 20.94,
+   "etiquetteMax": 13.65
+  },
+  {
+   "series": [
+    [
+     1,
+     1000000
+    ]
+   ],
+   "largeur": 360,
+   "graduations": [
+    0,
+    200000,
+    400000,
+    600000,
+    800000,
+    1000000
+   ],
+   "largeurAxe": 310.26,
+   "gauche": 20.94,
+   "etiquetteMax": 51.61
+  },
+  {
+   "series": [
+    [
+     0,
+     0,
+     0
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1
+   ],
+   "largeurAxe": 568.91,
+   "gauche": 20.94,
+   "etiquetteMax": 16.94
+  },
+  {
+   "series": [
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    0.5,
+    1,
+    1.5,
+    2,
+    2.5,
+    3
+   ],
+   "largeurAxe": 567.87,
+   "gauche": 20.94,
+   "etiquetteMax": 16.54
+  },
+  {
+   "series": [
+    [
+     5,
+     12,
+     7,
+     20
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20
+   ],
+   "largeurAxe": 569.24,
+   "gauche": 20.94,
+   "etiquetteMax": 13.65
+  },
+  {
+   "series": [
+    [
+     100,
+     250,
+     175
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    50,
+    100,
+    150,
+    200,
+    250
+   ],
+   "largeurAxe": 565.97,
+   "gauche": 20.94,
+   "etiquetteMax": 20.59
+  },
+  {
+   "series": [
+    [
+     1250000,
+     980000,
+     1500000
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    200000,
+    400000,
+    600000,
+    800000,
+    1000000,
+    1200000,
+    1400000,
+    1600000
+   ],
+   "largeurAxe": 550.31,
+   "gauche": 20.94,
+   "etiquetteMax": 52.06
+  },
+  {
+   "series": [
+    [
+     0.2,
+     0.5,
+     0.35
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4,
+    0.45,
+    0.5
+   ],
+   "largeurAxe": 564.49,
+   "gauche": 20.94,
+   "etiquetteMax": 23.87
+  },
+  {
+   "series": [
+    [
+     3,
+     3,
+     3
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    0.5,
+    1,
+    1.5,
+    2,
+    2.5,
+    3
+   ],
+   "largeurAxe": 567.87,
+   "gauche": 20.94,
+   "etiquetteMax": 16.54
+  },
+  {
+   "series": [
+    [
+     7
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "largeurAxe": 572.95,
+   "gauche": 20.94,
+   "etiquetteMax": 7.11
+  },
+  {
+   "series": [
+    [
+     12,
+     48,
+     33,
+     91,
+     60,
+     77
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90,
+    100
+   ],
+   "largeurAxe": 566.72,
+   "gauche": 21.11,
+   "etiquetteMax": 18.35
+  },
+  {
+   "series": [
+    [
+     1000,
+     2000
+    ],
+    [
+     1500,
+     500
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    200,
+    400,
+    600,
+    800,
+    1000,
+    1200,
+    1400,
+    1600,
+    1800,
+    2000
+   ],
+   "largeurAxe": 560.85,
+   "gauche": 20.94,
+   "etiquetteMax": 30.42
+  },
+  {
+   "series": [
+    [
+     4200,
+     300,
+     150
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    500,
+    1000,
+    1500,
+    2000,
+    2500,
+    3000,
+    3500,
+    4000,
+    4500
+   ],
+   "largeurAxe": 560.98,
+   "gauche": 20.94,
+   "etiquetteMax": 30.44
+  },
+  {
+   "series": [
+    [
+     999,
+     1001
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    200,
+    400,
+    600,
+    800,
+    1000,
+    1200
+   ],
+   "largeurAxe": 561.95,
+   "gauche": 20.94,
+   "etiquetteMax": 28.23
+  },
+  {
+   "series": [
+    [
+     17,
+     2,
+     0,
+     9
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18
+   ],
+   "largeurAxe": 570.42,
+   "gauche": 20.94,
+   "etiquetteMax": 11.58
+  },
+  {
+   "series": [
+    [
+     1,
+     1000000
+    ]
+   ],
+   "largeur": 600,
+   "graduations": [
+    0,
+    100000,
+    200000,
+    300000,
+    400000,
+    500000,
+    600000,
+    700000,
+    800000,
+    900000,
+    1000000
+   ],
+   "largeurAxe": 571.44,
+   "gauche": 20.94,
+   "etiquetteMax": 51.61
+  }
+ ]
+}

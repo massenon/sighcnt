@@ -1,0 +1,58 @@
+{
+ "id": "m1-patient-profil",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Fiche patient",
+ "acces": "ouvert",
+ "titre": "Fiche patient",
+ "description": "Vue consolidée d’un dossier : administratif, médical, hospitalisations, financier et assurance.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Fiche patient"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Patient externe",
+  "Patients & Dossier médical"
+ ],
+ "regle": [
+  "Allergie(s) déclarée(s) : Sulfamides. Vérifier toute prescription et toute dispensation avant délivrance."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Rubriques du dossier",
+  "Identité et couverture",
+  "Dossier de consultation",
+  "Administratif"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "TCHANE Bertine",
+  "Modifier le dossier",
+  "Fiche de consultation",
+  "Documents numérisés",
+  "Imprimer la fiche",
+  "Retour au répertoire",
+  "Administratif",
+  "Médical1",
+  "Antécédents & allergies",
+  "Soins0",
+  "Hospitalisations0",
+  "Maternité2",
+  "Analyses & résultats0",
+  "Imagerie médicale2",
+  "Ordonnances0",
+  "À domicile0",
+  "Financier3",
+  "Assurance",
+  "Traçabilité"
+ ],
+ "champs": [
+  "Sélectionner un dossier patient"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

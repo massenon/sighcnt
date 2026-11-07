@@ -1,0 +1,40 @@
+{
+ "id": "m8-facture-avoir",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Factures d’avoir",
+ "acces": "ouvert",
+ "titre": "Factures d’avoir",
+ "description": "Contre-passation d’une pièce émise : erreur, interruption de soins, évacuation après paiement.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Factures d’avoir"
+ ],
+ "actions": [
+  "Tableau de bord facturation",
+  "Nouvelle facture",
+  "Facturation & Caisse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Avoirs émis",
+  "Montant contre-passé",
+  "Depuis la caisse",
+  "Factures rectifiées"
+ ],
+ "cartes": [
+  "Registre des avoirs"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Émettre un avoir"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

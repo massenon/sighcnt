@@ -138,59 +138,12 @@
          Sage-femme et aide-soignante figurent explicitement — la Direction les
          distingue de l'infirmier, et c'est cette distinction qui commande
          l'accès aux résultats et l'exécution des soins. */
-      /* LA LISTE DES POSTES VIENT DE LA BASE (03/10/2026). Elle était écrite
-         ici, en dur, et divergeait du jour où un compte était créé par
-         « Utilisateurs ». Elle est désormais lue par api/auth.php, qui
-         l'extrait de la table `utilisateurs` — sans aucun secret : c'est un
-         annuaire, pas une clé. */
-      var comptes = [
-        { role: 'admin', nom: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui', fonction: 'direction', secteur: 'ADM' },
-        { role: 'da', nom: 'TAKI Alimatou', identifiant: 'a.taki', fonction: 'direction', secteur: 'ADM' },
-        { role: 'medecin', nom: 'YENI M’PO Florent', identifiant: 'f.yeni', fonction: 'medecin', secteur: 'MGE' },
-        { role: 'infirmier', nom: 'BADO BANI A. B. Zoulehath', identifiant: 'z.badobani', fonction: 'sage_femme', secteur: 'MAT' },
-        { role: 'infirmier', nom: 'GARBA Yahouza', identifiant: 'y.garba', fonction: 'infirmier', secteur: 'SUR' },
-        { role: 'aide_soignant', nom: 'TEPA Séraphine', identifiant: 's.tepa', fonction: 'aide_soignant', secteur: 'HOS' },
-        /* LE BIOLOGISTE MÉDICAL — deux agents portent la fonction, celui-ci est
-           chef de service. Le rôle s'appelle « laborantin » au technique ; son
-           LIBELLÉ, celui que l'agent lit, est « Biologiste médical ». */
-        { role: 'laborantin', nom: 'KINNOU Addoul Ganiou', identifiant: 'a.kinnou', fonction: 'tsl', secteur: 'LAB' },
-        { role: 'stock', nom: 'MAMAN Zoukanéri', identifiant: 'z.maman', fonction: 'stock', secteur: 'ADM' },
-        { role: 'comptable', nom: 'KASSA Augustin', identifiant: 'a.kassa', fonction: 'comptable', secteur: 'ADM' },
-        /* LA CAISSE ET LA PHARMACIE SONT LE MÊME POSTE. DIEYABIDI Aïssatou est
-           Caissière-Dispensatrice : elle encaisse et elle délivre. Le compte
-           « Pharmacien » a été fermé par archivage, et proposer une session sur
-           un compte fermé n'aurait aucun sens — c'est ce compte-ci qui a repris
-           l'intégralité de ses droits. */
-        { role: 'caissier', nom: 'DIEYABIDI Aïssatou — Dispensaire (Pharmacie)',
-          identifiant: 'a.dieyabidi', fonction: 'caissiere', secteur: 'CPH' },
-        { role: 'reception', nom: 'OROU YO Edmond', identifiant: 'e.orouyo', fonction: 'accueil', secteur: 'ACC' },
 
-        /* LES TROIS COMPTES CRÉÉS PAR LA DIRECTION LE 24/08/2026. Leurs rôles
-           existaient, leurs tableaux de bord aussi, mais aucune session ne
-           pouvait s'ouvrir à leur nom : la matrice des droits ne se vérifiait
-           donc pas à l'usage, seulement sur le papier. */
-        { role: 'echographiste', nom: 'AHOHOU Rodrigue', identifiant: 'r.ahohou',
-          fonction: 'medecin', secteur: 'IMG' },
-        { role: 'surveillant', nom: 'GARBA Yahouza — Surveillant', identifiant: 'y.garba.sur',
-          fonction: 'infirmier', secteur: 'SUR' },
-        { role: 'assistant_comptable', nom: 'GBEDJI Hervé — Assistant de Direction',
-          identifiant: 'h.gbedji', fonction: 'comptable', secteur: 'ADM' },
-
-        /* LES TROIS RÔLES DE LA PHASE 2 (31/08/2026). Le chirurgien a un
-           titulaire RÉEL : la NS 145 désigne Dr BASSONGUI Chabi Seko Y.,
-           chirurgien généraliste, responsable du secteur CHI — seconde session
-           du même agent, comme GARBA Yahouza (infirmier et surveillant).
-           Anesthésiste et assistant comptable ne sont nommés par AUCUN
-           document : comptes à pourvoir — inventer un nom d'agent serait la
-           même faute qu'inventer un numéro d'urgence. */
-        { role: 'chirurgien', nom: 'BASSONGUI Chabi Séko — Chirurgien',
-          identifiant: 'c.bassongui.chi', fonction: 'medecin', secteur: 'CHI' },
-        { role: 'anesthesiste', nom: 'Compte à pourvoir (démonstration)',
-          identifiant: 'demo.anesthesiste', fonction: 'medecin', secteur: 'CHI' },
-        { role: 'aide_comptable', nom: 'Compte à pourvoir (démonstration)',
-          identifiant: 'demo.assist-comptable', fonction: 'comptable', secteur: 'ADM' },
-      ];
-
+      /* PAGE DE CONNEXION ÉPURÉE (20/10/2026) : plus de sélecteur de profil de
+         démonstration ni de mot de passe pré-rempli — l'agent saisit SES
+         identifiants, le serveur vérifie le haché. Le pied (« comptes ouverts
+         par l'administrateur », double facteur, plan du site) est retiré : il
+         promettait des portes qui ne sont pas celles de la connexion. */
       var form = el('form.space-y-4');
       var idField = el('input.input', { type: 'text', id: 'identifiant', autocomplete: 'username', placeholder: 'prenom.nom', required: true });
       var pwField = el('input.input.pr-10', { type: 'password', id: 'motdepasse', autocomplete: 'current-password', placeholder: '••••••••', required: true });
@@ -219,57 +172,19 @@
         el('div.mt-1\\.5', null, pwWrap),
       ]));
 
-      /* Sélection du profil — le prototype ne vérifie pas de mot de passe réel. */
-      var sel = el('select.select');
-      comptes.forEach(function (c) {
-        /* Un libellé PROPRE par option (Bug 0 des Instructions) : le nom de
-           compte porte parfois la fonction en suffixe pour distinguer deux
-           sessions d'un même agent — la répéter après le libellé du rôle
-           donnait « Rôle — Nom — Rôle ». On n'affiche que le nom nu. */
-        var nomCourt = String(c.nom).split(' — ')[0];
-        sel.appendChild(el('option', { value: c.role }, N.ROLES[c.role].label + ' — ' + nomCourt));
-      });
-      sel.addEventListener('change', function () {
-        var c = comptes.filter(function (x) { return x.role === sel.value; })[0];
-        if (c) { idField.value = c.identifiant; pwField.value = 'demonstration'; }
-      });
 
-      /* On recharge le sélecteur depuis la base dès qu'elle répond : la liste
-         ci-dessus n'est qu'un repli d'affichage. */
-      if (global.fetch) {
-        global.fetch('api/auth.php?action=comptes', { headers: { Accept: 'application/json' } })
-          .then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (o) {
-            if (!o || !o.comptes || !o.comptes.length) return;
-            comptes = o.comptes.filter(function (c) { return N.ROLES[c.role]; });
-            C.clear(sel);
-            comptes.forEach(function (c) {
-              var nomCourt = c.nom.split('—')[0].trim();
-              sel.appendChild(el('option', { value: c.role },
-                N.ROLES[c.role].label + ' — ' + nomCourt));
-            });
-          })
-          .catch(function () { /* le repli d'affichage tient */ });
-      }
-      form.appendChild(el('div', null, [
-        el('label.label', { text: 'Profil de connexion (démonstration)' }),
-        sel,
-        el('p.mt-1.text-xs.text-slate-400', { text: 'Le prototype ouvre la session avec le périmètre RBAC du profil choisi.' }),
-      ]));
-
-      form.appendChild(el('div.flex.items-center.justify-between', null, [
-        el('label.flex.cursor-pointer.items-center.gap-2', null, [
-          el('input.checkbox', { type: 'checkbox' }),
-          el('span.text-sm.text-slate-600', { text: 'Se souvenir de ce poste' }),
-        ]),
-      ]));
-
+      /* La case « Se souvenir de ce poste » est retirée : elle ne persistait rien (constat fausses sauvegardes). */
       var erreur = el('div.hidden.items-start.gap-2.rounded-lg.border.border-danger-200.bg-danger-50.px-3.py-2');
       erreur.appendChild(el('span.shrink-0.text-danger-600', null, C.icon('alert-circle', 'h-4 w-4')));
       var erreurTexte = el('p.text-xs.text-danger-900');
       erreur.appendChild(erreurTexte);
       form.appendChild(erreur);
 
+      /* Une session clôturée par l'administrateur renvoie ici, et le dit. */
+      if (/[?&]motif=session-cloturee/.test(global.location.search)) {
+        erreur.className = 'flex items-start gap-2 rounded-lg border border-warning-200 bg-warning-50 px-3 py-2';
+        erreurTexte.textContent = 'Votre session a été clôturée par un administrateur. Elle ne se rouvre pas : reconnectez-vous pour en ouvrir une nouvelle.';
+      }
       var tentatives = 0;
       var submit = el('button.btn.btn-primary.btn-lg.w-full', { type: 'submit' }, [C.icon('log-in', 'h-4 w-4'), 'Se connecter']);
       form.appendChild(submit);
@@ -302,6 +217,17 @@
           return r.json().then(function (o) { return { ok: r.ok, o: o }; });
         }).then(function (res) {
           submit.disabled = false;
+          /* LE SERVEUR A DÉCIDÉ, NOUS NE REJUGEONS PAS. Un rôle archivé a sa modale
+             explicite ; un mot de passe provisoire ouvre le changement AVANT tout
+             écran (aucune session n'existe tant qu'il n'est pas remplacé). */
+          if (res.o && res.o.code === 'ROLE_ARCHIVE') {
+            refuserRoleArchive((res.o.utilisateur && res.o.utilisateur.role) || '', res.o.utilisateur);
+            return;
+          }
+          if (res.ok && res.o && res.o.code === 'CHANGEMENT_REQUIS' && res.o.jetonChangement) {
+            demanderChangement(res.o, pwField.value);
+            return;
+          }
           if (!res.ok || !res.o.jeton) {
             tentatives++;
             erreur.className = 'flex items-start gap-2 rounded-lg border border-danger-200 bg-danger-50 px-3 py-2';
@@ -309,23 +235,7 @@
               || 'Connexion refusée.';
             return;
           }
-          var u = res.o.utilisateur;
-
-          /* Le rôle a-t-il été archivé depuis la matrice des droits ? Le compte
-             peut être valide en base et son RÔLE retiré : le refus doit être
-             NOMMÉ, et l'administrateur informé. */
-          if (N.roleArchive(u.role)) {
-            refuserRoleArchive(u.role, u);
-            return;
-          }
-
-          /* Le JETON vient du serveur : on l'adopte, on n'en invente pas. */
-          S.setSession({
-            jeton: res.o.jeton, role: u.role, nom: u.nom,
-            poste: (N.ROLES[u.role] && N.ROLES[u.role].label) || u.role,
-            identifiant: u.identifiant, fonction: u.fonction, secteur: u.secteur,
-          });
-          global.location.href = url((N.ROLES[u.role] && N.ROLES[u.role].home) || 'dash-admin');
+          ouvrirSession(res.o);
         }).catch(function () {
           submit.disabled = false;
           erreur.className = 'flex items-start gap-2 rounded-lg border border-danger-200 bg-danger-50 px-3 py-2';
@@ -334,23 +244,86 @@
         });
       });
 
+      /* La session s'ouvre avec le JETON du serveur : on l'adopte, on n'en invente pas. */
+      function ouvrirSession(o) {
+        var u = o.utilisateur;
+        S.setSession({
+          nouvelleSession: true,
+          jeton: o.jeton, role: u.role, nom: u.nom,
+          poste: (N.ROLES[u.role] && N.ROLES[u.role].label) || u.role,
+          identifiant: u.identifiant, fonction: u.fonction, secteur: u.secteur,
+        });
+        /* La connexion demande l'ouverture du centre de notifications sur la
+           page d'accueil du profil (consommé une seule fois par app.js). */
+        try { global.sessionStorage.setItem('sigh-cnt:notifs-ouverture', '1'); } catch (e) { /* sans effet */ }
+        global.location.href = url((N.ROLES[u.role] && N.ROLES[u.role].home) || 'dash-admin');
+      }
+
+      /* ----------------------------------------------------------------------
+       * CHANGEMENT DE MOT DE PASSE IMPOSÉ, AVANT TOUT ÉCRAN.
+       * Le mot de passe provisoire ne donne aucune session : le serveur n'a
+       * délivré qu'un jeton de changement, à usage unique. L'ancien mot de passe
+       * est celui que l'agent vient de saisir ; le nouveau compte huit caractères
+       * au moins. Rien n'est conservé ici.
+       * -------------------------------------------------------------------- */
+      function demanderChangement(o, ancien) {
+        var nouveau = el('input.input', { type: 'password', autocomplete: 'new-password', id: 'nouveau-mdp' });
+        var confirmation = el('input.input', { type: 'password', autocomplete: 'new-password', id: 'confirmation-mdp' });
+        var message = el('p.hidden.text-xs.text-danger-700', { role: 'alert' });
+        var m = null;
+        function valider() {
+          message.className = 'hidden text-xs text-danger-700';
+          if (String(nouveau.value).length < 8) {
+            message.textContent = 'Le nouveau mot de passe doit compter au moins huit caractères.';
+            message.className = 'text-xs text-danger-700'; return;
+          }
+          if (nouveau.value !== confirmation.value) {
+            message.textContent = 'Les deux mots de passe saisis ne correspondent pas.';
+            message.className = 'text-xs text-danger-700'; return;
+          }
+          global.fetch('api/auth.php', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'changer_mot_de_passe', jetonChangement: o.jetonChangement,
+              ancienMotDePasse: ancien, nouveauMotDePasse: nouveau.value, poste: (global.location.hostname || 'poste') }),
+          }).then(function (r) {
+            return r.json().then(function (b) { return { ok: r.ok, b: b }; });
+          }).then(function (res) {
+            if (!res.ok || !res.b.jeton) {
+              message.textContent = (res.b && res.b.detail) || 'Changement refusé.';
+              message.className = 'text-xs text-danger-700';
+              return;
+            }
+            if (m) m.close();
+            ouvrirSession(res.b);
+          }).catch(function () {
+            message.textContent = 'Connexion perdue avec le serveur : réessayer.';
+            message.className = 'text-xs text-danger-700';
+          });
+        }
+        m = U.modal({
+          title: 'Choisir un nouveau mot de passe', size: 'md',
+          body: el('div.space-y-3', null, [
+            el('p.text-sm.text-slate-700', { text: 'Ce compte utilise un mot de passe provisoire ou une réinitialisation a été imposée. '
+              + 'Choisissez un nouveau mot de passe avant d’accéder au logiciel.' }),
+            el('div', null, [el('label.label', { for: 'nouveau-mdp', text: 'Nouveau mot de passe (8 caractères au minimum)' }), nouveau]),
+            el('div', null, [el('label.label', { for: 'confirmation-mdp', text: 'Confirmer le nouveau mot de passe' }), confirmation]),
+            message,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Changer le mot de passe', { variant: 'primary', onclick: valider }),
+          ],
+        });
+      }
+
       /* --------------------------------------------------------------------
        * Refus de connexion — rôle archivé.
        * L'administrateur retrouve la tentative dans « Rôles & permissions ».
        * ------------------------------------------------------------------ */
       function refuserRoleArchive(role, compte) {
         var libelle = N.ROLES[role] ? N.ROLES[role].label : role;
-        S.collection('tentativesConnexion', { module: 'M14', entite: 'tentative', prefix: 'TNT' }).insert({
-          identifiant: (compte && compte.identifiant) || idField.value.trim(),
-          nom: (compte && compte.nom) || idField.value.trim(),
-          role: role,
-          motif: 'Rôle archivé — accès retiré par l’administrateur',
-          horodatage: new Date().toISOString(),
-          poste: 'Écran de connexion', traitee: false,
-        });
-        S.log('Connexion refusée', 'M14', 'Session', (compte && compte.identifiant) || idField.value.trim(),
-          null, { role: role, motif: 'rôle archivé' });
-
+        /* La tentative est écrite PAR LE SERVEUR (api/auth.php, `tentativesConnexion`) :
+           sans session, le navigateur n'a pas le droit d'écrire, et un doublon serait journalisé. */
         erreur.className = 'flex items-start gap-2 rounded-lg border border-danger-200 bg-danger-50 px-3 py-2';
         erreurTexte.textContent = 'Connexion refusée — le profil « ' + libelle + ' » a été retiré.';
 
@@ -385,24 +358,11 @@
         });
       }
 
-      /* Pré-remplissage initial */
-      idField.value = comptes[0].identifiant;
-      pwField.value = 'demonstration';
 
       root.appendChild(shell({
         titre: 'Connexion',
         sousTitre: 'Authentification individuelle obligatoire — aucun compte partagé (CDCT §12.2).',
         body: form,
-        pied: [
-          /* Pas d'auto-inscription dans ce logiciel : les comptes sont ouverts
-             par l'administrateur (M14). Le pied disait « Pas encore de
-             compte ? » et renvoyait au double facteur — il promettait une
-             porte qui n'existe pas. */
-          el('span.block.mb-1', { text: 'Les comptes sont ouverts par l’administrateur système.' }),
-          el('a.font-medium.text-navy-700.hover\\:underline', { href: url('auth-2fa'), text: 'Vérification en 2 étapes' }),
-          el('span', { text: ' — ' }),
-          el('a.font-medium.text-navy-700.hover\\:underline', { href: url('plan-du-site'), text: 'Plan du site' }),
-        ],
       }));
       return null;
     },
@@ -422,14 +382,14 @@
       f.appendChild(el('button.btn.btn-primary.btn-lg.w-full', { type: 'submit' }, 'Envoyer les instructions'));
       f.addEventListener('submit', function (e) {
         e.preventDefault();
-        U.toast('Demande transmise à l’administrateur système.', {
-          type: 'success', detail: 'La réinitialisation est effectuée par l’Administrateur (CDCT §12.2).',
+        /* Refus nommé : aucune demande n'est écrite depuis cette page, qui n'a pas de session. */
+        U.toast('Demande non transmise : cette maquette ne l’enregistre pas.', {
+          type: 'warning', detail: 'Adressez-vous à l’Administrateur système, qui réinitialise le mot de passe depuis « Utilisateurs » (CDCT §12.2).',
         });
-        setTimeout(function () { global.location.href = url('auth-reset'); }, 1200);
       });
       root.appendChild(shell({
         icon: 'key-round', titre: 'Mot de passe oublié',
-        sousTitre: 'La réinitialisation est prise en charge par l’Administrateur système et journalisée.',
+        sousTitre: 'La réinitialisation est faite par l’Administrateur système. Cette page n’enregistre aucune demande : contactez-le directement.',
         body: f,
         pied: el('a.font-medium.text-navy-700.hover\\:underline', { href: url('index'), text: '← Retour à la connexion' }),
       }));
@@ -449,24 +409,18 @@
       f.appendChild(el('div', null, [el('label.label', { text: 'Nouveau mot de passe' }), pw]));
       f.appendChild(el('div', null, [el('label.label', { text: 'Confirmer le mot de passe' }), pw2]));
 
-      var regles = el('ul.space-y-1\\.5.rounded-lg.bg-slate-50.p-3');
-      [['12 caractères minimum'], ['Au moins une majuscule et une minuscule'], ['Au moins un chiffre et un caractère spécial'],
-       ['Renouvellement obligatoire tous les 90 jours']].forEach(function (r) {
-        regles.appendChild(el('li.flex.items-center.gap-2.text-xs.text-slate-600', null, [
-          C.icon('check', 'h-3.5 w-3.5 text-success-600'), el('span', { text: r[0] }),
-        ]));
-      });
-      f.appendChild(regles);
       f.appendChild(el('button.btn.btn-primary.btn-lg.w-full', { type: 'submit' }, 'Définir le mot de passe'));
       f.addEventListener('submit', function (e) {
         e.preventDefault();
         if (pw.value !== pw2.value) { U.toast('Les deux mots de passe ne correspondent pas.', { type: 'error' }); return; }
-        U.toast('Mot de passe mis à jour.', { type: 'success' });
-        setTimeout(function () { global.location.href = url('index'); }, 1000);
+        /* Refus nommé : aucune action serveur ne change un mot de passe depuis cette page. */
+        U.toast('Mot de passe non modifié : cette page n’enregistre rien.', {
+          type: 'warning', detail: 'Le mot de passe se change par l’Administrateur système (écran « Utilisateurs »).',
+        });
       });
       root.appendChild(shell({
         icon: 'lock-keyhole', titre: 'Réinitialiser le mot de passe',
-        sousTitre: 'Politique de mot de passe de la clinique (CDCT §12.2).',
+        sousTitre: 'Politique de mot de passe de la clinique (CDCT §12.2). Maquette : cette page ne modifie aucun mot de passe.',
         body: f,
         pied: el('a.font-medium.text-navy-700.hover\\:underline', { href: url('index'), text: '← Retour à la connexion' }),
       }));
@@ -503,15 +457,14 @@
       f.appendChild(el('p.text-center.text-xs.text-slate-500', { text: 'Code non reçu ? Un nouvel envoi est possible dans 30 secondes.' }));
       f.addEventListener('submit', function (e) {
         e.preventDefault();
-        var s = S.session();
-        U.toast('Vérification réussie.', { type: 'success' });
-        setTimeout(function () {
-          global.location.href = url(s && s.role ? N.ROLES[s.role].home : 'dash-admin');
-        }, 900);
+        /* Refus nommé : aucun code n'est vérifié, aucune marque n'est posée sur la session. */
+        U.toast('Code non vérifié : la double authentification n’est pas branchée.', {
+          type: 'warning', detail: 'Cette page est une maquette ; elle ne valide aucun code.',
+        });
       });
       root.appendChild(shell({
         icon: 'smartphone', titre: 'Vérification en 2 étapes',
-        sousTitre: 'Exigée pour les profils à privilèges élevés : Administrateur et Direction (CDCT §12.2).',
+        sousTitre: 'Prévue pour les profils à privilèges élevés : Administrateur et Direction (CDCT §12.2). Maquette non branchée : aucun code n’est vérifié.',
         body: f,
         pied: el('a.font-medium.text-navy-700.hover\\:underline', { href: url('index'), text: '← Utiliser un autre compte' }),
       }));
@@ -591,6 +544,17 @@
 
       f.addEventListener('submit', function (e) {
         e.preventDefault();
+        /* Une session clôturée pendant le verrouillage ne se reprend pas : retour à la connexion, avec le motif. */
+        var M = global.SIGH.sessions;
+        var fermee = M && M.cloturee();
+        if (fermee) {
+          S.log('Session fermée par clôture', 'M14', 'Session', fermee.identifiant, { etat: 'ouverte' }, { sessionId: fermee.id, cloturePar: fermee.cloturePar });
+          S.setSession(null);
+          S.storage.remove(cleRetour);
+          global.location.href = url('index') + '?motif=session-cloturee';
+          return;
+        }
+        if (M) M.changerEtat('active');
         S.log('Déverrouillage de session', 'M14', 'Session', s.identifiant || s.nom, null,
           { retour: retour || null });
         /* Le drapeau est à usage unique : sans cela, un rechargement de cet

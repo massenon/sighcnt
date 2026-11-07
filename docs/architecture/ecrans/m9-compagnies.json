@@ -1,0 +1,55 @@
+{
+ "id": "m9-compagnies",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Compagnies partenaires",
+ "acces": "ouvert",
+ "titre": "Compagnies d’assurance partenaires",
+ "description": "Référentiel des compagnies conventionnées avec la clinique : coordonnées, convention, assurés et créances.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Compagnies partenaires"
+ ],
+ "actions": [
+  "Tableau de bord assurances",
+  "Assurés & cartes",
+  "Assurances & Créances"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les compagnies",
+  "Archivés"
+ ],
+ "kpis": [
+  "Compagnies partenaires",
+  "Conventions actives",
+  "Assurés couverts",
+  "Créances totales"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Code",
+   "Compagnie",
+   "Téléphones",
+   "Adresse électronique",
+   "Convention",
+   "Assurés",
+   "Créances",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les compagnies13",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

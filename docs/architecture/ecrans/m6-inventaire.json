@@ -1,0 +1,40 @@
+{
+ "id": "m6-inventaire",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Inventaires",
+ "acces": "ouvert",
+ "titre": "Inventaires",
+ "description": "Inventaire mensuel et annuel : comparaison automatique entre stock physique saisi et stock théorique du système.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Inventaires"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Inventaires réalisés",
+  "Références à inventorier",
+  "Valeur théorique",
+  "Dernier inventaire"
+ ],
+ "cartes": [
+  "Historique des inventaires"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Lancer un inventaire"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

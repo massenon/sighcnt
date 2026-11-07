@@ -1,0 +1,30 @@
+{
+ "id": "m1-dossier-medical",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Dossier médical informatisé",
+ "acces": "ouvert",
+ "titre": "Dossier médical informatisé",
+ "description": "Fusionné dans le répertoire des patients — un seul point d’entrée du dossier (Bug 1).",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Dossier médical informatisé"
+ ],
+ "actions": [],
+ "regle": [
+  "Le dossier médical informatisé est fusionné dans le répertoire des patients : la fiche de chaque patient y agrège consultations, hospitalisations, analyses, ordonnances et documents — et les épisodes de soins se tiennent dans Consultations (M2), leur écran d’origine."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Ouvrir le répertoire des patients",
+  "Consultations"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

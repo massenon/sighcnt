@@ -27,6 +27,7 @@
  * ========================================================================== */
 
 require_once __DIR__ . '/_commun.php';
+require_once __DIR__ . '/projection.php';
 
 try {
     $pdo = sigh_pdo();
@@ -115,6 +116,12 @@ if ($action === 'inserer') {
             sigh_ajouter_fiche($pdo, $collection, $fiche);
             sigh_journaliser($pdo, $session, 'Création', $collection, (string) $fiche['id'], null, $fiche);
         }
+        /* La copie relationnelle suit, dans la même transaction (api/projection.php). */
+        sigh_proj_depuis_base($pdo, $collection, (string) $fiche['id']);
+        if ($deja === null) {
+            sigh_proj_depuis_base($pdo, 'audit');
+        }
+        sigh_evenement($pdo, $collection, (string) $fiche['id'], $session['jeton'] ?? null, (string) ($session['identifiant'] ?? ''));
         $pdo->commit();
     } catch (Throwable $e) {
         $pdo->rollBack();
@@ -159,6 +166,9 @@ if ($action === 'modifier' || $action === 'archiver' || $action === 'restaurer')
     try {
         $apres = sigh_modifier_fiche($pdo, $collection, $id, $correctif);
         sigh_journaliser($pdo, $session, $libelle, $collection, $id, $avant, $apres);
+        sigh_proj_depuis_base($pdo, $collection, $id);
+        sigh_proj_depuis_base($pdo, 'audit');
+        sigh_evenement($pdo, $collection, $id, $session['jeton'] ?? null, (string) ($session['identifiant'] ?? ''));
         $pdo->commit();
     } catch (Throwable $e) {
         $pdo->rollBack();

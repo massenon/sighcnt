@@ -1,0 +1,41 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/reference-impression.js — géométrie des gabarits imprimés de la maquette.",
+ "ticket": {
+  "x": 488.8,
+  "y": 71,
+  "l": 302.4,
+  "h": 369.2
+ },
+ "ticketLignes": 25,
+ "a4": {
+  "x": 243.2,
+  "y": 71,
+  "l": 793.7,
+  "h": 1122.5
+ },
+ "entete": {
+  "x": 288.5,
+  "y": 116.3,
+  "l": 703,
+  "h": 101.8
+ },
+ "titre": {
+  "x": 561.9,
+  "y": 236.1,
+  "l": 156.2,
+  "h": 28.5
+ },
+ "pied": {
+  "x": 288.5,
+  "y": 549.6,
+  "l": 703,
+  "h": 33
+ },
+ "tableau": {
+  "x": 288.5,
+  "y": 280.6,
+  "l": 703,
+  "h": 102
+ },
+ "lignesTableau": 4
+}

@@ -1,0 +1,176 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mobile-suite.js : la fiche N1 de la page du simulateur mobile « cpn ». Ne pas éditer à la main.",
+ "titre": "Visite prénatale (CPN)",
+ "sous": "SOUROU Mariam",
+ "textes": [],
+ "champs": [
+  {
+   "section": "Examen",
+   "id": "sa",
+   "libelle": "Terme (SA)",
+   "requis": true,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "numeric",
+   "placeholder": "28",
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Examen",
+   "id": "poids",
+   "libelle": "Poids (kg)",
+   "requis": true,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "decimal",
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Examen",
+   "id": "sys",
+   "libelle": "TA systolique",
+   "requis": true,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "numeric",
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Examen",
+   "id": "dia",
+   "libelle": "diastolique",
+   "requis": true,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "numeric",
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Examen",
+   "id": "hu",
+   "libelle": "Hauteur utérine (cm)",
+   "requis": false,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "decimal",
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Examen",
+   "id": "bcf",
+   "libelle": "BCF (/min)",
+   "requis": false,
+   "type": "input",
+   "saisie": "text",
+   "clavier": "numeric",
+   "placeholder": "140",
+   "options": null,
+   "valeur": null
+  },
+  {
+   "section": "Examen",
+   "id": "presentation",
+   "libelle": "Présentation",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Céphalique",
+    "Siège",
+    "Transversale",
+    "Non déterminée"
+   ],
+   "valeur": "Céphalique"
+  },
+  {
+   "section": "Prévention",
+   "id": "sp",
+   "libelle": "SP / TPI — dose",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Aucune",
+    "SP 1",
+    "SP 2",
+    "SP 3",
+    "SP 4"
+   ],
+   "valeur": "Aucune"
+  },
+  {
+   "section": "Prévention",
+   "id": "milda",
+   "libelle": "MILDA remise",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Oui",
+    "Non"
+   ],
+   "valeur": "Oui"
+  },
+  {
+   "section": "Prévention",
+   "id": "proteinurie",
+   "libelle": "Protéinurie",
+   "requis": false,
+   "type": "select",
+   "saisie": null,
+   "clavier": null,
+   "placeholder": null,
+   "options": [
+    "Négative",
+    "Traces",
+    "+",
+    "++",
+    "+++"
+   ],
+   "valeur": "Négative"
+  },
+  {
+   "section": null,
+   "id": "rdv",
+   "libelle": "Prochain rendez-vous",
+   "requis": false,
+   "type": "input",
+   "saisie": "date",
+   "clavier": null,
+   "placeholder": null,
+   "options": null,
+   "valeur": null
+  }
+ ],
+ "boutons": [
+  "Enregistrer la visite"
+ ],
+ "onglets": [
+  "Accueil",
+  "Synchro",
+  "À traiter",
+  "Réglages"
+ ],
+ "notes": [],
+ "cartes": [
+  "Examen",
+  "Prévention"
+ ],
+ "items": [],
+ "kpis": []
+}

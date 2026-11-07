@@ -1,0 +1,64 @@
+{
+ "id": "m3-observation",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Mise en observation",
+ "acces": "ouvert",
+ "titre": "Mise en observation",
+ "description": "Surveillance de courte durée : admission en unité d’observation, feuille de constantes, prescriptions ciblées et orientation de sortie.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Mise en observation"
+ ],
+ "actions": [
+  "Plan des lits",
+  "Feuille de soins",
+  "Mettre en observation"
+ ],
+ "regle": [
+  "1 patient(s) en observation depuis plus de 24 heures. L’observation n’est pas une hospitalisation : au-delà de la durée de référence, une orientation doit être décidée — sortie, hospitalisation complète ou transfert."
+ ],
+ "onglets": [
+  "En observation",
+  "Séjours clos"
+ ],
+ "kpis": [
+  "Patients en observation",
+  "Au-delà de 24 h",
+  "Durée moyenne",
+  "Séjours clos"
+ ],
+ "cartes": [
+  "Occupation des unités d’observation"
+ ],
+ "tableaux": [
+  [
+   "Unité",
+   "Occupées",
+   "Places",
+   "Disponibilité"
+  ],
+  [
+   "N°",
+   "Patient",
+   "Motif de surveillance",
+   "Unité",
+   "Entrée",
+   "Durée",
+   "Constantes",
+   "Issue",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "En observation6",
+  "Séjours clos12",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

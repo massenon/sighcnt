@@ -1,0 +1,58 @@
+{
+ "id": "m12-echeances",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Échéances fiscales & paiements",
+ "acces": "ouvert",
+ "titre": "Échéances fiscales & paiements",
+ "description": "Suivi des obligations fiscales et sociales : ce qui est dû, ce qui approche, ce qui est réglé.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Échéances fiscales & paiements"
+ ],
+ "actions": [
+  "Obligations & règles",
+  "Tableau de bord comptable",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [
+  "10 échéance(s) dépassée(s) et non réglée(s)ITS — 10/09/2026 (50 j de retard) · ITS — 12/10/2026 (18 j de retard) · AIB — 10/09/2026 (50 j de retard) …Valider le paiement",
+  "4 déclaration(s) à préparerUne déclaration précède le paiement : ITS — Déclaration mensuelle avant paiement · AIB — Déclaration mensuelle avant paiement"
+ ],
+ "onglets": [],
+ "kpis": [
+  "En retard",
+  "À payer sous 10 jours",
+  "Déclarations attendues",
+  "Réglées sur l’exercice"
+ ],
+ "cartes": [
+  "Échéances de l’exercice 2026"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Obligation",
+   "Échéance",
+   "Délai",
+   "État",
+   "Montant réglé",
+   "Validé par",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Valider le paiement",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

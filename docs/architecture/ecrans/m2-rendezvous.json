@@ -1,0 +1,67 @@
+{
+ "id": "m2-rendezvous",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "Rendez-vous & visites",
+ "acces": "ouvert",
+ "titre": "Rendez-vous & visites",
+ "description": "Prise de rendez-vous et enregistrement des venues — patients, individus non enregistrés, affaires privées.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "Rendez-vous & visites"
+ ],
+ "actions": [
+  "Agenda",
+  "Passage sans rendez-vous",
+  "File d’attente"
+ ],
+ "regle": [],
+ "onglets": [
+  "Agenda — à venir, reportés, non honorés",
+  "Honorés (apurés de l’agenda)",
+  "Archivés"
+ ],
+ "kpis": [
+  "Dans l’agenda",
+  "À venir",
+  "Reportés",
+  "Non honorés & à statuer"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date et heure",
+   "Patient",
+   "Praticien",
+   "Motif",
+   "Type",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Aujourd’hui",
+  "Sept derniers jours",
+  "Toute la période",
+  "Agenda — à venir, reportés, non honorés102",
+  "Honorés (apurés de l’agenda)180",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [
+  "Du",
+  "Au"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

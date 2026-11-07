@@ -1,0 +1,54 @@
+{
+ "id": "m2-agenda-medecin",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "Agenda du médecin",
+ "acces": "ouvert",
+ "titre": "Agenda du médecin",
+ "description": "Les consultations d’un praticien — passées, du jour et à venir — lues depuis le registre.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "Agenda du médecin"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Consultations au registre",
+  "Aujourd’hui",
+  "Planifiées à venir",
+  "Terminees ce mois-ci"
+ ],
+ "cartes": [
+  "Agenda — BASSONGUI Chabi Séko"
+ ],
+ "tableaux": [
+  [
+   "Date et heure",
+   "Patient",
+   "Motif",
+   "Type",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [
+  "Praticien"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

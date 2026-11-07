@@ -85,8 +85,16 @@
      tant qu'elle était recopiée dans chacun, elle finissait par diverger :
      la vague 67 a bougé les deux premiers et laissé le troisième à 61, si
      bien qu'un poste hydraté depuis la base ne se ré-amorçait jamais.
-     Incrémenter ce nombre, et lui seul, à toute modification de forme. */
-  var VERSION = 64;
+     Incrémenter ce nombre, et lui seul, à toute modification de forme.
+     69 (06/11/2026) : la configuration fiscale VALIDÉE et DATÉE, trois
+     collections semées au socle (identiteLegale, obligationsFiscales,
+     historiqueObligations), posées d'un coup pour tout le chantier.
+     70 (07/11/2026) : le moteur de validation commun. Les validations du
+     01/09/2026 ne sont plus des constantes pour toute une liste mais des
+     fiches (`valideRole` en plus, mention « validation écrite du 01/09/2026 »),
+     et la collection `validationsReferentiels` (une fiche par artefact du code
+     que le magasin ne porte pas : check-listes du bloc…) est semée au socle. */
+  var VERSION = 70;
   var db = null;
   var listeners = {};
 
@@ -471,16 +479,6 @@
      métier en demande cinq : le planning et les présences. */
   var droitsSurveillant = fermerTout({});
 
-  /* L'ingénieur biomédical entretient les automates et le parc technique. Il
-     VOIT le laboratoire pour connaître les analyses en cours sur les appareils
-     dont il a la charge, mais ne rend AUCUN résultat : la validation biologique
-     engage la responsabilité du biologiste, pas celle du technicien qui a
-     étalonné la machine. Il tient la maintenance (M13) et voit le stock des
-     réactifs et consommables. */
-  var droitsBiomedical = fermerTout({
-    M5: VOIR, M6: VOIR, M7: VOIR, M13: EDITER, RAP: VOIR,
-  });
-
   /* L'assistant comptable, d'après ses 30 activités : livres de compte,
      rapprochements, recouvrement des créances chez les particuliers ET les
      compagnies, obligations fiscales, point journalier de la caisse,
@@ -846,25 +844,46 @@
    * REPORTÉE au jour ouvrable suivant, jamais avancée — l'administration
    * n'ouvre pas le week-end, et anticiper ferait payer avant d'y être tenu.
    * ======================================================================== */
-  function genEcheances() {
-    var AUJ2 = new Date(2026, 7, 16);
-    function jourOuvrableSuivant(d) {
-      var x = new Date(d.getTime());
-      while (x.getDay() === 0 || x.getDay() === 6) x = C.addDays(x, 1);
-      return x;
+  /* LES OBLIGATIONS SONT LUES À LEUR DATE (06/11/2026). Pour chaque mois de
+     l'exercice, c'est la version de l'obligation EN VIGUEUR AU PREMIER DU MOIS
+     qui fixe l'échéance du mois : une version qui change en cours d'exercice
+     ne touche que les échéances postérieures à sa date d'effet. `opts.obligations`
+     impose la liste (le semis la passe : pendant le semis, le magasin n'est pas
+     encore là) ; sinon `D.obligationsALaDate` lit le magasin. `opts.aujourdhui`
+     décide ce qui est réputé réglé (défaut : la date du jeu, 16/08/2026) ;
+     `opts.sansReglement` n'invente aucune quittance (vidage des jeux de test). */
+  function jourOuvrableSuivantGen(d) {
+    var x = new Date(d.getTime());
+    while (x.getDay() === 0 || x.getDay() === 6) x = C.addDays(x, 1);
+    return x;
+  }
+  function obligationsPour(dateRef, opts) {
+    if (opts && Array.isArray(opts.obligations)) {
+      return opts.obligations.filter(function (o) { return o.type !== 'parametres' && o.statut !== 'archive'; });
     }
-    var annee = AUJ2.getFullYear();
+    return D.obligationsALaDate ? D.obligationsALaDate(dateRef) : (D.CALENDRIER_FISCAL || []);
+  }
+  function genEcheances(exercice, opts) {
+    opts = opts || {};
+    var AUJ2 = opts.aujourdhui ? C.toDate(opts.aujourdhui) : new Date(2026, 7, 16);
+    var annee = Number(exercice) || AUJ2.getFullYear();
+    var parCode = {}, ordre = [];
+    for (var m = 0; m < 12; m++) {
+      obligationsPour(new Date(annee, m, 1), opts).forEach(function (o) {
+        var d = null;
+        if (o.periodicite === 'mensuelle') d = new Date(annee, m, o.jour);
+        else if (o.mois === m) d = new Date(annee, m, Math.min(o.jour, 28));
+        if (!d) return;
+        if (!parCode[o.code]) { parCode[o.code] = []; ordre.push(o.code); }
+        parCode[o.code].push({ o: o, d: d });
+      });
+    }
     var out = [], n = 0;
-    (D.CALENDRIER_FISCAL || []).forEach(function (o) {
-      var dates = [];
-      if (o.periodicite === 'mensuelle') {
-        for (var m = 0; m < 12; m++) dates.push(new Date(annee, m, o.jour));
-      } else {
-        dates.push(new Date(annee, o.mois, Math.min(o.jour, 28)));
-      }
-      dates.forEach(function (d) {
+    ordre.forEach(function (code) {
+      parCode[code].forEach(function (x) {
+        var o = x.o, d = x.d;
         n++;
-        var echue = jourOuvrableSuivant(d);
+        var echue = jourOuvrableSuivantGen(d);
         var passee = echue < AUJ2;
         out.push({
           id: 'ECH' + C.pad(n, 4), statut: 'actif',
@@ -874,11 +893,14 @@
           periode: o.periodicite === 'mensuelle'
             ? C.MOIS[Math.max(0, d.getMonth() - 1)] + ' ' + annee : String(annee),
           echeance: C.iso(echue),
+          echeanceTheorique: C.iso(d),
           reportee: C.iso(echue) !== C.iso(d),
+          /* La version de l'obligation qui a engendré l'échéance : sa date d'effet (null pour la version d'origine). */
+          versionObligation: o.dateEffet || null,
           /* Les échéances passées sont réputées honorées, SAUF les plus
              récentes — sans quoi l'écran de suivi et le tableau de bord du
              comptable n'auraient jamais rien à montrer. */
-          paye: passee && C.daysBetween(echue, AUJ2) > 25,
+          paye: !opts.sansReglement && passee && C.daysBetween(echue, AUJ2) > 25,
           datePaiement: null, montant: null, reference: null, valideePar: null,
         });
       });
@@ -891,6 +913,62 @@
       }
     });
     return out;
+  }
+
+  /**
+   * RÉGÉNÈRE LES ÉCHÉANCES D'UNE OBLIGATION après une version datée : les
+   * échéances NON PAYÉES dont la date théorique est >= dateEffet sont archivées
+   * (RG-14) et recréées depuis la version en vigueur ; les PAYÉES ne bougent
+   * pas (une quittance ne se réécrit jamais), ni les non payées antérieures à
+   * la date d'effet. Un seul geste au journal, qui porte les deux listes.
+   * Rend les comptes ; c'est l'appelant (parcours) qui les annonce.
+   */
+  function regenererEcheances(o) {
+    load();
+    var d = String(o.dateEffet).slice(0, 10);
+    var auteur = o.auteur || currentUser();
+    var maintenant = new Date().toISOString();
+    if (!db.echeancesFiscales) db.echeancesFiscales = [];
+    var existantes = db.echeancesFiscales.filter(function (e) { return e.code === o.code && e.statut !== 'archive'; });
+    var exercices = {};
+    existantes.forEach(function (e) { exercices[e.exercice] = true; });
+    var anneeEffet = Number(d.slice(0, 4));
+    exercices[anneeEffet] = true;
+    var conservees = 0, anterieures = 0, archivees = 0, creees = 0, avant = [], apres = [];
+    Object.keys(exercices).map(Number).filter(function (a) { return a >= anneeEffet; }).sort().forEach(function (annee) {
+      /* Les mois (AAAA-MM) qu'une échéance PAYÉE couvre déjà : la nouvelle version n'y recrée rien, sans quoi
+         le mois serait dû deux fois (une quittance et une échéance ouverte pour la même période). */
+      var moisConserves = {};
+      existantes.filter(function (e) { return e.exercice === annee; }).forEach(function (e) {
+        /* Avant la date d'effet, rien ne bouge (payée ou non) ; à partir d'elle, une PAYÉE est conservée, une non payée régénérée. */
+        var theorique = e.echeanceTheorique || e.echeance;
+        if (theorique < d) { anterieures++; return; }
+        if (e.paye) { conservees++; moisConserves[String(theorique).slice(0, 7)] = true; return; }
+        e.statut = 'archive';
+        e._archivePar = auteur;
+        e._archiveLe = maintenant;
+        e._motifArchivage = 'Régénérée : version de ' + o.code + ' en vigueur au ' + C.dateFR(d);
+        avant.push(e.echeance);
+        archivees++;
+      });
+      genEcheances(annee, { sansReglement: true }).filter(function (n) {
+        return n.code === o.code && n.echeanceTheorique >= d && !moisConserves[String(n.echeanceTheorique).slice(0, 7)];
+      }).forEach(function (n) {
+        n.id = 'ECH' + C.uid();
+        n.versionObligation = d;
+        n.regenereeLe = maintenant;
+        n.regenereePar = auteur;
+        n._creePar = auteur;
+        n._creeLe = maintenant;
+        db.echeancesFiscales.unshift(n);
+        apres.push(n.echeance);
+        creees++;
+      });
+    });
+    log('Régénération des échéances', 'M12', 'EcheancesFiscales', o.code,
+      { avant: avant }, { apres: apres, dateEffet: d, payeesConservees: conservees });
+    save(); emit('echeancesFiscales');
+    return { code: o.code, dateEffet: d, conservees: conservees, anterieures: anterieures, archivees: archivees, creees: creees };
   }
 
   /* Une remise se JUSTIFIE. Un rabais sans motif au dossier est exactement ce
@@ -1379,6 +1457,8 @@
   /* ==========================================================================
    * AMORÇAGE
    * ======================================================================== */
+  /* LA TRACE DES VALIDATIONS ÉCRITES DU 01/09/2026, au format du moteur de validation (parcours.js). */
+  var VALIDATION_ECRITE_0109 = { valideLe: '2026-09-01', validePar: 'validation écrite du 01/09/2026', valideRole: 'Direction' };
   function seed() {
     var rnd = C.seeded(20260716);
     var personnel = genPersonnel(rnd);
@@ -1389,6 +1469,17 @@
     var produits = genProduits(rnd);
     var consultations = genConsultations(rnd, patients, personnel);
     var admissions = genAdmissions(rnd, patients, personnel);
+    /* La configuration fiscale SEMÉE (06/11/2026) : la version 1 de l'identité
+       légale (copie de C.BRAND d'origine, depuis l'ouverture du dossier) et les
+       obligations du calendrier confirmé. Aucune n'est validée : la Direction
+       valide À L'ÉCRAN, à la première configuration. */
+    var identiteSemee = Object.assign({
+      id: 'IDL001', statut: 'actif', version: 1, debut: null, fin: null,
+      creeLe: '2026-08-31', creePar: 'core.js (semence)', motif: null,
+      valideLe: null, validePar: null,
+      source: 'core.js, arbitrage du 31/08/2026',
+    }, C.champsIdentite(C.BRAND_ORIGINE));
+    var obligationsSemees = D.semenceObligations();
 
     return {
       /* 39 — phase 1 : catalogue des actes au socle, réunions et GED semées
@@ -1491,8 +1582,24 @@
          données de santé nominatives qu'aucune de ses activités ne demande)
          et passe de TOUT à VOIR sur M12 — écrire et annuler des écritures
          comptables appartient au Comptable. Les fiches RBAC étant SEMÉES,
-         sans incrément un poste garderait l'ancienne matrice. */
+         sans incrément un poste garderait l'ancienne matrice.
+         69 (06/11/2026) : la configuration fiscale VALIDÉE et DATÉE
+         (identiteLegale, obligationsFiscales, historiqueObligations). */
       _version: VERSION,
+      /* L'IDENTITÉ LÉGALE, par versions datées : C.BRAND n'est plus qu'un
+         MIROIR de la version en force (S.appliquerIdentite). Lue par CFG,
+         print.js (toutes les pièces), M8, MECeF : au socle. */
+      identiteLegale: [identiteSemee],
+      /* Les OBLIGATIONS FISCALES et les paramètres ORTB, version en vigueur ;
+         les versions antérieures vont dans historiqueObligations (le modèle
+         grillePrimes / historiquePrimes). Lues par CFG, M11 (ORTB), M12
+         (échéances), M13 et les tableaux de bord : au socle. */
+      obligationsFiscales: obligationsSemees,
+      historiqueObligations: [],
+      /* Les validations des artefacts que le code porte et que le magasin ne peut pas marquer (une fiche par cible,
+         `VRF-<cible>`) : les check-listes du bloc, arrêtées par les praticiens le 01/09/2026. */
+      validationsReferentiels: [Object.assign({ id: 'VRF-checklist-bloc', statut: 'actif', famille: 'checklists_bloc',
+        cible: 'checklist-bloc', libelle: 'Check-listes d’entrée et de sortie du bloc' }, VALIDATION_ECRITE_0109)],
       _seededAt: new Date().toISOString(),
       personnel: personnel,
       patients: patients,
@@ -1810,7 +1917,7 @@
        * dit à la Direction qu'il n'y a rien à payer. C'est plus dangereux qu'un
        * tableau de bord absent.
        * ==================================================================== */
-      echeancesFiscales: genEcheances(),
+      echeancesFiscales: genEcheances(2026, { obligations: obligationsSemees }),
 
       /* Comptes rendus de maternité : accouchement, planning familial, AMIU.
          Trois pièces aux rubriques propres — un gabarit unique aurait fait
@@ -2002,7 +2109,7 @@
             'm6-mouvements': { voir: false, editer: false, annuler: false },
             'm6-lots': { voir: false, editer: false, annuler: false },
             'm6-inventaire': { voir: true, editer: false, annuler: false },
-            'm6-reprise': { voir: false },
+            'm6-import-grand-stock': { voir: false },
 
             /* L'AVOIR se consulte au guichet — le patient revient avec sa
                pièce — mais son ÉMISSION appartient au Comptable et à la DAF
@@ -2043,7 +2150,7 @@
             'm6-stock-detail': { voir: false },
             'm6-transferts': { voir: false },
             'm6-inventaire': { voir: false },
-            'm6-reprise': { voir: false },
+            'm6-import-grand-stock': { voir: false },
             'm6-point-ventes': { voir: false },
             'm6-point-stock': { voir: false },
             /* Le catalogue et les valeurs de référence du laboratoire sont
@@ -2127,6 +2234,10 @@
             M13: { editer: false, annuler: false },
           },
           droitsEcrans: {
+            /* Arbitrage de la Direction (31/10/2026) : L'ACCUEIL TIENT le répertoire des ambulances à jour — c'est lui qui recueille et
+               vérifie les numéros. Écriture accordée sur CET écran seulement : le reste de M13 (secrétariat) reste fermé à l'accueil.
+               Sans cette surcharge d'écran, M13 en lecture lui rendait le répertoire consultable mais non modifiable. */
+            'm13-repertoire-ambulances': { voir: true, editer: true, annuler: false },
             /* ZONE 1 — identification, coordonnées, couverture, constantes.
                La zone clinique ne lui est pas ouverte (RG-13), et chacune de
                ses consultations du dossier est journalisée. */
@@ -2184,6 +2295,9 @@
             'm1-patients': { voir: true, editer: false, annuler: false },
             'm1-patient-profil': { voir: true, editer: false, annuler: false },
             'm1-externe': { voir: true, editer: true, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : le biologiste y voit les bornes et unités du laboratoire. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
 
             /* CE QUI EST CLINIQUE — RG-13. */
             'm1-dossier-medical': { voir: false },
@@ -2370,6 +2484,9 @@
             /* Les statistiques de SON activité : PIL lui est fermé au module
                (aucun accès financier), l'écran s'accorde nommément. */
             'm2-stats-echographie': { voir: true, editer: false, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : l'échographiste y voit le catalogue de l'imagerie. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
 
             /* Les écrans de M1 ajoutés depuis, rouverts par héritage du
                module : l'échographiste lit l'indication, il ne tient ni le
@@ -2506,6 +2623,9 @@
           droits: droitsChirurgien,
           droitsEcrans: {
             'dash-chirurgien': { voir: true, editer: true, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : le chirurgien y voit les check-listes du bloc. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
             /* Même discipline que le médecin sur le stock et le laboratoire :
                il prescrit, il ne tient ni l'un ni l'autre. */
             'm5-catalogue': { voir: true, editer: false, annuler: false },
@@ -2531,6 +2651,9 @@
           droits: droitsAnesthesiste,
           droitsEcrans: {
             'dash-anesthesiste': { voir: true, editer: true, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : l'anesthésiste y voit les check-listes du bloc. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
             /* Les constantes se saisissent — c'est son matériau de travail. */
             'm1-constantes': { voir: true, editer: true, annuler: false },
             'm5-catalogue': { voir: true, editer: false, annuler: false },
@@ -2601,7 +2724,7 @@
           droitsEcrans: {
             'm6-stock-gros': { voir: false },
             'm6-transferts': { voir: false },
-            'm6-reprise': { voir: false },
+            'm6-import-grand-stock': { voir: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'Direction médicale : écrit le clinique (M1-M5), lit le stock et la caisse, ne les '
@@ -2694,6 +2817,8 @@
             /* La configuration fiscale engage la clinique devant la DGI :
                elle se décide, elle ne se retouche pas au fil des saisies. */
             'mecef-config': { voir: true, editer: false, annuler: false },
+            /* A2 (31/10/2026) : le comptable GÉNÈRE les bulletins, il ne les VALIDE pas. Voir seulement : celui qui calcule ne signe pas. */
+            'm11-validation': { voir: true, editer: false, annuler: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'La comptabilité, la caisse (avoirs compris), les créances, la paie et le fiscal. '
@@ -2769,29 +2894,6 @@
           motif: 'Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, '
             + 'rien du dossier au-delà de l’identité du patient transporté.',
         },
-        {
-          /* ARCHIVÉ : le poste n'existe pas. Le rôle est conservé — un rôle
-             s'archive, il ne se supprime jamais (RG-14), et des fiches de
-             maintenance portent sa signature — mais il n'ouvre plus de
-             session. Ses droits sur le parc technique passent à l'agent
-             administratif : un archivage va toujours avec son transfert. */
-          id: 'RBAC11', role: 'biomedical', statut: 'archive', nouveau: true,
-          transfereA: 'agentadmin',
-          libelle: 'Ingénieur biomédical', libelleCourt: 'Ing. biomed.', couleur: 'info',
-          accueil: 'dash-biomedical',
-          droits: droitsBiomedical,
-          droitsEcrans: {
-            /* Il voit les demandes et l'activité des automates, jamais les
-               RÉSULTATS : un résultat n'est opposable qu'après validation
-               biologique, et cette validation n'est pas la sienne. */
-            'm5-resultats': { voir: false },
-          },
-          definiLe: '2026-08-25', definiPar: 'Direction',
-          motif: 'Rôle créé le 25/08/2026 puis laissé SANS TITULAIRE le 26/08 : la Direction a '
-            + 'confirmé que KINNOU A. Ganiou reste au laboratoire comme biologiste médical chef de '
-            + 'service. Le rôle subsiste — la clinique pourra le pourvoir — mais personne ne le porte.',
-          sansTitulaire: true,
-        },
       ],
       /* Emplacements de rangement — rayons et casiers. Amorcés depuis ce que
          les produits portent déjà : le référentiel ne part pas de zéro, il
@@ -2846,13 +2948,6 @@
          *
          * Rien n'est supprimé : rouvrir l'activité rend les écrans en l'état.
          * ============================================================== */
-        { id: 'ACT-BIOMED', statut: 'actif', actif: false,
-          libelle: 'Poste d’ingénieur biomédical',
-          ecrans: ['dash-biomedical'],
-          motif: 'Poste inexistant à la clinique. Le rôle avait été créé sur une lecture erronée de '
-            + 'la liste des comptes ; la Direction a rectifié le 27/08/2026 — l’agent concerné est '
-            + 'biologiste médical. Le parc technique reste ouvert, tenu par l’administration.',
-          fermeLe: '2026-08-27', fermePar: 'Direction' },
 
         {
           id: 'MOD01', code: 'M5-BANQUE', libelle: 'Banque de sang', module: 'M5',
@@ -2874,18 +2969,15 @@
          les valeurs peuvent changer » — d'où leur passage par le magasin. */
       /* Pathologies — lues par la consultation, le dossier patient et les
          statistiques de morbidité, donc amorcées ici. */
-      /* VALIDATIONS ÉCRITES DU 01/09/2026 (vague 51) — les professionnels
-         nommés ont tranché : les pathologies par les médecins (tableau de
-         morbidité), les bornes suppléées par le biologiste médical. La
-         SEMENCE (D.PATHOLOGIES, L.VARIABLES) garde son marquage : elle
-         documente ce qui venait d'un document et ce qui a été suppléé. */
+      /* VALIDATIONS ÉCRITES DU 01/09/2026 (vague 51), RECONDUITES le 07/11/2026
+         sous la forme que le moteur de validation écrit lui-même (`valideLe`,
+         `validePar`, `valideRole`) : la Direction a retenu la mention
+         « validation écrite du 01/09/2026 », jamais un nom de personne
+         inventé. La SEMENCE (D.PATHOLOGIES, L.VARIABLES) garde son marquage :
+         elle documente ce qui venait d'un document et ce qui a été suppléé. */
       pathologies: D.PATHOLOGIES.map(function (x) {
         var rec = Object.assign({}, x);
-        if (rec.aValider) {
-          rec.aValider = false;
-          rec.valideLe = '2026-09-01';
-          rec.validePar = 'Médecins — tableau de morbidité';
-        }
+        if (rec.aValider) Object.assign(rec, { aValider: false }, VALIDATION_ECRITE_0109);
         return rec;
       }),
       examensLabo: L.EXAMENS.map(function (e) { return Object.assign({}, e); }),
@@ -2895,9 +2987,7 @@
       variablesLabo: L.VARIABLES.map(function (v) {
         var rec = Object.assign({}, v);
         if (rec.aValider) {
-          rec.aValider = false;
-          rec.valideLe = '2026-09-01';
-          rec.validePar = 'Biologiste médical';
+          Object.assign(rec, { aValider: false }, VALIDATION_ECRITE_0109);
           rec.source = 'Valeur usuelle, validée par le biologiste médical le 01/09/2026';
         }
         return rec;
@@ -3093,6 +3183,8 @@
       db = vide();
       return db;
     }
+    /* LECTURE REFUSÉE (vague 84) : coquille jetable, jamais semée ni poussée au serveur. */
+    if (SRV.sansMagasin) { db = vide(); return db; }
     /* PAS DE SESSION, PAS DE SEMENCE. L'écran de connexion charge le socle
        comme tous les autres ; s'il semait, il écrirait sans session et le
        serveur refuserait — à raison (RG-12). Il n'a besoin que de
@@ -3106,7 +3198,40 @@
     db = seed();
     invaliderManifeste();
     ecrire();
+    appliquerIdentite();
     return db;
+  }
+
+  /* ==========================================================================
+   * L'IDENTITÉ LÉGALE EN FORCE (06/11/2026)
+   * --------------------------------------------------------------------------
+   * `identiteALaDate(date)` : la version dont `debut <= date` (ou `debut` null,
+   * « depuis l'ouverture du dossier ») et (`fin` null ou `date <= fin`) ; une
+   * date antérieure à toute version rend la version 1. Elle ne lit QUE le
+   * magasin chargé : appeler `load()` ici sèmerait en boucle pendant le semis.
+   *
+   * `appliquerIdentite()` écrase C.BRAND EN PLACE avec la version en force
+   * AUJOURD'HUI : print.js et core.js ont capturé la référence, une
+   * réaffectation les laisserait sur l'ancienne identité. Appelée au
+   * chargement, après toute écriture dans `identiteLegale` (abonnement) et à
+   * chaque relecture par le sondage inter-postes (qui émet la collection).
+   * ======================================================================== */
+  function identiteALaDate(date) {
+    if (!db || !Array.isArray(db.identiteLegale)) return null;
+    var liste = db.identiteLegale.filter(function (v) { return v && v.statut !== 'archive'; });
+    if (!liste.length) return null;
+    var d = date ? (typeof date === 'string' ? date.slice(0, 10) : C.iso(date)) : C.iso(C.aujourdhui());
+    var couvrantes = liste.filter(function (v) {
+      return (!v.debut || d >= String(v.debut).slice(0, 10)) && (!v.fin || d <= String(v.fin).slice(0, 10));
+    }).sort(function (a, b) { return (b.version || 0) - (a.version || 0); });
+    if (couvrantes[0]) return couvrantes[0];
+    return liste.slice().sort(function (a, b) { return (a.version || 0) - (b.version || 0); })[0];
+  }
+  function appliquerIdentite() {
+    var v = identiteALaDate();
+    if (!v) return false;
+    Object.assign(C.BRAND, C.champsIdentite(v));
+    return true;
   }
 
   /**
@@ -3188,6 +3313,10 @@
        répondait très bien. `repondu` ne vaut vrai qu'une fois la réponse
        reçue — c'est lui, et lui seul, qui autorise à conclure à une panne. */
     repondu: false,
+    /* Vague 84 : la LECTURE du magasin exige une session. Vrai quand la page n'a pas pu (ou pas dû) le lire :
+       pas de jeton, ou jeton refusé par le serveur. Elle travaille alors sur une coquille jetable, qui ne
+       s'écrit JAMAIS vers le serveur (sinon des collections vides remplaceraient les vraies). */
+    sansMagasin: false,
   };
   var CLE_JETON = 'sigh-cnt:jeton';
 
@@ -3217,14 +3346,60 @@
     SRV.teste = true;
     if (!serveurPlausible()) { SRV.repondu = true; return global.Promise.resolve(false); }
 
-    return global.fetch(urlApi('magasin.php'), { headers: { Accept: 'application/json' } })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    /* LA LECTURE EXIGE UNE SESSION (vague 84). Le jeton se lit AVANT la requête : le serveur refuse tout GET sans
+       session valide (401 SESSION_REQUISE). Sans jeton on ne demande même pas : une page de connexion, une erreur
+       ou la page publique d'enquête n'ont aucun magasin à lire, et un refus annoncé d'avance ne pollue pas la
+       console. La session affichée n'est qu'un pointeur : sans jeton qui la soutienne, il est retiré. */
+    function sansLecture() {
+      SRV.repondu = true;
+      _provisoire = false;
+      SRV.actif = true;          /* le serveur est joignable : seule la lecture est refusée */
+      SRV.sansMagasin = true;
+      SRV.jeton = null;
+      try { storage.remove(CLE_JETON); } catch (e) { /* sans effet */ }
+      try { storage.remove('sigh-cnt:session'); } catch (e) { /* sans effet */ }
+      db = null;
+      invaliderManifeste();
+      return false;
+    }
+    try { SRV.jeton = storage.get(CLE_JETON) || null; } catch (e) { SRV.jeton = null; }
+    if (!SRV.jeton) return global.Promise.resolve(sansLecture());
+
+    /* LE CHARGEMENT A UN DÉLAI. Une réponse qui n'arrive jamais laissait la page BLANCHE et muette : l'agent
+       attendait sans rien lire, et le banc d'essai 150 secondes. Chaque tentative est abandonnée au bout de
+       30 s et reprise UNE fois ; au second échec on retombe, comme avant, sur le stockage du navigateur — mais
+       en le disant dans la console. Une tentative qui aboutit n'est jamais coupée : 5 Mo en 30 s, c'est déjà un réseau en panne. */
+    function chargerMagasin(tentative) {
+      var ctl = global.AbortController ? new global.AbortController() : null;
+      var minuterie = ctl ? global.setTimeout(function () { ctl.abort(); }, 30000) : null;
+      return global.fetch(urlApi('magasin.php'), { headers: { Accept: 'application/json', 'X-Sigh-Jeton': SRV.jeton }, signal: ctl ? ctl.signal : undefined })
+        .then(function (r) {
+          if (minuterie) global.clearTimeout(minuterie);
+          /* 401 : la session portée par ce navigateur n'existe plus au serveur (fermée, expirée). */
+          if (r.status === 401) return { _refuse: true };
+          return r.ok ? r.json() : null;
+        })
+        .catch(function (e) {
+          if (minuterie) global.clearTimeout(minuterie);
+          if (tentative < 2) {
+            if (global.console && global.console.warn) global.console.warn('[SIGH] Chargement du magasin sans réponse (tentative ' + tentative + '), nouvel essai :', e && e.name);
+            return chargerMagasin(tentative + 1);
+          }
+          throw e;
+        });
+    }
+    return chargerMagasin(1)
       .then(function (o) {
+        if (o && o._refuse) return sansLecture();
         SRV.repondu = true;
         _provisoire = false;          /* la coquille d'attente a fait son temps */
         if (!o || o.erreur) { invaliderManifeste(); return false; }
         SRV.actif = true;
-        try { SRV.jeton = storage.get(CLE_JETON) || null; } catch (e) { SRV.jeton = null; }
+        /* La séquence des événements au moment de la lecture : tout ce qui arrivera après viendra par
+           le sondage. Ce n'est PAS une donnée du magasin — on la retire avant qu'elle n'y entre. */
+        SYNC.seq = Number(o._seq) || 0;
+        delete o._seq;
+        demarrerSync();
         if (o._vide) {
           /* LA BASE EST VIDE — ET L'ON NE SÈME PAS ICI. Le peuplement écrit
              aussitôt, or la session du poste n'est pas encore ouverte à cet
@@ -3257,6 +3432,7 @@
         invaliderManifeste();
         fusionnerServiceDirection(db);
         normaliserEtatsResultat(db);
+        appliquerIdentite();
         return true;
       })
       .catch(function () { SRV.repondu = true; return false; });
@@ -3372,10 +3548,82 @@
    * PENDANT L'AMORÇAGE, elle est MUETTE : semer, c'est dix mille fiches, donc
    * dix mille requêtes. Le peuplement passe par l'envoi du magasin entier.
    * ======================================================================== */
+  /* ==========================================================================
+   * CE QUI A CHANGÉ SUR UN AUTRE POSTE (vague 70)
+   * --------------------------------------------------------------------------
+   * Toutes les ~3 secondes, le poste demande au serveur quels événements ont été
+   * écrits PAR D'AUTRES postes depuis la séquence qu'il connaît. S'il y en a, il
+   * relit seulement les collections concernées et les met en place, puis le dit
+   * aux écrans. Quatre précautions :
+   *  - jamais pendant qu'un geste local part (file, minuterie, envoi en vol) :
+   *    relire alors écraserait ce que l'agent vient de saisir — on diffère ;
+   *  - la forme relue devient la forme « déjà envoyée » : elle ne repart pas
+   *    au serveur comme si elle venait d'être modifiée ici ;
+   *  - hors ligne, le sondage échoue en silence et la pastille le dit ; rien
+   *    n'est perdu, la file locale se vide au retour du serveur ;
+   *  - onglet masqué : on ne sonde pas.
+   * ======================================================================== */
+  var SYNC = { seq: 0, timer: null, enCours: false, dernierSucces: 0, ok: null, depuisKO: 0, aRelire: {}, relectures: 0 };
+  function ecrituresLocalesEnCours() {
+    return FILE.actions.length + (FILE.enCours ? 1 : 0) + (_minuterie ? 1 : 0) + (SRV.enVol ? 1 : 0);
+  }
+  function demarrerSync() {
+    if (SYNC.timer || !SRV.actif || !global.setInterval) return;
+    SYNC.timer = global.setInterval(sonderEvenements, 3000);
+  }
+  function sonderEvenements() {
+    if (SYNC.enCours || !SRV.actif || !SRV.jeton) return global.Promise.resolve(false);
+    if (global.document && global.document.hidden) return global.Promise.resolve(false);
+    SYNC.enCours = true;
+    return global.fetch(urlApi('evenements.php?depuis=' + SYNC.seq), { headers: { 'X-Sigh-Jeton': SRV.jeton, Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (o) {
+        SYNC.ok = true; SYNC.dernierSucces = Date.now(); SYNC.depuisKO = 0;
+        var evs = (o && o.evenements) || [];
+        /* Plus de 200 événements d'un coup : on avance jusqu'au dernier reçu, le reste vient au tour suivant. */
+        SYNC.seq = evs.length >= 200 ? evs[evs.length - 1].seq : (o.seq || SYNC.seq);
+        evs.forEach(function (e) { SYNC.aRelire[e.collection] = true; });
+        return relireDistantes();
+      }, function () {
+        SYNC.ok = false; if (!SYNC.depuisKO) SYNC.depuisKO = Date.now();
+        return false;
+      })
+      .then(function (v) { SYNC.enCours = false; return v; }, function () { SYNC.enCours = false; return false; });
+  }
+  function relireDistantes() {
+    var noms = Object.keys(SYNC.aRelire);
+    if (!noms.length || !db) return global.Promise.resolve(false);
+    if (ecrituresLocalesEnCours() > 0) return global.Promise.resolve(false);   /* on diffère : le tour suivant reprendra */
+    return global.fetch(urlApi('magasin.php?collections=' + encodeURIComponent(noms.join(','))), { headers: { Accept: 'application/json', 'X-Sigh-Jeton': SRV.jeton || '' } })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (o) {
+        /* Un geste local a pu partir pendant la relecture : on laisse alors tomber, la collection sera relue. */
+        if (ecrituresLocalesEnCours() > 0) return false;
+        var mis = [];
+        noms.forEach(function (n) {
+          if (!Array.isArray(o[n])) return;
+          db[n] = o[n];
+          SRV.envoye[n] = JSON.stringify(o[n]);
+          delete SYNC.aRelire[n];
+          mis.push(n);
+        });
+        if (mis.length) {
+          SYNC.relectures += mis.length;
+          mis.forEach(function (n) { emit(n); });
+          try { if (global.SIGH && global.SIGH.app && global.SIGH.app.surDonneesDistantes) global.SIGH.app.surDonneesDistantes(mis); } catch (e) { console.error(e); }
+        }
+        return mis.length > 0;
+      }, function () { return false; });
+  }
+  function etatSync() {
+    return { actif: SRV.actif, ok: SYNC.ok, dernierSucces: SYNC.dernierSucces, depuisKO: SYNC.depuisKO, seq: SYNC.seq,
+      enAttente: ecrituresLocalesEnCours(), relectures: SYNC.relectures };
+  }
+
   var FILE = { actions: [], enCours: false, minuterie: null };
 
   function transmettre(action, collection, charge) {
-    if (!SRV.actif || _lot > 0 || PANNE.active) return;
+    if (!SRV.actif || SRV.sansMagasin || _lot > 0 || PANNE.active) return;
     if (!session()) return;   /* avant la connexion, rien n'a d'auteur */
     FILE.actions.push(Object.assign({ action: action, collection: collection }, charge));
     if (FILE.minuterie) clearTimeout(FILE.minuterie);
@@ -3442,7 +3690,7 @@
       /* Sans session, rien ne part : le serveur refuserait (RG-12) et la
          tentative se reprogrammerait en boucle. Avant la connexion il n'y a
          d'ailleurs aucune donnée d'agent à perdre. */
-      if (!session()) return;
+      if (!session() || SRV.sansMagasin) return;
       var charge = delta();
       if (charge) pousserServeur(charge, false, _enPartant);
       return;
@@ -3500,11 +3748,136 @@
       if (_minuterie) ecrire();
     });
   }
+  /* ==========================================================================
+   * CE QUI SURVIT À UNE RÉINITIALISATION — la liste vit AU SOCLE (vague 68)
+   * --------------------------------------------------------------------------
+   * « Réinitialiser » retire les données ENGENDRÉES pour la démonstration —
+   * patients, consultations, factures, mouvements, écritures — et garde ce qui
+   * fait le logiciel : le paramétrage, les référentiels issus des documents,
+   * les comptes, la matrice des droits, les catalogues, les règles datées.
+   *
+   * La liste vivait dans l'écran des paramètres, et elle était INCOMPLÈTE : la
+   * matrice RBAC, les modules actifs, les catalogues du laboratoire et de
+   * l'imagerie, le barème et la grille des primes n'y figuraient pas. Vider les
+   * jeux de test rouvrait la banque de sang, rendait TOUS les droits à TOUS
+   * les rôles (un rôle sans fiche a tout — vague 36) et privait le laboratoire
+   * de ses examens. C'est ce que « ça n'a pas marché » voulait dire.
+   *
+   * Et le vidage ne TENAIT pas : une quinzaine d'écrans ré-amorcent leur
+   * collection dès qu'ils la trouvent vide (contrats, budgets, avances, poches,
+   * achats…). Ouvrir l'écran suffisait à faire renaître le jeu, écran par
+   * écran. D'où le drapeau `_jeuVide`, posé par le vidage et lu par
+   * `amorcable()` : un amorçage de DÉMONSTRATION ne repart plus sur un magasin
+   * volontairement vidé ; un référentiel DÉRIVÉ d'un document (le calendrier
+   * fiscal) reste libre de se reconstruire, il ne porte aucune invention.
+   * ======================================================================== */
+  var COLLECTIONS_ESSENTIELLES = [
+    /* Paramétrage et référentiels administrés par la clinique */
+    'actes', 'analyses', 'produits', 'assureurs', 'fournisseurs', 'comptes', 'banques',
+    'naturesFacture', 'centresCouts', 'secteurs', 'postes', 'personnel', 'soignants',
+    'ressources', 'souscripteurs', 'garanties', 'certificats', 'typesPiece',
+    'catalogueTarifs', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel', 'comptesResultat',
+    /* Comptes, droits et activation des modules */
+    'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
+    /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
+    'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels',
+    /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
+    'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
+    'examensImagerie', 'variablesImagerie', 'pathologies',
+    /* Modèles (badges, messages, questionnaires) et emplacements de rangement */
+    'modelesBadge', 'modelesMessage', 'enquetes', 'emplacements',
+    /* LE JOURNAL D'AUDIT SE GARDE : il trace les tarifs arrêtés, les droits fermés, la
+       grille des primes — tout ce que le vidage CONSERVE. Effacer la trace de ce qu'on
+       garde contredirait RG-12 ; le vidage s'inscrit EN TÊTE du journal conservé. */
+    'audit',
+  ];
+  /* Dérivées d'un référentiel : vidées, elles se reconstruisent depuis leur
+     document — le vidage ne leur retire rien. */
+  var COLLECTIONS_DERIVEES = ['echeancesFiscales'];
+  /* LE PERSONNEL SE GARDE, PAS SA RÉMUNÉRATION DE DÉMONSTRATION (01/11/2026). L'effectif (noms, postes, services)
+     vient de l'organigramme : c'est un référentiel. Le salaire de base, l'échelon et le numéro CNSS sont des valeurs
+     tirées pour le jeu : les garder faisait survivre la masse salariale, le calcul de la paie, les redevances ORTB et
+     le coût de l'agent à « Réinitialiser ». Vidés, ces champs valent `null` : les écrans disent « non renseigné » et
+     la paie dit « non calculable » au lieu d'afficher un zéro. Les fiches de poste ne sont plus conservées non plus :
+     les 26 fiches « à rédiger » étaient recensées d'office depuis l'effectif. */
+  var CHAMPS_DE_TEST_CONSERVES = { personnel: ['salaireBase', 'categorie', 'cnss'] };
+
+  function essentielle(nom) { return COLLECTIONS_ESSENTIELLES.indexOf(nom) >= 0; }
+  /** Le magasin a-t-il été volontairement vidé de ses jeux de test ? */
+  function jeuVide() { load(); return !!(db && db._jeuVide); }
+  /** Un amorçage d'écran a-t-il le droit de peupler cette collection ? */
+  function amorcable(nom) {
+    if (!jeuVide()) return true;
+    return essentielle(nom) || COLLECTIONS_DERIVEES.indexOf(nom) >= 0;
+  }
+  /** Vide les données d'activité, garde l'essentiel, et le DIT au magasin. */
+  function viderActivite(motif) {
+    load();
+    var tables = 0, lignes = 0, vidées = [];
+    Object.keys(db).forEach(function (k) {
+      if (k.charAt(0) === '_' || !Array.isArray(db[k]) || essentielle(k)) return;
+      lignes += db[k].length; tables++; vidées.push(k);
+      db[k] = [];
+    });
+    /* Les référentiels conservés perdent leurs valeurs de démonstration (voir CHAMPS_DE_TEST_CONSERVES). */
+    var champsVides = 0;
+    Object.keys(CHAMPS_DE_TEST_CONSERVES).forEach(function (nom) {
+      (db[nom] || []).forEach(function (r) {
+        CHAMPS_DE_TEST_CONSERVES[nom].forEach(function (ch) {
+          if (r[ch] !== null && r[ch] !== undefined) { r[ch] = null; champsVides++; }
+        });
+      });
+    });
+    /* LE CALENDRIER FISCAL EST DÉRIVÉ D'UN DOCUMENT : il revient aussitôt, SANS règlement
+       inventé — un tableau de bord qui lirait un faux zéro jusqu'à l'ouverture de l'écran
+       des échéances est le défaut documenté de la vague 31. */
+    db.echeancesFiscales = genEcheances().map(function (e) {
+      return Object.assign(e, { paye: false, datePaiement: null, reference: null, valideePar: null });
+    });
+    db._jeuVide = true;
+    db._jeuVideLe = new Date().toISOString();
+    /* Le peuplement du parcours transactionnel ne doit pas repartir non plus. */
+    db._parcoursAmorces = true;
+    /* LA CORBEILLE ET LE JOURNAL SONT VIDÉS (Direction, 02/11/2026) : un jeu de test remis à neuf ne garde ni les fiches
+       archivées pendant les essais ni le journal d'audit des essais. Exception explicite à RG-14 et RG-12, limitée à cette
+       commande. Deux collections gardent leurs archives : un RÔLE archivé (rbac) et un COMPTE archivé (utilisateurs)
+       FERMENT un accès, les retirer rouvrirait ce que la Direction a fermé. */
+    var archivees = 0;
+    Object.keys(db).forEach(function (k) {
+      if (k.charAt(0) === '_' || !Array.isArray(db[k]) || k === 'audit' || k === 'rbac' || k === 'utilisateurs') return;
+      var gardees = db[k].filter(function (r) { return !(r && r.statut === 'archive'); });
+      archivees += db[k].length - gardees.length;
+      db[k] = gardees;
+    });
+    var entrees = (db.audit || []).length;
+    db.audit = [];
+    save();
+    /* La première entrée du journal NEUF dit le vidage (RG-12) : il ne s'efface pas lui-même. */
+    log('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null,
+      { tables: tables, enregistrements: lignes, valeursRetirees: champsVides, archiveesRetirees: archivees, entreesJournalRetirees: entrees, motif: motif || '' });
+    return { tables: tables, enregistrements: lignes, collections: vidées, valeursRetirees: champsVides, archiveesRetirees: archivees, entreesJournalRetirees: entrees };
+  }
+
   function reset() {
     try { storage.remove(KEY); } catch (e) { /* reliquat d'avant la bascule */ }
+    var ancien = db;
     db = seed();
+    /* UNE CLÉ ABSENTE NE PART JAMAIS : le delta n'envoie que ce que le nouveau magasin
+       PORTE. Une collection née après un vidage (badges, évaluations, missions) et absente
+       de la semence survivrait à la régénération, et `_parcoursAmorces`, posé vrai par le
+       vidage, empêcherait le peuplement du parcours de repartir — la base rendait un jeu
+       amputé. On pose donc explicitement ce qui doit être vide ou faux. */
+    Object.keys(ancien || {}).forEach(function (k) {
+      if (Array.isArray(ancien[k]) && !(k in db)) db[k] = [];
+    });
+    db._jeuVide = false;
+    db._jeuVideLe = null;
+    db._parcoursAmorces = false;
+    db._parcoursAmorcesLe = null;
     SRV.envoye = {}; SRV.meta = {};   /* tout est à repousser */
     ecrire();
+    appliquerIdentite();
     return db;
   }
 
@@ -3535,10 +3908,27 @@
   /* --- Abonnements -------------------------------------------------------- */
   function on(name, fn) { (listeners[name] = listeners[name] || []).push(fn); }
   function emit(name) { (listeners[name] || []).forEach(function (fn) { try { fn(); } catch (e) { console.error(e); } }); }
+  /* Toute écriture dans l'identité légale, locale ou relue d'un autre poste, remet C.BRAND au pas. */
+  on('identiteLegale', appliquerIdentite);
 
   /* ==========================================================================
    * API COLLECTION
    * ======================================================================== */
+  /* GARDES D'ÉCRITURE — une règle métier posée SUR la collection, pas sur un
+     écran : l'exercice clos refuse toute écriture, d'où qu'elle vienne. La garde
+     rend un MOTIF (refus nommé) ou rien. */
+  var GARDES = {};
+  function garder(nom, fn) { GARDES[nom] = fn; }
+  function refuse(nom, op, rec) {
+    var g = GARDES[nom];
+    if (!g) return null;
+    var motif = g(op, rec);
+    if (!motif) return null;
+    try { log('Écriture refusée', '—', nom, (rec && (rec.id || rec.numero)) || '', null, { op: op, motif: motif }); } catch (e) { /* journal indisponible */ }
+    try { if (global.SIGH.ui && global.SIGH.ui.toast) global.SIGH.ui.toast('Écriture refusée.', { type: 'error', detail: motif }); } catch (e) { /* sans interface */ }
+    return motif;
+  }
+
   function collection(name, meta) {
     load();
     if (!db[name]) db[name] = [];
@@ -3557,6 +3947,7 @@
       count: function () { return api.active().length; },
 
       insert: function (obj) {
+        if (refuse(name, 'inserer', obj)) return null;
         var rec = Object.assign({
           id: (M.prefix || name.slice(0, 3).toUpperCase()) + C.uid(),
           statut: 'actif',
@@ -3585,6 +3976,7 @@
 
       update: function (id, patch) {
         var rec = api.get(id); if (!rec) return null;
+        if (refuse(name, 'modifier', Object.assign({}, rec, patch))) return null;
         var avant = Object.assign({}, rec);
         Object.assign(rec, patch);
         rec._modifiePar = currentUser();
@@ -3610,6 +4002,7 @@
       /** RG-14 — archivage logique, jamais de suppression physique. */
       archive: function (id, motif) {
         var rec = api.get(id); if (!rec) return null;
+        if (refuse(name, 'archiver', rec)) return null;
         var avant = rec.statut;
         rec.statut = 'archive';
         rec._archivePar = currentUser();
@@ -3668,8 +4061,9 @@
   /* Libellé lisible de chaque collection : « module | entité ». Une collection
      absente de cette table reste listée sous son nom technique. */
   var LIBELLES = {
-    patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
+    lotsImportation: 'IMP|Lots d’importation', patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
     documents: 'GED|Bibliothèque documentaire',
+    archivesExercice: 'M12|Archives de clôture', clotures: 'M12|Clôtures et réouvertures', comptesResultat: 'M12|Comptes de résultat (131, 139)',
     consultations: 'M2|Consultations et rendez-vous', support: 'M2|Registre des appels',
     admissions: 'M3|Admissions', soins: 'M3|Soins', observations: 'M3|Mises en observation', sortiesAvisMedical: 'M3|Sorties contre avis médical',
     suiviMaternite: 'M4|Suivi maternité', accouchements: 'M4|Accouchements',
@@ -3686,7 +4080,7 @@
     objectifsPilotage: 'M12|Objectifs et seuils du pilotage',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
-    avoirs: 'M8|Factures d’avoir', pvReceptions: 'M7|PV de réception',
+    avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',
     secteurs: 'CFG|Secteurs de la clinique', postes: 'CFG|Postes de l’organigramme',
     ressources: 'CFG|Ressources graphiques',
     poches: 'M5|Banque de sang', donneurs: 'M5|Donneurs',
@@ -3703,6 +4097,9 @@
     comptes: 'M12|Plan comptable', ecritures: 'M12|Écritures', budgets: 'M12|Budgets',
     immobilisations: 'M12|Immobilisations', rapprochements: 'M12|Rapprochements bancaires',
     echeancesFiscales: 'M12|Échéances fiscales',
+    identiteLegale: 'CFG|Identité légale (versions datées)',
+    obligationsFiscales: 'CFG|Obligations fiscales et paramètres ORTB',
+    historiqueObligations: 'CFG|Versions antérieures des obligations fiscales',
     regimesTravail: 'M10|Régimes de travail par catégorie',
     modulesActifs: 'CFG|Activité des modules', notifications: 'M14|Notifications',
     emplacements: 'M6|Emplacements de rangement',
@@ -3712,8 +4109,9 @@
     examensLabo: 'M5|Catalogue des examens', unitesLabo: 'M5|Unités de mesure',
     variablesLabo: 'M5|Variables et valeurs de référence',
     evenements: 'M10|Événements du personnel', participations: 'M10|Participations aux événements',
-    grillePrimes: 'M10|Grille des primes NS 132', historiquePrimes: 'M10|Versions antérieures de la grille des primes',
+    grillePrimes: 'M10|Grille des primes NS 132', historiquePrimes: 'M10|Versions antérieures de la grille des primes', beneficiairesPrimes: 'M10|Bénéficiaires des primes fixes',
     rbac: 'M14|Rôles et permissions', tentativesConnexion: 'M14|Tentatives de connexion refusées',
+    sessionsUtilisateur: 'M14|Sessions de poste', politiqueSecurite: 'M14|Politique de sécurité des comptes',
     courriers: 'M13|Courriers', reunions: 'M13|Réunions',
     /* Une clé déclarée deux fois dans un littéral écrase la première EN
        SILENCE : « evenements » désignait ici les événements de M13 et effaçait
@@ -3725,6 +4123,7 @@
     resultatsImagerie: 'M2|Comptes rendus d’imagerie',
     demandesImagerie: 'M2|Demandes d’imagerie',
     enquetes: 'M13|Modèles d’enquête',
+    validationsReferentiels: 'CFG|Validations de référentiels',
     reponsesEnquetes: 'M13|Réponses d’enquête',
     jetonsEnquete: 'M13|Liens de partage des enquêtes',
     badges: 'M10|Badges du personnel', modelesBadge: 'M10|Modèles de badge',
@@ -3738,7 +4137,7 @@
     rapportsMedicaux: 'M3|Rapports médicaux',
     fileAttente: 'M2|File d’attente',
     fichesPoste: 'M10|Fiches de poste',
-    pretsEtudes: 'M11|Prêts-études et avances',
+    pretsEtudes: 'M11|Prêts et avances',
     facturesMere: 'M9|Factures mères d’assurance',
     ambulances: 'M13|Répertoire des ambulances',
     materiel: 'M13|Parc technique',
@@ -3847,6 +4246,8 @@
     enLot: enLot,
     journaliserAcces: journaliserAcces,
     load: load, save: save, reset: reset, collection: collection,
+    COLLECTIONS_ESSENTIELLES: COLLECTIONS_ESSENTIELLES, CHAMPS_DE_TEST_CONSERVES: CHAMPS_DE_TEST_CONSERVES, viderActivite: viderActivite,
+    jeuVide: jeuVide, amorcable: amorcable,
     hydraterServeur: hydraterServeur,
     surServeur: function () { return SRV.actif; },
     /** LE MAGASIN EN MAIN FAIT-IL AUTORITÉ ? Tant que l'hydratation est en
@@ -3877,11 +4278,15 @@
       viderFile();
     },
     jetonServeur: function () { return SRV.jeton; },
+    etatSync: etatSync, sonderEvenements: sonderEvenements,
+    etatServeur: function () { return { actif: SRV.actif, teste: SRV.teste, repondu: SRV.repondu, jeton: !!SRV.jeton, magasinCharge: !!db, sansMagasin: SRV.sansMagasin }; },
     log: log, on: on, emit: emit,
-    session: session, setSession: setSession, currentUser: currentUser,
+    session: session, setSession: setSession, currentUser: currentUser, garder: garder,
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,
     reglage: reglage, setReglage: setReglage,
     valeurUnitaire: valeurUnitaire,
+    identiteALaDate: identiteALaDate, appliquerIdentite: appliquerIdentite,
+    genEcheances: genEcheances, regenererEcheances: regenererEcheances,
     storage: storage,
     corbeille: corbeille, libelleCollection: libelleCollection,
     raw: function () { return load(); },
