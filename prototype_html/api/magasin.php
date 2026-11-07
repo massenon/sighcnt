@@ -6,6 +6,15 @@
  *         mémoire : { "_version": 61, "patients": [...], "factures": [...] }.
  *         Le navigateur l'assigne tel quel et continue de lire de façon
  *         SYNCHRONE — aucun écran ne change.
+ *         LA LECTURE EXIGE UNE SESSION (vague 84) : le magasin porte des données
+ *         de santé (RG-13). Sans jeton de session valide, 401 `SESSION_REQUISE`,
+ *         pour le magasin entier comme pour `?collections=`. Un jeton de
+ *         CHANGEMENT de mot de passe n'est pas une session : refusé aussi.
+ *         LIMITE ASSUMÉE : le serveur ne filtre PAS par rôle à la lecture (la
+ *         matrice des droits vit côté client). Lecture = tout poste
+ *         authentifié voit tout le magasin ; le filtrage par rôle au serveur
+ *         est le pas suivant. La page publique d'enquête n'y lit rien : elle
+ *         a sa lecture étroite, `api/enquete.php`.
  *
  * POST  → applique un DELTA : seules les collections modifiées voyagent.
  *         Renvoyer les 4,8 Mo à chaque geste coûterait plus cher que le
@@ -27,6 +36,7 @@
 
 require __DIR__ . '/config.php';
 require_once __DIR__ . '/projection.php';
+require_once __DIR__ . '/_commun.php';
 
 header('Access-Control-Allow-Origin: ' . ($_SERVER['HTTP_ORIGIN'] ?? '*'));
 header('Access-Control-Allow-Credentials: true');
@@ -49,6 +59,16 @@ $methode = $_SERVER['REQUEST_METHOD'] ?? 'GET';
  * LECTURE — le magasin entier
  * ------------------------------------------------------------------------ */
 if ($methode === 'GET') {
+    /* Session obligatoire AVANT toute lecture. `sigh_session` ne connaît que `sessions_poste` : un jeton de
+       changement de mot de passe (table `changements_requis`) n'y figure pas, donc il est refusé. Le refus
+       est NOMMÉ : un rejet muet se lirait comme une panne. */
+    if (sigh_session($pdo) === null) {
+        sigh_repondre([
+            'erreur' => 'session requise',
+            'code'   => 'SESSION_REQUISE',
+            'detail' => 'La lecture du magasin exige une session de poste ouverte (api/auth.php).',
+        ], 401);
+    }
     $sortie = [];
     /* `?collections=a,b` : seulement ces collections — la relecture d'un poste qui vient d'apprendre,
        par le journal des événements, qu'un autre poste les a modifiées. Sans méta : ce n'est pas un chargement. */

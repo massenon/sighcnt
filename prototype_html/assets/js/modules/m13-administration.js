@@ -2170,8 +2170,6 @@
     render: function (root) {
       var params = new URLSearchParams(global.location.search || '');
       var code = params.get('jeton');
-      var jeton = jetonParCode(code);
-      var enq = jeton ? colEnquetes().get(jeton.enqueteId) : null;
 
       var page = el('div.min-h-screen.bg-slate-100.px-4.py-8');
       var carte = el('div.mx-auto.w-full.max-w-2xl.space-y-4');
@@ -2189,7 +2187,19 @@
       entete.appendChild(el('p.text-xs.italic.text-navy-700', { text: C.BRAND.slogan }));
       carte.appendChild(entete);
 
-      if (!jeton || !jetonOuvert(jeton) || !enq) {
+      /* LECTURE ÉTROITE (vague 84). Le magasin exige une session ; cette page n'en a pas et n'en lit aucun.
+         Elle demande à `api/enquete.php` le modèle que désigne le jeton, et rien d'autre. Le serveur juge
+         le jeton (inconnu, expiré, révoqué : même 404) ; la page n'affiche ni ne conserve autre chose. */
+      var lien = base + 'api/enquete.php?jeton=' + encodeURIComponent(code || '');
+      (code ? global.fetch(lien, { headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .catch(function () { return null; }) : global.Promise.resolve(null))
+        .then(function (rep) {
+          if (!rep || !rep.enquete || !rep.jeton) { refuser(); return; }
+          questionnaire(rep.enquete, rep.jeton);
+        });
+
+      function refuser() {
         /* Une seule et même réponse pour « jeton inconnu », « expiré » et
            « révoqué » : distinguer les trois renseignerait sur ce qui
            existe. */
@@ -2202,9 +2212,9 @@
           el('p.mt-4.text-xs.text-slate-400', { text: 'Tél. ' + C.BRAND.telephones.join(' / ') }),
         ]));
         U.icons(page);
-        return null;
       }
 
+      function questionnaire(enq, jeton) {
       /* --- Le questionnaire ---------------------------------------------- */
       var corps = el('div.rounded-2xl.bg-white.px-6.py-6.shadow-card.space-y-4');
       corps.appendChild(el('h1.text-xl.font-bold.text-slate-900', { text: enq.titre }));
@@ -2264,6 +2274,7 @@
         text: C.BRAND.nom + ' — ' + C.BRAND.bp,
       }));
       U.icons(page);
+      }
       return null;
     },
   });

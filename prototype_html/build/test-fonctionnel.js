@@ -8997,6 +8997,11 @@ async function viderMessages(page) {
     });
     await pause(300);
 
+    /* Vague 84 : la page publique lit le jeton au SERVEUR (api/enquete.php), qui juge l'expiration à SON horloge. Le lien
+       créé ci-dessus expire 30 jours après la date DÉCALÉE du banc (16/08/2026), soit avant la date réelle du serveur :
+       on le repousse, sans quoi il serait expiré pour le serveur. Le test de la DATE du lien (au-dessus) est déjà fait. */
+    await page.evaluate((id) => window.SIGH.store.collection('jetonsEnquete').update(id, { expireLe: '2099-12-31' }),
+      await page.evaluate(() => window.SIGH.store.collection('jetonsEnquete').active()[0].id));
     /* --- La page publique : isolée, sans coquille ------------------------- */
     await ouvrir('enquete-publique.html?jeton=' + jeton.jeton);
     const publique = await page.evaluate(() => ({
@@ -9107,8 +9112,9 @@ async function viderMessages(page) {
     verifier('Un jeton inconnu reçoit LA MÊME réponse qu’un jeton révoqué — sans nommer aucune enquête',
       inconnu2.refus && !inconnu2.nommeEnquete && !ferme.nommeEnquete, JSON.stringify(inconnu2));
 
+    /* Le 404 de api/enquete.php pour un jeton inconnu est la réponse VOULUE (vague 84) : Chrome le journalise comme ressource. */
     verifier('Aucune erreur JavaScript sur le partage et la page publique',
-      erreursJS.length === 0, erreursJS.join(' | '));
+      erreursJS.filter((e) => !/404 \(Not Found\)/.test(e)).length === 0, erreursJS.join(' | '));
   });
 
   /* =========================================================================
@@ -13812,6 +13818,179 @@ async function viderMessages(page) {
        (« Failed to load resource ») : ce sont des réponses sondées, pas des erreurs de la page. ---- */
     erreurs83.push(...erreursJS.filter((m) => !/Failed to load resource: the server responded with a status of (400|401|403|409|423)/.test(m)));
     verifier('Aucune erreur JavaScript pendant le scénario (hors refus HTTP sondés)', erreurs83.length === 0, erreurs83.join(' | '));
+  });
+
+  /* =========================================================================
+   * Vague 84 : lecture du magasin fermée
+   * -------------------------------------------------------------------------
+   * `GET api/magasin.php` (entier ou `?collections=`) exige une session de poste : sans elle 401
+   * `SESSION_REQUISE`, jeton de CHANGEMENT de mot de passe refusé, jeton de session fermée refusé. Le
+   * serveur ne filtre pas par rôle à la lecture (limite assumée, dite en tête de magasin.php). La page
+   * publique d'enquête lit seulement `api/enquete.php?jeton=` : le modèle de l'enquête désignée, rien
+   * d'autre ; inconnu, expiré, révoqué : MÊME réponse. Les fiches jetables (enquête, jetons) sont posées
+   * en base par SQL et RETIRÉES en sortant.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 84 : lecture du magasin fermée (session exigée, lecture étroite de l’enquête publique)');
+    const { execFileSync } = require('child_process');
+    const erreurs84 = [];
+    const sql = (texte) => execFileSync('su', ['postgres', '-c', 'psql -q -At ' + BANC.BASE_TEST], { input: texte, encoding: 'utf8' }).trim();
+    const lireCol = (nom) => { const t = sql("SELECT donnees::text FROM collections WHERE nom = '" + nom + "';"); return t ? JSON.parse(t) : null; };
+    const ecrireCol = (nom, arr) => {
+      if (arr === null) { sql("DELETE FROM collections WHERE nom = '" + nom + "';"); return; }
+      sql("INSERT INTO collections (nom, donnees, fiches) VALUES ('" + nom + "', $j$" + JSON.stringify(arr) + "$j$::jsonb, " + arr.length + ") ON CONFLICT (nom) DO UPDATE SET donnees = EXCLUDED.donnees, fiches = EXCLUDED.fiches;");
+    };
+    const nettoyerTables = () => sql("DELETE FROM sessions_poste WHERE identifiant LIKE 'v84.%'; DELETE FROM echecs_connexion WHERE identifiant LIKE 'v84.%'; DELETE FROM changements_requis WHERE identifiant LIKE 'v84.%'; DELETE FROM utilisateurs WHERE identifiant LIKE 'v84.%';");
+    const appel = (methode, chemin, corps, jeton) => page.evaluate(async (m, c, b, j) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const h = { 'Content-Type': 'application/json' };
+      if (j) h['X-Sigh-Jeton'] = j;
+      const r = await fetch(racine + 'api/' + c, { method: m, headers: h, body: b ? JSON.stringify(b) : undefined });
+      const t = await r.text(); let o = {}; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+      return { statut: r.status, o: o, brut: t };
+    }, methode, chemin, corps || null, jeton || null);
+    const auth = (corps, jeton) => appel('POST', 'auth.php', corps, jeton);
+    const refus = (r) => r.statut === 401 && r.o.code === 'SESSION_REQUISE';
+    const MDP_PROV = 'Provisoire-84a';
+
+    await ouvrir('m1-patients.html');
+    const nomPatient = sql("SELECT donnees->0->>'nom' FROM collections WHERE nom = 'patients';");
+    verifier('Départ : le magasin du banc porte des patients nominatifs (la sonde sait quoi chercher dans une réponse)', nomPatient.length >= 2, nomPatient);
+    const sauve = { enquetes: lireCol('enquetes'), jetons: lireCol('jetonsEnquete') };
+    nettoyerTables();
+    const adm = ((await BANC.connecter('c.bassongui')) || {}).jeton;
+    const kassa = ((await BANC.connecter('a.kassa')) || {}).jeton;
+    verifier('Deux sessions ordinaires (admin, comptable) ouvertes par le serveur', !!adm && !!kassa, JSON.stringify([!!adm, !!kassa]));
+
+    try {
+      /* ---- sans session : magasin entier et ?collections= ---- */
+      const g0 = await appel('GET', 'magasin.php', null, null);
+      const g1 = await appel('GET', 'magasin.php?collections=patients', null, null);
+      const g2 = await appel('GET', 'magasin.php?collections=patients,factures,utilisateurs', null, 'jeton-qui-n-existe-pas');
+      verifier('GET du magasin ENTIER sans session : 401 SESSION_REQUISE, aucune donnée patient dans la réponse',
+        refus(g0) && g0.o.patients === undefined && !g0.brut.includes(nomPatient) && g0.brut.length < 400, JSON.stringify([g0.statut, g0.o.code, g0.brut.length]));
+      verifier('GET ?collections=patients sans session : 401 SESSION_REQUISE, aucune donnée patient dans la réponse',
+        refus(g1) && g1.o.patients === undefined && !g1.brut.includes(nomPatient) && g1.brut.length < 400, JSON.stringify([g1.statut, g1.o.code, g1.brut.length]));
+      verifier('Un jeton inconnu est refusé de la même façon (401 SESSION_REQUISE), pour plusieurs collections',
+        refus(g2) && g2.o.patients === undefined && !g2.brut.includes(nomPatient), JSON.stringify([g2.statut, g2.o.code]));
+
+      /* ---- jeton de CHANGEMENT : pas une session ---- */
+      const c = await auth({ action: 'creer_compte', identifiant: 'v84.a', nom: 'Sonde 84 A', role: 'comptable', motDePasse: MDP_PROV }, adm);
+      const prov = await auth({ action: 'connexion', identifiant: 'v84.a', motDePasse: MDP_PROV, poste: 'sonde 84' });
+      const jc = prov.o.jetonChangement;
+      verifier('Compte jeté v84.a : 201, puis connexion provisoire rend un jeton de CHANGEMENT sans jeton de session', c.statut === 201 && prov.o.code === 'CHANGEMENT_REQUIS' && typeof jc === 'string' && prov.o.jeton === undefined, JSON.stringify([c.statut, prov.o.code]));
+      const j0 = await appel('GET', 'magasin.php', null, jc);
+      const j1 = await appel('GET', 'magasin.php?collections=patients', null, jc);
+      verifier('Un jeton de CHANGEMENT de mot de passe ne lit rien : magasin entier ET ?collections= refusés (401 SESSION_REQUISE)',
+        refus(j0) && refus(j1) && !j0.brut.includes(nomPatient) && !j1.brut.includes(nomPatient), JSON.stringify([j0.statut, j0.o.code, j1.statut, j1.o.code]));
+
+      /* ---- session ordinaire : 200 ---- */
+      const s0 = await appel('GET', 'magasin.php?collections=patients,factures', null, adm);
+      const s1 = await appel('GET', 'magasin.php', null, kassa);
+      verifier('Session ordinaire : ?collections= rend les collections demandées (200, patients et factures en tableaux non vides)',
+        s0.statut === 200 && Array.isArray(s0.o.patients) && s0.o.patients.length > 0 && Array.isArray(s0.o.factures) && s0.o.factures.length > 0 && s0.o.audit === undefined, JSON.stringify([s0.statut, Object.keys(s0.o)]));
+      verifier('Session ordinaire (comptable) : le magasin entier est rendu (200, _version, _seq, patients) : lecture = tout poste authentifié',
+        s1.statut === 200 && typeof s1.o._version === 'number' && typeof s1.o._seq === 'number' && Array.isArray(s1.o.patients) && s1.o.patients.length > 0, JSON.stringify([s1.statut, s1.o._version]));
+
+      /* ---- jeton de session FERMÉE ---- */
+      const ferme = ((await BANC.connecter('a.kassa')) || {}).jeton;
+      const avant = await appel('GET', 'magasin.php?collections=patients', null, ferme);
+      const dec = await auth({ action: 'deconnexion' }, ferme);
+      const apres0 = await appel('GET', 'magasin.php', null, ferme);
+      const apres1 = await appel('GET', 'magasin.php?collections=patients', null, ferme);
+      verifier('Jeton de session fermée (après deconnexion) : 200 avant, 401 SESSION_REQUISE après, magasin entier ET ?collections=',
+        avant.statut === 200 && dec.statut === 200 && refus(apres0) && refus(apres1) && !apres0.brut.includes(nomPatient), JSON.stringify([avant.statut, dec.statut, apres0.statut, apres1.statut]));
+
+      /* ---- l'enquête publique : lecture étroite, sans session ---- */
+      const mkEnq = (id, titre) => ({ id: id, titre: titre, description: 'Description de sonde', questions: [{ code: 'Q1', libelle: 'Accueil de la sonde ?', type: 'note', options: null }, { code: 'Q2', libelle: 'Commentaire de la sonde', type: 'texte', options: null }], statut: 'actif', _secret: 'CHAMP-INTERNE-84' });
+      const mkJet = (id, jeton, extra) => Object.assign({ id: id, jeton: jeton, enqueteId: 'ENQ-V84', enqueteTitre: 'Sonde 84 titre unique', anonyme: true, usage: 'salle', creeLe: '2026-01-01', expireLe: '2099-12-31', revoqueLe: null, note: 'NOTE-INTERNE-84', ouvertPar: 'x' }, extra || {});
+      const JV = 'v84valide23456789abcd', JR = 'v84revoque23456789abc', JE = 'v84expire23456789abcd', JI = 'v84inconnu23456789abc', JAUTRE = 'v84autre234567890abcd';
+      ecrireCol('enquetes', (sauve.enquetes || []).concat([mkEnq('ENQ-V84', 'Sonde 84 titre unique'), mkEnq('ENQ-V84-AUTRE', 'Sonde 84 autre enquete confidentielle')]));
+      ecrireCol('jetonsEnquete', (sauve.jetons || []).concat([
+        mkJet('JET-V84-1', JV), mkJet('JET-V84-2', JR, { revoqueLe: '2026-01-02' }), mkJet('JET-V84-3', JE, { expireLe: '2020-01-01' }),
+        mkJet('JET-V84-4', JAUTRE, { enqueteId: 'ENQ-V84-AUTRE', enqueteTitre: 'Sonde 84 autre enquete confidentielle' })]));
+      const e0 = await appel('GET', 'enquete.php?jeton=' + JV, null, null);
+      const cles = Object.keys(e0.o).sort().join(',');
+      const clesEnq = Object.keys(e0.o.enquete || {}).sort().join(',');
+      verifier('Jeton valide, SANS session : api/enquete.php rend le modèle seul (200, clés limitées, questions réduites à code/libellé/type/options)',
+        e0.statut === 200 && cles === 'enquete,jeton' && clesEnq === 'description,id,questions,titre' && e0.o.enquete.titre === 'Sonde 84 titre unique' && e0.o.enquete.questions.length === 2
+        && Object.keys(e0.o.enquete.questions[0]).sort().join(',') === 'code,libelle,options,type' && Object.keys(e0.o.jeton).sort().join(',') === 'anonyme,id', JSON.stringify([e0.statut, cles, clesEnq]));
+      verifier('Cette réponse ne porte aucune fiche patient, aucune autre enquête, aucun autre jeton, aucun champ interne',
+        !e0.brut.includes(nomPatient) && !/confidentielle|CHAMP-INTERNE-84|NOTE-INTERNE-84|v84autre|v84revoque|v84expire/.test(e0.brut) && !/patients|factures|utilisateurs/.test(e0.brut), e0.brut.slice(0, 200));
+      const eR = await appel('GET', 'enquete.php?jeton=' + JR, null, null);
+      const eE = await appel('GET', 'enquete.php?jeton=' + JE, null, null);
+      const eI = await appel('GET', 'enquete.php?jeton=' + JI, null, null);
+      const eM = await appel('GET', 'enquete.php?jeton=%27%3B--', null, null);
+      const eV = await appel('GET', 'enquete.php', null, null);
+      verifier('Jeton révoqué, expiré, inconnu (et malformé, absent) : MÊME réponse, 404 générique, octet pour octet, sans nommer aucune enquête',
+        [eR, eE, eI, eM, eV].every((r) => r.statut === 404 && r.brut === eI.brut) && !/Sonde|titre|enquete"/.test(eI.brut) && eI.o.erreur === 'lien invalide', JSON.stringify([eR.statut, eE.statut, eI.statut, eM.statut, eV.statut, eR.brut === eI.brut, eE.brut === eI.brut]));
+      const eP = await appel('POST', 'enquete.php?jeton=' + JV, { x: 1 }, null);
+      verifier('api/enquete.php ne sert que GET (POST : 405)', eP.statut === 405, String(eP.statut));
+
+      /* ---- les pages SANS session : aucune lecture du magasin, la page publique lit le seul modèle ---- */
+      const anon = async (rel, avant) => {
+        /* Contexte ISOLÉ : sans lui, la page partagerait le localStorage (donc le jeton) du banc, et ne serait pas anonyme. */
+        const ctx = browser.createBrowserContext ? await browser.createBrowserContext() : await browser.createIncognitoBrowserContext();
+        const p = await ctx.newPage();
+        const errs = [], reqs = [];
+        p.on('pageerror', (e) => errs.push(String(e.message)));
+        p.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
+        p.on('request', (r) => reqs.push(r.url()));
+        if (avant) await p.evaluateOnNewDocument(avant.fn, avant.arg);
+        await p.goto('http://127.0.0.1:' + PORT + (rel === 'index.php' ? '/' : '/pages/') + pageDuBanc(rel), { waitUntil: 'domcontentloaded' });
+        await p.waitForFunction(() => document.body && document.body.innerText.length > 60, { timeout: 20000 }).catch(() => null);
+        await pause(1200);
+        const etat = await p.evaluate(() => ({
+          texte: document.body.innerText.replace(/\s+/g, ' ').trim(),
+          serveur: window.SIGH && window.SIGH.store ? window.SIGH.store.etatServeur() : null,
+          nbPatients: window.SIGH && window.SIGH.store && window.SIGH.store.raw ? ((window.SIGH.store.raw().patients || []).length) : -1,
+          champs: document.querySelectorAll('form select, form textarea, form input').length + document.querySelectorAll('form .combo').length,
+          session: localStorage.getItem('sigh-cnt:session'), jeton: localStorage.getItem('sigh-cnt:jeton'),
+        }));
+        await p.close();
+        await ctx.close();
+        return { etat, errs, lectures: reqs.filter((u) => /api\/magasin\.php/.test(u)).length, enquete: reqs.filter((u) => /api\/enquete\.php/.test(u)).length };
+      };
+      const pv = await anon('enquete-publique.html?jeton=' + JV);
+      verifier('Page publique sans session : elle affiche le questionnaire lu au modèle étroit, et NE LIT PAS le magasin (0 requête magasin.php, aucun patient en mémoire)',
+        /Sonde 84 titre unique/.test(pv.etat.texte) && pv.etat.champs >= 2 && pv.lectures === 0 && pv.enquete === 1 && pv.etat.nbPatients === 0 && !pv.etat.texte.includes(nomPatient) && !/confidentielle/.test(pv.etat.texte)
+        && pv.etat.serveur && pv.etat.serveur.sansMagasin === true, JSON.stringify({ lectures: pv.lectures, enquete: pv.enquete, champs: pv.etat.champs, pat: pv.etat.nbPatients, srv: pv.etat.serveur }));
+      const pr = await anon('enquete-publique.html?jeton=' + JR);
+      const pe = await anon('enquete-publique.html?jeton=' + JE);
+      const pi = await anon('enquete-publique.html?jeton=' + JI);
+      verifier('Page publique : jeton révoqué, expiré et inconnu affichent EXACTEMENT le même texte, sans nommer aucune enquête ni afficher de formulaire',
+        pr.etat.texte === pi.etat.texte && pe.etat.texte === pi.etat.texte && /n’est plus valable/.test(pi.etat.texte) && !/Sonde/.test(pr.etat.texte + pe.etat.texte + pi.etat.texte) && pr.etat.champs === 0 && pi.etat.champs === 0 && pr.lectures + pe.lectures + pi.lectures === 0,
+        JSON.stringify([pr.etat.texte === pi.etat.texte, pe.etat.texte === pi.etat.texte, pr.lectures, pe.lectures, pi.lectures]));
+      const ix = await anon('index.php');
+      verifier('La page de connexion sans session ne lit pas le magasin (0 requête magasin.php) et se peint (champ identifiant) sans erreur JS',
+        ix.lectures === 0 && /Identifiant/.test(ix.etat.texte) && ix.errs.length === 0, JSON.stringify([ix.lectures, ix.errs.slice(0, 2)]));
+      const mort = await anon('index.php', { fn: (j) => { try { localStorage.setItem('sigh-cnt:jeton', j); localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: 'admin', nom: 'Fantome', jeton: j })); } catch (e) { /* rien */ } }, arg: 'jeton-mort-84' });
+      verifier('Jeton mort porté par le navigateur : lecture refusée (401), la page ne reçoit aucune donnée, le pointeur de session et le jeton sont retirés',
+        mort.lectures === 1 && mort.etat.serveur && mort.etat.serveur.sansMagasin === true && mort.etat.nbPatients === 0 && mort.etat.jeton === null && mort.etat.session === null && mort.etat.serveur.jeton === false,
+        JSON.stringify([mort.lectures, mort.etat.serveur, mort.etat.nbPatients, mort.etat.jeton, mort.etat.session]));
+
+      /* ---- l'hydratation d'une page ordinaire après connexion ---- */
+      await ouvrir('m1-patients.html');
+      const hyd = await page.evaluate(() => ({
+        peinte: !!document.querySelector('#page-content') && document.querySelectorAll('#page-content tbody tr').length > 0,
+        lignes: document.querySelectorAll('#page-content tbody tr').length,
+        srv: window.SIGH.store.etatServeur(), patients: (window.SIGH.store.raw().patients || []).length,
+      }));
+      verifier('Page ordinaire avec session : hydratée (magasin chargé, patients en mémoire, tableau peint), sans coquille sans-magasin',
+        hyd.peinte && hyd.srv.actif && hyd.srv.magasinCharge && hyd.srv.sansMagasin === false && hyd.srv.jeton === true && hyd.patients > 0, JSON.stringify(hyd));
+      erreurs84.push(...erreursJS);
+      verifier('Aucune erreur JavaScript sur la page ordinaire hydratée', erreurs84.length === 0, erreurs84.join(' | '));
+      verifier('Aucune erreur JavaScript sur les pages sans session (hors 401/404 voulus)', [pv, pr, pe, pi].every((x) => x.errs.filter((m) => !/Failed to load resource: the server responded with a status of (401|404)/.test(m)).length === 0),
+        JSON.stringify([pv, pr, pe, pi].map((x) => x.errs.slice(0, 2))));
+    } finally {
+      nettoyerTables();
+      ecrireCol('enquetes', sauve.enquetes);
+      ecrireCol('jetonsEnquete', sauve.jetons);
+      await pause(300);
+    }
+    const reste = sql("SELECT COUNT(*) FROM utilisateurs WHERE identifiant LIKE 'v84.%';");
+    const resteEnq = (lireCol('enquetes') || []).filter((e) => /^ENQ-V84/.test(e.id || '')).length + (lireCol('jetonsEnquete') || []).filter((j) => /^JET-V84/.test(j.id || '')).length;
+    verifier('Nettoyage : plus de compte v84.*, d’enquête ni de jeton jetables en base', reste === '0' && resteEnq === 0, JSON.stringify([reste, resteEnq]));
   });
 
   await browser.close();

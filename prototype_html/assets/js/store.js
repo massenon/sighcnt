@@ -3165,6 +3165,8 @@
       db = vide();
       return db;
     }
+    /* LECTURE REFUSÉE (vague 84) : coquille jetable, jamais semée ni poussée au serveur. */
+    if (SRV.sansMagasin) { db = vide(); return db; }
     /* PAS DE SESSION, PAS DE SEMENCE. L'écran de connexion charge le socle
        comme tous les autres ; s'il semait, il écrirait sans session et le
        serveur refuserait — à raison (RG-12). Il n'a besoin que de
@@ -3293,6 +3295,10 @@
        répondait très bien. `repondu` ne vaut vrai qu'une fois la réponse
        reçue — c'est lui, et lui seul, qui autorise à conclure à une panne. */
     repondu: false,
+    /* Vague 84 : la LECTURE du magasin exige une session. Vrai quand la page n'a pas pu (ou pas dû) le lire :
+       pas de jeton, ou jeton refusé par le serveur. Elle travaille alors sur une coquille jetable, qui ne
+       s'écrit JAMAIS vers le serveur (sinon des collections vides remplaceraient les vraies). */
+    sansMagasin: false,
   };
   var CLE_JETON = 'sigh-cnt:jeton';
 
@@ -3322,6 +3328,25 @@
     SRV.teste = true;
     if (!serveurPlausible()) { SRV.repondu = true; return global.Promise.resolve(false); }
 
+    /* LA LECTURE EXIGE UNE SESSION (vague 84). Le jeton se lit AVANT la requête : le serveur refuse tout GET sans
+       session valide (401 SESSION_REQUISE). Sans jeton on ne demande même pas : une page de connexion, une erreur
+       ou la page publique d'enquête n'ont aucun magasin à lire, et un refus annoncé d'avance ne pollue pas la
+       console. La session affichée n'est qu'un pointeur : sans jeton qui la soutienne, il est retiré. */
+    function sansLecture() {
+      SRV.repondu = true;
+      _provisoire = false;
+      SRV.actif = true;          /* le serveur est joignable : seule la lecture est refusée */
+      SRV.sansMagasin = true;
+      SRV.jeton = null;
+      try { storage.remove(CLE_JETON); } catch (e) { /* sans effet */ }
+      try { storage.remove('sigh-cnt:session'); } catch (e) { /* sans effet */ }
+      db = null;
+      invaliderManifeste();
+      return false;
+    }
+    try { SRV.jeton = storage.get(CLE_JETON) || null; } catch (e) { SRV.jeton = null; }
+    if (!SRV.jeton) return global.Promise.resolve(sansLecture());
+
     /* LE CHARGEMENT A UN DÉLAI. Une réponse qui n'arrive jamais laissait la page BLANCHE et muette : l'agent
        attendait sans rien lire, et le banc d'essai 150 secondes. Chaque tentative est abandonnée au bout de
        30 s et reprise UNE fois ; au second échec on retombe, comme avant, sur le stockage du navigateur — mais
@@ -3329,8 +3354,13 @@
     function chargerMagasin(tentative) {
       var ctl = global.AbortController ? new global.AbortController() : null;
       var minuterie = ctl ? global.setTimeout(function () { ctl.abort(); }, 30000) : null;
-      return global.fetch(urlApi('magasin.php'), { headers: { Accept: 'application/json' }, signal: ctl ? ctl.signal : undefined })
-        .then(function (r) { if (minuterie) global.clearTimeout(minuterie); return r.ok ? r.json() : null; })
+      return global.fetch(urlApi('magasin.php'), { headers: { Accept: 'application/json', 'X-Sigh-Jeton': SRV.jeton }, signal: ctl ? ctl.signal : undefined })
+        .then(function (r) {
+          if (minuterie) global.clearTimeout(minuterie);
+          /* 401 : la session portée par ce navigateur n'existe plus au serveur (fermée, expirée). */
+          if (r.status === 401) return { _refuse: true };
+          return r.ok ? r.json() : null;
+        })
         .catch(function (e) {
           if (minuterie) global.clearTimeout(minuterie);
           if (tentative < 2) {
@@ -3342,6 +3372,7 @@
     }
     return chargerMagasin(1)
       .then(function (o) {
+        if (o && o._refuse) return sansLecture();
         SRV.repondu = true;
         _provisoire = false;          /* la coquille d'attente a fait son temps */
         if (!o || o.erreur) { invaliderManifeste(); return false; }
@@ -3351,7 +3382,6 @@
         SYNC.seq = Number(o._seq) || 0;
         delete o._seq;
         demarrerSync();
-        try { SRV.jeton = storage.get(CLE_JETON) || null; } catch (e) { SRV.jeton = null; }
         if (o._vide) {
           /* LA BASE EST VIDE — ET L'ON NE SÈME PAS ICI. Le peuplement écrit
              aussitôt, or la session du poste n'est pas encore ouverte à cet
@@ -3546,7 +3576,7 @@
     var noms = Object.keys(SYNC.aRelire);
     if (!noms.length || !db) return global.Promise.resolve(false);
     if (ecrituresLocalesEnCours() > 0) return global.Promise.resolve(false);   /* on diffère : le tour suivant reprendra */
-    return global.fetch(urlApi('magasin.php?collections=' + encodeURIComponent(noms.join(','))), { headers: { Accept: 'application/json' } })
+    return global.fetch(urlApi('magasin.php?collections=' + encodeURIComponent(noms.join(','))), { headers: { Accept: 'application/json', 'X-Sigh-Jeton': SRV.jeton || '' } })
       .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
       .then(function (o) {
         /* Un geste local a pu partir pendant la relecture : on laisse alors tomber, la collection sera relue. */
@@ -3575,7 +3605,7 @@
   var FILE = { actions: [], enCours: false, minuterie: null };
 
   function transmettre(action, collection, charge) {
-    if (!SRV.actif || _lot > 0 || PANNE.active) return;
+    if (!SRV.actif || SRV.sansMagasin || _lot > 0 || PANNE.active) return;
     if (!session()) return;   /* avant la connexion, rien n'a d'auteur */
     FILE.actions.push(Object.assign({ action: action, collection: collection }, charge));
     if (FILE.minuterie) clearTimeout(FILE.minuterie);
@@ -3642,7 +3672,7 @@
       /* Sans session, rien ne part : le serveur refuserait (RG-12) et la
          tentative se reprogrammerait en boucle. Avant la connexion il n'y a
          d'ailleurs aucune donnée d'agent à perdre. */
-      if (!session()) return;
+      if (!session() || SRV.sansMagasin) return;
       var charge = delta();
       if (charge) pousserServeur(charge, false, _enPartant);
       return;
@@ -4230,7 +4260,7 @@
     },
     jetonServeur: function () { return SRV.jeton; },
     etatSync: etatSync, sonderEvenements: sonderEvenements,
-    etatServeur: function () { return { actif: SRV.actif, teste: SRV.teste, repondu: SRV.repondu, jeton: !!SRV.jeton, magasinCharge: !!db }; },
+    etatServeur: function () { return { actif: SRV.actif, teste: SRV.teste, repondu: SRV.repondu, jeton: !!SRV.jeton, magasinCharge: !!db, sansMagasin: SRV.sansMagasin }; },
     log: log, on: on, emit: emit,
     session: session, setSession: setSession, currentUser: currentUser, garder: garder,
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,
