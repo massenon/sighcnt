@@ -752,8 +752,8 @@
         onRowClick: fiche,
         rowActions: function (s) {
           return [
-            K.iconBtn('percent', 'Saisir la grille', function () { fiche(s); }),
-            K.iconBtn('pencil', 'Modifier', function () {
+            K.commandeIcone('percent', 'Saisir la grille', function () { fiche(s); }),
+            K.commandeIcone('pencil', 'Modifier', function () {
               K.modifier(colSous(), champsSouscripteur, s, dessiner,
                 /* Un contrat qui change de compagnie est un autre contrat : refusé tant que des garanties portent l'ancienne (code SOUSCRIPTEUR_COMPAGNIE). */
                 function (v, rec) {
@@ -767,7 +767,7 @@
                 /* Le champ dérivé suit le code, comme à la création. */
                 function (v) { v.assureurNom = assureurNom(v.assureur); return v; });
             }),
-          ];
+          ].filter(Boolean);
         },
         actions: [K.creer(colSous(), champsSouscripteur, {
           titre: 'Nouveau souscripteur', entite: 'Souscripteur',

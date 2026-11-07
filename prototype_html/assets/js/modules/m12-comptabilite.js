@@ -516,7 +516,7 @@
         rowActions: function (e) {
           var acts = [K.iconBtn('eye', 'Consulter', function () { consulter(e); })];
           if (e.statut === 'brouillon') {
-            acts.push(K.iconBtn('check', 'Valider', function () {
+            acts.push(K.commandeIcone('check', 'Valider', function () {
               /* On valide la PIÈCE ENTIÈRE, jamais une ligne seule (écart E710) : valider une ligne coupait l'écriture en deux
                  et laissait la balance boiteuse. RG-10 est contrôlé sur l'ensemble des lignes de même numéro AVANT. */
               var piece = col.active().filter(function (x) { return x.numero === e.numero && x.statut === 'brouillon'; });
@@ -541,7 +541,7 @@
           }
           /* Archiver est absent (jamais grisé) quand l'exercice de la pièce n'est pas ouvert : la garde le refuserait. */
           var exoOuvert = !global.SIGH.exercice || global.SIGH.exercice.etat(global.SIGH.exercice.anneeDe(e.date)) === 'ouvert';
-          if (exoOuvert) acts.push(K.iconBtn('archive', 'Archiver', function () {
+          if (exoOuvert) acts.push(K.commandeIcone('archive', 'Archiver', function () {
             /* On archive la PIÈCE ENTIÈRE (écart E716, même défaut que la validation) : archiver une ligne seule laissait
                l'autre au journal — une demi-écriture serait pire qu'aucune (RG-10, comme l'archivage d'une dépense). */
             var piece = col.active().filter(function (x) { return x.numero === e.numero; });
@@ -554,8 +554,9 @@
             table.refresh();
             U.toast('Écriture archivée.', { type: 'success', detail: piece.length + ' ligne(s).',
               undo: function () { res.forEach(function (r) { if (r) r.undo(); }); table.refresh(); } });
-          }, 'ghost'));
-          return acts;
+          }, { variant: 'ghost', droit: 'annuler' }));
+          /* Une commande sans droit est ABSENTE (`commandeIcone` rend null) : audit RBAC du 07/11/2026, profils direction et aide-comptable. */
+          return acts.filter(Boolean);
         },
       });
       host.appendChild(table);
@@ -3487,13 +3488,13 @@
             if (e.paye) {
               return [
                 K.iconBtn('printer', 'Éditer la quittance', function () { imprimerQuittance(e); }),
-                K.iconBtn('undo-2', 'Annuler la validation', function () { annulerPaiement(e); }),
-              ];
+                K.commandeIcone('undo-2', 'Annuler la validation', function () { annulerPaiement(e); }, { droit: 'annuler' }),
+              ].filter(Boolean);
             }
             return [
-              K.iconBtn('check', 'Valider le paiement effectué', function () { validerPaiement(e); }),
+              K.commandeIcone('check', 'Valider le paiement effectué', function () { validerPaiement(e); }),
               K.iconBtn('bell', 'Rappeler cette échéance', function () { rappeler(e); }),
-            ];
+            ].filter(Boolean);
           },
         }));
 

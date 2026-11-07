@@ -2240,8 +2240,8 @@
         rowActions: function (e) {
           return [
             K.iconBtn('printer', 'Imprimer la fiche', function () { etatFiche(e); }),
-            K.iconBtn('pencil', 'Modifier', function () { ouvrir(e); }),
-          ];
+            K.commandeIcone('pencil', 'Modifier', function () { ouvrir(e); }),
+          ].filter(Boolean);
         },
       });
       host.appendChild(table);
