@@ -395,6 +395,19 @@ CREATE TABLE IF NOT EXISTS "cfg"."types_piece" (
 );
 COMMENT ON TABLE "cfg"."types_piece" IS 'Collection « typesPiece » — Configuration';
 CREATE INDEX IF NOT EXISTS "ix_types_piece_statut" ON "cfg"."types_piece" ("statut");
+CREATE TABLE IF NOT EXISTS "cfg"."validations_referentiels" (
+  "id" text PRIMARY KEY,
+  "cible" text,
+  "statut" text,
+  "famille" text,
+  "libelle" text,
+  "valide_le" date,
+  "valide_par" text,
+  "valide_role" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "cfg"."validations_referentiels" IS 'Collection « validationsReferentiels » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_validations_referentiels_statut" ON "cfg"."validations_referentiels" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."variables_imagerie" (
   "id" text PRIMARY KEY,
   "code" text,

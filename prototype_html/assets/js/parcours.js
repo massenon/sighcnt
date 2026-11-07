@@ -4090,6 +4090,184 @@
     };
   }
 
+  /* ==========================================================================
+   * MOTEUR DE VALIDATION COMMUN DES RÉFÉRENTIELS (Direction, 07/11/2026)
+   * --------------------------------------------------------------------------
+   * Tout ce qui porte un marquage « à valider » (modèle d'enquête, borne du
+   * laboratoire, pathologie, catalogue d'imagerie, check-liste du bloc, tarif
+   * d'attente, valorisation, objectif de pilotage, répartition des charges,
+   * modèle de badge, jeu d'import, modèle de message, barème ITS) se valide par
+   * UN geste, le même partout : `validerReferentiel`. Même doctrine que la
+   * configuration fiscale : refus NOMMÉ (code, motif, geste), écriture de
+   * `valideLe`, `validePar`, `valideRole`, UNE ligne de journal (RG-12), et
+   * JAMAIS de validation en masse : un appel valide une fiche.
+   *
+   * LE COMPTE EST LU, JAMAIS ÉCRIT : `referentielsAValider()` relit les
+   * marquages dans le magasin à chaque appel. Une validation ne modifie AUCUN
+   * autre champ que le marquage et ses trois traces ; modifier un artefact déjà
+   * validé le remet « à valider » (`remettreAValider`, appelé par l'écran qui
+   * modifie), comme la configuration fiscale.
+   *
+   * Deux formes d'artefact : (1) une FICHE du magasin qui porte son marquage
+   * (`aValider`, `tarifProvisoire`) : la validation l'écrit sur la fiche ;
+   * (2) une CONSTANTE du code (check-listes du bloc, répartition fixe/variable,
+   * barème ITS, jeu d'import) qui ne peut pas porter de marquage : sa
+   * validation vit dans une fiche de la collection `validationsReferentiels`,
+   * une par cible (`VRF-<cible>`). Un artefact de forme 2 est « à valider »
+   * tant qu'aucune fiche porteuse d'un `valideLe` ne le couvre.
+   * ======================================================================== */
+  var VUE_COMPLETE_VALIDATIONS = ['direction', 'da', 'admin'];
+  var FAMILLES_A_VALIDER = [
+    { id: 'enquetes', libelle: 'Modèles d’enquête', module: 'M13', collections: ['enquetes'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'adm-enquetes' },
+    { id: 'labo_variables', libelle: 'Variables et unités du laboratoire (bornes suppléées)', module: 'M5',
+      collections: ['variablesLabo', 'unitesLabo'], champs: ['aValider'],
+      roles: ['laborantin'], ecran: 'm5-valeurs-reference' },
+    { id: 'pathologies', libelle: 'Pathologies (tableau de morbidité)', module: 'M2', collections: ['pathologies'], champs: ['aValider'],
+      roles: ['dm', 'medecin'], ecran: 'm2-pathologies' },
+    { id: 'imagerie', libelle: 'Catalogue de l’imagerie (examens et variables)', module: 'CFG',
+      collections: ['examensImagerie', 'variablesImagerie'], champs: ['aValider'],
+      roles: ['echographiste', 'dm'], ecran: 'cfg-imagerie-catalogue' },
+    { id: 'checklists_bloc', libelle: 'Check-listes du bloc, échelles ASA et Mallampati', module: 'M3', mode: 'fiche',
+      cibles: [{ id: 'checklist-bloc', libelle: 'Check-listes d’entrée et de sortie du bloc' }],
+      roles: ['chirurgien', 'anesthesiste'], ecran: 'm3-bloc-checklist' },
+    { id: 'actes', libelle: 'Tarifs des actes (valeurs d’attente)', module: 'CFG', collections: ['actes'], champs: ['tarifProvisoire'],
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs' },
+    { id: 'analyses', libelle: 'Tarifs des analyses', module: 'CFG', collections: ['analyses'], champs: ['tarifProvisoire', 'aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs' },
+    { id: 'valorisation_sage', libelle: 'Valorisation des références SAGE', module: 'M6', collections: ['valorisationsSage'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'm6-produits' },
+    { id: 'objectifs_pilotage', libelle: 'Objectifs de pilotage', module: 'M12', collections: ['objectifsPilotage'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'm12-tableau-decisionnel' },
+    { id: 'repartition_charges', libelle: 'Répartition fixe et variable des charges', module: 'M12', mode: 'fiche',
+      cibles: [{ id: 'repartition-fixe-variable', libelle: 'Répartition proposée des comptes de charge' }],
+      roles: ['comptable', 'direction', 'da', 'admin'], ecran: 'm12-seuil-rentabilite' },
+    { id: 'modeles_badge', libelle: 'Modèles de badge', module: 'M10', collections: ['modelesBadge'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'm10-badges-modeles' },
+    { id: 'jeux_import', libelle: 'Jeux d’import en proposition', module: 'IMP', mode: 'fiche',
+      cibles: [{ id: 'imp-analyses', libelle: 'Importation du catalogue des analyses' }],
+      roles: ['direction', 'da', 'admin'], ecran: 'imp-analyses' },
+    { id: 'modeles_messages', libelle: 'Modèles de messages', module: 'CFG', collections: ['modelesMessage'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-notifications' },
+    { id: 'bareme_its', libelle: 'Barème de l’ITS', module: 'M11', mode: 'fiche',
+      cibles: [{ id: 'bareme-its', libelle: 'Barème de l’impôt sur les traitements et salaires' }],
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-comptabilite' },
+  ];
+  FAMILLES_A_VALIDER.forEach(function (f) { f.mode = f.mode || 'fiche-marquee'; });
+
+  function colValidationsReferentiels() {
+    return S.collection('validationsReferentiels', { module: 'CFG', entite: 'validation de référentiel', prefix: 'VRF' });
+  }
+  function familleAValider(id) {
+    return FAMILLES_A_VALIDER.filter(function (f) { return f.id === id; })[0] || null;
+  }
+  function profilsFamille(f) { return f.roles.map(libelleRole).join(', '); }
+  function ficheDeValidation(cible) {
+    return colValidationsReferentiels().all().filter(function (x) { return x.id === 'VRF-' + cible && x.statut !== 'archive'; })[0] || null;
+  }
+  /* Les artefacts d'une famille, chacun avec son état LU : { id, libelle, enAttente, valideLe, rec, col }. */
+  function artefactsDe(f) {
+    var brut = S.raw();
+    if (f.mode === 'fiche') {
+      return f.cibles.map(function (c) {
+        var fiche = ficheDeValidation(c.id);
+        return { id: c.id, libelle: c.libelle, enAttente: !(fiche && fiche.valideLe), valideLe: fiche ? fiche.valideLe : null, rec: fiche, col: null };
+      });
+    }
+    var out = [];
+    f.collections.forEach(function (nom) {
+      (brut[nom] || []).forEach(function (rec) {
+        if (!rec || rec.statut === 'archive') return;
+        out.push({
+          id: rec.id, col: nom, rec: rec, valideLe: rec.valideLe || null,
+          libelle: rec.libelle || rec.label || rec.designation || rec.nom || rec.reference || rec.id,
+          enAttente: f.champs.some(function (c) { return rec[c] === true; }),
+        });
+      });
+    });
+    return out;
+  }
+  /** Les familles avec leur compte RÉEL. `{ role }` ne garde que les familles que ce profil valide. */
+  function referentielsAValider(opts) {
+    var role = opts && opts.role;
+    var brut = S.raw();
+    return FAMILLES_A_VALIDER.filter(function (f) { return !role || f.roles.indexOf(role) >= 0; }).map(function (f) {
+      var arts = artefactsDe(f);
+      var nonAmorce = f.mode !== 'fiche' && !arts.length
+        && f.collections.every(function (nom) { return !(brut[nom] || []).length; }) && S.amorcable(f.collections[0]);
+      var attente = arts.filter(function (a) { return a.enAttente; });
+      return {
+        famille: f.id, libelle: f.libelle, module: f.module, mode: f.mode,
+        collections: f.collections || ['validationsReferentiels'], champs: f.champs || ['valideLe'],
+        roles: f.roles.slice(), profil: profilsFamille(f), ecran: f.ecran,
+        enAttente: nonAmorce ? null : attente.length,
+        total: nonAmorce ? null : arts.length,
+        nonAmorce: nonAmorce,
+        ids: attente.map(function (a) { return a.id; }),
+      };
+    });
+  }
+  function refusValidation(code, motif, geste) { return refusCfg(code, motif, geste); }
+  function validerReferentiel(familleId, id, opts) {
+    opts = opts || {};
+    var f = familleAValider(familleId);
+    if (!f) return refusValidation('INTROUVABLE', 'Famille de référentiel inconnue : ' + familleId + '.', 'Choisir une famille du registre des validations.');
+    var role = opts.role || roleCourant();
+    if (f.roles.indexOf(role) < 0) {
+      return refusValidation('VALIDATION_RESERVEE', 'La validation de « ' + f.libelle + ' » est réservée à : ' + profilsFamille(f) + '. Profil : ' + libelleRole(role) + '.',
+        'Demander à ' + libelleRole(f.roles[0]) + ' de valider depuis son poste.');
+    }
+    var cible = artefactsDe(f).filter(function (a) { return a.id === id; })[0];
+    if (!cible) return refusValidation('INTROUVABLE', 'Aucun élément « ' + id + ' » dans « ' + f.libelle + ' ».', 'Ouvrir l’écran de la famille et choisir l’élément à valider.');
+    if (!cible.enAttente) {
+      return refusValidation('DEJA_VALIDE', cible.valideLe
+        ? '« ' + cible.libelle + ' » est déjà validé (' + C.dateFR(String(cible.valideLe).slice(0, 10)) + ').'
+        : '« ' + cible.libelle + ' » ne porte aucun marquage à valider.',
+      'Rien à faire : toute modification ultérieure le remettra à valider.');
+    }
+    var quand = new Date().toISOString(), qui = acteur(), libRole = libelleRole(role);
+    var avant;
+    if (f.mode === 'fiche') {
+      var col = colValidationsReferentiels();
+      var fiche = ficheDeValidation(id);
+      avant = { valideLe: fiche ? fiche.valideLe : null };
+      if (fiche) Object.assign(fiche, { valideLe: quand, validePar: qui, valideRole: libRole });
+      else col.all().push({ id: 'VRF-' + id, statut: 'actif', famille: f.id, cible: id, libelle: cible.libelle, valideLe: quand, validePar: qui, valideRole: libRole });
+      S.save(); S.emit('validationsReferentiels');
+    } else {
+      var rec = cible.rec;
+      avant = {};
+      f.champs.forEach(function (c) { if (rec[c] === true) { avant[c] = true; rec[c] = false; } });
+      rec.valideLe = quand; rec.validePar = qui; rec.valideRole = libRole;
+      S.save(); S.emit(cible.col);
+    }
+    S.log('Validation', f.module, f.libelle, id, avant, { valideLe: quand, validePar: qui, valideRole: libRole });
+    return { ok: true, famille: f.id, id: id, valideLe: quand, validePar: qui, valideRole: libRole };
+  }
+  /* Appelé par l'écran qui MODIFIE un artefact validé : le marquage revient, les traces de validation tombent. */
+  function remettreAValider(familleId, id) {
+    var f = familleAValider(familleId);
+    if (!f) return refusValidation('INTROUVABLE', 'Famille de référentiel inconnue : ' + familleId + '.', 'Choisir une famille du registre des validations.');
+    var cible = artefactsDe(f).filter(function (a) { return a.id === id; })[0];
+    if (!cible) return refusValidation('INTROUVABLE', 'Aucun élément « ' + id + ' » dans « ' + f.libelle + ' ».', 'Ouvrir l’écran de la famille.');
+    if (cible.enAttente) return { ok: true, remis: false, famille: f.id, id: id };
+    var avant = { valideLe: cible.valideLe };
+    if (f.mode === 'fiche') {
+      Object.assign(cible.rec, { valideLe: null, validePar: null, valideRole: null });
+      S.save(); S.emit('validationsReferentiels');
+    } else {
+      cible.rec[f.champs[0]] = true;
+      Object.assign(cible.rec, { valideLe: null, validePar: null, valideRole: null });
+      S.save(); S.emit(cible.col);
+    }
+    S.log('Remise à valider', f.module, f.libelle, id, avant, { motif: 'modifié depuis la validation' });
+    return { ok: true, remis: true, famille: f.id, id: id };
+  }
+  /** Les familles qu'un profil VOIT au centre des validations : la Direction et la DAF voient tout, les autres leur ressort. */
+  function referentielsVisiblesPar(role) {
+    return referentielsAValider(VUE_COMPLETE_VALIDATIONS.indexOf(role) >= 0 ? null : { role: role });
+  }
+
   global.SIGH.configurationFiscale = {
     ROLES_VALIDATION: ROLES_VALIDATION,
     identiteEnForce: identiteEnForce, identiteExigeVersion: identiteExigeVersion,
@@ -4105,4 +4283,13 @@
   global.SIGH.parcours.validerIdentite = validerIdentite;
   global.SIGH.parcours.validerObligations = validerObligations;
   global.SIGH.parcours.etatConfigurationFiscale = etatConfigurationFiscale;
+  global.SIGH.validations = {
+    FAMILLES_A_VALIDER: FAMILLES_A_VALIDER, VUE_COMPLETE: VUE_COMPLETE_VALIDATIONS,
+    referentielsAValider: referentielsAValider, referentielsVisiblesPar: referentielsVisiblesPar,
+    validerReferentiel: validerReferentiel, remettreAValider: remettreAValider,
+  };
+  global.SIGH.parcours.FAMILLES_A_VALIDER = FAMILLES_A_VALIDER;
+  global.SIGH.parcours.referentielsAValider = referentielsAValider;
+  global.SIGH.parcours.validerReferentiel = validerReferentiel;
+  global.SIGH.parcours.remettreAValider = remettreAValider;
 })(window);

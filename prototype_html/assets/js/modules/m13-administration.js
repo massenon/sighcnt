@@ -1317,7 +1317,7 @@
       description: 'Recueil \u00e0 la sortie \u2014 accueil, attente, soins, recommandation.',
       /* Propos\u00e9 faute de questionnaire dans les documents de cadrage, puis
          VALID\u00c9 par la Direction le 01/09/2026 (vague 49). */
-      aValider: false, valideLe: '2026-09-01', validePar: 'Direction',
+      aValider: false, valideLe: '2026-09-01', validePar: 'validation \u00e9crite du 01/09/2026', valideRole: 'Direction',
       source: 'Propos\u00e9 (aucun questionnaire aux documents de cadrage) ; valid\u00e9 par la Direction le 01/09/2026.',
       questions: [
         { code: 'Q_ACCUEIL', libelle: 'Qualit\u00e9 de l\u2019accueil', type: 'note' },
@@ -1955,11 +1955,11 @@
     title: 'Validations en attente',
     description: 'Tout ce qui attend une validation, class\u00e9 par poste et par responsable \u2014 avec le chemin vers le geste.',
     regle: 'Cet \u00e9cran <strong>oriente</strong>, il ne valide jamais en masse : la validation est un '
-      + '<strong>geste humain, port\u00e9 \u00e0 son poste</strong> \u2014 le biologiste valide au laboratoire, '
-      + 'le comptable au journal, la DA sur le bon. Les validations \u00e9crites des professionnels '
-      + 'nomm\u00e9s sont <strong>arriv\u00e9es le 01/09/2026</strong> (biologiste, m\u00e9decins, praticiens du '
-      + 'bloc) ; ce qui reste en attente est une <strong>donn\u00e9e manquante ou r\u00e9currente</strong>, '
-      + 'jamais une signature que la Direction pourrait porter \u00e0 leur place.',
+      + '<strong>geste humain, port\u00e9 \u00e0 son poste</strong>, le biologiste au laboratoire, '
+      + 'le comptable au journal, la DA sur le bon, la Direction \u00e0 l\u2019\u00e9cran du r\u00e9f\u00e9rentiel. '
+      + 'Les comptes de la liste des r\u00e9f\u00e9rentiels sont <strong>relus dans le magasin \u00e0 chaque '
+      + 'affichage</strong> ; chaque profil n\u2019y voit que les familles de son ressort, et la Direction '
+      + 'ne signe jamais \u00e0 la place d\u2019un professionnel nomm\u00e9.',
     render: function (root) {
       var host = el('div.space-y-4');
       root.appendChild(host);
@@ -1967,6 +1967,16 @@
 
       function c(nom) { return S.collection(nom).active(); }
       var AUJ2 = C.iso(new Date());
+      var sessionAdm = S.session() || {};
+      var roleAdm = sessionAdm.role;
+      /* Les sept profils qui ouvraient d\u00e9j\u00e0 le centre gardent tout ce qu'ils y voyaient ; le biologiste,
+         l'\u00e9chographiste et les praticiens du bloc n'y voient QUE les familles de r\u00e9f\u00e9rentiels de leur r\u00f4le. */
+      var ELARGIS = ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'];
+      var restreint = ELARGIS.indexOf(roleAdm) < 0;
+      function ouvrable(id) {
+        var e = id && global.SIGH.nav.get(id);
+        return !!e && global.SIGH.nav.can(roleAdm, e);
+      }
 
       var files = [
         { libelle: 'R\u00e9sultats \u00e0 valider biologiquement', poste: 'Biologiste m\u00e9dical',
@@ -2002,20 +2012,24 @@
           ecran: 'm12-echeances', icone: 'calendar-clock' },
       ];
 
-      var professionnels = [
-        /* Les validations \u00e9crites du 01/09 sont ARRIV\u00c9ES (vague 51) ; ce qui
-           reste ici n'attend PAS une signature : ce sont des DONN\u00c9ES
-           physiquement manquantes ou structurellement r\u00e9currentes. */
+      /* Cas (c) : ce qui ne se l\u00e8ve PAS par un geste. Le marquage tombe par la SAISIE de la donn\u00e9e qui manque. */
+      var cas = [
         { libelle: 'Parc technique \u2014 fiches \u00e0 compl\u00e9ter', qui: 'Ing\u00e9nierie / administration',
           compte: c('materiel').filter(function (m) { return m.aCompleter; }).length,
           ecran: 'm13-maintenance',
           motif: 'Marque, n\u00b0 de s\u00e9rie et mise en service MANQUENT physiquement : une validation ne cr\u00e9e '
             + 'pas un num\u00e9ro de s\u00e9rie \u2014 le marquage dispara\u00eet par la SAISIE, jamais par une signature.' },
+        { libelle: 'R\u00e9pertoire des ambulances : num\u00e9ros \u00e0 renseigner', qui: 'Accueil',
+          compte: S.collection('ambulances').all().length ? c('ambulances').filter(function (r) { return !r.telephone; }).length : null,
+          nonAmorce: !S.collection('ambulances').all().length,
+          ecran: 'm13-repertoire-ambulances',
+          motif: 'Aucun num\u00e9ro d\u2019urgence n\u2019est invent\u00e9 : la fiche reste vide et le dit jusqu\u2019\u00e0 la SAISIE du num\u00e9ro, '
+            + 'jamais par une signature.' },
         { libelle: 'Plages de r\u00e9f\u00e9rence par lot de r\u00e9actif', qui: 'Biologiste m\u00e9dical',
-          compte: c('plagesReactif').length,
+          compte: null, structurel: true,
           ecran: 'm5-valeurs-reference',
-          motif: 'Structurel : chaque NOUVEAU lot porte ses bornes \u2014 la notice du r\u00e9actif fait foi, '
-            + '\u00e0 chaque arrivage.' },
+          motif: 'Structurel, sans marquage : chaque NOUVEAU lot porte les bornes de SA notice, la notice du '
+            + 'r\u00e9actif fait foi, \u00e0 chaque arrivage.' },
       ];
 
       /* QUATRI\u00c8ME FAMILLE \u2014 ce qui attend un ARBITRAGE de la Direction
@@ -2065,82 +2079,103 @@
             + 'l\u2019entr\u00e9e, horodatage, traitement des oublis de badge.' },
       ]);
 
-      var validees = [
-        { libelle: 'Tarifs des actes (valeurs d\u2019attente du 20/08)', detail: 'ARR\u00caT\u00c9S par la Direction \u2014 plus aucun tarif provisoire au catalogue vivant ; la semence garde le marquage historique.' },
-        { libelle: 'Valorisation des 34 r\u00e9f\u00e9rences SAGE', detail: 'M\u00e9diane de cat\u00e9gorie CONFIRM\u00c9E ; r\u00e9visable \u00e0 la premi\u00e8re facture fournisseur (surcouche trac\u00e9e).' },
-        { libelle: 'Les quatre groupes d\u2019articles', detail: 'CONFIRM\u00c9S \u2014 ils cessent d\u2019\u00eatre une proposition.' },
-        { libelle: 'Questionnaire de satisfaction', detail: 'VALID\u00c9 \u2014 le recueil peut s\u2019appuyer dessus.' },
-        { libelle: 'Bornes suppl\u00e9\u00e9es du laboratoire (61 variables)', detail: 'Validation \u00e9crite du BIOLOGISTE M\u00c9DICAL (01/09) \u2014 badge \u00ab Valid\u00e9e \u00bb, jamais confondu avec \u00ab Document\u00e9e \u00bb.' },
-        { libelle: 'Liste des 55 pathologies', detail: 'Arr\u00eat\u00e9e par les M\u00c9DECINS (tableau de morbidit\u00e9, 01/09) \u2014 elle reste administrable.' },
-        { libelle: 'Check-listes du bloc, \u00e9chelles ASA/Mallampati, techniques', detail: 'Arr\u00eat\u00e9es par les PRATICIENS DU BLOC (01/09) \u2014 la provenance propos\u00e9e reste dite.' },
-        { libelle: 'Seuils d\u2019alerte du stock', detail: 'Seuils propos\u00e9s (20 % du stock repris) CONFIRM\u00c9S \u2014 r\u00e9visables r\u00e9f\u00e9rence par r\u00e9f\u00e9rence.' },
-        { libelle: 'Rapprochement groupe \u2194 centre de co\u00fbts', detail: 'ARR\u00caT\u00c9 \u2014 b\u00e9n\u00e9fice brut par groupe affich\u00e9, charges transverses non ventil\u00e9es (dit).' },
-      ];
-
+      /* LES R\u00c9F\u00c9RENTIELS : un compte par famille, relu dans le magasin (PR.referentielsAValider) : jamais un litt\u00e9ral. */
+      var PRV = global.SIGH.parcours;
+      var familles = PRV.referentielsAValider ? global.SIGH.validations.referentielsVisiblesPar(roleAdm) : [];
+      var totalFamilles = familles.reduce(function (n, x) { return n + (x.enAttente || 0); }, 0);
       var totalGestes = files.reduce(function (n, x) { return n + (x.compte || 0); }, 0);
-      host.appendChild(U.kpiGrid([
-        { label: 'Gestes de validation en attente', value: C.num(totalGestes), icon: 'list-checks',
-          tone: totalGestes ? 'warning' : 'success' },
-        { label: 'Files concern\u00e9es', value: C.num(files.filter(function (x) { return x.compte > 0; }).length) + ' / ' + files.length,
-          icon: 'layout-grid', tone: 'neutral' },
-        { label: 'R\u00e9f\u00e9rentiels en attente d\u2019un professionnel', value: C.num(professionnels.filter(function (x) { return x.compte === null || x.compte > 0; }).length),
-          icon: 'user-check', tone: 'info' },
-        { label: 'Valid\u00e9s par la Direction le 01/09', value: C.num(validees.length), icon: 'check-circle-2', tone: 'success' },
-      ]));
+      var kpis = [];
+      if (!restreint) {
+        kpis.push({ label: 'Gestes de validation en attente', value: C.num(totalGestes), icon: 'list-checks',
+          tone: totalGestes ? 'warning' : 'success' });
+        kpis.push({ label: 'Files concern\u00e9es', value: C.num(files.filter(function (x) { return x.compte > 0; }).length) + ' / ' + files.length,
+          icon: 'layout-grid', tone: 'neutral' });
+      }
+      kpis.push({ label: 'R\u00e9f\u00e9rentiels en attente de validation', value: C.num(totalFamilles), icon: 'user-check',
+        tone: totalFamilles ? 'warning' : 'success' });
+      kpis.push({ label: 'Familles concern\u00e9es', value: C.num(familles.filter(function (x) { return x.enAttente > 0; }).length) + ' / ' + familles.length,
+        icon: 'layers', tone: 'neutral' });
+      host.appendChild(U.kpiGrid(kpis));
 
-      var grille = el('div.grid.gap-3.md:grid-cols-2');
-      files.forEach(function (x) {
-        var carte = el('div.card');
-        carte.appendChild(el('div.card-body.flex.items-center.gap-3', null, [
-          el('span.shrink-0.text-navy-600', null, C.icon(x.icone, 'h-6 w-6')),
-          el('div.min-w-0.flex-1', null, [
-            el('p.text-sm.font-medium.text-slate-800', { text: x.libelle }),
-            el('p.text-xs.text-slate-500', { text: x.nonAmorce
-              ? 'File non amorc\u00e9e sur ce poste \u2014 ouvrir l\u2019\u00e9cran pour la charger'
-              : 'Le geste appartient \u00e0 : ' + x.poste }),
-          ]),
-          el('span.shrink-0.text-lg.font-semibold.num', {
-            class: x.compte ? 'text-warning-700' : 'text-slate-300',
-            text: x.compte == null ? '\u2014' : C.num(x.compte),
-          }),
-          K.btn('Y aller', { size: 'sm', icon: 'arrow-right',
-            onclick: function () { if (go) go(x.ecran); } }),
-        ]));
-        grille.appendChild(carte);
-      });
-      host.appendChild(U.card('\u00c0 valider \u00c0 SON POSTE \u2014 l\u2019\u00e9cran oriente, le poste valide', grille));
-
-      host.appendChild(U.card('R\u00e9f\u00e9rentiels en attente d\u2019un PROFESSIONNEL nomm\u00e9 \u2014 la Direction ne signe pas \u00e0 sa place',
-        el('div.space-y-2', null, professionnels.map(function (x) {
-          return el('div.flex.items-start.gap-3.rounded-lg.border.border-slate-200.px-3.py-2', null, [
-            el('div.min-w-0.flex-1', null, [
-              el('p.text-sm.font-medium.text-slate-800', {
-                text: x.libelle + (x.compte != null ? ' \u2014 ' + C.num(x.compte) + ' entr\u00e9e(s)' : ''),
-              }),
-              el('p.text-xs.text-slate-500', { text: x.qui + ' \u00b7 ' + x.motif }),
-            ]),
-            K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right',
-              onclick: function () { if (go) go(x.ecran); } }),
-          ]);
-        }))));
-
-      host.appendChild(U.card('En attente d\u2019un ARBITRAGE de la Direction \u2014 elle seule peut trancher',
-        el('div.space-y-2', null, arbitrages.map(function (x) {
-          var ligne = el('div.flex.items-start.gap-3.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
+      if (!restreint) {
+        var grille = el('div.grid.gap-3.md:grid-cols-2');
+        files.forEach(function (x) {
+          var carte = el('div.card');
+          carte.appendChild(el('div.card-body.flex.items-center.gap-3', null, [
+            el('span.shrink-0.text-navy-600', null, C.icon(x.icone, 'h-6 w-6')),
             el('div.min-w-0.flex-1', null, [
               el('p.text-sm.font-medium.text-slate-800', { text: x.libelle }),
-              el('p.text-xs.text-slate-600', { text: (x.configuration ? '\u00c9tat : ' : 'Valeur d\u2019attente : ') + x.attente + ' \u00b7 ' + x.motif }),
+              el('p.text-xs.text-slate-500', { text: x.nonAmorce
+                ? 'File non amorc\u00e9e sur ce poste : ouvrir l\u2019\u00e9cran pour la charger'
+                : 'Le geste appartient \u00e0 : ' + x.poste }),
             ]),
-            K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right',
+            el('span.shrink-0.text-lg.font-semibold.num', {
+              class: x.compte ? 'text-warning-700' : 'text-slate-300',
+              text: x.compte == null ? '\u2014' : C.num(x.compte),
+            }),
+            K.btn('Y aller', { size: 'sm', icon: 'arrow-right',
               onclick: function () { if (go) go(x.ecran); } }),
-          ]);
-          if (x.configuration) ligne.setAttribute('data-configuration-fiscale', x.configuration);
-          return ligne;
-        }))));
+          ]));
+          grille.appendChild(carte);
+        });
+        host.appendChild(U.card('\u00c0 valider \u00c0 SON POSTE, l\u2019\u00e9cran oriente, le poste valide', grille));
+      }
 
-      host.appendChild(U.card('Valid\u00e9es par la DIRECTION le 01/09/2026 (vague 49)',
-        K.miniTable(['R\u00e9f\u00e9rentiel', 'D\u00e9cision'],
-          validees.map(function (x) { return [x.libelle, x.detail]; }))));
+      /* Une ligne par famille : compte r\u00e9el, profil nomm\u00e9, lien vers l'\u00e9cran o\u00f9 se trouve l'artefact. Aucune commande d'\u00e9criture. */
+      host.appendChild(U.card(restreint
+        ? 'Les r\u00e9f\u00e9rentiels de votre ressort : \u00e0 valider \u00e0 l\u2019\u00e9cran de chacun'
+        : 'R\u00e9f\u00e9rentiels en attente de validation, par famille : la Direction ne signe pas \u00e0 la place d\u2019un professionnel nomm\u00e9',
+        familles.length
+          ? el('div.space-y-2', { 'data-familles-validation': '' }, familles.map(function (x) {
+            var ligne = el('div.flex.items-start.gap-3.rounded-lg.border.border-slate-200.px-3.py-2', null, [
+              el('div.min-w-0.flex-1', null, [
+                el('p.text-sm.font-medium.text-slate-800', { text: x.libelle }),
+                el('p.text-xs.text-slate-500', { text: 'Valide : ' + x.profil + (x.nonAmorce ? ' \u00b7 non amorc\u00e9 sur ce poste, ouvrir l\u2019\u00e9cran pour le charger' : '') }),
+              ]),
+              el('span.shrink-0.text-lg.font-semibold.num', {
+                class: x.enAttente ? 'text-warning-700' : 'text-slate-300',
+                text: x.enAttente == null ? '\u2014' : C.num(x.enAttente),
+              }),
+              el('span.shrink-0.text-xs.text-slate-500.self-center', { text: x.total == null ? '' : 'sur ' + C.num(x.total) }),
+              ouvrable(x.ecran)
+                ? K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right', onclick: function () { if (go) go(x.ecran); } })
+                : null,
+            ].filter(Boolean));
+            ligne.setAttribute('data-famille', x.famille);
+            ligne.setAttribute('data-en-attente', x.enAttente == null ? '' : String(x.enAttente));
+            return ligne;
+          }))
+          : el('p.text-sm.text-slate-500', { text: 'Aucun r\u00e9f\u00e9rentiel \u00e0 valider ne rel\u00e8ve de votre profil.' })));
+
+      if (!restreint) {
+        host.appendChild(U.card('Donn\u00e9es \u00e0 compl\u00e9ter : le marquage tombe par la SAISIE, jamais par une signature',
+          el('div.space-y-2', null, cas.map(function (x) {
+            return el('div.flex.items-start.gap-3.rounded-lg.border.border-slate-200.px-3.py-2', null, [
+              el('div.min-w-0.flex-1', null, [
+                el('p.text-sm.font-medium.text-slate-800', {
+                  text: x.libelle + (x.nonAmorce ? ' (non amorc\u00e9 sur ce poste)' : (x.compte != null ? ' : ' + C.num(x.compte) + ' entr\u00e9e(s)' : '')),
+                }),
+                el('p.text-xs.text-slate-500', { text: x.qui + ' \u00b7 ' + x.motif }),
+              ]),
+              ouvrable(x.ecran) ? K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right',
+                onclick: function () { if (go) go(x.ecran); } }) : null,
+            ].filter(Boolean));
+          }))));
+
+        host.appendChild(U.card('En attente d\u2019un ARBITRAGE de la Direction : elle seule peut trancher',
+          el('div.space-y-2', null, arbitrages.map(function (x) {
+            var ligne = el('div.flex.items-start.gap-3.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
+              el('div.min-w-0.flex-1', null, [
+                el('p.text-sm.font-medium.text-slate-800', { text: x.libelle }),
+                el('p.text-xs.text-slate-600', { text: (x.configuration ? '\u00c9tat : ' : 'Valeur d\u2019attente : ') + x.attente + ' \u00b7 ' + x.motif }),
+              ]),
+              K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right',
+                onclick: function () { if (go) go(x.ecran); } }),
+            ]);
+            if (x.configuration) ligne.setAttribute('data-configuration-fiscale', x.configuration);
+            return ligne;
+          }))));
+      }
 
       host.appendChild(K.source('Compt\u00e9 \u00e0 chaque affichage depuis les registres du magasin \u2014 rien n\u2019est fourni.'));
       U.icons(host);

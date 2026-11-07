@@ -4161,7 +4161,7 @@
             'Bonjour {{nom}}, un reliquat reste dû sur votre dossier à {{clinique}}. '
             + 'Nous vous remercions de bien vouloir passer à la caisse.'],
         ].forEach(function (m) {
-          col.insert({ occasion: m[0], libelle: m[1], texte: m[2], actif: true,
+          col.insert({ occasion: m[0], libelle: m[1], texte: m[2], actif: true, aValider: true,
             source: 'Modèle proposé — à valider par la Direction' });
         });
         S.save();

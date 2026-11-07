@@ -583,7 +583,10 @@
                du modèle (principe KoboCollect, hors ligne). L'accueil
                recueille, la direction lit. */
             { id: 'adm-validations', label: 'Validations en attente', icon: 'list-checks',
-              roles: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'] },
+              /* Le biologiste, l'échographiste et les praticiens du bloc y voient les SEULES familles de leur ressort
+                 (Direction, 07/11/2026) : l'écran filtre par rôle, le manifeste ouvre la porte. */
+              roles: ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin',
+                'laborantin', 'echographiste', 'chirurgien', 'anesthesiste'] },
             { id: 'adm-enquetes', label: 'Enquêtes & questionnaires', icon: 'clipboard-list',
               roles: ['agentadmin', 'da', 'admin', 'direction', 'reception'] },
             { id: 'adm-satisfaction', label: 'Satisfaction des patients', icon: 'thumbs-up',

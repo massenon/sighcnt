@@ -3287,7 +3287,7 @@ async function viderMessages(page) {
         sections: L.SECTIONS.map((x) => x.id),
         documentes: ex.filter((e) => e.documente).length,
         aValider: va.filter((v) => v.aValider).length,
-        valideesBio: va.filter((v) => v.valideLe && /iologiste/.test(v.validePar || '')).length,
+        valideesBio: va.filter((v) => v.valideLe && /validation écrite du 01\/09\/2026/.test(v.validePar || '') && v.valideRole === 'Direction').length,
         retractables: va.filter((v) => v.retractable).length,
         sousVariables: va.filter((v) => v.parent).length,
       };
@@ -8424,8 +8424,9 @@ async function viderMessages(page) {
           && S.collection('pathologies').active().filter((p) => p.aValider).length === 0,
         /* L'écran oriente : les trois familles, et jamais de bouton de
            validation en masse. */
-        troisFamilles: /À SON POSTE/.test(t) && /PROFESSIONNEL nommé/.test(t)
-          && /Validées par la DIRECTION/.test(t),
+        /* Vague 91 : le centre lit les familles de référentiels au magasin (plus de bloc « Validées » en littéral). */
+        troisFamilles: /À SON POSTE/.test(t) && /Référentiels en attente de validation/.test(t)
+          && document.querySelectorAll('[data-famille]').length === 14 && !/Validées/.test(t),
         nonAmorceDit: /non amorcée/.test(t),
         pasDeMasse: ![...document.querySelectorAll('button')]
           .some((b) => /Tout valider|Valider tout/i.test(b.textContent)),
@@ -14097,6 +14098,214 @@ async function viderMessages(page) {
     });
     verifier('Axe « Service » : service du praticien à l’organigramme, jamais le type de consultation',
       okAxe && service.lignes.length > 0 && service.typesParmiLignes.length === 0 && service.inconnus.length === 0, JSON.stringify(service));
+  });
+
+  /* ==========================================================================
+   * Vague 91 : moteur de validation et centre des validations (Direction, 07/11/2026)
+   * -------------------------------------------------------------------------
+   * S4 de l'audit des marquages, plus le moteur : le compte d'une famille est RELU dans le magasin (jamais un littéral),
+   * un geste valide UNE fiche (marquage retiré, valideLe / validePar / valideRole, UNE ligne de journal, aucun autre champ
+   * touché), un autre rôle est refusé en le nommant sans rien écrire, un second geste est refusé (DEJA_VALIDE), le centre
+   * n'a aucune commande d'écriture et chacun n'y voit que les familles de son rôle. Les fiches insérées sont archivées en
+   * sortant (RG-14) ; la fiche de validation d'une constante (répartition des charges) est archivée aussi.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 91 : moteur de validation et centre des validations');
+    await page.evaluate(() => {
+      sessionStorage.clear();
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({
+        role: 'direction', fonction: 'direction', nom: 'OROU YO Marguerite',
+        nomComplet: 'OROU YO Marguerite', identifiant: 'm.orouyo', secteur: 'DIR',
+      }));
+    });
+    await ouvrir('adm-validations.html');
+
+    /* --- (a) une famille posée à la main : le compte lu augmente de 1 ---------------------------------------------- */
+    const a = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const compte = () => PR.referentielsAValider().filter((f) => f.famille === 'pathologies')[0].enAttente;
+      const recompte = () => S.raw().pathologies.filter((r) => r.statut !== 'archive' && r.aValider === true).length;
+      const avant = { moteur: compte(), magasin: recompte() };
+      const fiche = S.collection('pathologies').insert({ code: 'SONDE91', libelle: 'Pathologie de sonde 91', chapitre: 'Sonde', aValider: true, sonde: 'Vague 91' }).record;
+      return { avant, apres: { moteur: compte(), magasin: recompte() }, id: fiche.id,
+        exposeSIGH: !!(window.SIGH.validations && window.SIGH.validations.validerReferentiel),
+        registre: PR.FAMILLES_A_VALIDER.map((f) => f.id) };
+    });
+    verifier('Registre : les 14 familles de l’audit sont déclarées et le moteur est exposé (SIGH.validations)',
+      a.exposeSIGH && a.registre.length === 14 && ['enquetes', 'labo_variables', 'pathologies', 'imagerie', 'checklists_bloc', 'actes', 'analyses',
+        'valorisation_sage', 'objectifs_pilotage', 'repartition_charges', 'modeles_badge', 'jeux_import', 'modeles_messages', 'bareme_its'].every((x) => a.registre.indexOf(x) >= 0),
+      a.registre.join(','));
+    verifier('(a) Une pathologie marquée « à valider » insérée à la main : le compte du moteur augmente de 1 ET égale le recompte du magasin',
+      a.apres.moteur === a.avant.moteur + 1 && a.apres.magasin === a.avant.magasin + 1 && a.avant.moteur === a.avant.magasin, JSON.stringify(a));
+
+    /* --- (c bis) le refus nommé d'abord : un autre rôle, rien d'écrit -------------------------------------------- */
+    const c1 = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const rec = () => S.raw().pathologies.filter((r) => r.id === id)[0];
+      const avant = JSON.stringify(rec()), journal0 = S.raw().audit[0].id;
+      const r = PR.validerReferentiel('pathologies', id, { role: 'caissier' });
+      return { r: { ok: r.ok, code: r.code, motif: r.motif, geste: r.geste }, inchange: JSON.stringify(rec()) === avant, journalInchange: S.raw().audit[0].id === journal0 };
+    }, a.id);
+    verifier('(c) Un autre rôle (caissier) est refusé VALIDATION_RESERVEE, le motif nomme les profils attendus, RIEN n’est écrit ni journalisé',
+      c1.r.ok === false && c1.r.code === 'VALIDATION_RESERVEE' && /Directeur Médical|Médecin/.test(c1.r.motif) && !!c1.r.geste && c1.inchange && c1.journalInchange, JSON.stringify(c1));
+
+    /* --- (b) le rôle autorisé : marquage retiré, trois traces, UNE ligne de journal, aucun autre champ --------------- */
+    const b = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, N = window.SIGH.nav;
+      const compte = () => PR.referentielsAValider().filter((f) => f.famille === 'pathologies')[0].enAttente;
+      const rec = () => S.raw().pathologies.filter((r) => r.id === id)[0];
+      const avantCompte = compte();
+      const avantFiche = JSON.parse(JSON.stringify(rec()));
+      const r = PR.validerReferentiel('pathologies', id, { role: 'dm' });
+      const fiche = rec();
+      const autres = Object.keys(fiche).filter((k) => ['aValider', 'valideLe', 'validePar', 'valideRole'].indexOf(k) < 0);
+      const lignes = S.raw().audit.filter((e) => e.action === 'Validation' && e.reference === id);
+      return {
+        ok: r.ok, aValider: fiche.aValider, valideLe: !!fiche.valideLe, validePar: fiche.validePar, valideRole: fiche.valideRole,
+        roleAttendu: N.ROLES.dm.label, journal: lignes.length, premiereLigne: S.raw().audit[0].action + '|' + S.raw().audit[0].reference,
+        compteAvant: avantCompte, compteApres: compte(),
+        autresInchanges: autres.every((k) => JSON.stringify(fiche[k]) === JSON.stringify(avantFiche[k])) && Object.keys(avantFiche).every((k) => k in fiche || k === 'aValider'),
+      };
+    }, a.id);
+    verifier('(b) Le Directeur Médical valide : marquage retiré, valideLe / validePar (nom de la session) / valideRole écrits',
+      b.ok === true && b.aValider === false && b.valideLe && b.validePar === 'OROU YO Marguerite' && b.valideRole === b.roleAttendu, JSON.stringify(b));
+    verifier('(b) UNE ligne de journal « Validation » (RG-12), la première du journal, et AUCUN autre champ de la fiche modifié',
+      b.journal === 1 && b.premiereLigne === 'Validation|' + a.id && b.autresInchanges, JSON.stringify(b));
+    verifier('(b) Le compte baisse de 1', b.compteApres === b.compteAvant - 1, JSON.stringify([b.compteAvant, b.compteApres]));
+
+    /* --- (c) DEJA_VALIDE au second geste, INTROUVABLE pour un identifiant ou une famille inconnus ------------------- */
+    const c2 = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const journal0 = S.raw().audit[0].id;
+      const encore = PR.validerReferentiel('pathologies', id, { role: 'dm' });
+      const inconnu = PR.validerReferentiel('pathologies', 'N-EXISTE-PAS', { role: 'dm' });
+      const famille = PR.validerReferentiel('famille-inconnue', id, { role: 'dm' });
+      return { encore: encore.code, inconnu: inconnu.code, famille: famille.code, journalInchange: S.raw().audit[0].id === journal0 };
+    }, a.id);
+    verifier('(c) Le second geste est refusé DEJA_VALIDE ; un identifiant ou une famille inconnus, INTROUVABLE ; rien n’est journalisé',
+      c2.encore === 'DEJA_VALIDE' && c2.inconnu === 'INTROUVABLE' && c2.famille === 'INTROUVABLE' && c2.journalInchange, JSON.stringify(c2));
+
+    /* --- (f) remettreAValider : une fiche validée repart « à valider » ------------------------------------------- */
+    const f = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const compte = () => PR.referentielsAValider().filter((x) => x.famille === 'pathologies')[0].enAttente;
+      const rec = () => S.raw().pathologies.filter((r) => r.id === id)[0];
+      const avant = compte();
+      const r = PR.remettreAValider('pathologies', id);
+      const fiche = rec();
+      const second = PR.remettreAValider('pathologies', id);
+      return { ok: r.ok, remis: r.remis, aValider: fiche.aValider, valideLe: fiche.valideLe == null, validePar: fiche.validePar == null,
+        secondRemis: second.remis, compteAvant: avant, compteApres: compte(), ligne: S.raw().audit[0].action };
+    }, a.id);
+    verifier('(f) remettreAValider remet la fiche validée « à valider » (marquage, traces effacées, compte +1, journal) et ne refait rien au second appel',
+      f.ok && f.remis === true && f.aValider === true && f.valideLe && f.validePar && f.secondRemis === false
+        && f.compteApres === f.compteAvant + 1 && f.ligne === 'Remise à valider', JSON.stringify(f));
+
+    /* --- constante du code : la validation vit dans une fiche `validationsReferentiels` -------------------------- */
+    const k = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const compte = () => PR.referentielsAValider().filter((x) => x.famille === 'repartition_charges')[0].enAttente;
+      const avant = compte();
+      const refuse = PR.validerReferentiel('repartition_charges', 'repartition-fixe-variable', { role: 'caissier' });
+      const ok = PR.validerReferentiel('repartition_charges', 'repartition-fixe-variable', { role: 'comptable' });
+      const apres = compte();
+      const fiche = S.raw().validationsReferentiels.filter((x) => x.id === 'VRF-repartition-fixe-variable')[0];
+      const remise = PR.remettreAValider('repartition_charges', 'repartition-fixe-variable');
+      const apresRemise = compte();
+      /* Retrait de la fiche de sonde (RG-14 : archivée, jamais supprimée). */
+      fiche.statut = 'archive'; S.save();
+      return { avant, refuse: refuse.code, ok: ok.ok, apres, fiche: !!fiche, remis: remise.remis, apresRemise, retire: compte() };
+    });
+    verifier('Une constante du code (répartition fixe/variable) : refus nommé, validation par fiche, compte -1, remise à valider +1',
+      k.avant === 1 && k.refuse === 'VALIDATION_RESERVEE' && k.ok === true && k.apres === 0 && k.fiche && k.remis === true && k.apresRemise === 1 && k.retire === 1, JSON.stringify(k));
+
+    /* --- (d) le centre : aucune commande d'écriture, aucun littéral « Validées », compte = recompte AVANT et APRÈS --- */
+    const lireCentre = () => page.evaluate(() => {
+      const S = window.SIGH.store;
+      const brut = S.raw();
+      const SPEC = {
+        enquetes: [['enquetes'], ['aValider']], labo_variables: [['variablesLabo', 'unitesLabo'], ['aValider']], pathologies: [['pathologies'], ['aValider']],
+        imagerie: [['examensImagerie', 'variablesImagerie'], ['aValider']], actes: [['actes'], ['tarifProvisoire']], analyses: [['analyses'], ['tarifProvisoire', 'aValider']],
+        valorisation_sage: [['valorisationsSage'], ['aValider']], objectifs_pilotage: [['objectifsPilotage'], ['aValider']],
+        modeles_badge: [['modelesBadge'], ['aValider']], modeles_messages: [['modelesMessage'], ['aValider']],
+      };
+      const FICHES = { checklists_bloc: 'checklist-bloc', repartition_charges: 'repartition-fixe-variable', jeux_import: 'imp-analyses', bareme_its: 'bareme-its' };
+      const lignes = [...document.querySelectorAll('#page-content [data-famille]')].map((n) => {
+        const fam = n.getAttribute('data-famille'), lu = n.getAttribute('data-en-attente');
+        let attendu;
+        if (SPEC[fam]) {
+          const [cols, champs] = SPEC[fam];
+          const tout = cols.reduce((m, c) => m.concat((brut[c] || []).filter((r) => r.statut !== 'archive')), []);
+          attendu = tout.length ? String(tout.filter((r) => champs.some((c) => r[c] === true)).length) : '';
+        } else {
+          attendu = (brut.validationsReferentiels || []).some((x) => x.cible === FICHES[fam] && x.valideLe && x.statut !== 'archive') ? '0' : '1';
+        }
+        return { fam, lu, attendu };
+      });
+      const boutons = [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()).filter(Boolean);
+      return { lignes, boutons, texte: document.getElementById('page-content').textContent,
+        ecritures: boutons.filter((t) => !/^(Y aller|Ouvrir)$/.test(t)) };
+    });
+    await ouvrir('adm-validations.html');
+    const d1 = await lireCentre();
+    verifier('(d) Le centre porte une ligne par famille (14) et le compte affiché égale le recompte du magasin AVANT le geste',
+      d1.lignes.length === 14 && d1.lignes.every((l) => l.lu === l.attendu), JSON.stringify(d1.lignes.filter((l) => l.lu !== l.attendu)));
+    verifier('(d) Aucune commande d’écriture sur le centre (seuls « Y aller » et « Ouvrir »), aucun littéral « Validées »',
+      d1.ecritures.length === 0 && !/Validées|validées/.test(d1.texte), JSON.stringify(d1.ecritures) + ' · ' + (d1.texte.match(/.{20}[Vv]alidées.{20}/) || [''])[0]);
+    /* Le geste (validation de la fiche remise à valider), puis le centre rouvert : le compte suit le magasin. */
+    await page.evaluate((id) => {
+      const r = window.SIGH.parcours.validerReferentiel('pathologies', id, { role: 'medecin' });
+      if (!r.ok) throw new Error('validation refusée : ' + r.code);
+    }, a.id);
+    await ouvrir('adm-validations.html');
+    const d2 = await lireCentre();
+    const dm = (x) => (x.lignes.filter((l) => l.fam === 'pathologies')[0] || {}).lu;
+    verifier('(d) APRÈS le geste, le compte affiché égale toujours le recompte du magasin, et la famille a baissé de 1',
+      d2.lignes.length === 14 && d2.lignes.every((l) => l.lu === l.attendu) && Number(dm(d2)) === Number(dm(d1)) - 1, JSON.stringify([dm(d1), dm(d2)]));
+
+    /* --- (e) chacun ne voit que les familles de son rôle ; l'accueil, la caisse et le stock ne l'ouvrent pas -------- */
+    const accessibles = await page.evaluate(() => {
+      const N = window.SIGH.nav, e = N.get('adm-validations');
+      const sonde = (roles) => roles.reduce((o, r) => { o[r] = N.can(r, e); return o; }, {});
+      return sonde(['laborantin', 'echographiste', 'chirurgien', 'anesthesiste', 'direction', 'reception', 'caissier', 'stock']);
+    });
+    verifier('(e) Le biologiste, l’échographiste, le chirurgien et l’anesthésiste ouvrent le centre ; la réception, la caisse et le stock non',
+      accessibles.laborantin && accessibles.echographiste && accessibles.chirurgien && accessibles.anesthesiste && accessibles.direction
+        && !accessibles.reception && !accessibles.caissier && !accessibles.stock, JSON.stringify(accessibles));
+    const parRole = {};
+    for (const [role, nom] of [['laborantin', 'KINNOU G.'], ['echographiste', 'ADJIBI S.'], ['chirurgien', 'BASSONGUI C.'], ['anesthesiste', 'ZOUMAROU I.']]) {
+      await page.evaluate((r, n) => window.SIGH.store.setSession({ role: r, nom: n, nomComplet: n, fonction: r }), role, nom);
+      await ouvrir('adm-validations.html');
+      parRole[role] = await page.evaluate(() => ({
+        url: location.pathname.split('/').pop(),
+        familles: [...document.querySelectorAll('#page-content [data-famille]')].map((n) => n.getAttribute('data-famille')),
+        files: /À SON POSTE/.test(document.getElementById('page-content') ? document.getElementById('page-content').textContent : ''),
+        boutonsEcriture: [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()).filter((t) => t && !/^(Y aller|Ouvrir)$/.test(t)),
+      }));
+    }
+    verifier('(e) Le biologiste ouvre le centre et n’y voit QUE les familles du laboratoire',
+      /adm-validations/.test(parRole.laborantin.url) && JSON.stringify(parRole.laborantin.familles) === '["labo_variables"]' && !parRole.laborantin.files, JSON.stringify(parRole.laborantin));
+    verifier('(e) L’échographiste n’y voit que l’imagerie, le chirurgien et l’anesthésiste que les check-listes du bloc, sans aucune commande d’écriture',
+      JSON.stringify(parRole.echographiste.familles) === '["imagerie"]' && JSON.stringify(parRole.chirurgien.familles) === '["checklists_bloc"]'
+        && JSON.stringify(parRole.anesthesiste.familles) === '["checklists_bloc"]'
+        && ['echographiste', 'chirurgien', 'anesthesiste'].every((r) => parRole[r].boutonsEcriture.length === 0), JSON.stringify(parRole));
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'reception', nom: 'AGOSSOU R.', nomComplet: 'AGOSSOU R.', fonction: 'accueil' }));
+    await ouvrir('adm-validations.html');
+    const accueil = await page.evaluate(() => ({ url: location.pathname, familles: document.querySelectorAll('[data-famille]').length }));
+    verifier('(e) La réception n’ouvre pas le centre (renvoi au 403, aucune famille affichée)', /error-403/.test(accueil.url) && accueil.familles === 0, JSON.stringify(accueil));
+
+    /* --- restitution : session de la Direction, fiches de sonde archivées (RG-14) ---------------------------------- */
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'direction', nom: 'OROU YO Marguerite', nomComplet: 'OROU YO Marguerite', fonction: 'direction' }));
+    const rest = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      S.collection('pathologies').archive(id, 'Fiche de sonde, vague 91');
+      return { reste: S.collection('pathologies').active().filter((r) => r.sonde === 'Vague 91').length,
+        compte: PR.referentielsAValider().filter((x) => x.famille === 'pathologies')[0].enAttente,
+        magasin: S.raw().pathologies.filter((r) => r.statut !== 'archive' && r.aValider === true).length };
+    }, a.id);
+    verifier('Fiche de sonde archivée : la famille revient à son compte d’avant',
+      rest.reste === 0 && rest.compte === a.avant.moteur && rest.magasin === a.avant.magasin, JSON.stringify([rest, a.avant]));
+    verifier('Aucune erreur JavaScript sur le centre des validations', erreursJS.length === 0, erreursJS.join(' | '));
   });
 
   await browser.close();

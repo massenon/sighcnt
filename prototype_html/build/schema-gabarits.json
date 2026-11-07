@@ -7,5 +7,9 @@
   "lotsImportation": {
     "source": "modules/import.js consigner() et appliquer() (module IMP, lots d'importation)",
     "fiche": { "id": "LIM00001", "statut": "actif", "reference": "IMP-2026-00001", "jeu": "grand-stock", "jeuLibelle": "Importation Grand Stock", "fichier": "stock.xlsx", "empreinte": "0000", "date": "2026-11-06", "par": "admin", "validePar": "admin", "etat": "applique", "nbLignes": 1, "nbAvertissements": 0, "nbRefus": 0, "ecrits": [{ "collection": "produits", "id": "P0001" }], "erreurs": [{ "n": 1, "colonne": "x", "valeur": "y", "code": "C", "niveau": "avertissement", "motif": "m", "geste": "g" }], "erreursTotal": 1, "_creeLe": "2026-11-06T09:00:00.000Z", "_creePar": "admin" }
+  },
+  "validationsReferentiels": {
+    "source": "parcours.js validerReferentiel() (moteur de validation commun, module CFG) et store.js seed()",
+    "fiche": { "id": "VRF-checklist-bloc", "statut": "actif", "famille": "checklists_bloc", "cible": "checklist-bloc", "libelle": "Check-listes d’entrée et de sortie du bloc", "valideLe": "2026-09-01", "validePar": "validation écrite du 01/09/2026", "valideRole": "Direction" }
   }
 }

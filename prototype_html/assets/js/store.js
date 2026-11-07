@@ -88,8 +88,13 @@
      Incrémenter ce nombre, et lui seul, à toute modification de forme.
      69 (06/11/2026) : la configuration fiscale VALIDÉE et DATÉE, trois
      collections semées au socle (identiteLegale, obligationsFiscales,
-     historiqueObligations), posées d'un coup pour tout le chantier. */
-  var VERSION = 69;
+     historiqueObligations), posées d'un coup pour tout le chantier.
+     70 (07/11/2026) : le moteur de validation commun. Les validations du
+     01/09/2026 ne sont plus des constantes pour toute une liste mais des
+     fiches (`valideRole` en plus, mention « validation écrite du 01/09/2026 »),
+     et la collection `validationsReferentiels` (une fiche par artefact du code
+     que le magasin ne porte pas : check-listes du bloc…) est semée au socle. */
+  var VERSION = 70;
   var db = null;
   var listeners = {};
 
@@ -1452,6 +1457,8 @@
   /* ==========================================================================
    * AMORÇAGE
    * ======================================================================== */
+  /* LA TRACE DES VALIDATIONS ÉCRITES DU 01/09/2026, au format du moteur de validation (parcours.js). */
+  var VALIDATION_ECRITE_0109 = { valideLe: '2026-09-01', validePar: 'validation écrite du 01/09/2026', valideRole: 'Direction' };
   function seed() {
     var rnd = C.seeded(20260716);
     var personnel = genPersonnel(rnd);
@@ -1589,6 +1596,10 @@
          (échéances), M13 et les tableaux de bord : au socle. */
       obligationsFiscales: obligationsSemees,
       historiqueObligations: [],
+      /* Les validations des artefacts que le code porte et que le magasin ne peut pas marquer (une fiche par cible,
+         `VRF-<cible>`) : les check-listes du bloc, arrêtées par les praticiens le 01/09/2026. */
+      validationsReferentiels: [Object.assign({ id: 'VRF-checklist-bloc', statut: 'actif', famille: 'checklists_bloc',
+        cible: 'checklist-bloc', libelle: 'Check-listes d’entrée et de sortie du bloc' }, VALIDATION_ECRITE_0109)],
       _seededAt: new Date().toISOString(),
       personnel: personnel,
       patients: patients,
@@ -2284,6 +2295,9 @@
             'm1-patients': { voir: true, editer: false, annuler: false },
             'm1-patient-profil': { voir: true, editer: false, annuler: false },
             'm1-externe': { voir: true, editer: true, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : le biologiste y voit les bornes et unités du laboratoire. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
 
             /* CE QUI EST CLINIQUE — RG-13. */
             'm1-dossier-medical': { voir: false },
@@ -2470,6 +2484,9 @@
             /* Les statistiques de SON activité : PIL lui est fermé au module
                (aucun accès financier), l'écran s'accorde nommément. */
             'm2-stats-echographie': { voir: true, editer: false, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : l'échographiste y voit le catalogue de l'imagerie. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
 
             /* Les écrans de M1 ajoutés depuis, rouverts par héritage du
                module : l'échographiste lit l'indication, il ne tient ni le
@@ -2606,6 +2623,9 @@
           droits: droitsChirurgien,
           droitsEcrans: {
             'dash-chirurgien': { voir: true, editer: true, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : le chirurgien y voit les check-listes du bloc. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
             /* Même discipline que le médecin sur le stock et le laboratoire :
                il prescrit, il ne tient ni l'un ni l'autre. */
             'm5-catalogue': { voir: true, editer: false, annuler: false },
@@ -2631,6 +2651,9 @@
           droits: droitsAnesthesiste,
           droitsEcrans: {
             'dash-anesthesiste': { voir: true, editer: true, annuler: false },
+            /* Le centre des validations (Direction, 07/11/2026) : l'anesthésiste y voit les check-listes du bloc. Lecture seule, l'écran n'écrit rien et
+               ne montre que les familles de son rôle ; une surcharge ACCORDE. */
+            'adm-validations': { voir: true, editer: false, annuler: false },
             /* Les constantes se saisissent — c'est son matériau de travail. */
             'm1-constantes': { voir: true, editer: true, annuler: false },
             'm5-catalogue': { voir: true, editer: false, annuler: false },
@@ -2946,18 +2969,15 @@
          les valeurs peuvent changer » — d'où leur passage par le magasin. */
       /* Pathologies — lues par la consultation, le dossier patient et les
          statistiques de morbidité, donc amorcées ici. */
-      /* VALIDATIONS ÉCRITES DU 01/09/2026 (vague 51) — les professionnels
-         nommés ont tranché : les pathologies par les médecins (tableau de
-         morbidité), les bornes suppléées par le biologiste médical. La
-         SEMENCE (D.PATHOLOGIES, L.VARIABLES) garde son marquage : elle
-         documente ce qui venait d'un document et ce qui a été suppléé. */
+      /* VALIDATIONS ÉCRITES DU 01/09/2026 (vague 51), RECONDUITES le 07/11/2026
+         sous la forme que le moteur de validation écrit lui-même (`valideLe`,
+         `validePar`, `valideRole`) : la Direction a retenu la mention
+         « validation écrite du 01/09/2026 », jamais un nom de personne
+         inventé. La SEMENCE (D.PATHOLOGIES, L.VARIABLES) garde son marquage :
+         elle documente ce qui venait d'un document et ce qui a été suppléé. */
       pathologies: D.PATHOLOGIES.map(function (x) {
         var rec = Object.assign({}, x);
-        if (rec.aValider) {
-          rec.aValider = false;
-          rec.valideLe = '2026-09-01';
-          rec.validePar = 'Médecins — tableau de morbidité';
-        }
+        if (rec.aValider) Object.assign(rec, { aValider: false }, VALIDATION_ECRITE_0109);
         return rec;
       }),
       examensLabo: L.EXAMENS.map(function (e) { return Object.assign({}, e); }),
@@ -2967,9 +2987,7 @@
       variablesLabo: L.VARIABLES.map(function (v) {
         var rec = Object.assign({}, v);
         if (rec.aValider) {
-          rec.aValider = false;
-          rec.valideLe = '2026-09-01';
-          rec.validePar = 'Biologiste médical';
+          Object.assign(rec, { aValider: false }, VALIDATION_ECRITE_0109);
           rec.source = 'Valeur usuelle, validée par le biologiste médical le 01/09/2026';
         }
         return rec;
@@ -3763,7 +3781,7 @@
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
     'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
-    'identiteLegale', 'obligationsFiscales', 'historiqueObligations',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -4105,6 +4123,7 @@
     resultatsImagerie: 'M2|Comptes rendus d’imagerie',
     demandesImagerie: 'M2|Demandes d’imagerie',
     enquetes: 'M13|Modèles d’enquête',
+    validationsReferentiels: 'CFG|Validations de référentiels',
     reponsesEnquetes: 'M13|Réponses d’enquête',
     jetonsEnquete: 'M13|Liens de partage des enquêtes',
     badges: 'M10|Badges du personnel', modelesBadge: 'M10|Modèles de badge',

@@ -639,6 +639,27 @@ ALTER TABLE "cfg"."types_piece" ADD COLUMN IF NOT EXISTS "tarif_code" text; -- @
 ALTER TABLE "cfg"."types_piece" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."types_piece" IS 'Collection « typesPiece » — Configuration';
 CREATE INDEX IF NOT EXISTS "ix_types_piece_statut" ON "cfg"."types_piece" ("statut");
+CREATE TABLE IF NOT EXISTS "cfg"."validations_referentiels" (
+  "id" text PRIMARY KEY,
+  "cible" text,
+  "statut" text,
+  "famille" text,
+  "libelle" text,
+  "valide_le" date,
+  "valide_par" text,
+  "valide_role" text,
+  "extra" jsonb
+);
+ALTER TABLE "cfg"."validations_referentiels" ADD COLUMN IF NOT EXISTS "cible" text; -- @montee
+ALTER TABLE "cfg"."validations_referentiels" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "cfg"."validations_referentiels" ADD COLUMN IF NOT EXISTS "famille" text; -- @montee
+ALTER TABLE "cfg"."validations_referentiels" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "cfg"."validations_referentiels" ADD COLUMN IF NOT EXISTS "valide_le" date; -- @montee
+ALTER TABLE "cfg"."validations_referentiels" ADD COLUMN IF NOT EXISTS "valide_par" text; -- @montee
+ALTER TABLE "cfg"."validations_referentiels" ADD COLUMN IF NOT EXISTS "valide_role" text; -- @montee
+ALTER TABLE "cfg"."validations_referentiels" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "cfg"."validations_referentiels" IS 'Collection « validationsReferentiels » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_validations_referentiels_statut" ON "cfg"."validations_referentiels" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."variables_imagerie" (
   "id" text PRIMARY KEY,
   "code" text,
