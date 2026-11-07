@@ -20,6 +20,8 @@ Chaque exigence cite sa source dans `docs/cadrage/` ; ce qui n'a pas de source e
 
 | [PRD-RELAIS-en-ligne-consultation-et-configuration](PRD-RELAIS-en-ligne-consultation-et-configuration.md) | Relais en ligne : consultation à règles métier complètes (option A relais opaque ou B relais en clair, décision Q1 bloquante), configuration et journal d'opérations conservés sans exception, restauration depuis le relais seul | proposé 07/11/2026 |
 
+| [PRD-SATISFACTION-collecte-web-qr-et-analyse](PRD-SATISFACTION-collecte-web-qr-et-analyse.md) | Satisfaction des patients : collecte par lien et QR à l'accueil, enveloppes scellées par le relais, kiosque hors ligne, questionnaires avancés, analyse complète (filtres avancés, NPS, alertes, modération, exports) | proposé 07/11/2026 |
+
 Ordre de livraison recommandé : SOCLE (P0) → M6 → M12, le socle rendant les deux autres plus
 simples à sonder (pas de rechargement entre les étapes d'un parcours).
 | `PRD-M10-planning-individuel-et-libre-service-agent.md` | Planning et gardes individuels (régime propre à un agent, historique daté), filtres avancés, CRUD du planning, espace « Mes » de l'agent (17 rubriques, mobile et poste, validation DAF) et revue d'écarts des écrans | proposé le 06/11/2026 |

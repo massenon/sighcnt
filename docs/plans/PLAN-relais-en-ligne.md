@@ -22,6 +22,7 @@ Méthode : un agent Sonnet par étape, brief court, relecture du responsable pou
 - Sortie : PRD mis à jour ; ADR si B.
 
 ## R1. Domaine sur le web (le risque principal d'abord)
+À prouver aussi (décision du 07/11) : le client web rejoue les journaux **de tous les appareils** (`dir = pair`) avec la fusion du domaine, y compris les opérations d'un fileul quand la mère est éteinte ; vérifier que ces journaux sont chiffrés avec la clé de clinique et lisibles par le client.
 Compiler `packages/domaine` pour le web et rejouer **tous** les vecteurs (`packages/domaine/test/vecteurs/*.json`) dans un navigateur sans tête. Si une règle ne se compile pas ou diverge : c'est le moment de le savoir, avant de promettre « 100 % ». Critère de sortie : zéro divergence, ou liste nommée des écarts à corriger au domaine.
 
 ## R2. Relais : conserver tout

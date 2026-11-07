@@ -104,6 +104,8 @@ Au poste : parité N1 à 100 % de `cfg-sms`, tests d'écran, file avec reprise. 
 
 **Reçues.** Fournisseur par défaut : **Twilio**, avec **Vonage** disponible. **Couverture du Bénin pour les deux : déclarée par la Direction** (non vérifiée par l'équipe : une vérification de confort reste prévue en recette, non bloquante). **Toutes les gardes sont conservées** : consentement, plafond, heures calmes, aucune donnée médicale, refus nommés, secrets jamais relus. **Bibliothèques installées le 07/11/2026** : `twilio/sdk` 8.14 et `vonage/client` 4.4 (relais : `apps/web/composer.json` et `composer.lock` versionnés ; maquette : `prototype_html/api/composer.json`, `vendor/` non versionné, repli sur l'appel REST direct par cURL si `vendor/` est absent ; le poste n'appelle jamais un fournisseur donc n'embarque aucune bibliothèque). Les sept avis de sécurité que `composer audit` signale concernent des composants Symfony **déjà présents** avant cet ajout, aucune bibliothèque nouvelle n'en porte ; mise à jour à traiter à part.
 
+**Secrets (décision du 07/11/2026)** : les clés Twilio (SID et jeton) et Vonage (clé et secret) se renseignent dans le fichier `.env` du relais (`RELAIS_SMS_TWILIO_SID`, `RELAIS_SMS_TWILIO_TOKEN`, `RELAIS_SMS_VONAGE_KEY`, `RELAIS_SMS_VONAGE_SECRET`, `RELAIS_SMS_FOURNISSEUR=twilio`), jamais dans le panneau ni dans le dépôt ; le panneau montre « défini dans .env » et porte le **Test SMS** ; secret absent : refus nommé `SECRET_NON_DEFINI`. Le mot de passe SMTP suit la même règle (à valider : il était saisi au panneau jusqu'ici).
+
 **Restantes** (Q2 devient une vérification de confort, les autres restent à valider).
 
 | # | Question | Proposition |

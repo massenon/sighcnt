@@ -10,6 +10,12 @@ Règle de rédaction : pas de tiret cadratin comme ponctuation. Doctrine : « au
 2. **Configuration** : « elle doit garder la configuration et le système total sans exception, les journaux d'opérations ».
 3. **SMS** : voir `PRD-SMS-passerelle-et-test-envoi.md` (Twilio par défaut, Vonage en second, couverture du Bénin déclarée par la Direction, bibliothèques à installer ; installées le 07/11/2026).
 
+## 1 bis. Décisions de la Direction du 07/11/2026 (reçues)
+
+- **Q1 : option A** (relais opaque, règles exécutées dans le navigateur).
+- **Q3 : les secrets (mot de passe SMTP, clés des fournisseurs SMS) vont dans le fichier `.env` du relais**, non versionné. Conséquence à valider (elle remplace la saisie dans le panneau décidée le 06/11) : le panneau affiche « défini dans .env » et n'accepte plus la saisie du secret ; le test d'envoi reste dans le panneau ; `.env` est ignoré par git, gardé hors du dossier public, droits de lecture restreints au compte du serveur web ; un secret absent donne le refus nommé `SECRET_NON_DEFINI` avec le nom de la variable à renseigner. Les hachés de comptes restent dans l'instantané, chiffrés.
+- **La donnée vient de TOUS les postes, pas de la mère seule.** Chaque poste (fileul ou mère) dépose le journal chiffré de ses opérations au relais ; le client de consultation rejoue **les journaux de tous les appareils** avec la règle de fusion du domaine (`pair`), la même que celle des postes. La copie de la mère devient un **accélérateur** (instantané), plus la source unique : la consultation reste fraîche **même mère éteinte**, tant qu'un poste dépose. À vérifier au banc (étape R1 du plan) : le journal pair est chiffré avec la même clé de clinique et le domaine de fusion se compile pour le web.
+
 ## 2. Ce qui existe (relevé le 07/11/2026)
 
 - **Consultation** : une page du panneau superadmin. La mère dépose, au plus toutes les 30 secondes, des enveloppes de copie **chiffrées** (AES-256-GCM, clé de clinique que le relais ne connaît pas). Le navigateur télécharge, déchiffre avec la clé collée par l'utilisateur (mémoire de l'onglet), reconstruit les tables et les affiche. **Aucune règle métier** n'est appliquée : pas de droits par rôle (la page est celle du seul superadmin), pas de filtrage, pas de calcul. Elle est « à jour » seulement tant que **la mère est allumée et connectée** : si elle s'éteint, la copie vieillit.
@@ -24,7 +30,7 @@ Règle de rédaction : pas de tiret cadratin comme ponctuation. Doctrine : « au
 ## 4. Objectifs mesurables
 
 - **O1.** La consultation en ligne applique **100 % des règles de lecture** : droits par rôle (`rbac.json`), cloisonnement RG-13, règles d'affichage et de calcul des écrans consultables. Critère : les **vecteurs du domaine** (323 et plus, source unique) passent identiquement dans le client web ; un test de parité N1 et N2 par écran consultable ; zéro règle codée à la main côté relais.
-- **O2.** La donnée affichée a un **âge connu et affiché** (« mise à jour il y a N s »). Critère : latence mère vers consultation de 5 secondes au plus en fonctionnement normal ; quand la mère est éteinte ou injoignable, la page le dit en toutes lettres avec l'heure de la dernière copie, **jamais un état « en ligne » trompeur**.
+- **O2.** La donnée affichée a un **âge connu et affiché** (celui du dernier dépôt de **n'importe quel poste**) (« mise à jour il y a N s »). Critère : latence mère vers consultation de 5 secondes au plus en fonctionnement normal ; quand la mère est éteinte ou injoignable, la page le dit en toutes lettres avec l'heure de la dernière copie, **jamais un état « en ligne » trompeur**.
 - **O3.** Le relais conserve **la configuration complète et le journal d'opérations de toutes les familles, sans purge ni exception** (hors secrets de fournisseur, voir Q3). Critère : une mère neuve restaure l'état entier depuis le relais seul, et l'empreinte de l'état restauré égale celle de la mère d'origine (test de bout en bout).
 - **O4.** L'opacité du relais est **conservée** si la Direction retient l'option A (Q1) ; sinon elle est abandonnée **explicitement** par décision écrite.
 - **O5.** Aucune régression de RG-12 (journalisation de chaque ouverture) ni de RG-14 (jamais de suppression).

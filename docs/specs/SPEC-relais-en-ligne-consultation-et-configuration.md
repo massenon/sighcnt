@@ -3,6 +3,9 @@
 Statut : **proposé le 07/11/2026**, sous réserve de la décision Q1 du PRD (`docs/prd/PRD-RELAIS-en-ligne-consultation-et-configuration.md`). Cette spec décrit l'**option A** (relais opaque, règles dans le navigateur). Si la Direction retient B, cette spec est caduque et une ADR de renversement est écrite d'abord.
 Règle de rédaction : pas de tiret cadratin comme ponctuation. Un refus se nomme (code, motif, geste) ; une commande interdite est absente ; « non calculable » n'est pas zéro.
 
+## 0. Décisions du 07/11/2026
+Option A retenue. Secrets dans `.env` (SMTP, SMS ; jamais dans le panneau, jamais dans une sauvegarde). **Source de la consultation = les journaux de tous les appareils** (`dir = pair`), rejoués côté client avec `packages/domaine/lib/src/sync/pair.dart` ; la copie de la mère (`dir = copie`) et l'instantané accélèrent le démarrage mais ne sont plus requis pour être à jour. Le client reconstruit l'état par la fonction pure « état = repli de l'ensemble unique des opérations », triée par `[nOps, hlc, appareil, idOp]`, avec `seq` de la mère quand elle existe et marquage des conflits laissés à `trancher`.
+
 ## 1. Composants
 
 | Composant | Rôle | Nouveauté |
@@ -43,7 +46,7 @@ Procédure de la console de la mère neuve (admin et DA, clé de clinique et cod
 
 - **Accès** : connexion nominative (compte et rôle renvoyés par le relais) ; clé de clinique saisie (v1 superadmin) ou fournie enveloppée par compte (P1) ; la clé vit **en mémoire de l'onglet seulement**, effacée après inactivité (CSP sans script externe, pas de `localStorage`).
 - **Règles** : le client importe le domaine Dart compilé pour le web ; chaque écran consultable déclare sa fiche (`docs/architecture/ecrans/<id>.json`) ; les droits viennent de `rbac.json` (même fichier que le poste) ; RG-13 est appliqué avant tout rendu (les collections hors droit du rôle ne sont **pas même reconstruites** en mémoire).
-- **Âge** : bandeau permanent : « mise à jour il y a N s » (compteur du relais) ; si la mère n'a rien déposé depuis plus de 60 s : « source injoignable depuis HH:MM » (ton attention) ; aucun état « en ligne » sans cette mesure.
+- **Âge** : (dernier dépôt de n'importe quel appareil) bandeau permanent : « mise à jour il y a N s » (compteur du relais) ; si la mère n'a rien déposé depuis plus de 60 s : « source injoignable depuis HH:MM » (ton attention) ; aucun état « en ligne » sans cette mesure.
 - **Rafraîchissement** : sondage du compteur toutes les 5 secondes avec ETag ; relève des seuls rangs nouveaux ; jamais de rechargement complet.
 - **Lecture seule** : aucune commande d'écriture n'existe dans le client (absentes, pas grisées).
 - **Journal** : ouverture, écran consulté, export, déconnexion : RG-12, sans contenu.
