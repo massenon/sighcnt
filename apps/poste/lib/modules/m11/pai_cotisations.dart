@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../impression/identite_poste.dart';
 import '../../impression/apercu.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -117,7 +118,7 @@ class _EtatCotisations extends State<EcranCotisations> {
               ('Effectif', nombre(calc.length)),
               ('Masse salariale', paiMontant(calc, (x) => x.brut)),
               ('Montant à verser', money(total)),
-              ('IFU employeur', IdentiteClinique.ifu),
+              ('IFU employeur', identiteImprimeeDe(c.magasin, c.aujourdhui).ifu),
               ('Date d’édition', dateFR(c.aujourdhui)),
             ],
             tableaux: [TableauEtat(colonnes: colonnes, lignes: [for (final x in calc) ligneCalcul(x)])],

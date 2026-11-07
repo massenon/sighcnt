@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../impression/identite_poste.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
@@ -284,7 +285,7 @@ class _EtatFactureMere extends State<EcranFactureMere> {
               ('Souscripteurs consolidés', nombre(lignes.length)),
               ('Pièces filles', nombre(r != null ? n(r['nbFactures']) : rap.nbFactures)),
               ('Émise le', r != null ? dateDe(r['dateEmission']) : '— aperçu —'),
-              ('RCCM', IdentiteClinique.rccm),
+              ('RCCM', identiteImprimeeDe(c.magasin, c.aujourdhui).rccm),
             ],
             blocs: [
               const BlocTexte('CONSOLIDATION PAR SOUSCRIPTEUR', gras: true),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
@@ -155,6 +157,47 @@ void main() {
       m.collection('identiteLegale').inserer({'version': 2, 'statut': 'actif', 'debut': '2026-12-01', 'nom': 'X'}, prefixe: 'IDL');
       expect(s.lignesConfiguration()['cfg-fiscalite']!.ecrit, isFalse);
     });
+  });
+
+  test('aucune lecture en dur de l’IFU ou du RCCM dans lib/ : les littéraux n’y sont pas, et les états imprimés passent par la fabrique de l’identité à la date', () {
+    final fichiers = Directory('lib').listSync(recursive: true).whereType<File>().where((f) => f.path.endsWith('.dart'));
+    for (final f in fichiers) {
+      final t = f.readAsStringSync();
+      expect(t.contains('3201642748214'), isFalse, reason: '${f.path} porte l’IFU en dur');
+      expect(t.contains('RB/NAT/2016'), isFalse, reason: '${f.path} porte le RCCM en dur');
+    }
+    // Les états imprimés (facture mère, relevé assureur, cotisations, ticket) lisent la version en force, plus la constante de semence.
+    for (final p in ['lib/modules/m9/releve.dart', 'lib/modules/m9/facture_mere.dart', 'lib/modules/m11/pai_cotisations.dart', 'lib/modules/m8/facturation.dart']) {
+      final t = File(p).readAsStringSync();
+      expect(RegExp(r'IdentiteClinique\.(ifu|rccm)').hasMatch(t), isFalse, reason: '$p lit la constante de semence');
+      expect(t.contains('identiteImprimeeDe'), isTrue, reason: p);
+    }
+  });
+
+  casM14('adm-validations : les deux lignes de configuration fiscale existent, disparaissent une fois validées et reviennent sur une version non validée', (t) async {
+    final m = magasinM14();
+    await ouvrirM14(t, m, 'adm-validations');
+    expect(find.byKey(const Key('qual:config:identite')), findsOneWidget);
+    expect(find.byKey(const Key('qual:config:obligations')), findsOneWidget);
+    expect(find.text('Identité légale à valider (première configuration)'), findsOneWidget);
+    expect(find.text('Obligations fiscales à valider'), findsOneWidget);
+    final ri = cfbValiderIdentite(m.collection('identiteLegale').toutes, role: 'admin', acteur: 'ADJOVI', maintenant: DateTime(2026, 10, 30), aujourdhui: DateTime(2026, 10, 30));
+    for (final id in ri.ids) {
+      m.collection('identiteLegale').mettreAJour(id, ri.patch);
+    }
+    await t.pump();
+    expect(find.byKey(const Key('qual:config:identite')), findsNothing);
+    expect(find.byKey(const Key('qual:config:obligations')), findsOneWidget);
+    final ro = cfbValiderObligations(m.collection('obligationsFiscales').toutes, role: 'admin', acteur: 'ADJOVI', maintenant: DateTime(2026, 10, 30));
+    for (final id in ro.ids) {
+      m.collection('obligationsFiscales').mettreAJour(id, ro.patch);
+    }
+    await t.pump();
+    expect(find.byKey(const Key('qual:config:obligations')), findsNothing);
+    m.collection('identiteLegale').inserer({'version': 2, 'statut': 'actif', 'debut': '2027-01-01', 'nom': 'X', 'creeLe': '2026-11-01T10:00:00.000'}, prefixe: 'IDL');
+    await t.pump();
+    expect(find.byKey(const Key('qual:config:identite')), findsOneWidget);
+    expect(find.textContaining('à revalider'), findsOneWidget);
   });
 
   casM14('un fileul rattaché voit cfg-fiscalite et cfg-comptabilite en LECTURE SEULE nommée : ni Enregistrer, ni Valider, ni Modifier', (t) async {

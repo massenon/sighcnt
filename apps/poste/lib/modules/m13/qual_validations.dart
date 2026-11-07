@@ -5,6 +5,8 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../cfg/cfb_configuration_fiscale.dart';
+import '../m2/cr_commun.dart' show dateHeureDe;
 import 'qual_commun.dart';
 
 /// `adm-validations` — « Validations en attente » : le centre qui répond à « qu'est-ce qui attend une validation, et de QUI ? ». Il ORIENTE, il ne valide
@@ -41,7 +43,10 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
       'resultatsImagerie',
       'echeancesFiscales',
       'materiel',
-      'plagesReactif'
+      'plagesReactif',
+      'identiteLegale',
+      'obligationsFiscales',
+      'historiqueObligations'
     ];
     return ListenableBuilder(
         listenable: Listenable.merge([for (final n in noms) m.collection(n)]),
@@ -59,6 +64,8 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
               materiel: m.collection('materiel').toutes,
               plagesReactif: m.collection('plagesReactif').toutes);
           final bilan = qualBilanValidations(files, pros);
+          final cf = ConfigurationFiscalePoste(c);
+          final configuration = _configurationAValider(cf);
           return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             KpiGrilleSigh(kpis: [
               KpiSigh(
@@ -106,8 +113,12 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
             CarteSigh(
                 titre: 'En attente d’un ARBITRAGE de la Direction — elle seule peut trancher',
                 child: Column(children: [
-                  for (final (i, a) in qualArbitrages.indexed) ...[
+                  for (final (i, x) in configuration.indexed) ...[
                     if (i > 0) const SizedBox(height: 8),
+                    _bloc(c, x.libelle, 'État : ${x.attente} · ${x.motif}', x.ecran, attention: true, cle: 'qual:config:${x.nom}'),
+                  ],
+                  for (final (i, a) in qualArbitrages.indexed) ...[
+                    if (i > 0 || configuration.isNotEmpty) const SizedBox(height: 8),
                     _bloc(c, a.libelle, a.detail, a.ecran, attention: true),
                   ]
                 ])),
@@ -124,6 +135,32 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
             sourceQual('Compté à chaque affichage depuis les registres du magasin — rien n’est fourni.'),
           ]);
         });
+  }
+
+  /// LA CONFIGURATION FISCALE À VALIDER (Direction, 06/11/2026) : deux lignes dans la famille des arbitrages, tant que l'état n'est pas « validé ».
+  /// L'état vient du moteur (`cfbEtatIdentite`, `cfbEtatObligations`), jamais recopié ici ; elles reviennent sur « modifié depuis la validation ».
+  List<_LigneConfiguration> _configurationAValider(ConfigurationFiscalePoste cf) {
+    String attente(CfbEtatConfiguration e) => e.etat == 'modifie_depuis'
+        ? 'Modifiée le ${e.modifieLe == null ? '?' : dateHeureDe(e.modifieLe)} depuis la validation du ${dateHeureDe(e.validationAnterieure?['valideLe'])} : à revalider'
+        : 'À valider (première configuration)';
+    final ei = cf.etatIdentite();
+    final eo = cf.etatObligations();
+    return [
+      if (ei.etat != 'valide')
+        _LigneConfiguration(
+            'identite',
+            'Identité légale à valider (première configuration)',
+            attente(ei),
+            'cfg-fiscalite',
+            'IFU, RCCM, forme, autorisation, adresse fiscale, devise et régime de TVA s’impriment sur toutes les pièces : la Direction, la DAF ou l’administrateur les vérifie et valide à l’écran Paramètres fiscaux.'),
+      if (eo.etat != 'valide')
+        _LigneConfiguration(
+            'obligations',
+            'Obligations fiscales à valider',
+            attente(eo),
+            'cfg-comptabilite',
+            'Obligations mensuelles, IS, patente, CCIB, TVM et redevances ORTB prélevées sur les salaires : à vérifier et valider à l’écran Paramètres comptables & obligations.'),
+    ];
   }
 
   /// Une file de gestes : icône, intitulé, poste (ou « non amorcée »), compte, « Y aller ».
@@ -158,7 +195,8 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
             onPressed: () => c.aller(f.ecran)),
       ]));
 
-  Widget _bloc(ContexteEcran c, String titre, String detail, String ecran, {required bool attention}) => Container(
+  Widget _bloc(ContexteEcran c, String titre, String detail, String ecran, {required bool attention, String? cle}) => Container(
+      key: cle == null ? null : Key(cle),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
           color: attention ? JetonsShell.warning50 : null,
@@ -182,4 +220,9 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
             variante: VarianteBouton.secondaire,
             onPressed: () => c.aller(ecran)),
       ]));
+}
+
+class _LigneConfiguration {
+  const _LigneConfiguration(this.nom, this.libelle, this.attente, this.ecran, this.motif);
+  final String nom, libelle, attente, ecran, motif;
 }

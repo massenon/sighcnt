@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../impression/identite_poste.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
@@ -232,7 +233,7 @@ class _EtatReleve extends State<EcranReleveAssureur> {
                 'Assurés concernés',
                 nombre(groupes.fold<int>(0, (a, g) => a + g.patients.length))
               ),
-              ('RCCM', IdentiteClinique.rccm),
+              ('RCCM', identiteImprimeeDe(c.magasin, c.aujourdhui).rccm),
             ],
             tableaux: [
               TableauEtat(colonnes: [

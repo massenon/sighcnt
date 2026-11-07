@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../impression/identite_poste.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../kit/kit.dart';
@@ -515,7 +516,7 @@ class _EtatFacturation extends State<EcranFacturation> {
           dossier: _reglement['dissocier'] == true ? null : '${p['code']}',
           date: c.aujourdhui,
           mecef: BlocMecef(
-              nim: 'NIM${IdentiteClinique.ifu.substring(IdentiteClinique.ifu.length - 8)}',
+              nim: 'NIM${identiteImprimeeDe(c.magasin, c.aujourdhui).ifu.substring(identiteImprimeeDe(c.magasin, c.aujourdhui).ifu.length - 8)}',
               code: 'CODE-DGI-EN-ATTENTE',
               compteurs: '${nbFactures + 1}/$nbFactures FN'),
           lignes: [
