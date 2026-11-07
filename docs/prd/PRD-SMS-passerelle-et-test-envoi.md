@@ -100,7 +100,11 @@ Scénario « Vague 85 » (maquette), avec mutations des protections :
 
 Au poste : parité N1 à 100 % de `cfg-sms`, tests d'écran, file avec reprise. Au relais : tests PHPUnit (secrets jamais rendus, droits de l'appareil, refus nommés).
 
-## 9. Décisions à valider (Direction)
+## 9. Décisions de la Direction du 07/11/2026 (reçues) et décisions restantes
+
+**Reçues.** Fournisseur par défaut : **Twilio**, avec **Vonage** disponible. **Couverture du Bénin pour les deux : déclarée par la Direction** (non vérifiée par l'équipe : une vérification de confort reste prévue en recette, non bloquante). **Toutes les gardes sont conservées** : consentement, plafond, heures calmes, aucune donnée médicale, refus nommés, secrets jamais relus. **Bibliothèques installées le 07/11/2026** : `twilio/sdk` 8.14 et `vonage/client` 4.4 (relais : `apps/web/composer.json` et `composer.lock` versionnés ; maquette : `prototype_html/api/composer.json`, `vendor/` non versionné, repli sur l'appel REST direct par cURL si `vendor/` est absent ; le poste n'appelle jamais un fournisseur donc n'embarque aucune bibliothèque). Les sept avis de sécurité que `composer audit` signale concernent des composants Symfony **déjà présents** avant cet ajout, aucune bibliothèque nouvelle n'en porte ; mise à jour à traiter à part.
+
+**Restantes** (Q2 devient une vérification de confort, les autres restent à valider).
 
 | # | Question | Proposition |
 |---|---|---|

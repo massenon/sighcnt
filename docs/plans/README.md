@@ -12,4 +12,6 @@
 
 | [PLAN-sms-passerelle](PLAN-sms-passerelle.md) | Passerelle SMS : sept étapes S0 à S6 (décisions et couverture Bénin, maquette avec puits de test, moteur de consentement et de plafond, domaine Dart, relais, poste, recette) | proposé 07/11/2026 |
 
+| [PLAN-relais-en-ligne](PLAN-relais-en-ligne.md) | Relais en ligne : sept étapes R0 à R7 (décisions, domaine sur le web, conservation, publication continue et instantané de configuration, restauration, client web, recette) | proposé 07/11/2026 |
+
 Le banc à deux postes (étape S3.2 de ce plan) tient lieu de P1 de l'architecture cible.

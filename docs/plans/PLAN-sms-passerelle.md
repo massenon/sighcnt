@@ -1,6 +1,6 @@
 # PLAN : Passerelle SMS (Vonage et Twilio) et test d'envoi
 
-Statut : **proposé le 07/11/2026**, à lancer après validation des décisions Q1 à Q8 du PRD (`docs/prd/PRD-SMS-passerelle-et-test-envoi.md`). Aucune étape ne démarre sans la réponse à Q2 (couverture du Bénin et expéditeur), qui peut changer la conception.
+Statut : **proposé le 07/11/2026**, à lancer après validation des décisions Q1 à Q8 du PRD (`docs/prd/PRD-SMS-passerelle-et-test-envoi.md`). Décisions du 07/11/2026 : Twilio par défaut, Vonage disponible, couverture du Bénin déclarée par la Direction, gardes conservées ; bibliothèques déjà installées (relais et maquette). La vérification de couverture et d'expéditeur devient une vérification de confort en recette, non bloquante.
 Méthode : maquette d'abord, puis vecteurs, domaine Dart, relais, poste. Un agent Sonnet par étape, brief court, relecture par le responsable pour l'**argent** (coût, plafond) et les **droits** (secrets, consentement). Banc isolé (`SIGH_PORT_PHP`, `SIGH_BASE_TEST`, `SIGH_PORT_TEST` distincts, piège E2263). Un seul passage complet en fin de série.
 
 ## Vue d'ensemble
@@ -17,7 +17,7 @@ Méthode : maquette d'abord, puis vecteurs, domaine Dart, relais, poste. Un agen
 
 ## S0. Décisions et vérification (sans code)
 - Obtenir les réponses Q1 à Q8.
-- Vérifier chez Vonage et Twilio : couverture du Bénin, coût par message, expéditeur alphanumérique accepté ou non, procédure d'enregistrement éventuelle auprès des opérateurs, délai. **Rien de ce qui précède n'est établi dans le dépôt** : ne rien inventer, marquer « à confirmer » dans l'écran tant que non confirmé.
+- Vérification de confort chez Vonage et Twilio (non bloquante, la Direction a déclaré la couverture) : couverture du Bénin, coût par message, expéditeur alphanumérique accepté ou non, procédure d'enregistrement éventuelle auprès des opérateurs, délai. **Rien de ce qui précède n'est établi dans le dépôt** : ne rien inventer, marquer « à confirmer » dans l'écran tant que non confirmé.
 - Sortie : ce document mis à jour, ADR courte si le relais n'est pas le seul point d'envoi.
 
 ## S1. Maquette : passerelle, puits, écran, test, journal

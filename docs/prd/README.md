@@ -18,6 +18,8 @@ Chaque exigence cite sa source dans `docs/cadrage/` ; ce qui n'a pas de source e
 
 | [PRD-SMS-passerelle-et-test-envoi](PRD-SMS-passerelle-et-test-envoi.md) | Passerelle SMS (Vonage et Twilio) réglable et testable : écran de configuration et Test SMS (maquette, poste, relais), secrets tenus par le relais, journal des envois, consentement, matrice des canaux enfin exécutée | proposé 07/11/2026 |
 
+| [PRD-RELAIS-en-ligne-consultation-et-configuration](PRD-RELAIS-en-ligne-consultation-et-configuration.md) | Relais en ligne : consultation à règles métier complètes (option A relais opaque ou B relais en clair, décision Q1 bloquante), configuration et journal d'opérations conservés sans exception, restauration depuis le relais seul | proposé 07/11/2026 |
+
 Ordre de livraison recommandé : SOCLE (P0) → M6 → M12, le socle rendant les deux autres plus
 simples à sonder (pas de rechargement entre les étapes d'un parcours).
 | `PRD-M10-planning-individuel-et-libre-service-agent.md` | Planning et gardes individuels (régime propre à un agent, historique daté), filtres avancés, CRUD du planning, espace « Mes » de l'agent (17 rubriques, mobile et poste, validation DAF) et revue d'écarts des écrans | proposé le 06/11/2026 |
