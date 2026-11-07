@@ -56,6 +56,21 @@ async function ouvrirMaquette() {
     localStorage.setItem('sigh-cnt:session', JSON.stringify(session));
     localStorage.setItem('sigh-cnt:jeton', j);
   }, [BANC.SESSION_BANC, jeton]);
+  /* L'HORLOGE D'EXTRACTION (E2284) : les fiches d'écran se relèvent « au 30/10/2026 », la date que les tests du poste posent (`aujourdhui` de
+     `m14_aide.dart`, horloge de `m11_parite_test`). Sans ce décalage, une régénération faite un autre jour écrivait le mois et les jours de la
+     semaine du jour dans les fiches, et les parités N1 du poste échouaient sans qu'aucun écran n'ait changé. */
+  await page.addInitScript(([h]) => {
+    var Reel = window.Date;
+    var decalage = new Reel(h.annee, h.mois, h.jour, 12, 0, 0).getTime() - Reel.now();
+    function maintenant() { return Reel.now() + decalage; }
+    function Decalee() {
+      if (!(this instanceof Decalee)) return String(new Reel(maintenant()));
+      if (arguments.length === 0) return new Reel(maintenant());
+      return new (Function.prototype.bind.apply(Reel, [null].concat(Array.prototype.slice.call(arguments))))();
+    }
+    Decalee.prototype = Reel.prototype; Decalee.now = maintenant; Decalee.UTC = Reel.UTC; Decalee.parse = Reel.parse;
+    window.Date = Decalee;
+  }, [{ annee: 2026, mois: 9, jour: 30 }]);
   await page.goto(`http://127.0.0.1:${BANC.PORT_PHP}/_extraction.html`);
   await page.waitForFunction(() => window.SIGH && SIGH.nav && SIGH.store, null, { timeout: 15000 });
   /* Hydratation, puis premier accès : c'est lui qui sème (la session est posée). */
