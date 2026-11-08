@@ -16,7 +16,7 @@ import 'transcription_mobile.dart' show PieceSync;
 ///
 /// Le canal est celui qui existe : la mère écrit chaque fiche au journal (`POST /admin/referentiel` de son propre service), le fileul la reçoit par la
 /// synchronisation (`GET /liste`) et l'applique à son magasin. Aucun canal nouveau.
-Set<String> collectionsConfiguration() => {...cfbEssentielles, 'utilisateurs'}.difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'});
+Set<String> collectionsConfiguration() => {...cfbEssentielles, 'utilisateurs', valCollectionValidations}.difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'});
 
 /// Les collections qu'un fileul continue d'ÉCRIRE lui-même : un agent s'y connecte, change son mot de passe, voit son compteur d'échecs monter. Elles ne sont
 /// pas protégées par la garde « réglé sur la mère ».

@@ -8,6 +8,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'mat_commun.dart';
 
@@ -49,6 +50,7 @@ class CrudMat extends StatefulWidget {
     this.source,
     this.filtreBase,
     this.apresTableau,
+    this.validation,
     this.intro,
   });
 
@@ -105,6 +107,9 @@ class CrudMat extends StatefulWidget {
   final bool Function(Fiche)? filtreBase;
   final Widget Function(BuildContext)? apresTableau;
 
+  /// `validation: { famille, cible?, siChange? }` du `K.crud` : bouton Valider par ligne (moteur commun), et modifier remet « à valider ».
+  final ValidationCrud? validation;
+
   @override
   State<CrudMat> createState() => _CrudMatState();
 }
@@ -119,13 +124,18 @@ class _CrudMatState extends State<CrudMat> {
     _du.addListener(_maj);
     _au.addListener(_maj);
     widget.collection.addListener(_maj);
+    _validations = widget.validation == null ? null : context.getInheritedWidgetOfExactType<ContexteEcran>()?.magasin.collection(valCollectionValidations);
+    _validations?.addListener(_maj);
   }
+
+  CollectionMagasin? _validations;
 
   @override
   void dispose() {
     _du.dispose();
     _au.dispose();
     widget.collection.removeListener(_maj);
+    _validations?.removeListener(_maj);
     super.dispose();
   }
 
@@ -306,8 +316,11 @@ class _CrudMatState extends State<CrudMat> {
                         final vide = e.value == null || (e.value is String && '${e.value}'.trim().isEmpty);
                         if (vide && !patch.containsKey(e.key) && existante[e.key] != null) patch[e.key] = null;
                       }
+                      final avant = {...existante};
                       final annuler =
                           widget.collection.mettreAJour(existante['id'], patch);
+                      // Modifier un artefact validé le remet « à valider » (moteur de validation commun).
+                      if (widget.validation != null) ValidationPoste(c).remettreApresModification(widget.validation!, avant, existante);
                       ToastsSigh.afficher(ctx, 'Modifications enregistrées.',
                           type: TypeToast.succes,
                           detail: widget.referenceToast?.call(existante),
@@ -425,6 +438,7 @@ class _CrudMatState extends State<CrudMat> {
                   icone: LucideIcons.eye,
                   libelle: 'Consulter',
                   onPressed: () => _ouvrirDetail(ctx, f)),
+              if (widget.validation != null) ...ValidationPoste(c).boutonsDeLigne(context, widget.validation!, f),
               if (widget.etat != null)
                 BoutonIcone(
                     icone: LucideIcons.printer,

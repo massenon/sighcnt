@@ -7,6 +7,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m6/points_commun.dart' show champUnique, commande;
 import 'cpb_commun.dart';
@@ -149,7 +150,7 @@ class _EtatSeuil extends State<EcranSeuilRentabilite> {
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     return ListenableBuilder(
-      listenable: ecouteCompta(c, const ['reglages']),
+      listenable: ecouteCompta(c, const ['reglages', valCollectionValidations]),
       builder: (context, _) {
         final r = _calcul(c);
         final editer = c.droit.editer;
@@ -218,6 +219,11 @@ class _EtatSeuil extends State<EcranSeuilRentabilite> {
                         SerieGraphique('Montant', [r.ca, r.variable, r.fixe, r.seuil ?? 0], couleur: tonNavy),
                       ])),
             ]),
+            // La répartition est UNE pièce à valider (constante du code : la validation vit dans `validationsReferentiels`).
+            Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: JetonsShell.slate200)),
+                child: ValidationPoste(c).bandeau(context, 'repartition_charges', 'repartition-fixe-variable', titre: 'Répartition fixe et variable')),
             TableauSigh(
               key: const ValueKey('seuil-natures'),
               titre: 'Nature des charges — proposition corrigeable',
@@ -260,6 +266,8 @@ class _EtatSeuil extends State<EcranSeuilRentabilite> {
                             libelle: 'Basculer en ${variable ? 'fixe' : 'variable'}',
                             onPressed: () {
                               corrigerNature(c, '${x['compte']}', variable ? 'fixe' : 'variable');
+                              // Corriger la répartition remet la pièce « à valider ».
+                              ValidationPoste(c).remettre('repartition_charges', 'repartition-fixe-variable');
                               ToastsSigh.afficher(ctx, 'Nature corrigée.',
                                   type: TypeToast.succes,
                                   detail: '${x['compte']} — ${variable ? 'désormais fixe' : 'désormais variable'}. Le seuil est recalculé.');

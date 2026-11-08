@@ -1,0 +1,7083 @@
+{
+ "registre": [
+  {
+   "id": "enquetes",
+   "libelle": "Modèles d’enquête",
+   "module": "M13",
+   "collections": [
+    "enquetes"
+   ],
+   "champs": [
+    "aValider"
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "adm-enquetes",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "labo_variables",
+   "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+   "module": "M5",
+   "collections": [
+    "variablesLabo",
+    "unitesLabo"
+   ],
+   "champs": [
+    "aValider"
+   ],
+   "roles": [
+    "laborantin"
+   ],
+   "ecran": "m5-valeurs-reference",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "pathologies",
+   "libelle": "Pathologies (tableau de morbidité)",
+   "module": "M2",
+   "collections": [
+    "pathologies"
+   ],
+   "champs": [
+    "aValider"
+   ],
+   "roles": [
+    "dm",
+    "medecin"
+   ],
+   "ecran": "m2-pathologies",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "imagerie",
+   "libelle": "Catalogue de l’imagerie (examens et variables)",
+   "module": "CFG",
+   "collections": [
+    "examensImagerie",
+    "variablesImagerie"
+   ],
+   "champs": [
+    "aValider"
+   ],
+   "roles": [
+    "echographiste",
+    "dm"
+   ],
+   "ecran": "cfg-imagerie-catalogue",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "checklists_bloc",
+   "libelle": "Check-listes du bloc, échelles ASA et Mallampati",
+   "module": "M3",
+   "mode": "fiche",
+   "cibles": [
+    {
+     "id": "checklist-bloc",
+     "libelle": "Check-listes d’entrée et de sortie du bloc"
+    }
+   ],
+   "roles": [
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "ecran": "m3-bloc-checklist"
+  },
+  {
+   "id": "actes",
+   "libelle": "Tarifs des actes (valeurs d’attente)",
+   "module": "CFG",
+   "collections": [
+    "actes"
+   ],
+   "champs": [
+    "tarifProvisoire"
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "cfg-tarifs",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "analyses",
+   "libelle": "Tarifs des analyses",
+   "module": "CFG",
+   "collections": [
+    "analyses"
+   ],
+   "champs": [
+    "tarifProvisoire",
+    "aValider"
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "cfg-tarifs",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "valorisation_sage",
+   "libelle": "Valorisation des références SAGE",
+   "module": "M6",
+   "collections": [
+    "valorisationsSage"
+   ],
+   "champs": [
+    "aValider"
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "m6-produits",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "objectifs_pilotage",
+   "libelle": "Objectifs de pilotage",
+   "module": "M12",
+   "collections": [
+    "objectifsPilotage"
+   ],
+   "champs": [
+    "aValider"
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "m12-tableau-decisionnel",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "repartition_charges",
+   "libelle": "Répartition fixe et variable des charges",
+   "module": "M12",
+   "mode": "fiche",
+   "cibles": [
+    {
+     "id": "repartition-fixe-variable",
+     "libelle": "Répartition proposée des comptes de charge"
+    }
+   ],
+   "roles": [
+    "comptable",
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "m12-seuil-rentabilite"
+  },
+  {
+   "id": "modeles_badge",
+   "libelle": "Modèles de badge",
+   "module": "M10",
+   "collections": [
+    "modelesBadge"
+   ],
+   "champs": [
+    "aValider"
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "m10-badges-modeles",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "jeux_import",
+   "libelle": "Jeux d’import en proposition",
+   "module": "IMP",
+   "mode": "fiche",
+   "cibles": [
+    {
+     "id": "imp-analyses",
+     "libelle": "Importation du catalogue des analyses"
+    }
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "imp-analyses"
+  },
+  {
+   "id": "modeles_messages",
+   "libelle": "Modèles de messages",
+   "module": "CFG",
+   "collections": [
+    "modelesMessage"
+   ],
+   "champs": [
+    "aValider"
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "cfg-notifications",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "bareme_its",
+   "libelle": "Barème de l’ITS",
+   "module": "M11",
+   "mode": "fiche",
+   "cibles": [
+    {
+     "id": "bareme-its",
+     "libelle": "Barème de l’impôt sur les traitements et salaires"
+    }
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin"
+   ],
+   "ecran": "cfg-comptabilite"
+  }
+ ],
+ "vueComplete": [
+  "direction",
+  "da",
+  "admin"
+ ],
+ "libelles": {
+  "admin": "Administrateur système",
+  "direction": "Direction / Gérance",
+  "dm": "Directeur Médical",
+  "da": "Directrice de l’Administration et des Finances (DAF)",
+  "medecin": "Médecin",
+  "infirmier": "Infirmier / Sage-femme",
+  "pharmacien": "Pharmacien",
+  "laborantin": "Biologiste médical",
+  "stock": "Gestionnaire de Stock",
+  "caissier": "Caissier — Dispensaire (Pharmacie)",
+  "comptable": "Comptable",
+  "rh": "Responsable RH",
+  "reception": "Réception / Accueil",
+  "agentadmin": "Agent Administratif",
+  "ambulancier": "Ambulancier",
+  "aide_soignant": "Aide-soignante",
+  "echographiste": "Technicien d’échographie",
+  "surveillant": "Surveillant",
+  "assistant_comptable": "Assistant de Direction",
+  "chirurgien": "Chirurgien",
+  "anesthesiste": "Anesthésiste — Réanimateur",
+  "aide_comptable": "Assistant Comptable"
+ },
+ "comptes": [
+  {
+   "nom": "magasin vide : chaque famille de collections est « non amorcée », les fiches de validation comptent 1 à valider",
+   "entree": {},
+   "opts": null,
+   "sortie": [
+    {
+     "famille": "enquetes",
+     "libelle": "Modèles d’enquête",
+     "module": "M13",
+     "mode": "fiche-marquee",
+     "collections": [
+      "enquetes"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "adm-enquetes",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "labo_variables",
+     "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+     "module": "M5",
+     "mode": "fiche-marquee",
+     "collections": [
+      "variablesLabo",
+      "unitesLabo"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "laborantin"
+     ],
+     "profil": "Biologiste médical",
+     "ecran": "m5-valeurs-reference",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "pathologies",
+     "libelle": "Pathologies (tableau de morbidité)",
+     "module": "M2",
+     "mode": "fiche-marquee",
+     "collections": [
+      "pathologies"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "dm",
+      "medecin"
+     ],
+     "profil": "Directeur Médical, Médecin",
+     "ecran": "m2-pathologies",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "imagerie",
+     "libelle": "Catalogue de l’imagerie (examens et variables)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "examensImagerie",
+      "variablesImagerie"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "echographiste",
+      "dm"
+     ],
+     "profil": "Technicien d’échographie, Directeur Médical",
+     "ecran": "cfg-imagerie-catalogue",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "checklists_bloc",
+     "libelle": "Check-listes du bloc, échelles ASA et Mallampati",
+     "module": "M3",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "chirurgien",
+      "anesthesiste"
+     ],
+     "profil": "Chirurgien, Anesthésiste — Réanimateur",
+     "ecran": "m3-bloc-checklist",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "checklist-bloc"
+     ]
+    },
+    {
+     "famille": "actes",
+     "libelle": "Tarifs des actes (valeurs d’attente)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "actes"
+     ],
+     "champs": [
+      "tarifProvisoire"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "analyses",
+     "libelle": "Tarifs des analyses",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "analyses"
+     ],
+     "champs": [
+      "tarifProvisoire",
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "valorisation_sage",
+     "libelle": "Valorisation des références SAGE",
+     "module": "M6",
+     "mode": "fiche-marquee",
+     "collections": [
+      "valorisationsSage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m6-produits",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "objectifs_pilotage",
+     "libelle": "Objectifs de pilotage",
+     "module": "M12",
+     "mode": "fiche-marquee",
+     "collections": [
+      "objectifsPilotage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-tableau-decisionnel",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "repartition_charges",
+     "libelle": "Répartition fixe et variable des charges",
+     "module": "M12",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "comptable",
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-seuil-rentabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "repartition-fixe-variable"
+     ]
+    },
+    {
+     "famille": "modeles_badge",
+     "libelle": "Modèles de badge",
+     "module": "M10",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesBadge"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m10-badges-modeles",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "jeux_import",
+     "libelle": "Jeux d’import en proposition",
+     "module": "IMP",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "imp-analyses",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "imp-analyses"
+     ]
+    },
+    {
+     "famille": "modeles_messages",
+     "libelle": "Modèles de messages",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesMessage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_its",
+     "libelle": "Barème de l’ITS",
+     "module": "M11",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-comptabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "bareme-its"
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "pathologies : une en attente, une validée, une archivée en attente (ignorée)",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z"
+     },
+     {
+      "id": "P3",
+      "statut": "archive",
+      "libelle": "Élément P3",
+      "aValider": true
+     }
+    ]
+   },
+   "opts": null,
+   "sortie": [
+    {
+     "famille": "enquetes",
+     "libelle": "Modèles d’enquête",
+     "module": "M13",
+     "mode": "fiche-marquee",
+     "collections": [
+      "enquetes"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "adm-enquetes",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "labo_variables",
+     "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+     "module": "M5",
+     "mode": "fiche-marquee",
+     "collections": [
+      "variablesLabo",
+      "unitesLabo"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "laborantin"
+     ],
+     "profil": "Biologiste médical",
+     "ecran": "m5-valeurs-reference",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "pathologies",
+     "libelle": "Pathologies (tableau de morbidité)",
+     "module": "M2",
+     "mode": "fiche-marquee",
+     "collections": [
+      "pathologies"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "dm",
+      "medecin"
+     ],
+     "profil": "Directeur Médical, Médecin",
+     "ecran": "m2-pathologies",
+     "enAttente": 1,
+     "total": 2,
+     "nonAmorce": false,
+     "ids": [
+      "P1"
+     ]
+    },
+    {
+     "famille": "imagerie",
+     "libelle": "Catalogue de l’imagerie (examens et variables)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "examensImagerie",
+      "variablesImagerie"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "echographiste",
+      "dm"
+     ],
+     "profil": "Technicien d’échographie, Directeur Médical",
+     "ecran": "cfg-imagerie-catalogue",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "checklists_bloc",
+     "libelle": "Check-listes du bloc, échelles ASA et Mallampati",
+     "module": "M3",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "chirurgien",
+      "anesthesiste"
+     ],
+     "profil": "Chirurgien, Anesthésiste — Réanimateur",
+     "ecran": "m3-bloc-checklist",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "checklist-bloc"
+     ]
+    },
+    {
+     "famille": "actes",
+     "libelle": "Tarifs des actes (valeurs d’attente)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "actes"
+     ],
+     "champs": [
+      "tarifProvisoire"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "analyses",
+     "libelle": "Tarifs des analyses",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "analyses"
+     ],
+     "champs": [
+      "tarifProvisoire",
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "valorisation_sage",
+     "libelle": "Valorisation des références SAGE",
+     "module": "M6",
+     "mode": "fiche-marquee",
+     "collections": [
+      "valorisationsSage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m6-produits",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "objectifs_pilotage",
+     "libelle": "Objectifs de pilotage",
+     "module": "M12",
+     "mode": "fiche-marquee",
+     "collections": [
+      "objectifsPilotage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-tableau-decisionnel",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "repartition_charges",
+     "libelle": "Répartition fixe et variable des charges",
+     "module": "M12",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "comptable",
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-seuil-rentabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "repartition-fixe-variable"
+     ]
+    },
+    {
+     "famille": "modeles_badge",
+     "libelle": "Modèles de badge",
+     "module": "M10",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesBadge"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m10-badges-modeles",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "jeux_import",
+     "libelle": "Jeux d’import en proposition",
+     "module": "IMP",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "imp-analyses",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "imp-analyses"
+     ]
+    },
+    {
+     "famille": "modeles_messages",
+     "libelle": "Modèles de messages",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesMessage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_its",
+     "libelle": "Barème de l’ITS",
+     "module": "M11",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-comptabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "bareme-its"
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "actes : tarifProvisoire, et un acte sans marquage",
+   "entree": {
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": 5000
+     },
+     {
+      "id": "A2",
+      "statut": "actif",
+      "libelle": "Élément A2",
+      "tarifProvisoire": false,
+      "prix": 7000
+     },
+     {
+      "id": "A3",
+      "statut": "actif",
+      "libelle": "Élément A3",
+      "tarifProvisoire": true,
+      "prix": null
+     }
+    ]
+   },
+   "opts": null,
+   "sortie": [
+    {
+     "famille": "enquetes",
+     "libelle": "Modèles d’enquête",
+     "module": "M13",
+     "mode": "fiche-marquee",
+     "collections": [
+      "enquetes"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "adm-enquetes",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "labo_variables",
+     "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+     "module": "M5",
+     "mode": "fiche-marquee",
+     "collections": [
+      "variablesLabo",
+      "unitesLabo"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "laborantin"
+     ],
+     "profil": "Biologiste médical",
+     "ecran": "m5-valeurs-reference",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "pathologies",
+     "libelle": "Pathologies (tableau de morbidité)",
+     "module": "M2",
+     "mode": "fiche-marquee",
+     "collections": [
+      "pathologies"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "dm",
+      "medecin"
+     ],
+     "profil": "Directeur Médical, Médecin",
+     "ecran": "m2-pathologies",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "imagerie",
+     "libelle": "Catalogue de l’imagerie (examens et variables)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "examensImagerie",
+      "variablesImagerie"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "echographiste",
+      "dm"
+     ],
+     "profil": "Technicien d’échographie, Directeur Médical",
+     "ecran": "cfg-imagerie-catalogue",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "checklists_bloc",
+     "libelle": "Check-listes du bloc, échelles ASA et Mallampati",
+     "module": "M3",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "chirurgien",
+      "anesthesiste"
+     ],
+     "profil": "Chirurgien, Anesthésiste — Réanimateur",
+     "ecran": "m3-bloc-checklist",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "checklist-bloc"
+     ]
+    },
+    {
+     "famille": "actes",
+     "libelle": "Tarifs des actes (valeurs d’attente)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "actes"
+     ],
+     "champs": [
+      "tarifProvisoire"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": 2,
+     "total": 3,
+     "nonAmorce": false,
+     "ids": [
+      "A1",
+      "A3"
+     ]
+    },
+    {
+     "famille": "analyses",
+     "libelle": "Tarifs des analyses",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "analyses"
+     ],
+     "champs": [
+      "tarifProvisoire",
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "valorisation_sage",
+     "libelle": "Valorisation des références SAGE",
+     "module": "M6",
+     "mode": "fiche-marquee",
+     "collections": [
+      "valorisationsSage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m6-produits",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "objectifs_pilotage",
+     "libelle": "Objectifs de pilotage",
+     "module": "M12",
+     "mode": "fiche-marquee",
+     "collections": [
+      "objectifsPilotage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-tableau-decisionnel",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "repartition_charges",
+     "libelle": "Répartition fixe et variable des charges",
+     "module": "M12",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "comptable",
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-seuil-rentabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "repartition-fixe-variable"
+     ]
+    },
+    {
+     "famille": "modeles_badge",
+     "libelle": "Modèles de badge",
+     "module": "M10",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesBadge"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m10-badges-modeles",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "jeux_import",
+     "libelle": "Jeux d’import en proposition",
+     "module": "IMP",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "imp-analyses",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "imp-analyses"
+     ]
+    },
+    {
+     "famille": "modeles_messages",
+     "libelle": "Modèles de messages",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesMessage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_its",
+     "libelle": "Barème de l’ITS",
+     "module": "M11",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-comptabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "bareme-its"
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "analyses : tarifProvisoire OU aValider compte une fois",
+   "entree": {
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": true,
+      "aValider": true
+     },
+     {
+      "id": "N2",
+      "statut": "actif",
+      "libelle": "Élément N2",
+      "aValider": true
+     },
+     {
+      "id": "N3",
+      "statut": "actif",
+      "libelle": "Élément N3",
+      "tarifProvisoire": false,
+      "aValider": false
+     }
+    ]
+   },
+   "opts": null,
+   "sortie": [
+    {
+     "famille": "enquetes",
+     "libelle": "Modèles d’enquête",
+     "module": "M13",
+     "mode": "fiche-marquee",
+     "collections": [
+      "enquetes"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "adm-enquetes",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "labo_variables",
+     "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+     "module": "M5",
+     "mode": "fiche-marquee",
+     "collections": [
+      "variablesLabo",
+      "unitesLabo"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "laborantin"
+     ],
+     "profil": "Biologiste médical",
+     "ecran": "m5-valeurs-reference",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "pathologies",
+     "libelle": "Pathologies (tableau de morbidité)",
+     "module": "M2",
+     "mode": "fiche-marquee",
+     "collections": [
+      "pathologies"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "dm",
+      "medecin"
+     ],
+     "profil": "Directeur Médical, Médecin",
+     "ecran": "m2-pathologies",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "imagerie",
+     "libelle": "Catalogue de l’imagerie (examens et variables)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "examensImagerie",
+      "variablesImagerie"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "echographiste",
+      "dm"
+     ],
+     "profil": "Technicien d’échographie, Directeur Médical",
+     "ecran": "cfg-imagerie-catalogue",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "checklists_bloc",
+     "libelle": "Check-listes du bloc, échelles ASA et Mallampati",
+     "module": "M3",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "chirurgien",
+      "anesthesiste"
+     ],
+     "profil": "Chirurgien, Anesthésiste — Réanimateur",
+     "ecran": "m3-bloc-checklist",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "checklist-bloc"
+     ]
+    },
+    {
+     "famille": "actes",
+     "libelle": "Tarifs des actes (valeurs d’attente)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "actes"
+     ],
+     "champs": [
+      "tarifProvisoire"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "analyses",
+     "libelle": "Tarifs des analyses",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "analyses"
+     ],
+     "champs": [
+      "tarifProvisoire",
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": 2,
+     "total": 3,
+     "nonAmorce": false,
+     "ids": [
+      "N1",
+      "N2"
+     ]
+    },
+    {
+     "famille": "valorisation_sage",
+     "libelle": "Valorisation des références SAGE",
+     "module": "M6",
+     "mode": "fiche-marquee",
+     "collections": [
+      "valorisationsSage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m6-produits",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "objectifs_pilotage",
+     "libelle": "Objectifs de pilotage",
+     "module": "M12",
+     "mode": "fiche-marquee",
+     "collections": [
+      "objectifsPilotage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-tableau-decisionnel",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "repartition_charges",
+     "libelle": "Répartition fixe et variable des charges",
+     "module": "M12",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "comptable",
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-seuil-rentabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "repartition-fixe-variable"
+     ]
+    },
+    {
+     "famille": "modeles_badge",
+     "libelle": "Modèles de badge",
+     "module": "M10",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesBadge"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m10-badges-modeles",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "jeux_import",
+     "libelle": "Jeux d’import en proposition",
+     "module": "IMP",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "imp-analyses",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "imp-analyses"
+     ]
+    },
+    {
+     "famille": "modeles_messages",
+     "libelle": "Modèles de messages",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesMessage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_its",
+     "libelle": "Barème de l’ITS",
+     "module": "M11",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-comptabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "bareme-its"
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "deux collections : variables et unités du laboratoire",
+   "entree": {
+    "variablesLabo": [
+     {
+      "id": "VL1",
+      "statut": "actif",
+      "libelle": "Élément VL1",
+      "aValider": true
+     },
+     {
+      "id": "VL2",
+      "statut": "actif",
+      "libelle": "Élément VL2",
+      "aValider": false
+     }
+    ],
+    "unitesLabo": [
+     {
+      "id": "UL1",
+      "statut": "actif",
+      "libelle": "Élément UL1",
+      "aValider": true
+     },
+     {
+      "id": "UL2",
+      "statut": "actif",
+      "libelle": "Élément UL2",
+      "aValider": true
+     }
+    ]
+   },
+   "opts": null,
+   "sortie": [
+    {
+     "famille": "enquetes",
+     "libelle": "Modèles d’enquête",
+     "module": "M13",
+     "mode": "fiche-marquee",
+     "collections": [
+      "enquetes"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "adm-enquetes",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "labo_variables",
+     "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+     "module": "M5",
+     "mode": "fiche-marquee",
+     "collections": [
+      "variablesLabo",
+      "unitesLabo"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "laborantin"
+     ],
+     "profil": "Biologiste médical",
+     "ecran": "m5-valeurs-reference",
+     "enAttente": 3,
+     "total": 4,
+     "nonAmorce": false,
+     "ids": [
+      "VL1",
+      "UL1",
+      "UL2"
+     ]
+    },
+    {
+     "famille": "pathologies",
+     "libelle": "Pathologies (tableau de morbidité)",
+     "module": "M2",
+     "mode": "fiche-marquee",
+     "collections": [
+      "pathologies"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "dm",
+      "medecin"
+     ],
+     "profil": "Directeur Médical, Médecin",
+     "ecran": "m2-pathologies",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "imagerie",
+     "libelle": "Catalogue de l’imagerie (examens et variables)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "examensImagerie",
+      "variablesImagerie"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "echographiste",
+      "dm"
+     ],
+     "profil": "Technicien d’échographie, Directeur Médical",
+     "ecran": "cfg-imagerie-catalogue",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "checklists_bloc",
+     "libelle": "Check-listes du bloc, échelles ASA et Mallampati",
+     "module": "M3",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "chirurgien",
+      "anesthesiste"
+     ],
+     "profil": "Chirurgien, Anesthésiste — Réanimateur",
+     "ecran": "m3-bloc-checklist",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "checklist-bloc"
+     ]
+    },
+    {
+     "famille": "actes",
+     "libelle": "Tarifs des actes (valeurs d’attente)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "actes"
+     ],
+     "champs": [
+      "tarifProvisoire"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "analyses",
+     "libelle": "Tarifs des analyses",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "analyses"
+     ],
+     "champs": [
+      "tarifProvisoire",
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "valorisation_sage",
+     "libelle": "Valorisation des références SAGE",
+     "module": "M6",
+     "mode": "fiche-marquee",
+     "collections": [
+      "valorisationsSage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m6-produits",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "objectifs_pilotage",
+     "libelle": "Objectifs de pilotage",
+     "module": "M12",
+     "mode": "fiche-marquee",
+     "collections": [
+      "objectifsPilotage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-tableau-decisionnel",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "repartition_charges",
+     "libelle": "Répartition fixe et variable des charges",
+     "module": "M12",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "comptable",
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-seuil-rentabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "repartition-fixe-variable"
+     ]
+    },
+    {
+     "famille": "modeles_badge",
+     "libelle": "Modèles de badge",
+     "module": "M10",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesBadge"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m10-badges-modeles",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "jeux_import",
+     "libelle": "Jeux d’import en proposition",
+     "module": "IMP",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "imp-analyses",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "imp-analyses"
+     ]
+    },
+    {
+     "famille": "modeles_messages",
+     "libelle": "Modèles de messages",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesMessage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_its",
+     "libelle": "Barème de l’ITS",
+     "module": "M11",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-comptabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "bareme-its"
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "constante du code : une validation écrite couvre la check-liste",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-checklist-bloc",
+      "statut": "actif",
+      "famille": "checklists_bloc",
+      "cible": "checklist-bloc",
+      "libelle": "Validation checklist-bloc",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Praticiens du bloc",
+      "valideRole": "Chirurgien"
+     }
+    ]
+   },
+   "opts": null,
+   "sortie": [
+    {
+     "famille": "enquetes",
+     "libelle": "Modèles d’enquête",
+     "module": "M13",
+     "mode": "fiche-marquee",
+     "collections": [
+      "enquetes"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "adm-enquetes",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "labo_variables",
+     "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+     "module": "M5",
+     "mode": "fiche-marquee",
+     "collections": [
+      "variablesLabo",
+      "unitesLabo"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "laborantin"
+     ],
+     "profil": "Biologiste médical",
+     "ecran": "m5-valeurs-reference",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "pathologies",
+     "libelle": "Pathologies (tableau de morbidité)",
+     "module": "M2",
+     "mode": "fiche-marquee",
+     "collections": [
+      "pathologies"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "dm",
+      "medecin"
+     ],
+     "profil": "Directeur Médical, Médecin",
+     "ecran": "m2-pathologies",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "imagerie",
+     "libelle": "Catalogue de l’imagerie (examens et variables)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "examensImagerie",
+      "variablesImagerie"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "echographiste",
+      "dm"
+     ],
+     "profil": "Technicien d’échographie, Directeur Médical",
+     "ecran": "cfg-imagerie-catalogue",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "checklists_bloc",
+     "libelle": "Check-listes du bloc, échelles ASA et Mallampati",
+     "module": "M3",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "chirurgien",
+      "anesthesiste"
+     ],
+     "profil": "Chirurgien, Anesthésiste — Réanimateur",
+     "ecran": "m3-bloc-checklist",
+     "enAttente": 0,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": []
+    },
+    {
+     "famille": "actes",
+     "libelle": "Tarifs des actes (valeurs d’attente)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "actes"
+     ],
+     "champs": [
+      "tarifProvisoire"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "analyses",
+     "libelle": "Tarifs des analyses",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "analyses"
+     ],
+     "champs": [
+      "tarifProvisoire",
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "valorisation_sage",
+     "libelle": "Valorisation des références SAGE",
+     "module": "M6",
+     "mode": "fiche-marquee",
+     "collections": [
+      "valorisationsSage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m6-produits",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "objectifs_pilotage",
+     "libelle": "Objectifs de pilotage",
+     "module": "M12",
+     "mode": "fiche-marquee",
+     "collections": [
+      "objectifsPilotage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-tableau-decisionnel",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "repartition_charges",
+     "libelle": "Répartition fixe et variable des charges",
+     "module": "M12",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "comptable",
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-seuil-rentabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "repartition-fixe-variable"
+     ]
+    },
+    {
+     "famille": "modeles_badge",
+     "libelle": "Modèles de badge",
+     "module": "M10",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesBadge"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m10-badges-modeles",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "jeux_import",
+     "libelle": "Jeux d’import en proposition",
+     "module": "IMP",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "imp-analyses",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "imp-analyses"
+     ]
+    },
+    {
+     "famille": "modeles_messages",
+     "libelle": "Modèles de messages",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesMessage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_its",
+     "libelle": "Barème de l’ITS",
+     "module": "M11",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-comptabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "bareme-its"
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "constante du code : une fiche de validation SANS valideLe ne couvre rien",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-bareme-its",
+      "statut": "actif",
+      "famille": "bareme_its",
+      "cible": "bareme-its",
+      "libelle": "Validation bareme-its"
+     }
+    ]
+   },
+   "opts": null,
+   "sortie": [
+    {
+     "famille": "enquetes",
+     "libelle": "Modèles d’enquête",
+     "module": "M13",
+     "mode": "fiche-marquee",
+     "collections": [
+      "enquetes"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "adm-enquetes",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "labo_variables",
+     "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+     "module": "M5",
+     "mode": "fiche-marquee",
+     "collections": [
+      "variablesLabo",
+      "unitesLabo"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "laborantin"
+     ],
+     "profil": "Biologiste médical",
+     "ecran": "m5-valeurs-reference",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "pathologies",
+     "libelle": "Pathologies (tableau de morbidité)",
+     "module": "M2",
+     "mode": "fiche-marquee",
+     "collections": [
+      "pathologies"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "dm",
+      "medecin"
+     ],
+     "profil": "Directeur Médical, Médecin",
+     "ecran": "m2-pathologies",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "imagerie",
+     "libelle": "Catalogue de l’imagerie (examens et variables)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "examensImagerie",
+      "variablesImagerie"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "echographiste",
+      "dm"
+     ],
+     "profil": "Technicien d’échographie, Directeur Médical",
+     "ecran": "cfg-imagerie-catalogue",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "checklists_bloc",
+     "libelle": "Check-listes du bloc, échelles ASA et Mallampati",
+     "module": "M3",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "chirurgien",
+      "anesthesiste"
+     ],
+     "profil": "Chirurgien, Anesthésiste — Réanimateur",
+     "ecran": "m3-bloc-checklist",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "checklist-bloc"
+     ]
+    },
+    {
+     "famille": "actes",
+     "libelle": "Tarifs des actes (valeurs d’attente)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "actes"
+     ],
+     "champs": [
+      "tarifProvisoire"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "analyses",
+     "libelle": "Tarifs des analyses",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "analyses"
+     ],
+     "champs": [
+      "tarifProvisoire",
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "valorisation_sage",
+     "libelle": "Valorisation des références SAGE",
+     "module": "M6",
+     "mode": "fiche-marquee",
+     "collections": [
+      "valorisationsSage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m6-produits",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "objectifs_pilotage",
+     "libelle": "Objectifs de pilotage",
+     "module": "M12",
+     "mode": "fiche-marquee",
+     "collections": [
+      "objectifsPilotage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-tableau-decisionnel",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "repartition_charges",
+     "libelle": "Répartition fixe et variable des charges",
+     "module": "M12",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "comptable",
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-seuil-rentabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "repartition-fixe-variable"
+     ]
+    },
+    {
+     "famille": "modeles_badge",
+     "libelle": "Modèles de badge",
+     "module": "M10",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesBadge"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m10-badges-modeles",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "jeux_import",
+     "libelle": "Jeux d’import en proposition",
+     "module": "IMP",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "imp-analyses",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "imp-analyses"
+     ]
+    },
+    {
+     "famille": "modeles_messages",
+     "libelle": "Modèles de messages",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesMessage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_its",
+     "libelle": "Barème de l’ITS",
+     "module": "M11",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-comptabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "bareme-its"
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "constante du code : une fiche de validation archivée ne couvre rien",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-imp-analyses",
+      "statut": "archive",
+      "famille": "jeux_import",
+      "cible": "imp-analyses",
+      "libelle": "Validation imp-analyses",
+      "valideLe": "2026-09-01T09:00:00.000Z"
+     }
+    ]
+   },
+   "opts": null,
+   "sortie": [
+    {
+     "famille": "enquetes",
+     "libelle": "Modèles d’enquête",
+     "module": "M13",
+     "mode": "fiche-marquee",
+     "collections": [
+      "enquetes"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "adm-enquetes",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "labo_variables",
+     "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+     "module": "M5",
+     "mode": "fiche-marquee",
+     "collections": [
+      "variablesLabo",
+      "unitesLabo"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "laborantin"
+     ],
+     "profil": "Biologiste médical",
+     "ecran": "m5-valeurs-reference",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "pathologies",
+     "libelle": "Pathologies (tableau de morbidité)",
+     "module": "M2",
+     "mode": "fiche-marquee",
+     "collections": [
+      "pathologies"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "dm",
+      "medecin"
+     ],
+     "profil": "Directeur Médical, Médecin",
+     "ecran": "m2-pathologies",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "imagerie",
+     "libelle": "Catalogue de l’imagerie (examens et variables)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "examensImagerie",
+      "variablesImagerie"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "echographiste",
+      "dm"
+     ],
+     "profil": "Technicien d’échographie, Directeur Médical",
+     "ecran": "cfg-imagerie-catalogue",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "checklists_bloc",
+     "libelle": "Check-listes du bloc, échelles ASA et Mallampati",
+     "module": "M3",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "chirurgien",
+      "anesthesiste"
+     ],
+     "profil": "Chirurgien, Anesthésiste — Réanimateur",
+     "ecran": "m3-bloc-checklist",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "checklist-bloc"
+     ]
+    },
+    {
+     "famille": "actes",
+     "libelle": "Tarifs des actes (valeurs d’attente)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "actes"
+     ],
+     "champs": [
+      "tarifProvisoire"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "analyses",
+     "libelle": "Tarifs des analyses",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "analyses"
+     ],
+     "champs": [
+      "tarifProvisoire",
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-tarifs",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "valorisation_sage",
+     "libelle": "Valorisation des références SAGE",
+     "module": "M6",
+     "mode": "fiche-marquee",
+     "collections": [
+      "valorisationsSage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m6-produits",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "objectifs_pilotage",
+     "libelle": "Objectifs de pilotage",
+     "module": "M12",
+     "mode": "fiche-marquee",
+     "collections": [
+      "objectifsPilotage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-tableau-decisionnel",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "repartition_charges",
+     "libelle": "Répartition fixe et variable des charges",
+     "module": "M12",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "comptable",
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m12-seuil-rentabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "repartition-fixe-variable"
+     ]
+    },
+    {
+     "famille": "modeles_badge",
+     "libelle": "Modèles de badge",
+     "module": "M10",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesBadge"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "m10-badges-modeles",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "jeux_import",
+     "libelle": "Jeux d’import en proposition",
+     "module": "IMP",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "imp-analyses",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "imp-analyses"
+     ]
+    },
+    {
+     "famille": "modeles_messages",
+     "libelle": "Modèles de messages",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "modelesMessage"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_its",
+     "libelle": "Barème de l’ITS",
+     "module": "M11",
+     "mode": "fiche",
+     "collections": [
+      "validationsReferentiels"
+     ],
+     "champs": [
+      "valideLe"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
+     "ecran": "cfg-comptabilite",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "bareme-its"
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "vue du biologiste : seules les familles de son rôle",
+   "entree": {
+    "variablesLabo": [
+     {
+      "id": "VL1",
+      "statut": "actif",
+      "libelle": "Élément VL1",
+      "aValider": true
+     }
+    ]
+   },
+   "opts": {
+    "role": "laborantin"
+   },
+   "sortie": [
+    {
+     "famille": "labo_variables",
+     "libelle": "Variables et unités du laboratoire (bornes suppléées)",
+     "module": "M5",
+     "mode": "fiche-marquee",
+     "collections": [
+      "variablesLabo",
+      "unitesLabo"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "laborantin"
+     ],
+     "profil": "Biologiste médical",
+     "ecran": "m5-valeurs-reference",
+     "enAttente": 1,
+     "total": 1,
+     "nonAmorce": false,
+     "ids": [
+      "VL1"
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "vue de l’échographiste",
+   "entree": {},
+   "opts": {
+    "role": "echographiste"
+   },
+   "sortie": [
+    {
+     "famille": "imagerie",
+     "libelle": "Catalogue de l’imagerie (examens et variables)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "examensImagerie",
+      "variablesImagerie"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "echographiste",
+      "dm"
+     ],
+     "profil": "Technicien d’échographie, Directeur Médical",
+     "ecran": "cfg-imagerie-catalogue",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    }
+   ]
+  },
+  {
+   "nom": "vue du caissier : aucune famille",
+   "entree": {},
+   "opts": {
+    "role": "caissier"
+   },
+   "sortie": []
+  }
+ ],
+ "vues": {
+  "direction": [
+   "enquetes",
+   "labo_variables",
+   "pathologies",
+   "imagerie",
+   "checklists_bloc",
+   "actes",
+   "analyses",
+   "valorisation_sage",
+   "objectifs_pilotage",
+   "repartition_charges",
+   "modeles_badge",
+   "jeux_import",
+   "modeles_messages",
+   "bareme_its"
+  ],
+  "da": [
+   "enquetes",
+   "labo_variables",
+   "pathologies",
+   "imagerie",
+   "checklists_bloc",
+   "actes",
+   "analyses",
+   "valorisation_sage",
+   "objectifs_pilotage",
+   "repartition_charges",
+   "modeles_badge",
+   "jeux_import",
+   "modeles_messages",
+   "bareme_its"
+  ],
+  "admin": [
+   "enquetes",
+   "labo_variables",
+   "pathologies",
+   "imagerie",
+   "checklists_bloc",
+   "actes",
+   "analyses",
+   "valorisation_sage",
+   "objectifs_pilotage",
+   "repartition_charges",
+   "modeles_badge",
+   "jeux_import",
+   "modeles_messages",
+   "bareme_its"
+  ],
+  "laborantin": [
+   "labo_variables"
+  ],
+  "echographiste": [
+   "imagerie"
+  ],
+  "chirurgien": [
+   "checklists_bloc"
+  ],
+  "anesthesiste": [
+   "checklists_bloc"
+  ],
+  "dm": [
+   "pathologies",
+   "imagerie"
+  ],
+  "medecin": [
+   "pathologies"
+  ],
+  "comptable": [
+   "repartition_charges"
+  ],
+  "caissier": [],
+  "reception": [],
+  "stock": []
+ },
+ "etats": [
+  {
+   "nom": "pathologie en attente",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "sortie": {
+    "famille": "pathologies",
+    "id": "P1",
+    "libelle": "Élément P1",
+    "enAttente": true,
+    "valideLe": null,
+    "validePar": null,
+    "valideRole": null,
+    "roles": [
+     "dm",
+     "medecin"
+    ],
+    "profil": "Directeur Médical, Médecin"
+   }
+  },
+  {
+   "nom": "pathologie validée : trois traces lues",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Dr X",
+      "valideRole": "Directeur Médical"
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "sortie": {
+    "famille": "pathologies",
+    "id": "P1",
+    "libelle": "Élément P1",
+    "enAttente": false,
+    "valideLe": "2026-09-01T09:00:00.000Z",
+    "validePar": "Dr X",
+    "valideRole": "Directeur Médical",
+    "roles": [
+     "dm",
+     "medecin"
+    ],
+    "profil": "Directeur Médical, Médecin"
+   }
+  },
+  {
+   "nom": "pathologie sans nom ni libellé : l’identifiant tient lieu de libellé",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P9",
+      "statut": "actif",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P9",
+   "sortie": {
+    "famille": "pathologies",
+    "id": "P9",
+    "libelle": "P9",
+    "enAttente": true,
+    "valideLe": null,
+    "validePar": null,
+    "valideRole": null,
+    "roles": [
+     "dm",
+     "medecin"
+    ],
+    "profil": "Directeur Médical, Médecin"
+   }
+  },
+  {
+   "nom": "libellé : `label` avant `designation` avant `nom`",
+   "entree": {
+    "modelesBadge": [
+     {
+      "id": "MB1",
+      "statut": "actif",
+      "designation": "Désignation",
+      "nom": "Nom",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "modeles_badge",
+   "id": "MB1",
+   "sortie": {
+    "famille": "modeles_badge",
+    "id": "MB1",
+    "libelle": "Désignation",
+    "enAttente": true,
+    "valideLe": null,
+    "validePar": null,
+    "valideRole": null,
+    "roles": [
+     "direction",
+     "da",
+     "admin"
+    ],
+    "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système"
+   }
+  },
+  {
+   "nom": "constante du code non validée",
+   "entree": {},
+   "famille": "checklists_bloc",
+   "id": "checklist-bloc",
+   "sortie": {
+    "famille": "checklists_bloc",
+    "id": "checklist-bloc",
+    "libelle": "Check-listes d’entrée et de sortie du bloc",
+    "enAttente": true,
+    "valideLe": null,
+    "validePar": null,
+    "valideRole": null,
+    "roles": [
+     "chirurgien",
+     "anesthesiste"
+    ],
+    "profil": "Chirurgien, Anesthésiste — Réanimateur"
+   }
+  },
+  {
+   "nom": "constante du code validée par fiche",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-checklist-bloc",
+      "statut": "actif",
+      "famille": "checklists_bloc",
+      "cible": "checklist-bloc",
+      "libelle": "Validation checklist-bloc",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Praticiens du bloc",
+      "valideRole": "Chirurgien"
+     }
+    ]
+   },
+   "famille": "checklists_bloc",
+   "id": "checklist-bloc",
+   "sortie": {
+    "famille": "checklists_bloc",
+    "id": "checklist-bloc",
+    "libelle": "Check-listes d’entrée et de sortie du bloc",
+    "enAttente": false,
+    "valideLe": "2026-09-01T09:00:00.000Z",
+    "validePar": "Praticiens du bloc",
+    "valideRole": "Chirurgien",
+    "roles": [
+     "chirurgien",
+     "anesthesiste"
+    ],
+    "profil": "Chirurgien, Anesthésiste — Réanimateur"
+   }
+  },
+  {
+   "nom": "élément inconnu",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "NEXISTEPAS",
+   "sortie": null
+  },
+  {
+   "nom": "famille inconnue",
+   "entree": {},
+   "famille": "famille-inconnue",
+   "id": "P1",
+   "sortie": null
+  },
+  {
+   "nom": "fiche archivée : introuvable",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "archive",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "sortie": null
+  }
+ ],
+ "gestes": [
+  {
+   "nom": "valider sous le bon rôle (dm) : marquage retiré, trois traces, UNE ligne de journal, aucun autre champ touché",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": "dm",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "pathologies",
+    "id": "P1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Directeur Médical",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "code": "PAL-S",
+      "chapitre": "infectieuses",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Directeur Médical"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M2",
+    "entite": "Pathologies (tableau de morbidité)",
+    "reference": "P1",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Directeur Médi",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "valider sous le rôle de la SESSION (medecin), sans rôle passé par l’écran",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": null,
+   "roleSession": "medecin",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "pathologies",
+    "id": "P1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Médecin",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "code": "PAL-S",
+      "chapitre": "infectieuses",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Médecin"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M2",
+    "entite": "Pathologies (tableau de morbidité)",
+    "reference": "P1",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Médecin\"}",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "le rôle passé l’emporte sur celui de la session",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": "dm",
+   "roleSession": "caissier",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "pathologies",
+    "id": "P1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Directeur Médical",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "code": "PAL-S",
+      "chapitre": "infectieuses",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Directeur Médical"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M2",
+    "entite": "Pathologies (tableau de morbidité)",
+    "reference": "P1",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Directeur Médi",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "rôle interdit (caissier) : VALIDATION_RESERVEE, rien d’écrit",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": "caissier",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "La validation de « Pathologies (tableau de morbidité) » est réservée à : Directeur Médical, Médecin. Profil : Caissier — Dispensaire (Pharmacie).",
+    "geste": "Demander à Directeur Médical de valider depuis son poste."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "rôle de la session interdit (reception) : VALIDATION_RESERVEE",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": null,
+   "roleSession": "reception",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "La validation de « Pathologies (tableau de morbidité) » est réservée à : Directeur Médical, Médecin. Profil : Réception / Accueil.",
+    "geste": "Demander à Directeur Médical de valider depuis son poste."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "profil sans rôle de session : refusé, « aucun » nommé",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": null,
+   "roleSession": "",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "La validation de « Pathologies (tableau de morbidité) » est réservée à : Directeur Médical, Médecin. Profil : aucun.",
+    "geste": "Demander à Directeur Médical de valider depuis son poste."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "déjà validé : DEJA_VALIDE (date de la validation citée)",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z"
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": "dm",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "DEJA_VALIDE",
+    "motif": "« Élément P1 » est déjà validé (01/09/2026).",
+    "geste": "Rien à faire : toute modification ultérieure le remettra à valider."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "aucun marquage ni validation : DEJA_VALIDE sans date",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1"
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": "dm",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "DEJA_VALIDE",
+    "motif": "« Élément P1 » ne porte aucun marquage à valider.",
+    "geste": "Rien à faire : toute modification ultérieure le remettra à valider."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "élément introuvable : INTROUVABLE",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "N-EXISTE-PAS",
+   "role": "dm",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "INTROUVABLE",
+    "motif": "Aucun élément « N-EXISTE-PAS » dans « Pathologies (tableau de morbidité) ».",
+    "geste": "Ouvrir l’écran de la famille et choisir l’élément à valider."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "élément archivé : INTROUVABLE",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "archive",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": "dm",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "archive",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "INTROUVABLE",
+    "motif": "Aucun élément « P1 » dans « Pathologies (tableau de morbidité) ».",
+    "geste": "Ouvrir l’écran de la famille et choisir l’élément à valider."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "archive",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "famille inconnue : INTROUVABLE",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "famille-inconnue",
+   "id": "P1",
+   "role": "dm",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "INTROUVABLE",
+    "motif": "Famille de référentiel inconnue : famille-inconnue.",
+    "geste": "Choisir une famille du registre des validations."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "code": "PAL-S",
+      "chapitre": "infectieuses"
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "acte sans tarif : TARIF_ABSENT (le tiret n’est ni un zéro ni un tarif arrêté)",
+   "entree": {
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": null
+     }
+    ]
+   },
+   "famille": "actes",
+   "id": "A1",
+   "role": "direction",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": null
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "TARIF_ABSENT",
+    "motif": "« Élément A1 » n’a aucun tarif : il n’y a rien à valider.",
+    "geste": "Saisir le tarif d’attente, puis le valider."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": null
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "acte au tarif d’attente : validé, tarifProvisoire retiré, prix intact",
+   "entree": {
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": 5000,
+      "designation": "Pansement"
+     }
+    ]
+   },
+   "famille": "actes",
+   "id": "A1",
+   "role": "da",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": 5000,
+      "designation": "Pansement"
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "actes",
+    "id": "A1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": false,
+      "prix": 5000,
+      "designation": "Pansement",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Directrice de l’Administration et des Finances (DAF)"
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "CFG",
+    "entite": "Tarifs des actes (valeurs d’attente)",
+    "reference": "A1",
+    "avant": "{\"tarifProvisoire\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Directrice de ",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "acte à tarif ZÉRO : validé (zéro est un tarif, null est un tiret)",
+   "entree": {
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": 0
+     }
+    ]
+   },
+   "famille": "actes",
+   "id": "A1",
+   "role": "admin",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": 0
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "actes",
+    "id": "A1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Administrateur système",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": false,
+      "prix": 0,
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Administrateur système"
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "CFG",
+    "entite": "Tarifs des actes (valeurs d’attente)",
+    "reference": "A1",
+    "avant": "{\"tarifProvisoire\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Administrateur",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "analyse sans tarif : TARIF_ABSENT",
+   "entree": {
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": true,
+      "prix": null
+     }
+    ]
+   },
+   "famille": "analyses",
+   "id": "N1",
+   "role": "direction",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": true,
+      "prix": null
+     }
+    ],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "TARIF_ABSENT",
+    "motif": "« Élément N1 » n’a aucun tarif : il n’y a rien à valider.",
+    "geste": "Saisir le tarif d’attente, puis le valider."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": true,
+      "prix": null
+     }
+    ],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "analyse à double marquage : les DEUX marquages tombent",
+   "entree": {
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": true,
+      "aValider": true,
+      "prix": 2500
+     }
+    ]
+   },
+   "famille": "analyses",
+   "id": "N1",
+   "role": "direction",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": true,
+      "aValider": true,
+      "prix": 2500
+     }
+    ],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "analyses",
+    "id": "N1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Direction / Gérance",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": false,
+      "aValider": false,
+      "prix": 2500,
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Direction / Gérance"
+     }
+    ],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "CFG",
+    "entite": "Tarifs des analyses",
+    "reference": "N1",
+    "avant": "{\"tarifProvisoire\":true,\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Direction / Gé",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "analyse à marquage unique aValider : seul ce marquage tombe",
+   "entree": {
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "aValider": true,
+      "prix": 2500
+     }
+    ]
+   },
+   "famille": "analyses",
+   "id": "N1",
+   "role": "da",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "aValider": true,
+      "prix": 2500
+     }
+    ],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "analyses",
+    "id": "N1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "aValider": false,
+      "prix": 2500,
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Directrice de l’Administration et des Finances (DAF)"
+     }
+    ],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "CFG",
+    "entite": "Tarifs des analyses",
+    "reference": "N1",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Directrice de ",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "laboratoire : les unités se valident comme les variables (biologiste)",
+   "entree": {
+    "unitesLabo": [
+     {
+      "id": "UL1",
+      "statut": "actif",
+      "libelle": "Élément UL1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "labo_variables",
+   "id": "UL1",
+   "role": "laborantin",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [
+     {
+      "id": "UL1",
+      "statut": "actif",
+      "libelle": "Élément UL1",
+      "aValider": true
+     }
+    ],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "labo_variables",
+    "id": "UL1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Biologiste médical",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [
+     {
+      "id": "UL1",
+      "statut": "actif",
+      "libelle": "Élément UL1",
+      "aValider": false,
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Biologiste médical"
+     }
+    ],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M5",
+    "entite": "Variables et unités du laboratoire (bornes suppléées)",
+    "reference": "UL1",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Biologiste méd",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "laboratoire : la direction ne signe pas à la place du biologiste",
+   "entree": {
+    "variablesLabo": [
+     {
+      "id": "VL1",
+      "statut": "actif",
+      "libelle": "Élément VL1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "labo_variables",
+   "id": "VL1",
+   "role": "direction",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [
+     {
+      "id": "VL1",
+      "statut": "actif",
+      "libelle": "Élément VL1",
+      "aValider": true
+     }
+    ],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "La validation de « Variables et unités du laboratoire (bornes suppléées) » est réservée à : Biologiste médical. Profil : Direction / Gérance.",
+    "geste": "Demander à Biologiste médical de valider depuis son poste."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [
+     {
+      "id": "VL1",
+      "statut": "actif",
+      "libelle": "Élément VL1",
+      "aValider": true
+     }
+    ],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "imagerie : l’échographiste valide une variable",
+   "entree": {
+    "variablesImagerie": [
+     {
+      "id": "VI1",
+      "statut": "actif",
+      "libelle": "Élément VI1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "imagerie",
+   "id": "VI1",
+   "role": "echographiste",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [
+     {
+      "id": "VI1",
+      "statut": "actif",
+      "libelle": "Élément VI1",
+      "aValider": true
+     }
+    ],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "imagerie",
+    "id": "VI1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Technicien d’échographie",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [
+     {
+      "id": "VI1",
+      "statut": "actif",
+      "libelle": "Élément VI1",
+      "aValider": false,
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Technicien d’échographie"
+     }
+    ],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "CFG",
+    "entite": "Catalogue de l’imagerie (examens et variables)",
+    "reference": "VI1",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Technicien d’é",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "constante du code, première validation : une fiche VRF-<cible> naît",
+   "entree": {},
+   "famille": "repartition_charges",
+   "id": "repartition-fixe-variable",
+   "role": "comptable",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "repartition_charges",
+    "id": "repartition-fixe-variable",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Comptable",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Répartition proposée des comptes de charge",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M12",
+    "entite": "Répartition fixe et variable des charges",
+    "reference": "repartition-fixe-variable",
+    "avant": "{\"valideLe\":null}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Comptable\"}",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "constante du code, fiche existante sans valideLe : elle est complétée, jamais doublée",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable"
+     }
+    ]
+   },
+   "famille": "repartition_charges",
+   "id": "repartition-fixe-variable",
+   "role": "direction",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable"
+     }
+    ]
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "repartition_charges",
+    "id": "repartition-fixe-variable",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Direction / Gérance",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Direction / Gérance"
+     }
+    ]
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M12",
+    "entite": "Répartition fixe et variable des charges",
+    "reference": "repartition-fixe-variable",
+    "avant": "{}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Direction / Gé",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "constante du code déjà validée : DEJA_VALIDE",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-checklist-bloc",
+      "statut": "actif",
+      "famille": "checklists_bloc",
+      "cible": "checklist-bloc",
+      "libelle": "Validation checklist-bloc",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Praticiens du bloc",
+      "valideRole": "Chirurgien"
+     }
+    ]
+   },
+   "famille": "checklists_bloc",
+   "id": "checklist-bloc",
+   "role": "chirurgien",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-checklist-bloc",
+      "statut": "actif",
+      "famille": "checklists_bloc",
+      "cible": "checklist-bloc",
+      "libelle": "Validation checklist-bloc",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Praticiens du bloc",
+      "valideRole": "Chirurgien"
+     }
+    ]
+   },
+   "sortie": {
+    "ok": false,
+    "code": "DEJA_VALIDE",
+    "motif": "« Check-listes d’entrée et de sortie du bloc » est déjà validé (01/09/2026).",
+    "geste": "Rien à faire : toute modification ultérieure le remettra à valider."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-checklist-bloc",
+      "statut": "actif",
+      "famille": "checklists_bloc",
+      "cible": "checklist-bloc",
+      "libelle": "Validation checklist-bloc",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Praticiens du bloc",
+      "valideRole": "Chirurgien"
+     }
+    ]
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "constante du code : le caissier est refusé",
+   "entree": {},
+   "famille": "bareme_its",
+   "id": "bareme-its",
+   "role": "caissier",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "La validation de « Barème de l’ITS » est réservée à : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système. Profil : Caissier — Dispensaire (Pharmacie).",
+    "geste": "Demander à Direction / Gérance de valider depuis son poste."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "inchange": true
+  },
+  {
+   "nom": "barème de l’ITS par la DA",
+   "entree": {},
+   "famille": "bareme_its",
+   "id": "bareme-its",
+   "role": "da",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "bareme_its",
+    "id": "bareme-its",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-bareme-its",
+      "statut": "actif",
+      "famille": "bareme_its",
+      "cible": "bareme-its",
+      "libelle": "Barème de l’impôt sur les traitements et salaires",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Directrice de l’Administration et des Finances (DAF)"
+     }
+    ]
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M11",
+    "entite": "Barème de l’ITS",
+    "reference": "bareme-its",
+    "avant": "{\"valideLe\":null}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Directrice de ",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "chaque famille à marquage se valide par son premier rôle",
+   "entree": {
+    "enquetes": [
+     {
+      "id": "X-enquetes",
+      "statut": "actif",
+      "libelle": "Élément X-enquetes",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "variablesLabo": [
+     {
+      "id": "X-labo_variables",
+      "statut": "actif",
+      "libelle": "Élément X-labo_variables",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "pathologies": [
+     {
+      "id": "X-pathologies",
+      "statut": "actif",
+      "libelle": "Élément X-pathologies",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "examensImagerie": [
+     {
+      "id": "X-imagerie",
+      "statut": "actif",
+      "libelle": "Élément X-imagerie",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "actes": [
+     {
+      "id": "X-actes",
+      "statut": "actif",
+      "libelle": "Élément X-actes",
+      "tarifProvisoire": true,
+      "prix": 1000
+     }
+    ],
+    "analyses": [
+     {
+      "id": "X-analyses",
+      "statut": "actif",
+      "libelle": "Élément X-analyses",
+      "tarifProvisoire": true,
+      "prix": 1000
+     }
+    ],
+    "valorisationsSage": [
+     {
+      "id": "X-valorisation_sage",
+      "statut": "actif",
+      "libelle": "Élément X-valorisation_sage",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "objectifsPilotage": [
+     {
+      "id": "X-objectifs_pilotage",
+      "statut": "actif",
+      "libelle": "Élément X-objectifs_pilotage",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "modelesBadge": [
+     {
+      "id": "X-modeles_badge",
+      "statut": "actif",
+      "libelle": "Élément X-modeles_badge",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "modelesMessage": [
+     {
+      "id": "X-modeles_messages",
+      "statut": "actif",
+      "libelle": "Élément X-modeles_messages",
+      "aValider": true,
+      "prix": 1000
+     }
+    ]
+   },
+   "famille": "enquetes",
+   "id": "X-enquetes",
+   "role": "direction",
+   "roleSession": "direction",
+   "acteurSession": "OROU YO Marguerite",
+   "avantFiches": {
+    "enquetes": [
+     {
+      "id": "X-enquetes",
+      "statut": "actif",
+      "libelle": "Élément X-enquetes",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "variablesLabo": [
+     {
+      "id": "X-labo_variables",
+      "statut": "actif",
+      "libelle": "Élément X-labo_variables",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "X-pathologies",
+      "statut": "actif",
+      "libelle": "Élément X-pathologies",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "examensImagerie": [
+     {
+      "id": "X-imagerie",
+      "statut": "actif",
+      "libelle": "Élément X-imagerie",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "X-actes",
+      "statut": "actif",
+      "libelle": "Élément X-actes",
+      "tarifProvisoire": true,
+      "prix": 1000
+     }
+    ],
+    "analyses": [
+     {
+      "id": "X-analyses",
+      "statut": "actif",
+      "libelle": "Élément X-analyses",
+      "tarifProvisoire": true,
+      "prix": 1000
+     }
+    ],
+    "valorisationsSage": [
+     {
+      "id": "X-valorisation_sage",
+      "statut": "actif",
+      "libelle": "Élément X-valorisation_sage",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "objectifsPilotage": [
+     {
+      "id": "X-objectifs_pilotage",
+      "statut": "actif",
+      "libelle": "Élément X-objectifs_pilotage",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "modelesBadge": [
+     {
+      "id": "X-modeles_badge",
+      "statut": "actif",
+      "libelle": "Élément X-modeles_badge",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "modelesMessage": [
+     {
+      "id": "X-modeles_messages",
+      "statut": "actif",
+      "libelle": "Élément X-modeles_messages",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "enquetes",
+    "id": "X-enquetes",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Direction / Gérance",
+    "valideLeIso": true,
+    "memeInstantPartout": true
+   },
+   "apres": {
+    "enquetes": [
+     {
+      "id": "X-enquetes",
+      "statut": "actif",
+      "libelle": "Élément X-enquetes",
+      "aValider": false,
+      "prix": 1000,
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Direction / Gérance"
+     }
+    ],
+    "variablesLabo": [
+     {
+      "id": "X-labo_variables",
+      "statut": "actif",
+      "libelle": "Élément X-labo_variables",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "X-pathologies",
+      "statut": "actif",
+      "libelle": "Élément X-pathologies",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "examensImagerie": [
+     {
+      "id": "X-imagerie",
+      "statut": "actif",
+      "libelle": "Élément X-imagerie",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "X-actes",
+      "statut": "actif",
+      "libelle": "Élément X-actes",
+      "tarifProvisoire": true,
+      "prix": 1000
+     }
+    ],
+    "analyses": [
+     {
+      "id": "X-analyses",
+      "statut": "actif",
+      "libelle": "Élément X-analyses",
+      "tarifProvisoire": true,
+      "prix": 1000
+     }
+    ],
+    "valorisationsSage": [
+     {
+      "id": "X-valorisation_sage",
+      "statut": "actif",
+      "libelle": "Élément X-valorisation_sage",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "objectifsPilotage": [
+     {
+      "id": "X-objectifs_pilotage",
+      "statut": "actif",
+      "libelle": "Élément X-objectifs_pilotage",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "modelesBadge": [
+     {
+      "id": "X-modeles_badge",
+      "statut": "actif",
+      "libelle": "Élément X-modeles_badge",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "modelesMessage": [
+     {
+      "id": "X-modeles_messages",
+      "statut": "actif",
+      "libelle": "Élément X-modeles_messages",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M13",
+    "entite": "Modèles d’enquête",
+    "reference": "X-enquetes",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Direction / Gé",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  }
+ ],
+ "parFamille": [
+  {
+   "famille": "enquetes",
+   "id": "F-enquetes",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
+   "famille": "labo_variables",
+   "id": "F-labo_variables",
+   "role": "laborantin",
+   "ok": true,
+   "valideRole": "Biologiste médical",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
+   "famille": "pathologies",
+   "id": "F-pathologies",
+   "role": "dm",
+   "ok": true,
+   "valideRole": "Directeur Médical",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
+   "famille": "imagerie",
+   "id": "F-imagerie",
+   "role": "echographiste",
+   "ok": true,
+   "valideRole": "Technicien d’échographie",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
+   "famille": "checklists_bloc",
+   "id": "checklist-bloc",
+   "role": "chirurgien",
+   "ok": true,
+   "valideRole": "Chirurgien",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": null
+  },
+  {
+   "famille": "actes",
+   "id": "F-actes",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
+   "famille": "analyses",
+   "id": "F-analyses",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false,
+    null
+   ]
+  },
+  {
+   "famille": "valorisation_sage",
+   "id": "F-valorisation_sage",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
+   "famille": "objectifs_pilotage",
+   "id": "F-objectifs_pilotage",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
+   "famille": "repartition_charges",
+   "id": "repartition-fixe-variable",
+   "role": "comptable",
+   "ok": true,
+   "valideRole": "Comptable",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": null
+  },
+  {
+   "famille": "modeles_badge",
+   "id": "F-modeles_badge",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
+   "famille": "jeux_import",
+   "id": "imp-analyses",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": null
+  },
+  {
+   "famille": "modeles_messages",
+   "id": "F-modeles_messages",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
+   "famille": "bareme_its",
+   "id": "bareme-its",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": null
+  }
+ ],
+ "remises": [
+  {
+   "nom": "fiche validée : le marquage revient, les trois traces tombent à null, journal « Remise à valider »",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Dr X",
+      "valideRole": "Directeur Médical"
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Dr X",
+      "valideRole": "Directeur Médical"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "remis": true,
+    "famille": "pathologies",
+    "id": "P1"
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "valideLe": null,
+      "validePar": null,
+      "valideRole": null
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Remise à valider",
+    "module": "M2",
+    "entite": "Pathologies (tableau de morbidité)",
+    "reference": "P1",
+    "avant": "{\"valideLe\":\"2026-09-01T09:00:00.000Z\"}",
+    "apres": "{\"motif\":\"modifié depuis la validation\"}",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "fiche déjà en attente : rien n’est fait, rien n’est journalisé",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "remis": false,
+    "famille": "pathologies",
+    "id": "P1"
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null
+  },
+  {
+   "nom": "acte validé : tarifProvisoire revient",
+   "entree": {
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": false,
+      "prix": 5000,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "M",
+      "valideRole": "Directeur"
+     }
+    ]
+   },
+   "famille": "actes",
+   "id": "A1",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": false,
+      "prix": 5000,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "M",
+      "valideRole": "Directeur"
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "remis": true,
+    "famille": "actes",
+    "id": "A1"
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": 5000,
+      "valideLe": null,
+      "validePar": null,
+      "valideRole": null
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Remise à valider",
+    "module": "CFG",
+    "entite": "Tarifs des actes (valeurs d’attente)",
+    "reference": "A1",
+    "avant": "{\"valideLe\":\"2026-09-01T09:00:00.000Z\"}",
+    "apres": "{\"motif\":\"modifié depuis la validation\"}",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "analyse validée (deux marquages) : le PREMIER champ du registre revient seul",
+   "entree": {
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": false,
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "M",
+      "valideRole": "Directeur"
+     }
+    ]
+   },
+   "famille": "analyses",
+   "id": "N1",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": false,
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "M",
+      "valideRole": "Directeur"
+     }
+    ],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "remis": true,
+    "famille": "analyses",
+    "id": "N1"
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [
+     {
+      "id": "N1",
+      "statut": "actif",
+      "libelle": "Élément N1",
+      "tarifProvisoire": true,
+      "aValider": false,
+      "valideLe": null,
+      "validePar": null,
+      "valideRole": null
+     }
+    ],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Remise à valider",
+    "module": "CFG",
+    "entite": "Tarifs des analyses",
+    "reference": "N1",
+    "avant": "{\"valideLe\":\"2026-09-01T09:00:00.000Z\"}",
+    "apres": "{\"motif\":\"modifié depuis la validation\"}",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "constante du code validée : la fiche VRF perd ses traces",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-checklist-bloc",
+      "statut": "actif",
+      "famille": "checklists_bloc",
+      "cible": "checklist-bloc",
+      "libelle": "Validation checklist-bloc",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Praticiens du bloc",
+      "valideRole": "Chirurgien"
+     }
+    ]
+   },
+   "famille": "checklists_bloc",
+   "id": "checklist-bloc",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-checklist-bloc",
+      "statut": "actif",
+      "famille": "checklists_bloc",
+      "cible": "checklist-bloc",
+      "libelle": "Validation checklist-bloc",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Praticiens du bloc",
+      "valideRole": "Chirurgien"
+     }
+    ]
+   },
+   "sortie": {
+    "ok": true,
+    "remis": true,
+    "famille": "checklists_bloc",
+    "id": "checklist-bloc"
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-checklist-bloc",
+      "statut": "actif",
+      "famille": "checklists_bloc",
+      "cible": "checklist-bloc",
+      "libelle": "Validation checklist-bloc",
+      "valideLe": null,
+      "validePar": null,
+      "valideRole": null
+     }
+    ]
+   },
+   "journal": {
+    "action": "Remise à valider",
+    "module": "M3",
+    "entite": "Check-listes du bloc, échelles ASA et Mallampati",
+    "reference": "checklist-bloc",
+    "avant": "{\"valideLe\":\"2026-09-01T09:00:00.000Z\"}",
+    "apres": "{\"motif\":\"modifié depuis la validation\"}",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "constante du code jamais validée : rien à remettre",
+   "entree": {},
+   "famille": "checklists_bloc",
+   "id": "checklist-bloc",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "remis": false,
+    "famille": "checklists_bloc",
+    "id": "checklist-bloc"
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null
+  },
+  {
+   "nom": "élément inconnu : INTROUVABLE",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Dr X",
+      "valideRole": "Directeur Médical"
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "NEXISTEPAS",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Dr X",
+      "valideRole": "Directeur Médical"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "INTROUVABLE",
+    "motif": "Aucun élément « NEXISTEPAS » dans « Pathologies (tableau de morbidité) ».",
+    "geste": "Ouvrir l’écran de la famille."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Dr X",
+      "valideRole": "Directeur Médical"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null
+  },
+  {
+   "nom": "famille inconnue : INTROUVABLE",
+   "entree": {},
+   "famille": "famille-inconnue",
+   "id": "P1",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "INTROUVABLE",
+    "motif": "Famille de référentiel inconnue : famille-inconnue.",
+    "geste": "Choisir une famille du registre des validations."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "validationsReferentiels": []
+   },
+   "journal": null
+  }
+ ],
+ "centre": [
+  {
+   "nom": "direction : toutes les familles, comptes lus au magasin",
+   "role": "direction",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     },
+     {
+      "id": "P2",
+      "statut": "actif",
+      "libelle": "Élément P2",
+      "aValider": true
+     },
+     {
+      "id": "P3",
+      "statut": "actif",
+      "libelle": "Élément P3",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z"
+     }
+    ],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": 5000
+     }
+    ],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-checklist-bloc",
+      "statut": "actif",
+      "famille": "checklists_bloc",
+      "cible": "checklist-bloc",
+      "libelle": "Validation checklist-bloc",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Praticiens du bloc",
+      "valideRole": "Chirurgien"
+     }
+    ]
+   },
+   "kpis": [
+    {
+     "label": "Gestes de validation en attente",
+     "valeur": "88"
+    },
+    {
+     "label": "Files concernées",
+     "valeur": "3 / 7"
+    },
+    {
+     "label": "Référentiels en attente de validation",
+     "valeur": "6"
+    },
+    {
+     "label": "Familles concernées",
+     "valeur": "5 / 14"
+    }
+   ],
+   "cartes": [
+    "À valider À SON POSTE, l’écran oriente, le poste valide",
+    "Référentiels en attente de validation, par famille : la Direction ne signe pas à la place d’un professionnel nommé",
+    "Données à compléter : le marquage tombe par la SAISIE, jamais par une signature",
+    "En attente d’un ARBITRAGE de la Direction : elle seule peut trancher"
+   ],
+   "familles": [
+    {
+     "famille": "enquetes",
+     "enAttente": "",
+     "texte": "Modèles d’enquêteValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "labo_variables",
+     "enAttente": "",
+     "texte": "Variables et unités du laboratoire (bornes suppléées)Valide : Biologiste médical · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "pathologies",
+     "enAttente": "2",
+     "texte": "Pathologies (tableau de morbidité)Valide : Directeur Médical, Médecin2sur 3Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "imagerie",
+     "enAttente": "",
+     "texte": "Catalogue de l’imagerie (examens et variables)Valide : Technicien d’échographie, Directeur Médical · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "checklists_bloc",
+     "enAttente": "0",
+     "texte": "Check-listes du bloc, échelles ASA et MallampatiValide : Chirurgien, Anesthésiste — Réanimateur0sur 1Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "actes",
+     "enAttente": "1",
+     "texte": "Tarifs des actes (valeurs d’attente)Valide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système1sur 1Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "analyses",
+     "enAttente": "",
+     "texte": "Tarifs des analysesValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "valorisation_sage",
+     "enAttente": "",
+     "texte": "Valorisation des références SAGEValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "objectifs_pilotage",
+     "enAttente": "",
+     "texte": "Objectifs de pilotageValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "repartition_charges",
+     "enAttente": "1",
+     "texte": "Répartition fixe et variable des chargesValide : Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système1sur 1Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "modeles_badge",
+     "enAttente": "",
+     "texte": "Modèles de badgeValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "jeux_import",
+     "enAttente": "1",
+     "texte": "Jeux d’import en propositionValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système1sur 1",
+     "ouvrir": false
+    },
+    {
+     "famille": "modeles_messages",
+     "enAttente": "",
+     "texte": "Modèles de messagesValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "bareme_its",
+     "enAttente": "1",
+     "texte": "Barème de l’ITSValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système1sur 1Ouvrir",
+     "ouvrir": true
+    }
+   ],
+   "boutons": [
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir"
+   ],
+   "vide": ""
+  },
+  {
+   "nom": "biologiste : QUE les familles du laboratoire, aucune file de poste",
+   "role": "laborantin",
+   "entree": {
+    "variablesLabo": [
+     {
+      "id": "VL1",
+      "statut": "actif",
+      "libelle": "Élément VL1",
+      "aValider": true
+     },
+     {
+      "id": "VL2",
+      "statut": "actif",
+      "libelle": "Élément VL2",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z"
+     }
+    ]
+   },
+   "kpis": [
+    {
+     "label": "Référentiels en attente de validation",
+     "valeur": "1"
+    },
+    {
+     "label": "Familles concernées",
+     "valeur": "1 / 1"
+    }
+   ],
+   "cartes": [
+    "Les référentiels de votre ressort : à valider à l’écran de chacun"
+   ],
+   "familles": [
+    {
+     "famille": "labo_variables",
+     "enAttente": "1",
+     "texte": "Variables et unités du laboratoire (bornes suppléées)Valide : Biologiste médical1sur 2Ouvrir",
+     "ouvrir": true
+    }
+   ],
+   "boutons": [
+    "Ouvrir"
+   ],
+   "vide": ""
+  },
+  {
+   "nom": "échographiste : QUE l’imagerie, jamais lue (non amorcée)",
+   "role": "echographiste",
+   "entree": {},
+   "kpis": [
+    {
+     "label": "Référentiels en attente de validation",
+     "valeur": "0"
+    },
+    {
+     "label": "Familles concernées",
+     "valeur": "0 / 1"
+    }
+   ],
+   "cartes": [
+    "Les référentiels de votre ressort : à valider à l’écran de chacun"
+   ],
+   "familles": [
+    {
+     "famille": "imagerie",
+     "enAttente": "",
+     "texte": "Catalogue de l’imagerie (examens et variables)Valide : Technicien d’échographie, Directeur Médical · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    }
+   ],
+   "boutons": [
+    "Ouvrir"
+   ],
+   "vide": ""
+  },
+  {
+   "nom": "chirurgien : QUE les check-listes du bloc",
+   "role": "chirurgien",
+   "entree": {},
+   "kpis": [
+    {
+     "label": "Référentiels en attente de validation",
+     "valeur": "1"
+    },
+    {
+     "label": "Familles concernées",
+     "valeur": "1 / 1"
+    }
+   ],
+   "cartes": [
+    "Les référentiels de votre ressort : à valider à l’écran de chacun"
+   ],
+   "familles": [
+    {
+     "famille": "checklists_bloc",
+     "enAttente": "1",
+     "texte": "Check-listes du bloc, échelles ASA et MallampatiValide : Chirurgien, Anesthésiste — Réanimateur1sur 1Ouvrir",
+     "ouvrir": true
+    }
+   ],
+   "boutons": [
+    "Ouvrir"
+   ],
+   "vide": ""
+  },
+  {
+   "nom": "comptable : la répartition des charges, avec les files de son poste",
+   "role": "comptable",
+   "entree": {},
+   "kpis": [
+    {
+     "label": "Gestes de validation en attente",
+     "valeur": "88"
+    },
+    {
+     "label": "Files concernées",
+     "valeur": "3 / 7"
+    },
+    {
+     "label": "Référentiels en attente de validation",
+     "valeur": "1"
+    },
+    {
+     "label": "Familles concernées",
+     "valeur": "1 / 1"
+    }
+   ],
+   "cartes": [
+    "À valider À SON POSTE, l’écran oriente, le poste valide",
+    "Référentiels en attente de validation, par famille : la Direction ne signe pas à la place d’un professionnel nommé",
+    "Données à compléter : le marquage tombe par la SAISIE, jamais par une signature",
+    "En attente d’un ARBITRAGE de la Direction : elle seule peut trancher"
+   ],
+   "familles": [
+    {
+     "famille": "repartition_charges",
+     "enAttente": "1",
+     "texte": "Répartition fixe et variable des chargesValide : Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système1sur 1Ouvrir",
+     "ouvrir": true
+    }
+   ],
+   "boutons": [
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Y aller",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir",
+    "Ouvrir"
+   ],
+   "vide": ""
+  }
+ ],
+ "sessionActeur": "OROU YO Marguerite",
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-validation.js : le moteur de validation commun (SIGH.validations) piloté dans Chrome, ne pas éditer."
+}

@@ -8,6 +8,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m6/flux_commun.dart' show modaleSaisie;
 import 'qual_commun.dart';
@@ -48,7 +49,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
     final m = c.magasin;
     final enquetes = colEnquetes(m), reponses = colReponses(m), jetons = colJetons(m);
     return ListenableBuilder(
-        listenable: Listenable.merge([enquetes, reponses, jetons]),
+        listenable: Listenable.merge([enquetes, reponses, jetons, c.magasin.collection(valCollectionValidations)]),
         builder: (context, _) {
           final rows = enquetes.actives;
           final reps = reponses.actives;
@@ -149,10 +150,10 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
           ColonneTableau(
               cle: 'aValider',
               libelle: 'Statut',
-              texte: (r) => r['aValider'] == true ? 'Proposition à valider' : 'Validé',
-              rendu: (_, r) => r['aValider'] == true
-                  ? const BadgeSigh('Proposition à valider', ton: TonSigh.attention)
-                  : const BadgeSigh('Validé', ton: TonSigh.succes)),
+              texte: (r) => ValidationPoste(c).texteBadge('enquetes', r['id']),
+              rendu: (_, r) =>
+                  ValidationPoste(c).badge('enquetes', r['id']) ??
+                  (r['aValider'] == true ? const BadgeSigh('À valider', ton: TonSigh.attention) : const BadgeSigh('Validé', ton: TonSigh.succes))),
         ],
         actionsLigne: (ctx, r) => [
           if (c.droit.editer)
@@ -165,6 +166,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
               icone: LucideIcons.eye,
               libelle: 'Voir les réponses',
               onPressed: () => _voirReponses(ecran, r)),
+          ...ValidationPoste(c).boutons(ctx, 'enquetes', r['id']),
           if (c.droit.editer)
             BoutonIcone(
                 icone: LucideIcons.share2,
@@ -288,6 +290,8 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
                       }, prefixe: 'ENQ');
                     } else {
                       col.mettreAJour(r['id'], {...v, 'questions': [for (final q in questions) {...q}]});
+                      // Modifier un modèle validé le remet « à valider » (moteur de validation commun).
+                      ValidationPoste(c).remettre('enquetes', r['id']);
                     }
                     fermer();
                     ToastsSigh.afficher(ecran, creation ? 'Modèle créé.' : 'Modèle enregistré.', type: TypeToast.succes);

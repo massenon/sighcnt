@@ -5,6 +5,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cfa_commun.dart';
 
@@ -28,7 +29,7 @@ class EcranImagerieCatalogue extends StatelessWidget with EcranMaquette {
     final examens = c.magasin.collection('examensImagerie');
     final variables = c.magasin.collection('variablesImagerie');
     return ListenableBuilder(
-        listenable: Listenable.merge([examens, variables]),
+        listenable: Listenable.merge([examens, variables, c.magasin.collection(valCollectionValidations)]),
         builder: (ctx, _) {
           final vars = variables.actives;
           return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -57,6 +58,7 @@ class _OngletExamens extends StatelessWidget {
     final variables = c.magasin.collection('variablesImagerie');
     return CfaTableau(
       collection: 'examensImagerie',
+      validation: const ValidationCrud('imagerie'),
       entite: 'Examen',
       libelleNouveau: 'Nouvel examen',
       titreCreation: 'Examen d’imagerie',
@@ -72,8 +74,10 @@ class _OngletExamens extends StatelessWidget {
             cle: 'aValider',
             libelle: 'Origine',
             valeur: (x) => cfaVrai(x['aValider']) ? 'Proposition à valider' : 'Documentée',
-            texte: (x) => cfaVrai(x['aValider']) ? 'Proposition à valider' : 'Documentée',
-            rendu: (_, x) => cfaVrai(x['aValider']) ? const BadgeSigh('Proposition à valider', ton: TonSigh.attention) : const BadgeSigh('Documentée', ton: TonSigh.succes)),
+            texte: (x) => cfaVrai(x['aValider']) || cfaVrai(x['valideLe']) ? ValidationPoste(c).texteBadge('imagerie', x['id']) : 'Documentée',
+            rendu: (_, x) => cfaVrai(x['aValider']) || cfaVrai(x['valideLe'])
+                ? (ValidationPoste(c).badge('imagerie', x['id']) ?? const BadgeSigh('À valider', ton: TonSigh.attention))
+                : const BadgeSigh('Documentée', ton: TonSigh.succes)),
         ColonneTableau(cle: 'voie', libelle: 'Voie d’abord', texte: (x) => cfaOuTiret(x['voie'])),
         ColonneTableau(
             cle: 'variables',
@@ -109,6 +113,7 @@ class _OngletVariables extends StatelessWidget {
     String libelleType(Object? code) => cfaTypesVariableImagerie.where((t) => t.$1 == code).map((t) => t.$2).firstOrNull ?? '$code';
     return CfaTableau(
       collection: 'variablesImagerie',
+      validation: const ValidationCrud('imagerie'),
       entite: 'Variable',
       libelleNouveau: 'Nouvelle variable',
       titreCreation: 'Variable de compte rendu',
@@ -141,6 +146,15 @@ class _OngletVariables extends StatelessWidget {
             droite: true,
             texte: (v) => v['actif'] == false ? 'Fermée' : 'Active',
             rendu: (_, v) => v['actif'] == false ? const BadgeSigh('Fermée') : const BadgeSigh('Active', ton: TonSigh.succes)),
+        ColonneTableau(
+            cle: 'aValider',
+            libelle: 'Validation',
+            droite: true,
+            valeur: (v) => cfaVrai(v['aValider']) ? 'à valider' : (cfaVrai(v['valideLe']) ? 'validée' : ''),
+            texte: (v) => cfaVrai(v['aValider']) || cfaVrai(v['valideLe']) ? ValidationPoste(c).texteBadge('imagerie', v['id']) : 'sans objet',
+            rendu: (_, v) => cfaVrai(v['aValider']) || cfaVrai(v['valideLe'])
+                ? (ValidationPoste(c).badge('imagerie', v['id']) ?? const BadgeSigh('À valider', ton: TonSigh.attention))
+                : const Text('sans objet', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300))),
       ],
       champs: (e) => [
         ChampDef(

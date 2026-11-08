@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../core/jetons_shell.dart';
+import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'stock_commun.dart';
 import 'stock_crud.dart';
@@ -27,12 +30,20 @@ class EcranProduitsStock extends StatelessWidget with EcranMaquette {
   @override
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
+    // La valorisation d'une référence SAGE (surcouche `valorisationsSage`) se valide ICI, au produit qu'elle concerne.
+    Fiche? valorisationDe(Object? code) =>
+        c.magasin.collection('valorisationsSage').actives.where((v) => v['code'] == code).firstOrNull;
+    final vp = ValidationPoste(c);
     return ListenableBuilder(
       // la fiche d'un produit lit aussi ses lots et ses mouvements
       listenable: Listenable.merge(
-          [c.magasin.collection('lots'), c.magasin.collection('mouvements')]),
+          [c.magasin.collection('lots'), c.magasin.collection('mouvements'), c.magasin.collection('valorisationsSage')]),
       builder: (context, _) => CrudStock(
         collection: c.magasin.collection('produits'),
+        // Modifier le prix d'achat ou le CUMP d'une référence valorisée la remet à valider.
+        validation: ValidationCrud('valorisation_sage',
+            cible: (p) => valorisationDe(p['code'])?['id'],
+            siChange: (avant, apres) => avant['prixAchat'] != apres['prixAchat'] || avant['cump'] != apres['cump']),
         entite: 'produit',
         entiteP: 'produits',
         prefixeId: 'PRD',
@@ -57,6 +68,19 @@ class EcranProduitsStock extends StatelessWidget with EcranMaquette {
               rendu: (_, p) =>
                   cellule(mnt(qte(p['stock']) * qte(p['cump'])), droite: true)),
           colEtat(),
+          ColonneTableau(
+              cle: 'valorisation',
+              libelle: 'Valorisation',
+              triable: false,
+              texte: (p) {
+                final v = valorisationDe(p['code']);
+                return v == null ? '' : (v['aValider'] == true ? 'à valider' : 'validée');
+              },
+              rendu: (_, p) {
+                final v = valorisationDe(p['code']);
+                final b = v == null ? null : vp.badge('valorisation_sage', v['id']);
+                return b ?? const Text('sans objet', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300));
+              }),
         ],
         filtres: [
           FiltreTableau(

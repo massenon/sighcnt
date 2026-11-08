@@ -7,6 +7,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'pil_commun.dart';
 
@@ -392,6 +393,14 @@ class _GrilleObjectifReel extends StatelessWidget {
 class _ObjectifsSeuils extends StatelessWidget {
   const _ObjectifsSeuils();
 
+  /// « le JJ/MM/AAAA » : la date de la VALIDATION si elle existe, sinon celle de l'ancien arrêt ; rien quand aucune n'est portée.
+  static String _dateArret(Fiche r) {
+    final d = pilVrai(r['valideLe']) ? '${r['valideLe']}' : (pilVrai(r['arreteLe']) ? '${r['arreteLe']}' : null);
+    if (d == null) return '';
+    final t = DateTime.tryParse(d.length >= 10 ? d.substring(0, 10) : d);
+    return t == null ? '' : ' le ${dateFR(t)}';
+  }
+
   void _consulter(BuildContext ctx, Fiche r) => afficherTiroir<void>(ctx,
       titre: '${r['label']}',
       sousTitre: 'Objectif de pilotage',
@@ -403,7 +412,7 @@ class _ObjectifsSeuils extends StatelessWidget {
               ('Objectif', '${nombre(r['cible'])} ${r['unite']}'),
               ('Seuil d’alerte', '${nombre(r['alerte'])} ${r['unite']}'),
               ('Réussite', r['sens'] == 'haut' ? 'valeur la plus haute' : 'valeur la plus basse'),
-              ('Statut', pilVrai(r['aValider']) ? 'Proposition — non arbitrée' : 'Arrêté le ${r['arreteLe'] != null ? dateFR(DateTime.parse('${r['arreteLe']}')) : '—'}'),
+              ('Statut', pilVrai(r['aValider']) ? 'À valider (non arrêté)' : 'Arrêté${_dateArret(r)}'),
             ]),
             if (r['source'] != null)
               pilNote('Origine de la valeur proposée : ${r['source']}',
@@ -419,8 +428,9 @@ class _ObjectifsSeuils extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     final col = c.magasin.collection('objectifsPilotage');
+    final vp = ValidationPoste(c);
     return ListenableBuilder(
-      listenable: col,
+      listenable: Listenable.merge([col, c.magasin.collection(valCollectionValidations)]),
       builder: (context, _) => pilPile([
         pilNote(
             'Une cible corrigée ici est arrêtée par la Direction : la mention « à valider » tombe d’elle-même. Le sens dit de quel côté se trouve la réussite — un DSO se veut bas, un taux d’occupation haut ; sans lui, la grille colorerait en rouge un indicateur excellent.',
@@ -451,11 +461,15 @@ class _ObjectifsSeuils extends StatelessWidget {
             ColonneTableau(
                 cle: 'aValider',
                 libelle: 'Statut',
-                texte: (r) => pilVrai(r['aValider']) ? 'Proposition' : 'Arrêté par la Direction',
-                rendu: (_, r) => pilVrai(r['aValider']) ? const BadgeSigh('Proposition', ton: TonSigh.attention) : const BadgeSigh('Arrêté par la Direction', ton: TonSigh.succes)),
+                texte: (r) => vp.etat('objectifs_pilotage', r['id']) != null ? vp.texteBadge('objectifs_pilotage', r['id']) : (pilVrai(r['aValider']) ? 'À valider' : 'Arrêté'),
+                rendu: (_, r) =>
+                    vp.badge('objectifs_pilotage', r['id']) ??
+                    (pilVrai(r['aValider']) ? const BadgeSigh('À valider', ton: TonSigh.attention) : const BadgeSigh('Arrêté', ton: TonSigh.succes))),
           ],
           actionsLigne: (ctx, r) => [
             BoutonIcone(icone: LucideIcons.eye, libelle: 'Consulter', onPressed: () => _consulter(ctx, r)),
+            // « Arrêter » est le geste de validation (moteur commun) ; « Modifier » ne l'arrête pas : une cible déjà arrêtée puis corrigée REVIENT à valider.
+            ...vp.boutons(ctx, 'objectifs_pilotage', r['id'], libelle: 'Arrêter'),
             if (c.droit.editer) BoutonIcone(icone: LucideIcons.pencil, libelle: 'Modifier', onPressed: () => _modifier(context, c, r)),
             if (c.droit.annuler)
               BoutonIcone(
@@ -525,9 +539,9 @@ class _EtatModaleObjectif extends State<_ModaleObjectif> {
       return;
     }
     final c = widget.contexte;
-    // Corriger une cible, c'est l'ARRÊTER : la Direction vient de la décider, la marque de proposition n'a plus lieu d'être.
-    final patch = pilArreterObjectif({...v, 'cible': cible, 'alerte': alerte}, auj: c.aujourdhui, par: acteur(c).nom);
-    final annuler = c.magasin.collection('objectifsPilotage').mettreAJour(widget.objectif['id'], patch);
+    // Modifier ne l'arrête PAS : l'arrêt est le geste de validation (« Arrêter »). Une cible déjà arrêtée puis corrigée revient « à valider ».
+    final annuler = c.magasin.collection('objectifsPilotage').mettreAJour(widget.objectif['id'], {...v, 'cible': cible, 'alerte': alerte});
+    ValidationPoste(c).remettre('objectifs_pilotage', widget.objectif['id']);
     Navigator.of(context).pop();
     ToastsSigh.afficher(widget.ecran, 'Modifications enregistrées.', type: TypeToast.succes, annuler: annuler, messageAnnulation: 'Modification annulée.');
   }

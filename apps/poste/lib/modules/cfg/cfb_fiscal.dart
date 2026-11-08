@@ -5,6 +5,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cfa_commun.dart';
 import 'cfb_commun.dart';
@@ -26,7 +27,7 @@ List<CfbObligation> _calendrier(List<Fiche> fiches) => [for (final f in fiches) 
 
 /// Les écouteurs des quatre écrans : identité, obligations, historique, échéances, exercices.
 Listenable _ecoute(Magasin m) =>
-    Listenable.merge([for (final n in const ['identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'echeancesFiscales', 'exercices']) m.collection(n)]);
+    Listenable.merge([for (final n in const ['identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'echeancesFiscales', 'exercices', valCollectionValidations]) m.collection(n)]);
 
 // =============================================================================================================================================
 // cfg-fiscalite
@@ -642,6 +643,19 @@ class _EtatComptabilite extends State<EcranComptabilite> {
                   ], lignes: mensuelles),
                   _encart('Assiettes arrêtées par le CDCT §10.10 (lecture seule)',
                       '${cfbTexteAssiettes()} Ces taux ne se modifient pas ici : ils sont arrêtés par le cahier des charges ; les rendre datés est un chantier nommé.'),
+                ], espace: 12)),
+            // Barème de l'ITS : une pièce à valider (constante du code, validation au moteur commun).
+            CarteSigh(
+                titre: 'Barème de l’ITS',
+                child: cfaPile([
+                  ValidationPoste(c).bandeau(context, 'bareme_its', 'bareme-its', titre: 'Barème ITS Bénin, à confirmer par le service comptable'),
+                  MiniTableauSigh(colonnes: [
+                    ColonneMini('Tranche de salaire', (t) => '${t['tranche']}'),
+                    ColonneMini('Taux', (t) => '${t['taux']} %', droite: true),
+                  ], lignes: [
+                    for (final t in paiBaremeIts)
+                      {'tranche': '${money(t.de, avecDevise: false)}${t.a == null ? ' et plus' : ' à ${money(t.a, avecDevise: false)}'}', 'taux': t.taux}
+                  ]),
                 ], espace: 12)),
             CarteSigh(
                 titre: 'Impôt sur les sociétés : quatre acomptes et une liquidation',

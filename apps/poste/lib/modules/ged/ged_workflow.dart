@@ -119,7 +119,7 @@ class EcranWorkflowGed extends StatelessWidget with EcranMaquette {
       nomExport: 'ged-a-valider',
       triInitial: 'date',
       sensInitial: 'desc',
-      selectionnable: peutEcrire,
+      selectionnable: false,
       messageVide: 'Aucun document en attente de validation.',
       colonnes: [
         colonneReference(),
@@ -147,32 +147,8 @@ class EcranWorkflowGed extends StatelessWidget with EcranMaquette {
                       fontWeight: j > 15 ? FontWeight.w600 : FontWeight.w400));
             }),
       ],
-      actionsGroupe: peutEcrire
-          ? (ctx, sel, effacer) => [
-                BoutonSigh(
-                    libelle: 'Valider la sélection',
-                    icone: LucideIcons.badgeCheck,
-                    taille: TailleBouton.sm,
-                    variante: VarianteBouton.succes,
-                    onPressed: () {
-                      // La sélection se valide SANS signature : l'état seul change (E561).
-                      final annulations = [
-                        for (final d in sel)
-                          col.mettreAJour(d['id'], {...qualGedValidationSelection})
-                      ];
-                      effacer();
-                      ToastsSigh.afficher(context, '${sel.length} document(s) validé(s).',
-                          type: TypeToast.succes,
-                          detail:
-                              'Sans signature électronique : signer chaque document (bouton Valider de la ligne) pour le verrouiller.',
-                          annuler: () {
-                        for (final u in annulations) {
-                          u();
-                        }
-                      });
-                    }),
-              ]
-          : null,
+      // Défaut 7 (Direction, 08/11/2026) : plus de validation en MASSE. Une validation est un geste humain, un document à la fois : ni case de sélection,
+      // ni « Valider la sélection ». Le geste unitaire, de la ligne, reste le seul.
       actionsLigne: (ctx, d) => [
         if (peutEcrire) ...[
           BoutonSigh(

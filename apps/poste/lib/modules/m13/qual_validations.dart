@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../cfg/cfb_configuration_fiscale.dart';
 import '../m2/cr_commun.dart' show dateHeureDe;
@@ -28,7 +29,11 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'Cet écran oriente, il ne valide jamais en masse : la validation est un geste humain, porté à son poste — le biologiste valide au laboratoire, le comptable au journal, la DA sur le bon. Les validations écrites des professionnels nommés sont arrivées le 01/09/2026 (biologiste, médecins, praticiens du bloc) ; ce qui reste en attente est une donnée manquante ou récurrente, jamais une signature que la Direction pourrait porter à leur place.';
+      'Cet écran oriente, il ne valide jamais en masse : la validation est un geste humain, porté à son poste, le biologiste au laboratoire, le comptable au journal, la DA sur le bon, la Direction à l’écran du référentiel. Les comptes de la liste des référentiels sont relus dans le magasin à chaque affichage ; chaque profil n’y voit que les familles de son ressort, et la Direction ne signe jamais à la place d’un professionnel nommé.';
+
+  /// Les sept profils qui ouvraient déjà le centre gardent tout ce qu'ils y voyaient ; le biologiste, l'échographiste et les praticiens du bloc n'y voient
+  /// QUE les familles de référentiels de leur rôle.
+  static const _elargis = ['da', 'admin', 'direction', 'dm', 'comptable', 'surveillant', 'agentadmin'];
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +48,15 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
       'resultatsImagerie',
       'echeancesFiscales',
       'materiel',
-      'plagesReactif',
+      'ambulances',
       'identiteLegale',
       'obligationsFiscales',
-      'historiqueObligations'
+      'historiqueObligations',
+      // Le compte d'une famille est LU dans le magasin : toute collection qu'elle lit rafraîchit le centre.
+      ...valCollectionsLues(),
     ];
+    final restreint = !_elargis.contains(c.role);
+    final vp = ValidationPoste(c);
     return ListenableBuilder(
         listenable: Listenable.merge([for (final n in noms) m.collection(n)]),
         builder: (context, _) {
@@ -60,82 +69,131 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
               resultatsImagerie: m.collection('resultatsImagerie').toutes,
               echeancesFiscales: m.collection('echeancesFiscales').toutes,
               aujourdhui: jourIso(c));
-          final pros = qualProfessionnels(
-              materiel: m.collection('materiel').toutes,
-              plagesReactif: m.collection('plagesReactif').toutes);
-          final bilan = qualBilanValidations(files, pros);
+          final aCompleter = qualACompleter(materiel: m.collection('materiel').toutes, ambulancesToutes: m.collection('ambulances').toutes);
+          // LES RÉFÉRENTIELS : un compte par famille, relu dans le magasin (moteur de validation commun), jamais un littéral.
+          final familles = valReferentielsVisiblesPar(c.role, vp.lire, vp.libelles);
+          final totalFamilles = familles.fold<int>(0, (n, x) => n + (x.enAttente ?? 0));
+          final totalGestes = files.fold<int>(0, (n, x) => n + (x.compte ?? 0));
           final cf = ConfigurationFiscalePoste(c);
           final configuration = _configurationAValider(cf);
+          bool ouvrable(String ecran) => c.ouvre?.call(ecran) ?? true;
           return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             KpiGrilleSigh(kpis: [
+              if (!restreint) ...[
+                KpiSigh(
+                    libelle: 'Gestes de validation en attente',
+                    valeur: nombre(totalGestes),
+                    icone: LucideIcons.listChecks,
+                    ton: totalGestes > 0 ? TonSigh.attention : TonSigh.succes),
+                KpiSigh(
+                    libelle: 'Files concernées',
+                    valeur: '${files.where((x) => (x.compte ?? 0) > 0).length} / ${files.length}',
+                    icone: LucideIcons.layoutGrid,
+                    ton: TonSigh.neutre),
+              ],
               KpiSigh(
-                  libelle: 'Gestes de validation en attente',
-                  valeur: nombre(bilan.gestes),
-                  icone: LucideIcons.listChecks,
-                  ton: bilan.gestes > 0 ? TonSigh.attention : TonSigh.succes),
-              KpiSigh(
-                  libelle: 'Files concernées',
-                  valeur: bilan.filesTexte,
-                  icone: LucideIcons.layoutGrid,
-                  ton: TonSigh.neutre),
-              KpiSigh(
-                  libelle: 'Référentiels en attente d’un professionnel',
-                  valeur: nombre(bilan.professionnels),
+                  libelle: 'Référentiels en attente de validation',
+                  valeur: nombre(totalFamilles),
                   icone: LucideIcons.userCheck,
-                  ton: TonSigh.info),
+                  ton: totalFamilles > 0 ? TonSigh.attention : TonSigh.succes),
               KpiSigh(
-                  libelle: 'Validés par la Direction le 01/09',
-                  valeur: nombre(bilan.validees),
-                  icone: LucideIcons.circleCheck,
-                  ton: TonSigh.succes),
+                  libelle: 'Familles concernées',
+                  valeur: '${familles.where((x) => (x.enAttente ?? 0) > 0).length} / ${familles.length}',
+                  icone: LucideIcons.layers,
+                  ton: TonSigh.neutre),
             ]),
+            if (!restreint) ...[
+              const SizedBox(height: 16),
+              CarteSigh(
+                  titre: 'À valider À SON POSTE, l’écran oriente, le poste valide',
+                  child: LayoutBuilder(builder: (context, k) {
+                    final deux = k.maxWidth >= 768;
+                    final l = deux ? (k.maxWidth - 12) / 2 : k.maxWidth;
+                    return Wrap(spacing: 12, runSpacing: 12, children: [
+                      for (final f in files) SizedBox(width: l, child: _file(c, f)),
+                    ]);
+                  })),
+            ],
             const SizedBox(height: 16),
+            // Une ligne par famille : compte réel, profil nommé, lien vers l'écran où se trouve l'artefact. Aucune commande d'écriture ici.
             CarteSigh(
-                titre: 'À valider À SON POSTE — l’écran oriente, le poste valide',
-                child: LayoutBuilder(builder: (context, k) {
-                  final deux = k.maxWidth >= 768;
-                  final l = deux ? (k.maxWidth - 12) / 2 : k.maxWidth;
-                  return Wrap(spacing: 12, runSpacing: 12, children: [
-                    for (final f in files) SizedBox(width: l, child: _file(c, f)),
-                  ]);
-                })),
-            const SizedBox(height: 16),
-            CarteSigh(
-                titre:
-                    'Référentiels en attente d’un PROFESSIONNEL nommé — la Direction ne signe pas à sa place',
-                child: Column(children: [
-                  for (final (i, p) in pros.indexed) ...[
-                    if (i > 0) const SizedBox(height: 8),
-                    _bloc(c, p.titre, '${p.qui} · ${p.motif}', p.ecran, attention: false),
-                  ]
-                ])),
-            const SizedBox(height: 16),
-            CarteSigh(
-                titre: 'En attente d’un ARBITRAGE de la Direction — elle seule peut trancher',
-                child: Column(children: [
-                  for (final (i, x) in configuration.indexed) ...[
-                    if (i > 0) const SizedBox(height: 8),
-                    _bloc(c, x.libelle, 'État : ${x.attente} · ${x.motif}', x.ecran, attention: true, cle: 'qual:config:${x.nom}'),
-                  ],
-                  for (final (i, a) in qualArbitrages.indexed) ...[
-                    if (i > 0 || configuration.isNotEmpty) const SizedBox(height: 8),
-                    _bloc(c, a.libelle, a.detail, a.ecran, attention: true),
-                  ]
-                ])),
-            const SizedBox(height: 16),
-            CarteSigh(
-                titre: 'Validées par la DIRECTION le 01/09/2026 (vague 49)',
-                sansRemplissage: true,
-                child: MiniTableauSigh(colonnes: [
-                  ColonneMini('Référentiel', (x) => '${x['libelle']}'),
-                  ColonneMini('Décision', (x) => '${x['detail']}'),
-                ], lignes: [
-                  for (final v in qualValidees) {'libelle': v.$1, 'detail': v.$2}
-                ])),
-            sourceQual('Compté à chaque affichage depuis les registres du magasin — rien n’est fourni.'),
+                titre: restreint
+                    ? 'Les référentiels de votre ressort : à valider à l’écran de chacun'
+                    : 'Référentiels en attente de validation, par famille : la Direction ne signe pas à la place d’un professionnel nommé',
+                child: familles.isEmpty
+                    ? const Text('Aucun référentiel à valider ne relève de votre profil.',
+                        style: TextStyle(color: JetonsShell.slate500, fontSize: 14, height: 20 / 14))
+                    : Column(children: [
+                        for (final (i, x) in familles.indexed) ...[
+                          if (i > 0) const SizedBox(height: 8),
+                          _famille(c, x, ouvrable(x.ecran)),
+                        ]
+                      ])),
+            if (!restreint) ...[
+              const SizedBox(height: 16),
+              CarteSigh(
+                  titre: 'Données à compléter : le marquage tombe par la SAISIE, jamais par une signature',
+                  child: Column(children: [
+                    for (final (i, p) in aCompleter.indexed) ...[
+                      if (i > 0) const SizedBox(height: 8),
+                      _bloc(c, p.titre, '${p.qui} · ${p.motif}', p.ecran, attention: false, ouvrable: ouvrable(p.ecran)),
+                    ]
+                  ])),
+              const SizedBox(height: 16),
+              CarteSigh(
+                  titre: 'En attente d’un ARBITRAGE de la Direction : elle seule peut trancher',
+                  child: Column(children: [
+                    for (final (i, x) in configuration.indexed) ...[
+                      if (i > 0) const SizedBox(height: 8),
+                      _bloc(c, x.libelle, 'État : ${x.attente} · ${x.motif}', x.ecran, attention: true, cle: 'qual:config:${x.nom}'),
+                    ],
+                    for (final (i, a) in qualArbitrages.indexed) ...[
+                      if (i > 0 || configuration.isNotEmpty) const SizedBox(height: 8),
+                      _bloc(c, a.libelle, a.detail, a.ecran, attention: true),
+                    ]
+                  ])),
+            ],
+            sourceQual('Compté à chaque affichage depuis les registres du magasin, rien n’est fourni.'),
           ]);
         });
   }
+
+  /// Une famille : libellé, profil qui valide, compte réel (« — » tant qu'elle n'est pas amorcée), « sur N », et « Ouvrir » quand l'écran est ouvert au profil.
+  Widget _famille(ContexteEcran c, CompteFamille x, bool ouvrable) => Container(
+      key: Key('val:famille:${x.famille}'),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: JetonsShell.slate200)),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(x.libelle,
+              style: const TextStyle(color: JetonsShell.slate800, fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500)),
+          Text('Valide : ${x.profil}${x.nonAmorce ? ' · non amorcé sur ce poste, ouvrir l’écran pour le charger' : ''}',
+              style: const TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12)),
+        ])),
+        const SizedBox(width: 12),
+        Text(x.enAttente == null ? '—' : nombre(x.enAttente),
+            key: Key('val:en-attente:${x.famille}'),
+            style: TextStyle(
+                color: (x.enAttente ?? 0) > 0 ? JetonsShell.warning700 : JetonsShell.slate300,
+                fontSize: 18,
+                height: 28 / 18,
+                fontWeight: FontWeight.w600)),
+        const SizedBox(width: 12),
+        Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(x.total == null ? '' : 'sur ${nombre(x.total)}',
+                style: const TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12))),
+        if (ouvrable) ...[
+          const SizedBox(width: 12),
+          BoutonSigh(
+              libelle: 'Ouvrir',
+              icone: LucideIcons.arrowRight,
+              taille: TailleBouton.sm,
+              variante: VarianteBouton.secondaire,
+              onPressed: () => c.aller(x.ecran)),
+        ],
+      ]));
 
   /// LA CONFIGURATION FISCALE À VALIDER (Direction, 06/11/2026) : deux lignes dans la famille des arbitrages, tant que l'état n'est pas « validé ».
   /// L'état vient du moteur (`cfbEtatIdentite`, `cfbEtatObligations`), jamais recopié ici ; elles reviennent sur « modifié depuis la validation ».
@@ -195,7 +253,7 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
             onPressed: () => c.aller(f.ecran)),
       ]));
 
-  Widget _bloc(ContexteEcran c, String titre, String detail, String ecran, {required bool attention, String? cle}) => Container(
+  Widget _bloc(ContexteEcran c, String titre, String detail, String ecran, {required bool attention, String? cle, bool ouvrable = true}) => Container(
       key: cle == null ? null : Key(cle),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -212,13 +270,15 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
               style: TextStyle(
                   color: attention ? JetonsShell.slate600 : JetonsShell.slate500, fontSize: 12, height: 16 / 12)),
         ])),
-        const SizedBox(width: 12),
-        BoutonSigh(
-            libelle: 'Ouvrir',
-            icone: LucideIcons.arrowRight,
-            taille: TailleBouton.sm,
-            variante: VarianteBouton.secondaire,
-            onPressed: () => c.aller(ecran)),
+        if (ouvrable) ...[
+          const SizedBox(width: 12),
+          BoutonSigh(
+              libelle: 'Ouvrir',
+              icone: LucideIcons.arrowRight,
+              taille: TailleBouton.sm,
+              variante: VarianteBouton.secondaire,
+              onPressed: () => c.aller(ecran)),
+        ],
       ]));
 }
 

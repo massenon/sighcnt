@@ -160,27 +160,12 @@ void main() {
       expect(sp(kpi(t, 'Rejetés à corriger')), isNot(sp(m_(liste(c0['kpis'])[1])['valeur'])), reason: 'un rejet de plus');
     });
 
-    cas('valider une sélection : l’état seul change, la signature n’est pas posée', (t) async {
+    cas('plus de validation en masse : ni « Valider la sélection », ni case de sélection, seulement le geste unitaire de la ligne', (t) async {
       final m = magasin();
       await ouvrir(t, m, 'ged-workflow');
-      final s = m_(wf.firstWhere((x) => x['nom'] == 'valider la sélection'));
-      final refs = (s['refs'] as List).cast<String>();
-      // Documents de départ non signés, pour que la différence se lise.
-      for (final r in refs) {
-        m.collection('documents').mettreAJour(doc(m, r)['id'], {'signe': false});
-      }
-      await t.pump();
-      final cases = find.bySemanticsLabel('Sélectionner la ligne');
-      expect(cases, findsWidgets);
-      await toucher(t, cases.at(0));
-      await toucher(t, cases.at(1));
-      await toucher(t, find.widgetWithText(BoutonSigh, 'Valider la sélection'));
-      for (final r in refs) {
-        final d = doc(m, r);
-        if (d['etatValidation'] != 'valide') continue;
-        expect(d['signe'], false, reason: 'E561 : valider la sélection ne signe pas');
-      }
-      expect(find.text('2 document(s) validé(s).'), findsOneWidget);
+      expect(find.widgetWithText(BoutonSigh, 'Valider la sélection'), findsNothing);
+      expect(find.bySemanticsLabel('Sélectionner la ligne'), findsNothing);
+      expect(find.widgetWithText(BoutonSigh, 'Valider'), findsWidgets, reason: 'le geste unitaire reste offert sur chaque ligne');
     });
 
     cas('l’ancienneté au-delà de quinze jours passe en rouge', (t) async {

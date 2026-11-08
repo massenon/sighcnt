@@ -6456,6 +6456,11 @@
     1,
     0
    ],
+   "cfg-imagerie-catalogue": [
+    1,
+    0,
+    0
+   ],
    "dash-direction": [
     1,
     1,
@@ -9005,6 +9010,11 @@
     1,
     1
    ],
+   "adm-validations": [
+    1,
+    0,
+    0
+   ],
    "rapports-bibliotheque": [
     1,
     1,
@@ -11132,6 +11142,11 @@
     1,
     0
    ],
+   "adm-validations": [
+    1,
+    0,
+    0
+   ],
    "rapports-bibliotheque": [
     1,
     0,
@@ -11148,6 +11163,11 @@
     0
    ],
    "rapports-historique": [
+    1,
+    0,
+    0
+   ],
+   "cfg-imagerie-catalogue": [
     1,
     0,
     0
@@ -11833,6 +11853,11 @@
     1,
     0
    ],
+   "adm-validations": [
+    1,
+    0,
+    0
+   ],
    "rapports-bibliotheque": [
     1,
     0,
@@ -12173,6 +12198,11 @@
    "m7-besoins": [
     1,
     1,
+    0
+   ],
+   "adm-validations": [
+    1,
+    0,
     0
    ],
    "rapports-bibliotheque": [

@@ -7,6 +7,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m5/res_commun.dart' show ClassementLabo;
 import 'cs_commun.dart';
@@ -36,6 +37,7 @@ class EcranPathologies extends StatelessWidget with EcranMaquette {
         listenable: Listenable.merge([
           c.magasin.collection('pathologies'),
           c.magasin.collection('consultations'),
+          c.magasin.collection(valCollectionValidations),
         ]),
         builder: (ctx, _) => _Corps(c: c, ecran: ctx));
   }
@@ -86,6 +88,8 @@ class _Corps extends StatelessWidget {
       valider: (v) {
         if (r != null) {
           _col.mettreAJour(r['id'], {...v, 'notifiable': v['notifiable'] == true});
+          // Modifier un élément validé le remet « à valider » (moteur de validation commun).
+          ValidationPoste(c).remettre('pathologies', r['id']);
           ToastsSigh.afficher(ecran, 'Pathologie modifiée.', type: TypeToast.succes);
           return null;
         }
@@ -353,9 +357,11 @@ class _Corps extends StatelessWidget {
               cle: 'aValider',
               libelle: 'Provenance',
               droite: true,
-              texte: (x) => vrai(x['aValider']) ? 'à valider' : 'arrêtée',
-              rendu: (_, x) => vrai(x['aValider'])
-                  ? const BadgeSigh('À valider', ton: TonSigh.attention)
+              texte: (x) => vrai(x['aValider']) || vrai(x['valideLe'])
+                  ? ValidationPoste(c).texteBadge('pathologies', x['id'])
+                  : 'arrêtée',
+              rendu: (_, x) => vrai(x['aValider']) || vrai(x['valideLe'])
+                  ? (ValidationPoste(c).badge('pathologies', x['id']) ?? const BadgeSigh('À valider', ton: TonSigh.attention))
                   : const BadgeSigh('Arrêtée', ton: TonSigh.succes)),
         ],
         actions: [
@@ -367,6 +373,7 @@ class _Corps extends StatelessWidget {
                 onPressed: () => _ouvrir(null)),
         ],
         actionsLigne: (context, r) => [
+          ...ValidationPoste(c).boutons(context, 'pathologies', r['id']),
           if (c.droit.editer)
             BoutonIcone(
                 icone: LucideIcons.pencil, libelle: 'Modifier', onPressed: () => _ouvrir(r)),

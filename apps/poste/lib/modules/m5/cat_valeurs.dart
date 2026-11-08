@@ -7,6 +7,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m6/points_commun.dart' show champUnique, commande;
 import 'cat_commun.dart';
@@ -131,21 +132,24 @@ class _EtatValeurs extends State<EcranValeursReference> {
   // Affichage
   // -------------------------------------------------------------------------------------------------------------------------------------------
 
-  Widget _etatCellule(Fiche v) => switch (catProvenance(v)) {
+  /// « À valider » et « validée » sont l'état LU du moteur de validation commun (`K.badgeValidation`) : le rôle et la date de la validation y figurent.
+  Widget _etatCellule(Fiche v, ValidationPoste vp) => switch (catProvenance(v)) {
         'fermée' => const BadgeSigh('Fermée', ton: TonSigh.neutre),
-        'à valider' => const BadgeSigh('À valider', ton: TonSigh.attention),
-        'validée' => const BadgeSigh('Validée (biologiste)', ton: TonSigh.info),
+        'à valider' || 'validée' => vp.badge('labo_variables', v['id']) ??
+            (catProvenance(v) == 'validée'
+                ? const BadgeSigh('Validé', ton: TonSigh.succes)
+                : const BadgeSigh('À valider', ton: TonSigh.attention)),
         _ => const BadgeSigh('Documentée', ton: TonSigh.succes),
       };
 
-  static const _libelleEtat = {
-    'fermée': 'Fermée',
-    'à valider': 'À valider',
-    'validée': 'Validée (biologiste)',
-    'documentée': 'Documentée'
-  };
+  static const _libelleEtat = {'fermée': 'Fermée', 'documentée': 'Documentée'};
 
-  List<ColonneTableau> _colonnes(Magasin m) {
+  String _texteEtat(Fiche v, ValidationPoste vp) {
+    final e = catProvenance(v);
+    return _libelleEtat[e] ?? (vp.etat('labo_variables', v['id']) == null ? (e == 'validée' ? 'Validé' : 'À valider') : vp.texteBadge('labo_variables', v['id']));
+  }
+
+  List<ColonneTableau> _colonnes(Magasin m, ValidationPoste vp) {
     String unite(Fiche v) =>
         catSymboleUnite(m.collection('unitesLabo').toutes, v['unite']);
     return [
@@ -234,8 +238,8 @@ class _EtatValeurs extends State<EcranValeursReference> {
           libelle: 'État',
           droite: true,
           valeur: catProvenance,
-          texte: (v) => _libelleEtat[catProvenance(v)]!,
-          rendu: (_, v) => _etatCellule(v)),
+          texte: (v) => _texteEtat(v, vp),
+          rendu: (_, v) => _etatCellule(v, vp)),
     ];
   }
 
@@ -252,7 +256,8 @@ class _EtatValeurs extends State<EcranValeursReference> {
         variables,
         plages,
         c.magasin.collection('unitesLabo'),
-        c.magasin.collection('examensLabo')
+        c.magasin.collection('examensLabo'),
+        c.magasin.collection(valCollectionValidations)
       ]),
       builder: (context, _) {
         final lignes = _lignes(c.magasin);
@@ -303,7 +308,7 @@ class _EtatValeurs extends State<EcranValeursReference> {
           const SizedBox(height: 16),
           TableauSigh(
             titre: 'Variables et valeurs de référence',
-            colonnes: _colonnes(c.magasin),
+            colonnes: _colonnes(c.magasin, ValidationPoste(c)),
             lignes: lignes,
             taillePage: 25,
             nomExport: 'valeurs-reference',
@@ -316,6 +321,8 @@ class _EtatValeurs extends State<EcranValeursReference> {
                     onPressed: () => _saisirVariable(context, null)),
             ],
             actionsLigne: (ctx, v) => [
+              // Un geste unitaire, réservé au biologiste : ABSENT pour tout autre profil.
+              ...ValidationPoste(c).boutons(ctx, 'labo_variables', v['id']),
               if (c.droit.editer) ...[
                 BoutonIcone(
                     icone: LucideIcons.pencil,
@@ -456,7 +463,13 @@ class _EtatValeurs extends State<EcranValeursReference> {
                     if (creation) {
                       col.inserer({'statut': 'actif', ...val}, prefixe: 'VAR');
                     } else {
+                      final avant = {...v};
                       col.mettreAJour(v['id'], val);
+                      // Défaut 5 : déplacer une borne, l'unité, le type ou la règle remet la variable « à valider » (le biologiste revalide). Une valeur
+                      // ABSENTE (nulle ou vide) n'est pas une valeur déplacée.
+                      Object? vide(Object? x) => x == null || x == '' ? null : (x is num ? x.toDouble() : x);
+                      final changee = ['min', 'max', 'normal', 'unite', 'type', 'regle'].any((k) => vide(val[k]) != vide(avant[k]));
+                      if (changee) ValidationPoste(c).remettre('labo_variables', v['id']);
                     }
                     m.journaliser(
                         creation

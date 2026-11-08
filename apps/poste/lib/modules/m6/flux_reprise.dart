@@ -7,6 +7,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'flux_commun.dart';
 
@@ -36,7 +37,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
     final col = c.magasin.collection('valorisationsSage');
     final reglages = c.magasin.collection('reglages');
     return ListenableBuilder(
-      listenable: Listenable.merge([col, reglages]),
+      listenable: Listenable.merge([col, reglages, c.magasin.collection(valCollectionValidations)]),
       builder: (context, _) {
         final ref = ReferentielSage.instance;
         final articles = ref.articles;
@@ -305,6 +306,11 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
               }),
         ],
         actionsLigne: (cx, a) => [
+          // Un geste unitaire, réservé à la Direction, à la DAF et à l'administrateur : ABSENT pour tout autre profil.
+          ...() {
+            final vz = valorisationDe(a['code'], valo);
+            return vz == null ? const <Widget>[] : ValidationPoste(c).boutons(cx, 'valorisation_sage', vz['id']);
+          }(),
           if (c.droit.editer)
             BoutonIcone(
                 icone: a['reste'] == true ? LucideIcons.pencilLine : LucideIcons.rotateCcw,
@@ -558,6 +564,8 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
               jour: iso(c.aujourdhui));
           if (ancienne != null) {
             col.mettreAJour(ancienne['id'], fiche);
+            // Corriger une valorisation déjà arrêtée la remet à valider (le geste est celui de la Direction).
+            ValidationPoste(c).remettre('valorisation_sage', ancienne['id']);
           } else {
             col.inserer(fiche, prefixe: 'VSG');
           }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show valCollectionValidations;
 
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 
 /// `SIGH.kit.crud()` pour les registres de stock (produits, lots) : KPI, onglets « Tous les X » / ONGLETS SUPPLÉMENTAIRES / « Archivés » (avec leur
@@ -41,6 +43,7 @@ class CrudStock extends StatefulWidget {
     this.refuserExistante,
     this.champsPour,
     this.messageModification = 'Modification enregistrée.',
+    this.validation,
   });
 
   final CollectionMagasin collection;
@@ -88,6 +91,9 @@ class CrudStock extends StatefulWidget {
   /// Le message de la modification (« Modifications enregistrées. » dans certains registres de la maquette).
   final String messageModification;
 
+  /// Le geste de validation de la famille (moteur commun) ; absent : l'écran ne valide rien.
+  final ValidationCrud? validation;
+
   @override
   State<CrudStock> createState() => _CrudStockState();
 }
@@ -97,11 +103,16 @@ class _CrudStockState extends State<CrudStock> {
   void initState() {
     super.initState();
     widget.collection.addListener(_maj);
+    _validations = widget.validation == null ? null : context.getInheritedWidgetOfExactType<ContexteEcran>()?.magasin.collection(valCollectionValidations);
+    _validations?.addListener(_maj);
   }
+
+  CollectionMagasin? _validations;
 
   @override
   void dispose() {
     widget.collection.removeListener(_maj);
+    _validations?.removeListener(_maj);
     super.dispose();
   }
 
@@ -189,8 +200,11 @@ class _CrudStockState extends State<CrudStock> {
                           detail: widget.referenceToast?.call(r.fiche),
                           annuler: r.annuler);
                     } else {
+                      final avant = {...existante};
                       final annuler =
                           widget.collection.mettreAJour(existante['id'], fiche);
+                      // Modifier un artefact validé le remet « à valider ».
+                      if (widget.validation != null) ValidationPoste(c).remettreApresModification(widget.validation!, avant, existante);
                       ToastsSigh.afficher(ctx, widget.messageModification,
                           type: TypeToast.succes,
                           detail: widget.referenceToast?.call(existante),
@@ -297,6 +311,7 @@ class _CrudStockState extends State<CrudStock> {
                   icone: LucideIcons.eye,
                   libelle: 'Consulter',
                   onPressed: () => _ouvrirDetail(ctx, f)),
+              if (widget.validation != null) ...ValidationPoste(c).boutonsDeLigne(context, widget.validation!, f),
               if (c.droit.editer)
                 BoutonIcone(
                     icone: LucideIcons.pencil,

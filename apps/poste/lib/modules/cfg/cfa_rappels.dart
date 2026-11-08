@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cfa_commun.dart';
 
@@ -82,6 +83,7 @@ class _OngletModeles extends StatelessWidget {
     final c = ContexteEcran.of(context);
     return CfaTableau(
       collection: 'modelesMessage',
+      validation: const ValidationCrud('modeles_messages'),
       entite: 'Modèle',
       libelleNouveau: 'Nouveau modèle',
       titreCreation: 'Modèle de message',
@@ -101,6 +103,13 @@ class _OngletModeles extends StatelessWidget {
             libelle: 'Actif',
             texte: (r) => cfaVrai(r['actif']) ? 'Oui' : 'Non',
             rendu: (_, r) => cfaVrai(r['actif']) ? const BadgeSigh('Oui', ton: TonSigh.succes) : const BadgeSigh('Non')),
+        ColonneTableau(
+            cle: 'aValider',
+            libelle: 'Validation',
+            texte: (r) => cfaVrai(r['aValider']) || cfaVrai(r['valideLe']) ? ValidationPoste(c).texteBadge('modeles_messages', r['id']) : 'sans objet',
+            rendu: (_, r) => cfaVrai(r['aValider']) || cfaVrai(r['valideLe'])
+                ? (ValidationPoste(c).badge('modeles_messages', r['id']) ?? const BadgeSigh('À valider', ton: TonSigh.attention))
+                : const Text('sans objet', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300))),
       ],
       champs: (e) => [
         ChampDef(nom: 'occasion', libelle: 'Occasion', type: TypeChamp.select, requis: true, options: [for (final o in cfaOccasions) OptionChamp(o.$1, o.$2)]),

@@ -3,6 +3,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m4/mat_crud.dart';
 import 'rhb_commun.dart';
@@ -42,6 +43,7 @@ class EcranBadgesModeles extends StatelessWidget with EcranMaquette {
         listenable: col,
         builder: (context, _) => CrudMat(
               collection: col,
+              validation: const ValidationCrud('modeles_badge'),
               entite: 'modèle de badge',
               entiteP: 'modèles de badge',
               prefixeId: 'MOD',
@@ -66,8 +68,10 @@ class EcranBadgesModeles extends StatelessWidget with EcranMaquette {
                 ColonneTableau(
                     cle: 'aValider',
                     libelle: 'Statut',
-                    texte: (m) => m['aValider'] == true ? 'Proposition à valider' : 'Arrêté',
-                    rendu: (_, m) => m['aValider'] == true ? const BadgeSigh('Proposition à valider', ton: TonSigh.attention) : const BadgeSigh('Arrêté', ton: TonSigh.succes)),
+                    texte: (m) => ValidationPoste(c).etat('modeles_badge', m['id']) != null ? ValidationPoste(c).texteBadge('modeles_badge', m['id']) : (m['aValider'] == true ? 'À valider' : 'Arrêté'),
+                    rendu: (_, m) =>
+                        ValidationPoste(c).badge('modeles_badge', m['id']) ??
+                        (m['aValider'] == true ? const BadgeSigh('À valider', ton: TonSigh.attention) : const BadgeSigh('Arrêté', ton: TonSigh.succes))),
               ],
               champs: (m) => [
                 const ChampDef(nom: 'libelle', libelle: 'Intitulé du modèle', requis: true, col: ColChamp.plein),

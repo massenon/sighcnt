@@ -7,6 +7,7 @@ import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m14/commun_m14.dart' show rolesDe, surchargesRbac;
 import '../m4/mat_commun.dart';
@@ -113,7 +114,8 @@ void cfaSaisir(BuildContext ctx,
     TailleModale taille = TailleModale.lg,
     String prefixeId = 'ID',
     bool Function(BuildContext ctx, Map<String, Object?> saisie, Fiche? existante)? avant,
-    void Function(Fiche creee)? apres}) {
+    void Function(Fiche creee)? apres,
+    ValidationCrud? validation}) {
   final c = ContexteEcran.of(ctx);
   final ctl = ControleurFormulaire(champs, existante != null ? {for (final e in (preparer?.call(existante) ?? existante).entries) e.key: e.value is num ? '${e.value}' : e.value} : initiales);
   afficherModale<void>(ctx,
@@ -146,7 +148,10 @@ void cfaSaisir(BuildContext ctx,
                         messageAnnulation: 'Création annulée — la fiche est archivée.');
                     apres?.call(r.fiche);
                   } else {
+                    final avantModif = {...existante};
                     final annuler = col.mettreAJour(existante['id'], f);
+                    // Modifier un artefact validé le remet « à valider » (moteur de validation commun).
+                    if (validation != null) ValidationPoste(c).remettreApresModification(validation, avantModif, existante);
                     ToastsSigh.afficher(ctx, 'Modifications enregistrées.', type: TypeToast.succes, annuler: annuler);
                   }
                 }),
@@ -200,6 +205,7 @@ class CfaTableau extends StatelessWidget {
     this.creer = true,
     this.apres,
     this.largeurTiroir = 672,
+    this.validation,
   });
 
   final String collection;
@@ -237,6 +243,9 @@ class CfaTableau extends StatelessWidget {
   final void Function(Fiche)? apres;
   final double largeurTiroir;
 
+  /// `validation: { famille, cible?, siChange? }` de `K.actionsLigne` : bouton Valider par ligne (moteur commun), et modifier remet « à valider ».
+  final ValidationCrud? validation;
+
   Fiche _fiche(Map<String, Object?> s, Fiche? e) => fiche != null ? fiche!(s, e) : {...s};
 
   @override
@@ -244,7 +253,7 @@ class CfaTableau extends StatelessWidget {
     final c = ContexteEcran.of(context);
     final col = c.magasin.collection(collection);
     return ListenableBuilder(
-        listenable: col,
+        listenable: validation == null ? col : Listenable.merge([col, c.magasin.collection(valCollectionValidations)]),
         builder: (ctx, _) {
           final rows = lignes != null ? lignes!(col.actives) : col.actives;
           return TableauSigh(
@@ -286,12 +295,13 @@ class CfaTableau extends StatelessWidget {
                         sousTitre: sousTitreDetail?.call(f),
                         largeurMax: largeurTiroir,
                         corps: detail!(ctx2, f))),
+              if (validation != null) ...ValidationPoste(c).boutonsDeLigne(ctx2, validation!, f),
               ...?actionsLigneSup?.call(ctx2, f),
               if (c.droit.editer)
                 BoutonIcone(
                     icone: LucideIcons.pencil,
                     libelle: 'Modifier',
-                    onPressed: () => cfaSaisir(ctx2, col: col, champs: champs(f), fiche: _fiche, existante: f, titreCreation: titreCreation, entite: entite, taille: taille, avant: avant, preparer: preparer)),
+                    onPressed: () => cfaSaisir(ctx2, col: col, champs: champs(f), fiche: _fiche, existante: f, titreCreation: titreCreation, entite: entite, taille: taille, avant: avant, preparer: preparer, validation: validation)),
               if (archivable && c.droit.annuler) BoutonIcone(icone: LucideIcons.archive, libelle: 'Archiver', onPressed: () => cfaArchiver(ctx2, col, f)),
               ...?actionsLigneApres?.call(ctx2, f),
             ],

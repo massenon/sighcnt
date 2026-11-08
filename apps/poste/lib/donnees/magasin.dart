@@ -458,6 +458,8 @@ class Magasin {
     'prescriptions': 'M2',
     'constantes': 'M1',
     'pathologies': 'M2',
+    // Les validations des artefacts que le code porte (check-listes du bloc, répartition des charges, barème de l'ITS, jeu d'import) : une fiche par cible.
+    'validationsReferentiels': 'CFG',
     'soignants': 'M2',
     'notifications': 'M14',
     'souscripteurs': 'M9',
@@ -655,6 +657,7 @@ class Magasin {
     'prescriptions',
     'constantes',
     'pathologies',
+    'validationsReferentiels',
     'soignants',
     'notifications',
     'visitesHospi',

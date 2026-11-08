@@ -7,6 +7,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cfa_commun.dart';
 import 'cfb_commun.dart';
@@ -247,13 +248,40 @@ class _EtatNotifications extends State<EcranNotifications> {
     ToastsSigh.afficher(ctx, 'Paramétrage enregistré.', type: TypeToast.succes, detail: '$actifs canal(aux) actif(s).');
   }
 
+  Widget? _modelesAValider(BuildContext ctx, ContexteEcran c) {
+    final vp = ValidationPoste(c);
+    if (!vp.peutValider('modeles_messages')) return null;
+    final attente = [for (final m in c.magasin.collection('modelesMessage').actives) if (m['aValider'] == true) m];
+    if (attente.isEmpty) return null;
+    return CarteSigh(
+        titre: 'Modèles de messages à valider (${attente.length})',
+        child: cfaPile([
+          for (final m in attente)
+            Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: JetonsShell.slate200)),
+                child: Row(children: [
+                  Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('${m['libelle'] ?? ''}', style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500, color: JetonsShell.slate800)),
+                    Text(_extrait('${m['texte'] ?? ''}'), style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate400)),
+                  ])),
+                  ...vp.boutons(ctx, 'modeles_messages', m['id']),
+                ])),
+        ], espace: 8));
+  }
+
+  static String _extrait(String t) => t.length > 100 ? t.substring(0, 100) : t;
+
   @override
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     return ListenableBuilder(
-        listenable: c.magasin.collection('reglages'),
+        listenable: Listenable.merge([c.magasin.collection('reglages'), c.magasin.collection('modelesMessage'), c.magasin.collection(valCollectionValidations)]),
         builder: (ctx, _) => cfaPile([
               _carteSon(ctx, c),
+              // Les modèles de messages en attente se valident ICI aussi, un par un : le geste est celui de la Direction, absent pour tout autre profil.
+              if (_modelesAValider(ctx, c) case final carte?) carte,
               cfaKpis(cfbKpisNotifications([for (final n in cfbNotifications) cfbCanaux(n, _canauxEnregistres(c))])),
               CarteSigh(
                   titre: 'Matrice des notifications',

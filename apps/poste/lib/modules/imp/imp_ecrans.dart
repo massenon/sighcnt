@@ -11,6 +11,7 @@ import '../../import/classeur_xlsx.dart';
 import '../../import/port_magasin.dart';
 import '../../import/selecteurs_import.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m6/flux_reprise.dart';
 
@@ -385,8 +386,10 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
     final c = ContexteEcran.of(context);
     final j = _jeu;
     final lots = c.magasin.collection(collectionLots);
+    final vp = ValidationPoste(c);
+    // Un jeu en proposition se valide par le moteur commun (famille `jeux_import`, cible = l'écran du jeu) : l'état se LIT, il ne se déduit pas de la constante.
     return ListenableBuilder(
-      listenable: lots,
+      listenable: Listenable.merge([lots, c.magasin.collection(valCollectionValidations)]),
       builder: (context, _) {
         final port = _port(c);
         final siens = [for (final l in lots.toutes) if (l['jeu'] == j.id) l];
@@ -411,9 +414,14 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
                 icone: LucideIcons.badgeCheck,
                 ton: j.supporte ? TonSigh.succes : TonSigh.attention),
           ]),
-          if (!j.supporte) ...[
+          if (!j.supporte && !(vp.etat('jeux_import', j.ecran)?.enAttente == false)) ...[
             const SizedBox(height: 16),
             NoteSigh('Proposition à valider. ${j.limite}', ton: TonSigh.attention, icone: LucideIcons.circleHelp),
+            if (vp.bouton(context, 'jeux_import', j.ecran) case final b?) Padding(padding: const EdgeInsets.only(top: 16), child: Align(alignment: Alignment.centerRight, child: b)),
+          ] else if (!j.supporte) ...[
+            const SizedBox(height: 16),
+            NoteSigh('Jeu validé. ${j.limite ?? ''}', icone: LucideIcons.circleCheck),
+            if (vp.badge('jeux_import', j.ecran) case final b?) Padding(padding: const EdgeInsets.only(top: 16), child: Align(alignment: Alignment.centerRight, child: b)),
           ] else if (j.limite != null) ...[
             const SizedBox(height: 16),
             NoteSigh(j.limite!, icone: LucideIcons.info),
@@ -508,8 +516,9 @@ class EcranImportAccueil extends StatelessWidget with EcranMaquette {
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     final lots = c.magasin.collection(collectionLots);
+    final vp = ValidationPoste(c);
     return ListenableBuilder(
-      listenable: lots,
+      listenable: Listenable.merge([lots, c.magasin.collection(valCollectionValidations)]),
       builder: (context, _) {
         final tous = lots.toutes;
         final visibles = [for (final j in jeuxImport) if (c.ouvre == null || c.ouvre!(j.ecran)) j];
@@ -534,7 +543,11 @@ class EcranImportAccueil extends StatelessWidget with EcranMaquette {
                                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                               Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                 Expanded(child: Text(j.libelle, style: const TextStyle(fontWeight: FontWeight.w600, color: JetonsShell.navy900))),
-                                j.supporte ? const BadgeSigh('Supporté', ton: TonSigh.succes) : const BadgeSigh('Proposition à valider', ton: TonSigh.attention),
+                                j.supporte
+                                    ? const BadgeSigh('Supporté', ton: TonSigh.succes)
+                                    : (vp.etat('jeux_import', j.ecran)?.enAttente == false
+                                        ? (vp.badge('jeux_import', j.ecran) ?? const BadgeSigh('Validé', ton: TonSigh.succes))
+                                        : const BadgeSigh('Proposition à valider', ton: TonSigh.attention)),
                               ]),
                               const SizedBox(height: 8),
                               Text(j.description, style: const TextStyle(fontSize: 14, color: JetonsShell.slate600)),

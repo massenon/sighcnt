@@ -4,13 +4,15 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m6/flux_commun.dart' show SourceFlux;
 import '../m6/stock_crud.dart';
 import 'cat_commun.dart';
 
-Widget _provenance(Map<String, Object?> u) => catProvenanceUnite(u) == 'à confirmer'
-    ? const BadgeSigh('À confirmer', ton: TonSigh.attention)
+/// Une unité à confirmer ou validée porte l'état LU du moteur de validation commun (`K.badgeValidation('labo_variables')`) ; sinon sa source.
+Widget _provenance(ValidationPoste vp, Map<String, Object?> u) => (u['aValider'] == true || (u['valideLe'] != null && u['valideLe'] != ''))
+    ? (vp.badge('labo_variables', u['id']) ?? const BadgeSigh('À valider', ton: TonSigh.attention))
     : Text(catSourceUnite(u), style: styleCat(taille: 12, couleur: JetonsShell.slate500));
 
 /// `m5-unites` — « Unités de mesure » : les unités dans lesquelles les résultats s'expriment, pré-insérées pour que le laboratoire n'ait pas à les
@@ -36,6 +38,7 @@ class EcranUnitesLabo extends StatelessWidget with EcranMaquette {
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       CrudStock(
         collection: c.magasin.collection('unitesLabo'),
+        validation: const ValidationCrud('labo_variables'),
         entite: 'unité',
         entiteP: 'unités',
         prefixeId: 'UNI',
@@ -60,7 +63,7 @@ class EcranUnitesLabo extends StatelessWidget with EcranMaquette {
               libelle: 'Provenance',
               texte: catProvenanceUnite,
               valeur: catProvenanceUnite,
-              rendu: (_, u) => _provenance(u)),
+              rendu: (_, u) => _provenance(ValidationPoste(c), u)),
         ],
         filtres: [
           FiltreTableau(
@@ -116,7 +119,7 @@ class EcranUnitesLabo extends StatelessWidget with EcranMaquette {
           ('Symbole', Text('${u['symbole'] ?? ''}', style: monoCode.copyWith(fontSize: 14, height: 20 / 14))),
           ('Intitulé', '${u['libelle'] ?? ''}'),
           ('Domaine', BadgeSigh('${u['domaine'] ?? ''}', ton: TonSigh.navy)),
-          ('Provenance', _provenance(u)),
+          ('Provenance', _provenance(ValidationPoste(c), u)),
         ]),
         titreDetail: (u) => '${u['libelle'] ?? ''}',
         sousTitreDetail: null,

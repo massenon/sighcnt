@@ -4912,7 +4912,11 @@
     "dm",
     "comptable",
     "surveillant",
-    "agentadmin"
+    "agentadmin",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
    ]
   },
   {

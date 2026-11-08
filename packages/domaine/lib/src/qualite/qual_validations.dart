@@ -169,3 +169,37 @@ QualBilanValidations qualBilanValidations(List<QualFile> files, List<QualProfess
     files: files.length,
     professionnels: pros.where((x) => x.compte > 0).length,
     validees: qualValidees.length);
+
+/// Ce qui ne se lève PAS par un geste : « Données à compléter » du centre des validations (vague 91). Le marquage tombe par la SAISIE de la donnée qui manque,
+/// jamais par une signature. [compte] `null` : file non amorcée sur ce poste ([nonAmorce]) ou structurelle ([structurel] : aucun marquage à compter).
+class QualACompleter {
+  const QualACompleter(this.libelle, this.qui, this.compte, this.ecran, this.motif, {this.nonAmorce = false, this.structurel = false});
+  final String libelle;
+  final String qui;
+  final int? compte;
+  final String ecran;
+  final String motif;
+  final bool nonAmorce;
+  final bool structurel;
+
+  /// L'intitulé tel que la ligne l'affiche : la mention d'amorçage ou le compte s'y ajoutent.
+  String get titre => libelle + (nonAmorce ? ' (non amorcé sur ce poste)' : (compte != null ? ' : ${_nb(compte!)} entrée(s)' : ''));
+}
+
+/// Les trois lignes de « Données à compléter » : le parc technique (marque, n° de série, mise en service), le répertoire des ambulances (un numéro
+/// d'urgence n'est JAMAIS inventé) et les plages par lot de réactif (structurel). [ambulancesToutes] : la collection ENTIÈRE, dont le vide signifie « non amorcée ».
+List<QualACompleter> qualACompleter({required Iterable<QualFiche> materiel, required Iterable<QualFiche> ambulancesToutes}) {
+  final amorcees = ambulancesToutes.isNotEmpty;
+  return [
+    QualACompleter('Parc technique — fiches à compléter', 'Ingénierie / administration',
+        _actives(materiel).where((m) => _v(m['aCompleter'])).length, 'm13-maintenance',
+        'Marque, n° de série et mise en service MANQUENT physiquement : une validation ne crée pas un numéro de série — le marquage disparaît par la SAISIE, jamais par une signature.'),
+    QualACompleter('Répertoire des ambulances : numéros à renseigner', 'Accueil',
+        amorcees ? _actives(ambulancesToutes).where((r) => !_v(r['telephone'])).length : null, 'm13-repertoire-ambulances',
+        'Aucun numéro d’urgence n’est inventé : la fiche reste vide et le dit jusqu’à la SAISIE du numéro, jamais par une signature.',
+        nonAmorce: !amorcees),
+    const QualACompleter('Plages de référence par lot de réactif', 'Biologiste médical', null, 'm5-valeurs-reference',
+        'Structurel, sans marquage : chaque NOUVEAU lot porte les bornes de SA notice, la notice du réactif fait foi, à chaque arrivage.',
+        structurel: true),
+  ];
+}

@@ -6,6 +6,7 @@ import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cfa_commun.dart';
 
@@ -189,6 +190,7 @@ class _OngletAnalyses extends StatelessWidget {
           listenable: col,
           builder: (ctx, _) => CfaTableau(
                 collection: 'analyses',
+                validation: const ValidationCrud('analyses'),
                 entite: 'Analyse',
                 titreCreation: 'Nouvelle analyse au catalogue',
                 prefixeId: 'ANA',
@@ -206,7 +208,9 @@ class _OngletAnalyses extends StatelessWidget {
                       cle: 'tarifProvisoire',
                       libelle: 'Statut',
                       texte: (a) => cfaVrai(a['tarifProvisoire']) ? 'À confirmer' : 'Confirmé',
-                      rendu: (_, a) => cfaVrai(a['tarifProvisoire']) ? const BadgeSigh('À confirmer', ton: TonSigh.attention) : const BadgeSigh('Confirmé', ton: TonSigh.succes)),
+                      rendu: (_, a) => cfaVrai(a['tarifProvisoire']) || cfaVrai(a['aValider']) || cfaVrai(a['valideLe'])
+                          ? (ValidationPoste(c).badge('analyses', a['id']) ?? const BadgeSigh('À valider', ton: TonSigh.attention))
+                          : const BadgeSigh('Confirmé', ton: TonSigh.succes)),
                 ],
                 champs: (e) => e == null
                     ? [
@@ -253,6 +257,7 @@ class _OngletActes extends StatelessWidget {
                   icone: n.ton == 'succes' ? LucideIcons.circleCheck : n.ton == 'attention' ? LucideIcons.circleQuestionMark : LucideIcons.gitBranch),
             CfaTableau(
               collection: 'actes',
+              validation: const ValidationCrud('actes'),
               entite: 'Acte',
               libelleNouveau: 'Nouveau',
               titreCreation: 'Nouvelle prestation',
@@ -279,6 +284,8 @@ class _OngletActes extends StatelessWidget {
                       return Column(crossAxisAlignment: CrossAxisAlignment.end, mainAxisSize: MainAxisSize.min, children: [
                         _prix(a['prix'], gras: true, couleur: cfaVrai(a['tarifProvisoire']) ? JetonsShell.warning700 : JetonsShell.slate800),
                         if (cfaVrai(a['tarifProvisoire'])) const Text('valeur d’attente', style: TextStyle(fontSize: 10, height: 1.5, color: JetonsShell.warning600)),
+                        if (cfaVrai(a['tarifProvisoire']) || cfaVrai(a['valideLe']))
+                          Padding(padding: const EdgeInsets.only(top: 2), child: ValidationPoste(c).badge('actes', a['id']) ?? const SizedBox.shrink()),
                       ]);
                     }),
                 ColonneTableau(

@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
+import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m1/commun_m1.dart' show bandeauLectureSeule;
 import 'bloc_commun.dart';
@@ -158,10 +159,15 @@ class EcranChecklistBloc extends StatelessWidget with EcranMaquette {
     final c = ContexteEcran.of(context);
     final col = c.magasin.collection('checklistsBloc');
     return ListenableBuilder(
-      listenable: col,
+      listenable: Listenable.merge([col, c.magasin.collection(valCollectionValidations)]),
       builder: (context, _) {
         final rows = col.actives;
         final k = blocKpisChecklist(rows);
+        // L'état se LIT dans le moteur de validation (fiche `VRF-checklist-bloc`), jamais dans la constante du code.
+        final vp = ValidationPoste(c);
+        final etatCk = vp.etat('checklists_bloc', 'checklist-bloc');
+        final enAttenteCk = etatCk == null || etatCk.enAttente;
+        final boutonCk = vp.bouton(context, 'checklists_bloc', 'checklist-bloc');
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           bandeauLectureSeule(c),
           kpisBloc([
@@ -176,9 +182,19 @@ class EcranChecklistBloc extends StatelessWidget with EcranMaquette {
           ]),
           Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: NoteSigh(
-                  'Check-listes arrêtées par les praticiens du bloc le ${dateBloc(blocChecklistArreteLe)} (validation écrite). Proposées à l’origine faute de document remis — la provenance reste dite.',
-                  icone: LucideIcons.circleCheck)),
+              child: enAttenteCk
+                  ? const NoteSigh(
+                      'Les items proposés suivent la pratique courante de sécurité au bloc. La clinique n’a remis aucune check-liste écrite : cette liste est une proposition à valider par les praticiens du bloc (chirurgien, anesthésiste), pas une donnée reprise d’une source.',
+                      ton: TonSigh.attention,
+                      icone: LucideIcons.triangleAlert)
+                  : NoteSigh(
+                      'Check-listes arrêtées par les praticiens du bloc, validées${etatCk.valideRole != null ? ' (${etatCk.valideRole})' : ''}'
+                      '${etatCk.valideLe != null ? ' le ${dateFR(DateTime.parse(etatCk.valideLe!.substring(0, 10)))}' : ''}. Proposées à l’origine faute de document remis : la provenance reste dite.',
+                      ton: TonSigh.info,
+                      icone: LucideIcons.circleCheck)),
+          if (vp.badge('checklists_bloc', 'checklist-bloc') != null)
+            Padding(padding: const EdgeInsets.only(bottom: 8), child: Align(alignment: Alignment.centerRight, child: vp.badge('checklists_bloc', 'checklist-bloc'))),
+          if (boutonCk != null) Padding(padding: const EdgeInsets.only(bottom: 16), child: Align(alignment: Alignment.centerRight, child: boutonCk)),
           OngletsSigh(onglets: [
             OngletDef(
                 id: 'entree',
