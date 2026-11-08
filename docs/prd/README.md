@@ -27,3 +27,4 @@ Chaque exigence cite sa source dans `docs/cadrage/` ; ce qui n'a pas de source e
 Ordre de livraison recommandé : SOCLE (P0) → M6 → M12, le socle rendant les deux autres plus
 simples à sonder (pas de rechargement entre les étapes d'un parcours).
 | `PRD-M10-planning-individuel-et-libre-service-agent.md` | Planning et gardes individuels (régime propre à un agent, historique daté), filtres avancés, CRUD du planning, espace « Mes » de l'agent (17 rubriques, mobile et poste, validation DAF) et revue d'écarts des écrans | proposé le 06/11/2026 |
+| [PRD-M13-validation-par-modale-et-fin-du-statut-a-valider](PRD-M13-validation-par-modale-et-fin-du-statut-a-valider.md) | Validation par modale de mise à jour : le choix Valider dans la modale, enregistrer par un profil de la famille valide, plus de statut « à valider » une fois l’élément enregistré ; brouillon du 08/11/2026, questions Q1 à Q5 |
