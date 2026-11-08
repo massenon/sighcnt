@@ -14478,6 +14478,8 @@ async function viderMessages(page) {
       /* --- modifier l'élément validé le remet « à valider » ---------------------------------------------------------------- */
       if (c.edit) {
         await sessionDe('admin');   /* le geste de MODIFIER est celui d'un profil qui édite : l'échographiste lit ce catalogue, il ne le corrige pas */
+        /* Un scénario précédent a pu laisser l'exercice 2025 (clos, lecture seule) choisi : on repart de l'exercice courant. */
+        await page.evaluate(() => { try { window.SIGH.exercice.choisir(String(new Date().getFullYear())); } catch (e) { /* sans effet */ } });
         await ouvrirCas(c);
         if (c.col) await chercher(libelleArtefact);
         let geste = 'ok';
