@@ -2080,10 +2080,10 @@
             + 'La clinique n’a remis <strong>aucune check-liste écrite</strong> : cette liste est une '
             + '<strong>proposition à valider</strong> par les praticiens du bloc (chirurgien, anesthésiste), pas une donnée reprise d’une source.',
           { tone: 'warning', icon: 'triangle-alert' })
-          : K.note('Check-listes <strong>validées'
+          : K.note('Check-listes <strong>arrêtées par les praticiens du bloc</strong>, validées'
             + (etatCk.valideRole ? ' (' + etatCk.valideRole + ')' : '')
             + (etatCk.valideLe ? ' le ' + C.dateFR(String(etatCk.valideLe).slice(0, 10)) : '')
-            + '</strong>. Proposées à l’origine faute de document remis : la provenance reste dite.',
+            + '. Proposées à l’origine faute de document remis : la provenance reste dite.',
           { tone: 'info', icon: 'check-circle-2' });
         vue.appendChild(noteCk);
         vue.appendChild(el('div.flex.justify-end', null, K.badgeValidation('checklists_bloc', 'checklist-bloc')));

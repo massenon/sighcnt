@@ -7999,11 +7999,11 @@ async function viderMessages(page) {
         kpi: /Comptes rendus émis/.test(t) && /calculés/.test(t),
         caissierFerme: !N.can('caissier', N.get('m2-imagerie-demandes')),
         echographisteStats: !!N.can('echographiste', N.get('m2-stats-echographie')),
-        echographisteCfgFerme: !N.can('echographiste', N.get('cfg-imagerie-catalogue')),
+        echographisteCfgFerme: !(N.droitsEcran && N.droitsEcran('echographiste', 'cfg-imagerie-catalogue', 'CFG') || {}).editer,
       };
     });
     verifier('Les statistiques de l’échographie sont CALCULÉES, sous Pilotage', stats.kpi);
-    verifier('RBAC : le caissier ne voit pas les demandes ; l’échographiste a ses stats, pas le catalogue CFG',
+    verifier('RBAC : le caissier ne voit pas les demandes ; l’échographiste a ses stats et LIT le catalogue CFG pour le valider, sans pouvoir l’écrire',
       stats.caissierFerme && stats.echographisteStats && stats.echographisteCfgFerme);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
