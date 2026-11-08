@@ -1067,7 +1067,16 @@
     });
   }
 
-  function badgeStatut(j) { return j.statut === 'supporte' ? U.badge('Supporté', 'success') : U.badge('Proposition à valider', 'warning'); }
+  /* Un jeu en proposition se valide par le moteur commun (famille `jeux_import`, cible = l'écran du jeu) : l'état se LIT, il ne se déduit pas de la constante. */
+  function jeuValide(j) {
+    if (j.statut !== 'proposition') return false;
+    var e = global.SIGH.validations && global.SIGH.validations.etatValidation('jeux_import', j.ecran);
+    return !!(e && !e.enAttente);
+  }
+  function badgeStatut(j) {
+    if (j.statut === 'supporte') return U.badge('Supporté', 'success');
+    return jeuValide(j) ? K.badgeValidation('jeux_import', j.ecran) : U.badge('Proposition à valider', 'warning');
+  }
 
   function ecranJeu(j) {
     return function (root) {
@@ -1092,8 +1101,14 @@
         ];
       })()));
 
-      if (j.statut === 'proposition') host.appendChild(K.note('<strong>Proposition à valider.</strong> ' + j.limite, { tone: 'warning', icon: 'help-circle' }));
-      else if (j.limite) host.appendChild(K.note(j.limite, { tone: 'info', icon: 'info' }));
+      if (j.statut === 'proposition' && !jeuValide(j)) {
+        host.appendChild(K.note('<strong>Proposition à valider.</strong> ' + j.limite, { tone: 'warning', icon: 'help-circle' }));
+        var bv = K.boutonValider('jeux_import', j.ecran, { apres: function () { global.SIGH.app.go(j.ecran); } });
+        if (bv) host.appendChild(el('div.flex.justify-end', null, bv));
+      } else if (j.statut === 'proposition') {
+        host.appendChild(K.note('<strong>Jeu validé.</strong> ' + (j.limite || ''), { tone: 'info', icon: 'check-circle-2' }));
+        host.appendChild(el('div.flex.justify-end', null, K.badgeValidation('jeux_import', j.ecran)));
+      } else if (j.limite) host.appendChild(K.note(j.limite, { tone: 'info', icon: 'info' }));
 
       /* 1. Le modèle */
       var colTable = K.miniTable(['Colonne', 'Obligatoire', 'Type', 'Valeurs permises', 'Exemple'], j.colonnes.map(function (c) {

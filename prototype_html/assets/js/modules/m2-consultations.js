@@ -2603,7 +2603,7 @@
               key: 'aValider', label: 'Provenance', align: 'right',
               text: function (x) { return x.aValider ? 'à valider' : 'arrêtée'; },
               render: function (x) {
-                return x.aValider ? U.badge('À valider', 'warning') : U.badge('Arrêtée', 'success');
+                return x.aValider || x.valideLe ? K.badgeValidation('pathologies', x.id) : U.badge('Arrêtée', 'success');
               },
             },
           ],
@@ -2618,7 +2618,7 @@
             },
             apres: afficher,
           })].filter(Boolean),
-          rowActions: K.actionsLigne(col(), champs(), { module: 'M2', refresh: afficher }),
+          rowActions: K.actionsLigne(col(), champs(), { module: 'M2', refresh: afficher, validation: { famille: 'pathologies' } }),
         });
       }
 

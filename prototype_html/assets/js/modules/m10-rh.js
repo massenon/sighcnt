@@ -6380,7 +6380,7 @@
       return K.crud({
         collection: 'modelesBadge', module: 'M10',
         entite: 'modèle de badge', entiteP: 'modèles de badge',
-        pageSize: 8, defaultSort: 'libelle',
+        pageSize: 8, defaultSort: 'libelle', validation: { famille: 'modeles_badge' },
         columns: [
           { key: 'libelle', label: 'Modèle' },
           { key: 'format', label: 'Format' },
@@ -6392,7 +6392,7 @@
             return m.defaut ? U.badge('Modèle par défaut', 'success') : el('span.text-slate-300', { text: '—' });
           } },
           { key: 'aValider', label: 'Statut', render: function (m) {
-            return m.aValider ? U.badge('Proposition à valider', 'warning') : U.badge('Arrêté', 'success');
+            return K.badgeValidation('modeles_badge', m.id) || (m.aValider ? U.badge('À valider', 'warning') : U.badge('Arrêté', 'success'));
           } },
         ],
         fields: [

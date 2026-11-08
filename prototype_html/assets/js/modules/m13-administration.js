@@ -1607,7 +1607,7 @@
             { key: 'reponses', label: 'R\u00e9ponses', align: 'right',
               value: function (r) { return colReponses().active().filter(function (x) { return x.enqueteId === r.id; }).length; } },
             { key: 'aValider', label: 'Statut', render: function (r) {
-              return r.aValider ? U.badge('Proposition \u00e0 valider', 'warning') : U.badge('Valid\u00e9', 'success');
+              return K.badgeValidation('enquetes', r.id) || (r.aValider ? U.badge('\u00c0 valider', 'warning') : U.badge('Valid\u00e9', 'success'));
             } },
           ],
           rowActions: function (r) {
@@ -1616,6 +1616,7 @@
                 onclick: function () { saisirReponse(r, afficher); } }),
               K.iconBtn('eye', 'Voir les r\u00e9ponses', function () { voirReponses(r); }),
             ];
+            actes.push(K.boutonValider('enquetes', r.id, { size: 'sm', moduleCode: 'M13', apres: afficher }));
             var partager = K.commandeIcone('share-2', 'Partager \u00e0 un tiers', function () { ouvrirPartage(r); });
             if (partager) actes.push(partager);
             var mod = K.commandeIcone('pencil', 'Modifier le mod\u00e8le', function () { editerModele(r); });
@@ -1832,6 +1833,7 @@
                   }));
                 } else {
                   colEnquetes().update(r.id, Object.assign({}, v2, { questions: qs }));
+                  K.remettreAValider('enquetes', r.id);
                 }
                 m2.close(); afficher();
                 U.toast(creation ? 'Mod\u00e8le cr\u00e9\u00e9.' : 'Mod\u00e8le enregistr\u00e9.', { type: 'success' });

@@ -176,7 +176,9 @@
   function commande(label, opts) {
     var o = opts || {};
     var d = droits(o.moduleCode);
-    var accorde = o.droit === 'annuler' ? d.annuler : d.editer;
+    /* `droit: 'valider'` : le geste de validation d'un référentiel. Le garde de RÔLE est celui de la famille (boutonValider) ;
+       côté matrice, il suffit au profil d'OUVRIR l'écran, valider n'étant pas modifier la fiche. */
+    var accorde = o.droit === 'annuler' ? d.annuler : (o.droit === 'valider' ? d.voir : d.editer);
     return accorde ? btn(label, o) : null;
   }
 
@@ -186,6 +188,61 @@
     var d = droits(o.moduleCode);
     var accorde = o.droit === 'annuler' ? d.annuler : d.editer;
     return accorde ? iconBtn(icone, titre, onclick, o.variant) : null;
+  }
+
+  /* ==========================================================================
+   * VALIDATION D'UN RÉFÉRENTIEL : UN BOUTON PAR ÉCRAN (Direction, 07/11/2026)
+   * --------------------------------------------------------------------------
+   * `boutonValider(famille, id, opts)` : commande ABSENTE hors des rôles de la
+   * famille (jamais grisée) et pour un artefact déjà validé ; le geste est
+   * unitaire et passe par `validerReferentiel`, qui lit le rôle dans la
+   * SESSION (jamais passé par l'écran). `badgeValidation` dit l'état LU.
+   * `remettre(famille, id)` : à appeler sur tout chemin de modification.
+   * ======================================================================== */
+  function moteurValidation() { return global.SIGH && global.SIGH.validations; }
+  function roleSession() { var s = S.session && S.session(); return (s && s.role) || ''; }
+  function peutValider(familleId) {
+    var V = moteurValidation();
+    var f = V && V.FAMILLES_A_VALIDER.filter(function (x) { return x.id === familleId; })[0];
+    return !!(f && f.roles.indexOf(roleSession()) >= 0);
+  }
+  function badgeValidation(familleId, id) {
+    var V = moteurValidation();
+    var e = V && V.etatValidation(familleId, id);
+    if (!e) return null;
+    if (e.enAttente) return U.badge('À valider', 'warning');
+    var t = 'Validé';
+    if (e.valideLe) t += ' (' + [e.valideRole, C.dateFR(String(e.valideLe).slice(0, 10))].filter(Boolean).join(', ') + ')';
+    return U.badge(t, 'success');
+  }
+  function boutonValider(familleId, id, opts) {
+    var o = opts || {};
+    var V = moteurValidation();
+    if (!V || !peutValider(familleId)) return null;
+    var e = V.etatValidation(familleId, id);
+    if (!e || !e.enAttente) return null;
+    return commande(o.label || 'Valider', {
+      droit: 'valider', variant: o.variant || 'primary', size: o.size, icon: 'shield-check', moduleCode: o.moduleCode, title: 'Valider « ' + e.libelle + ' »',
+      onclick: function (ev) {
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        U.confirm({
+          title: 'Valider « ' + e.libelle + ' »',
+          message: 'La validation atteste que cet élément a été vérifié par un profil habilité (' + e.profil + '). Elle est <strong>journalisée</strong> '
+            + '(RG-12), ne modifie aucune valeur, et toute modification ultérieure le remettra à valider.',
+          confirmLabel: 'Valider',
+        }).then(function (ok) {
+          if (!ok) return;
+          var r = V.validerReferentiel(familleId, id);
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          U.toast('« ' + e.libelle + ' » validé.', { type: 'success', detail: 'Le ' + C.dateHeure(r.valideLe) + ' par ' + r.validePar + '.' });
+          if (o.apres) o.apres(r);
+        });
+      },
+    });
+  }
+  function remettreAValider(familleId, id) {
+    var V = moteurValidation();
+    return V ? V.remettreAValider(familleId, id) : null;
   }
 
   /** Bandeau affiché quand le profil n'a qu'un droit de lecture sur l'écran. */
@@ -249,7 +306,13 @@
                   if (err) { U.toast(err, { type: 'error' }); return; }
                 }
                 if (cfg.transform) values = cfg.transform(values, record);
+                var avantMaj = isEdit && cfg.validation ? Object.assign({}, record) : null;
                 var res = isEdit ? col.update(record.id, values) : col.insert(values);
+                /* Modifier un artefact validé le remet « à valider » (déclaré par `validation: { famille, cible?, siChange? }`). */
+                if (isEdit && cfg.validation) {
+                  var cibleMaj = cfg.validation.cible ? cfg.validation.cible(record) : record.id;
+                  if (cibleMaj && (!cfg.validation.siChange || cfg.validation.siChange(avantMaj, record))) remettreAValider(cfg.validation.famille, cibleMaj);
+                }
                 m.close(); refresh();
                 U.toast(isEdit ? 'Modifications enregistrées.' : 'Nouveau ' + cfg.entite + ' créé.', {
                   type: 'success', undo: annulable(res.undo),
@@ -455,6 +518,9 @@
             }
             var acts = [];
             acts.push(iconBtn('eye', 'Consulter', function () { openDetail(r); }));
+            var cibleV = cfg.validation ? (cfg.validation.cible ? cfg.validation.cible(r) : r.id) : null;
+            var bvc = cibleV ? boutonValider(cfg.validation.famille, cibleV, { size: 'sm', moduleCode: cfg.module, apres: refresh, label: cfg.validation.label }) : null;
+            if (bvc) acts.push(bvc);
             if (cfg.etat) acts.push(iconBtn('printer', 'Imprimer l’état', function () { cfg.etat(r); }));
             /* Pas de duplication : un doublon que rien ne distingue de
                l'original est un doublon que quelqu'un modifiera par erreur.
@@ -714,7 +780,7 @@
    * prises en charge issues des factures…) : la donnée y reste corrigible,
    * l'opération est journalisée et annulable.
    */
-  function modifier(col, champs, record, apres, avant, transform) {
+  function modifier(col, champs, record, apres, avant, transform, surMaj) {
     var f = U.form(typeof champs === 'function' ? champs(record) : champs, record);
     var m = U.modal({
       title: 'Modifier l’enregistrement',
@@ -732,6 +798,7 @@
             if (typeof avant === 'function' && avant(v, record) === false) return;
             if (typeof transform === 'function') v = transform(v, record);   /* E364 : la fiche corrigée est transmise */
             var res = col.update(record.id, v);
+            if (typeof surMaj === 'function') surMaj(record);   /* ex. remise « à valider » d'un artefact validé */
             m.close();
             if (apres) apres();
             U.toast('Modifications enregistrées.', {
@@ -821,7 +888,12 @@
       }
       if (opts.etat) actes.push(iconBtn('printer', 'Imprimer l’état', function () { opts.etat(r); }));
       var dr = droits(opts.module);
-      if (dr.editer) actes.push(iconBtn('pencil', 'Modifier', function () { modifier(col, champs, r, rafraichir, opts.avant, opts.transform); }));
+      var bv = opts.validation ? boutonValider(opts.validation.famille, r.id, { size: 'sm', moduleCode: opts.module, apres: rafraichir, label: opts.validation.label }) : null;
+      if (bv) actes.push(bv);
+      if (dr.editer) actes.push(iconBtn('pencil', 'Modifier', function () {
+        modifier(col, champs, r, rafraichir, opts.avant, opts.transform,
+          opts.validation ? function (rec) { remettreAValider(opts.validation.famille, rec.id); } : null);
+      }));
       if (opts.archivable !== false && dr.annuler) {
         actes.push(iconBtn('archive', 'Archiver', function () {
           U.confirm({
@@ -1596,6 +1668,7 @@
   global.SIGH.kit = {
     btn: btn, iconBtn: iconBtn, lien: lien,
     commande: commande, commandeIcone: commandeIcone,
+    boutonValider: boutonValider, badgeValidation: badgeValidation, peutValider: peutValider, remettreAValider: remettreAValider,
     section: section, grid: grid, row: row, note: note, source: source,
     crud: crud, registre: registre, lectureSeule: lectureSeule, fileAttente: fileAttente,
     pageFormulaire: pageFormulaire, groupesCartes: groupesCartes, actionsPageFormulaire: actionsPageFormulaire,

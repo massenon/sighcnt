@@ -273,24 +273,8 @@
             },
           },
         ],
-        bulkActions: function (getSelected, clear) {
-          return [K.btn('Valider la sélection', {
-            size: 'sm', variant: 'success', icon: 'badge-check',
-            onclick: function () {
-              var sel = getSelected();
-              /* Même geste que la validation d'une ligne : l'état ET la signature (note de l'écran). */
-              var majs = sel.map(function (d) { return col.update(d.id, { etatValidation: 'valide', signe: true }); }).filter(Boolean);
-              clear(); table.refresh(); peindreKpis();
-              if (majs.length < sel.length) {
-                U.toast((sel.length - majs.length) + ' document(s) n’ont pas été validés : écriture refusée par le magasin.', { type: 'warning', detail: majs.length + ' validé(s) et signé(s) sur ' + sel.length + '.' });
-              }
-              if (majs.length) U.toast(majs.length + ' document(s) validé(s) et signé(s).', {
-                type: 'success', undo: function () { majs.forEach(function (m) { m.undo(); }); table.refresh(); peindreKpis(); },
-              });
-            },
-          })];
-        },
-        selectable: true,
+        /* Défaut 7 : plus de validation en MASSE. Une validation est un geste humain, un document à la fois. */
+        selectable: false,
         rowActions: function (d) {
           return [
             K.btn('Valider', {

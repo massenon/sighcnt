@@ -5018,8 +5018,8 @@
 
         function peindre() {
           C.clear(vue);
-          vue.appendChild(K.note('Une cible corrigée ici est <strong>arrêtée par la Direction</strong> : '
-            + 'la mention « à valider » tombe d’elle-même. Le <strong>sens</strong> dit de quel côté se '
+          vue.appendChild(K.note('<strong>Modifier</strong> une cible ne l’arrête pas : elle reste (ou redevient) à valider. '
+            + '<strong>Arrêter</strong> est un geste distinct, réservé à la Direction, à la DAF et à l’administrateur, et journalisé. Le <strong>sens</strong> dit de quel côté se '
             + 'trouve la réussite — un DSO se veut bas, un taux d’occupation haut ; sans lui, la grille '
             + 'colorerait en rouge un indicateur excellent.', { tone: 'info', icon: 'target' }));
 
@@ -5041,7 +5041,7 @@
                   r.sens === 'haut' ? 'info' : 'navy');
               } },
               { key: 'aValider', label: 'Statut', render: function (r) {
-                return r.aValider ? U.badge('Proposition', 'warning') : U.badge('Arrêté par la Direction', 'success');
+                return K.badgeValidation('objectifs_pilotage', r.id) || (r.aValider ? U.badge('À valider', 'warning') : U.badge('Arrêté', 'success'));
               } },
             ],
             rowActions: K.actionsLigne(col, [
@@ -5054,15 +5054,9 @@
                 options: [{ value: 'bas', label: 'la valeur la plus BASSE' }, { value: 'haut', label: 'la valeur la plus HAUTE' }] },
               { name: 'aide', label: 'Ce que mesure l’indicateur', col: 'full' },
             ], {
-              /* Corriger une cible, c'est l'ARRÊTER : la Direction vient de
-                 la décider, la marque de proposition n'a plus lieu d'être. */
-              transform: function (v) {
-                return Object.assign({}, v, {
-                  aValider: false,
-                  arreteLe: C.iso(new Date()),
-                  arretePar: S.currentUser(),
-                });
-              },
+              /* « Arrêter » est le geste de validation (moteur commun) ; « Modifier » ne l'arrête pas :
+                 une cible déjà arrêtée puis corrigée REVIENT à valider. */
+              module: 'M12', validation: { famille: 'objectifs_pilotage', label: 'Arrêter' },
               /* `refresh` et non `apres` : c'est la clé que lit
                  `actionsLigne` — la grille se repeint, seuils compris. */
               refresh: peindre,
@@ -5074,7 +5068,7 @@
                   U.descList([['Axe', r.axe], ['Objectif', C.num(r.cible) + ' ' + r.unite],
                     ['Seuil d’alerte', C.num(r.alerte) + ' ' + r.unite],
                     ['Réussite', r.sens === 'haut' ? 'valeur la plus haute' : 'valeur la plus basse'],
-                    ['Statut', r.aValider ? 'Proposition — non arbitrée' : 'Arrêté le ' + C.dateFR(r.arreteLe || '')]]),
+                    ['Statut', r.aValider ? 'À valider (non arrêté)' : 'Arrêté' + (r.valideLe ? ' le ' + C.dateFR(String(r.valideLe).slice(0, 10)) : (r.arreteLe ? ' le ' + C.dateFR(r.arreteLe) : ''))]]),
                   r.source ? K.note('<strong>Origine de la valeur proposée</strong> : ' + r.source,
                     { tone: r.aValider ? 'warning' : 'neutral', icon: 'file-search' }) : null,
                 ].filter(Boolean)),

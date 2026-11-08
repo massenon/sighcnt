@@ -4225,6 +4225,10 @@
         : '« ' + cible.libelle + ' » ne porte aucun marquage à valider.',
       'Rien à faire : toute modification ultérieure le remettra à valider.');
     }
+    /* Un tarif ABSENT ne se valide pas : le tiret n'est ni un zéro ni un tarif arrêté. */
+    if ((f.id === 'actes' || f.id === 'analyses') && cible.rec && cible.rec.prix == null) {
+      return refusValidation('TARIF_ABSENT', '« ' + cible.libelle + ' » n\u2019a aucun tarif : il n\u2019y a rien à valider.', 'Saisir le tarif d\u2019attente, puis le valider.');
+    }
     var quand = new Date().toISOString(), qui = acteur(), libRole = libelleRole(role);
     var avant;
     if (f.mode === 'fiche') {
@@ -4263,6 +4267,16 @@
     S.log('Remise à valider', f.module, f.libelle, id, avant, { motif: 'modifié depuis la validation' });
     return { ok: true, remis: true, famille: f.id, id: id };
   }
+  /** L'état LU d'un artefact (jamais stocké) : sert les badges et les boutons des écrans. */
+  function etatValidation(familleId, id) {
+    var f = familleAValider(familleId);
+    if (!f) return null;
+    var a = artefactsDe(f).filter(function (x) { return x.id === id; })[0];
+    if (!a) return null;
+    var rec = a.rec || {};
+    return { famille: f.id, id: id, libelle: a.libelle, enAttente: !!a.enAttente, valideLe: a.valideLe || null,
+      validePar: rec.validePar || null, valideRole: rec.valideRole || null, roles: f.roles.slice(), profil: profilsFamille(f) };
+  }
   /** Les familles qu'un profil VOIT au centre des validations : la Direction et la DAF voient tout, les autres leur ressort. */
   function referentielsVisiblesPar(role) {
     return referentielsAValider(VUE_COMPLETE_VALIDATIONS.indexOf(role) >= 0 ? null : { role: role });
@@ -4286,7 +4300,7 @@
   global.SIGH.validations = {
     FAMILLES_A_VALIDER: FAMILLES_A_VALIDER, VUE_COMPLETE: VUE_COMPLETE_VALIDATIONS,
     referentielsAValider: referentielsAValider, referentielsVisiblesPar: referentielsVisiblesPar,
-    validerReferentiel: validerReferentiel, remettreAValider: remettreAValider,
+    validerReferentiel: validerReferentiel, remettreAValider: remettreAValider, etatValidation: etatValidation,
   };
   global.SIGH.parcours.FAMILLES_A_VALIDER = FAMILLES_A_VALIDER;
   global.SIGH.parcours.referentielsAValider = referentielsAValider;

@@ -87,14 +87,17 @@
             if (!v) return;
             var sess = S.session() || {};
             var fiche = {
-              code: article.code, designation: article.designation,
+              code: article.code, designation: article.designation, aValider: true,
               prixRevient: Number(v.prixRevient),
               source: v.source, observation: v.observation || null,
               auteur: sess.nomComplet || sess.identifiant || 'inconnu',
               date: C.iso(AUJ),
             };
-            if (ancienne) colValorisations().update(ancienne.id, fiche);
-            else colValorisations().insert(fiche);
+            if (ancienne) {
+              colValorisations().update(ancienne.id, fiche);
+              /* Corriger une valorisation déjà arrêtée la remet à valider (le geste est celui de la Direction). */
+              K.remettreAValider('valorisation_sage', ancienne.id);
+            } else colValorisations().insert(fiche);
             m.close();
             if (apres) apres();
             U.toast('Référence valorisée.', {
@@ -367,6 +370,12 @@
     render: K.crud({
       collection: 'produits', entite: 'produit', entiteP: 'produits', module: 'M6',
       defaultSort: 'designation', pageSize: 15, drawerWidth: 'max-w-3xl',
+      /* La valorisation d'une référence SAGE (surcouche `valorisationsSage`) se valide ICI, au produit qu'elle concerne ; modifier le prix d'achat la remet à valider. */
+      validation: {
+        famille: 'valorisation_sage',
+        cible: function (p) { var v = valorisationDe(p.code); return v ? v.id : null; },
+        siChange: function (avant, apres) { return avant.prixAchat !== apres.prixAchat || avant.cump !== apres.cump; },
+      },
       source: 'Inventaire « Grand Stock » SAGE 100 et tarifs médicaments de la clinique.',
       columns: [
         colCode, colDesignation,
@@ -383,6 +392,14 @@
           render: function (p) { return C.money(p.stock * p.cump, false); },
         },
         colEtat,
+        {
+          key: 'valorisation', label: 'Valorisation', sortable: false,
+          text: function (p) { var v = valorisationDe(p.code); return v ? (v.aValider ? 'à valider' : 'validée') : ''; },
+          render: function (p) {
+            var v = valorisationDe(p.code);
+            return v ? K.badgeValidation('valorisation_sage', v.id) : el('span.text-xs.text-slate-300', { text: 'sans objet' });
+          },
+        },
       ],
       fields: [
         { type: 'section', label: 'Identification' },
@@ -2993,10 +3010,13 @@
                 },
               ],
               rowActions: function (a) {
-                return [K.iconBtn(resteSansPrix(a) ? 'pencil-line' : 'rotate-ccw',
-                  resteSansPrix(a) ? 'Valoriser' : 'Corriger la valorisation', function () {
-                    saisirValorisation(a, function () { dessiner(); });
-                  })];
+                var vz = valorisationDe(a.code);
+                return [
+                  vz ? K.boutonValider('valorisation_sage', vz.id, { size: 'sm', moduleCode: 'M6', apres: function () { dessiner(); } }) : null,
+                  K.iconBtn(resteSansPrix(a) ? 'pencil-line' : 'rotate-ccw',
+                    resteSansPrix(a) ? 'Valoriser' : 'Corriger la valorisation', function () {
+                      saisirValorisation(a, function () { dessiner(); });
+                    })].filter(Boolean);
               },
             }));
             wrap.appendChild(K.note('Le <strong>seuil d’alerte</strong> ne figure pas non plus dans le document SAGE. '

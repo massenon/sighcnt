@@ -967,7 +967,7 @@
                     help: 'Valeur d’attente : le document source ne renseigne pas la colonne des prix.',
                   },
                   { name: 'delai', label: 'Délai de rendu' },
-                ], { entite: 'analyse' }),
+                ], { entite: 'analyse', module: 'CFG', validation: { famille: 'analyses' } }),
                 filters: [{ name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(analyses, 'categorie')).sort() }],
                 columns: [
                   { key: 'n', label: 'N°', align: 'right', nowrap: true },
@@ -978,7 +978,9 @@
                   {
                     key: 'tarifProvisoire', label: 'Statut',
                     text: function (a) { return a.tarifProvisoire ? 'À confirmer' : 'Confirmé'; },
-                    render: function (a) { return a.tarifProvisoire ? U.badge('À confirmer', 'warning') : U.badge('Confirmé', 'success'); },
+                    render: function (a) {
+                      return a.tarifProvisoire || a.aValider || a.valideLe ? K.badgeValidation('analyses', a.id) : U.badge('Confirmé', 'success');
+                    },
                   },
                 ],
               }),
@@ -1181,7 +1183,7 @@
                 class: a.tarifProvisoire ? 'text-warning-700' : 'text-slate-800',
                 text: C.money(a.prix, false),
               }),
-              a.tarifProvisoire ? el('p.text-[10px].text-warning-600', { text: 'valeur d’attente' }) : null,
+              a.tarifProvisoire || a.valideLe ? el('div.mt-0\\.5', null, K.badgeValidation('actes', a.id)) : null,
             ]);
           },
         },
@@ -1227,7 +1229,7 @@
           },
         },
       ],
-      rowActions: K.actionsLigne(colActes(), champsActe, { entite: 'acte' }),
+      rowActions: K.actionsLigne(colActes(), champsActe, { entite: 'acte', module: 'CFG', validation: { famille: 'actes' }, refresh: function () { dessinerActes(panneau); } }),
       actions: [
         K.creer(colActes(), champsActe, {
           titre: 'Nouvelle prestation', entite: 'Acte',
@@ -1235,6 +1237,9 @@
           transform: function (v) {
             if (!v.code) v.code = 'ACT-' + C.pad(colActes().all().length + 1, 3);
             if (v.prix === '' || v.prix == null) v.prix = null;
+            /* Défaut 6 : un acte créé ici n'est PAS un tarif arrêté : il naît « à valider » (valeur d'attente), daté et sourcé. */
+            v.tarifProvisoire = true;
+            v.motifPrix = v.motifPrix || 'Créé le ' + C.dateFR(AUJ) + ' : tarif à valider par la Direction';
             return v;
           },
           apres: function () { dessinerActes(panneau); },
@@ -2076,6 +2081,23 @@
        * silencieux utilisable en salle : le poste se tait sans rien perdre.
        * ---------------------------------------------------------------- */
       host.appendChild(blocSon());
+
+      /* Les modèles de messages en attente se valident ICI aussi, un par un : le geste est celui de la Direction, absent pour tout autre profil. */
+      (function () {
+        if (!K.peutValider('modeles_messages')) return;
+        var attente = S.collection('modelesMessage', { module: 'CFG', entite: 'modèle de message', prefix: 'MSG' }).active()
+          .filter(function (m) { return m.aValider === true; });
+        if (!attente.length) return;
+        host.appendChild(U.card('Modèles de messages à valider (' + attente.length + ')', el('div.space-y-2', null, attente.map(function (m) {
+          return el('div.flex.flex-wrap.items-center.justify-between.gap-2.rounded-lg.border.border-slate-200.px-3.py-2', null, [
+            el('div.min-w-0', null, [
+              el('p.text-sm.font-medium.text-slate-800', { text: m.libelle }),
+              el('p.text-xs.text-slate-400', { text: String(m.texte || '').slice(0, 100) }),
+            ]),
+            K.boutonValider('modeles_messages', m.id, { size: 'sm', apres: function () { global.SIGH.app.go('cfg-notifications'); } }),
+          ].filter(Boolean));
+        }))));
+      })();
 
       var NOTIFS = [
         { id: 'admission', libelle: 'Nouvelle admission', detail: 'Alerte à l’admission d’un patient', dest: 'Infirmiers, Direction médicale', app: true, sms: false, mail: false },
@@ -3600,6 +3622,22 @@
         ]),
       ])));
 
+      /* --- Barème de l'ITS : une pièce à valider (constante du code, validation au moteur commun) --- */
+      var tranchesIts = (D.PARAM_PAIE.its && D.PARAM_PAIE.its.bareme) || [];
+      host.appendChild(U.card('Barème de l’ITS', el('div.space-y-3', null, [
+        el('div.flex.flex-wrap.items-center.justify-between.gap-2', null, [
+          el('div.flex.items-center.gap-2', null, [
+            el('span.text-sm.text-slate-600', { text: (D.PARAM_PAIE.its && D.PARAM_PAIE.its.source) || '' }),
+            K.badgeValidation('bareme_its', 'bareme-its'),
+          ]),
+          K.boutonValider('bareme_its', 'bareme-its', { apres: peindre }),
+        ].filter(Boolean)),
+        K.miniTable([
+          { label: 'Tranche de salaire', render: function (t) { return C.money(t.de, false) + (t.a == null ? ' et plus' : ' à ' + C.money(t.a, false)); } },
+          { label: 'Taux', align: 'right', render: function (t) { return t.taux + ' %'; } },
+        ], tranchesIts),
+      ])));
+
       /* --- Impôt sur les sociétés --------------------------------------- */
       var acomptes = cal.filter(function (e) { return /^IS-\d$/.test(e.code); });
       host.appendChild(U.card('Impôt sur les sociétés : quatre acomptes et une liquidation', el('div.space-y-3', null, [
@@ -4225,7 +4263,8 @@
             module: 'CFG', label: 'Nouveau modèle', titre: 'Modèle de message',
             entite: 'Modèle', apres: afficher,
             transform: function (v) {
-              return Object.assign({ source: 'Rédigé par l’administrateur' }, v);
+              /* Un modèle rédigé ici naît « à valider » : la Direction l'arrête par le moteur commun. */
+              return Object.assign({ source: 'Rédigé par l’administrateur', aValider: true }, v);
             },
           })].filter(Boolean),
           columns: [
@@ -4242,9 +4281,12 @@
               } },
             { key: 'actif', label: 'Actif', align: 'center',
               render: function (r) { return r.actif ? U.badge('Oui', 'success') : U.badge('Non', 'neutral'); } },
+            { key: 'aValider', label: 'Validation', render: function (r) {
+              return r.aValider || r.valideLe ? K.badgeValidation('modeles_messages', r.id) : el('span.text-xs.text-slate-300', { text: 'sans objet' });
+            } },
           ],
           rowActions: K.actionsLigne(colModeles(), champsModele(), {
-            module: 'CFG', refresh: afficher,
+            module: 'CFG', refresh: afficher, validation: { famille: 'modeles_messages' },
             titre: function (r) { return r.libelle; },
             detail: function (r) {
               return el('div.space-y-4', null,
@@ -4467,7 +4509,7 @@
                     key: 'aValider', label: 'Origine',
                     value: function (x) { return x.aValider ? 'Proposition \u00e0 valider' : 'Document\u00e9e'; },
                     render: function (x) {
-                      return x.aValider ? U.badge('Proposition \u00e0 valider', 'warning') : U.badge('Document\u00e9e', 'success');
+                      return x.aValider || x.valideLe ? K.badgeValidation('imagerie', x.id) : U.badge('Document\u00e9e', 'success');
                     },
                   },
                   { key: 'voie', label: 'Voie d\u2019abord', render: function (x) { return x.voie || '\u2014'; } },
@@ -4479,7 +4521,7 @@
                   },
                 ],
                 rowActions: K.actionsLigne(colExamensIm(), champsExamen(), {
-                  module: 'CFG', refresh: afficher,
+                  module: 'CFG', refresh: afficher, validation: { famille: 'imagerie' },
                   titre: function (x) { return x.label; },
                 }),
               });
@@ -4530,10 +4572,17 @@
                       return v.actif === false ? U.badge('Ferm\u00e9e', 'neutral') : U.badge('Active', 'success');
                     },
                   },
+                  {
+                    key: 'aValider', label: 'Validation', align: 'right',
+                    value: function (v) { return v.aValider ? '\u00e0 valider' : (v.valideLe ? 'valid\u00e9e' : ''); },
+                    render: function (v) {
+                      return v.aValider || v.valideLe ? K.badgeValidation('imagerie', v.id) : el('span.text-xs.text-slate-300', { text: 'sans objet' });
+                    },
+                  },
                 ],
                 rowActions: function (v) {
                   var actes = K.actionsLigne(colVariablesIm(), champsVariable, {
-                    module: 'CFG', refresh: afficher, transform: transformVariable,
+                    module: 'CFG', refresh: afficher, transform: transformVariable, validation: { famille: 'imagerie' },
                     titre: function (x) { return x.libelle; },
                   })(v);
                   if (K.droits('CFG').editer) {

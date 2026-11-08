@@ -5474,6 +5474,14 @@
         }]));
 
         var droits = K.droits('M12');
+        /* La répartition est UNE pièce à valider (constante du code : la validation vit dans `validationsReferentiels`). */
+        vue.appendChild(el('div.flex.flex-wrap.items-center.justify-between.gap-2.rounded-lg.border.border-slate-200.bg-white.px-3.py-2', null, [
+          el('div.flex.items-center.gap-2', null, [
+            el('span.text-sm.font-medium.text-slate-700', { text: 'Répartition fixe et variable' }),
+            K.badgeValidation('repartition_charges', 'repartition-fixe-variable'),
+          ]),
+          K.boutonValider('repartition_charges', 'repartition-fixe-variable', { moduleCode: 'M12', apres: afficher }),
+        ].filter(Boolean)));
         vue.appendChild(U.card('Nature des charges — proposition corrigeable', U.dataTable({
           rows: r.comptes, exportName: 'nature-charges', pageSize: 20, searchable: true,
           filters: [{ name: 'nature', label: 'Nature',
@@ -5497,6 +5505,8 @@
             return [K.iconBtn('repeat', 'Basculer en ' + (x.nature === 'variable' ? 'fixe' : 'variable'),
               function () {
                 corrigerNature(x.compte, x.nature === 'variable' ? 'fixe' : 'variable');
+                /* Corriger la répartition remet la pièce « à valider ». */
+                K.remettreAValider('repartition_charges', 'repartition-fixe-variable');
                 afficher();
                 U.toast('Nature corrigée.', { type: 'success',
                   detail: x.compte + ' — ' + (x.nature === 'variable' ? 'désormais fixe' : 'désormais variable')

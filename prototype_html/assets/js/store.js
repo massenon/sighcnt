@@ -93,8 +93,10 @@
      01/09/2026 ne sont plus des constantes pour toute une liste mais des
      fiches (`valideRole` en plus, mention « validation écrite du 01/09/2026 »),
      et la collection `validationsReferentiels` (une fiche par artefact du code
-     que le magasin ne porte pas : check-listes du bloc…) est semée au socle. */
-  var VERSION = 70;
+     que le magasin ne porte pas : check-listes du bloc…) est semée au socle.
+     71 (08/11/2026) : fiches RBAC de l'échographiste et du Directeur Médical (le catalogue
+     de l'imagerie s'ouvre à eux en lecture, pour y valider) ; les fiches étant semées. */
+  var VERSION = 71;
   var db = null;
   var listeners = {};
 
@@ -2472,6 +2474,9 @@
             'm2-imagerie-mammographie': { voir: true, editer: true, annuler: true },
             'm2-imagerie-scanner': { voir: true, editer: true, annuler: true },
             'm2-imagerie-irm': { voir: true, editer: true, annuler: true },
+            /* Vague 92 : la famille « imagerie » se valide par l'échographiste ; le catalogue (CFG) lui est OUVERT EN LECTURE, sans le
+               modifier : il y trouve ses examens et le bouton Valider, rien d'autre. */
+            'cfg-imagerie-catalogue': { voir: true, editer: false, annuler: false },
             /* Phase 8 — l'imagerie éclatée : son poste de travail. Le module
                M2 ne le liste pas ; ce sont ces surcharges qui ACCORDENT.
                Sur le registre des demandes, il ÉCRIT — exécuter la demande
@@ -2725,6 +2730,8 @@
             'm6-stock-gros': { voir: false },
             'm6-transferts': { voir: false },
             'm6-import-grand-stock': { voir: false },
+            /* Vague 92 : le Directeur Médical valide le catalogue de l'imagerie (famille `imagerie`) : écran ouvert en lecture. */
+            'cfg-imagerie-catalogue': { voir: true, editer: false, annuler: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'Direction médicale : écrit le clinique (M1-M5), lit le stock et la caisse, ne les '

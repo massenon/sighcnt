@@ -14308,6 +14308,231 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript sur le centre des validations', erreursJS.length === 0, erreursJS.join(' | '));
   });
 
+  /* ==========================================================================
+   * Vague 92 : un bouton Valider par écran (Direction, 08/11/2026)
+   * -------------------------------------------------------------------------
+   * Chaque famille du moteur de validation porte son bouton à SON écran : visible pour les seuls rôles de la famille, ABSENT
+   * (jamais grisé) pour tout autre profil qui ouvre pourtant l'écran, un geste valide UN élément (statut, trois traces, UNE ligne
+   * de journal), et modifier un élément validé le remet « à valider ». La sonde est pilotée AU CLIC, sous la session du rôle :
+   * le moteur est déjà éprouvé par la vague 91, c'est le câblage des écrans que celle-ci mesure. Les fiches de sonde sont
+   * archivées en sortant (RG-14) et les fiches réelles touchées sont restituées à l'identique.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 92 : un bouton Valider par écran');
+    const principal = ['direction', 'da', 'admin'];
+    const CAS = [
+      { fam: 'enquetes', ecran: 'adm-enquetes.html', col: 'enquetes', edit: 'enquete' },
+      { fam: 'labo_variables', ecran: 'm5-valeurs-reference.html', col: 'variablesLabo', edit: 'labo' },
+      { fam: 'labo_variables', ecran: 'm5-unites.html', col: 'unitesLabo', edit: 'crud', libelleCle: 'unites' },
+      { fam: 'pathologies', ecran: 'm2-pathologies.html', onglet: 'Référentiel', col: 'pathologies', edit: 'crud' },
+      { fam: 'imagerie', ecran: 'cfg-imagerie-catalogue.html', onglet: 'Examens', col: 'examensImagerie', edit: 'crud', libelleCle: 'examens' },
+      { fam: 'imagerie', ecran: 'cfg-imagerie-catalogue.html', onglet: 'Variables', col: 'variablesImagerie', edit: 'crud', libelleCle: 'variables' },
+      { fam: 'checklists_bloc', ecran: 'm3-bloc-checklist.html', fiche: 'checklist-bloc', edit: null },
+      { fam: 'actes', ecran: 'cfg-tarifs.html', onglet: 'Actes & hospitalisation', col: 'actes', edit: 'crud' },
+      { fam: 'analyses', ecran: 'cfg-tarifs.html', onglet: 'Analyses de laboratoire', col: 'analyses', edit: 'crud' },
+      { fam: 'valorisation_sage', ecran: 'm6-produits.html', col: 'valorisationsSage', reel: true, edit: 'produit' },
+      { fam: 'objectifs_pilotage', ecran: 'm12-tableau-decisionnel.html', onglet: 'Objectifs', col: 'objectifsPilotage', edit: 'crud' },
+      { fam: 'repartition_charges', ecran: 'm12-seuil-rentabilite.html', fiche: 'repartition-fixe-variable', edit: 'basculer' },
+      { fam: 'modeles_badge', ecran: 'm10-badges-modeles.html', col: 'modelesBadge', edit: 'crud' },
+      { fam: 'jeux_import', ecran: 'imp-analyses.html', fiche: 'imp-analyses', edit: null },
+      { fam: 'modeles_messages', ecran: 'cfg-rappels.html', col: 'modelesMessage', edit: 'crud' },
+      { fam: 'bareme_its', ecran: 'cfg-comptabilite.html', fiche: 'bareme-its', edit: null },
+    ];
+    const nom92 = (c) => 'Sonde92 ' + c.fam + (c.libelleCle ? ' ' + c.libelleCle : '');
+    const sessionDe = (role) => page.evaluate((r) => {
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: r, fonction: r, nom: 'SONDE92 ' + r, nomComplet: 'SONDE92 ' + r, identifiant: 's92.' + r, secteur: 'DIR' }));
+      window.SIGH.store.setSession({ role: r, nom: 'SONDE92 ' + r, nomComplet: 'SONDE92 ' + r, fonction: r, identifiant: 's92.' + r });
+    }, role);
+    const ongletCas = async (c) => {
+      if (!c.onglet) return;
+      await page.evaluate((o) => { const t = [...document.querySelectorAll('#page-content [role="tab"]')].find((x) => x.textContent.trim().indexOf(o) === 0); if (t) t.click(); }, c.onglet);
+      await pause(400);
+    };
+    const ouvrirCas = async (c) => { await ouvrir(c.ecran); await ongletCas(c); };
+    const attendreBouton = (t) => page.evaluate(async (titre) => {
+      for (let i = 0; i < 12; i++) {
+        if ([...document.querySelectorAll('#page-content button')].some((b) => (b.getAttribute('title') || '').indexOf(titre) === 0)) return true;
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      return false;
+    }, t);
+    const chercher = (texte) => page.evaluate(async (t) => {
+      const champ = [...document.querySelectorAll('#page-content input')].find((i) => /search|text/.test(i.type) && /cherch/i.test((i.placeholder || '') + (i.getAttribute('aria-label') || '')));
+      if (!champ) return false;
+      champ.value = t; champ.dispatchEvent(new Event('input', { bubbles: true })); champ.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 500));
+      return true;
+    }, texte);
+    const cliquerBoutonTitre = (debut, libelleLigne) => page.evaluate((d, l) => {
+      const portee = l ? [...document.querySelectorAll('#page-content tbody tr')].find((tr) => tr.textContent.indexOf(l) >= 0) : document.getElementById('page-content');
+      if (!portee) return 'ligne absente';
+      const b = [...portee.querySelectorAll('button')].find((x) => (x.getAttribute('title') || '').indexOf(d) === 0);
+      if (!b) return 'bouton absent';
+      b.click(); return 'ok';
+    }, debut, libelleLigne || null);
+    const cliquerModale = (lib) => page.evaluate(async (l) => {
+      for (let i = 0; i < 40; i++) {
+        const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((x) => x.textContent.trim() === l);
+        if (b) { b.click(); return true; }
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      return false;
+    }, lib);
+    const etat = (fam, id) => page.evaluate((f, i) => window.SIGH.validations.etatValidation(f, i), fam, id);
+    const compterBoutons = () => page.evaluate(() => [...document.querySelectorAll('#page-content button')].filter((b) => (b.getAttribute('title') || '').indexOf('Valider « ') === 0).length);
+
+    const sauveFiches = await page.evaluate(() => JSON.parse(JSON.stringify(window.SIGH.store.raw().validationsReferentiels || [])));
+    const restes = [];   /* { col, id } fiches de sonde à archiver, { col, id, avant } fiches réelles à restituer */
+
+    for (const c of CAS) {
+      if (process.env.V92 && process.env.V92.split(',').indexOf(c.fam) < 0) continue;   /* réglage de mise au point : V92=actes,analyses */
+      const F = await page.evaluate((f) => { const x = window.SIGH.validations.FAMILLES_A_VALIDER.filter((y) => y.id === f)[0]; return { roles: x.roles, mode: x.mode }; }, c.fam);
+      const nom = nom92(c);
+      await sessionDe('admin');
+      await ouvrirCas(c);   /* l'écran amorce sa collection (enquêtes, modèles de messages) avant qu'on y prenne un modèle */
+
+      /* --- l'élément à valider : une fiche de sonde (ou une fiche réelle remise « à valider », ou une validation de pièce levée) --- */
+      const mis = await page.evaluate((cas, n) => {
+        const S = window.SIGH.store, brut = S.raw();
+        if (cas.fiche) {
+          const arr = brut.validationsReferentiels;
+          const avant = JSON.parse(JSON.stringify(arr));
+          arr.forEach((x) => { if (x.cible === cas.fiche && x.statut !== 'archive') x.statut = 'archive'; });
+          S.save();
+          return { id: cas.fiche, avantFiches: avant, libelle: window.SIGH.validations.etatValidation(cas.fam, cas.fiche).libelle };
+        }
+        const colRaw = brut[cas.col] || [];
+        if (cas.reel) {
+          const r = colRaw.filter((x) => x.statut !== 'archive')[0];
+          const avant = JSON.parse(JSON.stringify(r));
+          r.aValider = true; r.valideLe = null; r.validePar = null; r.valideRole = null; S.save();
+          return { id: r.id, avant: avant, libelle: r.designation || r.libelle };
+        }
+        const base = JSON.parse(JSON.stringify(colRaw.filter((x) => x.statut !== 'archive')[0] || {}));
+        delete base.id;
+        ['libelle', 'label', 'designation', 'titre', 'nom'].forEach((k) => { if (k in base) base[k] = n; });
+        base.libelle = n; base.reference = n;
+        const drapeaux = cas.col === 'actes' ? { tarifProvisoire: true, prix: base.prix == null ? 1000 : base.prix } : { aValider: true };
+        Object.assign(base, drapeaux, { valideLe: null, validePar: null, valideRole: null, sonde92: true });
+        const r = S.collection(cas.col).insert(base).record;
+        return { id: r.id, libelle: n };
+      }, c, nom);
+      if (mis.avantFiches) c.avantFiches = mis.avantFiches;
+      if (mis.avant) restes.push({ col: c.col, id: mis.id, avant: mis.avant }); else if (c.col) restes.push({ col: c.col, id: mis.id });
+      const libelleArtefact = mis.libelle;
+      const titre = 'Valider « ' + libelleArtefact + ' »';
+      const avantEtat = await etat(c.fam, mis.id);
+      verifier('(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + ') l’élément de sonde est « à valider » avant le geste',
+        avantEtat && avantEtat.enAttente === true, JSON.stringify(avantEtat));
+
+      /* --- un rôle HORS famille qui ouvre pourtant l'écran : le bouton est ABSENT, pas grisé ----------------------------- */
+      const candidats = (await page.evaluate(() => Object.keys(window.SIGH.nav.ROLES))).filter((r) => F.roles.indexOf(r) < 0);
+      let ko = null;
+      for (const r of candidats) {
+        await sessionDe(r);
+        await ouvrirCas(c);
+        const vu = await page.evaluate(() => ({ url: location.pathname.split('/').pop(), contenu: !!document.querySelector('#page-content table, #page-content .card') }));
+        if (!/error-403|index|auth-/.test(vu.url) && vu.contenu) {
+          if (c.col && !c.reel) await chercher(nom);
+          ko = { role: r, nb: await compterBoutons(), grise: await page.evaluate(() => [...document.querySelectorAll('#page-content button[disabled]')].filter((b) => /^Valider|Arrêter/.test(b.textContent.trim())).length) };
+          break;
+        }
+      }
+      /* Un écran que NUL profil hors famille n'ouvre (la configuration clinique : admin, DAF, Direction) ne peut pas porter de bouton chez un tiers : absence de fait. */
+      verifier('(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + ') sous un rôle HORS famille qui ouvre l’écran (' + (ko ? ko.role : 'aucun n’y accède') + '), AUCUN bouton Valider, ni grisé',
+        ko === null || (ko.nb === 0 && ko.grise === 0), JSON.stringify(ko));
+
+      /* --- un rôle de la famille : le bouton existe et valide UN élément ------------------------------------------------- */
+      let ok = null;
+      for (const r of (F.roles.indexOf('admin') >= 0 ? ['admin'] : F.roles)) {
+        await sessionDe(r);
+        await ouvrirCas(c);
+        if (c.col) await chercher(c.reel ? libelleArtefact : nom);
+        if (await attendreBouton(titre)) { ok = r; break; }
+      }
+      verifier('(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + ') sous un rôle de la famille (' + ok + '), le bouton « Valider » de l’élément existe',
+        !!ok, 'aucun rôle de ' + F.roles.join(',') + ' ne voit « ' + titre + ' » : ' + JSON.stringify(await page.evaluate((n) => ({
+          url: location.pathname + location.hash, boutons: [...document.querySelectorAll('#page-content button')].filter((b) => (b.getAttribute('title') || '').indexOf('Valider « ') === 0).length,
+          ligne: document.getElementById('page-content').textContent.indexOf(n) >= 0, recherche: !![...document.querySelectorAll('#page-content input')].find((i) => /cherch/i.test(i.placeholder || '')) }), nom)));
+      if (!ok) continue;
+      const journal0 = await page.evaluate((i) => window.SIGH.store.raw().audit.filter((x) => x.action === 'Validation' && x.reference === i).length, mis.id);
+      const clic = await cliquerBoutonTitre(titre);
+      const confirme = await cliquerModale('Valider');
+      await pause(500);
+      const apres = await page.evaluate((f, i) => {
+        const S = window.SIGH.store, e = window.SIGH.validations.etatValidation(f, i);
+        const l = S.raw().audit.filter((x) => x.action === 'Validation' && x.reference === i);
+        return { e: e, nbJournal: l.length, premier: S.raw().audit[0].action + '|' + S.raw().audit[0].reference };
+      }, c.fam, mis.id);
+      verifier('(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + ') le clic valide l’élément : statut changé, trois traces, UNE ligne de journal',
+        clic === 'ok' && confirme && apres.e && apres.e.enAttente === false && apres.e.validePar === 'SONDE92 ' + ok && !!apres.e.valideRole && !!apres.e.valideLe
+          && apres.nbJournal === journal0 + 1 && apres.premier === 'Validation|' + mis.id, JSON.stringify({ clic, confirme, apres }));
+      await ongletCas(c);   /* l'écran se repeint à la validation : l'onglet et le filtre de recherche retombent */
+      if (c.col && !c.reel) await chercher(nom);
+      if (c.reel) await chercher(libelleArtefact);
+      const encore = await page.evaluate((t) => [...document.querySelectorAll('#page-content button')].some((b) => (b.getAttribute('title') || '').indexOf(t) === 0), titre);
+      verifier('(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + ') l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »',
+        !encore && /Validé \(/.test(await page.evaluate(() => document.getElementById('page-content').textContent)),
+        'bouton encore présent : ' + encore);
+
+      /* --- modifier l'élément validé le remet « à valider » ---------------------------------------------------------------- */
+      if (c.edit) {
+        await sessionDe('admin');   /* le geste de MODIFIER est celui d'un profil qui édite : l'échographiste lit ce catalogue, il ne le corrige pas */
+        await ouvrirCas(c);
+        if (c.col) await chercher(libelleArtefact);
+        let geste = 'ok';
+        if (c.edit === 'basculer') {
+          geste = await cliquerBoutonTitre('Basculer en ');
+        } else {
+          const titreEdit = { enquete: 'Modifier le modèle', labo: 'Modifier les paramètres', produit: 'Modifier', crud: 'Modifier' }[c.edit];
+          geste = await cliquerBoutonTitre(titreEdit, libelleArtefact);
+          await pause(400);
+          if (geste === 'ok' && c.edit === 'labo') {
+            await page.evaluate(() => { const i = document.querySelector('.modal-root input[name="max"], [role=dialog] input[name="max"]'); if (i) { i.value = String(Number(i.value || 0) + 7); i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); } });
+          }
+          if (geste === 'ok' && c.edit === 'produit') {
+            await page.evaluate(() => { const i = document.querySelector('.modal-root input[name="prixAchat"], [role=dialog] input[name="prixAchat"]'); if (i) { const n = Number(String(i.value).replace(/\D/g, '')) || 0; i.value = String(n + 3); i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); } });
+          }
+          const enregistre = await cliquerModale('Enregistrer');
+          if (!enregistre) geste = 'modale sans Enregistrer';
+        }
+        await pause(500);
+        const remis = await etat(c.fam, mis.id);
+        verifier('(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + ') modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)',
+          geste === 'ok' && remis && remis.enAttente === true && !remis.valideLe, JSON.stringify({ geste, remis }));
+      }
+    }
+
+    /* --- GED : plus aucune validation en masse (défaut 7) -------------------------------------------------------------------- */
+    await sessionDe('admin');
+    await ouvrir('ged-workflow.html');
+    const ged = await page.evaluate(() => ({
+      masse: /Valider la sélection/.test(document.getElementById('page-content').textContent),
+      cases: document.querySelectorAll('#page-content thead input[type=checkbox]').length,
+      unitaires: [...document.querySelectorAll('#page-content tbody button')].filter((b) => b.textContent.trim() === 'Valider').length,
+    }));
+    verifier('Le workflow documentaire n’offre AUCUNE validation en masse (ni « Valider la sélection », ni case de sélection), seulement le geste unitaire',
+      !ged.masse && ged.cases === 0 && ged.unitaires > 0, JSON.stringify(ged));
+
+    /* --- restitution : fiches de sonde archivées (RG-14), fiches réelles et validations de pièces remises --------------------- */
+    await sessionDe('admin');
+    const rest = await page.evaluate((r, sauve) => {
+      const S = window.SIGH.store, brut = S.raw();
+      r.forEach((x) => {
+        const rec = (brut[x.col] || []).filter((y) => y.id === x.id)[0];
+        if (!rec) return;
+        if (x.avant) { Object.keys(rec).forEach((k) => { delete rec[k]; }); Object.assign(rec, x.avant); } else { rec.statut = 'archive'; }
+      });
+      const arr = brut.validationsReferentiels; arr.length = 0; sauve.forEach((x) => arr.push(x)); S.save();
+      return { sondesActives: ['enquetes', 'variablesLabo', 'unitesLabo', 'pathologies', 'examensImagerie', 'variablesImagerie', 'actes', 'analyses',
+        'objectifsPilotage', 'modelesBadge', 'modelesMessage'].reduce((n, k) => n + (brut[k] || []).filter((y) => y.sonde92 && y.statut !== 'archive').length, 0),
+      checklist: window.SIGH.validations.etatValidation('checklists_bloc', 'checklist-bloc').enAttente };
+    }, restes, sauveFiches);
+    verifier('Restitution : aucune fiche de sonde active, la validation des check-listes du bloc est rendue telle qu’avant',
+      rest.sondesActives === 0 && rest.checklist === false, JSON.stringify(rest));
+    verifier('Aucune erreur JavaScript pendant le balayage des écrans de validation', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

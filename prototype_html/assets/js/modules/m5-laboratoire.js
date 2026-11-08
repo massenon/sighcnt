@@ -1550,7 +1550,7 @@
       + 'lui imposer une autre notation, plus « correcte », l’obligerait à traduire à chaque lecture.',
     render: K.crud({
       collection: 'unitesLabo', entite: 'unité', entiteP: 'unités', module: 'M5',
-      pageSize: 25, defaultSort: 'domaine',
+      pageSize: 25, defaultSort: 'domaine', validation: { famille: 'labo_variables' },
       columns: [
         {
           key: 'symbole', label: 'Symbole', nowrap: true,
@@ -1562,8 +1562,8 @@
           key: 'aValider', label: 'Provenance',
           text: function (u) { return u.aValider ? 'à confirmer' : 'documentée'; },
           render: function (u) {
-            return u.aValider
-              ? U.badge('À confirmer', 'warning')
+            return u.aValider || u.valideLe
+              ? K.badgeValidation('labo_variables', u.id)
               : el('span.text-xs.text-slate-500', { text: u.source || 'Fiche de résultats CNT' });
           },
         },
@@ -1732,8 +1732,7 @@
               },
               render: function (v) {
                 if (v.actif === false) return U.badge('Fermée', 'neutral');
-                if (v.aValider) return U.badge('À valider', 'warning');
-                if (v.valideLe) return U.badge('Validée (biologiste)', 'info');
+                if (v.aValider || v.valideLe) return K.badgeValidation('labo_variables', v.id);
                 return U.badge('Documentée', 'success');
               },
             },
@@ -1743,6 +1742,8 @@
           })] : [],
           rowActions: function (v) {
             var actes = [];
+            /* Un geste unitaire, réservé au biologiste : ABSENT pour tout autre profil. */
+            actes.push(K.boutonValider('labo_variables', v.id, { size: 'sm', moduleCode: 'M5', apres: afficher }));
             if (K.droits('M5').editer) {
               actes.push(K.iconBtn('pencil', 'Modifier les paramètres', function () { editer(v); }));
               if (v.retractable) {
@@ -1751,7 +1752,7 @@
                   function () { basculer(v); }));
               }
             }
-            return actes;
+            return actes.filter(Boolean);
           },
         }));
 
@@ -1950,6 +1951,9 @@
                       + ' — précédemment : ' + (L.libelleReference(v) || '—');
                   }
                   colVariables().update(v.id, val);
+                  /* Défaut 5 : déplacer une borne, l'unité, le type ou la règle remet la variable « à valider » (le biologiste revalide). */
+                  var changee = bougee || vide(val.unite) !== vide(v.unite) || vide(val.type) !== vide(v.type) || vide(val.regle) !== vide(v.regle);
+                  if (changee) K.remettreAValider('labo_variables', v.id);
                 }
                 S.log(creation ? 'Création d’une variable de résultat' : 'Modification d’une valeur de référence',
                   'M5', 'Variable', val.code, v ? { min: v.min, max: v.max } : null, { min: val.min, max: val.max });
