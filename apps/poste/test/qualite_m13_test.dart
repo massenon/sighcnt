@@ -122,7 +122,10 @@ void main() {
     for (final c in casDe('validations')) {
       cas('${c['nom']}', (t) async {
         await ouvrir(t, magasinDeCas(c), 'adm-validations');
-        for (final k in liste(c['kpis'])) {
+        // Le centre lit désormais les FAMILLES de référentiels au magasin (moteur de validation commun, 07/11/2026) : les deux indicateurs de l'ancienne
+        // version (« en attente d'un professionnel », « validés par la Direction le 01/09 ») n'existent plus ; ceux des familles sont rejoués sur
+        // `validation.json › centre` (`validation_ecrans_test.dart`). Restent les deux indicateurs des files de poste.
+        for (final k in liste(c['kpis']).where((k) => const ['Gestes de validation en attente', 'Files concernées'].contains(k['label']))) {
           expect(sp(kpi(t, '${k['label']}')), sp(k['valeur']), reason: '${k['label']}');
         }
         // Une file par carte : son compte (ou « — » quand elle n'est pas amorcée) et sa phrase.
@@ -190,7 +193,9 @@ void main() {
       expect([for (final x in tab.colonnes) x.libelle], (c['entetes'] as List).cast<String>().where((x) => x != 'Actions').toList());
       final ligne = cellules(tab, t.state<TableauSighState>(find.byType(TableauSigh)).lignesFiltrees.first);
       final attendu = ((c['lignes'] as List).first as List).cast<String>();
-      expect([for (final x in ligne) sp(x)], [for (final x in attendu.take(4)) sp(x)]);
+      expect([for (final x in ligne.take(3)) sp(x)], [for (final x in attendu.take(3)) sp(x)]);
+      // Le statut est l'état LU du moteur de validation commun : « Validé » porte désormais le rôle et la date de la validation (`K.badgeValidation`).
+      expect(sp(ligne[3]), startsWith('Validé('));
       await parite(t, 'adm-enquetes');
     });
 

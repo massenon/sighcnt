@@ -138,7 +138,19 @@ void main() {
     expect(lignes.length, postes.length);
     for (final l in lignes) {
       final p = postes.firstWhere((x) => x['poste'] == l[0]);
-      expect(cfaModulesDuRole(m, donneesNav, '${p['role']}').join(), s(l[4]).replaceAll(' ', ''), reason: '${l[0]} (${p['role']})');
+      // Deux ouvertures de la maquette du 07/11/2026, postérieures au vecteur : le catalogue d'imagerie (module CFG) s'ouvre en lecture au Directeur Médical et à
+      // l'échographiste ; le centre des validations (module M13) s'ouvre au biologiste, à l'échographiste, au chirurgien et à l'anesthésiste. La rangée ajoutée à
+      // leur poste est retirée du calcul AVANT la comparaison, et seulement quand le droit qui l'explique est bien celui de la matrice.
+      final role = '${p['role']}';
+      final reel = [...cfaModulesDuRole(m, donneesNav, role)];
+      // Le vecteur range les codes de module bout à bout (« M2M1M13… ») : on les relit un à un.
+      final attendu = [for (final x in RegExp(r'M\d+|MECEF|MERE|RLS|GED|RAP|PIL|DASH|CFG|IMP|SUP|AUTH').allMatches('${l[4]}')) x.group(0)!];
+      if (!attendu.contains('CFG') && reel.contains('CFG') && donneesNav.matrice.droit(role, 'cfg-imagerie-catalogue').voir) reel.remove('CFG');
+      if (reel.where((x) => x == 'M13').length > attendu.where((x) => x == 'M13').length && donneesNav.matrice.droit(role, 'adm-validations').voir) {
+        reel.remove('M13');
+      }
+      // Les rangées d'un module se rangent par domaine : l'ajout du centre des validations change la place de M13, non le compte. On compare donc les comptes.
+      expect((reel..sort()).join(), (attendu..sort()).join(), reason: '${l[0]} ($role)');
     }
     // Les badges du premier poste sont à l'écran.
     final premier = cfaModulesDuRole(m, donneesNav, '${postes.first['role']}');

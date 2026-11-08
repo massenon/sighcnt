@@ -154,7 +154,7 @@ class _OngletVariables extends StatelessWidget {
             texte: (v) => cfaVrai(v['aValider']) || cfaVrai(v['valideLe']) ? ValidationPoste(c).texteBadge('imagerie', v['id']) : 'sans objet',
             rendu: (_, v) => cfaVrai(v['aValider']) || cfaVrai(v['valideLe'])
                 ? (ValidationPoste(c).badge('imagerie', v['id']) ?? const BadgeSigh('À valider', ton: TonSigh.attention))
-                : const Text('sans objet', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300))),
+                : Text('sans objet', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300))),
       ],
       champs: (e) => [
         ChampDef(

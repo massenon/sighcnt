@@ -176,8 +176,9 @@ void main() {
         final dy = t.getCenter(find.text(code)).dy;
         expect(dy, greaterThan(dyPrecedent), reason: 'ordre : $code');
         dyPrecedent = dy;
-        // colonne 0 : case de sélection ; dernière : actions
-        expect(ligneAffichee(t, code), ligneAttendue(cellules), reason: code);
+        // colonne 0 : case de sélection ; dernière : actions. La colonne « Valorisation » (moteur de validation commun, 07/11/2026) est postérieure
+        // aux vecteurs de cette parité : le jeu d'essai ne porte aucune valorisation SAGE, donc « sans objet » ferme chaque ligne.
+        expect(ligneAffichee(t, code), '${ligneAttendue(cellules)} sans objet', reason: code);
       }
     });
 

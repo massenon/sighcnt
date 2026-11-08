@@ -18,34 +18,29 @@
   "Administration & Ambulance"
  ],
  "regle": [
-  "Parc technique — fiches à compléter — 18 entrée(s)Ingénierie / administration · Marque, n° de série et mise en service MANQUENT physiquement : une validation ne crée pas un numéro de série — le marquage disparaît par la SAISIE, jamais par une signature.Ouvrir",
-  "Plages de référence par lot de réactif — 0 entrée(s)Biologiste médical · Structurel : chaque NOUVEAU lot porte ses bornes — la notice du réactif fait foi, à chaque arrivage.Ouvrir",
-  "Durée de validité d’un badge du personnelValeur d’attente : 24 mois (valeur d’attente) · Aucun document de cadrage ne la fixe. Peut aussi suivre la durée du contrat.Ouvrir"
+  "Modèles d’enquêteValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+  "Variables et unités du laboratoire (bornes suppléées)Valide : Biologiste médical9sur 186Ouvrir",
+  "Pathologies (tableau de morbidité)Valide : Directeur Médical, Médecin0sur 55Ouvrir"
  ],
  "onglets": [],
  "kpis": [
   "Gestes de validation en attente",
   "Files concernées",
-  "Référentiels en attente d’un professionnel",
-  "Validés par la Direction le 01/09"
+  "Référentiels en attente de validation",
+  "Familles concernées"
  ],
  "cartes": [
-  "À valider À SON POSTE — l’écran oriente, le poste valide",
-  "Référentiels en attente d’un PROFESSIONNEL nommé — la Direction ne signe pas à sa place",
-  "En attente d’un ARBITRAGE de la Direction — elle seule peut trancher",
-  "Validées par la DIRECTION le 01/09/2026 (vague 49)"
+  "À valider À SON POSTE, l’écran oriente, le poste valide",
+  "Référentiels en attente de validation, par famille : la Direction ne signe pas à la place d’un professionnel nommé",
+  "Données à compléter : le marquage tombe par la SAISIE, jamais par une signature",
+  "En attente d’un ARBITRAGE de la Direction : elle seule peut trancher"
  ],
- "tableaux": [
-  [
-   "Référentiel",
-   "Décision"
-  ]
- ],
+ "tableaux": [],
  "commandes": [
   "Y aller",
   "Ouvrir"
  ],
  "champs": [],
- "nbTableaux": 1,
+ "nbTableaux": 0,
  "nbKpis": 4
 }

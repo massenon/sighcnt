@@ -481,7 +481,11 @@ void main() {
 
   group('m3-bloc-checklist — deux listes séparées, l\'incomplète est signalée jamais refusée', () {
     final c = m_(vecteurs['checklist']);
-    Magasin base() => magasin({'checklistsBloc': liste(c['jeu'])});
+    // Les check-listes sont arrêtées par une validation ÉCRITE (fiche `VRF-checklist-bloc` du jeu) : l'état se lit au moteur de validation, plus dans une constante.
+    Magasin base() => magasin({
+      'checklistsBloc': liste(c['jeu']),
+      'validationsReferentiels': liste(jsonDecode(File('assets/donnees/jeu/validationsReferentiels.json').readAsStringSync())),
+    });
     Finder onglet(String libelle) =>
         find.descendant(of: find.byKey(const Key('kit:onglets-barre')), matching: find.textContaining(libelle));
 
@@ -490,7 +494,8 @@ void main() {
       final e = m_(c['ecran']);
       comparerKpis(t, e['kpis']);
       comparerTableau(t, e['tableaux'], colonnes: 4);
-      expect(find.textContaining('arrêtées par les praticiens du bloc le 01/09/2026'), findsOneWidget);
+      expect(find.textContaining('arrêtées par les praticiens du bloc, validées'), findsOneWidget);
+      expect(find.textContaining('le 01/09/2026'), findsWidgets);
       await parite(t, 'm3-bloc-checklist');
       await toucher(t, onglet('Check-liste de sortie'));
       comparerTableau(t, m_(c['sortieOnglet'])['tableaux'], colonnes: 4);

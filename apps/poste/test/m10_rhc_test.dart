@@ -336,7 +336,10 @@ void main() {
       formulaire(t).poser('defaut', true);
       await t.tap(find.widgetWithText(BoutonSigh, 'Enregistrer'));
       await t.pump(const Duration(milliseconds: 400));
-      fichesEgales(col.toutes.firstWhere((x) => x['libelle'] == 'Badge visiteur — portrait'), obj(obj(mo['modification'])['enregistre'])['fiche'] as M);
+      // Modifier un modèle le remet « à valider » (moteur de validation commun, postérieur au vecteur) : le marquage est la seule différence.
+      final modifie = col.toutes.firstWhere((x) => x['libelle'] == 'Badge visiteur — portrait');
+      expect(modifie['aValider'], true);
+      fichesEgales(modifie, obj(obj(mo['modification'])['enregistre'])['fiche'] as M, ignores: {'aValider'});
       // E745 : la maquette ne retire pas l'ancien « par défaut » : les deux le sont.
       expect(col.toutes.where((x) => x['defaut'] == true).length, 2);
       await archiverLigne(t, 'Doublon');

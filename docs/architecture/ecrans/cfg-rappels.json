@@ -38,6 +38,7 @@
    "Occasion",
    "Texte",
    "Actif",
+   "Validation",
    "Actions"
   ]
  ],
@@ -47,7 +48,8 @@
   "Variables5",
   "Colonnes",
   "Exporter",
-  "Nouveau modèle"
+  "Nouveau modèle",
+  "Valider"
  ],
  "champs": [],
  "nbTableaux": 1,

@@ -22,8 +22,8 @@
   {
    "id": "adm-validations",
    "mesure": true,
-   "attendus": 14,
-   "presents": 14,
+   "attendus": 12,
+   "presents": 12,
    "taux": 1.0,
    "manquants": []
   },
@@ -58,8 +58,8 @@
   {
    "id": "cfg-branding",
    "mesure": true,
-   "attendus": 22,
-   "presents": 22,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },
@@ -90,8 +90,8 @@
   {
    "id": "cfg-comptabilite",
    "mesure": true,
-   "attendus": 23,
-   "presents": 23,
+   "attendus": 33,
+   "presents": 33,
    "taux": 1.0,
    "manquants": []
   },
@@ -106,16 +106,16 @@
   {
    "id": "cfg-entetes",
    "mesure": true,
-   "attendus": 7,
-   "presents": 7,
+   "attendus": 9,
+   "presents": 9,
    "taux": 1.0,
    "manquants": []
   },
   {
    "id": "cfg-fiscalite",
    "mesure": true,
-   "attendus": 27,
-   "presents": 27,
+   "attendus": 46,
+   "presents": 46,
    "taux": 1.0,
    "manquants": []
   },
@@ -178,8 +178,8 @@
   {
    "id": "cfg-rappels",
    "mesure": true,
-   "attendus": 15,
-   "presents": 15,
+   "attendus": 17,
+   "presents": 17,
    "taux": 1.0,
    "manquants": []
   },
@@ -665,8 +665,8 @@
   {
    "id": "imp-analyses",
    "mesure": true,
-   "attendus": 19,
-   "presents": 19,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },
@@ -870,8 +870,8 @@
   {
    "id": "m10-badges-modeles",
    "mesure": true,
-   "attendus": 14,
-   "presents": 14,
+   "attendus": 15,
+   "presents": 15,
    "taux": 1.0,
    "manquants": []
   },
@@ -1286,8 +1286,8 @@
   {
    "id": "m12-seuil-rentabilite",
    "mesure": true,
-   "attendus": 19,
-   "presents": 19,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },
@@ -1638,8 +1638,8 @@
   {
    "id": "m2-stats-consultations",
    "mesure": true,
-   "attendus": 12,
-   "presents": 12,
+   "attendus": 13,
+   "presents": 13,
    "taux": 1.0,
    "manquants": []
   },
@@ -2206,8 +2206,8 @@
   {
    "id": "m6-produits",
    "mesure": true,
-   "attendus": 23,
-   "presents": 23,
+   "attendus": 24,
+   "presents": 24,
    "taux": 1.0,
    "manquants": []
   },

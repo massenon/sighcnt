@@ -109,7 +109,7 @@ class _OngletModeles extends StatelessWidget {
             texte: (r) => cfaVrai(r['aValider']) || cfaVrai(r['valideLe']) ? ValidationPoste(c).texteBadge('modeles_messages', r['id']) : 'sans objet',
             rendu: (_, r) => cfaVrai(r['aValider']) || cfaVrai(r['valideLe'])
                 ? (ValidationPoste(c).badge('modeles_messages', r['id']) ?? const BadgeSigh('À valider', ton: TonSigh.attention))
-                : const Text('sans objet', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300))),
+                : Text('sans objet', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300))),
       ],
       champs: (e) => [
         ChampDef(nom: 'occasion', libelle: 'Occasion', type: TypeChamp.select, requis: true, options: [for (final o in cfaOccasions) OptionChamp(o.$1, o.$2)]),

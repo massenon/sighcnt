@@ -310,20 +310,36 @@ void main() {
       expect(find.text('donnée manquante, jamais un zéro'), findsOneWidget);
       expect(find.text('174 j'), findsNothing, reason: 'le DSO n’est pas calculable sans chiffre d’affaires : il ne devient pas un zéro');
     });
-    casM14('corriger une cible l’ARRÊTE : la mention « à valider » tombe, la date et l’auteur sont portés', (t) async {
+    casM14('corriger une cible ne l’arrête PAS ; « Arrêter » est le geste de validation (moteur commun), et corriger une cible arrêtée la remet à valider', (t) async {
       final m = magasinComplet();
       await ouvrirM14(t, m, 'm12-tableau-decisionnel');
       await toucherM14(t, find.text('Objectifs & seuils'));
-      expect(find.text('Proposition'), findsNWidgets(8));
+      expect(find.text('À valider'), findsNWidgets(8));
+      // Modifier : la valeur change, la cible reste à valider (la maquette ne l'arrête plus à l'enregistrement).
       await toucherM14(t, find.byTooltip('Modifier').first);
       await saisir(t, 'cible', '40');
       await toucherM14(t, find.byKey(const Key('pil:enregistrer-objectif')));
-      final dso = m.collection('objectifsPilotage').actives.firstWhere((o) => o['id'] == 'dso');
+      var dso = m.collection('objectifsPilotage').actives.firstWhere((o) => o['id'] == 'dso');
       expect(dso['cible'], 40);
+      expect(dso['aValider'], true, reason: 'modifier ne valide pas');
+      expect(dso['arreteLe'], isNull);
+      // Arrêter : le geste unitaire de la Direction (ici l'administrateur), journalisé.
+      await toucherM14(t, find.byKey(const Key('val:valider:objectifs_pilotage:dso')));
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider').last);
+      dso = m.collection('objectifsPilotage').actives.firstWhere((o) => o['id'] == 'dso');
       expect(dso['aValider'], false);
-      expect(dso['arreteLe'], '2026-10-30');
-      expect(find.text('Arrêté par la Direction'), findsOneWidget);
-      expect(find.text('Proposition'), findsNWidgets(7));
+      expect(dso['valideLe'], isNotNull);
+      final j = m.collection('audit').toutes.first;
+      expect([j['action'], j['reference']], ['Validation', 'dso'], reason: 'UNE ligne de journal en tête (le journal est plafonné à 400 : on lit la tête, pas la longueur)');
+      expect(find.text('À valider'), findsNWidgets(7));
+      // Corriger la cible arrêtée la remet à valider.
+      await toucherM14(t, find.byTooltip('Modifier').first);
+      await saisir(t, 'cible', '45');
+      await toucherM14(t, find.byKey(const Key('pil:enregistrer-objectif')));
+      dso = m.collection('objectifsPilotage').actives.firstWhere((o) => o['id'] == 'dso');
+      expect(dso['aValider'], true);
+      expect(dso['valideLe'], isNull);
+      expect(find.text('À valider'), findsNWidgets(8));
     });
     casM14('sans le droit d’éditer, la commande « Modifier » est ABSENTE (RG-13) ; la consultation reste', (t) async {
       final m = magasinComplet();

@@ -95,7 +95,8 @@ void main() {
     for (final h in obj(t0['analyses'])['entetes'] as List) {
       expect(find.text('$h'.toUpperCase()), findsWidgets, reason: '$h');
     }
-    expect(find.text('À confirmer'), findsWidgets);
+    // Le statut d'une analyse au tarif d'attente est l'état LU du moteur de validation commun (« À valider »), plus un « À confirmer » littéral.
+    expect(find.text('À valider'), findsWidgets);
     expect(find.text('48'), findsWidgets);
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Nouveau'));
     await saisir(t, 'designation', 'Analyse Test');

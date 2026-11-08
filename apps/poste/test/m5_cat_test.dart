@@ -313,7 +313,9 @@ void main() {
       });
       await ouvrir(t, m, 'm5-unites');
       expect(find.text('Ma source'), findsOneWidget);
-      expect(find.text('À confirmer'), findsNWidgets(2), reason: 'le KPI et le badge');
+      // L'état d'une unité à confirmer est l'état LU du moteur de validation commun (« À valider ») ; le mot « À confirmer » reste celui du KPI.
+      expect(find.text('À confirmer'), findsOneWidget, reason: 'le KPI');
+      expect(find.text('À valider'), findsOneWidget, reason: 'le badge');
       expect(find.text('Fiche de résultats CNT'), findsOneWidget);
       expect(kpi(t, 'À confirmer'), '1');
       expect(kpi(t, 'Reprises de la fiche'), '2');
@@ -385,7 +387,8 @@ void main() {
       });
       await ouvrir(t, m, 'm5-valeurs-reference');
       expect(find.text('Documentée'), findsWidgets);
-      expect(find.text('Validée (biologiste)'), findsOneWidget);
+      // Une variable validée porte l'état LU du moteur commun : « Validé » avec la date (et le rôle quand la fiche le porte).
+      expect(find.textContaining('Validé ('), findsOneWidget);
       expect(find.text('À valider'), findsWidgets);
       expect(find.text('Fermée'), findsWidgets);
       expect(find.text('Commentaire de l’examen'), findsOneWidget);
@@ -405,7 +408,8 @@ void main() {
       expect(v['min'], 3.8);
       expect(v['max'], 8.5);
       expect(v['source'], 'Modifiée par $qui le 30/10/2026 — précédemment : 4 - 8');
-      expect(v['aValider'], false, reason: 'la provenance affichée ne change pas ; la source le dit');
+      expect(v['aValider'], true, reason: 'déplacer une borne remet la variable « à valider » : le biologiste revalide (moteur de validation commun)');
+      expect(v['valideLe'], isNull);
       expect(find.text('Paramètres enregistrés.'), findsOneWidget);
       expect(m.collection('audit').toutes.first['action'], 'Modification d’une valeur de référence');
     });

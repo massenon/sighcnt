@@ -79,7 +79,7 @@ class EcranProduitsStock extends StatelessWidget with EcranMaquette {
               rendu: (_, p) {
                 final v = valorisationDe(p['code']);
                 final b = v == null ? null : vp.badge('valorisation_sage', v['id']);
-                return b ?? const Text('sans objet', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300));
+                return b ?? Text('sans objet', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300));
               }),
         ],
         filtres: [

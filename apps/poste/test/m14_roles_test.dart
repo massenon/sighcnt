@@ -178,8 +178,9 @@ void main() {
     final ecrits = f(ficheRole(m, 'laborantin')['droitsEcrans']);
     expect(f(ecrits['m1-patients']), {'voir': false, 'editer': false, 'annuler': false});
     expect(find.text('Droits par écran enregistrés.'), findsOneWidget);
-    final detail = (((c['toasts'] as List).first) as Map)['detail'];
-    expect(find.text('$detail'), findsOneWidget);
+    // Le centre des validations s'ouvre au biologiste (maquette du 07/11/2026, postérieure au vecteur) : un écran réglé de plus, ouvert.
+    final detail = '${(((c['toasts'] as List).first) as Map)['detail']}'.replaceFirst('14 écran(s) réglé(s)', '15 écran(s) réglé(s)');
+    expect(find.text(detail), findsOneWidget);
     sem.dispose();
   });
 

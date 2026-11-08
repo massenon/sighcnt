@@ -19,7 +19,8 @@
  ],
  "regle": [
   "La répartition fixe / variable est une proposition. Aucun plan comptable ne la porte : elle relève de l’analyse de gestion. Elle est affichée compte par compte ci-dessous et se corrige d’un clic — le seuil se recalcule aussitôt.",
-  "305 463 107 FCFA de chiffre d’affaires couvrent les charges. Au-delà, chaque franc encaissé rapporte 8.3 % de marge. Le seuil n’est pas atteint sur la période retenue.Le seuil suppose la structure constante : il vaut pour un niveau d’activité voisin de l’actuel. L’extrapoler au double serait faux — il faudrait embaucher, et les charges fixes changeraient de palier."
+  "305 463 107 FCFA de chiffre d’affaires couvrent les charges. Au-delà, chaque franc encaissé rapporte 8.3 % de marge. Le seuil n’est pas atteint sur la période retenue.Le seuil suppose la structure constante : il vaut pour un niveau d’activité voisin de l’actuel. L’extrapoler au double serait faux — il faudrait embaucher, et les charges fixes changeraient de palier.",
+  "Répartition fixe et variableÀ validerValider"
  ],
  "onglets": [],
  "kpis": [
@@ -45,6 +46,7 @@
  ],
  "commandes": [
   "Imprimer l’analyse",
+  "Valider",
   "Colonnes",
   "Exporter"
  ],

@@ -31,6 +31,7 @@
  ],
  "cartes": [
   "Obligations mensuelles : le 10 du mois suivant",
+  "Barème de l’ITS",
   "Impôt sur les sociétés : quatre acomptes et une liquidation",
   "Patente, CCIB et TVM : une fois par an",
   "Redevances ORTB : prélevées sur les salaires",
@@ -44,6 +45,10 @@
    "Échéance",
    "Déclaration préalable",
    "Version"
+  ],
+  [
+   "Tranche de salaire",
+   "Taux"
   ],
   [
    "Acompte",
@@ -67,10 +72,11 @@
   "Nouvelle obligation",
   "Valider les obligations",
   "Suivi des échéances",
+  "Valider",
   "Modifier les paramètres ORTB",
   "Suivi nominatif"
  ],
  "champs": [],
- "nbTableaux": 4,
+ "nbTableaux": 5,
  "nbKpis": 4
 }
