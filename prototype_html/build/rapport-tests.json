@@ -6208,60 +6208,30 @@
     "nom": "Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse",
     "etapes": [
       {
-        "libelle": "L’écran « Tâches planifiées » lit le registre du serveur : six tâches, dont la sauvegarde et les échéances fiscales",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le poste lit les alertes ouvertes par le planificateur (échéances, stock, péremptions)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La cloche ne double jamais une alerte calculée par le poste ET par le serveur (clé unique)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le routage se fait AU SERVEUR : la réception ne reçoit ni échéance fiscale ni alerte de stock (RG-13)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Quand la cause cesse (échéances réglées), l’exécution résout l’alerte — elle disparaît de la cloche sans être supprimée",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Sans session, le registre des tâches est refusé (401)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune erreur JavaScript sur ces écrans",
-        "ok": true,
-        "detail": null
+        "libelle": "Le scénario s’exécute sans erreur",
+        "ok": false,
+        "detail": "Waiting failed: 30000ms exceeded"
       }
     ],
-    "ok": true
+    "ok": false
   },
   {
     "nom": "Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles",
     "etapes": [
       {
         "libelle": "Les tables existent pour tous les modules : au moins quinze schémas de module",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": ""
       },
       {
         "libelle": "Parité magasin ↔ tables : zéro écart sur toutes les collections",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": ""
       },
       {
         "libelle": "Plus de cent collections projetées",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "undefined"
       },
       {
         "libelle": "Aucune erreur de projection récente",
@@ -6270,36 +6240,16 @@
       },
       {
         "libelle": "Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "{\"erreur\":\"accès refusé\",\"detail\":\"Le contrôle de la copie relationnelle est réservé à l’administration.\"}"
       },
       {
-        "libelle": "Une modification est suivie, et un champ inconnu du schéma est CONSERVÉ dans « extra » au lieu d’être perdu",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les lignes d’une facture ont leur table fille et la parité des lignes est vérifiée avec le reste",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "RG-14 : archiver ne supprime pas — la ligne reste en table avec son statut",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Après ces écritures, la parité reste à zéro écart",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Sans session, le contrôle est refusé (401)",
-        "ok": true,
-        "detail": null
+        "libelle": "Le scénario s’exécute sans erreur",
+        "ok": false,
+        "detail": "Cannot read properties of undefined (reading 'slice')"
       }
     ],
-    "ok": true
+    "ok": false
   },
   {
     "nom": "Vague 70 — deux postes : l’écriture de l’un apparaît chez l’autre sans recharger, pastille d’état",
@@ -8421,6 +8371,463 @@
       },
       {
         "libelle": "Aucune erreur JavaScript pendant le balayage des écrans de validation",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 93 : passerelle SMS (test d’envoi, refus nommés, identifiants jamais relus, journal masqué, plafond, heures calmes, droits)",
+    "etapes": [
+      {
+        "libelle": "L’écran porte ses champs nommés ; non configurée au départ ; les identifiants sont des champs masqués et vides",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans configuration, le test rend SMS_NON_CONFIGUREE avec son motif ET son geste, et rien n’est « envoyé »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le refus est journalisé COMME refus : statut refusé, code nommé, aucun identifiant de message",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Enregistrée : configurée, les deux champs d’identifiants sont VIDÉS (jamais relus) et dits « enregistré »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le test montre les étapes (configuration, numéro, plafond, heures calmes, fournisseur) et conclut « accepté »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le puits a REÇU le message : numéro normalisé E.164, expéditeur, texte de contrôle, par Twilio",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le journal porte l’identifiant du message accepté et le numéro MASQUÉ (quatre derniers chiffres), motif « Test d’envoi »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Identifiants refusés par le puits : refus IDENTIFIANTS_REFUSES nommé avec son geste, étape « Fournisseur » en échec",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucun « envoyé » au journal pour ce refus : un nouveau refus, pas un nouveau message accepté, sans identifiant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Solde insuffisant chez le fournisseur : refus SOLDE_INSUFFISANT nommé, avec motif et geste, rien d’accepté",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Fournisseur injoignable : refus FOURNISSEUR_INJOIGNABLE nommé, avec motif et geste, rien d’accepté",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Expéditeur non autorisé : refus EXPEDITEUR_NON_AUTORISE nommé, avec motif et geste, rien d’accepté",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Numéro refusé par le fournisseur : refus NUMERO_INVALIDE nommé, avec motif et geste, rien d’accepté",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Numéro hors format international : refus NUMERO_INVALIDE nommé, avec motif et geste, rien d’accepté",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Numéro avec lettres : refus NUMERO_INVALIDE nommé, avec motif et geste, rien d’accepté",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Vonage, second fournisseur : un envoi par le puits est accepté et porte son identifiant de message",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Vonage : le statut du fournisseur est classé en IDENTIFIANTS_REFUSES",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Vonage : le statut du fournisseur est classé en SOLDE_INSUFFISANT",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le puits a vu l’envoi Vonage (numéro sans le signe plus, comme l’attend l’API de Vonage)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’API ne renvoie jamais un identifiant ni son chiffré : elle dit seulement lesquels sont définis",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune réponse d’envoi ne contient un identifiant (étapes, motif, entrée du journal)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les identifiants n’apparaissent ni dans le magasin exporté ni dans le stockage du navigateur ; le numéro en clair non plus",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sur le disque, les identifiants sont CHIFFRÉS (garde d’exécution, aucun clair), la clé vit dans un AUTRE fichier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’audit serveur garde les envois (numéro masqué, motif, statut) sans identifiant ni numéro en clair",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le puits lui-même ne garde aucun identifiant (seulement ce qui circule : numéro, expéditeur, texte)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Plafond de 2 par jour : deux envois acceptés, le troisième refusé PLAFOND_ATTEINT avec son geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le fournisseur n’a reçu que les deux messages du plafond (le refus est décidé AVANT l’appel)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le test est soumis au même plafond (un envoi coûte, test ou non)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Effacer puis ressaisir la configuration NE remet PAS le plafond à zéro (le compteur du jour survit)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le plafond se compte PAR JOUR (heure du Bénin) : le lendemain, l’envoi repart",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "À 22 h 30 (heure du Bénin), un souhait d’anniversaire est REPORTÉ : HEURES_CALMES, statut « reporté », reprise à 7 h le lendemain, rien envoyé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "À 3 h du matin, le report va au MÊME jour à 7 h (les heures calmes chevauchent minuit)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "À 10 h le souhait part ; l’alerte technique et le test de nuit sont EXEMPTÉS des heures calmes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Passerelle désactivée : l’envoi est refusé SMS_DESACTIVEE (seul le test, qui n’exige pas l’activation, envoie)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Texte médical refusé DONNEE_MEDICALE : « Votre diagnostic de paludisme est confirmé. »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Texte médical refusé DONNEE_MEDICALE : « Résultat positif au test de grossesse. »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Texte médical refusé DONNEE_MEDICALE : « Votre bilan VIH est disponible. »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Dire qu’un résultat est DISPONIBLE reste permis (jamais ce qu’il contient)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Texte vide ou de plus de 320 caractères : TEXTE_INVALIDE ; motif hors liste : MOTIF_INCONNU",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Serveur : réception, médecin, caissier et comptable sont refusés partout (403, ACCES_REFUSE) ; la Direction LIT (200) sans tester, enregistrer ni effacer",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La DAF règle et teste (200) mais n’efface pas (403 : seul l’administrateur retire la configuration)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le refus d’accès porte son code ACCES_REFUSE, son motif et son geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Seuls l’administrateur, la DAF et la Direction ouvrent la passerelle et son journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La Direction lit la passerelle : réglages et identifiants « enregistré » visibles, mais commande « Tester l’envoi », commande « Enregistrer » et formulaire ABSENTS (jamais grisés)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La DAF a les deux commandes et le formulaire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La carte « Passerelle SMS » figure aux Paramètres système de la DAF et de la Direction, jamais à ceux de la réception (RG-13)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le journal s’ouvre à la Direction en LECTURE SEULE : colonnes nommées, numéro masqué, aucune commande « Nouveau »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune ligne du journal ne porte un numéro en clair ni un texte de message : seuls les champs prévus",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Tout envoi accepté du journal porte un identifiant, tout refus n’en porte aucun",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’administrateur retire la configuration : la passerelle redevient non configurée, aucun identifiant ne subsiste sur le disque",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 94 : passerelle SMS, moteur (consentement, mot médical, doublon de rappel, report et reprise, hors ligne, droits par motif)",
+    "etapes": [
+      {
+        "libelle": "La passerelle est configurée et ACTIVE (Twilio, puits de test)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’accueil lit « disponible » : passerelle active et configurée, motifs de son poste (rappel, anniversaire), jamais le test ni l’alerte technique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’accueil ne voit ni ne règle la configuration : état, test, enregistrement et retrait refusés (403 ACCES_REFUSE)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le motif décide du profil : l’accueil n’envoie ni « test » ni « alerte technique » ; le caissier n’envoie rien ; le médecin n’envoie pas d’anniversaire ; sans session, 401",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’accueil et le médecin envoient bien un rappel de rendez-vous : acceptés par le puits, numéro masqué, aucun secret dans la réponse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Anniversaire : consentement par défaut, l’accueil envoie à A ; B (consentement retiré) et F (numéro inexploitable) sont REFUSÉS en nommant le motif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le puits n’a reçu QU’UN message : celui de A, au numéro normalisé +229, avec le texte du modèle et le nom, sans aucune donnée de santé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le texte envoyé vient du modèle d’anniversaire : vœu, nom du patient, aucun mot médical",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le journal écrit LES TROIS issues : A accepté avec identifiant de message et numéro masqué, B refusé CONSENTEMENT_RETIRE, F refusé NUMERO_INVALIDE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune ligne du journal ne porte un numéro en clair ni le texte du message",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Relancé le même jour : rien ne repart (même clé), nommé DEJA_TRAITE, le puits n’a pas bougé et le journal non plus",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Rappel de la veille : TROIS rendez-vous de A pour demain sont rappelés (un message par rendez-vous), acceptés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rappel nomme le médecin, la date et l’heure, JAMAIS le motif de la consultation (décision M6)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucun DOUBLON de rappel : le déclencheur relancé ne renvoie rien (DEJA_TRAITE), le puits garde ses quatre messages",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Même identifiant de demande présenté deux fois au serveur (réponse perdue, ou deux postes) : un SEUL message part, la seconde réponse rend l’envoi d’origine",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le retrait du consentement est TRACÉ : valeur fausse, date et auteur renseignés, relus par le moteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Consentement retiré : plus AUCUN envoi, refus nommé avec son geste, le puits reste vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Consentement rétabli par l’accueil : l’envoi repart (un message au puits)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un texte qui porte un mot de la liste médicale est REFUSÉ (DONNEE_MEDICALE) avec son geste : diagnostic, séropositive, positif, accents et casse compris, rien n’est envoyé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les trois refus médicaux sont au journal comme REFUS, sans identifiant de message, sans le texte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le SMS ne vise que des PATIENTS : un motif interne (alerte technique) et un destinataire qui n’est pas un patient sont refusés (MOTIF_INCONNU, PATIENT_INCONNU)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Hors ligne : le message est MIS EN FILE et le dit (statut en_file, code HORS_LIGNE), rien n’est présenté comme envoyé, le puits est vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Toujours hors ligne : la reprise ne perd rien et ne compte pas d’essai (le message attend)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Rien n’a circulé pendant la coupure : le puits est vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Au retour de la connexion : UN SEUL message part (celui de la file), le puits le confirme",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’entrée de file est CLOSE (envoyé), son texte effacé ; le journal porte « en file » PUIS « accepté » avec le même identifiant de clé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Reprises répétées et même clé représentée : AUCUN second envoi (le puits garde un message, la clé est DEJA_TRAITE)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Heures calmes (23 h) : le rappel est REPORTÉ et NOMMÉ (HEURES_CALMES), reprise annoncée à 7 h le lendemain, rien n’est parti",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le report n’est pas perdu : une entrée de file « reporté » porte l’heure de reprise ; le journal écrit « reporté », sans identifiant de message",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Avant l’ouverture de la fenêtre (23 h 30, puis 6 h 59) : la reprise n’envoie RIEN",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "À l’ouverture de la fenêtre (7 h 05) : UN message part, le puits le confirme, la file est close, le journal passe « reporté » puis « accepté »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Reprises suivantes : AUCUN doublon (le puits garde un seul message, un seul « accepté » au journal pour cette clé)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "UNE SEULE reprise : heures calmes encore en cours à la reprise, le message est ABANDONNÉ (HEURES_CALMES, tentative 1), ne repart pas quand la fenêtre se rouvre, le puits reste vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tour de surveillance des notifications appelle les déclencheurs SMS (une fois par tour)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Passerelle désactivée ou profil autre que l’accueil : les déclencheurs ne font RIEN (ni envoi, ni ligne de journal)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le dossier patient porte le champ de consentement SMS, COCHÉ PAR DÉFAUT",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le journal affiche les nouveaux états (refus nommés du moteur, reporté, en file) sans modification possible",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript",
         "ok": true,
         "detail": null
       }

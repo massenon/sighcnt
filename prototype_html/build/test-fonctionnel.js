@@ -11476,7 +11476,7 @@ async function viderMessages(page) {
    * ======================================================================== */
   await etape(async () => {
     scenario('Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse');
-    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
     await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
     await ouvrir('m14-taches.html');
     erreursJS = [];
@@ -11557,7 +11557,7 @@ async function viderMessages(page) {
    * ======================================================================== */
   await etape(async () => {
     scenario('Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles');
-    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
     await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
     await ouvrir('m14-taches.html');
     erreursJS = [];
