@@ -211,7 +211,10 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
             inerte: b.getAttribute('aria-disabled') === 'true' || b.disabled
               || /opacity-50/.test(b.className || ''),
           }))
-          .filter((b) => b.texte || b.titre);
+          .filter((b) => b.texte || b.titre)
+          /* Le bouton de VALIDATION d'un référentiel (K.boutonValider, titre « Valider « … »») n'est pas une écriture de la fiche : il se garde
+             par le rôle de la famille et l'ouverture de l'écran (« signer n'est pas saisir »). La Vague 92 le sonde à part. */
+          .filter((b) => !/^Valider «/.test(b.titre));
         const nom = (b) => (b.texte || b.titre).trim();
         return {
           ecriture: cmd.filter((b) => re.test(nom(b)) && !b.inerte).map(nom),
