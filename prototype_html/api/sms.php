@@ -312,6 +312,16 @@ if ($action === 'enregistrer') {
 
 if ($action === 'tester' || $action === 'envoyer') {
     $maintenant = sigh_sms_maintenant($corps);
+    if ($action === 'envoyer') {
+        /* le destinataire se contrôle ICI, avant le doublon, le fournisseur et le plafond : un refus ne consomme rien */
+        $refus = sigh_sms_controle_destinataire($pdo, $motifDemande, (string) ($corps['patientId'] ?? ''), (string) ($corps['destinataire'] ?? ''));
+        if ($refus !== null) {
+            sigh_journaliser($pdo, $session, 'Envoi de SMS refusé (destinataire)', 'CFG', 'Passerelle SMS', null, [
+                'motif' => $motifDemande, 'code' => $refus, 'a' => sigh_sms_masquer((string) (sigh_sms_normaliser((string) ($corps['destinataire'] ?? '')) ?? ($corps['destinataire'] ?? ''))),
+            ]);
+            sigh_sms_refuser($refus);
+        }
+    }
     $idClient = $action === 'envoyer' ? substr(preg_replace('/[^A-Za-z0-9:_.\-]/', '', (string) ($corps['idClient'] ?? '')), 0, 120) : '';
     if ($idClient !== '') {
         /* verrou : deux appels de même identifiant ne s'exécutent pas en parallèle (le second verra l'envoi du premier) */

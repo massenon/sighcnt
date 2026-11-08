@@ -76,6 +76,8 @@ function sigh_sms_refus(string $code, string $detail = ''): array
         'DONNEE_MEDICALE' => ['Le texte contient un mot de la liste médicale : aucune donnée de santé ne part par SMS.', 'Réécrire le message sans diagnostic, résultat ni motif de venue.'],
         'TEXTE_INVALIDE' => ['Le texte du message est vide ou dépasse 320 caractères.', 'Rédiger un message de 1 à 320 caractères.'],
         'MOTIF_INCONNU' => ['Le motif d’envoi n’est pas dans la liste des motifs admis.', 'Choisir un motif de la liste : ' . implode(', ', array_keys(SIGH_SMS_MOTIFS)) . '.'],
+        'DESTINATAIRE_NON_PATIENT' => ['Le destinataire n’est pas un patient enregistré : le SMS ne vise que des patients, au numéro de leur dossier.', 'Retrouver ou ouvrir le dossier du patient, et envoyer au numéro qu’il porte.'],
+        'CONSENTEMENT_RETIRE' => ['Le patient a retiré son consentement aux SMS : aucun message ne part.', 'Le consentement se rétablit au dossier du patient, par l’accueil, après accord de la personne.'],
         'ACCES_REFUSE' => ['Ce profil ne règle ni n’utilise la passerelle SMS.', 'S’adresser à l’administrateur système ou à la DAF.'],
     ];
     $x = $t[$code] ?? [$code, ''];
@@ -87,6 +89,48 @@ function sigh_sms_numero(string $n): ?string
 {
     $n = preg_replace('/[\s.\-()]/', '', trim($n));
     return preg_match('/^\+[1-9][0-9]{7,14}$/', (string) $n) ? $n : null;
+}
+
+/**
+ * La règle UNIQUE de normalisation d'un numéro de dossier ou de destinataire (la même que `numeroSms` du poste, parcours.js) : espaces, points, traits
+ * et parenthèses retirés ; le plus est conservé ; `00` devient `+` ; dix chiffres commençant par 01 reçoivent +229. Null sinon.
+ */
+function sigh_sms_normaliser(string $brut): ?string
+{
+    $n = preg_replace('/[\s.\-()]/', '', $brut);
+    if (strncmp($n, '+', 1) === 0) {
+        return $n;
+    }
+    if (preg_match('/^00[1-9]/', $n)) {
+        return '+' . substr($n, 2);
+    }
+    if (preg_match('/^01[0-9]{8}$/', $n)) {
+        return '+229' . $n;
+    }
+    return null;
+}
+
+/**
+ * Le contrôle du DESTINATAIRE (serveur, avant le fournisseur et avant le plafond) : un SMS ne vise qu'un patient non archivé, au numéro de son
+ * dossier, et qui n'a pas retiré son consentement. Exempt : l'alerte technique (elle vise un exploitant, pas un patient). Rend le code de refus ou null.
+ */
+function sigh_sms_controle_destinataire(PDO $pdo, string $motif, string $patientId, string $destinataire): ?string
+{
+    if ($motif === 'alerte_technique') {
+        return null;
+    }
+    $p = $patientId === '' ? null : sigh_lire_fiche($pdo, 'patients', $patientId);
+    if (!is_array($p) || ($p['statut'] ?? '') === 'archive') {
+        return 'DESTINATAIRE_NON_PATIENT';
+    }
+    $attendu = sigh_sms_normaliser((string) ($p['telephone'] ?? ''));
+    if ($attendu === null || $attendu !== sigh_sms_normaliser($destinataire)) {
+        return 'DESTINATAIRE_NON_PATIENT';
+    }
+    if (($p['consentementSms'] ?? null) === false) {
+        return 'CONSENTEMENT_RETIRE';
+    }
+    return null;
 }
 
 /** Le numéro MASQUÉ du journal : les quatre derniers chiffres seulement. */

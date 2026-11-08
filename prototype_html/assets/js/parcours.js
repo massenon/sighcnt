@@ -4419,7 +4419,7 @@
 
   /** Une tentative auprès du serveur, SANS effet de bord sur le journal ni la file. @return Promise<{etat, http, o}> */
   function smsTenter(spec) {
-    return smsAppeler({ motif: spec.motif, texte: spec.texte, destinataire: spec.numero, idClient: spec.idClient, maintenant: spec.maintenant || undefined })
+    return smsAppeler({ motif: spec.motif, texte: spec.texte, destinataire: spec.numero, patientId: spec.patientId || undefined, idClient: spec.idClient, maintenant: spec.maintenant || undefined })
       .then(function (x) {
         var o = x.o || {};
         if (o.code === 'ACCES_REFUSE') return { etat: 'acces', http: x.http, o: o };

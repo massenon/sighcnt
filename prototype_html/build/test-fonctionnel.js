@@ -14587,10 +14587,18 @@ async function viderMessages(page) {
       testids: [...document.querySelectorAll('[data-testid^="resultat-sms-"]')].map((n) => n.getAttribute('data-testid')),
     }));
     const journal = () => page.evaluate(() => (window.SIGH.store.raw().messagesSms || []).slice().sort((x, y) => String(x._creeLe).localeCompare(String(y._creeLe)) || String(x.id).localeCompare(String(y.id))));
-    const envoyer = (motif, texte, h, dest) => apiAdmin('envoyer', { motif: motif, texte: texte, destinataire: dest || NUM, maintenant: A(h || '10:00:00') });
+    let patient93 = '';
+    const envoyer = (motif, texte, h, dest) => apiAdmin('envoyer', { motif: motif, texte: texte, destinataire: dest || NUM, patientId: patient93, maintenant: A(h || '10:00:00') });
     const tester = (champs, h, dest) => apiAdmin('tester', Object.assign({ destinataire: dest || NUM, maintenant: A(h || '10:00:00') }, champs || {}));
 
     await poser('admin');
+    /* depuis la vague 95 le serveur ne texte qu'un patient, à son numéro : le destinataire de cette sonde est un patient de sonde (archivé à la sortie) */
+    patient93 = await page.evaluate((num) => window.SIGH.store.collection('patients', { module: 'M1', entite: 'Patient' }).insert({ code: 'CNT/93Z/40', nom: 'SONDE93', prenom: 'Alice', sexe: 'F', statut: 'actif', telephone: num }).record.id, NUM);
+    for (let i = 0; i < 40; i++) {
+      const vu = await page.evaluate(async (id) => { const r = await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/magasin.php?collections=patients', { headers: { 'X-Sigh-Jeton': window.SIGH.store.jetonServeur() || '' } }); const o = await r.json().catch(() => ({})); return (o.patients || []).some((p) => p.id === id); }, patient93);
+      if (vu) break;
+      await pause(250);
+    }
     await apiAdmin('effacer', {});
     await puitsApi('sms_puits_vider');
     await ouvrir('cfg-sms.php');
@@ -14682,7 +14690,9 @@ async function viderMessages(page) {
     verifier('Aucune réponse d’envoi ne contient un identifiant (étapes, motif, entrée du journal)', secrets.every((x) => !rep.brut.includes(x)), rep.brut.slice(0, 300));
     const fuites = await page.evaluate((liste, numeroPlein) => {
       const S = window.SIGH.store;
-      const tout = JSON.stringify(S.raw());
+      /* le dossier d'un patient PORTE légitimement son numéro (le contrôle du destinataire, vague 95, le relit) : la fuite se mesure hors `patients` */
+      const brut = Object.assign({}, S.raw()); delete brut.patients;
+      const tout = JSON.stringify(brut);
       let ls = ''; try { for (let i = 0; i < localStorage.length; i++) ls += localStorage.getItem(localStorage.key(i)); } catch (e) { /* stockage */ }
       return { magasin: liste.filter((x) => tout.includes(x)), stockage: liste.filter((x) => ls.includes(x)), numeroMagasin: tout.includes(numeroPlein), journalSms: JSON.stringify(S.raw().messagesSms || []).includes(numeroPlein) };
     }, secrets, NUM.slice(1));
@@ -14701,7 +14711,7 @@ async function viderMessages(page) {
     /* --- 6. plafond du jour (compté au SERVEUR) : un jour à lui, pour ne pas hériter des envois acceptés plus haut --------------- */
     const JP = new Date(Date.parse(JOUR + 'T12:00:00Z') + 10 * 86400000).toISOString().slice(0, 10);
     const AP = (h) => JP + 'T' + h + '+01:00';
-    const envP = (texte) => apiAdmin('envoyer', { motif: 'rappel_rdv', texte: texte, destinataire: NUM, maintenant: AP('10:00:00') });
+    const envP = (texte) => apiAdmin('envoyer', { motif: 'rappel_rdv', texte: texte, destinataire: NUM, patientId: patient93, maintenant: AP('10:00:00') });
     await apiAdmin('enregistrer', { fournisseur: 'twilio', twilioSid: SID, twilioToken: JETON_OK, expediteur: 'CLINIQUE', plafondJour: 2, actif: true, calmeDebut: 21, calmeFin: 7 });
     const p1 = await envP('Rendez-vous demain à 9 h avec le docteur Aïssatou.');
     const p2 = await envP('Rendez-vous demain à 10 h avec le docteur Aïssatou.');
@@ -14716,19 +14726,19 @@ async function viderMessages(page) {
     await apiAdmin('enregistrer', { fournisseur: 'twilio', twilioSid: SID, twilioToken: JETON_OK, expediteur: 'CLINIQUE', plafondJour: 2, actif: true });
     const p4 = await envP('Rendez-vous demain à 12 h avec le docteur Aïssatou.');
     verifier('Effacer puis ressaisir la configuration NE remet PAS le plafond à zéro (le compteur du jour survit)', effacerPuis.statut === 200 && p4.o.ok === false && p4.o.code === 'PLAFOND_ATTEINT', p4.brut.slice(0, 200));
-    const lendemain = await apiAdmin('envoyer', { motif: 'rappel_rdv', texte: 'Rendez-vous demain à 9 h avec le docteur Aïssatou.', destinataire: NUM, maintenant: new Date(Date.parse(AP('10:00:00')) + 86400000).toISOString().slice(0, 10) + 'T10:00:00+01:00' });
+    const lendemain = await apiAdmin('envoyer', { motif: 'rappel_rdv', texte: 'Rendez-vous demain à 9 h avec le docteur Aïssatou.', destinataire: NUM, patientId: patient93, maintenant: new Date(Date.parse(AP('10:00:00')) + 86400000).toISOString().slice(0, 10) + 'T10:00:00+01:00' });
     verifier('Le plafond se compte PAR JOUR (heure du Bénin) : le lendemain, l’envoi repart', lendemain.o.ok === true, lendemain.brut.slice(0, 200));
     await apiAdmin('enregistrer', { plafondJour: 200 });
 
     /* --- 7. heures calmes : report NOMMÉ, urgents exemptés ------------------------------------------------------------------ */
     const JOUR2 = new Date(Date.parse(JOUR + 'T12:00:00Z') + 5 * 86400000).toISOString().slice(0, 10);
     const A2 = (h) => JOUR2 + 'T' + h + '+01:00';
-    const nuit = await apiAdmin('envoyer', { motif: 'anniversaire', texte: 'Bon anniversaire de la part de la clinique.', destinataire: NUM, maintenant: A2('22:30:00') });
+    const nuit = await apiAdmin('envoyer', { motif: 'anniversaire', texte: 'Bon anniversaire de la part de la clinique.', destinataire: NUM, patientId: patient93, maintenant: A2('22:30:00') });
     verifier('À 22 h 30 (heure du Bénin), un souhait d’anniversaire est REPORTÉ : HEURES_CALMES, statut « reporté », reprise à 7 h le lendemain, rien envoyé',
       nuit.o.ok === false && nuit.o.code === 'HEURES_CALMES' && nuit.o.statut === 'reporte' && /T07:00:00\+01:00$/.test(nuit.o.reporteA || '') && (nuit.o.reporteA || '').slice(0, 10) > JOUR2, nuit.brut.slice(0, 300));
-    const aube = await apiAdmin('envoyer', { motif: 'anniversaire', texte: 'Bon anniversaire de la part de la clinique.', destinataire: NUM, maintenant: A2('03:00:00') });
+    const aube = await apiAdmin('envoyer', { motif: 'anniversaire', texte: 'Bon anniversaire de la part de la clinique.', destinataire: NUM, patientId: patient93, maintenant: A2('03:00:00') });
     verifier('À 3 h du matin, le report va au MÊME jour à 7 h (les heures calmes chevauchent minuit)', aube.o.code === 'HEURES_CALMES' && (aube.o.reporteA || '').slice(0, 16) === JOUR2 + 'T07:00', aube.brut.slice(0, 300));
-    const jour = await apiAdmin('envoyer', { motif: 'anniversaire', texte: 'Bon anniversaire de la part de la clinique.', destinataire: NUM, maintenant: A2('10:00:00') });
+    const jour = await apiAdmin('envoyer', { motif: 'anniversaire', texte: 'Bon anniversaire de la part de la clinique.', destinataire: NUM, patientId: patient93, maintenant: A2('10:00:00') });
     const urgent = await apiAdmin('envoyer', { motif: 'alerte_technique', texte: 'Alerte technique du serveur de la clinique.', destinataire: NUM, maintenant: A2('22:30:00') });
     const testNuit = await tester({}, '22:30:00');
     verifier('À 10 h le souhait part ; l’alerte technique et le test de nuit sont EXEMPTÉS des heures calmes',
@@ -14818,7 +14828,7 @@ async function viderMessages(page) {
     verifier('L’administrateur retire la configuration : la passerelle redevient non configurée, aucun identifiant ne subsiste sur le disque',
       efface.statut === 200 && efface.o.configure === false && !/"sec"/.test(fs.readFileSync(path.join(DOSSIER, 'sms.local.php'), 'utf8')), JSON.stringify([efface.statut, efface.brut.slice(0, 150)]));
     await puitsApi('sms_puits_vider');
-    await page.evaluate(() => { const col = window.SIGH.store.collection('messagesSms'); col.all().forEach((m) => { if (m.statut !== 'archive') col.archive(m.id, 'Sonde Vague 93'); }); });
+    await page.evaluate((pid) => { const col = window.SIGH.store.collection('messagesSms'); col.all().forEach((m) => { if (m.statut !== 'archive') col.archive(m.id, 'Sonde Vague 93'); }); window.SIGH.store.collection('patients').archive(pid, 'Sonde Vague 93'); }, patient93);
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
@@ -14890,6 +14900,8 @@ async function viderMessages(page) {
       mk('D', { telephone: '0197009404' });
       mk('E', { telephone: '0197009405' });
       mk('F', { telephone: '0512345678' });
+      mk('G', { telephone: '0197009498' });
+      mk('H', { telephone: '0197009497' });
       const demain = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate() + 1, 9, 30).toISOString();
       const rdv = (cle, suffixe) => S.collection('consultations', { module: 'M2', entite: 'Consultation' }).insert({ patientId: ids[cle], patientCode: 'CNT/94' + cle + '/40', patient: 'SONDE94' + cle + ' Alice', medecin: 'Dr SONDEMEDECIN', type: 'Consultation', date: demain, motif: 'Suspicion de paludisme grave', statut: 'planifiee', reference: 'C94' + cle + suffixe }).record.id;
       const rdvs = { A1: rdv('A', '1'), A2: rdv('A', '2'), A3: rdv('A', '3') };
@@ -14905,6 +14917,12 @@ async function viderMessages(page) {
     const ids = monde.ids;
     idsSonde = Object.values(ids);
     const cleDe = (suffixe) => MARQUE + ':' + suffixe;
+    /* le contrôle du destinataire (vague 95) lit les patients AU SERVEUR : on attend qu'ils y soient */
+    for (let i = 0; i < 40; i++) {
+      const vu = await page.evaluate(async (pids) => { const r = await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/magasin.php?collections=patients', { headers: { 'X-Sigh-Jeton': window.SIGH.store.jetonServeur() || '' } }); const o = await r.json().catch(() => ({})); const l = o.patients || []; return pids.every((id) => l.some((p) => p.id === id)); }, idsSonde);
+      if (vu) break;
+      await pause(250);
+    }
 
     /* --- 1. droits PAR MOTIF au serveur : l’accueil envoie, ne règle jamais --------------------------------------------------- */
     const tokR = await jetonDe('e.orouyo'), tokM = await jetonDe('f.yeni'), tokC = await jetonDe('a.dieyabidi');
@@ -14925,8 +14943,8 @@ async function viderMessages(page) {
       rTestMotif.statut === 403 && rAlerte.statut === 403 && rCaisse.statut === 403 && rCaisseDispo.statut === 403 && rMedecinAnniv.statut === 403 && rSansSession.statut === 401
       && [rTestMotif, rAlerte, rCaisse, rMedecinAnniv].every((x) => x.o.code === 'ACCES_REFUSE') && (await recus()).length === avantDroits,
       JSON.stringify([rTestMotif.statut, rAlerte.statut, rCaisse.statut, rCaisseDispo.statut, rMedecinAnniv.statut, rSansSession.statut]));
-    const rRappelR = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel de rendez-vous demain.', destinataire: '+22997009498', maintenant: MAINT, idClient: cleDe('d5') }, tokR);
-    const rRappelM = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel de rendez-vous demain.', destinataire: '+22997009497', maintenant: MAINT, idClient: cleDe('d6') }, tokM);
+    const rRappelR = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel de rendez-vous demain.', destinataire: '+2290197009498', patientId: ids.G, maintenant: MAINT, idClient: cleDe('d5') }, tokR);
+    const rRappelM = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel de rendez-vous demain.', destinataire: '+2290197009497', patientId: ids.H, maintenant: MAINT, idClient: cleDe('d6') }, tokM);
     verifier('L’accueil et le médecin envoient bien un rappel de rendez-vous : acceptés par le puits, numéro masqué, aucun secret dans la réponse',
       rRappelR.statut === 200 && rRappelR.o.ok === true && rRappelM.statut === 200 && rRappelM.o.ok === true && rRappelR.o.numeroMasque === '****9498' && !rRappelR.brut.includes(JETON_OK) && !rRappelR.brut.includes(SID)
       && (await recus()).length === avantDroits + 2, JSON.stringify([rRappelR.statut, rRappelM.statut, (await recus()).length]));
@@ -14968,8 +14986,8 @@ async function viderMessages(page) {
     verifier('Aucun DOUBLON de rappel : le déclencheur relancé ne renvoie rien (DEJA_TRAITE), le puits garde ses quatre messages',
       rap2.length === 3 && rap2.every((x) => x.code === 'DEJA_TRAITE') && (await recus()).length === 4, JSON.stringify(rap2));
     /* le même rappel présenté par un AUTRE poste (journal local vide) : le serveur le reconnaît par l’identifiant de demande */
-    const tiers = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel.', destinataire: '+22997009401', maintenant: MAINT, idClient: MARQUE + ':doublon-serveur' }, tokR);
-    const tiers2 = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel.', destinataire: '+22997009401', maintenant: MAINT, idClient: MARQUE + ':doublon-serveur' }, tokR);
+    const tiers = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel.', destinataire: '+2290197009401', patientId: ids.A, maintenant: MAINT, idClient: MARQUE + ':doublon-serveur' }, tokR);
+    const tiers2 = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel.', destinataire: '+2290197009401', patientId: ids.A, maintenant: MAINT, idClient: MARQUE + ':doublon-serveur' }, tokR);
     verifier('Même identifiant de demande présenté deux fois au serveur (réponse perdue, ou deux postes) : un SEUL message part, la seconde réponse rend l’envoi d’origine',
       tiers.o.ok === true && !tiers.o.doublon && tiers2.o.ok === true && tiers2.o.doublon === true && tiers2.o.idMessage === tiers.o.idMessage && (await recus()).length === 5, JSON.stringify([tiers.o.idMessage, tiers2.o.idMessage, tiers2.o.doublon, (await recus()).length]));
     await puitsApi('sms_puits_vider');
@@ -15091,6 +15109,103 @@ async function viderMessages(page) {
       ['messagesSms', 'fileSms'].forEach((n) => { const col = S.collection(n); col.all().forEach((e) => { if (e.statut !== 'archive' && e.cle && e.cle.indexOf(marque) >= 0 || (n === 'messagesSms' && (ids.A === e.patientId || Object.values(ids).includes(e.patientId)))) { try { col.archive(e.id, 'Sonde Vague 94'); } catch (x) { /* déjà archivé */ } } }); });
     }, ids, monde.rdvs, monde.crees, MARQUE);
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|net::ERR_INTERNET_DISCONNECTED/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  /* ==========================================================================
+   * Vague 95 : passerelle SMS, le contrôle du DESTINATAIRE au serveur (Direction, 08/11/2026)
+   * -------------------------------------------------------------------------
+   * Le contrôle du poste (PR.envoyerSms) se contourne en appelant l'API à la main : un profil admis à un motif visait un numéro quelconque, et chaque
+   * SMS coûte. La sonde est donc ce contournement : jeton de l'ACCUEIL, API appelée directement. Le puits compte ce qui a vraiment circulé, le plafond
+   * (posé à 2) prouve qu'un refus ne consomme rien. Les patients sont de SONDE (`SONDE95`), archivés à la sortie (RG-14).
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 95 : passerelle SMS, destinataire contrôlé au serveur (numéro libre, patient inconnu ou archivé, numéro différent, consentement retiré, plafond intact, alerte technique)');
+    const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
+    const JOUR = new Date(Date.UTC(2040, 0, 1) + Math.floor(Math.random() * 3000) * 86400000).toISOString().slice(0, 10);
+    const MAINT = JOUR + 'T10:00:00+01:00';
+    const SID = 'ACsonde95' + Math.random().toString(36).slice(2, 12);
+    const JETON_OK = 'puits-ok-' + Math.random().toString(36).slice(2, 12);
+    const MARQUE = 's95' + Math.random().toString(36).slice(2, 8);
+    erreursJS = [];
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), profil('admin'));
+    const api = (action, corps, jeton) => page.evaluate(async (a, c, j) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const tok = j === undefined ? window.SIGH.store.jetonServeur() : j;
+      const r = await fetch(racine + 'api/sms.php' + (c ? '' : '?action=' + a), { method: c ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': tok || '' }, body: c ? JSON.stringify(Object.assign({ action: a }, c)) : undefined });
+      const t = await r.text(); let o = {}; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+      return { statut: r.status, o: o, brut: t };
+    }, action, corps || null, jeton === undefined ? undefined : jeton);
+    const puitsApi = (action) => page.evaluate(async (a) => {
+      const r = await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/banc.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: a }) });
+      return (await r.json()).recus || [];
+    }, action);
+    const jetonDe = async (id) => ((await BANC.connecter(id)) || {}).jeton || '';
+    const tokAdmin = await jetonDe(BANC.SESSION_BANC.identifiant);
+    const tokR = await jetonDe('e.orouyo');
+    const lireServeur = (nom) => page.evaluate(async (n) => { const r = await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/magasin.php?collections=' + n, { headers: { 'X-Sigh-Jeton': window.SIGH.store.jetonServeur() || '' } }); const o = await r.json().catch(() => ({})); return o[n] || []; }, nom);
+
+    await api('effacer', {}, tokAdmin);
+    await puitsApi('sms_puits_vider');
+    const enr = await api('enregistrer', { fournisseur: 'twilio', twilioSid: SID, twilioToken: JETON_OK, expediteur: 'CLINIQUE', actif: true, plafondJour: 2, calmeDebut: 21, calmeFin: 7 }, tokAdmin);
+    verifier('Passerelle active sur le puits, plafond du jour posé à 2', enr.statut === 200 && enr.o.actif === true && enr.o.plafondJour === 2, JSON.stringify([enr.statut, enr.brut.slice(0, 160)]));
+
+    const ids = await page.evaluate((marque) => {
+      const col = window.SIGH.store.collection('patients', { module: 'M1', entite: 'Patient' });
+      const mk = (cle, o) => col.insert(Object.assign({ code: 'CNT/95' + cle + '/40', nom: 'SONDE95' + cle, prenom: 'Alice', sexe: 'F', statut: 'actif' }, o)).record.id;
+      const r = { ok: mk('A', { telephone: '0197009501' }), retire: mk('B', { telephone: '0197009502', consentementSms: false }), archive: mk('C', { telephone: '0197009503' }) };
+      col.archive(r.archive, 'Sonde Vague 95');
+      return r;
+    }, MARQUE);
+    for (let i = 0; i < 40; i++) {
+      const l = await lireServeur('patients');
+      if (Object.values(ids).every((id) => l.some((p) => p.id === id)) && (l.find((p) => p.id === ids.archive) || {}).statut === 'archive') break;
+      await pause(250);
+    }
+    const surServeur = await lireServeur('patients');
+    verifier('Les trois patients de sonde sont au magasin du SERVEUR (dont l’archivé, marqué archive)', Object.values(ids).every((id) => surServeur.some((p) => p.id === id)) && (surServeur.find((p) => p.id === ids.archive) || {}).statut === 'archive', JSON.stringify(Object.values(ids).map((id) => !!surServeur.find((p) => p.id === id))));
+    const envoi = (corps, tok) => api('envoyer', Object.assign({ motif: 'rappel_rdv', texte: 'Bonjour, rappel de rendez-vous demain.', maintenant: MAINT }, corps), tok === undefined ? tokR : tok);
+    const nom = (r) => r.o.code + '/' + r.statut;
+
+    /* --- les refus, sous le jeton de l'ACCUEIL ---------------------------------------------------------------------------------- */
+    const libre = await envoi({ destinataire: '+22997009999', idClient: MARQUE + ':libre' });
+    verifier('Numéro libre SANS patientId : refusé en 403, DESTINATAIRE_NON_PATIENT, motif et geste nommés', nom(libre) === 'DESTINATAIRE_NON_PATIENT/403' && !!libre.o.motif && !!libre.o.geste, JSON.stringify(libre.o).slice(0, 200));
+    const inconnu = await envoi({ destinataire: '+2290197009501', patientId: 'PAT-INEXISTANT-95', idClient: MARQUE + ':inconnu' });
+    verifier('patientId INCONNU : refusé (DESTINATAIRE_NON_PATIENT)', nom(inconnu) === 'DESTINATAIRE_NON_PATIENT/403', JSON.stringify(inconnu.o).slice(0, 200));
+    const archive = await envoi({ destinataire: '+2290197009503', patientId: ids.archive, idClient: MARQUE + ':archive' });
+    verifier('Patient ARCHIVÉ : refusé (DESTINATAIRE_NON_PATIENT)', nom(archive) === 'DESTINATAIRE_NON_PATIENT/403', JSON.stringify(archive.o).slice(0, 200));
+    const autre = await envoi({ destinataire: '+2290197009599', patientId: ids.ok, idClient: MARQUE + ':autre' });
+    verifier('Numéro DIFFÉRENT de celui du dossier : refusé (DESTINATAIRE_NON_PATIENT)', nom(autre) === 'DESTINATAIRE_NON_PATIENT/403', JSON.stringify(autre.o).slice(0, 200));
+    const retire = await envoi({ destinataire: '+2290197009502', patientId: ids.retire, idClient: MARQUE + ':retire' });
+    verifier('Consentement RETIRÉ : refusé (CONSENTEMENT_RETIRE), même au bon numéro', nom(retire) === 'CONSENTEMENT_RETIRE/403' && !!retire.o.geste, JSON.stringify(retire.o).slice(0, 200));
+    verifier('Aucun refus n’a atteint le fournisseur : le puits est vide', (await puitsApi('sms_puits_lire')).length === 0);
+
+    /* --- le cas légitime, puis le plafond : les cinq refus n'ont rien consommé ---------------------------------------------------- */
+    const bon = await envoi({ destinataire: '+2290197009501', patientId: ids.ok, idClient: MARQUE + ':bon' });
+    verifier('Cas légitime (accueil, patient actif, bon numéro, consentement) : accepté au puits, numéro masqué', bon.statut === 200 && bon.o.ok === true && bon.o.numeroMasque === '****9501' && (await puitsApi('sms_puits_lire')).length === 1, JSON.stringify([bon.statut, bon.o.code, bon.o.numeroMasque]));
+    const variante = await envoi({ destinataire: '+229 01 97 00 95 01', patientId: ids.ok, idClient: MARQUE + ':bon2' });
+    verifier('Le numéro du destinataire est normalisé comme celui du dossier (espaces) : accepté, c’est le SECOND envoi du plafond', variante.statut === 200 && variante.o.ok === true, JSON.stringify([variante.statut, variante.o.code]));
+    const plein = await envoi({ destinataire: '+2290197009501', patientId: ids.ok, idClient: MARQUE + ':plein' });
+    verifier('Le plafond (2) ne compte que les envois acceptés : le troisième est PLAFOND_ATTEINT, donc cinq refus n’ont rien consommé', plein.o.code === 'PLAFOND_ATTEINT' && (await puitsApi('sms_puits_lire')).length === 2, JSON.stringify([plein.statut, plein.o.code]));
+
+    /* --- alerte technique : sous admin, sans patientId, hors contrôle (sur un nouveau jour, le plafond est neuf) --------------------- */
+    const J2 = new Date(Date.parse(JOUR + 'T12:00:00Z') + 86400000).toISOString().slice(0, 10);
+    const alerte = await api('envoyer', { motif: 'alerte_technique', texte: 'Alerte technique du serveur de la clinique.', destinataire: '+22997009888', maintenant: J2 + 'T10:00:00+01:00', idClient: MARQUE + ':alerte' }, tokAdmin);
+    verifier('Alerte technique sous administrateur, SANS patientId, vers un numéro d’exploitant : acceptée', alerte.statut === 200 && alerte.o.ok === true && alerte.o.numeroMasque === '****9888', JSON.stringify([alerte.statut, alerte.o.code]));
+    const testeur = await api('tester', { destinataire: '+22997009777', maintenant: J2 + 'T10:00:00+01:00' }, tokAdmin);
+    verifier('Le test d’envoi n’est jamais soumis au contrôle du destinataire (numéro libre accepté)', testeur.statut === 200 && testeur.o.ok === true, JSON.stringify([testeur.statut, testeur.o.code]));
+
+    /* --- le journal du serveur : le refus est écrit, sans le numéro en clair ------------------------------------------------------- */
+    const audit = (await lireServeur('audit')).filter((e) => /refusé \(destinataire\)/.test(e.action || ''));
+    const brutAudit = JSON.stringify(audit.slice(0, 5));
+    verifier('Les refus sont journalisés par le serveur (RG-12) avec leur code, sans le numéro en clair ni le texte',
+      audit.length >= 5 && /DESTINATAIRE_NON_PATIENT/.test(brutAudit) && /CONSENTEMENT_RETIRE/.test(brutAudit) && !/2290197009|0197009502|Bonjour/.test(brutAudit), brutAudit.slice(0, 300));
+
+    /* --- restitution -------------------------------------------------------------------------------------------------------------- */
+    await api('effacer', {}, tokAdmin);
+    await puitsApi('sms_puits_vider');
+    await page.evaluate((ids) => { const S = window.SIGH.store; Object.values(ids).forEach((id) => { try { S.collection('patients').archive(id, 'Sonde Vague 95'); } catch (e) { /* déjà archivé */ } }); }, ids);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
   await browser.close();
