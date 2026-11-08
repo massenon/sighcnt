@@ -4662,7 +4662,7 @@
         "detail": null
       },
       {
-        "libelle": "RBAC : le caissier ne voit pas les demandes ; l’échographiste a ses stats, pas le catalogue CFG",
+        "libelle": "RBAC : le caissier ne voit pas les demandes ; l’échographiste a ses stats et LIT le catalogue CFG pour le valider, sans pouvoir l’écrire",
         "ok": true,
         "detail": null
       },
@@ -7935,6 +7935,492 @@
       },
       {
         "libelle": "Aucune erreur JavaScript sur le centre des validations",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 92 : un bouton Valider par écran",
+    "etapes": [
+      {
+        "libelle": "(enquetes / adm-enquetes) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(enquetes / adm-enquetes) sous un rôle HORS famille qui ouvre l’écran (reception), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(enquetes / adm-enquetes) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(enquetes / adm-enquetes) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(enquetes / adm-enquetes) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(enquetes / adm-enquetes) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-valeurs-reference) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-valeurs-reference) sous un rôle HORS famille qui ouvre l’écran (admin), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-valeurs-reference) sous un rôle de la famille (laborantin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-valeurs-reference) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-valeurs-reference) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-valeurs-reference) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-unites) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-unites) sous un rôle HORS famille qui ouvre l’écran (admin), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-unites) sous un rôle de la famille (laborantin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-unites) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-unites) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(labo_variables / m5-unites) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(pathologies / m2-pathologies) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(pathologies / m2-pathologies) sous un rôle HORS famille qui ouvre l’écran (admin), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(pathologies / m2-pathologies) sous un rôle de la famille (dm), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(pathologies / m2-pathologies) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(pathologies / m2-pathologies) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(pathologies / m2-pathologies) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) sous un rôle HORS famille qui ouvre l’écran (admin), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) sous un rôle de la famille (echographiste), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) sous un rôle HORS famille qui ouvre l’écran (admin), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) sous un rôle de la famille (echographiste), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(imagerie / cfg-imagerie-catalogue) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(checklists_bloc / m3-bloc-checklist) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(checklists_bloc / m3-bloc-checklist) sous un rôle HORS famille qui ouvre l’écran (admin), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(checklists_bloc / m3-bloc-checklist) sous un rôle de la famille (chirurgien), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(checklists_bloc / m3-bloc-checklist) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(checklists_bloc / m3-bloc-checklist) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(actes / cfg-tarifs) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(actes / cfg-tarifs) sous un rôle HORS famille qui ouvre l’écran (reception), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(actes / cfg-tarifs) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(actes / cfg-tarifs) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(actes / cfg-tarifs) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(actes / cfg-tarifs) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(analyses / cfg-tarifs) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(analyses / cfg-tarifs) sous un rôle HORS famille qui ouvre l’écran (reception), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(analyses / cfg-tarifs) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(analyses / cfg-tarifs) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(analyses / cfg-tarifs) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(analyses / cfg-tarifs) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(valorisation_sage / m6-produits) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(valorisation_sage / m6-produits) sous un rôle HORS famille qui ouvre l’écran (medecin), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(valorisation_sage / m6-produits) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(valorisation_sage / m6-produits) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(valorisation_sage / m6-produits) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(valorisation_sage / m6-produits) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(objectifs_pilotage / m12-tableau-decisionnel) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(objectifs_pilotage / m12-tableau-decisionnel) sous un rôle HORS famille qui ouvre l’écran (comptable), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(objectifs_pilotage / m12-tableau-decisionnel) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(objectifs_pilotage / m12-tableau-decisionnel) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(objectifs_pilotage / m12-tableau-decisionnel) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(objectifs_pilotage / m12-tableau-decisionnel) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(repartition_charges / m12-seuil-rentabilite) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(repartition_charges / m12-seuil-rentabilite) sous un rôle HORS famille qui ouvre l’écran (aide_comptable), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(repartition_charges / m12-seuil-rentabilite) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(repartition_charges / m12-seuil-rentabilite) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(repartition_charges / m12-seuil-rentabilite) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(repartition_charges / m12-seuil-rentabilite) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_badge / m10-badges-modeles) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_badge / m10-badges-modeles) sous un rôle HORS famille qui ouvre l’écran (aucun n’y accède), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_badge / m10-badges-modeles) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_badge / m10-badges-modeles) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_badge / m10-badges-modeles) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_badge / m10-badges-modeles) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(jeux_import / imp-analyses) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(jeux_import / imp-analyses) sous un rôle HORS famille qui ouvre l’écran (laborantin), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(jeux_import / imp-analyses) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(jeux_import / imp-analyses) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(jeux_import / imp-analyses) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_messages / cfg-rappels) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_messages / cfg-rappels) sous un rôle HORS famille qui ouvre l’écran (aucun n’y accède), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_messages / cfg-rappels) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_messages / cfg-rappels) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_messages / cfg-rappels) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(modeles_messages / cfg-rappels) modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(bareme_its / cfg-comptabilite) l’élément de sonde est « à valider » avant le geste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(bareme_its / cfg-comptabilite) sous un rôle HORS famille qui ouvre l’écran (aucun n’y accède), AUCUN bouton Valider, ni grisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(bareme_its / cfg-comptabilite) sous un rôle de la famille (admin), le bouton « Valider » de l’élément existe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(bareme_its / cfg-comptabilite) le clic valide l’élément : statut changé, trois traces, UNE ligne de journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "(bareme_its / cfg-comptabilite) l’élément validé n’offre plus de bouton Valider et porte « Validé (rôle, date) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le workflow documentaire n’offre AUCUNE validation en masse (ni « Valider la sélection », ni case de sélection), seulement le geste unitaire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Restitution : aucune fiche de sonde active, la validation des check-listes du bloc est rendue telle qu’avant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript pendant le balayage des écrans de validation",
         "ok": true,
         "detail": null
       }
