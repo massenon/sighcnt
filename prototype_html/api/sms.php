@@ -315,7 +315,7 @@ if ($action === 'tester' || $action === 'envoyer') {
     $idClient = $action === 'envoyer' ? substr(preg_replace('/[^A-Za-z0-9:_.\-]/', '', (string) ($corps['idClient'] ?? '')), 0, 120) : '';
     if ($idClient !== '') {
         /* verrou : deux appels de même identifiant ne s'exécutent pas en parallèle (le second verra l'envoi du premier) */
-        $verrou = @fopen(sigh_sms_dossier() . '/sms.verrou.local', 'c');
+        $verrou = @fopen(sigh_sms_dossier() . '/sms.verrou.local.php', 'c');
         if ($verrou) {
             flock($verrou, LOCK_EX);
         }

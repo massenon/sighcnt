@@ -1150,6 +1150,27 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `reference` | reference | text |  |
 | `responsable` | responsable | text |  |
 
+### `m13.file_sms` (collection « fileSms », 3 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `cle` | cle | text |  |
+| `motif` | motif | text |  |
+| `texte` | texte | text |  |
+| `raison` | raison | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `cree_par` | _creePar | text |  |
+| `id_client` | idClient | text |  |
+| `reporte_a` | reporteA | text |  |
+| `patient_id` | patientId | text | → patients (FK) |
+| `raison_fin` | raisonFin | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `tentatives` | tentatives | integer |  |
+| `modifie_par` | _modifiePar | text |  |
+| `id_message` | idMessage | text |  |
+
 ### `m13.jetons_enquete` (collection « jetonsEnquete », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -1173,6 +1194,31 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `mise_en_service` | miseEnService | text |  |
 | `periodicite_mois` | periodiciteMois | integer |  |
 | `dernier_entretien` | dernierEntretien | date |  |
+
+### `m13.messages_sms` (collection « messagesSms », 17 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `cle` | cle | text |  |
+| `par` | par | text |  |
+| `code` | code | text |  |
+| `date` | date | date |  |
+| `heure` | heure | text |  |
+| `motif` | motif | text |  |
+| `detail` | detail | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `jour_cle` | jourCle | date |  |
+| `cree_par` | _creePar | text |  |
+| `longueur` | longueur | integer |  |
+| `reporte_a` | reporteA | timestamptz |  |
+| `id_message` | idMessage | text |  |
+| `patient_id` | patientId | text | → patients (FK) |
+| `tentative` | tentative | integer |  |
+| `fournisseur` | fournisseur | text |  |
+| `motif_libelle` | motifLibelle | text |  |
+| `numero_masque` | numeroMasque | text |  |
 
 ### `m13.plan_annuel` (collection « planAnnuel », 0 fiches)
 
@@ -1529,29 +1575,32 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `centre_destination` | centreDestination | text |  |
 | `formation_sanitaire` | formationSanitaire | text |  |
 
-### `m1.patients` (collection « patients », 210 fiches)
+### `m1.patients` (collection « patients », 216 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
-| `age` | age | integer |  |
 | `nom` | nom | text |  |
 | `code` | code | text |  |
 | `sexe` | sexe | text |  |
-| `assure` | assure | boolean |  |
 | `prenom` | prenom | text |  |
 | `statut` | statut | text |  |
 | `cree_le` | _creeLe | timestamptz |  |
-| `adresse` | adresse | text |  |
-| `externe` | externe | boolean |  |
 | `cree_par` | _creePar | text |  |
-| `assureur` | assureur | text |  |
-| `quartier` | quartier | text |  |
 | `telephone` | telephone | text |  |
+| `date_naissance` | dateNaissance | date |  |
+| `consentement_sms` | consentementSms | boolean |  |
 | `modifie_le` | _modifieLe | timestamptz |  |
 | `modifie_par` | _modifiePar | text |  |
+| `consentement_sms_le` | consentementSmsLe | timestamptz |  |
+| `consentement_sms_par` | consentementSmsPar | text |  |
+| `age` | age | integer |  |
+| `assure` | assure | boolean |  |
+| `adresse` | adresse | text |  |
+| `externe` | externe | boolean |  |
+| `assureur` | assureur | text |  |
+| `quartier` | quartier | text |  |
 | `date_creation` | dateCreation | date |  |
-| `date_naissance` | dateNaissance | date |  |
 | `age_reference_le` | ageReferenceLe | text |  |
 | `origine_dossier` | origineDossier | text |  |
 | `taux_prise_en_charge` | tauxPriseEnCharge | integer |  |
@@ -1561,7 +1610,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `assureur_nom` | assureurNom | text |  |
 | `numero_police` | numeroPolice | text |  |
 | `groupe_sanguin` | groupeSanguin | text |  |
-| `souscripteur_id` | souscripteurId | text | → souscripteurs (FK) |
+| `souscripteur_id` | souscripteurId | text |  |
 | `carte_expiration` | carteExpiration | date |  |
 | `antecedents_autres` | antecedentsAutres | text |  |
 | `personne_a_prevenir` | personneAPrevenir | text |  |
@@ -1569,7 +1618,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `categorie_assurance` | categorieAssurance | text |  |
 | `souscripteur` | souscripteur | text |  |
 | `matricule` | matricule | text |  |
-| `personnel_id` | personnelId | text | → personnel (FK) |
+| `personnel_id` | personnelId | text |  |
 | `fonction_agent` | fonctionAgent | text |  |
 | `prise_en_charge_personnel` | priseEnChargePersonnel | boolean |  |
 

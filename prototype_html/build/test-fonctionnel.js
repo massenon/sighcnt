@@ -14860,17 +14860,21 @@ async function viderMessages(page) {
       return (await r.json()).recus || [];
     }, action);
     const recus = async () => (await puitsApi('sms_puits_lire'));
-    const journal = () => page.evaluate((m) => (window.SIGH.store.raw().messagesSms || []).filter((e) => e.cle && e.cle.indexOf(m) >= 0 && e.statut !== 'archive').sort((x, y) => String(x._creeLe).localeCompare(String(y._creeLe)) || String(x.id).localeCompare(String(y.id))), MARQUE);
-    const file = () => page.evaluate((m) => (window.SIGH.store.raw().fileSms || []).filter((e) => e.cle && e.cle.indexOf(m) >= 0), MARQUE);
+    let idsSonde = [];
+    const journal = () => page.evaluate((m, pids) => (window.SIGH.store.raw().messagesSms || []).filter((e) => ((e.cle && e.cle.indexOf(m) >= 0) || pids.includes(e.patientId)) && e.statut !== 'archive').sort((x, y) => String(x._creeLe).localeCompare(String(y._creeLe)) || String(x.id).localeCompare(String(y.id))), MARQUE, idsSonde);
+    const file = () => page.evaluate((m, pids) => (window.SIGH.store.raw().fileSms || []).filter((e) => (e.cle && e.cle.indexOf(m) >= 0) || pids.includes(e.patientId)), MARQUE, idsSonde);
     const pr = (corps, ...args) => page.evaluate(new Function('a', 'return (async () => { const PR = window.SIGH.parcours; ' + corps + ' })()'), args);
     const jetonDe = async (id) => ((await BANC.connecter(id)) || {}).jeton || '';
+    /* le réglage de la passerelle se fait sous un jeton d’ADMINISTRATEUR, quel que soit le profil posé sur la page (la page porte le jeton du profil posé) */
+    const tokAdmin = await jetonDe(BANC.SESSION_BANC.identifiant);
+    const regler = (corps) => api('enregistrer', corps, tokAdmin);
 
     await poser('admin');
-    await apiAdmin('effacer', {});
+    await api('effacer', {}, tokAdmin);
     await puitsApi('sms_puits_vider');
 
     /* --- 0. la passerelle sert, par le puits ----------------------------------------------------------------------------------- */
-    const enr = await apiAdmin('enregistrer', { fournisseur: 'twilio', twilioSid: SID, twilioToken: JETON_OK, expediteur: 'CLINIQUE', actif: true, plafondJour: 200, calmeDebut: 21, calmeFin: 7 });
+    const enr = await regler({ fournisseur: 'twilio', twilioSid: SID, twilioToken: JETON_OK, expediteur: 'CLINIQUE', actif: true, plafondJour: 200, calmeDebut: 21, calmeFin: 7 });
     verifier('La passerelle est configurée et ACTIVE (Twilio, puits de test)', enr.statut === 200 && enr.o.configure === true && enr.o.actif === true, JSON.stringify([enr.statut, enr.brut.slice(0, 200)]));
 
     /* --- les patients et les rendez-vous de la sonde ------------------------------------------------------------------------- */
@@ -14879,7 +14883,7 @@ async function viderMessages(page) {
       const auj = new Date(jour + 'T10:00:00+01:00');
       const md = C.iso(auj).slice(5);
       const ids = {};
-      const mk = (cle, o) => { const r = S.collection('patients', { module: 'M1', entite: 'Patient' }).insert(Object.assign({ code: 'CNT/94' + cle + '/40', nom: 'SONDE94' + cle, prenom: 'Alice', sexe: 'F', statut: 'actif', dateNaissance: '1990-' + md }, o)); ids[cle] = r.id; };
+      const mk = (cle, o) => { const r = S.collection('patients', { module: 'M1', entite: 'Patient' }).insert(Object.assign({ code: 'CNT/94' + cle + '/40', nom: 'SONDE94' + cle, prenom: 'Alice', sexe: 'F', statut: 'actif', dateNaissance: '1990-' + md }, o)); ids[cle] = r.record.id; };
       mk('A', { telephone: '0197009401' });
       mk('B', { telephone: '0197009402', consentementSms: false });
       mk('C', { telephone: '0197009403' });
@@ -14887,18 +14891,19 @@ async function viderMessages(page) {
       mk('E', { telephone: '0197009405' });
       mk('F', { telephone: '0512345678' });
       const demain = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate() + 1, 9, 30).toISOString();
-      const rdv = (cle, suffixe) => S.collection('consultations', { module: 'M2', entite: 'Consultation' }).insert({ patientId: ids[cle], patientCode: 'CNT/94' + cle + '/40', patient: 'SONDE94' + cle + ' Alice', medecin: 'Dr SONDEMEDECIN', type: 'Consultation', date: demain, motif: 'Suspicion de paludisme grave', statut: 'planifiee', reference: 'C94' + cle + suffixe }).id;
+      const rdv = (cle, suffixe) => S.collection('consultations', { module: 'M2', entite: 'Consultation' }).insert({ patientId: ids[cle], patientCode: 'CNT/94' + cle + '/40', patient: 'SONDE94' + cle + ' Alice', medecin: 'Dr SONDEMEDECIN', type: 'Consultation', date: demain, motif: 'Suspicion de paludisme grave', statut: 'planifiee', reference: 'C94' + cle + suffixe }).record.id;
       const rdvs = { A1: rdv('A', '1'), A2: rdv('A', '2'), A3: rdv('A', '3') };
       /* modèles : on lit ceux du magasin, on n’en crée que s’il en manque (archivés à la sortie) */
       const col = S.collection('modelesMessage', { module: 'CFG', entite: 'modèle de message', prefix: 'MSG' });
       const crees = [];
       [['anniversaire', 'Bonjour {{nom}}, toute l’équipe de {{clinique}} vous souhaite un très joyeux anniversaire. Votre santé, notre raison de vivre.'],
         ['rdv', 'Bonjour {{nom}}, nous vous rappelons votre rendez-vous à {{clinique}} le {{rdv}}. Pour toute modification, appelez le {{telephone}}.']].forEach((m) => {
-        if (!col.active().some((x) => x.occasion === m[0] && x.actif !== false)) crees.push(col.insert({ occasion: m[0], libelle: 'Modèle de sonde 94', texte: m[1], actif: true }).id);
+        if (!col.active().some((x) => x.occasion === m[0] && x.actif !== false)) crees.push(col.insert({ occasion: m[0], libelle: 'Modèle de sonde 94', texte: m[1], actif: true }).record.id);
       });
       return { ids, rdvs, crees, md };
     }, JOUR, MARQUE);
     const ids = monde.ids;
+    idsSonde = Object.values(ids);
     const cleDe = (suffixe) => MARQUE + ':' + suffixe;
 
     /* --- 1. droits PAR MOTIF au serveur : l’accueil envoie, ne règle jamais --------------------------------------------------- */
@@ -14928,7 +14933,9 @@ async function viderMessages(page) {
     await puitsApi('sms_puits_vider');
 
     /* --- 2. anniversaire : consentement (point 7 du PRD) -------------------------------------------------------------------- */
-    await poser('reception');
+    /* les flux sont menés sous un profil qui n’est PAS celui de l’accueil : le tour de surveillance déclenche tout seul les envois du poste d’accueil
+       (toutes les 45 s), et une reprise de file lancée en douce ferait dépendre les comptes du puits de l’horloge du navigateur */
+    await poser('admin');
     const ann1 = await pr("const r = await PR.anniversairesSms({ aujourdhui: a[0], maintenant: a[1], patientIds: a[2] }); return r.map((x) => ({ id: x.id, ok: x.resultat.ok, statut: x.resultat.statut, code: x.resultat.code, geste: x.resultat.geste }));", A('10:00:00'), MAINT, [ids.A, ids.B, ids.F]);
     const rc1 = await recus();
     const par = (id) => ann1.find((x) => x.id === id) || {};
@@ -14976,7 +14983,7 @@ async function viderMessages(page) {
       return { c: q.consentementSms, le: q.consentementSmsLe, par: q.consentementSmsPar, lu: PR.consentementSms(q) };
     }, ids.A);
     verifier('Le retrait du consentement est TRACÉ : valeur fausse, date et auteur renseignés, relus par le moteur',
-      retrait.c === false && /^\d{4}-\d\d-\d\dT/.test(retrait.le || '') && /Sonde reception/.test(retrait.par || '') && retrait.lu.accepte === false, JSON.stringify(retrait));
+      retrait.c === false && /^\d{4}-\d\d-\d\dT/.test(retrait.le || '') && /Sonde admin/.test(retrait.par || '') && retrait.lu.accepte === false, JSON.stringify(retrait));
     const rap3 = await pr("const S = window.SIGH.store; const c = S.collection('consultations').all().find((x) => x.id === a[0]); S.collection('consultations').update(a[0], { date: c.date, statut: 'planifiee' }); const r = await PR.envoyerSms('rappel_rdv', a[1], 'Bonjour, rappel de votre rendez-vous demain.', { cle: a[2], maintenant: a[3] }); return { ok: r.ok, code: r.code, motif: r.motif, geste: r.geste };", monde.rdvs.A2, ids.A, cleDe('retrait'), MAINT);
     verifier('Consentement retiré : plus AUCUN envoi, refus nommé avec son geste, le puits reste vide',
       rap3.ok === false && rap3.code === 'CONSENTEMENT_RETIRE' && /accueil/.test(rap3.geste) && (await recus()).length === 0, JSON.stringify(rap3));
@@ -15001,10 +15008,11 @@ async function viderMessages(page) {
     const hors = await pr("const r = await PR.envoyerSms('relance', a[0], 'Bonjour, merci de passer à la caisse.', { cle: a[1], maintenant: a[2] }); return { ok: r.ok, statut: r.statut, code: r.code, motif: r.motif };", ids.C, cleDe('hors'), MAINT);
     const fHors = (await file()).filter((e) => e.cle === cleDe('hors'));
     verifier('Hors ligne : le message est MIS EN FILE et le dit (statut en_file, code HORS_LIGNE), rien n’est présenté comme envoyé, le puits est vide',
-      hors.ok === false && hors.statut === 'en_file' && hors.code === 'HORS_LIGNE' && /file/.test(hors.motif) && fHors.length === 1 && fHors[0].statut === 'attente' && (await recus()).length === 0, JSON.stringify([hors, fHors]));
+      hors.ok === false && hors.statut === 'en_file' && hors.code === 'HORS_LIGNE' && /file/.test(hors.motif) && fHors.length === 1 && fHors[0].statut === 'attente', JSON.stringify([hors, fHors]));
     const pendant = await pr("const b = await PR.relancerSmsFile({ maintenant: a[0] }); return b;", MAINT);
-    verifier('Toujours hors ligne : la reprise ne perd rien et ne compte pas d’essai (le message attend)', (await file()).filter((e) => e.cle === cleDe('hors'))[0].statut === 'attente' && (await file()).filter((e) => e.cle === cleDe('hors'))[0].tentatives === 0 && (await recus()).length === 0, JSON.stringify(pendant));
+    verifier('Toujours hors ligne : la reprise ne perd rien et ne compte pas d’essai (le message attend)', (await file()).filter((e) => e.cle === cleDe('hors'))[0].statut === 'attente' && (await file()).filter((e) => e.cle === cleDe('hors'))[0].tentatives === 0, JSON.stringify(pendant));
     await page.setOfflineMode(false);
+    verifier('Rien n’a circulé pendant la coupure : le puits est vide', (await recus()).length === 0, JSON.stringify(await recus()));
     const retour = await pr("const b = await PR.relancerSmsFile({ maintenant: a[0] }); return b;", MAINT);
     const rcRet = await recus();
     verifier('Au retour de la connexion : UN SEUL message part (celui de la file), le puits le confirme', retour.some((x) => x.fin === 'envoye') && rcRet.length === 1 && /merci de passer à la caisse/.test(rcRet[0].texte), JSON.stringify([retour, rcRet.length]));
@@ -15037,9 +15045,9 @@ async function viderMessages(page) {
 
     /* une seule reprise : si la fenêtre est ENCORE fermée à la reprise, le message est abandonné, nommé, et ne revient plus */
     const calmeE = await pr("const r = await PR.envoyerSms('rappel_rdv', a[0], 'Bonjour, rappel de votre rendez-vous demain.', { cle: a[1], maintenant: a[2] }); return r.statut;", ids.E, cleDe('calmeE'), A('22:00:00'));
-    await apiAdmin('enregistrer', { calmeDebut: 0, calmeFin: 23 });
+    await regler({ calmeDebut: 0, calmeFin: 23 });
     await pr("return await PR.relancerSmsFile({ maintenant: a[0] });", B('08:00:00'));
-    await apiAdmin('enregistrer', { calmeDebut: 21, calmeFin: 7 });
+    await regler({ calmeDebut: 21, calmeFin: 7 });
     await pr("await PR.relancerSmsFile({ maintenant: a[0] }); return 1;", B('12:00:00'));
     const fE = (await file()).filter((e) => e.cle === cleDe('calmeE'))[0], jE = (await journal()).filter((e) => e.cle === cleDe('calmeE'));
     verifier('UNE SEULE reprise : heures calmes encore en cours à la reprise, le message est ABANDONNÉ (HEURES_CALMES, tentative 1), ne repart pas quand la fenêtre se rouvre, le puits reste vide',
@@ -15049,14 +15057,18 @@ async function viderMessages(page) {
     const branche = await page.evaluate(() => { const PR = window.SIGH.parcours; const orig = PR.declencherSmsAuto; let n = 0; PR.declencherSmsAuto = () => { n++; }; window.SIGH.notifications.tour(false); PR.declencherSmsAuto = orig; return n; });
     verifier('Le tour de surveillance des notifications appelle les déclencheurs SMS (une fois par tour)', branche === 1, String(branche));
     const jAvant = await page.evaluate(() => (window.SIGH.store.raw().messagesSms || []).length);
-    await apiAdmin('enregistrer', { actif: false });
+    await regler({ actif: false });
+    const roleSans = (r) => page.evaluate((s) => window.SIGH.store.setSession(s), profil(r));
+    await roleSans('reception');
     const silence = await pr("await PR.smsDisponible(true); const v = await PR.declencherSmsAuto(); return v;");
-    await poser('admin');
-    await apiAdmin('enregistrer', { actif: true });
+    await regler({ actif: true });
+    await roleSans('admin');
     const adminNul = await pr("await PR.smsDisponible(true); return await PR.declencherSmsAuto();");
-    await poser('reception');
+    const nbRecus = (await recus()).length;
+    await regler({ actif: false });
     verifier('Passerelle désactivée ou profil autre que l’accueil : les déclencheurs ne font RIEN (ni envoi, ni ligne de journal)',
-      silence === null && adminNul === null && (await page.evaluate(() => (window.SIGH.store.raw().messagesSms || []).length)) === jAvant && (await recus()).length === 0, JSON.stringify([silence, adminNul]));
+      silence === null && adminNul === null && (await page.evaluate(() => (window.SIGH.store.raw().messagesSms || []).length)) === jAvant && nbRecus === 0, JSON.stringify([silence, adminNul, nbRecus]));
+    await poser('reception');
 
     /* --- 8. écrans : le consentement au dossier, le journal --------------------------------------------------------------------- */
     await ouvrir('m1-patient-nouveau.php');
@@ -15069,7 +15081,7 @@ async function viderMessages(page) {
 
     /* --- restitution ------------------------------------------------------------------------------------------------------------ */
     await poser('admin');
-    await apiAdmin('effacer', {});
+    await api('effacer', {}, tokAdmin);
     await puitsApi('sms_puits_vider');
     await page.evaluate((ids, rdvs, crees, marque) => {
       const S = window.SIGH.store;

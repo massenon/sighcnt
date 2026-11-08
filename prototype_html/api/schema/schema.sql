@@ -2295,6 +2295,44 @@ COMMENT ON TABLE "m13"."evenements_etablissement" IS 'Collection « evenementsEt
 CREATE INDEX IF NOT EXISTS "ix_evenements_etablissement_date" ON "m13"."evenements_etablissement" ("date");
 CREATE INDEX IF NOT EXISTS "ix_evenements_etablissement_statut" ON "m13"."evenements_etablissement" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_evenements_etablissement_reference" ON "m13"."evenements_etablissement" ("reference");
+CREATE TABLE IF NOT EXISTS "m13"."file_sms" (
+  "id" text PRIMARY KEY,
+  "cle" text,
+  "motif" text,
+  "texte" text,
+  "raison" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "cree_par" text,
+  "id_client" text,
+  "reporte_a" text,
+  "patient_id" text,
+  "raison_fin" text,
+  "modifie_le" timestamptz,
+  "tentatives" integer,
+  "modifie_par" text,
+  "id_message" text,
+  "extra" jsonb
+);
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "cle" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "texte" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "raison" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "id_client" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "reporte_a" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "raison_fin" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "tentatives" integer; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "id_message" text; -- @montee
+ALTER TABLE "m13"."file_sms" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m13"."file_sms" IS 'Collection « fileSms » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_file_sms_statut" ON "m13"."file_sms" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_file_sms_patient_id" ON "m13"."file_sms" ("patient_id");
 CREATE TABLE IF NOT EXISTS "m13"."jetons_enquete" (
   "_rang" integer PRIMARY KEY,
   "extra" jsonb
@@ -2338,6 +2376,7 @@ CREATE INDEX IF NOT EXISTS "ix_materiel_statut" ON "m13"."materiel" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_materiel_reference" ON "m13"."materiel" ("reference");
 CREATE TABLE IF NOT EXISTS "m13"."messages_sms" (
   "id" text PRIMARY KEY,
+  "cle" text,
   "par" text,
   "code" text,
   "date" date,
@@ -2346,15 +2385,19 @@ CREATE TABLE IF NOT EXISTS "m13"."messages_sms" (
   "detail" text,
   "statut" text,
   "cree_le" timestamptz,
+  "jour_cle" date,
   "cree_par" text,
   "longueur" integer,
-  "reporte_a" text,
+  "reporte_a" timestamptz,
   "id_message" text,
+  "patient_id" text,
+  "tentative" integer,
   "fournisseur" text,
   "motif_libelle" text,
   "numero_masque" text,
   "extra" jsonb
 );
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "cle" text; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "par" text; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
@@ -2363,10 +2406,13 @@ ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "motif" text; -- @mont
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "detail" text; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "jour_cle" date; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "longueur" integer; -- @montee
-ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "reporte_a" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "reporte_a" timestamptz; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "id_message" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "tentative" integer; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "fournisseur" text; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "motif_libelle" text; -- @montee
 ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "numero_masque" text; -- @montee
@@ -2375,6 +2421,7 @@ COMMENT ON TABLE "m13"."messages_sms" IS 'Collection « messagesSms » — M13 A
 CREATE INDEX IF NOT EXISTS "ix_messages_sms_code" ON "m13"."messages_sms" ("code");
 CREATE INDEX IF NOT EXISTS "ix_messages_sms_date" ON "m13"."messages_sms" ("date");
 CREATE INDEX IF NOT EXISTS "ix_messages_sms_statut" ON "m13"."messages_sms" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_messages_sms_patient_id" ON "m13"."messages_sms" ("patient_id");
 CREATE TABLE IF NOT EXISTS "m13"."plan_annuel" (
   "id" text PRIMARY KEY,
   "axe" text,
@@ -3037,24 +3084,27 @@ CREATE INDEX IF NOT EXISTS "ix_fiches_reference_statut" ON "m1"."fiches_referenc
 CREATE INDEX IF NOT EXISTS "ix_fiches_reference_patient_id" ON "m1"."fiches_reference" ("patient_id");
 CREATE TABLE IF NOT EXISTS "m1"."patients" (
   "id" text PRIMARY KEY,
-  "age" integer,
   "nom" text,
   "code" text,
   "sexe" text,
-  "assure" boolean,
   "prenom" text,
   "statut" text,
   "cree_le" timestamptz,
-  "adresse" text,
-  "externe" boolean,
   "cree_par" text,
-  "assureur" text,
-  "quartier" text,
   "telephone" text,
+  "date_naissance" date,
+  "consentement_sms" boolean,
   "modifie_le" timestamptz,
   "modifie_par" text,
+  "consentement_sms_le" timestamptz,
+  "consentement_sms_par" text,
+  "age" integer,
+  "assure" boolean,
+  "adresse" text,
+  "externe" boolean,
+  "assureur" text,
+  "quartier" text,
   "date_creation" date,
-  "date_naissance" date,
   "age_reference_le" text,
   "origine_dossier" text,
   "taux_prise_en_charge" integer,
@@ -3077,24 +3127,27 @@ CREATE TABLE IF NOT EXISTS "m1"."patients" (
   "prise_en_charge_personnel" boolean,
   "extra" jsonb
 );
-ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "age" integer; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "nom" text; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "sexe" text; -- @montee
-ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "assure" boolean; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "prenom" text; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
-ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "adresse" text; -- @montee
-ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "externe" boolean; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
-ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "assureur" text; -- @montee
-ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "quartier" text; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "telephone" text; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "date_naissance" date; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "consentement_sms" boolean; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "consentement_sms_le" timestamptz; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "consentement_sms_par" text; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "age" integer; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "assure" boolean; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "adresse" text; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "externe" boolean; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "assureur" text; -- @montee
+ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "quartier" text; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "date_creation" date; -- @montee
-ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "date_naissance" date; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "age_reference_le" text; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "origine_dossier" text; -- @montee
 ALTER TABLE "m1"."patients" ADD COLUMN IF NOT EXISTS "taux_prise_en_charge" integer; -- @montee
