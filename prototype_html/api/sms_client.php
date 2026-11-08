@@ -42,6 +42,21 @@ const SIGH_SMS_MOTIFS = [
 ];
 
 /**
+ * QUI PEUT DEMANDER L'ENVOI d'un message de tel motif (action `envoyer`). La configuration, elle, reste à `admin` et `da` : un poste qui
+ * déclenche un rappel n'a jamais accès aux réglages ni au Test SMS. PROPOSITION à valider par la Direction : seuls les profils dont le
+ * poste produit le motif (accueil pour les rappels et les vœux, laboratoire pour « résultat disponible ») sont admis.
+ */
+const SIGH_SMS_ROLES_MOTIF = [
+    'test' => ['admin', 'da'],
+    'alerte_technique' => ['admin', 'da'],
+    'rappel_rdv' => ['admin', 'da', 'reception', 'medecin', 'infirmier', 'dm'],
+    'anniversaire' => ['admin', 'da', 'reception', 'agentadmin'],
+    'fete' => ['admin', 'da', 'reception', 'agentadmin'],
+    'relance' => ['admin', 'da', 'reception', 'agentadmin'],
+    'resultat_disponible' => ['admin', 'da', 'reception', 'laborantin', 'medecin', 'dm'],
+];
+
+/**
  * Les refus NOMMÉS : code, motif, geste. Une seule table : l'écran, le journal et les sondes la lisent.
  * @return array{code:string,motif:string,geste:string}
  */

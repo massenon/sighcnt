@@ -2324,7 +2324,7 @@
    * y est écrit comme refus : seul un message accepté par le fournisseur porte un identifiant. Ce journal ne se modifie pas : la trace d'un envoi
    * n'est pas une fiche qu'on corrige. Conservation 12 mois puis archivage (RG-14), décision du 07/11/2026.
    * ======================================================================== */
-  var STATUTS_SMS = { accepte: ['Accepté', 'success'], refuse: ['Refusé', 'danger'], reporte: ['Reporté', 'warning'] };
+  var STATUTS_SMS = { accepte: ['Accepté', 'success'], refuse: ['Refusé', 'danger'], reporte: ['Reporté', 'warning'], en_file: ['En file', 'warning'] };
   global.SIGH.screen('m13-sms-journal', {
     title: 'Journal des envois SMS',
     description: 'Les envois de la passerelle SMS : motif, statut, refus nommé, numéro masqué et identifiant chez le fournisseur.',
@@ -2345,7 +2345,7 @@
           { key: 'par', label: 'Par' },
         ],
         filters: [
-          { name: 'statut', label: 'Statut', options: [{ value: 'accepte', label: 'Accepté' }, { value: 'refuse', label: 'Refusé' }, { value: 'reporte', label: 'Reporté' }] },
+          { name: 'statut', label: 'Statut', options: [{ value: 'accepte', label: 'Accepté' }, { value: 'refuse', label: 'Refusé' }, { value: 'reporte', label: 'Reporté' }, { value: 'en_file', label: 'En file' }] },
           { name: 'motif', label: 'Motif', options: [{ value: 'test', label: 'Test d’envoi' }, { value: 'alerte_technique', label: 'Alerte technique' }, { value: 'rappel_rdv', label: 'Rappel de rendez-vous' }, { value: 'anniversaire', label: 'Souhait d’anniversaire' }, { value: 'fete', label: 'Souhait de fête' }, { value: 'relance', label: 'Relance' }, { value: 'resultat_disponible', label: 'Résultat disponible' }] },
           { name: 'fournisseur', label: 'Fournisseur', options: [{ value: 'twilio', label: 'Twilio' }, { value: 'vonage', label: 'Vonage' }] },
         ],

@@ -636,6 +636,9 @@
    * repère ce qui est NOUVEAU depuis le dernier tour, et distribue.
    */
   function tour(premier) {
+    /* Les déclencheurs SMS (rappel de la veille, vœux, reprise de la file) se branchent ICI, sur le même tour que les alertes : ils ne
+       dupliquent pas la tâche serveur rdv_lendemain, qui alerte le PERSONNEL ; eux préviennent le PATIENT, et seulement poste d’accueil. */
+    try { if (global.SIGH.parcours && global.SIGH.parcours.declencherSmsAuto) global.SIGH.parcours.declencherSmsAuto(); } catch (e) { console.error('[SIGH] SMS :', e); }
     var liste = enAttente();
     var nouveaux = liste.filter(function (n) { return !_vues[n.cle]; });
     liste.forEach(function (n) { _vues[n.cle] = true; });

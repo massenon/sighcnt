@@ -5,7 +5,8 @@
  * GET    ?action=etat       : la configuration SANS les identifiants (administrateur, DAF, Direction en lecture)
  * POST   action=enregistrer : enregistre la configuration (administrateur, DAF)
  * POST   action=tester      : envoie le message de contrôle à un numéro et rend les ÉTAPES (administrateur, DAF)
- * POST   action=envoyer     : envoie un message de motif admis (administrateur, DAF ; l'ouverture aux déclencheurs relève de l'étape S2)
+ * GET    ?action=disponible : la passerelle est-elle active et quels motifs ce profil peut-il envoyer (tout profil admis à envoyer, sans détail)
+ * POST   action=envoyer     : envoie un message de motif admis ; le PROFIL admis dépend du motif (SIGH_SMS_ROLES_MOTIF), jamais la configuration
  * POST   action=effacer     : retire la configuration (administrateur)
  *
  * LES IDENTIFIANTS DU FOURNISSEUR (SID, jeton, clé, secret) : saisis, chiffrés (AES-256-GCM) avec une clé tirée au sort qui vit dans un
@@ -15,6 +16,9 @@
  *
  * LE JOURNAL : le serveur écrit l'audit (RG-12) avec le numéro MASQUÉ (quatre derniers chiffres), le motif, le statut et l'identifiant du
  * message ; jamais le texte, jamais un secret. Il rend aussi l'`entree` que l'écran range dans la collection `messagesSms`.
+ * L'IDEMPOTENCE : un envoi porte un `idClient` stable (le déclencheur le dérive de sa clé). Le serveur retient les 300 derniers avec l'identifiant de
+ * message obtenu ; un second appel avec le même `idClient` ne renvoie RIEN au fournisseur et rend l'envoi d'origine (`doublon: true`). C'est ce qui
+ * rend sans danger la reprise d'un message mis en file quand la réponse s'est perdue en route, et le même rappel déclenché depuis deux postes.
  * LE PLAFOND est compté ICI (compteur du jour, heure du Bénin) : un poste ne peut pas le contourner en effaçant son navigateur.
  * ========================================================================== */
 
@@ -170,14 +174,34 @@ $action = (string) ($_GET['action'] ?? ($corps['action'] ?? 'etat'));
 $ecrit = in_array($role, SIGH_SMS_ROLES_ECRITURE, true);
 $lit = in_array($role, SIGH_SMS_ROLES_LECTURE, true);
 
-if (!$lit) {
-    sigh_sms_refuser('ACCES_REFUSE');
+/* Les profils admis à ENVOYER un message (réunion des listes par motif) : ils ne lisent ni ne règlent la passerelle pour autant. */
+$envoyeurs = array_values(array_unique(array_merge(...array_values(SIGH_SMS_ROLES_MOTIF))));
+$motifDemande = (string) ($corps['motif'] ?? '');
+if ($action === 'disponible') {
+    if (!in_array($role, $envoyeurs, true)) {
+        sigh_sms_refuser('ACCES_REFUSE');
+    }
+    $cd = sigh_sms_lire_config();
+    sigh_repondre([
+        'configure' => sigh_sms_manque(sigh_sms_config_active($cd)) === null, 'actif' => !empty($cd['actif']),
+        'motifs' => array_keys(array_filter(SIGH_SMS_ROLES_MOTIF, function ($rs) use ($role) { return in_array($role, $rs, true); })),
+    ]);
 }
-if ($action === 'etat') {
-    sigh_repondre(sigh_sms_publique(sigh_sms_lire_config()));
-}
-if (!$ecrit) {
-    sigh_sms_refuser('ACCES_REFUSE', 403, 'Ce profil lit la passerelle sans la modifier.');
+if ($action === 'envoyer') {
+    $permis = SIGH_SMS_ROLES_MOTIF[$motifDemande] ?? $envoyeurs;
+    if (!in_array($role, $permis, true)) {
+        sigh_sms_refuser('ACCES_REFUSE', 403, 'Ce profil n’envoie pas de message de ce motif.');
+    }
+} else {
+    if (!$lit) {
+        sigh_sms_refuser('ACCES_REFUSE');
+    }
+    if ($action === 'etat') {
+        sigh_repondre(sigh_sms_publique(sigh_sms_lire_config()));
+    }
+    if (!$ecrit) {
+        sigh_sms_refuser('ACCES_REFUSE', 403, 'Ce profil lit la passerelle sans la modifier.');
+    }
 }
 
 /** Fusionne le formulaire dans la configuration. Un identifiant VIDE veut dire « inchangé » : l'écran ne les relit jamais. */
@@ -229,7 +253,7 @@ $entree = function (array $r, string $motif, int $longueur) use ($session): arra
 };
 
 /** Compte l'envoi accepté dans le compteur du jour (verrou de fichier : deux envois simultanés ne se comptent pas pour un). */
-$compter = function (DateTimeImmutable $maintenant): void {
+$compter = function (DateTimeImmutable $maintenant, string $idClient = '', ?array $r = null): void {
     $f = sigh_sms_dossier() . '/sms.local.php';
     $h = @fopen($f, 'c+');
     if (!$h) {
@@ -244,6 +268,11 @@ $compter = function (DateTimeImmutable $maintenant): void {
     $jour = sigh_sms_jour($maintenant);
     $k = $c['compteur'] ?? [];
     $c['compteur'] = ['jour' => $jour, 'n' => (($k['jour'] ?? '') === $jour ? (int) ($k['n'] ?? 0) : 0) + 1];
+    if ($idClient !== '' && $r !== null) {
+        $rec = is_array($c['recents'] ?? null) ? $c['recents'] : [];
+        $rec[$idClient] = ['idMessage' => $r['idMessage'], 'numeroMasque' => $r['numeroMasque'], 'fournisseur' => $r['fournisseur'], 'le' => date('c')];
+        $c['recents'] = array_slice($rec, -300, null, true);
+    }
     ftruncate($h, 0);
     rewind($h);
     fwrite($h, SIGH_SMS_GARDE . json_encode($c, JSON_UNESCAPED_UNICODE));
@@ -283,7 +312,25 @@ if ($action === 'enregistrer') {
 
 if ($action === 'tester' || $action === 'envoyer') {
     $maintenant = sigh_sms_maintenant($corps);
+    $idClient = $action === 'envoyer' ? substr(preg_replace('/[^A-Za-z0-9:_.\-]/', '', (string) ($corps['idClient'] ?? '')), 0, 120) : '';
+    if ($idClient !== '') {
+        /* verrou : deux appels de même identifiant ne s'exécutent pas en parallèle (le second verra l'envoi du premier) */
+        $verrou = @fopen(sigh_sms_dossier() . '/sms.verrou.local', 'c');
+        if ($verrou) {
+            flock($verrou, LOCK_EX);
+        }
+    }
     $stocke = sigh_sms_lire_config();
+    if ($idClient !== '' && isset($stocke['recents'][$idClient])) {
+        $d = $stocke['recents'][$idClient];
+        $r = ['ok' => true, 'statut' => 'accepte', 'code' => null, 'doublon' => true,
+            'motif' => 'Ce message a déjà été accepté (même identifiant de demande) : aucun second envoi.', 'geste' => null,
+            'etapes' => [['etape' => 'doublon', 'ok' => true, 'detail' => 'Identifiant de demande déjà traité, identifiant du message ' . $d['idMessage'] . '.']],
+            'idMessage' => $d['idMessage'], 'numeroMasque' => $d['numeroMasque'], 'reporteA' => null, 'fournisseur' => $d['fournisseur']];
+        sigh_journaliser($pdo, $session, 'Envoi de SMS écarté (doublon)', 'CFG', 'Passerelle SMS', null, ['motif' => $motifDemande, 'id' => $d['idMessage']]);
+        $r['entree'] = $entree($r, $motifDemande, 0);
+        sigh_repondre($r);
+    }
     if ($action === 'tester') {
         $motif = 'test';
         $texte = SIGH_SMS_TEST_TEXTE;
@@ -298,7 +345,7 @@ if ($action === 'tester' || $action === 'envoyer') {
     }
     $r = sigh_sms_suite(sigh_sms_config_active($c), $motif, (string) ($corps['destinataire'] ?? ''), $texte, $maintenant, sigh_sms_envoyes($stocke, $maintenant), $exigerActif);
     if ($r['ok']) {
-        $compter($maintenant);
+        $compter($maintenant, $idClient, $r);
     }
     if ($action === 'tester') {
         /* le résultat n'est retenu qu'à titre du dernier test de la configuration ENREGISTRÉE, si le formulaire n'y a rien changé */
@@ -328,7 +375,13 @@ if ($action === 'effacer') {
     }
     /* le compteur du jour SURVIT : effacer puis ressaisir ne remet pas le plafond à zéro */
     $ancien = sigh_sms_lire_config();
-    sigh_sms_ecrire_config(isset($ancien['compteur']) ? ['compteur' => $ancien['compteur']] : []);
+    $garde = [];
+    foreach (['compteur', 'recents'] as $k) {
+        if (isset($ancien[$k])) {
+            $garde[$k] = $ancien[$k];
+        }
+    }
+    sigh_sms_ecrire_config($garde);
     sigh_journaliser($pdo, $session, 'Suppression de la configuration', 'CFG', 'Passerelle SMS', null, null);
     sigh_repondre(sigh_sms_publique(sigh_sms_lire_config()));
 }

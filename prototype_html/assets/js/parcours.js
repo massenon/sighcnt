@@ -4306,4 +4306,328 @@
   global.SIGH.parcours.referentielsAValider = referentielsAValider;
   global.SIGH.parcours.validerReferentiel = validerReferentiel;
   global.SIGH.parcours.remettreAValider = remettreAValider;
+
+  /* ==========================================================================
+   * PASSERELLE SMS : LA FABRIQUE UNIQUE D’ENVOI (étape S2, 08/11/2026)
+   * --------------------------------------------------------------------------
+   * Tout déclencheur (rappel de rendez-vous, anniversaire, plus tard fêtes, relances, résultat disponible) passe par PR.envoyerSms, et par rien
+   * d’autre : le consentement, le numéro, le journal et la mise en file ne se réécrivent pas à chaque déclencheur. Le SMS ne vise que des PATIENTS
+   * (décision de la Direction) : les alertes internes passent par la cloche et le son.
+   *
+   * Qui décide quoi. Le POSTE décide du consentement du patient et de la validité du numéro (il tient le dossier). Le SERVEUR (api/sms.php) garde
+   * ce qu’un poste ne peut pas contourner : le plafond du jour, les heures calmes, la liste des mots médicaux, le profil admis pour le motif.
+   * La liste médicale n’est PAS recopiée ici : le poste ne la connaît pas, il envoie le texte et le serveur le refuse (DONNEE_MEDICALE).
+   *
+   * Un refus se nomme (code, motif, geste) et s’écrit au journal comme refus. Un message dont la suite est INTERROMPUE ne se perd pas :
+   *   - heures calmes : file « reporté », retenté UNE SEULE FOIS à l’ouverture de la fenêtre ;
+   *   - serveur ou fournisseur injoignable : file « hors ligne », retenté à chaque tour (cinq tentatives au plus).
+   * Le même idClient accompagne chaque reprise et le serveur le retient : une réponse perdue en route ne produit jamais un second message.
+   * Un rappel déclaré avec une clé (`cle`) ne part qu’une fois, même relancé par deux postes.
+   * ======================================================================== */
+  var SMS_MOTIFS = {
+    rappel_rdv: { libelle: 'Rappel de rendez-vous', modele: 'rdv' },
+    anniversaire: { libelle: 'Souhait d’anniversaire', modele: 'anniversaire' },
+    fete: { libelle: 'Souhait de fête', modele: 'fete' },
+    relance: { libelle: 'Relance', modele: 'echeance' },
+    resultat_disponible: { libelle: 'Résultat disponible', modele: 'resultat' },
+  };
+  var SMS_REFUS_POSTE = {
+    MOTIF_INCONNU: ['Le motif d’envoi n’est pas un motif patient admis.', 'Choisir un motif de la liste : ' + Object.keys(SMS_MOTIFS).join(', ') + '.'],
+    PATIENT_INCONNU: ['Le destinataire n’est pas un patient enregistré : le SMS ne vise que des patients.', 'Retrouver ou ouvrir le dossier du patient.'],
+    CONSENTEMENT_RETIRE: ['Le patient a retiré son consentement aux SMS : aucun message ne part.', 'Le consentement se rétablit au dossier du patient, par l’accueil, après accord de la personne.'],
+    NUMERO_INVALIDE: ['Le numéro du dossier ne peut pas servir à un SMS : il manque l’indicatif ou le format est inconnu.', 'Corriger le téléphone au dossier : numéro à dix chiffres commençant par 01, ou format international avec le signe plus.'],
+    HORS_LIGNE: ['Le serveur n’est pas joint : le message est mis en file et partira au retour de la connexion.', 'Rien à faire : un seul envoi sera tenté au retour, jamais deux.'],
+    DEJA_TRAITE: ['Ce message a déjà été traité (même clé de déclencheur) : aucun second envoi.', 'Aucun.'],
+    MODELE_ABSENT: ['Aucun modèle de message actif pour cette occasion.', 'Activer ou écrire le modèle dans Rappels & messages.'],
+    ACCES_REFUSE: ['Ce profil n’envoie pas de message de ce motif.', 'S’adresser à l’accueil ou à l’administrateur système.'],
+  };
+  var SMS_FILE_TENTATIVES = 5;
+  var _smsEnVol = {};
+  var _smsDispo = { jeton: null, le: 0, v: null };
+
+  function smsJournal() { return S.collection('messagesSms', { module: 'M13', entite: 'message SMS', prefix: 'SMS' }); }
+  function smsFile() { return S.collection('fileSms', { module: 'M13', entite: 'message SMS en file', prefix: 'FSM' }); }
+  function smsPatient(id) { return id ? S.collection('patients').active().filter(function (p) { return p.id === id; })[0] || null : null; }
+
+  /** Consentement SMS d’un dossier : ACTIVÉ PAR DÉFAUT (décision de la Direction), retiré seulement par un `false` explicite. */
+  function consentementSms(p) {
+    return { accepte: !p || p.consentementSms !== false, le: (p && p.consentementSmsLe) || null, par: (p && p.consentementSmsPar) || null };
+  }
+  /** Date et auteur du consentement : posés à la création et à chaque CHANGEMENT. L’ancienne valeur reste lisible au journal d’audit (RG-12). */
+  function tracerConsentementSms(v, record) {
+    var avant = record ? record.consentementSms !== false : null;
+    var voulu = v.consentementSms !== false;
+    v.consentementSms = voulu;
+    if (avant === null || avant !== voulu || !v.consentementSmsLe) {
+      var s = S.session() || {};
+      v.consentementSmsLe = new Date().toISOString();
+      v.consentementSmsPar = s.nomComplet || s.nom || s.identifiant || 'inconnu';
+    }
+    return v;
+  }
+
+  /** Numéro international pour la passerelle. Règle proposée, à valider : un numéro à dix chiffres commençant par 01 (le format des lignes de la clinique) reçoit +229. */
+  function numeroSms(brut) {
+    var n = String(brut == null ? '' : brut).replace(/[\s.\-()]/g, '');
+    if (/^\+/.test(n)) return n;
+    if (/^00[1-9]/.test(n)) return '+' + n.slice(2);
+    if (/^01[0-9]{8}$/.test(n)) return '+229' + n;
+    return null;
+  }
+
+  function smsJourCle() { return C.iso(C.aujourdhui()); }
+  function smsEntreeBase(motif, extra) {
+    var now = C.aujourdhui(), s = S.session() || {};
+    return Object.assign({
+      date: C.iso(now), heure: C.pad(now.getHours()) + ':' + C.pad(now.getMinutes()), jourCle: C.iso(now),
+      motif: motif, motifLibelle: (SMS_MOTIFS[motif] || {}).libelle || motif, fournisseur: '', idMessage: '',
+      par: s.nomComplet || s.nom || s.identifiant || 'inconnu',
+    }, extra || {});
+  }
+  function smsMasque(brut) {
+    var c = String(brut == null ? '' : brut).replace(/\D/g, '');
+    return c.length >= 4 ? '****' + c.slice(-4) : '';
+  }
+  function smsEcrire(entree) {
+    try { return smsJournal().insert(entree); } catch (e) { console.error('[SIGH] journal SMS :', e); return null; }
+  }
+  function smsRefusPoste(code, detail) {
+    var t = SMS_REFUS_POSTE[code] || [code, ''];
+    return { code: code, motif: t[0] + (detail ? ' ' + detail : ''), geste: t[1] };
+  }
+  function smsDejaTraite(cle) {
+    var auj = smsJourCle();
+    var j = smsJournal().all().some(function (e) {
+      return e.cle === cle && (e.statut === 'accepte' || e.statut === 'reporte' || e.statut === 'en_file' || (e.statut === 'refuse' && e.jourCle === auj));
+    });
+    return j || smsFile().all().some(function (e) { return e.cle === cle && e.statut === 'attente'; });
+  }
+
+  /** Appel de l’API `envoyer`. Rejette si le transport échoue (hors ligne), sinon rend {http, o}. */
+  function smsAppeler(corps) {
+    var racine = '';
+    try { racine = document.documentElement.getAttribute('data-root') || ''; } catch (e) { racine = ''; }
+    var jeton = S.jetonServeur ? S.jetonServeur() : null;
+    if (!global.fetch || !jeton || global.location.protocol === 'file:') return global.Promise.reject(new Error('SANS_SERVEUR'));
+    return global.fetch(racine + 'api/sms.php', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': jeton },
+      body: JSON.stringify(Object.assign({ action: 'envoyer' }, corps)),
+    }).then(function (r) {
+      return r.text().then(function (t) { var o = {}; try { o = JSON.parse(t); } catch (e) { o = {}; } return { http: r.status, o: o }; });
+    });
+  }
+
+  /** Une tentative auprès du serveur, SANS effet de bord sur le journal ni la file. @return Promise<{etat, http, o}> */
+  function smsTenter(spec) {
+    return smsAppeler({ motif: spec.motif, texte: spec.texte, destinataire: spec.numero, idClient: spec.idClient, maintenant: spec.maintenant || undefined })
+      .then(function (x) {
+        var o = x.o || {};
+        if (o.code === 'ACCES_REFUSE') return { etat: 'acces', http: x.http, o: o };
+        if (o.etapes === undefined) return { etat: 'transitoire', http: x.http, o: o, code: 'HORS_LIGNE' };
+        if (o.ok) return { etat: 'accepte', http: x.http, o: o };
+        if (o.code === 'HEURES_CALMES') return { etat: 'reporte', http: x.http, o: o };
+        if (o.code === 'FOURNISSEUR_INJOIGNABLE') return { etat: 'transitoire', http: x.http, o: o, code: 'FOURNISSEUR_INJOIGNABLE' };
+        return { etat: 'refuse', http: x.http, o: o };
+      }, function () { return { etat: 'transitoire', http: 0, o: {}, code: 'HORS_LIGNE' }; });
+  }
+
+  /** L’entrée du journal pour une réponse du serveur : celle que le serveur a bâtie, complétée de ce que seul le poste sait (clé, patient). */
+  function smsEntreeServeur(t, spec, statut, extra) {
+    var e = Object.assign({}, smsEntreeBase(spec.motif), t.o.entree || {}, { cle: spec.cle || '', patientId: spec.patientId || '', jourCle: smsJourCle() }, extra || {});
+    if (statut) e.statut = statut;
+    return e;
+  }
+  function smsDejaAuJournal(idMessage) {
+    return !!idMessage && smsJournal().all().some(function (e) { return e.idMessage === idMessage && e.statut === 'accepte'; });
+  }
+
+  function envoyerSms(motif, patientId, texte, opts) {
+    opts = opts || {};
+    var cle = opts.cle || '';
+    var spec = { motif: motif, patientId: patientId || '', cle: cle, texte: String(texte == null ? '' : texte), maintenant: opts.maintenant || null,
+      idClient: opts.idClient || cle || ('sms:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8)) };
+    function refus(code, detail, numeroBrut, ecrire) {
+      var r = smsRefusPoste(code, detail);
+      if (ecrire !== false) {
+        smsEcrire(smsEntreeBase(motif, { statut: 'refuse', code: code, detail: r.motif, numeroMasque: smsMasque(numeroBrut), longueur: spec.texte.length, cle: cle, patientId: patientId || '' }));
+      }
+      return global.Promise.resolve({ ok: false, statut: 'refuse', code: code, motif: r.motif, geste: r.geste });
+    }
+    if (!SMS_MOTIFS[motif]) return refus('MOTIF_INCONNU', '', '', false);
+    if (cle && !opts.rejouer && smsDejaTraite(cle)) return refus('DEJA_TRAITE', '', '', false);
+    var p = smsPatient(patientId);
+    if (!p) return refus('PATIENT_INCONNU', '', '', false);
+    if (!consentementSms(p).accepte) return refus('CONSENTEMENT_RETIRE', '', p.telephone);
+    var numero = numeroSms(p.telephone);
+    if (!numero) return refus('NUMERO_INVALIDE', '', p.telephone);
+    spec.numero = numero;
+
+    return smsTenter(spec).then(function (t) {
+      var o = t.o, base = { longueur: spec.texte.length };
+      if (t.etat === 'acces') return { ok: false, statut: 'refuse', code: 'ACCES_REFUSE', motif: o.motif || smsRefusPoste('ACCES_REFUSE').motif, geste: o.geste || smsRefusPoste('ACCES_REFUSE').geste };
+      if (t.etat === 'accepte') {
+        if (!(o.doublon && smsDejaAuJournal(o.idMessage))) smsEcrire(smsEntreeServeur(t, spec, 'accepte', base));
+        return { ok: true, statut: 'accepte', idMessage: o.idMessage, numeroMasque: o.numeroMasque, doublon: !!o.doublon };
+      }
+      if (t.etat === 'refuse') {
+        smsEcrire(smsEntreeServeur(t, spec, 'refuse', base));
+        return { ok: false, statut: 'refuse', code: o.code, motif: o.motif, geste: o.geste };
+      }
+      /* interrompu : reporté (heures calmes) ou transitoire (hors ligne, fournisseur injoignable) : le message entre en file */
+      var reporte = t.etat === 'reporte';
+      var code = reporte ? 'HEURES_CALMES' : t.code;
+      var r = (reporte || code === 'FOURNISSEUR_INJOIGNABLE') ? { motif: o.motif, geste: o.geste } : smsRefusPoste('HORS_LIGNE');
+      smsFile().insert({ idClient: spec.idClient, cle: cle, motif: motif, patientId: patientId, texte: spec.texte, statut: 'attente', raison: reporte ? 'reporte' : 'transitoire', reporteA: reporte ? o.reporteA : '', tentatives: 0 });
+      smsEcrire(Object.assign({ numeroMasque: smsMasque(numero) }, smsEntreeServeur(t, spec, reporte ? 'reporte' : 'en_file', base), { code: code, detail: r.motif }));
+      return { ok: false, statut: reporte ? 'reporte' : 'en_file', code: code, motif: r.motif, geste: r.geste, reporteA: reporte ? o.reporteA : null };
+    });
+  }
+
+  /** Reprise de la file : un envoi reporté se retente UNE fois à l’ouverture de la fenêtre ; un envoi hors ligne à chaque tour, cinq fois au plus. */
+  function relancerSmsFile(opts) {
+    opts = opts || {};
+    var now = opts.maintenant ? new Date(opts.maintenant) : C.aujourdhui();
+    var dus = smsFile().all().filter(function (e) {
+      if (e.statut !== 'attente' || _smsEnVol[e.idClient]) return false;
+      return e.raison !== 'reporte' || (e.reporteA && new Date(e.reporteA) <= now);
+    });
+    var bilan = [];
+    return dus.reduce(function (chaine, e) {
+      return chaine.then(function () {
+        var p = smsPatient(e.patientId), numero = p ? numeroSms(p.telephone) : null;
+        var spec = { motif: e.motif, patientId: e.patientId, cle: e.cle, texte: e.texte, idClient: e.idClient, numero: numero, maintenant: opts.maintenant || null };
+        function clore(statut, extra) {
+          smsFile().update(e.id, Object.assign({ statut: statut, texte: '' }, extra || {}));
+        }
+        if (!p || !numero || !consentementSms(p).accepte) {
+          /* le consentement peut avoir été retiré, ou le dossier corrigé, pendant l’attente : la file ne passe jamais devant le patient */
+          var c = !p ? 'PATIENT_INCONNU' : (!consentementSms(p).accepte ? 'CONSENTEMENT_RETIRE' : 'NUMERO_INVALIDE');
+          var rc = smsRefusPoste(c);
+          smsEcrire(smsEntreeBase(e.motif, { statut: 'refuse', code: c, detail: rc.motif, numeroMasque: p ? smsMasque(p.telephone) : '', longueur: e.texte.length, cle: e.cle, patientId: e.patientId }));
+          clore('abandonne', { raisonFin: c });
+          bilan.push({ id: e.id, fin: c });
+          return null;
+        }
+        _smsEnVol[e.idClient] = true;
+        return smsTenter(spec).then(function (t) {
+          delete _smsEnVol[e.idClient];
+          var o = t.o, n = (e.tentatives || 0) + 1, base = { longueur: e.texte.length, tentative: n };
+          if (t.etat === 'acces') { bilan.push({ id: e.id, fin: 'acces' }); return null; }
+          if (t.etat === 'accepte') {
+            if (!(o.doublon && smsDejaAuJournal(o.idMessage))) smsEcrire(smsEntreeServeur(t, spec, 'accepte', base));
+            clore('envoye', { tentatives: n, idMessage: o.idMessage });
+            bilan.push({ id: e.id, fin: 'envoye' });
+            return null;
+          }
+          if (t.etat === 'transitoire' && t.http === 0) { bilan.push({ id: e.id, fin: 'attente' }); return null; }   /* le transport échoue encore : ce n’est pas une tentative */
+          if (t.etat === 'transitoire' && e.raison !== 'reporte' && n < SMS_FILE_TENTATIVES) {
+            smsFile().update(e.id, { tentatives: n });
+            bilan.push({ id: e.id, fin: 'attente' });
+            return null;
+          }
+          /* refus définitif, heures calmes encore en cours après la reprise, ou tentatives épuisées : la file s’arrête, le journal le dit */
+          var code = t.etat === 'transitoire' ? (t.code === 'HORS_LIGNE' ? 'HORS_LIGNE' : o.code) : (o.code || 'FOURNISSEUR_REFUS');
+          smsEcrire(smsEntreeServeur(t, spec, 'refuse', Object.assign({ code: code, detail: o.motif || smsRefusPoste('HORS_LIGNE').motif }, base)));
+          clore('abandonne', { tentatives: n, raisonFin: code });
+          bilan.push({ id: e.id, fin: code });
+          return null;
+        });
+      });
+    }, global.Promise.resolve()).then(function () { return bilan; });
+  }
+
+  /** La passerelle est-elle active, pour ce profil ? Mémorisé une minute : les déclencheurs ne doivent pas questionner le serveur à chaque patient. */
+  function smsDisponible(force) {
+    var jeton = S.jetonServeur ? S.jetonServeur() : null;
+    if (!jeton || !global.fetch || global.location.protocol === 'file:') return global.Promise.resolve(null);
+    if (!force && _smsDispo.jeton === jeton && Date.now() - _smsDispo.le < 60000) return global.Promise.resolve(_smsDispo.v);
+    var racine = '';
+    try { racine = document.documentElement.getAttribute('data-root') || ''; } catch (e) { racine = ''; }
+    return global.fetch(racine + 'api/sms.php?action=disponible', { headers: { 'X-Sigh-Jeton': jeton, Accept: 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (v) { _smsDispo = { jeton: jeton, le: Date.now(), v: v }; return v; }, function () { return null; });
+  }
+
+  /** Remplace les variables d’un modèle de message. Le motif du rendez-vous n’est PAS une variable : il ne peut donc jamais entrer dans un SMS (M6). */
+  function smsComposer(modele, vars) {
+    return String(modele || '')
+      .replace(/\{\{nom\}\}/g, vars.nom || '').replace(/\{\{clinique\}\}/g, C.BRAND.nom)
+      .replace(/\{\{date\}\}/g, vars.date || '').replace(/\{\{rdv\}\}/g, vars.rdv || '')
+      .replace(/\{\{telephone\}\}/g, C.BRAND.telephoneRdv || (C.BRAND.telephones || [''])[0]);
+  }
+  function smsModele(occasion) {
+    return S.collection('modelesMessage').active().filter(function (m) { return m.occasion === occasion && m.actif !== false; })[0] || null;
+  }
+  function smsJourDe(d) { return C.iso(new Date(d)); }
+  function smsLot(elements, envoi) {
+    var bilan = [];
+    return elements.reduce(function (chaine, x) {
+      return chaine.then(function () { return envoi(x).then(function (r) { bilan.push({ id: x.id, resultat: r }); }); });
+    }, global.Promise.resolve()).then(function () { return bilan; });
+  }
+
+  /** DÉCLENCHEUR 1 : le rappel de la veille. Il nomme le médecin et l’heure, jamais le motif (décision M6). Même définition de « demain » que la tâche serveur rdv_lendemain. */
+  function rappelsRdvSms(opts) {
+    opts = opts || {};
+    var auj = opts.aujourdhui ? new Date(opts.aujourdhui) : C.aujourdhui();
+    var demain = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate() + 1);
+    var jour = C.iso(demain);
+    var m = smsModele('rdv');
+    var cibles = S.collection('consultations').active().filter(function (c) {
+      return c.statut === 'planifiee' && c.patientId && !c.nonPatient && c.date && smsJourDe(c.date) === jour;
+    });
+    if (opts.patientIds) cibles = cibles.filter(function (c) { return opts.patientIds.indexOf(c.patientId) >= 0; });
+    if (!cibles.length) return global.Promise.resolve([]);
+    if (!m) return global.Promise.resolve([{ id: null, resultat: Object.assign({ ok: false, statut: 'refuse' }, smsRefusPoste('MODELE_ABSENT')) }]);
+    return smsLot(cibles, function (c) {
+      var p = smsPatient(c.patientId);
+      var h = new Date(c.date);
+      var rdv = C.dateFR(jour) + ' à ' + C.pad(h.getHours()) + 'h' + C.pad(h.getMinutes()) + (c.medecin ? ' avec ' + c.medecin : '');
+      var texte = smsComposer(m.texte, { nom: p ? p.nom + ' ' + p.prenom : '', date: C.dateFR(jour), rdv: rdv });
+      return envoyerSms('rappel_rdv', c.patientId, texte, { cle: 'rappel_rdv:' + c.id + ':' + jour, maintenant: opts.maintenant });
+    });
+  }
+
+  /** DÉCLENCHEUR 2 : le vœu d’anniversaire. Le texte vient du modèle, il ne porte aucune donnée de santé ; un patient décédé n’en reçoit pas. */
+  function anniversairesSms(opts) {
+    opts = opts || {};
+    var auj = opts.aujourdhui ? new Date(opts.aujourdhui) : C.aujourdhui();
+    var jour = C.iso(auj), md = jour.slice(5), an = jour.slice(0, 4);
+    var m = smsModele('anniversaire');
+    var decedes = {};
+    S.collection('deces').active().forEach(function (d) { if (d.patientId) decedes[d.patientId] = true; });
+    var cibles = S.collection('patients').active().filter(function (p) {
+      return p.dateNaissance && String(p.dateNaissance).slice(5, 10) === md && !decedes[p.id];
+    });
+    if (opts.patientIds) cibles = cibles.filter(function (p) { return opts.patientIds.indexOf(p.id) >= 0; });
+    if (!cibles.length) return global.Promise.resolve([]);
+    if (!m) return global.Promise.resolve([{ id: null, resultat: Object.assign({ ok: false, statut: 'refuse' }, smsRefusPoste('MODELE_ABSENT')) }]);
+    return smsLot(cibles, function (p) {
+      var texte = smsComposer(m.texte, { nom: p.nom + ' ' + p.prenom, date: C.dateFR(jour) });
+      return envoyerSms('anniversaire', p.id, texte, { cle: 'anniversaire:' + p.id + ':' + an, maintenant: opts.maintenant });
+    });
+  }
+
+  /** Le tour des déclencheurs, accroché à la surveillance de notifications.js. Silencieux tant que la passerelle n’est pas active : il n’écrit alors rien. Réservé au poste d’accueil. */
+  var _smsAutoEnVol = false;
+  function declencherSmsAuto() {
+    var s = S.session();
+    if (_smsAutoEnVol || !s || s.role !== 'reception') return global.Promise.resolve(null);
+    _smsAutoEnVol = true;
+    return smsDisponible().then(function (d) {
+      if (!d || !d.actif || !d.configure) return null;
+      return relancerSmsFile().then(function () { return rappelsRdvSms(); }).then(function () { return anniversairesSms(); });
+    }).then(function (x) { _smsAutoEnVol = false; return x; }, function (e) { _smsAutoEnVol = false; console.error('[SIGH] déclencheurs SMS :', e); return null; });
+  }
+
+  global.SIGH.parcours.envoyerSms = envoyerSms;
+  global.SIGH.parcours.relancerSmsFile = relancerSmsFile;
+  global.SIGH.parcours.rappelsRdvSms = rappelsRdvSms;
+  global.SIGH.parcours.anniversairesSms = anniversairesSms;
+  global.SIGH.parcours.declencherSmsAuto = declencherSmsAuto;
+  global.SIGH.parcours.smsDisponible = smsDisponible;
+  global.SIGH.parcours.consentementSms = consentementSms;
+  global.SIGH.parcours.tracerConsentementSms = tracerConsentementSms;
+  global.SIGH.parcours.numeroSms = numeroSms;
+  global.SIGH.parcours.SMS_MOTIFS = SMS_MOTIFS;
 })(window);

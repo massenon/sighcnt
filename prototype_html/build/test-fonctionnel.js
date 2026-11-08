@@ -14822,6 +14822,265 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
+  /* ==========================================================================
+   * Vague 94 : passerelle SMS, étape S2, le moteur (Direction, 08/11/2026)
+   * -------------------------------------------------------------------------
+   * PR.envoyerSms est la fabrique UNIQUE ; les déclencheurs (rappel de la veille, anniversaire) et la reprise de la file passent par elle. Le puits
+   * garde ce qui a VRAIMENT circulé : chaque assertion d'envoi compte les messages reçus par le puits, pas ce que l'écran affirme. Le temps est
+   * posé par la sonde (`maintenant` pour le serveur, `aujourdhui` pour le déclencheur) : ni l'heure réelle ni les passages précédents ne comptent.
+   * Les destinataires sont des patients de SONDE, nommés `SONDE94`, archivés à la sortie (RG-14) avec leurs rendez-vous, la file et le journal.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 94 : passerelle SMS, moteur (consentement, mot médical, doublon de rappel, report et reprise, hors ligne, droits par motif)');
+    const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
+    const poser = async (role) => { await ouvrir('m1-patients.html'); await page.evaluate((s) => window.SIGH.store.setSession(s), profil(role)); };
+    const JOUR = new Date(Date.UTC(2040, 0, 1) + Math.floor(Math.random() * 3000) * 86400000).toISOString().slice(0, 10);
+    const LENDEMAIN = new Date(Date.parse(JOUR + 'T12:00:00Z') + 86400000).toISOString().slice(0, 10);
+    const A = (h) => JOUR + 'T' + h + '+01:00';
+    const B = (h) => LENDEMAIN + 'T' + h + '+01:00';
+    const MAINT = A('10:00:00');
+    const SID = 'ACsonde94' + Math.random().toString(36).slice(2, 12);
+    const JETON_OK = 'puits-ok-' + Math.random().toString(36).slice(2, 12);
+    const MARQUE = 's94' + Math.random().toString(36).slice(2, 8);
+    erreursJS = [];
+    const api = (action, corps, jeton) => page.evaluate(async (a, c, j) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const tok = j === undefined ? window.SIGH.store.jetonServeur() : j;
+      const r = await fetch(racine + 'api/sms.php' + (c ? '' : '?action=' + a), { method: c ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': tok || '' }, body: c ? JSON.stringify(Object.assign({ action: a }, c)) : undefined });
+      const t = await r.text(); let o = {}; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+      return { statut: r.status, o: o, brut: t };
+    }, action, corps || null, jeton === undefined ? undefined : jeton);
+    const apiAdmin = async (action, corps) => {
+      let r = null;
+      for (let i = 0; i < 30; i++) { r = await api(action, corps); if (r.statut !== 401 && r.statut !== 403) return r; await pause(300); }
+      return r;
+    };
+    const puitsApi = (action) => page.evaluate(async (a) => {
+      const r = await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/banc.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: a }) });
+      return (await r.json()).recus || [];
+    }, action);
+    const recus = async () => (await puitsApi('sms_puits_lire'));
+    const journal = () => page.evaluate((m) => (window.SIGH.store.raw().messagesSms || []).filter((e) => e.cle && e.cle.indexOf(m) >= 0 && e.statut !== 'archive').sort((x, y) => String(x._creeLe).localeCompare(String(y._creeLe)) || String(x.id).localeCompare(String(y.id))), MARQUE);
+    const file = () => page.evaluate((m) => (window.SIGH.store.raw().fileSms || []).filter((e) => e.cle && e.cle.indexOf(m) >= 0), MARQUE);
+    const pr = (corps, ...args) => page.evaluate(new Function('a', 'return (async () => { const PR = window.SIGH.parcours; ' + corps + ' })()'), args);
+    const jetonDe = async (id) => ((await BANC.connecter(id)) || {}).jeton || '';
+
+    await poser('admin');
+    await apiAdmin('effacer', {});
+    await puitsApi('sms_puits_vider');
+
+    /* --- 0. la passerelle sert, par le puits ----------------------------------------------------------------------------------- */
+    const enr = await apiAdmin('enregistrer', { fournisseur: 'twilio', twilioSid: SID, twilioToken: JETON_OK, expediteur: 'CLINIQUE', actif: true, plafondJour: 200, calmeDebut: 21, calmeFin: 7 });
+    verifier('La passerelle est configurée et ACTIVE (Twilio, puits de test)', enr.statut === 200 && enr.o.configure === true && enr.o.actif === true, JSON.stringify([enr.statut, enr.brut.slice(0, 200)]));
+
+    /* --- les patients et les rendez-vous de la sonde ------------------------------------------------------------------------- */
+    const monde = await page.evaluate((jour, marque) => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const auj = new Date(jour + 'T10:00:00+01:00');
+      const md = C.iso(auj).slice(5);
+      const ids = {};
+      const mk = (cle, o) => { const r = S.collection('patients', { module: 'M1', entite: 'Patient' }).insert(Object.assign({ code: 'CNT/94' + cle + '/40', nom: 'SONDE94' + cle, prenom: 'Alice', sexe: 'F', statut: 'actif', dateNaissance: '1990-' + md }, o)); ids[cle] = r.id; };
+      mk('A', { telephone: '0197009401' });
+      mk('B', { telephone: '0197009402', consentementSms: false });
+      mk('C', { telephone: '0197009403' });
+      mk('D', { telephone: '0197009404' });
+      mk('E', { telephone: '0197009405' });
+      mk('F', { telephone: '0512345678' });
+      const demain = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate() + 1, 9, 30).toISOString();
+      const rdv = (cle, suffixe) => S.collection('consultations', { module: 'M2', entite: 'Consultation' }).insert({ patientId: ids[cle], patientCode: 'CNT/94' + cle + '/40', patient: 'SONDE94' + cle + ' Alice', medecin: 'Dr SONDEMEDECIN', type: 'Consultation', date: demain, motif: 'Suspicion de paludisme grave', statut: 'planifiee', reference: 'C94' + cle + suffixe }).id;
+      const rdvs = { A1: rdv('A', '1'), A2: rdv('A', '2'), A3: rdv('A', '3') };
+      /* modèles : on lit ceux du magasin, on n’en crée que s’il en manque (archivés à la sortie) */
+      const col = S.collection('modelesMessage', { module: 'CFG', entite: 'modèle de message', prefix: 'MSG' });
+      const crees = [];
+      [['anniversaire', 'Bonjour {{nom}}, toute l’équipe de {{clinique}} vous souhaite un très joyeux anniversaire. Votre santé, notre raison de vivre.'],
+        ['rdv', 'Bonjour {{nom}}, nous vous rappelons votre rendez-vous à {{clinique}} le {{rdv}}. Pour toute modification, appelez le {{telephone}}.']].forEach((m) => {
+        if (!col.active().some((x) => x.occasion === m[0] && x.actif !== false)) crees.push(col.insert({ occasion: m[0], libelle: 'Modèle de sonde 94', texte: m[1], actif: true }).id);
+      });
+      return { ids, rdvs, crees, md };
+    }, JOUR, MARQUE);
+    const ids = monde.ids;
+    const cleDe = (suffixe) => MARQUE + ':' + suffixe;
+
+    /* --- 1. droits PAR MOTIF au serveur : l’accueil envoie, ne règle jamais --------------------------------------------------- */
+    const tokR = await jetonDe('e.orouyo'), tokM = await jetonDe('f.yeni'), tokC = await jetonDe('a.dieyabidi');
+    const dispoR = await api('disponible', null, tokR);
+    verifier('L’accueil lit « disponible » : passerelle active et configurée, motifs de son poste (rappel, anniversaire), jamais le test ni l’alerte technique',
+      dispoR.statut === 200 && dispoR.o.actif === true && dispoR.o.configure === true && dispoR.o.motifs.includes('rappel_rdv') && dispoR.o.motifs.includes('anniversaire') && !dispoR.o.motifs.includes('test') && !dispoR.o.motifs.includes('alerte_technique'), JSON.stringify(dispoR.o));
+    const rEtat = await api('etat', null, tokR), rTest = await api('tester', { destinataire: '+22997009499', maintenant: MAINT }, tokR), rEnr = await api('enregistrer', { actif: false }, tokR), rEff = await api('effacer', {}, tokR);
+    verifier('L’accueil ne voit ni ne règle la configuration : état, test, enregistrement et retrait refusés (403 ACCES_REFUSE)',
+      [rEtat, rTest, rEnr, rEff].every((x) => x.statut === 403 && x.o.code === 'ACCES_REFUSE'), JSON.stringify([rEtat.statut, rTest.statut, rEnr.statut, rEff.statut]));
+    const avantDroits = (await recus()).length;
+    const rTestMotif = await api('envoyer', { motif: 'test', texte: 'Bonjour', destinataire: '+22997009499', maintenant: MAINT, idClient: cleDe('d1') }, tokR);
+    const rAlerte = await api('envoyer', { motif: 'alerte_technique', texte: 'Bonjour', destinataire: '+22997009499', maintenant: MAINT, idClient: cleDe('d2') }, tokR);
+    const rCaisse = await api('envoyer', { motif: 'anniversaire', texte: 'Bonjour', destinataire: '+22997009499', maintenant: MAINT, idClient: cleDe('d3') }, tokC);
+    const rCaisseDispo = await api('disponible', null, tokC);
+    const rMedecinAnniv = await api('envoyer', { motif: 'anniversaire', texte: 'Bonjour', destinataire: '+22997009499', maintenant: MAINT, idClient: cleDe('d4') }, tokM);
+    const rSansSession = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour', destinataire: '+22997009499', maintenant: MAINT }, '');
+    verifier('Le motif décide du profil : l’accueil n’envoie ni « test » ni « alerte technique » ; le caissier n’envoie rien ; le médecin n’envoie pas d’anniversaire ; sans session, 401',
+      rTestMotif.statut === 403 && rAlerte.statut === 403 && rCaisse.statut === 403 && rCaisseDispo.statut === 403 && rMedecinAnniv.statut === 403 && rSansSession.statut === 401
+      && [rTestMotif, rAlerte, rCaisse, rMedecinAnniv].every((x) => x.o.code === 'ACCES_REFUSE') && (await recus()).length === avantDroits,
+      JSON.stringify([rTestMotif.statut, rAlerte.statut, rCaisse.statut, rCaisseDispo.statut, rMedecinAnniv.statut, rSansSession.statut]));
+    const rRappelR = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel de rendez-vous demain.', destinataire: '+22997009498', maintenant: MAINT, idClient: cleDe('d5') }, tokR);
+    const rRappelM = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel de rendez-vous demain.', destinataire: '+22997009497', maintenant: MAINT, idClient: cleDe('d6') }, tokM);
+    verifier('L’accueil et le médecin envoient bien un rappel de rendez-vous : acceptés par le puits, numéro masqué, aucun secret dans la réponse',
+      rRappelR.statut === 200 && rRappelR.o.ok === true && rRappelM.statut === 200 && rRappelM.o.ok === true && rRappelR.o.numeroMasque === '****9498' && !rRappelR.brut.includes(JETON_OK) && !rRappelR.brut.includes(SID)
+      && (await recus()).length === avantDroits + 2, JSON.stringify([rRappelR.statut, rRappelM.statut, (await recus()).length]));
+    await puitsApi('sms_puits_vider');
+
+    /* --- 2. anniversaire : consentement (point 7 du PRD) -------------------------------------------------------------------- */
+    await poser('reception');
+    const ann1 = await pr("const r = await PR.anniversairesSms({ aujourdhui: a[0], maintenant: a[1], patientIds: a[2] }); return r.map((x) => ({ id: x.id, ok: x.resultat.ok, statut: x.resultat.statut, code: x.resultat.code, geste: x.resultat.geste }));", A('10:00:00'), MAINT, [ids.A, ids.B, ids.F]);
+    const rc1 = await recus();
+    const par = (id) => ann1.find((x) => x.id === id) || {};
+    verifier('Anniversaire : consentement par défaut, l’accueil envoie à A ; B (consentement retiré) et F (numéro inexploitable) sont REFUSÉS en nommant le motif',
+      par(ids.A).ok === true && par(ids.B).code === 'CONSENTEMENT_RETIRE' && par(ids.F).code === 'NUMERO_INVALIDE' && par(ids.B).geste && par(ids.F).geste, JSON.stringify(ann1));
+    verifier('Le puits n’a reçu QU’UN message : celui de A, au numéro normalisé +229, avec le texte du modèle et le nom, sans aucune donnée de santé',
+      rc1.length === 1 && rc1[0].a === '2290197009401' || rc1.length === 1 && String(rc1[0].a).replace(/\D/g, '') === '2290197009401', JSON.stringify(rc1));
+    verifier('Le texte envoyé vient du modèle d’anniversaire : vœu, nom du patient, aucun mot médical',
+      /anniversaire/i.test(rc1[0] && rc1[0].texte) && /SONDE94A/.test(rc1[0] && rc1[0].texte) && !/(diagnostic|paludisme|r[ée]sultat)/i.test(rc1[0] && rc1[0].texte), JSON.stringify(rc1[0]));
+    const j1 = (await journal()).filter((e) => e.motif === 'anniversaire');
+    const jA = j1.find((e) => e.patientId === ids.A), jB = j1.find((e) => e.patientId === ids.B), jF = j1.find((e) => e.patientId === ids.F);
+    verifier('Le journal écrit LES TROIS issues : A accepté avec identifiant de message et numéro masqué, B refusé CONSENTEMENT_RETIRE, F refusé NUMERO_INVALIDE',
+      jA && jA.statut === 'accepte' && /^SM[0-9a-f]{24}$/.test(jA.idMessage || '') && jA.numeroMasque === '****9401' && jB && jB.statut === 'refuse' && jB.code === 'CONSENTEMENT_RETIRE' && !jB.idMessage && jF && jF.statut === 'refuse' && jF.code === 'NUMERO_INVALIDE',
+      JSON.stringify(j1));
+    verifier('Aucune ligne du journal ne porte un numéro en clair ni le texte du message',
+      (await journal()).every((e) => !JSON.stringify(e).includes('0197009401') && !JSON.stringify(e).includes('2290197') && !('texte' in e) && !('destinataire' in e)), JSON.stringify(j1[0]));
+    const ann2 = await pr("const r = await PR.anniversairesSms({ aujourdhui: a[0], maintenant: a[1], patientIds: a[2] }); return r.map((x) => ({ id: x.id, code: x.resultat.code, ok: x.resultat.ok }));", A('10:00:00'), MAINT, [ids.A, ids.B, ids.F]);
+    verifier('Relancé le même jour : rien ne repart (même clé), nommé DEJA_TRAITE, le puits n’a pas bougé et le journal non plus',
+      ann2.length === 3 && ann2.every((x) => x.code === 'DEJA_TRAITE') && (await recus()).length === 1 && (await journal()).filter((e) => e.motif === 'anniversaire').length === 3, JSON.stringify(ann2));
+
+    /* --- 3. rappel de la veille : jamais le motif, un seul envoi, retrait puis rétablissement du consentement ---------------- */
+    const rap1 = await pr("const r = await PR.rappelsRdvSms({ aujourdhui: a[0], maintenant: a[1], patientIds: a[2] }); return r.map((x) => ({ id: x.id, ok: x.resultat.ok, code: x.resultat.code }));", A('10:00:00'), MAINT, [ids.A]);
+    const rc2 = await recus();
+    const dernier = rc2[rc2.length - 1] || {};
+    verifier('Rappel de la veille : TROIS rendez-vous de A pour demain sont rappelés (un message par rendez-vous), acceptés',
+      rap1.length === 3 && rap1.every((x) => x.ok === true) && rc2.length === 4, JSON.stringify(rap1));
+    verifier('Le rappel nomme le médecin, la date et l’heure, JAMAIS le motif de la consultation (décision M6)',
+      /Dr SONDEMEDECIN/.test(dernier.texte) && /09h30/.test(dernier.texte) && /SONDE94A/.test(dernier.texte) && !/paludisme|suspicion|grave/i.test(rc2.map((x) => x.texte).join(' ')), JSON.stringify(dernier));
+    const rap2 = await pr("const r = await PR.rappelsRdvSms({ aujourdhui: a[0], maintenant: a[1], patientIds: a[2] }); return r.map((x) => ({ code: x.resultat.code, ok: x.resultat.ok }));", A('10:00:00'), MAINT, [ids.A]);
+    verifier('Aucun DOUBLON de rappel : le déclencheur relancé ne renvoie rien (DEJA_TRAITE), le puits garde ses quatre messages',
+      rap2.length === 3 && rap2.every((x) => x.code === 'DEJA_TRAITE') && (await recus()).length === 4, JSON.stringify(rap2));
+    /* le même rappel présenté par un AUTRE poste (journal local vide) : le serveur le reconnaît par l’identifiant de demande */
+    const tiers = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel.', destinataire: '+22997009401', maintenant: MAINT, idClient: MARQUE + ':doublon-serveur' }, tokR);
+    const tiers2 = await api('envoyer', { motif: 'rappel_rdv', texte: 'Bonjour, rappel.', destinataire: '+22997009401', maintenant: MAINT, idClient: MARQUE + ':doublon-serveur' }, tokR);
+    verifier('Même identifiant de demande présenté deux fois au serveur (réponse perdue, ou deux postes) : un SEUL message part, la seconde réponse rend l’envoi d’origine',
+      tiers.o.ok === true && !tiers.o.doublon && tiers2.o.ok === true && tiers2.o.doublon === true && tiers2.o.idMessage === tiers.o.idMessage && (await recus()).length === 5, JSON.stringify([tiers.o.idMessage, tiers2.o.idMessage, tiers2.o.doublon, (await recus()).length]));
+    await puitsApi('sms_puits_vider');
+
+    const retrait = await page.evaluate((id) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, col = S.collection('patients');
+      const p = col.all().find((x) => x.id === id);
+      const v = PR.tracerConsentementSms(Object.assign({}, p, { consentementSms: false }), p);
+      col.update(id, { consentementSms: v.consentementSms, consentementSmsLe: v.consentementSmsLe, consentementSmsPar: v.consentementSmsPar });
+      const q = col.all().find((x) => x.id === id);
+      return { c: q.consentementSms, le: q.consentementSmsLe, par: q.consentementSmsPar, lu: PR.consentementSms(q) };
+    }, ids.A);
+    verifier('Le retrait du consentement est TRACÉ : valeur fausse, date et auteur renseignés, relus par le moteur',
+      retrait.c === false && /^\d{4}-\d\d-\d\dT/.test(retrait.le || '') && /Sonde reception/.test(retrait.par || '') && retrait.lu.accepte === false, JSON.stringify(retrait));
+    const rap3 = await pr("const S = window.SIGH.store; const c = S.collection('consultations').all().find((x) => x.id === a[0]); S.collection('consultations').update(a[0], { date: c.date, statut: 'planifiee' }); const r = await PR.envoyerSms('rappel_rdv', a[1], 'Bonjour, rappel de votre rendez-vous demain.', { cle: a[2], maintenant: a[3] }); return { ok: r.ok, code: r.code, motif: r.motif, geste: r.geste };", monde.rdvs.A2, ids.A, cleDe('retrait'), MAINT);
+    verifier('Consentement retiré : plus AUCUN envoi, refus nommé avec son geste, le puits reste vide',
+      rap3.ok === false && rap3.code === 'CONSENTEMENT_RETIRE' && /accueil/.test(rap3.geste) && (await recus()).length === 0, JSON.stringify(rap3));
+    await page.evaluate((id) => { const PR = window.SIGH.parcours, col = window.SIGH.store.collection('patients'); const p = col.all().find((x) => x.id === id); const v = PR.tracerConsentementSms(Object.assign({}, p, { consentementSms: true }), p); col.update(id, { consentementSms: true, consentementSmsLe: v.consentementSmsLe, consentementSmsPar: v.consentementSmsPar }); }, ids.A);
+    const rap4 = await pr("const r = await PR.envoyerSms('rappel_rdv', a[0], 'Bonjour, rappel de votre rendez-vous demain.', { cle: a[1], maintenant: a[2] }); return { ok: r.ok, code: r.code };", ids.A, cleDe('retabli'), MAINT);
+    verifier('Consentement rétabli par l’accueil : l’envoi repart (un message au puits)', rap4.ok === true && (await recus()).length === 1, JSON.stringify(rap4));
+
+    /* --- 4. aucune donnée médicale, aucun motif interne, aucun destinataire hors patients (point 6 du PRD) -------------------- */
+    const avantMed = (await recus()).length;
+    const med = await pr("const out = []; for (const t of ['Bonjour, votre diagnostic de paludisme est disponible.', 'Bonjour, vous êtes séropositive.', 'Résultat POSITIF, passez nous voir.']) { const r = await PR.envoyerSms('relance', a[0], t, { cle: a[1] + ':' + out.length, maintenant: a[2] }); out.push({ ok: r.ok, code: r.code, geste: r.geste }); } return out;", ids.C, cleDe('med'), MAINT);
+    verifier('Un texte qui porte un mot de la liste médicale est REFUSÉ (DONNEE_MEDICALE) avec son geste : diagnostic, séropositive, positif, accents et casse compris, rien n’est envoyé',
+      med.length === 3 && med.every((x) => x.ok === false && x.code === 'DONNEE_MEDICALE' && /sans diagnostic/.test(x.geste)) && (await recus()).length === avantMed, JSON.stringify(med));
+    const jmed = (await journal()).filter((e) => e.code === 'DONNEE_MEDICALE');
+    verifier('Les trois refus médicaux sont au journal comme REFUS, sans identifiant de message, sans le texte', jmed.length === 3 && jmed.every((e) => e.statut === 'refuse' && !e.idMessage && !JSON.stringify(e).includes('séropositive')), JSON.stringify(jmed.slice(0, 1)));
+    const interne = await pr("const a1 = await PR.envoyerSms('alerte_technique', a[0], 'Bonjour, test.', { maintenant: a[1] }); const a2 = await PR.envoyerSms('relance', 'PATIENT-QUI-N-EXISTE-PAS', 'Bonjour, merci de passer.', { maintenant: a[1] }); return [a1.code, a2.code];", ids.A, MAINT);
+    verifier('Le SMS ne vise que des PATIENTS : un motif interne (alerte technique) et un destinataire qui n’est pas un patient sont refusés (MOTIF_INCONNU, PATIENT_INCONNU)',
+      interne[0] === 'MOTIF_INCONNU' && interne[1] === 'PATIENT_INCONNU' && (await recus()).length === avantMed, JSON.stringify(interne));
+    await puitsApi('sms_puits_vider');
+
+    /* --- 5. hors ligne : en file, puis UN seul envoi au retour (point 10 du PRD) -------------------------------------------- */
+    await page.setOfflineMode(true);
+    const hors = await pr("const r = await PR.envoyerSms('relance', a[0], 'Bonjour, merci de passer à la caisse.', { cle: a[1], maintenant: a[2] }); return { ok: r.ok, statut: r.statut, code: r.code, motif: r.motif };", ids.C, cleDe('hors'), MAINT);
+    const fHors = (await file()).filter((e) => e.cle === cleDe('hors'));
+    verifier('Hors ligne : le message est MIS EN FILE et le dit (statut en_file, code HORS_LIGNE), rien n’est présenté comme envoyé, le puits est vide',
+      hors.ok === false && hors.statut === 'en_file' && hors.code === 'HORS_LIGNE' && /file/.test(hors.motif) && fHors.length === 1 && fHors[0].statut === 'attente' && (await recus()).length === 0, JSON.stringify([hors, fHors]));
+    const pendant = await pr("const b = await PR.relancerSmsFile({ maintenant: a[0] }); return b;", MAINT);
+    verifier('Toujours hors ligne : la reprise ne perd rien et ne compte pas d’essai (le message attend)', (await file()).filter((e) => e.cle === cleDe('hors'))[0].statut === 'attente' && (await file()).filter((e) => e.cle === cleDe('hors'))[0].tentatives === 0 && (await recus()).length === 0, JSON.stringify(pendant));
+    await page.setOfflineMode(false);
+    const retour = await pr("const b = await PR.relancerSmsFile({ maintenant: a[0] }); return b;", MAINT);
+    const rcRet = await recus();
+    verifier('Au retour de la connexion : UN SEUL message part (celui de la file), le puits le confirme', retour.some((x) => x.fin === 'envoye') && rcRet.length === 1 && /merci de passer à la caisse/.test(rcRet[0].texte), JSON.stringify([retour, rcRet.length]));
+    const fApres = (await file()).filter((e) => e.cle === cleDe('hors'))[0];
+    verifier('L’entrée de file est CLOSE (envoyé), son texte effacé ; le journal porte « en file » PUIS « accepté » avec le même identifiant de clé',
+      fApres.statut === 'envoye' && !fApres.texte && (await journal()).filter((e) => e.cle === cleDe('hors')).map((e) => e.statut).join(',') === 'en_file,accepte', JSON.stringify([fApres, (await journal()).filter((e) => e.cle === cleDe('hors')).map((e) => e.statut)]));
+    await pr("await PR.relancerSmsFile({ maintenant: a[0] }); await PR.relancerSmsFile({ maintenant: a[0] }); return 1;", MAINT);
+    const redite = await pr("const r = await PR.envoyerSms('relance', a[0], 'Bonjour, merci de passer à la caisse.', { cle: a[1], maintenant: a[2] }); return r.code;", ids.C, cleDe('hors'), MAINT);
+    verifier('Reprises répétées et même clé représentée : AUCUN second envoi (le puits garde un message, la clé est DEJA_TRAITE)', (await recus()).length === 1 && redite === 'DEJA_TRAITE', JSON.stringify([(await recus()).length, redite]));
+    await puitsApi('sms_puits_vider');
+
+    /* --- 6. heures calmes : report nommé, reprise UNE fois à l’ouverture de la fenêtre -------------------------------------- */
+    const calme = await pr("const r = await PR.envoyerSms('rappel_rdv', a[0], 'Bonjour, rappel de votre rendez-vous demain.', { cle: a[1], maintenant: a[2] }); return { ok: r.ok, statut: r.statut, code: r.code, reporteA: r.reporteA };", ids.D, cleDe('calme'), A('23:00:00'));
+    const fCalme = (await file()).filter((e) => e.cle === cleDe('calme'))[0];
+    verifier('Heures calmes (23 h) : le rappel est REPORTÉ et NOMMÉ (HEURES_CALMES), reprise annoncée à 7 h le lendemain, rien n’est parti',
+      calme.statut === 'reporte' && calme.code === 'HEURES_CALMES' && new Date(calme.reporteA).getTime() === new Date(B('07:00:00')).getTime() && (await recus()).length === 0, JSON.stringify(calme));
+    verifier('Le report n’est pas perdu : une entrée de file « reporté » porte l’heure de reprise ; le journal écrit « reporté », sans identifiant de message',
+      fCalme && fCalme.statut === 'attente' && fCalme.raison === 'reporte' && new Date(fCalme.reporteA).getTime() === new Date(B('07:00:00')).getTime()
+      && (await journal()).filter((e) => e.cle === cleDe('calme')).map((e) => e.statut + ':' + (e.idMessage || '')).join() === 'reporte:', JSON.stringify([fCalme, (await journal()).filter((e) => e.cle === cleDe('calme'))]));
+    await pr("await PR.relancerSmsFile({ maintenant: a[0] }); await PR.relancerSmsFile({ maintenant: a[1] }); return 1;", A('23:30:00'), B('06:59:00'));
+    verifier('Avant l’ouverture de la fenêtre (23 h 30, puis 6 h 59) : la reprise n’envoie RIEN', (await recus()).length === 0 && (await file()).filter((e) => e.cle === cleDe('calme'))[0].statut === 'attente', JSON.stringify(await recus()));
+    const reprise = await pr("return await PR.relancerSmsFile({ maintenant: a[0] });", B('07:05:00'));
+    verifier('À l’ouverture de la fenêtre (7 h 05) : UN message part, le puits le confirme, la file est close, le journal passe « reporté » puis « accepté »',
+      reprise.some((x) => x.fin === 'envoye') && (await recus()).length === 1 && (await file()).filter((e) => e.cle === cleDe('calme'))[0].statut === 'envoye'
+      && (await journal()).filter((e) => e.cle === cleDe('calme')).map((e) => e.statut).join() === 'reporte,accepte', JSON.stringify([reprise, (await journal()).filter((e) => e.cle === cleDe('calme')).map((e) => e.statut)]));
+    await pr("await PR.relancerSmsFile({ maintenant: a[0] }); await PR.relancerSmsFile({ maintenant: a[1] }); return 1;", B('07:10:00'), B('12:00:00'));
+    verifier('Reprises suivantes : AUCUN doublon (le puits garde un seul message, un seul « accepté » au journal pour cette clé)',
+      (await recus()).length === 1 && (await journal()).filter((e) => e.cle === cleDe('calme') && e.statut === 'accepte').length === 1, JSON.stringify(await recus()));
+    await puitsApi('sms_puits_vider');
+
+    /* une seule reprise : si la fenêtre est ENCORE fermée à la reprise, le message est abandonné, nommé, et ne revient plus */
+    const calmeE = await pr("const r = await PR.envoyerSms('rappel_rdv', a[0], 'Bonjour, rappel de votre rendez-vous demain.', { cle: a[1], maintenant: a[2] }); return r.statut;", ids.E, cleDe('calmeE'), A('22:00:00'));
+    await apiAdmin('enregistrer', { calmeDebut: 0, calmeFin: 23 });
+    await pr("return await PR.relancerSmsFile({ maintenant: a[0] });", B('08:00:00'));
+    await apiAdmin('enregistrer', { calmeDebut: 21, calmeFin: 7 });
+    await pr("await PR.relancerSmsFile({ maintenant: a[0] }); return 1;", B('12:00:00'));
+    const fE = (await file()).filter((e) => e.cle === cleDe('calmeE'))[0], jE = (await journal()).filter((e) => e.cle === cleDe('calmeE'));
+    verifier('UNE SEULE reprise : heures calmes encore en cours à la reprise, le message est ABANDONNÉ (HEURES_CALMES, tentative 1), ne repart pas quand la fenêtre se rouvre, le puits reste vide',
+      calmeE === 'reporte' && fE.statut === 'abandonne' && fE.raisonFin === 'HEURES_CALMES' && jE.map((e) => e.statut).join() === 'reporte,refuse' && jE[1].code === 'HEURES_CALMES' && jE[1].tentative === 1 && (await recus()).length === 0, JSON.stringify([calmeE, fE, jE.map((e) => e.statut + ':' + e.code)]));
+
+    /* --- 7. le tour des déclencheurs : branché sur la surveillance, silencieux sans passerelle, réservé à l’accueil ------------- */
+    const branche = await page.evaluate(() => { const PR = window.SIGH.parcours; const orig = PR.declencherSmsAuto; let n = 0; PR.declencherSmsAuto = () => { n++; }; window.SIGH.notifications.tour(false); PR.declencherSmsAuto = orig; return n; });
+    verifier('Le tour de surveillance des notifications appelle les déclencheurs SMS (une fois par tour)', branche === 1, String(branche));
+    const jAvant = await page.evaluate(() => (window.SIGH.store.raw().messagesSms || []).length);
+    await apiAdmin('enregistrer', { actif: false });
+    const silence = await pr("await PR.smsDisponible(true); const v = await PR.declencherSmsAuto(); return v;");
+    await poser('admin');
+    await apiAdmin('enregistrer', { actif: true });
+    const adminNul = await pr("await PR.smsDisponible(true); return await PR.declencherSmsAuto();");
+    await poser('reception');
+    verifier('Passerelle désactivée ou profil autre que l’accueil : les déclencheurs ne font RIEN (ni envoi, ni ligne de journal)',
+      silence === null && adminNul === null && (await page.evaluate(() => (window.SIGH.store.raw().messagesSms || []).length)) === jAvant && (await recus()).length === 0, JSON.stringify([silence, adminNul]));
+
+    /* --- 8. écrans : le consentement au dossier, le journal --------------------------------------------------------------------- */
+    await ouvrir('m1-patient-nouveau.php');
+    await page.waitForFunction(() => /Accepte de recevoir des SMS/.test((document.querySelector('#page-content') || {}).innerText || ''), { timeout: 30000 }).catch(() => null);
+    const champ = await page.evaluate(() => { const l = [...document.querySelectorAll('#page-content label')].find((x) => /Accepte de recevoir des SMS/.test(x.textContent)); const cb = l && (l.querySelector('input[type=checkbox]') || document.getElementById(l.getAttribute('for'))); return { present: !!l, coche: !!(cb && cb.checked) }; });
+    verifier('Le dossier patient porte le champ de consentement SMS, COCHÉ PAR DÉFAUT', champ.present && champ.coche, JSON.stringify(champ));
+    await poser('direction'); await ouvrir('m13-sms-journal.php'); await pause(1500);
+    const jr = await page.evaluate(() => document.querySelector('#page-content').innerText.replace(/\s+/g, ' '));
+    verifier('Le journal affiche les nouveaux états (refus nommés du moteur, reporté, en file) sans modification possible', /CONSENTEMENT_RETIRE|DONNEE_MEDICALE/.test(jr) && /Reporté/.test(jr) && /En file/.test(jr), jr.slice(0, 300));
+
+    /* --- restitution ------------------------------------------------------------------------------------------------------------ */
+    await poser('admin');
+    await apiAdmin('effacer', {});
+    await puitsApi('sms_puits_vider');
+    await page.evaluate((ids, rdvs, crees, marque) => {
+      const S = window.SIGH.store;
+      Object.values(ids).forEach((id) => S.collection('patients').archive(id, 'Sonde Vague 94'));
+      Object.values(rdvs).forEach((id) => S.collection('consultations').archive(id, 'Sonde Vague 94'));
+      crees.forEach((id) => S.collection('modelesMessage').archive(id, 'Sonde Vague 94'));
+      ['messagesSms', 'fileSms'].forEach((n) => { const col = S.collection(n); col.all().forEach((e) => { if (e.statut !== 'archive' && e.cle && e.cle.indexOf(marque) >= 0 || (n === 'messagesSms' && (ids.A === e.patientId || Object.values(ids).includes(e.patientId)))) { try { col.archive(e.id, 'Sonde Vague 94'); } catch (x) { /* déjà archivé */ } } }); });
+    }, ids, monde.rdvs, monde.crees, MARQUE);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|net::ERR_INTERNET_DISCONNECTED/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

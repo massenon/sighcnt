@@ -35,7 +35,7 @@
     v.assureurNom = a ? a.nom : null;
     Object.assign(v, K.valeursAge(v, record));
     delete v.naissanceConnue;
-    return v;
+    return PR.tracerConsentementSms(v, record);
   }
 
   /* Antécédents et allergies acceptent désormais plusieurs valeurs. Le jeu de
@@ -90,6 +90,13 @@
       },
       { name: 'adresse', label: 'Adresse', col: 'full' },
       { name: 'personneAPrevenir', label: 'Personne à prévenir', col: 'full' },
+      {
+        /* Consentement aux SMS de la clinique (rappel de rendez-vous, vœux). ACTIVÉ PAR DÉFAUT, décision de la Direction ; le patient peut le retirer,
+           l’accueil le décoche à sa demande. La date et l’auteur du changement sont posés à l’enregistrement (transformerPatient). */
+        name: 'consentementSms', label: 'Accepte de recevoir des SMS de la clinique', type: 'checkbox', col: 'full',
+        value: record ? record.consentementSms !== false : true,
+        help: 'Rappels de rendez-vous et vœux. Aucune donnée de santé ne part par SMS. Décocher dès que le patient refuse : aucun message ne lui sera plus envoyé.',
+      },
 
       { type: 'section', label: 'Éléments médicaux' },
       {
