@@ -456,7 +456,7 @@
           exportName: cfg.collection,
           searchPlaceholder: 'Rechercher un ' + cfg.entite + '…',
           emptyMessage: archived ? 'Aucun enregistrement archivé.' : 'Aucun ' + cfg.entite + ' enregistré.',
-          emptyHint: archived ? null : 'Utiliser le bouton « Nouveau » pour créer le premier enregistrement.',
+          emptyHint: (archived || cfg.readonly) ? null : 'Utiliser le bouton « Nouveau » pour créer le premier enregistrement.',
           onRowClick: openDetail,
           defaultSort: cfg.defaultSort, defaultDir: cfg.defaultDir,
           /* `creerVers` : certains écrans ne peuvent pas créer avec le formulaire

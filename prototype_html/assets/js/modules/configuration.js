@@ -4895,4 +4895,151 @@
     },
   });
 
+  /* ==========================================================================
+   * PASSERELLE SMS ET TEST D'ENVOI
+   * --------------------------------------------------------------------------
+   * Twilio par défaut, Vonage en second (décision de la Direction du 07/11/2026). L'écran règle la passerelle et son bouton « Tester l'envoi »
+   * envoie VRAIMENT un message de contrôle (api/sms.php) en montrant la suite d'étapes, ou le refus NOMMÉ (code, motif, geste).
+   * Les identifiants du fournisseur sont saisis en ÉCRITURE SEULE : ils partent au serveur, qui les garde chiffrés dans un fichier à part ; l'écran
+   * n'affiche que « enregistré ». Ni le magasin exporté, ni le journal, ni l'audit ne les contiennent. Le journal des envois (m13-sms-journal)
+   * ne garde que le numéro MASQUÉ, jamais le texte. Sans serveur (navigateur seul), l'écran le dit au lieu de simuler un envoi.
+   * La Direction LIT cet écran sans le modifier : la commande d'écriture est ABSENTE de son profil, le formulaire aussi.
+   * ========================================================================== */
+  global.SIGH.screen('cfg-sms', {
+    title: 'Passerelle SMS',
+    description: 'Fournisseur de SMS de la clinique (Twilio ou Vonage), plafond, heures calmes et test d’envoi : seuls les patients reçoivent des SMS.',
+    regle: 'Les <strong>identifiants du fournisseur ne sont jamais relus</strong> : l’écran affiche « enregistré », le magasin exporté et le journal ne les contiennent pas. Le test envoie un <strong>vrai message</strong> et nomme le refus s’il échoue. Un message accepté par le fournisseur n’est pas un message reçu.',
+    render: function (root) {
+      var hote = el('div.space-y-4');
+      root.appendChild(hote);
+      var peutEcrire = !!K.droits().editer;
+      function jeton() { return S.jetonServeur ? S.jetonServeur() : null; }
+      function racine() { return (document.documentElement.getAttribute('data-root')) || ''; }
+      function appeler(action, corps) {
+        var get = !corps;
+        return global.fetch(racine() + 'api/sms.php' + (get ? '?action=' + action : ''), {
+          method: get ? 'GET' : 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': jeton() || '' },
+          body: get ? undefined : JSON.stringify(Object.assign({ action: action }, corps)),
+        }).then(function (r) { return r.json().then(function (o) { if (!r.ok && !o.etapes) throw new Error(o.motif || o.detail || o.erreur || String(r.status)); return o; }); });
+      }
+      var ETAPES = { motif: 'Motif', configuration: 'Configuration', numero: 'Numéro', texte: 'Texte', plafond: 'Plafond du jour', heures_calmes: 'Heures calmes', fournisseur: 'Fournisseur' };
+      var NOMS = { twilio: 'Twilio', vonage: 'Vonage' };
+      var SECRETS = { twilioSid: 'Account SID Twilio', twilioToken: 'Jeton d’authentification Twilio', vonageCle: 'Clé API Vonage', vonageSecret: 'Secret API Vonage' };
+      var dernier = null, numeroTest = '';
+
+      function journaliser(r) {
+        try {
+          if (r && r.entree) S.collection('messagesSms', { module: 'M13', entite: 'message SMS', prefix: 'SMS' }).insert(r.entree);
+          S.log('Test d’envoi', 'CFG', 'Passerelle SMS', r.fournisseur, null, { statut: r.statut, code: r.code, a: r.numeroMasque });
+        } catch (e) { console.error('[SIGH] journal SMS :', e); }
+      }
+
+      function rendreEtapes(r) {
+        var liste = el('ol.space-y-1.text-sm', { 'data-testid': 'etapes-sms' });
+        (r.etapes || []).forEach(function (e) {
+          liste.appendChild(el('li.flex.items-start.gap-2', null, [
+            el('span.mt-0\\.5.shrink-0.' + (e.ok ? 'text-success-600' : 'text-danger-600'), null, C.icon(e.ok ? 'check-circle-2' : 'x-circle', 'h-4 w-4')),
+            el('span', null, [el('strong', { text: (ETAPES[e.etape] || e.etape) + ' : ' }), el('span', { text: e.detail })]),
+          ]));
+        });
+        var bandeau = r.ok
+          ? K.note('<strong>Message accepté par le fournisseur.</strong> Identifiant : ' + r.idMessage + '. Numéro ' + r.numeroMasque + '. Accepté ne veut pas dire reçu : vérifier la réception sur le téléphone.', { tone: 'success', icon: 'message-square-more' })
+          : K.note('<strong>Refus : ' + r.code + '.</strong> ' + r.motif + '<br><strong>Geste :</strong> ' + r.geste, { tone: 'danger', icon: 'message-square-x' });
+        return el('div.space-y-2', { 'data-testid': 'resultat-sms-' + (r.ok ? 'ok' : r.code) }, [bandeau, liste]);
+      }
+
+      function peindre(c) {
+        C.clear(hote);
+        if (!c) { hote.appendChild(K.note('Passerelle indisponible : aucun serveur n’est joint (navigateur seul). L’envoi réel exige le serveur du poste.', { tone: 'warning', icon: 'plug-zap' })); return; }
+        var f = null, ft = null;
+        hote.appendChild(U.kpiGrid([
+          { label: 'Passerelle', value: c.configure ? 'Configurée' : 'Non configurée', icon: 'message-square', tone: c.configure ? 'success' : 'warning' },
+          { label: 'Activation', value: c.actif ? 'Active' : 'Désactivée', icon: 'power', tone: c.actif ? 'success' : 'neutral' },
+          { label: 'Dernier test', value: c.testeOk === true ? 'Réussi' : (c.testeOk === false ? 'Refusé' : 'Jamais fait'), icon: 'send', tone: c.testeOk === true ? 'success' : (c.testeOk === false ? 'danger' : 'neutral') },
+          { label: 'Envois aujourd’hui', value: c.envoyesAujourdhui + ' sur ' + c.plafondJour, icon: 'gauge', tone: c.envoyesAujourdhui >= c.plafondJour ? 'danger' : 'navy' },
+        ]));
+        hote.appendChild(K.note('<strong>Couverture du Bénin et expéditeur : déclarés par la Direction, à confirmer chez le fournisseur.</strong> Aucun document du dépôt ne dit si l’identifiant alphanumérique est accepté au Bénin, ni le coût d’un message. Seuls les <strong>patients</strong> reçoivent des SMS ; les alertes du personnel passent par la cloche et le son du poste.', { tone: 'info', icon: 'info' }));
+
+        var secretsEtat = el('ul.space-y-1.text-sm');
+        Object.keys(SECRETS).forEach(function (k) {
+          secretsEtat.appendChild(el('li', null, [el('strong', { text: SECRETS[k] + ' : ' }), el('span', { text: c.secretsDefinis[k] ? 'enregistré' : 'non défini' })]));
+        });
+
+        if (!peutEcrire) {
+          hote.appendChild(U.card('Réglages de la passerelle', el('div.space-y-3', null, [
+            U.descList([
+              ['Fournisseur', NOMS[c.fournisseur] || c.fournisseur],
+              ['Expéditeur', c.expediteur || c.serviceSid || 'Non renseigné'],
+              ['Plafond par jour', String(c.plafondJour)],
+              ['Heures calmes', 'de ' + c.calmeDebut + ' h à ' + c.calmeFin + ' h (heure du Bénin)'],
+            ]),
+            secretsEtat,
+          ])));
+          return;
+        }
+
+        f = U.form([
+          { name: 'fournisseur', label: 'Fournisseur', type: 'select', required: true, col: 'third', value: c.fournisseur || 'twilio', search: false,
+            options: [{ value: 'twilio', label: 'Twilio (par défaut)' }, { value: 'vonage', label: 'Vonage' }] },
+          { name: 'plafondJour', label: 'Plafond par jour', type: 'number', min: 1, required: true, col: 'third', value: c.plafondJour, help: 'Au-delà, le refus PLAFOND_ATTEINT est rendu.' },
+          { name: 'actif', label: 'Passerelle active', type: 'checkbox', col: 'third', value: !!c.actif, help: 'Désactivée, seul le test envoie.' },
+          { name: 'twilioSid', label: SECRETS.twilioSid, type: 'password', condition: { controle: 'fournisseur', quand: ['twilio'] }, value: '', help: c.secretsDefinis.twilioSid ? 'Enregistré. Laisser vide pour le conserver.' : 'Jamais relu après enregistrement.' },
+          { name: 'twilioToken', label: SECRETS.twilioToken, type: 'password', condition: { controle: 'fournisseur', quand: ['twilio'] }, value: '', help: c.secretsDefinis.twilioToken ? 'Enregistré. Laisser vide pour le conserver.' : 'Jamais relu après enregistrement.' },
+          { name: 'serviceSid', label: 'Messaging Service SID Twilio (facultatif)', condition: { controle: 'fournisseur', quand: ['twilio'] }, value: c.serviceSid || '', help: 'Commence par MG. S’il est renseigné, il remplace l’expéditeur.' },
+          { name: 'vonageCle', label: SECRETS.vonageCle, type: 'password', condition: { controle: 'fournisseur', quand: ['vonage'] }, value: '', help: c.secretsDefinis.vonageCle ? 'Enregistrée. Laisser vide pour la conserver.' : 'Jamais relue après enregistrement.' },
+          { name: 'vonageSecret', label: SECRETS.vonageSecret, type: 'password', condition: { controle: 'fournisseur', quand: ['vonage'] }, value: '', help: c.secretsDefinis.vonageSecret ? 'Enregistré. Laisser vide pour le conserver.' : 'Jamais relu après enregistrement.' },
+          { name: 'expediteur', label: 'Expéditeur', col: 'full', value: c.expediteur || '', help: 'Numéro au format +229… acheté chez le fournisseur, ou identifiant de 1 à 11 caractères avec une lettre (à confirmer pour le Bénin).' },
+          { name: 'calmeDebut', label: 'Début des heures calmes (heure)', type: 'number', min: 0, col: 'third', value: c.calmeDebut, help: 'Proposition de la Direction : 21 h.' },
+          { name: 'calmeFin', label: 'Fin des heures calmes (heure)', type: 'number', min: 0, col: 'third', value: c.calmeFin, help: 'Proposition de la Direction : 7 h. Un message non urgent attend cette heure.' },
+        ], {});
+        hote.appendChild(U.card('Réglages de la passerelle', el('div', null, [
+          f,
+          el('div.mt-3', null, secretsEtat),
+          el('div.mt-4', null, K.commande('Enregistrer la passerelle', {
+            variant: 'primary', icon: 'save',
+            onclick: function () {
+              var v = f.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              appeler('enregistrer', v).then(function (n) {
+                S.log('Modification', 'CFG', 'Passerelle SMS', v.fournisseur, null, { fournisseur: v.fournisseur, actif: !!v.actif, identifiants: 'jamais journalisés' });
+                U.toast('Passerelle enregistrée. Le dernier test n’est plus valable : refaire un test d’envoi.', { type: 'success' });
+                dernier = null; peindre(n);
+              }).catch(function (e) { U.toast(e.message, { type: 'error' }); });
+            },
+          })),
+        ])));
+
+        ft = U.form([{ name: 'destinataire', label: 'Numéro de test (format international)', required: true, col: 'full', value: numeroTest, help: 'Un message de contrôle y sera envoyé avec les réglages ci-dessus, enregistrés ou non. Le numéro n’est pas conservé : le journal n’en garde que les quatre derniers chiffres.' }], {});
+        var resultat = el('div', { 'data-testid': 'resultat-test-sms' });
+        if (dernier) resultat.appendChild(rendreEtapes(dernier));
+        else if (c.testeOk !== null && c.testeOk !== undefined) resultat.appendChild(el('p.text-sm.text-slate-600', { text: 'Dernier test (' + C.dateFR(String(c.testeLe).slice(0, 10)) + ') : ' + (c.testeOk ? 'accepté par le fournisseur.' : 'refusé (' + c.testeCode + ').') }));
+        hote.appendChild(U.card('Test d’envoi', el('div.space-y-3', null, [
+          ft,
+          K.commande('Tester l’envoi', {
+            variant: 'primary', icon: 'send',
+            onclick: function () {
+              var v = f.collect(), t = ft.collect();
+              if (!v || !t) { U.toast('Renseigner les réglages de la passerelle et le numéro de test.', { type: 'error' }); return; }
+              numeroTest = t.destinataire;
+              C.clear(resultat); resultat.appendChild(el('p.text-sm.text-slate-500', { text: 'Envoi en cours…' }));
+              appeler('tester', Object.assign({}, v, { destinataire: t.destinataire })).then(function (r) {
+                if (!r.etapes) { C.clear(resultat); resultat.appendChild(K.note(r.motif || r.detail, { tone: 'danger' })); return; }
+                dernier = r;
+                journaliser(r);
+                appeler('etat').then(function (n) { peindre(n); }).catch(function () { C.clear(resultat); resultat.appendChild(rendreEtapes(r)); });
+              }).catch(function (e) { C.clear(resultat); resultat.appendChild(K.note(e.message, { tone: 'danger' })); });
+            },
+          }),
+          resultat,
+        ])));
+      }
+
+      if (!jeton()) { peindre(null); return null; }
+      hote.appendChild(el('p.text-sm.text-slate-500', { text: 'Lecture de la configuration…' }));
+      appeler('etat').then(peindre).catch(function (e) { C.clear(hote); hote.appendChild(K.note(e.message, { tone: 'danger' })); });
+      return null;
+    },
+  });
+
 })(window);

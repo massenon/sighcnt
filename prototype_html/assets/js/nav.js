@@ -577,6 +577,9 @@
                rien n'alimentait et renvoyait vers une adresse inexistante.
                Ouvert au biomédical et au laboratoire — c'est le laboratoire
                qui constate qu'un automate ne répond plus. */
+            /* Journal des envois SMS : lecture seule pour les trois profils qui voient la passerelle. */
+            { id: 'm13-sms-journal', label: 'Journal des envois SMS', icon: 'messages-square',
+              roles: ['admin', 'da', 'direction'] },
             { id: 'm13-maintenance', label: 'Parc technique & maintenance', icon: 'wrench',
               roles: ['admin', 'direction', 'da', 'laborantin', 'agentadmin'] },
             /* Phase 10 — le questionnaire est une donnée : le formulaire naît
@@ -675,6 +678,9 @@
             { id: 'cfg-poste', label: 'Ce poste (mode fileul / mère)', icon: 'server-cog', roles: ['admin', 'da'] },
             { id: 'cfg-pair', label: 'Échanges entre postes (mode pair)', icon: 'git-compare-arrows', roles: ['admin', 'da'] },
             { id: 'cfg-smtp', label: 'Messagerie (SMTP)', icon: 'mail', roles: ['admin', 'da'] },
+            /* PASSERELLE SMS (Direction, 07/11/2026) : l'administrateur et la DAF règlent et testent ; la Direction lit sans modifier
+               (fiche RBAC21, écran nommé). Les autres profils ne voient ni l'écran ni la carte. */
+            { id: 'cfg-sms', label: 'Passerelle SMS', icon: 'message-square', roles: ['admin', 'da', 'direction'] },
           ],
         },
         /* IMPORTATION DE DONNÉES (01/11/2026) : un moteur, dix jeux. Chaque jeu a son écran et ses rôles ;

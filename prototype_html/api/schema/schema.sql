@@ -2336,6 +2336,45 @@ COMMENT ON TABLE "m13"."materiel" IS 'Collection « materiel » — M13 Administ
 CREATE INDEX IF NOT EXISTS "ix_materiel_etat" ON "m13"."materiel" ("etat");
 CREATE INDEX IF NOT EXISTS "ix_materiel_statut" ON "m13"."materiel" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_materiel_reference" ON "m13"."materiel" ("reference");
+CREATE TABLE IF NOT EXISTS "m13"."messages_sms" (
+  "id" text PRIMARY KEY,
+  "par" text,
+  "code" text,
+  "date" date,
+  "heure" text,
+  "motif" text,
+  "detail" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "cree_par" text,
+  "longueur" integer,
+  "reporte_a" text,
+  "id_message" text,
+  "fournisseur" text,
+  "motif_libelle" text,
+  "numero_masque" text,
+  "extra" jsonb
+);
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "par" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "heure" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "detail" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "longueur" integer; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "reporte_a" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "id_message" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "fournisseur" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "motif_libelle" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "numero_masque" text; -- @montee
+ALTER TABLE "m13"."messages_sms" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m13"."messages_sms" IS 'Collection « messagesSms » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_messages_sms_code" ON "m13"."messages_sms" ("code");
+CREATE INDEX IF NOT EXISTS "ix_messages_sms_date" ON "m13"."messages_sms" ("date");
+CREATE INDEX IF NOT EXISTS "ix_messages_sms_statut" ON "m13"."messages_sms" ("statut");
 CREATE TABLE IF NOT EXISTS "m13"."plan_annuel" (
   "id" text PRIMARY KEY,
   "axe" text,

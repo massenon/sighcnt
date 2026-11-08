@@ -79,5 +79,15 @@ if ($action === 'etat') {
     sigh_repondre(['base' => $nom, 'collections' => $c, 'fiches' => $f, 'comptes' => $u]);
 }
 
+/* LE PUITS SMS (voir sms_client.php) : ce que le faux fournisseur a REÇU (jamais un secret) et sa remise à zéro. Le puits lui-même vit dans le
+   processus de `sms.php`, derrière `SIGH_BANC=1` : il n'existe pas hors banc. */
+if ($action === 'sms_puits_lire' || $action === 'sms_puits_vider') {
+    require_once __DIR__ . '/sms_client.php';
+    if ($action === 'sms_puits_vider') {
+        sigh_sms_puits_ecrire([]);
+    }
+    sigh_repondre(['recus' => sigh_sms_puits_lire()]);
+}
+
 sigh_repondre(['erreur' => 'action inconnue',
-    'detail' => 'Actions acceptées : reinitialiser, etat.'], 400);
+    'detail' => 'Actions acceptées : reinitialiser, etat, sms_puits_lire, sms_puits_vider.'], 400);

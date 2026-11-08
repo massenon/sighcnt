@@ -1430,6 +1430,29 @@ COMMENT ON TABLE "m13"."materiel" IS 'Collection « materiel » — M13 Administ
 CREATE INDEX IF NOT EXISTS "ix_materiel_etat" ON "m13"."materiel" ("etat");
 CREATE INDEX IF NOT EXISTS "ix_materiel_statut" ON "m13"."materiel" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_materiel_reference" ON "m13"."materiel" ("reference");
+CREATE TABLE IF NOT EXISTS "m13"."messages_sms" (
+  "id" text PRIMARY KEY,
+  "par" text,
+  "code" text,
+  "date" date,
+  "heure" text,
+  "motif" text,
+  "detail" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "cree_par" text,
+  "longueur" integer,
+  "reporte_a" text,
+  "id_message" text,
+  "fournisseur" text,
+  "motif_libelle" text,
+  "numero_masque" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m13"."messages_sms" IS 'Collection « messagesSms » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_messages_sms_code" ON "m13"."messages_sms" ("code");
+CREATE INDEX IF NOT EXISTS "ix_messages_sms_date" ON "m13"."messages_sms" ("date");
+CREATE INDEX IF NOT EXISTS "ix_messages_sms_statut" ON "m13"."messages_sms" ("statut");
 CREATE TABLE IF NOT EXISTS "m13"."plan_annuel" (
   "id" text PRIMARY KEY,
   "axe" text,

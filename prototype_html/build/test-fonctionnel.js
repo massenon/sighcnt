@@ -14535,6 +14535,293 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript pendant le balayage des écrans de validation', erreursJS.length === 0, erreursJS.join(' | '));
   });
 
+  /* ==========================================================================
+   * Vague 93 : passerelle SMS, étape S1 (Direction, 08/11/2026)
+   * -------------------------------------------------------------------------
+   * Twilio par défaut, Vonage en second ; le faux fournisseur est le PUITS de api/sms_client.php (SIGH_BANC=1 seulement : un secret « puits-… »
+   * n'est jamais envoyé au réseau, le mode vient du secret). Le scénario mesure ce qui a VRAIMENT circulé : le puits garde ce qu'il a reçu.
+   * Chaque envoi serveur pose `maintenant` (jour futur tiré au hasard) : le compteur du jour et les heures calmes ne dépendent ni de l'heure
+   * réelle ni des passages précédents. Journal rangé à la sortie (RG-14), configuration effacée, puits vidé.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 93 : passerelle SMS (test d’envoi, refus nommés, identifiants jamais relus, journal masqué, plafond, heures calmes, droits)');
+    const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
+    const poser = async (role) => { await ouvrir('m1-patients.html'); await page.evaluate((s) => window.SIGH.store.setSession(s), profil(role)); };
+    const DOSSIER = process.env.SIGH_SMS_DIR || path.join(ROOT, 'api');
+    const JOUR = new Date(Date.UTC(2040, 0, 1) + Math.floor(Math.random() * 3000) * 86400000).toISOString().slice(0, 10);
+    const A = (h) => JOUR + 'T' + h + '+01:00';
+    const SID = 'ACsonde93' + Math.random().toString(36).slice(2, 12);
+    const JETON_OK = 'puits-ok-' + Math.random().toString(36).slice(2, 12);
+    const NUM = '+22997000001';
+    erreursJS = [];
+    const api = (action, corps, jeton) => page.evaluate(async (a, c, j) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const tok = j || window.SIGH.store.jetonServeur();
+      const r = await fetch(racine + 'api/sms.php' + (c ? '' : '?action=' + a), { method: c ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': tok || '' }, body: c ? JSON.stringify(Object.assign({ action: a }, c)) : undefined });
+      const t = await r.text(); let o = {}; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+      return { statut: r.status, o: o, brut: t };
+    }, action, corps || null, jeton || null);
+    const apiAdmin = async (action, corps) => {
+      let r = null;
+      for (let i = 0; i < 30; i++) { r = await api(action, corps); if (r.statut !== 401 && r.statut !== 403) return r; await pause(300); }
+      return r;
+    };
+    const puitsApi = (action) => page.evaluate(async (a) => {
+      const r = await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/banc.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: a }) });
+      return (await r.json()).recus || [];
+    }, action);
+    const saisir = (id, v) => page.evaluate((a) => { const e = document.getElementById(a[0]); e.value = a[1]; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, [id, v]);
+    const cliquer = (libelle) => page.evaluate(async (l) => {
+      const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === l);
+      if (b) b.click();
+      await new Promise((r) => setTimeout(r, 600));
+      return !!b;
+    }, libelle);
+    const attendreTexte = (re) => page.waitForFunction((src) => new RegExp(src).test(document.querySelector('#page-content').innerText), { timeout: 30000 }, re.source).catch(() => null);
+    const lire = () => page.evaluate(() => ({
+      texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' '),
+      champs: [...document.querySelectorAll('#page-content label')].map((l) => l.textContent.trim()),
+      boutons: [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()),
+      secretType: ['twilioSid', 'twilioToken'].map((k) => (document.getElementById('f_' + k) || {}).type),
+      secretValeur: ['twilioSid', 'twilioToken'].map((k) => (document.getElementById('f_' + k) || {}).value),
+      testids: [...document.querySelectorAll('[data-testid^="resultat-sms-"]')].map((n) => n.getAttribute('data-testid')),
+    }));
+    const journal = () => page.evaluate(() => (window.SIGH.store.raw().messagesSms || []).slice().sort((x, y) => String(x._creeLe).localeCompare(String(y._creeLe)) || String(x.id).localeCompare(String(y.id))));
+    const envoyer = (motif, texte, h, dest) => apiAdmin('envoyer', { motif: motif, texte: texte, destinataire: dest || NUM, maintenant: A(h || '10:00:00') });
+    const tester = (champs, h, dest) => apiAdmin('tester', Object.assign({ destinataire: dest || NUM, maintenant: A(h || '10:00:00') }, champs || {}));
+
+    await poser('admin');
+    await apiAdmin('effacer', {});
+    await puitsApi('sms_puits_vider');
+    await ouvrir('cfg-sms.php');
+    await attendreTexte(/Passerelle/);
+
+    /* --- 1. sans configuration : refus nommé, au journal comme refus ------------------------------------------------------ */
+    const e0 = await lire();
+    verifier('L’écran porte ses champs nommés ; non configurée au départ ; les identifiants sont des champs masqués et vides',
+      /Passerelle Non configurée/.test(e0.texte) && e0.champs.some((c) => /Fournisseur/.test(c)) && e0.champs.some((c) => /Account SID Twilio/.test(c)) && e0.champs.some((c) => /Plafond par jour/.test(c))
+      && e0.secretType.every((t) => t === 'password') && e0.secretValeur.every((v) => v === '') && e0.boutons.includes('Tester l’envoi') && e0.boutons.includes('Enregistrer la passerelle'), JSON.stringify([e0.texte.slice(0, 200), e0.champs, e0.boutons]));
+    await saisir('f_destinataire', NUM);
+    await cliquer('Tester l’envoi');
+    await attendreTexte(/Refus : SMS_NON_CONFIGUREE/);
+    const e1 = await lire();
+    verifier('Sans configuration, le test rend SMS_NON_CONFIGUREE avec son motif ET son geste, et rien n’est « envoyé »',
+      e1.testids.includes('resultat-sms-SMS_NON_CONFIGUREE') && /Refus : SMS_NON_CONFIGUREE/.test(e1.texte) && /Geste : Renseigner les identifiants/.test(e1.texte) && (await puitsApi('sms_puits_lire')).length === 0, e1.texte.slice(-500));
+    const j1 = await journal();
+    verifier('Le refus est journalisé COMME refus : statut refusé, code nommé, aucun identifiant de message', j1.length === 1 && j1[0].statut === 'refuse' && j1[0].code === 'SMS_NON_CONFIGUREE' && !j1[0].idMessage, JSON.stringify(j1));
+
+    /* --- 2. enregistrement : identifiants en écriture seule ---------------------------------------------------------------- */
+    await saisir('f_twilioSid', SID); await saisir('f_twilioToken', JETON_OK); await saisir('f_expediteur', 'CLINIQUE');
+    await cliquer('Enregistrer la passerelle');
+    await attendreTexte(/Passerelle Configurée/);
+    const e2 = await lire();
+    verifier('Enregistrée : configurée, les deux champs d’identifiants sont VIDÉS (jamais relus) et dits « enregistré »',
+      /Passerelle Configurée/.test(e2.texte) && e2.secretValeur.every((v) => v === '') && /Account SID Twilio : enregistré/.test(e2.texte) && /Jeton d’authentification Twilio : enregistré/.test(e2.texte)
+      && !e2.texte.includes(SID) && !e2.texte.includes(JETON_OK), e2.texte.slice(0, 400));
+
+    /* --- 3. test réussi par le puits : ce qui a CIRCULÉ, identifiant au journal, numéro masqué ----------------------------- */
+    await saisir('f_destinataire', '+229 97 00 00 01');
+    await cliquer('Tester l’envoi');
+    await attendreTexte(/Message accepté par le fournisseur/);
+    const e3 = await lire();
+    const recus = await puitsApi('sms_puits_lire');
+    const dernierRecu = recus[recus.length - 1] || {};
+    verifier('Le test montre les étapes (configuration, numéro, plafond, heures calmes, fournisseur) et conclut « accepté »',
+      e3.testids.includes('resultat-sms-ok') && /Configuration : Fournisseur Twilio/.test(e3.texte) && /Numéro : Numéro valide \*\*\*\*0001/.test(e3.texte) && /Plafond du jour/.test(e3.texte) && /Heures calmes/.test(e3.texte) && /Fournisseur : Accepté par le fournisseur, identifiant SM/.test(e3.texte), e3.texte.slice(-700));
+    verifier('Le puits a REÇU le message : numéro normalisé E.164, expéditeur, texte de contrôle, par Twilio',
+      recus.length === 1 && dernierRecu.fournisseur === 'twilio' && dernierRecu.a === NUM && dernierRecu.de === 'CLINIQUE' && /SIGH-CNT : message de test/.test(dernierRecu.texte || ''), JSON.stringify(recus));
+    const j3 = await journal();
+    const ok3 = j3.filter((m) => m.statut === 'accepte');
+    verifier('Le journal porte l’identifiant du message accepté et le numéro MASQUÉ (quatre derniers chiffres), motif « Test d’envoi »',
+      ok3.length === 1 && /^SM[0-9a-f]{24}$/.test(ok3[0].idMessage || '') && ok3[0].numeroMasque === '****0001' && ok3[0].motif === 'test' && ok3[0].fournisseur === 'twilio', JSON.stringify(ok3));
+
+    /* --- 4. refus du fournisseur : nommés, jamais « envoyé » ---------------------------------------------------------------- */
+    const avantOk = (await journal()).filter((m) => m.statut === 'accepte').length;
+    await ouvrir('cfg-sms.php');
+    await attendreTexte(/Passerelle Configurée/);
+    await saisir('f_twilioToken', 'puits-refuse-93'); await saisir('f_destinataire', NUM);
+    await cliquer('Tester l’envoi');
+    await attendreTexte(/Refus : IDENTIFIANTS_REFUSES/);
+    const e4 = await lire();
+    verifier('Identifiants refusés par le puits : refus IDENTIFIANTS_REFUSES nommé avec son geste, étape « Fournisseur » en échec',
+      e4.testids.includes('resultat-sms-IDENTIFIANTS_REFUSES') && /Geste : Saisir de nouveau les identifiants/.test(e4.texte) && /Fournisseur : /.test(e4.texte), e4.texte.slice(-500));
+    const j4 = await journal();
+    const dernier4 = j4[j4.length - 1];
+    verifier('Aucun « envoyé » au journal pour ce refus : un nouveau refus, pas un nouveau message accepté, sans identifiant',
+      j4.filter((m) => m.statut === 'accepte').length === avantOk && dernier4.statut === 'refuse' && dernier4.code === 'IDENTIFIANTS_REFUSES' && !dernier4.idMessage, JSON.stringify(dernier4));
+    const cas = [
+      ['Solde insuffisant chez le fournisseur', { twilioToken: 'puits-solde-93' }, 'SOLDE_INSUFFISANT', NUM],
+      ['Fournisseur injoignable', { twilioToken: 'puits-injoignable-93' }, 'FOURNISSEUR_INJOIGNABLE', NUM],
+      ['Expéditeur non autorisé', { twilioToken: JETON_OK, expediteur: 'REFUSE' }, 'EXPEDITEUR_NON_AUTORISE', NUM],
+      ['Numéro refusé par le fournisseur', { twilioToken: JETON_OK }, 'NUMERO_INVALIDE', '+22990000000'],
+      ['Numéro hors format international', {}, 'NUMERO_INVALIDE', '97000001'],
+      ['Numéro avec lettres', {}, 'NUMERO_INVALIDE', '+229abcdefgh'],
+    ];
+    for (const [libelle, champs, code, dest] of cas) {
+      const r = await tester(champs, '10:00:00', dest);
+      verifier(libelle + ' : refus ' + code + ' nommé, avec motif et geste, rien d’accepté',
+        r.o.ok === false && r.o.code === code && !!r.o.motif && !!r.o.geste && r.o.statut === 'refuse' && !r.o.idMessage, r.brut.slice(0, 300));
+    }
+    const rv = await tester({ fournisseur: 'vonage', vonageCle: 'cle-v93', vonageSecret: 'puits-ok-v93', expediteur: 'CLINIQUE' });
+    verifier('Vonage, second fournisseur : un envoi par le puits est accepté et porte son identifiant de message',
+      rv.o.ok === true && rv.o.fournisseur === 'vonage' && /^[0-9a-f]{16}$/.test(rv.o.idMessage || ''), rv.brut.slice(0, 300));
+    const vr = [['puits-refuse-v93', 'IDENTIFIANTS_REFUSES'], ['puits-solde-v93', 'SOLDE_INSUFFISANT']];
+    for (const [sec, code] of vr) {
+      const r = await tester({ fournisseur: 'vonage', vonageCle: 'cle-v93', vonageSecret: sec, expediteur: 'CLINIQUE' });
+      verifier('Vonage : le statut du fournisseur est classé en ' + code, r.o.ok === false && r.o.code === code, r.brut.slice(0, 300));
+    }
+    const recusV = await puitsApi('sms_puits_lire');
+    verifier('Le puits a vu l’envoi Vonage (numéro sans le signe plus, comme l’attend l’API de Vonage)', recusV.some((x) => x.fournisseur === 'vonage' && x.a === '22997000001'), JSON.stringify(recusV.slice(-3)));
+
+    /* --- 5. les identifiants ne sont lus NULLE PART ------------------------------------------------------------------------ */
+    const secrets = [SID, JETON_OK, 'puits-refuse-93', 'puits-solde-93', 'puits-injoignable-93', 'cle-v93', 'puits-ok-v93'];
+    const etat = await api('etat');
+    verifier('L’API ne renvoie jamais un identifiant ni son chiffré : elle dit seulement lesquels sont définis',
+      secrets.every((x) => !etat.brut.includes(x)) && !/"sec"/.test(etat.brut) && etat.o.secretsDefinis.twilioSid === true && etat.o.secretsDefinis.twilioToken === true && etat.o.secretsDefinis.vonageCle === false, etat.brut.slice(0, 400));
+    const rep = await tester({}); 
+    verifier('Aucune réponse d’envoi ne contient un identifiant (étapes, motif, entrée du journal)', secrets.every((x) => !rep.brut.includes(x)), rep.brut.slice(0, 300));
+    const fuites = await page.evaluate((liste, numeroPlein) => {
+      const S = window.SIGH.store;
+      const tout = JSON.stringify(S.raw());
+      let ls = ''; try { for (let i = 0; i < localStorage.length; i++) ls += localStorage.getItem(localStorage.key(i)); } catch (e) { /* stockage */ }
+      return { magasin: liste.filter((x) => tout.includes(x)), stockage: liste.filter((x) => ls.includes(x)), numeroMagasin: tout.includes(numeroPlein), journalSms: JSON.stringify(S.raw().messagesSms || []).includes(numeroPlein) };
+    }, secrets, NUM.slice(1));
+    verifier('Les identifiants n’apparaissent ni dans le magasin exporté ni dans le stockage du navigateur ; le numéro en clair non plus',
+      fuites.magasin.length === 0 && fuites.stockage.length === 0 && !fuites.numeroMagasin && !fuites.journalSms, JSON.stringify(fuites));
+    const disque = fs.readFileSync(path.join(DOSSIER, 'sms.local.php'), 'utf8');
+    const cle = fs.readFileSync(path.join(DOSSIER, 'sms.cle.local.php'), 'utf8');
+    verifier('Sur le disque, les identifiants sont CHIFFRÉS (garde d’exécution, aucun clair), la clé vit dans un AUTRE fichier',
+      secrets.every((x) => !disque.includes(x)) && /^<\?php http_response_code\(403\); exit; \?>/.test(disque) && /"sec":\{"twilioSid":"/.test(disque) && /^<\?php http_response_code\(403\); exit; \?>\n[0-9a-f]{64}$/.test(cle) && !disque.includes(cle.slice(-64)), disque.slice(0, 250));
+    const audit = await page.evaluate(async () => { const r = await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/magasin.php?collections=audit', { headers: { 'X-Sigh-Jeton': window.SIGH.store.jetonServeur() } }); return r.text(); });
+    verifier('L’audit serveur garde les envois (numéro masqué, motif, statut) sans identifiant ni numéro en clair',
+      /Test d’envoi/.test(audit) && audit.includes('****0001') && secrets.every((x) => !audit.includes(x)) && !audit.includes(NUM.slice(1)), audit.slice(0, 300));
+    const brutPuits = fs.readFileSync(path.join(DOSSIER, 'sms.puits.local.php'), 'utf8');
+    verifier('Le puits lui-même ne garde aucun identifiant (seulement ce qui circule : numéro, expéditeur, texte)', secrets.every((x) => !brutPuits.includes(x)), brutPuits.slice(0, 200));
+
+    /* --- 6. plafond du jour (compté au SERVEUR) : un jour à lui, pour ne pas hériter des envois acceptés plus haut --------------- */
+    const JP = new Date(Date.parse(JOUR + 'T12:00:00Z') + 10 * 86400000).toISOString().slice(0, 10);
+    const AP = (h) => JP + 'T' + h + '+01:00';
+    const envP = (texte) => apiAdmin('envoyer', { motif: 'rappel_rdv', texte: texte, destinataire: NUM, maintenant: AP('10:00:00') });
+    await apiAdmin('enregistrer', { fournisseur: 'twilio', twilioSid: SID, twilioToken: JETON_OK, expediteur: 'CLINIQUE', plafondJour: 2, actif: true, calmeDebut: 21, calmeFin: 7 });
+    const p1 = await envP('Rendez-vous demain à 9 h avec le docteur Aïssatou.');
+    const p2 = await envP('Rendez-vous demain à 10 h avec le docteur Aïssatou.');
+    const p3 = await envP('Rendez-vous demain à 11 h avec le docteur Aïssatou.');
+    verifier('Plafond de 2 par jour : deux envois acceptés, le troisième refusé PLAFOND_ATTEINT avec son geste',
+      p1.o.ok === true && p2.o.ok === true && p3.o.ok === false && p3.o.code === 'PLAFOND_ATTEINT' && !!p3.o.geste, JSON.stringify([p1.o.code, p2.o.code, p3.o]).slice(0, 400));
+    const recusP = await puitsApi('sms_puits_lire');
+    verifier('Le fournisseur n’a reçu que les deux messages du plafond (le refus est décidé AVANT l’appel)', recusP.filter((x) => /docteur Aïssatou/.test(x.texte || '')).length === 2, JSON.stringify(recusP.filter((x) => /docteur/.test(x.texte || '')).length));
+    const pt = await apiAdmin('tester', { destinataire: NUM, maintenant: AP('10:00:00') });
+    verifier('Le test est soumis au même plafond (un envoi coûte, test ou non)', pt.o.ok === false && pt.o.code === 'PLAFOND_ATTEINT', pt.brut.slice(0, 200));
+    const effacerPuis = await apiAdmin('effacer', {});
+    await apiAdmin('enregistrer', { fournisseur: 'twilio', twilioSid: SID, twilioToken: JETON_OK, expediteur: 'CLINIQUE', plafondJour: 2, actif: true });
+    const p4 = await envP('Rendez-vous demain à 12 h avec le docteur Aïssatou.');
+    verifier('Effacer puis ressaisir la configuration NE remet PAS le plafond à zéro (le compteur du jour survit)', effacerPuis.statut === 200 && p4.o.ok === false && p4.o.code === 'PLAFOND_ATTEINT', p4.brut.slice(0, 200));
+    const lendemain = await apiAdmin('envoyer', { motif: 'rappel_rdv', texte: 'Rendez-vous demain à 9 h avec le docteur Aïssatou.', destinataire: NUM, maintenant: new Date(Date.parse(AP('10:00:00')) + 86400000).toISOString().slice(0, 10) + 'T10:00:00+01:00' });
+    verifier('Le plafond se compte PAR JOUR (heure du Bénin) : le lendemain, l’envoi repart', lendemain.o.ok === true, lendemain.brut.slice(0, 200));
+    await apiAdmin('enregistrer', { plafondJour: 200 });
+
+    /* --- 7. heures calmes : report NOMMÉ, urgents exemptés ------------------------------------------------------------------ */
+    const JOUR2 = new Date(Date.parse(JOUR + 'T12:00:00Z') + 5 * 86400000).toISOString().slice(0, 10);
+    const A2 = (h) => JOUR2 + 'T' + h + '+01:00';
+    const nuit = await apiAdmin('envoyer', { motif: 'anniversaire', texte: 'Bon anniversaire de la part de la clinique.', destinataire: NUM, maintenant: A2('22:30:00') });
+    verifier('À 22 h 30 (heure du Bénin), un souhait d’anniversaire est REPORTÉ : HEURES_CALMES, statut « reporté », reprise à 7 h le lendemain, rien envoyé',
+      nuit.o.ok === false && nuit.o.code === 'HEURES_CALMES' && nuit.o.statut === 'reporte' && /T07:00:00\+01:00$/.test(nuit.o.reporteA || '') && (nuit.o.reporteA || '').slice(0, 10) > JOUR2, nuit.brut.slice(0, 300));
+    const aube = await apiAdmin('envoyer', { motif: 'anniversaire', texte: 'Bon anniversaire de la part de la clinique.', destinataire: NUM, maintenant: A2('03:00:00') });
+    verifier('À 3 h du matin, le report va au MÊME jour à 7 h (les heures calmes chevauchent minuit)', aube.o.code === 'HEURES_CALMES' && (aube.o.reporteA || '').slice(0, 16) === JOUR2 + 'T07:00', aube.brut.slice(0, 300));
+    const jour = await apiAdmin('envoyer', { motif: 'anniversaire', texte: 'Bon anniversaire de la part de la clinique.', destinataire: NUM, maintenant: A2('10:00:00') });
+    const urgent = await apiAdmin('envoyer', { motif: 'alerte_technique', texte: 'Alerte technique du serveur de la clinique.', destinataire: NUM, maintenant: A2('22:30:00') });
+    const testNuit = await tester({}, '22:30:00');
+    verifier('À 10 h le souhait part ; l’alerte technique et le test de nuit sont EXEMPTÉS des heures calmes',
+      jour.o.ok === true && urgent.o.ok === true && testNuit.o.ok === true, JSON.stringify([jour.o.code, urgent.o.code, testNuit.o.code]));
+    const desact = await apiAdmin('enregistrer', { actif: false });
+    const rd = await envoyer('rappel_rdv', 'Rendez-vous demain à 9 h avec le docteur Aïssatou.');
+    verifier('Passerelle désactivée : l’envoi est refusé SMS_DESACTIVEE (seul le test, qui n’exige pas l’activation, envoie)', desact.statut === 200 && rd.o.code === 'SMS_DESACTIVEE', rd.brut.slice(0, 200));
+    await apiAdmin('enregistrer', { actif: true });
+
+    /* --- 8. aucune donnée médicale, texte et motif contrôlés ---------------------------------------------------------------- */
+    const medicaux = ['Votre diagnostic de paludisme est confirmé.', 'Résultat positif au test de grossesse.', 'Votre bilan VIH est disponible.'];
+    for (const t of medicaux) {
+      const r = await envoyer('relance', t, '09:00:00');
+      verifier('Texte médical refusé DONNEE_MEDICALE : « ' + t + ' »', r.o.ok === false && r.o.code === 'DONNEE_MEDICALE', r.brut.slice(0, 200));
+    }
+    const dispo = await envoyer('resultat_disponible', 'Votre résultat est disponible, passez à l’accueil de la clinique.', '09:00:00');
+    verifier('Dire qu’un résultat est DISPONIBLE reste permis (jamais ce qu’il contient)', dispo.o.ok === true, dispo.brut.slice(0, 200));
+    const vide = await envoyer('relance', '', '09:00:00'); const long = await envoyer('relance', 'x'.repeat(321), '09:00:00'); const inconnu = await envoyer('pub', 'Bonjour', '09:00:00');
+    verifier('Texte vide ou de plus de 320 caractères : TEXTE_INVALIDE ; motif hors liste : MOTIF_INCONNU',
+      vide.o.code === 'TEXTE_INVALIDE' && long.o.code === 'TEXTE_INVALIDE' && inconnu.o.code === 'MOTIF_INCONNU', JSON.stringify([vide.o.code, long.o.code, inconnu.o.code]));
+
+    /* --- 9. droits : l'écran, la commande, le serveur ----------------------------------------------------------------------- */
+    const jetonA = ((await BANC.connecter(BANC.SESSION_BANC.identifiant)) || {}).jeton || '';
+    const comptes = await page.evaluate(async (jt) => (await (await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/auth.php?action=comptes', { headers: { 'X-Sigh-Jeton': jt } })).json()).comptes || [], jetonA);
+    const jetonDe = async (role) => { const c = comptes.find((x) => x.role === role); const r = c ? await BANC.connecter(c.identifiant) : null; return r && r.jeton ? r.jeton : null; };
+    /* la Direction n'a pas de compte au jeu : sa session serveur s'ouvre par le poste (jeton NEUF exigé, sinon on sonderait celui du rôle précédent) */
+    const jetonPoste = async (role) => {
+      const avant = await page.evaluate(() => window.SIGH.store.jetonServeur());
+      await poser(role);
+      for (let i = 0; i < 40; i++) { const t = await page.evaluate(() => window.SIGH.store.jetonServeur()); if (t && t !== avant) return t; await pause(300); }
+      return null;
+    };
+    const serveur = {};
+    for (const role of ['reception', 'medecin', 'caissier', 'comptable', 'direction', 'da']) {
+      const jt = role === 'direction' ? await jetonPoste('direction') : await jetonDe(role);
+      if (!jt) { serveur[role] = 'sans compte'; continue; }
+      const lectureR = await api('etat', null, jt);
+      const testR = await api('tester', { destinataire: NUM, maintenant: A('10:00:00') }, jt);
+      const enrR = await api('enregistrer', { plafondJour: 5 }, jt);
+      const effR = await api('effacer', {}, jt);
+      serveur[role] = [lectureR.statut, testR.statut, enrR.statut, effR.statut].join('/');
+    }
+    verifier('Serveur : réception, médecin, caissier et comptable sont refusés partout (403, ACCES_REFUSE) ; la Direction LIT (200) sans tester, enregistrer ni effacer',
+      ['reception', 'medecin', 'caissier', 'comptable'].every((r) => serveur[r] === '403/403/403/403') && serveur.direction === '200/403/403/403', JSON.stringify(serveur));
+    verifier('La DAF règle et teste (200) mais n’efface pas (403 : seul l’administrateur retire la configuration)', /^200\/200\/200\/403$/.test(serveur.da), JSON.stringify(serveur));
+    const refusRole = await (async () => { const jt = await jetonDe('reception'); return jt ? api('etat', null, jt) : { o: {} }; })();
+    verifier('Le refus d’accès porte son code ACCES_REFUSE, son motif et son geste', refusRole.o.code === 'ACCES_REFUSE' && !!refusRole.o.motif && !!refusRole.o.geste, JSON.stringify(refusRole.o));
+    const droits = {};
+    for (const role of ['admin', 'da', 'direction', 'comptable', 'reception', 'medecin', 'caissier']) {
+      await poser(role);
+      droits[role] = await page.evaluate((r) => ['cfg-sms', 'm13-sms-journal'].map((id) => { const e = window.SIGH.nav.get(id); return window.SIGH.nav.can(r, { id: id, roles: e.roles, module: e.module }); }).join(), role);
+    }
+    verifier('Seuls l’administrateur, la DAF et la Direction ouvrent la passerelle et son journal',
+      ['admin', 'da', 'direction'].every((r) => droits[r] === 'true,true') && ['comptable', 'reception', 'medecin', 'caissier'].every((r) => droits[r] === 'false,false'), JSON.stringify(droits));
+    await poser('direction'); await pause(1500); await ouvrir('cfg-sms.php'); await attendreTexte(/Passerelle (Configurée|Non configurée)|Account SID Twilio : /); await pause(500);
+    const dir = await lire();
+    verifier('La Direction lit la passerelle : réglages et identifiants « enregistré » visibles, mais commande « Tester l’envoi », commande « Enregistrer » et formulaire ABSENTS (jamais grisés)',
+      /Passerelle/.test(dir.texte) && /Account SID Twilio : enregistré/.test(dir.texte) && !dir.boutons.includes('Tester l’envoi') && !dir.boutons.includes('Enregistrer la passerelle') && dir.champs.length === 0, JSON.stringify([dir.boutons, dir.champs, dir.texte.slice(0, 200)]));
+    await poser('da'); await pause(1500); await ouvrir('cfg-sms.php'); await attendreTexte(/Passerelle (Configurée|Non configurée)/); await pause(500);
+    const da = await lire();
+    verifier('La DAF a les deux commandes et le formulaire', da.boutons.includes('Tester l’envoi') && da.boutons.includes('Enregistrer la passerelle') && da.champs.length > 5, JSON.stringify([da.boutons, da.champs.length]));
+    const cartes = {};
+    for (const role of ['da', 'direction', 'reception']) {
+      await poser(role); await ouvrir('parametres-hub.php');
+      cartes[role] = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-sms/.test(a.getAttribute('href') || '')));
+    }
+    verifier('La carte « Passerelle SMS » figure aux Paramètres système de la DAF et de la Direction, jamais à ceux de la réception (RG-13)', cartes.da === true && cartes.direction === true && cartes.reception === false, JSON.stringify(cartes));
+
+    /* --- 10. le journal : lecture seule, numéro masqué, rien d'autre ------------------------------------------------------- */
+    await poser('direction'); await pause(1500); await ouvrir('m13-sms-journal.php'); await pause(1500);
+    const jr = await page.evaluate(() => ({
+      texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' '),
+      boutons: [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()),
+      lignes: document.querySelectorAll('#page-content tbody tr').length,
+    }));
+    verifier('Le journal s’ouvre à la Direction en LECTURE SEULE : colonnes nommées, numéro masqué, aucune commande « Nouveau »',
+      /Numéro \(masqué\)/i.test(jr.texte) && /\*\*\*\*0001/.test(jr.texte) && /Refus nommé/i.test(jr.texte) && !jr.boutons.includes('Nouveau') && jr.lignes > 0, JSON.stringify([jr.lignes, jr.texte.slice(-300)]));
+    const jfinal = await journal();
+    verifier('Aucune ligne du journal ne porte un numéro en clair ni un texte de message : seuls les champs prévus',
+      jfinal.length >= 3 && jfinal.every((m) => !JSON.stringify(m).includes('2299700000') && !JSON.stringify(m).includes('Rendez-vous demain') && !('texte' in m) && !('destinataire' in m) && /^\*\*\*\*\d{4}$/.test(m.numeroMasque)), JSON.stringify(jfinal.slice(0, 2)));
+    verifier('Tout envoi accepté du journal porte un identifiant, tout refus n’en porte aucun',
+      jfinal.every((m) => (m.statut === 'accepte') === !!m.idMessage), JSON.stringify(jfinal.filter((m) => (m.statut === 'accepte') !== !!m.idMessage)));
+
+    /* --- restitution --------------------------------------------------------------------------------------------------------- */
+    await poser('admin');
+    const efface = await apiAdmin('effacer', {});
+    verifier('L’administrateur retire la configuration : la passerelle redevient non configurée, aucun identifiant ne subsiste sur le disque',
+      efface.statut === 200 && efface.o.configure === false && !/"sec"/.test(fs.readFileSync(path.join(DOSSIER, 'sms.local.php'), 'utf8')), JSON.stringify([efface.statut, efface.brut.slice(0, 150)]));
+    await puitsApi('sms_puits_vider');
+    await page.evaluate(() => { const col = window.SIGH.store.collection('messagesSms'); col.all().forEach((m) => { if (m.statut !== 'archive') col.archive(m.id, 'Sonde Vague 93'); }); });
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

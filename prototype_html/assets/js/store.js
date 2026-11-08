@@ -95,8 +95,10 @@
      et la collection `validationsReferentiels` (une fiche par artefact du code
      que le magasin ne porte pas : check-listes du bloc…) est semée au socle.
      71 (08/11/2026) : fiches RBAC de l'échographiste et du Directeur Médical (le catalogue
-     de l'imagerie s'ouvre à eux en lecture, pour y valider) ; les fiches étant semées. */
-  var VERSION = 71;
+     de l'imagerie s'ouvre à eux en lecture, pour y valider) ; les fiches étant semées.
+     72 (08/11/2026) : passerelle SMS. La fiche RBAC21 (Direction) lit `cfg-sms` et `m13-sms-journal` sans les modifier
+     (écrans nommés) ; la collection `messagesSms` (journal des envois) naît à l'usage, elle est déclarée à la corbeille. */
+  var VERSION = 72;
   var db = null;
   var listeners = {};
 
@@ -2778,6 +2780,10 @@
             'm10-badges-modeles': { voir: true, editer: true, annuler: true },
             'm10-badges-impression': { voir: true, editer: true, annuler: false },
             'm10-badges-verification': { voir: true, editer: false, annuler: false },
+            /* LA PASSERELLE SMS SE LIT, ELLE NE SE RÈGLE PAS ICI : CFG et M13 sont en écriture pour la Direction, ces deux écrans
+               sont nommés en lecture (le réglage et le test sont le geste de l'administrateur et de la DAF). */
+            'cfg-sms': { voir: true, editer: false, annuler: false },
+            'm13-sms-journal': { voir: true, editer: false, annuler: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'La Direction lit tout et décide : administration, sécurité, configuration, '
@@ -4119,7 +4125,7 @@
     grillePrimes: 'M10|Grille des primes NS 132', historiquePrimes: 'M10|Versions antérieures de la grille des primes', beneficiairesPrimes: 'M10|Bénéficiaires des primes fixes',
     rbac: 'M14|Rôles et permissions', tentativesConnexion: 'M14|Tentatives de connexion refusées',
     sessionsUtilisateur: 'M14|Sessions de poste', politiqueSecurite: 'M14|Politique de sécurité des comptes',
-    courriers: 'M13|Courriers', reunions: 'M13|Réunions',
+    courriers: 'M13|Courriers', reunions: 'M13|Réunions', messagesSms: 'M13|Journal des envois SMS',
     /* Une clé déclarée deux fois dans un littéral écrase la première EN
        SILENCE : « evenements » désignait ici les événements de M13 et effaçait
        l'intitulé de ceux du personnel. Les deux collections sont désormais

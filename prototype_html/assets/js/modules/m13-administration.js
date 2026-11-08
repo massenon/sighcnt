@@ -2316,5 +2316,51 @@
     },
   });
 
+  /* ==========================================================================
+   * JOURNAL DES ENVOIS SMS (lecture seule)
+   * --------------------------------------------------------------------------
+   * Une ligne par envoi tenté depuis la passerelle (cfg-sms) : motif, statut, code du refus, fournisseur, numéro MASQUÉ (les quatre derniers
+   * chiffres), identifiant du message chez le fournisseur. JAMAIS le numéro en clair, JAMAIS le texte, JAMAIS un identifiant de compte. Un refus
+   * y est écrit comme refus : seul un message accepté par le fournisseur porte un identifiant. Ce journal ne se modifie pas : la trace d'un envoi
+   * n'est pas une fiche qu'on corrige. Conservation 12 mois puis archivage (RG-14), décision du 07/11/2026.
+   * ======================================================================== */
+  var STATUTS_SMS = { accepte: ['Accepté', 'success'], refuse: ['Refusé', 'danger'], reporte: ['Reporté', 'warning'] };
+  global.SIGH.screen('m13-sms-journal', {
+    title: 'Journal des envois SMS',
+    description: 'Les envois de la passerelle SMS : motif, statut, refus nommé, numéro masqué et identifiant chez le fournisseur.',
+    regle: 'Le journal ne garde <strong>ni le texte ni le numéro en clair</strong> (quatre derniers chiffres seulement). Il se lit sans se modifier : la trace d’un envoi n’est pas une fiche qu’on corrige.',
+    render: function (root) {
+      return K.crud({
+        collection: 'messagesSms', entite: 'envoi', entiteP: 'envois', module: 'M13', readonly: true,
+        defaultSort: 'date', defaultDir: 'desc', pageSize: 15,
+        plageDates: { champ: 'date', aujourdhui: AUJ },
+        columns: [
+          { key: 'date', label: 'Date', nowrap: true, text: function (m) { return C.dateFR(m.date) + ' ' + (m.heure || ''); }, render: function (m) { return C.dateFR(m.date) + ' ' + (m.heure || ''); }, sortValue: function (m) { return String(m.date || '') + ' ' + String(m.heure || ''); } },
+          { key: 'motifLibelle', label: 'Motif' },
+          { key: 'statut', label: 'Statut', text: function (m) { return (STATUTS_SMS[m.statut] || [m.statut])[0]; }, render: function (m) { var x = STATUTS_SMS[m.statut] || [m.statut || '—', 'neutral']; return U.badge(x[0], x[1]); } },
+          { key: 'code', label: 'Refus nommé', render: function (m) { return m.code ? el('span.font-mono.text-xs', { text: m.code }) : '—'; }, text: function (m) { return m.code || ''; } },
+          { key: 'fournisseur', label: 'Fournisseur', text: function (m) { return m.fournisseur === 'vonage' ? 'Vonage' : 'Twilio'; }, render: function (m) { return m.fournisseur === 'vonage' ? 'Vonage' : 'Twilio'; } },
+          { key: 'numeroMasque', label: 'Numéro (masqué)', nowrap: true, render: function (m) { return el('span.font-mono.text-xs', { text: m.numeroMasque || '—' }); } },
+          { key: 'idMessage', label: 'Identifiant du message', render: function (m) { return m.idMessage ? el('span.font-mono.text-xs', { text: m.idMessage }) : '—'; }, text: function (m) { return m.idMessage || ''; } },
+          { key: 'par', label: 'Par' },
+        ],
+        filters: [
+          { name: 'statut', label: 'Statut', options: [{ value: 'accepte', label: 'Accepté' }, { value: 'refuse', label: 'Refusé' }, { value: 'reporte', label: 'Reporté' }] },
+          { name: 'motif', label: 'Motif', options: [{ value: 'test', label: 'Test d’envoi' }, { value: 'alerte_technique', label: 'Alerte technique' }, { value: 'rappel_rdv', label: 'Rappel de rendez-vous' }, { value: 'anniversaire', label: 'Souhait d’anniversaire' }, { value: 'fete', label: 'Souhait de fête' }, { value: 'relance', label: 'Relance' }, { value: 'resultat_disponible', label: 'Résultat disponible' }] },
+          { name: 'fournisseur', label: 'Fournisseur', options: [{ value: 'twilio', label: 'Twilio' }, { value: 'vonage', label: 'Vonage' }] },
+        ],
+        kpis: function (rows) {
+          var n = function (st) { return rows.filter(function (m) { return m.statut === st; }).length; };
+          return [
+            { label: 'Envois journalisés', value: rows.length, icon: 'messages-square', tone: 'navy' },
+            { label: 'Acceptés', value: n('accepte'), icon: 'check-circle-2', tone: 'success' },
+            { label: 'Refusés', value: n('refuse'), icon: 'x-circle', tone: n('refuse') ? 'danger' : 'neutral' },
+            { label: 'Reportés', value: n('reporte'), icon: 'clock', tone: n('reporte') ? 'warning' : 'neutral' },
+          ];
+        },
+        fields: [],
+      })(root);
+    },
+  });
 
 })(window);
