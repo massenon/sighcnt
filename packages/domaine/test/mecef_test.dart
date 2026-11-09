@@ -37,9 +37,23 @@ void main() {
         expect(para, contains('Devise : FCFA'));
         expect(para, contains('${p.mentionMontant} :'));
         expect(para, contains(fac.enLettres));
-        expect(para, contains(fac.codeDgi));
-        expect(para, contains('MECeF NIM : ${fac.nim}'));
-        expect(para, contains('MECeF Compteurs : ${fac.compteurs}'));
+        // Le bloc fiscal n'existe que sur une pièce normalisée ; sinon le bandeau DEMO, jamais un faux code (E2299).
+        final f = (c['facture']! as Map).cast<String, Object?>();
+        final normalisee = f['statutMecef'] == 'valide' && '${f['numeroMecef'] ?? ''}'.isNotEmpty;
+        expect(fac.blocFiscal, normalisee);
+        if (normalisee) {
+          expect(para, contains(fac.codeDgi));
+          expect(para, contains('MECeF NIM : ${fac.nim}'));
+          expect(para, contains('MECeF Compteurs : ${fac.compteurs}'));
+          expect(para.contains('DEMO : pièce non normalisée'), isFalse);
+        } else {
+          expect(fac.bandeau, isNotEmpty);
+          for (final l in fac.bandeau) {
+            expect(para, contains(l));
+          }
+          expect(para.any((x) => x.startsWith('MECeF NIM')), isFalse);
+          expect(para, isNot(contains(fac.codeDgi)));
+        }
         // La mention d'exonération n'existe qu'à taux 0.
         expect(para.contains(p.mentionExoneration), p.tauxTva == 0);
         expect(fac.mentionExoneration != null, p.tauxTva == 0);
@@ -156,5 +170,32 @@ void main() {
     expect(r.statutMecef, 'valide');
     expect(r.codeRetour, 'OK-200');
     expect(r.numeroMecef, startsWith('MECEF'));
+  });
+
+  group('taux d\'AIB choisi à l\'encaissement (E2299)', () {
+    final f = {
+      'numero': 'FN-2099-00001',
+      'montantTTC': 10000,
+      'statutMecef': 'valide',
+      'numeroMecef': 'MECEF1234567',
+      'lignes': [
+        {'designation': 'Consultation', 'quantite': 1, 'prixUnitaire': 10000}
+      ],
+    };
+    test('5 % : l\'AIB et le net suivent le choix, la ligne de taxe le dit', () {
+      final fac = factureNormalisee({...f, 'aibTaux': 5}, const ParamFiscal());
+      expect(fac.netAPayer, 10500);
+      expect(lignes(fac.taxes).last, ['AIB 5 % (AIB2)', money(500, avecDevise: false)]);
+    });
+    test('le taux du régime reste le défaut, aucune mention changée', () {
+      final base = factureNormalisee(f, const ParamFiscal());
+      final egal = factureNormalisee({...f, 'aibTaux': 1}, const ParamFiscal());
+      expect(egal.netAPayer, base.netAPayer);
+      expect(lignes(egal.taxes), lignes(base.taxes));
+    });
+    test('0 % : aucun AIB', () {
+      final fac = factureNormalisee({...f, 'aibTaux': 0}, const ParamFiscal());
+      expect(fac.netAPayer, 10000);
+    });
   });
 }

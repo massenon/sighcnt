@@ -17,6 +17,7 @@ library;
 import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../impression/etat.dart';
+import '../mecef/etats.dart';
 import 'avoir.dart';
 
 /// Un régime de TVA du référentiel `PARAM_FISCAL.regimesTva`.
@@ -150,7 +151,8 @@ class FactureNormalisee {
       required this.codeDgi,
       required this.nim,
       required this.compteurs,
-      required this.mentionExoneration});
+      required this.mentionExoneration,
+      this.bandeau = const []});
   final TableauEtat lignes;
   final TableauEtat taxes;
   final TableauEtat totaux;
@@ -162,11 +164,25 @@ class FactureNormalisee {
 
   /// Présente seulement au régime exonéré.
   final String? mentionExoneration;
+
+  /// Le bandeau DEMO d'une pièce non normalisée (E2299) ; vide sur une pièce normalisée. Le bloc fiscal (code, NIM, compteurs) n'est imprimé que
+  /// quand il est vide : toute vente est normalisée, il n'existe pas de facture simple.
+  final List<String> bandeau;
+
+  /// Vrai quand la pièce porte le bloc fiscal imprimé.
+  bool get blocFiscal => bandeau.isEmpty;
 }
 
 /// La facture de vente normalisée, d'après la facture SoBAPS n° 26FNA00026 : colonnes HT/TTC, TVA, AIB, montant en toutes lettres, bloc de certification.
 FactureNormalisee factureNormalisee(Map<String, Object?> f, ParamFiscal p) {
-  final dec = decomposer(nombreOuZero(f['montantTTC']), p);
+  var dec = decomposer(nombreOuZero(f['montantTTC']), p);
+  // Le taux d'AIB choisi à l'encaissement gouverne la pièce ; sans choix, celui du régime (E2299).
+  final aibChoisi = f['aibTaux'];
+  final surcharge = aibChoisi is num && aibChoisi != p.tauxAib;
+  if (surcharge) {
+    final aib = arrondiJs(dec.ht * aibChoisi / 100);
+    dec = Decomposition(dec.ht, dec.tva, aib, dec.ttc, dec.ttc + aib);
+  }
   final detail = (f['lignes'] as List?) ?? const [];
   final lignes = detail.isNotEmpty
       ? [for (final l in detail) (l as Map).cast<String, Object?>()]
@@ -207,7 +223,10 @@ FactureNormalisee factureNormalisee(Map<String, Object?> f, ParamFiscal p) {
       ColonneEtat(libelle: 'Montant', valeur: (r) => r['v'], droite: true),
     ], lignes: [
       {'k': p.libelleTva, 'v': m(dec.tva)},
-      {'k': '${p.libelleAib} (${p.codeAib})', 'v': m(dec.aib)},
+      {
+        'k': '${surcharge ? 'AIB $aibChoisi %' : p.libelleAib} (${p.codeAib})',
+        'v': m(dec.aib)
+      },
     ]),
     totaux: TableauEtat(colonnes: [
       ColonneEtat(libelle: 'Rubrique', valeur: (r) => r['k']),
@@ -225,6 +244,7 @@ FactureNormalisee factureNormalisee(Map<String, Object?> f, ParamFiscal p) {
         : 'en attente d’attribution',
     compteurs: compteurs(graine),
     mentionExoneration: p.tauxTva == 0 ? p.mentionExoneration : null,
+    bandeau: bandeauDemoMecef(f),
   );
 }
 
@@ -261,18 +281,38 @@ class ReponseDispositif {
       };
 }
 
-/// « Synchroniser maintenant » : transmet UN LOT. Le tirage est graine par la taille du lot (`n * 7 + 13`) : 88 % acceptées, les autres rejetées
+/// « Synchroniser maintenant » : transmet UN LOT. Le tirage est graine par la taille du lot (`n * 7 + 13`) : 88 % acceptées, les autres refusées
 /// avec un code de retour. [jour] : `YYYY-MM-DD`.
-List<ReponseDispositif> synchroniser(int enAttente, String jour) {
+///
+/// Depuis E2299 : chaque facture consomme TROIS tirages dans l'ordre (acceptation, numéro, code), le numéro étant tiré même pour une refusée ; un
+/// numéro DÉJÀ PORTÉ ([numerosPortes], dans l'ordre du lot) n'est jamais réécrit, et un tirage déjà pris ([pris], augmenté au fil du lot) est
+/// écarté en avançant d'un numéro : le numéro d'une pièce ne se reprend jamais.
+List<ReponseDispositif> synchroniser(int enAttente, String jour,
+    {List<String?>? numerosPortes, Set<String> pris = const {}}) {
   final rnd = tirage(enAttente * 7 + 13);
+  final dejaPris = {...pris};
   return [
     for (var i = 0; i < enAttente; i++)
       () {
         final accepte = rnd() > 0.12;
-        final numero = accepte ? 'MECEF${_entre(rnd, 1000000, 9999999)}' : null;
+        final tireN = _entre(rnd, 1000000, 9999999);
         final code = accepte
             ? 'OK-200'
             : codesRejet[(rnd() * codesRejet.length).floor() % codesRejet.length].$1;
+        final porte = numerosPortes != null && i < numerosPortes.length
+            ? numerosPortes[i]
+            : null;
+        String? numero;
+        if (porte != null && porte.isNotEmpty) {
+          numero = porte;
+        } else if (accepte) {
+          var n = tireN;
+          while (dejaPris.contains('MECEF$n')) {
+            n++;
+          }
+          numero = 'MECEF$n';
+          dejaPris.add(numero);
+        }
         return ReponseDispositif(
             accepte ? 'valide' : 'rejete', numero, code, jour);
       }()

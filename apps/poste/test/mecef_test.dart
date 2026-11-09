@@ -4,7 +4,9 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
+import 'package:sigh_poste/donnees/normalisation_mecef.dart';
 import 'package:sigh_poste/impression/apercu.dart';
+import 'package:sigh_poste/impression/piece.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
 import 'package:sigh_poste/modules/mecef/commun.dart' show pieceFactureNormalisee, paramFiscal;
@@ -71,23 +73,68 @@ void main() {
     expect(find.text('Taux de validation'), findsOneWidget);
   });
 
-  cas('factures normalisées : le registre et l\'impression portent le code MECeF et le net à payer', (t) async {
+  cas('factures normalisées : une pièce NORMALISÉE imprime le bloc fiscal et le net à payer', (t) async {
     final m = magasin();
+    // La pièce normalisée la plus récente passe en tête du registre (tri par date décroissante).
+    final fac = norm(m, 'valide').firstWhere((f) => '${f['numeroMecef'] ?? ''}'.isNotEmpty);
+    m.collection('factures').mettreAJour(fac['id'], {'date': '2099-01-01'});
     await ouvrir(t, m, 'mecef-factures');
     final tous = m.collection('factures').actives.where((f) => f['proforma'] != true).length;
     expect(find.text('Factures normalisées'), findsWidgets);
+    expect(find.text('Normalisées'), findsWidgets);
     expect(find.text(nombre(tous)), findsWidgets);
     await toucher(t, find.byTooltip('Imprimer la facture normalisée').first);
     expect(find.text('Facture de vente — normalisée'), findsWidgets);
     expect(find.textContaining('Code MECeF / DGI'), findsWidgets);
     expect(find.textContaining('NET À PAYER'), findsWidgets);
+    expect(find.textContaining('DEMO : pièce non normalisée'), findsNothing);
+  });
+
+  cas('facture non normalisée : le bandeau DEMO, jamais un faux code (E2299)', (t) async {
+    final m = magasin();
+    final fac = norm(m, 'en_attente').first;
+    m.collection('factures').mettreAJour(fac['id'], {'date': '2099-01-01'});
+    await ouvrir(t, m, 'mecef-factures');
+    await toucher(t, find.byTooltip('Imprimer la facture normalisée').first);
+    expect(find.text('Facture de vente — normalisée'), findsWidgets);
+    expect(find.textContaining('DEMO : pièce non normalisée'), findsWidgets);
+    expect(find.textContaining('Code MECeF / DGI'), findsNothing);
+    expect(find.textContaining('MECeF NIM'), findsNothing);
+  });
+
+  test('la pièce imprimée : bloc fiscal seulement si normalisée, nom de l\'acheteur et simulation dits', () {
+    final m = magasin();
+    final p = paramFiscal(m);
+    final base = norm(m, 'valide').firstWhere((f) => '${f['numeroMecef'] ?? ''}'.isNotEmpty);
+    PieceA4 piece(Fiche f) => pieceFactureNormalisee(f, p,
+        utilisateur: 'T', edite: aujourdhui, reference: 'R');
+    List<String> textes(PieceA4 pc) => [
+          for (final b in pc.blocs)
+            if (b is BlocTexte) b.texte
+        ];
+    final ok = piece({...base, 'acheteurNom': 'Clinique X', 'mecefSimule': true});
+    expect(textes(ok), contains('Code MECeF / DGI'));
+    expect(textes(ok).any((x) => x.contains('n’est pas un numéro fiscal')), isTrue);
+    expect(ok.cartouche.any((c) => c.$1 == 'Nom de l’acheteur' && c.$2 == 'Clinique X'), isTrue);
+    for (final statut in ['en_attente', 'a_verifier', 'rejete', 'expiree']) {
+      final nok = piece({...base, 'statutMecef': statut});
+      expect(textes(nok), isNot(contains('Code MECeF / DGI')), reason: statut);
+      expect(textes(nok), contains('DEMO : pièce non normalisée'), reason: statut);
+    }
+    // Un état « normalisée » sans numéro n'imprime pas de bloc fiscal.
+    final sansNumero = piece({...base}..remove('numeroMecef'));
+    expect(textes(sansNumero), isNot(contains('Code MECeF / DGI')));
   });
 
   cas('synchroniser : le lot en attente est transmis selon le tirage de la maquette, et l\'annulation le restitue',
       (t) async {
     final m = magasin();
     final att = norm(m, 'en_attente');
-    final attendu = synchroniser(att.length, '2026-10-30');
+    final attendu = synchroniser(att.length, '2026-10-30',
+        numerosPortes: [
+          for (final f in att) f['numeroMecef'] == null ? null : '${f['numeroMecef']}'
+        ],
+        pris: numerosPris(m));
     await ouvrir(t, m, 'mecef-transmission');
     await toucher(t, find.text('Synchroniser maintenant'));
     await toucher(t, find.widgetWithText(BoutonSigh, 'Transmettre').last);
@@ -104,12 +151,12 @@ void main() {
     expect(norm(m, 'en_attente').length, att.length);
   });
 
-  cas('rejet : « Corriger et réémettre » valide la facture et le journal la compte en réémission', (t) async {
+  cas('rejet : « Corriger et retransmettre » normalise la facture et le journal la compte en réémission', (t) async {
     final m = magasin();
     final avant = norm(m, 'rejete').length;
     await ouvrir(t, m, 'mecef-transmission');
     await toucher(t, find.text('Rejets'));
-    await toucher(t, find.widgetWithText(BoutonSigh, 'Corriger et réémettre').first);
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Corriger et retransmettre').first);
     expect(norm(m, 'rejete').length, avant - 1);
     final reemises = m.collection('factures').actives.where((f) => f['reemise'] == true);
     expect(reemises.length, 1);
@@ -122,7 +169,7 @@ void main() {
     expect(find.text('Transmission & réponses'), findsWidgets);
     expect(find.text('Synchroniser maintenant'), findsNothing);
     await toucher(t, find.text('Rejets'));
-    expect(find.widgetWithText(BoutonSigh, 'Corriger et réémettre'), findsNothing);
+    expect(find.widgetWithText(BoutonSigh, 'Corriger et retransmettre'), findsNothing);
   });
 
   cas('avoir MECeF : supérieur à la facture → refusé nommément, rien n\'est écrit', (t) async {

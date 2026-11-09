@@ -8,6 +8,7 @@ import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../donnees/normalisation_mecef.dart';
 import '../m8/commun.dart' show ecrireAvoirEmis, idAvoirSuivant;
 import 'commun.dart';
 
@@ -105,7 +106,7 @@ class EcranMecefTableauDeBord extends StatelessWidget with EcranMaquette {
                     icone: LucideIcons.clock,
                     ton: TonSigh.attention),
                 KpiSigh(
-                    libelle: 'Factures rejetées',
+                    libelle: 'Factures refusées',
                     valeur: nombre(nb('rejete')),
                     icone: LucideIcons.fileX,
                     ton: TonSigh.danger),
@@ -250,7 +251,7 @@ class EcranMecefFactures extends StatelessWidget with EcranMaquette {
                     icone: LucideIcons.landmark,
                     ton: TonSigh.attention),
                 KpiSigh(
-                    libelle: 'Validées par l’administration',
+                    libelle: 'Normalisées',
                     valeur: nombre(
                         rows.where((f) => f['statutMecef'] == 'valide').length),
                     icone: LucideIcons.fileCheck2,
@@ -264,13 +265,12 @@ class EcranMecefFactures extends StatelessWidget with EcranMaquette {
                 sensInitial: 'desc',
                 nomExport: 'factures-normalisees',
                 lignes: rows,
-                filtres: const [
-                  FiltreTableau(nom: 'statutMecef', libelle: 'Statut fiscal', options: [
-                    OptionChamp('valide', 'Validée'),
-                    OptionChamp('en_attente', 'En attente'),
-                    OptionChamp('rejete', 'Rejetée'),
-                  ]),
-                  FiltreTableau(nom: 'type', libelle: 'Nature', options: [
+                filtres: [
+                  FiltreTableau(
+                      nom: 'statutMecef',
+                      libelle: 'Statut fiscal',
+                      options: optionsStatutMecef),
+                  const FiltreTableau(nom: 'type', libelle: 'Nature', options: [
                     OptionChamp('Consultation'),
                     OptionChamp('Hospitalisation'),
                     OptionChamp('Laboratoire'),
@@ -373,10 +373,24 @@ class EcranMecefFactures extends StatelessWidget with EcranMaquette {
           ]),
           if (f['statutMecef'] == 'rejete') ...[
             const SizedBox(height: 16),
-            const NoteSigh(
-                'Facture rejetée par le dispositif fiscal. Une correction puis une réémission sont nécessaires avant archivage définitif.',
+            NoteSigh(
+                'Facture refusée${f['codeRetour'] != null ? ' (${f['codeRetour']})' : ''}${f['motifRefusMecef'] != null ? ' : ${f['motifRefusMecef']}' : ''}. Une correction puis une retransmission sont nécessaires avant archivage définitif.',
                 ton: TonSigh.danger,
                 icone: LucideIcons.fileX),
+          ],
+          if (f['statutMecef'] == 'a_verifier') ...[
+            const SizedBox(height: 16),
+            const NoteSigh(
+                'Réponse perdue : la vente a peut-être été émise. « Reprendre sans doubler » lit l’appareil et ne rejoue jamais l’émission.',
+                ton: TonSigh.attention,
+                icone: LucideIcons.circleHelp),
+          ],
+          if (f['statutMecef'] == 'expiree') ...[
+            const SizedBox(height: 16),
+            const NoteSigh(
+                'Facture expirée avant confirmation : la vente se renormalise.',
+                ton: TonSigh.danger,
+                icone: LucideIcons.clock),
           ],
         ]),
         pied: (_) => [
@@ -429,8 +443,13 @@ class _EtatTransmission extends State<EcranMecefTransmission> {
             'Les factures en attente seront transmises au dispositif fiscal. Un identifiant MECeF sera attribué à chaque facture acceptée.',
         libelleOk: 'Transmettre');
     if (!ok || !mounted) return;
-    final reponses = synchroniser(att.length, iso(c.aujourdhui));
+    // Le tirage de la maquette (graine par la taille du lot), E2299 : un numéro DÉJÀ PORTÉ n'est jamais réécrit, un tirage déjà pris est écarté.
     final col = mag.collection('factures');
+    final reponses = synchroniser(att.length, iso(c.aujourdhui),
+        numerosPortes: [
+          for (final f in att) f['numeroMecef'] == null ? null : '${f['numeroMecef']}'
+        ],
+        pris: numerosPris(mag));
     final annulations = <VoidCallback>[];
     var acceptees = 0, refusees = 0;
     for (var i = 0; i < att.length; i++) {
@@ -449,24 +468,49 @@ class _EtatTransmission extends State<EcranMecefTransmission> {
     });
   }
 
-  void _transmettre(ContexteEcran c, Fiche f, {required bool reemission}) {
-    final r = transmettreUne(
-        c.aujourdhui.millisecondsSinceEpoch % (reemission ? 88888 : 99999),
-        iso(c.aujourdhui));
-    final undo = c.magasin.collection('factures').mettreAJour(f['id'], {
-      ...r.patch,
-      if (reemission) 'reemise': true,
-    });
+  /// « Normaliser » et « Corriger et retransmettre » : la NORMALISATION de la vente (E2299). Refus nommés du domaine (déjà normalisée, droit de
+  /// retransmettre, acheteur, montants) ; aucun appareil n'est branché, le numéro est celui de l'appareil de démonstration, non fiscal.
+  void _normaliser(ContexteEcran c, Fiche f, {required bool reemission}) {
+    final mag = c.magasin;
+    final refus = refusRetransmission(f, c.role);
+    if (refus != null) {
+      ToastsSigh.afficher(context, '${refus.code} : ${refus.motif}',
+          type: TypeToast.erreur,
+          detail: refus.geste,
+          duree: const Duration(seconds: 9));
+      return;
+    }
+    final col = mag.collection('factures');
+    final annulations = <VoidCallback>[];
+    if (f['statutMecef'] != 'en_attente') {
+      annulations.add(col.mettreAJour(
+          f['id'], {'retransmissions': (n(f['retransmissions']).toInt()) + 1}));
+    }
+    final r = normaliserVente(mag, '${f['id']}', maintenant: c.aujourdhui);
+    if (!r.ok) {
+      for (final u in annulations.reversed) {
+        u();
+      }
+      // Un refus des montants a écrit la pièce « refusée » : la retransmission compte, le refus se dit.
+      ToastsSigh.afficher(context, '${r.code} : ${r.motif}',
+          type: TypeToast.erreur,
+          detail: r.geste,
+          duree: const Duration(seconds: 9));
+      setState(() {});
+      return;
+    }
+    annulations.add(r.annuler);
+    if (reemission) annulations.add(col.mettreAJour(f['id'], {'reemise': true}));
     setState(() {});
     ToastsSigh.afficher(
         context,
-        reemission
-            ? 'Facture corrigée et réémise avec succès.'
-            : 'Facture transmise et validée.',
+        reemission ? 'Facture retransmise et normalisée.' : 'Facture normalisée.',
         type: TypeToast.succes,
-        detail: reemission ? null : r.numeroMecef,
+        detail: r.numero,
         annuler: () {
-          undo();
+          for (final u in annulations.reversed) {
+            u();
+          }
           setState(() {});
         });
   }
@@ -478,6 +522,7 @@ class _EtatTransmission extends State<EcranMecefTransmission> {
     final p = paramFiscal(mag);
     final att = _par(mag, 'en_attente'),
         rej = _par(mag, 'rejete'),
+        ver = [..._par(mag, 'a_verifier'), ..._par(mag, 'expiree')],
         val = _par(mag, 'valide');
     final total = normalisees(mag).length;
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -488,12 +533,17 @@ class _EtatTransmission extends State<EcranMecefTransmission> {
             icone: LucideIcons.clock,
             ton: TonSigh.attention),
         KpiSigh(
+            libelle: 'À vérifier',
+            valeur: nombre(_par(mag, 'a_verifier').length),
+            icone: LucideIcons.circleHelp,
+            ton: TonSigh.attention),
+        KpiSigh(
             libelle: 'Transmissions réussies',
             valeur: nombre(val.length),
             icone: LucideIcons.circleCheck,
             ton: TonSigh.succes),
         KpiSigh(
-            libelle: 'Rejets à corriger',
+            libelle: 'Refusées à corriger',
             valeur: nombre(rej.length),
             icone: LucideIcons.fileX,
             ton: TonSigh.danger),
@@ -536,10 +586,10 @@ class _EtatTransmission extends State<EcranMecefTransmission> {
                   actionsLigne: (_, f) => [
                     if (c.droit.editer)
                       BoutonSigh(
-                          libelle: 'Transmettre',
+                          libelle: 'Normaliser',
                           icone: LucideIcons.send,
                           taille: TailleBouton.sm,
-                          onPressed: () => _transmettre(c, f, reemission: false))
+                          onPressed: () => _normaliser(c, f, reemission: false))
                   ],
                 )),
         OngletDef(
@@ -561,8 +611,8 @@ class _EtatTransmission extends State<EcranMecefTransmission> {
                         taillePage: 12,
                         triInitial: 'date',
                         sensInitial: 'desc',
-                        nomExport: 'mecef-rejets',
-                        messageVide: 'Aucun rejet à traiter.',
+                        nomExport: 'mecef-refusees',
+                        messageVide: 'Aucune facture refusée à traiter.',
                         colonnes: [
                           colFacture(),
                           colDate(),
@@ -596,15 +646,54 @@ class _EtatTransmission extends State<EcranMecefTransmission> {
                         actionsLigne: (_, f) => [
                           if (c.droit.editer)
                             BoutonSigh(
-                                libelle: 'Corriger et réémettre',
+                                libelle: 'Corriger et retransmettre',
                                 icone: LucideIcons.repeat,
                                 taille: TailleBouton.sm,
                                 variante: VarianteBouton.secondaire,
                                 onPressed: () =>
-                                    _transmettre(c, f, reemission: true))
+                                    _normaliser(c, f, reemission: true))
                         ],
                       ),
                     ])),
+        OngletDef(
+            id: 'averifier',
+            libelle: 'À vérifier',
+            compte: ver.length,
+            construire: (ctx) => TableauSigh(
+                  lignes: ver,
+                  taillePage: 12,
+                  triInitial: 'date',
+                  sensInitial: 'desc',
+                  nomExport: 'mecef-a-verifier',
+                  messageVide: 'Aucune vente à vérifier ni expirée.',
+                  colonnes: [
+                    colFacture(),
+                    colDate(),
+                    const ColonneTableau(cle: 'patient', libelle: 'Client'),
+                    colMontantTtc(),
+                    colStatut(),
+                    ColonneTableau(
+                        cle: 'codeRetour',
+                        libelle: 'Motif',
+                        texte: (f) =>
+                            '${f['codeRetour'] ?? ''}${f['motifRefusMecef'] != null ? ' : ${f['motifRefusMecef']}' : ''}',
+                        rendu: (_, f) => Text(
+                            '${f['codeRetour'] ?? ''}${f['motifRefusMecef'] != null ? ' : ${f['motifRefusMecef']}' : ''}',
+                            style: const TextStyle(
+                                fontSize: 12, color: JetonsShell.slate600))),
+                  ],
+                  // Une vente EXPIRÉE se renormalise ; une vente À VÉRIFIER se reprend sans doubler : la reprise lit l'appareil, et ce poste n'a
+                  // aucun appareil branché (journal des émissions de la maquette non porté). La commande est ABSENTE, pas grisée.
+                  actionsLigne: (_, f) => [
+                    if (c.droit.editer && f['statutMecef'] == 'expiree')
+                      BoutonSigh(
+                          libelle: 'Renormaliser',
+                          icone: LucideIcons.repeat,
+                          taille: TailleBouton.sm,
+                          variante: VarianteBouton.secondaire,
+                          onPressed: () => _normaliser(c, f, reemission: false))
+                  ],
+                )),
         OngletDef(
             id: 'validees',
             libelle: 'Transmissions réussies',
@@ -1007,12 +1096,11 @@ class EcranMecefJournal extends StatelessWidget with EcranMaquette {
                 taillePage: 20,
                 nomExport: 'journal-mecef',
                 lignes: rows,
-                filtres: const [
-                  FiltreTableau(nom: 'statut', libelle: 'Statut', options: [
-                    OptionChamp('valide', 'Réussie'),
-                    OptionChamp('rejete', 'Échouée'),
-                    OptionChamp('en_attente', 'En attente'),
-                  ]),
+                filtres: [
+                  FiltreTableau(
+                      nom: 'statut',
+                      libelle: 'Statut',
+                      options: optionsStatutMecef),
                   FiltreTableau(nom: 'operation', libelle: 'Opération', options: [
                     OptionChamp('Transmission'),
                     OptionChamp('Réémission'),

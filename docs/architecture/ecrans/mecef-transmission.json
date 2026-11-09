@@ -21,12 +21,14 @@
  "onglets": [
   "En attente",
   "Rejets",
+  "À vérifier",
   "Transmissions réussies"
  ],
  "kpis": [
   "En attente d’envoi",
+  "À vérifier",
   "Transmissions réussies",
-  "Rejets à corriger",
+  "Refusées à corriger",
   "Taux de réussite"
  ],
  "cartes": [],
@@ -46,10 +48,11 @@
   "Journal des transactions",
   "En attente72",
   "Rejets15",
+  "À vérifier0",
   "Transmissions réussies310",
   "Colonnes",
   "Exporter",
-  "Transmettre",
+  "Normaliser",
   "1",
   "2",
   "3",
@@ -58,5 +61,5 @@
  ],
  "champs": [],
  "nbTableaux": 1,
- "nbKpis": 4
+ "nbKpis": 5
 }

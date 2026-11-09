@@ -14,6 +14,7 @@ library;
 
 import '../format/format_fr.dart';
 import '../format/js.dart';
+import '../mecef/montants.dart';
 
 const compteCaisse = '571000';
 const compteClientsAssurance = '411110';
@@ -27,7 +28,8 @@ class ResultatEncaissement {
       required this.montantRegle,
       required this.restantDu,
       required this.ecritures,
-      this.refus});
+      this.refus,
+      this.refusCode});
 
   /// La facture APRÈS versement (copie ; l'entrée n'est jamais modifiée).
   final Map<String, Object?> facture;
@@ -41,6 +43,9 @@ class ResultatEncaissement {
 
   /// Versement REFUSÉ (E2) : le motif nomme le défaut, rien n'est écrit ; `facture` est inchangée.
   final String? refus;
+
+  /// Le code nommé du refus de la fenêtre « Facture normalisée » (`IFU_INVALIDE`, `NOM_ACHETEUR_ABSENT`, `AIB_TAUX_INVALIDE`), sinon null.
+  final String? refusCode;
 }
 
 bool _vrai(Object? v) => v != null && v != '' && v != 0 && v != false;
@@ -57,6 +62,8 @@ ResultatEncaissement encaisser(
   required String maintenant,
   String utilisateur = '',
   List<Map<String, Object?>> ecritures = const [],
+  Map<String, Object?>? acheteur,
+  int aibParDefaut = aibTauxParDefaut,
 }) {
   if (facture['statutPaiement'] == 'soldee') {
     return ResultatEncaissement(
@@ -66,6 +73,30 @@ ResultatEncaissement encaisser(
         montantRegle: null,
         restantDu: null,
         ecritures: const []);
+  }
+  // La fenêtre « Facture normalisée » (IFU de l'acheteur, nom, AIB) se contrôle AVANT toute écriture : un refus nommé n'écrit rien (E2299).
+  AcheteurMecef? acheteurSaisi;
+  if (acheteur != null) {
+    final v = validerAcheteurMecef(
+        ifu: acheteur['ifu'],
+        nom: acheteur['nom'],
+        aibTaux: acheteur['aibTaux'],
+        aibParDefaut: aibParDefaut);
+    if (v.refus != null) {
+      final lignesDues = ((facture['lignes'] ?? const []) as List)
+          .map((l) => (l as Map).cast<String, Object?>())
+          .where((l) => l['statutPaiement'] != 'paye');
+      return ResultatEncaissement(
+          facture: facture,
+          deja: false,
+          lignesReglees: const [],
+          montantRegle: 0,
+          restantDu: lignesDues.fold<double>(0, (n, l) => n + _n(l['partPatient'])),
+          ecritures: const [],
+          refus: '${v.refus!.code} : ${v.refus!.motif} ${v.refus!.geste}',
+          refusCode: v.refus!.code);
+    }
+    acheteurSaisi = v.acheteur;
   }
   final toutes = ((facture['lignes'] ?? const []) as List)
       .map((l) => (l as Map).cast<String, Object?>())
@@ -136,6 +167,17 @@ ResultatEncaissement encaisser(
           ? duTotal - totalPaye
           : 0.0;
   final solde = restantDu <= 0;
+  // La base MECeF naît de la fonction unique des montants : seule la part PATIENT des lignes réglées par ce versement s'ajoute (ni part assureur,
+  // ni remise). Une ligne que la fonction refuse (prix décimal d'une pièce ancienne) ne bloque pas l'encaissement : la base reste le total réglé,
+  // et c'est la NORMALISATION qui refuse en nommant la ligne.
+  double? baseVersement;
+  if (reglees.isNotEmpty) {
+    final mv = mecefMontants(lignes: [for (final l in reglees) ligneVersMecef(l)]);
+    if (mv.ok) baseVersement = mv.montants!.base.toDouble();
+  }
+  final baseMecef = baseVersement != null
+      ? _n(facture['montantPaye']) + baseVersement
+      : totalPaye;
   final modeRetenu = _vrai(mode) ? mode! : 'especes';
 
   final apres = <String, Object?>{
@@ -146,9 +188,16 @@ ResultatEncaissement encaisser(
     'modePaiement': modeRetenu,
     'statutPaiement':
         solde ? 'soldee' : (totalPaye > 0 ? 'partielle' : 'impayee'),
-    'statutMecef': solde ? 'valide' : 'en_attente',
+    // TOUTE VENTE EST NORMALISÉE (Direction, 07/11/2026) : un encaissement ne dit jamais « normalisée » de lui-même. La pièce attend sa
+    // normalisation (geste du registre fiscal, appareil de la caisse) : l'état « normalisée » n'existe qu'avec un numéro rendu par l'appareil.
+    'statutMecef': 'en_attente',
     // Le point fiscal : seule la part réglée par le patient est normalisée (ni la part assureur, ni les remises).
-    'baseMecef': totalPaye,
+    'baseMecef': baseMecef,
+    if (acheteurSaisi != null) ...{
+      'ifuClient': acheteurSaisi.ifu,
+      'acheteurNom': acheteurSaisi.nom,
+      'aibTaux': acheteurSaisi.aibTaux,
+    },
     'dernierReglement': {
       'date': maintenant,
       'montant': paye,

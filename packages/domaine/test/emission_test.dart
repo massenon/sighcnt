@@ -10,12 +10,21 @@ List<Map<String, Object?>> liste(Object? v) => ((v ?? const []) as List)
     .map((x) => (x as Map).cast<String, Object?>())
     .toList();
 
+const apresNormalisation = {
+  '_modifieLe', '_modifiePar', 'acheteurNom', 'aibMontant', 'aibTaux', 'codeRetour', 'dateTransmission', 'ifuClient', 'mecefSimule',
+  'modeMecef', 'motifRefusMecef', 'normalisePar', 'statutMecef', 'numeroMecef',
+};
+
 /// Le magasin ne garde pas les champs nuls (`sansNuls`) : absent et nul se valent.
 void memes(Object? obtenu, Object? attendu, String chemin) {
   if (attendu is Map) {
     final o = (obtenu as Map?) ?? const {};
     for (final k in {...attendu.keys, ...o.keys}) {
       if (const {'id', 'statut', '_creePar', '_creeLe'}.contains(k)) continue;
+      // E2299 : la maquette relit la pièce APRÈS sa normalisation par le faux boîtier ; l'émission du domaine s'arrête avant (la pièce attend sa
+      // normalisation). Ces champs sont ceux que la normalisation écrit : ils ne se rejouent pas ici (voir mecef_normalisation_test.dart).
+      if (apresNormalisation.contains(k)) continue;
+      if (chemin.contains('.lignes[') && const {'statutPaiement', 'montantRegle', 'payeLe', 'payePar'}.contains(k)) continue;
       memes(o[k], attendu[k], '$chemin.$k');
     }
   } else if (attendu is List) {
@@ -104,6 +113,11 @@ void main() {
       final obtenues = [...r.pieces]
         ..sort((a, b) => '${a['numero']}'.compareTo('${b['numero']}'));
       memes(obtenues, attendues, 'pieces');
+      // Le numéro fiscal ne naît jamais à l'émission, et une pièce n'y est jamais « normalisée » d'office (E2299).
+      for (final p in obtenues) {
+        expect(p['numeroMecef'], isNull);
+        expect(p['statutMecef'], 'en_attente');
+      }
 
       // 3. les sorties de stock.
       final attSorties = liste(c['sorties']);

@@ -23,11 +23,19 @@ List<Fiche> normalisees(Magasin mag) => [
         if (f['proforma'] != true) f
     ];
 
+/// Les CINQ ÉTATS d'une pièce du registre fiscal (E2299) : ceux du domaine. Toute vente est normalisée, il n'y a pas de « facture simple ». Les
+/// identifiants STOCKÉS `valide` et `rejete` restent ceux des jeux du poste.
 const statutsMecef = {
-  'valide': ('Validée', TonSigh.succes),
+  'valide': ('Normalisée', TonSigh.succes),
   'en_attente': ('En attente de transmission', TonSigh.attention),
-  'rejete': ('Rejetée', TonSigh.danger),
+  'a_verifier': ('À vérifier', TonSigh.attention),
+  'rejete': ('Refusée', TonSigh.danger),
+  'expiree': ('Expirée', TonSigh.danger),
 };
+
+/// Les options de filtre du statut fiscal : les cinq états, par identifiant stocké.
+List<OptionChamp> get optionsStatutMecef =>
+    [for (final e in etatsMecef) OptionChamp(e.stocke, e.libelle)];
 
 Widget badgeStatut(Object? s) {
   final x = statutsMecef['$s'];
@@ -111,6 +119,7 @@ PieceA4 pieceFactureNormalisee(Fiche f, ParamFiscal p,
       // E14 (corrigé le 31/10/2026) : l'« IFU client » est celui du CLIENT, vide s'il est inconnu, jamais celui de la clinique.
       ('IFU client', ifuClientDe(f, patient)),
       ('Nature', '${f['type'] ?? ''}'),
+      if (f['acheteurNom'] != null) ('Nom de l’acheteur', '${f['acheteurNom']}'),
     ],
     blocs: [
       BlocTableau(fn.lignes),
@@ -121,15 +130,23 @@ PieceA4 pieceFactureNormalisee(Fiche f, ParamFiscal p,
       const BlocTexte('Devise : FCFA'),
       BlocTexte('${p.mentionMontant} :', gras: true),
       BlocTexte(fn.enLettres.toUpperCase(), gras: true),
-      // Le QR est un EMPLACEMENT : la certification réelle vient du boîtier physique (protocole attendu de la Direction).
-      const BlocTexte('QR CODE MECeF — emplacement réservé (simulation)',
-          italique: true),
-      const BlocTexte('Code MECeF / DGI', gras: true),
-      BlocTexte(fn.codeDgi, gras: true),
-      BlocTexte('MECeF NIM : ${fn.nim}'),
-      BlocTexte('MECeF Compteurs : ${fn.compteurs}'),
-      BlocTexte(
-          'IFU émetteur : ${identite.ifu} — RCCM : ${identite.rccm}'),
+      // Le bloc fiscal (QR, NIM, code, compteurs) ne s'imprime QUE sur une pièce réellement normalisée ; sinon le bandeau DEMO, jamais un faux code (E2299).
+      if (fn.blocFiscal) ...[
+        // Le QR est un EMPLACEMENT : la certification réelle vient du boîtier physique (protocole attendu de la Direction).
+        const BlocTexte('QR CODE MECeF — emplacement réservé (simulation)',
+            italique: true),
+        const BlocTexte('Code MECeF / DGI', gras: true),
+        BlocTexte(fn.codeDgi, gras: true),
+        BlocTexte('MECeF NIM : ${fn.nim}'),
+        BlocTexte('MECeF Compteurs : ${fn.compteurs}'),
+        BlocTexte('IFU émetteur : ${identite.ifu} — RCCM : ${identite.rccm}'),
+        if (f['mecefSimule'] == true)
+          const BlocTexte(
+              'Simulation de la maquette : ce numéro n’est pas un numéro fiscal.',
+              gras: true),
+      ] else ...[
+        for (final l in fn.bandeau) BlocTexte(l, gras: l == fn.bandeau.first),
+      ],
       const BlocTexte(
           'Facture normalisée émise conformément au dispositif de facturation électronique en vigueur en République du Bénin. Toute facture non revêtue du code MECeF/DGI et du code à barres de vérification est réputée non conforme.',
           italique: true),

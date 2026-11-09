@@ -97,6 +97,43 @@ void main() {
   });
 
   testWidgets(
+      'encaisser : la fenêtre « Facture normalisée » refuse un IFU invalide en le nommant AVANT toute écriture, et range un acheteur valide dans la pièce (E2299)',
+      (t) async {
+    final m = magasin();
+    final f = aRegler(m);
+    final ecrAvant = m.collection('ecritures').actives.length;
+    await ouvrir(t, m, 'm8-paiements');
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Encaisser').first);
+    expect(find.text('FACTURE NORMALISÉE'), findsOneWidget);
+    Future<void> saisir(String champ, String valeur) async {
+      final c = find.descendant(
+          of: find.byKey(Key('kit:champ:$champ')),
+          matching: find.byType(TextField));
+      await t.ensureVisible(c);
+      await t.enterText(c, valeur);
+      await t.pump();
+    }
+
+    await saisir('acheteurIfu', '12');
+    await saisir('acheteurNom', 'Clinique X');
+    await toucher(t, find.text('Valider l’encaissement'));
+    expect(find.textContaining('IFU_INVALIDE'), findsWidgets);
+    expect(m.collection('ecritures').actives.length, ecrAvant);
+    expect(m.collection('factures').parId(f['id'])!['reliquat'], f['reliquat'],
+        reason: 'rien n’est écrit');
+    await saisir('acheteurIfu', '3201642748214');
+    await toucher(t, find.text('Valider l’encaissement'));
+    final apres = m.collection('factures').actives
+        .firstWhere((x) => x['ifuClient'] == '3201642748214');
+    expect(apres['acheteurNom'], 'Clinique X');
+    expect(apres['aibTaux'], 1);
+    expect(apres['statutPaiement'], 'soldee');
+    expect(apres['statutMecef'], 'valide');
+    expect(RegExp(r'^MECEF\d{7}$').hasMatch('${apres['numeroMecef']}'), isTrue);
+    await t.pump(const Duration(seconds: 15));
+  });
+
+  testWidgets(
       'encaisser le reste solde la facture PAR LE MOTEUR : écriture posée (571, 411 de l’assureur, 706), reçu ouvert, aucune annulation offerte (E2260)',
       (t) async {
     final m = magasin();

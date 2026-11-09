@@ -292,11 +292,16 @@ ResultatEmission emettreFacture({
     dejaRegle += reglePiece;
 
     final suffixe = volet == 'couvert' ? '-A' : (volet == 'non_couvert' ? '-B' : '');
-    final normalisee = !(proforma || patPiece == 0);
+    // TOUTE VENTE SOLDÉE EST NORMALISÉE (E2299) ; une pièce à la charge de l'assureur seul (part patient nulle) n'a rien à normaliser. Le numéro
+    // fiscal ne naît JAMAIS à l'émission : il vient de la normalisation (appareil), l'émission laisse la pièce `en_attente`.
+    final statutPiece = proforma
+        ? 'impayee'
+        : (reglePiece >= patPiece ? 'soldee' : (reglePiece > 0 ? 'partielle' : 'impayee'));
+    final anormaliser = !proforma && patPiece > 0 && statutPiece == 'soldee';
     pieces.add({
       'numero':
           '${prefixeSerieFacture(proforma: proforma, dateFacture: dateFacture)}${(rangDebut + 1 + rang).toString().padLeft(5, '0')}$suffixe',
-      'mecef': normalisee,
+      'mecef': anormaliser,
       'baseMecef': proforma ? 0.0 : reglePiece,
       'patientId': patient['id'],
       'patient': '${patient['nom']} ${patient['prenom']}',
@@ -326,7 +331,7 @@ ResultatEmission emettreFacture({
       'statutPaiement': proforma
           ? 'impayee'
           : (reglePiece >= patPiece ? 'soldee' : (reglePiece > 0 ? 'partielle' : 'impayee')),
-      'statutMecef': normalisee ? 'valide' : 'en_attente',
+      'statutMecef': 'en_attente',
       'proforma': proforma,
     });
   }

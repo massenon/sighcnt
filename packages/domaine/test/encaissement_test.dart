@@ -84,9 +84,14 @@ void main() {
               (fa[k] as num?)?.toDouble() ?? 0, (attendu[k] as num).toDouble(),
               reason: '$raison : $k');
         }
-        for (final k in ['modePaiement', 'statutPaiement', 'statutMecef']) {
+        for (final k in ['modePaiement', 'statutPaiement']) {
           expect(fa[k] ?? attendu[k], attendu[k], reason: '$raison : $k');
         }
+        // E2299 : la maquette normalise la vente soldée sur-le-champ avec son faux boîtier (statut `valide`, numéro simulé). Le poste n'a pas de
+        // boîtier branché et n'invente pas de numéro : l'encaissement laisse la pièce `en_attente` de sa normalisation, jamais « normalisée » sans numéro.
+        expect(fa['statutMecef'] ?? 'en_attente', 'en_attente',
+            reason: '$raison : statutMecef');
+        expect(attendu['statutMecef'], anyOf('valide', 'en_attente'));
         if (!r.deja) {
           expect((fa['baseMecef'] as num).toDouble(),
               (attendu['baseMecef'] as num).toDouble(),
@@ -244,5 +249,74 @@ void testsCorrections() {
         ecritures: journal);
     expect(r3.ecritures.first['numero'], 'CAI-2027-00003',
         reason: 'millésime de la date, plus 2026 en dur');
+  });
+
+  group('fenêtre « Facture normalisée » à l\'encaissement (E2299)', () {
+    Map<String, Object?> piece() => {
+          'id': 'F20',
+          'numero': 'FC-2026-00020',
+          'patient': 'TEST',
+          'statutPaiement': 'impayee',
+          'montantTTC': 15000,
+          'partPatient': 12000,
+          'partAssurance': 3000,
+          'lignes': [
+            {'id': 'A1', 'designation': 'Consultation', 'quantite': 1, 'prixUnitaire': 10000, 'partAssureur': 3000, 'partPatient': 7000, 'statutPaiement': 'du'},
+            {'id': 'A2', 'designation': 'Soin', 'quantite': 1, 'prixUnitaire': 5000, 'partAssureur': 0, 'partPatient': 5000, 'statutPaiement': 'du'},
+          ],
+        };
+
+    test('un refus nomme le défaut et n\'écrit rien', () {
+      final f = piece();
+      final r = encaisser(f,
+          aujourdhui: '2026-11-09',
+          maintenant: 'x',
+          acheteur: {'ifu': '123', 'nom': 'X'});
+      expect(r.refusCode, 'IFU_INVALIDE');
+      expect(r.refus, contains('13 chiffres'));
+      expect(r.ecritures, isEmpty);
+      expect(r.lignesReglees, isEmpty);
+      expect(identical(r.facture, f), isTrue);
+      expect(r.restantDu, 12000);
+      final n = encaisser(f,
+          aujourdhui: '2026-11-09',
+          maintenant: 'x',
+          acheteur: {'ifu': '3201642748214', 'nom': ''});
+      expect(n.refusCode, 'NOM_ACHETEUR_ABSENT');
+      final a = encaisser(f,
+          aujourdhui: '2026-11-09',
+          maintenant: 'x',
+          acheteur: {'aibTaux': 7});
+      expect(a.refusCode, 'AIB_TAUX_INVALIDE');
+    });
+
+    test('l\'acheteur validé est rangé dans la vente ; la base est la part patient', () {
+      final r = encaisser(piece(),
+          aujourdhui: '2026-11-09',
+          maintenant: 'x',
+          acheteur: {'ifu': '3201 6427 48214', 'nom': 'Clinique X', 'aibTaux': 5});
+      expect(r.refus, isNull);
+      expect(r.facture['ifuClient'], '3201642748214');
+      expect(r.facture['acheteurNom'], 'Clinique X');
+      expect(r.facture['aibTaux'], 5);
+      expect(r.facture['baseMecef'], 12000);
+      expect(r.facture['statutMecef'], 'en_attente');
+    });
+
+    test('particulier sans acheteur saisi : le taux par défaut, aucun IFU', () {
+      final r = encaisser(piece(),
+          aujourdhui: '2026-11-09', maintenant: 'x', acheteur: const {});
+      expect(r.facture['ifuClient'], isNull);
+      expect(r.facture['aibTaux'], 1);
+    });
+
+    test('règlement partiel : la base ne porte que la part patient des lignes réglées', () {
+      final r = encaisser(piece(),
+          lignes: ['A1'], aujourdhui: '2026-11-09', maintenant: 'x');
+      expect(r.facture['baseMecef'], 7000);
+      final r2 = encaisser(r.facture,
+          lignes: ['A2'], aujourdhui: '2026-11-09', maintenant: 'x');
+      expect(r2.facture['baseMecef'], 12000);
+    });
   });
 }

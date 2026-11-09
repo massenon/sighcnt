@@ -2326,8 +2326,8 @@
   {
    "id": "m8-facturation",
    "mesure": true,
-   "attendus": 25,
-   "presents": 25,
+   "attendus": 28,
+   "presents": 28,
    "taux": 1.0,
    "manquants": []
   },
@@ -2518,8 +2518,8 @@
   {
    "id": "mecef-transmission",
    "mesure": true,
-   "attendus": 20,
-   "presents": 20,
+   "attendus": 21,
+   "presents": 21,
    "taux": 1.0,
    "manquants": []
   },

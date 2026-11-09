@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sigh_domaine/sigh_domaine.dart' as d;
 
 import 'magasin.dart';
+import 'normalisation_mecef.dart';
 
 /// Refus NOMMÉ d'une opération de caisse : un code, un motif lisible (jamais un échec muet).
 class RefusCaisse implements Exception {
@@ -23,6 +24,7 @@ class ResultatCaisse {
     required this.demandesLiberees,
     required this.ecritures,
     required this.annuler,
+    this.normalisation,
   });
   final Fiche facture;
   final bool deja;
@@ -39,6 +41,10 @@ class ResultatCaisse {
 
   /// Restitue TOUT ce que l'encaissement a écrit (facture, tâches, demandes, écritures) — une annulation visible, jamais partielle.
   final VoidCallback annuler;
+
+  /// La normalisation de la vente SOLDÉE (null tant que la pièce n'est pas soldée, ou qu'il n'y a rien à normaliser). Son refus ne défait pas
+  /// l'encaissement : l'argent est reçu, la pièce devient `refusee` en le disant.
+  final ResultatNormalisation? normalisation;
 }
 
 /// `PR.encaisser` côté poste : le cœur arithmétique est celui du domaine (vecteurs de la maquette) ; ici l'ORCHESTRATION — le laboratoire et
@@ -51,6 +57,9 @@ ResultatCaisse encaisserFacture(
   num? montant,
   String? mode,
   required DateTime maintenant,
+
+  /// La fenêtre « Facture normalisée » : `ifu`, `nom`, `aibTaux`. Contrôlée AVANT toute écriture (E2299).
+  Map<String, Object?>? acheteur,
 }) {
   final fac = m.collection('factures').parId(factureId);
   if (fac == null)
@@ -65,9 +74,12 @@ ResultatCaisse encaisserFacture(
     maintenant: maintenant.toIso8601String(),
     utilisateur: m.utilisateur,
     ecritures: m.collection('ecritures').actives,
+    acheteur: acheteur,
   );
   // E2 (corrigé le 31/10/2026) : un versement au-delà du dû d'une pièce sans lignes est REFUSÉ en nommant le défaut ; rien n'est écrit.
-  if (r.refus != null) throw RefusCaisse('VERSEMENT_REFUSE', r.refus!);
+  if (r.refus != null) {
+    throw RefusCaisse(r.refusCode ?? 'VERSEMENT_REFUSE', r.refus!);
+  }
   if (r.deja) {
     return ResultatCaisse(
         facture: fac,
@@ -193,8 +205,20 @@ ResultatCaisse encaisserFacture(
     'restantDu': r.restantDu
   });
 
+  // TOUTE VENTE SOLDÉE EST NORMALISÉE (Direction, 07/11/2026) ; un règlement partiel attend le solde, et une pièce à la charge de l'assureur seul
+  // (rien encaissé) n'a rien à normaliser. Le refus de la normalisation ne défait pas l'encaissement.
+  ResultatNormalisation? normalisation;
+  final apres = m.collection('factures').parId(factureId)!;
+  if (apres['statutPaiement'] == 'soldee' &&
+      n0(apres['montantPaye']) > 0) {
+    normalisation = normaliserVente(m, factureId,
+        acheteur: acheteur, maintenant: maintenant);
+    annulations.add(normalisation.annuler);
+  }
+
   return ResultatCaisse(
     facture: m.collection('factures').parId(factureId)!,
+    normalisation: normalisation,
     deja: false,
     lignesReglees: r.lignesReglees,
     montantRegle: r.montantRegle ?? 0,
@@ -209,3 +233,5 @@ ResultatCaisse encaisserFacture(
     },
   );
 }
+
+num n0(Object? v) => v is num ? v : (num.tryParse('${v ?? ''}') ?? 0);
