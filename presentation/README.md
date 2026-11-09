@@ -2,7 +2,7 @@
 
 Dossier de présentation du projet : un spécimen PDF de chaque état imprimé que le logiciel sait produire, rangé par module. Ouvrir `index.html` pour la consultation en vignettes (aucune dépendance réseau).
 
-**169 spécimens**, 47.4 Mo. Tous portent le filigrane et le bandeau « SPÉCIMEN, données fictives ».
+**182 spécimens**, 50.3 Mo. Tous portent le filigrane et le bandeau « SPÉCIMEN, données fictives ».
 
 ## Méthode
 
@@ -10,32 +10,33 @@ Dossier de présentation du projet : un spécimen PDF de chaque état imprimé q
 2. Les points d'entrée de l'impression (`SIGH.print.etat`, `ticket`, `badge`, `planche`) sont enveloppés : la feuille que le logiciel bâtit est relevée telle quelle, avec le site d'appel (fichier et ligne) lu dans la pile. Rien n'est redessiné.
 3. Chaque écran est exploré : commandes d'impression de la page, de chaque onglet, des tiroirs de fiche et des fenêtres de paramétrage. Un spécimen est gardé par site d'appel et par intitulé d'état (au plus 6 variantes par site).
 4. Les identités sont substituées dans le texte (voir Confidentialité), puis la feuille est rendue en PDF par Chrome (`page.pdf`) avec la même feuille de style que le logiciel : A4 portrait, ticket 80 mm, carte CR80 aux dimensions réelles.
-5. Régénération : `npm run presentation` depuis `prototype_html/` (`build/presentation.js`, phases `capture`, `pdf`, `index`).
+5. Les 13 états que cette exploration n'atteint pas seule (formulaire à champs obligatoires, plusieurs postes en chaîne, autre profil, activité fermée) sont joués par des scénarios dédiés sur un banc à part (voir « Les 13 spécimens produits par un scénario dédié »).
+6. Régénération : `npm run presentation` depuis `prototype_html/` (`build/presentation.js`, phases `capture`, `complements`, `pdf`, `index`).
 
 ## Couverture mesurée
 
 Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.planche`) dans les sources de la maquette ; 167 sites `P.tableau` (corps de tableau, toujours imprimés à l'intérieur d'un état).
 
-**États atteints : 156 / 169 sites (92 %).** Sites `P.tableau` traversés : 146 / 167 (87 %). Un site peut produire plusieurs états (variantes d'intitulé) ; un état n'est compté qu'une fois par site.
+**États atteints : 169 / 169 sites (100 %).** Sites `P.tableau` traversés : 146 / 167 (87 %). Un site peut produire plusieurs états (variantes d'intitulé) ; un état n'est compté qu'une fois par site.
 
 | Module (fichier source) | Sites d'état | Atteints | Taux |
 |---|---|---|---|
-| CFG | 6 | 5 | 83 % |
+| CFG | 6 | 6 | 100 % |
 | DASH | 4 | 4 | 100 % |
 | GED | 2 | 2 | 100 % |
-| M1 | 6 | 5 | 83 % |
-| M10 | 23 | 22 | 96 % |
+| M1 | 6 | 6 | 100 % |
+| M10 | 23 | 23 | 100 % |
 | M11 | 6 | 6 | 100 % |
-| M12 | 26 | 25 | 96 % |
+| M12 | 26 | 26 | 100 % |
 | M13 | 6 | 6 | 100 % |
 | M14 | 4 | 4 | 100 % |
-| M2 | 7 | 5 | 71 % |
-| M3 | 13 | 12 | 92 % |
+| M2 | 7 | 7 | 100 % |
+| M3 | 13 | 13 | 100 % |
 | M4 | 12 | 12 | 100 % |
-| M5 | 10 | 8 | 80 % |
-| M6 | 14 | 12 | 86 % |
+| M5 | 10 | 10 | 100 % |
+| M6 | 14 | 14 | 100 % |
 | M7 | 6 | 6 | 100 % |
-| M8 | 10 | 8 | 80 % |
+| M8 | 10 | 10 | 100 % |
 | M9 | 8 | 8 | 100 % |
 | MECEF | 2 | 2 | 100 % |
 | RAP | 2 | 2 | 100 % |
@@ -44,11 +45,12 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 
 ## Sommaire par module
 
-### M1 Patients & Dossier médical (7)
+### M1 Patients & Dossier médical (8)
 
 | État | Gabarit | Fichier |
 |---|---|---|
 | Ordonnance | A4 portrait | [`specimens/M1-patients-dossier-medical/m1-documents-ordonnance.pdf`](specimens/M1-patients-dossier-medical/m1-documents-ordonnance.pdf) |
+| Bulletin d’analyses bio-médicales (voir la section « Les 13 spécimens produits par un scénario dédié ») | A4 portrait | [`specimens/M1-patients-dossier-medical/m1-externe-bulletin-d-analyses-bio-medicales.pdf`](specimens/M1-patients-dossier-medical/m1-externe-bulletin-d-analyses-bio-medicales.pdf) |
 | État d’avancement de la numérisation | A4 portrait | [`specimens/M1-patients-dossier-medical/m1-numerisation-etat-d-avancement-de-la-numerisation.pdf`](specimens/M1-patients-dossier-medical/m1-numerisation-etat-d-avancement-de-la-numerisation.pdf) |
 | Fiche patient | A4 portrait | [`specimens/M1-patients-dossier-medical/m1-patient-profil-fiche-patient.pdf`](specimens/M1-patients-dossier-medical/m1-patient-profil-fiche-patient.pdf) |
 | Fiche patient | A4 portrait | [`specimens/M1-patients-dossier-medical/m1-patients-fiche-patient.pdf`](specimens/M1-patients-dossier-medical/m1-patients-fiche-patient.pdf) |
@@ -56,12 +58,14 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | CERTIFICAT MÉDICAL PRÉNUPTIAL | A4 portrait | [`specimens/M1-patients-dossier-medical/m1-pieces-certificat-medical-prenuptial.pdf`](specimens/M1-patients-dossier-medical/m1-pieces-certificat-medical-prenuptial.pdf) |
 | FICHE DE RÉFÉRENCE | A4 portrait | [`specimens/M1-patients-dossier-medical/m1-reference-fiche-de-reference.pdf`](specimens/M1-patients-dossier-medical/m1-reference-fiche-de-reference.pdf) |
 
-### M2 Consultations & prescriptions (3)
+### M2 Consultations & prescriptions (5)
 
 | État | Gabarit | Fichier |
 |---|---|---|
+| Bulletin d’analyses bio-médicales | A4 portrait | [`specimens/M2-consultations-prescriptions/m2-consultation-fiche-bulletin-d-analyses-bio-medicales.pdf`](specimens/M2-consultations-prescriptions/m2-consultation-fiche-bulletin-d-analyses-bio-medicales.pdf) |
 | DOSSIER DE CONSULTATION | A4 portrait | [`specimens/M2-consultations-prescriptions/m2-dossiers-consultation-dossier-de-consultation.pdf`](specimens/M2-consultations-prescriptions/m2-dossiers-consultation-dossier-de-consultation.pdf) |
 | Ordonnance médicale | A4 portrait | [`specimens/M2-consultations-prescriptions/m2-ordonnances-ordonnance-medicale.pdf`](specimens/M2-consultations-prescriptions/m2-ordonnances-ordonnance-medicale.pdf) |
+| Ordonnance médicale (voir la section « Les 13 spécimens produits par un scénario dédié ») | A4 portrait | [`specimens/M2-consultations-prescriptions/m2-ordonnances-ordonnance-medicale-2.pdf`](specimens/M2-consultations-prescriptions/m2-ordonnances-ordonnance-medicale-2.pdf) |
 | Tableau de morbidité | A4 portrait | [`specimens/M2-consultations-prescriptions/m2-pathologies-tableau-de-morbidite.pdf`](specimens/M2-consultations-prescriptions/m2-pathologies-tableau-de-morbidite.pdf) |
 
 ### M2 Imagerie médicale (5)
@@ -80,7 +84,7 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 |---|---|---|
 | Compte rendu de consultation | A4 portrait | [`specimens/M2-rdv-visites-consultations/m2-consultations-compte-rendu-de-consultation.pdf`](specimens/M2-rdv-visites-consultations/m2-consultations-compte-rendu-de-consultation.pdf) |
 
-### M3 Hospitalisation (12)
+### M3 Hospitalisation (13)
 
 | État | Gabarit | Fichier |
 |---|---|---|
@@ -90,6 +94,7 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Plan d’occupation des lits | A4 portrait | [`specimens/M3-hospitalisation/m3-chambres-plan-d-occupation-des-lits.pdf`](specimens/M3-hospitalisation/m3-chambres-plan-d-occupation-des-lits.pdf) |
 | CONSULTATION PRÉ-ANESTHÉSIQUE | A4 portrait | [`specimens/M3-hospitalisation/m3-cpa-consultation-pre-anesthesique.pdf`](specimens/M3-hospitalisation/m3-cpa-consultation-pre-anesthesique.pdf) |
 | COMPTE RENDU D’ANESTHÉSIE | A4 portrait | [`specimens/M3-hospitalisation/m3-cr-anesthesie-compte-rendu-d-anesthesie.pdf`](specimens/M3-hospitalisation/m3-cr-anesthesie-compte-rendu-d-anesthesie.pdf) |
+| FICHE DE DEMANDE D’EXAMEN | A4 portrait | [`specimens/M3-hospitalisation/m3-demande-examen-fiche-de-demande-d-examen.pdf`](specimens/M3-hospitalisation/m3-demande-examen-fiche-de-demande-d-examen.pdf) |
 | Feuille de température | A4 portrait | [`specimens/M3-hospitalisation/m3-feuille-temperature-feuille-de-temperature.pdf`](specimens/M3-hospitalisation/m3-feuille-temperature-feuille-de-temperature.pdf) |
 | Feuille de mise en observation | A4 portrait | [`specimens/M3-hospitalisation/m3-observation-feuille-de-mise-en-observation.pdf`](specimens/M3-hospitalisation/m3-observation-feuille-de-mise-en-observation.pdf) |
 | RAPPORT MÉDICAL | A4 portrait | [`specimens/M3-hospitalisation/m3-rapport-rapport-medical.pdf`](specimens/M3-hospitalisation/m3-rapport-rapport-medical.pdf) |
@@ -114,12 +119,14 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Fiche de planification familiale | A4 portrait | [`specimens/M4-maternite-naissances-deces/m4-planification-fiche-de-planification-familiale.pdf`](specimens/M4-maternite-naissances-deces/m4-planification-fiche-de-planification-familiale.pdf) |
 | Registre SONUB / SONUC — fiche d’urgence | A4 portrait | [`specimens/M4-maternite-naissances-deces/m4-sonu-registre-sonub-sonuc-fiche-d-urgence.pdf`](specimens/M4-maternite-naissances-deces/m4-sonu-registre-sonub-sonuc-fiche-d-urgence.pdf) |
 
-### M5 Laboratoire (8)
+### M5 Laboratoire (10)
 
 | État | Gabarit | Fichier |
 |---|---|---|
+| Bon de demande de sang (voir la section « Les 13 spécimens produits par un scénario dédié ») | A4 portrait | [`specimens/M5-laboratoire/m5-banque-sang-bon-de-demande-de-sang.pdf`](specimens/M5-laboratoire/m5-banque-sang-bon-de-demande-de-sang.pdf) |
 | Tarifs des analyses de laboratoire | A4 portrait | [`specimens/M5-laboratoire/m5-catalogue-tarifs-des-analyses-de-laboratoire.pdf`](specimens/M5-laboratoire/m5-catalogue-tarifs-des-analyses-de-laboratoire.pdf) |
 | Bon de prélèvement | A4 portrait | [`specimens/M5-laboratoire/m5-demandes-bon-de-prelevement.pdf`](specimens/M5-laboratoire/m5-demandes-bon-de-prelevement.pdf) |
+| Carte de donneur de sang (voir la section « Les 13 spécimens produits par un scénario dédié ») | A4 portrait | [`specimens/M5-laboratoire/m5-donneurs-carte-de-donneur-de-sang.pdf`](specimens/M5-laboratoire/m5-donneurs-carte-de-donneur-de-sang.pdf) |
 | Résultat d’analyse de laboratoire | A4 portrait | [`specimens/M5-laboratoire/m5-impression-resultats-resultat-d-analyse-de-laboratoire.pdf`](specimens/M5-laboratoire/m5-impression-resultats-resultat-d-analyse-de-laboratoire.pdf) |
 | Bulletin d’analyses bio-médicales | A4 portrait | [`specimens/M5-laboratoire/m5-prelevement-bulletin-d-analyses-bio-medicales.pdf`](specimens/M5-laboratoire/m5-prelevement-bulletin-d-analyses-bio-medicales.pdf) |
 | Bon d’expression de besoins — Laboratoire | A4 portrait | [`specimens/M5-laboratoire/m5-reactifs-bon-d-expression-de-besoins-laboratoire.pdf`](specimens/M5-laboratoire/m5-reactifs-bon-d-expression-de-besoins-laboratoire.pdf) |
@@ -127,12 +134,14 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Activité du laboratoire d’analyses biomédicales | A4 portrait | [`specimens/M5-laboratoire/m5-stats-activite-du-laboratoire-d-analyses-biomedicales.pdf`](specimens/M5-laboratoire/m5-stats-activite-du-laboratoire-d-analyses-biomedicales.pdf) |
 | Référentiel des valeurs de référence | A4 portrait | [`specimens/M5-laboratoire/m5-valeurs-reference-referentiel-des-valeurs-de-reference.pdf`](specimens/M5-laboratoire/m5-valeurs-reference-referentiel-des-valeurs-de-reference.pdf) |
 
-### M6 Pharmacie & Stocks (14)
+### M6 Pharmacie & Stocks (16)
 
 | État | Gabarit | Fichier |
 |---|---|---|
+| Bon de sortie de stock — dispensation (voir la section « Les 13 spécimens produits par un scénario dédié ») | A4 portrait | [`specimens/M6-pharmacie-stocks/m6-dispensation-bon-de-sortie-de-stock-dispensation.pdf`](specimens/M6-pharmacie-stocks/m6-dispensation-bon-de-sortie-de-stock-dispensation.pdf) |
 | Étiquettes produits | A4 portrait | [`specimens/M6-pharmacie-stocks/m6-etiquetage-etiquettes-produits.pdf`](specimens/M6-pharmacie-stocks/m6-etiquetage-etiquettes-produits.pdf) |
 | Bordereau de reprise du stock initial | A4 portrait | [`specimens/M6-pharmacie-stocks/m6-import-grand-stock-bordereau-de-reprise-du-stock-initial.pdf`](specimens/M6-pharmacie-stocks/m6-import-grand-stock-bordereau-de-reprise-du-stock-initial.pdf) |
+| État d’inventaire | A4 portrait | [`specimens/M6-pharmacie-stocks/m6-inventaire-etat-d-inventaire.pdf`](specimens/M6-pharmacie-stocks/m6-inventaire-etat-d-inventaire.pdf) |
 | État des produits périmés | A4 portrait | [`specimens/M6-pharmacie-stocks/m6-lots-etat-des-produits-perimes.pdf`](specimens/M6-pharmacie-stocks/m6-lots-etat-des-produits-perimes.pdf) |
 | Fiche de lot | A4 portrait | [`specimens/M6-pharmacie-stocks/m6-lots-fiche-de-lot.pdf`](specimens/M6-pharmacie-stocks/m6-lots-fiche-de-lot.pdf) |
 | Constat de pertes et casses | A4 portrait | [`specimens/M6-pharmacie-stocks/m6-pertes-constat-de-pertes-et-casses.pdf`](specimens/M6-pharmacie-stocks/m6-pertes-constat-de-pertes-et-casses.pdf) |
@@ -158,7 +167,7 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | PROCÈS-VERBAL DE RÉCEPTION | A4 portrait | [`specimens/M7-achats-fournisseurs/m7-pv-reception-consommables-proces-verbal-de-reception.pdf`](specimens/M7-achats-fournisseurs/m7-pv-reception-consommables-proces-verbal-de-reception.pdf) |
 | PROCÈS-VERBAL DE RÉCEPTION | A4 portrait | [`specimens/M7-achats-fournisseurs/m7-pv-reception-reactifs-proces-verbal-de-reception.pdf`](specimens/M7-achats-fournisseurs/m7-pv-reception-reactifs-proces-verbal-de-reception.pdf) |
 
-### M8 Facturation & Caisse (9)
+### M8 Facturation & Caisse (11)
 
 | État | Gabarit | Fichier |
 |---|---|---|
@@ -171,6 +180,8 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Reçu de paiement | A4 portrait | [`specimens/M8-facturation-caisse/m8-paiements-recu-de-paiement.pdf`](specimens/M8-facturation-caisse/m8-paiements-recu-de-paiement.pdf) |
 | État des recettes | A4 portrait | [`specimens/M8-facturation-caisse/m8-recettes-etat-des-recettes.pdf`](specimens/M8-facturation-caisse/m8-recettes-etat-des-recettes.pdf) |
 | Facture normalisée | A4 portrait | [`specimens/M8-facturation-caisse/m8-reliquats-facture-normalisee.pdf`](specimens/M8-facturation-caisse/m8-reliquats-facture-normalisee.pdf) |
+| Engagement de paiement | A4 portrait | [`specimens/M8-facturation-caisse/m8-reliquats-engagement-de-paiement.pdf`](specimens/M8-facturation-caisse/m8-reliquats-engagement-de-paiement.pdf) |
+| Attestation de remboursement | A4 portrait | [`specimens/M8-facturation-caisse/m8-remboursements-attestation-de-remboursement.pdf`](specimens/M8-facturation-caisse/m8-remboursements-attestation-de-remboursement.pdf) |
 
 ### M9 Assurances & Créances (10)
 
@@ -187,7 +198,7 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Facture — prestations de santé | A4 portrait | [`specimens/M9-assurances-creances/m9-factures-assureur-facture-prestations-de-sante.pdf`](specimens/M9-assurances-creances/m9-factures-assureur-facture-prestations-de-sante.pdf) |
 | Lettre de relance | A4 portrait | [`specimens/M9-assurances-creances/m9-relances-lettre-de-relance.pdf`](specimens/M9-assurances-creances/m9-relances-lettre-de-relance.pdf) |
 
-### M10 Ressources humaines (22)
+### M10 Ressources humaines (23)
 
 | État | Gabarit | Fichier |
 |---|---|---|
@@ -198,6 +209,7 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Décision de congé | A4 portrait | [`specimens/M10-ressources-humaines/m10-conges-decision-de-conge.pdf`](specimens/M10-ressources-humaines/m10-conges-decision-de-conge.pdf) |
 | Contrat de travail | A4 portrait | [`specimens/M10-ressources-humaines/m10-contrats-contrat-de-travail.pdf`](specimens/M10-ressources-humaines/m10-contrats-contrat-de-travail.pdf) |
 | Fiche d’évaluation du mois de JUILLET 2026 | A4 portrait | [`specimens/M10-ressources-humaines/m10-evaluations-fiche-d-evaluation-du-mois-de-juillet-2026.pdf`](specimens/M10-ressources-humaines/m10-evaluations-fiche-d-evaluation-du-mois-de-juillet-2026.pdf) |
+| Note de service (voir la section « Les 13 spécimens produits par un scénario dédié ») | A4 portrait | [`specimens/M10-ressources-humaines/m10-evaluations-note-de-service.pdf`](specimens/M10-ressources-humaines/m10-evaluations-note-de-service.pdf) |
 | Liste de collecte — participation du personnel | A4 portrait | [`specimens/M10-ressources-humaines/m10-evenements-liste-de-collecte-participation-du-personnel.pdf`](specimens/M10-ressources-humaines/m10-evenements-liste-de-collecte-participation-du-personnel.pdf) |
 | DESCRIPTION DE POSTE | A4 portrait | [`specimens/M10-ressources-humaines/m10-fiches-poste-description-de-poste.pdf`](specimens/M10-ressources-humaines/m10-fiches-poste-description-de-poste.pdf) |
 | Ordre de mission | A4 portrait | [`specimens/M10-ressources-humaines/m10-missions-ordre-de-mission.pdf`](specimens/M10-ressources-humaines/m10-missions-ordre-de-mission.pdf) |
@@ -228,7 +240,7 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | État des redevances ORTB | A4 portrait | [`specimens/M11-paie-primes/m11-ortb-etat-des-redevances-ortb.pdf`](specimens/M11-paie-primes/m11-ortb-etat-des-redevances-ortb.pdf) |
 | Journal de paie — validation | A4 portrait | [`specimens/M11-paie-primes/m11-validation-journal-de-paie-validation.pdf`](specimens/M11-paie-primes/m11-validation-journal-de-paie-validation.pdf) |
 
-### M12 Comptabilité SYSCOHADA (23)
+### M12 Comptabilité SYSCOHADA (24)
 
 | État | Gabarit | Fichier |
 |---|---|---|
@@ -237,6 +249,7 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Balance âgée des comptes de tiers | A4 portrait | [`specimens/M12-comptabilite-syscohada/m12-balance-balance-agee-des-comptes-de-tiers.pdf`](specimens/M12-comptabilite-syscohada/m12-balance-balance-agee-des-comptes-de-tiers.pdf) |
 | État de rapprochement bancaire | A4 portrait | [`specimens/M12-comptabilite-syscohada/m12-banques-etat-de-rapprochement-bancaire.pdf`](specimens/M12-comptabilite-syscohada/m12-banques-etat-de-rapprochement-bancaire.pdf) |
 | Compte de résultat — exercice 2025 | A4 portrait | [`specimens/M12-comptabilite-syscohada/m12-baseline-2025-compte-de-resultat-exercice-2025.pdf`](specimens/M12-comptabilite-syscohada/m12-baseline-2025-compte-de-resultat-exercice-2025.pdf) |
+| Procès-verbal de clôture — exercice 2026 (voir la section « Les 13 spécimens produits par un scénario dédié ») | A4 portrait | [`specimens/M12-comptabilite-syscohada/m12-cloture-proces-verbal-de-cloture-exercice-2026.pdf`](specimens/M12-comptabilite-syscohada/m12-cloture-proces-verbal-de-cloture-exercice-2026.pdf) |
 | Compte de résultat | A4 portrait | [`specimens/M12-comptabilite-syscohada/m12-compte-resultat-compte-de-resultat.pdf`](specimens/M12-comptabilite-syscohada/m12-compte-resultat-compte-de-resultat.pdf) |
 | État des dépenses de trésorerie | A4 portrait | [`specimens/M12-comptabilite-syscohada/m12-depenses-etat-des-depenses-de-tresorerie.pdf`](specimens/M12-comptabilite-syscohada/m12-depenses-etat-des-depenses-de-tresorerie.pdf) |
 | Pièce de dépense | A4 portrait | [`specimens/M12-comptabilite-syscohada/m12-depenses-piece-de-depense.pdf`](specimens/M12-comptabilite-syscohada/m12-depenses-piece-de-depense.pdf) |
@@ -283,11 +296,12 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Journal des sauvegardes | A4 portrait | [`specimens/M14-securite-utilisateurs/m14-sauvegardes-journal-des-sauvegardes.pdf`](specimens/M14-securite-utilisateurs/m14-sauvegardes-journal-des-sauvegardes.pdf) |
 | Fiche de compte utilisateur | A4 portrait | [`specimens/M14-securite-utilisateurs/m14-utilisateurs-fiche-de-compte-utilisateur.pdf`](specimens/M14-securite-utilisateurs/m14-utilisateurs-fiche-de-compte-utilisateur.pdf) |
 
-### CFG Configuration Clinique (5)
+### CFG Configuration Clinique (6)
 
 | État | Gabarit | Fichier |
 |---|---|---|
 | Aperçu du papier à en-tête | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-branding-apercu-du-papier-a-en-tete.pdf`](specimens/CFG-configuration-clinique/cfg-branding-apercu-du-papier-a-en-tete.pdf) |
+| CERTIFICAT MÉDICAL DE REPOS | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-certificats-certificat-medical-de-repos.pdf`](specimens/CFG-configuration-clinique/cfg-certificats-certificat-medical-de-repos.pdf) |
 | Répartition des secteurs de la clinique | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-organisation-repartition-des-secteurs-de-la-clinique.pdf`](specimens/CFG-configuration-clinique/cfg-organisation-repartition-des-secteurs-de-la-clinique.pdf) |
 | Organigramme de la Clinique NASSIERA TOO | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-organisation-organigramme-de-la-clinique-nassiera-too.pdf`](specimens/CFG-configuration-clinique/cfg-organisation-organigramme-de-la-clinique-nassiera-too.pdf) |
 | Matrice de traçabilité des règles métier | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-regles-matrice-de-tracabilite-des-regles-metier.pdf`](specimens/CFG-configuration-clinique/cfg-regles-matrice-de-tracabilite-des-regles-metier.pdf) |
@@ -328,61 +342,52 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Point mensuel — par client | A4 portrait | [`specimens/RAP-rapports-impression/rapports-direction-point-mensuel-par-client.pdf`](specimens/RAP-rapports-impression/rapports-direction-point-mensuel-par-client.pdf) |
 | Rapport d’activité | A4 portrait | [`specimens/RAP-rapports-impression/rapports-generateur-rapport-d-activite.pdf`](specimens/RAP-rapports-impression/rapports-generateur-rapport-d-activite.pdf) |
 
-## Ce qui n'a pas pu être produit
+## Sites sans spécimen
 
-Sites d'état de la maquette que l'exploration automatique n'a pas atteints (13). La raison générale est la même : l'état n'est offert qu'après un geste que l'exploration ne sait pas faire seule (saisie d'un formulaire à champs obligatoires, état métier particulier du jeu, sélection multiple, état déclenché par un événement ou par un rôle autre que l'administrateur) ou l'écran est fermé au profil du banc. Aucun fichier de l'application n'a été modifié pour les atteindre.
+Aucun. Les 169 sites d'appel d'un état figurent au dossier. 13 d'entre eux ont exigé un scénario dédié, décrit ci-dessous : l'exploration générique ne sait pas saisir un formulaire à champs obligatoires, enchaîner plusieurs postes, ni se connecter sous un autre profil.
 
-### CFG : 1 non atteint(s)
+## Les 13 spécimens produits par un scénario dédié
 
-- `assets/js/modules/configuration.js:3338` (intitulé construit à l'exécution) : impression d'un certificat du registre : cause non vérifiée (probablement aucune ligne imprimable sur le jeu)
+Chacun est joué par SON écran sur un banc dédié (`npm run presentation`, phase `complements` : base jetable, port propre, une session par rôle quand le geste l'exige). Les scénarios sont codés dans `build/presentation.js` (`COMPLEMENTS` et `SC[n]`). Aucun fichier de l'application n'est modifié.
 
-### M1 : 1 non atteint(s)
+| N° | Site | État | Comment | Fichier |
+|---|---|---|---|---|
+| 1 | `configuration.js:3338` | CERTIFICAT MÉDICAL DE REPOS | Le registre des certificats est VIDE sur le jeu : la commande de réédition n'existe que sur une ligne du registre. Le certificat est donc délivré par l'écran (carte « Certificat médical de repos », durée et date saisies, « Délivrer »), et c'est la délivrance qui imprime. | [`cfg-certificats-certificat-medical-de-repos.pdf`](specimens/CFG-configuration-clinique/cfg-certificats-certificat-medical-de-repos.pdf) |
+| 2 | `m1-patients.js:2304` | Bulletin d’analyses bio-médicales | Demande d'analyses d'un patient externe saisie à l'accueil (identité, ordonnance extérieure, deux examens cochés), enregistrée, puis « Imprimer le bulletin » dans la fenêtre « Demande enregistrée ». **Remarque : Le bouton « Imprimer le bulletin » lève une ReferenceError dans la maquette (`AUJ` n'est pas défini dans `m1-patients.js`, depuis le passage à l'horloge réelle). Le banc pose `AUJ` dans la page avant le clic : le gabarit est celui du logiciel, rien n'est redessiné.** | [`m1-externe-bulletin-d-analyses-bio-medicales.pdf`](specimens/M1-patients-dossier-medical/m1-externe-bulletin-d-analyses-bio-medicales.pdf) |
+| 3 | `m10-rh.js:2462` | Note de service | Cause élucidée : le clic s'exécute, mais `imprimerNote` lève une ReferenceError (`e` n'est pas défini hors de la fiche d'évaluation) avant tout aperçu. **Remarque : Le bouton « Imprimer la note » lève une ReferenceError dans la maquette (`dateBaremeDe(e)` dans `imprimerNote`, `e` hors de portée). Le banc pose `e = {}` dans la page avant le clic, ce qui retombe sur la date d'effet du barème NS 131.** | [`m10-evaluations-note-de-service.pdf`](specimens/M10-ressources-humaines/m10-evaluations-note-de-service.pdf) |
+| 4 | `m12-comptabilite.js:2396` | Procès-verbal de clôture — exercice 2026 | Sur le banc dédié : les brouillons sont validés par l'écran des écritures, la pré-clôture est contrôlée, le comptable (KASSA, connexion réelle) démarre la clôture de 2026, la Direction administrative (TAKI, connexion réelle) la valide, puis « Procès-verbal » est imprimé. **Remarque : Clôture de l'exercice 2026 jouée sur une base jetable de banc, jamais sur une base partagée.** | [`m12-cloture-proces-verbal-de-cloture-exercice-2026.pdf`](specimens/M12-comptabilite-syscohada/m12-cloture-proces-verbal-de-cloture-exercice-2026.pdf) |
+| 5 | `m2-consultations.js:483` | Bulletin d’analyses bio-médicales | Fiche de consultation enregistrée sur un dossier de consultation enregistré (pathologie, diagnostic, un médicament, deux analyses), puis « Bulletin d'analyses » dans la fenêtre « Consultation enregistrée ». | [`m2-consultation-fiche-bulletin-d-analyses-bio-medicales.pdf`](specimens/M2-consultations-prescriptions/m2-consultation-fiche-bulletin-d-analyses-bio-medicales.pdf) |
+| 6 | `m2-consultations.js:2902` | Ordonnance médicale | Code mort : `etatOrdonnanceAncienne` n'est appelée nulle part. Sa copie exacte dans le source est évaluée dans la page (mêmes lignes, même fichier source) et appelée sur une ordonnance du jeu. **Remarque : Code mort, rendu par appel direct de la fonction (copie du source évaluée dans la page) : aucun écran du logiciel ne l'appelle.** | [`m2-ordonnances-ordonnance-medicale-2.pdf`](specimens/M2-consultations-prescriptions/m2-ordonnances-ordonnance-medicale-2.pdf) |
+| 7 | `m3-hospitalisation.js:3623` | FICHE DE DEMANDE D’EXAMEN | Fiche remplie en entier : patient, résidence, service demandeur, prescripteur, indication, deux examens cochés, urgence « un examen urgent » nommant l'examen. Elle s'imprime à l'émission. | [`m3-demande-examen-fiche-de-demande-d-examen.pdf`](specimens/M3-hospitalisation/m3-demande-examen-fiche-de-demande-d-examen.pdf) |
+| 8 | `m5-laboratoire.js:3446` | Bon de demande de sang | L'activité « Banque de sang » est rouverte par l'écran des activités (cfg-modules) sur le banc seulement, puis « Bon de demande de sang » est imprimé. **Remarque : Activité rouverte sur le banc : la clinique ne pratique pas la banque de sang, l'activité est fermée dans le dépôt.** | [`m5-banque-sang-bon-de-demande-de-sang.pdf`](specimens/M5-laboratoire/m5-banque-sang-bon-de-demande-de-sang.pdf) |
+| 9 | `m5-laboratoire.js:3579` | Carte de donneur de sang | Même réouverture (activité « Donneurs & transfusions »), puis « Imprimer l'état » sur la première fiche de donneur. **Remarque : Activité rouverte sur le banc : la clinique ne pratique pas la transfusion, l'activité est fermée dans le dépôt.** | [`m5-donneurs-carte-de-donneur-de-sang.pdf`](specimens/M5-laboratoire/m5-donneurs-carte-de-donneur-de-sang.pdf) |
+| 10 | `m6-stock.js:1808` | État d’inventaire | Inventaire lancé (stock gros, périmètre « Fournitures administratives »), huit articles comptés dont quatre écarts, validé sur la feuille de saisie, puis « Imprimer l'état » sur la ligne du registre. | [`m6-inventaire-etat-d-inventaire.pdf`](specimens/M6-pharmacie-stocks/m6-inventaire-etat-d-inventaire.pdf) |
+| 11 | `m6-stock.js:2568` | Bon de sortie de stock — dispensation | Chaîne complète jouée par les écrans : fiche de consultation avec un médicament, encaissement de la facture à la caisse, délivrance sur la file de la pharmacie (sortie de stock, justificatif = n° d'ordonnance). Le bon ne s'imprime que depuis le registre des dispensations, que la délivrance n'alimente pas : la fonction du bon est donc appelée directement. **Remarque : Bon rendu par appel direct de la fonction du source : la délivrance de la file écrit les sorties de stock mais aucune ligne au registre `dispensations` (seul point d'impression du bon), et la création manuelle y est retirée. Les lignes, le patient et les prix sont ceux de l'ordonnance réellement encaissée et servie.** | [`m6-dispensation-bon-de-sortie-de-stock-dispensation.pdf`](specimens/M6-pharmacie-stocks/m6-dispensation-bon-de-sortie-de-stock-dispensation.pdf) |
+| 12 | `m8-facturation.js:1934` | Engagement de paiement | Une facture avec reliquat est choisie, l'engagement de paiement est saisi (échéancier en trois tranches, reçu par le comptable), puis « Enregistrer et éditer » imprime l'engagement. | [`m8-reliquats-engagement-de-paiement.pdf`](specimens/M8-facturation-caisse/m8-reliquats-engagement-de-paiement.pdf) |
+| 13 | `m8-facturation.js:2120` | Attestation de remboursement | Opération « Remboursement » saisie (facture réglée, montant, motif, autorisation), enregistrée, puis « Imprimer » sur la ligne créée. | [`m8-remboursements-attestation-de-remboursement.pdf`](specimens/M8-facturation-caisse/m8-remboursements-attestation-de-remboursement.pdf) |
 
-- `assets/js/modules/m1-patients.js:2304` « Bulletin d’analyses bio-médicales » : proposé après la saisie d'une demande d'analyses de patient externe, en fenêtre ; non rejoué
+**Six spécimens exigent une réserve que le lecteur doit connaître** : (2) et (3) viennent de boutons qui lèvent une ReferenceError dans la maquette actuelle (le bulletin du patient externe, la note de service des évaluations), le banc posant la variable manquante dans la page ; (6) et (11) viennent de fonctions qu'aucun geste d'écran n'atteint, appelées directement à partir de leur copie dans le source. (8) et (9) viennent d'activités que la clinique ne pratique pas, rouvertes sur le banc seulement. Les 8 autres sont des gestes d'écran de bout en bout.
 
-### M10 : 1 non atteint(s)
+### Défauts de la maquette relevés en les produisant
 
-- `assets/js/modules/m10-rh.js:2462` « Note de service » : le clic sur « Imprimer la note » n'ouvre aucun aperçu sur le banc (cause non élucidée)
+- `m1-patients.js:2314` : `AUJ` n'est défini nulle part dans ce fichier : « Imprimer le bulletin » de la demande d'un patient externe lève une ReferenceError et n'imprime rien.
+- `m10-rh.js:2481` : `imprimerNote` de l'écran des évaluations appelle `dateBaremeDe(e)` alors que `e` n'existe pas dans cette portée : « Imprimer la note » ne fait rien.
+- `m8-facturation.js:2279` : le titre de la fenêtre d'encaissement d'une prescription se lit « Encaisser undefined » (la tâche n'a pas de `reference`). Cosmétique.
+- `m6-stock.js` : la délivrance de la file de la pharmacie (`PR.delivrer`) n'écrit aucune ligne au registre des dispensations, seul point d'impression du « Bon de sortie de stock », et la création manuelle y est retirée : le bon n'est imprimable par aucun geste d'écran.
+- `m12-comptabilite.js` : « Clôturer définitivement » recharge la page aussitôt après `SIGH.exercice.valider`. Sur le banc, ce rechargement a laissé un état partiel côté serveur (pièces d'à-nouveaux écrites, exercice resté « en clôture ») : le scénario appelle donc le moteur que le bouton appelle, puis attend l'envoi.
 
-### M12 : 1 non atteint(s)
+Ils sont signalés, non corrigés : ce dossier ne modifie aucun fichier de l'application.
 
-- `assets/js/modules/m12-comptabilite.js:2396` « Procès-verbal de clôture — exercice  » : exige une clôture en deux gestes (demande, puis validation Direction) après une pré-clôture sans brouillon ; le jeu porte des brouillons
+### Écrans autrefois non explorés
 
-### M2 : 2 non atteint(s)
-
-- `assets/js/modules/m2-consultations.js:483` « Bulletin d’analyses bio-médicales » : exige une consultation portant des analyses prescrites ; non rejoué
-- `assets/js/modules/m2-consultations.js:2902` « Ordonnance médicale » : code mort : `etatOrdonnanceAncienne` n'est appelée nulle part (l'ordonnance s'imprime par `etatOrdonnanceMedicale`)
-
-### M3 : 1 non atteint(s)
-
-- `assets/js/modules/m3-hospitalisation.js:3623` « FICHE DE DEMANDE D’EXAMEN » : le formulaire exige des examens cochés et l'urgence par examen : la saisie automatique est refusée (erreurs de formulaire)
-
-### M5 : 2 non atteint(s)
-
-- `assets/js/modules/m5-laboratoire.js:3446` « Bon de demande de sang » : activité Banque de sang fermée (cfg-modules) : écran inaccessible à tous les profils, administrateur compris
-- `assets/js/modules/m5-laboratoire.js:3579` « Carte de donneur de sang » : activité Banque de sang fermée (cfg-modules) : écran inaccessible à tous les profils, administrateur compris
-
-### M6 : 2 non atteint(s)
-
-- `assets/js/modules/m6-stock.js:1808` « État d’inventaire » : exige une feuille d'inventaire comptée (registre vide sur le jeu) ; saisie de comptage non rejouée
-- `assets/js/modules/m6-stock.js:2568` « Bon de sortie de stock — dispensation » : aucune création manuelle (RG-03) : le bon naît d'une dispensation, qui exige une ordonnance encaissée puis servie ; chaîne non rejouée
-
-### M8 : 2 non atteint(s)
-
-- `assets/js/modules/m8-facturation.js:1934` « Engagement de paiement » : exige un patient débiteur et la saisie d'un engagement de paiement ; non rejoué
-- `assets/js/modules/m8-facturation.js:2120` (intitulé construit à l'exécution) : opération de remboursement à saisir (champs obligatoires) ; non rejouée
-
-### Écrans non explorés
-
-- `m5-donneurs` : non peinte (activité Banque de sang fermée)
-- `plan-du-site` : non peinte
-- `m5-banque-sang` : non peinte (activité Banque de sang fermée)
+- `m5-banque-sang`, `m5-donneurs` : activités fermées dans le dépôt, rouvertes sur le banc par `cfg-modules` (spécimens 8 et 9).
+- `plan-du-site` : page autonome, sans coquille ni `#page-content` : l'exploration la déclarait « non peinte » à tort. Elle est peinte (8934 caractères au dernier passage) et ne porte aucune commande d'impression : aucun état à y relever.
 
 ## Limites
 
 - Les montants et les lignes sont ceux du jeu de démonstration, à la date du banc (16/08/2026) : un état peut sortir avec des zéros ou des tableaux vides quand le jeu n'a rien à cette date (l'arrêté de caisse du jour, par exemple). Rien n'est inventé pour le remplir.
 - Un site d'impression peut produire plusieurs documents (selon le patient, la modalité, le mois) : seuls les premiers intitulés distincts sont gardés (au plus 6 par site).
-- Les écrans sont explorés avec le profil administrateur : un état réservé à un autre profil par surcharge d'écran reste atteignable tant que l'écran s'ouvre à l'administrateur ; les écrans fermés à tous (activités désactivées) ne sont pas explorés.
+- Les écrans sont explorés avec le profil administrateur : un état réservé à un autre profil par surcharge d'écran reste atteignable tant que l'écran s'ouvre à l'administrateur ; les écrans fermés à tous (activités désactivées) ne sont explorés que par les scénarios dédiés (banque de sang).
 - Les états de la maquette sont tous en A4 portrait, sauf le ticket de caisse (rouleau 80 mm) et le badge (carte CR80, recto et verso sur une feuille de 93,6 mm).
 - La taille tient à Chrome, qui écrit la police Inter (variable) en Type 3 ; les objets identiques sont dédoublonnés après coup (pypdf), sans perte.
 
@@ -390,6 +395,6 @@ Sites d'état de la maquette que l'exploration automatique n'a pas atteints (13)
 
 Le jeu de démonstration porte les noms du personnel de l'organigramme réel. Avant le PDF, une table de substitution déterministe remplace dans le texte de chaque état (noms et prénoms par jetons, y compris dans les identifiants de connexion, téléphones et numéros CNSS) par des identités fictives. Les noms de patients du jeu sont générés et sont conservés. L'en-tête légal de la clinique (dénomination, IFU, RCCM) est conservé tel quel : c'est la mise en page réelle des pièces. Aucune pièce ne porte de compte bancaire, de mot de passe ni de jeton.
 
-**Contrôle fait** : relecture de la couche texte de 169 PDF avec `pdftotext -layout`, recherche de 70 jetons de noms réels (personnel, titulaires de l'organigramme, comptes), 88 téléphones et numéros CNSS réels, et des mots IBAN, RIB, mot de passe, jeton. Résultat : **aucune occurrence**.
+**Contrôle fait** : relecture de la couche texte de 182 PDF avec `pdftotext -layout`, recherche de 70 jetons de noms réels (personnel, titulaires de l'organigramme, comptes), 88 téléphones et numéros CNSS réels, et des mots IBAN, RIB, mot de passe, jeton. Résultat : **aucune occurrence**.
 
 Les salaires affichés (bulletins, états de paie) sont des valeurs de démonstration du jeu, non des salaires réels (voir `CLAUDE.md`, champs de test conservés au vidage).
