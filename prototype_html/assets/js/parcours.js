@@ -1471,6 +1471,20 @@
     if (!fac) throw new Error('Facture introuvable.');
     if (fac.statutPaiement === 'soldee') return { facture: fac, deja: true, lignesReglees: [] };
 
+    /* La fenêtre « Facture normalisée » (IFU de l'acheteur, nom, AIB) se contrôle AVANT toute écriture : un refus nommé n'écrit rien. */
+    var acheteurSaisi = null;
+    if (opts.acheteur) {
+      acheteurSaisi = validerAcheteurMecef(opts.acheteur);
+      if (!acheteurSaisi.ok) {
+        return {
+          facture: fac, refus: acheteurSaisi.code + ' : ' + acheteurSaisi.motif + ' ' + acheteurSaisi.geste, refusNomme: acheteurSaisi,
+          debloquees: [], ecritures: [], lignesReglees: [], montantRegle: 0,
+          restantDu: (fac.lignes || []).filter(function (l) { return l.statutPaiement !== 'paye'; }).reduce(function (n, l) { return n + l.partPatient; }, 0),
+          demandesLiberees: [],
+        };
+      }
+    }
+
     var toutes = fac.lignes || [];
     var duTotal = fac.partPatient != null ? fac.partPatient : fac.montantTTC;
 
@@ -1527,22 +1541,39 @@
       : Math.max(0, duTotal - totalPaye);
     var solde = restantDu <= 0;
 
-    col('factures').update(factureId, {
+    /* LA BASE MECeF NAÎT DE LA FONCTION UNIQUE DES MONTANTS : seule la part PATIENT des lignes réglées par ce versement s'ajoute (ni part
+       assureur, ni remise). Les montants des pièces ne changent pas : la fonction retrouve exactement ce qui a été alloué. Une ligne que la
+       fonction refuse (prix décimal d'une pièce ancienne) ne bloque pas l'encaissement : la base reste le total réglé, et c'est la
+       NORMALISATION qui refuse en nommant la ligne. */
+    var baseVersement = null;
+    if (reglees.length) {
+      var mv = mecefMontants({ lignes: reglees.map(ligneVersMecef) });
+      if (mv.ok) baseVersement = mv.base;
+    }
+    var baseMecef = baseVersement != null ? (fac.montantPaye || 0) + baseVersement : totalPaye;
+
+    col('factures').update(factureId, Object.assign({
       lignes: lignesMaj,
       montantPaye: totalPaye,
       reliquat: restantDu,
       modePaiement: opts.mode || 'especes',
       statutPaiement: solde ? 'soldee' : (totalPaye > 0 ? 'partielle' : 'impayee'),
-      statutMecef: solde ? 'valide' : 'en_attente',
+      /* TOUTE VENTE EST NORMALISÉE (Direction, 07/11/2026) : l'état se décide plus bas, par la normalisation de la vente soldée. */
+      statutMecef: 'en_attente',
       /* Le point fiscal du dossier : seule la part réglée est normalisée. */
-      baseMecef: totalPaye,
+      baseMecef: baseMecef,
       dernierReglement: {
         date: new Date().toISOString(), montant: paye, mode: opts.mode || 'especes',
         lignes: reglees.map(function (l) { return l.id; }),
         encaissePar: opts.utilisateur || S.currentUser(),
       },
-    });
+    }, acheteurSaisi ? { ifuClient: acheteurSaisi.acheteur.ifu, acheteurNom: acheteurSaisi.acheteur.nom, aibTaux: acheteurSaisi.acheteur.aibTaux } : {}));
     fac = col('factures').get(factureId);
+
+    /* La vente SOLDÉE passe par la normalisation (faux boîtier) ; un règlement partiel attend le solde. Le refus de la normalisation ne défait
+       pas l'encaissement (l'argent est reçu) : la pièce devient « refusée » ou « à vérifier », nommément, et se retransmet ensuite. */
+    var normalisation = solde ? normaliserVente(factureId, { acheteur: opts.acheteur, utilisateur: opts.utilisateur }) : null;
+    if (normalisation) fac = col('factures').get(factureId);
 
     /* --- Le laboratoire : SEULES les analyses réglées passent ------------- */
     var demandesLiberees = [];
@@ -1623,6 +1654,7 @@
       facture: fac, debloquees: debloquees, ecritures: ecritures,
       lignesReglees: reglees, montantRegle: paye,
       restantDu: restantDu, demandesLiberees: demandesLiberees,
+      normalisation: normalisation,
     };
   }
 
@@ -4630,4 +4662,314 @@
   global.SIGH.parcours.tracerConsentementSms = tracerConsentementSms;
   global.SIGH.parcours.numeroSms = numeroSms;
   global.SIGH.parcours.SMS_MOTIFS = SMS_MOTIFS;
+
+  /* ==========================================================================
+   * MECeF, LOT M1 (08/11/2026) : montants entiers, acheteur, états de pièce, reprise sans doublon
+   * --------------------------------------------------------------------------
+   * Décision de la Direction du 07/11/2026 (PRD-MECEF, section 11 bis) : TOUTE VENTE EST NORMALISÉE à la clinique. Il n'y a donc pas de
+   * « facture simple » : quand le mode n'est pas « Désactivé », chaque vente SOLDÉE passe par la normalisation, et la fenêtre « Facture
+   * normalisée » ne sert qu'à saisir l'IFU et le nom de l'acheteur et le taux d'AIB.
+   *
+   * LA MAQUETTE SIMULE. Il n'y a ici ni boîtier, ni serveur de la DGI : `fauxBoitier` est un appareil de démonstration (compteur, journal
+   * des émissions, pannes réglables pour les sondes). Aucune adresse d'API, aucun protocole, aucun modèle de boîtier n'est supposé : ces
+   * éléments ne figurent dans aucun document remis (PRD, risques). Le numéro produit n'est PAS un numéro fiscal ; la pièce porte
+   * `mecefSimule: true` et l'impression le dit.
+   *
+   * Les identifiants STOCKÉS des états restent `valide` et `rejete` (le poste les lit dans ses jeux, doctrine « on ne renomme pas un
+   * identifiant technique ») : `etatMecef()` en donne le nom CANONIQUE (normalisee, en_attente, a_verifier, refusee, expiree).
+   * ======================================================================== */
+  var ETATS_MECEF = [
+    { id: 'normalisee', stocke: 'valide', libelle: 'Normalisée', ton: 'success' },
+    { id: 'en_attente', stocke: 'en_attente', libelle: 'En attente de transmission', ton: 'warning' },
+    { id: 'a_verifier', stocke: 'a_verifier', libelle: 'À vérifier', ton: 'warning' },
+    { id: 'refusee', stocke: 'rejete', libelle: 'Refusée', ton: 'danger' },
+    { id: 'expiree', stocke: 'expiree', libelle: 'Expirée', ton: 'danger' },
+  ];
+  /** L'état canonique d'une pièce, ou null quand la pièce n'est pas du registre fiscal (avoir « sans_objet », statut absent). */
+  function etatMecef(f) {
+    var s = f && (typeof f === 'string' ? f : f.statutMecef);
+    var e = ETATS_MECEF.filter(function (x) { return x.stocke === s; })[0];
+    return e ? e.id : null;
+  }
+  function etatMecefFiche(id) { return ETATS_MECEF.filter(function (x) { return x.id === id; })[0] || null; }
+
+  function refusMecef(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
+  function entierPositif(x) { return typeof x === 'number' && isFinite(x) && Math.floor(x) === x && x >= 0; }
+  /** a / b arrondi au plus proche (la moitié vers le haut), en arithmétique ENTIÈRE : aucune décimale ne traverse. a >= 0, b > 0. */
+  function divArrondi(a, b) { return Math.floor((2 * a + b) / (2 * b)); }
+  function tauxTvaCourant() {
+    var F = D.PARAM_FISCAL || {};
+    var r = (F.regimesTva || []).filter(function (x) { return x.id === F.regimeTva; })[0];
+    return r ? r.taux : 0;
+  }
+
+  /**
+   * LA FONCTION UNIQUE DES MONTANTS (exposée : SIGH.mecefMontants). Tout montant envoyé à la normalisation naît ici.
+   *   entree = { lignes: [{ id, designation, quantite, prixUnitaire, montantBrut?, remise?, partAssureur?, partPersonnel?, partPatient?,
+   *                         statutPaiement? }],
+   *              remiseGlobale?, totalAttendu?, paiements?, seulementPayees?, aibTaux?, tauxTva? }
+   * Règles : prix unitaire ENTIER en FCFA (sauf quand la pièce porte son `montantBrut` : c'est lui qui gouverne, le prix envoyé est
+   * alors déduit) ; quantité décimale admise jusqu'à trois décimales ; remise de ligne entière, remise globale RÉPARTIE au prorata du
+   * net (par défaut, l'écart d'arrondi va sur la PLUS GRANDE ligne) ; la base MECeF ne porte que la part du PATIENT (jamais la part
+   * assureur, jamais le personnel, jamais une remise) ; les totaux sont CONTRÔLÉS (TOTAL_INCOHERENT) avant tout envoi.
+   * Retour : { ok: true, lignes, brut, remises, total, partAssureur, partPersonnel, partPatient, base, ht, tva, aib, net }
+   *       ou { ok: false, code, motif, geste }.
+   */
+  function mecefMontants(entree) {
+    var e = entree || {};
+    var src = e.lignes || [];
+    if (!src.length) return refusMecef('AUCUNE_LIGNE', 'La pièce ne porte aucune ligne à normaliser.', 'Ajouter au moins une prestation avant la normalisation.');
+    var L = [];
+    for (var i = 0; i < src.length; i++) {
+      var l = src[i] || {};
+      var nom = l.designation || l.id || ('ligne ' + (i + 1));
+      var q = l.quantite == null ? 1 : Number(l.quantite);
+      var qm = Math.round(q * 1000);
+      if (!(isFinite(q) && q > 0) || Math.abs(qm / 1000 - q) > 1e-9) {
+        return refusMecef('QUANTITE_INVALIDE', 'La quantité de « ' + nom + ' » (' + l.quantite + ') doit être positive, à trois décimales au plus.', 'Corriger la quantité de la ligne.');
+      }
+      var brut;
+      if (l.montantBrut != null) {
+        if (!entierPositif(l.montantBrut)) return refusMecef('MONTANT_DECIMAL', 'Le montant de « ' + nom + ' » (' + l.montantBrut + ') n’est pas un nombre entier de FCFA.', 'Corriger la ligne : un montant normalisé est un entier.');
+        brut = l.montantBrut;
+      } else {
+        if (!entierPositif(Number(l.prixUnitaire))) return refusMecef('PRIX_DECIMAL', 'Le prix unitaire de « ' + nom + ' » (' + l.prixUnitaire + ') n’est pas un nombre entier de FCFA.', 'Corriger le prix : seule la quantité peut être décimale.');
+        brut = divArrondi(qm * Number(l.prixUnitaire), 1000);
+      }
+      var remise = l.remise == null ? 0 : l.remise;
+      if (!entierPositif(remise) || remise > brut) return refusMecef('REMISE_INVALIDE', 'La remise de « ' + nom + ' » (' + l.remise + ') doit être un entier de FCFA qui ne dépasse pas le montant de la ligne.', 'Corriger la remise de la ligne.');
+      L.push({ src: l, id: l.id || null, designation: l.designation || null, qm: qm, quantite: q, brut: brut, remise: remise, net: brut - remise,
+        partAssureur: l.partAssureur || 0, partPersonnel: l.partPersonnel || 0 });
+    }
+    /* La remise globale se répartit sur le net ; l'écart d'arrondi (strictement inférieur au nombre de lignes) va sur la PLUS GRANDE ligne. */
+    var rg = e.remiseGlobale == null ? 0 : e.remiseGlobale;
+    if (!entierPositif(rg)) return refusMecef('REMISE_INVALIDE', 'La remise globale (' + e.remiseGlobale + ') doit être un entier de FCFA.', 'Corriger la remise.');
+    if (rg > 0) {
+      var sommeNet = L.reduce(function (n, x) { return n + x.net; }, 0);
+      if (rg > sommeNet) return refusMecef('REMISE_INVALIDE', 'La remise globale (' + rg + ') dépasse le total de la pièce (' + sommeNet + ').', 'Corriger la remise.');
+      var parts = L.map(function (x) { return Math.floor(rg * x.net / sommeNet); });
+      var reste = rg - parts.reduce(function (n, p) { return n + p; }, 0);
+      var plus = 0;
+      L.forEach(function (x, k) { if (x.net > L[plus].net) plus = k; });
+      parts[plus] += reste;
+      for (var k = 0; k < L.length; k++) {
+        if (parts[k] > L[k].net) return refusMecef('REMISE_INVALIDE', 'La part de remise de « ' + (L[k].designation || L[k].id || 'ligne ' + (k + 1)) + ' » dépasse son montant.', 'Corriger la remise.');
+        L[k].remise += parts[k]; L[k].net -= parts[k];
+      }
+    }
+    var totalBrut = 0, totalRemises = 0, total = 0, tAss = 0, tPers = 0, tPat = 0, base = 0;
+    var sortie = [];
+    for (var j = 0; j < L.length; j++) {
+      var x = L[j];
+      var nomL = x.designation || x.id || ('ligne ' + (j + 1));
+      if (!entierPositif(x.partAssureur) || !entierPositif(x.partPersonnel)) return refusMecef('MONTANT_DECIMAL', 'Une part de « ' + nomL + ' » n’est pas un nombre entier de FCFA.', 'Corriger la prise en charge de la ligne.');
+      var pat = x.net - x.partAssureur - x.partPersonnel;
+      if (x.src.partPatient != null && rg === 0 && x.src.partPatient !== pat) {
+        return refusMecef('TOTAL_INCOHERENT', 'Les parts de « ' + nomL + ' » (patient ' + x.src.partPatient + ', assureur ' + x.partAssureur + ', personnel ' + x.partPersonnel + ') ne totalisent pas son montant (' + x.net + ').', 'Reprendre la répartition de la ligne.');
+      }
+      if (pat < 0) return refusMecef('TOTAL_INCOHERENT', 'Les parts de « ' + nomL + ' » dépassent son montant (' + x.net + ').', 'Reprendre la répartition de la ligne.');
+      var compte = !e.seulementPayees || x.src.statutPaiement === 'paye';
+      totalBrut += x.brut; totalRemises += x.remise; total += x.net; tAss += x.partAssureur; tPers += x.partPersonnel; tPat += pat;
+      if (compte) base += pat;
+      sortie.push({ id: x.id, designation: x.designation, quantite: x.quantite, prixUnitaireEnvoye: x.qm ? divArrondi(x.brut * 1000, x.qm) : x.brut,
+        brut: x.brut, remise: x.remise, net: x.net, partAssureur: x.partAssureur, partPersonnel: x.partPersonnel, partPatient: pat });
+    }
+    if (e.totalAttendu != null && e.totalAttendu !== total) {
+      return refusMecef('TOTAL_INCOHERENT', 'La somme des lignes (' + total + ') diffère du total de la pièce (' + e.totalAttendu + ').', 'Reprendre les lignes ou le total de la pièce avant la normalisation.');
+    }
+    if (e.paiements) {
+      var somPaiements = e.paiements.reduce(function (n, p) { return n + p; }, 0);
+      if (somPaiements !== base) return refusMecef('TOTAL_INCOHERENT', 'Les paiements (' + somPaiements + ') diffèrent de la base normalisée (' + base + ').', 'Reprendre les règlements de la pièce.');
+    }
+    var tva = e.tauxTva != null ? e.tauxTva : tauxTvaCourant();
+    var aibTaux = e.aibTaux == null ? 0 : e.aibTaux;
+    if (!entierPositif(aibTaux) || aibTaux > 100) return refusMecef('AIB_TAUX_INVALIDE', 'Le taux d’AIB (' + e.aibTaux + ') n’est pas un pourcentage entier.', 'Choisir 0, 1 ou 5 %.');
+    var ht = tva ? divArrondi(base * 100, 100 + tva) : base;
+    var aib = divArrondi(ht * aibTaux, 100);
+    return { ok: true, lignes: sortie, brut: totalBrut, remises: totalRemises, total: total, partAssureur: tAss, partPersonnel: tPers,
+      partPatient: tPat, base: base, ht: ht, tva: base - ht, aib: aib, net: base + aib };
+  }
+
+  /** Les taux d'AIB offerts à la fenêtre : 1 % par défaut (régime de la facture de référence, à confirmer : Q4 du PRD), 5 % et aucun en choix. */
+  var AIB_TAUX_ADMIS = [0, 1, 5];
+  function aibTauxDefaut() { var F = D.PARAM_FISCAL || {}; return F.aib && AIB_TAUX_ADMIS.indexOf(F.aib.taux) >= 0 ? F.aib.taux : 1; }
+
+  /** Contrôle de la fenêtre « Facture normalisée » : IFU de l'acheteur (13 chiffres quand il est renseigné, facultatif pour un particulier), nom, taux d'AIB. */
+  function validerAcheteurMecef(a) {
+    a = a || {};
+    var ifu = String(a.ifu == null ? '' : a.ifu).replace(/[\s  ]/g, '');
+    if (ifu && !/^\d{13}$/.test(ifu)) {
+      return refusMecef('IFU_INVALIDE', 'L’IFU de l’acheteur (« ' + ifu + ' ») doit comporter exactement 13 chiffres.', 'Corriger l’IFU, ou le laisser vide pour un particulier.');
+    }
+    var nom = String(a.nom == null ? '' : a.nom).trim();
+    if (ifu && !nom) return refusMecef('NOM_ACHETEUR_ABSENT', 'Un IFU d’acheteur est saisi sans son nom.', 'Saisir le nom de l’acheteur qui porte cet IFU.');
+    var taux = a.aibTaux == null || a.aibTaux === '' ? aibTauxDefaut() : Number(a.aibTaux);
+    if (AIB_TAUX_ADMIS.indexOf(taux) < 0) return refusMecef('AIB_TAUX_INVALIDE', 'Le taux d’AIB (' + a.aibTaux + ') n’est pas l’un des choix admis (0, 1 ou 5 %).', 'Choisir 0, 1 ou 5 %.');
+    return { ok: true, acheteur: { ifu: ifu || null, nom: nom || null, aibTaux: taux } };
+  }
+
+  /* --- Le mode : réglage d'exploitation (l'interface du réglage vient au lot M2) -------------------------------------------------- */
+  var MODES_MECEF = ['desactive', 'boitier', 'emecef'];
+  function modeMecef() { var m = S.reglage('mecefMode', 'boitier'); return MODES_MECEF.indexOf(m) >= 0 ? m : 'boitier'; }
+  function definirModeMecef(m) {
+    if (MODES_MECEF.indexOf(m) < 0) return refusMecef('MODE_INCONNU', 'Le mode « ' + m + ' » n’existe pas.', 'Choisir désactivé, boîtier ou e-MECeF.');
+    if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusMecef('MODE_RESERVE', 'Le mode de facturation normalisée se règle par l’administrateur ou la Directrice Administrative.', 'Demander le changement à la DA.');
+    S.setReglage('mecefMode', m);
+    S.log('Mode de facturation normalisée', 'MECEF', 'reglage', 'mecefMode', null, { mode: m });
+    return { ok: true, mode: m };
+  }
+
+  /* --- L'appareil de démonstration ------------------------------------------------------------------------------------------------ */
+  var fauxBoitier = {
+    /** Panne réglable pour les sondes : null | 'refus' | 'reponse_perdue' | 'delai'. En mémoire : un rechargement la lève. */
+    panne: null,
+    etat: function () { return S.reglage('mecefBoitier', { compteur: 0, emissions: [] }); },
+    /** Le prochain numéro : séquentiel, JAMAIS déjà porté par une facture ou un avoir. */
+    numeroSuivant: function () {
+      var pris = {};
+      col('factures').all().forEach(function (f) { if (f.numeroMecef) pris[f.numeroMecef] = true; });
+      col('avoirs').all().forEach(function (a) { if (a.numeroMecef) pris[a.numeroMecef] = true; });
+      var et = this.etat(), n = et.compteur, num;
+      do { n++; num = 'MECEF' + String(2000000 + n); } while (pris[num]);
+      return { numero: num, compteur: n };
+    },
+    emettre: function (demande) {
+      if (this.panne === 'refus') return { ok: false, code: 'REFUS_SIMULE', motif: 'Refus simulé par l’appareil de démonstration.' };
+      if (this.panne === 'delai') return { ok: false, code: 'DELAI_DEPASSE', motif: 'Délai simulé dépassé : la facture non confirmée a expiré.', expiree: true };
+      var nx = this.numeroSuivant();
+      var et = this.etat();
+      var emissions = (et.emissions || []).concat([{ cle: demande.cle, numero: nx.numero, compteur: nx.compteur, total: demande.total, base: demande.base,
+        ifuAcheteur: demande.ifuAcheteur, nomAcheteur: demande.nomAcheteur, aibTaux: demande.aibTaux, aib: demande.aib, horodatage: new Date().toISOString() }]).slice(-500);
+      S.setReglage('mecefBoitier', { compteur: nx.compteur, emissions: emissions });
+      if (this.panne === 'reponse_perdue') return { ok: false, code: 'REPONSE_PERDUE', motif: 'La réponse de l’appareil de démonstration s’est perdue après l’émission.', perdue: true };
+      return { ok: true, numero: nx.numero, compteur: nx.compteur, horodatage: emissions[emissions.length - 1].horodatage };
+    },
+    /** Lecture seule : ce que l'appareil a déjà émis pour cette vente (jamais une émission). */
+    consulter: function (cle) {
+      var tr = (this.etat().emissions || []).filter(function (x) { return x.cle === cle; });
+      return tr.length ? tr[tr.length - 1] : null;
+    },
+  };
+
+  /** Les lignes d'une pièce vues par la fonction des montants (la pièce garde ses montants : `montantBrut` ou `montant` gouverne). */
+  function ligneVersMecef(l) {
+    var o = { id: l.id, designation: l.designation, quantite: l.quantite != null ? l.quantite : 1, prixUnitaire: l.prixUnitaire,
+      partAssureur: l.partAssureur || 0, partPersonnel: l.partPersonnel || 0, statutPaiement: l.statutPaiement };
+    if (l.montantBrut != null) { o.montantBrut = l.montantBrut; o.remise = l.remise || 0; }
+    else if (l.montant != null) { o.montantBrut = l.montant; o.remise = 0; }
+    return o;
+  }
+  function entreeMontantsPiece(fac, aibTaux) {
+    var lignes = (fac.lignes && fac.lignes.length) ? fac.lignes.map(ligneVersMecef)
+      : [{ designation: 'Prestation', quantite: 1, montantBrut: fac.montantTTC, prixUnitaire: fac.montantTTC,
+        partAssureur: fac.partAssurance || 0, partPersonnel: fac.partPersonnel || 0 }];
+    return { lignes: lignes, totalAttendu: fac.montantTTC, aibTaux: aibTaux };
+  }
+
+  /** L'ACHETEUR d'une pièce : ce que la fenêtre a saisi, sinon ce que la pièce porte déjà, sinon les défauts (particulier, AIB par défaut). */
+  function acheteurDePiece(fac, saisi) {
+    var s = saisi || {};
+    return validerAcheteurMecef({
+      ifu: s.ifu !== undefined ? s.ifu : fac.ifuClient,
+      nom: s.nom !== undefined ? s.nom : fac.acheteurNom,
+      aibTaux: s.aibTaux !== undefined ? s.aibTaux : fac.aibTaux,
+    });
+  }
+
+  /**
+   * NORMALISER UNE VENTE (faux boîtier). Une vente déjà normalisée ne se renormalise JAMAIS ; un numéro déjà porté n'est jamais réécrit ;
+   * l'état `en_attente` est ÉCRIT AVANT l'appel à l'appareil (un redémarrage reprend au bon endroit, PRD section 8) ; aucune
+   * réponse perdue ne se rejoue toute seule (état `a_verifier`, décision humaine).
+   * Retour : { ok: true, numero, etat } | { ignore: true } (mode désactivé) | { ok: false, code, motif, geste, etat }.
+   */
+  function normaliserVente(factureId, opts) {
+    opts = opts || {};
+    var fac = col('factures').get(factureId);
+    if (!fac) return refusMecef('FACTURE_INTROUVABLE', 'La facture ' + factureId + ' n’existe pas.', 'Rouvrir la caisse et choisir une pièce du registre.');
+    if (fac.proforma) return refusMecef('PROFORMA', 'Une pro-forma n’est pas une vente : elle ne se normalise pas.', 'Émettre la facture de vente.');
+    if (modeMecef() === 'desactive') return { ok: true, ignore: true, motif: 'Mode « Désactivé » : aucune normalisation (démonstration).' };
+    if (etatMecef(fac) === 'normalisee' && fac.numeroMecef) {
+      return refusMecef('DEJA_NORMALISEE', 'La facture ' + fac.numero + ' est déjà normalisée (' + fac.numeroMecef + ') : elle ne se renormalise jamais.', 'La corriger par un avoir.');
+    }
+    var ach = acheteurDePiece(fac, opts.acheteur);
+    if (!ach.ok) return ach;
+    var acheteur = ach.acheteur;
+    var entree = entreeMontantsPiece(fac, acheteur.aibTaux);
+    var m = mecefMontants(entree);
+    var bascule = { ifuClient: acheteur.ifu, acheteurNom: acheteur.nom, aibTaux: acheteur.aibTaux, modeMecef: modeMecef(), mecefSimule: true };
+    if (!m.ok) {
+      col('factures').update(factureId, Object.assign({ statutMecef: 'rejete', codeRetour: m.code, motifRefusMecef: m.motif }, bascule));
+      S.log('Normalisation refusée', 'MECEF', 'facture', fac.numero, { statutMecef: fac.statutMecef }, { code: m.code });
+      return Object.assign({}, m, { etat: 'refusee' });
+    }
+    var aib = m.aib;
+    /* L'état est écrit AVANT l'appel à l'appareil. */
+    col('factures').update(factureId, Object.assign({ statutMecef: 'en_attente', codeRetour: null, motifRefusMecef: null }, bascule));
+    var rep;
+    if (fac.numeroMecef) {
+      /* Un numéro déjà porté (pièce ancienne, ou réponse reconciliée) n'est JAMAIS réécrit : on ne rappelle pas l'appareil. */
+      rep = { ok: true, numero: fac.numeroMecef, horodatage: new Date().toISOString(), repris: true };
+    } else {
+      rep = fauxBoitier.emettre({ cle: factureId, total: fac.montantTTC, base: m.base, ifuAcheteur: acheteur.ifu, nomAcheteur: acheteur.nom, aibTaux: acheteur.aibTaux, aib: aib });
+    }
+    if (rep.ok) {
+      col('factures').update(factureId, { statutMecef: 'valide', numeroMecef: rep.numero, codeRetour: 'OK-200', dateTransmission: rep.horodatage,
+        aibMontant: aib, normalisePar: opts.utilisateur || S.currentUser() });
+      S.log('Normalisation', 'MECEF', 'facture', fac.numero, { statutMecef: 'en_attente' }, { statutMecef: 'valide', numero: rep.numero, mode: modeMecef() });
+      return { ok: true, numero: rep.numero, etat: 'normalisee', repris: !!rep.repris };
+    }
+    var stocke = rep.perdue ? 'a_verifier' : (rep.expiree ? 'expiree' : 'rejete');
+    col('factures').update(factureId, { statutMecef: stocke, codeRetour: rep.code, motifRefusMecef: rep.motif });
+    S.log('Normalisation non aboutie', 'MECEF', 'facture', fac.numero, { statutMecef: 'en_attente' }, { statutMecef: stocke, code: rep.code });
+    var geste = rep.perdue ? 'Vérifier auprès de l’appareil : « Reprendre sans doubler » ne rejoue jamais l’émission.'
+      : (rep.expiree ? 'Renormaliser la vente.' : 'Corriger puis retransmettre la vente.');
+    return { ok: false, code: rep.code, motif: rep.motif, geste: geste, etat: etatMecef({ statutMecef: stocke }) };
+  }
+
+  /** REPRISE SANS DOUBLON d'une vente `a_verifier` : on LIT l'appareil, on n'émet pas. Émission retrouvée (même vente, même total) :
+   *  réconciliée, avec SON numéro. Rien d'émis : la vente repasse en attente (le renvoi reste un geste humain). Total différent : à vérifier. */
+  function reprendreMecef(factureId) {
+    var fac = col('factures').get(factureId);
+    if (!fac) return refusMecef('FACTURE_INTROUVABLE', 'La facture ' + factureId + ' n’existe pas.', 'Choisir une pièce du registre.');
+    if (etatMecef(fac) !== 'a_verifier') return refusMecef('PAS_A_VERIFIER', 'La facture ' + fac.numero + ' n’est pas à vérifier (état : ' + (etatMecef(fac) || '—') + ').', 'Seule une vente « À vérifier » se reprend.');
+    var em = fauxBoitier.consulter(factureId);
+    if (!em) {
+      col('factures').update(factureId, { statutMecef: 'en_attente', codeRetour: 'NON_EMISE', motifRefusMecef: 'L’appareil n’a rien émis pour cette vente.' });
+      S.log('Reprise MECeF', 'MECEF', 'facture', fac.numero, { statutMecef: 'a_verifier' }, { statutMecef: 'en_attente', code: 'NON_EMISE' });
+      return { ok: true, reconcilie: false, etat: 'en_attente', motif: 'Rien n’a été émis : la vente peut être renormalisée.' };
+    }
+    if (em.total !== fac.montantTTC) {
+      return refusMecef('DIVERGENCE', 'L’appareil a émis ' + em.numero + ' pour un total de ' + em.total + ' alors que la pièce vaut ' + fac.montantTTC + '.', 'Ne pas renvoyer : en référer à la DA.');
+    }
+    col('factures').update(factureId, { statutMecef: 'valide', numeroMecef: em.numero, codeRetour: 'OK-200', dateTransmission: em.horodatage,
+      aibMontant: em.aib, reconcilie: true, motifRefusMecef: null });
+    S.log('Reprise MECeF', 'MECEF', 'facture', fac.numero, { statutMecef: 'a_verifier' }, { statutMecef: 'valide', numero: em.numero });
+    return { ok: true, reconcilie: true, numero: em.numero, etat: 'normalisee' };
+  }
+
+  /** RETRANSMETTRE une vente refusée ou expirée (PRD section 7, Q7) : le caissier UNE fois, puis la DA ; jamais une vente normalisée. */
+  function retransmettreMecef(factureId, opts) {
+    var fac = col('factures').get(factureId);
+    if (!fac) return refusMecef('FACTURE_INTROUVABLE', 'La facture ' + factureId + ' n’existe pas.', 'Choisir une pièce du registre.');
+    var etat = etatMecef(fac);
+    if (etat === 'normalisee') return refusMecef('DEJA_NORMALISEE', 'La facture ' + fac.numero + ' est déjà normalisée (' + fac.numeroMecef + ') : elle ne se retransmet jamais.', 'La corriger par un avoir.');
+    if (['refusee', 'expiree', 'en_attente'].indexOf(etat) < 0) return refusMecef('PAS_RETRANSMISSIBLE', 'La facture ' + fac.numero + ' est à vérifier : elle se reprend sans doubler, elle ne se retransmet pas.', 'Utiliser « Reprendre sans doubler ».');
+    var role = roleCourant();
+    var deja = fac.retransmissions || 0;
+    if (role === 'caissier' && deja >= 1) return refusMecef('RETRANSMISSION_RESERVEE', 'Le caissier ne retransmet qu’une fois : la facture ' + fac.numero + ' l’a déjà été.', 'Demander la retransmission à la Directrice Administrative.');
+    if (['caissier', 'da', 'admin'].indexOf(role) < 0) return refusMecef('RETRANSMISSION_INTERDITE', 'La retransmission est réservée au caissier (une fois) et à la Directrice Administrative.', 'Demander à la caisse ou à la DA.');
+    if (etat !== 'en_attente') col('factures').update(factureId, { retransmissions: deja + 1 });
+    return normaliserVente(factureId, opts);
+  }
+
+  global.SIGH.mecefMontants = mecefMontants;
+  global.SIGH.mecef = {
+    ETATS: ETATS_MECEF, AIB_TAUX_ADMIS: AIB_TAUX_ADMIS, MODES: MODES_MECEF,
+    etat: etatMecef, fiche: etatMecefFiche,
+    montants: mecefMontants, validerAcheteur: validerAcheteurMecef, aibTauxDefaut: aibTauxDefaut,
+    mode: modeMecef, definirMode: definirModeMecef,
+    normaliser: normaliserVente, reprendre: reprendreMecef, retransmettre: retransmettreMecef,
+    fauxBoitier: fauxBoitier, numeroSuivant: function () { return fauxBoitier.numeroSuivant(); },
+  };
+  global.SIGH.parcours.mecef = global.SIGH.mecef;
 })(window);

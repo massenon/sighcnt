@@ -148,6 +148,42 @@
     return wrap;
   }
 
+  /* --- La fenêtre « Facture normalisée » (MECeF, lot M1, 08/11/2026) ----------------------------------------------------------------
+     TOUTE VENTE EST NORMALISÉE à la clinique (Direction, 07/11/2026) : il n'y a pas de « facture simple » à choisir. La fenêtre ne sert qu'à
+     saisir l'IFU et le nom de l'acheteur et le taux d'AIB ; ces données sont rangées dans la vente, imprimées, transmises. Une seule
+     fabrique pour les trois portes d'encaissement (registre, file de caisse, émission) : trois copies divergeraient. En mode « Désactivé »
+     (démonstration), la section est ABSENTE : il n'y a rien à normaliser. Le contrôle est celui du socle (`PR.mecef.validerAcheteur`). */
+  function sectionAcheteur(fac) {
+    if (!PR.mecef || PR.mecef.mode() === 'desactive') return null;
+    var f = fac || {};
+    var ifu = el('input.input', { type: 'text', inputmode: 'numeric', placeholder: '13 chiffres (facultatif pour un particulier)', value: f.ifuClient || '' });
+    var nom = el('input.input', { type: 'text', placeholder: 'Nom de l’acheteur (le patient, par défaut)', value: f.acheteurNom || '' });
+    var aib = el('select.select');
+    [[0, 'Aucun'], [1, '1 % (taux de la facture de référence, à confirmer)'], [5, '5 %']].forEach(function (o) {
+      aib.appendChild(el('option', { value: String(o[0]) }, o[1]));
+    });
+    aib.value = String(f.aibTaux != null ? f.aibTaux : PR.mecef.aibTauxDefaut());
+    var node = el('div.space-y-2.rounded-lg.border.border-slate-200.p-3', { 'data-section': 'facture-normalisee' }, [
+      el('p.text-xs.font-semibold.uppercase.tracking-wide.text-navy-900', { text: 'Facture normalisée' }),
+      el('div.grid.gap-3.sm\\:grid-cols-3', null, [
+        el('div', null, [el('label.label', { text: 'IFU de l’acheteur' }), ifu]),
+        el('div', null, [el('label.label', { text: 'Nom de l’acheteur' }), nom]),
+        el('div', null, [el('label.label', { text: 'Taux d’AIB' }), aib]),
+      ]),
+      el('p.text-xs.text-slate-500', { text: 'Toute vente est normalisée : ces trois champs sont les seuls à saisir. L’IFU, s’il est renseigné, compte 13 chiffres.' }),
+    ]);
+    return {
+      el: node, champs: { ifu: ifu, nom: nom, aib: aib },
+      lire: function () { return { ifu: ifu.value, nom: nom.value, aibTaux: Number(aib.value) }; },
+    };
+  }
+  /** Ce que la normalisation a rendu, dit au guichet : une pièce refusée ou à vérifier se DIT, avec son code, son motif et son geste. */
+  function annonceNormalisation(n) {
+    if (!n || n.ignore) return;
+    if (n.ok) { U.toast('Vente normalisée : ' + n.numero + '.', { type: 'success', detail: 'Numéro de démonstration, non fiscal (simulation de la maquette).' }); return; }
+    U.toast('Normalisation non aboutie (' + n.code + ') : la vente est encaissée mais pas normalisée.', { type: 'warning', detail: n.motif + ' ' + n.geste, duration: 12000 });
+  }
+
   /* --- Facture normalisée imprimable --------------------------------------- */
   /* --------------------------------------------------------------------------
    * Catégorie de garantie d'une ligne — c'est elle qui décide du taux appliqué.
@@ -1562,12 +1598,14 @@
           { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
         ], { montant: f.reliquat, modePaiement: f.modePaiement });
 
+        var acheteurFen = sectionAcheteur(f);
         var body = el('div.space-y-3', null, [
           U.descList([['Facture', f.numero], ['Patient', f.patient],
             ['Montant total', C.money(f.montantTTC)], ['Part patient', C.money(f.partPatient)],
             ['Déjà réglé', C.money(f.montantPaye)], ['Reste à payer', C.money(f.reliquat)]], 'grid-cols-2'),
           form,
-        ]);
+          acheteurFen ? acheteurFen.el : null,
+        ].filter(Boolean));
 
         var m = U.modal({
           title: 'Encaissement', subtitle: f.numero + ' — ' + f.patient, size: 'md', body: body,
@@ -1582,8 +1620,8 @@
                 /* L'encaissement passe par le MOTEUR (E2260) : lignes réglées, analyses et imagerie libérées, tâches d'aval ouvertes, base MECeF et
                    ÉCRITURE comptable. Il écrivait la facture seule : ni journal, ni déblocage, ni créance de l'assureur. Un versement refusé
                    (au-delà du dû) l'est en le disant. Un encaissement ne s'annule pas : la correction passe par un remboursement ou un avoir. */
-                var r = PR.encaisser(f.id, { montant: v.montant, mode: v.modePaiement });
-                if (r.refus) { U.toast(r.refus, { type: 'error' }); return; }
+                var r = PR.encaisser(f.id, { montant: v.montant, mode: v.modePaiement, acheteur: acheteurFen ? acheteurFen.lire() : undefined });
+                if (r.refus) { U.toast(r.refus, { type: 'error', duration: 9000 }); return; }
                 if (!(r.montantRegle > 0)) { U.toast('Ce versement ne couvre entièrement aucune ligne de la pièce : régler une ou plusieurs prestations en entier.', { type: 'error' }); return; }
                 /* La référence et l'observation du versement s'ÉCRIVENT sur la facture (même champ que m8-caisse) : sans cela elles
                    ne vivaient que sur le reçu imprimé une fois, et la réimpression affichait « — ». */
@@ -1593,6 +1631,7 @@
                 if (Object.keys(patchReglement).length) S.collection('factures').update(f.id, patchReglement);
                 m.close();
                 if (table) table.refresh();
+                annonceNormalisation(r.normalisation);
                 U.toast('Encaissement de ' + C.money(r.montantRegle) + ' enregistré.', {
                   type: 'success',
                   detail: (r.restantDu > 0 ? 'Reliquat de ' + C.money(r.restantDu) + '.' : 'Facture soldée.')
@@ -2154,6 +2193,7 @@
             : 'La facture sera intégralement soldée.';
         }
 
+        var acheteurFen = sectionAcheteur(fac);
         var corps = el('div.space-y-3', null, [
           U.descList([
             ['Patient', fac.patient], ['Dossier', fac.patientCode],
@@ -2179,6 +2219,7 @@
             el('div', null, [el('label.label', { text: 'Mode de règlement' }), selMode]),
             el('div', null, [el('label.label', { text: 'Référence de transaction' }), champRef]),
           ]),
+          acheteurFen ? acheteurFen.el : null,
         ].filter(Boolean));
 
         recalculer();
@@ -2211,6 +2252,7 @@
                     lignes: sel.map(function (l) { return l.id; }),
                     montant: lignes.length ? undefined : fac.reliquat,
                     mode: selMode.value, utilisateur: S.currentUser(),
+                    acheteur: acheteurFen ? acheteurFen.lire() : undefined,
                   });
                 } catch (e) { U.toast('Encaissement impossible : ' + e.message, { type: 'error' }); return; }
                 if (res.refus) { U.toast('Encaissement refusé.', { type: 'error', detail: res.refus, duration: 9000 }); return; }
@@ -2220,6 +2262,7 @@
                 m.close();
                 refresh();
                 afficher();
+                annonceNormalisation(res.normalisation);
 
                 var suite = (res.demandesLiberees || []).length
                   ? C.num(res.demandesLiberees.length) + ' examen(s) transmis au laboratoire'
