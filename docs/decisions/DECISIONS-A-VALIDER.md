@@ -1,4 +1,6 @@
-# Décisions à valider par la Direction
+# Décisions de la Direction
+
+**Statut : toutes les recommandations ci-dessous sont VALIDÉES par la Direction le 09/11/2026** (« je valide toutes tes décisions »). Les cases restent pour mémoire : lire la colonne « Recommandation » comme la décision arrêtée. Deux points ne sont pas des décisions mais des démarches : le texte réglementaire de l'AIB (Q1) et la charge des 5 % (Q7) restent à obtenir auprès de l'expert-comptable ou du centre des impôts ; en attendant, l'AIB reste un acompte imputable affiché sans écriture et tout reste « proposition à valider ».
 
 État au 09/11/2026. Une ligne par décision : cocher une case ou écrire une réponse, et rien d'autre à faire. Les recommandations sont celles de l'équipe de développement ; aucune n'est appliquée tant que la case n'est pas cochée.
 
