@@ -303,7 +303,7 @@
         el('div', null, [
           el('p.text-\\[9px\\].font-semibold', { text: 'Identifiant fiscal MECeF : ' + f.numeroMecef }),
           el('p.text-\\[9px\\]', { text: 'IFU : ' + C.BRAND.ifu + ' — RCCM : ' + C.BRAND.rccm }),
-          el('p.text-\\[9px\\]', { text: 'Statut de transmission : ' + (f.statutMecef === 'valide' ? 'validée par l’administration fiscale' : f.statutMecef) }),
+          el('p.text-\\[9px\\]', { text: 'Statut de transmission : ' + (f.statutMecef === 'valide' ? 'validée par l’administration fiscale' : ((PR.mecef.fiche(PR.mecef.etat(f)) || {}).libelle || f.statutMecef)) }),
         ]),
       ]));
     }
@@ -733,6 +733,7 @@
       /* Le cahier de charge le demande expressément : « dissocier l'opération de
          caisse du numéro de dossier du patient » — vente au comptoir. */
       var dissocier = el('input.checkbox', { type: 'checkbox', id: 'f_dissocier' });
+      var acheteurEmission = sectionAcheteur(null);
 
       lateral.appendChild(U.card('Récapitulatif', el('div.space-y-3', null, [
         totauxHost,
@@ -742,7 +743,8 @@
           dissocier,
           el('span.text-xs.text-slate-600', { text: 'Opération de caisse détachée du dossier patient (vente au comptoir)' }),
         ]),
-      ])));
+        acheteurEmission ? acheteurEmission.el : null,
+      ].filter(Boolean))));
 
       /* La répartition n'est plus un taux unique appliqué au total : le moteur
          de prise en charge traite chaque ligne selon sa catégorie, son plafond,
@@ -868,6 +870,12 @@
 
       function enregistrer(proforma) {
         if (!lignes.length) { U.toast('Ajouter au moins une prestation.', { type: 'error' }); return; }
+        /* La fenêtre « Facture normalisée » se contrôle AVANT toute écriture : un refus nommé n'écrit rien. */
+        var acheteurSaisi = null;
+        if (!proforma && acheteurEmission) {
+          acheteurSaisi = PR.mecef.validerAcheteur(acheteurEmission.lire());
+          if (!acheteurSaisi.ok) { U.toast(acheteurSaisi.code + ' : ' + acheteurSaisi.motif, { type: 'error', detail: acheteurSaisi.geste, duration: 9000 }); return; }
+        }
         var t = totaux();
         var couvre = t.partAssurance > 0;
 
@@ -933,7 +941,8 @@
             /* Point fiscal : la MECeF ne normalise que la part réglée par le
                patient. Une pièce entièrement à la charge de l'assureur n'y va
                pas, et les remises n'y entrent jamais. */
-            numeroMecef: (proforma || patPiece === 0) ? null : 'MECEF' + C.between(C.seeded(Date.now() % 100000 + rang), 1000000, 9999999),
+            /* Le numéro fiscal vient de la normalisation (faux boîtier), jamais d'un tirage à l'émission : une vente non soldée n'en porte pas. */
+            numeroMecef: null,
             baseMecef: proforma ? 0 : reglePiece,
             patientId: patientCourant.id, patient: patientCourant.nom + ' ' + patientCourant.prenom,
             patientCode: dissocier.checked ? null : patientCourant.code,
@@ -955,9 +964,10 @@
             montantPaye: reglePiece, reliquat: patPiece - reglePiece,
             modePaiement: selMode.value,
             statutPaiement: proforma ? 'impayee' : (reglePiece >= patPiece ? 'soldee' : (reglePiece > 0 ? 'partielle' : 'impayee')),
-            statutMecef: (proforma || patPiece === 0) ? 'en_attente' : 'valide',
+            statutMecef: 'en_attente',
             proforma: !!proforma,
           };
+          if (acheteurSaisi) { f.ifuClient = acheteurSaisi.acheteur.ifu; f.acheteurNom = acheteurSaisi.acheteur.nom; f.aibTaux = acheteurSaisi.acheteur.aibTaux; }
           var res = S.collection('factures', { module: 'M8', entite: 'Facture' }).insert(f);
           creees.push(res.record);
           annulations.push(res.undo);
@@ -967,6 +977,12 @@
           if (!proforma) {
             var posees = PR.ecrireEncaissement(res.record, reglePiece);
             annulations.push(function () { posees.forEach(function (e) { S.collection('ecritures').archive(e.id); }); });
+            /* TOUTE VENTE SOLDÉE EST NORMALISÉE ; une pièce à la charge de l'assureur seul (part patient nulle) n'a rien à normaliser. */
+            if (res.record.statutPaiement === 'soldee' && patPiece > 0) {
+              var norm = PR.mecef.normaliser(res.record.id, { acheteur: acheteurSaisi ? acheteurSaisi.acheteur : undefined });
+              annonceNormalisation(norm);
+              creees[creees.length - 1] = S.collection('factures').get(res.record.id);
+            }
           }
         });
 
@@ -1423,7 +1439,7 @@
         {
           key: 'statutMecef', label: 'MECeF',
           render: function (f) {
-            var m = { valide: ['Validée', 'success'], en_attente: ['En attente', 'warning'], rejete: ['Rejetée', 'danger'] };
+            var m = {}; PR.mecef.ETATS.forEach(function (e) { m[e.stocke] = [e.libelle, e.ton]; });
             var x = m[f.statutMecef] || ['—', 'neutral'];
             return U.badge(x[0], x[1]);
           },
@@ -1469,7 +1485,7 @@
       filters: [
         { name: 'statutPaiement', label: 'Règlement', options: [{ value: 'soldee', label: 'Soldée' }, { value: 'partielle', label: 'Partielle' }, { value: 'impayee', label: 'Impayée' }] },
         { name: 'type', label: 'Nature', options: ['Consultation', 'Hospitalisation', 'Laboratoire', 'Pharmacie', 'Soins à domicile'] },
-        { name: 'statutMecef', label: 'MECeF', options: [{ value: 'valide', label: 'Validée' }, { value: 'en_attente', label: 'En attente' }, { value: 'rejete', label: 'Rejetée' }] },
+        { name: 'statutMecef', label: 'MECeF', options: PR.mecef.ETATS.map(function (e) { return { value: e.stocke, label: e.libelle }; }) },
         {
           name: 'assurance', label: 'Couverture',
           options: [{ value: 'oui', label: 'Avec assurance' }, { value: 'non', label: 'Sans assurance' }],

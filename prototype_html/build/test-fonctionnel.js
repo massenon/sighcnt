@@ -15208,6 +15208,259 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
+  /* ==========================================================================
+   * Vague 96 : MECeF, lot M1 (Direction, 07/11/2026) : montants entiers, fenêtre « Facture normalisée », états de pièce, reprise sans doublon
+   * -------------------------------------------------------------------------
+   * TOUTE VENTE EST NORMALISÉE : pas de « facture simple », cinq états. La maquette SIMULE (faux boîtier, pannes réglables) et le dit. Les
+   * sondes de la fonction des montants sont des appels purs (propriété sur mille ventes tirées au hasard) ; celles du geste passent par
+   * l'encaissement réel. Pièces de SONDE (`FN-2099-S96…`), archivées à la sortie (RG-14) ; le journal de l'appareil et le mode sont restitués.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 96 : MECeF M1 (montants entiers, acheteur validé, cinq états sans « simple », reprise sans doublon, numéro jamais réécrit, DEMO, avoir aligné)');
+    erreursJS = [];
+    await ouvrir('m8-paiements.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+
+    /* --- 1. la fonction unique des montants (exposée pour être sondée) --------------------------------------------------------- */
+    const fn = await page.evaluate(() => {
+      const M = window.SIGH.mecefMontants;
+      const L = (net, o) => Object.assign({ designation: 'x', quantite: 1, prixUnitaire: net }, o || {});
+      const out = { exposee: typeof M === 'function' };
+      const rg = M({ lignes: [L(10000), L(3), L(7)], remiseGlobale: 100 });
+      out.residu = rg.ok ? { remises: rg.lignes.map((l) => l.remise), nets: rg.lignes.map((l) => l.net), total: rg.total } : rg;
+      const demi = M({ lignes: [L(3001, { quantite: 0.5 })] });
+      out.demi = demi.ok ? demi.lignes[0].brut : demi;
+      out.prixDecimal = M({ lignes: [L(1500.5)] });
+      out.qte4 = M({ lignes: [L(1000, { quantite: 1.2345 })] });
+      out.totalFaux = M({ lignes: [L(1000), L(2000)], totalAttendu: 3001 });
+      out.totalBon = M({ lignes: [L(1000), L(2000)], totalAttendu: 3000 });
+      const ass = M({ lignes: [L(10000, { partAssureur: 3000 }), L(6000, { remise: 1000 })] });
+      out.base = ass.ok ? { base: ass.base, total: ass.total, remises: ass.remises, partAssureur: ass.partAssureur } : ass;
+      const parts = M({ lignes: [L(10000, { partAssureur: 3000, partPatient: 6999 })] });
+      out.partsFausses = parts;
+      const pay = M({ lignes: [L(1000)], paiements: [999] });
+      out.payFaux = pay;
+      /* propriété : mille ventes tirées au hasard, aucune décimale (la quantité exceptée), totaux égaux à la somme des lignes */
+      let g = 12345; const r = () => (g = (g * 1103515245 + 12345) % 2147483648) / 2147483648;
+      let mauvais = 0, vus = 0, detail = '';
+      for (let i = 0; i < 1000; i++) {
+        const n = 1 + Math.floor(r() * 5);
+        const lignes = [];
+        for (let k = 0; k < n; k++) {
+          const q = [1, 2, 3, 0.5, 1.5, 2.25][Math.floor(r() * 6)], pu = 100 + Math.floor(r() * 50000);
+          const brut = Math.floor((Math.round(q * 1000) * pu + 500) / 1000);
+          const remise = r() < 0.3 ? Math.floor(r() * brut * 0.5) : 0;
+          const ass = r() < 0.4 ? Math.floor((brut - remise) * 0.8) : 0;
+          lignes.push({ designation: 'l' + k, quantite: q, prixUnitaire: pu, remise, partAssureur: ass });
+        }
+        const rgl = r() < 0.4 ? Math.floor(r() * 500) : 0;
+        const m = M({ lignes, remiseGlobale: rgl, aibTaux: [0, 1, 5][Math.floor(r() * 3)] });
+        vus++;
+        if (!m.ok) { if (rgl === 0) { mauvais++; detail = JSON.stringify(m).slice(0, 120); } continue; }
+        const entiers = [m.brut, m.remises, m.total, m.partAssureur, m.partPatient, m.base, m.ht, m.tva, m.aib, m.net].concat(m.lignes.reduce((a, l) => a.concat([l.brut, l.remise, l.net, l.partPatient, l.prixUnitaireEnvoye]), []));
+        const sNet = m.lignes.reduce((s, l) => s + l.net, 0), sPat = m.lignes.reduce((s, l) => s + l.partPatient, 0);
+        if (!entiers.every(Number.isInteger) || sNet !== m.total || sPat !== m.base || m.base + m.partAssureur !== m.total || m.remises !== lignes.reduce((s, l) => s + (l.remise || 0), 0) + rgl) { mauvais++; detail = 'incohérent ' + JSON.stringify([m.total, sNet, m.base, sPat]); }
+      }
+      out.propriete = { vus, mauvais, detail };
+      const A = window.SIGH.mecef.validerAcheteur;
+      out.acheteur = {
+        court: A({ ifu: '123', nom: 'X' }).code, treize: A({ ifu: '3201642748214', nom: 'Clinique X' }).ok, espaces: A({ ifu: '3201 6427 48214', nom: 'X' }).acheteur && A({ ifu: '3201 6427 48214', nom: 'X' }).acheteur.ifu,
+        lettres: A({ ifu: '32016427482AB', nom: 'X' }).code, sansNom: A({ ifu: '3201642748214', nom: '' }).code, particulier: A({ ifu: '', nom: '' }).ok, taux7: A({ aibTaux: 7 }).code, defaut: A({}).acheteur.aibTaux,
+      };
+      out.etats = window.SIGH.mecef.ETATS.map((e) => e.id);
+      return out;
+    });
+    verifier('SIGH.mecefMontants est exposée au socle (sondable)', fn.exposee === true);
+    verifier('Remise globale répartie : l’écart d’arrondi va sur la PLUS GRANDE ligne (10 000), les petites lignes ne reçoivent rien',
+      JSON.stringify(fn.residu.remises) === '[100,0,0]' && fn.residu.total === 9910, JSON.stringify(fn.residu));
+    verifier('Quantité décimale admise (0,5 × 3 001 = 1 501, la moitié vers le haut) ; plus de trois décimales refusé (QUANTITE_INVALIDE)', fn.demi === 1501 && fn.qte4.code === 'QUANTITE_INVALIDE', JSON.stringify([fn.demi, fn.qte4.code]));
+    verifier('Prix décimal refusé en le nommant (PRIX_DECIMAL, motif et geste)', fn.prixDecimal.ok === false && fn.prixDecimal.code === 'PRIX_DECIMAL' && !!fn.prixDecimal.motif && !!fn.prixDecimal.geste, JSON.stringify(fn.prixDecimal));
+    verifier('Total contrôlé : une somme de lignes différente du total de la pièce est refusée (TOTAL_INCOHERENT) ; le total juste passe', fn.totalFaux.code === 'TOTAL_INCOHERENT' && fn.totalBon.ok === true, JSON.stringify([fn.totalFaux.code, fn.totalBon.ok]));
+    verifier('Des parts qui ne totalisent pas la ligne, ou des paiements qui diffèrent de la base, sont refusés (TOTAL_INCOHERENT)', fn.partsFausses.code === 'TOTAL_INCOHERENT' && fn.payFaux.code === 'TOTAL_INCOHERENT', JSON.stringify([fn.partsFausses.code, fn.payFaux.code]));
+    verifier('La base MECeF ne porte QUE la part du patient : ni part assureur (3 000), ni remise (1 000)', fn.base.base === 12000 && fn.base.total === 15000 && fn.base.partAssureur === 3000 && fn.base.remises === 1000, JSON.stringify(fn.base));
+    verifier('Propriété sur 1 000 ventes tirées au hasard : aucun montant décimal, total = somme des lignes, base = somme des parts patient', fn.propriete.vus === 1000 && fn.propriete.mauvais === 0, JSON.stringify(fn.propriete));
+    verifier('IFU : 13 chiffres validé (espaces tolérés), 12 ou lettres refusés (IFU_INVALIDE), IFU sans nom refusé, particulier sans IFU accepté, AIB 7 % refusé, défaut 1 %',
+      fn.acheteur.court === 'IFU_INVALIDE' && fn.acheteur.lettres === 'IFU_INVALIDE' && fn.acheteur.treize === true && fn.acheteur.espaces === '3201642748214' && fn.acheteur.sansNom === 'NOM_ACHETEUR_ABSENT' && fn.acheteur.particulier === true && fn.acheteur.taux7 === 'AIB_TAUX_INVALIDE' && fn.acheteur.defaut === 1, JSON.stringify(fn.acheteur));
+    verifier('Les états sont EXACTEMENT normalisee, en_attente, a_verifier, refusee, expiree : « simple » n’existe pas', JSON.stringify(fn.etats) === '["normalisee","en_attente","a_verifier","refusee","expiree"]', JSON.stringify(fn.etats));
+
+    /* --- 2. le geste : l'encaissement normalise la vente ---------------------------------------------------------------------- */
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const sauve = { reglage: S.reglage('mecefBoitier', { compteur: 0, emissions: [] }), mode: S.reglage('mecefMode', 'boitier') };
+      const ecr0 = S.collection('ecritures').all().map((e) => e.id);
+      const mk = (cle, o) => {
+        const L = (id, brut, remise, ass) => ({ id, categorie: 'acte', designation: 'Acte ' + id, quantite: 1, prixUnitaire: brut, prixUnitaireNet: brut - remise, montantBrut: brut, remise, montant: brut - remise,
+          partAssureur: ass, partPersonnel: 0, partPatient: brut - remise - ass, statutPaiement: 'du', montantRegle: 0 });
+        const lignes = [L('L001', 10000, 0, 3000), L('L002', 6000, 1000, 0)];
+        return S.collection('factures', { module: 'M8', entite: 'Facture' }).insert(Object.assign({ numero: 'FN-2099-S96' + cle, patientId: 'P96', patient: 'SONDE Mecef', patientCode: 'CNT/96/26', date: '2026-12-31', type: 'Consultation',
+          lignes, montantHT: 15000, montantTTC: 15000, montantRemises: 1000, assureur: 'NSIA', partAssurance: 3000, partPatient: 12000, montantPaye: 0, reliquat: 12000, modePaiement: 'especes',
+          statutPaiement: 'impayee', statutMecef: 'en_attente', proforma: false }, o || {})).record.id;
+      };
+      const ids = { a: mk('A'), b: mk('B'), c: mk('C'), d: mk('D'), e: mk('E'), f: mk('F'), g: mk('G'), ui: mk('UI') };
+      return { ids, sauve, ecr0 };
+    });
+    const ids = monde.ids;
+    const lire = (id) => page.evaluate((i) => JSON.parse(JSON.stringify(window.SIGH.store.collection('factures').get(i))), id);
+    const jr = () => page.evaluate(() => window.SIGH.store.reglage('mecefBoitier', { compteur: 0, emissions: [] }));
+
+    const avant = await lire(ids.a);
+    const refus = await page.evaluate((i) => { const r = window.SIGH.parcours.encaisser(i, { mode: 'especes', acheteur: { ifu: '12345', nom: 'Acheteur' } }); return { refus: r.refus, code: r.refusNomme && r.refusNomme.code, geste: r.refusNomme && r.refusNomme.geste }; }, ids.a);
+    const apresRefus = await lire(ids.a);
+    verifier('IFU de 5 chiffres à l’encaissement : refus nommé IFU_INVALIDE, avec son geste, et RIEN n’est écrit (aucun règlement, pièce intacte)',
+      refus.code === 'IFU_INVALIDE' && !!refus.geste && apresRefus.montantPaye === 0 && apresRefus.statutPaiement === 'impayee' && apresRefus.statutMecef === 'en_attente' && JSON.stringify(apresRefus.lignes) === JSON.stringify(avant.lignes), JSON.stringify(refus));
+
+    const j0 = (await jr()).emissions.length;
+    const ok = await page.evaluate((i) => { const r = window.SIGH.parcours.encaisser(i, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur Sonde', aibTaux: 5 } }); return { norm: r.normalisation }; }, ids.a);
+    const a1 = await lire(ids.a), j1 = await jr();
+    verifier('Vente soldée : normalisée (état « valide » stocké = « normalisee »), numéro posé, jamais d’état « simple »', ok.norm && ok.norm.ok === true && a1.statutMecef === 'valide' && /^MECEF\d+$/.test(a1.numeroMecef || '') && a1.statutPaiement === 'soldee', JSON.stringify([ok.norm, a1.statutMecef, a1.numeroMecef]));
+    verifier('IFU, nom et AIB sont RANGÉS dans la vente ; la base MECeF vaut la part du patient (12 000), ni part assureur ni remise', a1.ifuClient === '3201642748214' && a1.acheteurNom === 'Acheteur Sonde' && a1.aibTaux === 5 && a1.baseMecef === 12000 && a1.montantPaye === 12000 && a1.baseMecef !== a1.montantTTC, JSON.stringify([a1.ifuClient, a1.acheteurNom, a1.aibTaux, a1.baseMecef]));
+    const emis = j1.emissions[j1.emissions.length - 1] || {};
+    verifier('Les mêmes données sont TRANSMISES à l’appareil (IFU, nom, AIB 5 %, base 12 000, AIB entier 600) : une seule émission', j1.emissions.length === j0 + 1 && emis.ifuAcheteur === '3201642748214' && emis.nomAcheteur === 'Acheteur Sonde' && emis.aibTaux === 5 && emis.base === 12000 && emis.aib === 600 && emis.numero === a1.numeroMecef, JSON.stringify(emis));
+
+    /* une vente déjà normalisée ne se renormalise JAMAIS, son numéro ne se réécrit jamais */
+    const second = await page.evaluate((i) => { const M = window.SIGH.mecef; return { n: M.normaliser(i), r: M.retransmettre(i) }; }, ids.a);
+    const a2 = await lire(ids.a), j2 = await jr();
+    verifier('Seconde normalisation et retransmission : refus nommé DEJA_NORMALISEE, numéro intact, l’appareil n’a RIEN émis de plus', second.n.code === 'DEJA_NORMALISEE' && second.r.code === 'DEJA_NORMALISEE' && a2.numeroMecef === a1.numeroMecef && j2.emissions.length === j1.emissions.length, JSON.stringify([second.n.code, second.r.code, a2.numeroMecef, j2.emissions.length]));
+    const deuxieme = await page.evaluate((i) => { window.SIGH.parcours.encaisser(i, { mode: 'especes' }); return true; }, ids.b);
+    const b1 = await lire(ids.b);
+    const jb = await jr();
+    verifier('Deux ventes, deux numéros DISTINCTS ; sans fenêtre remplie, l’acheteur est un particulier (IFU vide) et l’AIB prend son défaut (1 %)', b1.numeroMecef && b1.numeroMecef !== a1.numeroMecef && !b1.ifuClient && b1.aibTaux === 1 && b1.statutMecef === 'valide', JSON.stringify([b1.numeroMecef, a1.numeroMecef, b1.ifuClient, b1.aibTaux]));
+
+    /* --- 3. pannes : réponse perdue, refus, expiration -------------------------------------------------------------------------- */
+    const perdu = await page.evaluate((i) => { const M = window.SIGH.mecef; M.fauxBoitier.panne = 'reponse_perdue'; const r = window.SIGH.parcours.encaisser(i, { mode: 'especes' }); M.fauxBoitier.panne = null; return { n: r.normalisation }; }, ids.c);
+    const c1 = await lire(ids.c), jc1 = await jr();
+    verifier('Réponse perdue : état « à vérifier », AUCUN numéro rangé, aucun rejeu automatique (une émission côté appareil), refus nommé', perdu.n.ok === false && perdu.n.code === 'REPONSE_PERDUE' && !!perdu.n.geste && c1.statutMecef === 'a_verifier' && !c1.numeroMecef && jc1.emissions.length === jb.emissions.length + 1, JSON.stringify([perdu.n, c1.statutMecef, jc1.emissions.length, jb.emissions.length]));
+    const retrans = await page.evaluate((i) => window.SIGH.mecef.retransmettre(i), ids.c);
+    verifier('Une vente « à vérifier » ne se retransmet pas (PAS_RETRANSMISSIBLE) : on la reprend sans doubler', retrans.code === 'PAS_RETRANSMISSIBLE', JSON.stringify(retrans));
+    const rep = await page.evaluate((i) => window.SIGH.mecef.reprendre(i), ids.c);
+    const c2 = await lire(ids.c), jc2 = await jr();
+    const emC = jc1.emissions[jc1.emissions.length - 1];
+    verifier('Reprise sans doublon : l’appareil est LU, la vente est réconciliée avec SON numéro, aucune émission de plus (jamais deux numéros fiscaux)', rep.ok && rep.reconcilie === true && c2.statutMecef === 'valide' && c2.numeroMecef === emC.numero && jc2.emissions.length === jc1.emissions.length, JSON.stringify([rep, c2.numeroMecef, emC.numero, jc2.emissions.length, jc1.emissions.length]));
+
+    const refusee = await page.evaluate((i) => { const M = window.SIGH.mecef; M.fauxBoitier.panne = 'refus'; const r = window.SIGH.parcours.encaisser(i, { mode: 'especes' }); return { n: r.normalisation }; }, ids.d);
+    const d1 = await lire(ids.d);
+    verifier('Réponse en échec de l’appareil : traitée comme un échec NOMMÉ (REFUS_SIMULE), état « refusée », rien de normalisé, l’encaissement reste acquis', refusee.n.ok === false && refusee.n.code === 'REFUS_SIMULE' && d1.statutMecef === 'rejete' && !d1.numeroMecef && d1.statutPaiement === 'soldee', JSON.stringify([refusee.n, d1.statutMecef]));
+    /* le caissier retransmet UNE fois (l'appareil refuse encore), puis la DA */
+    const caissier = await page.evaluate((i) => {
+      const S = window.SIGH.store, M = window.SIGH.mecef, base = S.session();
+      S.setSession(Object.assign({}, base, { role: 'caissier' }));
+      const r1 = M.retransmettre(i);
+      const r2 = M.retransmettre(i);
+      S.setSession(Object.assign({}, base, { role: 'da' }));
+      M.fauxBoitier.panne = null;
+      const r3 = M.retransmettre(i);
+      S.setSession(base);
+      return { r1: r1.code, r2: r2.code, r3: r3.ok, num: r3.numero };
+    }, ids.d);
+    const d2 = await lire(ids.d);
+    verifier('Retransmission d’une vente refusée : le caissier UNE fois (l’appareil refuse encore), puis RETRANSMISSION_RESERVEE ; la DA la reprend et la vente est normalisée',
+      caissier.r1 === 'REFUS_SIMULE' && caissier.r2 === 'RETRANSMISSION_RESERVEE' && caissier.r3 === true && d2.statutMecef === 'valide' && d2.numeroMecef === caissier.num, JSON.stringify(caissier));
+    const delai = await page.evaluate((i) => { const M = window.SIGH.mecef; M.fauxBoitier.panne = 'delai'; const r = window.SIGH.parcours.encaisser(i, { mode: 'especes' }); M.fauxBoitier.panne = null; return r.normalisation; }, ids.e);
+    const e1 = await lire(ids.e);
+    verifier('Délai dépassé : état « expirée » (DELAI_DEPASSE), sans numéro', delai.code === 'DELAI_DEPASSE' && e1.statutMecef === 'expiree' && !e1.numeroMecef, JSON.stringify([delai.code, e1.statutMecef]));
+
+    /* --- 4. mode désactivé, numéro déjà porté jamais réécrit -------------------------------------------------------------------- */
+    const desact = await page.evaluate((i) => { const M = window.SIGH.mecef; const m = M.definirMode('desactive'); const r = window.SIGH.parcours.encaisser(i, { mode: 'especes' }); const mode = M.mode(); M.definirMode('boitier'); return { m, norm: r.normalisation, mode }; }, ids.f);
+    const f1 = await lire(ids.f);
+    verifier('Mode « Désactivé » (démonstration) : aucune normalisation, pièce « en attente » sans numéro (le bandeau DEMO s’imprime)', desact.m.ok && desact.norm.ignore === true && f1.statutMecef === 'en_attente' && !f1.numeroMecef && f1.statutPaiement === 'soldee', JSON.stringify([desact.m, f1.statutMecef]));
+    const inconnu = await page.evaluate(() => window.SIGH.mecef.definirMode('simple'));
+    verifier('Un mode inconnu (« simple ») est refusé en le nommant : MODE_INCONNU', inconnu.code === 'MODE_INCONNU', JSON.stringify(inconnu));
+    const porte = await page.evaluate((i) => {
+      const S = window.SIGH.store, col = S.collection('factures');
+      col.update(i, { numeroMecef: 'MECEF1234567', statutMecef: 'en_attente' });
+      const j = S.reglage('mecefBoitier', { compteur: 0, emissions: [] }).emissions.length;
+      const r = window.SIGH.mecef.normaliser(i);
+      return { r: r.ok, num: col.get(i).numeroMecef, etat: col.get(i).statutMecef, repris: r.repris, emis: S.reglage('mecefBoitier', { compteur: 0, emissions: [] }).emissions.length - j };
+    }, ids.f);
+    verifier('Un numéro déjà porté n’est JAMAIS réécrit : la vente est normalisée avec lui, sans rappeler l’appareil', porte.r && porte.num === 'MECEF1234567' && porte.etat === 'valide' && porte.repris === true && porte.emis === 0, JSON.stringify(porte));
+
+    /* --- 5. impression : le bloc fiscal seulement sur une pièce normalisée, DEMO sinon ------------------------------------------- */
+    await ouvrir('mecef-factures.html');
+    const imp = await page.evaluate((i) => {
+      const P = window.SIGH.print, out = {};
+      const imprimer = (numero) => {
+        const root = document.createElement('div'); document.body.appendChild(root);
+        window.SIGH.screens['mecef-factures'].render(root);
+        let capte = null; const etat = P.etat; P.etat = (o) => { capte = o; };
+        const ligne = [...root.querySelectorAll('tbody tr')].find((tr) => tr.textContent.includes(numero));
+        if (!ligne) { P.etat = etat; root.remove(); return null; }
+        ligne.querySelector('button[title="Imprimer la facture normalisée"], button[aria-label="Imprimer la facture normalisée"]').click();
+        P.etat = etat; root.remove();
+        return { texte: capte.contenu.textContent, cartouche: JSON.stringify(capte.cartouche) };
+      };
+      out.normalisee = imprimer('FN-2099-S96A'); out.nonNormalisee = imprimer('FN-2099-S96E'); out.desactivee = imprimer('FN-2099-S96G');
+      return out;
+    }, ids.a);
+    verifier('Impression d’une pièce normalisée : NIM, code, compteurs, QR ; IFU et nom de l’acheteur au cartouche ; AIB 5 % ; mention « simulation » (numéro non fiscal)',
+      imp.normalisee && /MECeF NIM : MECEF\d+/.test(imp.normalisee.texte) && /MECeF Compteurs/.test(imp.normalisee.texte) && /QR CODE MECeF/.test(imp.normalisee.texte) && /Acheteur Sonde/.test(imp.normalisee.cartouche) && /3201642748214/.test(imp.normalisee.cartouche) && /AIB 5 %/.test(imp.normalisee.texte) && /Simulation de la maquette/.test(imp.normalisee.texte), imp.normalisee && imp.normalisee.texte.slice(0, 200));
+    verifier('Impression d’une pièce expirée ou non normalisée : bandeau DEMO, AUCUN NIM, AUCUN compteur, AUCUN QR', imp.nonNormalisee && imp.desactivee && [imp.nonNormalisee, imp.desactivee].every((x) => /DEMO : pièce non normalisée/.test(x.texte) && !/MECeF NIM|MECeF Compteurs|QR CODE MECeF/.test(x.texte)), JSON.stringify([imp.nonNormalisee && imp.nonNormalisee.texte.slice(-160)]));
+
+    /* --- 6. registre fiscal : cinq états au filtre, jamais « simple » ----------------------------------------------------------- */
+    const reg = await page.evaluate(() => {
+      const root = document.createElement('div'); document.body.appendChild(root);
+      window.SIGH.screens['mecef-factures'].render(root);
+      const selects = [...root.querySelectorAll('select')];
+      const sel = selects.find((s) => [...s.options].some((o) => /Normalisée/.test(o.textContent)));
+      const out = { options: sel ? [...sel.options].map((o) => o.textContent.trim()).filter((t) => t && !/^Tous|^Toutes|^Statut fiscal/.test(t)) : null, texte: root.textContent };
+      root.remove(); return out;
+    });
+    verifier('Registre fiscal : le filtre d’état offre exactement les cinq états (Normalisée, En attente, À vérifier, Refusée, Expirée) et nulle part « simple »',
+      reg.options && reg.options.length === 5 && ['Normalisée', 'En attente de transmission', 'À vérifier', 'Refusée', 'Expirée'].every((l, k) => reg.options[k] === l) && !/simple/i.test(reg.texte), JSON.stringify(reg.options));
+
+    /* --- 7. avoir : l'état s'aligne sur la pièce -------------------------------------------------------------------------------- */
+    const avoirs = await page.evaluate((i) => {
+      const PR = window.SIGH.parcours, S = window.SIGH.store;
+      const p = { lignes: [{ id: 'L002', designation: 'Acte L002', montant: 5000 }], motif: 'Sonde 96', date: '2026-12-31', remboursement: 'creance', origine: 'sonde' };
+      const ra = PR.emettreAvoir(i.a, p), re = PR.emettreAvoir(i.e, p);
+      return { a: ra.erreur || ra.record.statutMecef, e: re.erreur || re.record.statutMecef };
+    }, ids);
+    verifier('Avoir sur une pièce normalisée : normalisé à son tour (en attente de transmission) ; sur une pièce non normalisée : sans objet', avoirs.a === 'en_attente' && avoirs.e === 'sans_objet', JSON.stringify(avoirs));
+
+    /* --- 8. l'interface : la fenêtre « Facture normalisée » à l'encaissement du registre ---------------------------------------- */
+    await ouvrir('m8-paiements.html');
+    const fen = await page.evaluate(async (i) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const clic = (re, racine) => { const b = [...(racine || document).querySelectorAll('button')].find((x) => re.test(x.textContent) && x.offsetParent !== null); if (b) b.click(); return !!b; };
+      const out = {};
+      const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => tr.textContent.includes('FN-2099-S96UI'));
+      out.ligne = !!ligne;
+      if (!ligne) return out;
+      [...ligne.querySelectorAll('button')].find((b) => /Encaisser/.test(b.textContent + (b.title || '') + (b.getAttribute('aria-label') || ''))).click();
+      await pause(400);
+      const sec = document.querySelector('[data-section="facture-normalisee"]');
+      out.section = !!sec; out.texteSection = sec ? sec.textContent : '';
+      const champs = sec ? [...sec.querySelectorAll('input')] : [];
+      out.champs = champs.length;
+      if (!sec) return out;
+      champs[0].value = '999'; champs[0].dispatchEvent(new Event('input', { bubbles: true }));
+      champs[1].value = 'Acheteur UI'; champs[1].dispatchEvent(new Event('input', { bubbles: true }));
+      clic(/Valider l.encaissement/);
+      await pause(500);
+      const f = window.SIGH.store.collection('factures').get(i);
+      out.apresRefus = { montantPaye: f.montantPaye, statutMecef: f.statutMecef, toast: /IFU_INVALIDE|13 chiffres/.test(document.body.innerText) };
+      champs[0].value = '3201642748214'; champs[0].dispatchEvent(new Event('input', { bubbles: true }));
+      clic(/Valider l.encaissement/);
+      await pause(700);
+      const g = window.SIGH.store.collection('factures').get(i);
+      out.apres = { statutMecef: g.statutMecef, numero: g.numeroMecef, ifu: g.ifuClient, nom: g.acheteurNom, soldee: g.statutPaiement };
+      return out;
+    }, ids.ui);
+    verifier('Fenêtre « Facture normalisée » à l’encaissement du registre : trois champs seulement (IFU, nom, AIB), aucun choix « simple »', fen.section === true && fen.champs === 2 && /IFU de l.acheteur/.test(fen.texteSection) && /Nom de l.acheteur/.test(fen.texteSection) && /Taux d.AIB/.test(fen.texteSection) && !/simple/i.test(fen.texteSection), JSON.stringify([fen.ligne, fen.section, fen.champs]));
+    verifier('IFU invalide saisi dans la fenêtre : refus nommé affiché, aucun règlement écrit', fen.apresRefus && fen.apresRefus.montantPaye === 0 && fen.apresRefus.statutMecef === 'en_attente' && fen.apresRefus.toast === true, JSON.stringify(fen.apresRefus));
+    verifier('IFU corrigé : l’encaissement passe, la vente est normalisée avec l’IFU et le nom saisis', fen.apres && fen.apres.statutMecef === 'valide' && /^MECEF\d+$/.test(fen.apres.numero || '') && fen.apres.ifu === '3201642748214' && fen.apres.nom === 'Acheteur UI' && fen.apres.soldee === 'soldee', JSON.stringify(fen.apres));
+
+    /* --- restitution (RG-14 : on archive, on ne supprime pas) -------------------------------------------------------------------- */
+    await page.evaluate((mo) => {
+      const S = window.SIGH.store;
+      Object.values(mo.ids).forEach((id) => { try { S.collection('factures').archive(id, 'Sonde Vague 96'); } catch (e) { /* déjà archivé */ } });
+      S.collection('avoirs').all().filter((a) => a.origine === 'sonde' && a.statut !== 'archive').forEach((a) => { try { S.collection('avoirs').archive(a.id, 'Sonde Vague 96'); } catch (e) { /* idem */ } });
+      S.collection('ecritures').all().filter((e) => mo.ecr0.indexOf(e.id) < 0 && e.statut !== 'archive').forEach((e) => { try { S.collection('ecritures').archive(e.id, 'Sonde Vague 96'); } catch (x) { /* idem */ } });
+      S.setReglage('mecefBoitier', mo.sauve.reglage); S.setReglage('mecefMode', mo.sauve.mode);
+      window.SIGH.mecef.fauxBoitier.panne = null;
+    }, monde);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

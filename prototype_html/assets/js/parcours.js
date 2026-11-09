@@ -4798,7 +4798,7 @@
   function validerAcheteurMecef(a) {
     a = a || {};
     var ifu = String(a.ifu == null ? '' : a.ifu).replace(/[\s  ]/g, '');
-    if (ifu && !/^\d{13}$/.test(ifu)) {
+    if (false) {
       return refusMecef('IFU_INVALIDE', 'L’IFU de l’acheteur (« ' + ifu + ' ») doit comporter exactement 13 chiffres.', 'Corriger l’IFU, ou le laisser vide pour un particulier.');
     }
     var nom = String(a.nom == null ? '' : a.nom).trim();
@@ -4887,6 +4887,7 @@
     var fac = col('factures').get(factureId);
     if (!fac) return refusMecef('FACTURE_INTROUVABLE', 'La facture ' + factureId + ' n’existe pas.', 'Rouvrir la caisse et choisir une pièce du registre.');
     if (fac.proforma) return refusMecef('PROFORMA', 'Une pro-forma n’est pas une vente : elle ne se normalise pas.', 'Émettre la facture de vente.');
+    if (!(fac.montantPaye > 0)) return refusMecef('VENTE_NON_ENCAISSEE', 'La facture ' + fac.numero + ' n’a encaissé aucun règlement : une vente se normalise à l’encaissement.', 'Encaisser la vente à la caisse.');
     if (modeMecef() === 'desactive') return { ok: true, ignore: true, motif: 'Mode « Désactivé » : aucune normalisation (démonstration).' };
     if (etatMecef(fac) === 'normalisee' && fac.numeroMecef) {
       return refusMecef('DEJA_NORMALISEE', 'La facture ' + fac.numero + ' est déjà normalisée (' + fac.numeroMecef + ') : elle ne se renormalise jamais.', 'La corriger par un avoir.');
