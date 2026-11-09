@@ -36,9 +36,12 @@ const FAMILLES = {
   factures: 'C', prescriptions: 'C',
   stock: 'D',
   tarifs: 'R', chambres: 'R', produits: 'R', transcriptions: 'B',
+  /* L0 : les paramètres versionnés par date (R : la mère seule écrit, une fiche = une version immuable) et leurs usages par les pièces (B : ajout seul). */
+  parametres: 'R', usagesParametres: 'B',
 };
 const ESSENTIELLES = new Set(['tarifs', 'chambres']);
 
+const PARAMETRES = require('./parametres');
 const db = new DatabaseSync(DB);
 db.exec(`
   PRAGMA journal_mode = WAL;
@@ -104,6 +107,17 @@ function traiter(op, app) {
   if (fam === 'R' && app.role !== 'mere') return refus('droit_refuse', 'Un référentiel ne se modifie qu’à la console de la mère.', 'Demander la modification à l’administrateur');
 
   const f = lire(op.collection, op.fiche);
+
+  /* L0 : une version de paramètre est une fiche IMMUABLE. La mère REFAIT le contrôle du poste (même fonction que l'émission) : version croissante, type, date d'effet,
+     valeur déjà utilisée par une pièce (usages relevés des postes), téléphone interdit pour un paramètre réservé. Un refus est nommé, jamais avalé. */
+  if (op.collection === 'parametres') {
+    if (op.type !== 'creer') return refus('version_immuable', 'Une version de paramètre ne se réécrit jamais : on ajoute une version.', 'Ajouter une nouvelle version avec sa date d’effet');
+    if (f) return refus('fiche_existe', 'Cette version existe déjà.', 'Aucun');
+    const existantes = db.prepare("SELECT data FROM fiches WHERE collection='parametres'").all().map((r) => JSON.parse(r.data)).filter((d) => d.cle === op.champs.cle);
+    const usages = db.prepare("SELECT data FROM fiches WHERE collection='usagesParametres'").all().map((r) => JSON.parse(r.data));
+    const v = PARAMETRES.validerFiche(op.champs, existantes, usages);
+    if (!v.ok) return refus(v.code, v.motif, v.geste);
+  }
 
   if (fam === 'D') {
     if (op.type === 'creer') {
@@ -531,7 +545,9 @@ function diffuser() {
     const cur = +meta('sortie_seq:' + a.uuid, -1); if (cur < 0) continue;
     const ops = db.prepare('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>? ORDER BY seq LIMIT 100').all(cur);
     if (!ops.length) continue;
-    const mine = ops.filter((o) => db.prepare('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?').get(a.uuid, o.collection, o.fiche))
+    /* L0 : un mobile ne reçoit de la configuration que les paramètres de la LISTE BLANCHE (déclarés `mobile`, non sensibles, famille non réservée : RG-13) ; le reste de
+       `parametres`, comme toute autre collection hors de sa portée, ne part pas. */
+    const mine = ops.filter((o) => (o.collection === 'parametres' ? PARAMETRES.autoriseMobile(JSON.parse(o.champs)) : db.prepare('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?').get(a.uuid, o.collection, o.fiche)))
       .map((o) => Object.assign({}, o, { seq: Number(o.seq), champs: JSON.parse(o.champs) }));
     setMeta('sortie_seq:' + a.uuid, Number(ops[ops.length - 1].seq));
     if (mine.length) publier(a.uuid, { type: 'ops', ops: mine });
