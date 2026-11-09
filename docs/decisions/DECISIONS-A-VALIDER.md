@@ -53,3 +53,26 @@
 6. Relais en ligne : étapes R0 à R7.
 7. Dictionnaire de données à régénérer pour les nouvelles tables.
 8. Une vingtaine de rechargements de page (MECeF, M2, M7, M9, M10, M13, M14) à rendre attentifs à l'envoi, comme celui de la clôture (E2307).
+
+## D. Réponses de la Direction du 09/11/2026 (formulaire de validation)
+
+Les 18 questions ont reçu une réponse. Règle générale posée par la Direction : **tout ce qui est paramétrable l'est dans les paramètres du poste et du web**, avec un défaut.
+
+| Question | Réponse | Paramétrage demandé |
+|---|---|---|
+| Validation Q1 à Q5 | recommandations retenues (oui, b, oui, valeurs chiffrées, oui) | |
+| AIB Q3 | taux selon la situation de l'acheteur | |
+| AIB Q5 | différer le branchement sur les écritures d'achat | formulaire de validation du branchement dans les paramètres |
+| AIB Q7 | la clinique supporte le prélèvement | **paramétrable**, défaut « clinique » (la clinique ne subit pas d'AIB) |
+| MECeF simulé | non : pas de numéro simulé ; **choix boîtier ou e-MECeF dans les paramètres du poste** | choix du mode |
+| Planning Q1 | déroge champ par champ | |
+| Planning Q3, Q6, Q8 | recommandations retenues | |
+| Planning Q4 | l'agent propose, le surveillant valide | **paramétrable** oui/non, défaut non |
+| Planning Q5 | copie chiffrée de la fiche de paie sur le téléphone | **paramétrable** oui/non, défaut oui |
+
+### Réponses à confirmer (contradiction entre la case cochée et la remarque)
+
+1. **AIB Q1** : case « texte fourni » cochée, remarque : un formulaire de validation du barème AIB dans les paramètres. Aucun texte réglementaire n'existe au dépôt : le barème reste « proposition à valider », et le formulaire de validation des paramètres (famille `bareme_aib`) en est le geste.
+2. **Planning Q2** : case « surveillant pour le service, DAF pour le tout », remarque « le surveillant pour le tout, le surveillant peut valider seul ». Lire : le surveillant valide pour son service, la DAF pour le tout et peut valider seule (PRD), sauf correction.
+3. **Planning Q7** : case « différer » cochée, remarque « paramétrable, oui par défaut ». Lire : le badge peut servir de pointage, réglage oui/non, **défaut oui** ; la conception change alors (le badge se relie au registre des présences).
+4. **MECeF** : e-MECeF n'est décrit par aucun document du dépôt (l'ADR retient le boîtier physique) ; le mode e-MECeF exige le dossier d'interface de la DGI avant tout code.
