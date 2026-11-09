@@ -264,7 +264,7 @@
   }
   function reporterJourOuvrable(d) {
     var x = new Date(toDate(d).getTime());
-    while (x.getDay() === 0 || x.getDay() === 6) x = addDays(x, 1);
+    while (x.getDay() === 0 || x.getDay() === 6) x = addDays(x, -1);
     return x;
   }
 

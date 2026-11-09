@@ -16094,6 +16094,8 @@ async function viderMessages(page) {
       return { id: r.record.id, ecart, nRoles: roles.length };
     });
     verifier('La vue mensuelle porte les droits de m12-echeances, rôle par rôle (aucun écart sur tous les profils)', V10.ecart.length === 0 && V10.nRoles >= 15, JSON.stringify(V10));
+    /* L'exercice lu est CHOISI (le choix vit en session) : une suite complète a pu laisser un autre exercice ouvert au-delà du jeu. */
+    const choixAvant = await page.evaluate(() => { let v = null; try { v = sessionStorage.getItem('sigh-cnt:exercice'); } catch (e) { /* sans effet */ } window.SIGH.exercice.choisir(2026); return v; });
     await ouvrir('m12-calendrier-fiscal.html'); await admin(); await ouvrir('m12-calendrier-fiscal.html');
     const lireMois = () => page.evaluate(() => ({ titre: (document.getElementById('cal-titre') || {}).textContent, mois: (document.getElementById('calendrier-fiscal') || { getAttribute: () => null }).getAttribute('data-mois'),
       chips: [...document.querySelectorAll('.cal-ech')].map((b) => ({ id: b.getAttribute('data-echeance'), date: b.getAttribute('data-date'), etat: b.getAttribute('data-etat'), code: b.getAttribute('data-code') })),
@@ -16129,6 +16131,7 @@ async function viderMessages(page) {
 
     /* --- restitution : le magasin du banc retrouve ses collections (les fiches de sonde sont archivées avant, RG-14) ---------------------- */
     await admin(); await ouvrir('m12-echeances.html'); await admin();
+    await page.evaluate((v) => { try { if (v === null) sessionStorage.removeItem('sigh-cnt:exercice'); else sessionStorage.setItem('sigh-cnt:exercice', v); } catch (e) { /* sans effet */ } }, choixAvant);
     await page.evaluate((snap) => {
       const S = window.SIGH.store, raw = S.raw();
       Object.keys(snap).forEach((n) => { raw[n] = snap[n]; });
