@@ -5042,4 +5042,207 @@
     },
   });
 
+  /* ==========================================================================
+   * BARÈME DE L'AIB PAR SITUATION DE L'ACHETEUR (Direction, 09/11/2026, lot A1)
+   * --------------------------------------------------------------------------
+   * L'écran ne contient AUCUN taux, AUCUNE date, AUCUN code de situation : il montre et écrit les collections `situationsAib` et `baremeAib`,
+   * que le moteur (`SIGH.baremeAib`, parcours.js) lit. Une version ne se réécrit jamais : « Corriger » en crée une nouvelle à une date
+   * d'effet postérieure et ferme la précédente à la veille ; « Retirer » archive (RG-14). Les commandes d'écriture sont ABSENTES sans le
+   * droit (comptable, DAF, administrateur écrivent ; la Direction lit) ; le moteur refait le contrôle.
+   * ======================================================================== */
+  global.SIGH.screen('cfg-bareme-aib', {
+    title: 'Barème de l’AIB',
+    description: 'Taux de l’acompte sur impôt assis sur les bénéfices par situation de l’acheteur, daté, versionné et modifiable sans toucher au code.',
+    regle: 'Chaque taux est une <strong>version datée</strong> d’une situation de l’acheteur (IFU actif, sans IFU actif, prestation de service, ou toute situation ajoutée ici). '
+      + 'La fenêtre « Facture normalisée » de la caisse en tire son taux par défaut et ses choix ; la vente garde le taux et la version sous lesquels elle est émise. '
+      + 'Une version ne se réécrit pas : la corriger en crée une nouvelle et ferme la précédente à la veille. Un taux sans version est refusé en le nommant, jamais rendu à zéro.',
+    actions: function () { return []; },
+    render: function (root) {
+      var B = global.SIGH.baremeAib;
+      var colV = S.collection('baremeAib', { module: 'CFG', entite: 'version du barème de l’AIB', prefix: 'BAI' });
+      var colS = S.collection('situationsAib', { module: 'CFG', entite: 'situation de l’acheteur (AIB)', prefix: 'SAI' });
+      dessiner();
+      return null;
+
+      function aujourdhui() { return C.iso(C.aujourdhui()); }
+      function libelleSituation(code) {
+        var x = colS.all().filter(function (r) { return r.code === code; })[0];
+        return x ? x.libelle : code;
+      }
+      function etatVersion(v) {
+        var a = aujourdhui();
+        if (String(v.dateEffet) > a) return { id: 'avenir', label: 'À venir', tone: 'info' };
+        if (v.dateFin && String(v.dateFin) < a) return { id: 'cloturee', label: 'Clôturée', tone: 'neutral' };
+        return { id: 'envigueur', label: 'En vigueur', tone: 'success' };
+      }
+      function refuser(r) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 12000 }); }
+
+      /* Le formulaire d'une version : une nouvelle version (situation libre) ou la correction d'une version existante (situation figée, taux proposé). */
+      function formulaireVersion(base) {
+        var sits = B.situations();
+        var dernieres = base ? B.versionsDe(base.situation) : [];
+        var minimum = dernieres.length ? C.iso(C.addDays(dernieres[dernieres.length - 1].dateEffet, 1)) : aujourdhui();
+        var defauts = base
+          ? { situation: base.situation, taux: base.taux, dateEffet: minimum > aujourdhui() ? minimum : aujourdhui() > minimum ? aujourdhui() : minimum, source: '', motif: '' }
+          : { situation: sits[0] ? sits[0].code : '', dateEffet: aujourdhui() };
+        var f = U.form([
+          { name: 'situation', label: 'Situation de l’acheteur', type: 'select', required: true, disabled: !!base,
+            options: sits.map(function (x) { return { value: x.code, label: x.libelle }; }) },
+          { name: 'taux', label: 'Taux (%)', type: 'number', required: true, min: 0, max: 100, step: 1, help: 'Pourcentage entier : la maquette calcule en montants entiers.' },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, help: 'Postérieure à la version la plus récente de la situation, qui sera fermée à la veille.' },
+          { name: 'source', label: 'Source du taux', type: 'textarea', rows: 2, required: true, col: 'full', help: 'Le texte, la décision ou la déclaration d’où vient le taux. On n’invente pas un taux.' },
+          { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], defauts);
+        var m = U.modal({
+          title: base ? 'Corriger : nouvelle version de « ' + libelleSituation(base.situation) + ' »' : 'Nouvelle version du barème',
+          subtitle: 'La version naît « à valider » ; elle ferme la précédente de la même situation à la veille de sa date d’effet.',
+          size: 'lg', body: f,
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer la version', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              var r = B.nouvelleVersion(v);
+              if (!r.ok) { refuser(r); return; }
+              m.close(); dessiner();
+              U.toast('Version enregistrée : ' + r.taux + ' % à compter du ' + C.dateFR(r.dateEffet) + ' (à valider).', {
+                type: 'success', detail: r.precedenteFermeeLe ? 'La version précédente est fermée le ' + C.dateFR(r.precedenteFermeeLe) + '.' : null,
+              });
+            } }),
+          ],
+        });
+      }
+      function retirer(v) {
+        U.confirm({
+          title: 'Retirer cette version ?',
+          message: 'La version <strong>' + v.taux + ' %</strong> de « ' + libelleSituation(v.situation) + ' » (à compter du ' + C.dateFR(v.dateEffet) + ') est archivée, jamais supprimée (RG-14). '
+            + 'Si elle était la plus récente, la version précédente est rouverte.',
+          confirmLabel: 'Retirer', danger: true, requireMotif: true,
+        }).then(function (r) {
+          if (!r) return;
+          var res = B.retirerVersion(v.id, r.motif);
+          if (!res.ok) { refuser(res); return; }
+          dessiner();
+          U.toast('Version retirée.', { type: 'success', undo: function () { if (res.undo) res.undo(); dessiner(); }, undoMessage: 'Retrait annulé.' });
+        });
+      }
+      function detailVersion(v) {
+        var historique = B.versionsDe(v.situation).map(function (x) {
+          return [C.dateFR(x.dateEffet) + (x.dateFin ? ' au ' + C.dateFR(x.dateFin) : ' et après'), x.taux + ' %' + (x.id === v.id ? ' (cette version)' : '')];
+        });
+        U.drawer({
+          title: libelleSituation(v.situation) + ' : ' + v.taux + ' %', subtitle: 'Version du ' + C.dateFR(v.dateEffet), width: 'max-w-xl',
+          body: el('div.space-y-4', null, [
+            U.descList([
+              ['Situation', libelleSituation(v.situation)], ['Taux', v.taux + ' %'],
+              ['Date d’effet', C.dateFR(v.dateEffet)], ['Date de fin', v.dateFin ? C.dateFR(v.dateFin) : 'Ouverte'],
+              ['État', etatVersion(v).label], ['Arrêtée', v.aValider === true ? 'Non, proposition à valider' : 'Oui' + (v.valideLe ? ' (' + C.dateFR(String(v.valideLe).slice(0, 10)) + ', ' + (v.validePar || '') + ')' : '')],
+              ['Source', v.source || 'Non renseignée'], ['Motif', v.motif || 'Non renseigné'],
+              ['Créée', (v.creeLe ? C.dateFR(v.creeLe) : '') + (v.creePar ? ' par ' + v.creePar : '')],
+            ]),
+            U.card('Versions de cette situation', K.miniTable(['Période', 'Taux'], historique)),
+          ]),
+        });
+      }
+
+      function dessiner() {
+        C.clear(root);
+        var host = el('div.space-y-4');
+        var actives = colV.active();
+        var aValider = actives.filter(function (v) { return v.aValider === true; });
+        var enVigueur = actives.filter(function (v) { return etatVersion(v).id === 'envigueur'; });
+        var droit = K.droits('CFG');
+        if (droit.lectureSeule) host.appendChild(K.bandeauLectureSeule(droit));
+        if (aValider.length) {
+          var bandeau = K.note('<strong>Proposition à valider.</strong> ' + C.num(aValider.length) + ' version(s) du barème ne sont pas encore arrêtées : la source de chaque taux est écrite sur sa fiche, '
+            + 'et aucun texte réglementaire n’est au dépôt. La validation appartient à la Direction, à la DAF, au comptable ou à l’administrateur système.', { tone: 'warning', icon: 'clipboard-check' });
+          bandeau.setAttribute('data-bareme-bandeau', 'a-valider');
+          host.appendChild(bandeau);
+        }
+        host.appendChild(K.note('<strong>Un IFU saisi est présumé actif.</strong> La maquette ne peut pas interroger la DGI : elle applique la situation « avec IFU » à tout IFU de 13 chiffres et le dit à la caisse.', { tone: 'info', icon: 'shield-question' }));
+        host.appendChild(U.kpiGrid([
+          { label: 'Situations actives', value: C.num(B.situations().length), icon: 'users', tone: 'navy' },
+          { label: 'Versions en vigueur', value: C.num(enVigueur.length), icon: 'percent', tone: 'success', hint: 'À la date du jour' },
+          { label: 'Versions à valider', value: C.num(aValider.length), icon: 'clipboard-check', tone: aValider.length ? 'warning' : 'neutral' },
+          { label: 'Versions archivées', value: C.num(colV.archived().length), icon: 'archive', tone: 'neutral', hint: 'Restaurables depuis la corbeille' },
+        ]));
+
+        var onglets = [
+          { id: 'versions', label: 'Barème par version', badge: actives.length, render: function () {
+            var lignes = actives.slice().sort(function (a, b) { return String(a.situation).localeCompare(String(b.situation)) || String(b.dateEffet).localeCompare(String(a.dateEffet)); });
+            var derniere = {};
+            lignes.forEach(function (v) { var l = B.versionsDe(v.situation); derniere[v.id] = l.length && l[l.length - 1].id === v.id; });
+            return U.dataTable({
+              title: 'Versions du barème', rows: lignes, exportName: 'bareme-aib', pageSize: 20, searchable: true,
+              filters: [{ name: 'situation', label: 'Situation', options: B.situations().map(function (x) { return { value: x.code, label: x.libelle }; }) }],
+              emptyMessage: 'Aucune version : sans version, la caisse refuse de proposer un taux (AIB_SANS_BAREME).',
+              onRowClick: detailVersion,
+              columns: [
+                { key: 'situation', label: 'Situation', render: function (v) { return el('span.font-medium.text-slate-800', { text: libelleSituation(v.situation) }); } },
+                { key: 'taux', label: 'Taux', align: 'right', render: function (v) { return el('span.font-semibold', { text: v.taux + ' %' }); } },
+                { key: 'dateEffet', label: 'Du', render: function (v) { return C.dateFR(v.dateEffet); } },
+                { key: 'dateFin', label: 'Au', render: function (v) { return v.dateFin ? C.dateFR(v.dateFin) : 'Ouverte'; } },
+                { key: 'etat', label: 'État', render: function (v) { var e = etatVersion(v); return U.badge(e.label, e.tone); } },
+                { key: 'arrete', label: 'Arrêtée', render: function (v) { return K.badgeValidation('bareme_aib', v.id) || U.badge('À valider', 'warning'); } },
+                { key: 'source', label: 'Source', render: function (v) { return el('span.text-xs.text-slate-500', { text: String(v.source || 'Non renseignée').slice(0, 90) }); } },
+              ],
+              rowActions: function (v) {
+                return [
+                  K.iconBtn('eye', 'Consulter', function () { detailVersion(v); }),
+                  K.boutonValider('bareme_aib', v.id, { size: 'sm', moduleCode: 'CFG', apres: dessiner }),
+                  derniere[v.id] ? K.commandeIcone('pencil', 'Corriger : nouvelle version', function () { formulaireVersion(v); }, { moduleCode: 'CFG' }) : null,
+                  K.commandeIcone('archive', 'Retirer la version', function () { retirer(v); }, { droit: 'annuler', variant: 'ghost', moduleCode: 'CFG' }),
+                ].filter(Boolean);
+              },
+              actions: [K.commande('Nouvelle version', { variant: 'primary', size: 'sm', icon: 'plus', moduleCode: 'CFG', onclick: function () { formulaireVersion(null); } })].filter(Boolean),
+            });
+          } },
+          { id: 'situations', label: 'Situations', badge: colS.active().length, render: function () {
+            var h = el('div');
+            K.crud({
+              collection: 'situationsAib', module: 'CFG', entite: 'situation', entiteP: 'situations', tabLabel: 'Situations actives', defaultSort: 'ordre',
+              columns: function () {
+                return [
+                  { key: 'code', label: 'Code', render: function (r) { return el('span.font-mono.text-xs', { text: r.code }); } },
+                  { key: 'libelle', label: 'Libellé' },
+                  { key: 'declencheur', label: 'Choisie', render: function (r) { var d = B.DECLENCHEURS.filter(function (x) { return x.value === r.declencheur; })[0]; return d ? d.label : r.declencheur; } },
+                  { key: 'taux', label: 'Taux du jour', align: 'right', render: function (r) { var t = global.SIGH.baremeAib.aLaDate(r.code); return t.ok ? t.taux + ' %' : U.badge('Sans barème', 'warning'); } },
+                ];
+              },
+              fields: function (rec) {
+                return [
+                  { name: 'code', label: 'Code', required: true, readonly: !!rec, help: 'Minuscules, chiffres et tiret bas. Ne change plus après la création : des versions le citent.' },
+                  { name: 'libelle', label: 'Libellé', required: true },
+                  { name: 'declencheur', label: 'La fenêtre de la caisse la choisit', type: 'select', required: true, options: B.DECLENCHEURS },
+                  { name: 'ordre', label: 'Ordre d’affichage', type: 'number', min: 1 },
+                  { name: 'description', label: 'Description', type: 'textarea', rows: 3, col: 'full' },
+                ];
+              },
+              beforeSave: function (v, rec) {
+                if (!/^[a-z][a-z0-9_]*$/.test(String(v.code || ''))) return 'Le code ne contient que des minuscules, des chiffres et des tirets bas, et commence par une lettre.';
+                if (!rec && colS.all().some(function (x) { return x.code === v.code; })) return 'Le code « ' + v.code + ' » existe déjà (éventuellement archivé).';
+                var role = (S.session() || {}).role;
+                if (B.ROLES_ECRITURE.indexOf(role) < 0) return 'AIB_ECRITURE_RESERVEE : le barème se tient par le comptable, la DAF ou l’administrateur.';
+                return null;
+              },
+              transform: function (v) { v.ordre = v.ordre ? Number(v.ordre) : colS.all().length + 1; return v; },
+            })(h);
+            return h;
+          } },
+          { id: 'abrancher', label: 'Ce qu’il faudrait y brancher', badge: B.aBrancher().filter(function (x) { return x.etat !== 'branche'; }).length, render: function () {
+            return el('div.space-y-3', null, [
+              K.note('Cette liste est en <strong>lecture seule</strong> : le moteur dit ce qu’il faudrait brancher sur le barème, il ne branche rien. Brancher l’AIB sur les écritures d’achat fausserait la comptabilité sans décision de la Direction.', { tone: 'info', icon: 'list-checks' }),
+              K.miniTable(['Lieu', 'État', 'Ce qu’il faudrait faire'], B.aBrancher().map(function (x) {
+                return [x.lieu, x.etat === 'branche' ? U.badge('Branché', 'success') : U.badge('Non branché', 'warning'), x.detail];
+              })),
+            ]);
+          } },
+        ];
+        host.appendChild(U.tabs(onglets));
+        root.appendChild(host);
+        U.icons(root);
+      }
+    },
+  });
+
 })(window);

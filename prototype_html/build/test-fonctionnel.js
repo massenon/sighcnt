@@ -8426,7 +8426,7 @@ async function viderMessages(page) {
            validation en masse. */
         /* Vague 91 : le centre lit les familles de référentiels au magasin (plus de bloc « Validées » en littéral). */
         troisFamilles: /À SON POSTE/.test(t) && /Référentiels en attente de validation/.test(t)
-          && document.querySelectorAll('[data-famille]').length === 14 && !/Validées/.test(t),
+          && document.querySelectorAll('[data-famille]').length === 15 && !/Validées/.test(t),
         nonAmorceDit: /non amorcée/.test(t),
         pasDeMasse: ![...document.querySelectorAll('button')]
           .some((b) => /Tout valider|Valider tout/i.test(b.textContent)),
@@ -14131,9 +14131,9 @@ async function viderMessages(page) {
         exposeSIGH: !!(window.SIGH.validations && window.SIGH.validations.validerReferentiel),
         registre: PR.FAMILLES_A_VALIDER.map((f) => f.id) };
     });
-    verifier('Registre : les 14 familles de l’audit sont déclarées et le moteur est exposé (SIGH.validations)',
-      a.exposeSIGH && a.registre.length === 14 && ['enquetes', 'labo_variables', 'pathologies', 'imagerie', 'checklists_bloc', 'actes', 'analyses',
-        'valorisation_sage', 'objectifs_pilotage', 'repartition_charges', 'modeles_badge', 'jeux_import', 'modeles_messages', 'bareme_its'].every((x) => a.registre.indexOf(x) >= 0),
+    verifier('Registre : les 14 familles de l’audit et le barème de l’AIB (15) sont déclarées et le moteur est exposé (SIGH.validations)',
+      a.exposeSIGH && a.registre.length === 15 && ['enquetes', 'labo_variables', 'pathologies', 'imagerie', 'checklists_bloc', 'actes', 'analyses',
+        'valorisation_sage', 'objectifs_pilotage', 'repartition_charges', 'modeles_badge', 'jeux_import', 'modeles_messages', 'bareme_its', 'bareme_aib'].every((x) => a.registre.indexOf(x) >= 0),
       a.registre.join(','));
     verifier('(a) Une pathologie marquée « à valider » insérée à la main : le compte du moteur augmente de 1 ET égale le recompte du magasin',
       a.apres.moteur === a.avant.moteur + 1 && a.apres.magasin === a.avant.magasin + 1 && a.avant.moteur === a.avant.magasin, JSON.stringify(a));
@@ -14227,7 +14227,7 @@ async function viderMessages(page) {
         enquetes: [['enquetes'], ['aValider']], labo_variables: [['variablesLabo', 'unitesLabo'], ['aValider']], pathologies: [['pathologies'], ['aValider']],
         imagerie: [['examensImagerie', 'variablesImagerie'], ['aValider']], actes: [['actes'], ['tarifProvisoire']], analyses: [['analyses'], ['tarifProvisoire', 'aValider']],
         valorisation_sage: [['valorisationsSage'], ['aValider']], objectifs_pilotage: [['objectifsPilotage'], ['aValider']],
-        modeles_badge: [['modelesBadge'], ['aValider']], modeles_messages: [['modelesMessage'], ['aValider']],
+        modeles_badge: [['modelesBadge'], ['aValider']], modeles_messages: [['modelesMessage'], ['aValider']], bareme_aib: [['baremeAib'], ['aValider']],
       };
       const FICHES = { checklists_bloc: 'checklist-bloc', repartition_charges: 'repartition-fixe-variable', jeux_import: 'imp-analyses', bareme_its: 'bareme-its' };
       const lignes = [...document.querySelectorAll('#page-content [data-famille]')].map((n) => {
@@ -14248,8 +14248,8 @@ async function viderMessages(page) {
     });
     await ouvrir('adm-validations.html');
     const d1 = await lireCentre();
-    verifier('(d) Le centre porte une ligne par famille (14) et le compte affiché égale le recompte du magasin AVANT le geste',
-      d1.lignes.length === 14 && d1.lignes.every((l) => l.lu === l.attendu), JSON.stringify(d1.lignes.filter((l) => l.lu !== l.attendu)));
+    verifier('(d) Le centre porte une ligne par famille (15) et le compte affiché égale le recompte du magasin AVANT le geste',
+      d1.lignes.length === 15 && d1.lignes.every((l) => l.lu === l.attendu), JSON.stringify(d1.lignes.filter((l) => l.lu !== l.attendu)));
     verifier('(d) Aucune commande d’écriture sur le centre (seuls « Y aller » et « Ouvrir »), aucun littéral « Validées »',
       d1.ecritures.length === 0 && !/Validées|validées/.test(d1.texte), JSON.stringify(d1.ecritures) + ' · ' + (d1.texte.match(/.{20}[Vv]alidées.{20}/) || [''])[0]);
     /* Le geste (validation de la fiche remise à valider), puis le centre rouvert : le compte suit le magasin. */
@@ -14261,7 +14261,7 @@ async function viderMessages(page) {
     const d2 = await lireCentre();
     const dm = (x) => (x.lignes.filter((l) => l.fam === 'pathologies')[0] || {}).lu;
     verifier('(d) APRÈS le geste, le compte affiché égale toujours le recompte du magasin, et la famille a baissé de 1',
-      d2.lignes.length === 14 && d2.lignes.every((l) => l.lu === l.attendu) && Number(dm(d2)) === Number(dm(d1)) - 1, JSON.stringify([dm(d1), dm(d2)]));
+      d2.lignes.length === 15 && d2.lignes.every((l) => l.lu === l.attendu) && Number(dm(d2)) === Number(dm(d1)) - 1, JSON.stringify([dm(d1), dm(d2)]));
 
     /* --- (e) chacun ne voit que les familles de son rôle ; l'accueil, la caisse et le stock ne l'ouvrent pas -------- */
     const accessibles = await page.evaluate(() => {
@@ -15310,7 +15310,8 @@ async function viderMessages(page) {
       refus.code === 'IFU_INVALIDE' && !!refus.geste && apresRefus.montantPaye === 0 && apresRefus.statutPaiement === 'impayee' && apresRefus.statutMecef === 'en_attente' && JSON.stringify(apresRefus.lignes) === JSON.stringify(avant.lignes), JSON.stringify(refus));
 
     const j0 = (await jr()).emissions.length;
-    const ok = await page.evaluate((i) => { const r = window.SIGH.parcours.encaisser(i, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur Sonde', aibTaux: 5 } }); return { norm: r.normalisation }; }, ids.a);
+    const ok = await page.evaluate((i) => { const r = window.SIGH.parcours.encaisser(i, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur Sonde', aibTaux: 5, date: '2026-09-10' } }); return { norm: r.normalisation }; }, ids.a);
+    /* Lot A1 (barème de l'AIB daté) : le 5 % n'existe au barème qu'à compter du 07/09/2026, alors que l'horloge du banc est au 16/08/2026 : la vente est datée du 10/09/2026. */
     const a1 = await lire(ids.a), j1 = await jr();
     verifier('Vente soldée : normalisée (état « valide » stocké = « normalisee »), numéro posé, jamais d’état « simple »', ok.norm && ok.norm.ok === true && a1.statutMecef === 'valide' && /^MECEF\d+$/.test(a1.numeroMecef || '') && a1.statutPaiement === 'soldee', JSON.stringify([ok.norm, a1.statutMecef, a1.numeroMecef]));
     verifier('IFU, nom et AIB sont RANGÉS dans la vente ; la base MECeF vaut la part du patient (12 000), ni part assureur ni remise', a1.ifuClient === '3201642748214' && a1.acheteurNom === 'Acheteur Sonde' && a1.aibTaux === 5 && a1.baseMecef === 12000 && a1.montantPaye === 12000 && a1.baseMecef !== a1.montantTTC, JSON.stringify([a1.ifuClient, a1.acheteurNom, a1.aibTaux, a1.baseMecef]));
@@ -15455,6 +15456,294 @@ async function viderMessages(page) {
       Object.values(mo.ids).forEach((id) => { try { S.collection('factures').archive(id, 'Sonde Vague 96'); } catch (e) { /* déjà archivé */ } });
       S.collection('avoirs').all().filter((a) => a.origine === 'sonde' && a.statut !== 'archive').forEach((a) => { try { S.collection('avoirs').archive(a.id, 'Sonde Vague 96'); } catch (e) { /* idem */ } });
       S.collection('ecritures').all().filter((e) => mo.ecr0.indexOf(e.id) < 0 && e.statut !== 'archive').forEach((e) => { try { S.collection('ecritures').archive(e.id, 'Sonde Vague 96'); } catch (x) { /* idem */ } });
+      S.setReglage('mecefBoitier', mo.sauve.reglage); S.setReglage('mecefMode', mo.sauve.mode);
+      window.SIGH.mecef.fauxBoitier.panne = null;
+    }, monde);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  /* ===========================================================================
+   * Vague 97 : le barème de l'AIB daté par situation de l'acheteur (Direction, 09/11/2026, lot A1)
+   * -------------------------------------------------------------------------
+   * Rien n'est lu dans le code : taux, dates, situations et libellés vivent dans `situationsAib` et `baremeAib`. La sonde mesure le moteur
+   * (trois dates, deux situations, une correction qui ferme la précédente, le refus nommé sans barème, la présomption d'IFU), puis le GESTE :
+   * le comptable change un taux à l'écran, la fenêtre « Facture normalisée » du caissier prend le nouveau défaut sans qu'on touche au code, et
+   * la vente porte le taux et la version. Les fiches de sonde sont archivées à la sortie (RG-14) et la précédente est rouverte.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 97 : barème de l’AIB daté par situation (taux à plusieurs dates, correction qui ferme la précédente, refus nommé sans barème, fenêtre MECeF lue au barème, droits)');
+    erreursJS = [];
+    const sessionDe = (role) => page.evaluate((r) => {
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: r, fonction: r, nom: 'SONDE97 ' + r, nomComplet: 'SONDE97 ' + r, identifiant: 's97.' + r, secteur: 'DIR' }));
+      window.SIGH.store.setSession({ role: r, nom: 'SONDE97 ' + r, nomComplet: 'SONDE97 ' + r, fonction: r, identifiant: 's97.' + r });
+    }, role);
+    const admin = () => page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    await ouvrir('cfg-bareme-aib.html');
+    await admin();
+
+    /* --- 1. le moteur : plusieurs dates, deux situations, refus nommés ---------------------------------------------------------- */
+    const m = await page.evaluate(() => {
+      const B = window.SIGH.baremeAib, S = window.SIGH.store, PR = window.SIGH.parcours;
+      const t = (s, d) => { const r = B.aLaDate(s, d); return r.ok ? [r.taux, r.version] : r.code; };
+      const out = { exposes: ['tauxAibALaDate', 'tauxAibPourAcheteur', 'tauxAibProposes'].every((n) => typeof PR[n] === 'function') && typeof B.aLaDate === 'function' };
+      out.sansIfu = ['2026-08-16', '2026-09-06', '2026-09-07', '2026-11-09'].map((d) => t('ifu_inactif_ou_absent', d));
+      out.avecIfu = ['2026-08-16', '2026-11-09'].map((d) => t('ifu_actif', d));
+      out.prestation = t('prestation_service', '2026-11-09');
+      const avant = B.aLaDate('ifu_actif', '2025-12-31');
+      out.avantTout = { ok: avant.ok, code: avant.code, taux: avant.taux, motif: !!avant.motif, geste: !!avant.geste };
+      out.inconnue = t('situation_inconnue', '2026-11-09');
+      out.defautVide = PR.mecef.aibTauxDefaut('', '2025-01-01');
+      const pi = B.pourAcheteur({ ifu: '3201 6427 48214', date: '2026-11-09' }), pa = B.pourAcheteur({ ifu: '', date: '2026-11-09' }), pb = B.pourAcheteur({ ifu: '12AB', date: '2026-11-09' });
+      out.presomption = { ifuSituation: pi.situation, ifuPresomption: pi.presomption, ifuMot: !!pi.avertissement, absSituation: pa.situation, absPresomption: pa.presomption, ifuTaux: pi.taux, absTaux: pa.taux, invalide: pb.code };
+      const p = B.proposes({ ifu: '', date: '2026-11-09' });
+      out.proposes = p.choix.map((c) => c.taux).sort((a, b) => a - b);
+      out.defautSans = p.defaut && p.defaut.taux;
+      out.versionsSemence = S.collection('baremeAib').all().filter((v) => v.statut !== 'archive').length;
+      out.situations = S.collection('situationsAib').active().map((s) => s.code).sort();
+      return out;
+    });
+    verifier('Le moteur et les trois fonctions sont exposés (sondables)', m.exposes === true);
+    verifier('Sans IFU actif : le taux suit la DATE (avant et la veille de la bascule, puis à compter du 07/09/2026), chaque réponse porte son rang de version',
+      JSON.stringify(m.sansIfu) === '[[1,1],[1,1],[5,2],[5,2]]', JSON.stringify(m.sansIfu));
+    verifier('Avec IFU actif et prestation de service : une autre situation, un autre taux, à la même date', JSON.stringify(m.avecIfu) === '[[1,1],[1,1]]' && JSON.stringify(m.prestation) === '[3,1]', JSON.stringify([m.avecIfu, m.prestation]));
+    verifier('Date antérieure à la première version : refus nommé AIB_SANS_BAREME avec motif et geste, jamais un taux nul ; situation inconnue idem',
+      m.avantTout.ok === false && m.avantTout.code === 'AIB_SANS_BAREME' && m.avantTout.taux === undefined && m.avantTout.motif && m.avantTout.geste && m.inconnue === 'AIB_SANS_BAREME', JSON.stringify([m.avantTout, m.inconnue]));
+    verifier('Un défaut sans barème est ABSENT (null), pas zéro', m.defautVide === null, String(m.defautVide));
+    verifier('Présomption : un IFU de 13 chiffres (espaces tolérés) relève de la situation « avec IFU », présumé actif et le dit ; sans IFU, pas de présomption ; un IFU mal formé est refusé',
+      m.presomption.ifuSituation === 'ifu_actif' && m.presomption.ifuPresomption === true && m.presomption.ifuMot === true && m.presomption.absSituation === 'ifu_inactif_ou_absent'
+      && m.presomption.absPresomption === false && m.presomption.ifuTaux === 1 && m.presomption.absTaux === 5 && m.presomption.invalide === 'IFU_INVALIDE', JSON.stringify(m.presomption));
+    verifier('Les taux proposés à la caisse se lisent au barème (1, 3 et 5 à cette date) et le défaut sans IFU vaut 5', JSON.stringify(m.proposes) === '[1,3,5]' && m.defautSans === 5, JSON.stringify([m.proposes, m.defautSans]));
+
+    /* --- 2. une correction crée une version, ferme la précédente à la veille, ne réécrit rien ------------------------------------- */
+    const c = await page.evaluate(() => {
+      const B = window.SIGH.baremeAib, S = window.SIGH.store;
+      const col = S.collection('baremeAib');
+      const avantV = B.versionsDe('ifu_actif');
+      const ancienne = JSON.parse(JSON.stringify(avantV[avantV.length - 1]));
+      const archAvant = col.archived().length;
+      const base = { situation: 'ifu_actif', taux: 2, dateEffet: '2027-01-01', source: 'Sonde 97 : texte à produire', motif: 'Sonde 97 : correction' };
+      const r = B.nouvelleVersion(base);
+      const apres = B.versionsDe('ifu_actif');
+      const nouvelle = r.ok ? col.get(r.id) : null;
+      const prec = col.get(ancienne.id);
+      const out = { r: { ok: r.ok, code: r.code, version: r.version, enAttente: r.enAttenteDeValidation }, nbApres: apres.length, nbAvant: avantV.length };
+      out.ferme = prec && prec.dateFin; out.tauxAncien = prec && prec.taux; out.dateEffetAncien = prec && prec.dateEffet;
+      out.nouvelle = nouvelle && { taux: nouvelle.taux, dateFin: nouvelle.dateFin, aValider: nouvelle.aValider, source: !!nouvelle.source, creePar: !!nouvelle.creePar };
+      const a = B.aLaDate('ifu_actif', '2026-12-31'), b = B.aLaDate('ifu_actif', '2027-01-01');
+      out.dates = [a.taux, a.version, b.taux, b.version, b.arrete];
+      out.memeDate = B.nouvelleVersion(Object.assign({}, base, { taux: 3 })).code;
+      out.anterieure = B.nouvelleVersion(Object.assign({}, base, { dateEffet: '2026-06-01' })).code;
+      out.decimal = B.nouvelleVersion(Object.assign({}, base, { taux: 7.5, dateEffet: '2027-02-01' })).code;
+      out.sansSource = B.nouvelleVersion(Object.assign({}, base, { source: '  ', dateEffet: '2027-02-01' })).code;
+      out.sansMotif = B.nouvelleVersion(Object.assign({}, base, { motif: '', dateEffet: '2027-02-01' })).code;
+      out.situationInconnue = B.nouvelleVersion(Object.assign({}, base, { situation: 'nexiste_pas', dateEffet: '2027-02-01' })).code;
+      out.nbApresRefus = B.versionsDe('ifu_actif').length;
+      /* la garde du magasin : une version existante ne se réécrit pas */
+      col.update(ancienne.id, { taux: 9 });
+      out.tauxApresEcrasement = col.get(ancienne.id).taux;
+      col.update(ancienne.id, { dateEffet: '2020-01-01' });
+      out.dateApresEcrasement = col.get(ancienne.id).dateEffet;
+      out.id = r.id; out.idAncienne = ancienne.id; out.archAvant = archAvant;
+      return out;
+    });
+    verifier('Correction : une NOUVELLE version naît (taux 2, ouverte, source dite), numéro de version incrémenté, annoncée « à valider »',
+      c.r.ok === true && c.r.version === c.nbAvant + 1 && c.nbApres === c.nbAvant + 1 && c.nouvelle && c.nouvelle.taux === 2 && c.nouvelle.dateFin === null && c.nouvelle.source && c.nouvelle.creePar, JSON.stringify([c.r, c.nouvelle]));
+    verifier('Correction : la version précédente est FERMÉE à la veille (31/12/2026), son taux et sa date d’effet sont INTACTS', c.ferme === '2026-12-31' && c.tauxAncien === 1 && c.dateEffetAncien === '2026-01-01', JSON.stringify([c.ferme, c.tauxAncien, c.dateEffetAncien]));
+    verifier('Le taux suit la date de part et d’autre de la bascule (veille : 1 %, version 1 ; jour d’effet : 2 %, version suivante) ; la nouvelle version n’est pas arrêtée (arrete = faux)',
+      c.dates[0] === 1 && c.dates[1] === c.nbAvant && c.dates[2] === 2 && c.dates[3] === c.nbAvant + 1 && c.dates[4] === false, JSON.stringify(c.dates));
+    verifier('Refus nommés, rien n’est écrit : même date d’effet (AIB_DATE_EXISTANTE), date antérieure à la plus récente (AIB_DATE_ANTERIEURE), taux décimal (AIB_TAUX_INVALIDE), source absente, motif absent, situation inconnue',
+      c.memeDate === 'AIB_DATE_EXISTANTE' && c.anterieure === 'AIB_DATE_ANTERIEURE' && c.decimal === 'AIB_TAUX_INVALIDE' && c.sansSource === 'AIB_SOURCE_ABSENTE' && c.sansMotif === 'AIB_MOTIF_ABSENT' && c.situationInconnue === 'AIB_SITUATION_INCONNUE' && c.nbApresRefus === c.nbApres, JSON.stringify([c.memeDate, c.anterieure, c.decimal, c.sansSource, c.sansMotif, c.situationInconnue]));
+    verifier('La garde du magasin refuse de réécrire une version existante (taux 9 puis date d’effet changée : la fiche garde 1 % et 01/01/2026)', c.tauxApresEcrasement === 1 && c.dateApresEcrasement === '2026-01-01', JSON.stringify([c.tauxApresEcrasement, c.dateApresEcrasement]));
+
+    /* --- 3. retirer = archiver ; l'archivée n'est pas comptée ; la précédente se rouvre ------------------------------------------- */
+    const r3 = await page.evaluate((o) => {
+      const B = window.SIGH.baremeAib, S = window.SIGH.store;
+      const col = S.collection('baremeAib');
+      const sansMotif = B.retirerVersion(o.id, '');
+      const r = B.retirerVersion(o.id, 'Sonde 97 : retrait');
+      const v = col.get(o.id), prec = col.get(o.idAncienne);
+      const t = B.aLaDate('ifu_actif', '2027-03-01');
+      return { sansMotif: sansMotif.code, ok: r.ok, statut: v.statut, existe: !!v, rouverte: r.precedenteRouverte === o.idAncienne, dateFinPrec: prec.dateFin, taux2027: t.taux, archives: col.archived().length, nbActives: B.versionsDe('ifu_actif').length };
+    }, c);
+    verifier('Retrait : sans motif refusé (AIB_MOTIF_ABSENT) ; avec motif la version est ARCHIVÉE (jamais supprimée), la précédente est rouverte et le taux d’après revient à 1 %',
+      r3.sansMotif === 'AIB_MOTIF_ABSENT' && r3.ok && r3.statut === 'archive' && r3.existe && r3.rouverte && r3.dateFinPrec === null && r3.taux2027 === 1 && r3.nbActives === c.nbAvant, JSON.stringify(r3));
+    verifier('Une version archivée n’est pas comptée au moteur : le compte des archivées a grandi de un, celui des actives est revenu', r3.archives === c.archAvant + 1 && r3.nbActives === c.nbAvant, JSON.stringify([r3.archives, c.archAvant, r3.nbActives]));
+
+    /* --- 4. marquage « à valider » et validation par le moteur commun ------------------------------------------------------------- */
+    const v4 = await page.evaluate(() => {
+      const B = window.SIGH.baremeAib, S = window.SIGH.store, V = window.SIGH.validations;
+      const col = S.collection('baremeAib');
+      const fam = V.FAMILLES_A_VALIDER.filter((f) => f.id === 'bareme_aib')[0];
+      const r = B.nouvelleVersion({ situation: 'prestation_service', taux: 4, dateEffet: '2027-06-01', source: 'Sonde 97 : texte à produire', motif: 'Sonde 97 : validation' });
+      const avant = V.etatValidation('bareme_aib', r.id);
+      const sonde = { famille: !!fam, roles: fam && fam.roles.slice().sort().join(','), enAttente: avant && avant.enAttente, arreteAvant: B.aLaDate('prestation_service', '2027-06-01').arrete };
+      return { r: r.ok, id: r.id, sonde, idPrec: r.precedente };
+    });
+    verifier('La famille « bareme_aib » est au moteur de validation (direction, da, admin, comptable) ; une version nouvelle est « à valider » (arrete faux)',
+      v4.r && v4.sonde.famille && v4.sonde.roles === 'admin,comptable,da,direction' && v4.sonde.enAttente === true && v4.sonde.arreteAvant === false, JSON.stringify(v4));
+    await sessionDe('caissier');
+    const refusV = await page.evaluate((id) => window.SIGH.validations.validerReferentiel('bareme_aib', id).code, v4.id);
+    await sessionDe('comptable');
+    const okV = await page.evaluate((id) => { const r = window.SIGH.validations.validerReferentiel('bareme_aib', id); return { ok: r.ok, arrete: window.SIGH.baremeAib.aLaDate('prestation_service', '2027-06-01').arrete }; }, v4.id);
+    verifier('Validation : le caissier est refusé (VALIDATION_RESERVEE), le comptable valide et le taux devient arrêté (arrete vrai)', refusV === 'VALIDATION_RESERVEE' && okV.ok === true && okV.arrete === true, JSON.stringify([refusV, okV]));
+    await admin();
+    await page.evaluate((id) => { window.SIGH.baremeAib.retirerVersion(id, 'Sonde 97 : fin de sonde'); }, v4.id);
+
+    /* --- 5. droits du moteur : le comptable écrit, la Direction et le caissier non -------------------------------------------------- */
+    const d5 = {};
+    for (const role of ['comptable', 'direction', 'caissier', 'da']) {
+      await sessionDe(role);
+      d5[role] = await page.evaluate(() => {
+        const B = window.SIGH.baremeAib;
+        const r = B.nouvelleVersion({ situation: 'prestation_service', taux: 6, dateEffet: '2028-01-01', source: 'Sonde 97 : texte à produire', motif: 'Sonde 97 : droits' });
+        if (r.ok) B.retirerVersion(r.id, 'Sonde 97 : fin de sonde');
+        return r.ok ? 'ok' : r.code;
+      });
+    }
+    verifier('Le moteur refuse l’écriture à la Direction et au caissier (AIB_ECRITURE_RESERVEE) ; le comptable et la DAF écrivent', d5.direction === 'AIB_ECRITURE_RESERVEE' && d5.caissier === 'AIB_ECRITURE_RESERVEE' && d5.comptable === 'ok' && d5.da === 'ok', JSON.stringify(d5));
+    await admin();
+
+    /* --- 6. l'écran : commandes absentes sans le droit ; le caissier n'ouvre pas l'écran ---------------------------------------- */
+    const banniere = await page.evaluate(() => window.SIGH.baremeAib.nouvelleVersion({ situation: 'prestation_service', taux: 4, dateEffet: '2029-01-01', source: 'Sonde 97 : texte à produire', motif: 'Sonde 97 : version à valider pour le bandeau' }).id);
+    const lire = () => page.evaluate(() => {
+      const bs = [...document.querySelectorAll('#page-content button')];
+      return { nouvelle: bs.some((b) => /Nouvelle version/.test(b.textContent)), corriger: bs.some((b) => /^Corriger/.test(b.getAttribute('title') || '')), retirer: bs.some((b) => /^Retirer/.test(b.getAttribute('title') || '')),
+        lignes: document.querySelectorAll('#page-content tbody tr').length, bandeau: !!document.querySelector('[data-bareme-bandeau]'), texte: document.getElementById('page-content') ? document.getElementById('page-content').textContent : '' };
+    });
+    await sessionDe('comptable'); await ouvrir('cfg-bareme-aib.html');
+    const uiC = await lire();
+    await sessionDe('direction'); await ouvrir('cfg-bareme-aib.html');
+    const uiD = await lire();
+    await sessionDe('caissier');
+    const caissier = await page.evaluate(() => { const N = window.SIGH.nav; return { can: !!N.can('caissier', N.get('cfg-bareme-aib')), droits: N.droitsEcran('caissier', 'cfg-bareme-aib', 'CFG') }; });
+    await ouvrir('cfg-bareme-aib.html');
+    const url403 = page.url();
+    verifier('Le comptable voit le barème et ses commandes (Nouvelle version, Corriger, Retirer) ; l’écran dit « proposition à valider »', uiC.lignes >= 4 && uiC.nouvelle && uiC.corriger && uiC.retirer && uiC.bandeau && /Proposition à valider/.test(uiC.texte), JSON.stringify({ l: uiC.lignes, n: uiC.nouvelle, c: uiC.corriger, r: uiC.retirer, b: uiC.bandeau }));
+    verifier('La Direction lit le barème : les lignes sont là, les commandes d’écriture sont ABSENTES (pas grisées)', uiD.lignes >= 4 && !uiD.nouvelle && !uiD.corriger && !uiD.retirer, JSON.stringify({ l: uiD.lignes, n: uiD.nouvelle, c: uiD.corriger, r: uiD.retirer }));
+    verifier('Le caissier n’a pas l’écran : fermé au manifeste, aucun droit, adresse renvoyée au 403', caissier.can === false && caissier.droits.voir === false && /error-403/.test(url403), JSON.stringify([caissier, url403]));
+    verifier('L’écran liste « ce qu’il faudrait y brancher » (achats, retenues, registre fiscal) sans le brancher', uiC.texte.indexOf('Ce qu’il faudrait y brancher') >= 0 && await page.evaluate(() => window.SIGH.baremeAib.aBrancher().filter((x) => x.etat === 'non_branche').length >= 3), '');
+    await ouvrir('m8-paiements.html');
+    await admin();
+    await page.evaluate((id) => window.SIGH.baremeAib.retirerVersion(id, 'Sonde 97 : fin de sonde'), banniere);
+
+    /* --- 7. le geste : un taux changé à l'ÉCRAN change le défaut de la fenêtre MECeF, sans toucher au code ------------------------------- */
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const sauve = { reglage: S.reglage('mecefBoitier', { compteur: 0, emissions: [] }), mode: S.reglage('mecefMode', 'boitier') };
+      const mk = (cle) => {
+        const L = (id, brut) => ({ id, categorie: 'acte', designation: 'Acte ' + id, quantite: 1, prixUnitaire: brut, prixUnitaireNet: brut, montantBrut: brut, remise: 0, montant: brut, partAssureur: 0, partPersonnel: 0, partPatient: brut, statutPaiement: 'du', montantRegle: 0 });
+        return S.collection('factures', { module: 'M8', entite: 'Facture' }).insert({ numero: 'FN-2099-S97' + cle, patientId: 'P97', patient: 'SONDE Aib', patientCode: 'CNT/97/26', date: '2026-12-31', type: 'Consultation',
+          lignes: [L('L001', 10000)], montantHT: 10000, montantTTC: 10000, montantRemises: 0, assureur: null, partAssurance: 0, partPatient: 10000, montantPaye: 0, reliquat: 10000, modePaiement: 'especes',
+          statutPaiement: 'impayee', statutMecef: 'en_attente', proforma: false }).record.id;
+      };
+      const aujourdhui = window.SIGH.core.iso(window.SIGH.core.aujourdhui());
+      return { a: mk('A'), b: mk('B'), sauve, aujourdhui, defautAvant: window.SIGH.mecef.aibTauxDefaut('3201642748214') };
+    });
+    /* le comptable change le taux de la situation « avec IFU » DEPUIS L'ÉCRAN, avec effet aujourd'hui */
+    await sessionDe('comptable'); await ouvrir('cfg-bareme-aib.html');
+    const ecran = await page.evaluate(async (auj) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const clic = (re) => { const b = [...document.querySelectorAll('button')].find((x) => re.test(x.textContent) && x.offsetParent !== null); if (b) b.click(); return !!b; };
+      const out = { ouvre: clic(/Nouvelle version/) };
+      await pause(500);
+      const champ = (n) => document.querySelector('[role=dialog] [name="' + n + '"], .modal-root [name="' + n + '"]');
+      const poser = (n, v) => { const c = champ(n); if (!c) return false; c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); return true; };
+      out.champs = [poser('situation', 'ifu_actif'), poser('taux', '2'), poser('dateEffet', auj), poser('source', 'Sonde 97 : texte à produire'), poser('motif', 'Sonde 97 : taux changé à l’écran')];
+      out.enregistre = clic(/Enregistrer la version/);
+      await pause(700);
+      return out;
+    }, monde.aujourdhui);
+    const apresEcran = await page.evaluate((auj) => {
+      const B = window.SIGH.baremeAib;
+      const v = B.versionsDe('ifu_actif'), derniere = v[v.length - 1], prec = v[v.length - 2] || null;
+      const r = B.aLaDate('ifu_actif', auj);
+      return { taux: r.taux, versionId: r.versionId, derniere: derniere && derniere.id, dateEffet: derniere && derniere.dateEffet, precFermee: prec && prec.dateFin, defaut: window.SIGH.mecef.aibTauxDefaut('3201642748214'), nb: v.length };
+    }, monde.aujourdhui);
+    verifier('Le taux est changé AU GESTE, à l’écran, sous le profil du comptable : une version naît à la date du jour et ferme la précédente à la veille',
+      ecran.ouvre && ecran.champs.every(Boolean) && ecran.enregistre && apresEcran.taux === 2 && apresEcran.derniere === apresEcran.versionId && !!apresEcran.precFermee && apresEcran.precFermee < monde.aujourdhui, JSON.stringify([ecran, apresEcran]));
+    verifier('Le défaut de la fenêtre MECeF pour un IFU de 13 chiffres passe de 1 % à 2 %, sans qu’aucun code ait changé', monde.defautAvant === 1 && apresEcran.defaut === 2, JSON.stringify([monde.defautAvant, apresEcran.defaut]));
+
+    await sessionDe('caissier'); await ouvrir('m8-paiements.html');
+    const fen = await page.evaluate(async (i) => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const clic = (re, racine) => { const b = [...(racine || document).querySelectorAll('button')].find((x) => re.test(x.textContent) && x.offsetParent !== null); if (b) b.click(); return !!b; };
+      const out = {};
+      const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => tr.textContent.includes('FN-2099-S97A'));
+      out.ligne = !!ligne;
+      if (!ligne) return out;
+      [...ligne.querySelectorAll('button')].find((b) => /Encaisser/.test(b.textContent + (b.title || '') + (b.getAttribute('aria-label') || ''))).click();
+      await pause(400);
+      const sec = document.querySelector('[data-section="facture-normalisee"]');
+      out.section = !!sec; if (!sec) return out;
+      const champs = [...sec.querySelectorAll('input')], sel = sec.querySelector('select');
+      out.sansIfu = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : null;
+      champs[0].value = '3201642748214'; champs[0].dispatchEvent(new Event('input', { bubbles: true }));
+      champs[1].value = 'Acheteur S97'; champs[1].dispatchEvent(new Event('input', { bubbles: true }));
+      await pause(200);
+      out.choisi = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : null;
+      out.options = [...sel.options].map((o) => o.textContent.trim());
+      out.indice = (sec.querySelector('[data-aib-indice]') || {}).textContent || '';
+      clic(/Valider l.encaissement/);
+      await pause(800);
+      const f = window.SIGH.store.collection('factures').get(i);
+      out.vente = { aibTaux: f.aibTaux, aibSituation: f.aibSituation, aibVersion: f.aibVersion, aibArrete: f.aibArrete, statut: f.statutMecef, numero: f.numeroMecef, base: f.baseMecef, aibMontant: f.aibMontant };
+      return out;
+    }, monde.a);
+    verifier('Fenêtre de la caisse : la situation « sans IFU » donne 1 % à la date du banc (16/08/2026, avant le 07/09) et le libellé vient du barème ; en saisissant l’IFU, le choix passe d’office au NOUVEAU taux (2 %) de la situation « avec IFU »',
+      fen.section === true && /^1 % : /.test(fen.sansIfu || '') && /^2 % : /.test(fen.choisi || ''), JSON.stringify([fen.sansIfu, fen.choisi]));
+    verifier('Fenêtre de la caisse : la liste des choix est celle du barème (2 % et 3 %, plus « Aucun »), le texte d’aide dit « présumé » : la maquette ne peut pas interroger la DGI',
+      fen.options && fen.options.some((o) => /^2 % : /.test(o)) && fen.options.some((o) => /^3 % : /.test(o)) && fen.options.some((o) => /^Aucun/.test(o)) && /présumé/.test(fen.indice || ''), JSON.stringify([fen.options, fen.indice]));
+    verifier('La vente PORTE le taux, la situation et la version du barème (2 %, avec IFU, version du jour) et est normalisée sur ce taux (AIB 200 sur 10 000)',
+      fen.vente && fen.vente.aibTaux === 2 && fen.vente.aibSituation === 'ifu_actif' && fen.vente.aibVersion === apresEcran.versionId && fen.vente.aibArrete === false && fen.vente.statut === 'valide' && fen.vente.aibMontant === 200, JSON.stringify(fen.vente));
+
+    /* un choix hors défaut est journalisé ; le taux porté par la vente ne se réécrit pas quand le barème change ensuite */
+    await admin();
+    const hd = await page.evaluate((i) => {
+      const PR = window.SIGH.parcours, S = window.SIGH.store;
+      const r = PR.encaisser(i.b, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur S97 B', aibSituation: 'prestation_service' } });
+      const f = S.collection('factures').get(i.b);
+      const journal = S.raw().audit.some((a) => a.action === 'AIB : taux choisi hors défaut' && a.reference === 'FN-2099-S97B');
+      const nonProp = PR.mecef.validerAcheteur({ ifu: '', nom: 'x', aibTaux: 7 }).code;
+      const sansBareme = PR.mecef.validerAcheteur({ ifu: '', nom: 'x', aibSituation: 'situation_inconnue' }).code;
+      return { norm: r.normalisation && r.normalisation.ok, aibTaux: f.aibTaux, aibSituation: f.aibSituation, journal, nonProp, sansBareme };
+    }, monde);
+    verifier('Un taux choisi à la main hors du défaut (prestation de service, 3 %) est accepté, porté par la vente et JOURNALISÉ ; un taux absent du barème (7 %) et une situation sans barème sont refusés en les nommant',
+      hd.norm === true && hd.aibTaux === 3 && hd.aibSituation === 'prestation_service' && hd.journal === true && hd.nonProp === 'AIB_TAUX_INVALIDE' && hd.sansBareme === 'AIB_SANS_BAREME', JSON.stringify(hd));
+    const tenu = await page.evaluate((o) => {
+      const B = window.SIGH.baremeAib, S = window.SIGH.store;
+      /* le barème revient à l'ancien taux (retrait de la version du jour) : les ventes déjà émises gardent 2 % et leur version */
+      const retrait = B.retirerVersion(o.versionId, 'Sonde 97 : fin de sonde');
+      const f = S.collection('factures').get(o.a);
+      const r = window.SIGH.mecef.retransmettre(o.a);
+      return { retrait: retrait.ok, aibTaux: f.aibTaux, aibVersion: f.aibVersion, defautRevenu: window.SIGH.mecef.aibTauxDefaut('3201642748214'), retrans: r.code, rouverte: retrait.precedenteRouverte };
+    }, { versionId: apresEcran.versionId, a: monde.a });
+    verifier('Une vente émise ne se réécrit jamais : le barème est revenu à 1 % (version retirée, précédente rouverte), la vente garde 2 % et sa version, la retransmission est refusée DEJA_NORMALISEE',
+      tenu.retrait && tenu.aibTaux === 2 && tenu.aibVersion === apresEcran.versionId && tenu.defautRevenu === 1 && tenu.retrans === 'DEJA_NORMALISEE' && !!tenu.rouverte, JSON.stringify(tenu));
+
+    /* --- 8. situations : une situation ajoutée à l'écran sans toucher au code ; sans version, refus nommé ---------------------------------- */
+    const s8 = await page.evaluate(() => {
+      const B = window.SIGH.baremeAib, S = window.SIGH.store, PR = window.SIGH.parcours;
+      const col = S.collection('situationsAib');
+      const nouvelle = col.insert({ code: 'sonde97_nouvelle', libelle: 'Situation de sonde 97', declencheur: 'choix', ordre: 99, description: 'Sonde' }).record;
+      const avant = B.aLaDate('sonde97_nouvelle', '2026-11-09');
+      const v = B.nouvelleVersion({ situation: 'sonde97_nouvelle', taux: 8, dateEffet: '2026-01-01', source: 'Sonde 97 : texte à produire', motif: 'Sonde 97 : situation nouvelle' });
+      const apres = B.aLaDate('sonde97_nouvelle', '2026-11-09');
+      const propose = PR.tauxAibProposes({ date: '2026-11-09' }).choix.some((c) => c.situation === 'sonde97_nouvelle' && c.taux === 8);
+      const code = col.update(nouvelle.id, { code: 'autre_code' });
+      const codeGarde = col.get(nouvelle.id).code;
+      if (v.ok) B.retirerVersion(v.id, 'Sonde 97 : fin de sonde');
+      col.archive(nouvelle.id, 'Sonde 97 : fin de sonde');
+      const archivee = B.aLaDate('sonde97_nouvelle', '2026-11-09');
+      return { avant: avant.code, apres: apres.ok && apres.taux, propose, codeGarde, archivee: archivee.code, v: v.ok };
+    });
+    verifier('Une situation créée sans toucher au code : sans version elle est refusée (AIB_SANS_BAREME), avec une version elle est rendue et PROPOSÉE à la caisse, son code ne change plus, archivée elle ne rend plus rien',
+      s8.avant === 'AIB_SANS_BAREME' && s8.v && s8.apres === 8 && s8.propose === true && s8.codeGarde === 'sonde97_nouvelle' && s8.archivee === 'AIB_SANS_BAREME', JSON.stringify(s8));
+
+    /* --- restitution (RG-14 : on archive, on ne supprime pas) ---------------------------------------------------------------------------- */
+    await page.evaluate((mo) => {
+      const S = window.SIGH.store;
+      [mo.a, mo.b].forEach((id) => { try { S.collection('factures').archive(id, 'Sonde Vague 97'); } catch (e) { /* déjà archivé */ } });
+      S.collection('ecritures').all().filter((e) => e.statut !== 'archive' && /S97/.test(String(e.reference || e.piece || e.libelle || ''))).forEach((e) => { try { S.collection('ecritures').archive(e.id, 'Sonde Vague 97'); } catch (x) { /* idem */ } });
       S.setReglage('mecefBoitier', mo.sauve.reglage); S.setReglage('mecefMode', mo.sauve.mode);
       window.SIGH.mecef.fauxBoitier.panne = null;
     }, monde);

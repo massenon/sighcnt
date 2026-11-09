@@ -124,6 +124,57 @@ ALTER TABLE "cfg"."actes_variantes_grille" ADD COLUMN IF NOT EXISTS "grille_colo
 ALTER TABLE "cfg"."actes_variantes_grille" ADD COLUMN IF NOT EXISTS "inverse_depuis_grille" boolean; -- @montee
 ALTER TABLE "cfg"."actes_variantes_grille" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."actes_variantes_grille" IS 'Lignes « variantesGrille » de « actes »';
+CREATE TABLE IF NOT EXISTS "cfg"."bareme_aib" (
+  "id" text PRIMARY KEY,
+  "taux" integer,
+  "motif" text,
+  "cree_le" date,
+  "source" text,
+  "statut" text,
+  "cree_le_2" timestamptz,
+  "cree_par" text,
+  "date_fin" date,
+  "cree_par_2" text,
+  "a_valider" boolean,
+  "date_effet" date,
+  "situation" text,
+  "archive_le" timestamptz,
+  "archive_par" text,
+  "motif_archivage" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
+  "valide_le" timestamptz,
+  "valide_par" text,
+  "valide_role" text,
+  "modifie_le_2" date,
+  "modifie_par_2" text,
+  "extra" jsonb
+);
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "taux" integer; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "cree_le" date; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "cree_le_2" timestamptz; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "date_fin" date; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "cree_par_2" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "a_valider" boolean; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "situation" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "valide_le" timestamptz; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "valide_par" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "valide_role" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "modifie_le_2" date; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "modifie_par_2" text; -- @montee
+ALTER TABLE "cfg"."bareme_aib" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "cfg"."bareme_aib" IS 'Collection « baremeAib » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_bareme_aib_statut" ON "cfg"."bareme_aib" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."catalogue_tarifs" (
   "id" text PRIMARY KEY,
   "code" text,
@@ -618,6 +669,30 @@ ALTER TABLE "cfg"."secteurs" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."secteurs" IS 'Collection « secteurs » — Configuration';
 CREATE INDEX IF NOT EXISTS "ix_secteurs_code" ON "cfg"."secteurs" ("code");
 CREATE INDEX IF NOT EXISTS "ix_secteurs_statut" ON "cfg"."secteurs" ("statut");
+CREATE TABLE IF NOT EXISTS "cfg"."situations_aib" (
+  "id" text PRIMARY KEY,
+  "code" text,
+  "ordre" integer,
+  "cree_le" date,
+  "statut" text,
+  "cree_par" text,
+  "libelle" text,
+  "declencheur" text,
+  "description" text,
+  "extra" jsonb
+);
+ALTER TABLE "cfg"."situations_aib" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
+ALTER TABLE "cfg"."situations_aib" ADD COLUMN IF NOT EXISTS "ordre" integer; -- @montee
+ALTER TABLE "cfg"."situations_aib" ADD COLUMN IF NOT EXISTS "cree_le" date; -- @montee
+ALTER TABLE "cfg"."situations_aib" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "cfg"."situations_aib" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "cfg"."situations_aib" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "cfg"."situations_aib" ADD COLUMN IF NOT EXISTS "declencheur" text; -- @montee
+ALTER TABLE "cfg"."situations_aib" ADD COLUMN IF NOT EXISTS "description" text; -- @montee
+ALTER TABLE "cfg"."situations_aib" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "cfg"."situations_aib" IS 'Collection « situationsAib » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_situations_aib_code" ON "cfg"."situations_aib" ("code");
+CREATE INDEX IF NOT EXISTS "ix_situations_aib_statut" ON "cfg"."situations_aib" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."types_piece" (
   "id" text PRIMARY KEY,
   "sigle" text,

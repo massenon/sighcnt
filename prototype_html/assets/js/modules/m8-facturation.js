@@ -159,10 +159,36 @@
     var ifu = el('input.input', { type: 'text', inputmode: 'numeric', placeholder: '13 chiffres (facultatif pour un particulier)', value: f.ifuClient || '' });
     var nom = el('input.input', { type: 'text', placeholder: 'Nom de l’acheteur (le patient, par défaut)', value: f.acheteurNom || '' });
     var aib = el('select.select');
-    [[0, 'Aucun'], [1, '1 % (taux de la facture de référence, à confirmer)'], [5, '5 %']].forEach(function (o) {
-      aib.appendChild(el('option', { value: String(o[0]) }, o[1]));
-    });
-    aib.value = String(f.aibTaux != null ? f.aibTaux : PR.mecef.aibTauxDefaut());
+    var indice = el('p.text-xs.text-slate-500', { 'data-aib-indice': '' });
+    /* Le taux par défaut et les choix viennent du BARÈME DE L’AIB DATÉ (cfg-bareme-aib) selon l'IFU saisi : aucune liste n'est écrite ici. Le caissier garde la main, mais un choix
+       autre que le défaut est journalisé par le moteur. */
+    var touche = false, ifuInitial = f.ifuClient || '', piecePorteTaux = f.aibTaux != null;
+    function peindre() {
+      var prop = PR.mecef.tauxPropose({ ifu: ifu.value });
+      var garde = aib.value;
+      C.clear(aib);
+      prop.choix.forEach(function (c) {
+        aib.appendChild(el('option', { value: 'sit:' + c.situation, 'data-taux': String(c.taux) },
+          c.taux + ' % : ' + c.libelle + (c.arrete ? '' : ' (proposition à valider)')));
+      });
+      aib.appendChild(el('option', { value: 'aucun', 'data-taux': '0' }, 'Aucun (choix journalisé)'));
+      var voulu = null;
+      if (touche && garde && Array.prototype.some.call(aib.options, function (o) { return o.value === garde; })) voulu = garde;
+      else if (!touche && piecePorteTaux && f.aibSituation && ifu.value === ifuInitial) voulu = 'sit:' + f.aibSituation;
+      else if (prop.defaut) voulu = 'sit:' + prop.defaut.situation;
+      if (voulu && Array.prototype.some.call(aib.options, function (o) { return o.value === voulu; })) aib.value = voulu;
+      else if (!prop.defaut) aib.selectedIndex = -1;
+      var texte;
+      if (prop.defaut) {
+        texte = 'Situation retenue : ' + prop.defaut.libelle + ', ' + prop.defaut.taux + ' % au ' + C.dateFR(prop.defaut.date)
+          + (prop.defaut.arrete ? '' : ' (taux proposé, pas encore arrêté)') + '.' + (prop.defaut.presomption ? ' ' + prop.defaut.avertissement : '');
+      } else {
+        texte = 'Aucun taux par défaut : ' + (prop.defautRefus ? prop.defautRefus.motif + ' ' + prop.defautRefus.geste : 'le barème ne dit rien.') + ' Choisir le taux à la main.';
+      }
+      indice.textContent = texte;
+    }
+    ifu.addEventListener('input', peindre);
+    aib.addEventListener('change', function () { touche = true; });
     var node = el('div.space-y-2.rounded-lg.border.border-slate-200.p-3', { 'data-section': 'facture-normalisee' }, [
       el('p.text-xs.font-semibold.uppercase.tracking-wide.text-navy-900', { text: 'Facture normalisée' }),
       el('div.grid.gap-3.sm\\:grid-cols-3', null, [
@@ -170,11 +196,20 @@
         el('div', null, [el('label.label', { text: 'Nom de l’acheteur' }), nom]),
         el('div', null, [el('label.label', { text: 'Taux d’AIB' }), aib]),
       ]),
+      indice,
       el('p.text-xs.text-slate-500', { text: 'Toute vente est normalisée : ces trois champs sont les seuls à saisir. L’IFU, s’il est renseigné, compte 13 chiffres.' }),
     ]);
+    peindre();
     return {
       el: node, champs: { ifu: ifu, nom: nom, aib: aib },
-      lire: function () { return { ifu: ifu.value, nom: nom.value, aibTaux: Number(aib.value) }; },
+      lire: function () {
+        var v = aib.value || '';
+        var base = { ifu: ifu.value, nom: nom.value };
+        if (piecePorteTaux && !touche && ifu.value === ifuInitial) return Object.assign(base, { aibTaux: f.aibTaux, aibSituation: f.aibSituation, aibVersion: f.aibVersion, aibArrete: f.aibArrete, aibDateBareme: f.aibDateBareme, conserve: true });
+        if (v.indexOf('sit:') === 0) return Object.assign(base, { aibSituation: v.slice(4), aibTaux: Number(aib.options[aib.selectedIndex].getAttribute('data-taux')) });
+        if (v === 'aucun') return Object.assign(base, { aibTaux: 0 });
+        return base;
+      },
     };
   }
   /** Ce que la normalisation a rendu, dit au guichet : une pièce refusée ou à vérifier se DIT, avec son code, son motif et son geste. */
