@@ -56,7 +56,7 @@
 
 ## D. Réponses de la Direction du 09/11/2026 (formulaire de validation)
 
-Les 18 questions ont reçu une réponse. Règle générale posée par la Direction : **tout ce qui est paramétrable l'est dans les paramètres du poste et du web, ENREGISTRÉ EN BASE de données (jamais une constante du code), avec un défaut** semé et modifiable ; un paramètre qui change se versionne par date quand des pièces ont été émises sous l'ancienne valeur.
+Les 18 questions ont reçu une réponse. Règle générale posée par la Direction : **tout ce qui est paramétrable l'est dans les paramètres du poste, ENREGISTRÉ EN BASE de données (jamais une constante du code), avec un défaut** semé et modifiable ; un paramètre qui change se versionne par date quand des pièces ont été émises sous l'ancienne valeur.
 
 | Question | Réponse | Paramétrage demandé |
 |---|---|---|
@@ -69,6 +69,8 @@ Les 18 questions ont reçu une réponse. Règle générale posée par la Directi
 | Planning Q3, Q6, Q8 | recommandations retenues | |
 | Planning Q4 | l'agent propose, le surveillant valide | **paramétrable** oui/non, défaut non |
 | Planning Q5 | copie chiffrée de la fiche de paie sur le téléphone | **paramétrable** oui/non, défaut oui |
+
+**Synchronisation des paramètres (Direction, 09/11/2026)** : les paramètres se règlent au poste, se synchronisent du poste vers le relais, qui les stocke **chiffrés** (relais opaque, il ne lit jamais leur contenu) ; le panneau web du relais n'affiche que les **réglages propres au relais** (appareils, jetons, sauvegardes, supervision). Un paramètre métier ne se règle donc jamais dans le panneau web.
 
 ### Contradictions tranchées : la remarque de la Direction l'emporte (09/11/2026)
 
