@@ -198,7 +198,7 @@ class EcranTableauDecisionnel extends StatelessWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'Les cibles ne sont pas documentées : aucun document de cadrage n’en fixe. Elles sont proposées, marquées à valider et corrigeables à l’onglet « Objectifs & seuils ». Un indicateur dont la donnée manque affiche « non calculable » — jamais un zéro, qui se lirait comme un échec.';
+      'Les cibles ne sont pas documentées : aucun document de cadrage n’en fixe. Elles sont proposées, arrêtées par la Direction, la DAF ou l’administrateur, et corrigeables à l’onglet « Objectifs & seuils ». Un indicateur dont la donnée manque affiche « non calculable » — jamais un zéro, qui se lirait comme un échec.';
 
   @override
   List<Widget> actionsEntete(BuildContext context) => [
@@ -530,7 +530,7 @@ class _EtatModaleObjectif extends State<_ModaleObjectif> {
     super.dispose();
   }
 
-  void _enregistrer() {
+  Future<void> _enregistrer() async {
     final v = _f.valider();
     if (v == null) return;
     final cible = num.tryParse('${v['cible']}'.replaceAll(',', '.')), alerte = num.tryParse('${v['alerte']}'.replaceAll(',', '.'));
@@ -539,11 +539,13 @@ class _EtatModaleObjectif extends State<_ModaleObjectif> {
       return;
     }
     final c = widget.contexte;
-    // Modifier ne l'arrête PAS : l'arrêt est le geste de validation (« Arrêter »). Une cible déjà arrêtée puis corrigée revient « à valider ».
-    final annuler = c.magasin.collection('objectifsPilotage').mettreAJour(widget.objectif['id'], {...v, 'cible': cible, 'alerte': alerte});
-    ValidationPoste(c).remettre('objectifs_pilotage', widget.objectif['id']);
+    // Lot L1 : la Direction, la DAF ou l'administrateur qui enregistre ARRÊTE la cible du même geste (le motif est demandé quand le chiffre change) ;
+    // saisie par un autre profil, elle attend l'arrêt.
+    final r = await ValidationPoste(c).enregistrer(widget.ecran, const ValidationCrud('objectifs_pilotage', libelle: 'Arrêter'),
+        c.magasin.collection('objectifsPilotage'), avant: widget.objectif, valeurs: {...v, 'cible': cible, 'alerte': alerte});
+    if (r == null || !mounted) return;
     Navigator.of(context).pop();
-    ToastsSigh.afficher(widget.ecran, 'Modifications enregistrées.', type: TypeToast.succes, annuler: annuler, messageAnnulation: 'Modification annulée.');
+    ToastsSigh.afficher(widget.ecran, 'Modifications enregistrées.', type: TypeToast.succes, annuler: r.annuler, messageAnnulation: 'Modification annulée.');
   }
 
   @override
@@ -555,6 +557,8 @@ class _EtatModaleObjectif extends State<_ModaleObjectif> {
         Row(mainAxisAlignment: MainAxisAlignment.end, children: [
           BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: () => Navigator.of(context).pop()),
           const SizedBox(width: 8),
+          if (ValidationPoste(widget.contexte).boutonModale(widget.ecran, const ValidationCrud('objectifs_pilotage', libelle: 'Arrêter'), widget.objectif,
+                  () => Navigator.of(context).pop()) case final b?) ...[b, const SizedBox(width: 8)],
           BoutonSigh(key: const Key('pil:enregistrer-objectif'), libelle: 'Enregistrer', onPressed: _enregistrer),
         ]),
       ]));

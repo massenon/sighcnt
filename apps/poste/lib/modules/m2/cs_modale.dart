@@ -15,6 +15,9 @@ Future<void> modaleFormulaire(
   required String? Function(Map<String, Object?> v) valider,
   TailleModale taille = TailleModale.lg,
   Widget? avant,
+
+  /// Un choix de plus au pied, entre « Annuler » et le bouton principal (lot L1 : « Valider » d'un référentiel à valider). Reçoit le contexte de la modale.
+  Widget? Function(BuildContext modale)? piedSup,
 }) =>
     afficherModale<void>(ecran,
         titre: titre,
@@ -26,7 +29,8 @@ Future<void> modaleFormulaire(
             initial: initial,
             libelleOk: libelleOk,
             valider: valider,
-            avant: avant),
+            avant: avant,
+            piedSup: piedSup),
         pied: null);
 
 class _CorpsFormulaire extends StatefulWidget {
@@ -36,13 +40,15 @@ class _CorpsFormulaire extends StatefulWidget {
       required this.initial,
       required this.libelleOk,
       required this.valider,
-      this.avant});
+      this.avant,
+      this.piedSup});
   final BuildContext ecran;
   final List<ChampDef> champs;
   final Map<String, Object?> initial;
   final String libelleOk;
   final String? Function(Map<String, Object?>) valider;
   final Widget? avant;
+  final Widget? Function(BuildContext modale)? piedSup;
   @override
   State<_CorpsFormulaire> createState() => _EtatCorpsFormulaire();
 }
@@ -87,6 +93,7 @@ class _EtatCorpsFormulaire extends State<_CorpsFormulaire> {
                   variante: VarianteBouton.secondaire,
                   onPressed: () => Navigator.of(context).pop()),
               const SizedBox(width: 8),
+              if (widget.piedSup?.call(context) case final sup?) ...[sup, const SizedBox(width: 8)],
               BoutonSigh(
                   libelle: widget.libelleOk,
                   icone: LucideIcons.save,

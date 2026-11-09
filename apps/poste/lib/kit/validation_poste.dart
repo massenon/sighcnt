@@ -6,7 +6,6 @@ import '../core/service_installation.dart';
 import '../donnees/magasin.dart';
 import '../modules/m14/commun_m14.dart' show rolesDe;
 import '../shell/contexte_ecran.dart';
-import '../sync/configuration_sync.dart' show ApplicateurConfiguration;
 import 'acteur.dart';
 import 'badge.dart';
 import 'bouton.dart';
@@ -55,7 +54,10 @@ class ValidationPoste {
   bool get fileul => ServiceInstallation.de(m).rattache;
 
   /// `K.peutValider(famille)` : le rôle de la SESSION est un des rôles de la famille, et le poste tient sa configuration.
-  bool peutValider(String famille) => !fileul && valPeutValider(famille, c.role);
+  bool peutValider(String famille) {
+    final f = valFamille(famille);
+    return f != null && !(fileul && valVoyageDeLaMere(f)) && valPeutValider(famille, c.role);
+  }
 
   EtatValidation? etat(String famille, Object? id) => valEtatValidation(famille, '$id', lire, libelles);
 
@@ -86,13 +88,10 @@ class ValidationPoste {
   }
 
   /// Le geste : refus nommé, ou écriture du marquage et de ses trois traces, UNE ligne de journal (RG-12).
-  VerdictValidation valider(String famille, Object? id) {
-    if (fileul) {
-      return VerdictValidation.refus(const RefusValidation('CONFIGURATION_DE_LA_MERE', ApplicateurConfiguration.motifGarde,
-          'Valider depuis le poste principal : la validation est reprise ici ensuite.'));
-    }
+  VerdictValidation valider(String famille, Object? id, {String? motif}) {
+    // Sur un fileul, le domaine refuse en nommant la mère (`CONFIGURATION_DE_LA_MERE`, même texte que la garde « réglé sur la mère »).
     final r = valValiderReferentiel(famille, '$id',
-        role: c.role, acteur: acteur(c).nom, maintenant: c.aujourdhui, lire: lire, libelles: libelles);
+        role: c.role, acteur: acteur(c).nom, maintenant: c.aujourdhui, lire: lire, libelles: libelles, fileul: fileul, motif: motif);
     if (!r.ok) return r;
     try {
       final col = m.collection(r.collection!);
@@ -132,6 +131,146 @@ class ValidationPoste {
       {VoidCallback? apres, String libelle = 'Valider'}) {
     final b = bouton(ctx, famille, id, apres: apres, libelle: libelle);
     return b == null ? const [] : [b];
+  }
+
+  // --- Lot L1 (09/11/2026) : ENREGISTRER VALIDE pour le profil de la famille ---------------------------------------------------------------------
+  //
+  // Équivalents de `K.ecrireValidable`, `K.boutonValiderModale`, `K.gardeValidation` et `K.suivreValidation` de la maquette. Le domaine décide
+  // (`valControlerEnregistrement`, `valMarquageEnregistrement`, `valSuivreEnregistrement`), ICI on écrit UNE fois et on journalise UNE ligne (RG-12,
+  // état inclus). La valeur chiffrée corrigée par la famille demande son motif au geste (refus nommé `MOTIF_OBLIGATOIRE` sinon).
+
+  /// Écrit une fiche d'un référentiel à valider depuis une modale : création si [avant] est nul. Rend le résultat (refus nommé, ou la fiche écrite et
+  /// la fonction qui l'annule). [valeurs] est la fiche COMPLÈTE à insérer en création, le patch du formulaire en modification.
+  EnregistrementValidable ecrire(ValidationCrud v, CollectionMagasin col, {Fiche? avant, required Fiche valeurs, String? motif, String prefixeId = 'ID'}) {
+    final role = c.role;
+    final f = valFamille(v.famille);
+    if (f == null) {
+      return EnregistrementValidable.refus(
+          const RefusValidation('INTROUVABLE', 'Famille de référentiel inconnue.', 'Choisir une famille du registre des validations.'));
+    }
+    if (v.cible != null) return _ecrireSepare(v, col, avant: avant, valeurs: valeurs, motif: motif);
+    final chiffres = valChiffresModifies(v.famille, avant, valeurs);
+    final refus = valControlerEnregistrement(v.famille, role: role, chiffres: chiffres, motif: motif, fileul: fileul);
+    if (refus != null) return EnregistrementValidable.refus(refus);
+    final modifie = avant != null && v.siChange != null ? v.siChange!(avant, {...avant, ...valeurs}) : null;
+    final m = valMarquageEnregistrement(v.famille,
+        role: role, acteur: acteur(c).nom, maintenant: c.aujourdhui, libelles: libelles, avant: avant, valeurs: valeurs, motif: motif, modifie: modifie);
+    final patch = {...valeurs, ...m.patch};
+    try {
+      if (avant != null) {
+        final annuler = col.mettreAJour(avant['id'], patch, journaliser: false);
+        final j = m.journal;
+        this.m.journaliser(j.action, f.module, f.libelle, '${avant['id']}', j.avant, j.apres);
+        return EnregistrementValidable(fiche: avant, marquage: m, annuler: annuler);
+      }
+      final id = '${patch['id'] ?? '$prefixeId${(col.toutes.length + 1).toString().padLeft(5, '0')}'}';
+      final fiche = {...patch, 'id': id};
+      col.ajouterSansJournal(fiche, enTete: true);
+      final j = m.journal;
+      this.m.journaliser(j.action, f.module, f.libelle, id, null, j.apres);
+      return EnregistrementValidable(fiche: fiche, marquage: m, annuler: () => col.archiver(id));
+    } on EcritureRefusee catch (e) {
+      return EnregistrementValidable.refus(RefusValidation('ECRITURE_REFUSEE', e.motif, null));
+    }
+  }
+
+  /// L'artefact validé est tenu AILLEURS que dans la fiche écrite (la valorisation lue au produit) : écriture ordinaire, puis suivi.
+  EnregistrementValidable _ecrireSepare(ValidationCrud v, CollectionMagasin col, {Fiche? avant, required Fiche valeurs, String? motif}) {
+    final modifie = avant != null && (v.siChange == null || v.siChange!(avant, {...avant, ...valeurs}));
+    final refus = valControlerEnregistrement(v.famille,
+        role: c.role, chiffres: modifie && v.siChange != null ? const ['valeur'] : const [], motif: motif, fileul: fileul);
+    if (refus != null) return EnregistrementValidable.refus(refus);
+    try {
+      final cibleId = avant == null ? null : v.cible!(avant);
+      final annuler = avant == null ? col.inserer({'statut': 'actif', ...valeurs}).annuler : col.mettreAJour(avant['id'], valeurs);
+      if (cibleId != null) suivre(v.famille, cibleId, modifie: modifie, motif: motif);
+      return EnregistrementValidable(fiche: avant ?? valeurs, annuler: annuler);
+    } on EcritureRefusee catch (e) {
+      return EnregistrementValidable.refus(RefusValidation('ECRITURE_REFUSEE', e.motif, null));
+    }
+  }
+
+  /// Le contrôle seul, AVANT un geste qui modifie un artefact tenu hors fiche (constante du code) : refus nommé (fileul), ou `null`.
+  RefusValidation? garde(String famille) => valControlerEnregistrement(famille, role: c.role, fileul: fileul);
+
+  /// APRÈS le geste : le profil de la famille valide la pièce si elle attendait ; tout autre profil la remet « à valider » quand elle a changé.
+  VerdictSuivi suivre(String famille, Object? cible, {bool? modifie, String? motif}) {
+    final r = valSuivreEnregistrement(famille, '$cible',
+        role: c.role, acteur: acteur(c).nom, maintenant: c.aujourdhui, lire: lire, libelles: libelles, modifie: modifie ?? true, motif: motif, fileul: fileul);
+    if (r.refus != null) return r;
+    final v = r.validation;
+    if (v != null) {
+      try {
+        final col = m.collection(v.collection!);
+        if (v.creation != null) {
+          col.ajouterSansJournal(v.creation!);
+        } else {
+          col.mettreAJour(v.collection == valCollectionValidations ? 'VRF-${v.id}' : '${v.id}', v.patch, journaliser: false);
+        }
+      } on EcritureRefusee {
+        return r;
+      }
+      final j = v.journal!;
+      m.journaliser(j.action, j.module, j.entite, j.reference, j.avant, j.apres);
+      return r;
+    }
+    final rem = r.remise;
+    if (rem != null && rem.remis) {
+      try {
+        m.collection(rem.collection!).mettreAJour(rem.collection == valCollectionValidations ? 'VRF-${rem.id}' : '${rem.id}', rem.patch, journaliser: false);
+      } on EcritureRefusee {
+        return r;
+      }
+      final j = rem.journal!;
+      m.journaliser(j.action, j.module, j.entite, j.reference, j.avant, j.apres);
+    }
+    return r;
+  }
+
+  /// Écrit avec la demande de MOTIF quand la famille corrige une valeur chiffrée : rend `null` si l'agent renonce. Le refus d'écriture est dit en toast.
+  Future<EnregistrementValidable?> enregistrer(BuildContext ctx, ValidationCrud v, CollectionMagasin col,
+      {Fiche? avant, required Fiche valeurs, String prefixeId = 'ID'}) async {
+    var r = ecrire(v, col, avant: avant, valeurs: valeurs, prefixeId: prefixeId);
+    if (!r.ok && r.refus!.code == 'MOTIF_OBLIGATOIRE') {
+      if (!ctx.mounted) return null;
+      final motif = await confirmerAvecMotif(ctx, titre: 'Motif de la correction', message: r.refus!.motif, libelleOk: 'Enregistrer');
+      if (motif == null || motif.trim().isEmpty || !ctx.mounted) return null;
+      r = ecrire(v, col, avant: avant, valeurs: valeurs, motif: motif, prefixeId: prefixeId);
+    }
+    if (!r.ok) {
+      if (ctx.mounted) ToastsSigh.afficher(ctx, r.refus!.motif, type: TypeToast.erreur, detail: r.refus!.geste);
+      return null;
+    }
+    return r;
+  }
+
+  /// `K.boutonValiderModale` : le choix « Valider » du pied de modale, ABSENT hors famille, pour un élément déjà validé et sur un fileul.
+  /// Il valide sans enregistrer les valeurs saisies. [fermer] referme la modale ; [apres] repeint l'écran.
+  Widget? boutonModale(BuildContext ctx, ValidationCrud v, Fiche existante, VoidCallback fermer, {VoidCallback? apres}) {
+    final cible = v.cible == null ? existante['id'] : v.cible!(existante);
+    if (cible == null) return null;
+    if (!peutValider(v.famille)) return null;
+    final e = etat(v.famille, cible);
+    if (e == null || !e.enAttente) return null;
+    return Tooltip(
+        message: 'Valider « ${e.libelle} » sans modifier ses valeurs',
+        child: BoutonSigh(
+            key: Key('val:modale:${v.famille}:$cible'),
+            libelle: v.libelle,
+            icone: LucideIcons.shieldCheck,
+            variante: VarianteBouton.secondaire,
+            onPressed: () {
+              final r = valider(v.famille, cible);
+              if (!r.ok) {
+                ToastsSigh.afficher(ctx, r.refus!.motif, type: TypeToast.erreur, detail: r.refus!.geste);
+                return;
+              }
+              fermer();
+              final quand = DateTime.tryParse(r.valideLe!);
+              ToastsSigh.afficher(ctx, '« ${e.libelle} » validé.',
+                  type: TypeToast.succes, detail: 'Le ${quand == null ? r.valideLe : dateHeure(quand.toLocal())} par ${r.validePar}.');
+              apres?.call();
+            }));
   }
 
   /// `validation: { famille, cible?, siChange? }` à l'ENREGISTREMENT d'une modification : remet l'artefact « à valider » si la configuration le demande.
@@ -208,3 +347,20 @@ class ValidationCrud {
   final bool Function(Map<String, Object?> avant, Map<String, Object?> apres)? siChange;
   final String libelle;
 }
+
+/// Ce qu'un enregistrement validable rend : un refus nommé, ou la fiche écrite, la fonction qui l'annule et le marquage appliqué.
+class EnregistrementValidable {
+  const EnregistrementValidable({required this.fiche, this.marquage, required this.annuler}) : refus = null;
+  const EnregistrementValidable.refus(RefusValidation r)
+      : refus = r,
+        fiche = const {},
+        marquage = null,
+        annuler = _rien;
+  final RefusValidation? refus;
+  bool get ok => refus == null;
+  final Fiche fiche;
+  final VerdictEnregistrement? marquage;
+  final VoidCallback annuler;
+}
+
+void _rien() {}

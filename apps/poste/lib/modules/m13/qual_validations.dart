@@ -118,10 +118,10 @@ class EcranValidations extends StatelessWidget with EcranMaquette {
             // Une ligne par famille : compte réel, profil nommé, lien vers l'écran où se trouve l'artefact. Aucune commande d'écriture ici.
             CarteSigh(
                 titre: restreint
-                    ? 'Les référentiels de votre ressort : à valider à l’écran de chacun'
+                    ? 'Les référentiels de votre ressort : la validation se fait à l’écran de chacun'
                     : 'Référentiels en attente de validation, par famille : la Direction ne signe pas à la place d’un professionnel nommé',
                 child: familles.isEmpty
-                    ? const Text('Aucun référentiel à valider ne relève de votre profil.',
+                    ? const Text('Aucun référentiel en attente de validation ne relève de votre profil.',
                         style: TextStyle(color: JetonsShell.slate500, fontSize: 14, height: 20 / 14))
                     : Column(children: [
                         for (final (i, x) in familles.indexed) ...[

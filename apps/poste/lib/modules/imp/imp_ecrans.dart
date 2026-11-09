@@ -410,9 +410,9 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
                 ton: TonSigh.attention),
             KpiSigh(
                 libelle: 'Statut du jeu',
-                valeur: j.supporte ? 'Supporté' : 'À valider',
+                valeur: j.supporte ? 'Supporté' : (vp.etat('jeux_import', j.ecran)?.enAttente == false ? 'Validé' : 'À valider'),
                 icone: LucideIcons.badgeCheck,
-                ton: j.supporte ? TonSigh.succes : TonSigh.attention),
+                ton: j.supporte || vp.etat('jeux_import', j.ecran)?.enAttente == false ? TonSigh.succes : TonSigh.attention),
           ]),
           if (!j.supporte && !(vp.etat('jeux_import', j.ecran)?.enAttente == false)) ...[
             const SizedBox(height: 16),
@@ -420,7 +420,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             if (vp.bouton(context, 'jeux_import', j.ecran) case final b?) Padding(padding: const EdgeInsets.only(top: 16), child: Align(alignment: Alignment.centerRight, child: b)),
           ] else if (!j.supporte) ...[
             const SizedBox(height: 16),
-            NoteSigh('Jeu validé. ${j.limite ?? ''}', icone: LucideIcons.circleCheck),
+            NoteSigh('Jeu validé. ${(j.limite ?? '').replaceFirst(RegExp(r'^PROPOSITION À VALIDER\\s*:\\s*'), '')}', icone: LucideIcons.circleCheck),
             if (vp.badge('jeux_import', j.ecran) case final b?) Padding(padding: const EdgeInsets.only(top: 16), child: Align(alignment: Alignment.centerRight, child: b)),
           ] else if (j.limite != null) ...[
             const SizedBox(height: 16),

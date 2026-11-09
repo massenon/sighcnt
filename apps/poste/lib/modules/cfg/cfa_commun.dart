@@ -127,10 +127,13 @@ void cfaSaisir(BuildContext ctx,
       corps: FormulaireSigh(controleur: ctl),
       pied: (fermer) => [
             BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+            // Lot L1 : le choix « Valider » du pied de modale (profil de la famille, élément en attente seulement ; ABSENT sinon).
+            if (existante != null && validation != null)
+              if (ValidationPoste(c).boutonModale(ctx, validation, existante, fermer) case final b?) b,
             BoutonSigh(
                 libelle: existante == null ? 'Créer' : 'Enregistrer',
                 icone: existante == null ? LucideIcons.plus : LucideIcons.save,
-                onPressed: () {
+                onPressed: () async {
                   final saisie = ctl.valider();
                   if (saisie == null) {
                     ToastsSigh.afficher(ctx, 'Le formulaire comporte des erreurs.', type: TypeToast.erreur);
@@ -138,6 +141,26 @@ void cfaSaisir(BuildContext ctx,
                   }
                   if (avant != null && !avant(ctx, saisie, existante)) return;
                   final f = fiche(saisie, existante);
+                  if (validation != null) {
+                    // Lot L1 : la famille qui enregistre VALIDE (une ligne de journal, état inclus) ; hors famille l'élément repasse « à valider ».
+                    final r = await ValidationPoste(c).enregistrer(ctx, validation, col,
+                        avant: existante,
+                        valeurs: existante == null ? {'statut': 'actif', ...f, '_creePar': acteur(c).nom, '_creeLe': c.aujourdhui.toIso8601String()} : f,
+                        prefixeId: prefixeId);
+                    if (r == null || !ctx.mounted) return;
+                    fermer();
+                    if (existante == null) {
+                      ToastsSigh.afficher(ctx, '$entite créé.',
+                          type: TypeToast.succes,
+                          detail: cfaVrai(r.fiche['libelle']) ? '${r.fiche['libelle']}' : cfaVrai(r.fiche['designation']) ? '${r.fiche['designation']}' : cfaVrai(r.fiche['code']) ? '${r.fiche['code']}' : null,
+                          annuler: r.annuler,
+                          messageAnnulation: 'Création annulée — la fiche est archivée.');
+                      apres?.call(r.fiche);
+                    } else {
+                      ToastsSigh.afficher(ctx, 'Modifications enregistrées.', type: TypeToast.succes, annuler: r.annuler);
+                    }
+                    return;
+                  }
                   fermer();
                   if (existante == null) {
                     final r = col.inserer({'statut': 'actif', ...f, '_creePar': acteur(c).nom, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: prefixeId);
@@ -148,10 +171,7 @@ void cfaSaisir(BuildContext ctx,
                         messageAnnulation: 'Création annulée — la fiche est archivée.');
                     apres?.call(r.fiche);
                   } else {
-                    final avantModif = {...existante};
                     final annuler = col.mettreAJour(existante['id'], f);
-                    // Modifier un artefact validé le remet « à valider » (moteur de validation commun).
-                    if (validation != null) ValidationPoste(c).remettreApresModification(validation, avantModif, existante);
                     ToastsSigh.afficher(ctx, 'Modifications enregistrées.', type: TypeToast.succes, annuler: annuler);
                   }
                 }),

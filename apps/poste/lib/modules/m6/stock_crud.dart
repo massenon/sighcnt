@@ -166,10 +166,13 @@ class _CrudStockState extends State<CrudStock> {
                   libelle: 'Annuler',
                   variante: VarianteBouton.secondaire,
                   onPressed: fermer),
+              // Lot L1 : le choix « Valider » du pied de modale (profil de la famille, élément en attente seulement ; ABSENT sinon).
+              if (existante != null && widget.validation != null)
+                if (ValidationPoste(c).boutonModale(ctx, widget.validation!, existante, fermer) case final b?) b,
               BoutonSigh(
                   libelle: existante == null ? 'Créer' : 'Enregistrer',
                   icone: LucideIcons.check,
-                  onPressed: () {
+                  onPressed: () async {
                     final saisie = ctl.valider();
                     if (saisie == null) {
                       ToastsSigh.afficher(
@@ -187,9 +190,17 @@ class _CrudStockState extends State<CrudStock> {
                     final fiche = widget.transformerExistante != null
                         ? widget.transformerExistante!(ctx, saisie, existante)
                         : widget.transformer(ctx, saisie);
+                    if (widget.validation != null && existante != null) {
+                      // Lot L1 : la famille qui enregistre VALIDE, hors famille l'élément repasse « à valider » (motif demandé si une valeur chiffrée change).
+                      final r = await ValidationPoste(c).enregistrer(ctx, widget.validation!, widget.collection, avant: existante, valeurs: fiche);
+                      if (r == null || !ctx.mounted) return;
+                      fermer();
+                      ToastsSigh.afficher(ctx, widget.messageModification,
+                          type: TypeToast.succes, detail: widget.referenceToast?.call(existante), annuler: r.annuler);
+                      return;
+                    }
                     fermer();
                     if (existante == null) {
-                      final r = widget.collection.inserer({
                         'statut': 'actif',
                         ...fiche,
                         '_creePar': acteur(c).nom,
@@ -200,11 +211,8 @@ class _CrudStockState extends State<CrudStock> {
                           detail: widget.referenceToast?.call(r.fiche),
                           annuler: r.annuler);
                     } else {
-                      final avant = {...existante};
                       final annuler =
                           widget.collection.mettreAJour(existante['id'], fiche);
-                      // Modifier un artefact validé le remet « à valider ».
-                      if (widget.validation != null) ValidationPoste(c).remettreApresModification(widget.validation!, avant, existante);
                       ToastsSigh.afficher(ctx, widget.messageModification,
                           type: TypeToast.succes,
                           detail: widget.referenceToast?.call(existante),

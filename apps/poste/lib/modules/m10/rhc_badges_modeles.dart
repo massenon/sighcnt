@@ -24,7 +24,7 @@ class EcranBadgesModeles extends StatelessWidget with EcranMaquette {
   String get description => 'Les gabarits : format, orientation, zones imprimées et mentions du verso.';
   @override
   String get regle =>
-      'Le badge ne porte aucune couleur en dur : il suit la charte de l’établissement, si bien qu’une autre clinique n’a rien à retoucher. L’en-tête officiel ne s’y applique pas tel quel — un badge n’est pas un état administratif : logo, dénomination et devise, mais ni IFU ni RCCM, qui sont des mentions fiscales. Les mentions du verso sont une proposition à valider : elles engagent la clinique envers le porteur.';
+      'Le badge ne porte aucune couleur en dur : il suit la charte de l’établissement, si bien qu’une autre clinique n’a rien à retoucher. L’en-tête officiel ne s’y applique pas tel quel — un badge n’est pas un état administratif : logo, dénomination et devise, mais ni IFU ni RCCM, qui sont des mentions fiscales. Les mentions du verso engagent la clinique envers le porteur : un modèle n’est arrêté que par la Direction, la DAF ou l’administrateur.';
 
   static const _zones = [
     OptionChamp('photo', 'Photographie'),

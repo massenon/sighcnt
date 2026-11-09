@@ -81,7 +81,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
                   ton: ouverts > 0 ? TonSigh.attention : TonSigh.neutre,
                   indice: 'Datés et révocables'),
               KpiSigh(
-                  libelle: 'Modèles à valider',
+                  libelle: 'Modèles en attente de validation',
                   valeur: nombre(rows.where((r) => r['aValider'] == true).length),
                   icone: LucideIcons.circleHelp,
                   ton: TonSigh.attention,
@@ -266,10 +266,13 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
         ]),
         pied: (fermer) => [
               BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              // Lot L1 : le choix « Valider » du pied de modale (la Direction, modèle en attente seulement ; ABSENT sinon).
+              if (!creation)
+                if (ValidationPoste(c).boutonModale(ecran, const ValidationCrud('enquetes'), r!, fermer) case final b?) b,
               BoutonSigh(
                   libelle: creation ? 'Créer le modèle' : 'Enregistrer',
                   icone: LucideIcons.save,
-                  onPressed: () {
+                  onPressed: () async {
                     final v = ctl.valider();
                     if (v == null) return;
                     if (questions.isEmpty) {
@@ -278,21 +281,22 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
                       return;
                     }
                     final col = colEnquetes(c.magasin);
-                    if (creation) {
-                      col.inserer({
-                        ...v,
-                        'statut': 'actif',
-                        'reference': _prochaineReference(col),
-                        'questions': [for (final q in questions) {...q}],
-                        'aValider': true,
-                        'creeLe': jourIso(c),
-                        'source': 'Créé dans l’application — à valider',
-                      }, prefixe: 'ENQ');
-                    } else {
-                      col.mettreAJour(r['id'], {...v, 'questions': [for (final q in questions) {...q}]});
-                      // Modifier un modèle validé le remet « à valider » (moteur de validation commun).
-                      ValidationPoste(c).remettre('enquetes', r['id']);
-                    }
+                    // Lot L1 : la Direction qui enregistre VALIDE ; hors famille, le modèle naît ou repasse « à valider ». UNE ligne de journal.
+                    final res = await ValidationPoste(c).enregistrer(ecran, const ValidationCrud('enquetes'), col,
+                        avant: r,
+                        valeurs: creation
+                            ? {
+                                ...v,
+                                'statut': 'actif',
+                                'reference': _prochaineReference(col),
+                                'questions': [for (final q in questions) {...q}],
+                                'aValider': true,
+                                'creeLe': jourIso(c),
+                                'source': 'Créé dans l’application — à valider',
+                              }
+                            : {...v, 'questions': [for (final q in questions) {...q}]},
+                        prefixeId: 'ENQ');
+                    if (res == null || !ecran.mounted) return;
                     fermer();
                     ToastsSigh.afficher(ecran, creation ? 'Modèle créé.' : 'Modèle enregistré.', type: TypeToast.succes);
                   }),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
@@ -47,9 +49,12 @@ Future<void> modaleSaisie(
   Map<String, Object?> initial = const {},
   required String libelleOk,
   required IconData icone,
-  required bool Function(Map<String, Object?> valeurs) surValider,
+  required FutureOr<bool> Function(Map<String, Object?> valeurs) surValider,
   TailleModale taille = TailleModale.lg,
   Widget? entete,
+
+  /// Un choix de plus au pied (lot L1 : « Valider » d'un référentiel à valider) ; reçoit la fonction qui referme la modale.
+  Widget? Function(VoidCallback fermer)? piedSup,
 }) async {
   // Les champs numériques se saisissent en texte : une valeur déjà numérique est présentée sans « .0 ».
   final depart = {
@@ -71,10 +76,11 @@ Future<void> modaleSaisie(
       ]),
       pied: (fermer) => [
             BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+            if (piedSup?.call(fermer) case final sup?) sup,
             BoutonSigh(
                 libelle: libelleOk,
                 icone: icone,
-                onPressed: () {
+                onPressed: () async {
                   final v = ctl.valider();
                   if (v == null) {
                     ToastsSigh.afficher(ecran, 'Le formulaire comporte des erreurs.', type: TypeToast.erreur);
@@ -83,7 +89,7 @@ Future<void> modaleSaisie(
                   for (final c in champs) {
                     if (c.type == TypeChamp.nombre && v.containsKey(c.nom)) v[c.nom] = nombreOuZero(v[c.nom]);
                   }
-                  if (surValider(v)) fermer();
+                  if (await surValider(v)) fermer();
                 }),
           ]);
   ctl.dispose();

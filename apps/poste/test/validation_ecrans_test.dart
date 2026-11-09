@@ -80,7 +80,7 @@ void main() {
       final m = magasinDe(const {});
       await ouvrirM14(t, m, 'adm-validations', role: 'agentadmin');
       // L'agent administratif voit l'écran en profil « élargi » : aucune famille ne relève de lui.
-      expect(find.text('Aucun référentiel à valider ne relève de votre profil.'), findsOneWidget);
+      expect(find.text('Aucun référentiel en attente de validation ne relève de votre profil.'), findsOneWidget);
     });
   });
 
@@ -181,17 +181,58 @@ void main() {
     });
   });
 
-  group('modifier un élément validé le remet « à valider »', () {
-    casM14('modifier une pathologie VALIDÉE (la ligne éditée) : la validation tombe, UNE ligne « Remise à valider »', (t) async {
+  group('enregistrer valide pour le profil de la famille, remet « à valider » hors famille (lot L1, 09/11/2026)', () {
+    M validee() => {'aValider': false, 'valideLe': '2026-09-01', 'validePar': 'Dr X', 'valideRole': 'Directeur Médical'};
+
+    Future<void> ouvrirPathologies(dynamic t, Magasin m, String role) async {
+      await ouvrirM14(t, m, 'm2-pathologies', role: role);
+      await toucherM14(t, find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('kit:onglet:referentiel')).first);
+    }
+
+    casM14('profil de la famille (dm) : enregistrer un élément validé le LAISSE validé, UNE ligne « Modification » portant l’état', (t) async {
       final m = magasinM14();
       final col = m.collection('pathologies');
-      // Toutes validées : la ligne éditée, quelle qu'elle soit, est validée.
       for (final f in col.actives) {
-        col.mettreAJour(f['id'], {'aValider': false, 'valideLe': '2026-09-01', 'validePar': 'Dr X', 'valideRole': 'Directeur Médical'}, journaliser: false);
+        col.mettreAJour(f['id'], validee(), journaliser: false);
       }
-      await ouvrirM14(t, m, 'm2-pathologies', role: 'dm');
-      await toucherM14(t, find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('kit:onglet:referentiel')).first);
+      final avant = m.collection('audit').toutes.length;
+      await ouvrirPathologies(t, m, 'dm');
       await toucherM14(t, find.byTooltip('Modifier').first);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      expect(col.actives.where((f) => f['aValider'] == true), isEmpty, reason: 'aucune pathologie ne repasse « à valider »');
+      expect(m.collection('audit').toutes.length, avant + 1, reason: 'UNE ligne de journal (RG-12)');
+      final j = m.collection('audit').toutes.first;
+      expect(j['action'], 'Modification');
+      expect('${j['apres']}', contains('validé'));
+    });
+
+    casM14('profil de la famille (dm) : enregistrer un élément « à valider » le VALIDE (trois traces), action « Validation »', (t) async {
+      final m = magasinM14();
+      final col = m.collection('pathologies');
+      for (final f in col.actives) {
+        col.mettreAJour(f['id'], {'aValider': true, 'valideLe': null, 'validePar': null, 'valideRole': null}, journaliser: false);
+      }
+      final avant = m.collection('audit').toutes.length;
+      await ouvrirPathologies(t, m, 'dm');
+      await toucherM14(t, find.byTooltip('Modifier').first);
+      expect(find.widgetWithText(BoutonSigh, 'Valider'), findsOneWidget, reason: 'le choix Valider du pied de modale (profil de la famille, élément en attente)');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final validees = col.actives.where((f) => f['aValider'] == false && f['valideLe'] != null).toList();
+      expect(validees.length, 1, reason: 'UNE pathologie est validée par l’enregistrement');
+      expect(validees.first['validePar'], isNotEmpty);
+      expect(m.collection('audit').toutes.length, avant + 1, reason: 'UNE ligne de journal');
+      expect(m.collection('audit').toutes.first['action'], 'Validation');
+    });
+
+    casM14('hors famille (admin) : pas de choix Valider dans la modale ; enregistrer remet l’élément validé « à valider », UNE ligne « Remise à valider »', (t) async {
+      final m = magasinM14();
+      final col = m.collection('pathologies');
+      for (final f in col.actives) {
+        col.mettreAJour(f['id'], validee(), journaliser: false);
+      }
+      await ouvrirPathologies(t, m, 'admin');
+      await toucherM14(t, find.byTooltip('Modifier').first);
+      expect(find.widgetWithText(BoutonSigh, 'Valider'), findsNothing, reason: 'commande ABSENTE hors famille, jamais grisée');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
       expect(col.actives.where((f) => f['aValider'] == true).length, 1, reason: 'UNE pathologie est revenue « à valider »');
       expect(col.actives.where((f) => f['aValider'] == true).first['valideLe'], isNull);

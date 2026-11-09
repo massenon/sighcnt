@@ -33,7 +33,7 @@ class EcranValeursReference extends StatefulWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'Les bornes dépendent du réactif et de l’automate : elles se modifient ici, sans toucher au code. Celles reprises de la fiche de résultats du 21/08/2026 sont marquées documentées ; les valeurs usuelles suppléées ont reçu la validation écrite du biologiste médical le 01/09/2026 et le portent — les deux provenances ne se confondent jamais. Une variable créée ou modifiée depuis repart « à valider ».';
+      'Les bornes dépendent du réactif et de l’automate : elles se modifient ici, sans toucher au code. Celles reprises de la fiche de résultats du 21/08/2026 sont marquées documentées ; les valeurs usuelles suppléées ont reçu la validation écrite du biologiste médical le 01/09/2026 et le portent — les deux provenances ne se confondent jamais. Enregistrée par le biologiste médical, une variable est arrêtée du même geste (le motif est demandé quand une borne change) ; créée ou modifiée par un autre profil, elle attend sa relecture.';
 
   @override
   State<EcranValeursReference> createState() => _EtatValeurs();
@@ -448,10 +448,13 @@ class _EtatValeurs extends State<EcranValeursReference> {
                   libelle: 'Annuler',
                   variante: VarianteBouton.secondaire,
                   onPressed: fermer),
+              // Lot L1 : le choix « Valider » du pied de modale (le biologiste, variable en attente seulement ; ABSENT sinon).
+              if (!creation)
+                if (ValidationPoste(c).boutonModale(ctx, const ValidationCrud('labo_variables'), v!, fermer) case final b?) b,
               BoutonSigh(
                   libelle: creation ? 'Créer' : 'Enregistrer',
                   icone: creation ? LucideIcons.plus : LucideIcons.check,
-                  onPressed: () {
+                  onPressed: () async {
                     final saisie = ctl.valider();
                     if (saisie == null) return;
                     final col = m.collection('variablesLabo');
@@ -460,26 +463,11 @@ class _EtatValeurs extends State<EcranValeursReference> {
                         examensActifs: m.collection('examensLabo').actives,
                         utilisateur: acteur(c).nom,
                         maintenant: c.aujourdhui);
-                    if (creation) {
-                      col.inserer({'statut': 'actif', ...val}, prefixe: 'VAR');
-                    } else {
-                      final avant = {...v};
-                      col.mettreAJour(v['id'], val);
-                      // Défaut 5 : déplacer une borne, l'unité, le type ou la règle remet la variable « à valider » (le biologiste revalide). Une valeur
-                      // ABSENTE (nulle ou vide) n'est pas une valeur déplacée.
-                      Object? vide(Object? x) => x == null || x == '' ? null : (x is num ? x.toDouble() : x);
-                      final changee = ['min', 'max', 'normal', 'unite', 'type', 'regle'].any((k) => vide(val[k]) != vide(avant[k]));
-                      if (changee) ValidationPoste(c).remettre('labo_variables', v['id']);
-                    }
-                    m.journaliser(
-                        creation
-                            ? 'Création d’une variable de résultat'
-                            : 'Modification d’une valeur de référence',
-                        'M5',
-                        'Variable',
-                        '${val['code']}',
-                        v == null ? null : {'min': v['min'], 'max': v['max']},
-                        {'min': val['min'], 'max': val['max']});
+                    // Lot L1 : le biologiste qui enregistre VALIDE (motif demandé si une borne change) ; hors famille, la variable naît ou repasse « à valider ».
+                    // UNE ligne de journal, portée par le moteur.
+                    final r = await ValidationPoste(c).enregistrer(ctx, const ValidationCrud('labo_variables'), col,
+                        avant: v, valeurs: creation ? {'statut': 'actif', ...val} : val, prefixeId: 'VAR');
+                    if (r == null || !ctx.mounted) return;
                     fermer();
                     final ref = catLibelleReference(val);
                     ToastsSigh.afficher(
@@ -771,8 +759,10 @@ class _EtatValeurs extends State<EcranValeursReference> {
                     }),
                 ColonneEtat(libelle: 'Provenance', valeur: provenance),
               ], lignes: rows)),
-              const BlocTexte(
-                  'Les valeurs marquées « documentées » sont reprises de la fiche de résultats de la clinique éditée le 21/08/2026. Celles marquées « à valider » sont des valeurs usuelles de la biologie médicale, portées à titre d’attente : elles dépendent du réactif et de l’automate employés et doivent être arrêtées par le biologiste médical avant mise en service.',
+              BlocTexte(
+                  rows.any((v) => v['aValider'] == true)
+                      ? 'Les valeurs marquées « documentées » sont reprises de la fiche de résultats de la clinique éditée le 21/08/2026. Celles marquées « à valider » sont des valeurs usuelles de la biologie médicale, portées à titre d’attente : elles dépendent du réactif et de l’automate employés et doivent être arrêtées par le biologiste médical avant mise en service.'
+                      : 'Les valeurs marquées « documentées » sont reprises de la fiche de résultats de la clinique éditée le 21/08/2026. Les autres ont été arrêtées par le biologiste médical.',
                   italique: true),
             ],
             signatures: const [

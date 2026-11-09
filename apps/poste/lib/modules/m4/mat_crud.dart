@@ -276,10 +276,13 @@ class _CrudMatState extends State<CrudMat> {
                   libelle: 'Annuler',
                   variante: VarianteBouton.secondaire,
                   onPressed: fermer),
+              // Lot L1 : le choix « Valider » du pied de modale (profil de la famille, élément en attente seulement ; ABSENT sinon).
+              if (existante != null && widget.validation != null)
+                if (ValidationPoste(c).boutonModale(ctx, widget.validation!, existante, fermer) case final b?) b,
               BoutonSigh(
                   libelle: existante == null ? 'Créer' : 'Enregistrer',
                   icone: existante == null ? LucideIcons.plus : LucideIcons.save,
-                  onPressed: () {
+                  onPressed: () async {
                     final saisie = ctl.valider();
                     if (saisie == null) {
                       ToastsSigh.afficher(
@@ -295,6 +298,26 @@ class _CrudMatState extends State<CrudMat> {
                     final fiche = widget.transformerExistante != null
                         ? widget.transformerExistante!(ctx, saisie, existante)
                         : widget.transformer(ctx, saisie);
+                    if (widget.validation != null) {
+                      // Lot L1 : la famille qui enregistre VALIDE (une ligne de journal, état inclus) ; hors famille l'élément repasse « à valider ».
+                      Fiche valeurs;
+                      if (existante == null) {
+                        valeurs = {'statut': 'actif', ...fiche, '_creePar': acteur(c).nom, '_creeLe': c.aujourdhui.toIso8601String()};
+                      } else {
+                        valeurs = {...fiche};
+                        for (final e in saisie.entries) {
+                          final vide = e.value == null || (e.value is String && '${e.value}'.trim().isEmpty);
+                          if (vide && !valeurs.containsKey(e.key) && existante[e.key] != null) valeurs[e.key] = null;
+                        }
+                      }
+                      final r = await ValidationPoste(c).enregistrer(ctx, widget.validation!, widget.collection,
+                          avant: existante, valeurs: valeurs, prefixeId: widget.prefixeId);
+                      if (r == null || !ctx.mounted) return;
+                      fermer();
+                      ToastsSigh.afficher(ctx, existante == null ? 'Nouveau ${widget.entite} créé.' : 'Modifications enregistrées.',
+                          type: TypeToast.succes, detail: widget.referenceToast?.call(r.fiche), annuler: r.annuler);
+                      return;
+                    }
                     fermer();
                     if (existante == null) {
                       final r = widget.collection.inserer({
@@ -316,11 +339,8 @@ class _CrudMatState extends State<CrudMat> {
                         final vide = e.value == null || (e.value is String && '${e.value}'.trim().isEmpty);
                         if (vide && !patch.containsKey(e.key) && existante[e.key] != null) patch[e.key] = null;
                       }
-                      final avant = {...existante};
                       final annuler =
                           widget.collection.mettreAJour(existante['id'], patch);
-                      // Modifier un artefact validé le remet « à valider » (moteur de validation commun).
-                      if (widget.validation != null) ValidationPoste(c).remettreApresModification(widget.validation!, avant, existante);
                       ToastsSigh.afficher(ctx, 'Modifications enregistrées.',
                           type: TypeToast.succes,
                           detail: widget.referenceToast?.call(existante),

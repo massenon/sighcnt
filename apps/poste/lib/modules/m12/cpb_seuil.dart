@@ -265,9 +265,14 @@ class _EtatSeuil extends State<EcranSeuilRentabilite> {
                             icone: LucideIcons.repeat,
                             libelle: 'Basculer en ${variable ? 'fixe' : 'variable'}',
                             onPressed: () {
+                              final vp = ValidationPoste(c);
+                              if (vp.garde('repartition_charges') case final refus?) {
+                                ToastsSigh.afficher(ctx, refus.motif, type: TypeToast.erreur, detail: refus.geste);
+                                return;
+                              }
                               corrigerNature(c, '${x['compte']}', variable ? 'fixe' : 'variable');
-                              // Corriger la répartition remet la pièce « à valider ».
-                              ValidationPoste(c).remettre('repartition_charges', 'repartition-fixe-variable');
+                              // Lot L1 : le comptable (profil de la famille) qui corrige VALIDE la pièce ; tout autre profil la remet « à valider ».
+                              vp.suivre('repartition_charges', 'repartition-fixe-variable');
                               ToastsSigh.afficher(ctx, 'Nature corrigée.',
                                   type: TypeToast.succes,
                                   detail: '${x['compte']} — ${variable ? 'désormais fixe' : 'désormais variable'}. Le seuil est recalculé.');

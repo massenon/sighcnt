@@ -182,10 +182,17 @@ class _OngletAnalyses extends StatelessWidget {
     final c = ContexteEcran.of(context);
     final col = c.magasin.collection('analyses');
     return cfaPile([
-      const NoteSigh(
-          'Les 48 désignations proviennent du document « Tarifs des analyses de laboratoire » de la clinique. Le document source ne renseignant pas la colonne des prix, les tarifs portés ici sont des valeurs d’attente à confirmer.',
-          ton: TonSigh.attention,
-          icone: LucideIcons.circleQuestionMark),
+      ListenableBuilder(
+          listenable: col,
+          builder: (_, __) => col.actives.any((a) => a['tarifProvisoire'] == true)
+              ? const NoteSigh(
+                  'Les 48 désignations proviennent du document « Tarifs des analyses de laboratoire » de la clinique. Le document source ne renseignant pas la colonne des prix, les tarifs portés ici sont des valeurs d’attente à confirmer.',
+                  ton: TonSigh.attention,
+                  icone: LucideIcons.circleQuestionMark)
+              : const NoteSigh(
+                  'Les 48 désignations proviennent du document « Tarifs des analyses de laboratoire » de la clinique. Tous les tarifs portés ici sont arrêtés.',
+                  ton: TonSigh.info,
+                  icone: LucideIcons.circleCheck)),
       ListenableBuilder(
           listenable: col,
           builder: (ctx, _) => CfaTableau(
@@ -309,11 +316,12 @@ class _OngletActes extends StatelessWidget {
                     libelle: 'Origine du tarif',
                     texte: (a) => '${a['source'] ?? ''} ${a['rapprochement'] ?? ''} ${a['motifPrix'] ?? ''}'.trim(),
                     rendu: (_, a) => Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                          cfaVrai(a['source'])
-                              ? Text('${a['source']}', style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate500))
+                          _texteArrete(a, 'source').isNotEmpty
+                              ? Text(_texteArrete(a, 'source'), style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate500))
                               : const Text('—', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300)),
                           if (cfaVrai(a['rapprochement'])) Text('rapproché par ${a['rapprochement']}', style: const TextStyle(fontSize: 10, height: 1.5, color: JetonsShell.slate400)),
-                          if (cfaVrai(a['motifPrix'])) Text('${a['motifPrix']}', style: const TextStyle(fontSize: 10, height: 1.5, color: JetonsShell.info600)),
+                          // Un tarif ARRÊTÉ ne dit plus « à valider » : la mention d'attente tombe du texte d'origine (lot L1).
+                          if (_texteArrete(a, 'motifPrix').isNotEmpty) Text(_texteArrete(a, 'motifPrix'), style: const TextStyle(fontSize: 10, height: 1.5, color: JetonsShell.info600)),
                         ])),
               ],
               champs: (e) => [
@@ -343,7 +351,7 @@ class _OngletActes extends StatelessWidget {
                         cartouche: [
                           ('Prestations au catalogue', nombre(rows.length)),
                           ('Tarifs validés', nombre(rows.length - aValider)),
-                          ('Tarifs à valider', nombre(aValider)),
+                          if (aValider > 0) ('Tarifs à valider', nombre(aValider)),
                           ('Date d’édition', dateFR(c.aujourdhui)),
                         ],
                         blocs: [
@@ -405,4 +413,12 @@ class _OngletCertificats extends StatelessWidget {
       if (sansTarif != null) NoteSigh(sansTarif, ton: TonSigh.attention, icone: LucideIcons.triangleAlert),
     ], espace: 12);
   }
+}
+
+/// Un texte d'origine du tarif tel qu'on le LIT : tant que le tarif est d'attente, tel quel ; une fois arrêté, sans la mention « à valider ».
+String _texteArrete(Map<String, Object?> a, String cle) {
+  final t = cfaVrai(a[cle]) ? '${a[cle]}' : '';
+  if (a['tarifProvisoire'] == true) return t;
+  final sans = t.replaceFirst(RegExp(r'^[^;]*à valider[^;]*;\s*', caseSensitive: false), '');
+  return (valEpurerMentions({cle: sans})[cle] as String?) ?? sans;
 }

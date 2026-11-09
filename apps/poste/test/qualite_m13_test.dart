@@ -274,7 +274,7 @@ void main() {
       expect(q['options'], ['Accueil', 'Caisse', 'Labo']);
       expect(q['type'], 'choix');
       expect(find.text('Modèle créé.'), findsOneWidget);
-      expect(kpi(t, 'Modèles à valider'), '1');
+      expect(kpi(t, 'Modèles en attente de validation'), '1');
     });
 
     cas('Partager : un jeton de 24 caractères, jamais l’identifiant, avec son QR ; Révoquer ferme la porte sans rien effacer', (t) async {

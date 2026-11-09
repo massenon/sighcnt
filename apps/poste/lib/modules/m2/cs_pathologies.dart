@@ -28,7 +28,7 @@ class EcranPathologies extends StatelessWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'La pathologie est un code que la clinique compte ; le diagnostic est la phrase que le médecin rédige. Les deux coexistent sur la consultation — n’avoir que le second rendrait toute statistique impossible. La liste est administrable : c’est le tableau de morbidité qui doit la faire évoluer, pas une mise à jour du logiciel. Les libellés proposés restent à arrêter par le Directeur Médical.';
+      'La pathologie est un code que la clinique compte ; le diagnostic est la phrase que le médecin rédige. Les deux coexistent sur la consultation — n’avoir que le second rendrait toute statistique impossible. La liste est administrable : c’est le tableau de morbidité qui doit la faire évoluer, pas une mise à jour du logiciel. Un libellé enregistré par le Directeur Médical ou un médecin est arrêté du même geste ; saisi par un autre profil, il attend leur relecture.';
 
   @override
   Widget build(BuildContext context) {
@@ -85,24 +85,27 @@ class _Corps extends StatelessWidget {
       initial: r == null
           ? {'chapitre': 'autres', 'notifiable': false}
           : {...r, 'notifiable': vrai(r['notifiable'])},
+      // Lot L1 : le choix « Valider » (profil de la famille, élément en attente seulement ; ABSENT sinon).
+      piedSup: r == null
+          ? null
+          : (m) => ValidationPoste(c).boutonModale(ecran, const ValidationCrud('pathologies'), r, () => Navigator.of(m).pop()),
       valider: (v) {
-        if (r != null) {
-          _col.mettreAJour(r['id'], {...v, 'notifiable': v['notifiable'] == true});
-          // Modifier un élément validé le remet « à valider » (moteur de validation commun).
-          ValidationPoste(c).remettre('pathologies', r['id']);
-          ToastsSigh.afficher(ecran, 'Pathologie modifiée.', type: TypeToast.succes);
-          return null;
-        }
-        final u = _col.inserer({
-          'statut': 'actif',
-          ...v,
-          'notifiable': v['notifiable'] == true,
-          'aValider': true,
-          'source':
-              'Ajoutée dans l’application le ${dateFR(c.aujourdhui)} — à arrêter par le Directeur Médical',
-        }, prefixe: 'PATH');
-        ToastsSigh.afficher(ecran, 'Pathologie créée.',
-            type: TypeToast.succes, annuler: u.annuler);
+        // Lot L1 : le Directeur Médical ou un médecin qui enregistre VALIDE du même geste ; hors famille l'élément repasse (ou naît) « à valider ».
+        final res = ValidationPoste(c).ecrire(const ValidationCrud('pathologies'), _col,
+            avant: r,
+            valeurs: r != null
+                ? {...v, 'notifiable': v['notifiable'] == true}
+                : {
+                    'statut': 'actif',
+                    ...v,
+                    'notifiable': v['notifiable'] == true,
+                    'aValider': true,
+                    'source': 'Ajoutée dans l’application le ${dateFR(c.aujourdhui)} — à arrêter par le Directeur Médical',
+                  },
+            prefixeId: 'PATH');
+        if (!res.ok) return res.refus!.motif;
+        ToastsSigh.afficher(ecran, r != null ? 'Pathologie modifiée.' : 'Pathologie créée.',
+            type: TypeToast.succes, annuler: res.annuler);
         return null;
       });
 

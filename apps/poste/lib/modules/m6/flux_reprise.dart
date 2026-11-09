@@ -554,7 +554,10 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
         initial: ancienne ?? const {},
         libelleOk: ancienne != null ? 'Corriger' : 'Valoriser',
         icone: LucideIcons.check,
-        surValider: (v) {
+        piedSup: ancienne == null
+            ? null
+            : (fermer) => ValidationPoste(c).boutonModale(ctx, const ValidationCrud('valorisation_sage'), ancienne, fermer),
+        surValider: (v) async {
           final prix = n(v['prixRevient']);
           final fiche = ficheValorisation(article,
               prixRevient: prix,
@@ -562,13 +565,10 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
               observation: '${v['observation'] ?? ''}',
               auteur: acteur(c).nom,
               jour: iso(c.aujourdhui));
-          if (ancienne != null) {
-            col.mettreAJour(ancienne['id'], fiche);
-            // Corriger une valorisation déjà arrêtée la remet à valider (le geste est celui de la Direction).
-            ValidationPoste(c).remettre('valorisation_sage', ancienne['id']);
-          } else {
-            col.inserer(fiche, prefixe: 'VSG');
-          }
+          // Lot L1 : la Direction qui valorise VALIDE (motif demandé si le prix de revient change) ; hors famille, la valorisation reste ou repasse « à valider ».
+          final r = await ValidationPoste(c).enregistrer(ctx, const ValidationCrud('valorisation_sage'), col,
+              avant: ancienne, valeurs: ancienne != null ? fiche : {'statut': 'actif', ...fiche}, prefixeId: 'VSG');
+          if (r == null || !ctx.mounted) return false;
           ToastsSigh.afficher(ctx, 'Référence valorisée.',
               type: TypeToast.succes, detail: detailValorisation(article, prix));
           return true;
