@@ -2038,7 +2038,7 @@
    }
   },
   {
-   "nom": "valider : version non croissante",
+   "nom": "valider : numéro de version déjà pris",
    "op": "valider",
    "fiche": {
     "cle": "planning.circuit",
@@ -2105,9 +2105,79 @@
    "usages": [],
    "attendu": {
     "ok": false,
-    "code": "version_non_croissante",
-    "motif": "La version 1 de « planning.circuit » n'est pas postérieure à la version 1 déjà connue.",
+    "code": "version_deja_prise",
+    "motif": "La version 1 de « planning.circuit » existe déjà.",
     "geste": "Rafraîchir le poste puis recommencer"
+   }
+  },
+  {
+   "nom": "valider : arrivée dans le désordre : v1 après v2",
+   "op": "valider",
+   "fiche": {
+    "cle": "planning.circuit",
+    "famille": "planning",
+    "type": "choix",
+    "choix": [
+     "surveillant",
+     "daf",
+     "surveillant_puis_daf"
+    ],
+    "valeur": "daf",
+    "defaut": "surveillant",
+    "dateEffet": "2026-12-01",
+    "version": 1,
+    "auteur": "admin",
+    "creeLe": "2026-11-09T08:00:00Z",
+    "motif": "vecteur",
+    "sensible": false,
+    "mobile": false,
+    "source": "fixture"
+   },
+   "existantes": [
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant",
+     "defaut": "surveillant",
+     "dateEffet": null,
+     "version": 0,
+     "auteur": "semis",
+     "creeLe": null,
+     "motif": "Défaut semé",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    },
+    {
+     "cle": "planning.circuit",
+     "famille": "planning",
+     "type": "choix",
+     "choix": [
+      "surveillant",
+      "daf",
+      "surveillant_puis_daf"
+     ],
+     "valeur": "surveillant_puis_daf",
+     "defaut": "surveillant",
+     "dateEffet": "2026-12-01",
+     "version": 2,
+     "auteur": "admin",
+     "creeLe": "2026-11-09T08:00:00Z",
+     "motif": "vecteur",
+     "sensible": false,
+     "mobile": false,
+     "source": "fixture"
+    }
+   ],
+   "usages": [],
+   "attendu": {
+    "ok": true
    }
   },
   {

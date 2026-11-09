@@ -82,6 +82,15 @@ module.exports = ({ monde, verifier, attendre, dormir, titre }) => ({
     await f1.ecrire({ type: 'creer', collection: 'parametres', fiche: 'intrus', champs: { ...P.semer(DEF.note).fiche, cle: 'intrus.cle' } });
     verifier('un fileul qui tente d\'écrire un paramètre est refusé, nommé (droit_refuse)', await attendre(async () => (await f1.etat()).a_traiter.some((r) => r.code === 'droit_refuse'), 15000));
 
+    /* 6 bis. l'ORDRE d'arrivée ne compte pas : le poste publie du plus récent au plus ancien, la mère accepte v(n+2) puis v(n+1) */
+    const base = await liste(f1);
+    const p1 = P.proposer({ definition: DEF.note, versions: base, usages: [], valeur: 'ancienne', dateEffet: '2026-12-10', auteur: 'admin', creeLe: '2026-11-09T10:30:00Z' });
+    const p2 = P.proposer({ definition: DEF.note, versions: [...base, p1.fiche], usages: [], valeur: 'recente', dateEffet: '2026-12-20', auteur: 'admin', creeLe: '2026-11-09T10:31:00Z' });
+    const r2 = await emettre(p2.fiche, p2.id); const r1 = await emettre(p1.fiche, p1.id);
+    verifier('une version plus récente arrivée AVANT la précédente est acceptée (v' + p2.fiche.version + ' puis v' + p1.fiche.version + ')', r2.statut === 'acceptee' && r1.statut === 'acceptee', [r2, r1]);
+    verifier('le numéro d\'une version déjà prise par une autre fiche est refusé, nommé', (await emettre({ ...p1.fiche, dateEffet: '2026-12-11' }, p1.id + '-bis')).code === 'version_deja_prise');
+    verifier('le fileul voit les deux, la valeur en vigueur suit la date', await attendre(async () => (await quand(f1, 'accueil.note', '2026-12-25')).valeur === 'recente' && (await quand(f1, 'accueil.note', '2026-12-12')).valeur === 'ancienne', 15000));
+
     /* 7. le téléphone : liste blanche. Les fiches sont créées APRÈS l'appairage (sinon rien ne descendrait de toute façon) */
     const mob = await m.mobile('M1');
     const avant = (await mob.liste('parametres')).length;

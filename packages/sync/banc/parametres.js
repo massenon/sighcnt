@@ -71,8 +71,9 @@ function validerFiche(c, existantes, usages) {
     if (c.version === 0) return refus('version_invalide', 'La version 0 est réservée au défaut semé.', 'Laisser le poste numéroter');
     const u = dernierUsage(usages, c.cle);
     if (u !== null && c.dateEffet <= u) return refus('parametre_deja_utilise', `La valeur de « ${c.cle} » a déjà servi à une pièce du ${u} : une version effective au ${c.dateEffet} la réécrirait.`, `Fixer une date d'effet postérieure au ${u}`);
-    const max = propres.reduce((m, v) => Math.max(m, v.version), 0);
-    if (c.version <= max) return refus('version_non_croissante', `La version ${c.version} de « ${c.cle} » n'est pas postérieure à la version ${max} déjà connue.`, 'Rafraîchir le poste puis recommencer');
+    /* Une seule fiche par (clé, version). L'ORDRE d'arrivée ne compte pas : le poste publie du plus récent au plus ancien (le magasin insère en tête), la mère doit
+       accepter v2 puis v1. Seul un NUMÉRO DÉJÀ PRIS par une autre fiche est refusé (deux postes qui auraient numéroté de leur côté). */
+    if (propres.some((v) => v.version === c.version)) return refus('version_deja_prise', `La version ${c.version} de « ${c.cle} » existe déjà.`, 'Rafraîchir le poste puis recommencer');
   }
   if (c.mobile === true && (c.sensible === true || FAMILLES_JAMAIS_MOBILE.includes(c.famille))) return refus('mobile_interdit', `« ${c.cle} » ne peut pas aller sur un téléphone : ${c.sensible === true ? 'paramètre sensible' : 'famille « ' + c.famille + ' » réservée'} (RG-13).`, 'Retirer l\'envoi au téléphone de la définition');
   return { ok: true };

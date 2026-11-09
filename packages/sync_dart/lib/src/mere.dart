@@ -10,7 +10,16 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:sigh_domaine/sigh_domaine.dart'
-    show RefusMobile, cfbEssentielles, mobMotifFonctionNonHabilitee, mobPeutPrescrire, mobRefusAffectation, mobRefusFonctionPiece;
+    show
+        Parametres,
+        RefusMobile,
+        cfbEssentielles,
+        mobMotifFonctionNonHabilitee,
+        mobPeutPrescrire,
+        mobRefusAffectation,
+        mobRefusFonctionPiece,
+        parCollectionParametres,
+        parCollectionUsages;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -24,6 +33,9 @@ final familles = <String, String>{
   ...familleDeBase,
   // La CONFIGURATION de la clinique (PRD-POSTE-premiere-installation) : référentiels, droits, comptes. Famille R : la mère seule écrit, les postes fileuls la reprennent.
   for (final n in collectionsConfigurationPoste) n: 'R',
+  // L0 : les paramètres versionnés par date (une fiche = une version immuable, la mère seule écrit) et leurs usages par les pièces (ajout seul, écrits par les postes).
+  parCollectionParametres: 'R',
+  parCollectionUsages: 'B',
 };
 const familleDeBase = <String, String>{
   'patients': 'A', 'rendezvous': 'A',
@@ -276,6 +288,22 @@ class Mere {
     final ficheId = op['fiche'] as String;
     final champsOp = ((op['champs'] ?? {}) as Map).cast<String, Object?>();
     final f = await lire(collection, ficheId);
+
+    // L0 : une version de paramètre est une fiche IMMUABLE. La mère REFAIT le contrôle du poste (même fonction, domaine) : version croissante, type, date d'effet,
+    // valeur déjà utilisée par une pièce (usages relevés des postes), téléphone interdit pour un paramètre réservé. Un refus est nommé, jamais avalé.
+    if (collection == parCollectionParametres) {
+      if (type != 'creer') return refus('version_immuable', 'Une version de paramètre ne se réécrit jamais : on ajoute une version.', 'Ajouter une nouvelle version avec sa date d’effet');
+      if (f != null) return refus('fiche_existe', 'Cette version existe déjà.', 'Aucun');
+      final existantes = [
+        for (final r in await base.select("SELECT data FROM fiches WHERE collection=?", [parCollectionParametres]))
+          (jsonDecode(r['data'] as String) as Map).cast<String, Object?>()
+      ].where((d) => d['cle'] == champsOp['cle']).toList();
+      final usages = [
+        for (final r in await base.select("SELECT data FROM fiches WHERE collection=?", [parCollectionUsages])) (jsonDecode(r['data'] as String) as Map).cast<String, Object?>()
+      ];
+      final r = Parametres.validerChamps(champsOp, existantes, usages);
+      if (r != null) return refus(r.code, r.motif, r.geste);
+    }
 
     if (fam == 'D') {
       if (type == 'creer') {
@@ -544,7 +572,8 @@ class Mere {
         final limite = min(int.tryParse(q['limite'] ?? '') ?? 500, 500);
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
-        final exclues = app.role == 'mobile' ? collectionsPosteSeulement.toList() : const <String>[];
+        // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})

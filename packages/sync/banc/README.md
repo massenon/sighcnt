@@ -105,3 +105,18 @@ Vérifié par mutation (sans relève, sans droits à l'émission, sans persistan
 À son retour, la mère de référence (`mere.js`) **relève** les journaux pair des fileuls (le relais l'autorise à les lire, et à déposer dans SON journal pair, appareil « mere », rien d'autre), les rejoue par la même règle de fusion (`pair.js`), attribue à chaque opération un `seq` qui **fait foi** dans l'ordre total de la fusion, et le publie (enveloppe `foi`) : les fileuls le relèvent comme celui d'un pair et le statut provisoire tombe. **Les conflits restent marqués** : la mère ne tranche jamais seule. La console (`POST /admin/pair/trancher`, réservée à la personne habilitée) publie une décision `trancher` (opération de la mère, avec son `seq`) que tous reçoivent : valeur fixée, conflit levé, décision tracée. Un conflit né après la décision reste marqué ; trancher un champ sans conflit, une pièce émise ou une fiche archivée est refusé en le nommant.
 
 P4 (15 vérifications) : mère éteinte puis de retour, `seq` sans trou, même état que les fileuls, conflit marqué puis tranché, SIGKILL de la mère sans rien relire ni republier, opération faite après le retour qui reçoit aussi son `seq`, relais sans aucun clair, rangs contigus. Vérifié par quatre mutations (mère qui ne publie pas le `seq`, qui tranche sans conflit, dont la décision ne lève pas le conflit, qui tranche d'office). Passe aussi contre le VRAI relais Laravel. Banc complet : 199/199, 33 scénarios.
+
+## Paramètres versionnés par date (lot L0, 09/11/2026)
+
+`banc/parametres.js` est la règle de référence des paramètres : une VERSION est une fiche immuable de la collection `parametres` (famille R), la valeur en vigueur à une date se résout parmi les versions avec défaut, une valeur déjà utilisée par une pièce ne se réécrit jamais, un téléphone ne reçoit que la liste blanche (RG-13). La mère de référence (`mere.js`) refait le contrôle à la réception et filtre ce qu'elle publie aux mobiles ; le relais n'a rien de nouveau (les versions voyagent dans les enveloppes `journal`, chiffrées).
+
+```bash
+cd packages/sync
+node --no-warnings --test banc/parametres.test.js      # 8 tests de la règle
+node --no-warnings banc/run.js L0                      # scénario à processus réels : 24 vérifications
+SIGH_RELAIS=laravel node --no-warnings banc/run.js L0  # même scénario contre le vrai relais
+SIGH_RELAIS=laravel SIGH_MERE=dart SIGH_FILEUL=dart SIGH_MOBILE=dart node --no-warnings banc/run.js L0   # tout en Dart (construire.sh d'abord)
+node banc/vecteurs-parametres.js                       # régénère packages/domaine/test/vecteurs/parametres.json (62 cas)
+```
+
+**L0** : la mère règle (valeur secrète sentinelle), le relais ne détient que du chiffré (octets décodés, entropie mesurée, contre-épreuve avec la clé de clinique), un fileul applique la valeur à la date d'effet (avant : le défaut semé), la mère refuse de réécrire une valeur déjà utilisée par la pièce d'un fileul (refus nommé avec le geste) et accepte une date postérieure, une version ne se modifie pas, une version plus récente arrivée avant la précédente est acceptée, un fileul ne règle rien (`droit_refuse`), un paramètre de famille réservée ne peut pas être déclaré `mobile` (refus à l'émission et à la réception), et le téléphone ne reçoit que la liste blanche (fiches créées APRÈS l'appairage). Vérifié par mutation : sans le contrôle d'usage, avec la liste blanche ouverte, sans le contrôle de la mère, et avec un « chiffrement » réduit à du base64, le scénario rougit. Non couvert : le mode pair ne porte pas la configuration ; SQLCipher et la revue de sécurité (voir plus haut).

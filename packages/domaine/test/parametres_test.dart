@@ -83,6 +83,11 @@ void main() {
         expect(d.source, isNotNull, reason: '${d.cle} : un défaut sans source se dit « proposition à valider »');
       }
     });
+    test('chaque choix a son libellé', () {
+      for (final d in definitionsParametres.where((d) => d.type == TypeParametre.choix)) {
+        expect(d.libellesChoix.keys.toSet(), d.choix!.toSet(), reason: d.cle);
+      }
+    });
     test('chaque version 0 semée est recevable par la mère', () {
       for (final d in definitionsParametres) {
         expect(Parametres.validerFiche(Parametres.semer(d), const [], const []), isNull, reason: d.cle);

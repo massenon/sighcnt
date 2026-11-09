@@ -11,7 +11,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:sigh_domaine/sigh_domaine.dart' show mobPeutPrescrire;
+import 'package:sigh_domaine/sigh_domaine.dart' show Parametres, mobPeutPrescrire, parCollectionParametres;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -189,8 +189,14 @@ class Pont {
           if (ops.isEmpty) continue;
           final siennes = <Map<String, Object?>>[];
           for (final o in ops) {
+            final champs = jsonDecode(o['champs'] as String);
+            // L0 : de la configuration, un mobile ne reçoit que les paramètres de la LISTE BLANCHE (déclarés `mobile`, non sensibles, famille non réservée : RG-13).
+            if (o['collection'] == parCollectionParametres) {
+              if (Parametres.autoriseMobile((champs as Map).cast<String, Object?>())) siennes.add({...o, 'champs': champs});
+              continue;
+            }
             final dans = await base.select('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?', [uuid, o['collection'], o['fiche']]);
-            if (dans.isNotEmpty) siennes.add({...o, 'champs': jsonDecode(o['champs'] as String)});
+            if (dans.isNotEmpty) siennes.add({...o, 'champs': champs});
           }
           await base.poserMeta('sortie_seq:$uuid', ops.last['seq']);
           if (siennes.isNotEmpty) await publier(uuid, {'type': 'ops', 'ops': siennes});

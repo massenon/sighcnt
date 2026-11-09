@@ -53,6 +53,7 @@ class DefinitionParametre {
     this.libelle = '',
     this.aide = '',
     this.choix,
+    this.libellesChoix = const {},
     this.sensible = false,
     this.mobile = false,
     this.source,
@@ -66,6 +67,9 @@ class DefinitionParametre {
   final String libelle;
   final String aide;
   final List<String>? choix;
+
+  /// Le libellé affiché de chaque choix (l'identifiant du choix est ce qui voyage et se compare ; le libellé ne sert qu'à l'écran).
+  final Map<String, String> libellesChoix;
   final bool sensible;
 
   /// Ce paramètre peut-il aller sur un téléphone ? Faux par défaut ; voir [Parametres.autoriseMobile].
@@ -284,8 +288,11 @@ class Parametres {
       if (u != null && (dateEffet as String).compareTo(u) <= 0) {
         return _r('parametre_deja_utilise', 'La valeur de « $cle » a déjà servi à une pièce du $u : une version effective au $dateEffet la réécrirait.', 'Fixer une date d\'effet postérieure au $u');
       }
-      final max = existantes.where((v) => v['cle'] == cle).fold<int>(0, (m, v) => ((v['version'] as num?)?.toInt() ?? 0) > m ? (v['version'] as num).toInt() : m);
-      if (version <= max) return _r('version_non_croissante', 'La version $version de « $cle » n\'est pas postérieure à la version $max déjà connue.', 'Rafraîchir le poste puis recommencer');
+      // Une seule fiche par (clé, version). L'ORDRE d'arrivée ne compte pas : le poste publie du plus récent au plus ancien (le magasin insère en tête), la mère doit
+      // accepter v2 puis v1. Seul un NUMÉRO DÉJÀ PRIS par une autre fiche est refusé (deux postes qui auraient numéroté de leur côté).
+      if (existantes.any((v) => v['cle'] == cle && ((v['version'] as num?)?.toInt() ?? -1) == version)) {
+        return _r('version_deja_prise', 'La version $version de « $cle » existe déjà.', 'Rafraîchir le poste puis recommencer');
+      }
     }
     if (c['mobile'] == true && (c['sensible'] == true || parFamillesJamaisMobile.contains(c['famille']))) {
       return _r('mobile_interdit', '« $cle » ne peut pas aller sur un téléphone : ${c['sensible'] == true ? 'paramètre sensible' : 'famille « ${c['famille']} » réservée'} (RG-13).', 'Retirer l\'envoi au téléphone de la définition');

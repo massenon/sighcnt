@@ -9,6 +9,7 @@ export 'src/sync/codes.dart';
 export 'src/sync/pair.dart';
 export 'src/parametres/parametres.dart';
 export 'src/parametres/definitions.dart';
+export 'src/parametres/service.dart';
 export 'src/format/format_fr.dart';
 export 'src/format/recherche.dart';
 export 'src/format/js.dart' show nombreOuZero, arrondiJs;

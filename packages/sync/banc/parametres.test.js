@@ -44,14 +44,14 @@ test('une valeur déjà utilisée par une pièce ne se réécrit jamais : refus 
   assert.ok(prop([v0], 'daf', '2026-11-01', [{ cle: 'autre', date: '2026-11-08' }]).ok);
 });
 
-test('refus nommés : valeur hors choix, type, auteur, date, version non croissante', () => {
+test('refus nommés : valeur hors choix, type, auteur, date, numéro de version déjà pris', () => {
   const v0 = P.semer(def).fiche;
   assert.strictEqual(prop([v0], 'personne', '2026-12-01').code, 'valeur_invalide');
   assert.strictEqual(prop([v0], true, '2026-12-01').code, 'valeur_invalide');
   assert.strictEqual(prop([v0], 'daf', '2026-02-30').code, 'date_invalide');
   assert.strictEqual(P.proposer({ definition: def, versions: [v0], usages: [], valeur: 'daf', dateEffet: '2026-12-01', auteur: '' }).code, 'auteur_manquant');
   const a = prop([v0], 'daf', '2026-12-01').fiche;
-  assert.strictEqual(P.validerFiche({ ...a, dateEffet: '2027-01-01', version: 1 }, [v0, a], []).code, 'version_non_croissante');
+  assert.strictEqual(P.validerFiche({ ...a, dateEffet: '2027-01-01', version: 1 }, [v0, a], []).code, 'version_deja_prise');
   assert.strictEqual(P.validerFiche({ ...a, version: 0 }, [v0], []).code, 'version_invalide');
   assert.strictEqual(prop([v0], 'daf', null).code, 'date_effet_manquante');
 });
@@ -72,4 +72,12 @@ test('liste blanche du téléphone : déclaré, non sensible, famille non réser
   const r = prop([], true, '2026-12-01', [], { ...ok, famille: 'paie' });
   assert.strictEqual(r.code, 'mobile_interdit'); assert.match(r.motif, /RG-13/);
   assert.strictEqual(P.validerFiche({ ...P.semer({ ...ok, famille: 'securite' }).fiche }, [], []).code, 'mobile_interdit');
+});
+
+test('l\'ordre d\'arrivée des versions ne compte pas : v2 puis v1 sont toutes deux acceptées', () => {
+  const v0 = P.semer(def).fiche;
+  const a = prop([v0], 'daf', '2026-12-01').fiche; const b = prop([v0, a], 'surveillant_puis_daf', '2027-01-01').fiche;
+  assert.ok(P.validerFiche(b, [v0], []).ok);
+  assert.ok(P.validerFiche(a, [v0, b], []).ok);
+  assert.strictEqual(P.validerFiche(a, [v0, a], []).code, 'version_deja_prise');
 });
