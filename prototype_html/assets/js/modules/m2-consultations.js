@@ -2456,7 +2456,7 @@
       + 'la phrase que le médecin rédige. Les deux coexistent sur la consultation — n’avoir que le second '
       + 'rendrait toute statistique impossible. La liste est <strong>administrable</strong> : c’est le tableau '
       + 'de morbidité qui doit la faire évoluer, pas une mise à jour du logiciel. '
-      + 'Les libellés proposés restent <strong>à arrêter par le Directeur Médical</strong>.',
+      + 'Un libellé enregistré par le <strong>Directeur Médical ou un médecin</strong> est arrêté du même geste ; saisi par un autre profil, il attend leur relecture.',
     render: function (root) {
       var vue = el('div.space-y-4');
       root.appendChild(vue);
@@ -2608,7 +2608,7 @@
             },
           ],
           actions: [K.creer(col(), champs(), {
-            module: 'M2', label: 'Nouvelle pathologie', titre: 'Nouvelle pathologie', entite: 'Pathologie',
+            module: 'M2', label: 'Nouvelle pathologie', titre: 'Nouvelle pathologie', entite: 'Pathologie', validation: { famille: 'pathologies' },
             defauts: function () { return { chapitre: 'autres', notifiable: false }; },
             transform: function (v) {
               v.notifiable = !!v.notifiable;

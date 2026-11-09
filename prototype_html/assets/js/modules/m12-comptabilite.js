@@ -5633,9 +5633,10 @@
             if (!droits.editer) return [];
             return [K.iconBtn('repeat', 'Basculer en ' + (x.nature === 'variable' ? 'fixe' : 'variable'),
               function () {
+                if (!K.gardeValidation('repartition_charges')) return;
                 corrigerNature(x.compte, x.nature === 'variable' ? 'fixe' : 'variable');
-                /* Corriger la répartition remet la pièce « à valider ». */
-                K.remettreAValider('repartition_charges', 'repartition-fixe-variable');
+                /* Lot L1 : le comptable (profil de la famille) qui corrige VALIDE la pièce ; tout autre profil la remet « à valider ». */
+                K.suivreValidation('repartition_charges', 'repartition-fixe-variable');
                 afficher();
                 U.toast('Nature corrigée.', { type: 'success',
                   detail: x.compte + ' — ' + (x.nature === 'variable' ? 'désormais fixe' : 'désormais variable')

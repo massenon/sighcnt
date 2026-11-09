@@ -24,7 +24,7 @@ const BANC = require('./_banc');
 const http = require('http');
 const puppeteer = require('puppeteer');
 const ROOT = path.resolve(__dirname, '..');
-const PORT = 8161;
+const PORT = Number(process.env.SIGH_PORT_AUDIT) || 8161;
 function findBrowser() {
   const c = [process.env.CHROME_PATH, 'C:/Program Files/Google/Chrome/Application/chrome.exe',
     'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
@@ -123,6 +123,8 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
 
   /* --roles=admin,da : ne sonder que ces profils (l'audit complet dépasse la demi-heure sous charge). */
   const SEULS = ((process.argv.find((a) => a.startsWith('--roles=')) || '').slice(8)).split(',').filter(Boolean);
+  /* --pages=m2-pathologies,cfg-tarifs : ne sonder que ces écrans (lot touchant quelques écrans : l'audit complet n'a pas à être rejoué). */
+  const PAGES = ((process.argv.find((a) => a.startsWith('--pages=')) || '').slice(8)).split(',').filter(Boolean);
   for (const [role, fonction] of PROFILS) {
     if (SEULS.length && SEULS.indexOf(role) < 0) continue;
     await page.evaluate((r, f) => localStorage.setItem('sigh-cnt:session', JSON.stringify({
@@ -185,6 +187,7 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
     if (accessibles === null) throw new Error('profil ' + role + ' : page instable, sondage impossible');
 
     for (const e of accessibles) {
+      if (PAGES.length && PAGES.indexOf(e.id) < 0) continue;
       await page.goto('http://127.0.0.1:' + PORT + '/pages/' + e.id + '.php', { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => {
         const c = document.getElementById('page-content');

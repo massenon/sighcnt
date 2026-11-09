@@ -320,6 +320,107 @@ async function viderMessages(page) {
   /* =========================================================================
    * 1. Création, édition, archivage annulable — Répertoire des patients (M1)
    * ======================================================================= */
+  /* OUTILS DES VAGUES 100 À 102 (lot L1) : déclarés dans le PRÉAMBULE, car `--seul` recompose le fichier à partir des seuls blocs de scénario et un
+     outil posé entre deux scénarios serait retiré avec le précédent. */
+  const outils100 = (() => {
+    const sessionDe = (role) => page.evaluate((r) => {
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: r, fonction: r, nom: 'SONDE100 ' + r, nomComplet: 'SONDE100 ' + r, identifiant: 's100.' + r, secteur: 'DIR' }));
+      window.SIGH.store.setSession({ role: r, nom: 'SONDE100 ' + r, nomComplet: 'SONDE100 ' + r, fonction: r, identifiant: 's100.' + r });
+    }, role);
+    const ongletCas = async (c) => {
+      if (!c.onglet) return;
+      await page.evaluate((o) => { const t = [...document.querySelectorAll('#page-content [role="tab"]')].find((x) => x.textContent.trim().indexOf(o) === 0); if (t) t.click(); }, c.onglet);
+      await pause(400);
+    };
+    const ouvrirCas = async (c) => { await ouvrir(c.ecran); await ongletCas(c); };
+    const chercher = (texte) => page.evaluate(async (t) => {
+      const champ = [...document.querySelectorAll('#page-content input')].find((i) => /search|text/.test(i.type) && /cherch/i.test((i.placeholder || '') + (i.getAttribute('aria-label') || '')));
+      if (!champ) return false;
+      champ.value = t; champ.dispatchEvent(new Event('input', { bubbles: true })); champ.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 500));
+      return true;
+    }, texte);
+    const cliquerLigne = (debut, libelleLigne) => page.evaluate((d, l) => {
+      const portee = l ? [...document.querySelectorAll('#page-content tbody tr')].find((tr) => tr.textContent.indexOf(l) >= 0) : document.getElementById('page-content');
+      if (!portee) return 'ligne absente';
+      const b = [...portee.querySelectorAll('button')].find((x) => (x.getAttribute('title') || '').indexOf(d) === 0);
+      if (!b) return 'bouton absent';
+      b.click(); return 'ok';
+    }, debut, libelleLigne || null);
+    const boutonsModale = () => page.evaluate(() => [...document.querySelectorAll('.modal-root button, [role=dialog] button')].map((b) => b.textContent.trim()).filter(Boolean));
+    /* Le DERNIER bouton portant le libellé : la modale du motif s'ouvre AU-DESSUS du formulaire, qui porte lui aussi un « Enregistrer ». */
+    const cliquerModale = (lib) => page.evaluate(async (l) => {
+      for (let i = 0; i < 40; i++) {
+        const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === l).pop();
+        if (b) { b.click(); return true; }
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      return false;
+    }, lib);
+    const champModale = (nom, valeur) => page.evaluate((n, v) => {
+      const i = document.querySelector('.modal-root input[name="' + n + '"], [role=dialog] input[name="' + n + '"]');
+      if (!i) return false;
+      i.value = String(v); i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); return true;
+    }, nom, valeur);
+    const motifModale = (texte) => page.evaluate(async (t) => {
+      for (let i = 0; i < 40; i++) {
+        const z = document.querySelector('.modal-root textarea, [role=dialog] textarea');
+        if (z) { z.value = t; z.dispatchEvent(new Event('input', { bubbles: true })); z.dispatchEvent(new Event('change', { bubbles: true })); return true; }
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      return false;
+    }, texte);
+    const etat = (fam, id) => page.evaluate((f, i) => window.SIGH.validations.etatValidation(f, i), fam, id);
+    const journalDe = (id) => page.evaluate((i) => window.SIGH.store.raw().audit.filter((x) => x.reference === i).map((x) => ({ action: x.action, apres: x.nouvelleValeur })), id);
+    const familleDe = (fam) => page.evaluate((f) => { const x = window.SIGH.validations.FAMILLES_A_VALIDER.filter((y) => y.id === f)[0]; return { roles: x.roles, mode: x.mode }; }, fam);
+    /* L'élément de sonde : une fiche de la collection, clonée d'une fiche réelle, « à valider », jamais validée. */
+    const poserSonde = (c, n, validee) => page.evaluate((cas, nom, ok) => {
+      const S = window.SIGH.store, brut = S.raw();
+      const base = JSON.parse(JSON.stringify((brut[cas.col] || []).filter((x) => x.statut !== 'archive')[0] || {}));
+      delete base.id;
+      ['libelle', 'label', 'designation', 'titre', 'nom'].forEach((k) => { if (k in base) base[k] = nom; });
+      base.libelle = nom; base.reference = nom;
+      const drapeaux = cas.col === 'actes' ? { tarifProvisoire: !ok, prix: base.prix == null ? 1000 : base.prix } : { aValider: !ok };
+      Object.assign(base, drapeaux, ok ? { valideLe: '2026-09-01T09:00:00.000Z', validePar: 'Sonde', valideRole: 'Sonde' } : { valideLe: null, validePar: null, valideRole: null }, { sonde100: true });
+      const r = S.collection(cas.col).insert(base).record;
+      return { id: r.id, libelle: nom };
+    }, c, n, !!validee);
+    const archiverSondes = () => page.evaluate(() => {
+      const S = window.SIGH.store, brut = S.raw();
+      ['enquetes', 'variablesLabo', 'unitesLabo', 'pathologies', 'examensImagerie', 'variablesImagerie', 'actes', 'analyses', 'objectifsPilotage', 'modelesBadge', 'modelesMessage']
+        .forEach((k) => (brut[k] || []).forEach((x) => { if (x.sonde100 && x.statut !== 'archive') x.statut = 'archive'; }));
+      S.save();
+    });
+    return { sessionDe, ongletCas, ouvrirCas, chercher, cliquerLigne, boutonsModale, cliquerModale, champModale, motifModale, etat, journalDe, familleDe, poserSonde, archiverSondes };
+  })();
+
+  const CAS100 = [
+    { fam: 'pathologies', ecran: 'm2-pathologies.html', onglet: 'Référentiel', col: 'pathologies', edit: 'Modifier', hors: 'admin', cree: 'Nouvelle pathologie', champCree: { libelle: 'Sonde100 pathologie créée', code: 'S100' } },
+    { fam: 'labo_variables', ecran: 'm5-valeurs-reference.html', col: 'variablesLabo', edit: 'Modifier les paramètres', hors: 'admin', chiffre: { champ: 'max', delta: 7 } },
+    { fam: 'labo_variables', ecran: 'm5-unites.html', col: 'unitesLabo', edit: 'Modifier', hors: 'admin' },
+    { fam: 'imagerie', ecran: 'cfg-imagerie-catalogue.html', onglet: 'Examens', col: 'examensImagerie', edit: 'Modifier', hors: 'admin' },
+    { fam: 'imagerie', ecran: 'cfg-imagerie-catalogue.html', onglet: 'Variables', col: 'variablesImagerie', edit: 'Modifier', hors: 'admin' },
+    { fam: 'actes', ecran: 'cfg-tarifs.html', onglet: 'Actes & hospitalisation', col: 'actes', edit: 'Modifier', chiffre: { champ: 'prix', delta: 100 } },
+    { fam: 'analyses', ecran: 'cfg-tarifs.html', onglet: 'Analyses de laboratoire', col: 'analyses', edit: 'Modifier', chiffre: { champ: 'prix', delta: 100 } },
+    { fam: 'objectifs_pilotage', ecran: 'm12-tableau-decisionnel.html', onglet: 'Objectifs', col: 'objectifsPilotage', edit: 'Modifier', hors: 'comptable', chiffre: { champ: 'cible', delta: 3 }, valider: 'Arrêter' },
+    { fam: 'modeles_badge', ecran: 'm10-badges-modeles.html', col: 'modelesBadge', edit: 'Modifier' },
+    { fam: 'modeles_messages', ecran: 'cfg-rappels.html', col: 'modelesMessage', edit: 'Modifier' },
+    { fam: 'enquetes', ecran: 'adm-enquetes.html', col: 'enquetes', edit: 'Modifier le modèle', hors: 'agentadmin' },
+  ];
+  const nom100 = (c) => 'Sonde100 ' + c.fam + (c.onglet ? ' ' + c.onglet.slice(0, 6) : '') + (c.col === 'unitesLabo' ? ' unites' : '');
+
+  /* Le rôle de la famille qui VOIT la ligne et sa commande Modifier (l'échographiste lit ce catalogue sans le corriger : on prend le premier qui l'édite). */
+  async function roleDeLaFamilleQuiEdite(c, F, libelle, nom) {
+    for (const r of (F.roles.indexOf('admin') >= 0 ? ['admin'] : F.roles)) {
+      await outils100.sessionDe(r);
+      await outils100.ouvrirCas(c);
+      await outils100.chercher(nom);
+      const bouton = await page.evaluate((d) => [...document.querySelectorAll('#page-content tbody button')].some((b) => (b.getAttribute('title') || '').indexOf(d) === 0), c.edit);
+      if (bouton) return r;
+    }
+    return null;
+  }
+
   await etape(async () => {
     scenario('M1 — Cycle de vie complet d’un dossier patient');
     await ouvrir('m1-patients.html');
@@ -14504,8 +14605,12 @@ async function viderMessages(page) {
         }
         await pause(500);
         const remis = await etat(c.fam, mis.id);
-        verifier('(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + ') modifier l’élément validé le remet « à valider » (marquage revenu, traces effacées)',
-          geste === 'ok' && remis && remis.enAttente === true && !remis.valideLe, JSON.stringify({ geste, remis }));
+        /* Lot L1 (09/11/2026) : la session de ce geste est « admin ». Profil de la famille, l'enregistrement VALIDE (l'élément reste validé) ; hors famille,
+           il repasse « à valider » (Q2 b). Le geste est le même, c'est le PROFIL qui décide. */
+        const adminDeLaFamille = F.roles.indexOf('admin') >= 0;
+        verifier('(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + ') modifier l’élément validé sous « admin » ' + (adminDeLaFamille
+          ? '(profil de la famille) le laisse validé' : '(hors famille) le remet « à valider » (marquage revenu, traces effacées)'),
+        geste === 'ok' && remis && (adminDeLaFamille ? remis.enAttente === false && !!remis.valideLe : remis.enAttente === true && !remis.valideLe), JSON.stringify({ geste, remis }));
       }
     }
 
@@ -15550,11 +15655,13 @@ async function viderMessages(page) {
       out.id = r.id; out.idAncienne = ancienne.id; out.archAvant = archAvant;
       return out;
     });
-    verifier('Correction : une NOUVELLE version naît (taux 2, ouverte, source dite), numéro de version incrémenté, annoncée « à valider »',
-      c.r.ok === true && c.r.version === c.nbAvant + 1 && c.nbApres === c.nbAvant + 1 && c.nouvelle && c.nouvelle.taux === 2 && c.nouvelle.dateFin === null && c.nouvelle.source && c.nouvelle.creePar, JSON.stringify([c.r, c.nouvelle]));
+    /* Lot L1 (Q5, 09/11/2026) : la session du banc est « admin », profil de la famille : la version naît ARRÊTÉE à la saisie (hors famille elle naît « à valider »). */
+    verifier('Correction : une NOUVELLE version naît (taux 2, ouverte, source dite), numéro de version incrémenté, arrêtée à la saisie par le profil de la famille (Q5)',
+      c.r.ok === true && c.r.version === c.nbAvant + 1 && c.nbApres === c.nbAvant + 1 && c.nouvelle && c.nouvelle.taux === 2 && c.nouvelle.dateFin === null && c.nouvelle.source && c.nouvelle.creePar
+        && c.nouvelle.aValider === false && c.r.enAttente === false, JSON.stringify([c.r, c.nouvelle]));
     verifier('Correction : la version précédente est FERMÉE à la veille (31/12/2026), son taux et sa date d’effet sont INTACTS', c.ferme === '2026-12-31' && c.tauxAncien === 1 && c.dateEffetAncien === '2026-01-01', JSON.stringify([c.ferme, c.tauxAncien, c.dateEffetAncien]));
-    verifier('Le taux suit la date de part et d’autre de la bascule (veille : 1 %, version 1 ; jour d’effet : 2 %, version suivante) ; la nouvelle version n’est pas arrêtée (arrete = faux)',
-      c.dates[0] === 1 && c.dates[1] === c.nbAvant && c.dates[2] === 2 && c.dates[3] === c.nbAvant + 1 && c.dates[4] === false, JSON.stringify(c.dates));
+    verifier('Le taux suit la date de part et d’autre de la bascule (veille : 1 %, version 1 ; jour d’effet : 2 %, version suivante) ; la nouvelle version est arrêtée (arrete = vrai, profil de la famille)',
+      c.dates[0] === 1 && c.dates[1] === c.nbAvant && c.dates[2] === 2 && c.dates[3] === c.nbAvant + 1 && c.dates[4] === true, JSON.stringify(c.dates));
     verifier('Refus nommés, rien n’est écrit : même date d’effet (AIB_DATE_EXISTANTE), date antérieure à la plus récente (AIB_DATE_ANTERIEURE), taux décimal (AIB_TAUX_INVALIDE), source absente, motif absent, situation inconnue',
       c.memeDate === 'AIB_DATE_EXISTANTE' && c.anterieure === 'AIB_DATE_ANTERIEURE' && c.decimal === 'AIB_TAUX_INVALIDE' && c.sansSource === 'AIB_SOURCE_ABSENTE' && c.sansMotif === 'AIB_MOTIF_ABSENT' && c.situationInconnue === 'AIB_SITUATION_INCONNUE' && c.nbApresRefus === c.nbApres, JSON.stringify([c.memeDate, c.anterieure, c.decimal, c.sansSource, c.sansMotif, c.situationInconnue]));
     verifier('La garde du magasin refuse de réécrire une version existante (taux 9 puis date d’effet changée : la fiche garde 1 % et 01/01/2026)', c.tauxApresEcrasement === 1 && c.dateApresEcrasement === '2026-01-01', JSON.stringify([c.tauxApresEcrasement, c.dateApresEcrasement]));
@@ -15579,12 +15686,17 @@ async function viderMessages(page) {
       const col = S.collection('baremeAib');
       const fam = V.FAMILLES_A_VALIDER.filter((f) => f.id === 'bareme_aib')[0];
       const r = B.nouvelleVersion({ situation: 'prestation_service', taux: 4, dateEffet: '2027-06-01', source: 'Sonde 97 : texte à produire', motif: 'Sonde 97 : validation' });
+      /* Lot L1 (Q5) : saisie par un profil de la famille (admin), la version naît ARRÊTÉE. On la remet « à valider » dans le magasin pour sonder la voie de la validation. */
+      const naissance = V.etatValidation('bareme_aib', r.id);
+      const naissanceArrete = B.aLaDate('prestation_service', '2027-06-01').arrete;
+      const rec = col.get(r.id); rec.aValider = true; rec.valideLe = null; rec.validePar = null; rec.valideRole = null; S.save();
       const avant = V.etatValidation('bareme_aib', r.id);
-      const sonde = { famille: !!fam, roles: fam && fam.roles.slice().sort().join(','), enAttente: avant && avant.enAttente, arreteAvant: B.aLaDate('prestation_service', '2027-06-01').arrete };
+      const sonde = { famille: !!fam, roles: fam && fam.roles.slice().sort().join(','), naissanceValidee: naissance && naissance.enAttente === false && naissanceArrete === true,
+        enAttente: avant && avant.enAttente, arreteAvant: B.aLaDate('prestation_service', '2027-06-01').arrete };
       return { r: r.ok, id: r.id, sonde, idPrec: r.precedente };
     });
-    verifier('La famille « bareme_aib » est au moteur de validation (direction, da, admin, comptable) ; une version nouvelle est « à valider » (arrete faux)',
-      v4.r && v4.sonde.famille && v4.sonde.roles === 'admin,comptable,da,direction' && v4.sonde.enAttente === true && v4.sonde.arreteAvant === false, JSON.stringify(v4));
+    verifier('La famille « bareme_aib » est au moteur de validation (direction, da, admin, comptable) ; une version saisie par la famille naît arrêtée (Q5), remise « à valider » elle ne l’est plus (arrete faux)',
+      v4.r && v4.sonde.famille && v4.sonde.roles === 'admin,comptable,da,direction' && v4.sonde.naissanceValidee === true && v4.sonde.enAttente === true && v4.sonde.arreteAvant === false, JSON.stringify(v4));
     await sessionDe('caissier');
     const refusV = await page.evaluate((id) => window.SIGH.validations.validerReferentiel('bareme_aib', id).code, v4.id);
     await sessionDe('comptable');
@@ -15698,7 +15810,7 @@ async function viderMessages(page) {
     verifier('Fenêtre de la caisse : la liste des choix est celle du barème (2 % et 3 %, plus « Aucun »), le texte d’aide dit « présumé » : la maquette ne peut pas interroger la DGI',
       fen.options && fen.options.some((o) => /^2 % : /.test(o)) && fen.options.some((o) => /^3 % : /.test(o)) && fen.options.some((o) => /^Aucun/.test(o)) && /présumé/.test(fen.indice || ''), JSON.stringify([fen.options, fen.indice]));
     verifier('La vente PORTE le taux, la situation et la version du barème (2 %, avec IFU, version du jour) et est normalisée sur ce taux (AIB 200 sur 10 000)',
-      fen.vente && fen.vente.aibTaux === 2 && fen.vente.aibSituation === 'ifu_actif' && fen.vente.aibVersion === apresEcran.versionId && fen.vente.aibArrete === false && fen.vente.statut === 'valide' && fen.vente.aibMontant === 200, JSON.stringify(fen.vente));
+      fen.vente && fen.vente.aibTaux === 2 && fen.vente.aibSituation === 'ifu_actif' && fen.vente.aibVersion === apresEcran.versionId && fen.vente.aibArrete === true && fen.vente.statut === 'valide' && fen.vente.aibMontant === 200, JSON.stringify(fen.vente));
 
     /* un choix hors défaut est journalisé ; le taux porté par la vente ne se réécrit pas quand le barème change ensuite */
     await admin();
@@ -16328,6 +16440,435 @@ async function viderMessages(page) {
       return { cl: S.collection('ecritures').active().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2026').length };
     });
     verifier('Le magasin du banc est restitué à l’instantané (aucune pièce CL de 2026 en plus de celles d’origine)', typeof rest.cl === 'number', JSON.stringify(rest));
+  });
+
+  /* ==========================================================================
+   * Vagues 100 à 102 : ENREGISTRER VALIDE, pour le profil de la famille (Direction, 09/11/2026, lot L1)
+   * -------------------------------------------------------------------------
+   * Q1 la famille seule valide en enregistrant ; Q2 b hors famille l'élément repasse « à valider » ; Q3 un élément semé reste en attente jusqu'à la
+   * première relecture ; Q4 motif obligatoire sur une valeur CHIFFRÉE corrigée par la famille ; Q5 création validée par la famille, « à valider »
+   * hors famille. Les sondes sont pilotées AU GESTE (la modale, ses boutons, sous la session du rôle) : le moteur est éprouvé par les vecteurs, c'est
+   * le câblage des écrans que ces scénarios mesurent. Les fiches de sonde sont archivées en sortant (RG-14), les fiches réelles touchées restituées.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 100 : enregistrer valide pour la famille (modale au geste : choix Valider, enregistrement, hors famille, création, une ligne de journal)');
+    const O = outils100;
+    for (const c of CAS100) {
+      if (process.env.V100 && process.env.V100.split(',').indexOf(c.fam) < 0) continue;
+      const F = await O.familleDe(c.fam);
+      const nom = nom100(c);
+      const marque = '(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + (c.onglet ? ' / ' + c.onglet.slice(0, 8) : '') + ')';
+      await O.sessionDe('admin');
+      await O.ouvrirCas(c);
+      const s1 = await O.poserSonde(c, nom, false);
+      const role = await roleDeLaFamilleQuiEdite(c, F, s1.libelle, nom);
+      if (!role) {
+        /* Le profil de la famille LIT ce catalogue (CFG en lecture) sans le corriger : seule la saisie hors famille (admin) existe ici. La famille valide par le
+           bouton de la ligne (Vague 92) ; on mesure donc le hors famille, jusqu'au bout. */
+        verifier(marque + ' aucun profil de ' + F.roles.join(',') + ' n’édite cet écran (lecture seule du catalogue) : seule la saisie hors famille est mesurée', !!c.hors);
+        if (!c.hors) continue;
+        await O.sessionDe(c.hors); await O.ouvrirCas(c); await O.chercher(nom);
+        const j3 = (await O.journalDe(s1.id)).length;
+        await page.evaluate((id) => { const x = window.SIGH.store.raw(); [x.examensImagerie, x.variablesImagerie].forEach((a) => (a || []).forEach((r) => { if (r.id === id) { r.aValider = false; r.valideLe = '2026-09-01T09:00:00.000Z'; r.validePar = 'Sonde'; r.valideRole = 'Sonde'; } })); window.SIGH.store.save(); }, s1.id);
+        await O.cliquerLigne(c.edit, nom);
+        await pause(500);
+        const pied3 = await O.boutonsModale();
+        verifier(marque + ' sous « ' + c.hors + ' » (hors famille), AUCUN « Valider » dans la modale, ni grisé', pied3.indexOf('Valider') < 0 && pied3.indexOf('Enregistrer') >= 0, JSON.stringify(pied3));
+        await O.cliquerModale('Enregistrer');
+        await pause(600);
+        const apresH = await O.etat(c.fam, s1.id);
+        const jH = await O.journalDe(s1.id);
+        verifier(marque + ' hors famille, enregistrer remet l’élément validé « à valider », UNE ligne « Remise à valider »',
+          apresH.enAttente === true && !apresH.valideLe && jH.length === j3 + 1 && jH[0].action === 'Remise à valider', JSON.stringify({ apresH, jH: jH.slice(0, 2) }));
+        continue;
+      }
+      verifier(marque + ' un profil de la famille voit la commande Modifier de l’élément', true);
+
+      /* --- 1. le choix Valider est offert dans la modale, à la famille seule, et valide sans enregistrer ------------------------------------------ */
+      const j0 = (await O.journalDe(s1.id)).length;
+      verifier(marque + ' avant le geste, l’élément est « à valider »', (await O.etat(c.fam, s1.id)).enAttente === true);
+      const ouvert1 = await O.cliquerLigne(c.edit, nom);
+      await pause(500);
+      const pied = await O.boutonsModale();
+      const libValider = c.valider || 'Valider';
+      verifier(marque + ' la modale de mise à jour offre « ' + libValider + ' » (' + role + ', famille) à côté d’« Enregistrer »',
+        ouvert1 === 'ok' && pied.indexOf(libValider) >= 0 && pied.indexOf('Enregistrer') >= 0, JSON.stringify({ ouvert1, pied }));
+      await O.cliquerModale(libValider);
+      await pause(500);
+      const apresV = await O.etat(c.fam, s1.id);
+      const jV = await O.journalDe(s1.id);
+      verifier(marque + ' « Valider » de la modale valide l’élément (trois traces, UNE ligne « Validation »)',
+        apresV.enAttente === false && apresV.validePar === 'SONDE100 ' + role && !!apresV.valideLe && jV.length === j0 + 1 && jV[0].action === 'Validation', JSON.stringify({ apresV, jV }));
+
+      /* --- 2. élément validé : plus de choix Valider dans la modale ; enregistrer par la famille le laisse validé, une ligne de journal ---------------- */
+      await O.ouvrirCas(c); await O.chercher(nom);
+      await O.cliquerLigne(c.edit, nom);
+      await pause(500);
+      const pied2 = await O.boutonsModale();
+      verifier(marque + ' élément déjà validé : « ' + libValider + ' » est ABSENT de la modale (DEJA_VALIDE reste pour l’appel direct)', pied2.indexOf(libValider) < 0 && pied2.indexOf('Enregistrer') >= 0, JSON.stringify(pied2));
+      const j1 = (await O.journalDe(s1.id)).length;
+      if (c.chiffre) {
+        /* Une valeur chiffrée n'est pas touchée ici : le motif a sa propre sonde (Vague 101). On enregistre sans changement. */
+      }
+      await O.cliquerModale('Enregistrer');
+      await pause(600);
+      const apresE = await O.etat(c.fam, s1.id);
+      const jE = await O.journalDe(s1.id);
+      verifier(marque + ' enregistrer par la famille un élément validé le LAISSE validé, en UNE ligne de journal « Modification » portant l’état',
+        apresE.enAttente === false && jE.length === j1 + 1 && jE[0].action === 'Modification' && /validé/.test(String(jE[0].apres)), JSON.stringify({ apresE, jE: jE.slice(0, 2) }));
+
+      /* --- 3. enregistrer par la famille un élément « à valider » le VALIDE (Q1), en une ligne ------------------------------------------------------- */
+      const s2 = await O.poserSonde(c, nom + ' B', false);
+      await O.ouvrirCas(c); await O.chercher(nom + ' B');
+      const j2 = (await O.journalDe(s2.id)).length;
+      await O.cliquerLigne(c.edit, nom + ' B');
+      await pause(500);
+      await O.cliquerModale('Enregistrer');
+      await pause(600);
+      const apresS = await O.etat(c.fam, s2.id);
+      const jS = await O.journalDe(s2.id);
+      verifier(marque + ' enregistrer par la famille un élément « à valider » le VALIDE (plus de statut à valider), UNE ligne portant l’état validé',
+        apresS.enAttente === false && !!apresS.valideLe && jS.length === j2 + 1 && /validé/.test(String(jS[0].apres)), JSON.stringify({ apresS, jS: jS.slice(0, 2) }));
+
+      /* --- 4. hors famille : pas de choix Valider ; enregistrer remet « à valider » (Q2 b) ---------------------------------------------------------------- */
+      if (c.hors) {
+        await O.sessionDe(c.hors);
+        await O.ouvrirCas(c);
+        const vu = await page.evaluate(() => ({ contenu: !!document.querySelector('#page-content table, #page-content .card'), url: location.pathname.split('/').pop() }));
+        await O.chercher(nom + ' B');
+        const peutEditer = await page.evaluate((d) => [...document.querySelectorAll('#page-content tbody button')].some((b) => (b.getAttribute('title') || '').indexOf(d) === 0), c.edit);
+        if (vu.contenu && peutEditer) {
+          const j3 = (await O.journalDe(s2.id)).length;
+          await O.cliquerLigne(c.edit, nom + ' B');
+          await pause(500);
+          const pied3 = await O.boutonsModale();
+          verifier(marque + ' sous « ' + c.hors + ' » (hors famille), AUCUN « ' + libValider + ' » dans la modale, ni grisé', pied3.indexOf(libValider) < 0 && pied3.indexOf('Enregistrer') >= 0, JSON.stringify(pied3));
+          await O.cliquerModale('Enregistrer');
+          await pause(600);
+          const apresH = await O.etat(c.fam, s2.id);
+          const jH = await O.journalDe(s2.id);
+          verifier(marque + ' hors famille, enregistrer remet l’élément validé « à valider » (traces effacées), UNE ligne « Remise à valider »',
+            apresH.enAttente === true && !apresH.valideLe && jH.length === j3 + 1 && jH[0].action === 'Remise à valider', JSON.stringify({ apresH, jH: jH.slice(0, 2) }));
+        } else {
+          verifier(marque + ' le profil « ' + c.hors + ' » n’édite pas cet écran dans ce jeu (absence de fait, non mesurée)', true, JSON.stringify({ vu, peutEditer }));
+        }
+      }
+    }
+
+    /* --- création : naît validée par la famille, « à valider » hors famille (Q5), au geste du bouton « Nouvelle… » ---------------------------------------------- */
+    {
+      const c = CAS100[0];
+      const nomC = 'Sonde100 pathologie créée';
+      for (const [role, attendu] of [['dm', false], ['caissier', null]]) {
+        /* Le caissier ne crée pas de pathologie (écran fermé) : la création hors famille se sonde au moteur, avec le profil d'un éditeur hors famille. */
+        if (attendu === null) continue;
+        await O.sessionDe(role);
+        await O.ouvrirCas(c);
+        const creer = await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === 'Nouvelle pathologie'); if (b) { b.click(); return true; } return false; });
+        await pause(500);
+        const rempli = await page.evaluate((n) => {
+          const m = document.querySelector('.modal-root, [role=dialog]'); if (!m) return false;
+          const poser = (nm, v) => { const i = m.querySelector('[name="' + nm + '"]'); if (i) { i.value = v; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); } };
+          poser('libelle', n); poser('code', 'S100'); return true;
+        }, nomC);
+        const cree = await O.cliquerModale('Créer');
+        await pause(700);
+        const enr = await page.evaluate((n, r) => {
+          const x = window.SIGH.store.raw().pathologies.filter((y) => y.libelle === n && y.statut !== 'archive')[0];
+          return x ? { id: x.id, aValider: x.aValider, valideRole: x.valideRole, validePar: x.validePar, source: x.source } : null;
+        }, nomC, role);
+        verifier('(pathologies) création par ' + role + ' (famille) : la pathologie NAÎT validée, avec ses trois traces et sans « à valider » dans son texte d’origine',
+          creer && rempli && cree && enr && enr.aValider === false && enr.validePar === 'SONDE100 ' + role && !/à (valider|arrêter)/i.test(String(enr.source || '')), JSON.stringify({ creer, rempli, cree, enr }));
+        if (enr) { await page.evaluate((id) => { const x = window.SIGH.store.raw().pathologies.filter((y) => y.id === id)[0]; if (x) { x.statut = 'archive'; window.SIGH.store.save(); } }, enr.id); }
+      }
+      /* Création hors famille : le moteur (même contrat que l'écran), sous un profil qui n'est pas de la famille. */
+      const hors = await page.evaluate(() => {
+        const S = window.SIGH.store, V = window.SIGH.validations;
+        S.setSession({ role: 'admin', nom: 'SONDE100 admin', nomComplet: 'SONDE100 admin', fonction: 'admin', identifiant: 's100.admin' });
+        const m = V.marquageEnregistrement('pathologies', { avant: null, valeurs: { libelle: 'x' } });
+        return { valide: m.valide, patch: m.patch, action: m.journal.action };
+      });
+      verifier('(pathologies) création HORS famille (admin) : l’élément naît « à valider » (aValider vrai, aucune trace), ligne « Création »',
+        hors.valide === false && hors.patch.aValider === true && hors.patch.valideLe === null && hors.action === 'Création', JSON.stringify(hors));
+    }
+
+    /* --- le choix Valider du produit : la valorisation lue au produit se valide depuis la modale du produit ------------------------------------------------------- */
+    {
+      await O.sessionDe('admin');
+      await ouvrir('m6-produits.html');
+      const prep = await page.evaluate(() => {
+        const S = window.SIGH.store, brut = S.raw();
+        const v = (brut.valorisationsSage || []).filter((x) => x.statut !== 'archive')[0];
+        if (!v) return null;
+        const avant = JSON.parse(JSON.stringify(v));
+        v.aValider = true; v.valideLe = null; v.validePar = null; v.valideRole = null; S.save();
+        const p = (brut.produits || []).filter((x) => x.code === v.code && x.statut !== 'archive')[0];
+        return { id: v.id, avant, designation: p ? p.designation : null };
+      });
+      verifier('(valorisation_sage / m6-produits) une valorisation de la collection est remise « à valider » pour la sonde', !!(prep && prep.designation), JSON.stringify(prep));
+      if (prep && prep.designation) {
+        await ouvrir('m6-produits.html');
+        await O.chercher(prep.designation);
+        await O.cliquerLigne('Modifier', prep.designation);
+        await pause(500);
+        const pied = await O.boutonsModale();
+        verifier('(valorisation_sage) la modale du PRODUIT offre « Valider » (admin) pour la valorisation en attente', pied.indexOf('Valider') >= 0 && pied.indexOf('Enregistrer') >= 0, JSON.stringify(pied));
+        const j0 = (await O.journalDe(prep.id)).length;
+        await O.cliquerModale('Enregistrer');
+        await pause(600);
+        const e = await O.etat('valorisation_sage', prep.id);
+        const j = await O.journalDe(prep.id);
+        verifier('(valorisation_sage) enregistrer le produit (prix inchangé) par la Direction VALIDE la valorisation, une ligne « Validation »',
+          e.enAttente === false && j.length === j0 + 1 && j[0].action === 'Validation', JSON.stringify({ e, j: j.slice(0, 2) }));
+        await page.evaluate((p) => { const v = window.SIGH.store.raw().valorisationsSage.filter((x) => x.id === p.id)[0]; Object.keys(v).forEach((k) => { delete v[k]; }); Object.assign(v, p.avant); window.SIGH.store.save(); }, prep);
+      }
+    }
+
+    await O.sessionDe('admin');
+    await O.archiverSondes();
+    const rest = await page.evaluate(() => ['enquetes', 'variablesLabo', 'unitesLabo', 'pathologies', 'examensImagerie', 'variablesImagerie', 'actes', 'analyses', 'objectifsPilotage', 'modelesBadge', 'modelesMessage']
+      .reduce((n, k) => n + (window.SIGH.store.raw()[k] || []).filter((y) => y.sonde100 && y.statut !== 'archive').length, 0));
+    verifier('Restitution : aucune fiche de sonde active (RG-14, archivées)', rest === 0, String(rest));
+    verifier('Aucune erreur JavaScript pendant le balayage des modales de validation', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 101 : valeur chiffrée corrigée par la famille (motif obligatoire demandé au geste, refus nommé, libellé sans motif)');
+    const O = outils100;
+    for (const c of CAS100.filter((x) => x.chiffre)) {
+      if (process.env.V100 && process.env.V100.split(',').indexOf(c.fam) < 0) continue;
+      const F = await O.familleDe(c.fam);
+      const nom = nom100(c) + ' M';
+      const marque = '(' + c.fam + ' / ' + c.chiffre.champ + ')';
+      await O.sessionDe('admin');
+      await O.ouvrirCas(c);
+      const s = await O.poserSonde(c, nom, false);
+      const role = await roleDeLaFamilleQuiEdite(c, F, s.libelle, nom);
+      if (!role) { verifier(marque + ' un profil de la famille édite l’élément', false, 'aucun'); continue; }
+      const avantFiche = await page.evaluate((cas, id) => window.SIGH.store.raw()[cas.col].filter((x) => x.id === id)[0][cas.chiffre.champ], c, s.id);
+      const j0 = (await O.journalDe(s.id)).length;
+      await O.cliquerLigne(c.edit, nom);
+      await pause(500);
+      const modifie = await page.evaluate((champ, delta) => {
+        const i = document.querySelector('.modal-root input[name="' + champ + '"], [role=dialog] input[name="' + champ + '"]');
+        if (!i) return false;
+        const n = Number(String(i.value).replace(/\D/g, '')) || 0;
+        i.value = String(n + delta); i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); return true;
+      }, c.chiffre.champ, c.chiffre.delta);
+      await O.cliquerModale('Enregistrer');
+      await pause(500);
+      const demande = await page.evaluate(() => !![...document.querySelectorAll('.modal-root textarea, [role=dialog] textarea')].length && /motif/i.test(document.body.textContent));
+      const enAttente = await O.etat(c.fam, s.id);
+      const jSans = (await O.journalDe(s.id)).length;
+      verifier(marque + ' la famille (' + role + ') corrige la valeur : le MOTIF est demandé et RIEN n’est écrit tant qu’il manque',
+        modifie && demande && enAttente.enAttente === true && jSans === j0, JSON.stringify({ modifie, demande, enAttente: enAttente.enAttente, j0, jSans }));
+      /* Un motif vide ne passe pas : la modale de motif refuse de confirmer. */
+      await O.motifModale('Reprise de la notice du lot, sonde 101');
+      const confirme = await O.cliquerModale('Enregistrer');
+      await pause(700);
+      const e = await O.etat(c.fam, s.id);
+      const fiche = await page.evaluate((cas, id) => { const x = window.SIGH.store.raw()[cas.col].filter((y) => y.id === id)[0]; return { v: x[cas.chiffre.champ], motif: x.motifCorrection || null }; }, c, s.id);
+      const jm = await O.journalDe(s.id);
+      verifier(marque + ' avec le motif : la valeur est écrite, l’élément VALIDÉ, motif porté par la fiche et UNE ligne de journal qui le cite',
+        confirme && e.enAttente === false && Number(fiche.v) === Number(avantFiche || 0) + c.chiffre.delta && fiche.motif === 'Reprise de la notice du lot, sonde 101'
+          && jm.length === j0 + 1 && /Reprise de la notice/.test(String(jm[0].apres)), JSON.stringify({ confirme, e: e.enAttente, fiche, avantFiche, jm: jm.slice(0, 2) }));
+    }
+    /* Un LIBELLÉ corrigé par la famille ne demande aucun motif (pathologie). */
+    {
+      const c = CAS100[0];
+      const F = await O.familleDe(c.fam);
+      const nom = nom100(c) + ' L';
+      await O.sessionDe('admin'); await O.ouvrirCas(c);
+      const s = await O.poserSonde(c, nom, false);
+      const role = await roleDeLaFamilleQuiEdite(c, F, s.libelle, nom);
+      await O.cliquerLigne('Modifier', nom);
+      await pause(500);
+      const renomme = await O.champModale('libelle', nom + ' renommée');
+      await O.cliquerModale('Enregistrer');
+      await pause(600);
+      const demande = await page.evaluate(() => !!document.querySelector('.modal-root textarea, [role=dialog] textarea'));
+      const e = await O.etat('pathologies', s.id);
+      verifier('(pathologies) un LIBELLÉ corrigé par la famille (' + role + ') ne demande aucun motif : validé du même geste', renomme && !demande && e && e.enAttente === false, JSON.stringify({ renomme, demande, e }));
+    }
+    /* Le refus nommé au moteur, sans passer par l'écran : code, motif, geste. */
+    const refus = await page.evaluate(() => {
+      const S = window.SIGH.store, V = window.SIGH.validations;
+      S.setSession({ role: 'direction', nom: 'SONDE101', nomComplet: 'SONDE101', fonction: 'direction', identifiant: 's101' });
+      return { sans: V.controlerEnregistrement('actes', { chiffres: ['prix'], motif: '' }), vide: V.controlerEnregistrement('actes', { chiffres: ['prix'], motif: '   ' }),
+        avec: V.controlerEnregistrement('actes', { chiffres: ['prix'], motif: 'Grille 2026' }), libelle: V.controlerEnregistrement('actes', { chiffres: [], motif: '' }),
+        horsFamille: (() => { S.setSession({ role: 'caissier', nom: 'S', nomComplet: 'S', fonction: 'caissier', identifiant: 's' }); return V.controlerEnregistrement('actes', { chiffres: ['prix'], motif: '' }); })() };
+    });
+    verifier('Le moteur refuse en nommant : MOTIF_OBLIGATOIRE (code, motif, geste) sans motif ou avec un motif blanc, rien pour un libellé ni hors famille',
+      refus.sans && refus.sans.code === 'MOTIF_OBLIGATOIRE' && !!refus.sans.motif && !!refus.sans.geste && refus.vide && refus.vide.code === 'MOTIF_OBLIGATOIRE'
+        && refus.avec === null && refus.libelle === null && refus.horsFamille === null, JSON.stringify(refus));
+    /* TARIF_ABSENT : un acte sans tarif enregistré par la famille reste « à valider », il ne se valide pas. */
+    const ta = await page.evaluate(() => {
+      const S = window.SIGH.store, V = window.SIGH.validations;
+      S.setSession({ role: 'direction', nom: 'SONDE101', nomComplet: 'SONDE101', fonction: 'direction', identifiant: 's101' });
+      const m = V.marquageEnregistrement('actes', { avant: null, valeurs: { libelle: 'Acte sans prix', prix: null } });
+      return { valide: m.valide, nonValide: m.nonValide, patch: m.patch };
+    });
+    verifier('TARIF_ABSENT : un acte créé sans tarif par la Direction ne se valide pas (il reste « à valider »), le tiret n’est pas un zéro',
+      ta.valide === false && ta.nonValide === 'TARIF_ABSENT' && ta.patch.tarifProvisoire === true, JSON.stringify(ta));
+    await O.sessionDe('admin');
+    await O.archiverSondes();
+    verifier('Aucune erreur JavaScript pendant les sondes du motif', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 102 : plus de « à valider » sur un élément validé (15 écrans), refus du fileul, fiche VRF archivée sans doublon');
+    const O = outils100;
+    const MOTIF = /[àa] valider|[àa] arr[êe]ter/i;
+    /* Tous les éléments de toutes les familles sont mis « validés » dans le magasin (la sonde mesure l'AFFICHAGE d'un référentiel arrêté) ; restitués ensuite. */
+    let sauve = null;
+    /* Idempotent : une collection amorcée PAR SON ÉCRAN (modèles de badge, modèles de messages) ne naît qu'à l'ouverture de l'écran ; on marque donc APRÈS l'avoir ouvert. */
+    const marquer = async () => { const snap = await page.evaluate((avecSnap) => {
+      const S = window.SIGH.store, V = window.SIGH.validations, brut = S.raw();
+      const noms = ['validationsReferentiels'];
+      V.FAMILLES_A_VALIDER.forEach((f) => (f.collections || []).forEach((c) => { if (noms.indexOf(c) < 0) noms.push(c); }));
+      const sauvegarde = {};
+      noms.forEach((n) => { S.collection(n).all(); sauvegarde[n] = JSON.parse(JSON.stringify(brut[n] || [])); });
+      V.FAMILLES_A_VALIDER.forEach((f) => {
+        if (f.mode === 'fiche') {
+          f.cibles.forEach((c) => {
+            const arr = brut.validationsReferentiels;
+            const exist = arr.filter((x) => x.id === 'VRF-' + c.id)[0];
+            const trace = { statut: 'actif', famille: f.id, cible: c.id, libelle: c.libelle, valideLe: '2026-09-01T09:00:00.000Z', validePar: 'Sonde', valideRole: 'Sonde' };
+            if (exist) Object.assign(exist, trace); else arr.push(Object.assign({ id: 'VRF-' + c.id }, trace));
+          });
+        } else {
+          f.collections.forEach((col) => (brut[col] || []).forEach((x) => {
+            if (x.statut === 'archive') return;
+            f.champs.forEach((ch) => { if (x[ch] === true) x[ch] = false; });
+            x.valideLe = x.valideLe || '2026-09-01T09:00:00.000Z'; x.validePar = x.validePar || 'Sonde'; x.valideRole = x.valideRole || 'Sonde';
+            ['source', 'motifPrix', 'observation'].forEach((k) => { if (typeof x[k] === 'string') x[k] = x[k].replace(/\s*(?:[—–:-]\s*)?(?:(?:tarif|proposition|modèle|valeur)\s+)?à\s+(?:valider|arrêter|confirmer)\b[^.;]*$/i, ''); });
+          }));
+        }
+      });
+      S.save();
+      return avecSnap ? sauvegarde : null;
+    }, sauve === null); if (sauve === null) sauve = snap; };
+    await marquer();
+    const ECRANS = [
+      { fam: 'enquetes', ecran: 'adm-enquetes.html', role: 'direction' },
+      { fam: 'labo_variables', ecran: 'm5-valeurs-reference.html', role: 'laborantin' },
+      { fam: 'labo_variables', ecran: 'm5-unites.html', role: 'laborantin' },
+      { fam: 'pathologies', ecran: 'm2-pathologies.html', role: 'dm', onglet: 'Référentiel' },
+      { fam: 'imagerie', ecran: 'cfg-imagerie-catalogue.html', role: 'admin', onglet: 'Examens' },
+      { fam: 'imagerie', ecran: 'cfg-imagerie-catalogue.html', role: 'admin', onglet: 'Variables' },
+      { fam: 'checklists_bloc', ecran: 'm3-bloc-checklist.html', role: 'chirurgien' },
+      { fam: 'actes', ecran: 'cfg-tarifs.html', role: 'admin', onglet: 'Actes & hospitalisation' },
+      { fam: 'analyses', ecran: 'cfg-tarifs.html', role: 'admin', onglet: 'Analyses de laboratoire' },
+      { fam: 'valorisation_sage', ecran: 'm6-produits.html', role: 'direction' },
+      { fam: 'objectifs_pilotage', ecran: 'm12-tableau-decisionnel.html', role: 'direction', onglet: 'Objectifs' },
+      { fam: 'repartition_charges', ecran: 'm12-seuil-rentabilite.html', role: 'comptable' },
+      { fam: 'modeles_badge', ecran: 'm10-badges-modeles.html', role: 'direction' },
+      { fam: 'jeux_import', ecran: 'imp-analyses.html', role: 'admin' },
+      { fam: 'modeles_messages', ecran: 'cfg-rappels.html', role: 'admin' },
+      { fam: 'bareme_aib', ecran: 'cfg-bareme-aib.html', role: 'admin' },
+      { fam: 'bareme_its', ecran: 'cfg-comptabilite.html', role: 'admin', zone: 'Barème de l’ITS' },
+    ];
+    for (const c of ECRANS) {
+      if (process.env.V102 && process.env.V102.split(',').indexOf(c.fam) < 0) continue;
+      await O.sessionDe(c.role);
+      await O.ouvrirCas(c);
+      await marquer();
+      await O.ouvrirCas(c);
+      await pause(300);
+      const lu = await page.evaluate((zone) => {
+        let racine = document.getElementById('page-content');
+        if (zone && racine) { racine = [...racine.querySelectorAll('.card')].filter((k) => k.textContent.indexOf(zone) >= 0).pop() || null; }
+        /* Les options d'un filtre (« À valider » est un CHOIX de filtre, pas l'état d'un élément) ne se lisent pas : la sonde mesure ce que l'écran DIT d'un élément. */
+        const copie = racine ? racine.cloneNode(true) : null;
+        if (copie) copie.querySelectorAll('select, option, [role=listbox]').forEach((n) => n.remove());
+        document.body.appendChild(copie || document.createElement('div')); if (copie) { copie.style.position = 'absolute'; copie.style.left = '-99999px'; }
+        const texte = copie ? copie.innerText : '';
+        if (copie) copie.remove();
+        return { url: location.pathname.split('/').pop(), texte: texte };
+      }, c.zone || null);
+      const trouves = (lu.texte.match(/[^\n]*(?:[àa] valider|[àa] arr[êe]ter)[^\n]*/gi) || []).slice(0, 4);
+      verifier('(' + c.fam + ' / ' + c.ecran.replace(/\.html.*/, '') + (c.onglet ? ' / ' + c.onglet.slice(0, 8) : '') + ') référentiel entièrement arrêté : AUCUNE mention « à valider » à l’écran',
+        /^(error|index|auth)/.test(lu.url) === false && lu.texte.length > 20 && trouves.length === 0, JSON.stringify({ url: lu.url, trouves }));
+    }
+    /* Le centre des validations : les lignes des familles ne parlent plus d'attente, les comptes sont nuls. */
+    await O.sessionDe('direction');
+    await marquer();
+    await ouvrir('adm-validations.html');
+    await pause(400);
+    const centre = await page.evaluate(() => ({
+      familles: [...document.querySelectorAll('[data-famille]')].map((n) => ({ f: n.getAttribute('data-famille'), n: n.getAttribute('data-en-attente') })),
+      kpi: [...document.querySelectorAll('#page-content .kpi')].map((k) => k.textContent.replace(/\s+/g, ' ').trim()),
+    }));
+    const attentes = centre.familles.filter((x) => x.n !== '' && Number(x.n) > 0);
+    verifier('Le centre des validations ne compte plus aucun élément en attente quand tout est arrêté (familles amorcées)', attentes.length === 0 && centre.familles.length >= 15, JSON.stringify({ attentes, nb: centre.familles.length }));
+
+    /* --- restitution des fiches ------------------------------------------------------------------------------------------------------------------------------------- */
+    await page.evaluate((s) => {
+      const S = window.SIGH.store, brut = S.raw();
+      Object.keys(s).forEach((n) => { brut[n] = s[n]; });
+      S.save();
+    }, sauve);
+
+    /* --- fileul : la commande Valider est ABSENTE et le geste refusé en nommant la mère (EF-VAL-07) ---------------------------------------------------------------- */
+    const O2 = outils100;
+    await O2.sessionDe('admin');
+    await ouvrir('cfg-tarifs.html');
+    const sonde = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const r = S.collection('actes').insert({ libelle: 'Sonde102 fileul', designation: 'Sonde102 fileul', code: 'S102', secteur: 'Consultation', prix: 1500, tarifProvisoire: true, sonde100: true }).record;
+      return r.id;
+    });
+    const avantFileul = await page.evaluate((id) => {
+      const S = window.SIGH.store, V = window.SIGH.validations;
+      S.setReglage('posteFileul', true);
+      return { peut: window.SIGH.kit.peutValider('actes'), valider: V.validerReferentiel('actes', id), controle: V.controlerEnregistrement('actes', {}),
+        suivre: V.suivreEnregistrement('pathologies', 'NEXISTEPAS', { modifie: true }), etat: V.etatValidation('actes', id) };
+    }, sonde);
+    verifier('Fileul : la commande Valider est absente (peutValider faux) et le geste direct refusé par CONFIGURATION_DE_LA_MERE (code, motif, geste), élément inchangé',
+      avantFileul.peut === false && avantFileul.valider.ok === false && avantFileul.valider.code === 'CONFIGURATION_DE_LA_MERE' && !!avantFileul.valider.motif && !!avantFileul.valider.geste
+        && avantFileul.controle && avantFileul.controle.code === 'CONFIGURATION_DE_LA_MERE' && avantFileul.etat.enAttente === true, JSON.stringify(avantFileul));
+    await ouvrir('cfg-tarifs.html');
+    await O2.ongletCas({ onglet: 'Actes & hospitalisation' });
+    await O2.chercher('Sonde102 fileul');
+    const boutonFileul = await page.evaluate(() => [...document.querySelectorAll('#page-content tbody button')].filter((b) => /^Valider « /.test(b.getAttribute('title') || '')).length);
+    await O2.cliquerLigne('Modifier', 'Sonde102 fileul');
+    await pause(500);
+    const piedFileul = await O2.boutonsModale();
+    const j0 = (await O2.journalDe(sonde)).length;
+    await O2.cliquerModale('Enregistrer');
+    await pause(600);
+    const apresFileul = await page.evaluate((id) => window.SIGH.validations.etatValidation('actes', id), sonde);
+    const j1 = (await O2.journalDe(sonde)).length;
+    verifier('Fileul, à l’écran : aucun bouton Valider en ligne ni dans la modale, et Enregistrer est refusé (l’élément reste « à valider », aucune ligne de journal)',
+      boutonFileul === 0 && piedFileul.indexOf('Valider') < 0 && apresFileul.enAttente === true && j1 === j0, JSON.stringify({ boutonFileul, piedFileul, apresFileul, j0, j1 }));
+    await page.evaluate(() => { window.SIGH.store.setReglage('posteFileul', false); });
+    const mere = await page.evaluate(() => window.SIGH.kit.peutValider('actes'));
+    verifier('Retour sur la mère : la commande Valider revient pour la famille', mere === true);
+    await O2.archiverSondes();
+
+    /* --- fiche VRF archivée : réactivée, jamais doublée --------------------------------------------------------------------------------------------------------------- */
+    await O2.sessionDe('chirurgien');
+    await ouvrir('m3-bloc-checklist.html');
+    const prepV = await page.evaluate(() => {
+      const S = window.SIGH.store, arr = S.raw().validationsReferentiels;
+      const avant = JSON.parse(JSON.stringify(arr));
+      arr.forEach((x) => { if (x.cible === 'checklist-bloc') { x.statut = 'archive'; x.valideLe = '2026-08-01T09:00:00.000Z'; } });
+      S.save();
+      return { avant, archivees: arr.filter((x) => x.cible === 'checklist-bloc' && x.statut === 'archive').length, enAttente: window.SIGH.validations.etatValidation('checklists_bloc', 'checklist-bloc').enAttente };
+    });
+    await ouvrir('m3-bloc-checklist.html');
+    const cliqueV = await O2.cliquerLigne('Valider « ', null);
+    const confirmeV = await O2.cliquerModale('Valider');
+    await pause(700);
+    const apresV = await page.evaluate(() => {
+      const arr = window.SIGH.store.raw().validationsReferentiels.filter((x) => x.id === 'VRF-checklist-bloc');
+      return { nb: arr.length, statut: arr[0] && arr[0].statut, valideLe: !!(arr[0] && arr[0].valideLe), etat: window.SIGH.validations.etatValidation('checklists_bloc', 'checklist-bloc').enAttente };
+    });
+    verifier('Fiche VRF ARCHIVÉE : la validation la réactive, UNE seule fiche pour la cible, l’élément est validé (pas de doublon)',
+      prepV.archivees >= 1 && prepV.enAttente === true && cliqueV === 'ok' && confirmeV && apresV.nb === 1 && apresV.statut === 'actif' && apresV.valideLe && apresV.etat === false, JSON.stringify({ prepV: { archivees: prepV.archivees, enAttente: prepV.enAttente }, cliqueV, confirmeV, apresV }));
+    await page.evaluate((avant) => { const S = window.SIGH.store, arr = S.raw().validationsReferentiels; arr.length = 0; avant.forEach((x) => arr.push(x)); S.save(); }, prepV.avant);
+    await O2.sessionDe('admin');
+    verifier('Aucune erreur JavaScript pendant la sonde de texte, le fileul et la fiche archivée', erreursJS.length === 0, erreursJS.join(' | '));
   });
 
   await browser.close();

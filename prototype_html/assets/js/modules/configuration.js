@@ -945,12 +945,14 @@
           id: 'analyses', label: 'Analyses de laboratoire', badge: analyses.length,
           render: function () {
             return el('div.space-y-3', null, [
-              K.note('Les 48 désignations proviennent du document « Tarifs des analyses de laboratoire » de la clinique. '
-                + 'Le document source ne renseignant pas la colonne des prix, les tarifs portés ici sont des <strong>valeurs d’attente à confirmer</strong>.', { tone: 'warning', icon: 'help-circle' }),
+              analyses.some(function (a) { return a.tarifProvisoire; })
+                ? K.note('Les 48 désignations proviennent du document « Tarifs des analyses de laboratoire » de la clinique. '
+                  + 'Le document source ne renseignant pas la colonne des prix, les tarifs portés ici sont des <strong>valeurs d’attente à confirmer</strong>.', { tone: 'warning', icon: 'help-circle' })
+                : K.note('Les 48 désignations proviennent du document « Tarifs des analyses de laboratoire » de la clinique. Tous les tarifs portés ici sont arrêtés.', { tone: 'info', icon: 'check-circle-2' }),
               U.dataTable({
                 rows: analyses, exportName: 'tarifs-analyses', pageSize: 15, defaultSort: 'n',
                 actions: [K.creer(S.collection('analyses', { module: 'M5', entite: 'Analyse' }), CHAMPS_ANALYSE, {
-                  titre: 'Nouvelle analyse au catalogue', entite: 'Analyse',
+                  titre: 'Nouvelle analyse au catalogue', entite: 'Analyse', validation: { famille: 'analyses' },
                   transform: function (v) {
                     var n = S.collection('analyses').all().length + 1;
                     v.n = n; v.code = v.code || 'L' + C.pad(n, 2);
@@ -1214,16 +1216,24 @@
           key: 'source', label: 'Origine du tarif',
           render: function (a) {
             var lignes = [];
-            lignes.push(a.source
-              ? el('span.text-xs.text-slate-500', { text: a.source })
+            /* Un tarif ARRÊTÉ ne dit plus « à valider » : la mention d'attente tombe du texte d'origine (lot L1). */
+            var texteArrete = function (t) {
+              return String(t || '').replace(/^[^;]*à valider[^;]*;\s*/i, '').replace(/\s*(?:[—–:-]\s*)?(?:(?:tarif|proposition|modèle|valeur)\s+)?à\s+(?:valider|arrêter|confirmer)\b[^.;]*$/i, '');
+            };
+            var sourceAffichee = a.tarifProvisoire ? a.source : texteArrete(a.source);
+            lignes.push(sourceAffichee
+              ? el('span.text-xs.text-slate-500', { text: sourceAffichee })
               : el('span.text-xs.text-slate-300', { text: '—' }));
             /* Par quelle voie le rapprochement s'est fait : une correspondance
                nommée est une DÉCISION, elle doit pouvoir se relire. */
             if (a.rapprochement) {
               lignes.push(el('p.text-[10px].text-slate-400', { text: 'rapproché par ' + a.rapprochement }));
             }
-            if (a.motifPrix) {
-              lignes.push(el('p.text-[10px].text-info-600', { text: a.motifPrix }));
+            /* Un tarif ARRÊTÉ ne dit plus « à valider » : la mention d'attente tombe du texte d'origine (lot L1). */
+            var motifAffiche = a.tarifProvisoire ? a.motifPrix : String(a.motifPrix || '')
+              .replace(/^[^;]*à valider[^;]*;\s*/i, '').replace(/\s*(?:[—–:-]\s*)?(?:(?:tarif|proposition|modèle|valeur)\s+)?à\s+(?:valider|arrêter|confirmer)\b[^.;]*$/i, '');
+            if (motifAffiche) {
+              lignes.push(el('p.text-[10px].text-info-600', { text: motifAffiche }));
             }
             return el('div', null, lignes);
           },
@@ -1232,7 +1242,7 @@
       rowActions: K.actionsLigne(colActes(), champsActe, { entite: 'acte', module: 'CFG', validation: { famille: 'actes' }, refresh: function () { dessinerActes(panneau); } }),
       actions: [
         K.creer(colActes(), champsActe, {
-          titre: 'Nouvelle prestation', entite: 'Acte',
+          titre: 'Nouvelle prestation', entite: 'Acte', validation: { famille: 'actes' },
           defauts: function () { return { secteur: D.SECTEURS_ACTIVITE[0] }; },
           transform: function (v) {
             if (!v.code) v.code = 'ACT-' + C.pad(colActes().all().length + 1, 3);
@@ -1252,8 +1262,8 @@
               sousTitre: 'Catalogue par secteur — ' + C.dateFR(AUJ),
               cartouche: [['Prestations au catalogue', C.num(rows.length)],
                 ['Tarifs validés', C.num(rows.length - aValider.length)],
-                ['Tarifs à valider', C.num(aValider.length)],
-                ['Date d’édition', C.dateFR(AUJ)]],
+                aValider.length ? ['Tarifs à valider', C.num(aValider.length)] : null,
+                ['Date d’édition', C.dateFR(AUJ)]].filter(Boolean),
               contenu: P.tableau([
                 { label: 'Code', key: 'code' },
                 { label: 'Prestation', key: 'libelle' },
@@ -4434,9 +4444,9 @@
           empty: 'Aucun modèle de message.',
           actions: [K.creer(colModeles(), champsModele(), {
             module: 'CFG', label: 'Nouveau modèle', titre: 'Modèle de message',
-            entite: 'Modèle', apres: afficher,
+            entite: 'Modèle', apres: afficher, validation: { famille: 'modeles_messages' },
             transform: function (v) {
-              /* Un modèle rédigé ici naît « à valider » : la Direction l'arrête par le moteur commun. */
+              /* Un modèle rédigé ici naît « à valider » hors famille (la Direction l'arrête par le moteur commun) ; validé s'il est rédigé par la famille (lot L1, Q5). */
               return Object.assign({ source: 'Rédigé par l’administrateur', aValider: true }, v);
             },
           })].filter(Boolean),
@@ -4666,7 +4676,7 @@
                 emptyMessage: 'Aucun examen au catalogue.',
                 actions: [K.creer(colExamensIm(), champsExamen(), {
                   module: 'CFG', label: 'Nouvel examen', titre: 'Examen d\u2019imagerie',
-                  entite: 'Examen', apres: afficher,
+                  entite: 'Examen', apres: afficher, validation: { famille: 'imagerie' },
                 })].filter(Boolean),
                 columns: [
                   { key: 'code', label: 'Code', render: function (x) { return el('span.font-mono.text-xs', { text: x.code }); } },
@@ -4709,7 +4719,7 @@
                 emptyMessage: 'Aucune variable param\u00e9tr\u00e9e.',
                 actions: [K.creer(colVariablesIm(), champsVariable, {
                   module: 'CFG', label: 'Nouvelle variable', titre: 'Variable de compte rendu',
-                  entite: 'Variable', size: 'lg', apres: afficher, transform: transformVariable,
+                  entite: 'Variable', size: 'lg', apres: afficher, transform: transformVariable, validation: { famille: 'imagerie' },
                 })].filter(Boolean),
                 columns: [
                   {
@@ -5268,7 +5278,7 @@
         ], defauts);
         var m = U.modal({
           title: base ? 'Corriger : nouvelle version de « ' + libelleSituation(base.situation) + ' »' : 'Nouvelle version du barème',
-          subtitle: 'La version naît « à valider » ; elle ferme la précédente de la même situation à la veille de sa date d’effet.',
+          subtitle: (K.peutValider('bareme_aib') ? 'La version est arrêtée à l’enregistrement (profil de validation) ; ' : 'La version naît « à valider » ; ') + 'elle ferme la précédente de la même situation à la veille de sa date d’effet.',
           size: 'lg', body: f,
           footer: [
             K.btn('Annuler', { onclick: function () { m.close(); } }),
@@ -5278,7 +5288,7 @@
               var r = B.nouvelleVersion(v);
               if (!r.ok) { refuser(r); return; }
               m.close(); dessiner();
-              U.toast('Version enregistrée : ' + r.taux + ' % à compter du ' + C.dateFR(r.dateEffet) + ' (à valider).', {
+              U.toast('Version enregistrée : ' + r.taux + ' % à compter du ' + C.dateFR(r.dateEffet) + (r.enAttenteDeValidation ? ' (à valider).' : ' (arrêtée).'), {
                 type: 'success', detail: r.precedenteFermeeLe ? 'La version précédente est fermée le ' + C.dateFR(r.precedenteFermeeLe) + '.' : null,
               });
             } }),
@@ -5336,7 +5346,7 @@
         host.appendChild(U.kpiGrid([
           { label: 'Situations actives', value: C.num(B.situations().length), icon: 'users', tone: 'navy' },
           { label: 'Versions en vigueur', value: C.num(enVigueur.length), icon: 'percent', tone: 'success', hint: 'À la date du jour' },
-          { label: 'Versions à valider', value: C.num(aValider.length), icon: 'clipboard-check', tone: aValider.length ? 'warning' : 'neutral' },
+          { label: 'Versions en attente de validation', value: C.num(aValider.length), icon: 'clipboard-check', tone: aValider.length ? 'warning' : 'neutral' },
           { label: 'Versions archivées', value: C.num(colV.archived().length), icon: 'archive', tone: 'neutral', hint: 'Restaurables depuis la corbeille' },
         ]));
 

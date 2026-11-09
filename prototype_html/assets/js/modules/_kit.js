@@ -204,6 +204,7 @@
   function peutValider(familleId) {
     var V = moteurValidation();
     var f = V && V.FAMILLES_A_VALIDER.filter(function (x) { return x.id === familleId; })[0];
+    if (f && V.posteFileul() && V.controlerEnregistrement(familleId, {})) return false;   /* fileul : la configuration est tenue par la mère, commande ABSENTE */
     return !!(f && f.roles.indexOf(roleSession()) >= 0);
   }
   function badgeValidation(familleId, id) {
@@ -243,6 +244,92 @@
   function remettreAValider(familleId, id) {
     var V = moteurValidation();
     return V ? V.remettreAValider(familleId, id) : null;
+  }
+
+  /* ==========================================================================
+   * ENREGISTRER = VALIDER POUR LE PROFIL DE LA FAMILLE (Direction, 09/11/2026, lot L1)
+   * --------------------------------------------------------------------------
+   * `ecrireValidable(col, v, record, values)` est l'UNIQUE chemin d'écriture d'un référentiel à valider depuis une modale : le moteur
+   * (`PR.controlerEnregistrement`, `PR.marquageEnregistrement`) décide, le kit écrit UNE fois (une seule ligne de journal, état inclus).
+   * Valeur chiffrée corrigée par la famille : le motif est DEMANDÉ au geste (refus nommé MOTIF_OBLIGATOIRE sinon). Rend une promesse
+   * `{ res, refus, marquage }`. `v` = `{ famille, cible?, siChange? }` ; avec `cible`, l'artefact est tenu ailleurs que dans la fiche écrite
+   * (valorisation lue au produit) : l'écriture reste ordinaire et le moteur SUIT l'artefact.
+   * `boutonValiderModale` : le choix « Valider » du pied de modale, ABSENT hors famille et pour un élément déjà validé.
+   * ======================================================================== */
+  function ecrireValidable(col, v, record, values) {
+    var V = moteurValidation();
+    var ordinaire = function () { return { res: record ? col.update(record.id, values) : col.insert(values) }; };
+    if (!V || !v || !v.famille) return Promise.resolve(ordinaire());
+    function essai(motif) {
+      if (v.cible) {
+        /* Artefact tenu ailleurs (le produit modifié, la valorisation validée) : écriture ordinaire, puis suivi. */
+        var apresV = Object.assign({}, record || {}, values);
+        var modifie = !!record && (!v.siChange || v.siChange(record, apresV));
+        var ctl = V.controlerEnregistrement(v.famille, { chiffres: modifie && v.siChange ? ['valeur'] : [], motif: motif });
+        if (ctl) return { refus: ctl };
+        var r = ordinaire();
+        var cibleId = record ? v.cible(record) : null;
+        if (cibleId) V.suivreEnregistrement(v.famille, cibleId, { modifie: modifie, motif: motif });
+        return r;
+      }
+      var chiffres = V.chiffresModifies(v.famille, record, values);
+      var refus = V.controlerEnregistrement(v.famille, { chiffres: chiffres, motif: motif });
+      if (refus) return { refus: refus };
+      var m = V.marquageEnregistrement(v.famille, { avant: record, valeurs: values, motif: motif,
+        modifie: record && v.siChange ? !!v.siChange(record, Object.assign({}, record, values)) : undefined });
+      if (!m.ok) return { refus: m };
+      var patch = Object.assign({}, values, m.patch);
+      var res = record ? col.update(record.id, patch, { journal: m.journal }) : col.insert(patch, { journal: m.journal });
+      return { res: res, marquage: m };
+    }
+    var premier = essai(null);
+    if (premier.refus && premier.refus.code === 'MOTIF_OBLIGATOIRE') {
+      return U.confirm({
+        title: 'Motif de la correction',
+        message: premier.refus.motif,
+        confirmLabel: 'Enregistrer', requireMotif: true,
+      }).then(function (rep) {
+        if (!rep || !String(rep.motif || '').trim()) return { annule: true, refus: premier.refus };
+        return essai(rep.motif);
+      });
+    }
+    return Promise.resolve(premier);
+  }
+  /** Le message de refus d'un enregistrement (toast nommé) ; rend vrai si l'écriture n'a pas eu lieu. */
+  function refusEcriture(r) {
+    if (r && r.annule) { U.toast(r.refus.motif, { type: 'error', detail: r.refus.geste }); return true; }
+    if (r && r.refus) { U.toast(r.refus.motif, { type: 'error', detail: r.refus.geste }); return true; }
+    return false;
+  }
+  /** Garde AVANT un geste qui modifie un artefact tenu hors fiche (constante du code) : refus nommé (fileul), vrai si le geste peut partir. */
+  function gardeValidation(familleId) {
+    var V = moteurValidation();
+    var r = V && V.controlerEnregistrement(familleId, {});
+    if (r) { U.toast(r.motif, { type: 'error', detail: r.geste }); return false; }
+    return true;
+  }
+  /** APRÈS le geste : le profil de la famille valide la pièce (si elle attendait), tout autre profil la remet « à valider ». */
+  function suivreValidation(familleId, cibleId) {
+    var V = moteurValidation();
+    return V ? V.suivreEnregistrement(familleId, cibleId, { modifie: true }) : null;
+  }
+  function boutonValiderModale(v, record, modale, apres) {
+    if (!v || !v.famille || !record) return null;
+    var id = v.cible ? v.cible(record) : record.id;
+    if (!id) return null;
+    var V = moteurValidation();
+    var e = V && V.etatValidation(v.famille, id);
+    if (!e || !e.enAttente || !peutValider(v.famille)) return null;
+    return commande(v.label || 'Valider', {
+      droit: 'valider', variant: 'secondary', icon: 'shield-check', title: 'Valider « ' + e.libelle + ' » sans modifier ses valeurs',
+      onclick: function () {
+        var r = V.validerReferentiel(v.famille, id);
+        if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+        modale.close();
+        U.toast('« ' + e.libelle + ' » validé.', { type: 'success', detail: 'Le ' + C.dateHeure(r.valideLe) + ' par ' + r.validePar + '.' });
+        if (apres) apres(r);
+      },
+    });
   }
 
   /** Bandeau affiché quand le profil n'a qu'un droit de lecture sur l'écran. */
@@ -296,6 +383,7 @@
           body: f,
           footer: [
             btn('Annuler', { onclick: function () { m.close(); } }),
+            isEdit && cfg.validation ? boutonValiderModale(cfg.validation, record, m, refresh) : null,
             btn(isEdit ? 'Enregistrer' : 'Créer', {
               variant: 'primary', icon: isEdit ? 'save' : 'plus',
               onclick: function () {
@@ -306,21 +394,22 @@
                   if (err) { U.toast(err, { type: 'error' }); return; }
                 }
                 if (cfg.transform) values = cfg.transform(values, record);
-                var avantMaj = isEdit && cfg.validation ? Object.assign({}, record) : null;
-                var res = isEdit ? col.update(record.id, values) : col.insert(values);
-                /* Modifier un artefact validé le remet « à valider » (déclaré par `validation: { famille, cible?, siChange? }`). */
-                if (isEdit && cfg.validation) {
-                  var cibleMaj = cfg.validation.cible ? cfg.validation.cible(record) : record.id;
-                  if (cibleMaj && (!cfg.validation.siChange || cfg.validation.siChange(avantMaj, record))) remettreAValider(cfg.validation.famille, cibleMaj);
-                }
-                m.close(); refresh();
-                U.toast(isEdit ? 'Modifications enregistrées.' : 'Nouveau ' + cfg.entite + ' créé.', {
-                  type: 'success', undo: annulable(res.undo),
-                  detail: res.record.code || res.record.reference || res.record.numero || null,
+                /* Lot L1 : l'enregistrement par le profil de la famille VALIDE (une ligne de journal, état inclus) ; hors famille, l'élément repasse « à valider ». */
+                var ecriture = cfg.validation
+                  ? ecrireValidable(col, cfg.validation, isEdit ? record : null, values)
+                  : Promise.resolve({ res: isEdit ? col.update(record.id, values) : col.insert(values) });
+                ecriture.then(function (w) {
+                  if (refusEcriture(w)) return;
+                  var res = w.res;
+                  m.close(); refresh();
+                  U.toast(isEdit ? 'Modifications enregistrées.' : 'Nouveau ' + cfg.entite + ' créé.', {
+                    type: 'success', undo: annulable(res.undo),
+                    detail: res.record.code || res.record.reference || res.record.numero || null,
+                  });
                 });
               },
             }),
-          ],
+          ].filter(Boolean),
         });
       }
 
@@ -780,7 +869,7 @@
    * prises en charge issues des factures…) : la donnée y reste corrigible,
    * l'opération est journalisée et annulable.
    */
-  function modifier(col, champs, record, apres, avant, transform, surMaj) {
+  function modifier(col, champs, record, apres, avant, transform, surMaj, validation) {
     var f = U.form(typeof champs === 'function' ? champs(record) : champs, record);
     var m = U.modal({
       title: 'Modifier l’enregistrement',
@@ -788,6 +877,7 @@
       size: 'lg', body: f,
       footer: [
         btn('Annuler', { onclick: function () { m.close(); } }),
+        validation ? boutonValiderModale(validation, record, m, apres) : null,
         btn('Enregistrer', {
           variant: 'primary', icon: 'save',
           onclick: function () {
@@ -797,17 +887,24 @@
                (son propre toast) et retourne false — rien n'est écrit. */
             if (typeof avant === 'function' && avant(v, record) === false) return;
             if (typeof transform === 'function') v = transform(v, record);   /* E364 : la fiche corrigée est transmise */
-            var res = col.update(record.id, v);
-            if (typeof surMaj === 'function') surMaj(record);   /* ex. remise « à valider » d'un artefact validé */
-            m.close();
-            if (apres) apres();
-            U.toast('Modifications enregistrées.', {
-              type: 'success',
-              undo: function () { res.undo(); if (apres) apres(); },
+            /* Lot L1 : la famille enregistre ET valide (une ligne de journal) ; hors famille, l'élément repasse « à valider ». */
+            var ecriture = validation
+              ? ecrireValidable(col, validation, record, v)
+              : Promise.resolve({ res: col.update(record.id, v) });
+            ecriture.then(function (w) {
+              if (refusEcriture(w)) return;
+              var res = w.res;
+              if (typeof surMaj === 'function') surMaj(record);   /* surcharge d'un appelant sans `validation` déclarée */
+              m.close();
+              if (apres) apres();
+              U.toast('Modifications enregistrées.', {
+                type: 'success',
+                undo: function () { res.undo(); if (apres) apres(); },
+              });
             });
           },
         }),
-      ],
+      ].filter(Boolean),
     });
     return m;
   }
@@ -840,14 +937,21 @@
                    retour false, rien n'est écrit. */
                 if (typeof opts.avant === 'function' && opts.avant(v, null) === false) return;
                 if (opts.transform) v = opts.transform(v);
-                var res = col.insert(v);
-                m.close();
-                if (opts.apres) opts.apres();
-                U.toast((opts.entite || 'Enregistrement') + ' créé.', {
-                  type: 'success',
-                  detail: res.record.libelle || res.record.designation || res.record.code || null,
-                  undo: function () { col.archive(res.record.id); if (opts.apres) opts.apres(); },
-                  undoMessage: 'Création annulée — la fiche est archivée.',
+                /* Lot L1 (Q5) : un élément créé par la famille naît validé ; hors famille, « à valider ». */
+                var ecriture = opts.validation
+                  ? ecrireValidable(col, opts.validation, null, v)
+                  : Promise.resolve({ res: col.insert(v) });
+                ecriture.then(function (w) {
+                  if (refusEcriture(w)) return;
+                  var res = w.res;
+                  m.close();
+                  if (opts.apres) opts.apres();
+                  U.toast((opts.entite || 'Enregistrement') + ' créé.', {
+                    type: 'success',
+                    detail: res.record.libelle || res.record.designation || res.record.code || null,
+                    undo: function () { col.archive(res.record.id); if (opts.apres) opts.apres(); },
+                    undoMessage: 'Création annulée — la fiche est archivée.',
+                  });
                 });
               },
             }),
@@ -891,8 +995,7 @@
       var bv = opts.validation ? boutonValider(opts.validation.famille, r.id, { size: 'sm', moduleCode: opts.module, apres: rafraichir, label: opts.validation.label }) : null;
       if (bv) actes.push(bv);
       if (dr.editer) actes.push(iconBtn('pencil', 'Modifier', function () {
-        modifier(col, champs, r, rafraichir, opts.avant, opts.transform,
-          opts.validation ? function (rec) { remettreAValider(opts.validation.famille, rec.id); } : null);
+        modifier(col, champs, r, rafraichir, opts.avant, opts.transform, null, opts.validation || null);
       }));
       if (opts.archivable !== false && dr.annuler) {
         actes.push(iconBtn('archive', 'Archiver', function () {
@@ -1669,6 +1772,8 @@
     btn: btn, iconBtn: iconBtn, lien: lien,
     commande: commande, commandeIcone: commandeIcone,
     boutonValider: boutonValider, badgeValidation: badgeValidation, peutValider: peutValider, remettreAValider: remettreAValider,
+    ecrireValidable: ecrireValidable, refusEcriture: refusEcriture, boutonValiderModale: boutonValiderModale,
+    gardeValidation: gardeValidation, suivreValidation: suivreValidation,
     section: section, grid: grid, row: row, note: note, source: source,
     crud: crud, registre: registre, lectureSeule: lectureSeule, fileAttente: fileAttente,
     pageFormulaire: pageFormulaire, groupesCartes: groupesCartes, actionsPageFormulaire: actionsPageFormulaire,

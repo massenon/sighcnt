@@ -1097,7 +1097,7 @@
           { label: 'Lots appliqués', value: String(appl.length), icon: 'package-check', tone: 'navy' },
           { label: 'Fiches importées', value: C.num(appl.reduce(function (t, l) { return t + l.ecrits.length; }, 0)), icon: 'database', tone: 'info' },
           { label: 'Fichiers refusés', value: String(lots.filter(function (l) { return l.etat === 'refuse'; }).length), icon: 'file-x', tone: 'warning' },
-          { label: 'Statut du jeu', value: j.statut === 'supporte' ? 'Supporté' : 'À valider', icon: 'badge-check', tone: j.statut === 'supporte' ? 'success' : 'warning' },
+          { label: 'Statut du jeu', value: j.statut === 'supporte' ? 'Supporté' : (jeuValide(j) ? 'Validé' : 'À valider'), icon: 'badge-check', tone: j.statut === 'supporte' || jeuValide(j) ? 'success' : 'warning' },
         ];
       })()));
 
@@ -1106,7 +1106,7 @@
         var bv = K.boutonValider('jeux_import', j.ecran, { apres: function () { global.SIGH.app.go(j.ecran); } });
         if (bv) host.appendChild(el('div.flex.justify-end', null, bv));
       } else if (j.statut === 'proposition') {
-        host.appendChild(K.note('<strong>Jeu validé.</strong> ' + (j.limite || ''), { tone: 'info', icon: 'check-circle-2' }));
+        host.appendChild(K.note('<strong>Jeu validé.</strong> ' + String(j.limite || '').replace(/^PROPOSITION À VALIDER\s*:\s*/, ''), { tone: 'info', icon: 'check-circle-2' }));
         host.appendChild(el('div.flex.justify-end', null, K.badgeValidation('jeux_import', j.ecran)));
       } else if (j.limite) host.appendChild(K.note(j.limite, { tone: 'info', icon: 'info' }));
 

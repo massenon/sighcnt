@@ -6374,7 +6374,7 @@
       + 'l’établissement, si bien qu’une autre clinique n’a rien à retoucher. L’en-tête officiel ne '
       + 's’y applique <strong>pas</strong> tel quel — un badge n’est pas un état administratif : logo, '
       + 'dénomination et devise, mais ni IFU ni RCCM, qui sont des mentions fiscales. Les mentions du '
-      + 'verso sont une <strong>proposition à valider</strong> : elles engagent la clinique envers le porteur.',
+      + 'verso engagent la clinique envers le porteur : un modèle n’est arrêté que par la Direction, la DAF ou l’administrateur.',
     render: function (root) {
       amorcerBadges();
       return K.crud({

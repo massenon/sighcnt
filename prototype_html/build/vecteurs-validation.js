@@ -191,6 +191,137 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       });
       S.setSession(SESSION);
 
+      /* ---------- lot L1 (09/11/2026) : ENREGISTRER VALIDE pour le profil de la famille ----------------------------------------------------- */
+      const masquer = (o, instant) => (instant ? JSON.parse(JSON.stringify(o).split(instant).join('@@MAINTENANT@@')) : o);
+      const sous = (role, fileul, fn) => {
+        S.setSession(Object.assign({}, SESSION, { role }));
+        if (fileul) S.setReglage('posteFileul', true);
+        try { return fn(); } finally { if (fileul) S.setReglage('posteFileul', false); S.setSession(SESSION); }
+      };
+      /* Le CONTRÔLE (refus nommé avant toute écriture) et le MARQUAGE (patch + une ligne de journal), fonctions pures : fiche avant, valeurs, profil. */
+      const enregistrements = [];
+      const enregistrer = (nom, famille, role, avant, valeurs, opts) => {
+        opts = opts || {};
+        const chiffres = V.chiffresModifies(famille, avant, valeurs);
+        const controle = sous(role, !!opts.fileul, () => V.controlerEnregistrement(famille, { chiffres, motif: opts.motif || null }));
+        let marquage = null, instant = null;
+        if (!controle) {
+          const m = sous(role, false, () => V.marquageEnregistrement(famille, { avant, valeurs, motif: opts.motif || null, modifie: opts.modifie }));
+          instant = (m.patch && m.patch.valideLe) || null;
+          const sortie = propre(m);
+          marquage = masquer(sortie, instant);
+          marquage.valideLeIso = instant ? FORME_ISO.test(instant) : null;
+        }
+        enregistrements.push({ nom, famille, role, avant: propre(avant), valeurs: propre(valeurs), motif: opts.motif || null,
+          modifie: 'modifie' in opts ? opts.modifie : null, fileul: !!opts.fileul, chiffres, controle: controle ? propre(controle) : null, marquage,
+          acteurSession: SESSION.nomComplet });
+      };
+      const PATHO = fiche('P1', { aValider: true, code: 'PAL-S', chapitre: 'infectieuses' });
+      const PATHO_OK = fiche('P1', { aValider: false, valideLe: FIXE, validePar: 'Dr X', valideRole: 'Directeur Médical', code: 'PAL-S', chapitre: 'infectieuses' });
+      enregistrer('famille, fiche à valider modifiée : validée du même geste, action Validation, état dans le journal', 'pathologies', 'dm', PATHO, { libelle: 'Paludisme grave', code: 'PAL-S' });
+      enregistrer('famille, fiche à valider enregistrée SANS changement : validée quand même (modifié ou non)', 'pathologies', 'medecin', PATHO, { libelle: PATHO.libelle });
+      enregistrer('famille, fiche déjà validée modifiée : reste validée, action Modification', 'pathologies', 'dm', PATHO_OK, { libelle: 'Paludisme simple' });
+      enregistrer('hors famille (admin), fiche validée modifiée : repasse à valider, action Remise à valider', 'pathologies', 'admin', PATHO_OK, { libelle: 'Paludisme simple' });
+      enregistrer('hors famille, fiche à valider modifiée : reste à valider, action Modification', 'pathologies', 'admin', PATHO, { libelle: 'Paludisme simple' });
+      enregistrer('hors famille, fiche validée enregistrée sans changement déclaré (modifie faux) : rien ne bouge', 'pathologies', 'admin', PATHO_OK, { libelle: PATHO_OK.libelle }, { modifie: false });
+      enregistrer('hors famille, fiche validée enregistrée sans autre précision : repasse à valider (Q2 b)', 'pathologies', 'admin', PATHO_OK, { libelle: PATHO_OK.libelle });
+      enregistrer('création par un profil de la famille : naît validée (Q5)', 'pathologies', 'dm', null, { libelle: 'Nouvelle pathologie', code: 'NP', chapitre: 'autres' });
+      enregistrer('création hors famille : naît à valider (Q5)', 'pathologies', 'caissier', null, { libelle: 'Nouvelle pathologie', code: 'NP', chapitre: 'autres' });
+      enregistrer('création par la famille : la mention « à valider » du texte d’origine est épurée', 'pathologies', 'dm', null,
+        { libelle: 'Nouvelle pathologie', source: 'Ajoutée dans l’application le 09/11/2026 — à arrêter par le Directeur Médical' });
+      enregistrer('création hors famille : le texte d’origine reste tel quel', 'pathologies', 'caissier', null,
+        { libelle: 'Nouvelle pathologie', source: 'Ajoutée dans l’application le 09/11/2026 — à arrêter par le Directeur Médical' });
+      enregistrer('valeur chiffrée corrigée par la famille SANS motif : MOTIF_OBLIGATOIRE', 'labo_variables', 'laborantin',
+        fiche('VL1', { aValider: true, min: 4, max: 8 }), { min: 4, max: 9 });
+      enregistrer('valeur chiffrée corrigée par la famille AVEC motif : validée, motif porté par la fiche et par le journal', 'labo_variables', 'laborantin',
+        fiche('VL1', { aValider: true, min: 4, max: 8 }), { min: 4, max: 9 }, { motif: 'Nouveau réactif, notice du lot' });
+      enregistrer('libellé corrigé par la famille : aucun motif exigé (borne inchangée)', 'labo_variables', 'laborantin',
+        fiche('VL1', { aValider: true, min: 4, max: 8 }), { libelle: 'GB', min: 4, max: 8 });
+      enregistrer('borne saisie en texte égale à la borne en nombre : aucun changement chiffré', 'labo_variables', 'laborantin',
+        fiche('VL1', { aValider: true, min: 4, max: 8 }), { min: '4', max: '8' });
+      enregistrer('borne vide saisie sur une borne absente : aucun changement chiffré', 'labo_variables', 'laborantin',
+        fiche('VL1', { aValider: true, min: null, max: 8 }), { min: '', max: 8 });
+      enregistrer('hors famille (direction) : la borne change sans motif exigé (la Direction ne signe pas)', 'labo_variables', 'direction',
+        fiche('VL1', { aValider: false, valideLe: FIXE, valideRole: 'Biologiste médical', min: 4, max: 8 }), { min: 4, max: 9 });
+      enregistrer('tarif d’un acte corrigé par la Direction sans motif : MOTIF_OBLIGATOIRE', 'actes', 'direction',
+        fiche('A1', { tarifProvisoire: true, prix: 5000 }), { prix: 6000 });
+      enregistrer('tarif d’un acte corrigé par la DA avec motif : validé, tarifProvisoire retiré', 'actes', 'da',
+        fiche('A1', { tarifProvisoire: true, prix: 5000 }), { prix: 6000 }, { motif: 'Grille 2026' });
+      enregistrer('acte créé sans tarif par la Direction : TARIF_ABSENT, il reste à valider', 'actes', 'direction', null, { libelle: 'Acte sans prix', prix: null });
+      enregistrer('acte créé avec tarif par la Direction : naît validé', 'actes', 'direction', null, { libelle: 'Acte', prix: 4000, motifPrix: 'Créé le 09/11/2026 : tarif à valider par la Direction' });
+      enregistrer('analyse à double marquage validée par enregistrement : les DEUX marquages tombent', 'analyses', 'admin',
+        fiche('N1', { tarifProvisoire: true, aValider: true, prix: 2500 }), { designation: 'NFS', prix: 2500 });
+      enregistrer('analyse sans tarif enregistrée par la famille : TARIF_ABSENT, elle reste à valider', 'analyses', 'admin',
+        fiche('N1', { tarifProvisoire: true, prix: null }), { designation: 'NFS', prix: null });
+      enregistrer('objectif corrigé par le DA : motif obligatoire sur la cible chiffrée', 'objectifs_pilotage', 'da', fiche('O1', { aValider: true, cible: 60 }), { cible: 45 });
+      enregistrer('barème de l’AIB : le comptable est de la famille, le taux chiffré exige un motif', 'bareme_aib', 'comptable', fiche('B1', { aValider: true, taux: 5 }), { taux: 3 });
+      enregistrer('fileul : la famille est refusée en le nommant (CONFIGURATION_DE_LA_MERE)', 'pathologies', 'dm', PATHO, { libelle: 'X' }, { fileul: true });
+      enregistrer('fileul : le profil hors famille est refusé aussi', 'actes', 'admin', fiche('A1', { tarifProvisoire: true, prix: 5000 }), { libelle: 'X' }, { fileul: true });
+      enregistrer('famille inconnue : INTROUVABLE', 'famille-inconnue', 'dm', null, {});
+
+      /* Le SUIVI d'un artefact tenu ailleurs que dans la fiche écrite (constante du code, valorisation lue au produit) : état du magasin APRÈS et journal. */
+      const suivis = [];
+      const suivre = (nom, entree, famille, cible, role, opts) => {
+        opts = opts || {};
+        poser(entree);
+        const avantJournal = dernierId();
+        const avantFiches = propre(NOMS.reduce((o, n) => { o[n] = brut()[n]; return o; }, {}));
+        const r = sous(role, !!opts.fileul, () => V.suivreEnregistrement(famille, cible, { modifie: opts.modifie, motif: opts.motif || null }));
+        const apres = propre(NOMS.reduce((o, n) => { o[n] = brut()[n]; return o; }, {}));
+        const nouveau = dernierId() !== avantJournal;
+        const journal = nouveau ? (() => { const e = brut().audit[0]; return { action: e.action, module: e.module, entite: e.entite, reference: e.reference,
+          avant: e.ancienneValeur || null, apres: e.nouvelleValeur || null, utilisateur: e.utilisateur }; })() : null;
+        const sortie = propre(r);
+        const instant = r.valideLe || null;
+        if (instant) { sortie.valideLeIso = FORME_ISO.test(instant); delete sortie.valideLe; }
+        suivis.push({ nom, entree: propre(entree), famille, cible, role, modifie: 'modifie' in opts ? opts.modifie : null, fileul: !!opts.fileul, motif: opts.motif || null,
+          avantFiches, sortie, apres: masquer(apres, instant), journal: journal ? { action: journal.action, module: journal.module, entite: journal.entite,
+            reference: journal.reference, avant: journal.avant, apres: journal.apres && instant ? journal.apres.split(instant).join('@@MAINTENANT@@') : journal.apres, utilisateur: journal.utilisateur } : null });
+      };
+      const VRF_OK = vrf('repartition-fixe-variable', 'repartition_charges', { valideLe: FIXE, validePar: 'Comptable', valideRole: 'Comptable' });
+      suivre('pièce du code en attente corrigée par la famille (comptable) : validée, une ligne Validation', {}, 'repartition_charges', 'repartition-fixe-variable', 'comptable', { modifie: true });
+      suivre('pièce du code déjà validée corrigée par la famille : reste validée, rien d’écrit', { validationsReferentiels: [VRF_OK] }, 'repartition_charges', 'repartition-fixe-variable', 'comptable', { modifie: true });
+      suivre('pièce du code validée corrigée hors famille (aide comptable) : remise à valider', { validationsReferentiels: [VRF_OK] }, 'repartition_charges', 'repartition-fixe-variable', 'aide_comptable', { modifie: true });
+      suivre('pièce du code en attente corrigée hors famille : rien ne bouge', {}, 'repartition_charges', 'repartition-fixe-variable', 'aide_comptable', { modifie: true });
+      suivre('hors famille sans modification : rien ne bouge', { validationsReferentiels: [VRF_OK] }, 'repartition_charges', 'repartition-fixe-variable', 'aide_comptable', { modifie: false });
+      suivre('valorisation lue au produit : la Direction qui corrige une valorisation en attente la valide, motif porté', {
+        valorisationsSage: [fiche('VZ1', { aValider: true, prixRevient: 100 })] }, 'valorisation_sage', 'VZ1', 'direction', { modifie: true, motif: 'Facture du 05/11' });
+      suivre('valorisation validée corrigée hors famille (magasinier) : remise à valider', {
+        valorisationsSage: [fiche('VZ1', { aValider: false, valideLe: FIXE, validePar: 'M', valideRole: 'Directeur', prixRevient: 100 })] }, 'valorisation_sage', 'VZ1', 'stock', { modifie: true });
+      suivre('fileul : le suivi est refusé en le nommant', { validationsReferentiels: [VRF_OK] }, 'repartition_charges', 'repartition-fixe-variable', 'comptable', { modifie: true, fileul: true });
+      suivre('élément inconnu corrigé par la famille : rien à valider, aucun refus', {}, 'pathologies', 'NEXISTEPAS', 'dm', { modifie: true });
+
+      /* Le geste « Valider » seul, lot L1 : fileul refusé, fiche VRF archivée RÉACTIVÉE (jamais doublée), texte d'origine épuré, motif porté. */
+      const gestesL1 = [];
+      const validerL1 = (nom, entree, famille, id, role, opts) => {
+        opts = opts || {};
+        poser(entree);
+        const avantJournal = dernierId();
+        const avantFiches = propre(NOMS.reduce((o, n) => { o[n] = brut()[n]; return o; }, {}));
+        const r = sous(role, !!opts.fileul, () => V.validerReferentiel(famille, id, { role, motif: opts.motif || null }));
+        const apres = propre(NOMS.reduce((o, n) => { o[n] = brut()[n]; return o; }, {}));
+        const nouveau = dernierId() !== avantJournal;
+        const journal = nouveau ? (() => { const e = brut().audit[0]; return { action: e.action, module: e.module, entite: e.entite, reference: e.reference,
+          avant: e.ancienneValeur || null, apres: e.nouvelleValeur || null, utilisateur: e.utilisateur }; })() : null;
+        const sortie = propre(r);
+        const instant = r.ok ? r.valideLe : null;
+        if (instant) { sortie.valideLeIso = FORME_ISO.test(instant); delete sortie.valideLe; }
+        gestesL1.push({ nom, entree: propre(entree), famille, id, role, fileul: !!opts.fileul, motif: opts.motif || null, avantFiches, sortie, apres: masquer(apres, instant),
+          journal: journal ? Object.assign({}, journal, { apres: journal.apres && instant ? journal.apres.split(instant).join('@@MAINTENANT@@') : journal.apres }) : null,
+          nbFichesVrf: (apres.validationsReferentiels || []).filter((x) => x.id === 'VRF-' + id).length });
+      };
+      validerL1('fileul : Valider refusé en nommant la mère, rien d’écrit', { pathologies: [fiche('P1', { aValider: true })] }, 'pathologies', 'P1', 'dm', { fileul: true });
+      validerL1('fileul : une famille « fiche » est refusée aussi', {}, 'repartition_charges', 'repartition-fixe-variable', 'comptable', { fileul: true });
+      validerL1('fiche VRF ARCHIVÉE : réactivée et complétée, jamais doublée', {
+        validationsReferentiels: [vrf('bareme-its', 'bareme_its', { valideLe: FIXE, statut: 'archive' })] }, 'bareme_its', 'bareme-its', 'da');
+      validerL1('fiche VRF archivée sans validation : réactivée, validée une fois', {
+        validationsReferentiels: [vrf('imp-analyses', 'jeux_import', { statut: 'archive' })] }, 'jeux_import', 'imp-analyses', 'direction');
+      validerL1('texte d’origine « à valider » épuré à la validation (source, motifPrix)', {
+        actes: [fiche('A1', { tarifProvisoire: true, prix: 5000, source: 'Relevé de facture — à valider', motifPrix: 'Créé le 09/11/2026 : tarif à valider par la Direction' })] }, 'actes', 'A1', 'direction');
+      validerL1('un texte sans mention « à valider » n’est pas touché', {
+        pathologies: [fiche('P1', { aValider: true, source: 'Liste du Directeur Médical, mise à jour le 01/09/2026' })] }, 'pathologies', 'P1', 'dm');
+      validerL1('motif porté par la fiche à la validation', { pathologies: [fiche('P1', { aValider: true })] }, 'pathologies', 'P1', 'dm', { motif: 'Relu en réunion' });
+
       /* ---------- remise à valider (remettreAValider) ----------------------------------------------------------------------------------- */
       const remises = [];
       const remettre = (nom, entree, famille, id) => {
@@ -251,12 +382,13 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       S.save();
 
       S.setSession(SESSION);
-      return { registre, vueComplete: V.VUE_COMPLETE.slice(), libelles, comptes, vues, etats, gestes, parFamille, remises, centre,
+      return { registre, vueComplete: V.VUE_COMPLETE.slice(), libelles, comptes, vues, etats, gestes, parFamille, remises, centre, enregistrements, suivis, gestesL1,
         sessionActeur: SESSION.nomComplet };
     });
 
     sortie._doc = 'ENGENDRÉ par prototype_html/build/vecteurs-validation.js : le moteur de validation commun (SIGH.validations) piloté dans Chrome, ne pas éditer.';
-    const nb = sortie.centre.length + sortie.comptes.length + sortie.etats.length + sortie.gestes.length + sortie.remises.length;
+    const nb = sortie.centre.length + sortie.comptes.length + sortie.etats.length + sortie.gestes.length + sortie.remises.length
+      + sortie.enregistrements.length + sortie.suivis.length + sortie.gestesL1.length;
     console.log(`  ${sortie.registre.length} familles · ${sortie.comptes.length} comptes · ${sortie.etats.length} états · ${sortie.gestes.length} gestes · ${sortie.remises.length} remises (${nb} cas)`);
     if (m.erreurs.length) console.log('  avertissements de chargement : ' + m.erreurs.length);
     ecrire('packages/domaine/test/vecteurs/validation.json', sortie);

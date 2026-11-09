@@ -4855,7 +4855,7 @@
     title: 'Tableau de bord décisionnel',
     description: 'Objectif fixé face au réel atteint, sur quatre axes : trésorerie et BFR, activité clinique, logistique et pharmacie, performance administrative.',
     regle: 'Les <strong>cibles ne sont pas documentées</strong> : aucun document de cadrage n’en fixe. '
-      + 'Elles sont <strong>proposées</strong>, marquées à valider et corrigeables à l’onglet '
+      + 'Elles sont <strong>proposées</strong>, arrêtées par la Direction, la DAF ou l’administrateur, et corrigeables à l’onglet '
       + '« Objectifs & seuils ». Un indicateur dont la donnée manque affiche '
       + '<strong>« non calculable »</strong> — jamais un zéro, qui se lirait comme un échec.',
     actions: function () {
@@ -5018,8 +5018,8 @@
 
         function peindre() {
           C.clear(vue);
-          vue.appendChild(K.note('<strong>Modifier</strong> une cible ne l’arrête pas : elle reste (ou redevient) à valider. '
-            + '<strong>Arrêter</strong> est un geste distinct, réservé à la Direction, à la DAF et à l’administrateur, et journalisé. Le <strong>sens</strong> dit de quel côté se '
+          vue.appendChild(K.note('<strong>Enregistrer</strong> une cible par la Direction, la DAF ou l’administrateur l’arrête du même geste (le motif est demandé quand le chiffre change) ; '
+            + 'saisie par un autre profil, elle attend l’arrêt. <strong>Arrêter</strong> sans modifier reste un geste distinct, réservé à ces profils, et journalisé. Le <strong>sens</strong> dit de quel côté se '
             + 'trouve la réussite — un DSO se veut bas, un taux d’occupation haut ; sans lui, la grille '
             + 'colorerait en rouge un indicateur excellent.', { tone: 'info', icon: 'target' }));
 

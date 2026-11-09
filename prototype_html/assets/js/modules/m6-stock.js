@@ -80,6 +80,7 @@
       ]),
       footer: [
         K.btn('Annuler', { onclick: function () { m.close(); } }),
+        ancienne ? K.boutonValiderModale({ famille: 'valorisation_sage' }, ancienne, m, apres) : null,
         K.btn(ancienne ? 'Corriger' : 'Valoriser', {
           variant: 'primary', icon: 'check',
           onclick: function () {
@@ -93,21 +94,20 @@
               auteur: sess.nomComplet || sess.identifiant || 'inconnu',
               date: C.iso(AUJ),
             };
-            if (ancienne) {
-              colValorisations().update(ancienne.id, fiche);
-              /* Corriger une valorisation déjà arrêtée la remet à valider (le geste est celui de la Direction). */
-              K.remettreAValider('valorisation_sage', ancienne.id);
-            } else colValorisations().insert(fiche);
-            m.close();
-            if (apres) apres();
-            U.toast('Référence valorisée.', {
-              type: 'success',
-              detail: article.designation + ' — ' + C.money(fiche.prixRevient, false) + ' l’unité, soit '
-                + C.money(fiche.prixRevient * article.quantite, false) + ' de stock.',
+            /* Lot L1 : la Direction qui valorise VALIDE (motif demandé si le prix de revient change) ; hors famille, la valorisation reste ou repasse « à valider ». */
+            K.ecrireValidable(colValorisations(), { famille: 'valorisation_sage' }, ancienne || null, fiche).then(function (w) {
+              if (K.refusEcriture(w)) return;
+              m.close();
+              if (apres) apres();
+              U.toast('Référence valorisée.', {
+                type: 'success',
+                detail: article.designation + ' — ' + C.money(fiche.prixRevient, false) + ' l’unité, soit '
+                  + C.money(fiche.prixRevient * article.quantite, false) + ' de stock.',
+              });
             });
           },
         }),
-      ],
+      ].filter(Boolean),
     });
   }
 

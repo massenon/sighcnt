@@ -4033,7 +4033,9 @@
       },
       count: function () { return api.active().length; },
 
-      insert: function (obj) {
+      /* `opts.journal` : { action, module?, entite?, avant, apres } : la ligne de journal que l'appelant DÉCRIT (une seule, RG-12) remplace la ligne
+         par défaut. Sert l'enregistrement d'un référentiel à valider, dont la ligne porte l'état de validation (lot L1, EF-VAL-05). */
+      insert: function (obj, opts) {
         if (refuse(name, 'inserer', obj)) return null;
         var rec = Object.assign({
           id: (M.prefix || name.slice(0, 3).toUpperCase()) + C.uid(),
@@ -4042,7 +4044,8 @@
         rec._creePar = currentUser();
         rec._creeLe = new Date().toISOString();
         db[name].unshift(rec);
-        log('Création', M.module || '—', M.entite || name, rec.id, null, rec);
+        if (opts && opts.journal) log(opts.journal.action || 'Création', opts.journal.module || M.module || '—', opts.journal.entite || M.entite || name, rec.id, opts.journal.avant || null, opts.journal.apres || null);
+        else log('Création', M.module || '—', M.entite || name, rec.id, null, rec);
         transmettre('inserer', name, { fiche: rec });
         save(); emit(name);
         return {
@@ -4061,14 +4064,15 @@
         };
       },
 
-      update: function (id, patch) {
+      update: function (id, patch, opts) {
         var rec = api.get(id); if (!rec) return null;
         if (refuse(name, 'modifier', Object.assign({}, rec, patch))) return null;
         var avant = Object.assign({}, rec);
         Object.assign(rec, patch);
         rec._modifiePar = currentUser();
         rec._modifieLe = new Date().toISOString();
-        log('Modification', M.module || '—', M.entite || name, id, avant, rec);
+        if (opts && opts.journal) log(opts.journal.action || 'Modification', opts.journal.module || M.module || '—', opts.journal.entite || M.entite || name, id, opts.journal.avant || null, opts.journal.apres || null);
+        else log('Modification', M.module || '—', M.entite || name, id, avant, rec);
         transmettre('modifier', name, { id: id, correctif: patch });
         save(); emit(name);
         return {

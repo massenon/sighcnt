@@ -1605,8 +1605,9 @@
     regle: 'Les bornes <strong>dépendent du réactif et de l’automate</strong> : elles se modifient ici, sans toucher au code. '
       + 'Celles reprises de la fiche de résultats du 21/08/2026 sont marquées <strong>documentées</strong> ; '
       + 'les valeurs usuelles suppléées ont reçu la <strong>validation écrite du biologiste médical le '
-      + '01/09/2026</strong> et le portent — les deux provenances ne se confondent jamais. Une variable '
-      + 'créée ou modifiée depuis repart « à valider ».',
+      + '01/09/2026</strong> et le portent — les deux provenances ne se confondent jamais. Enregistrée par le '
+      + '<strong>biologiste médical</strong>, une variable est arrêtée du même geste (le motif est demandé quand une borne change) ; '
+      + 'créée ou modifiée par un autre profil, elle attend sa relecture.',
     render: function (root) {
       var vue = el('div.space-y-4');
       var selSection = el('select.select');
@@ -1922,6 +1923,7 @@
           ].filter(Boolean)),
           footer: [
             K.btn('Annuler', { onclick: function () { m.close(); } }),
+            creation ? null : K.boutonValiderModale({ famille: 'labo_variables' }, v, m, afficher),
             K.btn(creation ? 'Créer' : 'Enregistrer', {
               variant: 'primary', icon: creation ? 'plus' : 'save',
               onclick: function () {
@@ -1938,7 +1940,6 @@
                   val.actif = true;
                   val.aValider = true;
                   val.source = 'Créée dans l’application le ' + C.dateFR(AUJ) + ' — à valider';
-                  colVariables().insert(val);
                 } else {
                   /* Modifier une borne la fait sortir du document : on le dit
                      dans la source plutôt que de laisser croire qu'elle en vient. */
@@ -1950,20 +1951,19 @@
                     val.source = 'Modifiée par ' + S.currentUser() + ' le ' + C.dateFR(AUJ)
                       + ' — précédemment : ' + (L.libelleReference(v) || '—');
                   }
-                  colVariables().update(v.id, val);
-                  /* Défaut 5 : déplacer une borne, l'unité, le type ou la règle remet la variable « à valider » (le biologiste revalide). */
-                  var changee = bougee || vide(val.unite) !== vide(v.unite) || vide(val.type) !== vide(v.type) || vide(val.regle) !== vide(v.regle);
-                  if (changee) K.remettreAValider('labo_variables', v.id);
                 }
-                S.log(creation ? 'Création d’une variable de résultat' : 'Modification d’une valeur de référence',
-                  'M5', 'Variable', val.code, v ? { min: v.min, max: v.max } : null, { min: val.min, max: val.max });
-                m.close(); afficher();
-                U.toast(creation ? 'Variable créée.' : 'Paramètres enregistrés.', {
-                  type: 'success', detail: val.libelle + ' — ' + (L.libelleReference(val) || 'sans référence'),
+                /* Lot L1 : le biologiste qui enregistre VALIDE (motif demandé si une borne change) ; hors famille, la variable repasse « à valider ».
+                   UNE ligne de journal, portée par le moteur. */
+                K.ecrireValidable(colVariables(), { famille: 'labo_variables' }, creation ? null : v, val).then(function (w) {
+                  if (K.refusEcriture(w)) return;
+                  m.close(); afficher();
+                  U.toast(creation ? 'Variable créée.' : 'Paramètres enregistrés.', {
+                    type: 'success', detail: val.libelle + ' — ' + (L.libelleReference(val) || 'sans référence'),
+                  });
                 });
               },
             }),
-          ],
+          ].filter(Boolean),
         });
       }
 
@@ -2013,9 +2013,12 @@
             ], rows),
             el('p.mt-3.text-\[10px\].italic', {
               text: 'Les valeurs marquées « documentées » sont reprises de la fiche de résultats de la clinique '
-                + 'éditée le 21/08/2026. Celles marquées « à valider » sont des valeurs usuelles de la biologie '
-                + 'médicale, portées à titre d’attente : elles dépendent du réactif et de l’automate employés et '
-                + 'doivent être arrêtées par le biologiste médical avant mise en service.',
+                + 'éditée le 21/08/2026.'
+                + (rows.some(function (v) { return v.aValider; })
+                  ? ' Celles marquées « à valider » sont des valeurs usuelles de la biologie '
+                    + 'médicale, portées à titre d’attente : elles dépendent du réactif et de l’automate employés et '
+                    + 'doivent être arrêtées par le biologiste médical avant mise en service.'
+                  : ' Les autres ont été arrêtées par le biologiste médical.'),
             }),
           ]),
           signatures: [{ role: 'Le Biologiste médical' },

@@ -4304,7 +4304,7 @@
       roles: ['direction', 'da', 'admin'], ecran: 'adm-enquetes' },
     { id: 'labo_variables', libelle: 'Variables et unités du laboratoire (bornes suppléées)', module: 'M5',
       collections: ['variablesLabo', 'unitesLabo'], champs: ['aValider'],
-      roles: ['laborantin'], ecran: 'm5-valeurs-reference' },
+      roles: ['laborantin'], ecran: 'm5-valeurs-reference', champsChiffres: ['min', 'max'] },
     { id: 'pathologies', libelle: 'Pathologies (tableau de morbidité)', module: 'M2', collections: ['pathologies'], champs: ['aValider'],
       roles: ['dm', 'medecin'], ecran: 'm2-pathologies' },
     { id: 'imagerie', libelle: 'Catalogue de l’imagerie (examens et variables)', module: 'CFG',
@@ -4314,13 +4314,13 @@
       cibles: [{ id: 'checklist-bloc', libelle: 'Check-listes d’entrée et de sortie du bloc' }],
       roles: ['chirurgien', 'anesthesiste'], ecran: 'm3-bloc-checklist' },
     { id: 'actes', libelle: 'Tarifs des actes (valeurs d’attente)', module: 'CFG', collections: ['actes'], champs: ['tarifProvisoire'],
-      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs' },
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs', champsChiffres: ['prix'] },
     { id: 'analyses', libelle: 'Tarifs des analyses', module: 'CFG', collections: ['analyses'], champs: ['tarifProvisoire', 'aValider'],
-      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs' },
+      roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs', champsChiffres: ['prix'] },
     { id: 'valorisation_sage', libelle: 'Valorisation des références SAGE', module: 'M6', collections: ['valorisationsSage'], champs: ['aValider'],
-      roles: ['direction', 'da', 'admin'], ecran: 'm6-produits' },
+      roles: ['direction', 'da', 'admin'], ecran: 'm6-produits', champsChiffres: ['prixRevient'] },
     { id: 'objectifs_pilotage', libelle: 'Objectifs de pilotage', module: 'M12', collections: ['objectifsPilotage'], champs: ['aValider'],
-      roles: ['direction', 'da', 'admin'], ecran: 'm12-tableau-decisionnel' },
+      roles: ['direction', 'da', 'admin'], ecran: 'm12-tableau-decisionnel', champsChiffres: ['cible'] },
     { id: 'repartition_charges', libelle: 'Répartition fixe et variable des charges', module: 'M12', mode: 'fiche',
       cibles: [{ id: 'repartition-fixe-variable', libelle: 'Répartition proposée des comptes de charge' }],
       roles: ['comptable', 'direction', 'da', 'admin'], ecran: 'm12-seuil-rentabilite' },
@@ -4332,7 +4332,7 @@
     { id: 'modeles_messages', libelle: 'Modèles de messages', module: 'CFG', collections: ['modelesMessage'], champs: ['aValider'],
       roles: ['direction', 'da', 'admin'], ecran: 'cfg-notifications' },
     { id: 'bareme_aib', libelle: 'Barème de l’AIB (taux par situation de l’acheteur)', module: 'CFG', collections: ['baremeAib'], champs: ['aValider'],
-      roles: ['direction', 'da', 'admin', 'comptable'], ecran: 'cfg-bareme-aib' },
+      roles: ['direction', 'da', 'admin', 'comptable'], ecran: 'cfg-bareme-aib', champsChiffres: ['taux'] },
     { id: 'bareme_its', libelle: 'Barème de l’ITS', module: 'M11', mode: 'fiche',
       cibles: [{ id: 'bareme-its', libelle: 'Barème de l’impôt sur les traitements et salaires' }],
       roles: ['direction', 'da', 'admin'], ecran: 'cfg-comptabilite' },
@@ -4397,6 +4397,8 @@
     var f = familleAValider(familleId);
     if (!f) return refusValidation('INTROUVABLE', 'Famille de référentiel inconnue : ' + familleId + '.', 'Choisir une famille du registre des validations.');
     var role = opts.role || roleCourant();
+    var gardeMere = refusFileulValidation(f);
+    if (gardeMere) return gardeMere;
     if (f.roles.indexOf(role) < 0) {
       return refusValidation('VALIDATION_RESERVEE', 'La validation de « ' + f.libelle + ' » est réservée à : ' + profilsFamille(f) + '. Profil : ' + libelleRole(role) + '.',
         'Demander à ' + libelleRole(f.roles[0]) + ' de valider depuis son poste.');
@@ -4419,14 +4421,23 @@
       var col = colValidationsReferentiels();
       var fiche = ficheDeValidation(id);
       avant = { valideLe: fiche ? fiche.valideLe : null };
+      /* UNE fiche VRF-<cible> par cible, jamais deux : une fiche ARCHIVÉE du même identifiant est réactivée, pas doublée (lot L1, V4). */
+      var archivee = !fiche ? col.all().filter(function (x) { return x.id === 'VRF-' + id; })[0] : null;
       if (fiche) Object.assign(fiche, { valideLe: quand, validePar: qui, valideRole: libRole });
-      else col.all().push({ id: 'VRF-' + id, statut: 'actif', famille: f.id, cible: id, libelle: cible.libelle, valideLe: quand, validePar: qui, valideRole: libRole });
+      else if (archivee) {
+        Object.assign(archivee, { statut: 'actif', famille: f.id, cible: id, libelle: cible.libelle, valideLe: quand, validePar: qui, valideRole: libRole });
+        delete archivee._archivePar; delete archivee._archiveLe; delete archivee._motifArchivage;
+      } else col.all().push({ id: 'VRF-' + id, statut: 'actif', famille: f.id, cible: id, libelle: cible.libelle, valideLe: quand, validePar: qui, valideRole: libRole });
       S.save(); S.emit('validationsReferentiels');
     } else {
       var rec = cible.rec;
       avant = {};
       f.champs.forEach(function (c) { if (rec[c] === true) { avant[c] = true; rec[c] = false; } });
       rec.valideLe = quand; rec.validePar = qui; rec.valideRole = libRole;
+      /* Plus aucune mention « à valider » sur un élément validé : le texte d'origine qui la portait est épuré. */
+      var epure = epurerMentions(rec);
+      Object.keys(epure).forEach(function (k) { rec[k] = epure[k]; });
+      if (opts.motif) rec.motifCorrection = String(opts.motif).trim();
       S.save(); S.emit(cible.col);
     }
     S.log('Validation', f.module, f.libelle, id, avant, { valideLe: quand, validePar: qui, valideRole: libRole });
@@ -4450,6 +4461,135 @@
     }
     S.log('Remise à valider', f.module, f.libelle, id, avant, { motif: 'modifié depuis la validation' });
     return { ok: true, remis: true, famille: f.id, id: id };
+  }
+  /* ==========================================================================
+   * ENREGISTRER VALIDE, POUR LE PROFIL DE LA FAMILLE (Direction, 09/11/2026, lot L1)
+   * --------------------------------------------------------------------------
+   * Q1 : « plus de statut à valider en enregistrant » vaut pour les SEULS profils de la famille (la Direction ne signe pas à la place du
+   * professionnel). Q2 (b) : un profil qui modifie sans être de la famille enregistre, et l'élément repasse « à valider ». Q3 : un élément
+   * semé reste « à valider » jusqu'à la première relecture ou validation par la famille. Q4 : motif OBLIGATOIRE quand le validateur modifie une
+   * valeur CHIFFRÉE (bornes, tarifs, barème), pas pour un libellé. Q5 : un élément créé par la famille naît validé ; hors famille, « à valider ».
+   *
+   * Trois fonctions, comme au poste : `controlerEnregistrement` REFUSE (code nommé) avant toute écriture ; `marquageEnregistrement` RENDS le patch
+   * à fusionner dans l'écriture de l'écran et UNE ligne de journal (RG-12, avant/après, état inclus) ; `suivreEnregistrement` sert l'artefact
+   * tenu ailleurs que dans la fiche écrite (constante du code, valorisation lue au produit). `remettreAValider` n'est plus appelé par un
+   * enregistrement de la famille.
+   * ======================================================================== */
+  var SUFFIXE_A_VALIDER = /\s*(?:[—–:-]\s*)?(?:(?:tarif|proposition|modèle|valeur)\s+)?à\s+(?:valider|arrêter|confirmer)\b[^.;]*$/i;
+  var CHAMPS_MENTION = ['source', 'motifPrix', 'observation'];
+  /** Les textes d'origine d'une fiche qui disent « à valider » : rendus épurés (clés à réécrire), jamais touchés ailleurs. */
+  function epurerMentions(rec) {
+    var out = {};
+    CHAMPS_MENTION.forEach(function (k) {
+      if (typeof rec[k] === 'string' && SUFFIXE_A_VALIDER.test(rec[k])) out[k] = rec[k].replace(SUFFIXE_A_VALIDER, '').replace(/[\s:;,—–-]+$/, '');
+    });
+    return out;
+  }
+  function voyageDeLaMere(f) {
+    if (f.mode === 'fiche') return true;
+    var ess = S.COLLECTIONS_ESSENTIELLES || [];
+    return (f.collections || []).some(function (c) { return ess.indexOf(c) >= 0; });
+  }
+  /** Sur un fileul, la configuration est tenue par la mère : le geste est refusé en le nommant (EF-VAL-07, même code qu'au poste). */
+  function refusFileulValidation(f) {
+    if (posteFileul() && voyageDeLaMere(f)) {
+      return refusValidation('CONFIGURATION_DE_LA_MERE', 'Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.',
+        'Valider depuis le poste principal : la validation est reprise ici ensuite.');
+    }
+    return null;
+  }
+  function nombreOuNul(x) { return x == null || x === '' ? null : Number(x); }
+  function texteOuNul(x) { return x == null || x === '' ? null : x; }
+  /** Les champs CHIFFRÉS de la famille que cette écriture déplace (rien pour une création : il n'y a rien à corriger). */
+  function chiffresModifies(familleId, avant, valeurs) {
+    var f = familleAValider(familleId);
+    if (!f || !avant) return [];
+    return (f.champsChiffres || []).filter(function (c) {
+      return valeurs && (c in valeurs) && nombreOuNul(valeurs[c]) !== nombreOuNul(avant[c]);
+    });
+  }
+  function champsModifies(avant, valeurs) {
+    return Object.keys(valeurs || {}).filter(function (k) {
+      if (k.charAt(0) === '_' || k === 'id') return false;
+      var a = avant ? avant[k] : undefined, b = valeurs[k];
+      if ((a && typeof a === 'object') || (b && typeof b === 'object')) return JSON.stringify(a == null ? null : a) !== JSON.stringify(b == null ? null : b);
+      return texteOuNul(a) !== texteOuNul(b);
+    });
+  }
+  function controlerEnregistrement(familleId, o) {
+    o = o || {};
+    var f = familleAValider(familleId);
+    if (!f) return refusValidation('INTROUVABLE', 'Famille de référentiel inconnue : ' + familleId + '.', 'Choisir une famille du registre des validations.');
+    var gardeMere = refusFileulValidation(f);
+    if (gardeMere) return gardeMere;
+    var role = o.role || roleCourant();
+    if (f.roles.indexOf(role) >= 0 && o.chiffres && o.chiffres.length && !String(o.motif || '').trim()) {
+      return refusValidation('MOTIF_OBLIGATOIRE', 'La valeur chiffrée « ' + o.chiffres.join(', ') + ' » de « ' + f.libelle + ' » change : le motif de la correction est obligatoire.',
+        'Saisir le motif de la correction, puis enregistrer.');
+    }
+    return null;
+  }
+  /** Le patch et la ligne de journal d'un enregistrement. `o` : { avant (fiche ou null), valeurs, motif, role? }. */
+  function marquageEnregistrement(familleId, o) {
+    o = o || {};
+    var f = familleAValider(familleId);
+    if (!f || f.mode === 'fiche') return refusValidation('INTROUVABLE', 'Famille à fiche marquée inconnue : ' + familleId + '.', 'Choisir une famille du registre des validations.');
+    var role = o.role || roleCourant();
+    var validateur = f.roles.indexOf(role) >= 0;
+    var avant = o.avant || null, valeurs = o.valeurs || {};
+    var enAttenteAvant = avant ? f.champs.some(function (c) { return avant[c] === true; }) : null;
+    var changes = champsModifies(avant, valeurs);
+    var chiffres = chiffresModifies(familleId, avant, valeurs);
+    /* Hors famille, ENREGISTRER remet « à valider » (Q2 b), sauf si l'écran dit que la fiche n'a pas changé (`modifie: false`, ex. `siChange`). */
+    var modifie = o.modifie == null ? true : !!o.modifie;
+    var maintenant = new Date().toISOString(), qui = acteur(), libRole = libelleRole(role);
+    var fusion = Object.assign({}, avant || {}, valeurs);
+    var patch = {}, action = avant ? 'Modification' : 'Création', valide = false, nonValide = null;
+    var rouvrir = function () {
+      patch[f.champs[0]] = true;
+      patch.valideLe = null; patch.validePar = null; patch.valideRole = null;
+    };
+    if (validateur) {
+      if ((f.id === 'actes' || f.id === 'analyses') && fusion.prix == null) { rouvrir(); nonValide = 'TARIF_ABSENT'; }
+      else {
+        f.champs.forEach(function (c) { patch[c] = false; });
+        patch.valideLe = maintenant; patch.validePar = qui; patch.valideRole = libRole;
+        if (chiffres.length && o.motif) patch.motifCorrection = String(o.motif).trim();
+        var epure = epurerMentions(fusion);
+        Object.keys(epure).forEach(function (k) { patch[k] = epure[k]; });
+        valide = true;
+        if (avant && enAttenteAvant) action = 'Validation';
+      }
+    } else if (!avant) { rouvrir(); }
+    else if (modifie) { rouvrir(); if (!enAttenteAvant) action = 'Remise à valider'; }
+    var libEtat = function (v) { return v ? 'à valider' : 'validé'; };
+    var etatApres = valide ? 'validé' : ((!validateur && avant && !modifie) ? libEtat(enAttenteAvant) : 'à valider');
+    var jAvant = { etat: avant ? libEtat(enAttenteAvant) : null };
+    var jApres = { etat: etatApres };
+    /* Le MOTIF d'abord : l'extrait du journal est plafonné à 100 caractères et c'est lui, avec l'état, qui doit toujours s'y lire. */
+    if (valide) { if (patch.motifCorrection) jApres.motif = patch.motifCorrection; jApres.valideRole = libRole; jApres.valideLe = maintenant; }
+    changes.filter(function (k) { return k !== 'source'; }).slice(0, 4).forEach(function (k) {
+      if (avant) jAvant[k] = avant[k] == null ? null : avant[k];
+      jApres[k] = valeurs[k] == null ? null : valeurs[k];
+    });
+    return { ok: true, famille: f.id, validateur: validateur, valide: valide, nonValide: nonValide, patch: patch, chiffres: chiffres,
+      journal: { action: action, module: f.module, entite: f.libelle, avant: avant ? jAvant : null, apres: jApres } };
+  }
+  /** Pour l'artefact tenu AILLEURS que dans la fiche écrite (constante du code, valorisation lue au produit) : après l'écriture de l'écran. */
+  function suivreEnregistrement(familleId, cibleId, o) {
+    o = o || {};
+    var f = familleAValider(familleId);
+    if (!f) return refusValidation('INTROUVABLE', 'Famille de référentiel inconnue : ' + familleId + '.', 'Choisir une famille du registre des validations.');
+    var gardeMere = refusFileulValidation(f);
+    if (gardeMere) return gardeMere;
+    var role = o.role || roleCourant();
+    if (f.roles.indexOf(role) >= 0) {
+      var e = etatValidation(familleId, cibleId);
+      if (e && e.enAttente) return validerReferentiel(familleId, cibleId, { role: role, motif: o.motif });
+      return { ok: true, famille: f.id, id: cibleId, valide: false, rien: true };
+    }
+    if (o.modifie) return remettreAValider(familleId, cibleId);
+    return { ok: true, famille: f.id, id: cibleId, rien: true };
   }
   /** L'état LU d'un artefact (jamais stocké) : sert les badges et les boutons des écrans. */
   function etatValidation(familleId, id) {
@@ -4488,6 +4628,8 @@
     FAMILLES_A_VALIDER: FAMILLES_A_VALIDER, VUE_COMPLETE: VUE_COMPLETE_VALIDATIONS,
     referentielsAValider: referentielsAValider, referentielsVisiblesPar: referentielsVisiblesPar,
     validerReferentiel: validerReferentiel, remettreAValider: remettreAValider, etatValidation: etatValidation,
+    controlerEnregistrement: controlerEnregistrement, marquageEnregistrement: marquageEnregistrement, suivreEnregistrement: suivreEnregistrement,
+    chiffresModifies: chiffresModifies, posteFileul: posteFileul, epurerMentions: epurerMentions,
   };
   global.SIGH.parcours.FAMILLES_A_VALIDER = FAMILLES_A_VALIDER;
   global.SIGH.parcours.referentielsAValider = referentielsAValider;
@@ -4940,13 +5082,16 @@
       ferme = { id: derniere.id, avant: derniere.dateFin || null };
       colBaremeAib().update(derniere.id, { dateFin: veillee, modifieLe: aujIso(), modifiePar: acteur() });
     }
-    var res = colBaremeAib().insert({ situation: o.situation, taux: taux, dateEffet: dateEffet, dateFin: null, aValider: true,
-      source: String(o.source).trim(), motif: String(o.motif).trim(), creeLe: aujIso(), creePar: acteur() });
-    S.log('Barème AIB : nouvelle version', 'CFG', 'baremeAib', res.record.id,
-      { precedente: derniere ? { id: derniere.id, taux: derniere.taux, dateFin: ferme ? ferme.avant : derniere.dateFin || null } : null },
-      { situation: o.situation, taux: taux, dateEffet: dateEffet, precedenteFermeeLe: ferme ? veillee : null });
+    /* Lot L1 (Q5) : une version saisie par un profil de la famille (comptable, DAF, administrateur) naît ARRÊTÉE, avec ses trois traces ; hors famille,
+       elle naît « à valider ». UNE ligne de journal, qui porte l'état (le correctif est une version nouvelle : le motif y est déjà obligatoire). */
+    var base = { situation: o.situation, taux: taux, dateEffet: dateEffet, dateFin: null,
+      source: String(o.source).trim(), motif: String(o.motif).trim(), creeLe: aujIso(), creePar: acteur() };
+    var mq = marquageEnregistrement('bareme_aib', { avant: null, valeurs: base });
+    var res = colBaremeAib().insert(Object.assign(base, mq.patch), { journal: { action: 'Barème AIB : nouvelle version', module: 'CFG', entite: 'baremeAib',
+      avant: { precedente: derniere ? { id: derniere.id, taux: derniere.taux, dateFin: ferme ? ferme.avant : derniere.dateFin || null } : null },
+      apres: { etat: mq.valide ? 'validé' : 'à valider', situation: o.situation, taux: taux, dateEffet: dateEffet, precedenteFermeeLe: ferme ? veillee : null } } });
     return { ok: true, id: res.record.id, version: existantes.length + 1, situation: o.situation, taux: taux, dateEffet: dateEffet,
-      precedente: derniere ? derniere.id : null, precedenteFermeeLe: ferme ? veillee : null, enAttenteDeValidation: true, undo: res.undo };
+      precedente: derniere ? derniere.id : null, precedenteFermeeLe: ferme ? veillee : null, enAttenteDeValidation: !mq.valide, undo: res.undo };
   }
   /** Retirer une version : ARCHIVE (RG-14), jamais une suppression. Si elle était la dernière et fermait la précédente, la précédente est rouverte. */
   function retirerVersionAib(id, motif) {

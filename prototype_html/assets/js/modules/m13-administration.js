@@ -1577,7 +1577,7 @@
           { label: 'Liens ouverts', value: C.num(liens.filter(function (j) { return jetonOuvert(j); }).length),
             icon: 'share-2', tone: liens.filter(function (j) { return jetonOuvert(j); }).length ? 'warning' : 'neutral',
             hint: 'Dat\u00e9s et r\u00e9vocables' },
-          { label: 'Mod\u00e8les \u00e0 valider', value: C.num(rows.filter(function (r) { return r.aValider; }).length),
+          { label: 'Mod\u00e8les en attente de validation', value: C.num(rows.filter(function (r) { return r.aValider; }).length),
             icon: 'help-circle', tone: 'warning', hint: 'Propositions \u2014 aucun document ne les fixe' },
         ]));
 
@@ -1815,6 +1815,7 @@
           body: el('div.space-y-3', null, [f2, U.card('Questions', ed.bloc)]),
           footer: [
             K.btn('Annuler', { onclick: function () { m2.close(); } }),
+            creation ? null : K.boutonValiderModale({ famille: 'enquetes' }, r, m2, afficher),
             K.btn(creation ? 'Cr\u00e9er le mod\u00e8le' : 'Enregistrer', {
               variant: 'primary', icon: 'save',
               onclick: function () {
@@ -1825,21 +1826,22 @@
                   U.toast('Un questionnaire sans question ne recueille rien.', { type: 'error' });
                   return;
                 }
-                if (creation) {
-                  colEnquetes().insert(Object.assign({}, v2, {
+                /* Lot L1 : la Direction qui enregistre VALIDE ; hors famille, le mod\u00e8le repasse \u00ab \u00e0 valider \u00bb. */
+                var valeursM = creation
+                  ? Object.assign({}, v2, {
                     reference: C.nextRef('ENQ-', 3), questions: qs,
                     aValider: true, creeLe: C.iso(new Date()),
                     source: 'Cr\u00e9\u00e9 dans l\u2019application \u2014 \u00e0 valider',
-                  }));
-                } else {
-                  colEnquetes().update(r.id, Object.assign({}, v2, { questions: qs }));
-                  K.remettreAValider('enquetes', r.id);
-                }
-                m2.close(); afficher();
-                U.toast(creation ? 'Mod\u00e8le cr\u00e9\u00e9.' : 'Mod\u00e8le enregistr\u00e9.', { type: 'success' });
+                  })
+                  : Object.assign({}, v2, { questions: qs });
+                K.ecrireValidable(colEnquetes(), { famille: 'enquetes' }, creation ? null : r, valeursM).then(function (w) {
+                  if (K.refusEcriture(w)) return;
+                  m2.close(); afficher();
+                  U.toast(creation ? 'Mod\u00e8le cr\u00e9\u00e9.' : 'Mod\u00e8le enregistr\u00e9.', { type: 'success' });
+                });
               },
             }),
-          ],
+          ].filter(Boolean),
         });
       }
 
@@ -2125,7 +2127,7 @@
 
       /* Une ligne par famille : compte r\u00e9el, profil nomm\u00e9, lien vers l'\u00e9cran o\u00f9 se trouve l'artefact. Aucune commande d'\u00e9criture. */
       host.appendChild(U.card(restreint
-        ? 'Les r\u00e9f\u00e9rentiels de votre ressort : \u00e0 valider \u00e0 l\u2019\u00e9cran de chacun'
+        ? 'Les r\u00e9f\u00e9rentiels de votre ressort : la validation se fait \u00e0 l\u2019\u00e9cran de chacun'
         : 'R\u00e9f\u00e9rentiels en attente de validation, par famille : la Direction ne signe pas \u00e0 la place d\u2019un professionnel nomm\u00e9',
         familles.length
           ? el('div.space-y-2', { 'data-familles-validation': '' }, familles.map(function (x) {
@@ -2147,7 +2149,7 @@
             ligne.setAttribute('data-en-attente', x.enAttente == null ? '' : String(x.enAttente));
             return ligne;
           }))
-          : el('p.text-sm.text-slate-500', { text: 'Aucun r\u00e9f\u00e9rentiel \u00e0 valider ne rel\u00e8ve de votre profil.' })));
+          : el('p.text-sm.text-slate-500', { text: 'Aucun r\u00e9f\u00e9rentiel en attente de validation ne rel\u00e8ve de votre profil.' })));
 
       if (!restreint) {
         host.appendChild(U.card('Donn\u00e9es \u00e0 compl\u00e9ter : le marquage tombe par la SAISIE, jamais par une signature',
