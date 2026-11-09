@@ -98,6 +98,37 @@ function sigh_cron_jour(string $iso): ?int
     return $t === false ? null : (int) floor($t / 86400);
 }
 
+/**
+ * LE DÉLAI « PROCHE » DU CALENDRIER FISCAL (lot A3b) : lu dans la collection `parametresFiscaux` (cfg-comptabilite), version en
+ * vigueur le jour de l'exécution. C'est LA MÊME définition que l'écran de suivi, la vue mensuelle, cfg-fiscalite et la cloche.
+ * Aucune valeur de repli écrite ici : un paramètre absent fait ÉCHOUER la tâche, nommément, plutôt que d'alerter sur un seuil
+ * que personne n'a fixé. Le JOUR d'une échéance n'est pas calculé ici : il est porté par la fiche (`echeance`), engendrée par
+ * le socle (C.jourDuMois, report au jour ouvrable), donc le serveur ne peut pas diverger des écrans sur un jour.
+ */
+function sigh_cron_delai_a_payer(PDO $pdo, int $auj): int
+{
+    $iso = gmdate('Y-m-d', $auj * 86400);
+    $retenu = null;
+    $dateRetenue = '';
+    foreach (sigh_cron_collection($pdo, 'parametresFiscaux') as $p) {
+        if (($p['code'] ?? '') !== 'DELAIS-ALERTE') {
+            continue;
+        }
+        $d = substr((string) ($p['dateEffet'] ?? ''), 0, 10);
+        if ($d !== '' && $d > $iso) {
+            continue; /* version à venir : pas encore en vigueur */
+        }
+        if ($retenu === null || $d >= $dateRetenue) {
+            $retenu = $p;
+            $dateRetenue = $d;
+        }
+    }
+    if ($retenu === null || !isset($retenu['delaiAPayer']) || (int) $retenu['delaiAPayer'] < 1) {
+        throw new RuntimeException('Paramètre DELAIS-ALERTE absent du magasin : le délai d\'alerte des échéances fiscales n\'est pas fixé (cfg-comptabilite, Paramètres du calendrier).');
+    }
+    return (int) $retenu['delaiAPayer'];
+}
+
 /* --------------------------------------------------------------------------
  * LES TÂCHES — chacune renvoie la liste COMPLÈTE de ce qui est vrai maintenant
  * ------------------------------------------------------------------------ */
@@ -105,10 +136,11 @@ function sigh_cron_taches(): array
 {
     return [
         'echeances_fiscales' => [
-            'libelle' => 'Échéances fiscales dépassées ou à moins de 7 jours',
+            'libelle' => 'Échéances fiscales dépassées ou proches (délai des paramètres comptables)',
             'frequence_min' => 60,
             'executer' => function (PDO $pdo, int $auj): array {
                 $out = [];
+                $delai = sigh_cron_delai_a_payer($pdo, $auj);
                 foreach (sigh_cron_collection($pdo, 'echeancesFiscales') as $e) {
                     if (!empty($e['paye'])) {
                         continue;
@@ -118,7 +150,7 @@ function sigh_cron_taches(): array
                         continue;
                     }
                     $ecart = $j - $auj;
-                    if ($ecart > 7) {
+                    if ($ecart > $delai) {
                         continue;
                     }
                     $nom = (string) ($e['libelle'] ?? $e['obligation'] ?? 'Échéance fiscale');
@@ -294,7 +326,10 @@ function sigh_cron_executer(PDO $pdo, string $origine = 'systeme', bool $force =
         if (!$fiche) {
             $pdo->prepare('INSERT INTO taches_planifiees (code, libelle, frequence_min) VALUES (?, ?, ?)')
                 ->execute([$code, $t['libelle'], $t['frequence_min']]);
-            $fiche = ['actif' => true, 'derniere_le' => null, 'frequence_min' => $t['frequence_min']];
+            $fiche = ['actif' => true, 'derniere_le' => null, 'frequence_min' => $t['frequence_min'], 'libelle' => $t['libelle']];
+        } elseif (($fiche['libelle'] ?? '') !== $t['libelle']) {
+            /* Le libellé du registre suit le code : un libellé qui dit « 7 jours » alors que le seuil est un paramètre mentirait. */
+            $pdo->prepare('UPDATE taches_planifiees SET libelle = ? WHERE code = ?')->execute([$t['libelle'], $code]);
         }
         if (!$pg ? !(int) $fiche['actif'] : !$fiche['actif']) {
             continue;

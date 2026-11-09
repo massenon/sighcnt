@@ -481,6 +481,8 @@
             { id: 'm12-etats-financiers', label: 'États financiers', icon: 'file-spreadsheet' },
             { id: 'm12-baseline-2025', label: 'Baseline 2025', icon: 'history' },
             { id: 'm12-echeances', label: 'Échéances fiscales & paiements', icon: 'calendar-clock' },
+            /* Une VUE du même registre, en lecture : ses droits sont ceux de m12-echeances (servant), jamais les siens. */
+            { id: 'm12-calendrier-fiscal', label: 'Calendrier fiscal mensuel', icon: 'calendar-days', servant: 'm12-echeances' },
             { id: 'm12-cloture', label: 'Exercices & clôtures', icon: 'lock' },
             /* LE BILAN D'OUVERTURE : sans à-nouveaux, un exercice s'ouvrait
                sur un journal vide et il fallait relire tout l'historique pour
@@ -1083,6 +1085,8 @@
       universel: !!item.universel,
       /* Fichiers de script ajoutés à la page en plus de celui de son module. */
       scripts: item.scripts || null,
+      /* Un écran du ruban qui N'EST QU'UNE AUTRE VUE d'un registre porte ses droits (vue mensuelle du calendrier fiscal). */
+      servant: item.servant || null,
     };
   }
 

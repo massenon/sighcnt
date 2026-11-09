@@ -1573,50 +1573,49 @@
   var CALENDRIER_FISCAL = [
     ['ITS', 'Impôt sur les traitements salariaux', 'mensuelle', 10, null, 100,
       'Déclaration mensuelle avant paiement',
-      'Le 10 du mois suivant le mois d’exercice. Reporté au jour ouvrable suivant si l’échéance tombe un week-end.'],
+      'Pour le mois d’exercice précédent. Reportée au jour ouvrable suivant si l’échéance tombe un week-end.'],
     ['AIB', 'Acompte sur impôt assis sur les bénéfices', 'mensuelle', 10, null, 100,
       'Déclaration mensuelle avant paiement',
-      'Le 10 de chaque mois, après la déclaration préalable.'],
+      'Chaque mois, après la déclaration préalable.'],
     ['VPS', 'Versement patronal sur salaires', 'mensuelle', 10, null, 100,
       'Déclaration mensuelle avant paiement',
-      'Le 10 du mois suivant le mois d’exercice.'],
+      'Pour le mois d’exercice précédent.'],
     ['CNSS', 'Cotisations sociales CNSS', 'mensuelle', 10, null, 100,
       'Déclaration mensuelle avant paiement',
-      'Le 10 du mois suivant. Part patronale 16,4 %, part ouvrière 3,6 %.'],
+      'Pour le mois précédent. Part patronale ' + PARAM_PAIE.cnss.patronale + ' %, part ouvrière ' + PARAM_PAIE.cnss.ouvriere + ' %.'],
 
     ['IS-1', 'Impôt sur les sociétés — 1er acompte', 'annuelle', 10, 2, 25, null,
       'Premier des quatre acomptes trimestriels, assis sur l’impôt de l’exercice précédent divisé par quatre. '
-      + 'Le 10 mars — confirmé par la Direction le 25/08/2026.'],
+      + 'Calendrier confirmé par la Direction le 25/08/2026.'],
     ['IS-2', 'Impôt sur les sociétés — 2e acompte', 'annuelle', 10, 5, 25, null, 'Deuxième acompte trimestriel.'],
     ['IS-3', 'Impôt sur les sociétés — 3e acompte', 'annuelle', 10, 8, 25, null, 'Troisième acompte trimestriel.'],
     ['IS-4', 'Impôt sur les sociétés — 4e acompte', 'annuelle', 10, 11, 25, null, 'Quatrième acompte trimestriel.'],
     ['IS-SOLDE', 'Liquidation du solde de l’impôt sur les sociétés', 'annuelle', 30, 3, null, null,
-      'Le 30 avril de chaque année, PRÉALABLEMENT au dépôt des états financiers. Ajuste à la hausse ou à la '
+      'PRÉALABLEMENT au dépôt des états financiers. Ajuste à la hausse ou à la '
       + 'baisse les acomptes versés l’exercice précédent — confirmé par la Direction le 25/08/2026.'],
     ['ETATS-FIN', 'Dépôt des états financiers', 'annuelle', 30, 3, null, null,
-      'Le 30 avril de l’année suivant l’exercice clos, après la liquidation du solde.'],
+      'Pour l’exercice clos, après la liquidation du solde.'],
 
     ['PATENTE-DECL', 'Patente — déclaration prévisionnelle', 'annuelle', 31, 0, null, null,
       'Date limite de la déclaration prévisionnelle de la patente.'],
-    ['PATENTE-1', 'Patente — 1er acompte', 'annuelle', 10, 1, 50, 'Déclaration prévisionnelle au 31 janvier',
+    ['PATENTE-1', 'Patente — 1er acompte', 'annuelle', 10, 1, 50, 'Déclaration prévisionnelle de la patente',
       'Première moitié. La patente se paie une fois par an, avec possibilité de régler en deux tranches.'],
-    ['PATENTE-2', 'Patente — solde', 'annuelle', 30, 3, 50, null, 'Seconde moitié, au 30 avril.'],
+    ['PATENTE-2', 'Patente — solde', 'annuelle', 30, 3, 50, null, 'Seconde moitié.'],
 
     ['CCIB-DECL', 'CCIB — déclaration prévisionnelle', 'annuelle', 28, 1, null, null,
-      'La déclaration prévisionnelle s’effectue à la FIN DU MOIS, avant le premier acompte — '
-      + 'confirmé par la Direction le 25/08/2026.'],
-    ['CCIB-1', 'CCIB — 1re tranche', 'annuelle', 10, 2, 50, 'Déclaration prévisionnelle en fin de mois',
-      'Contribution annuelle de 300 000 FCFA, réglée en deux tranches égales de 150 000 FCFA. '
-      + 'Premier acompte le 10 mars (50 %) — confirmé par la Direction le 25/08/2026.'],
-    ['CCIB-2', 'CCIB — 2e tranche', 'annuelle', 10, 5, 50, null, 'Seconde tranche de 150 000 FCFA, le 10 juin (50 %) — confirmé par la Direction le 25/08/2026.'],
+      'La déclaration prévisionnelle précède le premier acompte. Calendrier confirmé par la Direction le 25/08/2026.'],
+    ['CCIB-1', 'CCIB — 1re tranche', 'annuelle', 10, 2, 50, 'Déclaration prévisionnelle de la CCIB',
+      'Contribution annuelle réglée en deux tranches égales ; son montant est un paramètre du calendrier. '
+      + 'Premier acompte (50 %), confirmé par la Direction le 25/08/2026.'],
+    ['CCIB-2', 'CCIB — 2e tranche', 'annuelle', 10, 5, 50, null, 'Seconde tranche (50 %), confirmée par la Direction le 25/08/2026.'],
 
     ['TVM', 'Taxe sur véhicules à moteur', 'annuelle', 30, 3, 100, null,
-      'Une fois par an, au plus tard le 30 avril.'],
+      'Une fois par an, au plus tard à l’échéance.'],
 
     ['ORTB-RADIO', 'Redevance ORTB / Radio', 'annuelle', 30, 2, 100, null,
-      'Prélevée sur TOUS les salariés sans exception — 1 000 FCFA par agent, au mois de mars.'],
+      'Prélevée sur TOUS les salariés sans exception ; le montant et le mois de prélèvement sont les paramètres ORTB.'],
     ['ORTB-TELE', 'Redevance ORTB / Télé', 'annuelle', 30, 5, 100, null,
-      'Prélevée en SUS de la radio sur les salaires supérieurs à 60 000 FCFA — 3 000 FCFA par agent, au mois de juin.'],
+      'Prélevée en SUS de la radio au-delà du seuil de salaire brut ; le seuil, le montant et le mois sont les paramètres ORTB.'],
   ].map(function (e, i) {
     return {
       id: 'FIS' + C.pad(i + 1, 2), code: e[0], libelle: e[1],
@@ -1705,7 +1704,8 @@
   function versionEnVigueur(courante, historique, d) {
     if (courante && (!courante.dateEffet || d >= String(courante.dateEffet))) return courante;
     var couvrante = historique.filter(function (h) {
-      return (!h.dateEffet || d >= String(h.dateEffet)) && (!h.dateFin || d <= String(h.dateFin));
+      /* Une version « remplacée le même jour » n'a jamais été en force : elle ne couvre aucune date. */
+      return !h.memeDate && (!h.dateEffet || d >= String(h.dateEffet)) && (!h.dateFin || d <= String(h.dateFin));
     }).sort(function (a, b) { return String(b.dateEffet || '').localeCompare(String(a.dateEffet || '')); })[0];
     return couvrante || null;
   }

@@ -1723,11 +1723,13 @@
   /** La table des obligations déclaratives est DÉRIVÉE des obligations mensuelles en vigueur (E2273 : elle disait « CNSS le 15 » contre le calendrier). */
   function tableObligationsDeclaratives() {
     var mensuelles = D.obligationsALaDate(AUJ).filter(function (o) { return o.periodicite === 'mensuelle'; });
+    var etatsFin = D.obligationsALaDate(AUJ).filter(function (o) { return o.code === 'ETATS-FIN'; })[0];
     var lignes = mensuelles.map(function (o) {
-      return { d: o.libelle + ' (' + o.code + ')', p: 'Mensuelle', e: 'le ' + o.jour + ' du mois suivant', ecran: 'm11-cotisations' };
+      return { d: o.libelle + ' (' + o.code + ')', p: 'Mensuelle', e: D.libelleEcheance(o), ecran: 'm11-cotisations' };
     }).concat([
       { d: 'Transmission des factures normalisées', p: 'Continue', e: 'À l’émission', ecran: 'mecef-transmission' },
-      { d: 'États financiers de synthèse', p: 'Annuelle', e: 'Clôture de l’exercice, dépôt au 30 avril', ecran: 'm12-etats-financiers' },
+      /* Le jour du dépôt est LU de l'obligation en vigueur (ETATS-FIN), jamais écrit ici : il suit une modification. */
+      { d: 'États financiers de synthèse', p: 'Annuelle', e: 'Clôture de l’exercice' + (etatsFin ? ', dépôt ' + D.libelleEcheance(etatsFin) : ''), ecran: 'm12-etats-financiers' },
     ]);
     return K.miniTable([
       { label: 'Déclaration', key: 'd' },
@@ -1811,48 +1813,51 @@
        * ------------------------------------------------------------------ */
       var AN = AUJ.getFullYear();
 
-      function jourOuvrable(d) {
-        var x = new Date(d.getTime());
-        while (x.getDay() === 0 || x.getDay() === 6) x = C.addDays(x, 1);
-        return x;
-      }
-
+      /* UN SEUL CALCUL DU JOUR, celui du socle (C.jourDuMois : le dernier jour réel du mois si le jour le dépasse ; C.reporterJourOuvrable :
+         jamais avancé). Cet écran avait le sien et ne disait plus le même jour que le suivi (E-A3-01). La prochaine échéance est la
+         première, à partir d'aujourd'hui, dont la date REPORTÉE n'est pas passée : un samedi reporté au lundi reste « à venir » le dimanche. */
       function prochaineEcheance(e) {
-        if (e.periodicite === 'mensuelle') {
-          var m = AUJ.getMonth();
-          var d = new Date(AN, m, e.jour);
-          if (d < AUJ) d = new Date(AN, m + 1, e.jour);
-          return jourOuvrable(d);
+        for (var k = 0; k < 14; k++) {
+          var theorique = e.periodicite === 'mensuelle'
+            ? C.jourDuMois(AN, AUJ.getMonth() + k, e.jour)
+            : C.jourDuMois(AN + k, e.mois, e.jour);
+          var echue = C.reporterJourOuvrable(theorique);
+          if (C.iso(echue) >= C.iso(AUJ)) return { echue: echue, theorique: theorique };
         }
-        var a = new Date(AN, e.mois, e.jour);
-        if (a < AUJ) a = new Date(AN + 1, e.mois, e.jour);
-        return jourOuvrable(a);
+        return null;
       }
 
       var echeances = D.obligationsALaDate(AUJ).map(function (e) {
-        var d = prochaineEcheance(e);
-        var reporte = C.iso(d) !== C.iso(new Date(d.getFullYear(),
-          e.periodicite === 'mensuelle' ? d.getMonth() : e.mois, e.jour));
+        var p = prochaineEcheance(e);
         return Object.assign({}, e, {
-          echeance: C.iso(d),
-          jours: C.daysBetween(AUJ, d),
-          reporte: reporte,
+          echeance: C.iso(p.echue),
+          jours: C.daysBetween(AUJ, p.echue),
+          reporte: C.iso(p.echue) !== C.iso(p.theorique),
         });
       });
-      var proches = echeances.filter(function (e) { return e.jours >= 0 && e.jours <= 30; });
+      /* « Proche » et « déclaration attendue » sont les PARAMÈTRES du calendrier (cfg-comptabilite), les mêmes que le suivi. */
+      var DELAIS = D.delaisFiscauxALaDate(AUJ);
+      var CCIB = D.montantCcibALaDate(AUJ);
+      var proches = echeances.filter(function (e) { return e.jours >= 0 && e.jours <= DELAIS.delaiDeclaration; });
+      var mensuellesCodes = echeances.filter(function (e) { return e.periodicite === 'mensuelle'; }).map(function (e) { return e.code; });
+      function jourDe(code) { return echeances.filter(function (e) { return e.code === code; })[0]; }
+      function quand(code) { var o = jourDe(code); return o ? D.libelleEcheance(o) : 'à une date que l’obligation ' + code + ' ne porte plus (retirée)'; }
+      var acomptesIS = echeances.filter(function (e) { return /^IS-\d$/.test(e.code); })
+        .sort(function (a, b) { return a.mois - b.mois; });
+      var listeAcomptes = acomptesIS.map(function (e) { return D.libelleEcheance(e).replace(/^le /, ''); });
 
       host.appendChild(U.kpiGrid([
         { label: 'Échéances suivies', value: C.num(echeances.length), icon: 'landmark', tone: 'navy' },
-        { label: 'Mensuelles', value: C.num(echeances.filter(function (e) { return e.periodicite === 'mensuelle'; }).length), icon: 'calendar-days', tone: 'info', hint: 'ITS, AIB, VPS, CNSS' },
+        { label: 'Mensuelles', value: C.num(echeances.filter(function (e) { return e.periodicite === 'mensuelle'; }).length), icon: 'calendar-days', tone: 'info', hint: mensuellesCodes.join(', ') },
         {
-          label: 'Dans les 30 jours', value: C.num(proches.length), icon: 'alarm-clock',
+          label: 'Dans les ' + DELAIS.delaiDeclaration + ' jours', value: C.num(proches.length), icon: 'alarm-clock',
           tone: proches.length ? 'warning' : 'success',
         },
-        { label: 'CCIB annuelle', value: C.money(D.MONTANTS_FISCAUX.ccib.total), icon: 'coins', tone: 'neutral', hint: 'Deux tranches de 150 000 F' },
+        { label: 'CCIB annuelle', value: C.money(CCIB.total), icon: 'coins', tone: 'neutral', hint: CCIB.tranches + ' tranches de ' + C.money(CCIB.tranche, false) + ' F' },
       ], 'grid-cols-2 lg:grid-cols-4'));
 
       if (proches.length) {
-        host.appendChild(K.note('<strong>' + proches.length + ' échéance(s) dans les trente jours</strong> : '
+        host.appendChild(K.note('<strong>' + proches.length + ' échéance(s) dans les ' + DELAIS.delaiDeclaration + ' jours</strong> : '
           + proches.slice(0, 4).map(function (e) { return e.code + ' le ' + C.dateFR(e.echeance); }).join(' · ')
           + (proches.length > 4 ? ' …' : '') + '. Une déclaration précède généralement le paiement.',
         { tone: 'warning', icon: 'alarm-clock' }));
@@ -1890,28 +1895,29 @@
             render: function (e) {
               if (e.jours < 0) return el('span.text-xs.text-slate-400', { text: 'passée' });
               return el('span.num', {
-                class: e.jours <= 10 ? 'font-semibold text-danger-600' : (e.jours <= 30 ? 'text-warning-600' : 'text-slate-600'),
+                class: e.jours <= DELAIS.delaiAPayer ? 'font-semibold text-danger-600' : (e.jours <= DELAIS.delaiDeclaration ? 'text-warning-600' : 'text-slate-600'),
                 text: e.jours + ' j',
               });
             },
           },
-          { key: 'note', label: 'Règle appliquée', render: function (e) { return el('span.text-xs.text-slate-500', { text: e.note }); } },
+          /* Le jour est DÉRIVÉ de l'obligation en vigueur ; la note n'est que le commentaire libre (E-A3-08). */
+          { key: 'note', label: 'Règle appliquée', render: function (e) {
+            return el('div.text-xs.text-slate-500', null, [el('p.font-medium.text-slate-700', { text: D.libelleEcheance(e) }), el('p', { text: e.note || '' })]);
+          } },
         ],
       }));
 
+      /* Les jours de ces phrases sont LUS des obligations en vigueur : modifier un jour aux paramètres les change ici aussi. */
       host.appendChild(K.note('<strong>Impôt sur les sociétés.</strong> L’impôt de l’exercice se paie par '
-        + 'anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, '
-        + '10 juin, 10 septembre et 10 décembre. Le <strong>30 avril de l’année suivante</strong>, la '
-        + 'liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états '
-        + 'financiers.', { tone: 'info', icon: 'landmark' }));
+        + 'anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés ' + (listeAcomptes.length ? 'les ' + listeAcomptes.join(', ') : 'aux dates des obligations IS') + '. '
+        + 'La <strong>liquidation du solde</strong> (' + quand('IS-SOLDE') + ') ajuste à la hausse ou à la baisse, avec le dépôt des états '
+        + 'financiers (' + quand('ETATS-FIN') + ').', { tone: 'info', icon: 'landmark' }));
 
       host.appendChild(K.source(D.CALENDRIER_FISCAL[0].source
         + ' — le calendrier de la CCIB et des acomptes d’impôt sur les sociétés a été '
-          + '<strong>confirmé par la Direction le 25/08/2026</strong> : déclaration prévisionnelle de fin de '
-          + 'mois, puis deux tranches de 50 % aux 10 mars et 10 juin pour la CCIB ; quatre acomptes aux '
-          + '10 mars, 10 juin, 10 septembre et 10 décembre pour l’impôt sur les sociétés, liquidation du '
-          + 'solde et dépôt des états financiers au 30 avril de l’année suivante. Les obligations se modifient, datées, à l’écran '
-          + 'Paramètres comptables & obligations.'));
+          + '<strong>confirmé par la Direction le 25/08/2026</strong> (déclaration prévisionnelle puis deux tranches de 50 % pour la CCIB, '
+          + 'quatre acomptes pour l’impôt sur les sociétés, liquidation du solde puis dépôt des états financiers). '
+          + 'Les jours affichés sont ceux des obligations en vigueur : elles se modifient, datées, à l’écran Paramètres comptables & obligations.'));
 
       root.appendChild(host);
       U.icons(root);
@@ -3371,8 +3377,55 @@
    * règle (E2274). CNSS, VPS et ITS restent arrêtés par le CDCT : lecture seule.
    * ----------------------------------------------------------------------- */
   var MOIS_OPTIONS = C.MOIS.map(function (m, i) { return { value: String(i), label: m.charAt(0).toUpperCase() + m.slice(1) }; });
-  function libelleEcheanceObligation(o) {
-    return o.periodicite === 'mensuelle' ? 'le ' + o.jour + ' du mois suivant' : 'le ' + o.jour + ' ' + C.MOIS[o.mois];
+  /* Le jour en toutes lettres vient de data.js (D.libelleEcheance) : une seule phrase pour tous les écrans. */
+  function libelleEcheanceObligation(o) { return D.libelleEcheance(o); }
+  /** « À compter du 01/12/2026 : le 15 du mois suivant » : la version PROGRAMMÉE d'une obligation, ou rien (E-A3-02). */
+  function resumeVersion(v) { return D.libelleEcheance(v) + (v.part && v.part < 100 ? ', ' + v.part + ' %' : ''); }
+  function mentionAVenir(code) {
+    var v = CF().versionAVenirDe(code);
+    if (!v) return null;
+    return el('span.version-a-venir.block.text-xs.text-info-700', { 'data-code': code, 'data-date-effet': String(v.dateEffet).slice(0, 10),
+      text: 'À compter du ' + C.dateFR(v.dateEffet) + ' : ' + resumeVersion(v) });
+  }
+  function celluleEcheance(o) {
+    return el('div', null, [el('span', { text: libelleEcheanceObligation(o) }), mentionAVenir(o.code)]);
+  }
+  /** Un motif seul : l'annulation d'une version à venir n'a pas de date d'effet, elle demande POURQUOI. */
+  function modaleMotifAnnulation(o) {
+    var f = U.form([
+      { name: 'motif', label: 'Motif (consigné au journal)', type: 'textarea', rows: 2, required: true, col: 'full', placeholder: 'Pourquoi cette version à venir est abandonnée' },
+    ], {});
+    var m = U.modal({
+      title: o.titre, subtitle: o.sousTitre || null, size: 'lg',
+      body: el('div.space-y-3', null, [K.note(o.explication, { tone: 'warning', icon: 'undo-2' }), f]),
+      footer: [
+        K.btn('Garder la version', { onclick: function () { m.close(); } }),
+        K.btn('Annuler la version à venir', { variant: 'primary', icon: 'undo-2', onclick: function () {
+          var v = f.collect();
+          if (!v) { U.toast('Le motif est obligatoire.', { type: 'error' }); return; }
+          var r = o.appliquer(String(v.motif).trim());
+          if (r && r.ok === false) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          m.close();
+        } }),
+      ],
+    });
+    return m;
+  }
+  function annulerVersionUI(o, apres) {
+    var v = CF().versionAVenirDe(o.code);
+    if (!v) return;
+    modaleMotifAnnulation({
+      titre: 'Annuler la version à venir de ' + o.code, sousTitre: o.libelle,
+      explication: 'La version du ' + C.dateFR(v.dateEffet) + ' (' + resumeVersion(v) + ') est archivée avec son motif (RG-14) ; la version précédente est rouverte ; '
+        + 'les échéances non payées à partir de cette date reviennent à l’ancienne, les payées ne bougent pas.',
+      appliquer: function (motif) {
+        var r = CF().annulerVersionAVenir({ code: o.code, motif: motif });
+        if (!r.ok) return r;
+        annoncerEcheances(r, 'rétablie (version à venir annulée)');
+        if (apres) apres();
+        return r;
+      },
+    });
   }
   function champsObligation(o, creation) {
     o = o || {};
@@ -3542,8 +3595,121 @@
     if (CF().posteFileul()) return el('span.text-xs.text-slate-400', { text: 'tenue par la mère' });
     return el('div.flex.items-center.justify-end.gap-1', null, [
       K.commandeIcone('pencil', 'Modifier (version datée)', function () { modifierObligationUI(o, apres); }, { moduleCode: 'CFG' }),
+      CF().versionAVenirDe(o.code) ? K.commandeIcone('undo-2', 'Annuler la version à venir', function () { annulerVersionUI(o, apres); }, { moduleCode: 'CFG' }) : null,
       K.commandeIcone('archive', 'Retirer (version datée)', function () { retirerObligationUI(o, apres); }, { moduleCode: 'CFG', droit: 'annuler' }),
     ]);
+  }
+  /* --- Paramètres du calendrier fiscal (délais d'alerte, montant de la CCIB), versionnés par date (lot A3b) --- */
+  function champsParametre(code, base) {
+    base = base || {};
+    if (code === 'DELAIS-ALERTE') {
+      return [
+        { name: 'delaiAPayer', label: 'Délai « à payer » (jours avant l’échéance)', type: 'number', required: true, min: 1, max: 365, col: 'third', value: base.delaiAPayer,
+          help: 'À partir de ce délai, une échéance non réglée est « à payer » ; la cloche et le planificateur du serveur l’annoncent aussi.' },
+        { name: 'delaiDeclaration', label: 'Délai de déclaration (jours avant l’échéance)', type: 'number', required: true, min: 1, max: 365, col: 'third', value: base.delaiDeclaration,
+          help: 'À partir de ce délai, la déclaration préalable est « attendue ». Jamais plus court que le délai « à payer ».' },
+      ];
+    }
+    return [{ name: 'montantTotal', label: 'Montant annuel de la CCIB (FCFA)', type: 'money', required: true, min: 1, value: base.montantTotal,
+      help: 'Réparti en tranches égales selon les obligations CCIB en vigueur.' }];
+  }
+  function modifierParametreUI(code, libelle, apres) {
+    var versions = CF().versionsParametresFiscaux(code);
+    var derniere = versions[versions.length - 1] || D.versionsParametreFiscal(code)[0];
+    var f = U.form(champsParametre(code, derniere), {});
+    var m = U.modal({
+      title: 'Modifier : ' + libelle, size: 'lg',
+      body: el('div.space-y-3', null, [
+        K.note('La modification est <strong>datée</strong> : la version actuelle reste en vigueur jusqu’à la veille de la date d’effet. Une version à venir s’annule tant que sa date n’est pas atteinte.', { tone: 'info', icon: 'calendar-clock' }),
+        f,
+      ]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Continuer', { variant: 'primary', icon: 'arrow-right', onclick: function () {
+          var v = f.collect();
+          if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+          m.close();
+          modalePortee({
+            sousTitre: libelle,
+            explication: 'Le suivi des échéances, la vue mensuelle, la cloche et le planificateur du serveur lisent la nouvelle valeur à partir de la date d’effet ; avant, rien ne bouge.',
+            minimum: derniere && derniere.dateEffet || null,
+            placeholderMotif: 'Décision de la Direction, avis du cabinet comptable…',
+            appliquer: function (dateEffet, motif) {
+              var r = CF().modifierParametreFiscal({ code: code, valeurs: v, dateEffet: dateEffet, motif: motif });
+              if (!r.ok) return r;
+              U.toast('Paramètre modifié.', { type: 'success', detail: libelle + ' : ' + CF().resumeParametre(r.fiche) + ', à compter du ' + C.dateFR(dateEffet) + '.' });
+              if (apres) apres();
+              return r;
+            },
+          });
+        } }),
+      ],
+    });
+  }
+  function annulerParametreUI(fiche, apres) {
+    modaleMotifAnnulation({
+      titre: 'Annuler la version à venir', sousTitre: fiche.libelle,
+      explication: 'La version du ' + C.dateFR(fiche.dateEffet) + ' (' + CF().resumeParametre(fiche) + ') est archivée avec son motif (RG-14) ; la version précédente reste en vigueur.',
+      appliquer: function (motif) {
+        var r = CF().annulerParametreFiscal({ id: fiche.id, motif: motif });
+        if (!r.ok) return r;
+        U.toast('Version à venir annulée.', { type: 'success', detail: fiche.libelle + ' reste à sa valeur en vigueur.' });
+        if (apres) apres();
+        return r;
+      },
+    });
+  }
+  function cartesParametres(apres) {
+    var fileul = CF().posteFileul();
+    var lignes = D.semenceParametresFiscaux().map(function (s) {
+      var enVigueur = D.parametreFiscalALaDate(s.code, AUJ) || s;
+      var avenir = CF().versionsParametresFiscaux(s.code).filter(function (p) { return p.dateEffet && String(p.dateEffet).slice(0, 10) > C.iso(AUJ); });
+      return { code: s.code, libelle: s.libelle, v: enVigueur, avenir: avenir };
+    });
+    return U.card('Paramètres du calendrier : délais d’alerte et montant de la CCIB', el('div.space-y-3', null, [
+      K.note('Ces valeurs <strong>vivaient dans le code</strong>. Elles sont des paramètres datés, lus par le suivi des échéances, la vue mensuelle, '
+        + 'l’écran des paramètres fiscaux, la cloche et le planificateur du serveur : <strong>une seule définition de « proche »</strong> pour les cinq.', { tone: 'info', icon: 'sliders-horizontal' }),
+      K.miniTable([
+        { label: 'Paramètre', render: function (p) { return el('div', null, [el('p.text-sm.font-medium.text-slate-800', { text: p.libelle }), el('p.font-mono.text-xs.text-slate-500', { text: p.code })]); } },
+        { label: 'Valeur en vigueur', render: function (p) { return el('span.valeur-parametre', { 'data-code': p.code, text: CF().resumeParametre(p.v) }); } },
+        { label: 'Version', render: function (p) { return (p.v.dateEffet ? 'depuis le ' + C.dateFR(p.v.dateEffet) : 'd’origine') + (p.v.aValider ? ', à confirmer' : ''); } },
+        { label: 'À venir', render: function (p) {
+          if (!p.avenir.length) return el('span.text-xs.text-slate-400', { text: 'aucune' });
+          return el('div.space-y-1', null, p.avenir.map(function (f) {
+            return el('div.version-a-venir.flex.items-center.gap-2.text-xs.text-info-700', { 'data-code': p.code, 'data-date-effet': String(f.dateEffet).slice(0, 10) }, [
+              el('span', { text: 'À compter du ' + C.dateFR(f.dateEffet) + ' : ' + CF().resumeParametre(f) }),
+              fileul ? null : K.commandeIcone('undo-2', 'Annuler la version à venir', function () { annulerParametreUI(f, apres); }, { moduleCode: 'CFG' }),
+            ]);
+          }));
+        } },
+        { label: '', align: 'right', render: function (p) {
+          if (fileul) return el('span.text-xs.text-slate-400', { text: 'tenue par la mère' });
+          return K.commandeIcone('pencil', 'Modifier (version datée)', function () { modifierParametreUI(p.code, p.libelle, apres); }, { moduleCode: 'CFG' });
+        } },
+      ], lignes),
+    ]));
+  }
+  /** Les versions d'obligation PROGRAMMÉES (date d'effet non atteinte) : visibles et annulables, jamais cachées derrière l'ancienne (E-A3-02). */
+  function carteVersionsAVenir(apres) {
+    var venir = CF().versionsAVenir();
+    if (!venir.length) return null;
+    var enVigueur = {};
+    D.obligationsALaDate(AUJ).forEach(function (o) { enVigueur[o.code] = o; });
+    return U.card('Versions programmées à venir', el('div#versions-a-venir.space-y-3', null, [
+      K.note('Ces versions <strong>ne sont pas encore en vigueur</strong> : la version actuelle reste celle des tableaux ci-dessous jusqu’à la date d’effet. '
+        + 'Une version à venir peut être annulée tant que sa date n’est pas atteinte.', { tone: 'warning', icon: 'calendar-clock' }),
+      K.miniTable([
+        { label: 'Code', render: function (f) { return el('span.font-mono.text-xs.font-semibold', { text: f.code }); } },
+        { label: 'En vigueur aujourd’hui', render: function (f) { return enVigueur[f.code] ? resumeVersion(enVigueur[f.code]) : '—'; } },
+        { label: 'À compter du', render: function (f) { return C.dateFR(f.dateEffet); } },
+        { label: 'Version programmée', render: function (f) { return resumeVersion(f); } },
+        { label: 'Motif', render: function (f) { return el('span.text-xs', { text: f.motif || '—' }); } },
+        { label: '', align: 'right', render: function (f) {
+          if (CF().posteFileul()) return el('span.text-xs.text-slate-400', { text: 'tenue par la mère' });
+          return K.commandeIcone('undo-2', 'Annuler la version à venir', function () { annulerVersionUI(f, apres); }, { moduleCode: 'CFG' });
+        } },
+      ], venir),
+    ]));
   }
   function tableHistoriqueObligations() {
     var rows = S.collection('historiqueObligations').active().slice()
@@ -3555,7 +3721,7 @@
         return libelleEcheanceObligation(h) + (h.part && h.part < 100 ? ', ' + h.part + ' %' : '');
       } },
       { label: 'En vigueur du', render: function (h) { return h.dateEffet ? C.dateFR(h.dateEffet) : 'ouverture'; } },
-      { label: 'Au', render: function (h) { return h.dateFin ? C.dateFR(h.dateFin) : '—'; } },
+      { label: 'Au', render: function (h) { return h.dateFin ? C.dateFR(h.dateFin) : (h.memeDate ? 'remplacée le même jour' : '—'); } },
       { label: 'Remplacée le', render: function (h) { return (h.remplaceeLe ? C.dateHeure(h.remplaceeLe) : '—') + ' par ' + (h.remplaceePar || '—'); } },
       { label: 'Motif', render: function (h) { return [h.retiree ? U.badge('Retirée', 'danger') : null, el('span.text-xs', { text: ' ' + (h.motifRemplacement || '—') })]; } },
     ], rows, { empty: 'Aucune version antérieure : les obligations sont celles du calendrier confirmé le 25/08/2026.' });
@@ -3576,6 +3742,7 @@
       C.clear(root);
       var host = el('div.space-y-4');
       var cal = D.obligationsALaDate(AUJ);
+      var CCIB = D.montantCcibALaDate(AUJ);
       var mensuelles = cal.filter(function (e) { return e.periodicite === 'mensuelle'; });
       var annuelles = cal.filter(function (e) { return e.periodicite === 'annuelle'; });
       var fileul = CF().posteFileul();
@@ -3591,9 +3758,14 @@
       host.appendChild(U.kpiGrid([
         { label: 'Obligations en vigueur', value: C.num(cal.length), icon: 'book-open-check', tone: 'navy' },
         { label: 'Mensuelles', value: C.num(mensuelles.length), icon: 'calendar-days', tone: 'info', hint: mensuelles.map(function (e) { return e.code; }).join(', ') },
-        { label: 'Annuelles', value: C.num(annuelles.length), icon: 'calendar-range', tone: 'neutral', hint: 'IS, patente, CCIB, TVM, ORTB' },
+        { label: 'Annuelles', value: C.num(annuelles.length), icon: 'calendar-range', tone: 'neutral',
+          hint: annuelles.map(function (e) { return e.famille; }).filter(function (f, i, t) { return t.indexOf(f) === i; }).join(', ') },
         { label: 'Réglées en tranches', value: C.num(cal.filter(function (e) { return e.part && e.part < 100; }).length), icon: 'divide', tone: 'warning' },
       ]));
+
+      var carteAVenir = carteVersionsAVenir(peindre);
+      if (carteAVenir) host.appendChild(carteAVenir);
+      host.appendChild(cartesParametres(peindre));
 
       /* --- Obligations mensuelles --------------------------------------- */
       var joursMensuels = [];
@@ -3606,7 +3778,7 @@
         K.miniTable([
           { label: 'Code', render: function (e) { return el('span.font-mono.text-xs.font-semibold', { text: e.code }); } },
           { label: 'Obligation', key: 'libelle' },
-          { label: 'Échéance', render: libelleEcheanceObligation },
+          { label: 'Échéance', render: celluleEcheance },
           { label: 'Déclaration préalable', render: function (e) { return e.declaration || '—'; } },
           { label: 'Version', render: function (e) { return e.dateEffet ? 'depuis le ' + C.dateFR(e.dateEffet) : 'd’origine'; } },
           { label: '', align: 'right', render: function (e) { return commandesObligation(e, peindre); } },
@@ -3647,12 +3819,15 @@
         { tone: 'info', icon: 'landmark' }),
         K.miniTable([
           { label: 'Acompte', key: 'libelle' },
-          { label: 'Échéance', render: libelleEcheanceObligation },
+          { label: 'Échéance', render: celluleEcheance },
           { label: 'Part', render: function (e) { return e.part + ' % de l’impôt de l’exercice précédent'; } },
           { label: '', align: 'right', render: function (e) { return commandesObligation(e, peindre); } },
         ], acomptes),
         el('div.rounded-lg.border.border-navy-200.bg-navy-50.p-3', null, [
-          el('p.text-xs.font-semibold.uppercase.tracking-wide.text-navy-700', { text: 'Le 30 avril de l’année suivante' }),
+          el('p.text-xs.font-semibold.uppercase.tracking-wide.text-navy-700', { text: (function () {
+            var s = cal.filter(function (e) { return e.code === 'IS-SOLDE'; })[0];
+            return s ? libelleEcheanceObligation(s).replace(/^le /, 'Le ') + ' de l’année suivante' : 'À l’échéance de la liquidation du solde';
+          })() }),
           el('p.mt-1.text-sm.text-slate-700', {
             text: 'Deux opérations, dans cet ordre : la liquidation du solde ajuste ce qui a été versé en acomptes '
               + '(la clinique complète si l’impôt réel dépasse les acomptes, l’État rembourse dans le cas inverse), '
@@ -3662,7 +3837,7 @@
         K.miniTable([
           { label: 'Code', render: function (e) { return el('span.font-mono.text-xs.font-semibold', { text: e.code }); } },
           { label: 'Obligation', key: 'libelle' },
-          { label: 'Échéance', render: libelleEcheanceObligation },
+          { label: 'Échéance', render: celluleEcheance },
           { label: '', align: 'right', render: function (e) { return commandesObligation(e, peindre); } },
         ], cal.filter(function (e) { return e.code === 'IS-SOLDE' || e.code === 'ETATS-FIN'; })),
       ])));
@@ -3670,14 +3845,16 @@
       /* --- Obligations annuelles en tranches (dérivées des obligations en vigueur) --- */
       function lignesFamille(famille) {
         return cal.filter(function (e) { return e.famille === famille; }).map(function (e) {
-          return [libelleEcheanceObligation(e).replace(/^le /, ''), e.libelle + (e.part ? ' (' + e.part + ' %)' : ''), e];
+          var venir = CF().versionAVenirDe(e.code);
+          return [libelleEcheanceObligation(e).replace(/^le /, ''), e.libelle + (e.part ? ' (' + e.part + ' %)' : '')
+            + (venir ? ' (à compter du ' + C.dateFR(venir.dateEffet) + ' : ' + resumeVersion(venir) + ')' : ''), e];
         });
       }
       host.appendChild(U.card('Patente, CCIB et TVM : une fois par an', el('div.space-y-3', null, [
         el('div.grid.gap-3.md\\:grid-cols-3', null, [
           bloc('Patente', 'Une fois par an, avec possibilité de régler en deux tranches.', lignesFamille('PATENTE')),
-          bloc('CCIB', C.money(D.MONTANTS_FISCAUX.ccib.total) + ' par an, en deux tranches égales de '
-            + C.money(D.MONTANTS_FISCAUX.ccib.total / 2) + ' (montant à confirmer par le cabinet comptable).', lignesFamille('CCIB')),
+          bloc('CCIB', C.money(CCIB.total) + ' par an, en ' + CCIB.tranches + ' tranches égales de '
+            + C.money(CCIB.tranche) + (CCIB.version.aValider ? ' (montant à confirmer par le cabinet comptable).' : ' (paramètre du calendrier).'), lignesFamille('CCIB')),
           bloc('TVM', 'Taxe sur véhicules à moteur. Une fois par an, en une seule fois.', lignesFamille('TVM')),
         ]),
       ])));

@@ -1263,7 +1263,7 @@
     if (e.module === 'DASH' || e.module === 'PIL' || e.module === 'RAP') return false;
     if (/^(dash-|rapports-)/.test(e.id)) return false;
     /* Les écrans d'analyse : ils lisent, ils ne modifient pas. */
-    if (/-(stats|stats-[a-z]+|point-[a-z]+|baseline|analytique|grand-livre|balance)$/.test(e.id)) return false;
+    if (/-(stats|stats-[a-z]+|point-[a-z]+|baseline|analytique|grand-livre|balance|calendrier-fiscal)$/.test(e.id)) return false;
     return true;
   }
 

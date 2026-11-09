@@ -20,6 +20,16 @@ Recherche faite à la demande de la Direction. **Aucune source officielle primai
 
 Sources : [La Nouvelle Tribune, AIB de 5 %](https://lanouvelletribune.info/2026/09/benin-aib-de-5-ce-qui-change-selon-le-dgi-maxime-mensah-akakpo-djihountry/) ; [BeninWebTV, recouvrement de l'AIB au 7 septembre](https://beninwebtv.bj/recouvrement-de-laib-au-benin-ce-qui-change-a-partir-de-ce-lundi-7-septembre/) ; [BeninWebTV, généralisation du prélèvement de 5 %](https://beninwebtv.bj/dgi-generalisation-du-prelevement-de-5-daib-pour-les-contribuables-non-conformes-ou-non-immatricules-a-compter-du-7-septembre-2026/) ; [La Nouvelle Tribune, modalités AIB 2022](https://lanouvelletribune.info/2022/03/benin-le-dgi-yenoussi-devoile-les-modalites-dapplication-des-dispositions-fiscales-de-laib/) ; [CNSS, déclaration et paiement](https://cnss.bj/declaration-et-paiement/) ; [CNSS, déclaration unique](https://cnss.bj/communique/declaration-unique-des-impots-sur-salaires-et-des-cotisations-sociales/) ; [Bloomberg Tax, loi 2026-10](https://news.bloombergtax.com/daily-tax-report-international/benin-tax-agency-posts-law-amending-2026-finance-law).
 
+### Complément du 09/11/2026 (texte remis par la Direction, à confirmer avec l'expert-comptable)
+
+Le texte remis confirme et précise, sans source officielle ouverte non plus :
+- **Base de calcul de l'AIB : le montant hors taxes** de la facture normalisée. Le moteur de la maquette calcule déjà sur le hors taxes (`ht = base / (1 + TVA)`, soit la base elle-même tant que la TVA vaut 0 pour les produits de santé exonérés) ; un champ « hors taxes » explicite sur les lignes de facture reste à ajouter si la TVA devient applicable à certaines prestations.
+- **3 % pour les prestataires** : confirmé par un seul extrait de rescrit de 2026 ; **1 %** : source de 2022 ; tous deux restent **non arrêtés**.
+- **CNSS : deux obligations distinctes** : la **déclaration unique** des impôts sur salaires et cotisations est due le **10** ; le **versement** des cotisations CNSS se fait **dans les quinze jours**, soit le **15**. L'ancienne table déclarative de `cfg-fiscalite` disait « CNSS le 15 » et le calendrier « le 10 » : E2273 les a alignées sur le 10 ; ces deux dates ne se contredisent donc pas, elles visent deux gestes (question Q6).
+- **Resté ouvert** : les sources ne disent pas **qui supporte** le prélèvement de 5 % (le client qui est prélevé ou la clinique) : il faut le texte du communiqué (question Q7).
+- **Taux de TVA de 18 % sur tout** : toujours à confirmer par écrit ; le dépôt applique l'exonération des produits de santé (facture certifiée de référence).
+- Les autres échéances relevées dans le document remis sont jugées peu fiables : à ne pas reprendre sans texte.
+
 ## 1. Problème
 
 1. L'AIB (acompte sur impôt assis sur les bénéfices) est un paramètre figé à 1 % dans le code : un changement de taux (le texte remis annonce 5 % généralisé au 07/09/2026) écraserait le taux sous lequel des factures ont été émises, alors que `docs/prd` MECeF fait déjà dire à la fenêtre acheteur « 5 % par défaut, 1 %, aucun ». Sans barème daté, la maquette ne sait pas répondre à « quel taux ce jour-là ».
@@ -94,6 +104,8 @@ Taux 5 %, 1 %, 3 %, date du 07/09/2026 : aucun texte réglementaire dans le dép
 | Q3 | Le **taux d'AIB par défaut** de la fenêtre MECeF devient-il 5 % ? | **Non, pas un défaut unique** : 5 % quand l'acheteur n'a pas d'IFU actif, **1 % quand il a un IFU actif** (défaut de la fenêtre), 3 % pour une prestation de service retenue par le payeur. La fenêtre lit le moteur daté selon la situation de l'acheteur. À confirmer avec le texte (Q1). |
 | Q4 | Créer le marquage « valeur d'attente » du personnel ? | **Oui**, par champ, sans valeur inventée. |
 | Q5 | Brancher l'AIB sur les **écritures d'achat** ? | **Différer** : l'AIB est imputable sur l'impôt sur les bénéfices (compte d'acompte à définir par le comptable) ; le moteur liste d'abord ce qu'il faudrait brancher, sans l'écrire. |
+| Q6 | La CNSS se compose de **deux obligations** (déclaration unique le 10, versement des cotisations le 15). Ajoute-t-on une obligation « CNSS, versement des cotisations » au 15, marquée non arrêtée, à côté de la déclaration unique au 10 (modifiable dans les paramètres) ? | **Oui**, une obligation distincte : le 10 reste inchangé (décision du 09/11), et le 15 s'ajoute sans la remplacer, avec son marquage « à confirmer par la CNSS ». À décider. |
+| Q7 | **Qui supporte** le prélèvement de 5 % : l'acheteur ou la clinique ? | À trancher avec le texte du communiqué ; en attendant, l'AIB reste affiché comme un acompte sur l'impôt sur les bénéfices imputable, sans écriture. |
 
 ## Lots et agents (détail dans `docs/plans/PLAN-M12-bareme-aib-calendrier-attente.md`)
 

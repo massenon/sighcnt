@@ -997,6 +997,11 @@
     if (!(annee >= 2000 && annee <= 2100)) return { exercice: exercice, creees: 0, refus: 'EXERCICE_INVALIDE' };
     var X = global.SIGH && global.SIGH.exercice;
     if (X && typeof X.etat === 'function' && X.etat(annee) === 'clos') return { exercice: annee, creees: 0, refus: 'EXERCICE_CLOS' };
+    /* L'échéancier ne s'engendre que pour l'exercice COURANT et le SUIVANT : un exercice passé non clos se remplirait d'échéances « en
+       retard » que personne n'a manquées, et un exercice lointain (une écriture datée par erreur de 2035) d'un échéancier sans objet. */
+    var courante = C.aujourdhui().getFullYear();
+    if (annee < courante) return { exercice: annee, creees: 0, refus: 'EXERCICE_PASSE' };
+    if (annee > courante + 1) return { exercice: annee, creees: 0, refus: 'EXERCICE_LOINTAIN' };
     /* Un magasin pas encore amorcé (pas de session, pas de semence) n'est jamais écrit d'ici : le semis s'en charge. */
     if (!db.echeancesFiscales) return { exercice: annee, creees: 0, refus: 'NON_AMORCE' };
     var connues = {};

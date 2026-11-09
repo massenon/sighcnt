@@ -3275,11 +3275,7 @@
   }
 
   /** Reporte au jour ouvrable suivant — précision du comptable. */
-  function jourOuvrableSuivant(d) {
-    var x = new Date(d.getTime());
-    while (x.getDay() === 0 || x.getDay() === 6) x = C.addDays(x, 1);
-    return x;
-  }
+  function jourOuvrableSuivant(d) { return C.reporterJourOuvrable(d); }
 
   /* Déroule le calendrier sur l'exercice : chaque obligation mensuelle donne
      douze échéances, chaque obligation annuelle en donne une. */
@@ -3296,16 +3292,140 @@
     db.echeancesFiscales = S.genEcheances(AUJ.getFullYear(), { aujourdhui: AUJ, sansReglement: S.jeuVide() });
     S.save();
   }
+  /* L'ÉCHÉANCIER COUVRE L'EXERCICE COURANT, LE SUIVANT ET L'EXERCICE CHOISI (lot A3b, E-A3-09) : additif et idempotent,
+     une échéance existante (payée comprise) n'est jamais régénérée ni réécrite. */
+  function assurerExercices() {
+    var X = global.SIGH.exercice, annees = [AUJ.getFullYear(), AUJ.getFullYear() + 1];
+    if (X && X.choisi) { var c = X.choisi(); if (annees.indexOf(c) < 0) annees.push(c); }
+    annees.forEach(function (a) { S.assurerEcheances(a); });
+  }
+  /** Un nombre de jours, écrit comme le suivi l'a toujours écrit à sa valeur d'origine (« dix jours »). */
+  function enJours(n) { return n === 10 ? 'dix jours' : n + ' jours'; }
 
   /** État calculé d'une échéance — jamais stocké, toujours recalculé. */
   function calculerEtat(e) {
     if (e.paye) return 'payee';
     var j = C.daysBetween(AUJ, e.echeance);
     if (j < 0) return 'en_retard';
-    if (j <= 10) return 'a_payer';
-    if (e.declaration && j <= 30) return 'declaration';
+    /* LES SEUILS SONT DES PARAMÈTRES (collection parametresFiscaux, cfg-comptabilite) : une seule définition de « proche »
+       pour le suivi, la vue mensuelle, cfg-fiscalite, la cloche et le planificateur. */
+    var d = D.delaisFiscauxALaDate(AUJ);
+    if (j <= d.delaiAPayer) return 'a_payer';
+    if (e.declaration && j <= d.delaiDeclaration) return 'declaration';
     return 'a_venir';
   }
+
+  /* ==========================================================================
+   * CALENDRIER FISCAL MENSUEL (lot A3b, 09/11/2026) : la grille du mois, en LECTURE.
+   * --------------------------------------------------------------------------
+   * Une VUE du même registre que le suivi (collection echeancesFiscales) : aucune seconde collection, aucun calcul de date à
+   * part (la date vient de l'échéance, reportée au jour ouvrable par le moteur du socle), l'état vient de calculerEtat,
+   * donc des mêmes paramètres que le suivi. Elle ne modifie rien ; ses droits sont ceux de m12-echeances (servant).
+   * ======================================================================== */
+  var CHIPS_ETAT = {
+    payee: 'border-success-200 bg-success-50 text-success-700',
+    en_retard: 'border-danger-200 bg-danger-50 text-danger-700',
+    a_payer: 'border-warning-200 bg-warning-50 text-warning-700',
+    declaration: 'border-info-200 bg-info-50 text-info-700',
+    a_venir: 'border-slate-200 bg-slate-50 text-slate-600',
+  };
+  global.SIGH.screen('m12-calendrier-fiscal', {
+    title: 'Calendrier fiscal mensuel',
+    description: 'Les échéances fiscales et sociales du mois, jour par jour, avec leur état : payée, en retard, à payer, à venir.',
+    regle: 'Cette vue <strong>lit le même registre</strong> que le suivi des échéances : une échéance, son jour et son état y sont identiques. '
+      + 'Rien ne se saisit ici ; le paiement se valide au suivi. Un jour qui tombe un samedi ou un dimanche est <strong>reporté au jour ouvrable suivant</strong>, '
+      + 'et les seuils « à payer » et « déclaration » sont ceux des paramètres comptables.',
+    actions: function () {
+      return [
+        K.btn('Suivi des échéances', { icon: 'calendar-clock', onclick: function () { global.SIGH.app.go('m12-echeances'); } }),
+        K.btn('Obligations & règles', { icon: 'book-open-check', onclick: function () { global.SIGH.app.go('cfg-comptabilite'); } }),
+      ];
+    },
+    render: function (root) {
+      amorcerEcheances();
+      assurerExercices();
+      var X = global.SIGH.exercice;
+      var ref = X && X.dateReference ? X.dateReference() : AUJ;
+      var cur = { a: ref.getFullYear(), m: ref.getMonth() };
+      dessiner();
+      return null;
+
+      function bouton(label, id, opts) { var b = K.btn(label, opts); b.id = id; return b; }
+      function decaler(n) {
+        var d = new Date(cur.a, cur.m + n, 1);
+        cur = { a: d.getFullYear(), m: d.getMonth() };
+        dessiner();
+      }
+      function delaiLisible(e) {
+        if (e.paye) return 'réglée';
+        return e.jours < 0 ? Math.abs(e.jours) + ' j de retard' : 'dans ' + e.jours + ' j';
+      }
+
+      function dessiner() {
+        C.clear(root);
+        var debut = C.iso(new Date(cur.a, cur.m, 1)), fin = C.iso(new Date(cur.a, cur.m, C.dernierJourDuMois(cur.a, cur.m)));
+        var rows = colEcheances().active().filter(function (e) { return e.echeance >= debut && e.echeance <= fin; })
+          .map(function (e) { return Object.assign({}, e, { etat: calculerEtat(e), jours: C.daysBetween(AUJ, e.echeance) }); })
+          .sort(function (a, b) { return a.echeance.localeCompare(b.echeance) || String(a.code).localeCompare(String(b.code)); });
+        var parJour = {};
+        rows.forEach(function (e) { (parJour[e.echeance] = parJour[e.echeance] || []).push(e); });
+        var host = el('div#calendrier-fiscal.space-y-4', { 'data-mois': cur.a + '-' + C.pad(cur.m + 1, 2) });
+
+        host.appendChild(el('div.flex.flex-wrap.items-center.justify-between.gap-2', null, [
+          el('div.flex.items-center.gap-2', null, [
+            bouton('Mois précédent', 'cal-precedent', { icon: 'chevron-left', onclick: function () { decaler(-1); } }),
+            el('h2#cal-titre.px-2.text-lg.font-semibold.text-slate-800', { text: C.MOIS[cur.m].charAt(0).toUpperCase() + C.MOIS[cur.m].slice(1) + ' ' + cur.a }),
+            bouton('Mois suivant', 'cal-suivant', { icon: 'chevron-right', onclick: function () { decaler(1); } }),
+          ]),
+          bouton('Aujourd’hui', 'cal-aujourdhui', { onclick: function () { cur = { a: AUJ.getFullYear(), m: AUJ.getMonth() }; dessiner(); } }),
+        ]));
+
+        host.appendChild(U.kpiGrid([
+          { label: 'Échéances du mois', value: C.num(rows.length), icon: 'calendar-days', tone: 'navy' },
+          { label: 'En retard', value: C.num(rows.filter(function (e) { return e.etat === 'en_retard'; }).length), icon: 'alarm-clock', tone: rows.some(function (e) { return e.etat === 'en_retard'; }) ? 'danger' : 'success' },
+          { label: 'À payer ou à déclarer', value: C.num(rows.filter(function (e) { return e.etat === 'a_payer' || e.etat === 'declaration'; }).length), icon: 'coins', tone: 'warning' },
+          { label: 'Payées', value: C.num(rows.filter(function (e) { return e.etat === 'payee'; }).length), icon: 'check-circle-2', tone: 'success' },
+        ]));
+
+        /* La grille : lundi en premier, six semaines au plus. */
+        var premier = new Date(cur.a, cur.m, 1), decalage = (premier.getDay() + 6) % 7, nb = C.dernierJourDuMois(cur.a, cur.m);
+        var grille = el('div#cal-grille.grid.grid-cols-7.gap-1');
+        ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].forEach(function (j) {
+          grille.appendChild(el('div.px-1.pb-1.text-center.text-xs.font-semibold.uppercase.text-slate-500', { text: j }));
+        });
+        for (var v = 0; v < decalage; v++) grille.appendChild(el('div'));
+        for (var j = 1; j <= nb; j++) {
+          var dt = new Date(cur.a, cur.m, j), cle = C.iso(dt), fe = dt.getDay() === 0 || dt.getDay() === 6;
+          var cell = el('div.min-h-\\[5rem\\].rounded-md.border.p-1', { class: fe ? 'border-slate-100 bg-slate-50' : 'border-slate-200 bg-white', 'data-jour': cle });
+          cell.appendChild(el('p.text-xs.font-semibold', { class: cle === C.iso(AUJ) ? 'text-navy-700 underline' : 'text-slate-500', text: String(j) }));
+          (parJour[cle] || []).forEach(function (e) {
+            cell.appendChild(el('button.cal-ech.mt-0\\.5.block.w-full.truncate.rounded.border.px-1.text-left.text-xs.font-medium', {
+              type: 'button', class: CHIPS_ETAT[e.etat] || CHIPS_ETAT.a_venir,
+              title: e.libelle + ' (' + etatEcheance(e.etat).label + ', ' + delaiLisible(e) + ')',
+              'data-echeance': e.id, 'data-code': e.code, 'data-date': e.echeance, 'data-etat': e.etat,
+              onclick: function () { global.SIGH.app.go('m12-echeances'); },
+            }, e.code));
+          });
+          grille.appendChild(cell);
+        }
+        host.appendChild(U.card('Le mois en grille', el('div.space-y-2', null, [
+          grille,
+          el('div.flex.flex-wrap.gap-2.pt-1', null, ETATS_ECHEANCE.map(function (s) { return U.badge(s.label, s.tone); })),
+        ])));
+
+        host.appendChild(U.card('Les échéances du mois', K.miniTable([
+          { label: 'Date', render: function (e) { return el('span.num', { text: C.dateFR(e.echeance) + (e.reportee ? ' (reportée)' : '') }); } },
+          { label: 'Code', render: function (e) { return el('span.font-mono.text-xs.font-semibold', { text: e.code }); } },
+          { label: 'Obligation', render: function (e) { return e.libelle + (e.part && e.part < 100 ? ', tranche de ' + e.part + ' %' : ''); } },
+          { label: 'Délai', render: delaiLisible },
+          { label: 'État', render: function (e) { var s = etatEcheance(e.etat); return U.badge(s.label, s.tone); } },
+        ], rows, { empty: 'Aucune échéance ce mois. L’échéancier d’un exercice se génère à son ouverture.' })));
+
+        root.appendChild(host);
+        U.icons(root);
+      }
+    },
+  });
 
   global.SIGH.screen('m12-echeances', {
     title: 'Échéances fiscales & paiements',
@@ -3320,6 +3440,8 @@
     },
     render: function (root) {
       amorcerEcheances();
+      assurerExercices();
+      var DELAIS = D.delaisFiscauxALaDate(AUJ);
       dessiner();
       return null;
 
@@ -3348,7 +3470,7 @@
             hint: retard.length ? 'Risque de pénalité' : 'Aucun retard',
           },
           {
-            label: 'À payer sous 10 jours', value: C.num(aPayer.length), icon: 'coins',
+            label: 'À payer sous ' + DELAIS.delaiAPayer + ' jours', value: C.num(aPayer.length), icon: 'coins',
             tone: aPayer.length ? 'warning' : 'success',
           },
           { label: 'Déclarations attendues', value: C.num(declarations.length), icon: 'file-pen-line', tone: 'info' },
@@ -3371,7 +3493,7 @@
         }
         if (aPayer.length) {
           barre.appendChild(alerte('warning', 'coins',
-            aPayer.length + ' paiement(s) à effectuer sous dix jours',
+            aPayer.length + ' paiement(s) à effectuer sous ' + enJours(DELAIS.delaiAPayer),
             aPayer.slice(0, 3).map(function (e) {
               return e.code + ' le ' + C.dateFR(e.echeance);
             }).join(' · ') + (aPayer.length > 3 ? ' …' : ''),
@@ -3397,7 +3519,10 @@
         host.appendChild(barre);
 
         host.appendChild(U.dataTable({
-          title: 'Échéances de l’exercice ' + AUJ.getFullYear(),
+          title: (function () {
+            var ex = Object.keys(C.groupBy(rows, 'exercice')).sort();
+            return ex.length > 1 ? 'Échéances des exercices ' + ex.join(' et ') : 'Échéances de l’exercice ' + (ex[0] || AUJ.getFullYear());
+          })(),
           rows: rows, exportName: 'echeances-fiscales', pageSize: 20, searchable: true,
           defaultSort: 'echeance',
           filters: [
@@ -3412,6 +3537,10 @@
             {
               name: 'periodicite', label: 'Périodicité',
               options: [{ value: 'mensuelle', label: 'Mensuelle' }, { value: 'annuelle', label: 'Annuelle' }],
+            },
+            {
+              name: 'exercice', label: 'Exercice',
+              options: Object.keys(C.groupBy(rows, 'exercice')).sort().map(function (x) { return { value: x, label: x }; }),
             },
           ],
           columns: [
@@ -3449,7 +3578,7 @@
                 if (e.paye) return el('span.text-xs.text-slate-400', { text: '—' });
                 if (e.jours < 0) return el('span.num.font-semibold.text-danger-600', { text: Math.abs(e.jours) + ' j de retard' });
                 return el('span.num', {
-                  class: e.jours <= 10 ? 'font-semibold text-warning-700' : 'text-slate-600',
+                  class: e.jours <= DELAIS.delaiAPayer ? 'font-semibold text-warning-700' : 'text-slate-600',
                   text: 'dans ' + e.jours + ' j',
                 });
               },
@@ -3506,7 +3635,7 @@
         if (retard.length || aPayer.length) {
           setTimeout(function () {
             U.alerter(
-              (retard.length ? retard.length + ' échéance(s) en retard' : aPayer.length + ' paiement(s) sous dix jours'),
+              (retard.length ? retard.length + ' échéance(s) en retard' : aPayer.length + ' paiement(s) sous ' + enJours(DELAIS.delaiAPayer)),
               {
                 son: retard.length ? 'alerte' : 'rappel',
                 type: retard.length ? 'error' : 'warning',

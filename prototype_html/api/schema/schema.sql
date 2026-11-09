@@ -587,6 +587,40 @@ ALTER TABLE "cfg"."obligations_fiscales_redevances" ADD COLUMN IF NOT EXISTS "ca
 ALTER TABLE "cfg"."obligations_fiscales_redevances" ADD COLUMN IF NOT EXISTS "mois_label" text; -- @montee
 ALTER TABLE "cfg"."obligations_fiscales_redevances" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."obligations_fiscales_redevances" IS 'Lignes « redevances » de « obligationsFiscales »';
+CREATE TABLE IF NOT EXISTS "cfg"."parametres_fiscaux" (
+  "id" text PRIMARY KEY,
+  "code" text,
+  "motif" text,
+  "source" text,
+  "statut" text,
+  "libelle" text,
+  "a_valider" boolean,
+  "date_effet" text,
+  "modifie_le" text,
+  "modifie_par" text,
+  "delai_a_payer" integer,
+  "delai_declaration" integer,
+  "tranches" integer,
+  "montant_total" integer,
+  "extra" jsonb
+);
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "a_valider" boolean; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "date_effet" text; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "modifie_le" text; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "delai_a_payer" integer; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "delai_declaration" integer; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "tranches" integer; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "montant_total" integer; -- @montee
+ALTER TABLE "cfg"."parametres_fiscaux" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "cfg"."parametres_fiscaux" IS 'Collection « parametresFiscaux » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_parametres_fiscaux_code" ON "cfg"."parametres_fiscaux" ("code");
+CREATE INDEX IF NOT EXISTS "ix_parametres_fiscaux_statut" ON "cfg"."parametres_fiscaux" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."postes" (
   "id" text PRIMARY KEY,
   "chef" boolean,

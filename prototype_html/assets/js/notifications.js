@@ -32,7 +32,7 @@
  * ========================================================================== */
 (function (global) {
   'use strict';
-  var C = global.SIGH.core, S = global.SIGH.store, N = global.SIGH.nav;
+  var C = global.SIGH.core, S = global.SIGH.store, N = global.SIGH.nav, D = global.SIGH.data;
 
   /* ==========================================================================
    * PARAMÈTRES DE L'UTILISATEUR — ils gouvernent le CANAL, jamais la règle
@@ -197,6 +197,31 @@
               priorite: 'critique',
               titre: (e.libelle || e.obligation) + ' : échéance dépassée',
               detail: 'Échéance au ' + C.dateFR(e.echeance) + '. Une pénalité court.',
+              lien: 'm12-echeances',
+              postes: ['comptable', 'da', 'assistant_comptable', 'direction'],
+            };
+          });
+      },
+    },
+    {
+      code: 'echeance_fiscale_proche', categorie: 'metier', domaine: 'Comptabilité',
+      /* Une échéance NON dépassée mais PROCHE : le délai est le paramètre « à payer » du calendrier (cfg-comptabilite), le même que le
+         suivi, la vue mensuelle et le planificateur du serveur. Ce fichier ne décide d'aucun seuil, il applique celui des paramètres. */
+      lire: function () {
+        var auj = C.iso(C.aujourdhui());
+        var delai = D.delaisFiscauxALaDate(auj).delaiAPayer;
+        return S.collection('echeancesFiscales').active()
+          .filter(function (e) {
+            var j = C.daysBetween(auj, String(e.echeance).slice(0, 10));
+            return !e.paye && j >= 0 && j <= delai;
+          })
+          .map(function (e) {
+            var j = C.daysBetween(auj, String(e.echeance).slice(0, 10));
+            return {
+              cle: 'fisc-proche:' + e.id,
+              priorite: 'important',
+              titre: (e.libelle || e.obligation) + ' : échéance dans ' + j + ' jour(s)',
+              detail: 'Échéance au ' + C.dateFR(e.echeance) + '. Valider le règlement dans le suivi des échéances.',
               lien: 'm12-echeances',
               postes: ['comptable', 'da', 'assistant_comptable', 'direction'],
             };
@@ -445,6 +470,8 @@
       'Corriger puis réémettre auprès de l’administration fiscale.'],
     echeance_fiscale: ['échéance(s) fiscale(s) dépassée(s)',
       'Une pénalité court sur chacune. Déclarer et payer.'],
+    echeance_fiscale_proche: ['échéance(s) fiscale(s) proche(s)',
+      'À payer dans le délai des paramètres du calendrier : déclarer puis payer.'],
     labo_a_traiter: ['analyse(s) réglée(s), prélèvement à faire',
       'Les patients ont payé : ils peuvent être appelés en salle de prélèvement.'],
     labo_a_saisir: ['échantillon(s) reçu(s), résultat à saisir',

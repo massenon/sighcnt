@@ -2948,15 +2948,17 @@ async function viderMessages(page) {
       return {
         total: rows.length,
         familles: [...new Set(rows.map((e) => e.famille))].length,
-        mensuelles: rows.filter((e) => e.periodicite === 'mensuelle').length,
+        /* « Douze échéances chacune » se lit PAR EXERCICE : le jeu porte désormais 2026 ET 2027 (lot A3b, valeur changée voulue : 48 par exercice, 96 en tout). */
+        mensuelles: rows.filter((e) => e.periodicite === 'mensuelle' && e.exercice === 2026).length,
+        deuxExercices: [...new Set(rows.map((e) => e.exercice))].sort().join(','),
         reportees: rows.filter((e) => e.reportee).length,
         barre: /échéance|paiement|déclaration/i.test(document.body.textContent),
       };
     });
     verifier('Les obligations sont déroulées sur l'+String.fromCharCode(8217)+'exercice',
       ech.total > 50 && ech.familles === 10, ech.total + ' échéances · ' + ech.familles + ' obligations');
-    verifier('Les obligations mensuelles donnent douze échéances chacune',
-      ech.mensuelles === 48, ech.mensuelles + ' échéances mensuelles');
+    verifier('Les obligations mensuelles donnent douze échéances chacune (par exercice) ; le jeu porte l’exercice du jeu et le suivant',
+      ech.mensuelles === 48 && ech.deuxExercices === '2026,2027', ech.mensuelles + ' échéances mensuelles, exercices ' + ech.deuxExercices);
     verifier('Les échéances tombant un week-end sont reportées',
       ech.reportees > 0, ech.reportees + ' reportée(s) au jour ouvrable');
     verifier('Une barre de notification signale ce qui est dû', ech.barre);
@@ -13144,15 +13146,16 @@ async function viderMessages(page) {
     verifier('CCIB-2 passe du 10 au 15 à effet du 01/06/2026 : l’échéance CCIB-1 PAYÉE garde sa date et sa quittance',
       o4.ok && o4.apres1.echeance === o4.ref1.echeance && o4.apres1.reference === o4.ref1.reference && o4.apres1.paye && o4.apres1.statut === 'actif', JSON.stringify([o4.ref1, o4.apres1]));
     verifier('L’échéance CCIB-2 non payée est archivée et recréée au 15/06/2026 avec versionObligation ; comptes annoncés 0 conservée / 1 régénérée / 1 recréée',
-      o4.anc2 === 'archive' && o4.nouv2.length === 1 && o4.nouv2[0].echeance === '2026-06-15' && o4.nouv2[0].versionObligation === '2026-06-01' && !o4.nouv2[0].paye
-      && o4.nouv2[0].regenereePar === 'TAKI Alimatou' && o4.ech.archivees === 1 && o4.ech.creees === 1 && o4.ech.conservees === 0, JSON.stringify([o4.anc2, o4.nouv2, o4.ech]));
+      /* Valeur changée voulue (lot A3b) : le jeu porte l'exercice 2026 ET le suivant, la modification régénère les deux (2 archivées, 2 recréées) ; la sonde lit l'échéance de 2026 comme avant. */
+      o4.anc2 === 'archive' && o4.nouv2.length === 2 && o4.nouv2.filter((x) => x.echeance === '2026-06-15' && x.versionObligation === '2026-06-01' && !x.paye && x.regenereePar === 'TAKI Alimatou').length === 1
+      && o4.nouv2.filter((x) => x.echeance.slice(0, 4) === '2027' && x.versionObligation === '2026-06-01' && !x.paye).length === 1 && o4.ech.archivees === 2 && o4.ech.creees === 2 && o4.ech.conservees === 0, JSON.stringify([o4.anc2, o4.nouv2, o4.ech]));
     verifier('Le journal porte « Régénération des échéances », le Comptable reçoit une tâche de poste, et l’historique garde la version d’origine (jour 10, fin 31/05/2026)',
       o4.journal && o4.notif && o4.hist.length === 1 && o4.hist[0].jour === 10 && o4.hist[0].dateFin === '2026-05-31' && o4.hist[0].dateEffet === null && !o4.hist[0].retiree, JSON.stringify([o4.journal, o4.notif, o4.hist]));
     verifier('obligationsALaDate rend le 15 après la date d’effet et le 10 avant ; la fiche porte dateEffet et perd sa validation',
       o4.enVigueur === 15 && o4.avantEffet === 10 && o4.fiche.jour === 15 && o4.fiche.dateEffet === '2026-06-01' && o4.fiche.valideLe === true, JSON.stringify([o4.enVigueur, o4.avantEffet, o4.fiche]));
     verifier('ITS (mensuelle) du 10 au 12 à effet du 01/06 : les échéances PAYÉES de juin et juillet restent intactes (date, quittance), les non payées sont régénérées au 12 ; douze échéances au total',
       o4.its.ok && o4.its.payeesAvant >= 1 && o4.its.payeesIntactes && o4.its.ech.conservees === o4.its.payeesAvant && o4.its.ech.archivees === o4.its.ech.creees
-      && o4.its.nouvelles.length === o4.its.ech.creees && o4.its.toutesAu12 && o4.its.total === 12, JSON.stringify(o4.its));
+      && o4.its.nouvelles.length === o4.its.ech.creees && o4.its.toutesAu12 && o4.its.total === 24, JSON.stringify(o4.its));   /* 24 : douze par exercice, 2026 et 2027 (valeur changée voulue, lot A3b) */
     await attendreEcritures();
     await ouvrir('cfg-comptabilite.html');
     const ui4 = await page.evaluate(async () => {
@@ -13255,7 +13258,7 @@ async function viderMessages(page) {
     await attendreEcritures();
     verifier('Le scénario restaure l’état : identité v1 d’origine non validée, obligations et ORTB d’origine (CCIB-2 le 10, seuil 60 000), historique vide, CCIB-2 payée, session rendue',
       fin.slogan === 'Votre santé, notre raison de vivre' && fin.rccm === 'RB/NAT/2016-B-268' && fin.tel === 2 && fin.etatI === 'a_valider' && fin.etatO === 'a_valider'
-      && fin.versions === 1 && fin.ccib2 && fin.ccib2Actives === 1 && fin.itsActives === 12 && fin.regenereesActives === 0 && fin.hist === 0 && fin.seuil === 60000 && fin.seuilMin === 60001 && fin.jourCcib2 === 10 && fin.role === sauve.etat.session.role,
+      && fin.versions === 1 && fin.ccib2 && fin.ccib2Actives === 2 && fin.itsActives === 24 && fin.regenereesActives === 0 && fin.hist === 0 && fin.seuil === 60000 && fin.seuilMin === 60001 && fin.jourCcib2 === 10 && fin.role === sauve.etat.session.role,
       JSON.stringify(fin));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   });
@@ -15747,6 +15750,396 @@ async function viderMessages(page) {
       S.setReglage('mecefBoitier', mo.sauve.reglage); S.setReglage('mecefMode', mo.sauve.mode);
       window.SIGH.mecef.fauxBoitier.panne = null;
     }, monde);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  /* ===========================================================================
+   * Vague 98 : le calendrier fiscal corrigé et ouvert à l'avenir (Direction, 09/11/2026, lot A3b, audit A3)
+   * -------------------------------------------------------------------------
+   * Les jours attendus sont ceux du calendrier confirmé le 25/08/2026 ; leur calcul (dernier jour réel du mois, report au jour ouvrable,
+   * jamais d'avance) est refait ICI, côté Node, sans une ligne du code produit : la sonde mesure l'écran contre le document, pas contre
+   * lui-même. Elle éprouve les trois lieux qui montrent un jour (la référence, le suivi, cfg-fiscalite), une mensuelle au 31, les libellés
+   * de période, une version à venir visible puis annulée, le refus nommé, le rétablissement à la même date, les paramètres datés (l'état d'une
+   * échéance ET le seuil du planificateur changent d'un seul geste), l'exercice suivant sans toucher une payée, la vue mensuelle. Tout ce que la
+   * sonde écrit est restitué par instantané à la sortie (le magasin d'un banc isolé, jamais le jeu d'un poste).
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 98 : calendrier fiscal (jours des 19 obligations sur la référence, le suivi et cfg-fiscalite, mensuelle au 31, période juste, version à venir visible puis annulée, seuils en paramètres jusqu’au planificateur, exercice suivant, vue mensuelle)');
+    erreursJS = [];
+    const admin = () => page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    const sessionDe = (role) => page.evaluate((r) => {
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: r, fonction: r, nom: 'SONDE98 ' + r, nomComplet: 'SONDE98 ' + r, identifiant: 's98.' + r, secteur: 'DIR' }));
+      window.SIGH.store.setSession({ role: r, nom: 'SONDE98 ' + r, nomComplet: 'SONDE98 ' + r, fonction: r, identifiant: 's98.' + r });
+    }, role);
+    const attendreEnvoi = () => page.evaluate(async () => {
+      const S = window.SIGH.store; S.pousserMaintenant();
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+    });
+    await ouvrir('m12-echeances.html');
+    await admin();
+
+    /* Le calcul du document, refait indépendamment du code produit. */
+    const dernier = (a, m) => new Date(a, m + 1, 0).getDate();
+    const theo = (a, m, j) => new Date(a, m, Math.min(j, dernier(a, m)));
+    const roule = (d) => { let x = new Date(d.getTime()); while (x.getDay() === 0 || x.getDay() === 6) x = new Date(x.getFullYear(), x.getMonth(), x.getDate() + 1); return x; };
+    const isoJ = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const fr = (d) => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+    const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    const AUJ = new Date(2026, 7, 16);
+    /* Le calendrier confirmé le 25/08/2026 : [jour, mois (0 à 11) ou null pour une mensuelle]. */
+    const ATTENDU = { ITS: [10, null], AIB: [10, null], VPS: [10, null], CNSS: [10, null], 'IS-1': [10, 2], 'IS-2': [10, 5], 'IS-3': [10, 8], 'IS-4': [10, 11],
+      'IS-SOLDE': [30, 3], 'ETATS-FIN': [30, 3], 'PATENTE-DECL': [31, 0], 'PATENTE-1': [10, 1], 'PATENTE-2': [30, 3], 'CCIB-DECL': [28, 1], 'CCIB-1': [10, 2], 'CCIB-2': [10, 5],
+      TVM: [30, 3], 'ORTB-RADIO': [30, 2], 'ORTB-TELE': [30, 5] };
+    const dates = (code, annee) => { const [j, m] = ATTENDU[code]; return (m === null ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] : [m]).map((k) => theo(annee, k, j)); };
+
+    /* Instantané des collections que la sonde touche : restitué à la sortie. */
+    const COLLS = ['obligationsFiscales', 'historiqueObligations', 'echeancesFiscales', 'parametresFiscaux', 'exercices'];
+    const instantane = await page.evaluate((c) => { const raw = window.SIGH.store.raw(); const o = {}; c.forEach((n) => { o[n] = JSON.parse(JSON.stringify(raw[n] || [])); }); return o; }, COLLS);
+
+    /* --- 1. les 19 obligations : référence, suivi, cfg-fiscalite, cfg-comptabilite, zéro divergence ------------------------------ */
+    const etat1 = await page.evaluate(() => {
+      const S = window.SIGH.store, D = window.SIGH.data;
+      return {
+        reference: D.obligationsALaDate('2026-08-16').map((o) => [o.code, o.jour, o.mois]),
+        suivi: S.collection('echeancesFiscales').active().map((e) => ({ code: e.code, exercice: e.exercice, th: e.echeanceTheorique, ech: e.echeance, periode: e.periodicite === 'mensuelle' ? e.periode : null, id: e.id })),
+      };
+    });
+    const refAttendu = Object.keys(ATTENDU).length;
+    const refEcarts = etat1.reference.filter(([c, j, m]) => !ATTENDU[c] || ATTENDU[c][0] !== j || (ATTENDU[c][1] === null ? m !== null && m !== undefined : ATTENDU[c][1] !== m));
+    verifier('La référence (obligations en vigueur) porte les 19 jours du calendrier confirmé le 25/08/2026, la CNSS reste au 10',
+      etat1.reference.length === refAttendu && refEcarts.length === 0 && etat1.reference.some(([c, j]) => c === 'CNSS' && j === 10), JSON.stringify([etat1.reference.length, refEcarts]));
+    let ecartsSuivi = [], manquants = [];
+    [2026, 2027].forEach((an) => Object.keys(ATTENDU).forEach((code) => {
+      const att = dates(code, an);
+      const lues = etat1.suivi.filter((e) => e.code === code && e.exercice === an).sort((a, b) => a.th.localeCompare(b.th));
+      if (lues.length !== att.length) { manquants.push(code + ' ' + an + ' : ' + lues.length + '/' + att.length); return; }
+      att.forEach((d, i) => { if (lues[i].th !== isoJ(d) || lues[i].ech !== isoJ(roule(d))) ecartsSuivi.push(code + ' ' + an + ' attendu ' + isoJ(d) + '/' + isoJ(roule(d)) + ' lu ' + lues[i].th + '/' + lues[i].ech); });
+    }));
+    verifier('Le suivi : sur les exercices 2026 et 2027 chacune des 19 obligations tombe au jour attendu (dernier jour réel du mois, report au jour ouvrable), zéro divergence',
+      ecartsSuivi.length === 0 && manquants.length === 0, JSON.stringify([ecartsSuivi.slice(0, 4), manquants.slice(0, 4)]));
+    verifier('Les sept obligations annuelles au 29, 30 ou 31 ne sont plus plafonnées à 28 : IS-SOLDE, ETATS-FIN, PATENTE-DECL, PATENTE-2, TVM, ORTB-RADIO et ORTB-TELE le disent (2026 et 2027)',
+      ['IS-SOLDE', 'ETATS-FIN', 'PATENTE-DECL', 'PATENTE-2', 'TVM', 'ORTB-RADIO', 'ORTB-TELE'].every((c) => [2026, 2027].every((an) => etat1.suivi.some((e) => e.code === c && e.exercice === an && e.th === isoJ(dates(c, an)[0])))), '');
+
+    await ouvrir('cfg-fiscalite.html'); await admin();
+    await ouvrir('cfg-fiscalite.html');
+    const ficalDOM = await page.evaluate(() => {
+      const o = {};
+      const table = [...document.querySelectorAll('#page-content table')].find((t) => /Prochaine échéance/.test(t.textContent));
+      if (!table) return o;
+      const th = [...table.querySelectorAll('th')].map((x) => x.textContent.trim());
+      const iCode = th.findIndex((x) => /^Code/.test(x)), iEch = th.findIndex((x) => /^Prochaine échéance/.test(x));
+      [...table.querySelectorAll('tbody tr')].forEach((tr) => {
+        const c = tr.querySelectorAll('td'); if (iEch < 0 || c.length <= iEch) return;
+        const code = c[iCode].textContent.trim(); const p = c[iEch].querySelector('p');
+        if (/^[A-Z0-9-]+$/.test(code)) o[code] = p ? p.textContent.trim() : c[iEch].textContent.trim();
+      });
+      return o;
+    });
+    const prochaine = (code) => { const [j, m] = ATTENDU[code];
+      for (let k = 0; k < 14; k++) { const d = roule(m === null ? theo(2026, AUJ.getMonth() + k, j) : theo(2026 + k, m, j)); if (isoJ(d) >= isoJ(AUJ)) return fr(d); } };
+    const ecartsFiscalite = Object.keys(ATTENDU).filter((c) => ficalDOM[c] !== prochaine(c));
+    verifier('cfg-fiscalite : la prochaine échéance des 19 obligations est celle du document (31 janvier reporté au 01/02/2027, 28 février au 01/03/2027), zéro divergence avec le suivi',
+      Object.keys(ficalDOM).length === 19 && ecartsFiscalite.length === 0, JSON.stringify([Object.keys(ficalDOM).length, ecartsFiscalite.map((c) => c + ' lu ' + ficalDOM[c] + ' attendu ' + prochaine(c))]));
+
+    await ouvrir('cfg-comptabilite.html'); await admin();
+    await ouvrir('cfg-comptabilite.html');
+    const refDOM = await page.evaluate(() => document.getElementById('page-content').textContent);
+    const sansRef = Object.keys(ATTENDU).filter((c) => !/^ORTB/.test(c)).filter((c) => {
+      const [j, m] = ATTENDU[c];
+      return m === null ? refDOM.indexOf('le ' + j + ' du mois suivant') < 0 : refDOM.indexOf(j + ' ' + MOIS[m]) < 0;
+    });
+    verifier('cfg-comptabilite (la référence) affiche le jour de chaque obligation au document : mensuelles au 10, acomptes, patente, CCIB, TVM, solde et dépôt', sansRef.length === 0, JSON.stringify(sansRef));
+
+    /* --- 2 et 3. une mensuelle au 31, le 31 de février et d'avril, les libellés de période ------------------------------------------ */
+    const sondes = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale;
+      const base = { dateEffet: '2027-01-01', motif: 'Sonde 98 : jour 31' };
+      const mk = (code, v) => { const r = CF.creerObligation(Object.assign({}, base, { valeurs: Object.assign({ code, libelle: 'Sonde 98 ' + code, part: 100 }, v) })); return r.ok ? 'ok' : r.code + ' ' + r.motif; };
+      return [mk('S98-MENS', { periodicite: 'mensuelle', jour: 31 }), mk('S98-FEV', { periodicite: 'annuelle', jour: 31, mois: 1 }), mk('S98-AVR', { periodicite: 'annuelle', jour: 31, mois: 3 })];
+    });
+    verifier('Trois obligations de sonde (mensuelle au 31, annuelle au 31 février, annuelle au 31 avril) se créent à la date d’effet du 01/01/2027', sondes.every((x) => x === 'ok'), JSON.stringify(sondes));
+    const s31 = await page.evaluate(() => window.SIGH.store.collection('echeancesFiscales').active().filter((e) => /^S98-/.test(e.code)).map((e) => ({ code: e.code, exercice: e.exercice, th: e.echeanceTheorique, ech: e.echeance, periode: e.periode })));
+    const mens = s31.filter((e) => e.code === 'S98-MENS').sort((a, b) => a.th.localeCompare(b.th));
+    const attMens = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((k) => theo(2027, k, 31));
+    verifier('Une mensuelle au 31 : douze échéances, une par mois, au dernier jour réel (28 février, 30 avril…), aucune ne déborde sur le mois suivant',
+      mens.length === 12 && mens.every((e, i) => e.th === isoJ(attMens[i]) && e.ech === isoJ(roule(attMens[i]))) && new Set(mens.map((e) => e.th.slice(0, 7))).size === 12, JSON.stringify(mens.map((e) => e.th)));
+    const fev = s31.filter((e) => e.code === 'S98-FEV'), avr = s31.filter((e) => e.code === 'S98-AVR');
+    verifier('Une annuelle au 31 février donne le 28 février 2027 (reporté au lundi 01/03/2027), au 31 avril le 30 avril 2027',
+      fev.length === 1 && fev[0].th === '2027-02-28' && fev[0].ech === isoJ(roule(new Date(2027, 1, 28))) && avr.length === 1 && avr[0].th === '2027-04-30', JSON.stringify([fev, avr]));
+    const periodes = await page.evaluate(() => {
+      const l = window.SIGH.store.collection('echeancesFiscales').active().filter((e) => e.code === 'ITS' && e.exercice === 2026).sort((a, b) => a.echeanceTheorique.localeCompare(b.echeanceTheorique));
+      return l.map((e) => e.periode);
+    });
+    const periodesM = mens.map((e) => e.periode);
+    verifier('Les libellés de période sont justes : l’échéance du 10 janvier règle décembre de l’exercice d’avant, celle du 10 février janvier',
+      periodes[0] === 'décembre 2025' && periodes[1] === 'janvier 2026' && periodes[11] === 'novembre 2026' && periodesM[0] === 'décembre 2026' && periodesM[11] === 'novembre 2027', JSON.stringify([periodes.slice(0, 2), periodes[11], periodesM[0], periodesM[11]]));
+
+    /* --- 4 et 5. une version à venir : visible, refus nommé, annulée à l'écran (archive RG-14, la précédente rouverte, le journal) ---------- */
+    const v4 = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale, S = window.SIGH.store;
+      const r = CF.modifierObligation({ code: 'CNSS', valeurs: { jour: 15 }, dateEffet: '2026-12-01', motif: 'Sonde 98 : CNSS au 15 à compter de décembre' });
+      const dec = S.collection('echeancesFiscales').active().filter((e) => e.code === 'CNSS' && e.exercice === 2026 && /2026-12/.test(e.echeanceTheorique || ''));
+      /* La décembre régénérée est réglée : une quittance ne se réécrit jamais. */
+      dec.forEach((e) => S.collection('echeancesFiscales').update(e.id, { paye: true, datePaiement: '2026-12-15', reference: 'QUIT-S98-CNSS', valideePar: 'Sonde 98' }));
+      const D = window.SIGH.data;
+      return { ok: r.ok, avant: D.obligationsALaDate('2026-08-16').filter((o) => o.code === 'CNSS')[0].jour, apres: D.obligationsALaDate('2026-12-01').filter((o) => o.code === 'CNSS')[0].jour,
+        dec: dec.map((e) => e.echeanceTheorique), decId: dec.map((e) => e.id), aout: S.collection('echeancesFiscales').active().filter((e) => e.code === 'CNSS' && /2026-08/.test(e.echeanceTheorique)).map((e) => e.echeanceTheorique) };
+    });
+    verifier('CNSS au 15 programmée au 01/12/2026 : la version en vigueur reste celle du 10 jusqu’à cette date, la régénération ne touche que décembre (15/12), août reste au 10',
+      v4.ok && v4.avant === 10 && v4.apres === 15 && v4.dec.length === 1 && v4.dec[0] === '2026-12-15' && v4.aout[0] === '2026-08-10', JSON.stringify(v4));
+    await ouvrir('cfg-comptabilite.html'); await admin(); await ouvrir('cfg-comptabilite.html');
+    const dom4 = await page.evaluate(() => {
+      const m = document.querySelector('.version-a-venir[data-code="CNSS"]');
+      const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => /^CNSS/.test((tr.querySelector('td') || {}).textContent || ''));
+      return { mention: m ? m.textContent : null, date: m ? m.getAttribute('data-date-effet') : null, carte: !!document.getElementById('versions-a-venir'), ligne: ligne ? ligne.textContent : null,
+        annuler: [...document.querySelectorAll('#page-content button')].filter((b) => /^Annuler la version à venir/.test(b.getAttribute('title') || '')).length };
+    });
+    verifier('La version à venir est VISIBLE à l’écran : mention « À compter du 01/12/2026 : le 15 du mois suivant » sur la ligne, carte « Versions programmées », ancienne version toujours affichée (le 10) ; la commande d’annulation est offerte',
+      dom4.mention && /À compter du 01\/12\/2026 : le 15 du mois suivant/.test(dom4.mention) && dom4.date === '2026-12-01' && dom4.carte && /le 10 du mois suivant/.test(dom4.ligne || '') && dom4.annuler >= 1, JSON.stringify(dom4));
+    const r5 = await page.evaluate(() => {
+      const r = window.SIGH.configurationFiscale.modifierObligation({ code: 'CNSS', valeurs: { jour: 12 }, dateEffet: '2026-10-01', motif: 'Sonde 98 : correction intercalée' });
+      const p = window.SIGH.configurationFiscale.parametresFiscauxEnVigueur;
+      return { ok: r.ok, code: r.code, motif: r.motif, geste: r.geste, nomme: r.versionAVenir };
+    });
+    verifier('Le refus DATE_EFFET_ANTERIEURE NOMME la version à venir (01/12/2026, le 15 du mois suivant) et le geste de correction (annuler d’abord la version à venir)',
+      r5.ok === false && r5.code === 'DATE_EFFET_ANTERIEURE' && /01\/12\/2026/.test(r5.motif) && /le 15 du mois suivant/.test(r5.motif) && /Annuler d’abord la version à venir/.test(r5.geste) && r5.nomme && r5.nomme.code === 'CNSS', JSON.stringify(r5));
+    const avantAnnul = await page.evaluate(() => ({ journal: window.SIGH.store.raw().audit.length, histActives: window.SIGH.store.collection('historiqueObligations').active().length,
+      oblActives: window.SIGH.store.collection('obligationsFiscales').active().length }));
+    /* Le geste à l'écran : bouton « Annuler la version à venir », motif, confirmation. */
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].filter((b) => /^Annuler la version à venir/.test(b.getAttribute('title') || '')).filter((b) => /CNSS/.test((b.closest('tr') || {}).textContent || ''))[0].click(); });
+    await page.waitForFunction(() => document.querySelector('textarea'), { timeout: 8000 });
+    await page.evaluate(() => { const t = document.querySelector('textarea'); t.value = 'Sonde 98 : erreur de saisie, le 15 n’est pas confirmé'; t.dispatchEvent(new Event('input', { bubbles: true })); t.dispatchEvent(new Event('change', { bubbles: true }));
+      [...document.querySelectorAll('button')].filter((b) => /Annuler la version à venir/.test(b.textContent))[0].click(); });
+    await page.waitForFunction(() => !document.querySelector('.version-a-venir[data-code="CNSS"]'), { timeout: 8000 }).catch(() => {});
+    const ap = await page.evaluate(() => {
+      const S = window.SIGH.store, D = window.SIGH.data;
+      const ob = S.collection('obligationsFiscales').all().filter((o) => o.code === 'CNSS');
+      const act = ob.filter((o) => o.statut !== 'archive');
+      const arch = ob.filter((o) => o.statut === 'archive');
+      const hist = S.collection('historiqueObligations').all().filter((h) => h.code === 'CNSS');
+      const dec = S.collection('echeancesFiscales').active().filter((e) => e.code === 'CNSS' && e.exercice === 2026 && /2026-12/.test(e.echeanceTheorique));
+      const j = S.raw().audit.slice(0, 12).map((a) => a.action || a.libelle || '').join('|');
+      return { actives: act.length, jourActive: act[0] && act[0].jour, dateEffetActive: act[0] && act[0].dateEffet, archivee: arch.length, archJour: arch[0] && arch[0].jour, archMotif: arch[0] && (arch[0]._motifArchivage || ''),
+        histActives: hist.filter((h) => h.statut !== 'archive').length, histArch: hist.filter((h) => h.statut === 'archive').length,
+        enForce: D.obligationsALaDate('2026-12-20').filter((o) => o.code === 'CNSS')[0] && D.obligationsALaDate('2026-12-20').filter((o) => o.code === 'CNSS')[0].jour,
+        dec: dec.map((e) => ({ th: e.echeanceTheorique, paye: e.paye, ref: e.reference, id: e.id })), mention: !!document.querySelector('.version-a-venir[data-code="CNSS"]'), journal: j };
+    });
+    verifier('Annulation à l’écran : la version du 15 est ARCHIVÉE avec son motif (RG-14), la précédente est ROUVERTE (le 10, d’origine), son entrée d’historique archivée, la mention a disparu',
+      ap.actives === 1 && ap.jourActive === 10 && !ap.dateEffetActive && ap.archivee === 1 && ap.archJour === 15 && /Version à venir annulée/.test(ap.archMotif) && /erreur de saisie/.test(ap.archMotif) && ap.histActives === 0 && ap.histArch === 1 && ap.enForce === 10 && !ap.mention, JSON.stringify(ap));
+    verifier('L’annulation ne réécrit pas une payée : la décembre réglée garde son jour (15/12), sa quittance et son identifiant ; aucune doublure du 10/12 n’est recréée ; le journal porte le geste',
+      ap.dec.length === 1 && ap.dec[0].th === '2026-12-15' && ap.dec[0].paye === true && ap.dec[0].ref === 'QUIT-S98-CNSS' && ap.dec[0].id === v4.decId[0] && /Annulation de version à venir d’obligation fiscale/.test(ap.journal), JSON.stringify(ap.dec) + ap.journal.slice(0, 200));
+    const r5b = await page.evaluate(() => { const r = window.SIGH.configurationFiscale.annulerVersionAVenir({ code: 'CNSS', motif: 'Sonde 98' }); const r2 = window.SIGH.configurationFiscale.annulerVersionAVenir({ code: 'ITS', motif: '' });
+      return { code: r.code, geste: !!r.geste, sansMotif: r2.code }; });
+    verifier('Annuler une version déjà en force est refusé (AUCUNE_VERSION_A_VENIR, geste nommé) ; sans motif, refus MOTIF_REQUIS', r5b.code === 'AUCUNE_VERSION_A_VENIR' && r5b.geste && r5b.sansMotif === 'MOTIF_REQUIS', JSON.stringify(r5b));
+
+    /* --- 6. rétablir à la même date d'effet : aucun historique dont la fin précède le début ----------------------------------------- */
+    const r6 = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale, S = window.SIGH.store, D = window.SIGH.data;
+      const a = CF.modifierObligation({ code: 'TVM', valeurs: { jour: 15 }, dateEffet: '2026-12-01', motif: 'Sonde 98 : TVM au 15' });
+      const b = CF.modifierObligation({ code: 'TVM', valeurs: { jour: 30 }, dateEffet: '2026-12-01', motif: 'Sonde 98 : rétablissement à la même date' });
+      const hist = S.collection('historiqueObligations').all().filter((h) => h.code === 'TVM');
+      const inverses = hist.filter((h) => h.dateFin && h.dateEffet && String(h.dateFin) < String(h.dateEffet));
+      const meme = hist.filter((h) => h.memeDate);
+      return { a: a.ok, b: b.ok, nHist: hist.length, inverses: inverses.length, meme: meme.length, memeFin: meme[0] && meme[0].dateFin, avant: D.obligationsALaDate('2026-11-30').filter((o) => o.code === 'TVM')[0].jour, apres: D.obligationsALaDate('2026-12-02').filter((o) => o.code === 'TVM')[0].jour };
+    });
+    verifier('Rétablir à la même date d’effet : aucune ligne d’historique ne finit avant de commencer, la version remplacée le même jour est marquée (fin vide), les jours en vigueur sont justes',
+      r6.a && r6.b && r6.inverses === 0 && r6.meme === 1 && !r6.memeFin && r6.avant === 30 && r6.apres === 30, JSON.stringify(r6));
+    const r6b = await page.evaluate(() => { const r = window.SIGH.configurationFiscale.annulerVersionAVenir({ code: 'TVM', motif: 'Sonde 98 : fin de sonde' }); return { ok: r.ok, jour: window.SIGH.data.obligationsALaDate('2026-12-02').filter((o) => o.code === 'TVM')[0].jour, dateEffet: window.SIGH.configurationFiscale.versionAVenirDe('TVM') }; });
+    verifier('Annuler la version à venir qui a remplacé son propre jour rouvre la version d’origine de la TVM (le 30)', r6b.ok && r6b.jour === 30 && r6b.dateEffet === null, JSON.stringify(r6b));
+
+    /* --- 7. les textes qui répètent un jour sont CALCULÉS : modifier le jour d'ETATS-FIN et d'IS-SOLDE change les phrases ------------------ */
+    const lireFiscalite = async () => { await ouvrir('cfg-fiscalite.html'); await admin(); await ouvrir('cfg-fiscalite.html');
+      return page.evaluate(() => document.getElementById('page-content').textContent.replace(/\s+/g, ' ')); };
+    const avantTxt = await lireFiscalite();
+    await page.evaluate(() => { const CF = window.SIGH.configurationFiscale;
+      CF.modifierObligation({ code: 'ETATS-FIN', valeurs: { jour: 29 }, dateEffet: '2026-08-16', motif: 'Sonde 98 : dépôt au 29' });
+      CF.modifierObligation({ code: 'IS-SOLDE', valeurs: { jour: 28 }, dateEffet: '2026-08-16', motif: 'Sonde 98 : solde au 28' }); });
+    const apresTxt = await lireFiscalite();
+    verifier('Les phrases qui répétaient un jour (dépôt des états financiers, liquidation du solde) sont calculées : avant « le 30 avril », après la modification « le 29 avril » et « le 28 avril », sans que le texte ait été retouché',
+      /dépôt le 30 avril/.test(avantTxt) && /liquidation du solde \(le 30 avril\)/.test(avantTxt)
+      && /dépôt le 29 avril/.test(apresTxt) && /liquidation du solde \(le 28 avril\)/.test(apresTxt) && !/dépôt le 30 avril/.test(apresTxt), JSON.stringify([/dépôt le \d+ avril/.exec(avantTxt), /dépôt le \d+ avril/.exec(apresTxt), /solde \(le \d+ avril\)/.exec(apresTxt)]));
+    const notes = await page.evaluate(() => window.SIGH.store.collection('obligationsFiscales').active().filter((o) => o.type !== 'parametres').filter((o) => /\b(10|28|29|30|31)\b ?(du mois|janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)|300 000|150 000/i.test(o.note || '')).map((o) => o.code));
+    verifier('Aucune note d’obligation ne répète un jour ni un montant (la note est le commentaire libre, le jour est lu de l’obligation)', notes.length === 0, JSON.stringify(notes));
+
+    /* --- 8. les seuils sont des PARAMÈTRES : modifiés à l'écran, ils changent l'état d'une échéance ET le seuil du planificateur ------------ */
+    const P0 = await page.evaluate(() => { const D = window.SIGH.data; const d = D.delaisFiscauxALaDate('2026-08-16'); return { aPayer: d.delaiAPayer, decl: d.delaiDeclaration, ccib: D.montantCcibALaDate('2026-08-16').total,
+      lignes: window.SIGH.store.collection('parametresFiscaux').active().length, sources: window.SIGH.store.collection('parametresFiscaux').active().map((p) => p.code + ':' + (p.aValider ? 'a_valider' : 'arrete')).join(',') }; });
+    verifier('Les seuils (10 et 30 jours) et le montant de la CCIB (300 000 F) sont des fiches de la collection parametresFiscaux, semées au socle, marquées à valider',
+      P0.aPayer === 10 && P0.decl === 30 && P0.ccib === 300000 && P0.lignes === 2 && /DELAIS-ALERTE:a_valider/.test(P0.sources) && /CCIB-MONTANT:a_valider/.test(P0.sources), JSON.stringify(P0));
+    /* Le serveur : l'échéance la plus proche de la veille du seuil, mesurée sur une grille de sondes datées du JOUR DU SERVEUR. */
+    const serveurAuj = new Date().toISOString().slice(0, 10);   /* le serveur PHP du banc tourne sur cette machine : même horloge réelle */
+    const sondesCron = await page.evaluate((auj) => {
+      const S = window.SIGH.store, col = S.collection('echeancesFiscales');
+      const plus = (n) => { const d = new Date(auj + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+      const o = {};
+      [10, 11, 30, 31].forEach((n) => { const r = col.insert({ code: 'S98-CRON' + n, libelle: 'Sonde 98 cron +' + n, famille: 'S98', periodicite: 'annuelle', exercice: 2099, periode: '2099', echeance: plus(n), echeanceTheorique: plus(n), reportee: false, paye: false }); o[n] = r.record.id; });
+      return o;
+    }, serveurAuj);
+    const alertesCron = () => page.evaluate(async (ids) => {
+      const S = window.SIGH.store;
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      S.pousserMaintenant();
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/notifications.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': S.jetonServeur() }, body: JSON.stringify({ action: 'executer', code: 'echeances_fiscales' }) });
+      const o = await r.json();
+      await window.SIGH.notifications.sonderServeur();
+      const cles = window.SIGH.notifications.etatServeur().alertes.map((a) => a.cle);
+      const out = { statut: o.rapport && o.rapport.echeances_fiscales && o.rapport.echeances_fiscales.statut, message: o.rapport && o.rapport.echeances_fiscales && o.rapport.echeances_fiscales.message };
+      Object.keys(ids).forEach((n) => { out['j' + n] = cles.indexOf('echeance:' + ids[n]) >= 0; });
+      return out;
+    }, sondesCron);
+    await page.evaluate(() => window.SIGH.store.pousserMaintenant());
+    const cron0 = await alertesCron();
+    verifier('Planificateur, seuil d’origine : l’alerte du serveur porte sur l’échéance à 10 jours et pas au-delà (le seuil lu côté PHP vaut 10, comme l’écran)',
+      cron0.statut === 'ok' && cron0.j10 === true && cron0.j11 === false && cron0.j30 === false && cron0.j31 === false, JSON.stringify(cron0));
+    /* Le geste : la DAF passe les seuils à 30 et 45 jours depuis l'écran. */
+    await sessionDe('da'); await ouvrir('cfg-comptabilite.html');
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].filter((b) => /^Modifier \(version datée\)/.test(b.getAttribute('title') || ''))
+      .filter((b) => /DELAIS-ALERTE/.test((b.closest('tr') || {}).textContent || ''))[0].click(); });
+    await page.waitForFunction(() => document.querySelector('input[name="delaiAPayer"]'), { timeout: 8000 });
+    const poser = (nom, val) => page.evaluate((n, v) => { const i = document.querySelector('input[name="' + n + '"]'); i.value = v; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); }, nom, val);
+    await poser('delaiAPayer', '30'); await poser('delaiDeclaration', '45');
+    await page.evaluate(() => { [...document.querySelectorAll('button')].filter((b) => /^Continuer/.test(b.textContent.trim()))[0].click(); });
+    await page.waitForFunction(() => document.querySelector('textarea'), { timeout: 8000 });
+    await page.evaluate(() => { const t = document.querySelector('textarea'); t.value = 'Sonde 98 : délais portés à 30 et 45 jours'; t.dispatchEvent(new Event('input', { bubbles: true })); t.dispatchEvent(new Event('change', { bubbles: true }));
+      [...document.querySelectorAll('button')].filter((b) => /^Appliquer/.test(b.textContent.trim()))[0].click(); });
+    await page.waitForFunction(() => { const v = document.querySelector('.valeur-parametre[data-code="DELAIS-ALERTE"]'); return v && /sous 30 jours/.test(v.textContent); }, { timeout: 8000 }).catch(() => {});
+    const P1 = await page.evaluate(() => { const D = window.SIGH.data; const d = D.delaisFiscauxALaDate('2026-08-16'); const v = document.querySelector('.valeur-parametre[data-code="DELAIS-ALERTE"]');
+      const lignes = window.SIGH.configurationFiscale.versionsParametresFiscaux('DELAIS-ALERTE');
+      return { aPayer: d.delaiAPayer, decl: d.delaiDeclaration, ecran: v && v.textContent, lignes: lignes.length, modifiePar: lignes[lignes.length - 1].modifiePar, motif: lignes[lignes.length - 1].motif, ancienne: lignes[0].delaiAPayer }; });
+    verifier('Modifier les délais à l’écran crée une version datée (la semence reste, rien n’est réécrit) : 30 et 45 jours en vigueur, l’écran le dit, le motif et l’auteur sont portés',
+      P1.aPayer === 30 && P1.decl === 45 && /sous 30 jours/.test(P1.ecran || '') && P1.lignes === 2 && P1.ancienne === 10 && /30 et 45 jours/.test(P1.motif) && /SONDE98/.test(P1.modifiePar), JSON.stringify(P1));
+    await admin();
+    const cron1 = await alertesCron();
+    verifier('Planificateur après le geste : le serveur lit le NOUVEAU seuil (30) : il alerte à 10, 11 et 30 jours et PAS à 31 (la valeur lue côté PHP égale la valeur de l’écran, 30)',
+      cron1.statut === 'ok' && cron1.j10 && cron1.j11 && cron1.j30 && cron1.j31 === false && P1.aPayer === 30, JSON.stringify(cron1));
+    /* L'état d'une échéance du suivi suit : l'ITS du 10/09/2026 (25 jours) était « déclaration attendue », elle devient « à payer ». */
+    await ouvrir('m12-echeances.html'); await admin(); await ouvrir('m12-echeances.html');
+    const suivi8 = await page.evaluate(() => { const t = document.getElementById('page-content').textContent.replace(/\s+/g, ' ');
+      const kpi = /À payer sous (\d+) jours/.exec(t); const n = [...document.querySelectorAll('#page-content .kpi, #page-content [class*="kpi"]')];
+      return { label: kpi && kpi[1], apercu: /(\d+) paiement\(s\) à effectuer sous (\d+ jours|dix jours)/.exec(t) }; });
+    verifier('Le suivi lit le même paramètre : « À payer sous 30 jours » et la barre annonce les paiements « sous 30 jours » (et non plus dix)', suivi8.label === '30' && suivi8.apercu && suivi8.apercu[2] === '30 jours', JSON.stringify(suivi8));
+    const verif8 = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale;
+      const futur = CF.modifierParametreFiscal({ code: 'DELAIS-ALERTE', valeurs: { delaiAPayer: 5, delaiDeclaration: 20 }, dateEffet: '2027-06-01', motif: 'Sonde 98 : version à venir' });
+      const refus = CF.modifierParametreFiscal({ code: 'DELAIS-ALERTE', valeurs: { delaiAPayer: 6 }, dateEffet: '2027-05-01', motif: 'Sonde 98 : intercalée' });
+      const incoh = CF.modifierParametreFiscal({ code: 'DELAIS-ALERTE', valeurs: { delaiAPayer: 50, delaiDeclaration: 40 }, dateEffet: '2028-01-01', motif: 'Sonde 98 : incohérent' });
+      const sansMotif = CF.modifierParametreFiscal({ code: 'CCIB-MONTANT', valeurs: { montantTotal: 400000 }, dateEffet: '2027-01-01', motif: '' });
+      const ccib = CF.modifierParametreFiscal({ code: 'CCIB-MONTANT', valeurs: { montantTotal: 400000 }, dateEffet: '2027-01-01', motif: 'Sonde 98 : CCIB révisée' });
+      const D = window.SIGH.data;
+      const avant = D.delaisFiscauxALaDate('2027-05-31').delaiAPayer, apres = D.delaisFiscauxALaDate('2027-06-01').delaiAPayer;
+      const ccibDates = [D.montantCcibALaDate('2026-12-31').total, D.montantCcibALaDate('2027-01-01').total];
+      const annul = futur.ok ? CF.annulerParametreFiscal({ id: futur.fiche.id, motif: 'Sonde 98 : abandonnée' }) : null;
+      const encore = D.delaisFiscauxALaDate('2027-07-01').delaiAPayer;
+      const hors = CF.annulerParametreFiscal({ id: CF.versionsParametresFiscaux('DELAIS-ALERTE')[1].id, motif: 'Sonde 98' });
+      return { futur: futur.ok, refus: refus.code, refusNomme: /01\/06\/2027/.test(refus.motif || '') && /Annuler/.test(refus.geste || ''), incoh: incoh.code, sansMotif: sansMotif.code, ccib: ccib.ok, ccibDates, avant, apres, annul: annul && annul.ok, encore, hors: hors.code };
+    });
+    verifier('Une version de paramètre programmée ne change rien avant sa date (30 jusqu’au 31/05/2027, 5 le 01/06) ; un second changement antérieur est refusé en NOMMANT la version à venir ; 50 jours « à payer » avec 40 de déclaration est refusé ; sans motif refusé ; la CCIB à 400 000 F ne vaut qu’à partir du 01/01/2027',
+      verif8.futur && verif8.avant === 30 && verif8.apres === 5 && verif8.refus === 'DATE_EFFET_ANTERIEURE' && verif8.refusNomme && verif8.incoh === 'DELAI_INCOHERENT' && verif8.sansMotif === 'MOTIF_REQUIS'
+      && verif8.ccib && verif8.ccibDates[0] === 300000 && verif8.ccibDates[1] === 400000, JSON.stringify(verif8));
+    verifier('Annuler une version de paramètre à venir l’archive et laisse la précédente en vigueur ; une version déjà en force ne s’annule pas (AUCUNE_VERSION_A_VENIR)', verif8.annul === true && verif8.encore === 30 && verif8.hors === 'AUCUNE_VERSION_A_VENIR', JSON.stringify([verif8.annul, verif8.encore, verif8.hors]));
+    const ccibDOM = await page.evaluate(() => { const D = window.SIGH.data; return { fiscalite: D.montantCcibALaDate('2027-02-01').total }; });
+    verifier('Le montant de la CCIB est lu aux paramètres : 400 000 F à compter de 2027 (l’écran de référence n’écrit plus 300 000 en dur)', ccibDOM.fiscalite === 400000, JSON.stringify(ccibDOM));
+    await ouvrir('cfg-comptabilite.html'); await admin(); await ouvrir('cfg-comptabilite.html');
+    const ccibTxt = await page.evaluate(() => document.getElementById('page-content').textContent.replace(/[\s  ]/g, ''));
+    verifier('cfg-comptabilite montre le montant de la CCIB lu au paramètre en vigueur aujourd’hui (300000), et la version à venir du 01/01/2027 (400000)', /300000/.test(ccibTxt) && /Àcompterdu01\/01\/2027:400000/.test(ccibTxt), ccibTxt.slice(ccibTxt.indexOf('CCIB'), ccibTxt.indexOf('CCIB') + 80));
+
+    /* --- 9. l'exercice suivant : le jeu l'a, un nouvel exercice se génère à son ouverture, sans toucher une payée ------------------------ */
+    const E9 = await page.evaluate(() => {
+      const S = window.SIGH.store, X = window.SIGH.exercice;
+      const col = S.collection('echeancesFiscales');
+      const pre = col.active().filter((e) => e.exercice === 2027 && !/^S98/.test(e.code));
+      const payee = pre.filter((e) => e.code === 'IS-1')[0];
+      col.update(payee.id, { paye: true, datePaiement: '2027-03-10', reference: 'QUIT-S98-2027', valideePar: 'Sonde 98', montant: 123456 });
+      const snap = JSON.stringify(col.all().filter((e) => e.exercice === 2026 || e.exercice === 2027));
+      const idem = S.assurerEcheances(2027);
+      const memeApres = JSON.stringify(col.all().filter((e) => e.exercice === 2026 || e.exercice === 2027)) === snap;
+      /* L'exercice qui s'ouvre : le premier année sans fiche d'exercice, au-delà du jeu (une suite complète peut en avoir laissé d'autres). */
+      const Y = Math.max.apply(null, [2027].concat(S.raw().exercices.map((x) => x.annee))) + 1;
+      const avantY = col.all().filter((e) => e.exercice === Y).length;
+      const lointain = S.assurerEcheances(Y + 5);
+      const lointainRien = col.all().filter((e) => e.exercice === Y + 5).length;
+      const dec = new Date(Y, 0, 18, 12).getTime() - Date.now();
+      window.__SIGH_HORLOGE.decaler(dec);   /* 18 janvier de Y : l'exercice Y s'ouvre */
+      const passe = S.assurerEcheances(Y - 1);   /* l'exercice d'avant, non clos : passé */
+      const liste = X.liste().map((x) => x.annee);
+      const apresY = col.active().filter((e) => e.exercice === Y);
+      const inchanges = JSON.stringify(col.all().filter((e) => e.exercice === 2026 || e.exercice === 2027)) === snap;
+      const idemY = S.assurerEcheances(Y);
+      const fevrierY = apresY.filter((e) => e.code === 'S98-FEV').map((e) => e.echeanceTheorique);
+      window.__SIGH_HORLOGE.decaler(-dec);
+      const clos = S.assurerEcheances(2025);
+      /* Le banc rend l'exercice qu'il a ouvert (échéances archivées, RG-14 ; la fiche d'exercice, DÉRIVÉE, retirée) pour que la suite parte du jeu. */
+      col.active().filter((e) => e.exercice === Y).forEach((e) => col.archive(e.id, 'Sonde 98 : fin de sonde'));
+      S.raw().exercices = S.raw().exercices.filter((x) => x.annee !== Y);
+      S.save();
+      return { Y, n2027: pre.length, codes2027: new Set(pre.map((e) => e.code)).size, idem: idem.creees, memeApres, avantY, liste, nY: apresY.length, codesY: new Set(apresY.filter((e) => !/^S98/.test(e.code)).map((e) => e.code)).size,
+        payeesY: apresY.filter((e) => e.paye).length, inchanges, idemY: idemY.creees, fevrierY, clos: clos.refus, lointain: lointain.refus, lointainRien, passe: passe.refus };
+    });
+    const Y9 = E9.Y;
+    verifier('Le jeu porte l’échéancier de l’exercice suivant (2027 : 63 échéances, 19 obligations) ; régénérer 2027 est idempotent (0 créée) et ne touche à rien, la payée de 2027 comprise',
+      E9.n2027 === 63 && E9.codes2027 === 19 && E9.idem === 0 && E9.memeApres === true, JSON.stringify(E9));
+    verifier('Un nouvel exercice se génère à son OUVERTURE (la liste des exercices l’ajoute) : il naît avec ses 19 obligations, aucune payée, le 31 février de sonde y tombe au dernier jour réel de février (29 si l’année est bissextile), 2026 et 2027 sont intacts octet pour octet, la seconde génération ne crée rien',
+      E9.avantY === 0 && E9.liste.indexOf(Y9) >= 0 && E9.nY >= 63 && E9.codesY === 19 && E9.payeesY === 0 && E9.inchanges === true && E9.idemY === 0 && E9.fevrierY.length === 1 && E9.fevrierY[0] === isoJ(theo(Y9, 1, 31)), JSON.stringify(E9));
+    verifier('Un exercice clos ne se génère pas (EXERCICE_CLOS, la liasse déposée est une lecture) ; ni un exercice passé (EXERCICE_PASSE), ni un exercice lointain (EXERCICE_LOINTAIN, rien n’est écrit)',
+      E9.clos === 'EXERCICE_CLOS' && E9.passe === 'EXERCICE_PASSE' && E9.lointain === 'EXERCICE_LOINTAIN' && E9.lointainRien === 0, JSON.stringify([E9.clos, E9.passe, E9.lointain, E9.lointainRien]));
+
+    /* --- 10. la vue mensuelle : le même registre, les mêmes échéances et le même état que le suivi ------------------------------------- */
+    const V10 = await page.evaluate(() => {
+      const S = window.SIGH.store, N = window.SIGH.nav;
+      const r = S.collection('echeancesFiscales').insert({ code: 'S98-VUE', libelle: 'Sonde 98 vue', famille: 'S98', periodicite: 'annuelle', exercice: 2026, periode: '2026', echeance: '2026-08-20', echeanceTheorique: '2026-08-20', reportee: false, paye: false });
+      const roles = Object.keys(N.ROLES).filter((x) => !N.roleArchive || !N.roleArchive(x));
+      const ecart = roles.filter((role) => !!N.can(role, N.get('m12-calendrier-fiscal')) !== !!N.can(role, N.get('m12-echeances')));
+      return { id: r.record.id, ecart, nRoles: roles.length };
+    });
+    verifier('La vue mensuelle porte les droits de m12-echeances, rôle par rôle (aucun écart sur tous les profils)', V10.ecart.length === 0 && V10.nRoles >= 15, JSON.stringify(V10));
+    await ouvrir('m12-calendrier-fiscal.html'); await admin(); await ouvrir('m12-calendrier-fiscal.html');
+    const lireMois = () => page.evaluate(() => ({ titre: (document.getElementById('cal-titre') || {}).textContent, mois: (document.getElementById('calendrier-fiscal') || { getAttribute: () => null }).getAttribute('data-mois'),
+      chips: [...document.querySelectorAll('.cal-ech')].map((b) => ({ id: b.getAttribute('data-echeance'), date: b.getAttribute('data-date'), etat: b.getAttribute('data-etat'), code: b.getAttribute('data-code') })),
+      lignes: document.querySelectorAll('#page-content table tbody tr').length }));
+    const attendu = (mois, delais) => page.evaluate((m, d) => {
+      const S = window.SIGH.store, auj = new Date(2026, 7, 16);
+      const j = (iso) => Math.round((new Date(iso + 'T12:00:00') - new Date(auj.getFullYear(), auj.getMonth(), auj.getDate(), 12)) / 86400000);
+      return S.collection('echeancesFiscales').active().filter((e) => e.echeance.slice(0, 7) === m).map((e) => {
+        const n = j(e.echeance);
+        const etat = e.paye ? 'payee' : n < 0 ? 'en_retard' : n <= d.aPayer ? 'a_payer' : (e.declaration && n <= d.decl) ? 'declaration' : 'a_venir';
+        return { id: e.id, date: e.echeance, etat, code: e.code };
+      }).sort((a, b) => a.date.localeCompare(b.date) || a.code.localeCompare(b.code));
+    }, mois, delais);
+    const trier = (l) => l.slice().sort((a, b) => a.date.localeCompare(b.date) || a.code.localeCompare(b.code));
+    const D30 = { aPayer: 30, decl: 45 };
+    const m0 = await lireMois(), a0 = await attendu('2026-08', D30);
+    verifier('La vue mensuelle s’ouvre sur le mois courant (août 2026) et montre EXACTEMENT les échéances du registre de ce mois, avec l’état du suivi (payée, en retard, à payer, à venir), sonde S98-VUE comprise',
+      /Août 2026/.test(m0.titre) && m0.mois === '2026-08' && JSON.stringify(trier(m0.chips)) === JSON.stringify(a0) && m0.chips.some((c) => c.code === 'S98-VUE' && c.date === '2026-08-20') && m0.lignes === a0.length && a0.length >= 5, JSON.stringify([m0.titre, m0.chips.length, a0.length, trier(m0.chips).slice(0, 2), a0.slice(0, 2)]));
+    await page.evaluate(() => document.getElementById('cal-suivant').click());
+    const m1 = await lireMois(), a1 = await attendu('2026-09', D30);
+    await page.evaluate(() => { document.getElementById('cal-precedent').click(); document.getElementById('cal-precedent').click(); });
+    const m2 = await lireMois(), a2 = await attendu('2026-07', D30);
+    verifier('La navigation mois suivant et mois précédent change la grille et reste égale au registre (septembre : ITS, AIB, VPS, CNSS, IS-3 ; juillet : les réglées)',
+      /Septembre 2026/.test(m1.titre) && JSON.stringify(trier(m1.chips)) === JSON.stringify(a1) && a1.length >= 5 && /Juillet 2026/.test(m2.titre) && JSON.stringify(trier(m2.chips)) === JSON.stringify(a2) && m2.chips.every((c) => c.etat === 'payee'), JSON.stringify([m1.titre, m1.chips.length, a1.length, m2.titre, m2.chips.length, a2.length]));
+    /* Une seule vérité : le règlement validé dans le registre change la vue. */
+    await page.evaluate((id) => { window.SIGH.store.collection('echeancesFiscales').update(id, { paye: true, datePaiement: '2026-08-16', reference: 'QUIT-S98-VUE', valideePar: 'Sonde 98' }); }, V10.id);
+    await ouvrir('m12-calendrier-fiscal.html'); await admin(); await ouvrir('m12-calendrier-fiscal.html');
+    const m3 = await lireMois();
+    verifier('Une seule vérité : l’échéance réglée dans le registre apparaît « payée » dans la vue mensuelle au rechargement (la vue ne garde aucune copie)', (m3.chips.filter((c) => c.code === 'S98-VUE')[0] || {}).etat === 'payee', JSON.stringify(m3.chips.filter((c) => c.code === 'S98-VUE')));
+    await sessionDe('caissier'); await ouvrir('m12-calendrier-fiscal.html');
+    const url403 = page.url();
+    verifier('Le caissier n’a pas la vue mensuelle (fermée comme le suivi : adresse renvoyée au 403)', /error-403/.test(url403), url403);
+
+    /* --- restitution : le magasin du banc retrouve ses collections (les fiches de sonde sont archivées avant, RG-14) ---------------------- */
+    await admin(); await ouvrir('m12-echeances.html'); await admin();
+    await page.evaluate((snap) => {
+      const S = window.SIGH.store, raw = S.raw();
+      Object.keys(snap).forEach((n) => { raw[n] = snap[n]; });
+      S.save();
+    }, instantane);
+    await attendreEnvoi();
+    const restitue = await page.evaluate(() => { const S = window.SIGH.store, D = window.SIGH.data;
+      return { ech: S.collection('echeancesFiscales').active().length, obl: S.collection('obligationsFiscales').active().length, params: S.collection('parametresFiscaux').active().length, jour: D.obligationsALaDate('2026-08-16').filter((o) => o.code === 'CNSS')[0].jour,
+        exos: S.collection('exercices').all().filter((x) => x.annee > 2026).length }; });
+    const attenduRest = { ech: instantane.echeancesFiscales.filter((e) => e.statut !== 'archive').length, exos: instantane.exercices.filter((x) => x.annee > 2026).length, params: instantane.parametresFiscaux.filter((p) => p.statut !== 'archive').length };
+    verifier('Le magasin est restitué à l’instantané (échéances actives, fiches d’exercice, paramètres) : les obligations d’origine, la CNSS au 10', restitue.ech === attenduRest.ech && restitue.params === attenduRest.params && restitue.params === 2 && restitue.jour === 10 && restitue.exos === attenduRest.exos, JSON.stringify([restitue, attenduRest]));
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 

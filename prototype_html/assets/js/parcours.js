@@ -3814,7 +3814,7 @@
     }
     return null;
   }
-  function controleDateEffet(d, minimum) {
+  function controleDateEffet(d, minimum, existante) {
     if (!d) return refusCfg('DATE_EFFET_REQUISE', 'La date d’effet est obligatoire.', 'Choisir la date à partir de laquelle la nouvelle version s’applique.');
     var annee = Number(String(d).slice(0, 4));
     var etat = global.SIGH.exercice && global.SIGH.exercice.etat ? global.SIGH.exercice.etat(annee) : 'ouvert';
@@ -3823,6 +3823,14 @@
         'Choisir une date d’effet dans l’exercice ' + C.aujourdhui().getFullYear() + '.');
     }
     if (minimum && d < isoJour(minimum)) {
+      /* Une version DÉJÀ PROGRAMMÉE à une date future est la vraie cause : le refus la NOMME et dit le geste (E-A3-03). */
+      if (existante && existante.dateEffet && isoJour(existante.dateEffet) > aujIso()) {
+        var quoi = existante.libelleVersion || D.libelleEcheance(existante);
+        return refusCfg('DATE_EFFET_ANTERIEURE', 'Une version de ' + (existante.code || 'cette fiche') + ' est déjà programmée à compter du ' + C.dateFR(isoJour(existante.dateEffet))
+          + ' (' + quoi + ') : la date d’effet (' + C.dateFR(d) + ') lui est antérieure.',
+          'Annuler d’abord la version à venir (commande « Annuler la version à venir » de la ligne, avec un motif), puis saisir la correction ; ou choisir une date d’effet au plus tôt le '
+          + C.dateFR(isoJour(minimum)) + '.', { versionAVenir: { code: existante.code, dateEffet: isoJour(existante.dateEffet), id: existante.id || null } });
+      }
       return refusCfg('DATE_EFFET_ANTERIEURE', 'La date d’effet (' + C.dateFR(d) + ') est antérieure à la version en vigueur (' + C.dateFR(isoJour(minimum)) + ').',
         'Choisir une date d’effet au plus tôt le ' + C.dateFR(isoJour(minimum)) + '.');
     }
@@ -3969,9 +3977,12 @@
   }
   function copieHistorique(fiche, d, motif, retiree) {
     var copie = Object.assign({}, fiche);
+    /* Rétablir À LA MÊME date d'effet ne peut pas écrire une version dont la fin précède le début (E-A3-04) : la version sortante
+       n'a jamais été en force avant cette date, elle est marquée « remplacée le même jour » et sa fin reste vide. */
+    var memeDate = !!(fiche.dateEffet && isoJour(fiche.dateEffet) === isoJour(d));
     ['id', 'statut', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', '_archivePar', '_archiveLe', '_motifArchivage'].forEach(function (k) { delete copie[k]; });
     return colHistoriqueObligations().insert(Object.assign(copie, {
-      obligationId: fiche.id, dateFin: veille(d), remplaceeLe: new Date().toISOString(), remplaceePar: acteur(),
+      obligationId: fiche.id, dateFin: memeDate ? null : veille(d), memeDate: memeDate, remplaceeLe: new Date().toISOString(), remplaceePar: acteur(),
       motifRemplacement: motif, retiree: !!retiree,
     })).record;
   }
@@ -3997,7 +4008,7 @@
     if (!fiche) return refusCfg('OBLIGATION_INCONNUE', 'Aucune obligation en vigueur ne porte cette référence.', 'Choisir une obligation du tableau.');
     if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de la modification est obligatoire.', 'Dire ce qui change et pourquoi (texte de loi, note de la DGI…).');
     var d = isoJour(o.dateEffet || aujIso());
-    r = controleDateEffet(d, fiche.dateEffet); if (r) return r;
+    r = controleDateEffet(d, fiche.dateEffet, fiche); if (r) return r;
     var fusion = Object.assign({}, fiche, o.valeurs || {});
     r = controleValeursObligation(fusion); if (r) return r;
     var apres = valeursObligation(fusion);
@@ -4045,7 +4056,7 @@
     if (!fiche) return refusCfg('OBLIGATION_INCONNUE', 'Aucune obligation en vigueur ne porte cette référence.', 'Choisir une obligation du tableau.');
     if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif du retrait est obligatoire.', 'Citer le texte qui supprime l’obligation.');
     var d = isoJour(o.dateEffet || aujIso());
-    r = controleDateEffet(d, fiche.dateEffet); if (r) return r;
+    r = controleDateEffet(d, fiche.dateEffet, fiche); if (r) return r;
     copieHistorique(fiche, d, String(o.motif).trim(), true);
     colObligations().archive(fiche.id, String(o.motif).trim());
     var reg = S.regenererEcheances({ code: fiche.code, dateEffet: d, auteur: acteur() });
@@ -4053,6 +4064,141 @@
     S.log('Retrait d’obligation fiscale', 'CFG', 'ObligationsFiscales', fiche.id, { code: fiche.code }, { dateFin: veille(d), motif: String(o.motif).trim() });
     return { ok: true, fiche: colObligations().get(fiche.id), echeances: reg };
   }
+  /** Les versions PROGRAMMÉES : fiches d'obligation dont la date d'effet n'est pas atteinte (la version en vigueur reste l'ancienne). */
+  function versionsAVenir() {
+    return colObligations().active().filter(function (f) { return f.type !== 'parametres' && f.dateEffet && isoJour(f.dateEffet) > aujIso(); });
+  }
+  function versionAVenirDe(code) { return versionsAVenir().filter(function (f) { return f.code === code; })[0] || null; }
+  /** La version qui était en force juste avant la fiche : la copie d'historique fermée à la veille de sa date d'effet. */
+  function versionPrecedente(fiche) {
+    if (!fiche || !fiche.dateEffet) return null;
+    var fin = veille(fiche.dateEffet);
+    return colHistoriqueObligations().active().filter(function (h) {
+      return h.type !== 'parametres' && h.obligationId === fiche.id && !h.retiree && h.dateFin === fin;
+    }).sort(function (a, b) { return String(b.remplaceeLe || '').localeCompare(String(a.remplaceeLe || '')); })[0] || null;
+  }
+  /**
+   * ANNULE UNE VERSION À VENIR (E-A3-03) : la fiche programmée est archivée (RG-14, motif obligatoire), la version qui la
+   * précédait est ROUVERTE (nouvelle fiche active, copie fidèle, son entrée d'historique archivée), les échéances non payées
+   * à partir de la date d'effet reviennent à l'ancienne version et les payées ne bougent pas. Une version déjà en force ne
+   * s'annule pas : elle a produit des échéances, elle se corrige par une nouvelle version datée.
+   */
+  function annulerVersionAVenir(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var fiche = obligationActive(o);
+    if (!fiche) return refusCfg('OBLIGATION_INCONNUE', 'Aucune obligation en vigueur ne porte cette référence.', 'Choisir une obligation du tableau.');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de l’annulation est obligatoire.', 'Dire pourquoi la version programmée est abandonnée (erreur de saisie, texte non confirmé…).');
+    if (!fiche.dateEffet || isoJour(fiche.dateEffet) <= aujIso()) {
+      return refusCfg('AUCUNE_VERSION_A_VENIR', 'La version de ' + fiche.code + ' est déjà en force' + (fiche.dateEffet ? ' depuis le ' + C.dateFR(isoJour(fiche.dateEffet)) : ' (version d’origine)') + ' : elle a produit des échéances, elle ne s’annule pas.',
+        'La corriger par une nouvelle version datée (commande « Modifier »).');
+    }
+    var d = isoJour(fiche.dateEffet);
+    var prec = versionPrecedente(fiche);
+    if (!prec) return refusCfg('VERSION_PRECEDENTE_ABSENTE', 'La version qui précédait celle du ' + C.dateFR(d) + ' n’est pas à l’historique : la rouvrir est impossible.', 'Modifier l’obligation par une nouvelle version datée.');
+    r = controleDateEffet(d); if (r) return r;
+    var motif = String(o.motif).trim();
+    var avant = { jour: fiche.jour, mois: fiche.mois, part: fiche.part, dateEffet: d };
+    var copie = Object.assign({}, prec);
+    ['id', 'statut', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', '_archivePar', '_archiveLe', '_motifArchivage',
+      'obligationId', 'dateFin', 'remplaceeLe', 'remplaceePar', 'motifRemplacement', 'retiree', 'memeDate'].forEach(function (k) { delete copie[k]; });
+    copie.rouverteLe = new Date().toISOString();
+    copie.rouvertePar = acteur();
+    copie.motifReouverture = 'Annulation de la version du ' + C.dateFR(d) + ' : ' + motif;
+    colObligations().archive(fiche.id, 'Version à venir annulée : ' + motif);
+    var rouverte = colObligations().insert(copie).record;
+    colHistoriqueObligations().archive(prec.id, 'Version rouverte (annulation de la version du ' + C.dateFR(d) + ')');
+    var reg = S.regenererEcheances({ code: fiche.code, dateEffet: d, auteur: acteur(), versionObligation: prec.dateEffet ? isoJour(prec.dateEffet) : null });
+    annoncerRegeneration(fiche.code, reg);
+    S.log('Annulation de version à venir d’obligation fiscale', 'CFG', 'ObligationsFiscales', fiche.id, avant,
+      { rouverte: rouverte.id, jour: rouverte.jour, mois: rouverte.mois, part: rouverte.part, motif: motif });
+    return { ok: true, fiche: rouverte, annulee: colObligations().get(fiche.id), echeances: reg };
+  }
+
+  /* --- Paramètres du calendrier fiscal (délais d'alerte, montant de la CCIB), versionnés par date ---------------------- */
+  function colParametresFiscaux() { return S.collection('parametresFiscaux', { module: 'CFG', entite: 'paramètre fiscal', prefix: 'PFI' }); }
+  /* Ce que chaque paramètre PORTE (noms de champs et règles de forme, jamais une valeur) : les valeurs vivent au magasin. */
+  var CHAMPS_PARAMETRE_FISCAL = { 'DELAIS-ALERTE': ['delaiAPayer', 'delaiDeclaration'], 'CCIB-MONTANT': ['montantTotal'] };
+  function versionsParametresFiscaux(code) {
+    return colParametresFiscaux().active().filter(function (p) { return !code || p.code === code; })
+      .sort(function (a, b) { return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')); });
+  }
+  function resumeParametre(p) {
+    if (p.code === 'DELAIS-ALERTE') return 'à payer sous ' + p.delaiAPayer + ' jours, déclaration sous ' + p.delaiDeclaration + ' jours';
+    return C.money(p.montantTotal, false);
+  }
+  function entier(v) { var n = Number(v); return v !== '' && v !== null && v !== undefined && isFinite(n) && n === Math.floor(n) ? n : null; }
+  function controleValeursParametre(code, v) {
+    if (code === 'DELAIS-ALERTE') {
+      var a = entier(v.delaiAPayer), b = entier(v.delaiDeclaration);
+      if (a === null || a < 1 || a > 365) return refusCfg('DELAI_INVALIDE', 'Le délai « à payer » est un nombre entier de jours, de 1 à 365.', 'Saisir le nombre de jours avant l’échéance où le paiement devient « à payer » (et alerté).');
+      if (b === null || b < 1 || b > 365) return refusCfg('DELAI_INVALIDE', 'Le délai de déclaration est un nombre entier de jours, de 1 à 365.', 'Saisir le nombre de jours avant l’échéance où la déclaration est attendue.');
+      if (b < a) return refusCfg('DELAI_INCOHERENT', 'Le délai de déclaration (' + b + ' j) ne peut pas être plus court que le délai « à payer » (' + a + ' j) : la déclaration précède le paiement.',
+        'Porter le délai de déclaration à ' + a + ' jours au moins, ou réduire le délai « à payer ».');
+    } else if (code === 'CCIB-MONTANT') {
+      var m = entier(v.montantTotal);
+      if (m === null || m < 1) return refusCfg('MONTANT_INVALIDE', 'Le montant de la CCIB est un nombre entier de francs strictement positif.', 'Saisir le montant annuel arrêté avec le cabinet comptable.');
+    }
+    return null;
+  }
+  /**
+   * Modifie un paramètre du calendrier : UNE NOUVELLE FICHE à sa date d'effet, jamais une réécriture (la version d'avant reste
+   * la version en vigueur jusqu'à la veille). Motif obligatoire, droits des obligations (poste mère, exercice ouvert).
+   */
+  function modifierParametreFiscal(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var code = String(o.code || '');
+    if (!CHAMPS_PARAMETRE_FISCAL[code]) return refusCfg('PARAMETRE_INCONNU', 'Aucun paramètre du calendrier ne porte le code « ' + code + ' ».', 'Choisir un paramètre du tableau.');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de la modification est obligatoire.', 'Dire ce qui change et pourquoi (décision de la Direction, avis du cabinet…).');
+    var d = isoJour(o.dateEffet || aujIso());
+    var versions = versionsParametresFiscaux(code);
+    var derniere = versions[versions.length - 1] || null;
+    r = controleDateEffet(d, derniere && derniere.dateEffet,
+      derniere && Object.assign({}, derniere, { libelleVersion: resumeParametre(derniere) })); if (r) return r;
+    if (versions.some(function (p) { return p.dateEffet && isoJour(p.dateEffet) === d; })) {
+      return refusCfg('VERSION_EXISTANTE', 'Une version de ' + code + ' prend déjà effet le ' + C.dateFR(d) + '.', 'Annuler cette version à venir si elle est fausse, ou choisir une autre date d’effet.');
+    }
+    var base = D.parametreFiscalALaDate(code, C.addDays(d, 36500)) || derniere || {};
+    var vals = {};
+    CHAMPS_PARAMETRE_FISCAL[code].forEach(function (k) { vals[k] = (o.valeurs && o.valeurs[k] !== undefined) ? o.valeurs[k] : base[k]; });
+    r = controleValeursParametre(code, vals); if (r) return r;
+    var fiche = { type: 'parametre', code: code, libelle: base.libelle || code, tranches: base.tranches,
+      source: 'Saisie à l’écran (cfg-comptabilite)', aValider: false, dateEffet: d,
+      modifieLe: new Date().toISOString(), modifiePar: acteur(), motif: String(o.motif).trim() };
+    CHAMPS_PARAMETRE_FISCAL[code].forEach(function (k) { fiche[k] = entier(vals[k]); });
+    var res = colParametresFiscaux().insert(fiche);
+    S.log('Modification de paramètre du calendrier fiscal', 'CFG', 'ParametresFiscaux', res.record.id,
+      derniere ? { resume: resumeParametre(derniere), dateEffet: derniere.dateEffet || null } : null,
+      { resume: resumeParametre(res.record), dateEffet: d, motif: fiche.motif });
+    return { ok: true, fiche: res.record, precedente: derniere, enForceAujourdhui: d <= aujIso() };
+  }
+  /** Annule une version à venir d'un paramètre : elle est archivée (RG-14, motif obligatoire) ; la version d'avant reste en vigueur. */
+  function annulerParametreFiscal(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var f = o.id ? colParametresFiscaux().get(o.id) : null;
+    if (!f || f.statut === 'archive') return refusCfg('PARAMETRE_INCONNU', 'Aucune version de paramètre ne porte cette référence.', 'Choisir une version du tableau.');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de l’annulation est obligatoire.', 'Dire pourquoi la version programmée est abandonnée.');
+    if (!f.dateEffet || isoJour(f.dateEffet) <= aujIso()) {
+      return refusCfg('AUCUNE_VERSION_A_VENIR', 'La version de ' + f.code + ' est déjà en force' + (f.dateEffet ? ' depuis le ' + C.dateFR(isoJour(f.dateEffet)) : ' (version d’origine)') + ' : elle ne s’annule pas.',
+        'La corriger par une nouvelle version datée (commande « Modifier »).');
+    }
+    colParametresFiscaux().archive(f.id, 'Version à venir annulée : ' + String(o.motif).trim());
+    S.log('Annulation de version à venir de paramètre du calendrier fiscal', 'CFG', 'ParametresFiscaux', f.id,
+      { resume: resumeParametre(f), dateEffet: f.dateEffet }, { motif: String(o.motif).trim() });
+    return { ok: true, annulee: f };
+  }
+  /* LA GARDE DU MAGASIN : une version de paramètre ne se réécrit pas (valeurs ni date d'effet) ; seule son archive est admise. */
+  S.garder('parametresFiscaux', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colParametresFiscaux().get(rec.id) : null;
+    if (!avant) return null;
+    var change = String(avant.dateEffet || '') !== String(rec.dateEffet || '');
+    CHAMPS_PARAMETRE_FISCAL[avant.code] && CHAMPS_PARAMETRE_FISCAL[avant.code].forEach(function (k) { if (String(avant[k]) !== String(rec[k])) change = true; });
+    return change ? 'PARAMETRE_VERSION_FIGEE : une version de paramètre ne se réécrit pas. Ajouter une nouvelle version à une date d’effet postérieure.' : null;
+  });
+
   function espaceMilliers(n) { return String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
   function modifierOrtb(o) {
     o = o || {};
@@ -4328,6 +4474,9 @@
     ortbEnVigueur: function (date) { return D.ortbALaDate(date); },
     ficheOrtb: ficheOrtb,
     modifierObligation: modifierObligation, creerObligation: creerObligation, retirerObligation: retirerObligation,
+    annulerVersionAVenir: annulerVersionAVenir, versionsAVenir: versionsAVenir, versionAVenirDe: versionAVenirDe,
+    parametresFiscauxEnVigueur: function (date) { return { delais: D.delaisFiscauxALaDate(date), ccib: D.montantCcibALaDate(date) }; },
+    resumeParametre: resumeParametre, versionsParametresFiscaux: versionsParametresFiscaux, modifierParametreFiscal: modifierParametreFiscal, annulerParametreFiscal: annulerParametreFiscal,
     modifierOrtb: modifierOrtb, validerObligations: validerObligations,
     echeancesImpactees: echeancesImpactees, versionsObligation: versionsObligation,
     etatConfigurationFiscale: etatConfigurationFiscale, posteFileul: posteFileul,

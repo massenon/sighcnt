@@ -358,6 +358,26 @@ CREATE TABLE IF NOT EXISTS "cfg"."obligations_fiscales_redevances" (
   FOREIGN KEY ("parent_id") REFERENCES "cfg"."obligations_fiscales" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE "cfg"."obligations_fiscales_redevances" IS 'Lignes « redevances » de « obligationsFiscales »';
+CREATE TABLE IF NOT EXISTS "cfg"."parametres_fiscaux" (
+  "id" text PRIMARY KEY,
+  "code" text,
+  "motif" text,
+  "source" text,
+  "statut" text,
+  "libelle" text,
+  "a_valider" boolean,
+  "date_effet" text,
+  "modifie_le" text,
+  "modifie_par" text,
+  "delai_a_payer" integer,
+  "delai_declaration" integer,
+  "tranches" integer,
+  "montant_total" integer,
+  "extra" jsonb
+);
+COMMENT ON TABLE "cfg"."parametres_fiscaux" IS 'Collection « parametresFiscaux » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_parametres_fiscaux_code" ON "cfg"."parametres_fiscaux" ("code");
+CREATE INDEX IF NOT EXISTS "ix_parametres_fiscaux_statut" ON "cfg"."parametres_fiscaux" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."postes" (
   "id" text PRIMARY KEY,
   "chef" boolean,
