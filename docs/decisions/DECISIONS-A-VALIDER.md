@@ -56,7 +56,7 @@
 
 ## D. Réponses de la Direction du 09/11/2026 (formulaire de validation)
 
-Les 18 questions ont reçu une réponse. Règle générale posée par la Direction : **tout ce qui est paramétrable l'est dans les paramètres du poste et du web**, avec un défaut.
+Les 18 questions ont reçu une réponse. Règle générale posée par la Direction : **tout ce qui est paramétrable l'est dans les paramètres du poste et du web, ENREGISTRÉ EN BASE de données (jamais une constante du code), avec un défaut** semé et modifiable ; un paramètre qui change se versionne par date quand des pièces ont été émises sous l'ancienne valeur.
 
 | Question | Réponse | Paramétrage demandé |
 |---|---|---|
