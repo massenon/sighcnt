@@ -70,9 +70,9 @@ Les 18 questions ont reçu une réponse. Règle générale posée par la Directi
 | Planning Q4 | l'agent propose, le surveillant valide | **paramétrable** oui/non, défaut non |
 | Planning Q5 | copie chiffrée de la fiche de paie sur le téléphone | **paramétrable** oui/non, défaut oui |
 
-### Réponses à confirmer (contradiction entre la case cochée et la remarque)
+### Contradictions tranchées : la remarque de la Direction l'emporte (09/11/2026)
 
-1. **AIB Q1** : case « texte fourni » cochée, remarque : un formulaire de validation du barème AIB dans les paramètres. Aucun texte réglementaire n'existe au dépôt : le barème reste « proposition à valider », et le formulaire de validation des paramètres (famille `bareme_aib`) en est le geste.
-2. **Planning Q2** : case « surveillant pour le service, DAF pour le tout », remarque « le surveillant pour le tout, le surveillant peut valider seul ». Lire : le surveillant valide pour son service, la DAF pour le tout et peut valider seule (PRD), sauf correction.
-3. **Planning Q7** : case « différer » cochée, remarque « paramétrable, oui par défaut ». Lire : le badge peut servir de pointage, réglage oui/non, **défaut oui** ; la conception change alors (le badge se relie au registre des présences).
-4. **MECeF** : e-MECeF n'est décrit par aucun document du dépôt (l'ADR retient le boîtier physique) ; le mode e-MECeF exige le dossier d'interface de la DGI avant tout code.
+1. **AIB Q1** : aucun texte réglementaire n'existe ; un **formulaire de validation du barème AIB** est créé dans les paramètres (poste et web). Le barème reste « proposition à valider » jusqu'à sa validation par ce formulaire.
+2. **Planning Q2** : le **surveillant valide les présences et absences pour tout le personnel et peut valider seul**. Le circuit est paramétrable (surveillant seul, DAF seule, surveillant puis DAF) ; défaut : surveillant seul. La DAF garde son droit d'écran.
+3. **Planning Q7** : le **badge sert de pointage**, réglage oui/non dans les paramètres, **défaut oui** ; le badge se relie au registre des présences.
+4. **MECeF** : **aucun numéro simulé**. Les paramètres du poste offrent le **choix du mode : boîtier ou e-MECeF**. Le mode e-MECeF s'affiche « non configuré : dossier d'interface DGI requis » tant qu'aucun document n'en décrit le protocole ; aucun code d'intégration n'est écrit à l'aveugle.
