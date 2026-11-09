@@ -63,9 +63,14 @@ class _EtatEcheances extends State<EcranEcheances> {
     if (_demarre) return;
     _demarre = true;
     final c = ContexteEcran.of(context);
-    // Un exercice sans échéance les reçoit depuis la version EN VIGUEUR des obligations (jamais pendant un rendu : les écouteurs se déclencheraient en pleine construction).
-    ConfigurationFiscalePoste.amorcer(c.magasin);
-    ConfigurationFiscalePoste(c).amorcerEcheances(c.aujourdhui.year);
+    // Un exercice sans échéance les reçoit depuis la version EN VIGUEUR des obligations. L'écriture est DIFFÉRÉE après la construction : `didChangeDependencies`
+    // s'exécute en pleine phase de build, et la notification de la collection réveille le centre de notifications (« setState pendant le build »).
+    // Le tableau écoute la collection : il se repeint dès que l'amorçage a eu lieu.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ConfigurationFiscalePoste.amorcer(c.magasin);
+      ConfigurationFiscalePoste(c).amorcerEcheances(c.aujourdhui.year);
+    });
     // « Le comptable ne consulte pas l'écran tous les jours ; c'est l'écran qui doit l'avertir » : l'alerte part 800 ms après l'ouverture.
     _alerte = Timer(const Duration(milliseconds: 800), () {
       if (!mounted) return;

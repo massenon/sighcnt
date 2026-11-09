@@ -161,8 +161,10 @@ Map<String, Object?> accDemandeMessage(String objet, String message, {bool courr
       'capture': null,
     };
 
-/// La demande « anomalie ».
-Map<String, Object?> accDemandeAnomalie(String module, String description, String? etapes, String? capture, {bool courriel = false}) => {
+/// La demande « anomalie ». `captureDonnees` est l'image elle-même, conservée avec la fiche et jamais jointe au courriel
+/// (la maquette l'écrit depuis le 20/10/2026). Le poste n'embarque pas de sélecteur de fichier : il la laisse à null.
+Map<String, Object?> accDemandeAnomalie(String module, String description, String? etapes, String? capture,
+        {String? captureDonnees, bool courriel = false}) => {
       'courriel': courriel ? 'demande' : 'non',
       'type': 'anomalie',
       'objet': 'Anomalie — $module',
@@ -170,6 +172,7 @@ Map<String, Object?> accDemandeAnomalie(String module, String description, Strin
       'description': description,
       'etapes': etapes,
       'capture': capture,
+      'captureDonnees': captureDonnees,
     };
 
 /// Le toast d'une demande ENREGISTRÉE sans courriel : il ne promet jamais un envoi qui n'a pas eu lieu (la messagerie peut ne pas être configurée).

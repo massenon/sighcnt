@@ -36,7 +36,7 @@ void main() {
       final c = obj(v['connexion']);
       expect(c['nbSelect'], 0);
       final champs = fl(c['champs']);
-      expect(champs.map((x) => x['type']), ['text', 'password', 'checkbox']);
+      expect(champs.map((x) => x['type']), ['text', 'password']);
     });
 
     final utilisateurs = <M>[
