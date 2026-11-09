@@ -1696,6 +1696,11 @@
     if (typeof date === 'string') return date.slice(0, 10);
     return C.iso(date);
   }
+  /** Le jour d'une obligation, en toutes lettres, DÉRIVÉ de la fiche (jamais écrit à la main dans un texte) : « le 10 du mois suivant », « le 30 avril ». */
+  function libelleEcheance(o) {
+    if (!o) return '';
+    return o.periodicite === 'mensuelle' ? 'le ' + o.jour + ' du mois suivant' : 'le ' + o.jour + ' ' + C.MOIS[o.mois];
+  }
   /** La version d'une fiche (courante ou historique) en vigueur à `d` (ISO). */
   function versionEnVigueur(courante, historique, d) {
     if (courante && (!courante.dateEffet || d >= String(courante.dateEffet))) return courante;
@@ -1735,6 +1740,60 @@
     var hist = lireCollection('historiqueObligations').filter(function (o) { return o.type === 'parametres' && o.code === 'ORTB-PARAMETRES'; });
     var v = versionEnVigueur(courante, hist, d);
     return v || PARAM_PAIE.ortb;
+  }
+
+  /* ==========================================================================
+   * LES PARAMÈTRES DU CALENDRIER FISCAL, DATÉS (lot A3b, Direction, 09/11/2026)
+   * --------------------------------------------------------------------------
+   * Trois valeurs vivaient dans le code : les seuils d'état du suivi (10 et 30
+   * jours, dupliqués dans cfg-fiscalite), le seuil d'alerte du planificateur
+   * (7 jours, une troisième définition de « proche ») et le montant de la CCIB.
+   * Elles sont une collection, `parametresFiscaux` : UNE FICHE PAR VERSION, la
+   * version en vigueur à une date est celle de la plus grande date d'effet qui ne
+   * la dépasse pas (la même règle que les obligations, sans seconde collection :
+   * une version à venir est une fiche dont la date d'effet n'est pas atteinte, et
+   * l'annuler l'archive). `DELAIS_FISCAUX_ATTENTE` et `MONTANTS_FISCAUX.ccib` ne
+   * sont plus que la SEMENCE, marquée à valider.
+   *
+   * UNE SEULE DÉFINITION DE « PROCHE » pour l'écran de suivi, la vue mensuelle,
+   * cfg-fiscalite, la cloche et le planificateur (api/cron.php) : `delaiAPayer`
+   * (jours avant l'échéance où le paiement est « à payer » et alerté) et
+   * `delaiDeclaration` (jours avant l'échéance où la déclaration est attendue).
+   * ======================================================================== */
+  var DELAIS_FISCAUX_ATTENTE = { delaiAPayer: 10, delaiDeclaration: 30 };
+  var SOURCE_PARAMETRES_FISCAUX = 'Valeurs d’attente de la maquette (suivi des échéances, jusqu’ici écrites dans le code) : à confirmer par la Direction';
+  function semenceParametresFiscaux() {
+    return [
+      { id: 'PFI-DELAIS', statut: 'actif', code: 'DELAIS-ALERTE', libelle: 'Délais d’alerte du calendrier fiscal',
+        delaiAPayer: DELAIS_FISCAUX_ATTENTE.delaiAPayer, delaiDeclaration: DELAIS_FISCAUX_ATTENTE.delaiDeclaration,
+        source: SOURCE_PARAMETRES_FISCAUX, aValider: true, dateEffet: null, motif: null, modifieLe: null, modifiePar: null },
+      { id: 'PFI-CCIB', statut: 'actif', code: 'CCIB-MONTANT', libelle: 'Montant annuel de la CCIB',
+        montantTotal: MONTANTS_FISCAUX.ccib.total, tranches: MONTANTS_FISCAUX.ccib.tranches,
+        source: 'Montant à confirmer par le cabinet comptable', aValider: true, dateEffet: null, motif: null, modifieLe: null, modifiePar: null },
+    ];
+  }
+  /** Les versions d'un paramètre, de la plus ancienne à la plus récente (les archivées n'y sont pas). */
+  function versionsParametreFiscal(code) {
+    var rows = magasinPret() ? lireCollection('parametresFiscaux').filter(function (p) { return p.code === code; }) : [];
+    if (!rows.length) rows = semenceParametresFiscaux().filter(function (p) { return p.code === code; });
+    return rows.slice().sort(function (a, b) { return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')); });
+  }
+  /** La version d'un paramètre en vigueur à une date (null : paramètre inconnu). */
+  function parametreFiscalALaDate(code, date) {
+    var d = dateIso(date), v = null;
+    versionsParametreFiscal(code).forEach(function (p) { if (!p.dateEffet || String(p.dateEffet).slice(0, 10) <= d) v = p; });
+    return v;
+  }
+  /** Les délais d'alerte en vigueur : { delaiAPayer, delaiDeclaration } (la semence si la collection manque). */
+  function delaisFiscauxALaDate(date) {
+    var v = parametreFiscalALaDate('DELAIS-ALERTE', date) || semenceParametresFiscaux()[0];
+    return { delaiAPayer: Number(v.delaiAPayer), delaiDeclaration: Number(v.delaiDeclaration), version: v };
+  }
+  /** Le montant de la CCIB en vigueur : { total, tranches, tranche }. */
+  function montantCcibALaDate(date) {
+    var v = parametreFiscalALaDate('CCIB-MONTANT', date) || semenceParametresFiscaux()[1];
+    var n = Number(v.tranches) || 2;
+    return { total: Number(v.montantTotal), tranches: n, tranche: Number(v.montantTotal) / n, version: v };
   }
 
 
@@ -2221,6 +2280,9 @@
     CALENDRIER_FISCAL: CALENDRIER_FISCAL, MONTANTS_FISCAUX: MONTANTS_FISCAUX,
     semenceObligations: semenceObligations, semenceOrtbParametres: semenceOrtbParametres,
     obligationsALaDate: obligationsALaDate, ortbALaDate: ortbALaDate,
+    libelleEcheance: libelleEcheance, DELAIS_FISCAUX_ATTENTE: DELAIS_FISCAUX_ATTENTE, semenceParametresFiscaux: semenceParametresFiscaux,
+    versionsParametreFiscal: versionsParametreFiscal, parametreFiscalALaDate: parametreFiscalALaDate,
+    delaisFiscauxALaDate: delaisFiscauxALaDate, montantCcibALaDate: montantCcibALaDate,
     CAPACITES: CAPACITES, NATURES_PRESCRIPTION: NATURES_PRESCRIPTION,
     BAREME_REFERENCE: BAREME_REFERENCE, CATEGORIES_GARANTIE: CATEGORIES_GARANTIE, UNITES_PLAFOND: UNITES_PLAFOND,
   };

@@ -103,8 +103,11 @@
      (`fileSms`, heures calmes et hors ligne) est une collection d'activité, déclarée à la corbeille.
      74 (09/11/2026) : le barème de l'AIB par situation de l'acheteur. Deux collections semées au socle (`situationsAib`, `baremeAib`,
      lues par la caisse, la fenêtre MECeF et l'écran de paramétrage), une fiche RBAC22 (comptable) et RBAC21 (Direction) qui nomment
-     `cfg-bareme-aib` ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice. */
-  var VERSION = 74;
+     `cfg-bareme-aib` ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice.
+     75 (09/11/2026) : le calendrier fiscal corrigé et ouvert à l'avenir (lot A3b). La collection `parametresFiscaux` (délais d'alerte
+     « à payer » et « déclaration », montant de la CCIB : une fiche par version datée) est semée au socle, et l'échéancier est semé
+     sur DEUX exercices (le jeu et le suivant) : sans incrément un poste garderait un seul exercice et des jours plafonnés à 28. */
+  var VERSION = 75;
   var db = null;
   var listeners = {};
 
@@ -862,11 +865,7 @@
      encore là) ; sinon `D.obligationsALaDate` lit le magasin. `opts.aujourdhui`
      décide ce qui est réputé réglé (défaut : la date du jeu, 16/08/2026) ;
      `opts.sansReglement` n'invente aucune quittance (vidage des jeux de test). */
-  function jourOuvrableSuivantGen(d) {
-    var x = new Date(d.getTime());
-    while (x.getDay() === 0 || x.getDay() === 6) x = C.addDays(x, 1);
-    return x;
-  }
+  function jourOuvrableSuivantGen(d) { return C.reporterJourOuvrable(d); }
   function obligationsPour(dateRef, opts) {
     if (opts && Array.isArray(opts.obligations)) {
       return opts.obligations.filter(function (o) { return o.type !== 'parametres' && o.statut !== 'archive'; });
@@ -881,14 +880,16 @@
     for (var m = 0; m < 12; m++) {
       obligationsPour(new Date(annee, m, 1), opts).forEach(function (o) {
         var d = null;
-        if (o.periodicite === 'mensuelle') d = new Date(annee, m, o.jour);
-        else if (o.mois === m) d = new Date(annee, m, Math.min(o.jour, 28));
+        /* Le jour tombe au dernier jour RÉEL du mois s'il le dépasse (C.jourDuMois) : plus de plafond à 28, plus de
+           débordement sur le mois suivant (E-A3-01, 05, 06). */
+        if (o.periodicite === 'mensuelle') d = C.jourDuMois(annee, m, o.jour);
+        else if (o.mois === m) d = C.jourDuMois(annee, m, o.jour);
         if (!d) return;
         if (!parCode[o.code]) { parCode[o.code] = []; ordre.push(o.code); }
         parCode[o.code].push({ o: o, d: d });
       });
     }
-    var out = [], n = 0;
+    var out = [], n = Number(opts.depart) || 0;
     ordre.forEach(function (code) {
       parCode[code].forEach(function (x) {
         var o = x.o, d = x.d;
@@ -900,8 +901,9 @@
           code: o.code, libelle: o.libelle, famille: o.famille,
           periodicite: o.periodicite, part: o.part, declaration: o.declaration, note: o.note,
           exercice: annee,
+          /* Une mensuelle règle le mois PRÉCÉDENT : celle du 10 janvier porte « décembre » de l'exercice d'avant (E-A3-07). */
           periode: o.periodicite === 'mensuelle'
-            ? C.MOIS[Math.max(0, d.getMonth() - 1)] + ' ' + annee : String(annee),
+            ? C.MOIS[(d.getMonth() + 11) % 12] + ' ' + (d.getMonth() === 0 ? annee - 1 : annee) : String(annee),
           echeance: C.iso(echue),
           echeanceTheorique: C.iso(d),
           reportee: C.iso(echue) !== C.iso(d),
@@ -965,7 +967,7 @@
         return n.code === o.code && n.echeanceTheorique >= d && !moisConserves[String(n.echeanceTheorique).slice(0, 7)];
       }).forEach(function (n) {
         n.id = 'ECH' + C.uid();
-        n.versionObligation = d;
+        n.versionObligation = o.versionObligation !== undefined ? o.versionObligation : d;
         n.regenereeLe = maintenant;
         n.regenereePar = auteur;
         n._creePar = auteur;
@@ -979,6 +981,40 @@
       { avant: avant }, { apres: apres, dateEffet: d, payeesConservees: conservees });
     save(); emit('echeancesFiscales');
     return { code: o.code, dateEffet: d, conservees: conservees, anterieures: anterieures, archivees: archivees, creees: creees };
+  }
+
+  /**
+   * ASSURE L'ÉCHÉANCIER D'UN EXERCICE (lot A3b, E-A3-09) : engendre, depuis les obligations en vigueur à chaque mois, les
+   * échéances qui MANQUENT, et seulement celles-là. Une échéance existante (payée, ouverte OU archivée) est reconnue par son
+   * code et sa date théorique et n'est jamais réécrite : un exercice qui s'ouvre ne régénère donc rien et ne touche à aucune
+   * quittance. Aucun règlement n'est inventé. Un exercice clos ne se génère pas (sa lecture est seule). Rend
+   * { exercice, creees, refus? } ; idempotent.
+   */
+  function assurerEcheances(exercice, opts) {
+    load();
+    opts = opts || {};
+    var annee = Number(exercice);
+    if (!(annee >= 2000 && annee <= 2100)) return { exercice: exercice, creees: 0, refus: 'EXERCICE_INVALIDE' };
+    var X = global.SIGH && global.SIGH.exercice;
+    if (X && typeof X.etat === 'function' && X.etat(annee) === 'clos') return { exercice: annee, creees: 0, refus: 'EXERCICE_CLOS' };
+    /* Un magasin pas encore amorcé (pas de session, pas de semence) n'est jamais écrit d'ici : le semis s'en charge. */
+    if (!db.echeancesFiscales) return { exercice: annee, creees: 0, refus: 'NON_AMORCE' };
+    var connues = {};
+    db.echeancesFiscales.forEach(function (e) {
+      if (Number(e.exercice) === annee) connues[e.code + '|' + (e.echeanceTheorique || e.echeance)] = true;
+    });
+    var neuves = genEcheances(annee, { sansReglement: true }).filter(function (n) { return !connues[n.code + '|' + n.echeanceTheorique]; });
+    if (!neuves.length) return { exercice: annee, creees: 0 };
+    var auteur = opts.auteur || currentUser(), maintenant = new Date().toISOString();
+    neuves.forEach(function (n) {
+      n.id = 'ECH' + C.uid();
+      n._creePar = auteur; n._creeLe = maintenant;
+      db.echeancesFiscales.push(n);
+    });
+    log('Génération des échéances de l’exercice ' + annee, 'M12', 'EcheancesFiscales', String(annee),
+      null, { exercice: annee, creees: neuves.length, codes: neuves.map(function (n) { return n.code; }).filter(function (c, i, t) { return t.indexOf(c) === i; }) });
+    save(); emit('echeancesFiscales');
+    return { exercice: annee, creees: neuves.length };
   }
 
   /* Une remise se JUSTIFIE. Un rabais sans motif au dossier est exactement ce
@@ -1469,6 +1505,8 @@
    * ======================================================================== */
   /* LA TRACE DES VALIDATIONS ÉCRITES DU 01/09/2026, au format du moteur de validation (parcours.js). */
   var VALIDATION_ECRITE_0109 = { valideLe: '2026-09-01', validePar: 'validation écrite du 01/09/2026', valideRole: 'Direction' };
+  /* L'exercice du JEU de démonstration (daté, comme le reste du jeu) : le seul endroit où une année est écrite ; le suivant s'en déduit. */
+  var ANNEE_JEU = 2026;
   function seed() {
     var rnd = C.seeded(20260716);
     var personnel = genPersonnel(rnd);
@@ -1937,7 +1975,15 @@
        * dit à la Direction qu'il n'y a rien à payer. C'est plus dangereux qu'un
        * tableau de bord absent.
        * ==================================================================== */
-      echeancesFiscales: genEcheances(2026, { obligations: obligationsSemees }),
+      echeancesFiscales: (function () {
+        /* L'exercice du jeu (daté, réputé payé jusqu'à la date du jeu) ET le suivant, sans règlement : l'échéancier de l'année
+           qui vient existe avant décembre (E-A3-09). Les identifiants se suivent d'un exercice à l'autre. */
+        var jeu = genEcheances(ANNEE_JEU, { obligations: obligationsSemees });
+        return jeu.concat(genEcheances(ANNEE_JEU + 1, { obligations: obligationsSemees, sansReglement: true, depart: jeu.length }));
+      })(),
+      /* Les paramètres du calendrier fiscal (délais d'alerte, montant de la CCIB), une fiche par version datée : lus par le suivi,
+         la vue mensuelle, cfg-fiscalite, la cloche et le planificateur. Au socle : plusieurs modules et api/cron.php les lisent. */
+      parametresFiscaux: D.semenceParametresFiscaux(),
 
       /* Comptes rendus de maternité : accouchement, planning familial, AMIU.
          Trois pièces aux rubriques propres — un gabarit unique aurait fait
@@ -3814,7 +3860,7 @@
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
     'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
-    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'parametresFiscaux',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -3865,7 +3911,10 @@
     /* LE CALENDRIER FISCAL EST DÉRIVÉ D'UN DOCUMENT : il revient aussitôt, SANS règlement
        inventé — un tableau de bord qui lirait un faux zéro jusqu'à l'ouverture de l'écran
        des échéances est le défaut documenté de la vague 31. */
-    db.echeancesFiscales = genEcheances().map(function (e) {
+    var anneeVide = C.aujourdhui().getFullYear();
+    var apresVidage = genEcheances(anneeVide, { sansReglement: true });
+    apresVidage = apresVidage.concat(genEcheances(anneeVide + 1, { sansReglement: true, depart: apresVidage.length }));
+    db.echeancesFiscales = apresVidage.map(function (e) {
       return Object.assign(e, { paye: false, datePaiement: null, reference: null, valideePar: null });
     });
     db._jeuVide = true;
@@ -4135,6 +4184,7 @@
     identiteLegale: 'CFG|Identité légale (versions datées)',
     obligationsFiscales: 'CFG|Obligations fiscales et paramètres ORTB',
     historiqueObligations: 'CFG|Versions antérieures des obligations fiscales',
+    parametresFiscaux: 'CFG|Paramètres du calendrier fiscal (délais d’alerte, montant de la CCIB)',
     regimesTravail: 'M10|Régimes de travail par catégorie',
     modulesActifs: 'CFG|Activité des modules', notifications: 'M14|Notifications',
     emplacements: 'M6|Emplacements de rangement',
@@ -4321,7 +4371,7 @@
     reglage: reglage, setReglage: setReglage,
     valeurUnitaire: valeurUnitaire,
     identiteALaDate: identiteALaDate, appliquerIdentite: appliquerIdentite,
-    genEcheances: genEcheances, regenererEcheances: regenererEcheances,
+    genEcheances: genEcheances, regenererEcheances: regenererEcheances, assurerEcheances: assurerEcheances,
     storage: storage,
     corbeille: corbeille, libelleCollection: libelleCollection,
     raw: function () { return load(); },

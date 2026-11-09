@@ -246,6 +246,29 @@
   function daysBetween(a, b) { return Math.round((toDate(b) - toDate(a)) / 86400000); }
 
   /* --------------------------------------------------------------------------
+   * LE JOUR D'UNE ÉCHÉANCE : UNE SEULE RÈGLE, ICI (lot A3b, 09/11/2026)
+   * --------------------------------------------------------------------------
+   * Le jour demandé tombe au DERNIER JOUR RÉEL du mois s'il le dépasse (31 en
+   * février donne le 28 ou le 29, 31 en avril donne le 30), jamais avant le
+   * jour déclaré ; un jour qui dépasse ne déborde donc plus sur le mois suivant.
+   * Une échéance tombant un samedi ou un dimanche est REPORTÉE au jour ouvrable
+   * suivant, jamais avancée. Le semis des échéances, la référence
+   * (cfg-comptabilite), le suivi (m12-echeances), la vue mensuelle, l'écran
+   * cfg-fiscalite et la cloche appellent ces trois fonctions et aucune autre :
+   * deux calculs finissent par ne plus dire le même jour (E-A3-01).
+   * ------------------------------------------------------------------------ */
+  function dernierJourDuMois(annee, mois) { return new Date(Number(annee), Number(mois) + 1, 0).getDate(); }
+  function jourDuMois(annee, mois, jour) {
+    var j = Math.max(1, Math.floor(Number(jour) || 1));
+    return new Date(Number(annee), Number(mois), Math.min(j, dernierJourDuMois(annee, mois)));
+  }
+  function reporterJourOuvrable(d) {
+    var x = new Date(toDate(d).getTime());
+    while (x.getDay() === 0 || x.getDay() === 6) x = addDays(x, 1);
+    return x;
+  }
+
+  /* --------------------------------------------------------------------------
    * PÉRIODICITÉS — les six pas de découpage que la clinique demande
    * --------------------------------------------------------------------------
    * « Journalier ou hebdomadaire ou mensuel ou trimestriel ou semestriel ou
@@ -602,6 +625,7 @@
     dateFR: dateFR, dateLong: dateLong, dateJour: dateJour, heure: heure, age: age,
     ageDe: ageDe, ageTexte: ageTexte, ageEstDeclare: ageEstDeclare,
     params: params, ancre: ancre,
+    dernierJourDuMois: dernierJourDuMois, jourDuMois: jourDuMois, reporterJourOuvrable: reporterJourOuvrable,
     dateHeure: dateHeure, iso: iso, moisAnnee: moisAnnee, ilYA: ilYA,
     aujourdhui: aujourdhui, isoLocal: isoLocal, mentionLegale: mentionLegale,
     addDays: addDays, daysBetween: daysBetween, toDate: toDate,

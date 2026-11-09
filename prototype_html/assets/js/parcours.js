@@ -3054,7 +3054,7 @@
       annees[global.SIGH.liasse.DEPOT.exerciceN] = true;
       annees[global.SIGH.liasse.DEPOT.exerciceN1] = true;
     }
-    var ajoute = false;
+    var ajoute = false, nouveaux = [];
     Object.keys(annees).forEach(function (a) {
       a = Number(a);
       if (col.all().some(function (x) { return x.annee === a; })) return;
@@ -3068,10 +3068,13 @@
         motif: deposee ? 'Exercice antérieur à la mise en service : fait par la liasse déposée.' : null,
       });
       ajoute = true;
+      if (!deposee) nouveaux.push(a);
     });
     /* Le 05/11/2026 l'état « en attente de clôture » devient « en clôture » (la demande verrouille les modules) : les fiches d'avant sont reprises. */
     col.all().forEach(function (x) { if (x.etat === 'en_attente_cloture') { x.etat = 'en_cloture'; ajoute = true; } });
     if (ajoute) S.save();
+    /* UN EXERCICE QUI S'OUVRE ENGENDRE SON ÉCHÉANCIER (lot A3b, E-A3-09) : additif, sans toucher une échéance existante ni une quittance. */
+    nouveaux.forEach(function (a) { if (S.assurerEcheances) S.assurerEcheances(a); });
     return col.all().filter(function (x) { return x.statut !== 'archive'; })
       .sort(function (a, b) { return b.annee - a.annee; });
   }
@@ -3093,6 +3096,7 @@
   }
   function choisirExercice(annee) {
     try { global.sessionStorage.setItem(CLE_EXERCICE, String(annee)); } catch (e) { /* sans effet */ }
+    if (S.assurerEcheances && exercice(annee)) S.assurerEcheances(annee);
     return Number(annee);
   }
   /* « Ce mois », « ce trimestre » : calculés depuis aujourd'hui si l'exercice consulté le contient, sinon depuis son dernier jour. Consulter 2025 en 2026,
