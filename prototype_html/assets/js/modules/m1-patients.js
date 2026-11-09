@@ -2311,7 +2311,7 @@
             ['Téléphone', pat.telephone || '—'],
             ['Résidence', pat.adresse || '—'],
             ['Prescripteur extérieur', pat.prescripteurExterieur || '—'],
-            ['Date', C.dateFR(AUJ)],
+            ['Date', C.dateFR(C.aujourdhui())],
             ['À régler à la caisse', C.money(res.facture.partPatient)],
           ],
           contenu: el('div.space-y-3', null, [

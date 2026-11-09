@@ -2276,7 +2276,7 @@
         recalculer();
 
         var m = U.modal({
-          title: 'Encaisser ' + tache.reference, subtitle: fac.numero, size: 'xl', body: corps,
+          title: 'Encaisser ' + (tache.reference || 'la prescription'), subtitle: fac.numero, size: 'xl', body: corps,
           footer: [
             K.btn('Annuler', { onclick: function () { m.close(); } }),
             lignes.length ? K.btn('Tout cocher', {

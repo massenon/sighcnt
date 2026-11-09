@@ -2478,7 +2478,7 @@
               { label: 'Bonne', value: function () { return 'Aucune'; } },
               { label: 'Moyenne (1er niveau)', value: function (c) { return '1 à 2 — moins ' + c.sanctions.moyenne + ' % du salaire brut'; } },
               { label: 'Faible à mauvaise (2e niveau)', value: function (c) { return '3 et plus — ' + c.sanctions.faible + ' % du salaire brut'; } },
-            ], criteresBaremeALaDate(dateBaremeDe(e))),
+            ], criteresBaremeALaDate(dateBaremeDe(null))),
             el('p.mt-3', { text: D.NS131.mention + ' Entre en vigueur à compter de sa date de signature.' }),
             el('p.mt-2.text-\\[10px\\]', { text: 'Ampliation : ' + D.NS131.ampliation }),
           ]),

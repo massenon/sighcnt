@@ -4367,6 +4367,24 @@
       if (_minuterie) { clearTimeout(_minuterie); _minuterie = null; ecrire(); }
       viderFile();
     },
+    /** Recharge la page APRÈS que le serveur a reçu tout ce qui attendait.
+     *  Un rechargement immédiat coupe l'envoi en cours : les gestes nommés
+     *  encore en file ne partent qu'en `keepalive` (64 Ko pour toute la page,
+     *  sans ordre garanti), si bien que seule une partie d'une opération qui
+     *  écrit des centaines de fiches arrive. Plafond de 8 s, puis on recharge
+     *  quand même (la file locale reste dans le navigateur). */
+    rechargerQuandEnvoye: function (apres) {
+      var self = this;
+      self.pousserMaintenant();
+      var debut = Date.now();
+      (function attendre() {
+        if (self.fileEnAttente() === 0 || Date.now() - debut > 8000) {
+          if (typeof apres === 'function') apres(); else global.location.reload();
+          return;
+        }
+        setTimeout(attendre, 100);
+      })();
+    },
     jetonServeur: function () { return SRV.jeton; },
     etatSync: etatSync, sonderEvenements: sonderEvenements,
     etatServeur: function () { return { actif: SRV.actif, teste: SRV.teste, repondu: SRV.repondu, jeton: !!SRV.jeton, magasinCharge: !!db, sansMagasin: SRV.sansMagasin }; },
