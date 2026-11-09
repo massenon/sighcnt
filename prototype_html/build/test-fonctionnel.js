@@ -2958,7 +2958,7 @@ async function viderMessages(page) {
     verifier('Les obligations sont déroulées sur l'+String.fromCharCode(8217)+'exercice',
       ech.total > 50 && ech.familles === 10, ech.total + ' échéances · ' + ech.familles + ' obligations');
     verifier('Les obligations mensuelles donnent douze échéances chacune (par exercice) ; le jeu porte l’exercice du jeu et le suivant',
-      ech.mensuelles === 48 && ech.deuxExercices === '2026,2027', ech.mensuelles + ' échéances mensuelles, exercices ' + ech.deuxExercices);
+      ech.mensuelles === 60 && ech.deuxExercices === '2026,2027', ech.mensuelles + ' échéances mensuelles, exercices ' + ech.deuxExercices);
     verifier('Les échéances tombant un week-end sont reportées',
       ech.reportees > 0, ech.reportees + ' reportée(s) au jour ouvrable');
     verifier('Une barre de notification signale ce qui est dû', ech.barre);
@@ -5241,7 +5241,8 @@ async function viderMessages(page) {
     await ouvrir('dash-direction.html');
     const socle = await page.evaluate(() => {
       const S = window.SIGH.store;
-      const ech = S.collection('echeancesFiscales').active();
+      /* L'exercice du jeu (2026) : le jeu porte aussi le suivant (lot A3b) ; cinq mensuelles dont le versement CNSS, 75 échéances (valeur changée voulue : 63). */
+      const ech = S.collection('echeancesFiscales').active().filter((e) => e.exercice === 2026);
       const auj = window.SIGH.core.iso(new Date());
       return {
         n: ech.length,
@@ -5255,7 +5256,7 @@ async function viderMessages(page) {
       };
     });
     verifier('Le calendrier fiscal est disponible SANS être passé par son écran',
-      socle.n === 63, socle.n + ' échéance(s) — amorcées au socle');
+      socle.n === 75, socle.n + ' échéance(s) — amorcées au socle');
     verifier('Aucune échéance ne tombe un samedi ni un dimanche',
       socle.weekEnd === 0, 'reportées au jour ouvrable suivant, jamais avancées');
     verifier('Le tableau de bord de la Direction compte les échéances DÉPASSÉES, pas toutes',
@@ -12978,8 +12979,8 @@ async function viderMessages(page) {
         version: raw._version };
     });
     const e0 = sauve.etat;
-    verifier('Les trois collections sont semées au socle (identité v1 non validée, 20 fiches d’obligations : les 19 du calendrier et ORTB-PARAMETRES, historique vide), essentielles, libellées CFG, _version 69 ou plus',
-      e0.identite.length === 1 && e0.identite[0].version === 1 && !e0.identite[0].valideLe && e0.obligations.length === 20
+    verifier('Les trois collections sont semées au socle (identité v1 non validée, 21 fiches d’obligations : les 20 du calendrier, dont le versement CNSS, et ORTB-PARAMETRES, historique vide), essentielles, libellées CFG, _version 69 ou plus',
+      e0.identite.length === 1 && e0.identite[0].version === 1 && !e0.identite[0].valideLe && e0.obligations.length === 21   /* valeur changée voulue (lot A3b) : 20 fiches devient 21, le versement CNSS en plus */
       && e0.obligations.some((o) => o.code === 'ORTB-PARAMETRES' && o.type === 'parametres') && e0.historique.length === 0
       && e0.essentielles && e0.libelles === 'CFG/CFG' && e0.version >= 69,
       JSON.stringify({ identite: e0.identite.length, obligations: e0.obligations.length, historique: e0.historique.length, essentielles: e0.essentielles, libelles: e0.libelles, version: e0.version }));
@@ -15764,7 +15765,7 @@ async function viderMessages(page) {
    * sonde écrit est restitué par instantané à la sortie (le magasin d'un banc isolé, jamais le jeu d'un poste).
    * ======================================================================== */
   await etape(async () => {
-    scenario('Vague 98 : calendrier fiscal (jours des 19 obligations sur la référence, le suivi et cfg-fiscalite, mensuelle au 31, période juste, version à venir visible puis annulée, seuils en paramètres jusqu’au planificateur, exercice suivant, vue mensuelle)');
+    scenario('Vague 98 : calendrier fiscal (jours des 20 obligations sur la référence, le suivi et cfg-fiscalite, mensuelle au 31, période juste, version à venir visible puis annulée, seuils en paramètres jusqu’au planificateur, exercice suivant, vue mensuelle)');
     erreursJS = [];
     const admin = () => page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
     const sessionDe = (role) => page.evaluate((r) => {
@@ -15787,7 +15788,7 @@ async function viderMessages(page) {
     const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
     const AUJ = new Date(2026, 7, 16);
     /* Le calendrier confirmé le 25/08/2026 : [jour, mois (0 à 11) ou null pour une mensuelle]. */
-    const ATTENDU = { ITS: [10, null], AIB: [10, null], VPS: [10, null], CNSS: [10, null], 'IS-1': [10, 2], 'IS-2': [10, 5], 'IS-3': [10, 8], 'IS-4': [10, 11],
+    const ATTENDU = { ITS: [10, null], AIB: [10, null], VPS: [10, null], CNSS: [10, null], 'CNSS-VERSEMENT': [15, null], 'IS-1': [10, 2], 'IS-2': [10, 5], 'IS-3': [10, 8], 'IS-4': [10, 11],
       'IS-SOLDE': [30, 3], 'ETATS-FIN': [30, 3], 'PATENTE-DECL': [31, 0], 'PATENTE-1': [10, 1], 'PATENTE-2': [30, 3], 'CCIB-DECL': [28, 1], 'CCIB-1': [10, 2], 'CCIB-2': [10, 5],
       TVM: [30, 3], 'ORTB-RADIO': [30, 2], 'ORTB-TELE': [30, 5] };
     const dates = (code, annee) => { const [j, m] = ATTENDU[code]; return (m === null ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] : [m]).map((k) => theo(annee, k, j)); };
@@ -15806,7 +15807,7 @@ async function viderMessages(page) {
     });
     const refAttendu = Object.keys(ATTENDU).length;
     const refEcarts = etat1.reference.filter(([c, j, m]) => !ATTENDU[c] || ATTENDU[c][0] !== j || (ATTENDU[c][1] === null ? m !== null && m !== undefined : ATTENDU[c][1] !== m));
-    verifier('La référence (obligations en vigueur) porte les 19 jours du calendrier confirmé le 25/08/2026, la CNSS reste au 10',
+    verifier('La référence (obligations en vigueur) porte les 20 jours du calendrier (19 confirmés le 25/08/2026, plus le versement CNSS au 15, non arrêté), la déclaration CNSS reste au 10',
       etat1.reference.length === refAttendu && refEcarts.length === 0 && etat1.reference.some(([c, j]) => c === 'CNSS' && j === 10), JSON.stringify([etat1.reference.length, refEcarts]));
     let ecartsSuivi = [], manquants = [];
     [2026, 2027].forEach((an) => Object.keys(ATTENDU).forEach((code) => {
@@ -15815,8 +15816,12 @@ async function viderMessages(page) {
       if (lues.length !== att.length) { manquants.push(code + ' ' + an + ' : ' + lues.length + '/' + att.length); return; }
       att.forEach((d, i) => { if (lues[i].th !== isoJ(d) || lues[i].ech !== isoJ(roule(d))) ecartsSuivi.push(code + ' ' + an + ' attendu ' + isoJ(d) + '/' + isoJ(roule(d)) + ' lu ' + lues[i].th + '/' + lues[i].ech); });
     }));
-    verifier('Le suivi : sur les exercices 2026 et 2027 chacune des 19 obligations tombe au jour attendu (dernier jour réel du mois, report au jour ouvrable), zéro divergence',
+    verifier('Le suivi : sur les exercices 2026 et 2027 chacune des 20 obligations tombe au jour attendu (dernier jour réel du mois, report au jour ouvrable), zéro divergence',
       ecartsSuivi.length === 0 && manquants.length === 0, JSON.stringify([ecartsSuivi.slice(0, 4), manquants.slice(0, 4)]));
+    const cnss = etat1.reference.filter(([c]) => c === 'CNSS' || c === 'CNSS-VERSEMENT').reduce((o, [c, j]) => { o[c] = j; return o; }, {});
+    const cnssSuivi = ['CNSS', 'CNSS-VERSEMENT'].map((c) => [2026, 2027].every((an) => etat1.suivi.filter((e) => e.code === c && e.exercice === an).length === 12 && etat1.suivi.filter((e) => e.code === c && e.exercice === an).every((e) => e.th.slice(8) === (c === 'CNSS' ? '10' : '15'))));
+    verifier('CNSS : la déclaration reste au 10 ET le versement (obligation distincte, mensuelle) est au 15, sur la référence et sur douze échéances par exercice du suivi (2026 et 2027)',
+      cnss.CNSS === 10 && cnss['CNSS-VERSEMENT'] === 15 && cnssSuivi.every(Boolean), JSON.stringify([cnss, cnssSuivi]));
     verifier('Les sept obligations annuelles au 29, 30 ou 31 ne sont plus plafonnées à 28 : IS-SOLDE, ETATS-FIN, PATENTE-DECL, PATENTE-2, TVM, ORTB-RADIO et ORTB-TELE le disent (2026 et 2027)',
       ['IS-SOLDE', 'ETATS-FIN', 'PATENTE-DECL', 'PATENTE-2', 'TVM', 'ORTB-RADIO', 'ORTB-TELE'].every((c) => [2026, 2027].every((an) => etat1.suivi.some((e) => e.code === c && e.exercice === an && e.th === isoJ(dates(c, an)[0])))), '');
 
@@ -15838,8 +15843,8 @@ async function viderMessages(page) {
     const prochaine = (code) => { const [j, m] = ATTENDU[code];
       for (let k = 0; k < 14; k++) { const d = roule(m === null ? theo(2026, AUJ.getMonth() + k, j) : theo(2026 + k, m, j)); if (isoJ(d) >= isoJ(AUJ)) return fr(d); } };
     const ecartsFiscalite = Object.keys(ATTENDU).filter((c) => ficalDOM[c] !== prochaine(c));
-    verifier('cfg-fiscalite : la prochaine échéance des 19 obligations est celle du document (31 janvier reporté au 01/02/2027, 28 février au 01/03/2027), zéro divergence avec le suivi',
-      Object.keys(ficalDOM).length === 19 && ecartsFiscalite.length === 0, JSON.stringify([Object.keys(ficalDOM).length, ecartsFiscalite.map((c) => c + ' lu ' + ficalDOM[c] + ' attendu ' + prochaine(c))]));
+    verifier('cfg-fiscalite : la prochaine échéance des 20 obligations est celle du document (31 janvier reporté au 01/02/2027, 28 février au 01/03/2027), zéro divergence avec le suivi',
+      Object.keys(ficalDOM).length === 20 && ecartsFiscalite.length === 0, JSON.stringify([Object.keys(ficalDOM).length, ecartsFiscalite.map((c) => c + ' lu ' + ficalDOM[c] + ' attendu ' + prochaine(c))]));
 
     await ouvrir('cfg-comptabilite.html'); await admin();
     await ouvrir('cfg-comptabilite.html');
@@ -15848,6 +15853,8 @@ async function viderMessages(page) {
       const [j, m] = ATTENDU[c];
       return m === null ? refDOM.indexOf('le ' + j + ' du mois suivant') < 0 : refDOM.indexOf(j + ' ' + MOIS[m]) < 0;
     });
+    const versDOM = await page.evaluate(() => { const m = document.querySelector('.a-confirmer[data-code="CNSS-VERSEMENT"]'); return { texte: m ? m.textContent : null, source: window.SIGH.store.collection('obligationsFiscales').active().filter((o) => o.code === 'CNSS-VERSEMENT').map((o) => [o.aConfirmer, o.valideLe || null, o.source])[0] }; });
+    verifier('Le versement CNSS est dit « À confirmer, non arrêtée » à l’écran, avec sa source (page CNSS « Déclaration et paiement ») ; sa fiche est à valider', versDOM.texte && /À confirmer, non arrêtée/.test(versDOM.texte) && /Déclaration et paiement/.test(versDOM.texte) && versDOM.source && versDOM.source[0] === true && versDOM.source[1] === null, JSON.stringify(versDOM));
     verifier('cfg-comptabilite (la référence) affiche le jour de chaque obligation au document : mensuelles au 10, acomptes, patente, CCIB, TVM, solde et dépôt', sansRef.length === 0, JSON.stringify(sansRef));
 
     /* --- 2 et 3. une mensuelle au 31, le 31 de février et d'avril, les libellés de période ------------------------------------------ */
@@ -16078,10 +16085,10 @@ async function viderMessages(page) {
         payeesY: apresY.filter((e) => e.paye).length, inchanges, idemY: idemY.creees, fevrierY, clos: clos.refus, lointain: lointain.refus, lointainRien, passe: passe.refus };
     });
     const Y9 = E9.Y;
-    verifier('Le jeu porte l’échéancier de l’exercice suivant (2027 : 63 échéances, 19 obligations) ; régénérer 2027 est idempotent (0 créée) et ne touche à rien, la payée de 2027 comprise',
-      E9.n2027 === 63 && E9.codes2027 === 19 && E9.idem === 0 && E9.memeApres === true, JSON.stringify(E9));
-    verifier('Un nouvel exercice se génère à son OUVERTURE (la liste des exercices l’ajoute) : il naît avec ses 19 obligations, aucune payée, le 31 février de sonde y tombe au dernier jour réel de février (29 si l’année est bissextile), 2026 et 2027 sont intacts octet pour octet, la seconde génération ne crée rien',
-      E9.avantY === 0 && E9.liste.indexOf(Y9) >= 0 && E9.nY >= 63 && E9.codesY === 19 && E9.payeesY === 0 && E9.inchanges === true && E9.idemY === 0 && E9.fevrierY.length === 1 && E9.fevrierY[0] === isoJ(theo(Y9, 1, 31)), JSON.stringify(E9));
+    verifier('Le jeu porte l’échéancier de l’exercice suivant (2027 : 75 échéances, 20 obligations) ; régénérer 2027 est idempotent (0 créée) et ne touche à rien, la payée de 2027 comprise',
+      E9.n2027 === 75 && E9.codes2027 === 20 && E9.idem === 0 && E9.memeApres === true, JSON.stringify(E9));
+    verifier('Un nouvel exercice se génère à son OUVERTURE (la liste des exercices l’ajoute) : il naît avec ses 20 obligations, aucune payée, le 31 février de sonde y tombe au dernier jour réel de février (29 si l’année est bissextile), 2026 et 2027 sont intacts octet pour octet, la seconde génération ne crée rien',
+      E9.avantY === 0 && E9.liste.indexOf(Y9) >= 0 && E9.nY >= 75 && E9.codesY === 20 && E9.payeesY === 0 && E9.inchanges === true && E9.idemY === 0 && E9.fevrierY.length === 1 && E9.fevrierY[0] === isoJ(theo(Y9, 1, 31)), JSON.stringify(E9));
     verifier('Un exercice clos ne se génère pas (EXERCICE_CLOS, la liasse déposée est une lecture) ; ni un exercice passé (EXERCICE_PASSE), ni un exercice lointain (EXERCICE_LOINTAIN, rien n’est écrit)',
       E9.clos === 'EXERCICE_CLOS' && E9.passe === 'EXERCICE_PASSE' && E9.lointain === 'EXERCICE_LOINTAIN' && E9.lointainRien === 0, JSON.stringify([E9.clos, E9.passe, E9.lointain, E9.lointainRien]));
 

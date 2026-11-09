@@ -3777,7 +3777,10 @@
           + 'dimanche, le jour ouvrable qui suit immédiatement fait foi.', { tone: 'info' }),
         K.miniTable([
           { label: 'Code', render: function (e) { return el('span.font-mono.text-xs.font-semibold', { text: e.code }); } },
-          { label: 'Obligation', key: 'libelle' },
+          { label: 'Obligation', render: function (e) {
+            return el('div', null, [el('span', { text: e.libelle }),
+              e.aConfirmer ? el('span.a-confirmer.block.text-xs.text-warning-700', { 'data-code': e.code, text: 'À confirmer, non arrêtée. Source : ' + (e.source || 'non citée') }) : null]);
+          } },
           { label: 'Échéance', render: celluleEcheance },
           { label: 'Déclaration préalable', render: function (e) { return e.declaration || '—'; } },
           { label: 'Version', render: function (e) { return e.dateEffet ? 'depuis le ' + C.dateFR(e.dateEffet) : 'd’origine'; } },

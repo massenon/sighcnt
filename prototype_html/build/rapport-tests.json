@@ -151,115 +151,90 @@
     "ok": true
   },
   {
-    "nom": "Obligations fiscales — documentation, échéancier et validation",
+    "nom": "Tableaux de bord par profil et premier regard",
     "etapes": [
       {
-        "libelle": "La patente est documentée : déclaration au 31 janvier, deux tranches",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La CCIB est documentée : 300 000 F en deux tranches, mars et juin",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les quatre acomptes d’impôt sur les sociétés sont datés",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La TVM est documentée : une fois par an, au 30 avril",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les redevances ORTB Radio et Télé sont documentées",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Liquidation du solde et dépôt des états financiers sont distingués",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le report au jour ouvrable est énoncé",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les obligations sont déroulées sur l’exercice",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les obligations mensuelles donnent douze échéances chacune",
+        "libelle": "Le calendrier fiscal est disponible SANS être passé par son écran",
         "ok": false,
-        "detail": "96 échéances mensuelles"
+        "detail": "150 échéance(s) — amorcées au socle"
       },
       {
-        "libelle": "Les échéances tombant un week-end sont reportées",
+        "libelle": "Aucune échéance ne tombe un samedi ni un dimanche",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Une barre de notification signale ce qui est dû",
+        "libelle": "Le tableau de bord de la Direction compte les échéances DÉPASSÉES, pas toutes",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Un paiement se valide avec montant, quittance et auteur",
+        "libelle": "Le tableau de bord porte un bandeau « à regarder en premier »",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "La validation reste annulable — l’échéance redevient due",
+        "libelle": "…placé AVANT les indicateurs — l’ordre de lecture est ce qu’un tableau contrôle vraiment",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Tous les actes portent désormais un tarif",
+        "libelle": "…et il mène directement à l’écran concerné",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Les actes reprennent les prix des grilles imprimées",
+        "libelle": "À zéro, le bandeau énonce une phrase — un vide gris ferait douter de l’écran",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Un acte rapproché n’est plus une valeur d’attente",
+        "libelle": "Le rôle « aide_soignant » ouvre SON tableau de bord, pas celui d’un autre profil",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le rapprochement passe par le libellé ou par une correspondance nommée, jamais par approximation",
+        "libelle": "Le rôle « echographiste » ouvre SON tableau de bord, pas celui d’un autre profil",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Dans tous les actes rapprochés, l’assuré paie moins que le non-assuré",
+        "libelle": "Le rôle « surveillant » ouvre SON tableau de bord, pas celui d’un autre profil",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Les actes déclinés par la grille disent pourquoi ils restent sans prix",
+        "libelle": "Le rôle « assistant_comptable » ouvre SON tableau de bord, pas celui d’un autre profil",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "La semence garde la distinction du 20/08 ; le catalogue vivant est arrêté (vague 49)",
+        "libelle": "Le compteur des ruptures ne retient que les articles AYANT un seuil",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "L’écran montre les deux colonnes de la grille",
+        "libelle": "Le compteur du comptable distingue les écritures en brouillon des validées",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "libelle": "Le tableau d’un compte fermé le dit, au lieu de faire comme si de rien n’était",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et indique où la fonction a été transférée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les tableaux de bord OUVERTS se montent tous",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les tableaux de bord",
         "ok": true,
         "detail": null
       }
@@ -468,95 +443,45 @@
     "nom": "Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse",
     "etapes": [
       {
-        "libelle": "L’écran « Tâches planifiées » lit le registre du serveur : six tâches, dont la sauvegarde et les échéances fiscales",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le poste lit les alertes ouvertes par le planificateur (échéances, stock, péremptions)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La cloche ne double jamais une alerte calculée par le poste ET par le serveur (clé unique)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le routage se fait AU SERVEUR : la réception ne reçoit ni échéance fiscale ni alerte de stock (RG-13)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Quand la cause cesse (échéances réglées), l’exécution résout l’alerte — elle disparaît de la cloche sans être supprimée",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Sans session, le registre des tâches est refusé (401)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune erreur JavaScript sur ces écrans",
-        "ok": true,
-        "detail": null
+        "libelle": "Le scénario s’exécute sans erreur",
+        "ok": false,
+        "detail": "Waiting failed: 30000ms exceeded"
       }
     ],
-    "ok": true
+    "ok": false
   },
   {
     "nom": "Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles",
     "etapes": [
       {
         "libelle": "Les tables existent pour tous les modules : au moins quinze schémas de module",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": ""
       },
       {
         "libelle": "Parité magasin ↔ tables : zéro écart sur toutes les collections",
         "ok": false,
-        "detail": "[\"parametresFiscaux : absente du schéma\"]"
+        "detail": ""
       },
       {
         "libelle": "Plus de cent collections projetées",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "undefined"
       },
       {
         "libelle": "Aucune erreur de projection récente",
-        "ok": false,
-        "detail": "[{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:58.495279\"},{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:38.022854\"},{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:37.592525\"},{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:22.127584\"},{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:12.026428\"},{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:12.005121\"},{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:11.962163\"},{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:11.916344\"},{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:10.067231\"},{\"collection\":\"parametresFiscaux\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-11-09 09:23:09.788624\"}]"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une modification est suivie, et un champ inconnu du schéma est CONSERVÉ dans « extra » au lieu d’être perdu",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les lignes d’une facture ont leur table fille et la parité des lignes est vérifiée avec le reste",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "RG-14 : archiver ne supprime pas — la ligne reste en table avec son statut",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Après ces écritures, la parité reste à zéro écart",
         "ok": false,
-        "detail": "[\"parametresFiscaux : absente du schéma\"]"
+        "detail": "{\"erreur\":\"accès refusé\",\"detail\":\"Le contrôle de la copie relationnelle est réservé à l’administration.\"}"
       },
       {
-        "libelle": "Sans session, le contrôle est refusé (401)",
-        "ok": true,
-        "detail": null
+        "libelle": "Le scénario s’exécute sans erreur",
+        "ok": false,
+        "detail": "Cannot read properties of undefined (reading 'slice')"
       }
     ],
     "ok": false
@@ -649,165 +574,12 @@
     "ok": true
   },
   {
-    "nom": "Vague 73 — exercice : trois états, journaux CL et AN, atomicité, réouverture par contre-passation, comptes de résultat paramétrables",
-    "etapes": [
-      {
-        "libelle": "Trois états : en clôture, un module n’écrit plus dans l’exercice, le comptable y passe ses écritures d’inventaire, un autre rôle non",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Reprendre la saisie rend l’exercice à « ouvert » et les modules y réécrivent",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Atomicité : des à-nouveaux déséquilibrés refusent la clôture APRÈS la pièce CL, qui est défaite ; l’exercice reste en clôture",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La clôture pose la pièce CL au 31/12 (journal CL), équilibrée CENTRE de coûts par centre, la contrepartie en 131",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "… puis la pièce AN au 01/01/N+1 : classes 1 à 5 seulement, équilibrée, et le verrou « clôturé »",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les états de N restent ceux d’avant la clôture (le journal CL en est exclu) : le résultat n’est pas zéro",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Exercice clôturé : même le comptable ne peut plus y écrire",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Réouverture : refusée à un autre rôle, à un motif de moins de dix caractères, à l’exercice de la liasse déposée, et si N+1 n’est plus ouvert",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le comptable rouvre : l’exercice repasse « en clôture », CL et AN sont CONTRE-PASSÉES, aucune pièce n’est effacée",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une seconde clôture est possible après la réouverture, sous de NOUVEAUX numéros",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les comptes de résultat 131 et 139 viennent d’une table paramétrable, pas du code",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune erreur JavaScript",
-        "ok": true,
-        "detail": null
-      }
-    ],
-    "ok": true
-  },
-  {
-    "nom": "Vague 73 — le dossier patient imprimé est le dossier ENTIER : identité, dossier de consultation et toutes les rubriques",
-    "etapes": [
-      {
-        "libelle": "Le bouton d’impression du dossier ouvre un état",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Toutes les rubriques du dossier figurent sur le papier (aucune ne manque)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucun bouton ne se retrouve imprimé",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune erreur JavaScript",
-        "ok": true,
-        "detail": null
-      }
-    ],
-    "ok": true
-  },
-  {
-    "nom": "Vague 74 — le sélecteur d’exercice est dans la barre supérieure : en session, seulement sur les écrans à année, il lit sans jamais écrire",
-    "etapes": [
-      {
-        "libelle": "Sur un registre comptable, le sélecteur est dans la BARRE SUPÉRIEURE et non plus dans l’en-tête de la page",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Sans choix, l’exercice par défaut est l’exercice OUVERT le plus récent",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les boutons « exercice précédent » et « suivant » existent quand l’exercice voisin existe",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Il est absent des écrans du jour (caisse, point de vente, tableaux de bord de poste, accueil) et présent sur les registres et états à année",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Sur la caisse, aucun sélecteur dans la barre",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le choix est tenu par la SESSION (sessionStorage), jamais par une copie dans le stockage durable",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Choisir 2025 n’écrit rien : mêmes écritures, mêmes factures, aucune entrée d’audit de plus",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le registre des factures SUIT l’exercice : 2025 ne montre que les factures datées de 2025, pas celles de 2026",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une pièce datée de 2026 s’enregistre dans 2026 même quand on consulte 2025",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les dates relatives partent du dernier jour de l’exercice consulté (2025), et d’aujourd’hui pour l’exercice en cours",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune erreur JavaScript",
-        "ok": true,
-        "detail": null
-      }
-    ],
-    "ok": true
-  },
-  {
     "nom": "Vague 81 : configuration fiscale validée et datée (identité par versions, obligations régénérées, ORTB à la date du bulletin, validation réservée)",
     "etapes": [
       {
         "libelle": "Les trois collections sont semées au socle (identité v1 non validée, 20 fiches d’obligations : les 19 du calendrier et ORTB-PARAMETRES, historique vide), essentielles, libellées CFG, _version 69 ou plus",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "{\"identite\":1,\"obligations\":21,\"historique\":0,\"essentielles\":true,\"libelles\":\"CFG/CFG\",\"version\":75}"
       },
       {
         "libelle": "cfg-branding : « Enregistrer » écrit la fiche et le toast nomme la version (1) et la validation à faire",
@@ -891,8 +663,8 @@
       },
       {
         "libelle": "L’échéance CCIB-2 non payée est archivée et recréée au 15/06/2026 avec versionObligation ; comptes annoncés 0 conservée / 1 régénérée / 1 recréée",
-        "ok": false,
-        "detail": "[\"archive\",[{\"echeance\":\"2031-06-16\",\"versionObligation\":\"2026-06-01\",\"paye\":false,\"regenereePar\":\"TAKI Alimatou\"},{\"echeance\":\"2030-06-17\",\"versionObligation\":\"2026-06-01\",\"paye\":false,\"regenereePar\":\"TAKI Alimatou\"},{\"echeance\":\"2028-06-15\",\"versionObligation\":\"2026-06-01\",\"paye\":false,\"regenereePar\":\"TAKI Alimatou\"},{\"echeance\":\"2027-06-15\",\"versionObligation\":\"2026-06-01\",\"paye\":false,\"regenereePar\":\"TAKI Alimatou\"},{\"echeance\":\"2026-06-15\",\"versionObligation\":\"2026-06-01\",\"paye\":false,\"regenereePar\":\"TAKI Alimatou\"}],{\"code\":\"CCIB-2\",\"dateEffet\":\"2026-06-01\",\"conservees\":0,\"anterieures\":0,\"archivees\":5,\"creees\":5}]"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "Le journal porte « Régénération des échéances », le Comptable reçoit une tâche de poste, et l’historique garde la version d’origine (jour 10, fin 31/05/2026)",
@@ -906,8 +678,8 @@
       },
       {
         "libelle": "ITS (mensuelle) du 10 au 12 à effet du 01/06 : les échéances PAYÉES de juin et juillet restent intactes (date, quittance), les non payées sont régénérées au 12 ; douze échéances au total",
-        "ok": false,
-        "detail": "{\"ok\":true,\"ech\":{\"code\":\"ITS\",\"dateEffet\":\"2026-06-01\",\"conservees\":3,\"anterieures\":5,\"archivees\":52,\"creees\":52},\"payeesAvant\":3,\"payeesIntactes\":true,\"nouvelles\":[\"2031-12-12\",\"2031-11-12\",\"2031-10-13\",\"2031-09-12\",\"2031-08-12\",\"2031-07-14\",\"2031-06-12\",\"2031-05-12\",\"2031-04-14\",\"2031-03-12\",\"2031-02-12\",\"2031-01-13\",\"2030-12-12\",\"2030-11-12\",\"2030-10-14\",\"2030-09-12\",\"2030-08-12\",\"2030-07-12\",\"2030-06-12\",\"2030-05-13\",\"2030-04-12\",\"2030-03-12\",\"2030-02-12\",\"2030-01-14\",\"2028-12-12\",\"2028-11-13\",\"2028-10-12\",\"2028-09-12\",\"2028-08-14\",\"2028-07-12\",\"2028-06-12\",\"2028-05-12\",\"2028-04-12\",\"2028-03-13\",\"2028-02-14\",\"2028-01-12\",\"2027-12-13\",\"2027-11-12\",\"2027-10-12\",\"2027-09-13\",\"2027-08-12\",\"2027-07-12\",\"2027-06-14\",\"2027-05-12\",\"2027-04-12\",\"2027-03-12\",\"2027-02-12\",\"2027-01-12\",\"2026-12-14\",\"2026-11-12\",\"2026-10-12\",\"2026-09-14\"],\"toutesAu12\":true,\"total\":60}"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "À l’écran : le crayon de CCIB-2 ouvre la fiche (jour 15), « Continuer » ouvre « Portée de la modification » qui annonce conservées et régénérées ; la page montre « 15 juin » et l’historique motivé",
@@ -931,8 +703,8 @@
       },
       {
         "libelle": "Le scénario restaure l’état : identité v1 d’origine non validée, obligations et ORTB d’origine (CCIB-2 le 10, seuil 60 000), historique vide, CCIB-2 payée, session rendue",
-        "ok": false,
-        "detail": "{\"slogan\":\"Votre santé, notre raison de vivre\",\"rccm\":\"RB/NAT/2016-B-268\",\"tel\":2,\"etatI\":\"a_valider\",\"etatO\":\"a_valider\",\"versions\":1,\"ccib2\":true,\"ccib2Actives\":5,\"itsActives\":60,\"regenereesActives\":0,\"hist\":0,\"seuil\":60000,\"seuilMin\":60001,\"jourCcib2\":10,\"role\":\"admin\"}"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "Aucune erreur JavaScript",
@@ -1745,201 +1517,5 @@
       }
     ],
     "ok": true
-  },
-  {
-    "nom": "Vague 98 : calendrier fiscal (jours des 19 obligations sur la référence, le suivi et cfg-fiscalite, mensuelle au 31, période juste, version à venir visible puis annulée, seuils en paramètres jusqu’au planificateur, exercice suivant, vue mensuelle)",
-    "etapes": [
-      {
-        "libelle": "La référence (obligations en vigueur) porte les 19 jours du calendrier confirmé le 25/08/2026, la CNSS reste au 10",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le suivi : sur les exercices 2026 et 2027 chacune des 19 obligations tombe au jour attendu (dernier jour réel du mois, report au jour ouvrable), zéro divergence",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les sept obligations annuelles au 29, 30 ou 31 ne sont plus plafonnées à 28 : IS-SOLDE, ETATS-FIN, PATENTE-DECL, PATENTE-2, TVM, ORTB-RADIO et ORTB-TELE le disent (2026 et 2027)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "cfg-fiscalite : la prochaine échéance des 19 obligations est celle du document (31 janvier reporté au 01/02/2027, 28 février au 01/03/2027), zéro divergence avec le suivi",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "cfg-comptabilite (la référence) affiche le jour de chaque obligation au document : mensuelles au 10, acomptes, patente, CCIB, TVM, solde et dépôt",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Trois obligations de sonde (mensuelle au 31, annuelle au 31 février, annuelle au 31 avril) se créent à la date d’effet du 01/01/2027",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une mensuelle au 31 : douze échéances, une par mois, au dernier jour réel (28 février, 30 avril…), aucune ne déborde sur le mois suivant",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une annuelle au 31 février donne le 28 février 2027 (reporté au lundi 01/03/2027), au 31 avril le 30 avril 2027",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les libellés de période sont justes : l’échéance du 10 janvier règle décembre de l’exercice d’avant, celle du 10 février janvier",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "CNSS au 15 programmée au 01/12/2026 : la version en vigueur reste celle du 10 jusqu’à cette date, la régénération ne touche que décembre (15/12), août reste au 10",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La version à venir est VISIBLE à l’écran : mention « À compter du 01/12/2026 : le 15 du mois suivant » sur la ligne, carte « Versions programmées », ancienne version toujours affichée (le 10) ; la commande d’annulation est offerte",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le refus DATE_EFFET_ANTERIEURE NOMME la version à venir (01/12/2026, le 15 du mois suivant) et le geste de correction (annuler d’abord la version à venir)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Annulation à l’écran : la version du 15 est ARCHIVÉE avec son motif (RG-14), la précédente est ROUVERTE (le 10, d’origine), son entrée d’historique archivée, la mention a disparu",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "L’annulation ne réécrit pas une payée : la décembre réglée garde son jour (15/12), sa quittance et son identifiant ; aucune doublure du 10/12 n’est recréée ; le journal porte le geste",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Annuler une version déjà en force est refusé (AUCUNE_VERSION_A_VENIR, geste nommé) ; sans motif, refus MOTIF_REQUIS",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Rétablir à la même date d’effet : aucune ligne d’historique ne finit avant de commencer, la version remplacée le même jour est marquée (fin vide), les jours en vigueur sont justes",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Annuler la version à venir qui a remplacé son propre jour rouvre la version d’origine de la TVM (le 30)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les phrases qui répétaient un jour (dépôt des états financiers, liquidation du solde) sont calculées : avant « le 30 avril », après la modification « le 29 avril » et « le 28 avril », sans que le texte ait été retouché",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune note d’obligation ne répète un jour ni un montant (la note est le commentaire libre, le jour est lu de l’obligation)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les seuils (10 et 30 jours) et le montant de la CCIB (300 000 F) sont des fiches de la collection parametresFiscaux, semées au socle, marquées à valider",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Planificateur, seuil d’origine : l’alerte du serveur porte sur l’échéance à 10 jours et pas au-delà (le seuil lu côté PHP vaut 10, comme l’écran)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Modifier les délais à l’écran crée une version datée (la semence reste, rien n’est réécrit) : 30 et 45 jours en vigueur, l’écran le dit, le motif et l’auteur sont portés",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Planificateur après le geste : le serveur lit le NOUVEAU seuil (30) : il alerte à 10, 11 et 30 jours et PAS à 31 (la valeur lue côté PHP égale la valeur de l’écran, 30)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le suivi lit le même paramètre : « À payer sous 30 jours » et la barre annonce les paiements « sous 30 jours » (et non plus dix)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une version de paramètre programmée ne change rien avant sa date (30 jusqu’au 31/05/2027, 5 le 01/06) ; un second changement antérieur est refusé en NOMMANT la version à venir ; 50 jours « à payer » avec 40 de déclaration est refusé ; sans motif refusé ; la CCIB à 400 000 F ne vaut qu’à partir du 01/01/2027",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Annuler une version de paramètre à venir l’archive et laisse la précédente en vigueur ; une version déjà en force ne s’annule pas (AUCUNE_VERSION_A_VENIR)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le montant de la CCIB est lu aux paramètres : 400 000 F à compter de 2027 (l’écran de référence n’écrit plus 300 000 en dur)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "cfg-comptabilite montre le montant de la CCIB lu au paramètre en vigueur aujourd’hui (300000), et la version à venir du 01/01/2027 (400000)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le jeu porte l’échéancier de l’exercice suivant (2027 : 63 échéances, 19 obligations) ; régénérer 2027 est idempotent (0 créée) et ne touche à rien, la payée de 2027 comprise",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Un nouvel exercice se génère à son OUVERTURE (la liste des exercices l’ajoute) : 2028 naît avec ses 19 obligations, aucune payée, le 31 février de sonde y tombe le 29 (année bissextile), 2026 et 2027 sont intacts octet pour octet, la seconde génération ne crée rien",
-        "ok": false,
-        "detail": "{\"n2027\":63,\"codes2027\":19,\"idem\":0,\"memeApres\":true,\"avant2028\":105,\"liste\":[2031,2030,2028,2027,2026,2025,2024],\"n2028\":63,\"codes2028\":19,\"payees2028\":0,\"inchanges\":true,\"idem28\":14,\"fevrier28\":[],\"clos\":\"EXERCICE_CLOS\"}"
-      },
-      {
-        "libelle": "Un exercice clos ne se génère pas (refus EXERCICE_CLOS, la liasse déposée est une lecture)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La vue mensuelle porte les droits de m12-echeances, rôle par rôle (aucun écart sur tous les profils)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La vue mensuelle s’ouvre sur le mois courant (août 2026) et montre EXACTEMENT les échéances du registre de ce mois, avec l’état du suivi (payée, en retard, à payer, à venir), sonde S98-VUE comprise",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La navigation mois suivant et mois précédent change la grille et reste égale au registre (septembre : ITS, AIB, VPS, CNSS, IS-3 ; juillet : les réglées)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une seule vérité : l’échéance réglée dans le registre apparaît « payée » dans la vue mensuelle au rechargement (la vue ne garde aucune copie)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le caissier n’a pas la vue mensuelle (fermée comme le suivi : adresse renvoyée au 403)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le magasin est restitué à l’instantané : 126 échéances (2026 et 2027), les obligations d’origine, deux paramètres, aucun exercice 2028",
-        "ok": false,
-        "detail": "{\"ech\":315,\"obl\":20,\"params\":2,\"jour\":10,\"exos\":4}"
-      },
-      {
-        "libelle": "Aucune erreur JavaScript",
-        "ok": true,
-        "detail": null
-      }
-    ],
-    "ok": false
   }
 ]

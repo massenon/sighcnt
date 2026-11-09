@@ -1616,6 +1616,15 @@
       'Prélevée sur TOUS les salariés sans exception ; le montant et le mois de prélèvement sont les paramètres ORTB.'],
     ['ORTB-TELE', 'Redevance ORTB / Télé', 'annuelle', 30, 5, 100, null,
       'Prélevée en SUS de la radio au-delà du seuil de salaire brut ; le seuil, le montant et le mois sont les paramètres ORTB.'],
+
+    /* DÉCISION DE LA DIRECTION DU 09/11/2026 (Q6) : le VERSEMENT des cotisations CNSS est une obligation DISTINCTE de la déclaration
+       (qui reste au jour porté par CNSS, arrêté le 25/08/2026). Son jour et sa nature NE SONT PAS ARRÊTÉS : la source est la page CNSS
+       « Déclaration et paiement » (versement dans les quinze jours ; employeur de plus de vingt salariés : mensuel), à confirmer par la
+       CNSS. Elle est dans la semence comme les autres, donc modifiable aux paramètres (jour, part, date d'effet, motif), versionnée.
+       Dernier élément de la liste : les identifiants des obligations déjà posées ne se décalent pas. */
+    ['CNSS-VERSEMENT', 'Cotisations sociales CNSS, versement', 'mensuelle', 15, null, 100, null,
+      'Versement des cotisations, distinct de la déclaration CNSS. À confirmer par la CNSS, non arrêtée.',
+      'Page CNSS « Déclaration et paiement » : versement dans les quinze jours, employeur de plus de vingt salariés : mensuel. À confirmer par la CNSS, non arrêtée (décision de la Direction du 09/11/2026).'],
   ].map(function (e, i) {
     return {
       id: 'FIS' + C.pad(i + 1, 2), code: e[0], libelle: e[1],
@@ -1623,7 +1632,9 @@
       part: e[5], declaration: e[6], note: e[7],
       famille: e[0].split('-')[0],
       statut: 'actif',
-      source: 'Précisions du comptable — réunion du 19/08/2026',
+      /* Une obligation dont la source n'est pas le comptable le dit (e[8]) et se marque « à confirmer ». */
+      aConfirmer: e[8] ? true : false,
+      source: e[8] || 'Précisions du comptable — réunion du 19/08/2026',
     };
   });
 
@@ -1659,7 +1670,8 @@
         code: o.code, libelle: o.libelle, famille: o.famille,
         periodicite: o.periodicite, jour: o.jour, mois: o.mois, part: o.part,
         declaration: o.declaration, note: o.note,
-        source: SOURCE_OBLIGATIONS,
+        aConfirmer: !!o.aConfirmer,
+        source: o.aConfirmer ? o.source : SOURCE_OBLIGATIONS,
         dateEffet: null, modifieLe: null, modifiePar: null, motif: null,
         valideLe: null, validePar: null,
       };
