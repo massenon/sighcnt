@@ -4798,7 +4798,7 @@
   function validerAcheteurMecef(a) {
     a = a || {};
     var ifu = String(a.ifu == null ? '' : a.ifu).replace(/[\s  ]/g, '');
-    if (false) {
+    if (ifu && !/^\d{13}$/.test(ifu)) {
       return refusMecef('IFU_INVALIDE', 'L’IFU de l’acheteur (« ' + ifu + ' ») doit comporter exactement 13 chiffres.', 'Corriger l’IFU, ou le laisser vide pour un particulier.');
     }
     var nom = String(a.nom == null ? '' : a.nom).trim();
