@@ -1,6 +1,6 @@
 # PRD : Validation par modale de mise à jour, et fin du statut « à valider » une fois l'élément enregistré
 
-Statut : **brouillon du 08/11/2026**, à arrêter par la Direction (questions de la section 10).
+Statut : **arrêté le 09/11/2026** : la Direction a répondu aux cinq questions de la section 10 (voir `docs/decisions/DECISIONS-A-VALIDER.md`) et le lot L1 en livre les lots V1 à V4 (maquette, vecteurs, domaine, poste ; écarts E2309 à E2312). Réponses : Q1 oui (les seuls profils de la famille), Q2 option (b), Q3 oui, Q4 motif obligatoire sur les valeurs chiffrées seulement, Q5 oui.
 Sources : demande de la Direction du 08/11/2026 (« tout statut de module à valider doit être implémenté avec une modale de mise à jour du bouton Valider, qui permettra de transformer le statut à valider en validé, ou en enregistrant : on ne doit plus avoir le statut à valider ») ; moteur de validation commun livré le 07/11/2026 (`PR.validerReferentiel`, `PR.remettreAValider`, `PR.FAMILLES_A_VALIDER`, 14 familles, centre `adm-validations`, scénarios Vague 91 et Vague 92) ; CLAUDE.md vagues 49 et 51 (la Direction tranche ce qui est de son ressort, le professionnel nommé garde le sien).
 
 ## 1. Problème
@@ -82,6 +82,12 @@ Les états imprimés qui citent un référentiel ne portent plus « proposition 
 | Q3 | Les éléments **semés** (propositions tirées d'un document, valeurs d'attente) restent-ils « à valider » jusqu'au premier enregistrement ou à la première validation par un profil de la famille ? | Oui : on ne valide pas à la place du professionnel, la première relecture suffit. |
 | Q4 | Faut-il un **motif** obligatoire quand le validateur enregistre une valeur modifiée (traçabilité d'une correction de borne ou de tarif) ? | Oui pour les valeurs chiffrées (bornes, tarifs, barème), non pour les libellés. |
 | Q5 | Le choix **Valider** dans la modale s'applique-t-il aussi aux **créations** (nouvel acte, nouvelle pathologie) faites par un validateur : elles naissent validées, sans second geste ? | Oui (EF-VAL-03). |
+
+## Mise en oeuvre (lot L1, 09/11/2026)
+
+- **Moteur** (`parcours.js`) : `PR.controlerEnregistrement` (refus nommé avant écriture : `MOTIF_OBLIGATOIRE`, `CONFIGURATION_DE_LA_MERE`), `PR.marquageEnregistrement` (patch et UNE ligne de journal portant l'état), `PR.suivreEnregistrement` (artefact tenu hors de la fiche écrite). `remettreAValider` n'est plus appelé par un enregistrement de la famille.
+- **Kit** (`_kit.js`) : `K.ecrireValidable` est l'unique chemin d'écriture d'un référentiel à valider depuis une modale ; `K.boutonValiderModale` pose « Valider » (libellé de la déclaration, « Arrêter » pour les objectifs) en pied de modale, ABSENT hors famille, pour un élément déjà validé et sur un fileul.
+- **Écrans** : les 15 familles du registre (quinze depuis le barème de l'AIB). Scénarios 100 (au geste), 101 (motif) et 102 (texte et fileul).
 
 ## Lots proposés (après arbitrage)
 
