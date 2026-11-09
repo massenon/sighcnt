@@ -9,6 +9,17 @@ Sources : message de la Direction du 09/11/2026 (texte remis, décrivant trois c
 - Le calendrier fiscal du dépôt (`D.CALENDRIER_FISCAL`) place la **CNSS au 10** et ce calendrier a été **confirmé par la Direction le 25/08/2026**. Le texte remis dit « la CNSS est bien au 15 » : les deux se contredisent (question Q2).
 - Aucune notion de **salaire d'attente** n'existe sur les fiches de M10 : pas de marquage « provisoire » sur le salaire, la date d'embauche, la CNSS ou le tarif de vacation. À créer ou à constater (question Q4).
 
+## Recherches du 09/11/2026 (sources publiques, à confirmer auprès de la DGI)
+
+Recherche faite à la demande de la Direction. **Aucune source officielle primaire n'a pu être ouverte** (les sites `impots.finances.gouv.bj` et `beninwebtv.bj` sont hors du réseau autorisé de la session) ; ce qui suit vient d'extraits de presse béninoise et de pages de la CNSS vues par moteur de recherche. À confirmer avant tout arrêt.
+
+- **AIB à 5 %, généralisé au 07/09/2026** : un communiqué de la DGI (daté du 3 ou 4 septembre 2026 selon les articles) généralise le prélèvement de l'AIB à **5 %**, **à l'émission des factures normalisées**, pour les contribuables **non conformes ou non immatriculés** (IFU désactivé, personnes morales comprises, entreprises individuelles et professions libérales). Il s'appuie sur les articles 132 d) et 135 du Code général des impôts. Il cesse à la régularisation (réactivation de l'IFU) ; une entreprise connue qui l'a subi par non-conformité passagère peut demander une **compensation**. L'AIB est **imputable sur l'impôt sur les bénéfices**, ce n'est pas un impôt supplémentaire. **Ce n'est donc pas un taux unique pour tous les acheteurs** : le 5 % vise la situation de l'acheteur.
+- **1 %, 3 %** (source de 2022, à reconfirmer pour 2026) : ventes en gros et demi-gros par importateurs, producteurs et revendeurs : **1 %** si le client est immatriculé à l'IFU, **5 %** sinon ; prestations de services : **3 %**, fournitures de travaux : 1 %, retenu par l'organisme payeur sur le prix hors taxe de la facture au paiement.
+- **CNSS** : la page « Déclaration et paiement » de la CNSS dit que les cotisations se versent « dans les quinze jours qui suivent la période » (mensuel pour 20 salariés et plus, trimestriel en dessous) ; la **déclaration unique** des impôts sur salaires et des cotisations sociales est, selon la DGI, due **au plus tard le 10 du mois suivant**. Les deux dates coexistent donc pour deux obligations proches : notre calendrier (10, confirmé le 25/08) suit la déclaration unique. Des guides secondaires citent tantôt le 10, tantôt le 15 : ils ne font pas foi.
+- **Loi n° 2026-10** modifiant la loi de finances 2026 (publiée le 31 juillet 2026) : non lue, son effet sur l'AIB n'est pas vérifié.
+
+Sources : [La Nouvelle Tribune, AIB de 5 %](https://lanouvelletribune.info/2026/09/benin-aib-de-5-ce-qui-change-selon-le-dgi-maxime-mensah-akakpo-djihountry/) ; [BeninWebTV, recouvrement de l'AIB au 7 septembre](https://beninwebtv.bj/recouvrement-de-laib-au-benin-ce-qui-change-a-partir-de-ce-lundi-7-septembre/) ; [BeninWebTV, généralisation du prélèvement de 5 %](https://beninwebtv.bj/dgi-generalisation-du-prelevement-de-5-daib-pour-les-contribuables-non-conformes-ou-non-immatricules-a-compter-du-7-septembre-2026/) ; [La Nouvelle Tribune, modalités AIB 2022](https://lanouvelletribune.info/2022/03/benin-le-dgi-yenoussi-devoile-les-modalites-dapplication-des-dispositions-fiscales-de-laib/) ; [CNSS, déclaration et paiement](https://cnss.bj/declaration-et-paiement/) ; [CNSS, déclaration unique](https://cnss.bj/communique/declaration-unique-des-impots-sur-salaires-et-des-cotisations-sociales/) ; [Bloomberg Tax, loi 2026-10](https://news.bloombergtax.com/daily-tax-report-international/benin-tax-agency-posts-law-amending-2026-finance-law).
+
 ## 1. Problème
 
 1. L'AIB (acompte sur impôt assis sur les bénéfices) est un paramètre figé à 1 % dans le code : un changement de taux (le texte remis annonce 5 % généralisé au 07/09/2026) écraserait le taux sous lequel des factures ont été émises, alors que `docs/prd` MECeF fait déjà dire à la fenêtre acheteur « 5 % par défaut, 1 %, aucun ». Sans barème daté, la maquette ne sait pas répondre à « quel taux ce jour-là ».
@@ -47,9 +58,9 @@ Non-objectifs :
 
 ## 5. Exigences fonctionnelles
 
-- **EF-AIB-01** : collection `baremeAib`, une fiche par version : `taux` (entier ou décimal défini), `dateEffet`, `arrete` (booléen), `source`, `motif`, `cree*`/`modifie*` ; jamais d'écrasement : une correction crée une version et ferme la précédente à `dateEffet - 1`. Source : vagues 13 et 19.
+- **EF-AIB-01** : collection `baremeAib`, une fiche par version ET par **situation de l'acheteur** (`situation` : `ifu_actif`, `ifu_inactif_ou_absent`, `prestation_service`) : `taux` (entier ou décimal défini), `dateEffet`, `arrete` (booléen), `source`, `motif`, `cree*`/`modifie*` ; jamais d'écrasement : une correction crée une version et ferme la précédente à `dateEffet - 1`. Source : vagues 13 et 19.
 - **EF-AIB-02** : moteur `PR.tauxAibALaDate(date)` : rend `{taux, arrete, dateEffet, version}` ; refus nommé `AIB_SANS_BAREME` si aucune version ne couvre la date (un tiret n'est pas un zéro). Critère : sondé sur trois dates et sur une date antérieure à la première version.
-- **EF-AIB-03** : valeurs de départ **proposées** : 5 % arrêté, généralisé à compter du 07/09/2026 ; 1 % et 3 % non arrêtés. Marquées « proposition à valider » (source : message du 09/11/2026), jamais présentées comme reprises d'un document.
+- **EF-AIB-03** : valeurs de départ **proposées d'après la recherche du 09/11/2026**, toutes marquées « proposition à valider » : `ifu_inactif_ou_absent` 5 % à compter du 07/09/2026 (communiqué DGI rapporté par la presse) ; `ifu_actif` 1 % (régime de la facture certifiée de référence et source de 2022) ; `prestation_service` 3 % (source de 2022, retenue par le payeur). Aucune n'est présentée comme reprise d'un texte officiel tant que le texte n'est pas produit.
 - **EF-AIB-04** : écran `m12-bareme-aib` (domaine Financier, rangée de la fiscalité), CRUD complet par `K.crud`, droits écriture comptable et lecture Direction par fiche RBAC, corbeille (RG-14), journal (RG-12).
 - **EF-AIB-05** : le moteur expose la liste de ce qu'il faudrait y brancher (achats, retenues, fenêtre acheteur MECeF) sans le brancher ; elle s'affiche à l'écran en lecture.
 - **EF-CAL-01** : rapport de vérification du calendrier : pour chaque obligation, jour de dépôt et jour affiché par `cfg-comptabilite` et `m12-echeances` ; le calendrier se sème à l'ouverture des deux écrans (piège de l'amorçage, vague 31) ; le suivi s'ouvre peuplé. Une vue mensuelle est ajoutée **seulement si elle n'existe pas**.
@@ -74,15 +85,15 @@ Non-objectifs :
 
 Taux 5 %, 1 %, 3 %, date du 07/09/2026 : aucun texte réglementaire dans le dépôt ; marquage « proposition à valider ». Jour de dépôt de la CNSS : le dépôt dit 10 (confirmé 25/08), le texte remis dit 15. Marquage d'attente du personnel : n'existe pas dans le dépôt.
 
-## 10. Questions ouvertes pour la Direction
+## 10. Questions ouvertes pour la Direction (après recherche)
 
-| N° | Question | Option recommandée |
+| N° | Question | Réponse recommandée, d'après la recherche |
 |---|---|---|
-| Q1 | Peut-on produire le **texte réglementaire** du 5 % généralisé au 07/09/2026 (et des 1 % et 3 %) ? | Oui : tant qu'il manque, tout reste « non arrêté » sauf mention contraire de la Direction. |
-| Q2 | **CNSS au 10 ou au 15** ? Le calendrier confirmé le 25/08/2026 dit 10. | Garder le 10 tant qu'une réponse écrite ne change pas la confirmation du 25/08. |
-| Q3 | Le **taux d'AIB par défaut** de la fenêtre acheteur MECeF (PRD MECeF, Q4 recommandé 1 %) devient-il 5 % à compter du 07/09/2026 ? | Oui si Q1 est confirmé : la fenêtre lit le moteur daté au lieu d'un défaut figé. |
-| Q4 | Faut-il **créer** le marquage « valeur d'attente » sur les fiches de personnel (il n'existe pas) ? | Oui, par champ, sans valeur inventée. |
-| Q5 | L'AIB doit-il être branché sur les **écritures d'achat** dans un second temps ? | Décision différée : le moteur liste d'abord ce qu'il faudrait brancher. |
+| Q1 | Peut-on produire le **texte réglementaire** (communiqué DGI du 3 ou 4 septembre 2026, articles 132 d) et 135 du CGI, loi 2026-10) ? | Oui, à demander à l'expert-comptable ou au centre des impôts de Natitingou ; en attendant tout reste « proposition à valider ». |
+| Q2 | **CNSS au 10 ou au 15** ? | **Garder le 10** : la DGI fixe la déclaration unique (ITS et cotisations) au 10 du mois suivant, et c'est le calendrier confirmé le 25/08. Le « quinze jours » de la CNSS vise le versement des cotisations : à faire confirmer par la CNSS pour un employeur de plus de 20 salariés. |
+| Q3 | Le **taux d'AIB par défaut** de la fenêtre MECeF devient-il 5 % ? | **Non, pas un défaut unique** : 5 % quand l'acheteur n'a pas d'IFU actif, **1 % quand il a un IFU actif** (défaut de la fenêtre), 3 % pour une prestation de service retenue par le payeur. La fenêtre lit le moteur daté selon la situation de l'acheteur. À confirmer avec le texte (Q1). |
+| Q4 | Créer le marquage « valeur d'attente » du personnel ? | **Oui**, par champ, sans valeur inventée. |
+| Q5 | Brancher l'AIB sur les **écritures d'achat** ? | **Différer** : l'AIB est imputable sur l'impôt sur les bénéfices (compte d'acompte à définir par le comptable) ; le moteur liste d'abord ce qu'il faudrait brancher, sans l'écrire. |
 
 ## Lots et agents (détail dans `docs/plans/PLAN-M12-bareme-aib-calendrier-attente.md`)
 
