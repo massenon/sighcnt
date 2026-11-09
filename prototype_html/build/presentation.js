@@ -519,11 +519,8 @@ async function capture() {
  * Les captures sont écrites dans le même dossier que celles de la phase capture,
  * au même format : la phase pdf les rend avec les autres.
  *
- * Trois sites ne s'impriment pas par le seul clic de l'écran, parce que le bouton
- * lève une ReferenceError dans la maquette (variable absente de la fermeture) :
- * le banc pose alors la variable manquante dans la page avant le clic (`AUJ` pour
- * le bulletin du patient externe, `e` pour la note de service des évaluations), ou
- * évalue la fonction morte à partir de sa copie dans le source. Chaque cas est
+ * Deux sites ne s'impriment pas par un geste d'écran (code mort, ou registre que rien
+ * n'alimente) : ils sont évalués à partir de leur copie dans le source. Chaque cas est
  * dit dans la note du spécimen et au README. Aucun fichier de l'application n'est modifié.
  * ======================================================================= */
 const COMPLEMENTS = [
@@ -531,10 +528,10 @@ const COMPLEMENTS = [
     comment: 'Le registre des certificats est VIDE sur le jeu : la commande de réédition n\'existe que sur une ligne du registre. Le certificat est donc délivré par l\'écran (carte « Certificat médical de repos », durée et date saisies, « Délivrer »), et c\'est la délivrance qui imprime.', note: null },
   { n: 2, site: 'assets/js/modules/m1-patients.js:2304', page: 'm1-externe',
     comment: 'Demande d\'analyses d\'un patient externe saisie à l\'accueil (identité, ordonnance extérieure, deux examens cochés), enregistrée, puis « Imprimer le bulletin » dans la fenêtre « Demande enregistrée ».',
-    note: 'Le bouton « Imprimer le bulletin » lève une ReferenceError dans la maquette (`AUJ` n\'est pas défini dans `m1-patients.js`, depuis le passage à l\'horloge réelle). Le banc pose `AUJ` dans la page avant le clic : le gabarit est celui du logiciel, rien n\'est redessiné.' },
+    note: null },
   { n: 3, site: 'assets/js/modules/m10-rh.js:2462', page: 'm10-evaluations',
-    comment: 'Cause élucidée : le clic s\'exécute, mais `imprimerNote` lève une ReferenceError (`e` n\'est pas défini hors de la fiche d\'évaluation) avant tout aperçu.',
-    note: 'Le bouton « Imprimer la note » lève une ReferenceError dans la maquette (`dateBaremeDe(e)` dans `imprimerNote`, `e` hors de portée). Le banc pose `e = {}` dans la page avant le clic, ce qui retombe sur la date d\'effet du barème NS 131.' },
+    comment: 'Écran des évaluations : « Imprimer la note » (note de service du barème NS 131), sans geste préalable.',
+    note: null },
   { n: 4, site: 'assets/js/modules/m12-comptabilite.js:2396', page: 'm12-cloture',
     comment: 'Sur le banc dédié : les brouillons sont validés par l\'écran des écritures, la pré-clôture est contrôlée, le comptable (KASSA, connexion réelle) démarre la clôture de 2026, la Direction administrative (TAKI, connexion réelle) la valide, puis « Procès-verbal » est imprimé.',
     note: 'Clôture de l\'exercice 2026 jouée sur une base jetable de banc, jamais sur une base partagée.' },
@@ -732,8 +729,6 @@ async function complements() {
     await attendre(1500);
     const txt = await ev(() => (window.__dlg() ? window.__dlg().innerText.slice(0, 80) : 'aucune fenêtre'));
     exiger(/Demande enregistrée/.test(txt), 'demande non enregistrée : ' + txt + ' ' + (await ev(() => window.__toast())));
-    /* La maquette lève une ReferenceError sur AUJ : le banc le pose dans la page (voir la note du spécimen). */
-    await ev(() => { window.AUJ = window.SIGH.core.aujourdhui(); });
     exiger(await ev(() => window.__btnx('Imprimer le bulletin', 'dialog')), 'bouton Imprimer le bulletin absent');
     await attendre(1000);
     return { caps: await vider(), declencheur: 'Imprimer le bulletin (après « Enregistrer et envoyer à la caisse »)' };
@@ -741,7 +736,6 @@ async function complements() {
 
   SC[3] = async (c) => {
     await ouvrir(c.page);
-    await ev(() => { window.e = {}; });
     exiger(await ev(() => window.__btnx('Imprimer la note')), 'bouton Imprimer la note absent');
     await attendre(1200);
     return { caps: await vider(), declencheur: 'Imprimer la note' };
@@ -1386,15 +1380,10 @@ function indexer() {
     r += '| ' + c.n + ' | `' + c.site.replace('assets/js/modules/', '') + '` | ' + (m ? m.titre.replace(/\|/g, '/') : 'NON PRODUIT') + ' | ' + c.comment.replace(/\|/g, '/')
       + (c.note ? ' **Remarque : ' + c.note.replace(/\|/g, '/') + '**' : '') + ' | ' + (m ? '[`' + m.fichier + '`](specimens/' + m.dossier + '/' + m.fichier + ')' : 'aucun') + ' |\n';
   });
-  r += '\n**Six spécimens exigent une réserve que le lecteur doit connaître** : (2) et (3) viennent de boutons qui lèvent une ReferenceError dans la maquette actuelle (le bulletin du patient externe, la note de service des évaluations), le banc posant la variable manquante dans la page ; '
-    + '(6) et (11) viennent de fonctions qu\'aucun geste d\'écran n\'atteint, appelées directement à partir de leur copie dans le source. '
-    + '(8) et (9) viennent d\'activités que la clinique ne pratique pas, rouvertes sur le banc seulement. Les 8 autres sont des gestes d\'écran de bout en bout.\n\n';
-  const defauts = ['`m1-patients.js:2314` : `AUJ` n\'est défini nulle part dans ce fichier : « Imprimer le bulletin » de la demande d\'un patient externe lève une ReferenceError et n\'imprime rien.',
-    '`m10-rh.js:2481` : `imprimerNote` de l\'écran des évaluations appelle `dateBaremeDe(e)` alors que `e` n\'existe pas dans cette portée : « Imprimer la note » ne fait rien.',
-    '`m8-facturation.js:2279` : le titre de la fenêtre d\'encaissement d\'une prescription se lit « Encaisser undefined » (la tâche n\'a pas de `reference`). Cosmétique.',
-    '`m6-stock.js` : la délivrance de la file de la pharmacie (`PR.delivrer`) n\'écrit aucune ligne au registre des dispensations, seul point d\'impression du « Bon de sortie de stock », et la création manuelle y est retirée : le bon n\'est imprimable par aucun geste d\'écran.',
-    '`m12-comptabilite.js` : « Clôturer définitivement » recharge la page aussitôt après `SIGH.exercice.valider`. Sur le banc, ce rechargement a laissé un état partiel côté serveur (pièces d\'à-nouveaux écrites, exercice resté « en clôture ») : le scénario appelle donc le moteur que le bouton appelle, puis attend l\'envoi.'];
-  r += '### Défauts de la maquette relevés en les produisant\n\n' + defauts.map((x) => '- ' + x).join('\n') + '\n\nIls sont signalés, non corrigés : ce dossier ne modifie aucun fichier de l\'application.\n\n';
+  r += '\n**Quatre spécimens exigent une réserve que le lecteur doit connaître** : (6) et (11) viennent de fonctions qu\'aucun geste d\'écran n\'atteint, appelées directement à partir de leur copie dans le source. '
+    + '(8) et (9) viennent d\'activités que la clinique ne pratique pas, rouvertes sur le banc seulement. Les 9 autres sont des gestes d\'écran de bout en bout (le bulletin du patient externe et la note de service des évaluations, qui levaient une ReferenceError, s\'impriment désormais par le seul clic).\n\n';
+  const defauts = ['`m6-stock.js` : la délivrance de la file de la pharmacie (`PR.delivrer`) n\'écrit aucune ligne au registre des dispensations, seul point d\'impression du « Bon de sortie de stock », et la création manuelle y est retirée : le bon n\'est imprimable par aucun geste d\'écran.'];
+  r += '### Défaut de la maquette relevé en les produisant\n\n' + defauts.map((x) => '- ' + x).join('\n') + '\n\nIl est signalé, non corrigé : ce dossier ne modifie aucun fichier de l\'application. Quatre autres défauts relevés à la première production (bulletin du patient externe, note de service, titre de la fenêtre d\'encaissement, clôture de l\'exercice rechargée trop tôt) sont corrigés dans la maquette (écarts E2304 à E2307).\n\n';
   r += '### Écrans autrefois non explorés\n\n'
     + '- `m5-banque-sang`, `m5-donneurs` : activités fermées dans le dépôt, rouvertes sur le banc par `cfg-modules` (spécimens 8 et 9).\n'
     + '- `plan-du-site` : page autonome, sans coquille ni `#page-content` : l\'exploration la déclarait « non peinte » à tort. Elle est peinte (' + ((bilanCompl.filter((b) => b.ecran === 'plan-du-site')[0] || {}).detail || {}).longueur + ' caractères au dernier passage) et ne porte aucune commande d\'impression : aucun état à y relever.\n\n';

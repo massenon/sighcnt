@@ -2833,14 +2833,7 @@
   /* ON ATTEND QUE LE SERVEUR AIT REÇU le vidage avant de recharger : un
      rechargement lancé pendant l'envoi relisait la base d'AVANT, et l'on
      croyait que rien ne s'était passé. */
-  function recharger() {
-    S.pousserMaintenant();
-    var debut = Date.now();
-    (function attendre() {
-      if (S.fileEnAttente() === 0 || Date.now() - debut > 8000) { global.location.reload(); return; }
-      setTimeout(attendre, 150);
-    })();
-  }
+  function recharger() { S.rechargerQuandEnvoye(); }
 
   function ongletReinitialisation(panneau) {
     dessiner();

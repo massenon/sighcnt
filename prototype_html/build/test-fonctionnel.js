@@ -16153,6 +16153,183 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
+  /* ===========================================================================
+   * Vague 99 : quatre défauts relevés en produisant les spécimens de présentation (E2304 à E2307)
+   * -------------------------------------------------------------------------
+   * Sondés AU GESTE, sur l'écran réel : (1) « Imprimer le bulletin » du patient externe levait une ReferenceError (`AUJ` hors de portée) ;
+   * (2) « Imprimer la note » des évaluations levait une ReferenceError (`e` hors de portée) ; (3) la fenêtre d'encaissement ouverte depuis le
+   * registre des pièces se titrait « Encaisser undefined » ; (4) « Clôturer définitivement » rechargeait la page aussitôt : les gestes nommés
+   * encore en file ne partaient qu'en `keepalive`, sans ordre, et le serveur gardait un état PARTIEL (écritures posées, exercice resté « en clôture »).
+   * La clôture se juge sur ce que le SERVEUR relit après le rechargement : « clos » ET pièces CL/AN, ou rien. Tout est restitué par instantané.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 99 : quatre défauts des spécimens (bulletin externe, note de service, titre d’encaissement, clôture atomique côté serveur)');
+    erreursJS = [];
+    const admin = () => page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    const attendreEnvoi = () => page.evaluate(async () => {
+      const S = window.SIGH.store; S.pousserMaintenant();
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+    });
+    const refs = () => erreursJS.filter((x) => /ReferenceError|is not defined|undefined/i.test(x));
+    const COLLS = ['ecritures', 'exercices', 'clotures', 'documents', 'notifications', 'factures', 'demandesLabo', 'patients', 'taches'];
+    await ouvrir('m12-cloture.html'); await admin(); await ouvrir('m12-cloture.html');
+    const instantane = await page.evaluate((c) => { const raw = window.SIGH.store.raw(); const o = {}; c.forEach((n) => { if (raw[n]) o[n] = JSON.parse(JSON.stringify(raw[n])); }); return o; }, COLLS);
+
+    /* --- 1. le bulletin du patient externe s'imprime ------------------------------------------------------------------------------------ */
+    await ouvrir('m1-externe.html'); await admin(); await ouvrir('m1-externe.html');
+    const atelier = () => page.evaluate(() => {
+      const w = (ms) => new Promise((r) => setTimeout(r, ms));
+      const ev = (i) => { i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); };
+      window.__s99 = {
+        w, dlg: () => Array.from(document.querySelectorAll('[role=dialog]')).pop() || null,
+        set: (r, n, v) => { const i = r.querySelector('[name="' + n + '"]'); if (!i) return false; i.value = v; ev(i); return true; },
+        btn: async (re, scope) => {
+          const R = new RegExp(re, 'i'), racine = scope === 'dialog' ? window.__s99.dlg() : document.getElementById('page-content');
+          const b = racine && Array.from(racine.querySelectorAll('button')).find((x) => R.test((x.textContent || '').trim()) && x.getBoundingClientRect().width && !x.disabled);
+          if (!b) return null; b.click(); await w(800); return (b.textContent || '').trim();
+        },
+        multi: async (r, idx, ks) => {
+          const cb = r.querySelectorAll('button.combo-input')[idx]; if (!cb) return false;
+          cb.click(); await w(250);
+          const pan = Array.from(document.querySelectorAll('.combo-panel')).find((x) => !x.hidden); if (!pan) return false;
+          const opts = pan.querySelectorAll('.combo-option');
+          for (const k of ks) { const o = opts[k]; if (!o) continue; o.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); o.click(); await w(200); }
+          cb.click(); await w(200); return true;
+        },
+      };
+      return true;
+    });
+    await atelier();
+    const ext = await page.evaluate(async () => {
+      const A = window.__s99;
+      if (!(await A.btn('Nouvelle demande externe'))) return { erreur: 'bouton absent' };
+      const d = A.dlg();
+      A.set(d, 'nom', 'TOGBE'); A.set(d, 'prenom', 'Rosalie'); A.set(d, 'sexe', 'F');
+      A.set(d, 'naissanceConnue', 'date'); A.set(d, 'dateNaissance', '1991-05-14');
+      A.set(d, 'telephone', '0197000042'); A.set(d, 'residence', 'Natitingou, quartier Yimporima');
+      A.set(d, 'prescripteur', 'Dr ADEOTI, centre de santé de Boukoumbé'); A.set(d, 'indication', 'Fièvre et fatigue, bilan demandé');
+      const sd = d.querySelector('[name=serviceDemandeur]'); if (sd && sd.options[1]) { sd.value = sd.options[1].value; sd.dispatchEvent(new Event('change', { bubbles: true })); }
+      await A.multi(d, 1, [0, 1]);
+      if (!(await A.btn('Enregistrer et envoyer', 'dialog'))) return { erreur: 'Enregistrer absent' };
+      await A.w(1500);
+      const txt = A.dlg() ? A.dlg().innerText.slice(0, 80) : 'aucune fenêtre';
+      if (!/Demande enregistrée/.test(txt)) return { erreur: 'non enregistrée : ' + txt };
+      const clic = await A.btn('Imprimer le bulletin', 'dialog');
+      await A.w(1000);
+      const f = document.querySelector('.print-sheet');
+      return { clic: !!clic, feuille: !!f, texte: f ? f.textContent.replace(/\s+/g, ' ').slice(0, 400) : '' };
+    });
+    verifier('Bulletin du patient externe : « Imprimer le bulletin » ouvre l’aperçu (patient et date de la demande), sans ReferenceError',
+      !ext.erreur && ext.clic && ext.feuille && /TOGBE/.test(ext.texte) && /\d{2}\/\d{2}\/\d{4}/.test(ext.texte) && refs().length === 0, JSON.stringify(ext) + ' | ' + refs().join(' | '));
+
+    /* --- 2. la note de service des évaluations s'ouvre ---------------------------------------------------------------------------------- */
+    await ouvrir('m10-evaluations.html'); await admin(); await ouvrir('m10-evaluations.html');
+    const note = await page.evaluate(async () => {
+      const b = Array.from(document.querySelectorAll('#page-content button')).find((x) => /Imprimer la note/.test(x.textContent) && x.offsetParent !== null);
+      if (!b) return { erreur: 'bouton absent' };
+      b.click(); await new Promise((r) => setTimeout(r, 1200));
+      const f = document.querySelector('.print-sheet');
+      return { feuille: !!f, texte: f ? f.textContent.replace(/\s+/g, ' ').slice(0, 2500) : '' };
+    });
+    verifier('Note de service : « Imprimer la note » ouvre l’aperçu (titre et barème NS 131), sans ReferenceError',
+      !note.erreur && note.feuille && /Note de service/.test(note.texte) && /NS 131/.test(note.texte) && refs().length === 0, JSON.stringify(note) + ' | ' + refs().join(' | '));
+
+    /* --- 3. le titre de la fenêtre d'encaissement ----------------------------------------------------------------------------------------- */
+    await ouvrir('m8-caisse.html'); await admin(); await ouvrir('m8-caisse.html');
+    const enc = await page.evaluate(async () => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const cands = S.collection('factures').active().filter((x) => (x.lignes || []).some((l) => l.statutPaiement !== 'paye') && Number(x.montantTTC) > Number(x.montantPaye || 0)).slice(0, 25);
+      if (!cands.length) return { erreur: 'aucune facture avec reste dû' };
+      const champ = document.querySelector('#page-content input[type=date]');
+      if (!champ) return { erreur: 'sélecteur de date absent' };
+      let b = null, f = null;
+      for (const c of cands) {
+        champ.value = C.iso(c.date); champ.dispatchEvent(new Event('change', { bubbles: true }));
+        await new Promise((r) => setTimeout(r, 400));
+        const ligne = Array.from(document.querySelectorAll('#page-content tbody tr')).find((tr) => tr.textContent.indexOf(c.numero) >= 0);
+        b = ligne && Array.from(ligne.querySelectorAll('button')).find((x) => /Encaisser le reste/.test(x.textContent));
+        if (b) { f = c; break; }
+      }
+      if (!b) return { erreur: 'commande « Encaisser le reste » absente sur ' + cands.length + ' factures essayées' };
+      b.click(); await new Promise((r) => setTimeout(r, 800));
+      const m = Array.from(document.querySelectorAll('[role=dialog]')).pop();
+      return { titre: m ? (m.querySelector('h2, h3, .modal-title') || m).textContent.replace(/\s+/g, ' ').trim().slice(0, 120) : null, corps: m ? m.textContent.replace(/\s+/g, ' ').slice(0, 400) : '' };
+    });
+    verifier('Titre d’encaissement : la fenêtre ouverte depuis le registre des pièces ne se lit pas « Encaisser undefined » (ni « undefined » dans le corps)',
+      !enc.erreur && enc.titre && /Encaisser/.test(enc.titre) && !/undefined/.test(enc.titre) && !/undefined/.test(enc.corps), JSON.stringify(enc));
+
+    /* --- 4. clôture, puis rechargement : « clos » ET pièces, jamais un état partiel ---------------------------------------------------- */
+    await ouvrir('m12-cloture.html'); await admin(); await ouvrir('m12-cloture.html');
+    const prep = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      const ecr = S.collection('ecritures');
+      const etat0 = X.etat(2026);
+      let r = { etat0 };
+      if (etat0 === 'clos') { r.rouvre = X.rouvrir(2026, 'Sonde Vague 99 : rouverture pour rejouer la clôture').ok; }
+      else if (etat0 === 'ouvert') { r.demande = X.demander(2026).ok; }
+      ecr.all().forEach((e) => { if (e.statut === 'brouillon' && String(e.date).slice(0, 4) === '2026') e.statut = 'validee'; });
+      S.save();
+      const pre = X.preCloture(2026);
+      r.etat = X.etat(2026); r.bloquants = pre.bloquants.map((b) => b.id + ':' + b.detail);
+      r.avant = { cl: ecr.active().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2026').length,
+        an: ecr.active().filter((e) => e.journal === 'AN' && String(e.date).slice(0, 4) === '2027').length };
+      return r;
+    });
+    verifier('Préparation : l’exercice 2026 est « en clôture », sans contrôle bloquant, sans pièce CL ni AN posée',
+      prep.etat === 'en_cloture' && prep.bloquants.length === 0 && prep.avant.cl === 0 && prep.avant.an === 0, JSON.stringify(prep));
+    await attendreEnvoi();
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'da', nom: 'Directrice Administrative', nomComplet: 'TAKI Alimatou', fonction: 'direction', identifiant: 's99.da' }));
+    await ouvrir('m12-cloture.html');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'da', nom: 'Directrice Administrative', nomComplet: 'TAKI Alimatou', fonction: 'direction', identifiant: 's99.da' }));
+    await ouvrir('m12-cloture.html');
+    const modale = await page.evaluate(async () => {
+      const lignes = Array.from(document.querySelectorAll('#page-content tbody tr')).filter((tr) => /2026/.test(tr.textContent));
+      const b = lignes.map((tr) => Array.from(tr.querySelectorAll('button')).find((x) => /Clôturer définitivement/.test(x.textContent + (x.title || '') + (x.getAttribute('aria-label') || '')))).filter(Boolean)[0];
+      if (!b) return { erreur: 'commande « Clôturer définitivement » absente de la ligne 2026' };
+      b.click(); await new Promise((r) => setTimeout(r, 600));
+      const champ = document.getElementById('motif-cloture');
+      if (!champ) return { erreur: 'fenêtre de validation absente' };
+      champ.value = 'Clôture validée, sonde Vague 99'; champ.dispatchEvent(new Event('input', { bubbles: true }));
+      return { ok: true };
+    });
+    verifier('La Direction ouvre la fenêtre « Valider la clôture » depuis la ligne de l’exercice 2026', modale.ok === true, JSON.stringify(modale));
+    if (modale.ok) {
+      const nav = page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }).then(() => true, () => false);
+      await page.evaluate(() => {
+        const m = Array.from(document.querySelectorAll('[role=dialog]')).pop();
+        Array.from(m.querySelectorAll('button')).find((x) => /Clôturer définitivement/.test(x.textContent)).click();
+      });
+      verifier('« Clôturer définitivement » recharge bien la page après la clôture', await nav, 'aucune navigation');
+      await attendrePeinture();
+      await pause(1500);
+      /* Ce que le SERVEUR a retenu : la page vient d'être hydratée depuis la base, rien ne vient du navigateur. */
+      const apres = await page.evaluate(() => {
+        const S = window.SIGH.store, X = window.SIGH.exercice;
+        const ecr = S.collection('ecritures').active();
+        const x = S.collection('exercices').all().filter((e) => e.annee === 2026)[0] || {};
+        return { etat: x.etat, cl: ecr.filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2026').length,
+          an: ecr.filter((e) => e.journal === 'AN' && String(e.date).slice(0, 4) === '2027').length,
+          trace: S.collection('clotures').all().filter((c) => c.annee === 2026 && c.type === 'cloture').length,
+          anNumero: x.anNumero, clNumero: x.clNumero };
+      });
+      verifier('Après rechargement, le serveur porte la clôture ENTIÈRE : exercice « clos », pièce CL, pièce d’à-nouveaux AN et trace de clôture (jamais un état partiel)',
+        apres.etat === 'clos' && apres.cl > 0 && apres.an > 0 && apres.trace >= 1, JSON.stringify(apres));
+    }
+
+    /* --- restitution ---------------------------------------------------------------------------------------------------------------------- */
+    await ouvrir('m12-cloture.html'); await admin(); await ouvrir('m12-cloture.html');
+    await page.evaluate((snap) => {
+      const S = window.SIGH.store, raw = S.raw();
+      Object.keys(snap).forEach((n) => { raw[n] = snap[n]; });
+      S.save();
+    }, instantane);
+    await attendreEnvoi();
+    const rest = await page.evaluate(() => { const S = window.SIGH.store;
+      return { cl: S.collection('ecritures').active().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2026').length };
+    });
+    verifier('Le magasin du banc est restitué à l’instantané (aucune pièce CL de 2026 en plus de celles d’origine)', typeof rest.cl === 'number', JSON.stringify(rest));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

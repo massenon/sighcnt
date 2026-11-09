@@ -2430,7 +2430,7 @@
       var r = global.SIGH.exercice.demarrer(x.annee);
       if (!r.ok) { U.toast('Démarrage refusé.', { type: 'error', detail: r.motif }); return; }
       U.toast('Clôture ' + x.annee + ' démarrée.', { type: 'success', detail: 'Les modules n’écrivent plus dans cet exercice.' });
-      global.location.reload();
+      S.rechargerQuandEnvoye();
     });
   }
 
@@ -2440,7 +2440,7 @@
       var r = global.SIGH.exercice.reprendre(x.annee);
       if (!r.ok) { U.toast('Reprise refusée.', { type: 'error', detail: r.motif }); return; }
       U.toast('Saisie de ' + x.annee + ' reprise.', { type: 'success' });
-      global.location.reload();
+      S.rechargerQuandEnvoye();
     });
   }
 
@@ -2455,7 +2455,7 @@
           if (!r.ok) { U.toast('Réouverture refusée.', { type: 'error', detail: r.motif }); return; }
           m.close();
           U.toast('Exercice ' + x.annee + ' rouvert.', { type: 'success', detail: r.pieces.join(' et ') + ' contre-passent la clôture.' });
-          global.location.reload();
+          S.rechargerQuandEnvoye();
         } })] });
   }
 
@@ -2470,7 +2470,7 @@
           if (!r.ok) { U.toast('Clôture refusée.', { type: 'error', detail: r.motif }); return; }
           m.close();
           U.toast('Exercice ' + x.annee + ' clos.', { type: 'success', detail: 'Résultat ' + C.money(r.resultat) + ' — ' + r.lignesAN + ' ligne(s) d’à-nouveau écrite(s).' });
-          global.location.reload();
+          S.rechargerQuandEnvoye();
         } })] });
   }
 

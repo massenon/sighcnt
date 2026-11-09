@@ -2248,7 +2248,7 @@
         var corps = el('div.space-y-3', null, [
           U.descList([
             ['Patient', fac.patient], ['Dossier', fac.patientCode],
-            ['Prescription', tache.reference],
+            ['Prescription', tache.reference || '—'],
             ['Montant total', C.money(fac.montantTTC)],
             ['Part assureur', fac.assureur ? C.money(fac.partAssurance) + ' — ' + fac.assureur : 'Sans assurance'],
             ['Déjà réglé', deja.length ? C.money(C.sum(deja, 'partPatient')) + ' — ' + C.num(deja.length) + ' prestation(s)' : 'Rien'],
