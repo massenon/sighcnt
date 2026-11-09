@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles, droitsDepuisMatrice, valCollectionValidations;
+import 'core/service_parametres.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -182,9 +183,14 @@ Future<void> main() async {
     await installation.attacher(stockage, await activation.parametres());
     // MÈRE : ses configurations et ses comptes partent vers le relais et les fileuls par le journal. FILEUL RATTACHÉ : il les reprend.
     PublicateurConfiguration? publicateur;
-    void demarrerPublication() => publicateur ??= PublicateurConfiguration(
-        magasin, publierVersMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin))
-      ..demarrer();
+    void demarrerPublication() {
+      // Lot L0 : la MÈRE sème le défaut (version 0) de chaque paramètre déclaré, une seule fois ; les fileuls reçoivent ces fiches par le journal. Le semis part
+      // ensuite avec le reste de la configuration, chiffré vers le relais.
+      serviceParametres(magasin, auteur: () => 'Poste mère').semerDefauts();
+      publicateur ??= PublicateurConfiguration(
+          magasin, publierVersMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin))
+        ..demarrer();
+    }
     // L'ACTIVITÉ et les mots de passe voyagent dans les deux sens (pont magasin / journal, E2130 à E2134).
     PontActivite? pontMere, pontFileul;
     void demarrerPontMere() {

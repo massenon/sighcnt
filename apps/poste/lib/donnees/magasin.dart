@@ -460,6 +460,9 @@ class Magasin {
     'pathologies': 'M2',
     // Les validations des artefacts que le code porte (check-listes du bloc, répartition des charges, barème de l'ITS, jeu d'import) : une fiche par cible.
     'validationsReferentiels': 'CFG',
+    // Lot L0 : une fiche par VERSION de paramètre (immuable) et une ligne par usage d'une valeur par une pièce (ajout seul).
+    'parametres': 'CFG',
+    'usagesParametres': 'CFG',
     'soignants': 'M2',
     'notifications': 'M14',
     'souscripteurs': 'M9',
@@ -540,6 +543,11 @@ class Magasin {
         // L'archive d'une clôture est IMMUABLE et le registre des clôtures est une piste d'audit (arbitrage du 05/11/2026).
         if (nom == 'archivesExercice') c.garder((op, f) => cpcGardeArchives(collection('archivesExercice').toutes, op, f['reference']));
         if (nom == 'clotures') c.garder((op, f) => cpcGardeClotures(op));
+        // Lot L0 : une version de paramètre ne se réécrit jamais (on en ajoute une, avec sa date d'effet) et un usage est un journal : seule l'insertion passe, tenue
+        // AU MOTEUR (masquer un bouton ne protège rien). La réception d'une fiche de la mère (`appliquerDistante`) ne passe pas par les gardes.
+        if (nom == 'parametres' || nom == 'usagesParametres') {
+          c.garder((op, f) => op == 'inserer' ? null : 'Une version de paramètre ne se réécrit jamais : ajouter une version avec sa date d’effet (rien n’est supprimé, RG-14).');
+        }
         return c;
       });
 

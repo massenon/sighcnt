@@ -28,6 +28,9 @@ const Set<String> collectionsActivite = {
   'consultations',
   'dossiersConsultation',
   'antecedents',
+  // Lot L0 : les USAGES des paramètres par les pièces (une ligne par pièce et par clé, ajout seul). Un fileul note ici qu'une pièce a utilisé une valeur ; la mère,
+  // qui seule écrit les versions, refuse ensuite de réécrire ce que cette pièce a utilisé.
+  'usagesParametres',
   // Les pièces et les compteurs, avec leurs règles de fusion propres (`fusion_activite.dart`).
   'factures',
   'avoirs',

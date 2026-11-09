@@ -1,5 +1,5 @@
 <div>
-    @include('livewire.panneau._entete', ['titre' => 'Paramètres du relais', 'description' => 'Secret de la mère, seuil de battement, rétention de l’audit, crochets du banc d’essai (fermés).', 'regle' => 'Le secret de la mère se pose dans le .env du relais (jamais en base). Les crochets du banc d’essai sont fermés en production.'])
+    @include('livewire.panneau._entete', ['titre' => 'Paramètres du relais', 'description' => 'Secret de la mère, seuil de battement, rétention de l’audit, crochets du banc d’essai (fermés).', 'regle' => 'Le secret de la mère se pose dans le .env du relais (jamais en base). Les crochets du banc d’essai sont fermés en production. Les paramètres de la clinique (taux, dates, circuits, modes) ne se règlent pas ici : ils se règlent au poste, voyagent chiffrés et ce relais ne les lit pas.'])
     <div class="carte">
         <h2>Paramètres</h2>
         <table>

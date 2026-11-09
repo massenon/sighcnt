@@ -14,6 +14,7 @@ import '../../shell/contexte_ecran.dart';
 import '../../shell/ecran_hub.dart';
 import 'cfa_commun.dart';
 import 'cfb_commun.dart';
+import 'cfg_parametres.dart';
 
 const _mono = 'LiberationMono';
 const _idReinit = 'reinitAutorisee';
@@ -22,7 +23,7 @@ const _idBareme = 'baremeModifiable';
 /// Les collections que le poste tient pour SIENNES mais que la maquette ne connaît pas : la matrice et le manifeste engendrés, et les réglages
 /// d'exploitation. `validationsReferentiels` (les validations des artefacts du code) est essentielle dans la maquette (`S.COLLECTIONS_ESSENTIELLES`) ; la liste
 /// `cfbEssentielles` du domaine, tenue par ses vecteurs, ne la porte pas encore : elle survit donc au vidage ici, comme les autres collections techniques. Elles survivent à tout vidage et ne figurent ni au « Contenu du jeu de données » ni à la corbeille.
-const cfbCollectionsTechniques = {'rolesBase', 'modulesManifeste', 'reglages', valCollectionValidations};
+const cfbCollectionsTechniques = {'rolesBase', 'modulesManifeste', 'reglages', valCollectionValidations, parCollectionParametres, parCollectionUsages};
 
 /// Les noms des collections du poste (celles de la maquette qu'il connaît).
 List<String> cfbNomsCollections() => [for (final n in Magasin.collectionsDuJeu) if (!cfbCollectionsTechniques.contains(n)) n];
@@ -210,6 +211,7 @@ class _EtatSysteme extends State<EcranSysteme> {
               OngletDef(id: 'bareme', libelle: 'Barème NS 131', construire: (_) => _Bareme(c: c)),
               OngletDef(id: 'reinitialisation', libelle: 'Jeux de test', construire: (_) => _JeuxDeTest(c: c, rafraichir: () => setState(() {}))),
               OngletDef(id: 'relais', libelle: 'Relais en ligne', construire: (_) => _Relais(c: c, estMere: widget.estMere)),
+              OngletDef(id: 'parametres', libelle: 'Paramètres', construire: (_) => PanneauParametres(c: c, estMere: widget.estMere)),
             ]));
   }
 }

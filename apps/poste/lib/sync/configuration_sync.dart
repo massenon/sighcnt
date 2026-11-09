@@ -16,7 +16,12 @@ import 'transcription_mobile.dart' show PieceSync;
 ///
 /// Le canal est celui qui existe : la mère écrit chaque fiche au journal (`POST /admin/referentiel` de son propre service), le fileul la reçoit par la
 /// synchronisation (`GET /liste`) et l'applique à son magasin. Aucun canal nouveau.
-Set<String> collectionsConfiguration() => {...cfbEssentielles, 'utilisateurs', valCollectionValidations}.difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'});
+///
+/// Les PARAMÈTRES (lot L0) en font partie : une fiche par version datée, famille R. Ils partent de la mère par le même canal, chiffrés de bout en bout vers le relais
+/// (qui n'en lit rien), et un fileul les reçoit sans pouvoir les écrire (garde « réglé sur la mère »). La liste blanche du téléphone est tenue par la mère
+/// (`Pont.diffuser`), pas ici.
+Set<String> collectionsConfiguration() =>
+    {...cfbEssentielles, 'utilisateurs', valCollectionValidations, parCollectionParametres}.difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'});
 
 /// Les collections qu'un fileul continue d'ÉCRIRE lui-même : un agent s'y connecte, change son mot de passe, voit son compteur d'échecs monter. Elles ne sont
 /// pas protégées par la garde « réglé sur la mère ».
