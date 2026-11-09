@@ -111,8 +111,28 @@ function inventaireSites() {
  * PHASE 1 : CAPTURE
  * ======================================================================= */
 const PRINT_RE = /imprim|éditer|edition|édition|reçu|bulletin|certificat|attestation|ordonnance|\bbon\b|facture|relevé|état|\bpdf\b|badge|planche|ticket|fiche|compte rendu|rapport|courrier|quittance|justificatif|arrêté|registre|liasse|balance|grand livre|journal|bilan|lettre|convocation|planning|résultat|aperçu|prévisualis|printer|file-text|receipt|file-down|file-check|clipboard/i;
-const EXCLU_RE = /^(nouveau|nouvelle|ajouter|créer|archiver|supprimer|restaurer|annuler|encaisser|clôturer|cloturer|modifier|enregistrer|fermer|filtrer|rechercher|colonnes|exporter|tout |rafra|actualiser|réinitialiser|se déconnecter|déconnexion|retour|précédent|suivant|\d+$)/i;
+const EXCLU_RE = /^(nouveau|nouvelle|ajouter|créer|archiver|supprimer|restaurer|annuler|encaisser|clôturer|cloturer|modifier|enregistrer|fermer|filtrer|rechercher|colonnes|exporter$|tout |rafra|actualiser|réinitialiser|se déconnecter|déconnexion|retour|précédent|suivant|\d+$)/i;
 const DIALOGUE_RE = /^(éditer|imprimer|générer|afficher|aperçu|prévisualiser|lancer|continuer|confirmer|valider|émettre|emettre|enregistrer|oui|ok|calculer|établir|produire|exporter en pdf)\b/i;
+
+/* Scénarios ciblés : gestes que l'exploration générique ne sait pas faire seule (encaisser, valider une fenêtre,
+   cocher une sélection). Chaque étape est [portée, expression]; la portée est « page » ou « dialog ». */
+const SCENARIOS = [
+  { page: 'm9-compagnies', etapes: [['page', '^Exporter$'], ['dialog', 'PDF / Impression'], ['recharger', ''], ['case', ''], ['page', 'Imprimer la sélection']] },
+  { page: 'm8-facturation', etapes: [['page', 'Ajouter'], ['page', 'Ticket de caisse']] },
+  { page: 'm8-caisse', etapes: [['page', 'Encaisser'], ['dialog', 'Tout cocher'], ['dialog', 'Valider l.encaissement'], ['dialog', 'Imprimer le reçu']] },
+  { page: 'm8-facture-avoir', etapes: [['page', 'Émettre un avoir'], ['combos', ''], ['cases', ''], ['remplir', ''], ['dialog', 'Émettre l.avoir'], ['recharger', ''], ['ligne', ''], ['dialog', 'Imprimer l.avoir']] },
+  { page: 'm12-immobilisations', etapes: [['page', 'Report au bilan'], ['page', 'Imprimer le report']] },
+  { page: 'm10-badges-impression', etapes: [['case', ''], ['passe', '']] },
+  { page: 'm3-bons-pansements', etapes: [['page', 'Nouveau bon'], ['combos', ''], ['remplir', ''], ['dialog', 'Enregistrer|Créer|Valider|Émettre'], ['passe', '']] },
+  { page: 'm3-sortie-avis-medical', etapes: [['page', 'Enregistrer'], ['combos', ''], ['remplir', ''], ['dialog', 'Consigner|Enregistrer'], ['passe', '']] },
+  { page: 'm3-cr-anesthesie', etapes: [['page', 'Nouveau compte rendu'], ['combos', ''], ['remplir', ''], ['dialog', 'Enregistrer|Créer|Valider|Émettre'], ['passe', '']] },
+  { page: 'm3-demande-examen', etapes: [['page', 'Nouvelle fiche'], ['combos', ''], ['cases', ''], ['remplir', ''], ['dialog', 'Enregistrer|Créer|Valider|Émettre'], ['passe', '']] },
+  { page: 'm6-inventaire', etapes: [['page', 'Lancer un inventaire'], ['combos', ''], ['remplir', ''], ['passe', '']] },
+  { page: 'm2-dossier-consultation-nouveau', etapes: [['combos', ''], ['remplir', ''], ['page', 'Enregistrer le dossier'], ['passe', '']] },
+  { page: 'mecef-avoirs', etapes: [['page', 'Émettre un avoir'], ['combos', ''], ['cases', ''], ['remplir', ''], ['dialog', 'Émettre|Enregistrer|Créer'], ['passe', '']] },
+  { page: 'm9-relances', etapes: [['page', 'Nouvelle relance'], ['combos', ''], ['remplir', ''], ['dialog', 'Enregistrer|Créer|Valider|Émettre'], ['passe', '']] },
+  { page: 'm8-remboursements', etapes: [['page', 'Nouvelle opération'], ['combos', ''], ['remplir', ''], ['dialog', 'Enregistrer|Créer|Valider|Émettre'], ['passe', '']] },
+];
 
 /* Fonctions injectées dans chaque document : elles ne dépendent de SIGH qu'à l'installation. */
 function instrumentation() {
@@ -185,12 +205,9 @@ function instrumentation() {
     },
     clic(id) { const el = document.querySelector('[data-pres="' + id + '"]'); if (!el) return false; el.click(); return true; },
     onglets() {
-      return Array.prototype.map.call(document.querySelectorAll('#page-content [role=tab]'), (b, i) => {
-        const id = 't' + i; b.setAttribute('data-pres-tab', id);
-        return { id: id, texte: (b.textContent || '').trim().slice(0, 40) };
-      });
+      return Array.prototype.map.call(document.querySelectorAll('#page-content [role=tab]'), (b, i) => ({ id: i, texte: (b.textContent || '').trim().slice(0, 40) }));
     },
-    ongletClic(id) { const el = document.querySelector('[data-pres-tab="' + id + '"]'); if (el) el.click(); return !!el; },
+    ongletClic(i) { const el = document.querySelectorAll('#page-content [role=tab]')[i]; if (el) el.click(); return !!el; },
     lignes() {
       return Array.prototype.map.call(document.querySelectorAll('#page-content tbody tr'), (tr, i) => {
         const r = tr.getBoundingClientRect(); if (!r.width) return null;
@@ -207,6 +224,52 @@ function instrumentation() {
       });
       document.querySelectorAll('[role=dialog]').forEach((d) => d.remove());
       document.body.style.overflow = '';
+      return n;
+    },
+    agir(scope, re) {
+      const R = new RegExp(re, 'i'); let hit = null;
+      const sel = scope === 'dialog' ? '[role=dialog]' : '#page-content, #page-actions';
+      document.querySelectorAll(sel).forEach((r) => r.querySelectorAll('button, [role=button], tbody tr, [role=tab], input[type=checkbox]').forEach((b) => {
+        if (hit) return; const rc = b.getBoundingClientRect(); if (!rc.width) return;
+        if (b.closest('#app-topbar, #app-menubar, #app-ribbon, .print-chrome')) return;
+        const t = ((b.textContent || '') + ' ' + (b.title || '') + ' ' + (b.getAttribute('aria-label') || '')).trim();
+        if (b.tagName === 'INPUT' ? re === 'CASE' : R.test(t)) hit = b;
+      }));
+      if (!hit) return null; hit.click(); return (hit.textContent || hit.tagName).trim().slice(0, 40);
+    },
+    choisir(scope, n, k) {
+      const racine = scope === 'dialog' ? document.querySelector('[role=dialog]') : document.getElementById('page-content');
+      if (!racine) return null;
+      const b = racine.querySelectorAll('button.combo-input')[n]; if (!b) return null;
+      b.click();
+      const p = Array.prototype.find.call(document.querySelectorAll('.combo-panel'), (x) => !x.hidden);
+      const o = p && p.querySelectorAll('.combo-option')[k]; if (!o) { b.click(); return null; }
+      o.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); o.click();
+      return (o.textContent || '').trim().slice(0, 40);
+    },
+    combosVides(scope) {
+      const racine = scope === 'dialog' ? document.querySelector('[role=dialog]') : document.getElementById('page-content');
+      if (!racine) return 0; let n = 0;
+      racine.querySelectorAll('button.combo-input').forEach((b, i) => {
+        const v = b.querySelector('.combo-value'); const t = (v && v.textContent || '').trim();
+        if (!t || /^—/.test(t) || (v && v.classList.contains('text-slate-400'))) { const r = this.choisir(scope, i, 0); if (r) n++; }
+      });
+      return n;
+    },
+    remplir(scope) {
+      const racine = scope === 'dialog' ? document.querySelector('[role=dialog]') : document.getElementById('page-content');
+      if (!racine) return 0; let n = 0;
+      racine.querySelectorAll('textarea, input[type=text], input:not([type])').forEach((i) => {
+        if (i.value || i.classList.contains('combo-search') || i.type === 'search' || i.disabled) return;
+        i.value = 'Spécimen de démonstration'; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); n++;
+      });
+      racine.querySelectorAll('input[type=date], input[type=datetime-local], input[type=time]').forEach((i) => {
+        if (i.value || i.disabled) return;
+        const d = new Date(), z = (x) => String(x).padStart(2, '0');
+        const jour = d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate());
+        i.value = i.type === 'date' ? jour : (i.type === 'time' ? z(d.getHours()) + ':' + z(d.getMinutes()) : jour + 'T' + z(d.getHours()) + ':' + z(d.getMinutes()));
+        i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); n++;
+      });
       return n;
     },
     peint() { const c = document.getElementById('page-content'); return !!(c && c.children.length && c.textContent.trim().length > 20); },
@@ -228,7 +291,8 @@ async function capture() {
   console.log('[worker ' + i + '/' + n + '] php ' + portPhp + ' web ' + portWeb + ' base ' + process.env.SIGH_BASE_TEST);
   await BANC.banc('reinitialiser');
   const chrome = trouverChrome();
-  const browser = await puppeteer.launch({ executablePath: chrome, headless: true, args: ['--no-sandbox'] });
+  const lancerNavigateur = () => puppeteer.launch({ executablePath: chrome, headless: true, args: ['--no-sandbox'] });
+  let browser = await lancerNavigateur();
 
   /* Liste des écrans : fichiers de pages, sans connexion, erreurs, hubs, enquête publique. */
   let pages = fs.readdirSync(path.join(ROOT, 'pages')).filter((f) => f.endsWith('.php')).map((f) => f.slice(0, -4))
@@ -281,13 +345,15 @@ async function capture() {
   for (const id of pages) {
     if (pageIdx++ >= maxPages) break;
     const t0 = Date.now();
+    fs.rmSync(path.join(capDir, id), { recursive: true, force: true });
     let ctx = null;
+    const travail = (async () => {
     try {
       ctx = await ouvrir(id);
-      if (!ctx.ok) { log.push({ page: id, statut: 'non peinte' }); try { await ctx.page.close(); } catch (e) {} continue; }
+      if (!ctx.ok) { log.push({ page: id, statut: 'non peinte' }); try { await ctx.page.close(); } catch (e) {} return; }
       const { page } = ctx;
       const info = await page.evaluate((i) => { const e = window.SIGH.nav.INDEX[i]; return e ? { module: e.module, moduleLabel: e.moduleLabel, label: e.label } : { module: 'HORS', moduleLabel: 'Hors ruban', label: i }; }, id);
-      if (filtreModules && filtreModules.indexOf(info.module) < 0) { await page.close(); continue; }
+      if (filtreModules && filtreModules.indexOf(info.module) < 0) { await page.close(); return; }
       const clics = new Set();
       let nbEtats = 0;
       const url0 = await page.evaluate(() => window.__pres.chemin());
@@ -295,6 +361,7 @@ async function capture() {
       async function retablir() {
         const c = await page.evaluate(() => window.__pres.chemin()).catch(() => null);
         if (c !== url0) {
+          await collecter();
           await page.goto('http://127.0.0.1:' + portWeb + '/pages/' + id + '.php', { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(() => {});
           for (let k = 0; k < 60; k++) { await attendre(500); if (await page.evaluate(() => window.__pres && window.__pres.peint() && window.SIGH && window.SIGH.print).catch(() => false)) break; }
           await attendre(500); await page.evaluate(() => window.__pres.installer()).catch(() => {});
@@ -361,16 +428,56 @@ async function capture() {
         await contexteComplet('onglet:' + o.texte);
         await retablir();
       }
-      const stats = await page.evaluate(() => ({ s: window.__pres.sites, t: window.__pres.tab })).catch(() => ({ s: {}, t: {} }));
-      Object.keys(stats.s).forEach((k) => { sitesTouches[k] = (sitesTouches[k] || 0) + stats.s[k]; });
-      Object.keys(stats.t).forEach((k) => { tablTouches[k] = (tablTouches[k] || 0) + stats.t[k]; });
-      log.push({ page: id, module: info.module, etats: nbEtats, sites: Object.keys(stats.s).length, erreurs: ctx.erreurs.length, ms: Date.now() - t0 });
-      console.log(id.padEnd(40), info.module.padEnd(6), 'états', nbEtats, 'sites', Object.keys(stats.s).length, (Date.now() - t0) + ' ms');
+      async function collecter() {
+        const stats = await page.evaluate(() => ({ s: window.__pres.sites, t: window.__pres.tab })).catch(() => ({ s: {}, t: {} }));
+        Object.keys(stats.s).forEach((k) => { sitesTouches[k] = (sitesTouches[k] || 0) + stats.s[k]; });
+        Object.keys(stats.t).forEach((k) => { tablTouches[k] = (tablTouches[k] || 0) + stats.t[k]; });
+      }
+      await collecter();
+      for (const sc of SCENARIOS.filter((x) => x.page === id)) {
+        await page.goto('http://127.0.0.1:' + portWeb + '/pages/' + id + '.php', { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(() => {});
+        for (let k = 0; k < 60; k++) { await attendre(500); if (await page.evaluate(() => window.__pres && window.__pres.peint() && window.SIGH && window.SIGH.print).catch(() => false)) break; }
+        await attendre(600); await page.evaluate(() => window.__pres.installer()).catch(() => {});
+        let ok = true;
+        for (const [portee, re] of sc.etapes) {
+          let r;
+          if (portee === 'combos') { for (let t = 0; t < 3; t++) { await page.evaluate(() => window.__pres.combosVides('dialog')).catch(() => 0); await attendre(300); await page.evaluate(() => window.__pres.combosVides('page')).catch(() => 0); await attendre(300); } r = 'ok'; }
+          else if (portee === 'remplir') { await page.evaluate(() => { window.__pres.remplir('dialog'); window.__pres.remplir('page'); }).catch(() => 0); r = 'ok'; }
+          else if (portee === 'combo') { const [cn, ck] = re.split(':').map(Number); r = await page.evaluate((x, y) => window.__pres.choisir('dialog', x, y) || window.__pres.choisir('page', x, y), cn, ck).catch(() => null); }
+          else if (portee === 'ligne') { r = await page.evaluate(() => { const tr = document.querySelector('#page-content tbody tr'); if (!tr) return null; tr.click(); return 'ligne'; }).catch(() => null); }
+          else if (portee === 'cases') { r = await page.evaluate(() => { const rac = document.querySelector('[role=dialog]') || document.getElementById('page-content'); let n = 0; rac.querySelectorAll('input[type=checkbox]').forEach((c) => { if (!c.checked && !c.disabled) { c.click(); n++; } }); return 'cases ' + n; }).catch(() => null); }
+          else if (portee === 'case') { r = await page.evaluate(() => { const c = document.querySelector('#page-content thead input[type=checkbox], #page-content input[type=checkbox]'); if (!c) return null; c.click(); return 'case'; }).catch(() => null); }
+          else if (portee === 'recharger') {
+            await page.goto('http://127.0.0.1:' + portWeb + '/pages/' + id + '.php', { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(() => {});
+            for (let k = 0; k < 60; k++) { await attendre(500); if (await page.evaluate(() => window.__pres && window.__pres.peint() && window.SIGH && window.SIGH.print).catch(() => false)) break; }
+            await attendre(600); await page.evaluate(() => window.__pres.installer()).catch(() => {}); r = 'ok';
+          }
+          else if (portee === 'passe') { clics.clear(); await passe('scénario', '[role=dialog], #page-actions, #page-content'); r = 'ok'; }
+          else r = await page.evaluate((a, b) => window.__pres.agir(a, b), portee, re).catch(() => null);
+          if (r === null) { console.log('  scénario ' + id + ' : étape introuvable ' + portee + ':' + re); ok = false; break; }
+          await attendre(800);
+          nbEtats += await relever(page, id, info, 'scénario', portee + ':' + re);
+          if (process.env.PRES_DEBUG) console.log('    étape', portee, re, '=>', r, '| toast:', await page.evaluate(() => { const t = document.getElementById('toast-host'); return t ? t.textContent.replace(/\s+/g, ' ').slice(0, 200) : ''; }).catch(() => ''));
+        }
+        log.push({ page: id, scenario: sc.etapes.map((e) => e[1]).join(' > '), abouti: ok });
+      }
+      await collecter();
+      log.push({ page: id, module: info.module, etats: nbEtats, sites: Object.keys(sitesTouches).length, erreurs: ctx.erreurs.length, ms: Date.now() - t0 });
+      console.log(id.padEnd(40), info.module.padEnd(6), 'états', nbEtats, 'sites', Object.keys(sitesTouches).length, (Date.now() - t0) + ' ms');
       await page.close();
     } catch (e) {
       log.push({ page: id, statut: 'erreur', detail: String(e.message).slice(0, 200) });
       console.log(id, 'ERREUR', String(e.message).slice(0, 120));
       try { if (ctx && ctx.page) await ctx.page.close(); } catch (e2) { /* déjà fermée */ }
+    }
+    })();
+    /* Garde-fou : un écran qui fige le navigateur est abandonné, le navigateur relancé. */
+    const issue = await Promise.race([travail.then(() => 'ok'), attendre(170000).then(() => 'delai')]);
+    if (issue === 'delai' || !browser.connected) {
+      log.push({ page: id, statut: 'erreur', detail: 'délai dépassé, navigateur relancé' });
+      console.log(id, 'DELAI, navigateur relancé');
+      try { await browser.close(); } catch (e) { /* mort */ }
+      browser = await lancerNavigateur();
     }
   }
 
@@ -393,7 +500,7 @@ async function capture() {
     await page.close();
   }
 
-  fs.writeFileSync(path.join(TMP, 'releve-' + i + '.json'), JSON.stringify({ sites: sitesTouches, tableaux: tablTouches, log: log }));
+  fs.writeFileSync(path.join(TMP, 'releve-' + i + (arg('pages') ? '-sous-ensemble-' + Date.now() : '') + '.json'), JSON.stringify({ sites: sitesTouches, tableaux: tablTouches, log: log }));
   await browser.close(); web.close(); try { dem.php.kill(); } catch (e) {}
 }
 
@@ -404,13 +511,18 @@ const POOL_NOMS = ['ADJOVI', 'SOSSA', 'HOUNKPATIN', 'AKPLOGAN', 'DOSSOU', 'KINGB
   'ZINSOU', 'AHOUANDJINOU', 'GLELE', 'ASSOGBA', 'DEGBE', 'HOUESSOU', 'AMOUSSOU', 'FADO', 'GNANSOUNOU', 'OKE', 'SAGBO', 'TCHIBOZO',
   'AZONHE', 'BIAOU', 'CAKPO', 'DAKO', 'EDAH', 'FASSINOU', 'GBAGUIDI', 'HOUNSA', 'IDOHOU', 'JOHNSON', 'KOUTON', 'LAWSON', 'MEDEGAN',
   'NOUATIN', 'OGOUNCHI', 'PADONOU', 'QUENUM', 'ROUSSEAU', 'SAKA', 'TOKPANOU', 'UNGUENON', 'VIGNON', 'WANKPO', 'YEHOUENOU', 'ZOUNON',
-  'ABOKI', 'BONOU', 'CODJIA', 'DJOSSOU', 'EGOUNLETI', 'FOLLY', 'GANDONOU', 'HOUNGBO', 'ISSIAKA', 'KPADE', 'LEGBA', 'MONTCHO', 'NAGO'];
+  'ABOKI', 'BONOU', 'CODJIA', 'DJOSSOU', 'EGOUNLETI', 'FOLLY', 'GANDONOU', 'HOUNGBO', 'ISSIAKA', 'KPADE', 'LEGBA', 'MONTCHO', 'NAGO',
+  'ATCHADE', 'BANKOLE', 'CHABI', 'DANSOU', 'ESSOU', 'FAGLA', 'GOUDOU', 'HESSOU', 'IMOROU', 'JAKPOR', 'KEKE', 'LANTONKPODE', 'MATHIAS', 'NOUMON',
+  'OLOUDE', 'POGNON', 'QUAKOU', 'RAHA', 'SOGLO', 'TOSSOU', 'UBALD', 'VIDEGLA', 'WADAGNI', 'YOVO', 'ZANNOU', 'AKOTEGNON', 'BOKO', 'CAPO', 'DOVONOU',
+  'ELEGBEDE', 'FANOU', 'GOGAN', 'HODONOU', 'ITA', 'KAKPO', 'LISSANON', 'MEHOU', 'NATA', 'OROU', 'PRAGA', 'SEHOUETO', 'TCHOKPON'];
 const POOL_PRENOMS = ['Marcelle', 'Théodore', 'Prisca', 'Gaspard', 'Colette', 'Fidèle', 'Judith', 'Anicet', 'Rosine', 'Clément', 'Estelle',
   'Barnabé', 'Sylvie', 'Rodolphe', 'Léontine', 'Isidore', 'Mireille', 'Casimir', 'Ursule', 'Basile', 'Odile', 'Thaddée', 'Nadège',
   'Cyriaque', 'Honorine', 'Maxime', 'Brigitte', 'Aristide', 'Pélagie', 'Lucien', 'Yolande', 'Hilaire', 'Séverine', 'Constant',
   'Annick', 'Gildas', 'Berthe', 'Narcisse', 'Euphrasie', 'Médard', 'Adélaïde', 'Romuald', 'Clarisse', 'Vianney', 'Perpétue',
   'Armand', 'Josiane', 'Fabrice', 'Gisèle', 'Hyacinthe', 'Irène', 'Landry', 'Mélanie', 'Octave', 'Philomène', 'Quentin', 'Reine',
-  'Sidoine', 'Tatiana', 'Valéry'];
+  'Sidoine', 'Tatiana', 'Valéry', 'Aurélie', 'Bertrand', 'Chloé', 'Désiré', 'Éliane', 'Flavien', 'Ghislaine', 'Herbert', 'Inès', 'Jérémie', 'Karine',
+  'Léopold', 'Mathilde', 'Noël', 'Océane', 'Pascal', 'Raïssa', 'Serge', 'Thérèse', 'Urbain', 'Virginie', 'Wilfried', 'Yvette', 'Zacharie', 'Albane', 'Bruno',
+  'Cécile', 'Damien', 'Emmanuelle', 'Félix', 'Gabrielle', 'Hugues', 'Isabelle', 'Joël', 'Laure', 'Martial', 'Nicole', 'Olivier', 'Paulette', 'Rémi'];
 const PARTICULES = /^(épse|epse|ep|dit|de|du|la|le|des|et|dr|pr|mme|mlle|m)$/i;
 
 function jetons(chaine) {
@@ -454,8 +566,8 @@ function tableSubstitution(ident) {
   return { mapping, nums, reelsMajuscules };
 }
 
-/* Exécuté dans la page de rendu : remplace dans tout nœud texte et attribut. */
-function substituerDansPage(donnees) {
+/* Substituteur pur (sans DOM) : sert à la page de rendu ET aux intitulés, noms de fichiers et sommaires. */
+function fabriquerRemplacer(donnees) {
   const map = new Map(donnees.mapping);
   const cles = [...map.keys()].sort((x, y) => y.length - x.length);
   const re = cles.length ? new RegExp('(?<![\\p{L}])(' + cles.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')(?![\\p{L}])', 'giu') : null;
@@ -469,6 +581,12 @@ function substituerDansPage(donnees) {
     if (reNum) r = r.replace(reNum, (m) => { const d = m.replace(/\D/g, ''); const f = nums.find((x) => x[0] === d); return f ? f[1] : m; });
     return r;
   }
+  return remplacer;
+}
+
+/* Exécuté dans la page de rendu : applique le substituteur à tout nœud texte et attribut. */
+function substituerDansPage(src, donnees) {
+  const remplacer = (new Function('return ' + src))()(donnees);
   const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   let n; while ((n = tw.nextNode())) { const v = remplacer(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
   document.querySelectorAll('*').forEach((el) => {
@@ -476,10 +594,34 @@ function substituerDansPage(donnees) {
   });
 }
 
-function gabarit(largeur) {
+function gabarit(largeur, fonction) {
   const w = parseFloat(largeur) || 210;
-  if (largeur && /mm$/.test(largeur) && w <= 120) return { code: w <= 60 ? 'carte CR80' : 'ticket 80 mm', w: w };
+  if (largeur && /mm$/.test(largeur) && w <= 120) return { code: fonction === 'badge' ? 'carte CR80 (recto et verso)' : 'ticket 80 mm', w: w };
   return { code: 'A4 portrait', w: 210 };
+}
+
+/* Chrome écrit les polices variables d'Inter en Type 3, dupliquées : on dédoublonne les objets identiques
+   et on recompresse les flux (pypdf). Sans Python ou sans pypdf, les PDF restent tels que Chrome les écrit. */
+function compresserPdf(dossier) {
+  const code = [
+    'import sys, os, warnings',
+    'warnings.filterwarnings("ignore")',
+    'from pypdf import PdfReader, PdfWriter',
+    'avant = apres = 0',
+    'for racine, _, fichiers in os.walk(sys.argv[1]):',
+    '    for f in fichiers:',
+    '        if not f.endswith(".pdf"): continue',
+    '        p = os.path.join(racine, f)',
+    '        avant += os.path.getsize(p)',
+    '        w = PdfWriter(clone_from=PdfReader(p))',
+    '        for page in w.pages: page.compress_content_streams(level=9)',
+    '        w.compress_identical_objects(remove_identicals=True, remove_orphans=True)',
+    '        w.write(p + ".tmp"); os.replace(p + ".tmp", p)',
+    '        apres += os.path.getsize(p)',
+    'print("compression: %.1f Mo -> %.1f Mo" % (avant / 1048576, apres / 1048576))',
+  ].join('\n');
+  const r = spawnSync('python3', ['-I', '-c', code, dossier], { encoding: 'utf8', maxBuffer: 1 << 26 });
+  console.log(r.status === 0 ? r.stdout.trim() : 'compression ignorée (python3 ou pypdf absent) : ' + String(r.stderr).slice(-160));
 }
 
 async function pdf() {
@@ -489,6 +631,7 @@ async function pdf() {
   const ident = JSON.parse(fs.readFileSync(path.join(TMP, 'identites.json'), 'utf8'));
   const { mapping, nums } = tableSubstitution(ident);
   const donnees = { mapping: [...mapping], nums: [...nums] };
+  const remplacerTexte = fabriquerRemplacer(donnees);
   fs.writeFileSync(path.join(TMP, 'table-substitution-jetons.json'), JSON.stringify({ nbJetonsNoms: mapping.size, nbNumeros: nums.size }));
   const browser = await puppeteer.launch({ executablePath: trouverChrome(), headless: true, args: ['--no-sandbox'] });
   const capDir = path.join(TMP, 'captures');
@@ -502,7 +645,8 @@ async function pdf() {
   await page.setViewport({ width: 1000, height: 1200 });
   for (const f of fichiers) {
     const c = JSON.parse(fs.readFileSync(f, 'utf8'));
-    const g = gabarit(c.largeur);
+    ['titre', 'ecran', 'declencheur'].forEach((k) => { if (c[k]) c[k] = remplacerTexte(c[k]); });
+    const g = gabarit(c.largeur, c.fonction);
     const dossier = (c.module + '-' + slug(c.moduleLabel));
     let base = slug(c.pageId + '--' + c.titre);
     let nom = base, k = 2; while (pris.has(dossier + '/' + nom)) nom = base + '-' + (k++);
@@ -513,30 +657,42 @@ async function pdf() {
       + '<link rel="stylesheet" href="../assets/css/tailwind.css">'
       + '<style>html,body{margin:0;padding:0;background:#fff}'
       + '.print-sheet{box-shadow:none!important;margin:0!important}'
+      + (petit ? '.print-sheet,article{min-height:0!important;height:auto!important}' : '')
       + '.pres-filigrane{position:fixed;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:9999}'
       + '.pres-filigrane span{transform:rotate(-32deg);font:700 ' + (petit ? '15px' : '46px') + '/1.1 Inter,Arial,sans-serif;color:rgba(185,28,28,.16);text-transform:uppercase;letter-spacing:.06em;text-align:center;white-space:nowrap}'
       + '.pres-bandeau{position:fixed;left:0;right:0;bottom:0;text-align:center;font:600 ' + (petit ? '6px' : '8px') + '/1.4 Inter,Arial,sans-serif;color:#b91c1c;background:rgba(254,226,226,.85);padding:1px 0;z-index:9999;text-transform:uppercase;letter-spacing:.08em}'
-      + '@page{size:' + (petit ? g.w + 'mm auto' : 'A4') + ';margin:0}</style></head><body>'
+      + '@page{' + (petit ? '' : 'size:A4;') + 'margin:0}</style></head><body>'
       + c.html + '<div class="pres-filigrane"><span>' + filigrane + '</span></div><div class="pres-bandeau">' + filigrane + '</div></body></html>';
     await page.setViewport({ width: Math.ceil(g.w / 25.4 * 96) + 2, height: 1200 });
-    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
+    await page.setContent(html, { waitUntil: 'load', timeout: 60000 });
+    await page.evaluate(() => document.fonts.ready.then(() => 1));
     await page.emulateMediaType('print');
-    await page.evaluate(substituerDansPage, donnees);
+    await page.evaluate(substituerDansPage, fabriquerRemplacer.toString(), donnees);
     await attendre(80);
-    const hpx = await page.evaluate(() => Math.ceil(document.querySelector('.print-sheet, article').getBoundingClientRect().height));
+    const hpx = await page.evaluate((court) => {
+      const f = document.querySelector('.print-sheet, article');
+      if (!court) return Math.ceil(f.getBoundingClientRect().height);
+      let m = 0; f.querySelectorAll('*').forEach((e) => { const r = e.getBoundingClientRect(); if (r.height > 0 && r.bottom > m) m = r.bottom; });
+      return Math.ceil(m) + 12;
+    }, petit);
     fs.mkdirSync(path.join(specs, dossier), { recursive: true }); fs.mkdirSync(path.join(vign, dossier), { recursive: true });
     const opts = { printBackground: true, margin: { top: 0, right: 0, bottom: 0, left: 0 } };
-    if (petit) { opts.width = g.w + 'mm'; opts.height = (Math.ceil(hpx * 25.4 / 96) + 2) + 'mm'; } else { opts.format = 'A4'; opts.preferCSSPageSize = true; }
+    if (petit) {
+      /* La feuille de style du logiciel déclare @page A4 : le format réduit se redéclare ici, au mm près. */
+      await page.addStyleTag({ content: '@page{size:' + g.w + 'mm ' + (Math.ceil(hpx * 25.4 / 96) + 2) + 'mm;margin:0}' });
+      opts.preferCSSPageSize = true;
+    } else { opts.format = 'A4'; opts.preferCSSPageSize = true; }
     await page.pdf(Object.assign({ path: path.join(specs, dossier, nom + '.pdf') }, opts));
     /* Vignette : haut de la première page, JPEG léger. */
     const largeurPx = Math.ceil(g.w / 25.4 * 96);
-    await page.screenshot({ path: path.join(vign, dossier, nom + '.jpg'), type: 'jpeg', quality: 55,
-      clip: { x: 0, y: 0, width: largeurPx, height: Math.min(hpx, petit ? 1000 : 1123) } });
+    await page.screenshot({ path: path.join(vign, dossier, nom + '.jpg'), type: 'jpeg', quality: 45,
+      clip: { x: 0, y: 0, width: largeurPx, height: Math.min(hpx, petit ? 1000 : 1123), scale: petit ? 0.5 : 0.36 } });
     manifeste.push({ module: c.module, moduleLabel: c.moduleLabel, dossier: dossier, fichier: nom + '.pdf', vignette: nom + '.jpg', titre: c.titre, gabarit: g.code,
       pageId: c.pageId, ecran: c.ecran, site: c.site, fonction: c.fonction, declencheur: c.declencheur });
     process.stdout.write('.');
   }
   console.log('\n' + manifeste.length + ' PDF');
+  compresserPdf(specs);
   fs.writeFileSync(path.join(TMP, 'manifeste.json'), JSON.stringify(manifeste));
   await browser.close(); web.close();
 }
@@ -575,11 +731,29 @@ function controleConfidentialite() {
   return { outilTexte: rien.pdftotext ? 'pdftotext -layout' : 'build/_pdftext.js', nbPdf, jetonsRecherches: longs.length, nomsCompletsRecherches: nomsComplets.size, numerosRecherches: nums.size, trouvailles };
 }
 
+/* Causes connues des états non atteints (vérifiées dans les sources ou au banc). Ce qui n'est pas vérifié le dit. */
+const RAISONS = {
+  'assets/js/modules/m2-consultations.js:2902': 'code mort : `etatOrdonnanceAncienne` n\'est appelée nulle part (l\'ordonnance s\'imprime par `etatOrdonnanceMedicale`)',
+  'assets/js/modules/m5-laboratoire.js:3446': 'activité Banque de sang fermée (cfg-modules) : écran inaccessible à tous les profils, administrateur compris',
+  'assets/js/modules/m5-laboratoire.js:3579': 'activité Banque de sang fermée (cfg-modules) : écran inaccessible à tous les profils, administrateur compris',
+  'assets/js/modules/m6-stock.js:2568': 'aucune création manuelle (RG-03) : le bon naît d\'une dispensation, qui exige une ordonnance encaissée puis servie ; chaîne non rejouée',
+  'assets/js/modules/m6-stock.js:1808': 'exige une feuille d\'inventaire comptée (registre vide sur le jeu) ; saisie de comptage non rejouée',
+  'assets/js/modules/m3-hospitalisation.js:3623': 'le formulaire exige des examens cochés et l\'urgence par examen : la saisie automatique est refusée (erreurs de formulaire)',
+  'assets/js/modules/m8-facturation.js:1934': 'exige un patient débiteur et la saisie d\'un engagement de paiement ; non rejoué',
+  'assets/js/modules/m8-facturation.js:2120': 'opération de remboursement à saisir (champs obligatoires) ; non rejouée',
+  'assets/js/modules/m12-comptabilite.js:2396': 'exige une clôture en deux gestes (demande, puis validation Direction) après une pré-clôture sans brouillon ; le jeu porte des brouillons',
+  'assets/js/modules/m10-rh.js:2462': 'le clic sur « Imprimer la note » n\'ouvre aucun aperçu sur le banc (cause non élucidée)',
+  'assets/js/modules/m1-patients.js:2304': 'proposé après la saisie d\'une demande d\'analyses de patient externe, en fenêtre ; non rejoué',
+  'assets/js/modules/m2-consultations.js:483': 'exige une consultation portant des analyses prescrites ; non rejoué',
+  'assets/js/modules/configuration.js:3338': 'impression d\'un certificat du registre : cause non vérifiée (probablement aucune ligne imprimable sur le jeu)',
+};
+
 function indexer() {
   const manifeste = JSON.parse(fs.readFileSync(path.join(TMP, 'manifeste.json'), 'utf8'));
   const sites = inventaireSites();
-  const releves = fs.readdirSync(TMP).filter((f) => /^releve-\d+\.json$/.test(f)).map((f) => JSON.parse(fs.readFileSync(path.join(TMP, f), 'utf8')));
+  const releves = fs.readdirSync(TMP).filter((f) => /^releve-.*\.json$/.test(f)).map((f) => JSON.parse(fs.readFileSync(path.join(TMP, f), 'utf8')));
   const touches = {}, tabTouches = {}, pagesLog = [];
+  manifeste.forEach((m) => { if (m.site) touches[m.site] = 1; });
   releves.forEach((r) => { Object.keys(r.sites).forEach((k) => { touches[k] = (touches[k] || 0) + r.sites[k]; }); Object.keys(r.tableaux).forEach((k) => { tabTouches[k] = 1; }); (r.log || []).forEach((l) => pagesLog.push(l)); });
   const etatsSites = sites.filter((s) => s.type !== 'tableau');
   const tabSites = sites.filter((s) => s.type === 'tableau');
@@ -596,7 +770,7 @@ function indexer() {
 
   /* ---- index.html ---- */
   const groupes = {};
-  manifeste.forEach((m) => { (groupes[m.dossier] = groupes[m.dossier] || { label: m.module + ' ' + m.moduleLabel, items: [] }).items.push(m); });
+  manifeste.forEach((m) => { (groupes[m.dossier] = groupes[m.dossier] || { label: (m.module + ' ' + m.moduleLabel).replace(/\s[—–]\s/g, ' : '), items: [] }).items.push(m); });
   const ordre = Object.keys(groupes).sort((a, b) => { const na = parseInt(a.replace(/\D+/, ''), 10), nb = parseInt(b.replace(/\D+/, ''), 10); return (isNaN(na) ? 999 : na) - (isNaN(nb) ? 999 : nb) || a.localeCompare(b); });
   let h = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SIGH-CNT : spécimens des états imprimés</title>'
     + '<style>:root{--navy:#14284b;--bord:#d7dde8;--fond:#f4f6fa}*{box-sizing:border-box}body{margin:0;font:14px/1.45 Inter,Segoe UI,Arial,sans-serif;background:var(--fond);color:#1e293b}'
@@ -649,12 +823,18 @@ function indexer() {
   Object.keys(parModule).sort().forEach((m) => {
     const p = parModule[m]; if (!p.manques.length) return;
     r += '### ' + m + ' : ' + p.manques.length + ' non atteint(s)\n\n';
-    p.manques.forEach((s) => { r += '- `' + s.fichier + ':' + s.ligne + '` ' + (s.titre ? '« ' + s.titre + ' »' : '(intitulé construit à l\'exécution)') + '\n'; });
+    p.manques.forEach((s) => { r += '- `' + s.fichier + ':' + s.ligne + '` ' + (s.titre ? '« ' + s.titre + ' »' : '(intitulé construit à l\'exécution)') + ' : ' + (RAISONS[s.cle] || 'non atteint par l\'exploration, cause non élucidée') + '\n'; });
     r += '\n';
   });
   if (pageNonPeintes.length) {
-    r += '### Écrans non explorés\n\n' + pageNonPeintes.map((l) => '- `' + l.page + '` : ' + (l.statut || '') + (l.detail ? ' (' + l.detail + ')' : '')).join('\n') + '\n\n';
+    r += '### Écrans non explorés\n\n' + pageNonPeintes.map((l) => '- `' + l.page + '` : ' + (l.statut || '') + (/banque-sang|donneurs/.test(l.page) ? ' (activité Banque de sang fermée)' : '') + (l.detail ? ' (' + l.detail + ')' : '')).join('\n') + '\n\n';
   }
+  r += '## Limites\n\n'
+    + '- Les montants et les lignes sont ceux du jeu de démonstration, à la date du banc (16/08/2026) : un état peut sortir avec des zéros ou des tableaux vides quand le jeu n\'a rien à cette date (l\'arrêté de caisse du jour, par exemple). Rien n\'est inventé pour le remplir.\n'
+    + '- Un site d\'impression peut produire plusieurs documents (selon le patient, la modalité, le mois) : seuls les premiers intitulés distincts sont gardés (au plus ' + MAX_PAR_SITE + ' par site).\n'
+    + '- Les écrans sont explorés avec le profil administrateur : un état réservé à un autre profil par surcharge d\'écran reste atteignable tant que l\'écran s\'ouvre à l\'administrateur ; les écrans fermés à tous (activités désactivées) ne sont pas explorés.\n'
+    + '- Les états de la maquette sont tous en A4 portrait, sauf le ticket de caisse (rouleau 80 mm) et le badge (carte CR80, recto et verso sur une feuille de 93,6 mm).\n'
+    + '- La taille tient à Chrome, qui écrit la police Inter (variable) en Type 3 ; les objets identiques sont dédoublonnés après coup (pypdf), sans perte.\n\n';
   r += '## Confidentialité\n\n'
     + 'Le jeu de démonstration porte les noms du personnel de l\'organigramme réel. Avant le PDF, une table de substitution déterministe remplace dans le texte de chaque état ('
     + 'noms et prénoms par jetons, y compris dans les identifiants de connexion, téléphones et numéros CNSS) par des identités fictives. '
