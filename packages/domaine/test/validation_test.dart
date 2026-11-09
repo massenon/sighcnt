@@ -43,16 +43,17 @@ String extrait(Map<String, Object?> m) {
 }
 
 void main() {
-  test('le registre porte les 14 familles de la maquette, champ par champ', () {
+  test('le registre porte les 15 familles de la maquette, champ par champ', () {
     final reg = liste(v['registre']);
     expect(valFamilles.length, reg.length);
-    expect(valFamilles.length, 14);
+    expect(valFamilles.length, 15);
     for (var i = 0; i < reg.length; i++) {
       final f = valFamilles[i], r = reg[i];
       expect([f.id, f.libelle, f.module, f.mode, f.ecran], [r['id'], r['libelle'], r['module'], r['mode'], r['ecran']], reason: '${r['id']}');
       expect(f.roles, (r['roles'] as List).cast<String>(), reason: '${r['id']} : rôles');
       expect(f.collections, ((r['collections'] ?? const []) as List).cast<String>(), reason: '${r['id']} : collections');
       expect(f.champs, ((r['champs'] ?? const []) as List).cast<String>(), reason: '${r['id']} : champs');
+      expect(f.champsChiffres, ((r['champsChiffres'] ?? const []) as List).cast<String>(), reason: '${r['id']} : champs chiffrés (motif obligatoire)');
       expect([for (final c in f.cibles) [c.id, c.libelle]], [for (final c in liste(r['cibles'])) [c['id'], c['libelle']]], reason: '${r['id']} : cibles');
     }
     expect(valVueComplete, (v['vueComplete'] as List).cast<String>());
@@ -147,7 +148,7 @@ void main() {
         expect(extrait(r.journal!.apres), '${j['apres']}'.replaceAll(marqueur, r.valideLe!));
         // Aucun autre champ que le marquage et ses trois traces n'est touché.
         final fiche = r.creation == null ? r.patch : r.creation!;
-        final permis = {'valideLe', 'validePar', 'valideRole', 'id', 'statut', 'famille', 'cible', 'libelle', ...valFamille(r.famille!)!.champs};
+        final permis = {'valideLe', 'validePar', 'valideRole', 'id', 'statut', 'famille', 'cible', 'libelle', 'source', 'motifPrix', 'observation', 'motifCorrection', ...valFamille(r.famille!)!.champs};
         expect(fiche.keys.every(permis.contains), isTrue, reason: '${fiche.keys}');
       });
     }
@@ -172,6 +173,137 @@ void main() {
         }
       }
     });
+  });
+
+  group('lot L1 : le geste « Valider » (fileul, fiche VRF archivée réactivée, texte épuré, motif)', () {
+    for (final c in liste(v['gestesL1'])) {
+      test(c['nom'] as String, () {
+        final maintenant = DateTime.utc(2026, 10, 30, 10, 15, 30, 123);
+        final r = valValiderReferentiel('${c['famille']}', '${c['id']}',
+            role: '${c['role']}',
+            acteur: '${v['sessionActeur']}',
+            maintenant: maintenant,
+            lire: lecture(obj(c['entree'])),
+            libelles: libelles,
+            fileul: c['fileul'] == true,
+            motif: c['motif'] as String?);
+        final s = obj(c['sortie']);
+        expect(r.ok, s['ok'], reason: 'ok');
+        if (!r.ok) {
+          expect([r.refus!.code, r.refus!.motif, r.refus!.geste], [s['code'], s['motif'], s['geste']]);
+          expect(c['journal'], isNull);
+          expect(r.patch, isEmpty);
+          return;
+        }
+        final etat = copie(c['avantFiches']);
+        appliquer(etat, r);
+        final apres = copie(c['apres']);
+        for (final n in apres.keys) {
+          memes(etat[n], jsonDecode(jsonEncode(apres[n]).replaceAll(marqueur, r.valideLe!)), n);
+        }
+        expect(etat[valCollectionValidations]!.where((f) => f['id'] == 'VRF-${c['id']}').length, c['nbFichesVrf'], reason: 'UNE fiche VRF par cible, jamais deux');
+        final j = obj(c['journal']);
+        expect([r.journal!.action, r.journal!.module, r.journal!.entite, r.journal!.reference], [j['action'], j['module'], j['entite'], j['reference']]);
+        expect(extrait(r.journal!.avant), j['avant']);
+        expect(extrait(r.journal!.apres), '${j['apres']}'.replaceAll(marqueur, r.valideLe!));
+      });
+    }
+  });
+
+  group('lot L1 : enregistrer valide pour le profil de la famille (contrôle et marquage)', () {
+    for (final c in liste(v['enregistrements'])) {
+      test(c['nom'] as String, () {
+        final famille = '${c['famille']}', role = '${c['role']}';
+        final avant = c['avant'] == null ? null : obj(c['avant']);
+        final valeurs = obj(c['valeurs']);
+        final chiffres = valChiffresModifies(famille, avant, valeurs);
+        expect(chiffres, (c['chiffres'] as List).cast<String>(), reason: 'champs chiffrés déplacés');
+        final refus = valControlerEnregistrement(famille,
+            role: role, chiffres: chiffres, motif: c['motif'] as String?, fileul: c['fileul'] == true);
+        if (c['controle'] != null) {
+          final s = obj(c['controle']);
+          expect(refus, isNotNull, reason: 'refus attendu');
+          expect([refus!.code, refus.motif, refus.geste], [s['code'], s['motif'], s['geste']]);
+          expect(c['marquage'], isNull);
+          return;
+        }
+        expect(refus, isNull);
+        final maintenant = DateTime.utc(2026, 10, 30, 10, 15, 30, 123);
+        final m = valMarquageEnregistrement(famille,
+            role: role,
+            acteur: '${c['acteurSession']}',
+            maintenant: maintenant,
+            libelles: libelles,
+            avant: avant,
+            valeurs: valeurs,
+            motif: c['motif'] as String?,
+            modifie: c['modifie'] as bool?);
+        final a = obj(c['marquage']);
+        expect([m.validateur, m.valide, m.nonValide], [a['validateur'], a['valide'], a['nonValide']]);
+        final instant = m.valideLe ?? '@@jamais@@';
+        memes(jsonDecode(jsonEncode(m.patch).replaceAll(instant, marqueur)), a['patch'], 'patch');
+        expect(m.chiffres, (a['chiffres'] as List).cast<String>());
+        final j = obj(a['journal']);
+        expect([m.journal.action, m.journal.module, m.journal.entite], [j['action'], j['module'], j['entite']]);
+        if (j['avant'] == null) {
+          expect(m.journal.avant, isEmpty);
+        } else {
+          expect(jsonEncode(m.journal.avant), jsonEncode(j['avant']));
+        }
+        expect(jsonEncode(m.journal.apres).replaceAll(instant, marqueur), jsonEncode(j['apres']), reason: 'la ligne de journal porte l’état');
+        // Une création par la famille naît validée (hors tarif absent), hors famille elle naît « à valider ».
+        if (avant == null) {
+          expect(m.valide, m.validateur && m.nonValide == null);
+        }
+      });
+    }
+  });
+
+  group('lot L1 : le suivi d’un artefact tenu ailleurs que dans la fiche écrite', () {
+    for (final c in liste(v['suivis'])) {
+      test(c['nom'] as String, () {
+        final maintenant = DateTime.utc(2026, 10, 30, 10, 15, 30, 123);
+        final r = valSuivreEnregistrement('${c['famille']}', '${c['cible']}',
+            role: '${c['role']}',
+            acteur: '${v['sessionActeur']}',
+            maintenant: maintenant,
+            lire: lecture(obj(c['entree'])),
+            libelles: libelles,
+            modifie: c['modifie'] as bool?,
+            motif: c['motif'] as String?,
+            fileul: c['fileul'] == true);
+        final s = obj(c['sortie']);
+        expect(r.refus == null, s['ok'], reason: 'ok');
+        if (r.refus != null) {
+          expect([r.refus!.code, r.refus!.motif, r.refus!.geste], [s['code'], s['motif'], s['geste']]);
+          expect(c['journal'], isNull);
+          return;
+        }
+        final etat = copie(c['avantFiches']);
+        var instant = '@@jamais@@';
+        if (r.validation != null) {
+          appliquer(etat, r.validation!);
+          instant = r.validation!.valideLe!;
+        } else if (r.remise != null && r.remise!.remis) {
+          final id = r.remise!.collection == valCollectionValidations ? 'VRF-${r.remise!.id}' : r.remise!.id;
+          etat[r.remise!.collection!]!.firstWhere((f) => f['id'] == id).addAll(r.remise!.patch);
+        } else {
+          expect(c['journal'], isNull, reason: 'rien à écrire : aucune ligne de journal');
+        }
+        final apres = copie(c['apres']);
+        for (final n in apres.keys) {
+          memes(etat[n], jsonDecode(jsonEncode(apres[n]).replaceAll(marqueur, instant)), n);
+        }
+        final jv = r.validation?.journal ?? r.remise?.journal;
+        if (c['journal'] != null) {
+          final j = obj(c['journal']);
+          expect(jv, isNotNull);
+          expect([jv!.action, jv.module, jv.entite, jv.reference], [j['action'], j['module'], j['entite'], j['reference']]);
+          expect(extrait(jv.avant), j['avant']);
+          expect(extrait(jv.apres), '${j['apres']}'.replaceAll(marqueur, instant));
+        }
+      });
+    }
   });
 
   group('remise à valider (remettreAValider)', () {

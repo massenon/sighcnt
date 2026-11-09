@@ -33,6 +33,10 @@
     "laborantin"
    ],
    "ecran": "m5-valeurs-reference",
+   "champsChiffres": [
+    "min",
+    "max"
+   ],
    "mode": "fiche-marquee"
   },
   {
@@ -103,6 +107,9 @@
     "admin"
    ],
    "ecran": "cfg-tarifs",
+   "champsChiffres": [
+    "prix"
+   ],
    "mode": "fiche-marquee"
   },
   {
@@ -122,6 +129,9 @@
     "admin"
    ],
    "ecran": "cfg-tarifs",
+   "champsChiffres": [
+    "prix"
+   ],
    "mode": "fiche-marquee"
   },
   {
@@ -140,6 +150,9 @@
     "admin"
    ],
    "ecran": "m6-produits",
+   "champsChiffres": [
+    "prixRevient"
+   ],
    "mode": "fiche-marquee"
   },
   {
@@ -158,6 +171,9 @@
     "admin"
    ],
    "ecran": "m12-tableau-decisionnel",
+   "champsChiffres": [
+    "cible"
+   ],
    "mode": "fiche-marquee"
   },
   {
@@ -231,6 +247,28 @@
     "admin"
    ],
    "ecran": "cfg-notifications",
+   "mode": "fiche-marquee"
+  },
+  {
+   "id": "bareme_aib",
+   "libelle": "Barème de l’AIB (taux par situation de l’acheteur)",
+   "module": "CFG",
+   "collections": [
+    "baremeAib"
+   ],
+   "champs": [
+    "aValider"
+   ],
+   "roles": [
+    "direction",
+    "da",
+    "admin",
+    "comptable"
+   ],
+   "ecran": "cfg-bareme-aib",
+   "champsChiffres": [
+    "taux"
+   ],
    "mode": "fiche-marquee"
   },
   {
@@ -592,6 +630,30 @@
      "ids": []
     },
     {
+     "famille": "bareme_aib",
+     "libelle": "Barème de l’AIB (taux par situation de l’acheteur)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "baremeAib"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin",
+      "comptable"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable",
+     "ecran": "cfg-bareme-aib",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
      "famille": "bareme_its",
      "libelle": "Barème de l’ITS",
      "module": "M11",
@@ -946,6 +1008,30 @@
      ],
      "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
      "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_aib",
+     "libelle": "Barème de l’AIB (taux par situation de l’acheteur)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "baremeAib"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin",
+      "comptable"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable",
+     "ecran": "cfg-bareme-aib",
      "enAttente": null,
      "total": null,
      "nonAmorce": true,
@@ -1315,6 +1401,30 @@
      "ids": []
     },
     {
+     "famille": "bareme_aib",
+     "libelle": "Barème de l’AIB (taux par situation de l’acheteur)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "baremeAib"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin",
+      "comptable"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable",
+     "ecran": "cfg-bareme-aib",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
      "famille": "bareme_its",
      "libelle": "Barème de l’ITS",
      "module": "M11",
@@ -1671,6 +1781,30 @@
      ],
      "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
      "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_aib",
+     "libelle": "Barème de l’AIB (taux par situation de l’acheteur)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "baremeAib"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin",
+      "comptable"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable",
+     "ecran": "cfg-bareme-aib",
      "enAttente": null,
      "total": null,
      "nonAmorce": true,
@@ -2046,6 +2180,30 @@
      "ids": []
     },
     {
+     "famille": "bareme_aib",
+     "libelle": "Barème de l’AIB (taux par situation de l’acheteur)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "baremeAib"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin",
+      "comptable"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable",
+     "ecran": "cfg-bareme-aib",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
      "famille": "bareme_its",
      "libelle": "Barème de l’ITS",
      "module": "M11",
@@ -2393,6 +2551,30 @@
      "ids": []
     },
     {
+     "famille": "bareme_aib",
+     "libelle": "Barème de l’AIB (taux par situation de l’acheteur)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "baremeAib"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin",
+      "comptable"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable",
+     "ecran": "cfg-bareme-aib",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
      "famille": "bareme_its",
      "libelle": "Barème de l’ITS",
      "module": "M11",
@@ -2733,6 +2915,30 @@
      ],
      "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système",
      "ecran": "cfg-notifications",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
+     "famille": "bareme_aib",
+     "libelle": "Barème de l’AIB (taux par situation de l’acheteur)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "baremeAib"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin",
+      "comptable"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable",
+     "ecran": "cfg-bareme-aib",
      "enAttente": null,
      "total": null,
      "nonAmorce": true,
@@ -3086,6 +3292,30 @@
      "ids": []
     },
     {
+     "famille": "bareme_aib",
+     "libelle": "Barème de l’AIB (taux par situation de l’acheteur)",
+     "module": "CFG",
+     "mode": "fiche-marquee",
+     "collections": [
+      "baremeAib"
+     ],
+     "champs": [
+      "aValider"
+     ],
+     "roles": [
+      "direction",
+      "da",
+      "admin",
+      "comptable"
+     ],
+     "profil": "Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable",
+     "ecran": "cfg-bareme-aib",
+     "enAttente": null,
+     "total": null,
+     "nonAmorce": true,
+     "ids": []
+    },
+    {
      "famille": "bareme_its",
      "libelle": "Barème de l’ITS",
      "module": "M11",
@@ -3210,6 +3440,7 @@
    "modeles_badge",
    "jeux_import",
    "modeles_messages",
+   "bareme_aib",
    "bareme_its"
   ],
   "da": [
@@ -3226,6 +3457,7 @@
    "modeles_badge",
    "jeux_import",
    "modeles_messages",
+   "bareme_aib",
    "bareme_its"
   ],
   "admin": [
@@ -3242,6 +3474,7 @@
    "modeles_badge",
    "jeux_import",
    "modeles_messages",
+   "bareme_aib",
    "bareme_its"
   ],
   "laborantin": [
@@ -3264,7 +3497,8 @@
    "pathologies"
   ],
   "comptable": [
-   "repartition_charges"
+   "repartition_charges",
+   "bareme_aib"
   ],
   "caissier": [],
   "reception": [],
@@ -3538,6 +3772,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -3580,6 +3815,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -3645,6 +3881,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -3687,6 +3924,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -3752,6 +3990,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -3794,6 +4033,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -3859,6 +4099,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -3895,6 +4136,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -3953,6 +4195,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -3989,6 +4232,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -4047,6 +4291,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4083,6 +4328,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -4127,6 +4373,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4156,6 +4403,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -4196,6 +4444,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4223,6 +4472,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -4281,6 +4531,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4317,6 +4568,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -4359,6 +4611,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4387,6 +4640,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -4445,6 +4699,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4481,6 +4736,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -4525,6 +4781,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4554,6 +4811,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -4600,6 +4858,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4636,6 +4895,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -4687,6 +4947,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4722,6 +4983,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -4773,6 +5035,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4802,6 +5065,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -4848,6 +5112,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4884,6 +5149,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -4935,6 +5201,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -4970,6 +5237,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -5019,6 +5287,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -5053,6 +5322,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -5102,6 +5372,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -5130,6 +5401,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -5172,6 +5444,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -5206,6 +5479,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -5239,6 +5513,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -5263,6 +5538,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": [
      {
       "id": "VRF-repartition-fixe-variable",
@@ -5317,6 +5593,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": [
      {
       "id": "VRF-repartition-fixe-variable",
@@ -5349,6 +5626,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": [
      {
       "id": "VRF-repartition-fixe-variable",
@@ -5406,6 +5684,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": [
      {
       "id": "VRF-checklist-bloc",
@@ -5438,6 +5717,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": [
      {
       "id": "VRF-checklist-bloc",
@@ -5475,6 +5755,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -5496,6 +5777,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null,
@@ -5522,6 +5804,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -5546,6 +5829,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": [
      {
       "id": "VRF-bareme-its",
@@ -5661,6 +5945,15 @@
       "aValider": true,
       "prix": 1000
      }
+    ],
+    "baremeAib": [
+     {
+      "id": "X-bareme_aib",
+      "statut": "actif",
+      "libelle": "Élément X-bareme_aib",
+      "aValider": true,
+      "prix": 1000
+     }
     ]
    },
    "famille": "enquetes",
@@ -5757,6 +6050,15 @@
       "id": "X-modeles_messages",
       "statut": "actif",
       "libelle": "Élément X-modeles_messages",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "baremeAib": [
+     {
+      "id": "X-bareme_aib",
+      "statut": "actif",
+      "libelle": "Élément X-bareme_aib",
       "aValider": true,
       "prix": 1000
      }
@@ -5864,6 +6166,15 @@
       "id": "X-modeles_messages",
       "statut": "actif",
       "libelle": "Élément X-modeles_messages",
+      "aValider": true,
+      "prix": 1000
+     }
+    ],
+    "baremeAib": [
+     {
+      "id": "X-bareme_aib",
+      "statut": "actif",
+      "libelle": "Élément X-bareme_aib",
       "aValider": true,
       "prix": 1000
      }
@@ -6138,6 +6449,26 @@
    ]
   },
   {
+   "famille": "bareme_aib",
+   "id": "F-bareme_aib",
+   "role": "direction",
+   "ok": true,
+   "valideRole": "Direction / Gérance",
+   "refusHorsFamille": [
+    {
+     "role": "caissier",
+     "code": "VALIDATION_RESERVEE"
+    },
+    {
+     "role": "reception",
+     "code": "VALIDATION_RESERVEE"
+    }
+   ],
+   "marquageApres": [
+    false
+   ]
+  },
+  {
    "famille": "bareme_its",
    "id": "bareme-its",
    "role": "direction",
@@ -6197,6 +6528,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -6228,6 +6560,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -6274,6 +6607,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -6302,6 +6636,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null
@@ -6348,6 +6683,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -6380,6 +6716,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -6434,6 +6771,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -6466,6 +6804,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": {
@@ -6509,6 +6848,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": [
      {
       "id": "VRF-checklist-bloc",
@@ -6541,6 +6881,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": [
      {
       "id": "VRF-checklist-bloc",
@@ -6582,6 +6923,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -6603,6 +6945,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null
@@ -6647,6 +6990,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -6678,6 +7022,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null
@@ -6700,6 +7045,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "sortie": {
@@ -6721,6 +7067,7 @@
     "objectifsPilotage": [],
     "modelesBadge": [],
     "modelesMessage": [],
+    "baremeAib": [],
     "validationsReferentiels": []
    },
    "journal": null
@@ -6777,7 +7124,7 @@
    "kpis": [
     {
      "label": "Gestes de validation en attente",
-     "valeur": "88"
+     "valeur": "91"
     },
     {
      "label": "Files concernées",
@@ -6789,7 +7136,7 @@
     },
     {
      "label": "Familles concernées",
-     "valeur": "5 / 14"
+     "valeur": "5 / 15"
     }
    ],
    "cartes": [
@@ -6878,6 +7225,12 @@
      "ouvrir": true
     },
     {
+     "famille": "bareme_aib",
+     "enAttente": "",
+     "texte": "Barème de l’AIB (taux par situation de l’acheteur)Valide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "ouvrir": true
+    },
+    {
      "famille": "bareme_its",
      "enAttente": "1",
      "texte": "Barème de l’ITSValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système1sur 1Ouvrir",
@@ -6892,6 +7245,7 @@
     "Y aller",
     "Y aller",
     "Y aller",
+    "Ouvrir",
     "Ouvrir",
     "Ouvrir",
     "Ouvrir",
@@ -6948,7 +7302,7 @@
     }
    ],
    "cartes": [
-    "Les référentiels de votre ressort : à valider à l’écran de chacun"
+    "Les référentiels de votre ressort : la validation se fait à l’écran de chacun"
    ],
    "familles": [
     {
@@ -6978,7 +7332,7 @@
     }
    ],
    "cartes": [
-    "Les référentiels de votre ressort : à valider à l’écran de chacun"
+    "Les référentiels de votre ressort : la validation se fait à l’écran de chacun"
    ],
    "familles": [
     {
@@ -7008,7 +7362,7 @@
     }
    ],
    "cartes": [
-    "Les référentiels de votre ressort : à valider à l’écran de chacun"
+    "Les référentiels de votre ressort : la validation se fait à l’écran de chacun"
    ],
    "familles": [
     {
@@ -7030,7 +7384,7 @@
    "kpis": [
     {
      "label": "Gestes de validation en attente",
-     "valeur": "88"
+     "valeur": "91"
     },
     {
      "label": "Files concernées",
@@ -7042,7 +7396,7 @@
     },
     {
      "label": "Familles concernées",
-     "valeur": "1 / 1"
+     "valeur": "1 / 2"
     }
    ],
    "cartes": [
@@ -7056,6 +7410,12 @@
      "famille": "repartition_charges",
      "enAttente": "1",
      "texte": "Répartition fixe et variable des chargesValide : Comptable, Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système1sur 1Ouvrir",
+     "ouvrir": true
+    },
+    {
+     "famille": "bareme_aib",
+     "enAttente": "",
+     "texte": "Barème de l’AIB (taux par situation de l’acheteur)Valide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système, Comptable · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
      "ouvrir": true
     }
    ],
@@ -7073,9 +7433,2528 @@
     "Ouvrir",
     "Ouvrir",
     "Ouvrir",
+    "Ouvrir",
     "Ouvrir"
    ],
    "vide": ""
+  }
+ ],
+ "enregistrements": [
+  {
+   "nom": "famille, fiche à valider modifiée : validée du même geste, action Validation, état dans le journal",
+   "famille": "pathologies",
+   "role": "dm",
+   "avant": {
+    "id": "P1",
+    "statut": "actif",
+    "libelle": "Élément P1",
+    "aValider": true,
+    "code": "PAL-S",
+    "chapitre": "infectieuses"
+   },
+   "valeurs": {
+    "libelle": "Paludisme grave",
+    "code": "PAL-S"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Directeur Médical"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Validation",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": {
+      "etat": "à valider",
+      "libelle": "Élément P1"
+     },
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Directeur Médical",
+      "valideLe": "@@MAINTENANT@@",
+      "libelle": "Paludisme grave"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "famille, fiche à valider enregistrée SANS changement : validée quand même (modifié ou non)",
+   "famille": "pathologies",
+   "role": "medecin",
+   "avant": {
+    "id": "P1",
+    "statut": "actif",
+    "libelle": "Élément P1",
+    "aValider": true,
+    "code": "PAL-S",
+    "chapitre": "infectieuses"
+   },
+   "valeurs": {
+    "libelle": "Élément P1"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Médecin"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Validation",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": {
+      "etat": "à valider"
+     },
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Médecin",
+      "valideLe": "@@MAINTENANT@@"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "famille, fiche déjà validée modifiée : reste validée, action Modification",
+   "famille": "pathologies",
+   "role": "dm",
+   "avant": {
+    "id": "P1",
+    "statut": "actif",
+    "libelle": "Élément P1",
+    "aValider": false,
+    "valideLe": "2026-09-01T09:00:00.000Z",
+    "validePar": "Dr X",
+    "valideRole": "Directeur Médical",
+    "code": "PAL-S",
+    "chapitre": "infectieuses"
+   },
+   "valeurs": {
+    "libelle": "Paludisme simple"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Directeur Médical"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Modification",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": {
+      "etat": "validé",
+      "libelle": "Élément P1"
+     },
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Directeur Médical",
+      "valideLe": "@@MAINTENANT@@",
+      "libelle": "Paludisme simple"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "hors famille (admin), fiche validée modifiée : repasse à valider, action Remise à valider",
+   "famille": "pathologies",
+   "role": "admin",
+   "avant": {
+    "id": "P1",
+    "statut": "actif",
+    "libelle": "Élément P1",
+    "aValider": false,
+    "valideLe": "2026-09-01T09:00:00.000Z",
+    "validePar": "Dr X",
+    "valideRole": "Directeur Médical",
+    "code": "PAL-S",
+    "chapitre": "infectieuses"
+   },
+   "valeurs": {
+    "libelle": "Paludisme simple"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": false,
+    "valide": false,
+    "nonValide": null,
+    "patch": {
+     "aValider": true,
+     "valideLe": null,
+     "validePar": null,
+     "valideRole": null
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Remise à valider",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": {
+      "etat": "validé",
+      "libelle": "Élément P1"
+     },
+     "apres": {
+      "etat": "à valider",
+      "libelle": "Paludisme simple"
+     }
+    },
+    "valideLeIso": null
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "hors famille, fiche à valider modifiée : reste à valider, action Modification",
+   "famille": "pathologies",
+   "role": "admin",
+   "avant": {
+    "id": "P1",
+    "statut": "actif",
+    "libelle": "Élément P1",
+    "aValider": true,
+    "code": "PAL-S",
+    "chapitre": "infectieuses"
+   },
+   "valeurs": {
+    "libelle": "Paludisme simple"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": false,
+    "valide": false,
+    "nonValide": null,
+    "patch": {
+     "aValider": true,
+     "valideLe": null,
+     "validePar": null,
+     "valideRole": null
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Modification",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": {
+      "etat": "à valider",
+      "libelle": "Élément P1"
+     },
+     "apres": {
+      "etat": "à valider",
+      "libelle": "Paludisme simple"
+     }
+    },
+    "valideLeIso": null
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "hors famille, fiche validée enregistrée sans changement déclaré (modifie faux) : rien ne bouge",
+   "famille": "pathologies",
+   "role": "admin",
+   "avant": {
+    "id": "P1",
+    "statut": "actif",
+    "libelle": "Élément P1",
+    "aValider": false,
+    "valideLe": "2026-09-01T09:00:00.000Z",
+    "validePar": "Dr X",
+    "valideRole": "Directeur Médical",
+    "code": "PAL-S",
+    "chapitre": "infectieuses"
+   },
+   "valeurs": {
+    "libelle": "Élément P1"
+   },
+   "motif": null,
+   "modifie": false,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": false,
+    "valide": false,
+    "nonValide": null,
+    "patch": {},
+    "chiffres": [],
+    "journal": {
+     "action": "Modification",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": {
+      "etat": "validé"
+     },
+     "apres": {
+      "etat": "validé"
+     }
+    },
+    "valideLeIso": null
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "hors famille, fiche validée enregistrée sans autre précision : repasse à valider (Q2 b)",
+   "famille": "pathologies",
+   "role": "admin",
+   "avant": {
+    "id": "P1",
+    "statut": "actif",
+    "libelle": "Élément P1",
+    "aValider": false,
+    "valideLe": "2026-09-01T09:00:00.000Z",
+    "validePar": "Dr X",
+    "valideRole": "Directeur Médical",
+    "code": "PAL-S",
+    "chapitre": "infectieuses"
+   },
+   "valeurs": {
+    "libelle": "Élément P1"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": false,
+    "valide": false,
+    "nonValide": null,
+    "patch": {
+     "aValider": true,
+     "valideLe": null,
+     "validePar": null,
+     "valideRole": null
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Remise à valider",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": {
+      "etat": "validé"
+     },
+     "apres": {
+      "etat": "à valider"
+     }
+    },
+    "valideLeIso": null
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "création par un profil de la famille : naît validée (Q5)",
+   "famille": "pathologies",
+   "role": "dm",
+   "avant": null,
+   "valeurs": {
+    "libelle": "Nouvelle pathologie",
+    "code": "NP",
+    "chapitre": "autres"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Directeur Médical"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Création",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": null,
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Directeur Médical",
+      "valideLe": "@@MAINTENANT@@",
+      "libelle": "Nouvelle pathologie",
+      "code": "NP",
+      "chapitre": "autres"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "création hors famille : naît à valider (Q5)",
+   "famille": "pathologies",
+   "role": "caissier",
+   "avant": null,
+   "valeurs": {
+    "libelle": "Nouvelle pathologie",
+    "code": "NP",
+    "chapitre": "autres"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": false,
+    "valide": false,
+    "nonValide": null,
+    "patch": {
+     "aValider": true,
+     "valideLe": null,
+     "validePar": null,
+     "valideRole": null
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Création",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": null,
+     "apres": {
+      "etat": "à valider",
+      "libelle": "Nouvelle pathologie",
+      "code": "NP",
+      "chapitre": "autres"
+     }
+    },
+    "valideLeIso": null
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "création par la famille : la mention « à valider » du texte d’origine est épurée",
+   "famille": "pathologies",
+   "role": "dm",
+   "avant": null,
+   "valeurs": {
+    "libelle": "Nouvelle pathologie",
+    "source": "Ajoutée dans l’application le 09/11/2026 — à arrêter par le Directeur Médical"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Directeur Médical",
+     "source": "Ajoutée dans l’application le 09/11/2026"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Création",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": null,
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Directeur Médical",
+      "valideLe": "@@MAINTENANT@@",
+      "libelle": "Nouvelle pathologie"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "création hors famille : le texte d’origine reste tel quel",
+   "famille": "pathologies",
+   "role": "caissier",
+   "avant": null,
+   "valeurs": {
+    "libelle": "Nouvelle pathologie",
+    "source": "Ajoutée dans l’application le 09/11/2026 — à arrêter par le Directeur Médical"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "pathologies",
+    "validateur": false,
+    "valide": false,
+    "nonValide": null,
+    "patch": {
+     "aValider": true,
+     "valideLe": null,
+     "validePar": null,
+     "valideRole": null
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Création",
+     "module": "M2",
+     "entite": "Pathologies (tableau de morbidité)",
+     "avant": null,
+     "apres": {
+      "etat": "à valider",
+      "libelle": "Nouvelle pathologie"
+     }
+    },
+    "valideLeIso": null
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "valeur chiffrée corrigée par la famille SANS motif : MOTIF_OBLIGATOIRE",
+   "famille": "labo_variables",
+   "role": "laborantin",
+   "avant": {
+    "id": "VL1",
+    "statut": "actif",
+    "libelle": "Élément VL1",
+    "aValider": true,
+    "min": 4,
+    "max": 8
+   },
+   "valeurs": {
+    "min": 4,
+    "max": 9
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [
+    "max"
+   ],
+   "controle": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "La valeur chiffrée « max » de « Variables et unités du laboratoire (bornes suppléées) » change : le motif de la correction est obligatoire.",
+    "geste": "Saisir le motif de la correction, puis enregistrer."
+   },
+   "marquage": null,
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "valeur chiffrée corrigée par la famille AVEC motif : validée, motif porté par la fiche et par le journal",
+   "famille": "labo_variables",
+   "role": "laborantin",
+   "avant": {
+    "id": "VL1",
+    "statut": "actif",
+    "libelle": "Élément VL1",
+    "aValider": true,
+    "min": 4,
+    "max": 8
+   },
+   "valeurs": {
+    "min": 4,
+    "max": 9
+   },
+   "motif": "Nouveau réactif, notice du lot",
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [
+    "max"
+   ],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "labo_variables",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Biologiste médical",
+     "motifCorrection": "Nouveau réactif, notice du lot"
+    },
+    "chiffres": [
+     "max"
+    ],
+    "journal": {
+     "action": "Validation",
+     "module": "M5",
+     "entite": "Variables et unités du laboratoire (bornes suppléées)",
+     "avant": {
+      "etat": "à valider",
+      "max": 8
+     },
+     "apres": {
+      "etat": "validé",
+      "motif": "Nouveau réactif, notice du lot",
+      "valideRole": "Biologiste médical",
+      "valideLe": "@@MAINTENANT@@",
+      "max": 9
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "libellé corrigé par la famille : aucun motif exigé (borne inchangée)",
+   "famille": "labo_variables",
+   "role": "laborantin",
+   "avant": {
+    "id": "VL1",
+    "statut": "actif",
+    "libelle": "Élément VL1",
+    "aValider": true,
+    "min": 4,
+    "max": 8
+   },
+   "valeurs": {
+    "libelle": "GB",
+    "min": 4,
+    "max": 8
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "labo_variables",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Biologiste médical"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Validation",
+     "module": "M5",
+     "entite": "Variables et unités du laboratoire (bornes suppléées)",
+     "avant": {
+      "etat": "à valider",
+      "libelle": "Élément VL1"
+     },
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Biologiste médical",
+      "valideLe": "@@MAINTENANT@@",
+      "libelle": "GB"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "borne saisie en texte égale à la borne en nombre : aucun changement chiffré",
+   "famille": "labo_variables",
+   "role": "laborantin",
+   "avant": {
+    "id": "VL1",
+    "statut": "actif",
+    "libelle": "Élément VL1",
+    "aValider": true,
+    "min": 4,
+    "max": 8
+   },
+   "valeurs": {
+    "min": "4",
+    "max": "8"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "labo_variables",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Biologiste médical"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Validation",
+     "module": "M5",
+     "entite": "Variables et unités du laboratoire (bornes suppléées)",
+     "avant": {
+      "etat": "à valider",
+      "min": 4,
+      "max": 8
+     },
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Biologiste médical",
+      "valideLe": "@@MAINTENANT@@",
+      "min": "4",
+      "max": "8"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "borne vide saisie sur une borne absente : aucun changement chiffré",
+   "famille": "labo_variables",
+   "role": "laborantin",
+   "avant": {
+    "id": "VL1",
+    "statut": "actif",
+    "libelle": "Élément VL1",
+    "aValider": true,
+    "min": null,
+    "max": 8
+   },
+   "valeurs": {
+    "min": "",
+    "max": 8
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "labo_variables",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Biologiste médical"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Validation",
+     "module": "M5",
+     "entite": "Variables et unités du laboratoire (bornes suppléées)",
+     "avant": {
+      "etat": "à valider"
+     },
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Biologiste médical",
+      "valideLe": "@@MAINTENANT@@"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "hors famille (direction) : la borne change sans motif exigé (la Direction ne signe pas)",
+   "famille": "labo_variables",
+   "role": "direction",
+   "avant": {
+    "id": "VL1",
+    "statut": "actif",
+    "libelle": "Élément VL1",
+    "aValider": false,
+    "valideLe": "2026-09-01T09:00:00.000Z",
+    "valideRole": "Biologiste médical",
+    "min": 4,
+    "max": 8
+   },
+   "valeurs": {
+    "min": 4,
+    "max": 9
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [
+    "max"
+   ],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "labo_variables",
+    "validateur": false,
+    "valide": false,
+    "nonValide": null,
+    "patch": {
+     "aValider": true,
+     "valideLe": null,
+     "validePar": null,
+     "valideRole": null
+    },
+    "chiffres": [
+     "max"
+    ],
+    "journal": {
+     "action": "Remise à valider",
+     "module": "M5",
+     "entite": "Variables et unités du laboratoire (bornes suppléées)",
+     "avant": {
+      "etat": "validé",
+      "max": 8
+     },
+     "apres": {
+      "etat": "à valider",
+      "max": 9
+     }
+    },
+    "valideLeIso": null
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "tarif d’un acte corrigé par la Direction sans motif : MOTIF_OBLIGATOIRE",
+   "famille": "actes",
+   "role": "direction",
+   "avant": {
+    "id": "A1",
+    "statut": "actif",
+    "libelle": "Élément A1",
+    "tarifProvisoire": true,
+    "prix": 5000
+   },
+   "valeurs": {
+    "prix": 6000
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [
+    "prix"
+   ],
+   "controle": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "La valeur chiffrée « prix » de « Tarifs des actes (valeurs d’attente) » change : le motif de la correction est obligatoire.",
+    "geste": "Saisir le motif de la correction, puis enregistrer."
+   },
+   "marquage": null,
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "tarif d’un acte corrigé par la DA avec motif : validé, tarifProvisoire retiré",
+   "famille": "actes",
+   "role": "da",
+   "avant": {
+    "id": "A1",
+    "statut": "actif",
+    "libelle": "Élément A1",
+    "tarifProvisoire": true,
+    "prix": 5000
+   },
+   "valeurs": {
+    "prix": 6000
+   },
+   "motif": "Grille 2026",
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [
+    "prix"
+   ],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "actes",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "tarifProvisoire": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+     "motifCorrection": "Grille 2026"
+    },
+    "chiffres": [
+     "prix"
+    ],
+    "journal": {
+     "action": "Validation",
+     "module": "CFG",
+     "entite": "Tarifs des actes (valeurs d’attente)",
+     "avant": {
+      "etat": "à valider",
+      "prix": 5000
+     },
+     "apres": {
+      "etat": "validé",
+      "motif": "Grille 2026",
+      "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+      "valideLe": "@@MAINTENANT@@",
+      "prix": 6000
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "acte créé sans tarif par la Direction : TARIF_ABSENT, il reste à valider",
+   "famille": "actes",
+   "role": "direction",
+   "avant": null,
+   "valeurs": {
+    "libelle": "Acte sans prix",
+    "prix": null
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "actes",
+    "validateur": true,
+    "valide": false,
+    "nonValide": "TARIF_ABSENT",
+    "patch": {
+     "tarifProvisoire": true,
+     "valideLe": null,
+     "validePar": null,
+     "valideRole": null
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Création",
+     "module": "CFG",
+     "entite": "Tarifs des actes (valeurs d’attente)",
+     "avant": null,
+     "apres": {
+      "etat": "à valider",
+      "libelle": "Acte sans prix"
+     }
+    },
+    "valideLeIso": null
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "acte créé avec tarif par la Direction : naît validé",
+   "famille": "actes",
+   "role": "direction",
+   "avant": null,
+   "valeurs": {
+    "libelle": "Acte",
+    "prix": 4000,
+    "motifPrix": "Créé le 09/11/2026 : tarif à valider par la Direction"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "actes",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "tarifProvisoire": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Direction / Gérance",
+     "motifPrix": "Créé le 09/11/2026"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Création",
+     "module": "CFG",
+     "entite": "Tarifs des actes (valeurs d’attente)",
+     "avant": null,
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Direction / Gérance",
+      "valideLe": "@@MAINTENANT@@",
+      "libelle": "Acte",
+      "prix": 4000,
+      "motifPrix": "Créé le 09/11/2026 : tarif à valider par la Direction"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "analyse à double marquage validée par enregistrement : les DEUX marquages tombent",
+   "famille": "analyses",
+   "role": "admin",
+   "avant": {
+    "id": "N1",
+    "statut": "actif",
+    "libelle": "Élément N1",
+    "tarifProvisoire": true,
+    "aValider": true,
+    "prix": 2500
+   },
+   "valeurs": {
+    "designation": "NFS",
+    "prix": 2500
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "analyses",
+    "validateur": true,
+    "valide": true,
+    "nonValide": null,
+    "patch": {
+     "tarifProvisoire": false,
+     "aValider": false,
+     "valideLe": "@@MAINTENANT@@",
+     "validePar": "OROU YO Marguerite",
+     "valideRole": "Administrateur système"
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Validation",
+     "module": "CFG",
+     "entite": "Tarifs des analyses",
+     "avant": {
+      "etat": "à valider",
+      "designation": null
+     },
+     "apres": {
+      "etat": "validé",
+      "valideRole": "Administrateur système",
+      "valideLe": "@@MAINTENANT@@",
+      "designation": "NFS"
+     }
+    },
+    "valideLeIso": true
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "analyse sans tarif enregistrée par la famille : TARIF_ABSENT, elle reste à valider",
+   "famille": "analyses",
+   "role": "admin",
+   "avant": {
+    "id": "N1",
+    "statut": "actif",
+    "libelle": "Élément N1",
+    "tarifProvisoire": true,
+    "prix": null
+   },
+   "valeurs": {
+    "designation": "NFS",
+    "prix": null
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": null,
+   "marquage": {
+    "ok": true,
+    "famille": "analyses",
+    "validateur": true,
+    "valide": false,
+    "nonValide": "TARIF_ABSENT",
+    "patch": {
+     "tarifProvisoire": true,
+     "valideLe": null,
+     "validePar": null,
+     "valideRole": null
+    },
+    "chiffres": [],
+    "journal": {
+     "action": "Modification",
+     "module": "CFG",
+     "entite": "Tarifs des analyses",
+     "avant": {
+      "etat": "à valider",
+      "designation": null
+     },
+     "apres": {
+      "etat": "à valider",
+      "designation": "NFS"
+     }
+    },
+    "valideLeIso": null
+   },
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "objectif corrigé par le DA : motif obligatoire sur la cible chiffrée",
+   "famille": "objectifs_pilotage",
+   "role": "da",
+   "avant": {
+    "id": "O1",
+    "statut": "actif",
+    "libelle": "Élément O1",
+    "aValider": true,
+    "cible": 60
+   },
+   "valeurs": {
+    "cible": 45
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [
+    "cible"
+   ],
+   "controle": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "La valeur chiffrée « cible » de « Objectifs de pilotage » change : le motif de la correction est obligatoire.",
+    "geste": "Saisir le motif de la correction, puis enregistrer."
+   },
+   "marquage": null,
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "barème de l’AIB : le comptable est de la famille, le taux chiffré exige un motif",
+   "famille": "bareme_aib",
+   "role": "comptable",
+   "avant": {
+    "id": "B1",
+    "statut": "actif",
+    "libelle": "Élément B1",
+    "aValider": true,
+    "taux": 5
+   },
+   "valeurs": {
+    "taux": 3
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [
+    "taux"
+   ],
+   "controle": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "La valeur chiffrée « taux » de « Barème de l’AIB (taux par situation de l’acheteur) » change : le motif de la correction est obligatoire.",
+    "geste": "Saisir le motif de la correction, puis enregistrer."
+   },
+   "marquage": null,
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "fileul : la famille est refusée en le nommant (CONFIGURATION_DE_LA_MERE)",
+   "famille": "pathologies",
+   "role": "dm",
+   "avant": {
+    "id": "P1",
+    "statut": "actif",
+    "libelle": "Élément P1",
+    "aValider": true,
+    "code": "PAL-S",
+    "chapitre": "infectieuses"
+   },
+   "valeurs": {
+    "libelle": "X"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": true,
+   "chiffres": [],
+   "controle": {
+    "ok": false,
+    "code": "CONFIGURATION_DE_LA_MERE",
+    "motif": "Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.",
+    "geste": "Valider depuis le poste principal : la validation est reprise ici ensuite."
+   },
+   "marquage": null,
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "fileul : le profil hors famille est refusé aussi",
+   "famille": "actes",
+   "role": "admin",
+   "avant": {
+    "id": "A1",
+    "statut": "actif",
+    "libelle": "Élément A1",
+    "tarifProvisoire": true,
+    "prix": 5000
+   },
+   "valeurs": {
+    "libelle": "X"
+   },
+   "motif": null,
+   "modifie": null,
+   "fileul": true,
+   "chiffres": [],
+   "controle": {
+    "ok": false,
+    "code": "CONFIGURATION_DE_LA_MERE",
+    "motif": "Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.",
+    "geste": "Valider depuis le poste principal : la validation est reprise ici ensuite."
+   },
+   "marquage": null,
+   "acteurSession": "OROU YO Marguerite"
+  },
+  {
+   "nom": "famille inconnue : INTROUVABLE",
+   "famille": "famille-inconnue",
+   "role": "dm",
+   "avant": null,
+   "valeurs": {},
+   "motif": null,
+   "modifie": null,
+   "fileul": false,
+   "chiffres": [],
+   "controle": {
+    "ok": false,
+    "code": "INTROUVABLE",
+    "motif": "Famille de référentiel inconnue : famille-inconnue.",
+    "geste": "Choisir une famille du registre des validations."
+   },
+   "marquage": null,
+   "acteurSession": "OROU YO Marguerite"
+  }
+ ],
+ "suivis": [
+  {
+   "nom": "pièce du code en attente corrigée par la famille (comptable) : validée, une ligne Validation",
+   "entree": {},
+   "famille": "repartition_charges",
+   "cible": "repartition-fixe-variable",
+   "role": "comptable",
+   "modifie": true,
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "repartition_charges",
+    "id": "repartition-fixe-variable",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Comptable",
+    "valideLeIso": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Répartition proposée des comptes de charge",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M12",
+    "entite": "Répartition fixe et variable des charges",
+    "reference": "repartition-fixe-variable",
+    "avant": "{\"valideLe\":null}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Comptable\"}",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "pièce du code déjà validée corrigée par la famille : reste validée, rien d’écrit",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "famille": "repartition_charges",
+   "cible": "repartition-fixe-variable",
+   "role": "comptable",
+   "modifie": true,
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "repartition_charges",
+    "id": "repartition-fixe-variable",
+    "valide": false,
+    "rien": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "journal": null
+  },
+  {
+   "nom": "pièce du code validée corrigée hors famille (aide comptable) : remise à valider",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "famille": "repartition_charges",
+   "cible": "repartition-fixe-variable",
+   "role": "aide_comptable",
+   "modifie": true,
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "sortie": {
+    "ok": true,
+    "remis": true,
+    "famille": "repartition_charges",
+    "id": "repartition-fixe-variable"
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": null,
+      "validePar": null,
+      "valideRole": null
+     }
+    ]
+   },
+   "journal": {
+    "action": "Remise à valider",
+    "module": "M12",
+    "entite": "Répartition fixe et variable des charges",
+    "reference": "repartition-fixe-variable",
+    "avant": "{\"valideLe\":\"2026-09-01T09:00:00.000Z\"}",
+    "apres": "{\"motif\":\"modifié depuis la validation\"}",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "pièce du code en attente corrigée hors famille : rien ne bouge",
+   "entree": {},
+   "famille": "repartition_charges",
+   "cible": "repartition-fixe-variable",
+   "role": "aide_comptable",
+   "modifie": true,
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "remis": false,
+    "famille": "repartition_charges",
+    "id": "repartition-fixe-variable"
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "journal": null
+  },
+  {
+   "nom": "hors famille sans modification : rien ne bouge",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "famille": "repartition_charges",
+   "cible": "repartition-fixe-variable",
+   "role": "aide_comptable",
+   "modifie": false,
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "repartition_charges",
+    "id": "repartition-fixe-variable",
+    "rien": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "journal": null
+  },
+  {
+   "nom": "valorisation lue au produit : la Direction qui corrige une valorisation en attente la valide, motif porté",
+   "entree": {
+    "valorisationsSage": [
+     {
+      "id": "VZ1",
+      "statut": "actif",
+      "libelle": "Élément VZ1",
+      "aValider": true,
+      "prixRevient": 100
+     }
+    ]
+   },
+   "famille": "valorisation_sage",
+   "cible": "VZ1",
+   "role": "direction",
+   "modifie": true,
+   "fileul": false,
+   "motif": "Facture du 05/11",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [
+     {
+      "id": "VZ1",
+      "statut": "actif",
+      "libelle": "Élément VZ1",
+      "aValider": true,
+      "prixRevient": 100
+     }
+    ],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "valorisation_sage",
+    "id": "VZ1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Direction / Gérance",
+    "valideLeIso": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [
+     {
+      "id": "VZ1",
+      "statut": "actif",
+      "libelle": "Élément VZ1",
+      "aValider": false,
+      "prixRevient": 100,
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Direction / Gérance",
+      "motifCorrection": "Facture du 05/11"
+     }
+    ],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M6",
+    "entite": "Valorisation des références SAGE",
+    "reference": "VZ1",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Direction / Gé",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "valorisation validée corrigée hors famille (magasinier) : remise à valider",
+   "entree": {
+    "valorisationsSage": [
+     {
+      "id": "VZ1",
+      "statut": "actif",
+      "libelle": "Élément VZ1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "M",
+      "valideRole": "Directeur",
+      "prixRevient": 100
+     }
+    ]
+   },
+   "famille": "valorisation_sage",
+   "cible": "VZ1",
+   "role": "stock",
+   "modifie": true,
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [
+     {
+      "id": "VZ1",
+      "statut": "actif",
+      "libelle": "Élément VZ1",
+      "aValider": false,
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "M",
+      "valideRole": "Directeur",
+      "prixRevient": 100
+     }
+    ],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "remis": true,
+    "famille": "valorisation_sage",
+    "id": "VZ1"
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [
+     {
+      "id": "VZ1",
+      "statut": "actif",
+      "libelle": "Élément VZ1",
+      "aValider": true,
+      "valideLe": null,
+      "validePar": null,
+      "valideRole": null,
+      "prixRevient": 100
+     }
+    ],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Remise à valider",
+    "module": "M6",
+    "entite": "Valorisation des références SAGE",
+    "reference": "VZ1",
+    "avant": "{\"valideLe\":\"2026-09-01T09:00:00.000Z\"}",
+    "apres": "{\"motif\":\"modifié depuis la validation\"}",
+    "utilisateur": "OROU YO Marguerite"
+   }
+  },
+  {
+   "nom": "fileul : le suivi est refusé en le nommant",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "famille": "repartition_charges",
+   "cible": "repartition-fixe-variable",
+   "role": "comptable",
+   "modifie": true,
+   "fileul": true,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "sortie": {
+    "ok": false,
+    "code": "CONFIGURATION_DE_LA_MERE",
+    "motif": "Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.",
+    "geste": "Valider depuis le poste principal : la validation est reprise ici ensuite."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-repartition-fixe-variable",
+      "statut": "actif",
+      "famille": "repartition_charges",
+      "cible": "repartition-fixe-variable",
+      "libelle": "Validation repartition-fixe-variable",
+      "valideLe": "2026-09-01T09:00:00.000Z",
+      "validePar": "Comptable",
+      "valideRole": "Comptable"
+     }
+    ]
+   },
+   "journal": null
+  },
+  {
+   "nom": "élément inconnu corrigé par la famille : rien à valider, aucun refus",
+   "entree": {},
+   "famille": "pathologies",
+   "cible": "NEXISTEPAS",
+   "role": "dm",
+   "modifie": true,
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "pathologies",
+    "id": "NEXISTEPAS",
+    "valide": false,
+    "rien": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "journal": null
+  }
+ ],
+ "gestesL1": [
+  {
+   "nom": "fileul : Valider refusé en nommant la mère, rien d’écrit",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": "dm",
+   "fileul": true,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "CONFIGURATION_DE_LA_MERE",
+    "motif": "Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.",
+    "geste": "Valider depuis le poste principal : la validation est reprise ici ensuite."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "nbFichesVrf": 0
+  },
+  {
+   "nom": "fileul : une famille « fiche » est refusée aussi",
+   "entree": {},
+   "famille": "repartition_charges",
+   "id": "repartition-fixe-variable",
+   "role": "comptable",
+   "fileul": true,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": false,
+    "code": "CONFIGURATION_DE_LA_MERE",
+    "motif": "Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.",
+    "geste": "Valider depuis le poste principal : la validation est reprise ici ensuite."
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "journal": null,
+   "nbFichesVrf": 0
+  },
+  {
+   "nom": "fiche VRF ARCHIVÉE : réactivée et complétée, jamais doublée",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-bareme-its",
+      "statut": "archive",
+      "famille": "bareme_its",
+      "cible": "bareme-its",
+      "libelle": "Validation bareme-its",
+      "valideLe": "2026-09-01T09:00:00.000Z"
+     }
+    ]
+   },
+   "famille": "bareme_its",
+   "id": "bareme-its",
+   "role": "da",
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-bareme-its",
+      "statut": "archive",
+      "famille": "bareme_its",
+      "cible": "bareme-its",
+      "libelle": "Validation bareme-its",
+      "valideLe": "2026-09-01T09:00:00.000Z"
+     }
+    ]
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "bareme_its",
+    "id": "bareme-its",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Directrice de l’Administration et des Finances (DAF)",
+    "valideLeIso": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-bareme-its",
+      "statut": "actif",
+      "famille": "bareme_its",
+      "cible": "bareme-its",
+      "libelle": "Barème de l’impôt sur les traitements et salaires",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Directrice de l’Administration et des Finances (DAF)"
+     }
+    ]
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M11",
+    "entite": "Barème de l’ITS",
+    "reference": "bareme-its",
+    "avant": "{\"valideLe\":null}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Directrice de ",
+    "utilisateur": "OROU YO Marguerite"
+   },
+   "nbFichesVrf": 1
+  },
+  {
+   "nom": "fiche VRF archivée sans validation : réactivée, validée une fois",
+   "entree": {
+    "validationsReferentiels": [
+     {
+      "id": "VRF-imp-analyses",
+      "statut": "archive",
+      "famille": "jeux_import",
+      "cible": "imp-analyses",
+      "libelle": "Validation imp-analyses"
+     }
+    ]
+   },
+   "famille": "jeux_import",
+   "id": "imp-analyses",
+   "role": "direction",
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-imp-analyses",
+      "statut": "archive",
+      "famille": "jeux_import",
+      "cible": "imp-analyses",
+      "libelle": "Validation imp-analyses"
+     }
+    ]
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "jeux_import",
+    "id": "imp-analyses",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Direction / Gérance",
+    "valideLeIso": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": [
+     {
+      "id": "VRF-imp-analyses",
+      "statut": "actif",
+      "famille": "jeux_import",
+      "cible": "imp-analyses",
+      "libelle": "Importation du catalogue des analyses",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Direction / Gérance"
+     }
+    ]
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "IMP",
+    "entite": "Jeux d’import en proposition",
+    "reference": "imp-analyses",
+    "avant": "{\"valideLe\":null}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Direction / Gé",
+    "utilisateur": "OROU YO Marguerite"
+   },
+   "nbFichesVrf": 1
+  },
+  {
+   "nom": "texte d’origine « à valider » épuré à la validation (source, motifPrix)",
+   "entree": {
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": 5000,
+      "source": "Relevé de facture — à valider",
+      "motifPrix": "Créé le 09/11/2026 : tarif à valider par la Direction"
+     }
+    ]
+   },
+   "famille": "actes",
+   "id": "A1",
+   "role": "direction",
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": true,
+      "prix": 5000,
+      "source": "Relevé de facture — à valider",
+      "motifPrix": "Créé le 09/11/2026 : tarif à valider par la Direction"
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "actes",
+    "id": "A1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Direction / Gérance",
+    "valideLeIso": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [
+     {
+      "id": "A1",
+      "statut": "actif",
+      "libelle": "Élément A1",
+      "tarifProvisoire": false,
+      "prix": 5000,
+      "source": "Relevé de facture",
+      "motifPrix": "Créé le 09/11/2026",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Direction / Gérance"
+     }
+    ],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "CFG",
+    "entite": "Tarifs des actes (valeurs d’attente)",
+    "reference": "A1",
+    "avant": "{\"tarifProvisoire\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Direction / Gé",
+    "utilisateur": "OROU YO Marguerite"
+   },
+   "nbFichesVrf": 0
+  },
+  {
+   "nom": "un texte sans mention « à valider » n’est pas touché",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "source": "Liste du Directeur Médical, mise à jour le 01/09/2026"
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": "dm",
+   "fileul": false,
+   "motif": null,
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true,
+      "source": "Liste du Directeur Médical, mise à jour le 01/09/2026"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "pathologies",
+    "id": "P1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Directeur Médical",
+    "valideLeIso": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "source": "Liste du Directeur Médical, mise à jour le 01/09/2026",
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Directeur Médical"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M2",
+    "entite": "Pathologies (tableau de morbidité)",
+    "reference": "P1",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Directeur Médi",
+    "utilisateur": "OROU YO Marguerite"
+   },
+   "nbFichesVrf": 0
+  },
+  {
+   "nom": "motif porté par la fiche à la validation",
+   "entree": {
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ]
+   },
+   "famille": "pathologies",
+   "id": "P1",
+   "role": "dm",
+   "fileul": false,
+   "motif": "Relu en réunion",
+   "avantFiches": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": true
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "sortie": {
+    "ok": true,
+    "famille": "pathologies",
+    "id": "P1",
+    "validePar": "OROU YO Marguerite",
+    "valideRole": "Directeur Médical",
+    "valideLeIso": true
+   },
+   "apres": {
+    "enquetes": [],
+    "variablesLabo": [],
+    "unitesLabo": [],
+    "pathologies": [
+     {
+      "id": "P1",
+      "statut": "actif",
+      "libelle": "Élément P1",
+      "aValider": false,
+      "valideLe": "@@MAINTENANT@@",
+      "validePar": "OROU YO Marguerite",
+      "valideRole": "Directeur Médical",
+      "motifCorrection": "Relu en réunion"
+     }
+    ],
+    "examensImagerie": [],
+    "variablesImagerie": [],
+    "actes": [],
+    "analyses": [],
+    "valorisationsSage": [],
+    "objectifsPilotage": [],
+    "modelesBadge": [],
+    "modelesMessage": [],
+    "baremeAib": [],
+    "validationsReferentiels": []
+   },
+   "journal": {
+    "action": "Validation",
+    "module": "M2",
+    "entite": "Pathologies (tableau de morbidité)",
+    "reference": "P1",
+    "avant": "{\"aValider\":true}",
+    "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Directeur Médi",
+    "utilisateur": "OROU YO Marguerite"
+   },
+   "nbFichesVrf": 0
   }
  ],
  "sessionActeur": "OROU YO Marguerite",

@@ -14,6 +14,10 @@
 // bloc, répartition fixe/variable, barème de l'ITS, jeu d'import) qui ne peut pas porter de marquage : sa validation vit dans une fiche de la collection
 // `validationsReferentiels`, une par cible (`VRF-<cible>`).
 
+import 'dart:convert';
+
+import '../configuration/cfb_donnees.dart' show cfbEssentielles;
+
 /// Lit TOUTES les fiches d'une collection (archivées comprises) : le moteur ignore lui-même les archivées.
 typedef LectureValidation = List<Map<String, Object?>> Function(String collection);
 
@@ -41,6 +45,7 @@ class FamilleValidation {
     this.collections = const [],
     this.champs = const [],
     this.cibles = const [],
+    this.champsChiffres = const [],
   });
   final String id;
   final String libelle;
@@ -57,11 +62,14 @@ class FamilleValidation {
   final List<String> roles;
   final String ecran;
 
+  /// Les champs CHIFFRÉS (bornes, tarifs, barème) : les corriger exige un motif quand c'est le profil de la famille qui enregistre (lot L1, Q4).
+  final List<String> champsChiffres;
+
   /// `fiche-marquee` (le marquage est sur la fiche) ou `fiche` (la validation vit dans `validationsReferentiels`).
   String get mode => cibles.isEmpty ? 'fiche-marquee' : 'fiche';
 }
 
-/// Le registre des 14 familles (`FAMILLES_A_VALIDER`), dans l'ordre de la maquette.
+/// Le registre des 15 familles (`FAMILLES_A_VALIDER`), dans l'ordre de la maquette.
 const List<FamilleValidation> valFamilles = [
   FamilleValidation(
       id: 'enquetes',
@@ -78,7 +86,8 @@ const List<FamilleValidation> valFamilles = [
       collections: ['variablesLabo', 'unitesLabo'],
       champs: ['aValider'],
       roles: ['laborantin'],
-      ecran: 'm5-valeurs-reference'),
+      ecran: 'm5-valeurs-reference',
+      champsChiffres: ['min', 'max']),
   FamilleValidation(
       id: 'pathologies',
       libelle: 'Pathologies (tableau de morbidité)',
@@ -109,7 +118,8 @@ const List<FamilleValidation> valFamilles = [
       collections: ['actes'],
       champs: ['tarifProvisoire'],
       roles: ['direction', 'da', 'admin'],
-      ecran: 'cfg-tarifs'),
+      ecran: 'cfg-tarifs',
+      champsChiffres: ['prix']),
   FamilleValidation(
       id: 'analyses',
       libelle: 'Tarifs des analyses',
@@ -117,7 +127,8 @@ const List<FamilleValidation> valFamilles = [
       collections: ['analyses'],
       champs: ['tarifProvisoire', 'aValider'],
       roles: ['direction', 'da', 'admin'],
-      ecran: 'cfg-tarifs'),
+      ecran: 'cfg-tarifs',
+      champsChiffres: ['prix']),
   FamilleValidation(
       id: 'valorisation_sage',
       libelle: 'Valorisation des références SAGE',
@@ -125,7 +136,8 @@ const List<FamilleValidation> valFamilles = [
       collections: ['valorisationsSage'],
       champs: ['aValider'],
       roles: ['direction', 'da', 'admin'],
-      ecran: 'm6-produits'),
+      ecran: 'm6-produits',
+      champsChiffres: ['prixRevient']),
   FamilleValidation(
       id: 'objectifs_pilotage',
       libelle: 'Objectifs de pilotage',
@@ -133,7 +145,8 @@ const List<FamilleValidation> valFamilles = [
       collections: ['objectifsPilotage'],
       champs: ['aValider'],
       roles: ['direction', 'da', 'admin'],
-      ecran: 'm12-tableau-decisionnel'),
+      ecran: 'm12-tableau-decisionnel',
+      champsChiffres: ['cible']),
   FamilleValidation(
       id: 'repartition_charges',
       libelle: 'Répartition fixe et variable des charges',
@@ -164,6 +177,15 @@ const List<FamilleValidation> valFamilles = [
       champs: ['aValider'],
       roles: ['direction', 'da', 'admin'],
       ecran: 'cfg-notifications'),
+  FamilleValidation(
+      id: 'bareme_aib',
+      libelle: 'Barème de l’AIB (taux par situation de l’acheteur)',
+      module: 'CFG',
+      collections: ['baremeAib'],
+      champs: ['aValider'],
+      roles: ['direction', 'da', 'admin', 'comptable'],
+      ecran: 'cfg-bareme-aib',
+      champsChiffres: ['taux']),
   FamilleValidation(
       id: 'bareme_its',
       libelle: 'Barème de l’ITS',
@@ -360,6 +382,14 @@ Map<String, Object?>? _ficheDeValidation(LectureValidation lire, String cible) {
   return null;
 }
 
+/// La fiche `VRF-<cible>` ARCHIVÉE, s'il en existe une : elle est réactivée par la validation, jamais doublée (lot L1, V4).
+Map<String, Object?>? _ficheArchiveeDeValidation(LectureValidation lire, String cible) {
+  for (final x in lire(valCollectionValidations)) {
+    if (x['id'] == 'VRF-$cible') return x;
+  }
+  return null;
+}
+
 /// Les artefacts d'une famille, chacun avec son état LU.
 List<ArtefactValidation> valArtefactsDe(FamilleValidation f, LectureValidation lire) {
   if (f.mode == 'fiche') {
@@ -482,12 +512,16 @@ VerdictValidation valValiderReferentiel(
   required DateTime maintenant,
   required LectureValidation lire,
   required Map<String, String> libelles,
+  bool fileul = false,
+  String? motif,
 }) {
   final f = valFamille(familleId);
   if (f == null) {
     return VerdictValidation.refus(RefusValidation(
         'INTROUVABLE', 'Famille de référentiel inconnue : $familleId.', 'Choisir une famille du registre des validations.'));
   }
+  final gardeMere = _refusFileul(f, fileul);
+  if (gardeMere != null) return VerdictValidation.refus(gardeMere);
   if (!f.roles.contains(role)) {
     return VerdictValidation.refus(RefusValidation(
         'VALIDATION_RESERVEE',
@@ -527,6 +561,8 @@ VerdictValidation valValiderReferentiel(
     if (fiche == null) {
       avant['valideLe'] = null;
     }
+    // UNE fiche VRF-<cible> par cible, jamais deux : une fiche ARCHIVÉE du même identifiant est réactivée, pas doublée.
+    final archivee = fiche == null ? _ficheArchiveeDeValidation(lire, id) : null;
     return VerdictValidation.ok(
         famille: f.id,
         id: id,
@@ -534,8 +570,10 @@ VerdictValidation valValiderReferentiel(
         validePar: acteur,
         valideRole: libRole,
         collection: valCollectionValidations,
-        patch: traces,
-        creation: fiche == null
+        patch: archivee != null
+            ? {'statut': 'actif', 'famille': f.id, 'cible': id, 'libelle': cible.libelle, ...traces}
+            : traces,
+        creation: (fiche == null && archivee == null)
             ? {'id': 'VRF-$id', 'statut': 'actif', 'famille': f.id, 'cible': id, 'libelle': cible.libelle, ...traces}
             : null,
         journal: JournalValidation('Validation', f.module, f.libelle, id, avant, traces));
@@ -550,6 +588,9 @@ VerdictValidation valValiderReferentiel(
     }
   }
   patch.addAll(traces);
+  // Plus aucune mention « à valider » sur un élément validé : le texte d'origine qui la portait est épuré ; le motif de la correction est porté.
+  patch.addAll(valEpurerMentions(rec));
+  if (motif != null && motif.trim().isNotEmpty) patch['motifCorrection'] = motif.trim();
   return VerdictValidation.ok(
       famille: f.id,
       id: id,
@@ -594,4 +635,239 @@ VerdictRemise valRemettreAValider(String familleId, String id, {required Lecture
       patch: f.mode == 'fiche' ? traces : {f.champs.first: true, ...traces},
       journal: JournalValidation(
           'Remise à valider', f.module, f.libelle, id, {'valideLe': cible.valideLe}, {'motif': 'modifié depuis la validation'}));
+}
+
+
+// --- Lot L1 (09/11/2026) : ENREGISTRER VALIDE pour le profil de la famille -------------------------------------------------------------------------
+//
+// Q1 : « plus de statut à valider en enregistrant » vaut pour les SEULS profils de la famille. Q2 (b) : un profil qui modifie sans être de la famille
+// enregistre, et l'élément repasse « à valider ». Q3 : un élément semé reste « à valider » jusqu'à la première relecture par la famille. Q4 : motif
+// OBLIGATOIRE quand le validateur modifie une valeur CHIFFRÉE. Q5 : un élément créé par la famille naît validé, hors famille « à valider ».
+// Trois fonctions pures, comme `PR.controlerEnregistrement`, `PR.marquageEnregistrement` et `PR.suivreEnregistrement` de la maquette : le contrôle refuse
+// (code nommé) avant toute écriture, le marquage rend le patch à fusionner dans l'écriture de l'écran et UNE ligne de journal (état inclus), le suivi
+// sert l'artefact tenu ailleurs que dans la fiche écrite.
+
+/// Le code et le texte du refus d'un fileul (même code que `ApplicateurConfiguration`).
+const String valCodeFileul = 'CONFIGURATION_DE_LA_MERE';
+
+final RegExp _suffixeAValider = RegExp(
+    r'\s*(?:[—–:-]\s*)?(?:(?:tarif|proposition|modèle|valeur)\s+)?à\s+(?:valider|arrêter|confirmer)\b[^.;]*$',
+    caseSensitive: false);
+final RegExp _queuePonctuation = RegExp(r'[\s:;,—–-]+$');
+const List<String> _champsMention = ['source', 'motifPrix', 'observation'];
+
+/// Les textes d'origine d'une fiche qui disent « à valider », rendus épurés (clés à réécrire), jamais touchés ailleurs.
+Map<String, Object?> valEpurerMentions(Map<String, Object?> rec) {
+  final out = <String, Object?>{};
+  for (final k in _champsMention) {
+    final v = rec[k];
+    if (v is String && _suffixeAValider.hasMatch(v)) {
+      out[k] = v.replaceFirst(_suffixeAValider, '').replaceFirst(_queuePonctuation, '');
+    }
+  }
+  return out;
+}
+
+/// La famille voyage-t-elle de la mère aux fileuls ? (les familles « fiche » et celles dont une collection est essentielle).
+bool valVoyageDeLaMere(FamilleValidation f) =>
+    f.mode == 'fiche' || f.collections.any((c) => cfbEssentielles.contains(c) || c == 'baremeAib');
+
+RefusValidation? _refusFileul(FamilleValidation f, bool fileul) {
+  if (fileul && valVoyageDeLaMere(f)) {
+    return const RefusValidation(valCodeFileul,
+        'Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.',
+        'Valider depuis le poste principal : la validation est reprise ici ensuite.');
+  }
+  return null;
+}
+
+num? _nombreOuNul(Object? x) => (x == null || x == '') ? null : (x is num ? x : num.tryParse('$x'));
+Object? _texteOuNul(Object? x) => (x == null || x == '') ? null : x;
+
+/// Les champs CHIFFRÉS de la famille que cette écriture déplace (rien pour une création : il n'y a rien à corriger).
+List<String> valChiffresModifies(String familleId, Map<String, Object?>? avant, Map<String, Object?> valeurs) {
+  final f = valFamille(familleId);
+  if (f == null || avant == null) return const [];
+  return [
+    for (final c in f.champsChiffres)
+      if (valeurs.containsKey(c) && _nombreOuNul(valeurs[c]) != _nombreOuNul(avant[c])) c
+  ];
+}
+
+bool _structure(Object? x) => x is Map || x is List;
+
+List<String> _champsModifies(Map<String, Object?>? avant, Map<String, Object?> valeurs) {
+  final out = <String>[];
+  for (final k in valeurs.keys) {
+    if (k.startsWith('_') || k == 'id') continue;
+    final a = avant?[k], b = valeurs[k];
+    final change = (_structure(a) || _structure(b)) ? jsonEncode(a) != jsonEncode(b) : _texteOuNul(a) != _texteOuNul(b);
+    if (change) out.add(k);
+  }
+  return out;
+}
+
+/// `controlerEnregistrement` : le refus nommé AVANT toute écriture, ou `null`. [fileul] : le poste est un fileul rattaché.
+RefusValidation? valControlerEnregistrement(String familleId,
+    {required String role, List<String> chiffres = const [], String? motif, bool fileul = false}) {
+  final f = valFamille(familleId);
+  if (f == null) {
+    return RefusValidation('INTROUVABLE', 'Famille de référentiel inconnue : $familleId.', 'Choisir une famille du registre des validations.');
+  }
+  final gardeMere = _refusFileul(f, fileul);
+  if (gardeMere != null) return gardeMere;
+  if (f.roles.contains(role) && chiffres.isNotEmpty && (motif ?? '').trim().isEmpty) {
+    return RefusValidation(
+        'MOTIF_OBLIGATOIRE',
+        'La valeur chiffrée « ${chiffres.join(', ')} » de « ${f.libelle} » change : le motif de la correction est obligatoire.',
+        'Saisir le motif de la correction, puis enregistrer.');
+  }
+  return null;
+}
+
+/// Ce que le marquage d'un enregistrement rend : le patch à fusionner dans l'écriture et la ligne de journal (une seule).
+class VerdictEnregistrement {
+  const VerdictEnregistrement({
+    required this.validateur,
+    required this.valide,
+    required this.nonValide,
+    required this.patch,
+    required this.chiffres,
+    required this.journal,
+    this.valideLe,
+  });
+  final bool validateur;
+  final bool valide;
+
+  /// `TARIF_ABSENT` : un tarif absent ne se valide pas, l'élément reste « à valider ».
+  final String? nonValide;
+  final Map<String, Object?> patch;
+  final List<String> chiffres;
+  final JournalValidation journal;
+  final String? valideLe;
+}
+
+/// `marquageEnregistrement` : le patch et la ligne de journal d'un enregistrement. [avant] : la fiche avant l'écriture (`null` pour une création).
+/// [modifie] : l'écran dit que la fiche n'a pas changé (`false`) ; sinon, hors famille, enregistrer remet « à valider ».
+VerdictEnregistrement valMarquageEnregistrement(
+  String familleId, {
+  required String role,
+  required String acteur,
+  required DateTime maintenant,
+  required Map<String, String> libelles,
+  Map<String, Object?>? avant,
+  required Map<String, Object?> valeurs,
+  String? motif,
+  bool? modifie,
+}) {
+  final f = valFamille(familleId)!;
+  final validateur = f.roles.contains(role);
+  final enAttenteAvant = avant == null ? null : f.champs.any((c) => avant[c] == true);
+  final changes = _champsModifies(avant, valeurs);
+  final chiffres = valChiffresModifies(familleId, avant, valeurs);
+  final modif = modifie ?? true;
+  final quand = valInstant(maintenant);
+  final libRole = valLibelleRole(role, libelles);
+  final fusion = <String, Object?>{...?avant, ...valeurs};
+  final patch = <String, Object?>{};
+  var action = avant != null ? 'Modification' : 'Création';
+  var valide = false;
+  String? nonValide;
+  void rouvrir() {
+    patch[f.champs.first] = true;
+    patch['valideLe'] = null;
+    patch['validePar'] = null;
+    patch['valideRole'] = null;
+  }
+
+  if (validateur) {
+    if ((f.id == 'actes' || f.id == 'analyses') && fusion['prix'] == null) {
+      rouvrir();
+      nonValide = 'TARIF_ABSENT';
+    } else {
+      for (final c in f.champs) {
+        patch[c] = false;
+      }
+      patch['valideLe'] = quand;
+      patch['validePar'] = acteur;
+      patch['valideRole'] = libRole;
+      if (chiffres.isNotEmpty && (motif ?? '').isNotEmpty) patch['motifCorrection'] = motif!.trim();
+      patch.addAll(valEpurerMentions(fusion));
+      valide = true;
+      if (avant != null && enAttenteAvant == true) action = 'Validation';
+    }
+  } else if (avant == null) {
+    rouvrir();
+  } else if (modif) {
+    rouvrir();
+    if (enAttenteAvant != true) action = 'Remise à valider';
+  }
+  String libEtat(bool? v) => v == true ? 'à valider' : 'validé';
+  final etatApres = valide ? 'validé' : ((!validateur && avant != null && !modif) ? libEtat(enAttenteAvant) : 'à valider');
+  final jAvant = <String, Object?>{'etat': avant != null ? libEtat(enAttenteAvant) : null};
+  final jApres = <String, Object?>{'etat': etatApres};
+  // Le MOTIF d'abord : l'extrait du journal est plafonné à 100 caractères et c'est lui, avec l'état, qui doit toujours s'y lire.
+  if (valide) {
+    if (patch['motifCorrection'] != null) jApres['motif'] = patch['motifCorrection'];
+    jApres['valideRole'] = libRole;
+    jApres['valideLe'] = quand;
+  }
+  for (final k in changes.where((k) => k != 'source').take(4)) {
+    if (avant != null) jAvant[k] = avant[k];
+    jApres[k] = valeurs[k];
+  }
+  return VerdictEnregistrement(
+      validateur: validateur,
+      valide: valide,
+      nonValide: nonValide,
+      patch: patch,
+      chiffres: chiffres,
+      valideLe: valide ? quand : null,
+      journal: JournalValidation(action, f.module, f.libelle, '', avant != null ? jAvant : const {}, jApres));
+}
+
+/// Ce que le suivi d'un artefact tenu ailleurs rend : un refus, une validation à écrire, une remise à écrire, ou rien.
+class VerdictSuivi {
+  const VerdictSuivi({this.refus, this.validation, this.remise});
+  final RefusValidation? refus;
+  final VerdictValidation? validation;
+  final VerdictRemise? remise;
+  bool get rien => refus == null && validation == null && (remise == null || !remise!.remis);
+}
+
+/// `suivreEnregistrement` : l'artefact tenu AILLEURS que dans la fiche écrite (constante du code, valorisation lue au produit). Le profil de la famille
+/// valide la pièce si elle attendait ; tout autre profil la remet « à valider » quand elle a changé ([modifie]).
+VerdictSuivi valSuivreEnregistrement(
+  String familleId,
+  String cibleId, {
+  required String role,
+  required String acteur,
+  required DateTime maintenant,
+  required LectureValidation lire,
+  required Map<String, String> libelles,
+  bool? modifie,
+  String? motif,
+  bool fileul = false,
+}) {
+  final f = valFamille(familleId);
+  if (f == null) {
+    return VerdictSuivi(
+        refus: RefusValidation('INTROUVABLE', 'Famille de référentiel inconnue : $familleId.', 'Choisir une famille du registre des validations.'));
+  }
+  final gardeMere = _refusFileul(f, fileul);
+  if (gardeMere != null) return VerdictSuivi(refus: gardeMere);
+  if (f.roles.contains(role)) {
+    final e = valEtatValidation(familleId, cibleId, lire, libelles);
+    if (e != null && e.enAttente) {
+      final v = valValiderReferentiel(familleId, cibleId,
+          role: role, acteur: acteur, maintenant: maintenant, lire: lire, libelles: libelles, motif: motif);
+      return v.ok ? VerdictSuivi(validation: v) : VerdictSuivi(refus: v.refus);
+    }
+    return const VerdictSuivi();
+  }
+  if (modifie == true) {
+    final r = valRemettreAValider(familleId, cibleId, lire: lire);
+    return r.ok ? VerdictSuivi(remise: r) : VerdictSuivi(refus: r.refus);
+  }
+  return const VerdictSuivi();
 }
