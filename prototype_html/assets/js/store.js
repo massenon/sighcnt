@@ -100,8 +100,11 @@
      (écrans nommés) ; la collection `messagesSms` (journal des envois) naît à l'usage, elle est déclarée à la corbeille.
      73 (08/11/2026) : moteur SMS (étape S2). Le dossier patient porte `consentementSms` (actif par défaut, retirable), `consentementSmsLe` et
      `consentementSmsPar` ; le journal des envois porte `cle`, `patientId`, `jourCle`, `tentative` ; la file des messages interrompus
-     (`fileSms`, heures calmes et hors ligne) est une collection d'activité, déclarée à la corbeille. */
-  var VERSION = 73;
+     (`fileSms`, heures calmes et hors ligne) est une collection d'activité, déclarée à la corbeille.
+     74 (09/11/2026) : le barème de l'AIB par situation de l'acheteur. Deux collections semées au socle (`situationsAib`, `baremeAib`,
+     lues par la caisse, la fenêtre MECeF et l'écran de paramétrage), une fiche RBAC22 (comptable) et RBAC21 (Direction) qui nomment
+     `cfg-bareme-aib` ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice. */
+  var VERSION = 74;
   var db = null;
   var listeners = {};
 
@@ -1724,6 +1727,16 @@
         return Object.assign({ id: 'OBJ' + C.pad(i + 1, 2), statut: 'actif' }, o);
       }),
 
+      /* LE BARÈME DE L'AIB (09/11/2026) : taux PAR SITUATION de l'acheteur, versionné par date d'effet. Au socle : la caisse (fenêtre MECeF),
+         le moteur de validation et l'écran de paramétrage le lisent. La semence (`D.SITUATIONS_AIB`, `D.BAREME_AIB`) est une PROPOSITION
+         à valider, jamais une constante lue par un moteur : le moteur ne lit que ces deux collections. */
+      situationsAib: (D.SITUATIONS_AIB || []).map(function (x, i) {
+        return Object.assign({ id: 'SAI' + C.pad(i + 1, 2), statut: 'actif', creeLe: '2026-11-09', creePar: 'Semence du socle' }, x);
+      }),
+      baremeAib: (D.BAREME_AIB || []).map(function (x, i) {
+        return Object.assign({ id: 'BAI' + C.pad(i + 1, 3), statut: 'actif', aValider: true, creeLe: '2026-11-09', creePar: 'Semence du socle' }, x);
+      }),
+
       /* ====================================================================
        * COMPTES DE TRÉSORERIE — d'où l'argent sort
        * --------------------------------------------------------------------
@@ -2787,6 +2800,8 @@
                sont nommés en lecture (le réglage et le test sont le geste de l'administrateur et de la DAF). */
             'cfg-sms': { voir: true, editer: false, annuler: false },
             'm13-sms-journal': { voir: true, editer: false, annuler: false },
+            /* LE BARÈME DE L'AIB SE LIT : CFG est en écriture pour la Direction, l'écran est nommé en lecture (le comptable le tient). */
+            'cfg-bareme-aib': { voir: true, editer: false, annuler: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'La Direction lit tout et décide : administration, sécurité, configuration, '
@@ -2835,6 +2850,8 @@
             'mecef-config': { voir: true, editer: false, annuler: false },
             /* A2 (31/10/2026) : le comptable GÉNÈRE les bulletins, il ne les VALIDE pas. Voir seulement : celui qui calcule ne signe pas. */
             'm11-validation': { voir: true, editer: false, annuler: false },
+            /* Le barème de l'AIB est une règle comptable datée : le comptable la tient, par surcharge d'écran (il n'a pas CFG au module). */
+            'cfg-bareme-aib': { voir: true, editer: true, annuler: true },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'La comptabilité, la caisse (avoirs compris), les créances, la paie et le fiscal. '
@@ -3797,7 +3814,7 @@
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
     'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
-    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -4094,6 +4111,8 @@
     actes: 'CFG|Catalogue des actes', ordonnances: 'M2|Ordonnances', taches: 'CFG|Files d’attente',
     certificats: 'CFG|Certificats médicaux', naturesFacture: 'CFG|Natures de facture', centresCouts: 'M12|Centres de coûts',
     objectifsPilotage: 'M12|Objectifs et seuils du pilotage',
+    situationsAib: 'CFG|Situations de l’acheteur (AIB)',
+    baremeAib: 'CFG|Barème de l’AIB par situation',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
     avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',

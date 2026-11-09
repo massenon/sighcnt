@@ -1567,7 +1567,7 @@
         lignes: reglees.map(function (l) { return l.id; }),
         encaissePar: opts.utilisateur || S.currentUser(),
       },
-    }, acheteurSaisi ? { ifuClient: acheteurSaisi.acheteur.ifu, acheteurNom: acheteurSaisi.acheteur.nom, aibTaux: acheteurSaisi.acheteur.aibTaux } : {}));
+    }, acheteurSaisi ? Object.assign({ ifuClient: acheteurSaisi.acheteur.ifu, acheteurNom: acheteurSaisi.acheteur.nom }, traceAibAcheteur(acheteurSaisi.acheteur)) : {}));
     fac = col('factures').get(factureId);
 
     /* La vente SOLDÉE passe par la normalisation (faux boîtier) ; un règlement partiel attend le solde. Le refus de la normalisation ne défait
@@ -4181,6 +4181,8 @@
       roles: ['direction', 'da', 'admin'], ecran: 'imp-analyses' },
     { id: 'modeles_messages', libelle: 'Modèles de messages', module: 'CFG', collections: ['modelesMessage'], champs: ['aValider'],
       roles: ['direction', 'da', 'admin'], ecran: 'cfg-notifications' },
+    { id: 'bareme_aib', libelle: 'Barème de l’AIB (taux par situation de l’acheteur)', module: 'CFG', collections: ['baremeAib'], champs: ['aValider'],
+      roles: ['direction', 'da', 'admin', 'comptable'], ecran: 'cfg-bareme-aib' },
     { id: 'bareme_its', libelle: 'Barème de l’ITS', module: 'M11', mode: 'fiche',
       cibles: [{ id: 'bareme-its', libelle: 'Barème de l’impôt sur les traitements et salaires' }],
       roles: ['direction', 'da', 'admin'], ecran: 'cfg-comptabilite' },
@@ -4664,6 +4666,197 @@
   global.SIGH.parcours.SMS_MOTIFS = SMS_MOTIFS;
 
   /* ==========================================================================
+   * LE BARÈME DE L'AIB PAR SITUATION DE L'ACHETEUR (Direction, 09/11/2026, lot A1)
+   * --------------------------------------------------------------------------
+   * TOUT EST PENSÉ POUR L'AVENIR : aucun taux, aucune date, aucun code de situation ni aucun libellé n'est écrit dans ce moteur. Il lit deux
+   * collections du magasin, `situationsAib` (le code d'une situation, son libellé, le déclencheur qui la choisit d'office) et `baremeAib` (une
+   * fiche par version ET par situation : taux, date d'effet, date de fin, source, motif). La semence (`D.SITUATIONS_AIB`, `D.BAREME_AIB`) n'est
+   * qu'une PROPOSITION à valider ; on ajoute une situation, on change un taux à une date future ou on retire une version à l'écran
+   * `cfg-bareme-aib`, sans toucher au code.
+   *
+   * Une version ne se réécrit JAMAIS : la corriger crée une nouvelle version à une date d'effet postérieure et FERME la précédente à la veille ;
+   * la retirer l'archive (RG-14). La garde posée sur la collection refuse toute modification du taux, de la date d'effet ou de la situation d'une
+   * version existante, d'où qu'elle vienne. Un taux absent n'est jamais zéro : le moteur refuse en le nommant (`AIB_SANS_BAREME`).
+   * Un IFU saisi est PRÉSUMÉ actif : la maquette ne peut pas interroger la DGI, et le dit.
+   * ======================================================================== */
+  var ROLES_ECRITURE_AIB = ['comptable', 'admin', 'da'];
+  var DECLENCHEURS_AIB = [
+    { value: 'ifu_renseigne', label: 'Un IFU de 13 chiffres est saisi' },
+    { value: 'ifu_absent', label: 'Aucun IFU saisi' },
+    { value: 'choix', label: 'Choisie à la main par le caissier' },
+  ];
+  function colSituationsAib() { return S.collection('situationsAib', { module: 'CFG', entite: 'situation de l’acheteur (AIB)', prefix: 'SAI' }); }
+  function colBaremeAib() { return S.collection('baremeAib', { module: 'CFG', entite: 'version du barème de l’AIB', prefix: 'BAI' }); }
+  function refusAib(code, motif, geste, extra) { return refusCfg(code, motif, geste, extra); }
+  function dateAib(d) { return d ? isoJour(d) : aujIso(); }
+  function normaliserIfu(x) { return String(x == null ? '' : x).replace(/[\s  ]/g, ''); }
+  function situationsAibActives() {
+    return colSituationsAib().active().slice().sort(function (a, b) { return (a.ordre || 99) - (b.ordre || 99) || String(a.code).localeCompare(String(b.code)); });
+  }
+  function versionsAibDe(situation) {
+    return colBaremeAib().active().filter(function (v) { return v.situation === situation; })
+      .sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)); });
+  }
+  /** Le taux de la situation à la date : { ok, taux, arrete, dateEffet, dateFin, version (rang), versionId, situation, libelle, source } ou refus nommé. */
+  function tauxAibALaDate(situation, date) {
+    var d = dateAib(date);
+    var sit = colSituationsAib().active().filter(function (s) { return s.code === situation; })[0];
+    if (!sit) {
+      return refusAib('AIB_SANS_BAREME', 'La situation « ' + situation + ' » n’est pas active au barème de l’AIB : aucun taux ne peut être rendu (un tiret n’est pas un zéro).',
+        'Choisir une situation listée, ou la créer puis lui donner une version à l’écran « Barème de l’AIB ».', { situation: situation, date: d });
+    }
+    var toutes = versionsAibDe(situation);
+    var couvrantes = toutes.filter(function (v) { return String(v.dateEffet) <= d && (!v.dateFin || String(v.dateFin) >= d); });
+    var v = couvrantes[couvrantes.length - 1];
+    if (!v || v.taux == null || v.taux === '' || !isFinite(Number(v.taux))) {
+      return refusAib('AIB_SANS_BAREME', 'Aucune version du barème de l’AIB ne couvre la situation « ' + sit.libelle + ' » au ' + C.dateFR(d) + ' : le taux n’est pas arrêté, il ne vaut pas zéro.',
+        'Ajouter une version de cette situation à l’écran « Barème de l’AIB » (taux, date d’effet, source), ou choisir une autre date.', { situation: situation, date: d });
+    }
+    return { ok: true, taux: Number(v.taux), arrete: v.aValider !== true, dateEffet: v.dateEffet, dateFin: v.dateFin || null,
+      version: toutes.indexOf(v) + 1, versionId: v.id, situation: situation, libelle: sit.libelle, source: v.source || null, date: d };
+  }
+  /** La situation d'un acheteur d'après son IFU, et le taux de la date. Un IFU de 13 chiffres est PRÉSUMÉ actif (la DGI n'est pas interrogeable ici). */
+  function tauxAibPourAcheteur(o) {
+    o = o || {};
+    var ifu = normaliserIfu(o.ifu);
+    var declencheur;
+    if (ifu === '') declencheur = 'ifu_absent';
+    else if (/^\d{13}$/.test(ifu)) declencheur = 'ifu_renseigne';
+    else return refusAib('IFU_INVALIDE', 'L’IFU de l’acheteur (« ' + ifu + ' ») doit comporter exactement 13 chiffres.', 'Corriger l’IFU, ou le laisser vide pour un particulier.');
+    var sit = situationsAibActives().filter(function (s) { return s.declencheur === declencheur; })[0];
+    if (!sit) {
+      return refusAib('AIB_SANS_BAREME', 'Aucune situation active du barème de l’AIB ne se choisit d’office quand ' + (declencheur === 'ifu_absent' ? 'aucun IFU n’est saisi' : 'un IFU est saisi') + '.',
+        'Régler le déclencheur d’une situation à l’écran « Barème de l’AIB », ou choisir le taux à la main.', { date: dateAib(o.date) });
+    }
+    var r = tauxAibALaDate(sit.code, o.date);
+    if (!r.ok) return r;
+    r.presomption = declencheur === 'ifu_renseigne';
+    r.avertissement = r.presomption ? 'IFU présumé actif : la maquette ne peut pas interroger la DGI, l’activité de l’IFU n’est pas vérifiée.' : null;
+    return r;
+  }
+  /** Les taux PROPOSÉS à la caisse à la date : un choix par situation active qui a un taux en vigueur, et le défaut selon l'IFU saisi. */
+  function tauxAibProposes(o) {
+    o = o || {};
+    var d = dateAib(o.date);
+    var choix = [];
+    situationsAibActives().forEach(function (s) {
+      var r = tauxAibALaDate(s.code, d);
+      if (r.ok) choix.push({ situation: s.code, libelle: s.libelle, declencheur: s.declencheur, taux: r.taux, arrete: r.arrete, version: r.version, versionId: r.versionId });
+    });
+    var defaut = tauxAibPourAcheteur({ ifu: o.ifu, date: d });
+    return { ok: true, date: d, choix: choix, defaut: defaut.ok ? defaut : null, defautRefus: defaut.ok ? null : defaut };
+  }
+  function motifEcritureAib() {
+    var role = roleCourant();
+    if (ROLES_ECRITURE_AIB.indexOf(role) < 0) {
+      return refusAib('AIB_ECRITURE_RESERVEE', 'Le barème de l’AIB se tient par le comptable, la Directrice Administrative ou l’administrateur. Profil : ' + libelleRole(role) + '.',
+        'Demander la modification au comptable ; la Direction consulte le barème sans l’écrire.');
+    }
+    if (posteFileul()) {
+      return refusAib('AIB_POSTE_FILEUL', 'Ce poste est un fileul : le barème de l’AIB est tenu par la mère et se lit ici sans s’y écrire.', 'Faire la modification depuis le poste mère.');
+    }
+    return null;
+  }
+  /** Une version nouvelle : taux, date d'effet postérieure à la plus récente, source dite, motif. Elle FERME la précédente à la veille. Elle naît « à valider ». */
+  function nouvelleVersionAib(o) {
+    o = o || {};
+    var refus = motifEcritureAib();
+    if (refus) return refus;
+    var sit = colSituationsAib().active().filter(function (s) { return s.code === o.situation; })[0];
+    if (!sit) return refusAib('AIB_SITUATION_INCONNUE', 'La situation « ' + o.situation + ' » n’existe pas au barème de l’AIB.', 'Choisir une situation listée ou la créer d’abord.');
+    var tauxBrut = o.taux;
+    var taux = Number(tauxBrut);
+    if (tauxBrut == null || tauxBrut === '' || !isFinite(taux) || Math.floor(taux) !== taux || taux < 0 || taux > 100) {
+      return refusAib('AIB_TAUX_INVALIDE', 'Le taux (« ' + (tauxBrut == null ? '' : tauxBrut) + ' ») doit être un pourcentage entier de 0 à 100 : la maquette calcule en montants entiers.', 'Saisir un entier, par exemple 5.');
+    }
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateEffet)) return refusAib('AIB_DATE_INVALIDE', 'La date d’effet est absente ou illisible.', 'Choisir la date à partir de laquelle le taux s’applique.');
+    if (!String(o.source || '').trim()) return refusAib('AIB_SOURCE_ABSENTE', 'Aucune source n’est dite pour ce taux : on n’invente pas un taux, on cite son texte.', 'Indiquer le texte, la décision ou la déclaration d’où vient le taux.');
+    if (!String(o.motif || '').trim()) return refusAib('AIB_MOTIF_ABSENT', 'Le motif de cette version est obligatoire.', 'Dire pourquoi le taux change ou pourquoi la version est ajoutée.');
+    var existantes = versionsAibDe(o.situation);
+    var derniere = existantes[existantes.length - 1] || null;
+    if (existantes.some(function (v) { return String(v.dateEffet) === dateEffet; })) {
+      return refusAib('AIB_DATE_EXISTANTE', 'Une version de cette situation commence déjà le ' + C.dateFR(dateEffet) + ' : une version ne se réécrit pas.', 'Choisir une date d’effet postérieure, ou retirer l’autre version (archive).');
+    }
+    if (derniere && String(derniere.dateEffet) > dateEffet) {
+      return refusAib('AIB_DATE_ANTERIEURE', 'La version la plus récente de cette situation commence le ' + C.dateFR(derniere.dateEffet) + ' : une version insérée avant elle masquerait l’historique.', 'Choisir une date d’effet postérieure au ' + C.dateFR(derniere.dateEffet) + '.');
+    }
+    var veillee = veille(dateEffet);
+    var ferme = null;
+    if (derniere && (!derniere.dateFin || String(derniere.dateFin) > veillee)) {
+      ferme = { id: derniere.id, avant: derniere.dateFin || null };
+      colBaremeAib().update(derniere.id, { dateFin: veillee, modifieLe: aujIso(), modifiePar: acteur() });
+    }
+    var res = colBaremeAib().insert({ situation: o.situation, taux: taux, dateEffet: dateEffet, dateFin: null, aValider: true,
+      source: String(o.source).trim(), motif: String(o.motif).trim(), creeLe: aujIso(), creePar: acteur() });
+    S.log('Barème AIB : nouvelle version', 'CFG', 'baremeAib', res.record.id,
+      { precedente: derniere ? { id: derniere.id, taux: derniere.taux, dateFin: ferme ? ferme.avant : derniere.dateFin || null } : null },
+      { situation: o.situation, taux: taux, dateEffet: dateEffet, precedenteFermeeLe: ferme ? veillee : null });
+    return { ok: true, id: res.record.id, version: existantes.length + 1, situation: o.situation, taux: taux, dateEffet: dateEffet,
+      precedente: derniere ? derniere.id : null, precedenteFermeeLe: ferme ? veillee : null, enAttenteDeValidation: true, undo: res.undo };
+  }
+  /** Retirer une version : ARCHIVE (RG-14), jamais une suppression. Si elle était la dernière et fermait la précédente, la précédente est rouverte. */
+  function retirerVersionAib(id, motif) {
+    var refus = motifEcritureAib();
+    if (refus) return refus;
+    var v = colBaremeAib().get(id);
+    if (!v || v.statut === 'archive') return refusAib('AIB_VERSION_INTROUVABLE', 'La version « ' + id + ' » n’existe pas ou est déjà archivée.', 'Choisir une version active du barème.');
+    if (!String(motif || '').trim()) return refusAib('AIB_MOTIF_ABSENT', 'Le motif du retrait est obligatoire.', 'Dire pourquoi la version est retirée.');
+    var autres = versionsAibDe(v.situation).filter(function (x) { return x.id !== v.id; });
+    var precedente = autres.filter(function (x) { return String(x.dateEffet) < String(v.dateEffet); }).pop() || null;
+    var derniere = !autres.some(function (x) { return String(x.dateEffet) > String(v.dateEffet); });
+    var res = colBaremeAib().archive(id, String(motif).trim());
+    var rouverte = null;
+    if (precedente && derniere && precedente.dateFin && String(precedente.dateFin) === veille(v.dateEffet)) {
+      colBaremeAib().update(precedente.id, { dateFin: null, modifieLe: aujIso(), modifiePar: acteur() });
+      rouverte = precedente.id;
+    }
+    S.log('Barème AIB : version retirée', 'CFG', 'baremeAib', id, { taux: v.taux, dateEffet: v.dateEffet }, { statut: 'archive', motif: String(motif).trim(), precedenteRouverte: rouverte });
+    return { ok: true, id: id, precedenteRouverte: rouverte, undo: res ? res.undo : null };
+  }
+  /** Ce qu'il FAUDRAIT brancher sur le barème, en lecture : le moteur liste, il ne branche pas (décision comptable de la Direction). */
+  function aibABrancher() {
+    return [
+      { id: 'fenetre_mecef', lieu: 'Fenêtre « Facture normalisée » de la caisse (registre, file de caisse, émission)', etat: 'branche',
+        detail: 'Branchée par le lot A1 : le taux par défaut vient du barème selon l’IFU saisi, les choix aussi ; le taux et sa version voyagent avec la vente.' },
+      { id: 'registre_mecef', lieu: 'Registre fiscal MECeF et impression de la pièce normalisée (mecef.js)', etat: 'non_branche',
+        detail: 'Lisent encore le paramètre fiscal fixe (AIB 1 %) pour décomposer les pièces anciennes. À brancher sur le taux et la version portés par chaque vente.' },
+      { id: 'achats', lieu: 'Factures fournisseurs et bons de commande (M7)', etat: 'non_branche',
+        detail: 'L’AIB retenu à l’achat n’est pas calculé d’après ce barème. À brancher sur la situation du fournisseur ; le compte d’acompte à débiter est à définir par le comptable avant tout branchement.' },
+      { id: 'retenues_source', lieu: 'Retenues à la source et échéance mensuelle de l’AIB (M12, calendrier fiscal)', etat: 'non_branche',
+        detail: 'L’échéance mensuelle ne lit aucun taux. À brancher pour rapprocher l’AIB prélevé aux ventes de l’AIB déclaré ; imputable sur l’impôt sur les bénéfices, pas une charge.' },
+    ];
+  }
+  /* LA GARDE DU MAGASIN : une version existante ne change ni de taux, ni de situation, ni de date d'effet ; une situation ne change pas de code
+     (des versions la citent). Les seules écritures admises sur une version sont sa fermeture (dateFin), sa validation et son archive. */
+  S.garder('baremeAib', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colBaremeAib().get(rec.id) : null;
+    if (!avant) return null;
+    if (String(avant.taux) !== String(rec.taux) || avant.situation !== rec.situation || String(avant.dateEffet) !== String(rec.dateEffet)) {
+      return 'AIB_VERSION_FIGEE : une version du barème ne se réécrit pas (taux, situation, date d’effet). Ajouter une nouvelle version à une date d’effet postérieure.';
+    }
+    return null;
+  });
+  S.garder('situationsAib', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colSituationsAib().get(rec.id) : null;
+    if (avant && avant.code !== rec.code) return 'AIB_CODE_FIGE : le code d’une situation ne change pas, des versions du barème le citent. Créer une nouvelle situation et archiver celle-ci.';
+    return null;
+  });
+  global.SIGH.baremeAib = {
+    ROLES_ECRITURE: ROLES_ECRITURE_AIB, DECLENCHEURS: DECLENCHEURS_AIB,
+    aLaDate: tauxAibALaDate, pourAcheteur: tauxAibPourAcheteur, proposes: tauxAibProposes,
+    nouvelleVersion: nouvelleVersionAib, retirerVersion: retirerVersionAib, aBrancher: aibABrancher,
+    versionsDe: versionsAibDe, situations: situationsAibActives,
+  };
+  global.SIGH.parcours.tauxAibALaDate = tauxAibALaDate;
+  global.SIGH.parcours.tauxAibPourAcheteur = tauxAibPourAcheteur;
+  global.SIGH.parcours.tauxAibProposes = tauxAibProposes;
+  global.SIGH.parcours.nouvelleVersionAib = nouvelleVersionAib;
+  global.SIGH.parcours.retirerVersionAib = retirerVersionAib;
+
+  /* ==========================================================================
    * MECeF, LOT M1 (08/11/2026) : montants entiers, acheteur, états de pièce, reprise sans doublon
    * --------------------------------------------------------------------------
    * Décision de la Direction du 07/11/2026 (PRD-MECEF, section 11 bis) : TOUTE VENTE EST NORMALISÉE à la clinique. Il n'y a donc pas de
@@ -4790,22 +4983,57 @@
       partPatient: tPat, base: base, ht: ht, tva: base - ht, aib: aib, net: base + aib };
   }
 
-  /** Les taux d'AIB offerts à la fenêtre : 1 % par défaut (régime de la facture de référence, à confirmer : Q4 du PRD), 5 % et aucun en choix. */
-  var AIB_TAUX_ADMIS = [0, 1, 5];
-  function aibTauxDefaut() { var F = D.PARAM_FISCAL || {}; return F.aib && AIB_TAUX_ADMIS.indexOf(F.aib.taux) >= 0 ? F.aib.taux : 1; }
+  /** Le taux par défaut de la fenêtre selon l'IFU saisi : lu au barème daté (null si le barème ne dit rien : jamais zéro). */
+  function aibTauxDefaut(ifu, date) { var r = tauxAibPourAcheteur({ ifu: ifu, date: date }); return r.ok ? r.taux : null; }
 
-  /** Contrôle de la fenêtre « Facture normalisée » : IFU de l'acheteur (13 chiffres quand il est renseigné, facultatif pour un particulier), nom, taux d'AIB. */
+  /** Les données de l'acheteur que la vente PORTE : le taux, la situation et la version du barème sous lesquels elle est émise. Une pièce émise ne se réécrit jamais. */
+  function traceAibAcheteur(ach) {
+    return { aibTaux: ach.aibTaux, aibSituation: ach.aibSituation || null, aibVersion: ach.aibVersion || null,
+      aibArrete: ach.aibArrete == null ? null : ach.aibArrete, aibDateBareme: ach.aibDateBareme || null };
+  }
+
+  /** Contrôle de la fenêtre « Facture normalisée » : IFU de l'acheteur (13 chiffres quand il est renseigné, facultatif pour un particulier), nom, taux d'AIB.
+   *  Le taux vient du barème daté : défaut selon l'IFU, choix parmi les taux en vigueur (ou « aucun »), jamais une liste écrite ici. `a.conserve` : pièce
+   *  déjà émise, son taux est gardé tel quel (il n'est pas rejugé au barème d'aujourd'hui). */
   function validerAcheteurMecef(a) {
     a = a || {};
-    var ifu = String(a.ifu == null ? '' : a.ifu).replace(/[\s  ]/g, '');
+    var ifu = normaliserIfu(a.ifu);
     if (ifu && !/^\d{13}$/.test(ifu)) {
       return refusMecef('IFU_INVALIDE', 'L’IFU de l’acheteur (« ' + ifu + ' ») doit comporter exactement 13 chiffres.', 'Corriger l’IFU, ou le laisser vide pour un particulier.');
     }
     var nom = String(a.nom == null ? '' : a.nom).trim();
     if (ifu && !nom) return refusMecef('NOM_ACHETEUR_ABSENT', 'Un IFU d’acheteur est saisi sans son nom.', 'Saisir le nom de l’acheteur qui porte cet IFU.');
-    var taux = a.aibTaux == null || a.aibTaux === '' ? aibTauxDefaut() : Number(a.aibTaux);
-    if (AIB_TAUX_ADMIS.indexOf(taux) < 0) return refusMecef('AIB_TAUX_INVALIDE', 'Le taux d’AIB (' + a.aibTaux + ') n’est pas l’un des choix admis (0, 1 ou 5 %).', 'Choisir 0, 1 ou 5 %.');
-    return { ok: true, acheteur: { ifu: ifu || null, nom: nom || null, aibTaux: taux } };
+    var date = dateAib(a.date);
+    var vide = a.aibTaux == null || a.aibTaux === '';
+    var taux, situation = null, version = null, arrete = null, dateBareme = date, horsDefaut = false;
+    var defaut = tauxAibPourAcheteur({ ifu: ifu, date: date });
+    if (a.conserve && !vide) {
+      taux = Number(a.aibTaux);
+      if (!entierPositif(taux) || taux > 100) return refusMecef('AIB_TAUX_INVALIDE', 'Le taux d’AIB (' + a.aibTaux + ') n’est pas un pourcentage entier.', 'Reprendre la pièce.');
+      situation = a.aibSituation || null; version = a.aibVersion || null; arrete = a.aibArrete == null ? null : a.aibArrete; dateBareme = a.date ? date : (a.aibDateBareme || null);
+    } else if (a.aibSituation) {
+      var rs = tauxAibALaDate(a.aibSituation, date);
+      if (!rs.ok) return refusMecef(rs.code, rs.motif, rs.geste);
+      taux = rs.taux; situation = rs.situation; version = rs.versionId; arrete = rs.arrete;
+      horsDefaut = !defaut.ok || defaut.situation !== rs.situation;
+    } else if (vide) {
+      if (!defaut.ok) return refusMecef(defaut.code, defaut.motif, defaut.geste);
+      taux = defaut.taux; situation = defaut.situation; version = defaut.versionId; arrete = defaut.arrete;
+    } else {
+      taux = Number(a.aibTaux);
+      var prop = tauxAibProposes({ ifu: ifu, date: date });
+      var retenus = prop.choix.filter(function (c) { return c.taux === taux; });
+      if (taux !== 0 && !retenus.length) {
+        return refusMecef('AIB_TAUX_INVALIDE', 'Le taux d’AIB (' + a.aibTaux + ') n’est pas l’un des taux du barème au ' + C.dateFR(date) + ' ('
+          + (prop.choix.map(function (c) { return c.taux + ' %'; }).filter(function (x, i, t) { return t.indexOf(x) === i; }).concat(['aucun']).join(', ')) + ').',
+        'Choisir un taux proposé, ou le faire ajouter au barème par le comptable.');
+      }
+      var choisi = defaut.ok && retenus.filter(function (c) { return c.situation === defaut.situation; })[0] || retenus[0] || null;
+      if (choisi) { situation = choisi.situation; version = choisi.versionId; arrete = choisi.arrete; }
+      horsDefaut = !defaut.ok || defaut.taux !== taux;
+    }
+    return { ok: true, acheteur: { ifu: ifu || null, nom: nom || null, aibTaux: taux, aibSituation: situation, aibVersion: version, aibArrete: arrete,
+      aibDateBareme: dateBareme, aibDefaut: defaut.ok ? defaut.taux : null, aibHorsDefaut: horsDefaut } };
   }
 
   /* --- Le mode : réglage d'exploitation (l'interface du réglage vient au lot M2) -------------------------------------------------- */
@@ -4869,10 +5097,15 @@
   /** L'ACHETEUR d'une pièce : ce que la fenêtre a saisi, sinon ce que la pièce porte déjà, sinon les défauts (particulier, AIB par défaut). */
   function acheteurDePiece(fac, saisi) {
     var s = saisi || {};
+    /* Ce que la pièce porte déjà (taux, situation, version, date du barème) est CONSERVÉ : un taux changé au barème depuis ne réécrit pas une vente émise. */
+    var garde = s.aibTaux === undefined && s.aibSituation === undefined && fac.aibTaux != null;
     return validerAcheteurMecef({
       ifu: s.ifu !== undefined ? s.ifu : fac.ifuClient,
       nom: s.nom !== undefined ? s.nom : fac.acheteurNom,
       aibTaux: s.aibTaux !== undefined ? s.aibTaux : fac.aibTaux,
+      aibSituation: s.aibSituation !== undefined ? s.aibSituation : (garde ? fac.aibSituation : undefined),
+      aibVersion: garde ? fac.aibVersion : undefined, aibArrete: garde ? fac.aibArrete : undefined, aibDateBareme: garde ? fac.aibDateBareme : undefined,
+      date: s.date, conserve: garde,
     });
   }
 
@@ -4897,7 +5130,11 @@
     var acheteur = ach.acheteur;
     var entree = entreeMontantsPiece(fac, acheteur.aibTaux);
     var m = mecefMontants(entree);
-    var bascule = { ifuClient: acheteur.ifu, acheteurNom: acheteur.nom, aibTaux: acheteur.aibTaux, modeMecef: modeMecef(), mecefSimule: true };
+    var bascule = Object.assign({ ifuClient: acheteur.ifu, acheteurNom: acheteur.nom, modeMecef: modeMecef(), mecefSimule: true }, traceAibAcheteur(acheteur));
+    /* Un taux choisi à la main, autre que le défaut du barème pour cet acheteur, est JOURNALISÉ (RG-12). */
+    if (acheteur.aibHorsDefaut) {
+      S.log('AIB : taux choisi hors défaut', 'M8', 'facture', fac.numero, { defaut: acheteur.aibDefaut }, { aibTaux: acheteur.aibTaux, situation: acheteur.aibSituation, version: acheteur.aibVersion });
+    }
     if (!m.ok) {
       col('factures').update(factureId, Object.assign({ statutMecef: 'rejete', codeRetour: m.code, motifRefusMecef: m.motif }, bascule));
       S.log('Normalisation refusée', 'MECEF', 'facture', fac.numero, { statutMecef: fac.statutMecef }, { code: m.code });
@@ -4965,9 +5202,9 @@
 
   global.SIGH.mecefMontants = mecefMontants;
   global.SIGH.mecef = {
-    ETATS: ETATS_MECEF, AIB_TAUX_ADMIS: AIB_TAUX_ADMIS, MODES: MODES_MECEF,
+    ETATS: ETATS_MECEF, MODES: MODES_MECEF,
     etat: etatMecef, fiche: etatMecefFiche,
-    montants: mecefMontants, validerAcheteur: validerAcheteurMecef, aibTauxDefaut: aibTauxDefaut,
+    montants: mecefMontants, validerAcheteur: validerAcheteurMecef, aibTauxDefaut: aibTauxDefaut, tauxPropose: tauxAibProposes, traceAibAcheteur: traceAibAcheteur,
     mode: modeMecef, definirMode: definirModeMecef,
     normaliser: normaliserVente, reprendre: reprendreMecef, retransmettre: retransmettreMecef,
     fauxBoitier: fauxBoitier, numeroSuivant: function () { return fauxBoitier.numeroSuivant(); },

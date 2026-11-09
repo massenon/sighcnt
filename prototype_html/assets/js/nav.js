@@ -671,6 +671,7 @@
             { id: 'cfg-regles', label: 'Règles métier versionnées', icon: 'shield-check' },
             { id: 'cfg-fiscalite', label: 'Paramètres fiscaux (IFU / RCCM)', icon: 'landmark' },
             { id: 'cfg-comptabilite', label: 'Paramètres comptables & obligations', icon: 'book-open-check' },
+            { id: 'cfg-bareme-aib', label: 'Barème de l’AIB', icon: 'percent' },
             { id: 'cfg-notifications', label: 'Notifications', icon: 'bell' },
             { id: 'cfg-compte', label: 'Mon compte', icon: 'circle-user' },
             { id: 'cfg-modules', label: 'Activité des modules', icon: 'toggle-right' },

@@ -967,7 +967,7 @@
             statutMecef: 'en_attente',
             proforma: !!proforma,
           };
-          if (acheteurSaisi) { f.ifuClient = acheteurSaisi.acheteur.ifu; f.acheteurNom = acheteurSaisi.acheteur.nom; f.aibTaux = acheteurSaisi.acheteur.aibTaux; }
+          if (acheteurSaisi) { f.ifuClient = acheteurSaisi.acheteur.ifu; f.acheteurNom = acheteurSaisi.acheteur.nom; Object.assign(f, PR.mecef.traceAibAcheteur(acheteurSaisi.acheteur)); }
           var res = S.collection('factures', { module: 'M8', entite: 'Facture' }).insert(f);
           creees.push(res.record);
           annulations.push(res.undo);

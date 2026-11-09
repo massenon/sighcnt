@@ -752,6 +752,38 @@
     },
   };
 
+  /* --------------------------------------------------------------------------
+   * SEMENCE DU BARÈME DE L'AIB (09/11/2026, lot A1). Ce n'est QU'une semence : le moteur (`PR.tauxAibALaDate`) lit les collections
+   * `situationsAib` et `baremeAib` du magasin, jamais ces constantes ; on ajoute une situation, on change un taux à une date future ou on
+   * retire une version à l'écran `cfg-bareme-aib`, sans toucher au code. TOUTES les valeurs sont des PROPOSITIONS À VALIDER : aucun texte
+   * réglementaire n'est au dépôt (PRD M12, recherche du 09/11/2026). `declencheur` dit comment la fenêtre MECeF choisit la situation
+   * d'office (ifu_absent, ifu_renseigne) ou la laisse au caissier (choix).
+   * ----------------------------------------------------------------------- */
+  var SRC_COMMUNIQUE_DGI = 'Communiqué de la DGI (3 ou 4 septembre 2026) rapporté par la presse béninoise (La Nouvelle Tribune, BeninWebTV) : '
+    + 'proposition à valider, texte réglementaire à produire';
+  var SRC_REGIME_REFERENCE = 'Régime de la facture certifiée de référence (AIB 1 %, paramètre fiscal de la maquette) et modalités de 2022 rapportées par la presse : '
+    + 'proposition à valider, texte réglementaire à produire';
+  var SRC_PRESTATION = 'Modalités de 2022 rapportées par la presse (prestations de services : 3 %, retenue par l’organisme payeur) : '
+    + 'proposition à valider, texte réglementaire à produire';
+  var SITUATIONS_AIB = [
+    { code: 'ifu_actif', libelle: 'Acheteur avec IFU actif', declencheur: 'ifu_renseigne', ordre: 1,
+      description: 'L’acheteur présente un IFU de 13 chiffres. L’activité de l’IFU n’est pas vérifiée auprès de la DGI (la maquette ne peut pas l’interroger) : elle est présumée.' },
+    { code: 'ifu_inactif_ou_absent', libelle: 'Acheteur sans IFU actif', declencheur: 'ifu_absent', ordre: 2,
+      description: 'Aucun IFU renseigné (particulier) ou IFU désactivé : contribuable non conforme ou non immatriculé.' },
+    { code: 'prestation_service', libelle: 'Prestation de service retenue par le payeur', declencheur: 'choix', ordre: 3,
+      description: 'Prestation de service dont l’organisme payeur retient l’AIB sur le prix hors taxe. Choisie par le caissier, jamais d’office.' },
+  ];
+  var BAREME_AIB = [
+    { situation: 'ifu_inactif_ou_absent', taux: 1, dateEffet: '2026-01-01', dateFin: '2026-09-06', source: SRC_REGIME_REFERENCE,
+      motif: 'Taux appliqué avant le communiqué de septembre 2026 : défaut historique de la maquette (date d’effet d’attente : début de l’exercice 2026).' },
+    { situation: 'ifu_inactif_ou_absent', taux: 5, dateEffet: '2026-09-07', dateFin: null, source: SRC_COMMUNIQUE_DGI,
+      motif: 'Généralisation du prélèvement de 5 % à l’émission des factures normalisées, à compter du 07/09/2026.' },
+    { situation: 'ifu_actif', taux: 1, dateEffet: '2026-01-01', dateFin: null, source: SRC_REGIME_REFERENCE,
+      motif: 'Défaut de la fenêtre MECeF quand l’acheteur a un IFU actif (date d’effet d’attente : début de l’exercice 2026).' },
+    { situation: 'prestation_service', taux: 3, dateEffet: '2026-01-01', dateFin: null, source: SRC_PRESTATION,
+      motif: 'Prestation de service retenue par le payeur (date d’effet d’attente : début de l’exercice 2026).' },
+  ];
+
   var FOURNISSEURS = [
     {
       id: 'F001', code: 'SOBAPS', nom: 'SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé',
@@ -2165,6 +2197,8 @@
     CATEGORIES_PRODUIT: CATEGORIES_PRODUIT, TYPES_STOCK: TYPES_STOCK, TYPES_MOUVEMENT: TYPES_MOUVEMENT,
     FOURNISSEURS: FOURNISSEURS, PLAN_COMPTABLE: PLAN_COMPTABLE, JOURNAUX: JOURNAUX, CENTRES_COUT: CENTRES_COUT,
     PARAM_FISCAL: PARAM_FISCAL,
+    SITUATIONS_AIB: SITUATIONS_AIB,
+    BAREME_AIB: BAREME_AIB,
     PARAM_PAIE: PARAM_PAIE, TYPES_CHAMBRE: TYPES_CHAMBRE, CHAMBRES: CHAMBRES,
     MODES_PAIEMENT: MODES_PAIEMENT, TYPES_PLANNING: TYPES_PLANNING, SERVICES: SERVICES,
     REGLES_PLANNING: REGLES_PLANNING, regleDe: regleDe,
