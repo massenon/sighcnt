@@ -1,0 +1,3317 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mes-pointage.js : espace « Mes » (lot L7) et pointage par badge (lot L8), tirés des moteurs de la maquette. Ne pas éditer à la main.",
+ "monde": {
+  "personnel": [
+   {
+    "id": "EMP10",
+    "nomComplet": "GARBA Yahouza",
+    "matricule": "10",
+    "fonction": "infirmier",
+    "poste": "Surveillant",
+    "service": "Soins infirmiers",
+    "statut": "actif"
+   },
+   {
+    "id": "EMP11",
+    "nomComplet": "IDRISSOU ANIKI Baba-Toundé",
+    "matricule": "11",
+    "fonction": "infirmier",
+    "poste": "Infirmier",
+    "service": "Soins infirmiers",
+    "statut": "actif"
+   },
+   {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "matricule": "1",
+    "fonction": "medecin",
+    "poste": null,
+    "service": "Direction",
+    "statut": "actif"
+   },
+   {
+    "id": "EMP21",
+    "nomComplet": "TEPA Séraphine",
+    "matricule": "21",
+    "fonction": "aide_soignant",
+    "poste": "Aide-soignante — Chef de service",
+    "service": "Soins infirmiers",
+    "statut": "archive"
+   }
+  ],
+  "collections": {
+   "fichesPoste": [
+    {
+     "id": "FDP1",
+     "statut": "actif",
+     "intitule": "Surveillant",
+     "rattachement": "Soins"
+    },
+    {
+     "id": "FDP2",
+     "statut": "actif",
+     "intitule": "Un autre poste",
+     "rattachement": "X"
+    },
+    {
+     "id": "FDP3",
+     "statut": "archive",
+     "intitule": "Surveillant"
+    }
+   ],
+   "bulletins": [
+    {
+     "id": "BA1",
+     "statut": "actif",
+     "reference": "BP-A1",
+     "employeId": "EMP10",
+     "statutBulletin": "diffuse"
+    },
+    {
+     "id": "BA2",
+     "statut": "actif",
+     "reference": "BP-A2",
+     "employeId": "EMP10",
+     "statutBulletin": "diffuse"
+    },
+    {
+     "id": "BA3",
+     "statut": "actif",
+     "reference": "BP-A3",
+     "employeId": "EMP10",
+     "statutBulletin": "valide"
+    },
+    {
+     "id": "BA4",
+     "statut": "actif",
+     "reference": "BP-A4",
+     "employeId": "EMP10",
+     "statutBulletin": "a_valider"
+    },
+    {
+     "id": "BA5",
+     "statut": "archive",
+     "reference": "BP-A5",
+     "employeId": "EMP10",
+     "statutBulletin": "diffuse"
+    },
+    {
+     "id": "BB1",
+     "statut": "actif",
+     "reference": "BP-B1",
+     "employeId": "EMP11",
+     "statutBulletin": "diffuse"
+    }
+   ],
+   "contrats": [
+    {
+     "id": "CTA1",
+     "statut": "actif",
+     "employeId": "EMP10"
+    },
+    {
+     "id": "CTB1",
+     "statut": "actif",
+     "employeId": "EMP11"
+    },
+    {
+     "id": "CTA2",
+     "statut": "archive",
+     "employeId": "EMP10"
+    }
+   ],
+   "planning": [
+    {
+     "id": "PLA1",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "type": "garde",
+     "validationEtat": "validee"
+    },
+    {
+     "id": "PLA2",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "type": "garde"
+    },
+    {
+     "id": "PLA3",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "type": "garde",
+     "validationEtat": "a_valider"
+    },
+    {
+     "id": "PLA4",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "type": "permanence",
+     "validationEtat": "validee"
+    },
+    {
+     "id": "PLA5",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "type": "repos",
+     "validationEtat": "validee"
+    },
+    {
+     "id": "PLA6",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "type": "garde_soins",
+     "validationEtat": "validee"
+    },
+    {
+     "id": "PLB1",
+     "statut": "actif",
+     "employeId": "EMP11",
+     "type": "garde",
+     "validationEtat": "validee"
+    },
+    {
+     "id": "PLA7",
+     "statut": "archive",
+     "employeId": "EMP10",
+     "type": "garde",
+     "validationEtat": "validee"
+    }
+   ],
+   "presences": [
+    {
+     "id": "PRA1",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "etat": "present"
+    },
+    {
+     "id": "PRA2",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "etat": "retard",
+     "validationEtat": "a_valider"
+    },
+    {
+     "id": "PRA3",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "etat": "absent",
+     "validationEtat": "valide"
+    },
+    {
+     "id": "PRA4",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "etat": "retard",
+     "validationEtat": "valide"
+    },
+    {
+     "id": "PRB1",
+     "statut": "actif",
+     "employeId": "EMP11",
+     "etat": "present"
+    }
+   ],
+   "conges": [
+    {
+     "id": "CGA1",
+     "statut": "actif",
+     "employeId": "EMP10"
+    },
+    {
+     "id": "CGB1",
+     "statut": "actif",
+     "employeId": "EMP11"
+    }
+   ],
+   "missions": [
+    {
+     "id": "OMA1",
+     "statut": "actif",
+     "agentId": "EMP10"
+    },
+    {
+     "id": "OMB1",
+     "statut": "actif",
+     "agentId": "EMP11"
+    },
+    {
+     "id": "OMA2",
+     "statut": "actif",
+     "agentId": "EMP10"
+    }
+   ],
+   "evenements": [
+    {
+     "id": "EV1",
+     "statut": "actif",
+     "beneficiaireId": "EMP10",
+     "portee": "tous"
+    },
+    {
+     "id": "EV2",
+     "statut": "actif",
+     "beneficiaireId": "EMP11",
+     "portee": "tous"
+    },
+    {
+     "id": "EV3",
+     "statut": "actif",
+     "beneficiaireId": "EMP01",
+     "portee": "tous"
+    },
+    {
+     "id": "EV4",
+     "statut": "actif",
+     "beneficiaireId": "EMP01",
+     "portee": "tous"
+    }
+   ],
+   "participations": [
+    {
+     "id": "PAR1",
+     "statut": "actif",
+     "evenementId": "EV3",
+     "employeId": "EMP10"
+    },
+    {
+     "id": "PAR2",
+     "statut": "actif",
+     "evenementId": "EV2",
+     "employeId": "EMP11"
+    },
+    {
+     "id": "PAR3",
+     "statut": "actif",
+     "evenementId": "EV1",
+     "employeId": "EMP11"
+    }
+   ],
+   "patients": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "personnelId": "EMP10"
+    },
+    {
+     "id": "P2",
+     "statut": "actif",
+     "personnelId": "EMP11"
+    },
+    {
+     "id": "P3",
+     "statut": "actif"
+    }
+   ],
+   "consultations": [
+    {
+     "id": "CS1",
+     "statut": "actif",
+     "patientId": "P1",
+     "date": "2026-01-06",
+     "tarif": 5000,
+     "medecinId": "EMP11"
+    },
+    {
+     "id": "CS2",
+     "statut": "actif",
+     "patientId": "P1",
+     "date": "2026-01-07",
+     "medecinId": "EMP11"
+    },
+    {
+     "id": "CS3",
+     "statut": "actif",
+     "patientId": "P2",
+     "date": "2026-01-08",
+     "tarif": 3000,
+     "medecinId": "EMP10"
+    },
+    {
+     "id": "CS4",
+     "statut": "actif",
+     "patientId": "P3",
+     "date": "2026-01-09",
+     "tarif": 2000,
+     "medecinId": "EMP10"
+    },
+    {
+     "id": "CS5",
+     "statut": "actif",
+     "patientId": "P1",
+     "date": "2026-01-10",
+     "tarif": "",
+     "medecinId": "EMP11"
+    }
+   ],
+   "demandesAnalyses": [
+    {
+     "id": "DA1",
+     "statut": "actif",
+     "patientId": "P1",
+     "prix": 2000,
+     "dateHeure": "2026-01-05T08:00:00"
+    },
+    {
+     "id": "DA2",
+     "statut": "actif",
+     "patientId": "P1",
+     "montant": 1500,
+     "prix": 2000,
+     "dateHeure": "2026-01-11T08:00:00"
+    },
+    {
+     "id": "DA3",
+     "statut": "actif",
+     "patientId": "P1",
+     "analyse": "L01",
+     "dateHeure": "2026-01-12T08:00:00"
+    },
+    {
+     "id": "DA4",
+     "statut": "actif",
+     "patientId": "P1",
+     "montant": 0,
+     "dateHeure": "2026-01-13T08:00:00"
+    },
+    {
+     "id": "DA5",
+     "statut": "actif",
+     "patientId": "P2",
+     "prix": 900,
+     "dateHeure": "2026-01-14T08:00:00"
+    }
+   ],
+   "admissions": [
+    {
+     "id": "AD1",
+     "statut": "actif",
+     "patientId": "P1",
+     "dateEntree": "2026-02-01",
+     "montant": 40000
+    },
+    {
+     "id": "AD2",
+     "statut": "actif",
+     "patientId": "P1",
+     "dateEntree": "2026-02-05"
+    }
+   ]
+  },
+  "notes": [
+   "NS 131/07/DM/DA/CNT/2026",
+   "NS n° 132/07/DM/DA/CNT/2026"
+  ]
+ },
+ "agents": {
+  "A": "EMP10",
+  "B": "EMP11",
+  "C": "EMP01"
+ },
+ "rubriques": [
+  {
+   "n": 1,
+   "id": "fiche_poste",
+   "libelle": "Ma fiche de poste",
+   "ecran": "m10-fiches-poste",
+   "source": "fichesPoste",
+   "lien": "poste",
+   "calcule": null,
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 2,
+   "id": "fiche_paie",
+   "libelle": "Ma fiche de paie",
+   "ecran": "m11-bulletins",
+   "source": "bulletins",
+   "lien": "employeId",
+   "calcule": null,
+   "emise": true,
+   "sensible": true,
+   "lectureSeule": false
+  },
+  {
+   "n": 3,
+   "id": "contrat",
+   "libelle": "Mon contrat",
+   "ecran": "m10-contrats",
+   "source": "contrats",
+   "lien": "employeId",
+   "calcule": null,
+   "emise": false,
+   "sensible": true,
+   "lectureSeule": false
+  },
+  {
+   "n": 4,
+   "id": "planning",
+   "libelle": "Mes planning et gardes",
+   "ecran": "m10-planning",
+   "source": "planning",
+   "lien": "employeId",
+   "calcule": null,
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 5,
+   "id": "stats_garde",
+   "libelle": "Mes statistiques de garde",
+   "ecran": "m10-stats-gardes",
+   "source": null,
+   "lien": null,
+   "calcule": "garde",
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 6,
+   "id": "stats_permanence",
+   "libelle": "Mes statistiques des permanences",
+   "ecran": "m10-stats-permanences",
+   "source": null,
+   "lien": null,
+   "calcule": "permanence",
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 7,
+   "id": "taux_presence",
+   "libelle": "Mon taux de présence par service",
+   "ecran": "m10-stats-presence",
+   "source": null,
+   "lien": null,
+   "calcule": "presence",
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 8,
+   "id": "presences",
+   "libelle": "Mes présences et absences",
+   "ecran": "m10-presences",
+   "source": "presences",
+   "lien": "employeId",
+   "calcule": null,
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 9,
+   "id": "conges",
+   "libelle": "Mes congés",
+   "ecran": "m10-conges",
+   "source": "conges",
+   "lien": "employeId",
+   "calcule": null,
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 10,
+   "id": "missions",
+   "libelle": "Mes ordres de mission",
+   "ecran": "m10-missions",
+   "source": "missions",
+   "lien": "agentId",
+   "calcule": null,
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 11,
+   "id": "primes",
+   "libelle": "Mes primes",
+   "ecran": "m10-primes",
+   "source": "bulletins",
+   "lien": "employeId",
+   "calcule": null,
+   "emise": true,
+   "sensible": true,
+   "lectureSeule": false
+  },
+  {
+   "n": 12,
+   "id": "evenements",
+   "libelle": "Événements du personnel",
+   "ecran": "m10-evenements",
+   "source": "evenements",
+   "lien": "evenementsDeLAgent",
+   "calcule": null,
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 13,
+   "id": "participations",
+   "libelle": "Mes frais de participation",
+   "ecran": "m10-participations",
+   "source": "participations",
+   "lien": "employeId",
+   "calcule": null,
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 14,
+   "id": "assurance",
+   "libelle": "Mon assurance du personnel",
+   "ecran": "m10-assurance-personnel",
+   "source": null,
+   "lien": null,
+   "calcule": "assurance",
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": true
+  },
+  {
+   "n": 15,
+   "id": "notes_service",
+   "libelle": "Notes de service",
+   "ecran": "m13-notes-service",
+   "source": null,
+   "lien": null,
+   "calcule": "notes",
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 16,
+   "id": "agenda",
+   "libelle": "Mon agenda",
+   "ecran": "m2-agenda",
+   "source": "consultations",
+   "lien": "medecinId",
+   "calcule": null,
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  },
+  {
+   "n": 17,
+   "id": "rendez_vous",
+   "libelle": "Mes rendez-vous et visites",
+   "ecran": "m2-rendezvous",
+   "source": "consultations",
+   "lien": "patientDeLAgent",
+   "calcule": null,
+   "emise": false,
+   "sensible": false,
+   "lectureSeule": false
+  }
+ ],
+ "lectures": [
+  {
+   "nom": "agent A : Ma fiche de poste",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "fiche_poste",
+   "attendu": {
+    "ok": true,
+    "rubrique": "fiche_poste",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "FDP1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Ma fiche de paie",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "fiche_paie",
+   "attendu": {
+    "ok": true,
+    "rubrique": "fiche_paie",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "BA1",
+     "BA2"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mon contrat",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "contrat",
+   "attendu": {
+    "ok": true,
+    "rubrique": "contrat",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "CTA1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mes planning et gardes",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "planning",
+   "attendu": {
+    "ok": true,
+    "rubrique": "planning",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "PLA1",
+     "PLA2",
+     "PLA3",
+     "PLA4",
+     "PLA5",
+     "PLA6"
+    ],
+    "total": 6,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mes statistiques de garde",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "stats_garde",
+   "attendu": {
+    "ok": true,
+    "rubrique": "stats_garde",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "PLA1",
+     "PLA2"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mes statistiques des permanences",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "stats_permanence",
+   "attendu": {
+    "ok": true,
+    "rubrique": "stats_permanence",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "PLA4"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mon taux de présence par service",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "taux_presence",
+   "attendu": {
+    "ok": true,
+    "rubrique": "taux_presence",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "PRA1",
+     "PRA3",
+     "PRA4"
+    ],
+    "total": 3,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": 1,
+    "retards": 1,
+    "absents": 1
+   }
+  },
+  {
+   "nom": "agent A : Mes présences et absences",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "presences",
+   "attendu": {
+    "ok": true,
+    "rubrique": "presences",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "PRA1",
+     "PRA2",
+     "PRA3",
+     "PRA4"
+    ],
+    "total": 4,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mes congés",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "conges",
+   "attendu": {
+    "ok": true,
+    "rubrique": "conges",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "CGA1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mes ordres de mission",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "missions",
+   "attendu": {
+    "ok": true,
+    "rubrique": "missions",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "OMA1",
+     "OMA2"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mes primes",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "primes",
+   "attendu": {
+    "ok": true,
+    "rubrique": "primes",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "BA1",
+     "BA2"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Événements du personnel",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "evenements",
+   "attendu": {
+    "ok": true,
+    "rubrique": "evenements",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "EV1",
+     "EV3"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mes frais de participation",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "participations",
+   "attendu": {
+    "ok": true,
+    "rubrique": "participations",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "PAR1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mon assurance du personnel",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "assurance",
+   "attendu": {
+    "ok": true,
+    "rubrique": "assurance",
+    "agentId": "EMP10",
+    "lectureSeule": true,
+    "ids": [
+     "CS1",
+     "CS2",
+     "CS5",
+     "DA1",
+     "DA2",
+     "DA3",
+     "DA4",
+     "AD1",
+     "AD2"
+    ],
+    "total": 9,
+    "valeur": 48500,
+    "sansMontant": 4,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Notes de service",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "notes_service",
+   "attendu": {
+    "ok": true,
+    "rubrique": "notes_service",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "NS 131/07/DM/DA/CNT/2026",
+     "NS n° 132/07/DM/DA/CNT/2026"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mon agenda",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "agenda",
+   "attendu": {
+    "ok": true,
+    "rubrique": "agenda",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "CS3",
+     "CS4"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent A : Mes rendez-vous et visites",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "rendez_vous",
+   "attendu": {
+    "ok": true,
+    "rubrique": "rendez_vous",
+    "agentId": "EMP10",
+    "lectureSeule": false,
+    "ids": [
+     "CS1",
+     "CS2",
+     "CS5"
+    ],
+    "total": 3,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Ma fiche de poste",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "fiche_poste",
+   "attendu": {
+    "ok": true,
+    "rubrique": "fiche_poste",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [],
+    "total": 0,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Ma fiche de paie",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "fiche_paie",
+   "attendu": {
+    "ok": true,
+    "rubrique": "fiche_paie",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "BB1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mon contrat",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "contrat",
+   "attendu": {
+    "ok": true,
+    "rubrique": "contrat",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "CTB1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mes planning et gardes",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "planning",
+   "attendu": {
+    "ok": true,
+    "rubrique": "planning",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "PLB1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mes statistiques de garde",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "stats_garde",
+   "attendu": {
+    "ok": true,
+    "rubrique": "stats_garde",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "PLB1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mes statistiques des permanences",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "stats_permanence",
+   "attendu": {
+    "ok": true,
+    "rubrique": "stats_permanence",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [],
+    "total": 0,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mon taux de présence par service",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "taux_presence",
+   "attendu": {
+    "ok": true,
+    "rubrique": "taux_presence",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "PRB1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": 1,
+    "retards": 0,
+    "absents": 0
+   }
+  },
+  {
+   "nom": "agent B : Mes présences et absences",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "presences",
+   "attendu": {
+    "ok": true,
+    "rubrique": "presences",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "PRB1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mes congés",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "conges",
+   "attendu": {
+    "ok": true,
+    "rubrique": "conges",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "CGB1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mes ordres de mission",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "missions",
+   "attendu": {
+    "ok": true,
+    "rubrique": "missions",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "OMB1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mes primes",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "primes",
+   "attendu": {
+    "ok": true,
+    "rubrique": "primes",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "BB1"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Événements du personnel",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "evenements",
+   "attendu": {
+    "ok": true,
+    "rubrique": "evenements",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "EV1",
+     "EV2"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mes frais de participation",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "participations",
+   "attendu": {
+    "ok": true,
+    "rubrique": "participations",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "PAR2",
+     "PAR3"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mon assurance du personnel",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "assurance",
+   "attendu": {
+    "ok": true,
+    "rubrique": "assurance",
+    "agentId": "EMP11",
+    "lectureSeule": true,
+    "ids": [
+     "CS3",
+     "DA5"
+    ],
+    "total": 2,
+    "valeur": 3900,
+    "sansMontant": 0,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Notes de service",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "notes_service",
+   "attendu": {
+    "ok": true,
+    "rubrique": "notes_service",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "NS 131/07/DM/DA/CNT/2026",
+     "NS n° 132/07/DM/DA/CNT/2026"
+    ],
+    "total": 2,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mon agenda",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "agenda",
+   "attendu": {
+    "ok": true,
+    "rubrique": "agenda",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "CS1",
+     "CS2",
+     "CS5"
+    ],
+    "total": 3,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "agent B : Mes rendez-vous et visites",
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "rubrique": "rendez_vous",
+   "attendu": {
+    "ok": true,
+    "rubrique": "rendez_vous",
+    "agentId": "EMP11",
+    "lectureSeule": false,
+    "ids": [
+     "CS3"
+    ],
+    "total": 1,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "médecin sans poste ni dossier : fiche_poste",
+   "acteur": "BASSONGUI Chabi Séko",
+   "rubrique": "fiche_poste",
+   "attendu": {
+    "ok": true,
+    "rubrique": "fiche_poste",
+    "agentId": "EMP01",
+    "lectureSeule": false,
+    "ids": [],
+    "total": 0,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "médecin sans poste ni dossier : fiche_paie",
+   "acteur": "BASSONGUI Chabi Séko",
+   "rubrique": "fiche_paie",
+   "attendu": {
+    "ok": true,
+    "rubrique": "fiche_paie",
+    "agentId": "EMP01",
+    "lectureSeule": false,
+    "ids": [],
+    "total": 0,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "médecin sans poste ni dossier : assurance",
+   "acteur": "BASSONGUI Chabi Séko",
+   "rubrique": "assurance",
+   "attendu": {
+    "ok": true,
+    "rubrique": "assurance",
+    "agentId": "EMP01",
+    "lectureSeule": true,
+    "ids": [],
+    "total": 0,
+    "valeur": 0,
+    "sansMontant": 0,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "médecin sans poste ni dossier : planning",
+   "acteur": "BASSONGUI Chabi Séko",
+   "rubrique": "planning",
+   "attendu": {
+    "ok": true,
+    "rubrique": "planning",
+    "agentId": "EMP01",
+    "lectureSeule": false,
+    "ids": [],
+    "total": 0,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "médecin sans poste ni dossier : rendez_vous",
+   "acteur": "BASSONGUI Chabi Séko",
+   "rubrique": "rendez_vous",
+   "attendu": {
+    "ok": true,
+    "rubrique": "rendez_vous",
+    "agentId": "EMP01",
+    "lectureSeule": false,
+    "ids": [],
+    "total": 0,
+    "valeur": null,
+    "sansMontant": null,
+    "presents": null,
+    "retards": null,
+    "absents": null
+   }
+  },
+  {
+   "nom": "compte du poste (non nominatif) : fiche_paie",
+   "acteur": "Poste Accueil 1",
+   "rubrique": "fiche_paie",
+   "attendu": {
+    "ok": false,
+    "code": "COMPTE_NON_NOMINATIF",
+    "motif": "Le compte « Poste Accueil 1 » ne correspond à aucun agent du personnel : l’espace « Mes » est celui d’une personne, pas d’un poste.",
+    "geste": "Se connecter avec son compte nominatif (poste partagé : fermer la session de l’agent précédent)."
+   }
+  },
+  {
+   "nom": "compte du poste (non nominatif) : contrat",
+   "acteur": "Poste Accueil 1",
+   "rubrique": "contrat",
+   "attendu": {
+    "ok": false,
+    "code": "COMPTE_NON_NOMINATIF",
+    "motif": "Le compte « Poste Accueil 1 » ne correspond à aucun agent du personnel : l’espace « Mes » est celui d’une personne, pas d’un poste.",
+    "geste": "Se connecter avec son compte nominatif (poste partagé : fermer la session de l’agent précédent)."
+   }
+  },
+  {
+   "nom": "compte du poste (non nominatif) : notes_service",
+   "acteur": "Poste Accueil 1",
+   "rubrique": "notes_service",
+   "attendu": {
+    "ok": false,
+    "code": "COMPTE_NON_NOMINATIF",
+    "motif": "Le compte « Poste Accueil 1 » ne correspond à aucun agent du personnel : l’espace « Mes » est celui d’une personne, pas d’un poste.",
+    "geste": "Se connecter avec son compte nominatif (poste partagé : fermer la session de l’agent précédent)."
+   }
+  },
+  {
+   "nom": "rubrique inconnue",
+   "acteur": "GARBA Yahouza",
+   "rubrique": "rubrique_fantome",
+   "attendu": {
+    "ok": false,
+    "code": "RUBRIQUE_INCONNUE",
+    "motif": "La rubrique « rubrique_fantome » n’existe pas.",
+    "geste": "Choisir l’une des dix-sept rubriques de l’espace « Mes »."
+   }
+  },
+  {
+   "nom": "rubrique inconnue pour un compte non nominatif (la rubrique est jugée d’abord)",
+   "acteur": "Poste Accueil 1",
+   "rubrique": "rubrique_fantome",
+   "attendu": {
+    "ok": false,
+    "code": "RUBRIQUE_INCONNUE",
+    "motif": "La rubrique « rubrique_fantome » n’existe pas.",
+    "geste": "Choisir l’une des dix-sept rubriques de l’espace « Mes »."
+   }
+  }
+ ],
+ "copies": [
+  {
+   "nom": "l’agent A, sans préciser : ses deux pièces émises",
+   "actif": true,
+   "acteur": "GARBA Yahouza",
+   "agentIdDemande": null,
+   "attendu": {
+    "ok": true,
+    "agentId": "EMP10",
+    "ids": [
+     "BA1",
+     "BA2"
+    ],
+    "references": [
+     "BP-A1",
+     "BP-A2"
+    ],
+    "total": 2,
+    "chiffree": true,
+    "recalculee": false
+   }
+  },
+  {
+   "nom": "l’agent A nomme sa propre fiche",
+   "actif": true,
+   "acteur": "GARBA Yahouza",
+   "agentIdDemande": "EMP10",
+   "attendu": {
+    "ok": true,
+    "agentId": "EMP10",
+    "ids": [
+     "BA1",
+     "BA2"
+    ],
+    "references": [
+     "BP-A1",
+     "BP-A2"
+    ],
+    "total": 2,
+    "chiffree": true,
+    "recalculee": false
+   }
+  },
+  {
+   "nom": "l’agent A demande celle de B : refus nommé",
+   "actif": true,
+   "acteur": "GARBA Yahouza",
+   "agentIdDemande": "EMP11",
+   "attendu": {
+    "ok": false,
+    "code": "COPIE_PAIE_AUTRE_AGENT",
+    "motif": "Une copie de fiche de paie ne se délivre qu’à l’agent concerné : celle d’un autre agent n’est jamais descendue (RG-13).",
+    "geste": "L’agent demande sa propre copie depuis son compte."
+   }
+  },
+  {
+   "nom": "l’agent B : sa seule pièce émise",
+   "actif": true,
+   "acteur": "IDRISSOU ANIKI Baba-Toundé",
+   "agentIdDemande": null,
+   "attendu": {
+    "ok": true,
+    "agentId": "EMP11",
+    "ids": [
+     "BB1"
+    ],
+    "references": [
+     "BP-B1"
+    ],
+    "total": 1,
+    "chiffree": true,
+    "recalculee": false
+   }
+  },
+  {
+   "nom": "un médecin sans pièce émise : copie vide, pas un refus",
+   "actif": true,
+   "acteur": "BASSONGUI Chabi Séko",
+   "agentIdDemande": null,
+   "attendu": {
+    "ok": true,
+    "agentId": "EMP01",
+    "ids": [],
+    "references": [],
+    "total": 0,
+    "chiffree": true,
+    "recalculee": false
+   }
+  },
+  {
+   "nom": "compte non nominatif",
+   "actif": true,
+   "acteur": "Poste Accueil 1",
+   "agentIdDemande": null,
+   "attendu": {
+    "ok": false,
+    "code": "COMPTE_NON_NOMINATIF",
+    "motif": "Le compte « Poste Accueil 1 » ne correspond à aucun agent du personnel : l’espace « Mes » est celui d’une personne, pas d’un poste.",
+    "geste": "Se connecter avec son compte nominatif (poste partagé : fermer la session de l’agent précédent)."
+   }
+  },
+  {
+   "nom": "réglage coupé : refus nommé",
+   "actif": false,
+   "acteur": "GARBA Yahouza",
+   "agentIdDemande": null,
+   "attendu": {
+    "ok": false,
+    "code": "COPIE_PAIE_DESACTIVEE",
+    "motif": "La copie de la fiche de paie sur le téléphone est désactivée au poste de la mère.",
+    "geste": "Demander à la Directrice Administrative de l’activer (paramètres, famille Paie)."
+   }
+  },
+  {
+   "nom": "réglage coupé, compte non nominatif : le réglage est jugé d’abord",
+   "actif": false,
+   "acteur": "Poste Accueil 1",
+   "agentIdDemande": null,
+   "attendu": {
+    "ok": false,
+    "code": "COPIE_PAIE_DESACTIVEE",
+    "motif": "La copie de la fiche de paie sur le téléphone est désactivée au poste de la mère.",
+    "geste": "Demander à la Directrice Administrative de l’activer (paramètres, famille Paie)."
+   }
+  },
+  {
+   "nom": "la demande d’un autre agent vaut refus même sans pièce",
+   "actif": true,
+   "acteur": "BASSONGUI Chabi Séko",
+   "agentIdDemande": "EMP10",
+   "attendu": {
+    "ok": false,
+    "code": "COPIE_PAIE_AUTRE_AGENT",
+    "motif": "Une copie de fiche de paie ne se délivre qu’à l’agent concerné : celle d’un autre agent n’est jamais descendue (RG-13).",
+    "geste": "L’agent demande sa propre copie depuis son compte."
+   }
+  }
+ ],
+ "reglagesCopie": [
+  {
+   "role": "admin",
+   "attendu": {
+    "ok": true,
+    "valeur": false,
+    "avant": true,
+    "enBase": false
+   }
+  },
+  {
+   "role": "da",
+   "attendu": {
+    "ok": true,
+    "valeur": false,
+    "avant": true,
+    "enBase": false
+   }
+  },
+  {
+   "role": "direction",
+   "attendu": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "enBase": true
+   }
+  },
+  {
+   "role": "medecin",
+   "attendu": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "enBase": true
+   }
+  },
+  {
+   "role": "surveillant",
+   "attendu": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "enBase": true
+   }
+  },
+  {
+   "role": "caissier",
+   "attendu": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "enBase": true
+   }
+  },
+  {
+   "role": "infirmier",
+   "attendu": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "enBase": true
+   }
+  }
+ ],
+ "pointage": {
+  "badges": [
+   {
+    "id": "BDGA",
+    "statut": "actif",
+    "numero": "BDG-V0001-2026",
+    "personnelId": "EMP10",
+    "matricule": "10",
+    "agent": "X",
+    "etat": "remis",
+    "expireLe": "2099-12-31"
+   },
+   {
+    "id": "BDGB",
+    "statut": "actif",
+    "numero": "BDG-V0002-2026",
+    "personnelId": "EMP11",
+    "matricule": "11",
+    "agent": "X",
+    "etat": "remis",
+    "expireLe": "2099-12-31"
+   },
+   {
+    "id": "BDGX",
+    "statut": "actif",
+    "numero": "BDG-V0003-2026",
+    "personnelId": "EMP01",
+    "matricule": "1",
+    "agent": "X",
+    "etat": "remis",
+    "expireLe": "2020-01-01"
+   },
+   {
+    "id": "BDGR",
+    "statut": "actif",
+    "numero": "BDG-V0004-2026",
+    "personnelId": "EMP01",
+    "matricule": "1",
+    "agent": "X",
+    "etat": "retire",
+    "expireLe": "2099-12-31",
+    "retireLe": "2026-06-01",
+    "motifRetrait": "Perte"
+   },
+   {
+    "id": "BDGN",
+    "statut": "actif",
+    "numero": "BDG-V0005-2026",
+    "personnelId": "EMP01",
+    "matricule": "1",
+    "agent": "X",
+    "etat": "a_editer",
+    "expireLe": "2099-12-31"
+   },
+   {
+    "id": "BDGZ",
+    "statut": "actif",
+    "numero": "BDG-V0006-2026",
+    "personnelId": "EMP-ABSENT",
+    "matricule": "4242",
+    "agent": "X",
+    "etat": "remis",
+    "expireLe": "2099-12-31"
+   },
+   {
+    "id": "BDGD",
+    "statut": "actif",
+    "numero": "BDG-V0007-2026",
+    "personnelId": "EMP21",
+    "matricule": "21",
+    "agent": "X",
+    "etat": "remis",
+    "expireLe": "2099-12-31"
+   },
+   {
+    "id": "BDGE",
+    "statut": "actif",
+    "numero": "BDG-V0008-2026",
+    "personnelId": "EMP11",
+    "matricule": "11",
+    "agent": "X",
+    "etat": "edite",
+    "expireLe": "2099-12-31"
+   },
+   {
+    "id": "BDGP",
+    "statut": "actif",
+    "numero": "BDG-V0009-2026",
+    "personnelId": "EMP01",
+    "matricule": "1",
+    "agent": "X",
+    "etat": "perdu",
+    "expireLe": "2099-12-31",
+    "retireLe": "2026-07-01",
+    "motifRetrait": "Vol"
+   },
+   {
+    "id": "BDGH",
+    "statut": "archive",
+    "numero": "BDG-V0010-2026",
+    "personnelId": "EMP10",
+    "matricule": "10",
+    "agent": "X",
+    "etat": "retire",
+    "expireLe": "2099-12-31",
+    "retireLe": "2026-05-01",
+    "motifRetrait": "Réédition — remplacement"
+   }
+  ],
+  "personnel": [
+   {
+    "id": "EMP10",
+    "nomComplet": "GARBA Yahouza",
+    "matricule": "10",
+    "fonction": "infirmier",
+    "poste": "Surveillant",
+    "service": "Soins infirmiers",
+    "statut": "actif"
+   },
+   {
+    "id": "EMP11",
+    "nomComplet": "IDRISSOU ANIKI Baba-Toundé",
+    "matricule": "11",
+    "fonction": "infirmier",
+    "poste": "Infirmier",
+    "service": "Soins infirmiers",
+    "statut": "actif"
+   },
+   {
+    "id": "EMP01",
+    "nomComplet": "BASSONGUI Chabi Séko",
+    "matricule": "1",
+    "fonction": "medecin",
+    "poste": null,
+    "service": "Direction",
+    "statut": "actif"
+   },
+   {
+    "id": "EMP21",
+    "nomComplet": "TEPA Séraphine",
+    "matricule": "21",
+    "fonction": "aide_soignant",
+    "poste": "Aide-soignante — Chef de service",
+    "service": "Soins infirmiers",
+    "statut": "archive"
+   }
+  ],
+  "cas": [
+   {
+    "nom": "première arrivée du jour",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "origine": "badge",
+      "badgeId": "BDGA",
+      "badgeNumero": "BDG-V0001-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur surveillant",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "le code QR complet vaut le numéro saisi",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "CNT-BDG|MAT:10|SER:BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "origine": "badge",
+      "badgeId": "BDGA",
+      "badgeNumero": "BDG-V0001-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur surveillant",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "le numéro se lit sans égard à la casse",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "bdg-v0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "origine": "badge",
+      "badgeId": "BDGA",
+      "badgeNumero": "BDG-V0001-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur surveillant",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "badge « édité » : valable",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0008-2026",
+    "jour": "2027-03-01",
+    "heure": "07:45",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP11",
+     "badgeId": "BDGE",
+     "heure": "07:45",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP11",
+      "employe": "IDRISSOU ANIKI Baba-Toundé",
+      "matricule": "11",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "07:45",
+      "origine": "badge",
+      "badgeId": "BDGE",
+      "badgeNumero": "BDG-V0008-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur surveillant",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "départ sur la présence ouverte",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "17:30",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "depart",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "17:30",
+     "etat": "a_valider",
+     "patch": {
+      "heureDepart": "17:30",
+      "departParBadge": "BDGA"
+     }
+    }
+   },
+   {
+    "nom": "trop rapproché (3 minutes, délai de 5)",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:03",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_TROP_RAPPROCHE",
+     "motif": "Deux pointages de GARBA Yahouza à moins de 5 minutes d’intervalle : le dernier date de 08:00.",
+     "geste": "Attendre 2 minute(s) avant de pointer de nouveau.",
+     "delai": 5
+    }
+   },
+   {
+    "nom": "à la limite (5 minutes) : passe",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:05",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "depart",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:05",
+     "etat": "a_valider",
+     "patch": {
+      "heureDepart": "08:05",
+      "departParBadge": "BDGA"
+     }
+    }
+   },
+   {
+    "nom": "délai à 0 : ne refuse jamais",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 0,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "depart",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "patch": {
+      "heureDepart": "08:00",
+      "departParBadge": "BDGA"
+     }
+    }
+   },
+   {
+    "nom": "délai à 30 : vingt minutes après, refus",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 30,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:20",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_TROP_RAPPROCHE",
+     "motif": "Deux pointages de GARBA Yahouza à moins de 30 minutes d’intervalle : le dernier date de 08:00.",
+     "geste": "Attendre 10 minute(s) avant de pointer de nouveau.",
+     "delai": 30
+    }
+   },
+   {
+    "nom": "délai à 1 minute : pluriel",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 1,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_TROP_RAPPROCHE",
+     "motif": "Deux pointages de GARBA Yahouza à moins de 1 minute d’intervalle : le dernier date de 08:00.",
+     "geste": "Attendre 1 minute(s) avant de pointer de nouveau.",
+     "delai": 1
+    }
+   },
+   {
+    "nom": "journée complète",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "18:00",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "heureDepart": "17:00"
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_JOURNEE_COMPLETE",
+     "motif": "L’arrivée et le départ de GARBA Yahouza sont déjà pointés aujourd’hui.",
+     "geste": "Aucun pointage de plus aujourd’hui ; régulariser au registre si une heure est fausse.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "présence du jour sans heure d’arrivée (absence déclarée)",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "09:00",
+    "presences": [
+     {
+      "id": "PA2",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "absent",
+      "validationEtat": "a_valider"
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_PRESENCE_EXISTANTE",
+     "motif": "Une présence du jour est déjà portée pour GARBA Yahouza (absent) sans heure d’arrivée.",
+     "geste": "La régulariser au registre des présences.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "départ sur une présence déjà validée",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "17:00",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "valide",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_PRESENCE_VALIDEE",
+     "motif": "La présence du jour de GARBA Yahouza est déjà validée : un pointage validé ne se modifie pas.",
+     "geste": "La régulariser au registre des présences (motif, date et auteur consignés).",
+     "delai": null
+    }
+   },
+   {
+    "nom": "départ sur une présence d’avant le circuit (sans état : validée)",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "17:00",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "depart",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "17:00",
+     "etat": "valide",
+     "patch": {
+      "heureDepart": "17:00",
+      "departParBadge": "BDGA"
+     }
+    }
+   },
+   {
+    "nom": "une présence archivée ne compte pas",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "archive",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "origine": "badge",
+      "badgeId": "BDGA",
+      "badgeNumero": "BDG-V0001-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur surveillant",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "la présence d’un autre jour ne compte pas",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-02-28",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "origine": "badge",
+      "badgeId": "BDGA",
+      "badgeNumero": "BDG-V0001-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur surveillant",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "la présence d’un autre agent ne compte pas",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0002-2026",
+    "jour": "2027-03-01",
+    "heure": "08:01",
+    "presences": [
+     {
+      "id": "PA1",
+      "statut": "actif",
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    ],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP11",
+     "badgeId": "BDGB",
+     "heure": "08:01",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP11",
+      "employe": "IDRISSOU ANIKI Baba-Toundé",
+      "matricule": "11",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:01",
+      "origine": "badge",
+      "badgeId": "BDGB",
+      "badgeNumero": "BDG-V0002-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur surveillant",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "badge inconnu",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-INCONNU-0000",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "BADGE_INCONNU",
+     "motif": "BADGE INCONNU. Aucun badge ne porte ce numéro. Ce n’est pas un badge de la clinique, ou il a été émis avant la mise en service du registre.",
+     "geste": "Ne pas pointer ; déclarer la présence au registre, ou signaler le badge à la RH.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "badge expiré",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0003-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "BADGE_EXPIRE",
+     "motif": "BADGE EXPIRÉ. Validité échue le 01/01/2020. L’agent est connu du registre : le badge est à rééditer, ce n’est pas un refus d’identité.",
+     "geste": "Faire rééditer le badge, et déclarer la présence au registre.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "badge retiré",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0004-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "BADGE_RETIRE",
+     "motif": "BADGE RETIRÉ. Badge retiré — Perte, le 01/06/2026. Il ne vaut plus identification.",
+     "geste": "Ne pas pointer ; déclarer la présence au registre, ou signaler le badge à la RH.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "badge perdu",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0009-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "BADGE_RETIRE",
+     "motif": "BADGE RETIRÉ. Badge perdu / volé — Vol, le 01/07/2026. Il ne vaut plus identification.",
+     "geste": "Ne pas pointer ; déclarer la présence au registre, ou signaler le badge à la RH.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "badge non remis",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0005-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "BADGE_NON_REMIS",
+     "motif": "BADGE NON REMIS. Le badge est enregistré mais n’a pas encore été édité ni remis à l’agent : une carte qui circule alors qu’elle n’a pas été remise doit être signalée à la RH.",
+     "geste": "Ne pas pointer ; déclarer la présence au registre, ou signaler le badge à la RH.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "fiche archivée d’un badge retiré : la fiche se retrouve",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0010-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "BADGE_RETIRE",
+     "motif": "BADGE RETIRÉ. Badge retiré — Réédition — remplacement, le 01/05/2026. Il ne vaut plus identification.",
+     "geste": "Ne pas pointer ; déclarer la présence au registre, ou signaler le badge à la RH.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "code incohérent avec le matricule",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "CNT-BDG|MAT:99999|SER:BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "BADGE_INCOHERENT",
+     "motif": "Le code présenté annonce le matricule 99999, le registre porte le matricule 10 pour ce numéro de série.",
+     "geste": "Retenir le badge et le signaler à la RH.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "numéro illisible (vide)",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "   ",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "BADGE_ILLISIBLE",
+     "motif": "Aucun numéro de badge n’a été lu.",
+     "geste": "Scanner le badge ou saisir son numéro de série.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "agent du badge absent du personnel",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0006-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "AGENT_INTROUVABLE",
+     "motif": "L’agent de ce badge n’existe plus au personnel.",
+     "geste": "Signaler le badge à la RH.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "agent du badge archivé",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0007-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "AGENT_INTROUVABLE",
+     "motif": "L’agent de ce badge n’existe plus au personnel.",
+     "geste": "Signaler le badge à la RH.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "pointage désactivé",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": false,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_DESACTIVE",
+     "motif": "Le badge ne sert pas de pointage : le réglage est coupé au poste de la mère.",
+     "geste": "Vérifier le badge seulement, ou demander à la Directrice Administrative d’activer le pointage par badge.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "désactivé et badge inconnu : le réglage est jugé d’abord",
+    "role": "surveillant",
+    "acteur": "Vecteur surveillant",
+    "actif": false,
+    "delai": 5,
+    "texte": "BDG-INCONNU-0000",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_DESACTIVE",
+     "motif": "Le badge ne sert pas de pointage : le réglage est coupé au poste de la mère.",
+     "geste": "Vérifier le badge seulement, ou demander à la Directrice Administrative d’activer le pointage par badge.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "rôle da",
+    "role": "da",
+    "acteur": "Vecteur da",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "origine": "badge",
+      "badgeId": "BDGA",
+      "badgeNumero": "BDG-V0001-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur da",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "rôle admin",
+    "role": "admin",
+    "acteur": "Vecteur admin",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "origine": "badge",
+      "badgeId": "BDGA",
+      "badgeNumero": "BDG-V0001-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur admin",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "rôle direction",
+    "role": "direction",
+    "acteur": "Vecteur direction",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "origine": "badge",
+      "badgeId": "BDGA",
+      "badgeNumero": "BDG-V0001-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur direction",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "rôle rh",
+    "role": "rh",
+    "acteur": "Vecteur rh",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": true,
+     "geste": "arrivee",
+     "agentId": "EMP10",
+     "badgeId": "BDGA",
+     "heure": "08:00",
+     "etat": "a_valider",
+     "creation": {
+      "date": "2027-03-01",
+      "employeId": "EMP10",
+      "employe": "GARBA Yahouza",
+      "matricule": "10",
+      "service": "Soins infirmiers",
+      "etat": "present",
+      "heureArrivee": "08:00",
+      "origine": "badge",
+      "badgeId": "BDGA",
+      "badgeNumero": "BDG-V0001-2026",
+      "validationEtat": "a_valider",
+      "etapesFaites": [],
+      "saisiPar": "Vecteur rh",
+      "saisiLe": "2026-10-30"
+     }
+    }
+   },
+   {
+    "nom": "rôle caissier",
+    "role": "caissier",
+    "acteur": "Vecteur caissier",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_RESERVE",
+     "motif": "Le pointage par badge se fait au poste d’un habilité (surveillant, Directrice Administrative, Direction, administrateur).",
+     "geste": "Présenter le badge à un habilité.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "rôle medecin",
+    "role": "medecin",
+    "acteur": "Vecteur medecin",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_RESERVE",
+     "motif": "Le pointage par badge se fait au poste d’un habilité (surveillant, Directrice Administrative, Direction, administrateur).",
+     "geste": "Présenter le badge à un habilité.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "rôle assistant_comptable",
+    "role": "assistant_comptable",
+    "acteur": "Vecteur assistant_comptable",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_RESERVE",
+     "motif": "Le pointage par badge se fait au poste d’un habilité (surveillant, Directrice Administrative, Direction, administrateur).",
+     "geste": "Présenter le badge à un habilité.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "rôle infirmier",
+    "role": "infirmier",
+    "acteur": "Vecteur infirmier",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_RESERVE",
+     "motif": "Le pointage par badge se fait au poste d’un habilité (surveillant, Directrice Administrative, Direction, administrateur).",
+     "geste": "Présenter le badge à un habilité.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "rôle aide_soignant",
+    "role": "aide_soignant",
+    "acteur": "Vecteur aide_soignant",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_RESERVE",
+     "motif": "Le pointage par badge se fait au poste d’un habilité (surveillant, Directrice Administrative, Direction, administrateur).",
+     "geste": "Présenter le badge à un habilité.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "rôle ambulancier",
+    "role": "ambulancier",
+    "acteur": "Vecteur ambulancier",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-V0001-2026",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_RESERVE",
+     "motif": "Le pointage par badge se fait au poste d’un habilité (surveillant, Directrice Administrative, Direction, administrateur).",
+     "geste": "Présenter le badge à un habilité.",
+     "delai": null
+    }
+   },
+   {
+    "nom": "rôle caissier et badge inconnu : le rôle est jugé d’abord",
+    "role": "caissier",
+    "acteur": "Vecteur caissier",
+    "actif": true,
+    "delai": 5,
+    "texte": "BDG-INCONNU-0000",
+    "jour": "2027-03-01",
+    "heure": "08:00",
+    "presences": [],
+    "aujourdhui": "2026-10-30",
+    "attendu": {
+     "ok": false,
+     "code": "POINTAGE_RESERVE",
+     "motif": "Le pointage par badge se fait au poste d’un habilité (surveillant, Directrice Administrative, Direction, administrateur).",
+     "geste": "Présenter le badge à un habilité.",
+     "delai": null
+    }
+   }
+  ],
+  "reglages": [
+   {
+    "nom": "l’administrateur coupe le pointage",
+    "role": "admin",
+    "options": {
+     "actif": false
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": true,
+     "actif": false,
+     "delai": 5,
+     "avant": {
+      "actif": true,
+      "delai": 5
+     },
+     "enBase": {
+      "actif": false,
+      "delai": 5
+     }
+    }
+   },
+   {
+    "nom": "la DAF règle le délai",
+    "role": "da",
+    "options": {
+     "delai": 10,
+     "motif": "Vecteur"
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": true,
+     "actif": true,
+     "delai": 10,
+     "avant": {
+      "actif": true,
+      "delai": 5
+     },
+     "enBase": {
+      "actif": true,
+      "delai": 10
+     }
+    }
+   },
+   {
+    "nom": "délai à 0",
+    "role": "admin",
+    "options": {
+     "delai": 0
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": true,
+     "actif": true,
+     "delai": 0,
+     "avant": {
+      "actif": true,
+      "delai": 5
+     },
+     "enBase": {
+      "actif": true,
+      "delai": 0
+     }
+    }
+   },
+   {
+    "nom": "délai à 720 (borne haute)",
+    "role": "admin",
+    "options": {
+     "delai": 720
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": true,
+     "actif": true,
+     "delai": 720,
+     "avant": {
+      "actif": true,
+      "delai": 5
+     },
+     "enBase": {
+      "actif": true,
+      "delai": 720
+     }
+    }
+   },
+   {
+    "nom": "délai à 721",
+    "role": "admin",
+    "options": {
+     "delai": 721
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai entre deux pointages est un nombre entier de minutes, de 0 à 720.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": {
+      "actif": true,
+      "delai": 5
+     }
+    }
+   },
+   {
+    "nom": "délai négatif",
+    "role": "admin",
+    "options": {
+     "delai": -1
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai entre deux pointages est un nombre entier de minutes, de 0 à 720.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": {
+      "actif": true,
+      "delai": 5
+     }
+    }
+   },
+   {
+    "nom": "délai décimal",
+    "role": "admin",
+    "options": {
+     "delai": 2.5
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai entre deux pointages est un nombre entier de minutes, de 0 à 720.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": {
+      "actif": true,
+      "delai": 5
+     }
+    }
+   },
+   {
+    "nom": "délai non numérique",
+    "role": "admin",
+    "options": {
+     "delai": "abc"
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai entre deux pointages est un nombre entier de minutes, de 0 à 720.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": {
+      "actif": true,
+      "delai": 5
+     }
+    }
+   },
+   {
+    "nom": "délai texte numérique accepté",
+    "role": "admin",
+    "options": {
+     "delai": "15"
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": true,
+     "actif": true,
+     "delai": 15,
+     "avant": {
+      "actif": true,
+      "delai": 5
+     },
+     "enBase": {
+      "actif": true,
+      "delai": 15
+     }
+    }
+   },
+   {
+    "nom": "délai omis : le courant reste",
+    "role": "admin",
+    "options": {
+     "actif": false
+    },
+    "courant": {
+     "actif": true,
+     "delai": 12
+    },
+    "attendu": {
+     "ok": true,
+     "actif": false,
+     "delai": 12,
+     "avant": {
+      "actif": true,
+      "delai": 12
+     },
+     "enBase": {
+      "actif": false,
+      "delai": 12
+     }
+    }
+   },
+   {
+    "nom": "actif omis : le courant reste",
+    "role": "admin",
+    "options": {
+     "delai": 7
+    },
+    "courant": {
+     "actif": false,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": true,
+     "actif": false,
+     "delai": 7,
+     "avant": {
+      "actif": false,
+      "delai": 5
+     },
+     "enBase": {
+      "actif": false,
+      "delai": 7
+     }
+    }
+   },
+   {
+    "nom": "un médecin ne règle pas",
+    "role": "medecin",
+    "options": {
+     "actif": false
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "enBase": {
+      "actif": true,
+      "delai": 5
+     }
+    }
+   },
+   {
+    "nom": "un surveillant ne règle pas",
+    "role": "surveillant",
+    "options": {
+     "delai": 1
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "enBase": {
+      "actif": true,
+      "delai": 5
+     }
+    }
+   },
+   {
+    "nom": "la Direction ne règle pas",
+    "role": "direction",
+    "options": {
+     "delai": 1
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "enBase": {
+      "actif": true,
+      "delai": 5
+     }
+    }
+   },
+   {
+    "nom": "rôle non habilité et délai invalide : le rôle est jugé d’abord",
+    "role": "caissier",
+    "options": {
+     "delai": -5
+    },
+    "courant": {
+     "actif": true,
+     "delai": 5
+    },
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "enBase": {
+      "actif": true,
+      "delai": 5
+     }
+    }
+   }
+  ]
+ }
+}

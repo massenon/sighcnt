@@ -7,7 +7,8 @@
 //
 // `branche: false` : le réglage s'enregistre et se synchronise, mais l'écran qu'il commande ne le lit pas encore (lot à venir) ; l'écran des paramètres le dit.
 // Le lot L3 a branché `mecef.mode` (lu par la normalisation, voir `src/mecef/mode.dart`). Les lots L5 et L6 ont branché `planning.circuitPresences` et
-// `planning.agentModifieDirectement` (lus par le moteur du planning RH, `src/rh/planning_rh.dart`, et par la maquette).
+// `planning.agentModifieDirectement` (lus par le moteur du planning RH, `src/rh/planning_rh.dart`, et par la maquette). Les lots L7 et L8 ont branché
+// `paie.copieFichePaieTelephone` (`src/rh/espace_mes.dart`), `planning.badgeSertDePointage` et `planning.delaiEntrePointagesBadge` (`src/rh/pointage_badge.dart`).
 // Aucune de ces définitions n'est envoyée au téléphone (`mobile: false`) : la liste blanche est vide tant qu'un lot ne démontre pas le besoin (RG-13).
 
 import 'parametres.dart';
@@ -106,9 +107,9 @@ const List<DefinitionParametre> definitionsParametres = [
     type: TypeParametre.booleen,
     defaut: true,
     libelle: 'Copie chiffrée de la fiche de paie sur le téléphone',
-    aide: 'Oui : l\'agent garde une copie chiffrée de sa fiche de paie sur son téléphone.',
+    aide: 'Oui : l\'agent garde sur son téléphone une copie chiffrée de sa propre fiche de paie ÉMISE (diffusée), jamais celle d\'un autre, jamais l\'ensemble de la paie, jamais recalculée à l\'appareil. Le réglage lui-même ne va PAS au téléphone (famille « paie » réservée) : la mère décide de publier ou de retirer la copie.',
     source: _decisions,
-    branche: false,
+    branche: true,
     appliquePar: 'Lot L7 (espace « Mes »)',
   ),
   DefinitionParametre(
@@ -117,9 +118,20 @@ const List<DefinitionParametre> definitionsParametres = [
     type: TypeParametre.booleen,
     defaut: true,
     libelle: 'Le badge sert de pointage',
-    aide: 'Oui : le badge se relie au registre des présences.',
+    aide: 'Oui : un badge vérifié valide crée une présence « à valider » au registre (arrivée, puis départ au passage suivant), qui suit le circuit de validation des présences.',
     source: _decisions,
-    branche: false,
+    branche: true,
+    appliquePar: 'Lot L8 (badge et pointage)',
+  ),
+  DefinitionParametre(
+    cle: 'planning.delaiEntrePointagesBadge',
+    famille: 'planning',
+    type: TypeParametre.entier,
+    defaut: 5,
+    libelle: 'Délai minimal entre deux pointages par badge (minutes)',
+    aide: 'Deux passages du même badge plus rapprochés sont refusés. Entier de 0 à 720 ; 0 ne refuse jamais. Valeur d\'attente de 5 minutes : aucun document ne la fixe, proposition à valider par la Direction.',
+    source: 'Proposition à valider (lot L8) : aucun document ne fixe ce délai',
+    branche: true,
     appliquePar: 'Lot L8 (badge et pointage)',
   ),
 ];
