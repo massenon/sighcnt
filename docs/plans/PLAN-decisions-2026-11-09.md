@@ -115,3 +115,30 @@ Voir ECARTS-MAQUETTE E2322 : modèle, interface et protocole du boîtier ; dossi
 
 - L'adaptateur réel (lot M3) n'existe pas : le poste ne certifie aucune vente. `normaliserVente` est synchrone et devra le devenir.
 - Le libellé de l'état `en_attente` reste « En attente de transmission » (la parité N1 compare les libellés) ; les messages disent « en attente de certification ».
+
+
+## L4, L5, L6 : planning individuel, circuit de validation, propositions de l'agent (réalisé le 10/11/2026)
+
+### Ce qui est livré
+
+| Lot | Pièce | Où | Vérification |
+|---|---|---|---|
+| L4 | Régime individuel qui déroge champ par champ (vacations, repos, cycle, honoraire, périodicité), versions datées immuables, retour à la catégorie par une version, historique, contrôle de repos unique (dérogation comprise, avant et après la garde, double affectation) | maquette : `SIGH.planningRh` (fin de `parcours.js`), collection `regimesIndividuels`, carte « Régimes individuels » de « Planning & gardes » | « Vague 106 » (28 vérifications au geste ; échoue sur l'arbre d'avant) |
+| L4 | Filtres avancés du planning et du registre des vacations (onze critères, grille et registre, état filtré, export de la liste filtrée) ; seul le planning VALIDÉ compte (primes, paie, statistiques) | `m10-rh.js`, `m11-paie.js` | « Vague 106 », scénarios RH existants verts |
+| L5 | Circuit de validation (surveillant seul par défaut, DAF seule, surveillant puis DAF), réglé au poste, en base, journalisé ; pointages, congés et ordres de mission au même circuit ; avis du chef de service ; motif codé, justificatif, régularisation datée ; pièce non validée visible et non comptée | maquette : `SIGH.planningRh`, cartes de réglage, écrans `m10-presences`, `m10-conges`, `m10-missions`, kit (`actionsSup`, `avantTableau`), RBAC09 (surveillant ouvre congés et missions, `VERSION` 77) | « Vague 107 » (31 vérifications au geste ; échoue sur l'arbre d'avant), audit RBAC ciblé : 0 promesse |
+| L6 | L'agent propose (ajout, modification, retrait, échange), le surveillant valide ; contrôle à la proposition et à la validation ; visibilité par agent ; application directe réglable (non par défaut) | maquette : écran `m10-propositions-planning` (universel), collection `propositionsPlanning` | « Vague 108 » (20 vérifications au geste ; échoue sur l'arbre d'avant) |
+| L4 à L6 | Vecteurs tirés du moteur de la maquette | `prototype_html/build/vecteurs-planning-rh.js` → `packages/domaine/test/vecteurs/planning_rh.json` (126 cas) | régénérables |
+| L4 à L6 | Domaine Dart | `packages/domaine/lib/src/rh/planning_rh.dart`, registre L0 (`planning.circuitPresences` et `planning.agentModifieDirectement` à `branche: true`) | `dart test test/planning_rh_test.dart` : 129 verts, mutations vérifiées |
+| L4 à L6 | Poste : couche données et règles | `apps/poste/lib/donnees/planning_rh_poste.dart` | `flutter test test/planning_rh_poste_test.dart` : 11 verts |
+
+### Décisions de conception
+
+- **Un moteur, un seul contrôle.** Le contrôle d'incompatibilité était écrit deux fois dans les écrans (grille générale, rotation sécurité et entretien) : il vit au moteur, appelé par la grille, la rotation, la validation d'une proposition et l'application directe. « Quelle que soit la voie » se tient parce qu'il n'y a plus qu'une voie de code.
+- **Une dérogation ne se réécrit pas.** Même principe que la grille des primes, les plages par lot et le barème AIB : une fiche immuable par version, la valeur à une date est une fonction pure des fiches ; une date d'effet passée est refusée ; la vacation porte le régime sous lequel elle a été posée.
+- **La validation est un droit du circuit, pas du module.** Le surveillant OUVRE congés et missions sans pouvoir les saisir (`editer: false`) ; le moteur refuse tout autre rôle (`VALIDATION_RESERVEE`). L'audit RBAC compte ces gestes comme un droit propre.
+- **Une pièce d'avant le circuit n'est ni validée d'office ni à valider** : elle est lue d'après son état d'origine, sans migration de données.
+- **Rien n'est supposé sur le « chef de service »** : l'avis est consigné par un habilité au nom du chef choisi, faute de document qui le désigne.
+
+### Limites
+
+Voir ECARTS-MAQUETTE E2330 et E2331 : les écrans du poste ne sont pas portés (le moteur du poste l'est) ; vecteurs de parité `rhb.json`, fiches d'écran, `rbac.json` et `manifeste.json` non régénérés (écart du lot A5) ; accord du collègue sur un échange non recueilli ; tables relationnelles non ajoutées au schéma engendré ; suite complète du poste et de la maquette non lancées ; échec préexistant d'un scénario isolé (« Dépenses, compte de résultat… »).

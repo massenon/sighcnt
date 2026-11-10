@@ -164,7 +164,7 @@ List<String> typesAutorisesRh(RegimeRhResolu r) {
     return (refus: const RefusRh('DEROGATION_RESERVEE', 'Le régime individuel se règle par la Directrice Administrative ou l’administrateur.', 'Demander à la Directrice Administrative de poser la dérogation.'), champs: null);
   }
   if (!agentExiste) {
-    return (refus: const RefusRh('AGENT_INTROUVABLE', 'L’agent — n’existe pas au personnel.', 'Choisir un agent du personnel.'), champs: null);
+    return (refus: const RefusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.'), champs: null);
   }
   final d = dateEffet ?? '';
   if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(d)) {
@@ -248,7 +248,7 @@ RefusRh? controlerVacationRh({
   required String? type,
   String? ignoreId,
 }) {
-  if (agent == null) return const RefusRh('AGENT_INTROUVABLE', 'L’agent — n’existe pas au personnel.', 'Choisir un agent du personnel.');
+  if (agent == null) return const RefusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
   final d = (date ?? '').length >= 10 ? date!.substring(0, 10) : '';
   if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(d)) return const RefusRh('DATE_INVALIDE', 'La date de la vacation est absente ou illisible.', 'Choisir une date.');
   if (rhbTypePlanning(type) == null) return RefusRh('TYPE_INCONNU', 'Le type de vacation « $type » n’existe pas.', 'Choisir un type du référentiel.');
@@ -508,7 +508,7 @@ RefusRh? controlerPropositionRh({
   final cv = proposition['vacationId'] == null ? null : vac(proposition['vacationId']);
   if (t == 'ajout') {
     return agent == null
-        ? const RefusRh('AGENT_INTROUVABLE', 'L’agent — n’existe pas au personnel.', 'Choisir un agent du personnel.')
+        ? const RefusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.')
         : controle(agent, '${proposition['date']}', proposition['typeVacation'] as String?, null);
   }
   if (cv == null) return const RefusRh('VACATION_INTROUVABLE', 'La vacation visée n’existe plus au planning.', 'Choisir une vacation du planning.');
@@ -518,7 +518,7 @@ RefusRh? controlerPropositionRh({
   if (t == 'retrait') return null;
   if (t == 'modification') {
     return agent == null
-        ? const RefusRh('AGENT_INTROUVABLE', 'L’agent — n’existe pas au personnel.', 'Choisir un agent du personnel.')
+        ? const RefusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.')
         : controle(agent, '${proposition['date'] ?? cv['date']}', proposition['typeVacation'] as String?, '${cv['id']}');
   }
   if (t == 'echange') {

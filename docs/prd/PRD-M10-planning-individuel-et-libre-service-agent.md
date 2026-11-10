@@ -168,3 +168,8 @@ Le badge servira de pointage plus tard : un **réglage système** (CFG, admin et
 | Mobile et poste, rubriques « Mes… » | à créer | CRUD des vacations propres, présences propres, statuts de validation visibles |
 
 Exigences ajoutées à la v1 : (1) filtres avancés et options avancées (colonnes, export, impression filtrée, enregistrement d'un filtre) sur ces quatre écrans, avec les filtres relevés SUR LA PAGE par `print.js` ; (2) circuit de validation écrit au moteur, jamais seulement masqué à l'écran (refus nommé `VALIDATION_RESERVEE` pour un rôle non habilité) ; (3) RBAC : surveillant limité à son service (RG-13), agent limité à ses propres lignes.
+
+### Réalisation partielle du 10/11/2026 (lots L4 à L6, décisions du 09/11/2026)
+
+Q1 (déroge champ par champ), Q2 et Q3 (surveillant valide seul, circuit paramétrable, congés et missions au même circuit), Q4 (l'agent propose, réglage de modification directe) sont réalisés dans la maquette, le domaine Dart et la couche données du poste : voir `docs/plans/PLAN-decisions-2026-11-09.md` (section L4, L5, L6) et `ECARTS-MAQUETTE.md` E2325 à E2331. Restent : les écrans du poste, l'espace « Mes », le mobile (L7, L8, L9), l'accord du collègue sur un échange (EX-8).
+

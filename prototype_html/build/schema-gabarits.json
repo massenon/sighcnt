@@ -11,5 +11,13 @@
   "validationsReferentiels": {
     "source": "parcours.js validerReferentiel() (moteur de validation commun, module CFG) et store.js seed()",
     "fiche": { "id": "VRF-checklist-bloc", "statut": "actif", "famille": "checklists_bloc", "cible": "checklist-bloc", "libelle": "Check-listes d’entrée et de sortie du bloc", "valideLe": "2026-09-01", "validePar": "validation écrite du 01/09/2026", "valideRole": "Direction" }
+  },
+  "regimesIndividuels": {
+    "source": "parcours.js derogerRegime() (SIGH.planningRh.deroger, lot L4 : une fiche immuable par version de dérogation)",
+    "fiche": {"id": "RGI00001", "statut": "actif", "employeId": "EMP00001", "employe": "Dr Exemple", "matricule": "M0001", "fonction": "medecin", "categorie": "Médecins", "champs": {"repos": "repos24", "honoraire": 20000}, "retourCategorie": false, "dateEffet": "2026-11-10", "motif": "Gardes de ce médecin au rythme de 24 h", "version": 1, "creeLe": "2026-11-10", "creePar": "Directrice Administrative"}
+  },
+  "propositionsPlanning": {
+    "source": "parcours.js proposerPlanningRh() (SIGH.planningRh.proposer, lot L6 : proposition de planning de l'agent)",
+    "fiche": {"id": "PPL00001", "statut": "actif", "type": "ajout", "employeId": "EMP00001", "employe": "Dr Exemple", "fonction": "medecin", "service": "Médecine générale", "motif": "Je prends cette garde", "date": "2026-11-20", "typeVacation": "garde", "vacationId": "PLN00001", "contrepartieId": "PLN00002", "vacationType": "garde", "vacationDate": "2026-11-10", "contrepartie": "Dr Autre", "contrepartieDate": "2026-11-25", "contrepartieType": "garde", "etat": "proposee", "proposeeLe": "2026-11-10", "proposeePar": "Dr Exemple", "tranchePar": "Surveillant", "trancheLe": "2026-11-11", "motifRefus": "Effectif insuffisant", "motifValidation": "Ok", "appliquees": ["PLN00003"]}
   }
 }

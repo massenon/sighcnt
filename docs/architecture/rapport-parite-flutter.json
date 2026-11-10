@@ -2486,8 +2486,8 @@
   {
    "id": "mecef-config",
    "mesure": true,
-   "attendus": 24,
-   "presents": 24,
+   "attendus": 26,
+   "presents": 26,
    "taux": 1.0,
    "manquants": []
   },
