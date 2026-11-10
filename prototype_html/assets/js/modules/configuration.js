@@ -360,6 +360,8 @@
       var plats = colPostes().active();
       var host = el('div.space-y-3');
 
+      host.appendChild(K.note('L’organigramme imprimé suit la <strong>collection des postes</strong> de cet écran : un intitulé, un effectif, un titulaire ou un rattachement corrigé ici se retrouve sur la feuille. Il peut donc différer de l’organigramme papier de la clinique tant que les postes n’ont pas été mis à jour. Le marqueur étoile du papier n’est tracé que pour un poste qui le porte : aucune donnée ne le porte aujourd’hui.', { tone: 'info', icon: 'printer' }));
+
       var carte = el('div');
       racines.forEach(function (r) { carte.appendChild(arbre(r, 0)); });
       host.appendChild(U.card('Organigramme de la Clinique NASSIERA TOO', carte, [
@@ -434,23 +436,19 @@
         return wrap;
       }
 
+      /* L'IMPRESSION REPRODUIT LA MISE EN PAGE DE L'ORGANIGRAMME PAPIER (10/11/2026) : titre, boîtes par niveau,
+         connecteurs, A4 paysage. Le contenu vient de la collection des postes, jamais d'un texte en dur : ce qui
+         s'y corrige se retrouve sur la feuille. L'ancien état (tableau poste, rattachement, rôle) quitte cet
+         écran ; le tableau « Postes » ci-dessus et l'onglet « Poste → rôle → accès » le portent déjà. */
       function imprimer() {
         P.etat({
-          titre: 'Organigramme de la Clinique NASSIERA TOO',
-          sousTitre: 'Structure organisationnelle et correspondance des rôles',
-          cartouche: [['Effectif total', C.num(effectifTotal(racines)) + ' agents'],
-            ['Postes distincts', C.num(plats.length)],
-            ['Rôles définis', C.num(Object.keys(N.ROLES).length)],
-            ['Date d’édition', C.dateFR(AUJ)]],
-          contenu: P.tableau([
-            { label: 'Poste', key: 'poste' },
-            { label: 'Rattaché à', value: function (p) { return nomDe(p.parentId); } },
-            { label: 'Effectif', key: 'effectif', align: 'right' },
-            { label: 'Titulaire / chef de service', value: function (p) { return p.titulaire || '—'; } },
-            { label: 'Rôle dans le système', value: function (p) { return N.ROLES[p.role] ? N.ROLES[p.role].label : p.role; } },
-          ], plats),
-          signatures: [{ role: 'La Directrice Administrative', nom: 'TAKI Alimatou' },
-            { role: 'Le Directeur Médical', nom: 'BASSONGUI Chabi Séko' }],
+          titre: 'ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO',
+          orientation: 'paysage',
+          lieuDate: false, filtres: false,
+          contenu: el('div', null, [
+            P.organigramme(racines),
+            el('p.mt-3.text-\\[9px\\].text-slate-600', { text: 'Effectif entre parenthèses. C/S : chef de service.' }),
+          ]),
         });
       }
     }

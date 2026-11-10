@@ -296,7 +296,11 @@
     var o = Object.assign({
       titre: 'État', sousTitre: null, contenu: null, cartouche: null,
       signatures: null, filigrane: undefined, lieuDate: true, archive: true, date: null,
+      orientation: 'portrait',
     }, options);
+    /* QUATRIÈME GABARIT, LE A4 PAYSAGE (10/11/2026) : une option de l'état, portrait par défaut. Les états
+       existants ne la déclarent pas et ne changent donc pas d'un pixel. */
+    var paysage = o.orientation === 'paysage';
     var I = identitePour(o.date);
     /* Le filigrane par défaut est un réglage d'exploitation (cfg-branding) ; un appelant qui en nomme un
        (« Pro-forma », « AVOIR ») ou qui le refuse (`null`) garde la main. */
@@ -307,8 +311,9 @@
 
     /* --- Feuille A4 --- */
     var sheet = el('article.print-sheet.relative.mx-auto.bg-white.text-slate-900', {
-      style: 'width:210mm;min-height:297mm;padding:12mm;box-sizing:border-box;',
+      style: (paysage ? 'width:297mm;min-height:210mm;' : 'width:210mm;min-height:297mm;') + 'padding:12mm;box-sizing:border-box;',
     });
+    if (paysage) sheet.setAttribute('data-orientation', 'paysage');
 
     if (o.filigrane) {
       sheet.appendChild(el('div.pointer-events-none.absolute.inset-0.grid.place-items-center', null,
@@ -364,14 +369,14 @@
     inner.appendChild(pied(ref, I));
     sheet.appendChild(inner);
 
-    return afficher(sheet, o.titre, ref, false, o.archive);
+    return afficher(sheet, o.titre, ref, paysage ? '297mm' : false, o.archive, paysage);
   }
 
   /* --------------------------------------------------------------------------
    * Prévisualisation commune au A4 et au rouleau : la feuille vit dans
    * #print-root — seul élément imprimable — et s'affiche dans une surcouche.
    * ----------------------------------------------------------------------- */
-  function afficher(sheet, titre, ref, etroit, archivable) {
+  function afficher(sheet, titre, ref, etroit, archivable, paysage) {
     /* --- Prévisualisation --- */
     var host = root();
     C.clear(host);
@@ -421,8 +426,18 @@
       /* On replace la feuille dans #print-root le temps de l'impression. */
       host.appendChild(sheet);
       document.body.classList.add('printing');
+      /* @page ne se règle pas par élément : le format paysage s'annonce par une feuille de style posée le temps
+         de l'impression (elle suit celle du logiciel, qui déclare A4 portrait, donc elle l'emporte) puis retirée. */
+      var orient = null;
+      if (paysage) {
+        orient = document.createElement('style');
+        orient.id = 'print-orientation';
+        orient.textContent = '@media print{@page{size:A4 landscape;margin:0}}';
+        document.head.appendChild(orient);
+      }
       var restore = function () {
         document.body.classList.remove('printing');
+        if (orient && orient.parentNode) orient.parentNode.removeChild(orient);
         frame.appendChild(sheet);
         global.removeEventListener('afterprint', restore);
       };
@@ -440,7 +455,7 @@
       if (e.key === 'Escape' && document.body.contains(overlay)) { fermer(); document.removeEventListener('keydown', esc); }
     });
 
-    return { ref: ref, imprimer: imprimer, fermer: fermer, sheet: sheet };
+    return { ref: ref, imprimer: imprimer, fermer: fermer, sheet: sheet, orientation: paysage ? 'paysage' : 'portrait' };
   }
 
   /* ==========================================================================
@@ -747,6 +762,113 @@
     return ref;
   }
 
+  /* ==========================================================================
+   * ORGANIGRAMME, DIAGRAMME EN BOÎTES ET CONNECTEURS (10/11/2026)
+   * --------------------------------------------------------------------------
+   * Reproduit la mise en page de l'organigramme papier de la clinique : un
+   * titre, des boîtes rangées par niveau hiérarchique, des connecteurs qui
+   * montrent le rattachement. Il dessine ce que la COLLECTION des postes
+   * contient : rien n'est écrit en dur ici.
+   *
+   * `noeuds` : racines `{ poste, effectif, titulaire, chef, etoile, enfants }`.
+   * Le marqueur étoile cerclé n'est tracé QUE si le poste porte `etoile`
+   * (aucun document ne dit ce qu'il signifie : la donnée seule le décide).
+   * Aucune couleur en dur : les classes viennent du design system.
+   * Les mesures sont en millimètres, la feuille A4 paysage offre 273 mm de
+   * large (12 mm de marge de chaque côté).
+   * ======================================================================== */
+  function organigramme(noeuds, options) {
+    var o = Object.assign({ largeur: 273, hauteurMax: 112, hauteurBoite: 17, ecartMin: 6 }, options);
+    var racines = (noeuds || []).filter(Boolean);
+    /* Niveaux, dans l'ordre de l'arbre : un nœud connaît son rang dans sa rangée et son parent. */
+    var rangees = [];
+    (function parcourir(liste, niveau, parent) {
+      liste.forEach(function (n) {
+        var f = { n: n, parent: parent, enfants: [], x: 0, niveau: niveau };
+        if (parent) parent.enfants.push(f);
+        (rangees[niveau] = rangees[niveau] || []).push(f);
+        parcourir(n.enfants || [], niveau + 1, f);
+      });
+    })(racines, 0, null);
+    if (!rangees.length) return el('p.text-center.text-\\[10px\\].italic.text-slate-500', { text: 'Aucun poste actif à représenter.' });
+
+    var plus = rangees.reduce(function (m, r) { return Math.max(m, r.length); }, 1);
+    var W = o.largeur;
+    var fente = W / plus;
+    var bw = Math.max(24, fente - 4);
+    var bh = o.hauteurBoite;
+    var nb = rangees.length;
+    var ecart = nb > 1 ? Math.max(o.ecartMin, Math.min(14, (o.hauteurMax - nb * bh) / (nb - 1))) : 0;
+    var H = nb * bh + (nb - 1) * ecart;
+    function haut(r) { return r * (bh + ecart); }
+
+    /* Abscisses : chaque rangée se place sous ses parents (un enfant unique pile dessous, plusieurs enfants
+       centrés), puis les chevauchements se résolvent de gauche à droite et la rangée se recale dans la feuille. */
+    rangees.forEach(function (rg, r) {
+      var prevu = [];
+      rg.forEach(function (f, i) {
+        if (!f.parent) { prevu.push(W / 2 + (i - (rg.length - 1) / 2) * fente); return; }
+        var k = f.parent.enfants.length, j = f.parent.enfants.indexOf(f);
+        prevu.push(f.parent.x + (j - (k - 1) / 2) * fente);
+      });
+      var min = fente / 2;
+      rg.forEach(function (f, i) {
+        f.x = Math.max(prevu[i], i ? rg[i - 1].x + fente : min);
+      });
+      var depasse = rg[rg.length - 1].x - (W - fente / 2);
+      if (depasse > 0) rg.forEach(function (f) { f.x = Math.max(fente / 2, f.x - depasse); });
+    });
+
+    /* Connecteurs : tronc depuis le parent, barre horizontale à mi-écart, descente vers chaque enfant. Plusieurs
+       parents d'une même rangée se partagent l'écart à des hauteurs différentes. */
+    var traits = [];
+    function trait(x1, y1, x2, y2) { traits.push('<line x1="' + x1.toFixed(2) + '" y1="' + y1.toFixed(2) + '" x2="' + x2.toFixed(2) + '" y2="' + y2.toFixed(2) + '"/>'); }
+    var fleches = [];
+    rangees.forEach(function (rg, r) {
+      var parents = rg.filter(function (f) { return f.enfants.length; });
+      parents.forEach(function (p, j) {
+        var yb = haut(r) + bh, yh = haut(r + 1);
+        var ym = yb + (yh - yb) * (j + 1) / (parents.length + 1);
+        var xs = p.enfants.map(function (c) { return c.x; }).concat([p.x]);
+        trait(p.x, yb, p.x, ym);
+        trait(Math.min.apply(null, xs), ym, Math.max.apply(null, xs), ym);
+        p.enfants.forEach(function (c) {
+          trait(c.x, ym, c.x, yh - 0.6);
+          fleches.push('<path d="M' + (c.x - 0.9).toFixed(2) + ' ' + (yh - 1.8).toFixed(2) + ' L' + c.x.toFixed(2) + ' ' + (yh - 0.2).toFixed(2) + ' L' + (c.x + 0.9).toFixed(2) + ' ' + (yh - 1.8).toFixed(2) + ' Z"/>');
+        });
+      });
+    });
+
+    var cadre = el('div.org-diagramme.relative.mx-auto', {
+      style: 'width:' + W + 'mm;height:' + H.toFixed(2) + 'mm;', 'data-niveaux': String(nb),
+    });
+    var svg = el('div.absolute.inset-0.text-slate-500');
+    svg.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + 'mm" height="' + H.toFixed(2) + 'mm" viewBox="0 0 ' + W + ' ' + H.toFixed(2)
+      + '" aria-hidden="true"><g stroke="currentColor" stroke-width="0.35" stroke-linecap="square">' + traits.join('') + '</g><g fill="currentColor">' + fleches.join('') + '</g></svg>';
+    cadre.appendChild(svg);
+
+    rangees.forEach(function (rg, r) {
+      rg.forEach(function (f) {
+        var n = f.n;
+        var racine = !f.parent;
+        var boite = el('div.org-boite.absolute.flex.flex-col.items-center.justify-center.overflow-hidden.rounded-sm.border.px-1.text-center.leading-tight', {
+          class: racine ? 'border-navy-900 bg-navy-50 text-navy-950' : 'border-slate-500 bg-white text-slate-900',
+          style: 'left:' + (f.x - bw / 2).toFixed(2) + 'mm;top:' + haut(r).toFixed(2) + 'mm;width:' + bw.toFixed(2) + 'mm;height:' + bh + 'mm;box-sizing:border-box;',
+          'data-poste': n.poste,
+        });
+        boite.appendChild(el('span.text-\\[9px\\].font-bold', { text: n.poste + ' (' + C.pad(n.effectif || 0, 2) + ')' }));
+        if (n.titulaire) boite.appendChild(el('span.text-\\[8.5px\\]', { text: n.titulaire + (n.chef ? ' C/S' : '') }));
+        if (n.etoile) {
+          boite.appendChild(el('span.org-etoile.absolute.grid.place-items-center.rounded-full.border.border-slate-600.bg-white.text-\\[7px\\].leading-none', {
+            style: 'right:0.8mm;bottom:0.8mm;width:3.2mm;height:3.2mm;', text: '★', title: 'Marqueur porté par le poste',
+          }));
+        }
+        cadre.appendChild(boite);
+      });
+    });
+    return cadre;
+  }
+
   function S() { return global.SIGH.store; }
 
   global.SIGH.print = {
@@ -754,5 +876,6 @@
     tableau: tableau, cartouche: cartouche, signatures: signatures,
     filtresDeLaPage: filtresDeLaPage,
     badge: badge, planche: planche, carteBadge: carteBadge, CR80: CR80,
+    organigramme: organigramme,
   };
 })(window);

@@ -17098,6 +17098,158 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
+  await etape(async () => {
+    scenario('Vague 104 : l’organigramme imprimé reproduit le papier de la clinique en A4 paysage (titre, une boîte par poste de la collection, connecteurs, aucun numéro de téléphone manuscrit, orientation mesurée sur le PDF)');
+    erreursJS = [];
+    const O = outils100;
+    const os = require('os');
+    const { spawnSync } = require('child_process');
+    await O.sessionDe('admin');
+    await ouvrir('cfg-organisation.html');
+    const avant = await page.evaluate(async () => {
+      [...document.querySelectorAll('.tab')].find((t) => /Organigramme/.test(t.textContent)).click();
+      await new Promise((r) => setTimeout(r, 350));
+      const postes = window.SIGH.store.collection('postes').active();
+      return {
+        nb: postes.length,
+        note: /collection des postes/.test(document.getElementById('page-content').textContent),
+        bouton: [...document.querySelectorAll('#page-content button')].some((b) => /Imprimer l’organigramme/.test(b.textContent)),
+        arbre: document.querySelectorAll('#page-content div.mb-2.flex.flex-wrap.items-center.gap-2.rounded-lg.border').length,
+      };
+    });
+    verifier('L’écran garde son arbre (une ligne par poste), son bouton d’impression, et DIT que l’impression suit la collection des postes',
+      avant.nb === 16 && avant.arbre === avant.nb && avant.bouton && avant.note, JSON.stringify(avant));
+
+    /* Le clic ouvre l'aperçu ; window.print et les minuteries sont neutralisés le temps du clic pour que la feuille reste en place
+       (corps « printing », feuille dans #print-root, feuille d'orientation posée) : c'est EXACTEMENT l'état que Chrome imprime. */
+    const apercu = await page.evaluate(async () => {
+      const st = window.setTimeout; window.__imprimeAppels = 0; window.__printOrig = window.print;
+      window.print = () => { window.__imprimeAppels++; };
+      const btn = [...document.querySelectorAll('#page-content button')].find((b) => /Imprimer l’organigramme/.test(b.textContent));
+      btn.click();
+      await new Promise((r) => setTimeout(r, 200));
+      const feuille = document.querySelector('.print-chrome .print-sheet');
+      if (!feuille) return { feuille: false };
+      const r = feuille.getBoundingClientRect();
+      const larg = r.width / 96 * 25.4, haut = r.height / 96 * 25.4;
+      const cadre = feuille.querySelector('.org-diagramme');
+      const boites = [...feuille.querySelectorAll('.org-boite')];
+      const postes = window.SIGH.store.collection('postes').active();
+      const parIdPoste = {}; postes.forEach((p) => { parIdPoste[p.id] = p; });
+      const boiteDe = {}; boites.forEach((b) => { boiteDe[b.getAttribute('data-poste')] = b; });
+      let hierarchieOk = true, sansParent = 0;
+      postes.forEach((p) => {
+        const b = boiteDe[p.poste]; if (!b) { hierarchieOk = false; return; }
+        if (!p.parentId || !parIdPoste[p.parentId]) { sansParent++; return; }
+        const pb = boiteDe[parIdPoste[p.parentId].poste];
+        if (!pb || !(b.getBoundingClientRect().top > pb.getBoundingClientRect().bottom)) hierarchieOk = false;
+      });
+      const texteDiagramme = cadre ? cadre.textContent : '';
+      const texteFeuille = feuille.textContent;
+      const titre = feuille.querySelector('h1');
+      window.__st = st;
+      return {
+        feuille: true, larg: Math.round(larg), haut: Math.round(haut), attr: feuille.getAttribute('data-orientation'),
+        titre: titre ? titre.textContent : null,
+        nbBoites: boites.length, nbPostes: postes.length,
+        toutesLesBoites: postes.every((p) => !!boiteDe[p.poste] && boiteDe[p.poste].textContent.indexOf('(' + String(p.effectif).padStart(2, '0') + ')') >= 0 && (!p.titulaire || boiteDe[p.poste].textContent.indexOf(p.titulaire) >= 0)),
+        hierarchieOk, sansParent, traits: cadre ? cadre.querySelectorAll('svg line').length : 0, fleches: cadre ? cadre.querySelectorAll('svg path').length : 0,
+        etoiles: feuille.querySelectorAll('.org-etoile').length,
+        telDiagramme: /(\+?229|\b0\d[\s.]?\d\d[\s.]?\d\d[\s.]?\d\d[\s.]?\d\d\b|\d{2} \d{2} \d{2} \d{2})/.test(texteDiagramme),
+        manuscrit: /97 ?90 ?06|66 ?47|97 ?32 ?26|95 ?92|Anath|Anat/.test(texteFeuille),
+        enTete: !!feuille.querySelector('.print-entete'), pied: !!feuille.querySelector('.print-pied'),
+        classesEnDur: !!cadre && cadre.outerHTML.match(/style="[^"]*(#[0-9a-fA-F]{3,6}|rgb\()/g) === null,
+      };
+    });
+    verifier('Le clic imprime un état en PAYSAGE : feuille 297 mm de large pour 210 mm de haut, drapeau d’orientation porté par la feuille',
+      apercu.feuille && apercu.larg === 297 && apercu.haut >= 209 && apercu.haut <= 212 && apercu.attr === 'paysage', JSON.stringify(apercu));
+    verifier('Le titre est « ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO », sous l’en-tête officiel et avec le pied normalisé (mêmes que les autres états)',
+      apercu.titre === 'ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO' && apercu.enTete && apercu.pied, JSON.stringify([apercu.titre, apercu.enTete, apercu.pied]));
+    verifier('Une boîte par poste de la COLLECTION (16), avec son effectif entre parenthèses et son titulaire, et chaque poste rattaché est dessiné SOUS son parent',
+      apercu.nbBoites === 16 && apercu.nbBoites === apercu.nbPostes && apercu.toutesLesBoites && apercu.hierarchieOk && apercu.sansParent === 1, JSON.stringify(apercu));
+    verifier('Les connecteurs existent (un tronc et une descente par rattachement, 15 flèches) et AUCUNE étoile n’est tracée : aucune donnée ne la porte',
+      apercu.traits >= 15 && apercu.fleches === 15 && apercu.etoiles === 0, JSON.stringify([apercu.traits, apercu.fleches, apercu.etoiles]));
+    verifier('Aucun numéro de téléphone dans le diagramme ni aucune mention manuscrite de la photo, et aucune couleur en dur',
+      apercu.telDiagramme === false && apercu.manuscrit === false && apercu.classesEnDur, JSON.stringify([apercu.telDiagramme, apercu.manuscrit, apercu.classesEnDur]));
+
+    /* Le bouton « Imprimer / Enregistrer en PDF » : l'orientation est annoncée à l'impression, et la feuille tient sur UNE page. */
+    const imprimeEtat = await page.evaluate(async () => {
+      window.setTimeout = () => 0;
+      const b = [...document.querySelectorAll('.print-chrome button')].find((x) => /Imprimer \/ Enregistrer/.test(x.textContent));
+      b.click();
+      window.setTimeout = window.__st;
+      const style = document.getElementById('print-orientation');
+      return { appels: window.__imprimeAppels, style: style ? style.textContent : null, imprimant: document.body.classList.contains('printing'),
+        dansRacine: !!document.querySelector('#print-root .print-sheet[data-orientation="paysage"]') };
+    });
+    verifier('À l’impression, la feuille passe dans la racine d’impression et la feuille de style annonce A4 landscape',
+      imprimeEtat.appels === 1 && /landscape/.test(imprimeEtat.style || '') && imprimeEtat.imprimant && imprimeEtat.dansRacine, JSON.stringify(imprimeEtat));
+    await page.emulateMediaType('print');
+    const pdfBuf = Buffer.from(await page.pdf({ preferCSSPageSize: true, printBackground: true }));
+    await page.emulateMediaType('screen');
+    const pdfTxt = pdfBuf.toString('latin1');
+    const boxes = [...pdfTxt.matchAll(/\/MediaBox\s*\[\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\]/g)].map((m) => [Number(m[3]) - Number(m[1]), Number(m[4]) - Number(m[2])]);
+    const pages = (pdfTxt.match(/\/Type\s*\/Page[^s]/g) || []).length;
+    const fichierPdf = path.join(os.tmpdir(), 'sigh-org-' + process.pid + '.pdf');
+    fs.writeFileSync(fichierPdf, pdfBuf);
+    const pt = spawnSync('pdftotext', ['-layout', fichierPdf, '-'], { encoding: 'utf8' });
+    try { fs.unlinkSync(fichierPdf); } catch (e) { /* déjà retiré */ }
+    const txt = pt.status === 0 ? pt.stdout : null;
+    verifier('PDF mesuré : page A4 en PAYSAGE (largeur > hauteur, 842 x 595 pt) et UNE seule page',
+      boxes.length > 0 && boxes.every((b) => b[0] > b[1] && Math.abs(b[0] - 841.9) < 3 && Math.abs(b[1] - 595.3) < 3) && pages === 1, JSON.stringify({ boxes, pages }));
+    const attendus = ['ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO', 'Directeur Médical (01)', 'BASSONGUI Chabi Séko', 'Laborantins (02)', 'Infirmiers (08)', 'Agents de Sécurité (03)', 'Chauffeur Coursier (01)', 'Assistant Comptable (01)'];
+    verifier('Le texte du PDF (pdftotext) porte le titre et les boîtes de la collection, et aucun numéro manuscrit de la photo',
+      txt === null ? true : (attendus.every((a) => txt.replace(/\s+/g, ' ').indexOf(a) >= 0) && !/97 ?90 ?06|66 ?47|97 ?32 ?26|95 ?92 ?\d\d|Anath/.test(txt)),
+      txt === null ? 'pdftotext absent : contrôle réduit au DOM' : JSON.stringify(attendus.filter((a) => txt.replace(/\s+/g, ' ').indexOf(a) < 0)));
+
+    /* Une modification de la collection se retrouve sur la feuille : la sonde mesure le branchement, pas un texte en dur. */
+    await page.evaluate(() => {
+      document.querySelectorAll('.print-chrome').forEach((o) => o.remove());
+      document.getElementById('print-orientation')?.remove();
+      document.body.classList.remove('printing'); document.body.style.overflow = '';
+      const r = document.getElementById('print-root'); if (r) r.innerHTML = '';
+      window.print = window.__printOrig;
+    });
+    const suivi = await page.evaluate(async () => {
+      const col = window.SIGH.store.collection('postes');
+      const da = col.active().filter((p) => /Directrice/.test(p.poste))[0];
+      const ins = col.insert({ poste: 'Service Sonde 104', parentId: da.id, effectif: 3, titulaire: 'SONDE Quatre', chef: true, etoile: true, role: 'agentadmin' });
+      window.print = () => {};
+      const st = window.setTimeout; window.setTimeout = () => 0;
+      [...document.querySelectorAll('.tab')].find((t) => /Organigramme/.test(t.textContent)).click();
+      await new Promise((r) => st(r, 350));
+      const btn = [...document.querySelectorAll('#page-content button')].find((b) => /Imprimer l’organigramme/.test(b.textContent));
+      btn.click(); await new Promise((r) => st(r, 200));
+      window.setTimeout = st;
+      const nouvelle = document.querySelector('.org-boite[data-poste="Service Sonde 104"]');
+      const out = { boite: !!nouvelle, texte: nouvelle ? nouvelle.textContent : '', etoile: !!(nouvelle && nouvelle.querySelector('.org-etoile')), n: document.querySelectorAll('.print-chrome .org-boite').length };
+      document.querySelectorAll('.print-chrome').forEach((o) => o.remove());
+      document.body.style.overflow = ''; const r = document.getElementById('print-root'); if (r) r.innerHTML = '';
+      col.archive ? col.archive(ins.record.id) : col.update(ins.record.id, { statut: 'archive' });
+      window.print = window.__printOrig;
+      return out;
+    });
+    verifier('Un poste ajouté à la collection apparaît sur la feuille (effectif, titulaire, C/S) ; l’étoile ne se trace que pour le poste qui la porte',
+      suivi.boite && /Service Sonde 104 \(03\)/.test(suivi.texte) && /SONDE Quatre C\/S/.test(suivi.texte) && suivi.etoile && suivi.n === 17, JSON.stringify(suivi));
+
+    /* Les états existants restent en portrait : l'impression de la répartition des secteurs (même écran) ne change pas. */
+    const portrait = await page.evaluate(async () => {
+      window.print = () => {};
+      [...document.querySelectorAll('.tab')].find((t) => /Secteurs/.test(t.textContent)).click();
+      await new Promise((r) => setTimeout(r, 350));
+      [...document.querySelectorAll('#page-content button')].find((b) => /Imprimer la répartition/.test(b.textContent)).click();
+      await new Promise((r) => setTimeout(r, 200));
+      const f = document.querySelector('.print-chrome .print-sheet');
+      const out = { larg: f ? Math.round(f.getBoundingClientRect().width / 96 * 25.4) : null, attr: f ? f.getAttribute('data-orientation') : 'absente' };
+      document.querySelectorAll('.print-chrome').forEach((o) => o.remove());
+      document.body.style.overflow = ''; const r = document.getElementById('print-root'); if (r) r.innerHTML = '';
+      window.print = window.__printOrig;
+      return out;
+    });
+    verifier('Un état existant (répartition des secteurs) reste en A4 portrait, sans drapeau d’orientation', portrait.larg === 210 && portrait.attr === null, JSON.stringify(portrait));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }
