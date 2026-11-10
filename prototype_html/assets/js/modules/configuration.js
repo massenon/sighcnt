@@ -5246,6 +5246,9 @@
       var colV = S.collection('baremeAib', { module: 'CFG', entite: 'version du barème de l’AIB', prefix: 'BAI' });
       var colS = S.collection('situationsAib', { module: 'CFG', entite: 'situation de l’acheteur (AIB)', prefix: 'SAI' });
       function colReglages() { return S.collection('reglagesAib', { module: 'CFG', entite: 'réglage de l’AIB', prefix: 'RAI' }); }
+      /* Déclarés AVANT le premier rendu : une affectation placée après l'appel de dessiner() serait lue sur undefined (piège du dépôt). */
+      var RG = global.SIGH.reglagesAib;
+      var periodeAchats = { du: null, au: null };
       dessiner();
       return null;
 
@@ -5331,8 +5334,6 @@
       }
 
       /* --- Les réglages de l'AIB (lot L2) : charge des 5 %, branchement sur les achats, comptes. Une version ne se réécrit pas : « Modifier » en crée une. --- */
-      var RG = global.SIGH.reglagesAib;
-      var periodeAchats = { du: null, au: null };
       function libelleValeur(def, valeur) {
         if (valeur == null || valeur === '') return 'Non choisi';
         if (def.type === 'choix') return (def.valeurs.filter(function (x) { return x.value === valeur; })[0] || {}).label || valeur;

@@ -16871,6 +16871,236 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript pendant la sonde de texte, le fileul et la fiche archivée', erreursJS.length === 0, erreursJS.join(' | '));
   });
 
+  /* ===========================================================================
+   * Vague 103 : les réglages de l'AIB (Direction, 09/11/2026, lot L2) : charge des 5 %, branchement différé sur les achats
+   * -------------------------------------------------------------------------
+   * Q1 : le barème et les réglages se valident par la famille `bareme_aib` (formulaire au geste, profil de la famille / hors famille). Q7 : la charge
+   * des 5 % (défaut « clinique », réglage non arrêté) est portée par la vente, jamais sans effet comptable. Q5 : le branchement sur les achats est
+   * DÉSACTIVÉ par défaut (le moteur liste, n'écrit rien), et activé il n'écrit que ce qui est listé. Q3 : le taux de chaque ligne vient de la situation
+   * du fournisseur et de la date. Les fiches de sonde et les collections touchées sont restituées à l'instantané en sortant.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 103 : réglages de l’AIB (validation au geste, charge clinique puis changée et relue, branchement désactivé sans écriture, activé seulement ce qui est listé, taux par situation et par date, refus nommés)');
+    erreursJS = [];
+    const O = outils100;
+    const NOMS = ['reglagesAib', 'validationsReferentiels', 'ecritures', 'facturesFournisseurs', 'fournisseurs', 'factures', 'audit'];
+    const snap = await page.evaluate((noms) => {
+      const S = window.SIGH.store, brut = S.raw(), out = {};
+      noms.forEach((n) => { if (n !== 'audit') S.collection(n).all(); out[n] = JSON.parse(JSON.stringify(brut[n] || [])); });
+      return out;
+    }, NOMS);
+    const restituer = () => page.evaluate((s) => {
+      const S = window.SIGH.store, brut = S.raw();
+      Object.keys(s).forEach((n) => { const arr = brut[n]; if (!arr) return; arr.length = 0; s[n].forEach((x) => arr.push(x)); });
+      S.save();
+    }, snap);
+    await O.sessionDe('admin');
+    await ouvrir('cfg-bareme-aib.html');
+    await O.sessionDe('comptable');
+
+    /* --- 1. l'état de départ : défauts de la Direction, rien d'inventé ----------------------------------------------------------------------- */
+    const d0 = await page.evaluate(() => {
+      const RG = window.SIGH.reglagesAib, S = window.SIGH.store;
+      const c = RG.charge('2026-08-16'), b = RG.branchement('2026-08-16');
+      const a = RG.aLaDate('compteAcompte', '2026-08-16'), k = RG.aLaDate('compteContrepartie', '2026-08-16');
+      return { charge: [c.ok, c.valeur, c.arrete, !!c.message], branchement: [b.actif, b.valeur, b.arrete], acompte: a.code || a.ok, contrepartie: k.code || k.ok, nb: S.collection('reglagesAib').active().length,
+        defs: window.SIGH.data.REGLAGES_AIB.map((x) => x.cle).join(',') };
+    });
+    verifier('Départ : la charge est « clinique » NON ARRÊTÉE (le texte officiel manque, l’écran le dit), le branchement est DÉSACTIVÉ, aucun compte n’est présélectionné (AIB_REGLAGE_SANS_VERSION), deux versions semées',
+      d0.charge[0] && d0.charge[1] === 'clinique' && d0.charge[2] === false && d0.charge[3] === true && d0.branchement[0] === false && d0.branchement[1] === 'desactive'
+      && d0.acompte === 'AIB_REGLAGE_SANS_VERSION' && d0.contrepartie === 'AIB_REGLAGE_SANS_VERSION' && d0.nb === 2 && d0.defs === 'chargePrelevement,branchementAchats,compteAcompte,compteContrepartie', JSON.stringify(d0));
+
+    /* --- 2. des factures fournisseurs de sonde : deux situations, deux dates --------------------------------------------------------------- */
+    const creerFactures = () => page.evaluate(() => {
+      const S = window.SIGH.store;
+      const fo = S.collection('fournisseurs');
+      if (!fo.all().some((f) => f.code === 'S103A')) {
+        fo.insert({ code: 'S103A', nom: 'Fournisseur S103 avec IFU', ifu: '3201642748214' });
+        fo.insert({ code: 'S103B', nom: 'Fournisseur S103 sans IFU' });
+      }
+      const ff = S.collection('facturesFournisseurs', { module: 'M7', entite: 'FactureFournisseur' });
+      const mk = (ref, four, nom, date, montant) => ff.insert({ reference: ref, fournisseur: four, fournisseurNom: nom, date: date, montantFacture: montant, montantLivraison: montant, statutPaiement: 'impayee' }).record.id;
+      return {
+        a1: mk('FF-S103-A1', 'S103A', 'Fournisseur S103 avec IFU', '2026-06-10', 100000),
+        b1: mk('FF-S103-B1', 'S103B', 'Fournisseur S103 sans IFU', '2026-06-10', 100000),
+        b2: mk('FF-S103-B2', 'S103B', 'Fournisseur S103 sans IFU', '2026-10-10', 100000),
+        a2: mk('FF-S103-A2', 'S103A', 'Fournisseur S103 avec IFU', '2026-10-10', 250000),
+      };
+    });
+    await creerFactures();
+    const liste = await page.evaluate(() => {
+      const L = window.SIGH.reglagesAib.achatsAEcrire({ du: '2026-06-01', au: '2026-12-31' });
+      const t = {}; L.lignes.filter((l) => /^FF-S103/.test(l.reference)).forEach((l) => { t[l.reference] = [l.taux, l.situation, l.aib, l.supporte, l.chargeArretee, l.refus || null]; });
+      return { t: t, ecrire: L.ecrire, aEcrire: L.aEcrire, br: L.branchement.actif, message: L.message };
+    });
+    verifier('Taux par situation et par DATE : le fournisseur avec IFU est à 1 % aux deux dates, le fournisseur sans IFU à 1 % avant le 07/09/2026 et à 5 % après (le montant arrondi à l’entier), la charge de chaque ligne vient du réglage (clinique, non arrêté)',
+      liste.t['FF-S103-A1'][0] === 1 && liste.t['FF-S103-A1'][2] === 1000 && liste.t['FF-S103-A1'][1] === 'ifu_actif' && liste.t['FF-S103-A2'][0] === 1 && liste.t['FF-S103-A2'][2] === 2500
+      && liste.t['FF-S103-B1'][0] === 1 && liste.t['FF-S103-B1'][2] === 1000 && liste.t['FF-S103-B1'][1] === 'ifu_inactif_ou_absent' && liste.t['FF-S103-B2'][0] === 5 && liste.t['FF-S103-B2'][2] === 5000
+      && liste.t['FF-S103-B2'][3] === 'clinique' && liste.t['FF-S103-B2'][4] === false, JSON.stringify(liste.t));
+    verifier('Branchement désactivé : la liste est un APERÇU (ecrire faux, le message le dit)', liste.br === false && liste.ecrire === false && /APERÇU/.test(liste.message), liste.message);
+
+    /* --- 3. désactivé : aucune écriture, au moteur ET à l'écran --------------------------------------------------------------------------- */
+    const avant3 = await page.evaluate(() => window.SIGH.store.collection('ecritures').all().length);
+    const r3 = await page.evaluate(() => { const r = window.SIGH.reglagesAib.ecrireAchats({ du: '2026-06-01', au: '2026-12-31' }); return { ok: r.ok, code: r.code, raisons: r.raisons || null }; });
+    const apres3 = await page.evaluate(() => window.SIGH.store.collection('ecritures').all().length);
+    verifier('Branchement désactivé : écrire est REFUSÉ en le nommant (AIB_BRANCHEMENT_DESACTIVE) et le journal des écritures ne bouge pas', r3.ok === false && r3.code === 'AIB_BRANCHEMENT_DESACTIVE' && avant3 === apres3, JSON.stringify([r3, avant3, apres3]));
+    await ouvrir('cfg-bareme-aib.html');
+    const ecran3 = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const t = [...document.querySelectorAll('#page-content [role="tab"]')].find((x) => x.textContent.trim().indexOf('Achats à écrire') === 0);
+      if (t) t.click(); await pause(500);
+      const txt = document.getElementById('page-content').textContent;
+      return { onglet: !!t, bouton: [...document.querySelectorAll('#page-content button')].some((b) => /^Écrire /.test(b.textContent.trim())), apercu: /APERÇU/.test(txt), ligne: txt.indexOf('FF-S103') >= 0 || txt.indexOf('Aucune facture') >= 0 };
+    });
+    verifier('À l’écran, l’onglet « Achats à écrire » liste sans écrire : la commande « Écrire » est ABSENTE, le message dit « APERÇU »', ecran3.onglet && !ecran3.bouton && ecran3.apercu, JSON.stringify(ecran3));
+
+    /* --- 4. refus nommés ---------------------------------------------------------------------------------------------------------------------------- */
+    const refus = await page.evaluate(() => {
+      const RG = window.SIGH.reglagesAib, S = window.SIGH.store;
+      const base = { cle: 'branchementAchats', valeur: 'actif', dateEffet: '2026-08-16', motif: 'Sonde 103' };
+      const out = {};
+      out.incomplet = RG.definir(base); out.incompletCode = out.incomplet.code; out.manque = (out.incomplet.manque || []).length;
+      out.inconnu = RG.definir({ cle: 'inexistant', valeur: 'x', dateEffet: '2026-08-16', motif: 'm' }).code;
+      out.valeur = RG.definir({ cle: 'chargePrelevement', valeur: 'personne', dateEffet: '2026-08-16', motif: 'm' }).code;
+      out.compte = RG.definir({ cle: 'compteAcompte', valeur: '999999', dateEffet: '2026-08-16', motif: 'm' }).code;
+      out.motif = RG.definir({ cle: 'chargePrelevement', valeur: 'acheteur', dateEffet: '2026-08-16', motif: '  ' }).code;
+      out.date = RG.definir({ cle: 'chargePrelevement', valeur: 'acheteur', dateEffet: 'demain', motif: 'm' }).code;
+      out.existe = RG.definir({ cle: 'chargePrelevement', valeur: 'acheteur', dateEffet: '2026-01-01', motif: 'm' }).code;
+      out.anterieure = RG.definir({ cle: 'branchementAchats', valeur: 'desactive', dateEffet: '2025-12-31', motif: 'm' }).code;
+      out.sansVersion = RG.aLaDate('compteAcompte', '2026-08-16').code;
+      out.reglageInconnu = RG.aLaDate('inexistant', '2026-08-16').code;
+      out.nb = S.collection('reglagesAib').active().length;
+      return out;
+    });
+    verifier('Refus NOMMÉS, rien d’écrit : activation incomplète (deux comptes et charge manquants, trois raisons), réglage inconnu, valeur non admise, compte hors plan, motif absent, date illisible, date d’effet déjà prise, date antérieure',
+      refus.incompletCode === 'AIB_BRANCHEMENT_INCOMPLET' && refus.manque === 3 && refus.inconnu === 'AIB_REGLAGE_INCONNU' && refus.valeur === 'AIB_VALEUR_INVALIDE' && refus.compte === 'AIB_COMPTE_INCONNU'
+      && refus.motif === 'AIB_MOTIF_ABSENT' && refus.date === 'AIB_DATE_INVALIDE' && refus.existe === 'AIB_DATE_EXISTANTE' && refus.anterieure === 'AIB_DATE_ANTERIEURE' && refus.sansVersion === 'AIB_REGLAGE_SANS_VERSION'
+      && refus.reglageInconnu === 'AIB_REGLAGE_INCONNU' && refus.nb === 2, JSON.stringify(refus));
+    const droits = {};
+    for (const role of ['direction', 'caissier', 'da']) {
+      await O.sessionDe(role);
+      droits[role] = await page.evaluate(() => { const r = window.SIGH.reglagesAib.definir({ cle: 'chargePrelevement', valeur: 'acheteur', dateEffet: '2030-01-01', motif: 'Sonde 103 : droits' }); if (r.ok) window.SIGH.store.collection('reglagesAib').archive(r.id, 'Sonde 103 : droits'); return r.ok ? 'ok' : r.code; });
+    }
+    await O.sessionDe('comptable');
+    verifier('Le réglage s’écrit par le comptable et la DAF ; la Direction et le caissier sont refusés en le nommant (AIB_ECRITURE_RESERVEE)', droits.direction === 'AIB_ECRITURE_RESERVEE' && droits.caissier === 'AIB_ECRITURE_RESERVEE' && droits.da === 'ok', JSON.stringify(droits));
+    await restituer();
+
+    /* --- 5. la validation au GESTE : profil de la famille / hors famille ------------------------------------------------------------------ */
+    await O.sessionDe('caissier');
+    const horsFamille = await page.evaluate(() => { const V = window.SIGH.validations; return { peut: window.SIGH.kit.peutValider('bareme_aib'), refus: V.validerReferentiel('bareme_aib', 'RAI001').code }; });
+    await O.sessionDe('direction');
+    await ouvrir('cfg-bareme-aib.html');
+    await page.evaluate(async () => { const t = [...document.querySelectorAll('#page-content [role="tab"]')].find((x) => x.textContent.trim().indexOf('Réglages') === 0); if (t) t.click(); await new Promise((r) => setTimeout(r, 500)); });
+    const avantV = await page.evaluate(() => ({ boutons: [...document.querySelectorAll('#page-content button')].filter((b) => /^Valider/.test(b.getAttribute('title') ? b.textContent.trim() : '') || /^Valider « /.test(b.getAttribute('title') || '')).length, etat: window.SIGH.reglagesAib.charge('2026-08-16').arrete }));
+    const cl = await O.cliquerLigne('Valider « ', 'Qui supporte');
+    const conf = await O.cliquerModale('Valider');
+    await pause(800);
+    const apresV = await page.evaluate(() => { const r = window.SIGH.reglagesAib.charge('2026-08-16'); const f = window.SIGH.store.collection('reglagesAib').get(r.versionId); return { arrete: r.arrete, valideLe: !!f.valideLe, validePar: f.validePar || null, aValider: f.aValider, journal: window.SIGH.store.raw().audit.some((a) => /alid/.test(a.action || '') && /RAI001|reglagesAib|bareme_aib/.test(JSON.stringify(a))) }; });
+    verifier('Validation au geste : hors famille (caissier) la commande est ABSENTE et le moteur refuse (VALIDATION_RESERVEE) ; la Direction, de la famille, voit « Valider » sur la charge, confirme, et le réglage devient ARRÊTÉ (date, auteur, journal)',
+      horsFamille.peut === false && horsFamille.refus === 'VALIDATION_RESERVEE' && avantV.etat === false && cl === 'ok' && conf && apresV.arrete === true && apresV.valideLe && !!apresV.validePar && apresV.journal, JSON.stringify([horsFamille, avantV, cl, conf, apresV]));
+    await restituer();
+
+    /* --- 6. la charge changée À L'ÉCRAN par le comptable, relue sur un autre chargement, portée par la vente ------------------------------------ */
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const mk = (cle) => {
+        const L = (id, brut) => ({ id, categorie: 'acte', designation: 'Acte ' + id, quantite: 1, prixUnitaire: brut, prixUnitaireNet: brut, montantBrut: brut, remise: 0, montant: brut, partAssureur: 0, partPersonnel: 0, partPatient: brut, statutPaiement: 'du', montantRegle: 0 });
+        return S.collection('factures', { module: 'M8', entite: 'Facture' }).insert({ numero: 'FN-2099-S103' + cle, patientId: 'P103', patient: 'SONDE Aib 103', patientCode: 'CNT/103/26', date: '2026-08-16', type: 'Consultation',
+          lignes: [L('L001', 10000)], montantHT: 10000, montantTTC: 10000, montantRemises: 0, assureur: null, partAssurance: 0, partPatient: 10000, montantPaye: 0, reliquat: 10000, modePaiement: 'especes',
+          statutPaiement: 'impayee', statutMecef: 'en_attente', proforma: false }).record.id;
+      };
+      const sauve = { reglage: S.reglage('mecefBoitier', { compteur: 0, emissions: [] }), mode: S.reglage('mecefMode', 'boitier') };
+      const auj = window.SIGH.core.iso(window.SIGH.core.aujourdhui());
+      const a = mk('A');
+      const rA = window.SIGH.parcours.encaisser(a, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur S103 A' } });
+      const fa = S.collection('factures').get(a);
+      return { a, b: mk('B'), sauve, auj, venteAvant: { charge: fa.aibCharge, arretee: fa.aibChargeArretee, ok: !!(rA.normalisation && rA.normalisation.ok) } };
+    });
+    await O.sessionDe('comptable');
+    await ouvrir('cfg-bareme-aib.html');
+    await page.evaluate(async () => { const t = [...document.querySelectorAll('#page-content [role="tab"]')].find((x) => x.textContent.trim().indexOf('Réglages') === 0); if (t) t.click(); await new Promise((r) => setTimeout(r, 500)); });
+    const m6 = await O.cliquerLigne('Modifier', 'Qui supporte');
+    await pause(400);
+    const vals = await page.evaluate((auj) => {
+      const sel = document.querySelector('.modal-root [name="valeur"], [role=dialog] [name="valeur"]');
+      const poser = (n, v) => { const c = document.querySelector('.modal-root [name="' + n + '"], [role=dialog] [name="' + n + '"]'); if (!c) return false; c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); return true; };
+      return { options: sel ? [...sel.options].map((o) => o.value) : null, champs: [poser('valeur', 'acheteur'), poser('dateEffet', auj), poser('motif', 'Sonde 103 : charge changée à l’écran')] };
+    }, monde.auj);
+    const enr = await O.cliquerModale('Enregistrer la version');
+    await pause(1500);
+    const charge6 = await page.evaluate((auj) => { const RG = window.SIGH.reglagesAib, C = window.SIGH.core; const veille = C.iso(C.addDays(auj, -1)); const v = RG.versionsDe('chargePrelevement'); return { veille, av: RG.charge(veille).valeur, ap: RG.charge(auj), nb: v.length, fermee: v[0].dateFin, arrete: RG.charge(auj).arrete }; }, monde.auj);
+    await ouvrir('cfg-bareme-aib.html');
+    await pause(500);
+    const relue = await page.evaluate((auj) => { const RG = window.SIGH.reglagesAib, C = window.SIGH.core; return { av: RG.charge(C.iso(C.addDays(auj, -1))).valeur, ap: RG.charge(auj).valeur, nb: RG.versionsDe('chargePrelevement').length }; }, monde.auj);
+    verifier('Charge : « clinique » par défaut, puis changée À L’ÉCRAN en « acheteur » à effet du jour : deux choix proposés, la version précédente est fermée à la veille, la nouvelle est ARRÊTÉE (profil de la famille), et la valeur est RELUE telle quelle sur un autre chargement du poste',
+      m6 === 'ok' && vals.options && vals.options.join() === 'clinique,acheteur' && vals.champs.every(Boolean) && enr && charge6.av === 'clinique' && charge6.ap.valeur === 'acheteur' && charge6.arrete === true && charge6.nb === 2 && charge6.fermee === charge6.veille
+      && relue.av === 'clinique' && relue.ap === 'acheteur' && relue.nb === 2, JSON.stringify([m6, vals, enr, charge6, relue]));
+    const vente = await page.evaluate((mo) => {
+      const PR = window.SIGH.parcours, S = window.SIGH.store;
+      const r = PR.encaisser(mo.b, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur S103 B' } });
+      const fb = S.collection('factures').get(mo.b), fa = S.collection('factures').get(mo.a);
+      return { ok: !!(r.normalisation && r.normalisation.ok), b: [fb.aibCharge, fb.aibChargeArretee, fb.aibTaux], a: [fa.aibCharge, fa.aibChargeArretee, fa.aibTaux] };
+    }, monde);
+    verifier('La vente PORTE la charge de sa date : émise avant le changement elle reste « clinique » (réglage non arrêté) et ne se réécrit pas, émise après elle porte « acheteur » (arrêté) ; le taux et le montant de l’AIB sont les mêmes (aucun effet comptable inventé)',
+      monde.venteAvant.charge === 'clinique' && monde.venteAvant.arretee === false && vente.a[0] === 'clinique' && vente.a[1] === false && vente.b[0] === 'acheteur' && vente.b[1] === true && vente.a[2] === vente.b[2], JSON.stringify([monde.venteAvant, vente]));
+
+    /* --- 7. activé : ce qui est listé SEULEMENT, équilibré, en brouillon, une seule fois ---------------------------------------------------------- */
+    await creerFactures();
+    const plan = await page.evaluate(() => {
+      const cs = window.SIGH.store.collection('comptes').active();
+      const p = (re) => (cs.filter((c) => re.test(String(c.num)))[0] || {}).num;
+      return { acompte: p(/^447/), contrepartie: p(/^401/) };
+    });
+    const act = await page.evaluate((pl) => {
+      const auj = window.SIGH.core.iso(window.SIGH.core.aujourdhui());
+      const RG = window.SIGH.reglagesAib;
+      const r1 = RG.definir({ cle: 'compteAcompte', valeur: pl.acompte, dateEffet: auj, motif: 'Sonde 103 : compte d’acompte choisi' });
+      const r2 = RG.definir({ cle: 'compteContrepartie', valeur: pl.contrepartie, dateEffet: auj, motif: 'Sonde 103 : compte de contrepartie choisi' });
+      const r3 = RG.definir({ cle: 'branchementAchats', valeur: 'actif', dateEffet: auj, motif: 'Sonde 103 : branchement activé' });
+      const b = RG.branchement(auj);
+      return { r1: r1.ok, r2: r2.ok, r3: r3.ok || r3.code, actif: b.actif, raisons: b.raisons, c: [b.compteAcompte, b.compteContrepartie] };
+    }, plan);
+    verifier('Activation : les deux comptes choisis par le comptable (aucun numéro proposé d’office) et la charge arrêtée, le branchement devient ACTIF', !!plan.acompte && !!plan.contrepartie && act.r1 && act.r2 && act.r3 === true && act.actif === true && act.c[0] === String(plan.acompte) && act.c[1] === String(plan.contrepartie), JSON.stringify([plan, act]));
+    const ante = await page.evaluate(() => window.SIGH.store.collection('ecritures').all().length);
+    const aff = await page.evaluate(() => { const L = window.SIGH.reglagesAib.achatsAEcrire({ du: '2026-06-01', au: '2026-12-31' }); return { ecrire: L.ecrire, ids: L.lignes.filter((l) => !l.refus && !l.ecriteSous && l.aib > 0).map((l) => l.reference).sort() }; });
+    const ecrit = await page.evaluate(() => { const r = window.SIGH.reglagesAib.ecrireAchats({ du: '2026-06-01', au: '2026-12-31' }); return { ok: r.ok, pieces: (r.pieces || []).map((p) => p.numero.replace(/^AIB-/, '')).sort(), refusees: r.refusees }; });
+    const post = await page.evaluate((n) => {
+      const E = window.SIGH.store.collection('ecritures').all();
+      const neuves = E.filter((e) => e.aibFactureId && e.statut !== 'archive');
+      const parNumero = {}; neuves.forEach((e) => { (parNumero[e.numero] = parNumero[e.numero] || []).push(e); });
+      const eq = Object.values(parNumero).every((l) => l.length === 2 && l.reduce((s, e) => s + (e.debit || 0), 0) === l.reduce((s, e) => s + (e.credit || 0), 0));
+      return { nbNeuves: E.length - n, brouillon: neuves.every((e) => e.statut === 'brouillon'), equilibre: eq, montants: Object.keys(parNumero).sort().map((k) => k.replace(/^AIB-/, '') + ':' + parNumero[k].reduce((t, e) => t + (e.debit || 0), 0) + '/' + parNumero[k].reduce((t, e) => t + (e.credit || 0), 0)).join(' ') };
+    }, ante);
+    const rejeu = await page.evaluate(() => { const r = window.SIGH.reglagesAib.ecrireAchats({ du: '2026-06-01', au: '2026-12-31' }); return { pieces: (r.pieces || []).length, ok: r.ok }; });
+    const factsFour = await page.evaluate(() => window.SIGH.store.collection('facturesFournisseurs').all().filter((f) => !/^FF-S103/.test(f.reference)).length);
+    verifier('Branchement ACTIF : « Écrire » pose EXACTEMENT les pièces listées (les quatre factures de sonde et celles que la liste portait, aucune autre), deux lignes équilibrées par pièce (RG-10), en BROUILLON, et rejouée n’en pose AUCUNE de plus',
+      aff.ecrire === true && ['FF-S103-A1', 'FF-S103-A2', 'FF-S103-B1', 'FF-S103-B2'].every((r) => aff.ids.indexOf(r) >= 0) && ecrit.ok && ecrit.pieces.join() === aff.ids.join() && post.nbNeuves === 2 * aff.ids.length && post.brouillon && post.equilibre
+      && /FF-S103-A1:1000\/1000/.test(post.montants) && /FF-S103-B2:5000\/5000/.test(post.montants) && rejeu.pieces === 0, JSON.stringify([aff, ecrit, post, rejeu, factsFour]));
+    await ouvrir('cfg-bareme-aib.html');
+    const ecran7 = await page.evaluate(async () => {
+      const t = [...document.querySelectorAll('#page-content [role="tab"]')].find((x) => x.textContent.trim().indexOf('Achats à écrire') === 0);
+      if (t) t.click(); await new Promise((r) => setTimeout(r, 500));
+      const txt = document.getElementById('page-content').textContent;
+      return { actif: /Branchement actif/.test(txt), apercu: /APERÇU/.test(txt) };
+    });
+    verifier('À l’écran, branchement actif : le message dit « Branchement actif » et ne parle plus d’aperçu', ecran7.actif && !ecran7.apercu, JSON.stringify(ecran7));
+    await restituer();
+
+    /* --- 8. une facture sans taux au barème porte son refus, jamais un montant à zéro ---------------------------------------------------------------- */
+    const sans = await page.evaluate(() => {
+      const B = window.SIGH.baremeAib, S = window.SIGH.store, RG = window.SIGH.reglagesAib;
+      const col = S.collection('facturesFournisseurs', { module: 'M7', entite: 'FactureFournisseur' });
+      const id = col.insert({ reference: 'FF-S103-X', fournisseur: 'S103B', fournisseurNom: 'Fournisseur S103 sans IFU', date: '2025-03-10', montantFacture: 100000, statutPaiement: 'impayee' }).record.id;
+      const L = RG.achatsAEcrire({ du: '2025-01-01', au: '2025-12-31' }).lignes.filter((l) => l.reference === 'FF-S103-X')[0];
+      return { refus: L.refus, aib: L.aib === undefined ? null : L.aib, taux: L.taux === undefined ? null : L.taux, motif: !!L.motif };
+    });
+    verifier('Une facture antérieure à tout barème est refusée en le nommant (AIB_SANS_BAREME), sans taux ni montant : jamais zéro', sans.refus === 'AIB_SANS_BAREME' && sans.aib === null && sans.taux === null && sans.motif, JSON.stringify(sans));
+    await restituer();
+    await page.evaluate((mo) => { const S = window.SIGH.store; S.setReglage('mecefBoitier', mo.sauve.reglage); S.setReglage('mecefMode', mo.sauve.mode); window.SIGH.mecef.fauxBoitier.panne = null; }, monde);
+    await O.sessionDe('admin');
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }
