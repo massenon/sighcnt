@@ -15185,6 +15185,10 @@ async function viderMessages(page) {
     verifier('Consentement retiré : plus AUCUN envoi, refus nommé avec son geste, le puits reste vide',
       rap3.ok === false && rap3.code === 'CONSENTEMENT_RETIRE' && /accueil/.test(rap3.geste) && (await recus()).length === 0, JSON.stringify(rap3));
     await page.evaluate((id) => { const PR = window.SIGH.parcours, col = window.SIGH.store.collection('patients'); const p = col.all().find((x) => x.id === id); const v = PR.tracerConsentementSms(Object.assign({}, p, { consentementSms: true }), p); col.update(id, { consentementSms: true, consentementSmsLe: v.consentementSmsLe, consentementSmsPar: v.consentementSmsPar }); }, ids.A);
+    /* Le serveur contrôle le consentement sur SA copie du patient (Vague 95) : le rétablissement doit y être ARRIVÉ avant l'envoi. Sans cette attente le POST du
+       rappel passait parfois devant la mise à jour du patient (une fois sur trois, isolé) : 403 CONSENTEMENT_RETIRE lu comme HORS_LIGNE par le poste, puis les deux
+       assertions suivantes en cascade (deux messages au puits, clé non rejouée). */
+    await attendreEcritures();
     const rap4 = await pr("const r = await PR.envoyerSms('rappel_rdv', a[0], 'Bonjour, rappel de votre rendez-vous demain.', { cle: a[1], maintenant: a[2] }); return { ok: r.ok, code: r.code };", ids.A, cleDe('retabli'), MAINT);
     verifier('Consentement rétabli par l’accueil : l’envoi repart (un message au puits)', rap4.ok === true && (await recus()).length === 1, JSON.stringify(rap4));
 
