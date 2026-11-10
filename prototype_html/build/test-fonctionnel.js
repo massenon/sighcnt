@@ -195,6 +195,18 @@ async function viderMessages(page) {
      Le contenu de la page n'a pas changé d'une ligne. */
   function pageDuBanc(rel) { return String(rel).replace(/\.html(#|\?|$)/, '.php$1'); }
 
+  /* LA SESSION DU SERVEUR SUIT CELLE DE L'ÉCRAN, MAIS PAS AU MÊME INSTANT. `setSession` ouvre une session côté serveur (POST api/session.php, jeton neuf) sans rendre la
+     main : un scénario qui change de profil puis ouvre aussitôt une page parlait au serveur avec le jeton du profil PRÉCÉDENT (rôle autre qu'administrateur : 403 « réservé à
+     l'administration », intermittent, une fois sur cinq isolé, et en cascade les scénarios suivants qui attendent un administrateur). On attend ici que le jeton ait changé. */
+  async function poserSessionServeur(sess) {
+    await page.evaluate(async (x) => {
+      const S = window.SIGH.store, avant = S.jetonServeur();
+      S.setSession(x);
+      if (x.jeton) return;
+      for (let i = 0; i < 100 && (!S.jetonServeur() || S.jetonServeur() === avant); i++) await new Promise((r) => setTimeout(r, 100));
+    }, sess);
+  }
+
   /* ON NE QUITTE PAS UNE PAGE AVANT QUE SES ÉCRITURES SOIENT PARTIES.
      Les mutations sont asynchrones depuis la bascule en base : un scénario qui
      enregistre puis navigue aussitôt doublait sa propre écriture, et ne
@@ -11598,7 +11610,7 @@ async function viderMessages(page) {
   await etape(async () => {
     scenario('Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
-    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await poserSessionServeur(ADMIN);
     await ouvrir('m14-taches.html');
     erreursJS = [];
     await page.waitForFunction(() => /Registre des tâches/.test(document.body.textContent), { timeout: 30000 });
@@ -11679,7 +11691,7 @@ async function viderMessages(page) {
   await etape(async () => {
     scenario('Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
-    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await poserSessionServeur(ADMIN);
     await ouvrir('m14-taches.html');
     erreursJS = [];
     const appel = (query) => page.evaluate(async (qs) => {
@@ -11754,7 +11766,7 @@ async function viderMessages(page) {
   await etape(async () => {
     scenario('Vague 70 (planning RH) : régime individuel et proposition de planning écrits par les moteurs, retrouvés en table, parité et projection sans erreur');
     erreursJS = [];
-    await page.evaluate((s) => window.SIGH.store.setSession(s), { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' });
+    await poserSessionServeur({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' });
     await ouvrir('m14-taches.html');
     const appel = (query) => page.evaluate(async (qs) => {
       const S = window.SIGH.store;
