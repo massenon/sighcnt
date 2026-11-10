@@ -1159,8 +1159,8 @@
        "paysage",
        "photo · nom · fonction · service · qr",
        "Modèle par défaut",
-       "Proposition à valider",
-       ""
+       "À valider",
+       "Valider"
       ]
      ]
     }
@@ -1176,6 +1176,7 @@
     "Archiver",
     "Tout désélectionner",
     "Consulter",
+    "Valider",
     "Modifier",
     "Archiver"
    ]
@@ -1188,12 +1189,13 @@
     "paysage",
     "photo · nom · fonction · service · qr",
     "Modèle par défaut",
-    "Proposition à valider",
-    ""
+    "À valider",
+    "Valider"
    ]
   ],
   "boutonsLigne": [
    "Consulter",
+   "Valider « Badge agent — CR80 paysage »",
    "Modifier",
    "Archiver"
   ],
@@ -1282,7 +1284,7 @@
      ]
     ],
     "fiche": {
-     "id": "MODxmvuswn40bfw87",
+     "id": "MODxmvuswn407doke",
      "statut": "actif",
      "libelle": "Badge visiteur — portrait",
      "format": "CR80 (85,6 × 54 mm)",
@@ -1293,7 +1295,11 @@
       "qr"
      ],
      "mentionsVerso": "Badge à restituer en sortant.\n\n  À porter visiblement.  ",
-     "defaut": false
+     "defaut": false,
+     "aValider": false,
+     "valideLe": "2026-10-30T10:00:00.000Z",
+     "validePar": "BASSONGUI Chabi Séko",
+     "valideRole": "Administrateur système"
     },
     "total": 2
    },
@@ -1306,7 +1312,7 @@
       "portrait",
       "photo · nom · qr",
       "—",
-      "Arrêté",
+      "Validé (Administrateur système, 30/10/2026)",
       ""
      ]
     ],
@@ -1344,7 +1350,7 @@
      ]
     ],
     "fiche": {
-     "id": "MODxmvuswn40bfw87",
+     "id": "MODxmvuswn407doke",
      "statut": "actif",
      "libelle": "Badge visiteur — portrait",
      "format": "CR80 (85,6 × 54 mm)",
@@ -1355,7 +1361,11 @@
       "qr"
      ],
      "mentionsVerso": "Badge à restituer en sortant.\n\n  À porter visiblement.  ",
-     "defaut": false
+     "defaut": false,
+     "aValider": false,
+     "valideLe": "2026-10-30T10:00:00.000Z",
+     "validePar": "BASSONGUI Chabi Séko",
+     "valideRole": "Administrateur système"
     }
    },
    "enregistre": {
@@ -1365,7 +1375,7 @@
      ]
     ],
     "fiche": {
-     "id": "MODxmvuswn40bfw87",
+     "id": "MODxmvuswn407doke",
      "statut": "actif",
      "libelle": "Badge visiteur — portrait",
      "format": "CR80 (85,6 × 54 mm)",
@@ -1375,7 +1385,11 @@
       "fonction"
      ],
      "mentionsVerso": "Badge à restituer en sortant.\n\n  À porter visiblement.  ",
-     "defaut": true
+     "defaut": true,
+     "aValider": false,
+     "valideLe": "2026-10-30T10:00:00.000Z",
+     "validePar": "BASSONGUI Chabi Séko",
+     "valideRole": "Administrateur système"
     },
     "autres": [
      [
@@ -1387,7 +1401,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "MODxmvuswn40bfw87",
+    "id": "MODxmvuswn407doke",
     "statut": "archive",
     "libelle": "Badge visiteur — portrait",
     "format": "CR80 (85,6 × 54 mm)",
@@ -1398,6 +1412,10 @@
     ],
     "mentionsVerso": "Badge à restituer en sortant.\n\n  À porter visiblement.  ",
     "defaut": true,
+    "aValider": false,
+    "valideLe": "2026-10-30T10:00:00.000Z",
+    "validePar": "BASSONGUI Chabi Séko",
+    "valideRole": "Administrateur système",
     "_motifArchivage": "Doublon"
    },
    "onglets": [
@@ -1412,8 +1430,8 @@
      "paysage",
      "photo · nom · fonction · service · qr",
      "Modèle par défaut",
-     "Proposition à valider",
-     ""
+     "À valider",
+     "Valider"
     ]
    ]
   }

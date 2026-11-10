@@ -9396,7 +9396,7 @@ async function viderMessages(page) {
     const fixtureLabo = await page.evaluate(() => {
       const S = window.SIGH.store, PR = window.SIGH.parcours;
       S.setSession({ role: 'laborantin', nom: 'KINNOU G.', fonction: 'tsl', secteur: 'LAB' });
-      const modele = S.collection('demandesAnalyses').active()[0] || {};
+      const modele = Object.assign({}, S.collection('demandesAnalyses').active()[0]);
       /* L'EXAMEN VIENT DU CATALOGUE, pas de la première demande du magasin : celle-ci dépend de ce que les scénarios précédents y ont inséré, et une demande sans
          variables paramétrées (« Aucune variable paramétrée pour cet examen », aucune modale) faisait échouer ce scénario dès qu'il suivait la navigation, le RBAC
          et les badges. Un examen qui porte des variables actives rend la saisie ouvrable quel que soit l'ordre. */
