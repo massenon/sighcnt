@@ -18277,6 +18277,321 @@ async function viderMessages(page) {
 
 
 
+  /* ==========================================================================
+   * Vague 109 : PLANNING, lot L7 (Direction, 09/11/2026, Planning Q5, Q6, Q8) : l'espace « Mes », la copie de la fiche de paie sur le téléphone, l'assurance du personnel
+   * -------------------------------------------------------------------------
+   * La copie de la fiche de paie (réglage oui par défaut, coupé au geste) ne porte que les pièces ÉMISES (diffusées) de l'agent demandeur ; l'espace « Mes » lit les
+   * données de la session et d'aucun autre agent, refuse un compte non nominatif, vide son affichage au verrou (rubrique gardée) et à la déconnexion ; « Mon assurance du
+   * personnel » est en lecture seule et dit « non renseigné » pour une demande ancienne sans montant, jamais le prix courant du catalogue. Bulletins et demande de sonde
+   * nettoyés à la sortie.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 109 : planning L7 (copie de la fiche de paie réglée au geste et limitée à l’agent, espace Mes filtré, poste partagé : verrou et déconnexion, assurance du personnel sans prix courant)');
+    erreursJS = [];
+    const enTant = async (role, nom, ecran) => {
+      await page.evaluate((a) => window.SIGH.store.setSession({ role: a[0], nom: a[1], nomComplet: a[1], fonction: a[0], identifiant: 's109.' + a[0], secteur: 'DIR' }), [role, nom]);
+      if (ecran) await ouvrir(ecran);
+    };
+    await ouvrir('m10-mes.html');
+    await enTant('admin', 'SONDE109 admin');
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const inf = S.collection('personnel').active().filter((e) => e.fonction === 'infirmier');
+      const [A, B] = inf;
+      const ins = (agent, ref, statutBulletin) => S.collection('bulletins', { module: 'M11', entite: 'BulletinPaie' }).insert({ reference: ref, periode: '2026-07', annee: 2026, mois: 6, employeId: agent.id, employe: agent.nomComplet, matricule: agent.matricule, brut: 100000, totalPrimes: 5000, totalRetenues: 12000, net: 88000, statutBulletin: statutBulletin, dateDiffusion: statutBulletin === 'diffuse' ? '2026-08-01' : null }).record.id;
+      const ids = { a1: ins(A, 'BP-S109-A1', 'diffuse'), a2: ins(A, 'BP-S109-A2', 'diffuse'), a3: ins(A, 'BP-S109-A3', 'valide'), a4: ins(A, 'BP-S109-A4', 'a_valider'), b1: ins(B, 'BP-S109-B1', 'diffuse') };
+      /* l'assurance : un agent qui a un dossier patient rattaché */
+      const dossier = S.collection('patients').active().filter((p) => p.personnelId && S.collection('personnel').get(p.personnelId) && S.collection('personnel').get(p.personnelId).statut !== 'archive')[0];
+      const agentSoigne = S.collection('personnel').get(dossier.personnelId);
+      const an = window.SIGH.data.ANALYSES.filter((x) => Number(x.prix) > 0)[0];
+      const demande = S.collection('demandesAnalyses').insert({ patientId: dossier.id, patient: dossier.nom + ' ' + dossier.prenom, patientCode: dossier.code, analyse: an.code, analyseCode: an.code, dateHeure: '2026-01-05T08:00:00', origine: 'sonde 109' }).record.id;
+      const consult = S.collection('consultations').insert({ patientId: dossier.id, patient: dossier.nom + ' ' + dossier.prenom, patientCode: dossier.code, date: '2026-01-06', type: 'Consultation', motif: 'Sonde 109', tarif: 5000, medecin: 'SONDE109' }).record.id;
+      return { a: A.id, na: A.nomComplet, b: B.id, nb: B.nomComplet, ids: ids, bul0: Object.values(ids), agentSoigne: { id: agentSoigne.id, nom: agentSoigne.nomComplet }, demande: demande, consult: consult, prixCatalogue: an.prix, libelleAnalyse: an.code,
+        reglage: S.reglage('paieCopieTelephone', undefined), nbRubriques: window.SIGH.espaceMes.RUBRIQUES.length };
+    });
+    const texteEcran = () => page.evaluate(() => (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' '));
+    const boutons = () => page.evaluate(() => [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim() + '|' + (b.getAttribute('title') || '')));
+    const modale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === l).pop(); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+
+    /* --- 1. le défaut, et un compte non nominatif ---------------------------------------------------------------------------------------------------------------------- */
+    await ouvrir('m10-mes.html');
+    const d1 = await page.evaluate(() => ({ actif: window.SIGH.espaceMes.copiePaieActive(), agent: window.SIGH.espaceMes.agent() }));
+    const t1 = await texteEcran();
+    verifier('La copie de la fiche de paie sur le téléphone vaut OUI par défaut ; le compte de la sonde n’est pas un agent : refus nommé COMPTE_NON_NOMINATIF, dit à l’écran', d1.actif === true && d1.agent.ok === false && d1.agent.code === 'COMPTE_NON_NOMINATIF' && /Espace non disponible/.test(t1) && /ne correspond à aucun agent/.test(t1) && /Copie chiffrée sur le téléphone de l’agent\s*Oui/.test(t1), JSON.stringify(d1.agent) + ' / ' + t1.slice(0, 200));
+
+    /* --- 2. le réglage AU GESTE : coupé, refus nommé, journal avec l'ancienne et la nouvelle valeur ------------------------------------------------------------------- */
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => /Régler/.test(x.textContent)); b.click(); });
+    await pause(500);
+    await page.evaluate(() => { const c = document.querySelector('.modal-root #f_oui, [role=dialog] #f_oui'); c.checked = false; c.dispatchEvent(new Event('change', { bubbles: true })); });
+    await modale('Enregistrer'); await pause(1200);
+    const r2 = await page.evaluate((m) => {
+      const S = window.SIGH.store, E = window.SIGH.espaceMes, s = S.session();
+      const j = S.raw().audit.filter((x) => x.action === 'Copie de la fiche de paie sur le téléphone')[0];
+      S.setSession(Object.assign({}, s, { role: 'infirmier', nom: m.na, nomComplet: m.na }));
+      const refus = E.copiePaie();
+      S.setSession(s);
+      return { valeur: S.reglage('paieCopieTelephone', null), actif: E.copiePaieActive(), journal: !!j && /true/.test(JSON.stringify(j.ancienneValeur)) && /false/.test(JSON.stringify(j.nouvelleValeur)), refus: { code: refus.code, geste: refus.geste } };
+    }, monde);
+    verifier('Réglée au geste : la copie est coupée en base, l’ancienne et la nouvelle valeur sont au journal, et la copie est refusée en le nommant (COPIE_PAIE_DESACTIVEE, geste dit)', r2.valeur === false && r2.actif === false && r2.journal && r2.refus.code === 'COPIE_PAIE_DESACTIVEE' && /activer/.test(r2.refus.geste), JSON.stringify(r2));
+    const droitReglage = await page.evaluate((m) => {
+      const S = window.SIGH.store, E = window.SIGH.espaceMes, s = S.session();
+      const essai = (role, nom) => { S.setSession(Object.assign({}, s, { role: role, nom: nom, nomComplet: nom })); const r = E.definirCopiePaie(true); return r.ok ? 'OK' : r.code; };
+      const out = { medecin: essai('medecin', m.na), caissier: essai('caissier', 'SONDE109 caissier'), surveillant: essai('surveillant', 'SONDE109 surveillant') };
+      S.setSession(s);
+      return out;
+    }, monde);
+    verifier('Le réglage est réservé à l’administrateur et à la DAF (REGLAGE_RESERVE pour un médecin, un caissier, un surveillant) ; l’administrateur le rétablit', droitReglage.medecin === 'REGLAGE_RESERVE' && droitReglage.caissier === 'REGLAGE_RESERVE' && droitReglage.surveillant === 'REGLAGE_RESERVE' && (await page.evaluate(() => window.SIGH.espaceMes.definirCopiePaie(true).ok)), JSON.stringify(droitReglage));
+
+    /* --- 3. l'agent A : ses dix-sept rubriques, sa fiche de paie émise SEULE -------------------------------------------------------------------------------------------- */
+    await enTant('infirmier', monde.na, 'm10-mes.html');
+    const ecranA = await page.evaluate(() => ({ rubriques: [...document.querySelectorAll('#page-content .card button')].length, regler: [...document.querySelectorAll('#page-content button')].some((b) => /Régler/.test(b.textContent)), titre: (document.querySelector('#page-content h3.card-title:last-of-type') || {}).textContent }));
+    verifier('L’agent voit les dix-sept rubriques de son espace et AUCUNE commande de réglage de la mère', ecranA.rubriques >= monde.nbRubriques && monde.nbRubriques === 17 && !ecranA.regler, JSON.stringify(ecranA));
+    await cliquer('Ma fiche de paie', '#page-content button'); await pause(500);
+    const tp = await texteEcran();
+    verifier('« Ma fiche de paie » liste les deux pièces ÉMISES de l’agent, ni la pièce validée non diffusée, ni celle à valider, ni celle d’un autre agent ; la copie chiffrée est dite activée', /BP-S109-A1/.test(tp) && /BP-S109-A2/.test(tp) && !/BP-S109-A3/.test(tp) && !/BP-S109-A4/.test(tp) && !/BP-S109-B1/.test(tp) && /activée/.test(tp), tp.slice(0, 300));
+    const copie = await page.evaluate((m) => {
+      const E = window.SIGH.espaceMes;
+      const ok = E.copiePaie();
+      const autre = E.copiePaie({ agentId: m.b });
+      const soi = E.copiePaie({ agentId: m.a });
+      return { ok: ok.ok, ids: ok.ids.slice().sort(), chiffree: ok.chiffree, recalculee: ok.recalculee, agent: ok.agentId, autre: autre.code, geste: autre.geste, soi: soi.ok && soi.total };
+    }, monde);
+    verifier('La copie pour le téléphone ne contient que les deux pièces émises de l’agent (jamais recalculées), refuse la demande d’un autre agent (COPIE_PAIE_AUTRE_AGENT) et rend la sienne quand il la nomme', copie.ok && JSON.stringify(copie.ids) === JSON.stringify([monde.ids.a1, monde.ids.a2].sort()) && copie.chiffree === true && copie.recalculee === false && copie.agent === monde.a && copie.autre === 'COPIE_PAIE_AUTRE_AGENT' && /propre copie/.test(copie.geste) && copie.soi === 2, JSON.stringify(copie));
+
+    /* --- 4. RG-13 : chaque fiche rendue est celle de l'agent, pour les dix-sept rubriques, et les deux agents n'en partagent aucune -------------------------------------- */
+    const rg13 = await page.evaluate((m) => {
+      const S = window.SIGH.store, E = window.SIGH.espaceMes, s = S.session();
+      const lire = (id, nom) => { S.setSession(Object.assign({}, s, { role: 'infirmier', nom: nom, nomComplet: nom })); return E.RUBRIQUES.map((r) => ({ r: r, lu: E.lire(r.id) })); };
+      const out = { fautes: [], commun: [], vides: 0 };
+      const A = lire('a', m.na), B = lire('b', m.nb);
+      const dossiers = (id) => S.collection('patients').active().filter((p) => p.personnelId === id).map((p) => p.id);
+      [[A, m.a], [B, m.b]].forEach((x) => x[0].forEach((e) => {
+        if (!e.lu.ok) { out.fautes.push(e.r.id + ':' + e.lu.code); return; }
+        if (!e.r.source) return;
+        e.lu.ids.forEach((i) => {
+          const f = S.collection(e.r.source).get(i);
+          const lien = e.r.lien;
+          const bon = lien === 'poste' ? true : (lien === 'evenementsDeLAgent' ? true : (lien === 'patientDeLAgent' ? dossiers(x[1]).indexOf(f.patientId) >= 0 : String(f[lien]) === String(x[1])));
+          if (!bon) out.fautes.push(e.r.id + ':' + i);
+        });
+      }));
+      A.forEach((e, k) => { if (e.r.source && e.r.lien !== 'poste' && e.r.lien !== 'evenementsDeLAgent') e.lu.ids.forEach((i) => { if (B[k].lu.ids.indexOf(i) >= 0) out.commun.push(e.r.id + ':' + i); }); });
+      out.total = A.reduce((n, e) => n + (e.lu.total || 0), 0) + B.reduce((n, e) => n + (e.lu.total || 0), 0);
+      S.setSession(s);
+      return out;
+    }, monde);
+    verifier('Les dix-sept rubriques lues pour deux agents : aucune fiche d’un autre agent (0 faute), aucune fiche en commun, et de la matière à comparer', rg13.fautes.length === 0 && rg13.commun.length === 0 && rg13.total > 0, JSON.stringify(rg13));
+
+    /* --- 5. POSTE PARTAGÉ : le verrou garde la rubrique et vide le reste, la déconnexion vide tout, l'agent suivant n'en hérite pas ------------------------------------- */
+    await cliquer('Mes congés', '#page-content button'); await pause(400);
+    const avantVerrou = await page.evaluate(() => { const S = window.SIGH.store; window.sessionStorage.setItem('sigh-cnt:mes-trace', 'x'); S.storage.set('sigh-cnt:verrou-delai', '1200'); return { rubrique: window.sessionStorage.getItem('sigh-cnt:mes-rubrique') }; });
+    verifier('La rubrique ouverte (« Mes congés ») est mémorisée pour la session', avantVerrou.rubrique === 'conges', JSON.stringify(avantVerrou));
+    await page.reload({ waitUntil: 'domcontentloaded' }).catch(() => null);
+    let verrouille = false;
+    for (let i = 0; i < 40 && !verrouille; i++) { await pause(500); verrouille = await page.evaluate(() => /auth-lock/.test(location.pathname)).catch(() => false); }
+    const apresVerrou = await page.evaluate(() => ({ rubrique: window.sessionStorage.getItem('sigh-cnt:mes-rubrique'), trace: window.sessionStorage.getItem('sigh-cnt:mes-trace'), session: !!window.SIGH.store.session(), retour: window.SIGH.store.storage.get('sigh-cnt:verrou-retour') })).catch((e) => ({ erreur: String(e) }));
+    verifier('Au verrou : la session est suspendue (pas fermée), la rubrique ouverte est gardée pour le retour, tout autre état d’affichage de l’espace « Mes » est vidé', verrouille && apresVerrou.session === true && apresVerrou.rubrique === 'conges' && apresVerrou.trace === null && /m10-mes/.test(apresVerrou.retour || ''), JSON.stringify(apresVerrou));
+    await page.evaluate(() => window.SIGH.store.storage.remove('sigh-cnt:verrou-delai'));
+    for (let i = 0; i < 40; i++) { if (await page.evaluate(() => [...document.querySelectorAll('a')].some((x) => /autre compte/.test(x.textContent))).catch(() => false)) break; await pause(250); }
+    await page.evaluate(() => { const a = [...document.querySelectorAll('a')].find((x) => /autre compte/.test(x.textContent)); if (a) a.click(); });
+    await pause(1500);
+    const apresDeconnexion = await page.evaluate(() => ({ cles: Object.keys(window.sessionStorage).filter((k) => k.indexOf('sigh-cnt:mes-') === 0), session: window.SIGH.store.session() })).catch((e) => ({ erreur: String(e) }));
+    /* Le banc repose la session d'essai à chaque chargement de page : on ne mesure donc PAS « session nulle » après la navigation, mais ce que la déconnexion a vidé. */
+    verifier('À la déconnexion (« Se connecter avec un autre compte ») : plus aucune clé de l’espace « Mes » ne reste (ni la rubrique « conges » gardée au verrou, ni la trace)', Array.isArray(apresDeconnexion.cles) && apresDeconnexion.cles.length === 0, JSON.stringify(apresDeconnexion.cles));
+    await enTant('infirmier', monde.nb, 'm10-mes.html');
+    const suivant = await page.evaluate(() => ({ rubrique: window.sessionStorage.getItem('sigh-cnt:mes-rubrique'), titre: [...document.querySelectorAll('#page-content h3.card-title')].map((h) => h.textContent.trim()) }));
+    await cliquer('Mes congés', '#page-content button'); await pause(400);
+    const tc = await texteEcran();
+    const congesA = await page.evaluate((m) => window.SIGH.store.collection('conges').active().filter((c) => c.employeId === m.a).map((c) => c.reference), monde);
+    verifier('Sur le même poste, l’agent suivant arrive sur la première rubrique (aucun héritage de la rubrique du précédent) et ne voit aucun congé de l’agent précédent', suivant.rubrique === null && suivant.titre.indexOf('Ma fiche de poste') >= 0 && congesA.every((r) => !tc.includes(r)), JSON.stringify({ suivant: suivant, congesA: congesA }));
+
+    /* --- 6. l'assurance du personnel : lecture seule, « non renseigné » et jamais le prix courant du catalogue --------------------------------------------------------- */
+    await enTant('infirmier', monde.agentSoigne.nom, 'm10-mes.html');
+    await cliquer('Mon assurance du personnel', '#page-content button'); await pause(500);
+    const as = await page.evaluate((m) => {
+      const t = document.getElementById('page-content').textContent.replace(/\s+/g, ' ');
+      const lignes = [...document.querySelectorAll('#page-content tbody tr')].map((tr) => tr.textContent.replace(/\s+/g, ' '));
+      const E = window.SIGH.espaceMes, S = window.SIGH.store, C = window.SIGH.core;
+      const lu = E.lire('assurance');
+      const renseignees = S.collection('consultations').active().filter((c) => lu.ids.indexOf(c.id) >= 0).reduce((n, c) => n + (c.tarif != null && c.tarif !== '' ? Number(c.tarif) : 0), 0)
+        + S.collection('demandesAnalyses').active().filter((c) => lu.ids.indexOf(c.id) >= 0).reduce((n, c) => n + (c.montant != null && c.montant !== '' ? Number(c.montant) : (c.prix != null && c.prix !== '' ? Number(c.prix) : 0)), 0);
+      const ligneAnalyse = lignes.filter((l) => l.indexOf('05/01/2026') >= 0)[0] || '';
+      const ligneConsult = lignes.filter((l) => l.indexOf('06/01/2026') >= 0)[0] || '';
+      const chiffres = (x) => String(x).replace(/\D/g, '');
+      return { lectureSeule: /Lecture seule/.test(t), saisie: [...document.querySelectorAll('#page-content button')].filter((b) => /Nouveau|Nouvelle|Ajouter|Modifier|Enregistrer/.test(b.textContent)).length,
+        ligneAnalyse: ligneAnalyse, nonRenseigne: /Non renseigné/.test(ligneAnalyse), prixCourant: chiffres(ligneAnalyse).indexOf(chiffres(C.money(m.prixCatalogue, false)).replace(/^0+/, '')) >= 0 && chiffres(C.money(m.prixCatalogue, false)).length > 0 && /FCFA/.test(ligneAnalyse),
+        consult: /5\s*000/.test(ligneConsult.replace(/[  ]/g, ' ')) || chiffres(ligneConsult).indexOf('5000') >= 0, sans: lu.sansMontant, valeur: lu.valeur, attendu: renseignees, hint: /sans montant renseigné/.test(t) };
+    }, monde);
+    verifier('« Mon assurance du personnel » : lecture seule sans aucune commande d’écriture ; la demande ancienne sans montant dit « Non renseigné » (jamais le prix courant du catalogue), la consultation montre son tarif porté', as.lectureSeule && as.saisie === 0 && as.nonRenseigne && !as.prixCourant && as.consult, JSON.stringify(as));
+    verifier('Le total ne compte que les montants portés (somme relue au magasin) et le nombre de lignes sans montant est dit', as.sans >= 1 && as.valeur === as.attendu && as.hint, JSON.stringify(as));
+    await enTant('admin', 'SONDE109 admin', 'm10-assurance-personnel.html');
+    await page.evaluate(() => { const c = [...document.querySelectorAll('#page-content input')].find((i) => /Recherch/i.test(i.getAttribute('placeholder') || '')); if (c) { c.value = '2026-01-05'; c.dispatchEvent(new Event('input', { bubbles: true })); } });
+    await pause(1200);
+    const ecranGestion = await page.evaluate((m) => {
+      const t = document.getElementById('page-content').textContent.replace(/\s+/g, ' ');
+      const C = window.SIGH.core;
+      const lignes = [...document.querySelectorAll('#page-content tbody tr')].map((tr) => tr.textContent.replace(/\s+/g, ' '));
+      const l = lignes.filter((x) => x.indexOf('05/01/2026') >= 0 && x.indexOf(m.libelleAnalyse) >= 0)[0] || '';
+      return { lignes: lignes.length, ligne0: lignes[0], trouvee: !!l, nonRenseigne: /Non renseigné/.test(l), prix: l.indexOf(C.money(m.prixCatalogue, false)) >= 0, hint: /sans montant renseigné/.test(t) };
+    }, monde);
+    verifier('L’écran de gestion de l’assurance du personnel dit lui aussi « Non renseigné » pour cette demande et annonce les lignes non comptées', ecranGestion.trouvee && ecranGestion.nonRenseigne && !ecranGestion.prix && ecranGestion.hint, JSON.stringify(ecranGestion));
+
+    /* --- 7. restitution ---------------------------------------------------------------------------------------------------------------------------------------------------- */
+    await page.evaluate((m) => {
+      const S = window.SIGH.store;
+      S.raw().bulletins = S.raw().bulletins.filter((x) => m.bul0.indexOf(x.id) < 0);
+      S.raw().demandesAnalyses = S.raw().demandesAnalyses.filter((x) => x.id !== m.demande);
+      S.raw().consultations = S.raw().consultations.filter((x) => x.id !== m.consult);
+      S.setReglage('paieCopieTelephone', m.reglage === undefined ? true : m.reglage);
+      S.save();
+    }, monde);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  /* ==========================================================================
+   * Vague 110 : PLANNING, lot L8 (Direction, 09/11/2026, Planning Q7) : le badge sert de POINTAGE
+   * -------------------------------------------------------------------------
+   * Réglage oui par défaut, relié au registre des présences : un badge vérifié valide crée une présence « à valider » (arrivée, puis départ), qui suit le circuit du lot L5.
+   * Refus nommés : badge illisible, inconnu, expiré, retiré, non remis, incohérent, pointage désactivé, deux pointages trop rapprochés (délai en base, 5 minutes d'attente à
+   * valider), journée complète, présence déjà validée. Chaque passage est journalisé. Badges, présences et réglages de sonde restitués à la sortie.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 110 : planning L8 (le badge pointe : réglage oui par défaut, arrivée puis départ à valider par le circuit, délai en base, refus nommés, journal, commande absente sans droit)');
+    erreursJS = [];
+    const enTant = async (role, nom, ecran) => {
+      await page.evaluate((a) => window.SIGH.store.setSession({ role: a[0], nom: a[1], nomComplet: a[1], fonction: a[0], identifiant: 's110.' + a[0], secteur: 'DIR' }), [role, nom]);
+      if (ecran) await ouvrir(ecran);
+    };
+    await ouvrir('m10-badges-verification.html');
+    await enTant('admin', 'SONDE110 admin');
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const today = C.iso(C.aujourdhui());
+      /* Les deux agents du geste n'ont aucune présence aujourd'hui : celles du jeu sont retirées le temps de la sonde, puis remises. */
+      const sansPresence = S.collection('personnel').active().filter((e) => e.fonction === 'infirmier').slice(0, 2);
+      const retirees = S.raw().presences.filter((p) => p.date === today && sansPresence.some((e) => e.id === p.employeId));
+      S.raw().presences = S.raw().presences.filter((p) => retirees.indexOf(p) < 0);
+      const autres = S.collection('personnel').active().filter((e) => e.fonction === 'aide_soignant' || e.fonction === 'tsl' || e.fonction === 'sage_femme');
+      const [A, B] = sansPresence, [C1, D1, E1] = autres;
+      const badge = (agent, numero, etat, expire) => S.collection('badges', { module: 'M10', entite: 'badge', prefix: 'BDG' }).insert({ numero: numero, personnelId: agent.id, matricule: agent.matricule, agent: agent.nomComplet, poste: agent.poste, service: agent.service, etat: etat, emisLe: '2026-01-01', expireLe: expire, retireLe: etat === 'retire' ? '2026-06-01' : null, motifRetrait: etat === 'retire' ? 'Perte' : null }).record.id;
+      const ids = { v: badge(A, 'BDG-S1100-2026', 'remis', '2099-12-31'), w: badge(B, 'BDG-S1101-2026', 'remis', '2099-12-31'), x: badge(C1, 'BDG-S1102-2026', 'remis', '2020-01-01'), r: badge(D1, 'BDG-S1103-2026', 'retire', '2099-12-31'), n: badge(E1, 'BDG-S1104-2026', 'a_editer', '2099-12-31') };
+      return { a: A.id, na: A.nomComplet, ma: A.matricule, b: B.id, nb: B.nomComplet, c: C1.id, nc: C1.nomComplet, d: D1.id, e: E1.id, ids: ids, bad0: Object.values(ids), pres0: S.collection('presences').all().map((p) => p.id), today: today, retirees: JSON.parse(JSON.stringify(retirees)),
+        reglage: S.reglage('planningBadgeSertDePointage', undefined), delai: S.reglage('planningBadgeDelaiMinutes', undefined) };
+    });
+    const enTantEngine = (role, nom, f, arg) => page.evaluate((a) => { const S = window.SIGH.store, s = S.session(); S.setSession(Object.assign({}, s, { role: a[0], nom: a[1], nomComplet: a[1] })); const PB = window.SIGH.pointageBadge; const r = a[2] === 'pointer' ? PB.pointer(a[3].t, a[3].o) : PB.regler(a[3]); S.setSession(s); return { ok: r.ok, code: r.code, geste: r.geste, motif: r.motif, heure: r.heure, presenceId: r.presenceId, etat: r.etat, delai: r.delai, actif: r.actif }; }, [role, nom, f, arg]);
+    const pointer = (t, o, role) => enTantEngine(role || 'surveillant', 'SONDE110 surveillant', 'pointer', { t: t, o: o });
+    const presencesBadge = () => page.evaluate((m) => window.SIGH.store.collection('presences').all().filter((p) => m.pres0.indexOf(p.id) < 0 && p.statut !== 'archive').map((p) => ({ id: p.id, emp: p.employeId, date: p.date, arr: p.heureArrivee, dep: p.heureDepart || null, etat: p.validationEtat, origine: p.origine, badge: p.badgeNumero })), monde);
+    const dernierAudit = () => page.evaluate(() => { const j = window.SIGH.store.raw().audit[0] || {}; return { action: j.action, motif: j.motif, reference: j.reference }; });
+
+    /* --- 1. le défaut : oui, 5 minutes d'attente, dit à l'écran ------------------------------------------------------------------------------------------------------------- */
+    await ouvrir('m10-badges-verification.html');
+    const d1 = await page.evaluate(() => ({ actif: window.SIGH.pointageBadge.actif(), delai: window.SIGH.pointageBadge.delai(), t: document.getElementById('page-content').textContent.replace(/\s+/g, ' ') }));
+    verifier('Le badge sert de pointage par DÉFAUT (oui), le délai entre deux pointages est de 5 minutes et l’écran dit que c’est une valeur d’attente à valider', d1.actif === true && d1.delai === 5 && /Le badge sert de pointage\s*Oui/.test(d1.t) && /5 minutes \(valeur d’attente, à valider\)/.test(d1.t), d1.t.slice(0, 250));
+
+    /* --- 2. le pointage AU GESTE : arrivée, présence « à valider » qui ne compte pas, deuxième passage refusé -------------------------------------------------------------- */
+    await enTant('surveillant', 'SONDE110 surveillant', 'm10-badges-verification.html');
+    const saisirEtPointer = (numero) => page.evaluate((n) => { const c = document.querySelector('#page-content input[type="text"]'); c.value = n; const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === 'Pointer'); if (!b) return false; b.click(); return true; }, numero);
+    const aBouton = await saisirEtPointer('BDG-S1100-2026'); await pause(700);
+    const g1 = await page.evaluate(() => document.getElementById('page-content').textContent.replace(/\s+/g, ' '));
+    const p1 = await presencesBadge();
+    const j1 = await dernierAudit();
+    const compte1 = await page.evaluate((id) => { const S = window.SIGH.store; return window.SIGH.planningRh.compte('presences', S.collection('presences').get(id)); }, (p1[0] || {}).id);
+    verifier('Au geste (bouton « Pointer ») : « Arrivée pointée », une présence « à valider » née du badge (origine, numéro de série, heure), qui NE COMPTE PAS tant que le circuit ne l’a pas validée, journalisée', aBouton && /Arrivée pointée/.test(g1) && p1.length === 1 && p1[0].emp === monde.a && p1[0].origine === 'badge' && p1[0].badge === 'BDG-S1100-2026' && p1[0].etat === 'a_valider' && /^\d{2}:\d{2}$/.test(p1[0].arr) && p1[0].dep === null && compte1 === false && j1.action === 'Pointage par badge' && /^ARRIVEE/.test(j1.motif), JSON.stringify({ g1: g1.slice(0, 160), p1: p1, j1: j1, compte1: compte1 }));
+    await saisirEtPointer('BDG-S1100-2026'); await pause(700);
+    const g2 = await page.evaluate(() => document.getElementById('page-content').textContent.replace(/\s+/g, ' '));
+    const p2 = await presencesBadge();
+    verifier('Un deuxième passage tout de suite est refusé à l’écran (Pointage refusé, délai nommé, geste dit) : toujours une seule présence, sans départ', /Pointage refusé/.test(g2) && /moins de 5 minutes/.test(g2) && /Attendre/.test(g2) && p2.length === 1 && p2[0].dep === null, g2.slice(0, 260));
+
+    /* --- 3. arrivée, délai, départ, journée complète : sur une date de sonde (instant fixé) ------------------------------------------------------------------------------- */
+    const D1 = '2027-03-01';
+    const s1 = await pointer('BDG-S1101-2026', { date: D1, heure: '08:00' });
+    const s2 = await pointer('BDG-S1101-2026', { date: D1, heure: '08:03' });
+    const s3 = await pointer('BDG-S1101-2026', { date: D1, heure: '08:05' });
+    const s4 = await pointer('BDG-S1101-2026', { date: D1, heure: '08:20' });
+    const pj = (await presencesBadge()).filter((p) => p.date === D1);
+    verifier('Arrivée (08:00), repassage à 08:03 refusé POINTAGE_TROP_RAPPROCHE, départ à 08:05 sur la MÊME présence, puis journée complète refusée (POINTAGE_JOURNEE_COMPLETE) : une présence, arrivée et départ', s1.ok && s1.geste === 'arrivee' && s2.code === 'POINTAGE_TROP_RAPPROCHE' && /Attendre 2 minute/.test(s2.geste) && s3.ok && s3.geste === 'depart' && s4.code === 'POINTAGE_JOURNEE_COMPLETE' && pj.length === 1 && pj[0].arr === '08:00' && pj[0].dep === '08:05' && pj[0].etat === 'a_valider', JSON.stringify({ s1: s1.ok, s2: s2.code, s2g: s2.geste, s3: s3.ok, s4: s4.code, pj: pj }));
+
+    /* --- 4. les refus nommés d'un badge : aucune présence écrite, chacun journalisé ---------------------------------------------------------------------------------------- */
+    const avant = (await presencesBadge()).length;
+    const refus = {};
+    for (const [cle, t] of [['inconnu', 'BDG-INCONNU-0000'], ['expire', 'BDG-S1102-2026'], ['retire', 'BDG-S1103-2026'], ['nonRemis', 'BDG-S1104-2026'], ['incoherent', 'CNT-BDG|MAT:99999|SER:BDG-S1101-2026'], ['illisible', '   ']]) {
+      refus[cle] = await pointer(t, { date: '2027-03-05', heure: '09:00' });
+      refus[cle].audit = await dernierAudit();
+    }
+    const apres = (await presencesBadge()).length;
+    verifier('Badge inconnu, expiré, retiré, non remis, code incohérent avec le matricule, numéro illisible : six refus nommés (BADGE_INCONNU, BADGE_EXPIRE, BADGE_RETIRE, BADGE_NON_REMIS, BADGE_INCOHERENT, BADGE_ILLISIBLE), motif et geste dits, aucune présence écrite',
+      refus.inconnu.code === 'BADGE_INCONNU' && refus.expire.code === 'BADGE_EXPIRE' && refus.retire.code === 'BADGE_RETIRE' && refus.nonRemis.code === 'BADGE_NON_REMIS' && refus.incoherent.code === 'BADGE_INCOHERENT' && refus.illisible.code === 'BADGE_ILLISIBLE'
+      && Object.values(refus).every((r) => r.motif && r.geste) && apres === avant, JSON.stringify(Object.keys(refus).map((k) => k + ':' + refus[k].code)) + ' ' + avant + '/' + apres);
+    verifier('Chaque refus est journalisé (RG-12) : « Pointage par badge », code en tête du motif (badge inconnu, expiré, retiré)', refus.inconnu.audit.action === 'Pointage par badge' && /^BADGE_INCONNU/.test(refus.inconnu.audit.motif) && /^BADGE_EXPIRE/.test(refus.expire.audit.motif) && /^BADGE_RETIRE/.test(refus.retire.audit.motif), JSON.stringify([refus.inconnu.audit, refus.expire.audit, refus.retire.audit]));
+
+    /* --- 5. relié au circuit du lot L5 : la présence née du badge est validée par le surveillant, et compte alors ---------------------------------------------------- */
+    const D2 = '2027-03-02';
+    const q1 = await pointer('BDG-S1100-2026', { date: D2, heure: '08:00' });
+    const circuit = await page.evaluate((a) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, s = S.session();
+      S.setSession(Object.assign({}, s, { role: 'surveillant', nom: 'SONDE110 surveillant', nomComplet: 'SONDE110 surveillant' }));
+      const rec0 = S.collection('presences').get(a);
+      const avantCompte = R.compte('presences', rec0);
+      const t = R.trancher({ collection: 'presences', id: a, decision: 'valider' });
+      const rec1 = S.collection('presences').get(a);
+      const out = { avantCompte: avantCompte, ok: t.ok, etat: t.etat, apresCompte: R.compte('presences', rec1) };
+      S.setSession(s);
+      return out;
+    }, q1.presenceId);
+    const q2 = await pointer('BDG-S1100-2026', { date: D2, heure: '17:00' });
+    verifier('La présence née du badge est tranchée par le circuit du lot L5 (surveillant seul) : elle ne comptait pas, elle compte une fois validée ; un départ sur une présence déjà validée est refusé (POINTAGE_PRESENCE_VALIDEE, régularisation nommée)', q1.ok && circuit.avantCompte === false && circuit.ok && circuit.etat === 'valide' && circuit.apresCompte === true && q2.code === 'POINTAGE_PRESENCE_VALIDEE' && /régulariser/i.test(q2.geste), JSON.stringify({ q1: q1.ok, circuit: circuit, q2: q2.code }));
+
+    /* --- 6. le délai est EN BASE : réglable, refusé s'il est invalide, réservé à l'administrateur et à la DAF -------------------------------------------------------------- */
+    const D3 = '2027-03-03';
+    const r30 = await enTantEngine('admin', 'SONDE110 admin', 'regler', { delai: 30, motif: 'Sonde 110' });
+    const t1 = await pointer('BDG-S1100-2026', { date: D3, heure: '08:00' });
+    const t2 = await pointer('BDG-S1100-2026', { date: D3, heure: '08:20' });
+    const r0 = await enTantEngine('da', 'SONDE110 da', 'regler', { delai: 0 });
+    const t3 = await pointer('BDG-S1100-2026', { date: D3, heure: '08:20' });
+    const inval = [await enTantEngine('admin', 'SONDE110 admin', 'regler', { delai: -1 }), await enTantEngine('admin', 'SONDE110 admin', 'regler', { delai: 2.5 }), await enTantEngine('admin', 'SONDE110 admin', 'regler', { delai: 'abc' })];
+    const reserve = [await enTantEngine('medecin', 'SONDE110 medecin', 'regler', { actif: false }), await enTantEngine('surveillant', 'SONDE110 surveillant', 'regler', { delai: 1 })];
+    const base = await page.evaluate(() => ({ delai: window.SIGH.store.reglage('planningBadgeDelaiMinutes', null), j: window.SIGH.store.raw().audit.filter((x) => x.action === 'Le badge sert de pointage').some((x) => /Sonde 110/.test(JSON.stringify(x.nouvelleValeur))) }));
+    verifier('Délai réglé à 30 minutes (en base, motif au journal) : 20 minutes après est refusé ; remis à 0 il ne refuse plus et le départ passe ; -1, 2,5 et « abc » refusés (DELAI_INVALIDE) ; un médecin et un surveillant ne règlent pas (REGLAGE_RESERVE)',
+      r30.ok && t1.ok && t2.code === 'POINTAGE_TROP_RAPPROCHE' && /30 minutes/.test(t2.motif) && r0.ok && t3.ok && inval.every((x) => x.code === 'DELAI_INVALIDE') && reserve.every((x) => x.code === 'REGLAGE_RESERVE') && base.delai === 0 && base.j === true, JSON.stringify({ r30: r30.ok, t2: t2.code, t3: t3.ok, inval: inval.map((x) => x.code), reserve: reserve.map((x) => x.code), base: base.delai }));
+    await enTantEngine('admin', 'SONDE110 admin', 'regler', { delai: 5 });
+
+    /* --- 7. désactivé AU GESTE : refus nommé, bouton absent ; droits : commande absente sans droit ------------------------------------------------------------------------- */
+    await enTant('admin', 'SONDE110 admin', 'm10-badges-verification.html');
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => /Régler/.test(x.textContent)); b.click(); });
+    await pause(500);
+    await page.evaluate(() => { const c = document.querySelector('.modal-root #f_actif, [role=dialog] #f_actif'); c.checked = false; c.dispatchEvent(new Event('change', { bubbles: true })); });
+    await page.evaluate(async () => { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === 'Enregistrer').pop(); b.click(); });
+    await pause(1500);
+    const off = await page.evaluate(() => { const S = window.SIGH.store; const j = S.raw().audit.filter((x) => x.action === 'Le badge sert de pointage')[0]; return { valeur: S.reglage('planningBadgeSertDePointage', null), journal: !!j && /true/.test(JSON.stringify(j.ancienneValeur)) && /false/.test(JSON.stringify(j.nouvelleValeur)) }; });
+    await enTant('surveillant', 'SONDE110 surveillant', 'm10-badges-verification.html');
+    const ecranOff = await page.evaluate(() => ({ pointer: [...document.querySelectorAll('#page-content button')].some((x) => x.textContent.trim() === 'Pointer'), verifier: [...document.querySelectorAll('#page-content button')].some((x) => x.textContent.trim() === 'Vérifier'), t: document.getElementById('page-content').textContent.replace(/\s+/g, ' ') }));
+    const refOff = await pointer('BDG-S1100-2026', { date: '2027-03-06', heure: '08:00' });
+    verifier('Réglé à NON au geste : en base, ancienne et nouvelle valeur au journal ; la commande « Pointer » est ABSENTE (« Vérifier » reste), et le moteur refuse en le nommant (POINTAGE_DESACTIVE)', off.valeur === false && off.journal && !ecranOff.pointer && ecranOff.verifier && /Le badge sert de pointage\s*Non/.test(ecranOff.t) && refOff.code === 'POINTAGE_DESACTIVE', JSON.stringify({ off: off, ecranOff: { pointer: ecranOff.pointer, verifier: ecranOff.verifier }, ref: refOff.code }));
+    await enTantEngine('admin', 'SONDE110 admin', 'regler', { actif: true });
+    const droits = await page.evaluate(async () => {
+      const S = window.SIGH.store, s = S.session(), PB = window.SIGH.pointageBadge;
+      const out = {};
+      for (const role of ['caissier', 'medecin', 'assistant_comptable', 'infirmier']) { S.setSession(Object.assign({}, s, { role: role, nom: 'SONDE110 ' + role, nomComplet: 'SONDE110 ' + role })); const r = PB.pointer('BDG-S1100-2026', { date: '2027-03-07', heure: '08:00' }); out[role] = r.ok ? 'OK' : r.code; }
+      S.setSession(s);
+      return out;
+    });
+    await enTant('assistant_comptable', 'SONDE110 assistant', 'm10-badges-verification.html');
+    const assistant = await page.evaluate(() => ({ pointer: [...document.querySelectorAll('#page-content button')].some((x) => x.textContent.trim() === 'Pointer'), verifier: [...document.querySelectorAll('#page-content button')].some((x) => x.textContent.trim() === 'Vérifier'), regler: [...document.querySelectorAll('#page-content button')].some((x) => /Régler/.test(x.textContent)) }));
+    verifier('Droits : un caissier, un médecin, un infirmier et l’assistant de direction ne pointent pas (POINTAGE_RESERVE) ; l’assistant de direction vérifie sans pointer ni régler (commandes absentes)', Object.values(droits).every((c) => c === 'POINTAGE_RESERVE') && !assistant.pointer && !assistant.regler, JSON.stringify({ droits: droits, assistant: assistant }));
+
+    /* --- 8. restitution --------------------------------------------------------------------------------------------------------------------------------------------------- */
+    await page.evaluate((m) => {
+      const S = window.SIGH.store;
+      S.raw().presences = S.raw().presences.filter((p) => m.pres0.indexOf(p.id) >= 0).concat(m.retirees);
+      S.raw().badges = S.raw().badges.filter((b) => m.bad0.indexOf(b.id) < 0);
+      S.setReglage('planningBadgeSertDePointage', m.reglage === undefined ? true : m.reglage);
+      S.setReglage('planningBadgeDelaiMinutes', m.delai === undefined ? 5 : m.delai);
+      S.save();
+    }, monde);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

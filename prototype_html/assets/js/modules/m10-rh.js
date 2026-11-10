@@ -4715,6 +4715,16 @@
    * lui est prescrit, parce que son dossier patient porte `personnelId`.
    * Ouvrir une saisie ici créerait une seconde vérité, divergente du dossier.
    * ======================================================================== */
+  /** L7 : un montant PORTÉ par la prestation est un nombre ; son absence est « non renseigné » (null), jamais un zéro ni le prix courant du catalogue. */
+  function montantAssurance(v) {
+    if (v === null || v === undefined || v === '') return null;
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+  }
+  function totalAssurance(rows) { return rows.reduce(function (t, r) { return t + (r.valeur == null ? 0 : r.valeur); }, 0); }
+  function sansMontantAssurance(rows) { return rows.filter(function (r) { return r.valeur == null; }).length; }
+  function texteMontantAssurance(v) { return v == null ? 'Non renseigné' : C.money(v, false); }
+
   global.SIGH.screen('m10-assurance-personnel', {
     title: 'Assurance du personnel',
     description: 'Prestations dispensées aux agents de la clinique, prises en charge à 100 % — hors recettes et hors comptabilité.',
@@ -4777,7 +4787,7 @@
             patientId: pat.id, code: pat.code, matricule: pat.matricule,
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Consultation', detail: c.type + ' — ' + (c.motif || ''),
-            praticien: c.medecin, valeur: Number(c.tarif) || 0,
+            praticien: c.medecin, valeur: montantAssurance(c.tarif),
           });
         });
 
@@ -4793,7 +4803,8 @@
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Analyse', detail: a.analyse || (analyse ? analyse.libelle : 'Analyse'),
             praticien: a.prescripteur || a.demandeur || '—',
-            valeur: Number(a.montant) || Number(a.prix) || (analyse ? Number(analyse.prix) || 0 : 0),
+            /* L7 : le montant PORTÉ par la demande, jamais le prix courant du catalogue : une demande ancienne sans montant est « non renseignée ». */
+            valeur: montantAssurance(a.montant != null && a.montant !== '' ? a.montant : a.prix),
           });
         });
 
@@ -4807,7 +4818,7 @@
             patientId: pat.id, code: pat.code, matricule: pat.matricule,
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Hospitalisation', detail: (h.service || '') + ' — lit ' + (h.lit || '—'),
-            praticien: h.medecin || '—', valeur: Number(h.montant) || 0,
+            praticien: h.medecin || '—', valeur: montantAssurance(h.montant),
           });
         });
 
@@ -4827,8 +4838,8 @@
             hint: 'sur ' + C.num(personnel().length) + ' agents' },
           { label: 'Prestations prises en charge', value: C.num(rows.length), icon: 'stethoscope', tone: 'info' },
           {
-            label: 'Valeur de l’avantage', value: C.money(C.sum(rows, 'valeur')), icon: 'gift', tone: 'success',
-            hint: 'Ni recette, ni créance',
+            label: 'Valeur de l’avantage', value: C.money(totalAssurance(rows)), icon: 'gift', tone: 'success',
+            hint: sansMontantAssurance(rows) ? 'Ni recette, ni créance · ' + sansMontantAssurance(rows) + ' sans montant renseigné (non comptées)' : 'Ni recette, ni créance',
           },
           {
             label: 'Agents effectivement soignés',
@@ -4880,10 +4891,10 @@
             { key: 'praticien', label: 'Praticien' },
             {
               key: 'valeur', label: 'Valeur', align: 'right',
-              text: function (r) { return C.money(r.valeur, false); },
+              text: function (r) { return texteMontantAssurance(r.valeur); },
               render: function (r) {
                 return el('div.text-right', null, [
-                  el('span.text-sm.text-slate-500', { text: C.money(r.valeur, false) }),
+                  el('span.text-sm.text-slate-500', { text: texteMontantAssurance(r.valeur) }),
                   el('p.text-xs.font-semibold.text-success-700', { text: 'pris en charge 100 %' }),
                 ]);
               },
@@ -4902,13 +4913,13 @@
         var parFonction = C.groupBy(rows, 'fonctionLabel');
         var parAgent = C.groupBy(rows, 'agent');
         var noms = Object.keys(parAgent)
-          .sort(function (a, b) { return C.sum(parAgent[b], 'valeur') - C.sum(parAgent[a], 'valeur'); })
+          .sort(function (a, b) { return totalAssurance(parAgent[b]) - totalAssurance(parAgent[a]); })
           .slice(0, 10);
 
         vue.appendChild(el('div.grid.gap-4.lg\:grid-cols-3', null, [
           U.card('Valeur par nature de prestation',
             G.camembert(Object.keys(parNature),
-              Object.keys(parNature).map(function (k) { return C.sum(parNature[k], 'valeur'); }),
+              Object.keys(parNature).map(function (k) { return totalAssurance(parNature[k]); }),
               { height: 260, legend: 'bottom' })),
           U.card('Prestations par fonction',
             G.barres(Object.keys(parFonction),
@@ -4916,7 +4927,7 @@
               { horizontal: true, height: 260 })),
           U.card('Les dix agents les plus pris en charge',
             K.ranking(noms.map(function (k) {
-              return { label: k, value: C.sum(parAgent[k], 'valeur'), tone: 'success' };
+              return { label: k, value: totalAssurance(parAgent[k]), tone: 'success' };
             }), { format: function (v) { return C.money(v, false); } })),
         ]));
 
@@ -4925,7 +4936,7 @@
         if (mois.length > 1) {
           vue.appendChild(U.card('Valeur mensuelle de l’avantage',
             G.ligne(mois.map(function (m) { return C.moisAnnee(new Date(m + '-01')); }),
-              [{ label: 'FCFA', data: mois.map(function (m) { return C.sum(parMois[m], 'valeur'); }), color: G.TONES.vert }],
+              [{ label: 'FCFA', data: mois.map(function (m) { return totalAssurance(parMois[m]); }), color: G.TONES.vert }],
               { height: 240 })));
         }
 
@@ -4945,7 +4956,7 @@
             consultations: v.filter(function (x) { return x.nature === 'Consultation'; }).length,
             analyses: v.filter(function (x) { return x.nature === 'Analyse'; }).length,
             hospitalisations: v.filter(function (x) { return x.nature === 'Hospitalisation'; }).length,
-            valeur: C.sum(v, 'valeur'),
+            valeur: totalAssurance(v), sansMontant: sansMontantAssurance(v),
           };
         }).sort(function (a, b) { return b.valeur - a.valeur; });
 
@@ -4955,7 +4966,7 @@
           cartouche: [['Période', selPeriode.options[selPeriode.selectedIndex].text],
             ['Agents concernés', C.num(lignes.length)],
             ['Prestations', C.num(rows.length)],
-            ['Valeur totale', C.money(C.sum(rows, 'valeur'))],
+            ['Valeur totale', C.money(totalAssurance(rows))],
             ['Établi par', S.currentUser()], ['Date d’édition', C.dateFR(AUJ)]],
           contenu: el('div.space-y-3', null, [
             P.tableau([
@@ -4965,7 +4976,7 @@
               { label: 'Consult.', align: 'right', value: function (r) { return C.num(r.consultations); }, somme: function (r) { return r.consultations; }, formatTotal: function (v) { return C.num(v); } },
               { label: 'Analyses', align: 'right', value: function (r) { return C.num(r.analyses); }, somme: function (r) { return r.analyses; }, formatTotal: function (v) { return C.num(v); } },
               { label: 'Hospit.', align: 'right', value: function (r) { return C.num(r.hospitalisations); }, somme: function (r) { return r.hospitalisations; }, formatTotal: function (v) { return C.num(v); } },
-              { label: 'Valeur prise en charge', align: 'right', value: function (r) { return C.money(r.valeur, false); }, somme: function (r) { return r.valeur; } },
+              { label: 'Valeur prise en charge', align: 'right', value: function (r) { return C.money(r.valeur, false) + (r.sansMontant ? ' (' + r.sansMontant + ' non renseignée' + (r.sansMontant > 1 ? 's' : '') + ')' : ''); }, somme: function (r) { return r.valeur; } },
             ], lignes, { total: true, totalLabel: 'TOTAL' }),
             el('p.mt-3.text-\[10px\].italic', {
               text: 'Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par '
@@ -6450,10 +6461,9 @@
     },
     pointage: {
       libelle: 'Le badge sert-il de support de POINTAGE ?',
-      valeur: 'Non — décision non prise',
-      motif: 'S’il pointe, il se relie au registre des présences (M10) et la conception change : '
-        + 'lecteur à l’entrée, horodatage, traitement des oublis de badge. Tant que ce n’est pas '
-        + 'tranché, le badge IDENTIFIE seulement.',
+      valeur: 'Oui par défaut (décision du 09/11/2026)',
+      motif: 'Réglable au poste : un badge vérifié valide crée un pointage « à valider » au registre des présences (M10). '
+        + 'Reste à arrêter par la Direction : le délai entre deux pointages (5 minutes proposées) et le traitement des oublis de badge.',
     },
   };
 
@@ -6537,6 +6547,86 @@
     return { code: 'valide', label: 'BADGE VALIDE', tone: 'success',
       message: 'Valable jusqu’au ' + (b.expireLe ? C.dateFR(b.expireLe) : '—') + '.' };
   }
+
+  /* ==========================================================================
+   * LE BADGE SERT DE POINTAGE (lot L8, 10/11/2026, Direction, Planning Q7)
+   * --------------------------------------------------------------------------
+   * Décision du 09/11/2026 (la remarque l'emporte sur la case « différer ») : le badge sert de pointage, réglage oui/non, OUI par défaut, relié au registre des
+   * présences. Un badge présenté et vérifié VALIDE crée au registre un pointage « à valider » (arrivée, puis départ au passage suivant) : il suit le circuit du lot L5,
+   * donc ne compte pas tant qu'il n'est pas validé (RG-11). Le code QR ne porte toujours que le matricule et le numéro de série (vague 54) : la vérification passe par
+   * le logiciel, qui lit le badge au registre. REFUS NOMMÉS (code, motif, geste) : badge illisible, inconnu, retiré, expiré, non remis, incohérent avec son matricule,
+   * pointage désactivé, deux pointages trop rapprochés, journée complète, présence déjà validée ou autre qu'un pointage. Chaque passage, refusé ou non, est journalisé.
+   * LE DÉLAI ENTRE DEUX POINTAGES est un paramètre en base (minutes) : aucun document ne le fixe, le défaut de 5 minutes est une PROPOSITION « à valider ».
+   * Ce que le badge n'infère PAS : le retard (aucun document ne fixe l'heure d'arrivée attendue) ; l'état naît « présent » et le surveillant régularise s'il y a lieu.
+   * ======================================================================== */
+  var DELAI_POINTAGE_DEFAUT = 5;
+  var ROLES_POINTAGE_BADGE = ['surveillant', 'da', 'admin', 'direction', 'rh'];
+  function refusPointage(code, motif, geste, extra) { return Object.assign({ ok: false, code: code, motif: motif, geste: geste }, extra || {}); }
+  function pointageBadgeActif() { return S.reglage('planningBadgeSertDePointage', true) !== false; }
+  function delaiPointageBadge() {
+    var v = Number(S.reglage('planningBadgeDelaiMinutes', DELAI_POINTAGE_DEFAUT));
+    return isFinite(v) && v >= 0 ? v : DELAI_POINTAGE_DEFAUT;
+  }
+  function reglerPointageBadge(o) {
+    o = o || {};
+    if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusPointage('REGLAGE_RESERVE', 'Ce réglage se fait par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.');
+    var delai = o.delai === undefined || o.delai === null || o.delai === '' ? delaiPointageBadge() : Number(o.delai);
+    if (!isFinite(delai) || delai < 0 || delai !== Math.floor(delai) || delai > 720) return refusPointage('DELAI_INVALIDE', 'Le délai entre deux pointages est un nombre entier de minutes, de 0 à 720.', 'Saisir un nombre entier de minutes.');
+    var avant = { actif: pointageBadgeActif(), delai: delaiPointageBadge() };
+    var actif = o.actif === undefined ? avant.actif : o.actif === true;
+    S.setReglage('planningBadgeSertDePointage', actif);
+    S.setReglage('planningBadgeDelaiMinutes', delai);
+    S.log('Le badge sert de pointage', 'M10', 'reglage', 'planningBadgeSertDePointage', avant, { actif: actif, delai: delai, motif: o.motif || null });
+    return { ok: true, actif: actif, delai: delai, avant: avant };
+  }
+  function minutesHeure(h) { var m = /^(\d{1,2}):(\d{2})/.exec(String(h || '')); return m ? Number(m[1]) * 60 + Number(m[2]) : null; }
+  function journaliserPointage(texte, b, code, motif) {
+    S.journaliserAcces({ action: 'Pointage par badge', module: 'M10', entite: 'Badge', reference: b ? b.numero : String(texte).slice(0, 40), cible: b ? b.agent : null,
+      ecran: 'm10-badges-verification', motif: code + (motif ? ' : ' + motif : ''), trouve: !!b });
+  }
+  /** Présente un badge au pointage : { ok, geste: 'arrivee' | 'depart', presenceId } ou le refus nommé. `o.date` et `o.heure` (HH:MM) fixent l'instant, sinon l'horloge. */
+  function pointerParBadge(texte, o) {
+    o = o || {};
+    var jour = o.date || C.iso(C.aujourdhui());
+    var heure = o.heure || (function () { var d = new Date(); return C.pad(d.getHours(), 2) + ':' + C.pad(d.getMinutes(), 2); })();
+    function refus(code, motif, geste, b, extra) { journaliserPointage(texte, b || null, code, motif); return refusPointage(code, motif, geste, extra); }
+    if (ROLES_POINTAGE_BADGE.indexOf(roleCourant()) < 0) return refus('POINTAGE_RESERVE', 'Le pointage par badge se fait au poste d’un habilité (surveillant, Directrice Administrative, Direction, administrateur).', 'Présenter le badge à un habilité.');
+    if (!pointageBadgeActif()) return refus('POINTAGE_DESACTIVE', 'Le badge ne sert pas de pointage : le réglage est coupé au poste de la mère.', 'Vérifier le badge seulement, ou demander à la Directrice Administrative d’activer le pointage par badge.');
+    var lu = global.SIGH.parcours.lireBadgeQR(texte);
+    if (!lu) return refus('BADGE_ILLISIBLE', 'Aucun numéro de badge n’a été lu.', 'Scanner le badge ou saisir son numéro de série.');
+    var b = colBadges().all().filter(function (x) { return String(x.numero || '').toUpperCase() === String(lu.numero || '').toUpperCase(); })[0] || null;
+    var v = verdictBadge(b, jour);
+    var codes = { inconnu: 'BADGE_INCONNU', retire: 'BADGE_RETIRE', expire: 'BADGE_EXPIRE', non_remis: 'BADGE_NON_REMIS' };
+    if (v.code !== 'valide') return refus(codes[v.code] || 'BADGE_REFUSE', v.label + '. ' + v.message, v.code === 'expire' ? 'Faire rééditer le badge, et déclarer la présence au registre.' : 'Ne pas pointer ; déclarer la présence au registre, ou signaler le badge à la RH.', b);
+    if (lu.matricule && b.matricule && String(lu.matricule) !== String(b.matricule)) return refus('BADGE_INCOHERENT', 'Le code présenté annonce le matricule ' + lu.matricule + ', le registre porte le matricule ' + b.matricule + ' pour ce numéro de série.', 'Retenir le badge et le signaler à la RH.', b);
+    var agent = S.collection('personnel').get(b.personnelId);
+    if (!agent || agent.statut === 'archive') return refus('AGENT_INTROUVABLE', 'L’agent de ce badge n’existe plus au personnel.', 'Signaler le badge à la RH.', b);
+    var col = S.collection('presences', { module: 'M10', entite: 'Presence' });
+    var duJour = col.active().filter(function (x) { return x.employeId === agent.id && x.date === jour; });
+    var h = minutesHeure(heure);
+    var dernier = null;
+    duJour.forEach(function (x) { [x.heureArrivee, x.heureDepart].forEach(function (t) { var m = minutesHeure(t); if (m !== null && (dernier === null || m > dernier)) dernier = m; }); });
+    var delai = delaiPointageBadge();
+    if (dernier !== null && delai > 0 && h - dernier < delai) return refus('POINTAGE_TROP_RAPPROCHE', 'Deux pointages de ' + agent.nomComplet + ' à moins de ' + delai + ' minute' + (delai > 1 ? 's' : '') + ' d’intervalle : le dernier date de ' + C.pad(Math.floor(dernier / 60), 2) + ':' + C.pad(dernier % 60, 2) + '.', 'Attendre ' + (delai - (h - dernier)) + ' minute(s) avant de pointer de nouveau.', b, { delai: delai });
+    var ouverte = duJour.filter(function (x) { return x.heureArrivee && !x.heureDepart; })[0];
+    var autre = duJour.filter(function (x) { return !x.heureArrivee; })[0];
+    if (ouverte) {
+      if (ouverte.validationEtat === 'valide') return refus('POINTAGE_PRESENCE_VALIDEE', 'La présence du jour de ' + agent.nomComplet + ' est déjà validée : un pointage validé ne se modifie pas.', 'La régulariser au registre des présences (motif, date et auteur consignés).', b);
+      var rd = col.update(ouverte.id, { heureDepart: heure, departParBadge: b.id }, { journal: { action: 'Départ pointé par badge', module: 'M10', entite: 'Presence', avant: { heureDepart: null }, apres: { heureDepart: heure, badge: b.numero } } });
+      if (!rd) return refus('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture du départ.', 'Relire le journal d’audit.', b);
+      journaliserPointage(texte, b, 'DEPART', heure);
+      return { ok: true, geste: 'depart', presenceId: ouverte.id, agentId: agent.id, badgeId: b.id, heure: heure, etat: PRH_validation(ouverte), undo: rd.undo };
+    }
+    if (duJour.length) return refus(autre ? 'POINTAGE_PRESENCE_EXISTANTE' : 'POINTAGE_JOURNEE_COMPLETE', autre ? 'Une présence du jour est déjà portée pour ' + agent.nomComplet + ' (' + autre.etat + ') sans heure d’arrivée.' : 'L’arrivée et le départ de ' + agent.nomComplet + ' sont déjà pointés aujourd’hui.', autre ? 'La régulariser au registre des présences.' : 'Aucun pointage de plus aujourd’hui ; régulariser au registre si une heure est fausse.', b);
+    var naissance = PRH().naissance();
+    var rec = Object.assign({ date: jour, employeId: agent.id, employe: agent.nomComplet, matricule: agent.matricule, service: agent.service, etat: 'present', heureArrivee: heure, origine: 'badge', badgeId: b.id, badgeNumero: b.numero }, naissance);
+    var ri = col.insert(rec, { journal: { action: 'Arrivée pointée par badge', module: 'M10', entite: 'Presence', avant: null, apres: { agent: agent.nomComplet, heureArrivee: heure, badge: b.numero, validationEtat: 'a_valider' } } });
+    if (!ri) return refus('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture du pointage.', 'Relire le journal d’audit.', b);
+    journaliserPointage(texte, b, 'ARRIVEE', heure);
+    return { ok: true, geste: 'arrivee', presenceId: ri.record.id, agentId: agent.id, badgeId: b.id, heure: heure, etat: 'a_valider', undo: ri.undo };
+  }
+  function PRH_validation(rec) { return PRH().etatValidation('presences', rec); }
+  global.SIGH.pointageBadge = { actif: pointageBadgeActif, delai: delaiPointageBadge, regler: reglerPointageBadge, pointer: pointerParBadge, DELAI_DEFAUT: DELAI_POINTAGE_DEFAUT, ROLES: ROLES_POINTAGE_BADGE };
 
   /* --------------------------------------------------------------------------
    * Amorçage — trois écrans de M10 lisent ces collections, et une page ne
@@ -7138,13 +7228,21 @@
       var bouton = K.btn('Vérifier', { variant: 'primary', icon: 'scan-face', onclick: verifier });
       saisie.addEventListener('keydown', function (e) { if (e.key === 'Enter') verifier(); });
 
+      var PB = global.SIGH.pointageBadge;
+      var peutPointer = PB.ROLES.indexOf(roleCourant()) >= 0 && PB.actif();
+      var boutonPointer = peutPointer ? K.btn('Pointer', { variant: 'success', icon: 'log-in', onclick: pointer }) : null;
+      var blocPointage = el('div');
+      host.appendChild(blocPointage);
+      rendrePointage();
+
       host.appendChild(U.card('Badge présenté', el('div.space-y-3', null, [
         el('div.flex.flex-wrap.items-end.gap-2', null, [
           el('div.min-w-\\[18rem\\].flex-1', null, [
             el('label.label', { text: 'Numéro de série ou code scanné' }), saisie,
           ]),
           bouton,
-        ]),
+          boutonPointer,
+        ].filter(Boolean)),
         K.note('La <strong>saisie manuelle est acceptée</strong> autant que le scan : refuser le numéro '
           + 'à la main rendrait le contrôle impossible le jour où le QR est abîmé — c’est-à-dire le jour '
           + 'où il sert le plus.', { tone: 'info', icon: 'keyboard' }),
@@ -7162,6 +7260,61 @@
 
       U.icons(host);
       return null;
+
+      function rendrePointage() {
+        C.clear(blocPointage);
+        var actions = [];
+        if (['admin', 'da'].indexOf(roleCourant()) >= 0) {
+          actions.push(K.btn('Régler', { size: 'sm', icon: 'settings-2', onclick: function () {
+            var f = U.form([
+              { name: 'actif', label: 'Le badge sert de pointage', type: 'checkbox', col: 'full' },
+              { name: 'delai', label: 'Délai minimal entre deux pointages (minutes)', type: 'number', required: true, col: 'full' },
+            ], { actif: PB.actif(), delai: PB.delai() });
+            var m = U.modal({
+              title: 'Pointage par badge', size: 'md',
+              body: el('div.space-y-3', null, [K.note('Le délai de ' + PB.DELAI_DEFAUT + ' minutes est une proposition à valider par la Direction. Le réglage se règle à la mère et se synchronise.', { tone: 'info' }), f]),
+              footer: [K.btn('Annuler', { onclick: function () { m.close(); } }),
+                K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+                  var v = f.collect(); if (!v) return;
+                  var r = PB.regler({ actif: v.actif === true, delai: v.delai });
+                  if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                  m.close(); global.SIGH.app.go('m10-badges-verification');
+                  U.toast('Réglage enregistré.', { type: 'success' });
+                } })],
+            });
+          } }));
+        }
+        blocPointage.appendChild(U.card('Pointage par badge', el('div.space-y-2', null, [
+          U.descList([
+            ['Le badge sert de pointage', PB.actif() ? 'Oui' : 'Non'],
+            ['Délai minimal entre deux pointages', PB.delai() + ' minute' + (PB.delai() > 1 ? 's' : '') + (PB.delai() === PB.DELAI_DEFAUT ? ' (valeur d’attente, à valider)' : '')],
+          ], 'grid-cols-1'),
+          el('p.text-xs.text-slate-500', { text: 'Un badge vérifié valide crée une présence « à valider » (arrivée, puis départ au passage suivant) : elle ne compte pas tant que le circuit de validation ne l’a pas tranchée.' }),
+        ]), actions));
+        U.icons(blocPointage);
+      }
+
+      function pointer() {
+        var texte = String(saisie.value || '').trim();
+        C.clear(reponse);
+        if (!texte) { U.toast('Saisir ou scanner un numéro de badge.', { type: 'warning' }); return; }
+        var r = PB.pointer(texte);
+        if (!r.ok) {
+          reponse.appendChild(el('div.rounded-xl.border.border-danger-300.bg-danger-50.p-4', null, [
+            el('p.text-xl.font-bold.text-danger-700', { text: 'Pointage refusé' }),
+            el('p.mt-1.text-sm.text-slate-700', { text: r.motif }),
+            el('p.mt-1.text-xs.text-slate-500', { text: r.geste }),
+          ]));
+          U.icons(reponse);
+          return;
+        }
+        var ag = S.collection('personnel').get(r.agentId);
+        reponse.appendChild(el('div.rounded-xl.border.border-success-300.bg-success-50.p-4', null, [
+          el('p.text-xl.font-bold.text-success-700', { text: r.geste === 'arrivee' ? 'Arrivée pointée' : 'Départ pointé' }),
+          el('p.mt-1.text-sm.text-slate-700', { text: (ag ? ag.nomComplet : '') + ' à ' + r.heure + '. Présence à valider par le circuit.' }),
+        ]));
+        U.icons(reponse);
+      }
 
       function verifier() {
         var texte = String(saisie.value || '').trim();
@@ -7216,6 +7369,137 @@
       }
     },
   });
+
+
+  /* ==========================================================================
+   * MON ESPACE (lot L7, 10/11/2026) : l'espace « Mes » de l'agent, ses dix-sept rubriques, en LECTURE
+   * --------------------------------------------------------------------------
+   * Ouvert à tout agent connecté sous son propre compte (`universel`), y compris sur un poste partagé en secours (Direction, Planning Q6). Chaque rubrique est
+   * lue par `SIGH.espaceMes.lire`, filtrée sur l'agent de la session : aucun droit d'écran sur une collection entière n'est accordé pour cela. Rien ne se saisit
+   * ici : chaque geste (demande de congé, pointage, proposition) reste à son écran, qui porte ses propres droits.
+   * ======================================================================== */
+  var COLONNES_MES = {
+    fiche_poste: [['Intitulé', 'intitule'], ['Rattachement', 'rattachement'], ['Résumé', 'resume']],
+    fiche_paie: [['Référence', 'reference'], ['Période', 'periode'], ['Brut', 'brut', 'money'], ['Retenues', 'totalRetenues', 'money'], ['Net à payer', 'net', 'money'], ['Diffusée le', 'dateDiffusion', 'date']],
+    contrat: [['Référence', 'reference'], ['Nature', 'nature'], ['Poste', 'poste'], ['Début', 'dateDebut', 'date'], ['Fin', 'dateFin', 'date']],
+    planning: [['Date', 'date', 'date'], ['Vacation', 'type'], ['Service', 'service'], ['Régime', 'regime']],
+    presences: [['Date', 'date', 'date'], ['État', 'etat'], ['Arrivée', 'heureArrivee'], ['Départ', 'heureDepart']],
+    conges: [['Référence', 'reference'], ['Nature', 'nature'], ['Du', 'dateDebut', 'date'], ['Au', 'dateFin', 'date'], ['Décision', 'statutConge']],
+    missions: [['Référence', 'reference'], ['Objet', 'objet'], ['Destination', 'destination'], ['Départ', 'dateDepart', 'date'], ['Retour', 'dateRetour', 'date'], ['Décision', 'statutMission']],
+    primes: [['Période', 'periode'], ['Primes', 'totalPrimes', 'money'], ['Heures supplémentaires', 'heuresSupMontant', 'money']],
+    evenements: [['Référence', 'reference'], ['Événement', 'libelle'], ['Date', 'date', 'date']],
+    participations: [['Événement', 'evenementLibelle'], ['Montant', 'montant', 'money'], ['Mode', 'mode'], ['Règlement', 'statutPaiement']],
+    agenda: [['Date', 'date', 'date'], ['Patient', 'patient'], ['Nature', 'type'], ['Motif', 'motif']],
+    rendez_vous: [['Date', 'date', 'date'], ['Praticien', 'medecin'], ['Nature', 'type'], ['Motif', 'motif']],
+  };
+  function celluleMes(v, f) {
+    if (v === null || v === undefined || v === '') return '—';
+    if (f === 'date') return C.dateFR(v);
+    if (f === 'money') return C.money(v, false);
+    return String(v);
+  }
+  global.SIGH.screen('m10-mes', {
+    title: 'Mon espace',
+    description: 'Mes informations d’agent, en lecture : poste, paie, contrat, planning, présences, congés, missions, primes, événements, assurance, notes de service, agenda.',
+    regle: 'Cet espace montre <strong>vos</strong> données et celles d’aucun autre agent (RG-13). Il se lit, il ne se saisit pas : chaque demande reste à son écran. '
+      + 'Sur un <strong>poste partagé</strong>, ouvrez votre propre session ; le compte d’un poste n’a pas d’espace « Mes ». '
+      + 'À la déconnexion, l’affichage est vidé ; au verrou, seule la rubrique ouverte est gardée. La fiche de paie est la <strong>pièce émise</strong>, jamais recalculée.',
+    render: function (root) {
+      var host = el('div.space-y-4');
+      var E = global.SIGH.espaceMes;
+      var a = E.agent();
+      if (['admin', 'da'].indexOf(roleCourant()) >= 0) host.appendChild(carteCopiePaie(function () { global.SIGH.app.go('m10-mes'); }));
+      if (!a.ok) {
+        host.appendChild(U.card('Espace non disponible', U.empty(a.motif, { icon: 'user-x', hint: a.geste })));
+        root.appendChild(host);
+        U.icons(host);
+        return null;
+      }
+      var courante = E.etat('rubrique');
+      if (!E.rubrique(courante)) courante = E.RUBRIQUES[0].id;
+      var liste = el('div.card');
+      var contenu = el('div.space-y-4');
+      host.appendChild(el('div.grid.gap-4.lg\\:grid-cols-4', null, [liste, el('div.lg\\:col-span-3', null, contenu)]));
+      root.appendChild(host);
+      dessiner();
+      return null;
+
+      function dessiner() {
+        C.clear(liste); C.clear(contenu);
+        var corps = el('div.card-body.space-y-1');
+        E.RUBRIQUES.forEach(function (r) {
+          var lu = E.lire(r.id);
+          var b = el('button.flex.w-full.items-center.justify-between.rounded-lg.px-3.py-2.text-left.text-sm', {
+            type: 'button', class: r.id === courante ? 'bg-navy-50 font-semibold text-navy-900' : 'text-slate-700 hover:bg-slate-50',
+            onclick: function () { courante = r.id; E.etat('rubrique', r.id); dessiner(); },
+          }, [el('span', { text: r.libelle }), el('span.text-xs.text-slate-500', { text: lu.ok ? C.num(lu.total) : '—' })]);
+          corps.appendChild(b);
+        });
+        liste.appendChild(el('div.card-head', null, el('h3.card-title', { text: 'Rubriques' })));
+        liste.appendChild(corps);
+        contenu.appendChild(rubrique(courante));
+        U.icons(host);
+      }
+
+      function rubrique(id) {
+        var r = E.rubrique(id), lu = E.lire(id);
+        if (!lu.ok) return U.card(r.libelle, U.empty(lu.motif, { icon: 'lock', hint: lu.geste }));
+        var corps = el('div.space-y-3');
+        if (r.lectureSeule) corps.appendChild(K.note('<strong>Lecture seule.</strong> La clinique soigne ses agents à 100 % : rien ne se saisit ici, rien ne remonte à la comptabilité.', { tone: 'info', icon: 'lock' }));
+        if (r.id === 'fiche_paie') corps.appendChild(K.note('Pièce <strong>émise</strong> (diffusée) : elle n’est jamais recalculée. Copie chiffrée sur le téléphone : ' + (E.copiePaieActive() ? '<strong>activée</strong>' : '<strong>désactivée</strong>') + ' au poste de la mère.', { tone: 'info', icon: 'smartphone' }));
+        if (r.calcule === 'garde' || r.calcule === 'permanence') {
+          corps.appendChild(U.kpiGrid([{ label: r.calcule === 'garde' ? 'Gardes effectuées' : 'Permanences assurées', value: C.num(lu.total), icon: 'calendar-check', tone: 'navy', hint: 'Planning validé seul' }], 'grid-cols-1'));
+        } else if (r.calcule === 'presence') {
+          corps.appendChild(U.kpiGrid([
+            { label: 'Présences', value: C.num(lu.presents), icon: 'user-check', tone: 'success' },
+            { label: 'Retards', value: C.num(lu.retards), icon: 'clock', tone: 'warning' },
+            { label: 'Absences', value: C.num(lu.absents), icon: 'user-x', tone: 'danger' },
+          ], 'grid-cols-3'));
+        } else if (r.calcule === 'notes') {
+          corps.appendChild(K.miniTable(['Note', 'Objet', 'Version'], [D.NS131, D.NS132].map(function (n) { return [n.reference, n.objet, 'Version ' + n.version]; })));
+        } else if (r.calcule === 'assurance') {
+          var as = E.assurance(E.agent().agent);
+          corps.appendChild(U.kpiGrid([
+            { label: 'Prestations prises en charge', value: C.num(as.lignes.length), icon: 'stethoscope', tone: 'info' },
+            { label: 'Valeur de l’avantage', value: C.money(as.total), icon: 'gift', tone: 'success', hint: as.sansMontant ? as.sansMontant + ' sans montant renseigné (non comptées)' : 'Ni recette, ni créance' },
+          ], 'grid-cols-2'));
+          corps.appendChild(as.lignes.length
+            ? K.miniTable(['Date', 'Nature', 'Valeur'], C.sortBy(as.lignes, 'date').reverse().map(function (l) { return [C.dateFR(l.date), l.nature, l.valeur === null ? 'Non renseigné' : C.money(l.valeur, false)]; }))
+            : U.empty('Aucune prestation.', { icon: 'shield-check' }));
+        } else {
+          var cols = COLONNES_MES[r.id] || [];
+          var fiches = lu.ids.map(function (i) { return S.collection(r.source).get(i); }).filter(Boolean);
+          corps.appendChild(fiches.length
+            ? K.miniTable(cols.map(function (c) { return c[0]; }), fiches.map(function (f) { return cols.map(function (c) { return celluleMes(f[c[1]], c[2]); }); }))
+            : U.empty('Aucune fiche à votre nom.', { icon: 'inbox' }));
+        }
+        corps.appendChild(K.lien(r.ecran, 'Ouvrir l’écran de gestion', { size: 'sm', icon: 'arrow-right' }));
+        return U.card(r.libelle, corps);
+      }
+    },
+  });
+
+  function carteCopiePaie(apres) {
+    var E = global.SIGH.espaceMes;
+    return U.card('Copie de la fiche de paie sur le téléphone', el('div.space-y-2', null, [
+      U.descList([['Copie chiffrée sur le téléphone de l’agent', E.copiePaieActive() ? 'Oui' : 'Non']], 'grid-cols-1'),
+      el('p.text-xs.text-slate-500', { text: 'La copie ne porte que la pièce émise de l’agent lui-même, jamais celle d’un autre ni l’ensemble de la paie. Elle se règle à la mère et se synchronise.' }),
+    ]), [K.btn('Régler', { size: 'sm', icon: 'settings-2', onclick: function () {
+      var f = U.form([{ name: 'oui', label: 'La fiche de paie émise de l’agent est copiée, chiffrée, sur son téléphone', type: 'checkbox', col: 'full' }], { oui: E.copiePaieActive() });
+      var m = U.modal({
+        title: 'Copie de la fiche de paie sur le téléphone', size: 'md',
+        body: el('div.space-y-3', null, [K.note('Désactiver retire la copie des téléphones à leur prochaine synchronisation.', { tone: 'info' }), f]),
+        footer: [K.btn('Annuler', { onclick: function () { m.close(); } }),
+          K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+            var v = f.collect(); if (!v) return;
+            var r = E.definirCopiePaie(v.oui === true);
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            m.close(); if (apres) apres();
+            U.toast('Réglage enregistré.', { type: 'success' });
+          } })],
+      });
+    } })]);
+  }
 
 
 })(window);

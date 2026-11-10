@@ -316,6 +316,8 @@
       if (!s2) return;
       /* L'adresse complète, ancre comprise : c'est elle qui porte l'onglet. */
       S.storage.set(VERROU_RETOUR, global.location.pathname.split('/').pop() + global.location.hash);
+      /* L7 : au verrou, ce que l'espace « Mes » gardait en mémoire d'affichage est vidé (la rubrique ouverte seule reste, pour le retour à l'écran quitté). */
+      try { if (global.SIGH.espaceMes) global.SIGH.espaceMes.purger({ gardeRubrique: true }); } catch (e) { /* sans effet */ }
       if (global.SIGH.sessions) { try { global.SIGH.sessions.changerEtat('suspendue'); } catch (e) { /* sans effet */ } }
       S.log('Verrouillage pour inactivité', 'M14', 'Session', s2.identifiant || s2.nom,
         null, { ecran: entry.id, delaiMinutes: Math.round(delaiVerrou() / 60000) });

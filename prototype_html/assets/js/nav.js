@@ -524,6 +524,8 @@
             /* L'agent PROPOSE une modification ou un échange de son planning, le surveillant valide (lot L6, 09/11/2026). Écran de TOUT agent (`universel`, comme
                les bons de besoins) : chacun n'y voit que ses propres propositions, le surveillant, la DAF et l'administrateur voient tout et tranchent. */
             { id: 'm10-propositions-planning', label: 'Propositions de planning', icon: 'calendar-sync', universel: true },
+            /* L'espace « Mes » : les données de l'agent, en lecture (lot L7, 09/11/2026). Écran de TOUT agent connecté sous son propre compte. */
+            { id: 'm10-mes', label: 'Mon espace', icon: 'user-round', universel: true },
             { id: 'm10-stats-gardes', label: 'Statistiques de garde', icon: 'chart-column' },
             { id: 'm10-stats-permanences', label: 'Statistiques des permanences', icon: 'clock-9' },
             { id: 'm10-stats-presence', label: 'Taux de présence par service', icon: 'user-check' },

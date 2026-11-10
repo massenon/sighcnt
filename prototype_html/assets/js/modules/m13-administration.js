@@ -2078,9 +2078,9 @@
           attente: 'Restitution, perte, propri\u00e9t\u00e9', ecran: 'm10-badges-modeles',
           motif: 'Elles engagent la clinique envers le porteur : c\u2019est \u00e0 la Direction de les arr\u00eater.' },
         { libelle: 'Le badge sert-il de support de POINTAGE ?',
-          attente: 'Non \u2014 d\u00e9cision non prise', ecran: 'm10-badges',
-          motif: 'S\u2019il pointe, il se relie au registre des pr\u00e9sences et la conception change : lecteur \u00e0 '
-            + 'l\u2019entr\u00e9e, horodatage, traitement des oublis de badge.' },
+          attente: 'Oui par d\u00e9faut (d\u00e9cision du 09/11/2026)', ecran: 'm10-badges',
+          motif: 'R\u00e9glable au poste. Reste \u00e0 arr\u00eater par la Direction : le d\u00e9lai entre deux pointages (5 minutes propos\u00e9es) '
+            + 'et le traitement des oublis de badge.' },
       ]);
 
       /* LES R\u00c9F\u00c9RENTIELS : un compte par famille, relu dans le magasin (PR.referentielsAValider) : jamais un litt\u00e9ral. */

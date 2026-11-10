@@ -290,7 +290,11 @@
    */
   function setSession(s) {
     if (s) storage.set('sigh-cnt:session', JSON.stringify(s));
-    else storage.remove('sigh-cnt:session');
+    else {
+      storage.remove('sigh-cnt:session');
+      /* L7 : à la déconnexion, l'état d'affichage de l'espace « Mes » part avec la session (poste partagé : le suivant n'en hérite pas). */
+      try { if (global.SIGH && global.SIGH.espaceMes) global.SIGH.espaceMes.purger(); } catch (e) { /* sans effet */ }
+    }
     if (s && s.jeton) {
       SRV.jeton = s.jeton;
       SRV.promesseSession = global.Promise.resolve(s.jeton);

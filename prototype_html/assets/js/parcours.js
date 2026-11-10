@@ -6244,6 +6244,161 @@
     return { ok: true, etat: 'validee', appliquees: appliquees };
   }
 
+  /* ==========================================================================
+   * RH, LOT L7 (10/11/2026) : L'ESPACE « MES » DE L'AGENT, LA COPIE DE LA FICHE DE PAIE SUR LE TÉLÉPHONE, « MON ASSURANCE DU PERSONNEL »
+   * --------------------------------------------------------------------------
+   * Décisions de la Direction du 09/11/2026 (Planning Q5, Q6, Q8). (1) Q5 : la fiche de paie descend sur le téléphone en COPIE CHIFFRÉE LOCALE de la pièce ÉMISE
+   * (bulletin DIFFUSÉ, jamais recalculé à l'appareil) de l'agent SEUL ; le réglage `paieCopieTelephone` (oui par défaut) l'active ou la coupe. (2) Q6 : l'espace
+   * « Mes » s'ouvre aussi sur un POSTE PARTAGÉ en secours, par une connexion NOMINATIVE. (3) Q8 : « Mon assurance du personnel » reste en LECTURE SEULE.
+   *
+   * L'ESPACE LIT, IL N'ÉCRIT RIEN ET NE GARDE RIEN : chaque rubrique est lue à l'ouverture, filtrée sur l'agent de la session (rattaché au personnel par son nom, comme
+   * partout), sans accorder de droit d'écran sur la collection entière (RG-13). Un compte NON NOMINATIF (aucun agent à ce nom) reçoit un refus nommé, jamais
+   * l'espace d'un autre. Seul l'état d'AFFICHAGE (rubrique ouverte) vit dans `sessionStorage`, sous `sigh-cnt:mes-*` ; `purger()` le vide à la déconnexion
+   * (`setSession(null)`) et au verrou. Au verrou la rubrique est gardée (retour à l'écran quitté), à la déconnexion tout part.
+   * ======================================================================== */
+  var RUBRIQUES_MES = [
+    { n: 1, id: 'fiche_poste', libelle: 'Ma fiche de poste', ecran: 'm10-fiches-poste', source: 'fichesPoste', lien: 'poste' },
+    { n: 2, id: 'fiche_paie', libelle: 'Ma fiche de paie', ecran: 'm11-bulletins', source: 'bulletins', lien: 'employeId', emise: true, sensible: true },
+    { n: 3, id: 'contrat', libelle: 'Mon contrat', ecran: 'm10-contrats', source: 'contrats', lien: 'employeId', sensible: true },
+    { n: 4, id: 'planning', libelle: 'Mes planning et gardes', ecran: 'm10-planning', source: 'planning', lien: 'employeId' },
+    { n: 5, id: 'stats_garde', libelle: 'Mes statistiques de garde', ecran: 'm10-stats-gardes', calcule: 'garde' },
+    { n: 6, id: 'stats_permanence', libelle: 'Mes statistiques des permanences', ecran: 'm10-stats-permanences', calcule: 'permanence' },
+    { n: 7, id: 'taux_presence', libelle: 'Mon taux de présence par service', ecran: 'm10-stats-presence', calcule: 'presence' },
+    { n: 8, id: 'presences', libelle: 'Mes présences et absences', ecran: 'm10-presences', source: 'presences', lien: 'employeId' },
+    { n: 9, id: 'conges', libelle: 'Mes congés', ecran: 'm10-conges', source: 'conges', lien: 'employeId' },
+    { n: 10, id: 'missions', libelle: 'Mes ordres de mission', ecran: 'm10-missions', source: 'missions', lien: 'agentId' },
+    { n: 11, id: 'primes', libelle: 'Mes primes', ecran: 'm10-primes', source: 'bulletins', lien: 'employeId', emise: true, sensible: true },
+    { n: 12, id: 'evenements', libelle: 'Événements du personnel', ecran: 'm10-evenements', source: 'evenements', lien: 'evenementsDeLAgent' },
+    { n: 13, id: 'participations', libelle: 'Mes frais de participation', ecran: 'm10-participations', source: 'participations', lien: 'employeId' },
+    { n: 14, id: 'assurance', libelle: 'Mon assurance du personnel', ecran: 'm10-assurance-personnel', calcule: 'assurance', lectureSeule: true },
+    { n: 15, id: 'notes_service', libelle: 'Notes de service', ecran: 'm13-notes-service', calcule: 'notes' },
+    { n: 16, id: 'agenda', libelle: 'Mon agenda', ecran: 'm2-agenda', source: 'consultations', lien: 'medecinId' },
+    { n: 17, id: 'rendez_vous', libelle: 'Mes rendez-vous et visites', ecran: 'm2-rendezvous', source: 'consultations', lien: 'patientDeLAgent' },
+  ];
+  var CLE_MES = 'sigh-cnt:mes-';
+  /* La garde est celle de 24 h (régime de repos du planning) ; la garde soins de 08h à 18h30 reste lue à la rubrique « Mes planning et gardes ». */
+  var TRAVAIL_MES = { garde: ['garde', 'garde_hospi'], permanence: ['permanence'] };
+
+  function rubriqueMes(id) { return RUBRIQUES_MES.filter(function (r) { return r.id === id; })[0] || null; }
+  function copiePaieTelephoneActive() { return S.reglage('paieCopieTelephone', true) !== false; }
+  function definirCopiePaieTelephone(oui, motif) {
+    if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusRh('REGLAGE_RESERVE', 'Ce réglage se fait par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.');
+    var avant = copiePaieTelephoneActive();
+    S.setReglage('paieCopieTelephone', oui === true);
+    S.log('Copie de la fiche de paie sur le téléphone', 'M11', 'reglage', 'paieCopieTelephone', { valeur: avant }, { valeur: oui === true, motif: motif || null });
+    return { ok: true, valeur: oui === true, avant: avant };
+  }
+
+  /** L'agent de la session : la connexion doit être NOMINATIVE (un agent du personnel à ce nom), sinon refus nommé. */
+  function agentDeMes() {
+    if (!(S.session && S.session())) return refusRh('SESSION_ABSENTE', 'Aucune session ouverte : l’espace « Mes » ne s’ouvre que sur une connexion nominative.', 'Se connecter avec son propre compte.');
+    var e = employeDeSession();
+    if (!e) return refusRh('COMPTE_NON_NOMINATIF', 'Le compte « ' + acteur() + ' » ne correspond à aucun agent du personnel : l’espace « Mes » est celui d’une personne, pas d’un poste.', 'Se connecter avec son compte nominatif (poste partagé : fermer la session de l’agent précédent).');
+    return { ok: true, agent: e };
+  }
+
+  /** Les fiches d'une rubrique qui sont CELLES DE L'AGENT, et d'aucun autre (RG-13). */
+  function fichesMes(r, e) {
+    var col = S.collection(r.source).active();
+    var dossiers = null;
+    function dossiersAgent() {
+      dossiers = dossiers || S.collection('patients').active().filter(function (p) { return p.personnelId === e.id; }).map(function (p) { return p.id; });
+      return dossiers;
+    }
+    return col.filter(function (x) {
+      if (r.lien === 'poste') return !!e.poste && x.intitule === e.poste;
+      if (r.lien === 'evenementsDeLAgent') {
+        return x.beneficiaireId === e.id || S.collection('participations').active().some(function (p) { return p.evenementId === x.id && p.employeId === e.id; });
+      }
+      if (r.lien === 'patientDeLAgent') return dossiersAgent().indexOf(x.patientId) >= 0;
+      if (r.emise && x.statutBulletin !== 'diffuse') return false;
+      return String(x[r.lien]) === String(e.id);
+    });
+  }
+
+  /** Consultations, analyses et hospitalisations de l'agent soigné à 100 % : montant PORTÉ ou « non renseigné », jamais le prix courant (vague 20, Q8). */
+  function montantPorte(v) { if (v === null || v === undefined || v === '') return null; var n = Number(v); return isFinite(n) ? n : null; }
+  function assuranceDeLAgent(e) {
+    var pids = S.collection('patients').active().filter(function (p) { return p.personnelId === e.id; }).map(function (p) { return p.id; });
+    var lignes = [];
+    S.collection('consultations').active().forEach(function (c) { if (pids.indexOf(c.patientId) >= 0) lignes.push({ id: c.id, nature: 'Consultation', date: String(c.date || '').slice(0, 10), valeur: montantPorte(c.tarif) }); });
+    S.collection('demandesAnalyses').active().forEach(function (a) {
+      if (pids.indexOf(a.patientId) >= 0) lignes.push({ id: a.id, nature: 'Analyse', date: String(a.date || a.dateDemande || a.dateHeure || '').slice(0, 10), valeur: montantPorte(a.montant != null && a.montant !== '' ? a.montant : a.prix) });
+    });
+    S.collection('admissions').active().forEach(function (h) { if (pids.indexOf(h.patientId) >= 0) lignes.push({ id: h.id, nature: 'Hospitalisation', date: String(h.dateEntree || '').slice(0, 10), valeur: montantPorte(h.montant) }); });
+    var renseignees = lignes.filter(function (l) { return l.valeur !== null; });
+    return { lignes: lignes, total: renseignees.reduce(function (t, l) { return t + l.valeur; }, 0), sansMontant: lignes.length - renseignees.length };
+  }
+
+  /** La lecture d'UNE rubrique par l'agent de la session : les identifiants de ses fiches, ou les valeurs calculées. Lecture seule, rien n'est écrit. */
+  function lireMes(rubriqueId) {
+    var r = rubriqueMes(rubriqueId);
+    if (!r) return refusRh('RUBRIQUE_INCONNUE', 'La rubrique « ' + rubriqueId + ' » n’existe pas.', 'Choisir l’une des dix-sept rubriques de l’espace « Mes ».');
+    var a = agentDeMes();
+    if (!a.ok) return a;
+    var e = a.agent;
+    var out = { ok: true, rubrique: r.id, agentId: e.id, lectureSeule: r.lectureSeule === true };
+    if (r.calcule === 'notes') { out.ids = [D.NS131.reference, D.NS132.reference]; out.total = out.ids.length; return out; }
+    if (r.calcule === 'assurance') {
+      var as = assuranceDeLAgent(e);
+      out.ids = as.lignes.map(function (l) { return l.id; }); out.total = as.lignes.length; out.valeur = as.total; out.sansMontant = as.sansMontant;
+      return out;
+    }
+    if (r.calcule === 'garde' || r.calcule === 'permanence') {
+      var vacs = S.collection('planning').active().filter(function (x) { return x.employeId === e.id && TRAVAIL_MES[r.calcule].indexOf(x.type) >= 0 && (!x.validationEtat || x.validationEtat === 'validee'); });
+      out.ids = vacs.map(function (x) { return x.id; }); out.total = vacs.length;
+      return out;
+    }
+    if (r.calcule === 'presence') {
+      var pts = S.collection('presences').active().filter(function (x) { return x.employeId === e.id && compteRh('presences', x); });
+      out.ids = pts.map(function (x) { return x.id; }); out.total = pts.length;
+      out.presents = pts.filter(function (x) { return x.etat === 'present'; }).length;
+      out.retards = pts.filter(function (x) { return x.etat === 'retard'; }).length;
+      out.absents = pts.filter(function (x) { return x.etat === 'absent'; }).length;
+      return out;
+    }
+    var f = fichesMes(r, e);
+    out.ids = f.map(function (x) { return x.id; }); out.total = f.length;
+    return out;
+  }
+
+  /** LA COPIE DE LA FICHE DE PAIE POUR LE TÉLÉPHONE : les pièces ÉMISES (diffusées) de l'agent DEMANDEUR, jamais celles d'un autre, jamais l'ensemble de la paie. */
+  function copiePaieAgent(o) {
+    o = o || {};
+    if (!copiePaieTelephoneActive()) return refusRh('COPIE_PAIE_DESACTIVEE', 'La copie de la fiche de paie sur le téléphone est désactivée au poste de la mère.', 'Demander à la Directrice Administrative de l’activer (paramètres, famille Paie).');
+    var a = agentDeMes();
+    if (!a.ok) return a;
+    var e = a.agent;
+    if (o.agentId && String(o.agentId) !== String(e.id)) return refusRh('COPIE_PAIE_AUTRE_AGENT', 'Une copie de fiche de paie ne se délivre qu’à l’agent concerné : celle d’un autre agent n’est jamais descendue (RG-13).', 'L’agent demande sa propre copie depuis son compte.');
+    var pieces = S.collection('bulletins').active().filter(function (b) { return String(b.employeId) === String(e.id) && b.statutBulletin === 'diffuse'; });
+    return { ok: true, agentId: e.id, ids: pieces.map(function (b) { return b.id; }), references: pieces.map(function (b) { return b.reference; }), total: pieces.length, chiffree: true, recalculee: false };
+  }
+
+  function etatMes(cle, valeur) {
+    try {
+      if (valeur === undefined) return global.sessionStorage.getItem(CLE_MES + cle);
+      global.sessionStorage.setItem(CLE_MES + cle, String(valeur));
+    } catch (e) { /* sans stockage : l'espace s'ouvre sur la première rubrique */ }
+    return null;
+  }
+  /** Vide l'état d'affichage de l'espace « Mes » : à la déconnexion tout part ; au verrou la rubrique est gardée (retour à l'écran quitté). */
+  function purgerMes(o) {
+    var garde = o && o.gardeRubrique ? etatMes('rubrique') : null;
+    var n = 0;
+    try {
+      var cles = [];
+      for (var i = 0; i < global.sessionStorage.length; i++) { var k = global.sessionStorage.key(i); if (k && k.indexOf(CLE_MES) === 0) cles.push(k); }
+      cles.forEach(function (k) { global.sessionStorage.removeItem(k); n++; });
+      if (garde) global.sessionStorage.setItem(CLE_MES + 'rubrique', garde);
+    } catch (e) { /* rien à purger */ }
+    return n;
+  }
+  global.SIGH.espaceMes = {
+    RUBRIQUES: RUBRIQUES_MES, rubrique: rubriqueMes, agent: agentDeMes, lire: lireMes, assurance: assuranceDeLAgent,
+    copiePaieActive: copiePaieTelephoneActive, definirCopiePaie: definirCopiePaieTelephone, copiePaie: copiePaieAgent,
+    etat: etatMes, purger: purgerMes,
+  };
+
   global.SIGH.planningRh = {
     CHAMPS_DEROGEABLES: CHAMPS_DEROGEABLES, CIRCUITS: CIRCUITS_PRESENCES, MOTIFS_ABSENCE: MOTIFS_ABSENCE, TYPES_PROPOSITION: TYPES_PROPOSITION,
     regimeCategorie: regimeCategorieRh, regimeALaDate: regimeALaDate, historique: historiqueRegimeInd, deroger: derogerRegime, typesAutorises: typesAutorisesRh,
