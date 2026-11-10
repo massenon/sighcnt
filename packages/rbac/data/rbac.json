@@ -3682,6 +3682,11 @@
     1,
     1
    ],
+   "m12-calendrier-fiscal": [
+    1,
+    1,
+    1
+   ],
    "m12-cloture": [
     1,
     1,
@@ -3738,6 +3743,11 @@
     1
    ],
    "m10-planning": [
+    1,
+    1,
+    1
+   ],
+   "m10-propositions-planning": [
     1,
     1,
     1
@@ -3888,6 +3898,11 @@
     1
    ],
    "m13-repertoire-ambulances": [
+    1,
+    1,
+    1
+   ],
+   "m13-sms-journal": [
     1,
     1,
     1
@@ -4057,6 +4072,11 @@
     1,
     1
    ],
+   "cfg-bareme-aib": [
+    1,
+    1,
+    1
+   ],
    "cfg-notifications": [
     1,
     1,
@@ -4088,6 +4108,11 @@
     1
    ],
    "cfg-smtp": [
+    1,
+    1,
+    1
+   ],
+   "cfg-sms": [
     1,
     1,
     1
@@ -5349,6 +5374,11 @@
     0,
     0
    ],
+   "m12-calendrier-fiscal": [
+    1,
+    0,
+    0
+   ],
    "m12-cloture": [
     1,
     0,
@@ -5407,6 +5437,11 @@
    "m10-planning": [
     1,
     0,
+    0
+   ],
+   "m10-propositions-planning": [
+    1,
+    1,
     0
    ],
    "m10-stats-gardes": [
@@ -5558,6 +5593,11 @@
     1,
     1,
     1
+   ],
+   "m13-sms-journal": [
+    1,
+    0,
+    0
    ],
    "m13-maintenance": [
     1,
@@ -5719,6 +5759,11 @@
     1,
     0
    ],
+   "cfg-bareme-aib": [
+    1,
+    0,
+    0
+   ],
    "cfg-notifications": [
     1,
     1,
@@ -5737,6 +5782,11 @@
    "cfg-systeme": [
     1,
     1,
+    0
+   ],
+   "cfg-sms": [
+    1,
+    0,
     0
    ],
    "imp-accueil": [
@@ -6421,6 +6471,11 @@
     0,
     0
    ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
+   ],
    "m13-repertoire-ambulances": [
     1,
     1,
@@ -7058,6 +7113,11 @@
     1,
     1
    ],
+   "m12-calendrier-fiscal": [
+    1,
+    1,
+    1
+   ],
    "m12-cloture": [
     1,
     1,
@@ -7114,6 +7174,11 @@
     1
    ],
    "m10-planning": [
+    1,
+    1,
+    1
+   ],
+   "m10-propositions-planning": [
     1,
     1,
     1
@@ -7264,6 +7329,11 @@
     1
    ],
    "m13-repertoire-ambulances": [
+    1,
+    1,
+    1
+   ],
+   "m13-sms-journal": [
     1,
     1,
     1
@@ -7428,6 +7498,11 @@
     1,
     1
    ],
+   "cfg-bareme-aib": [
+    1,
+    1,
+    1
+   ],
    "cfg-notifications": [
     1,
     1,
@@ -7459,6 +7534,11 @@
     1
    ],
    "cfg-smtp": [
+    1,
+    1,
+    1
+   ],
+   "cfg-sms": [
     1,
     1,
     1
@@ -8255,6 +8335,11 @@
     1,
     0
    ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
+   ],
    "rapports-bibliotheque": [
     1,
     1,
@@ -8767,6 +8852,11 @@
     1,
     0
    ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
+   ],
    "m13-repertoire-ambulances": [
     1,
     1,
@@ -9009,6 +9099,11 @@
     1,
     1,
     1
+   ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
    ],
    "adm-validations": [
     1,
@@ -9285,6 +9380,11 @@
    "m8-recettes": [
     1,
     0,
+    0
+   ],
+   "m10-propositions-planning": [
+    1,
+    1,
     0
    ],
    "rapports-bibliotheque": [
@@ -9570,6 +9670,11 @@
     0
    ],
    "mecef-journal": [
+    1,
+    1,
+    0
+   ],
+   "m10-propositions-planning": [
     1,
     1,
     0
@@ -10021,6 +10126,11 @@
     1,
     1
    ],
+   "m12-calendrier-fiscal": [
+    1,
+    1,
+    1
+   ],
    "m12-cloture": [
     1,
     1,
@@ -10030,6 +10140,11 @@
     1,
     1,
     1
+   ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
    ],
    "m11-prets-etudes": [
     1,
@@ -10110,6 +10225,11 @@
     1,
     1,
     0
+   ],
+   "cfg-bareme-aib": [
+    1,
+    1,
+    1
    ],
    "imp-accueil": [
     1,
@@ -10469,6 +10589,11 @@
     1,
     0
    ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
+   ],
    "m13-courriers": [
     1,
     1,
@@ -10612,6 +10737,11 @@
     0
    ],
    "m7-besoins": [
+    1,
+    1,
+    0
+   ],
+   "m10-propositions-planning": [
     1,
     1,
     0
@@ -10778,6 +10908,11 @@
     1,
     0
    ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
+   ],
    "m13-ambulance": [
     1,
     1,
@@ -10886,6 +11021,11 @@
     0
    ],
    "m7-besoins": [
+    1,
+    1,
+    0
+   ],
+   "m10-propositions-planning": [
     1,
     1,
     0
@@ -11142,6 +11282,11 @@
     1,
     0
    ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
+   ],
    "adm-validations": [
     1,
     0,
@@ -11284,6 +11429,11 @@
     1,
     0
    ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
+   ],
    "m10-stats-gardes": [
     1,
     0,
@@ -11302,6 +11452,16 @@
    "m10-presences": [
     1,
     1,
+    0
+   ],
+   "m10-conges": [
+    1,
+    0,
+    0
+   ],
+   "m10-missions": [
+    1,
+    0,
     0
    ],
    "rapports-bibliotheque": [
@@ -11401,6 +11561,11 @@
     0,
     0
    ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
+   ],
    "m13-courriers": [
     1,
     1,
@@ -11432,6 +11597,11 @@
     0
    ],
    "m13-repertoire-ambulances": [
+    1,
+    1,
+    0
+   ],
+   "m13-sms-journal": [
     1,
     1,
     0
@@ -11853,6 +12023,11 @@
     1,
     0
    ],
+   "m10-propositions-planning": [
+    1,
+    1,
+    0
+   ],
    "adm-validations": [
     1,
     0,
@@ -12196,6 +12371,11 @@
     0
    ],
    "m7-besoins": [
+    1,
+    1,
+    0
+   ],
+   "m10-propositions-planning": [
     1,
     1,
     0
@@ -12577,7 +12757,17 @@
     1,
     0
    ],
+   "m12-calendrier-fiscal": [
+    1,
+    1,
+    0
+   ],
    "m12-ouverture": [
+    1,
+    1,
+    0
+   ],
+   "m10-propositions-planning": [
     1,
     1,
     0

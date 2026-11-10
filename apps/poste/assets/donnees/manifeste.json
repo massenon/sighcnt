@@ -479,6 +479,7 @@
     "m12-etats-financiers",
     "m12-baseline-2025",
     "m12-echeances",
+    "m12-calendrier-fiscal",
     "m12-cloture",
     "m12-ouverture"
    ]
@@ -507,6 +508,7 @@
     "m10-badges-modeles",
     "m10-badges-impression",
     "m10-planning",
+    "m10-propositions-planning",
     "m10-stats-gardes",
     "m10-stats-permanences",
     "m10-stats-presence",
@@ -572,6 +574,7 @@
     "m13-notes-service",
     "m13-ambulance",
     "m13-repertoire-ambulances",
+    "m13-sms-journal",
     "m13-maintenance",
     "adm-validations",
     "adm-enquetes",
@@ -664,13 +667,15 @@
     "cfg-regles",
     "cfg-fiscalite",
     "cfg-comptabilite",
+    "cfg-bareme-aib",
     "cfg-notifications",
     "cfg-compte",
     "cfg-modules",
     "cfg-systeme",
     "cfg-poste",
     "cfg-pair",
-    "cfg-smtp"
+    "cfg-smtp",
+    "cfg-sms"
    ]
   },
   {
@@ -4036,6 +4041,24 @@
    ]
   },
   {
+   "id": "m12-calendrier-fiscal",
+   "label": "Calendrier fiscal mensuel",
+   "icone": "calendar-days",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": "m12-echeances",
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
    "id": "m12-cloture",
    "label": "Exercices & clôtures",
    "icone": "lock",
@@ -4263,6 +4286,24 @@
    "hub": false,
    "standalone": false,
    "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-propositions-planning",
+   "label": "Propositions de planning",
+   "icone": "calendar-sync",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": true,
    "servant": null,
    "roles": [
     "rh",
@@ -4873,6 +4914,23 @@
     "dm",
     "infirmier",
     "surveillant"
+   ]
+  },
+  {
+   "id": "m13-sms-journal",
+   "label": "Journal des envois SMS",
+   "icone": "messages-square",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
    ]
   },
   {
@@ -5528,6 +5586,23 @@
    ]
   },
   {
+   "id": "cfg-bareme-aib",
+   "label": "Barème de l’AIB",
+   "icone": "percent",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
    "id": "cfg-notifications",
    "label": "Notifications",
    "icone": "bell",
@@ -5641,6 +5716,23 @@
    "roles": [
     "admin",
     "da"
+   ]
+  },
+  {
+   "id": "cfg-sms",
+   "label": "Passerelle SMS",
+   "icone": "message-square",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
    ]
   },
   {

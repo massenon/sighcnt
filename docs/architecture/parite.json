@@ -20,10 +20,10 @@
     "chirurgien"
    ],
    "scenarios": [
-    22,
-    44,
-    67,
-    80
+    23,
+    45,
+    68,
+    82
    ],
    "statut": "porté"
   },
@@ -46,11 +46,11 @@
     "chirurgien"
    ],
    "scenarios": [
-    22,
-    43,
+    23,
     44,
-    57,
-    61
+    45,
+    58,
+    62
    ],
    "statut": "porté"
   },
@@ -73,7 +73,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    43
+    44
    ],
    "statut": "porté"
   },
@@ -96,7 +96,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    51
+    52
    ],
    "statut": "porté"
   },
@@ -118,7 +118,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    51
+    52
    ],
    "statut": "porté"
   },
@@ -141,7 +141,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    43
+    44
    ],
    "statut": "porté"
   },
@@ -185,7 +185,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    43
+    44
    ],
    "statut": "porté"
   },
@@ -208,9 +208,9 @@
     "chirurgien"
    ],
    "scenarios": [
-    31,
-    42,
-    54
+    32,
+    43,
+    55
    ],
    "statut": "porté"
   },
@@ -240,28 +240,32 @@
     "anesthesiste"
    ],
    "scenarios": [
-    1,
-    9,
-    14,
-    20,
-    22,
-    26,
-    31,
-    42,
-    45,
-    54,
-    63,
-    70,
-    73,
-    77,
-    78,
+    2,
+    10,
+    15,
+    21,
+    23,
+    27,
+    32,
+    43,
+    46,
+    55,
+    64,
+    71,
+    75,
     79,
     80,
     81,
     82,
     83,
     84,
-    85
+    85,
+    86,
+    87,
+    92,
+    96,
+    97,
+    98
    ],
    "statut": "porté"
   },
@@ -290,11 +294,11 @@
     "anesthesiste"
    ],
    "scenarios": [
-    13,
-    22,
-    31,
-    39,
-    63
+    14,
+    23,
+    32,
+    40,
+    64
    ],
    "statut": "porté"
   },
@@ -319,10 +323,11 @@
     "anesthesiste"
    ],
    "scenarios": [
-    29,
-    31,
-    43,
-    59
+    30,
+    32,
+    44,
+    60,
+    102
    ],
    "statut": "porté"
   },
@@ -346,9 +351,9 @@
     "anesthesiste"
    ],
    "scenarios": [
-    31,
-    39,
-    40
+    32,
+    40,
+    41
    ],
    "statut": "porté"
   },
@@ -372,8 +377,8 @@
     "anesthesiste"
    ],
    "scenarios": [
-    40,
-    51
+    41,
+    52
    ],
    "statut": "porté"
   },
@@ -398,9 +403,9 @@
     "anesthesiste"
    ],
    "scenarios": [
-    33,
-    40,
-    43
+    34,
+    41,
+    44
    ],
    "statut": "porté"
   },
@@ -424,7 +429,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    40
+    41
    ],
    "statut": "porté"
   },
@@ -448,7 +453,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    40
+    41
    ],
    "statut": "porté"
   },
@@ -472,8 +477,9 @@
     "anesthesiste"
    ],
    "scenarios": [
-    22,
-    31
+    23,
+    32,
+    90
    ],
    "statut": "porté"
   },
@@ -496,7 +502,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    31
+    32
    ],
    "statut": "porté"
   },
@@ -517,8 +523,8 @@
     "chirurgien"
    ],
    "scenarios": [
-    45,
-    63
+    46,
+    64
    ],
    "statut": "porté"
   },
@@ -540,10 +546,10 @@
     "chirurgien"
    ],
    "scenarios": [
-    20,
-    28,
-    45,
-    63
+    21,
+    29,
+    46,
+    64
    ],
    "statut": "porté"
   },
@@ -564,7 +570,10 @@
     "chirurgien"
    ],
    "scenarios": [
-    28
+    1,
+    29,
+    95,
+    105
    ],
    "statut": "porté"
   },
@@ -585,11 +594,11 @@
     "chirurgien"
    ],
    "scenarios": [
-    15,
-    28,
-    33,
-    38,
-    57
+    16,
+    29,
+    34,
+    39,
+    58
    ],
    "statut": "porté"
   },
@@ -611,7 +620,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    33
+    34
    ],
    "statut": "porté"
   },
@@ -632,8 +641,8 @@
     "chirurgien"
    ],
    "scenarios": [
-    33,
-    38
+    34,
+    39
    ],
    "statut": "porté"
   },
@@ -677,10 +686,10 @@
     "chirurgien"
    ],
    "scenarios": [
-    50,
-    57,
-    62,
-    66
+    51,
+    58,
+    63,
+    67
    ],
    "statut": "porté"
   },
@@ -702,11 +711,11 @@
     "chirurgien"
    ],
    "scenarios": [
-    33,
-    38,
-    42,
-    57,
-    64
+    34,
+    39,
+    43,
+    58,
+    65
    ],
    "statut": "porté"
   },
@@ -728,8 +737,8 @@
     "chirurgien"
    ],
    "scenarios": [
-    62,
-    66
+    63,
+    67
    ],
    "statut": "porté"
   },
@@ -751,7 +760,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    62
+    63
    ],
    "statut": "porté"
   },
@@ -773,8 +782,8 @@
     "chirurgien"
    ],
    "scenarios": [
-    62,
-    66
+    63,
+    67
    ],
    "statut": "porté"
   },
@@ -796,7 +805,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    62
+    63
    ],
    "statut": "porté"
   },
@@ -819,7 +828,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    50
+    51
    ],
    "statut": "porté"
   },
@@ -863,8 +872,8 @@
     "anesthesiste"
    ],
    "scenarios": [
-    21,
-    67
+    22,
+    68
    ],
    "statut": "porté"
   },
@@ -888,7 +897,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    33
+    34
    ],
    "statut": "porté"
   },
@@ -934,7 +943,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    33
+    34
    ],
    "statut": "porté"
   },
@@ -957,7 +966,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    20
+    21
    ],
    "statut": "porté"
   },
@@ -1001,7 +1010,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    49
+    50
    ],
    "statut": "porté"
   },
@@ -1024,8 +1033,8 @@
     "anesthesiste"
    ],
    "scenarios": [
-    33,
-    42
+    34,
+    43
    ],
    "statut": "porté"
   },
@@ -1048,7 +1057,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    49
+    50
    ],
    "statut": "porté"
   },
@@ -1071,8 +1080,10 @@
     "anesthesiste"
    ],
    "scenarios": [
-    33,
-    42
+    34,
+    43,
+    95,
+    105
    ],
    "statut": "porté"
   },
@@ -1095,7 +1106,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    49
+    50
    ],
    "statut": "porté"
   },
@@ -1118,7 +1129,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    49
+    50
    ],
    "statut": "porté"
   },
@@ -1183,7 +1194,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    42
+    43
    ],
    "statut": "porté"
   },
@@ -1248,7 +1259,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    5
+    6
    ],
    "statut": "porté"
   },
@@ -1289,7 +1300,7 @@
     "infirmier"
    ],
    "scenarios": [
-    60
+    61
    ],
    "statut": "porté"
   },
@@ -1309,7 +1320,7 @@
     "infirmier"
    ],
    "scenarios": [
-    46
+    47
    ],
    "statut": "porté"
   },
@@ -1329,7 +1340,7 @@
     "infirmier"
    ],
    "scenarios": [
-    46
+    47
    ],
    "statut": "porté"
   },
@@ -1349,7 +1360,7 @@
     "infirmier"
    ],
    "scenarios": [
-    46
+    47
    ],
    "statut": "porté"
   },
@@ -1369,7 +1380,7 @@
     "infirmier"
    ],
    "scenarios": [
-    42
+    43
    ],
    "statut": "porté"
   },
@@ -1407,7 +1418,7 @@
     "infirmier"
    ],
    "scenarios": [
-    46
+    47
    ],
    "statut": "porté"
   },
@@ -1427,7 +1438,7 @@
     "infirmier"
    ],
    "scenarios": [
-    46
+    47
    ],
    "statut": "porté"
   },
@@ -1447,7 +1458,7 @@
     "infirmier"
    ],
    "scenarios": [
-    46
+    47
    ],
    "statut": "porté"
   },
@@ -1503,8 +1514,8 @@
     "infirmier"
    ],
    "scenarios": [
-    33,
-    46
+    34,
+    47
    ],
    "statut": "porté"
   },
@@ -1564,10 +1575,10 @@
     "anesthesiste"
    ],
    "scenarios": [
-    15,
-    31,
-    48,
-    67
+    16,
+    32,
+    49,
+    68
    ],
    "statut": "porté"
   },
@@ -1591,7 +1602,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    48
+    49
    ],
    "statut": "porté"
   },
@@ -1615,7 +1626,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    48
+    49
    ],
    "statut": "porté"
   },
@@ -1639,12 +1650,12 @@
     "anesthesiste"
    ],
    "scenarios": [
-    20,
-    27,
-    30,
-    39,
-    42,
-    57
+    21,
+    28,
+    31,
+    40,
+    43,
+    58
    ],
    "statut": "porté"
   },
@@ -1668,7 +1679,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    48
+    49
    ],
    "statut": "porté"
   },
@@ -1691,7 +1702,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    48
+    49
    ],
    "statut": "porté"
   },
@@ -1714,7 +1725,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    2
+    3
    ],
    "statut": "porté"
   },
@@ -1733,7 +1744,11 @@
     "laborantin",
     "echographiste"
    ],
-   "scenarios": [],
+   "scenarios": [
+    1,
+    95,
+    105
+   ],
    "statut": "porté"
   },
   {
@@ -1755,7 +1770,10 @@
     "anesthesiste"
    ],
    "scenarios": [
-    27
+    1,
+    28,
+    95,
+    105
    ],
    "statut": "porté"
   },
@@ -1778,8 +1796,8 @@
     "anesthesiste"
    ],
    "scenarios": [
-    27,
-    40
+    28,
+    41
    ],
    "statut": "porté"
   },
@@ -1802,7 +1820,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    27
+    28
    ],
    "statut": "porté"
   },
@@ -1823,8 +1841,8 @@
     "assistant_comptable"
    ],
    "scenarios": [
-    27,
-    33
+    28,
+    34
    ],
    "statut": "porté"
   },
@@ -1847,7 +1865,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    48
+    49
    ],
    "statut": "porté"
   },
@@ -1861,7 +1879,7 @@
    "universel": false,
    "roles": [],
    "scenarios": [
-    27
+    28
    ],
    "statut": "porté"
   },
@@ -1875,7 +1893,7 @@
    "universel": false,
    "roles": [],
    "scenarios": [
-    27
+    28
    ],
    "statut": "porté"
   },
@@ -1916,7 +1934,9 @@
     "caissier",
     "comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    90
+   ],
    "statut": "porté"
   },
   {
@@ -1936,7 +1956,7 @@
     "comptable"
    ],
    "scenarios": [
-    80
+    82
    ],
    "statut": "porté"
   },
@@ -1958,9 +1978,12 @@
     "comptable"
    ],
    "scenarios": [
-    3,
-    11,
-    54
+    4,
+    12,
+    55,
+    95,
+    103,
+    105
    ],
    "statut": "porté"
   },
@@ -1980,8 +2003,8 @@
     "comptable"
    ],
    "scenarios": [
-    40,
-    54
+    41,
+    55
    ],
    "statut": "porté"
   },
@@ -2002,7 +2025,7 @@
     "comptable"
    ],
    "scenarios": [
-    40
+    41
    ],
    "statut": "porté"
   },
@@ -2022,9 +2045,9 @@
     "comptable"
    ],
    "scenarios": [
-    4,
-    40,
-    42
+    5,
+    41,
+    43
    ],
    "statut": "porté"
   },
@@ -2045,8 +2068,8 @@
     "comptable"
    ],
    "scenarios": [
-    31,
-    42
+    32,
+    43
    ],
    "statut": "porté"
   },
@@ -2067,8 +2090,8 @@
     "comptable"
    ],
    "scenarios": [
-    11,
-    42
+    12,
+    43
    ],
    "statut": "porté"
   },
@@ -2109,7 +2132,7 @@
     "comptable"
    ],
    "scenarios": [
-    65
+    66
    ],
    "statut": "porté"
   },
@@ -2131,7 +2154,8 @@
     "comptable"
    ],
    "scenarios": [
-    32
+    33,
+    90
    ],
    "statut": "porté"
   },
@@ -2153,8 +2177,8 @@
     "comptable"
    ],
    "scenarios": [
-    15,
-    24
+    16,
+    25
    ],
    "statut": "porté"
   },
@@ -2176,7 +2200,7 @@
     "comptable"
    ],
    "scenarios": [
-    32
+    33
    ],
    "statut": "porté"
   },
@@ -2198,11 +2222,11 @@
     "comptable"
    ],
    "scenarios": [
-    38,
-    57,
-    69,
+    39,
+    58,
     70,
-    80
+    71,
+    82
    ],
    "statut": "porté"
   },
@@ -2224,7 +2248,7 @@
     "comptable"
    ],
    "scenarios": [
-    38
+    39
    ],
    "statut": "porté"
   },
@@ -2244,8 +2268,9 @@
     "comptable"
    ],
    "scenarios": [
-    37,
-    75
+    38,
+    77,
+    90
    ],
    "statut": "porté"
   },
@@ -2280,9 +2305,9 @@
     "aide_comptable"
    ],
    "scenarios": [
-    31,
-    52,
-    67
+    32,
+    53,
+    68
    ],
    "statut": "porté"
   },
@@ -2304,8 +2329,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    31,
-    80
+    32,
+    82
    ],
    "statut": "porté"
   },
@@ -2326,7 +2351,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    31
+    32
    ],
    "statut": "porté"
   },
@@ -2348,7 +2373,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    31
+    32
    ],
    "statut": "porté"
   },
@@ -2370,7 +2395,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    31
+    32
    ],
    "statut": "porté"
   },
@@ -2411,7 +2436,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    47
+    48
    ],
    "statut": "porté"
   },
@@ -2432,7 +2457,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    31
+    32
    ],
    "statut": "porté"
   },
@@ -2453,7 +2478,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    31
+    32
    ],
    "statut": "porté"
   },
@@ -2496,12 +2521,14 @@
     "aide_comptable"
    ],
    "scenarios": [
-    10,
-    12,
-    16,
-    18,
-    31,
-    33
+    11,
+    13,
+    17,
+    19,
+    32,
+    34,
+    88,
+    90
    ],
    "statut": "porté"
   },
@@ -2524,10 +2551,10 @@
     "aide_comptable"
    ],
    "scenarios": [
-    11,
-    29,
-    47,
-    80
+    12,
+    30,
+    48,
+    82
    ],
    "statut": "porté"
   },
@@ -2569,7 +2596,11 @@
     "comptable",
     "aide_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    88,
+    99,
+    100
+   ],
    "statut": "porté"
   },
   {
@@ -2591,7 +2622,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    19
+    20
    ],
    "statut": "porté"
   },
@@ -2635,7 +2666,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    47
+    48
    ],
    "statut": "porté"
   },
@@ -2658,14 +2689,15 @@
     "aide_comptable"
    ],
    "scenarios": [
-    15,
-    29,
-    34,
-    38,
+    16,
+    30,
+    35,
     39,
-    42,
-    70,
-    80
+    40,
+    43,
+    71,
+    82,
+    102
    ],
    "statut": "porté"
   },
@@ -2688,7 +2720,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    19
+    20
    ],
    "statut": "porté"
   },
@@ -2711,7 +2743,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    19
+    20
    ],
    "statut": "porté"
   },
@@ -2751,8 +2783,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    8,
-    61
+    9,
+    62
    ],
    "statut": "porté"
   },
@@ -2773,9 +2805,9 @@
     "aide_comptable"
    ],
    "scenarios": [
-    17,
-    31,
-    61
+    18,
+    32,
+    62
    ],
    "statut": "porté"
   },
@@ -2796,8 +2828,9 @@
     "aide_comptable"
    ],
    "scenarios": [
-    17,
-    19
+    18,
+    20,
+    90
    ],
    "statut": "porté"
   },
@@ -2837,8 +2870,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    19,
-    74
+    20,
+    76
    ],
    "statut": "porté"
   },
@@ -2859,7 +2892,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    35
+    36
    ],
    "statut": "porté"
   },
@@ -2880,8 +2913,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    19,
-    80
+    20,
+    82
    ],
    "statut": "porté"
   },
@@ -2902,8 +2935,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    61,
-    74
+    62,
+    76
    ],
    "statut": "porté"
   },
@@ -2962,8 +2995,9 @@
     "aide_comptable"
    ],
    "scenarios": [
-    74,
-    80
+    76,
+    82,
+    99
    ],
    "statut": "porté"
   },
@@ -2983,7 +3017,9 @@
     "comptable",
     "aide_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    108
+   ],
    "statut": "porté"
   },
   {
@@ -3002,7 +3038,9 @@
     "comptable",
     "aide_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    108
+   ],
    "statut": "porté"
   },
   {
@@ -3039,7 +3077,10 @@
     "comptable",
     "aide_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    90,
+    108
+   ],
    "statut": "porté"
   },
   {
@@ -3058,7 +3099,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    80
+    82
    ],
    "statut": "porté"
   },
@@ -3114,11 +3155,11 @@
     "aide_comptable"
    ],
    "scenarios": [
-    6,
-    12,
-    42,
-    52,
-    80
+    7,
+    13,
+    43,
+    53,
+    82
    ],
    "statut": "porté"
   },
@@ -3138,10 +3179,11 @@
     "aide_comptable"
    ],
    "scenarios": [
-    39,
-    47,
-    52,
-    67
+    40,
+    48,
+    53,
+    68,
+    90
    ],
    "statut": "porté"
   },
@@ -3179,7 +3221,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    80
+    82
    ],
    "statut": "porté"
   },
@@ -3235,7 +3277,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    58
+    59
    ],
    "statut": "porté"
   },
@@ -3273,8 +3315,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    39,
-    62
+    40,
+    63
    ],
    "statut": "porté"
   },
@@ -3294,7 +3336,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    62
+    63
    ],
    "statut": "porté"
   },
@@ -3314,7 +3356,9 @@
     "aide_comptable"
    ],
    "scenarios": [
-    39
+    40,
+    95,
+    105
    ],
    "statut": "porté"
   },
@@ -3334,8 +3378,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    58,
-    74
+    59,
+    76
    ],
    "statut": "porté"
   },
@@ -3355,7 +3399,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    37
+    38
    ],
    "statut": "porté"
   },
@@ -3375,10 +3419,31 @@
     "aide_comptable"
    ],
    "scenarios": [
-    25,
-    67
+    26,
+    68,
+    101
    ],
    "statut": "porté"
+  },
+  {
+   "id": "m12-calendrier-fiscal",
+   "label": "Calendrier fiscal mensuel",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    101
+   ],
+   "statut": "non commencé"
   },
   {
    "id": "m12-cloture",
@@ -3395,13 +3460,14 @@
     "comptable"
    ],
    "scenarios": [
-    42,
-    68,
-    70,
-    74,
-    78,
-    81,
-    85
+    43,
+    69,
+    71,
+    76,
+    80,
+    83,
+    87,
+    102
    ],
    "statut": "porté"
   },
@@ -3421,7 +3487,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    58
+    59
    ],
    "statut": "porté"
   },
@@ -3439,7 +3505,7 @@
     "da"
    ],
    "scenarios": [
-    75
+    77
    ],
    "statut": "porté"
   },
@@ -3457,7 +3523,7 @@
     "da"
    ],
    "scenarios": [
-    75
+    77
    ],
    "statut": "porté"
   },
@@ -3475,10 +3541,10 @@
     "da"
    ],
    "scenarios": [
-    23,
-    39,
-    54,
-    75
+    24,
+    40,
+    55,
+    77
    ],
    "statut": "porté"
   },
@@ -3512,8 +3578,8 @@
     "da"
    ],
    "scenarios": [
-    33,
-    67
+    34,
+    68
    ],
    "statut": "porté"
   },
@@ -3533,8 +3599,8 @@
     "assistant_comptable"
    ],
    "scenarios": [
-    55,
-    67
+    56,
+    68
    ],
    "statut": "porté"
   },
@@ -3554,7 +3620,7 @@
     "assistant_comptable"
    ],
    "scenarios": [
-    55
+    56
    ],
    "statut": "porté"
   },
@@ -3572,7 +3638,10 @@
     "da"
    ],
    "scenarios": [
-    55
+    1,
+    56,
+    95,
+    105
    ],
    "statut": "porté"
   },
@@ -3590,7 +3659,7 @@
     "da"
    ],
    "scenarios": [
-    55
+    56
    ],
    "statut": "porté"
   },
@@ -3609,8 +3678,44 @@
     "surveillant"
    ],
    "scenarios": [
-    26,
-    33
+    27,
+    34,
+    109
+   ],
+   "statut": "porté"
+  },
+  {
+   "id": "m10-propositions-planning",
+   "label": "Propositions de planning",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": true,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    111
    ],
    "statut": "porté"
   },
@@ -3629,7 +3734,8 @@
     "surveillant"
    ],
    "scenarios": [
-    26
+    27,
+    110
    ],
    "statut": "porté"
   },
@@ -3648,7 +3754,7 @@
     "surveillant"
    ],
    "scenarios": [
-    39
+    40
    ],
    "statut": "porté"
   },
@@ -3667,7 +3773,7 @@
     "surveillant"
    ],
    "scenarios": [
-    39
+    40
    ],
    "statut": "porté"
   },
@@ -3686,7 +3792,8 @@
     "surveillant"
    ],
    "scenarios": [
-    33
+    34,
+    110
    ],
    "statut": "porté"
   },
@@ -3701,9 +3808,12 @@
    "roles": [
     "admin",
     "direction",
-    "da"
+    "da",
+    "surveillant"
    ],
-   "scenarios": [],
+   "scenarios": [
+    110
+   ],
    "statut": "porté"
   },
   {
@@ -3717,11 +3827,13 @@
    "roles": [
     "admin",
     "direction",
-    "da"
+    "da",
+    "surveillant"
    ],
    "scenarios": [
-    23,
-    67
+    24,
+    68,
+    110
    ],
    "statut": "porté"
   },
@@ -3739,9 +3851,10 @@
     "da"
    ],
    "scenarios": [
-    13,
-    32,
-    67
+    14,
+    33,
+    68,
+    102
    ],
    "statut": "porté"
   },
@@ -3775,8 +3888,8 @@
     "da"
    ],
    "scenarios": [
-    7,
-    26
+    8,
+    27
    ],
    "statut": "porté"
   },
@@ -3794,8 +3907,8 @@
     "da"
    ],
    "scenarios": [
-    26,
-    32
+    27,
+    33
    ],
    "statut": "porté"
   },
@@ -3813,7 +3926,7 @@
     "da"
    ],
    "scenarios": [
-    26
+    27
    ],
    "statut": "porté"
   },
@@ -3831,7 +3944,7 @@
     "da"
    ],
    "scenarios": [
-    26
+    27
    ],
    "statut": "porté"
   },
@@ -3882,7 +3995,7 @@
     "comptable"
    ],
    "scenarios": [
-    75
+    77
    ],
    "statut": "porté"
   },
@@ -3901,7 +4014,7 @@
     "comptable"
    ],
    "scenarios": [
-    75
+    77
    ],
    "statut": "porté"
   },
@@ -3920,10 +4033,10 @@
     "comptable"
    ],
    "scenarios": [
-    23,
-    26,
-    32,
-    75
+    24,
+    27,
+    33,
+    77
    ],
    "statut": "porté"
   },
@@ -3942,11 +4055,11 @@
     "comptable"
    ],
    "scenarios": [
-    9,
-    23,
-    54,
-    75,
-    80
+    10,
+    24,
+    55,
+    77,
+    82
    ],
    "statut": "porté"
   },
@@ -3965,8 +4078,8 @@
     "comptable"
    ],
    "scenarios": [
-    23,
-    75
+    24,
+    77
    ],
    "statut": "porté"
   },
@@ -3985,7 +4098,7 @@
     "comptable"
    ],
    "scenarios": [
-    75
+    77
    ],
    "statut": "porté"
   },
@@ -4021,8 +4134,9 @@
     "comptable"
    ],
    "scenarios": [
-    23,
-    75
+    24,
+    77,
+    89
    ],
    "statut": "porté"
   },
@@ -4041,7 +4155,7 @@
     "comptable"
    ],
    "scenarios": [
-    77
+    79
    ],
    "statut": "porté"
   },
@@ -4062,8 +4176,8 @@
     "assistant_comptable"
    ],
    "scenarios": [
-    43,
-    52
+    44,
+    53
    ],
    "statut": "porté"
   },
@@ -4101,8 +4215,8 @@
     "assistant_comptable"
    ],
    "scenarios": [
-    13,
-    22
+    14,
+    23
    ],
    "statut": "porté"
   },
@@ -4180,10 +4294,30 @@
     "assistant_comptable"
    ],
    "scenarios": [
-    35,
-    43
+    36,
+    44
    ],
    "statut": "porté"
+  },
+  {
+   "id": "m13-sms-journal",
+   "label": "Journal des envois SMS",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    96,
+    97
+   ],
+   "statut": "non commencé"
   },
   {
    "id": "m13-maintenance",
@@ -4200,8 +4334,8 @@
     "agentadmin"
    ],
    "scenarios": [
-    37,
-    40
+    38,
+    41
    ],
    "statut": "porté"
   },
@@ -4218,12 +4352,19 @@
     "direction",
     "dm",
     "da",
+    "laborantin",
     "comptable",
     "agentadmin",
-    "assistant_comptable"
+    "echographiste",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste"
    ],
    "scenarios": [
-    53
+    54,
+    89,
+    94,
+    105
    ],
    "statut": "porté"
   },
@@ -4243,8 +4384,11 @@
     "agentadmin"
    ],
    "scenarios": [
-    52,
-    56
+    1,
+    53,
+    57,
+    95,
+    105
    ],
    "statut": "porté"
   },
@@ -4264,8 +4408,8 @@
     "agentadmin"
    ],
    "scenarios": [
-    52,
-    53
+    53,
+    54
    ],
    "statut": "porté"
   },
@@ -4286,7 +4430,7 @@
     "assistant_comptable"
    ],
    "scenarios": [
-    52
+    53
    ],
    "statut": "porté"
   },
@@ -4306,7 +4450,9 @@
     "agentadmin",
     "assistant_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    95
+   ],
    "statut": "porté"
   },
   {
@@ -4380,7 +4526,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    24
+    25
    ],
    "statut": "porté"
   },
@@ -4441,7 +4587,9 @@
     "direction",
     "da"
    ],
-   "scenarios": [],
+   "scenarios": [
+    91
+   ],
    "statut": "porté"
   },
   {
@@ -4456,7 +4604,7 @@
     "admin"
    ],
    "scenarios": [
-    76
+    78
    ],
    "statut": "porté"
   },
@@ -4474,9 +4622,9 @@
     "da"
    ],
    "scenarios": [
-    20,
-    31,
-    33
+    21,
+    32,
+    34
    ],
    "statut": "porté"
   },
@@ -4494,7 +4642,7 @@
     "da"
    ],
    "scenarios": [
-    33
+    34
    ],
    "statut": "porté"
   },
@@ -4512,7 +4660,7 @@
     "da"
    ],
    "scenarios": [
-    76
+    78
    ],
    "statut": "porté"
   },
@@ -4546,7 +4694,8 @@
     "da"
    ],
    "scenarios": [
-    23
+    24,
+    90
    ],
    "statut": "porté"
   },
@@ -4564,8 +4713,9 @@
     "da"
    ],
    "scenarios": [
-    71,
-    72
+    72,
+    73,
+    74
    ],
    "statut": "porté"
   },
@@ -4583,7 +4733,8 @@
     "da"
    ],
    "scenarios": [
-    16
+    17,
+    107
    ],
    "statut": "porté"
   },
@@ -4600,7 +4751,9 @@
     "direction",
     "da"
    ],
-   "scenarios": [],
+   "scenarios": [
+    89
+   ],
    "statut": "porté"
   },
   {
@@ -4618,8 +4771,11 @@
     "reception"
    ],
    "scenarios": [
-    9,
-    43
+    1,
+    10,
+    44,
+    95,
+    105
    ],
    "statut": "porté"
   },
@@ -4638,7 +4794,7 @@
     "reception"
    ],
    "scenarios": [
-    33
+    34
    ],
    "statut": "porté"
   },
@@ -4653,10 +4809,15 @@
    "roles": [
     "admin",
     "direction",
-    "da"
+    "dm",
+    "da",
+    "echographiste"
    ],
    "scenarios": [
-    50
+    1,
+    51,
+    95,
+    105
    ],
    "statut": "porté"
   },
@@ -4674,7 +4835,8 @@
     "da"
    ],
    "scenarios": [
-    33
+    34,
+    89
    ],
    "statut": "porté"
   },
@@ -4692,7 +4854,7 @@
     "da"
    ],
    "scenarios": [
-    33
+    34
    ],
    "statut": "porté"
   },
@@ -4709,7 +4871,11 @@
     "direction",
     "da"
    ],
-   "scenarios": [],
+   "scenarios": [
+    1,
+    95,
+    105
+   ],
    "statut": "porté"
   },
   {
@@ -4727,7 +4893,7 @@
     "reception"
    ],
    "scenarios": [
-    23
+    24
    ],
    "statut": "porté"
   },
@@ -4745,7 +4911,7 @@
     "da"
    ],
    "scenarios": [
-    16
+    17
    ],
    "statut": "porté"
   },
@@ -4763,8 +4929,8 @@
     "da"
    ],
    "scenarios": [
-    16,
-    57
+    17,
+    58
    ],
    "statut": "porté"
   },
@@ -4782,7 +4948,7 @@
     "da"
    ],
    "scenarios": [
-    24
+    25
    ],
    "statut": "porté"
   },
@@ -4800,7 +4966,9 @@
     "da"
    ],
    "scenarios": [
-    23
+    24,
+    89,
+    101
    ],
    "statut": "porté"
   },
@@ -4818,9 +4986,34 @@
     "da"
    ],
    "scenarios": [
-    25
+    26,
+    89,
+    95,
+    101,
+    105
    ],
    "statut": "porté"
+  },
+  {
+   "id": "cfg-bareme-aib",
+   "label": "Barème de l’AIB",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    100,
+    105,
+    106
+   ],
+   "statut": "non commencé"
   },
   {
    "id": "cfg-notifications",
@@ -4868,8 +5061,8 @@
     "da"
    ],
    "scenarios": [
-    27,
-    54
+    28,
+    55
    ],
    "statut": "porté"
   },
@@ -4887,11 +5080,11 @@
     "da"
    ],
    "scenarios": [
-    16,
-    23,
-    67,
-    75,
-    82
+    17,
+    24,
+    68,
+    77,
+    84
    ],
    "statut": "porté"
   },
@@ -4923,7 +5116,7 @@
     "da"
    ],
    "scenarios": [
-    83
+    85
    ],
    "statut": "porté"
   },
@@ -4940,9 +5133,27 @@
     "da"
    ],
    "scenarios": [
-    84
+    86
    ],
    "statut": "porté"
+  },
+  {
+   "id": "cfg-sms",
+   "label": "Passerelle SMS",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    96
+   ],
+   "statut": "non commencé"
   },
   {
    "id": "imp-accueil",
@@ -5026,7 +5237,11 @@
     "da",
     "laborantin"
    ],
-   "scenarios": [],
+   "scenarios": [
+    94,
+    95,
+    105
+   ],
    "statut": "porté"
   },
   {
@@ -5623,10 +5838,10 @@
     "da"
    ],
    "scenarios": [
-    9,
-    11,
-    14,
-    36
+    10,
+    12,
+    15,
+    37
    ],
    "statut": "porté"
   },
@@ -5646,8 +5861,8 @@
     "comptable"
    ],
    "scenarios": [
-    36,
-    61
+    37,
+    62
    ],
    "statut": "porté"
   },
@@ -5667,9 +5882,11 @@
     "comptable"
    ],
    "scenarios": [
-    36,
-    39,
-    57
+    37,
+    40,
+    58,
+    92,
+    93
    ],
    "statut": "porté"
   },
@@ -5685,9 +5902,9 @@
     "admin"
    ],
    "scenarios": [
-    31,
-    36,
-    42
+    32,
+    37,
+    43
    ],
    "statut": "porté"
   },
@@ -5709,7 +5926,7 @@
     "surveillant"
    ],
    "scenarios": [
-    46
+    47
    ],
    "statut": "porté"
   },
@@ -5730,8 +5947,8 @@
     "echographiste"
    ],
    "scenarios": [
-    50,
-    57
+    51,
+    58
    ],
    "statut": "porté"
   },
@@ -5752,7 +5969,7 @@
     "laborantin"
    ],
    "scenarios": [
-    51
+    52
    ],
    "statut": "porté"
   },
@@ -5772,7 +5989,9 @@
     "medecin"
    ],
    "scenarios": [
-    51
+    52,
+    92,
+    93
    ],
    "statut": "porté"
   },
@@ -5794,7 +6013,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    51
+    52
    ],
    "statut": "porté"
   },
@@ -5834,8 +6053,8 @@
     "comptable"
    ],
    "scenarios": [
-    51,
-    75
+    52,
+    77
    ],
    "statut": "porté"
   },
@@ -5855,8 +6074,8 @@
     "comptable"
    ],
    "scenarios": [
-    51,
-    57
+    52,
+    58
    ],
    "statut": "porté"
   },
@@ -5875,7 +6094,10 @@
     "comptable"
    ],
    "scenarios": [
-    65
+    1,
+    66,
+    95,
+    105
    ],
    "statut": "porté"
   },
@@ -5895,7 +6117,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    65
+    66
    ],
    "statut": "porté"
   },
@@ -5931,8 +6153,8 @@
     "medecin"
    ],
    "scenarios": [
-    36,
-    37
+    37,
+    38
    ],
    "statut": "porté"
   },
@@ -5950,9 +6172,9 @@
     "infirmier"
    ],
    "scenarios": [
-    36,
     37,
-    46
+    38,
+    47
    ],
    "statut": "porté"
   },
@@ -5972,8 +6194,8 @@
     "caissier"
    ],
    "scenarios": [
-    36,
-    40
+    37,
+    41
    ],
    "statut": "porté"
   },
@@ -5990,9 +6212,9 @@
     "laborantin"
    ],
    "scenarios": [
-    36,
     37,
-    40
+    38,
+    41
    ],
    "statut": "porté"
   },
@@ -6010,9 +6232,9 @@
     "stock"
    ],
    "scenarios": [
-    36,
     37,
-    40
+    38,
+    41
    ],
    "statut": "porté"
   },
@@ -6029,10 +6251,10 @@
     "caissier"
    ],
    "scenarios": [
-    9,
-    36,
+    10,
     37,
-    40
+    38,
+    41
    ],
    "statut": "porté"
   },
@@ -6050,9 +6272,9 @@
     "comptable"
    ],
    "scenarios": [
-    36,
     37,
-    80
+    38,
+    82
    ],
    "statut": "porté"
   },
@@ -6084,9 +6306,9 @@
     "reception"
    ],
    "scenarios": [
-    36,
     37,
-    43
+    38,
+    44
    ],
    "statut": "porté"
   },
@@ -6103,8 +6325,8 @@
     "agentadmin"
    ],
    "scenarios": [
-    36,
-    41
+    37,
+    42
    ],
    "statut": "porté"
   },
@@ -6121,8 +6343,8 @@
     "ambulancier"
    ],
    "scenarios": [
-    36,
-    37
+    37,
+    38
    ],
    "statut": "porté"
   },
@@ -6140,8 +6362,8 @@
     "aide_soignant"
    ],
    "scenarios": [
-    36,
-    37
+    37,
+    38
    ],
    "statut": "porté"
   },
@@ -6159,9 +6381,9 @@
     "echographiste"
    ],
    "scenarios": [
-    36,
     37,
-    38
+    38,
+    39
    ],
    "statut": "porté"
   },
@@ -6180,8 +6402,8 @@
     "surveillant"
    ],
    "scenarios": [
-    36,
-    37
+    37,
+    38
    ],
    "statut": "porté"
   },
@@ -6199,8 +6421,8 @@
     "assistant_comptable"
    ],
    "scenarios": [
-    36,
-    37
+    37,
+    38
    ],
    "statut": "porté"
   },
@@ -6219,7 +6441,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    42
+    43
    ],
    "statut": "porté"
   },
@@ -6238,7 +6460,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    42
+    43
    ],
    "statut": "porté"
   },
@@ -6257,7 +6479,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    42
+    43
    ],
    "statut": "porté"
   },
@@ -6277,7 +6499,7 @@
     "infirmier"
    ],
    "scenarios": [
-    60
+    61
    ],
    "statut": "porté"
   },
@@ -6393,7 +6615,9 @@
     "anesthesiste",
     "aide_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    90
+   ],
    "statut": "porté"
   },
   {
@@ -6460,8 +6684,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    26,
-    70
+    27,
+    71
    ],
    "statut": "porté"
   },
@@ -6529,7 +6753,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    9
+    10
    ],
    "statut": "porté"
   },
@@ -6597,7 +6821,7 @@
     "aide_comptable"
    ],
    "scenarios": [
-    14
+    15
    ],
    "statut": "porté"
   },
@@ -6632,9 +6856,10 @@
     "aide_comptable"
    ],
    "scenarios": [
-    82,
-    83,
-    84
+    84,
+    85,
+    86,
+    96
    ],
    "statut": "porté"
   },
@@ -6669,8 +6894,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    14,
-    84
+    15,
+    86
    ],
    "statut": "porté"
   },
@@ -6694,10 +6919,10 @@
     "anesthesiste"
    ],
    "scenarios": [
-    31,
-    33,
-    40,
-    45
+    32,
+    34,
+    41,
+    46
    ],
    "statut": "porté"
   },
@@ -6720,10 +6945,10 @@
     "anesthesiste"
    ],
    "scenarios": [
-    20,
-    35,
-    40,
-    45
+    21,
+    36,
+    41,
+    46
    ],
    "statut": "porté"
   },
@@ -6830,7 +7055,8 @@
     "anesthesiste"
    ],
    "scenarios": [
-    1
+    2,
+    97
    ],
    "statut": "porté"
   },
@@ -6871,7 +7097,7 @@
     "chirurgien"
    ],
    "scenarios": [
-    22
+    23
    ],
    "statut": "porté"
   },
@@ -6899,7 +7125,7 @@
     "anesthesiste"
    ],
    "scenarios": [
-    51
+    52
    ],
    "statut": "porté"
   },

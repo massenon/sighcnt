@@ -1,0 +1,41 @@
+{
+ "id": "m10-propositions-planning",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Propositions de planning",
+ "acces": "ouvert",
+ "titre": "Propositions de planning",
+ "description": "L’agent propose une modification ou un échange de son planning ; le surveillant valide.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Propositions de planning"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "À valider",
+  "Validées",
+  "Refusées"
+ ],
+ "cartes": [
+  "Réglages du planning et des présences",
+  "Propositions des agents"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Régler",
+  "Colonnes",
+  "Exporter",
+  "Proposer une modification"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 3
+}
