@@ -2011,11 +2011,8 @@
       {
        "num": "3",
        "label": "Signaler les absences non autorisées",
-       "ecran": null,
-       "spans": [
-        "Signaler les absences non autorisées",
-        "— fermé à votre profil"
-       ],
+       "ecran": "m10-conges",
+       "spans": [],
        "detail": null
       }
      ],
@@ -2146,7 +2143,7 @@
    "vides": [],
    "liens": [],
    "classement": [],
-   "texteBrut": "À REGARDER EN PREMIER Aucun retard constaté aujourd’hui. Indicateur de votre description de poste : 95 % des retards constatés et notifiés. Constater ne suffit pas — c’est la notification qui compte. Accès rapides Présences et retards Pointage du jour Planning et gardes Vacations du personnel Congés et absences Demandes et soldes Statistiques de garde Charge par agent Ce que vous faites ici — vos parcours Contrôler les présences Mission 1 de votre description de poste. 1 Pointer les présences 2 Constater ET notifier les retards Votre indicateur : 95 % des retards constatés et notifiés. Constater ne suffit pas. 3 Signaler les absences non autorisées— fermé à votre profil Présences du jour Faire le planning Mission 5 — personnel paramédical. 1 Poser les vacations Garde 24 h, permanence 08h–18h, repos. Les incompatibilités sont bloquées. 2 Vérifier la charge par agent Repos et congés exclus : sinon les plus reposés paraissent les plus chargés. 3 Les primes suivent le planning validéPaie RG-11. Planning Superviser les soins Contrôler l’exécution, sans exécuter. 1 Vérifier les documents de transfusion— fermé à votre profil Activité 2 de votre description de poste. 2 Contrôler les registres— fermé à votre profil 3 Transmettre les statistiques à la zone sanitaire 100 % à bonne date. Présences pointées aujourd’hui 0 Vacations planifiées 0 Agents en congé 1 Effectif paramédical 19",
+   "texteBrut": "À REGARDER EN PREMIER Aucun retard constaté aujourd’hui. Indicateur de votre description de poste : 95 % des retards constatés et notifiés. Constater ne suffit pas — c’est la notification qui compte. Accès rapides Présences et retards Pointage du jour Planning et gardes Vacations du personnel Congés et absences Demandes et soldes Statistiques de garde Charge par agent Ce que vous faites ici — vos parcours Contrôler les présences Mission 1 de votre description de poste. 1 Pointer les présences 2 Constater ET notifier les retards Votre indicateur : 95 % des retards constatés et notifiés. Constater ne suffit pas. 3 Signaler les absences non autorisées Présences du jour Faire le planning Mission 5 — personnel paramédical. 1 Poser les vacations Garde 24 h, permanence 08h–18h, repos. Les incompatibilités sont bloquées. 2 Vérifier la charge par agent Repos et congés exclus : sinon les plus reposés paraissent les plus chargés. 3 Les primes suivent le planning validéPaie RG-11. Planning Superviser les soins Contrôler l’exécution, sans exécuter. 1 Vérifier les documents de transfusion— fermé à votre profil Activité 2 de votre description de poste. 2 Contrôler les registres— fermé à votre profil 3 Transmettre les statistiques à la zone sanitaire 100 % à bonne date. Présences pointées aujourd’hui 0 Vacations planifiées 0 Agents en congé 1 Effectif paramédical 19",
    "graphiques": [],
    "alertes": []
   },
@@ -2537,11 +2534,8 @@
       {
        "num": "3",
        "label": "Signaler les absences non autorisées",
-       "ecran": null,
-       "spans": [
-        "Signaler les absences non autorisées",
-        "— fermé à votre profil"
-       ],
+       "ecran": "m10-conges",
+       "spans": [],
        "detail": null
       }
      ],
@@ -2672,7 +2666,7 @@
    "vides": [],
    "liens": [],
    "classement": [],
-   "texteBrut": "À REGARDER EN PREMIER 2 retard(s) — constatés aujourd’hui Indicateur de votre description de poste : 95 % des retards constatés et notifiés. Constater ne suffit pas — c’est la notification qui compte. Présences du jour Accès rapides Présences et retards Pointage du jour Planning et gardes Vacations du personnel Congés et absences Demandes et soldes Statistiques de garde Charge par agent Ce que vous faites ici — vos parcours Contrôler les présences Mission 1 de votre description de poste. 1 Pointer les présences 2 Constater ET notifier les retards Votre indicateur : 95 % des retards constatés et notifiés. Constater ne suffit pas. 3 Signaler les absences non autorisées— fermé à votre profil Présences du jour Faire le planning Mission 5 — personnel paramédical. 1 Poser les vacations Garde 24 h, permanence 08h–18h, repos. Les incompatibilités sont bloquées. 2 Vérifier la charge par agent Repos et congés exclus : sinon les plus reposés paraissent les plus chargés. 3 Les primes suivent le planning validéPaie RG-11. Planning Superviser les soins Contrôler l’exécution, sans exécuter. 1 Vérifier les documents de transfusion— fermé à votre profil Activité 2 de votre description de poste. 2 Contrôler les registres— fermé à votre profil 3 Transmettre les statistiques à la zone sanitaire 100 % à bonne date. Présences pointées aujourd’hui 3 Vacations planifiées 2 Agents en congé 2 Effectif paramédical 19",
+   "texteBrut": "À REGARDER EN PREMIER 2 retard(s) — constatés aujourd’hui Indicateur de votre description de poste : 95 % des retards constatés et notifiés. Constater ne suffit pas — c’est la notification qui compte. Présences du jour Accès rapides Présences et retards Pointage du jour Planning et gardes Vacations du personnel Congés et absences Demandes et soldes Statistiques de garde Charge par agent Ce que vous faites ici — vos parcours Contrôler les présences Mission 1 de votre description de poste. 1 Pointer les présences 2 Constater ET notifier les retards Votre indicateur : 95 % des retards constatés et notifiés. Constater ne suffit pas. 3 Signaler les absences non autorisées Présences du jour Faire le planning Mission 5 — personnel paramédical. 1 Poser les vacations Garde 24 h, permanence 08h–18h, repos. Les incompatibilités sont bloquées. 2 Vérifier la charge par agent Repos et congés exclus : sinon les plus reposés paraissent les plus chargés. 3 Les primes suivent le planning validéPaie RG-11. Planning Superviser les soins Contrôler l’exécution, sans exécuter. 1 Vérifier les documents de transfusion— fermé à votre profil Activité 2 de votre description de poste. 2 Contrôler les registres— fermé à votre profil 3 Transmettre les statistiques à la zone sanitaire 100 % à bonne date. Présences pointées aujourd’hui 3 Vacations planifiées 2 Agents en congé 2 Effectif paramédical 19",
    "graphiques": [],
    "alertes": []
   }

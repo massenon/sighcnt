@@ -856,7 +856,7 @@
      "1",
      "BASSONGUI Chabi Séko",
      "Directeur Médical",
-     "M2M1M13M1M2M2M3M4M5M6M7M8M13RAPPILDASH"
+     "M2M1M13M1M2M2M3M4M5M6M7M8M13RAPPILDASHM10"
     ],
     [
      "Directrice Administrative",
@@ -870,28 +870,28 @@
      "1",
      "KASSA Augustin",
      "Comptable",
-     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPIMPPILM12DASH"
+     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPIMPPILM12DASHM10"
     ],
     [
      "Assistant Comptable",
      "1",
      "GBEDJI Hervé",
      "Comptable",
-     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPIMPPILM12DASH"
+     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPIMPPILM12DASHM10"
     ],
     [
      "Gestionnaire de Stock",
      "1",
      "MAMAN Zoukanéri",
      "Gestionnaire de Stock",
-     "M6M7M8RAPIMPDASH"
+     "M6M7M8RAPIMPDASHM10"
     ],
     [
      "Secrétaires Médicaux",
      "4",
      "OROU YO Edmond",
      "Réception / Accueil",
-     "M2M1M13CFGM1M2M3M7M13RAPCFGIMPDASH"
+     "M2M1M13CFGM1M2M3M7M13RAPCFGIMPDASHM10"
     ],
     [
      "Dispensatrices",
@@ -905,63 +905,63 @@
      "3",
      "OURTCHA TEREYAMA",
      "Agent Administratif",
-     "M1M13M1M7M13GEDRAPIMPDASH"
+     "M1M13M1M7M13GEDRAPIMPDASHM10"
     ],
     [
      "Agents d’Entretien",
      "3",
      "ISSA Rabiatou",
      "Agent Administratif",
-     "M1M13M1M7M13GEDRAPIMPDASH"
+     "M1M13M1M7M13GEDRAPIMPDASHM10"
     ],
     [
      "Chauffeur Coursier",
      "1",
      "TCHANE Nourou",
      "Ambulancier",
-     "M1M13M1M7M13RAPDASH"
+     "M1M13M1M7M13RAPDASHM10"
     ],
     [
      "Médecins Généralistes",
      "2",
      "YENI M’PO Florent",
      "Médecin",
-     "M2M1M1M2M2M3M4M5M6M7RAPPILDASH"
+     "M2M1M1M2M2M3M4M5M6M7RAPPILDASHM10"
     ],
     [
      "Échographiste",
      "1",
      "AHOHOU Rodrigue",
      "Médecin",
-     "M2M1M1M2M2M3M4M5M6M7RAPPILDASH"
+     "M2M1M1M2M2M3M4M5M6M7RAPPILDASHM10"
     ],
     [
      "Laborantins",
      "2",
      "KINNOU Addoul Ganiou",
      "Biologiste médical",
-     "M1M13M1M5M7RAPIMPPILDASH"
+     "M1M13M1M5M7RAPIMPPILDASHM10"
     ],
     [
      "Infirmiers",
      "8",
      "GARBA Yahouza",
      "Infirmier / Sage-femme",
-     "M2M1M13M1M2M2M3M4M5M7M13RAPPILDASH"
+     "M2M1M13M1M2M2M3M4M5M7M13RAPPILDASHM10"
     ],
     [
      "Sages-Femmes",
      "3",
      "—",
      "Infirmier / Sage-femme",
-     "M2M1M13M1M2M2M3M4M5M7M13RAPPILDASH"
+     "M2M1M13M1M2M2M3M4M5M7M13RAPPILDASHM10"
     ],
     [
      "Aide-Soignantes",
      "8",
      "TEPA Séraphine",
      "Aide-soignante",
-     "M1M1M3M7RAPDASH"
+     "M1M1M3M7RAPDASHM10"
     ]
    ]
   },
