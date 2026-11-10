@@ -1,104 +1,237 @@
 [
   {
-    "nom": "Vague 108 : planning L6 (proposition sans effet sur le planning validé, contrôle à la proposition et à la validation, validation au geste, refus motivé, échange, retrait, visibilité par agent, application directe réglée au poste)",
+    "nom": "Vague 69 — exercice : pré-clôture, deux gestes, résultat, à-nouveaux et lecture seule",
     "etapes": [
       {
-        "libelle": "Deux gardes de départ posées par le surveillant, et « l’agent modifie directement » vaut NON par défaut",
+        "libelle": "Le sélecteur d’exercice est dans l’en-tête de l’écran comptable, avec l’état de chaque exercice",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Un médecin ouvre l’écran des propositions (écran de tout agent), voit « Proposer » et aucune commande de validation",
+        "libelle": "Un lettrage qui ne s’annule pas est REFUSÉ en le disant ; un lettrage équilibré passe ; un dé-lettrage exige un motif",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "La proposition est enregistrée « à valider » et le planning n’a pas bougé d’une vacation",
+        "libelle": "N+1 porte des à-nouveaux PROVISOIRES tant que N n’est pas clos : équilibrés, marqués, jamais stockés",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Une proposition qui violerait le repos est refusée à la proposition (motif lu à l’écran) : aucune proposition de plus",
+        "libelle": "La pré-clôture REFUSE en nommant le contrôle bloquant (brouillons restants)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "L’agent proposant voit sa proposition, un autre médecin et un compte sans agent n’en voient aucune, le surveillant et la DAF les voient toutes",
+        "libelle": "La clôture démarre (état « en clôture »), mais la clôture DÉFINITIVE est refusée tant qu’un contrôle bloquant échoue, en le nommant",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Sur l’écran du médecin B, le registre ne montre aucune ligne du médecin A",
+        "libelle": "Une fois les brouillons validés et le journal équilibré, plus aucun contrôle bloquant : l’exercice est prêt pour la clôture définitive",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Refus nommés : un médecin ne valide pas (VALIDATION_RESERVEE), nul ne valide sa proposition (AUTO_VALIDATION), un refus exige son motif, proposition introuvable",
+        "libelle": "Signer n’est pas saisir : le demandeur ne valide pas sa propre clôture",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Validée au geste : la vacation naît au planning, validée, avec l’origine « proposition », la proposition, le régime et le validateur ; journalisé (RG-12)",
+        "libelle": "Seule la Direction ou la DAF valide ; une validation sans motif est refusée",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Une proposition validée ne se retranche pas (DEJA_TRANCHEE)",
+        "libelle": "La clôture validée fige l’exercice : état « clos », validateur et empreinte SHA-256 portés",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le planning a changé depuis la proposition : la validation REFAIT le contrôle et refuse en nommant (CONTROLE_ECHOUE, cause INCOMPATIBILITE_REPOS), rien d’écrit, la proposition reste à trancher",
+        "libelle": "La clôture validée dépose SEULE son archive dans la GED (une fiche, avec l’empreinte de l’exercice figé)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Refusée au geste avec son motif : état « refusée », motif conservé",
+        "libelle": "Les comptes de gestion (classes 6, 7, 8) sont SOLDÉS vers le résultat par une pièce équilibrée (RG-10)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "L’agent lit le motif du refus sur son écran",
+        "libelle": "Les à-nouveaux de N+1 sont équilibrés et reprennent au franc les soldes de clôture des comptes non lettrables",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Modification validée : la vacation change de date et de type ; retrait validé : la vacation est archivée (RG-14)",
+        "libelle": "Un compte de tiers est repris LIGNE À LIGNE : la facture due y est, le couple lettré n’y est pas",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Échange : proposé (jamais appliqué directement), validé par le surveillant : les deux vacations changent d’agent, restent validées et portent le collègue",
+        "libelle": "Un exercice clos est en LECTURE SEULE AU MOTEUR : création, modification et archivage refusés, aucune écriture ajoutée",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Refus nommés d’une proposition : échange hors régime, contrepartie introuvable, vacation d’autrui, motif absent, agent non identifié",
+        "libelle": "Après la clôture, 2027 est ouvert et n’a plus d’à-nouveaux provisoires (les définitifs sont écrits)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Retirer sa proposition : seul l’auteur (PROPOSITION_D_AUTRUI sinon), le surveillant ne tranche plus une proposition retirée (DEJA_TRANCHEE), et on ne la retire pas deux fois",
+        "libelle": "L’écran DIT que l’exercice affiché est clos et en lecture seule",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Réglé à la carte : « l’agent modifie directement » = oui en base, ancienne et nouvelle valeur au journal",
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — Suivi des ventes : détail par patient et par secteur, Imagerie médicale",
+    "etapes": [
+      {
+        "libelle": "« Imagerie médicale » remplace « Échographie » comme secteur : groupes, normalisation (IRM, scanner, mammographie comprises) et ligne d’imagerie",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Réglage « oui » : l’agent pose sa vacation aussitôt (validée, origine « agent », marquée modifiée directement), sans proposition, et le contrôle du repos reste opposable",
+        "libelle": "Le jeu porte au moins deux patients vendus sur la période (matière de la sonde)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Même en application directe, un échange touche un autre agent : il devient une PROPOSITION à valider",
+        "libelle": "L’onglet « Par patient » affiche une carte par patient sélectionné",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Aucune erreur JavaScript",
+        "libelle": "Chaque carte porte les SIX secteurs dans l’ordre arrêté, « Imagerie médicale » compris, et dit « aucune vente » pour un secteur vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le détail recoupe le magasin : autant de lignes affichées que de lignes facturées sur la période",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Point par patient » imprime une page par patient, secteurs en clair",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Point global » avec des clients retenus : le récapitulatif par groupe d’abord, puis une page par patient, les pourcentages en toutes lettres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans client retenu, le point global reste ce qu’il était (aucune page patient)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — navigation sans rechargement du document",
+    "etapes": [
+      {
+        "libelle": "go() change d’écran SANS recharger le document (marqueur de fenêtre conservé)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’adresse suit l’écran (pushState)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une seule coquille après navigation (pas de barre ni de contenu en double)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un module jamais chargé sur ce document (M12) se charge à la demande et peint",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un lien du ruban ou du bandeau navigue aussi sans recharger",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le retour arrière du navigateur restaure l’écran précédent sans rechargement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Quatre navigations enchaînées : toujours un seul document, une seule barre, aucune modale résiduelle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’ancre d’onglet est portée par l’adresse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un écran autonome (verrou) recharge le document, comme avant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript durant la navigation",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse",
+    "etapes": [
+      {
+        "libelle": "L’écran « Tâches planifiées » lit le registre du serveur : six tâches, dont la sauvegarde et les échéances fiscales",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le poste lit les alertes ouvertes par le planificateur (échéances, stock, péremptions)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La cloche ne double jamais une alerte calculée par le poste ET par le serveur (clé unique)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le routage se fait AU SERVEUR : la réception ne reçoit ni échéance fiscale ni alerte de stock (RG-13)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Quand la cause cesse (échéances réglées), l’exécution résout l’alerte — elle disparaît de la cloche sans être supprimée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans session, le registre des tâches est refusé (401)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
         "ok": true,
         "detail": null
       }
