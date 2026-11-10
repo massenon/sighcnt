@@ -106,8 +106,11 @@
      `cfg-bareme-aib` ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice.
      75 (09/11/2026) : le calendrier fiscal corrigé et ouvert à l'avenir (lot A3b). La collection `parametresFiscaux` (délais d'alerte
      « à payer » et « déclaration », montant de la CCIB : une fiche par version datée) est semée au socle, et l'échéancier est semé
-     sur DEUX exercices (le jeu et le suivant) : sans incrément un poste garderait un seul exercice et des jours plafonnés à 28. */
-  var VERSION = 75;
+     sur DEUX exercices (le jeu et le suivant) : sans incrément un poste garderait un seul exercice et des jours plafonnés à 28.
+     76 (10/11/2026) : les réglages de l'AIB (lot L2). La collection `reglagesAib` (charge du prélèvement, branchement sur les achats, comptes
+     d'acompte et de contrepartie : une fiche par version datée) est semée au socle avec les défauts de la Direction ; la famille de validation
+     `bareme_aib` la compte aussi. Sans incrément un poste n'aurait ni les défauts ni la collection. */
+  var VERSION = 76;
   var db = null;
   var listeners = {};
 
@@ -1778,6 +1781,11 @@
       }),
       baremeAib: (D.BAREME_AIB || []).map(function (x, i) {
         return Object.assign({ id: 'BAI' + C.pad(i + 1, 3), statut: 'actif', aValider: true, creeLe: '2026-11-09', creePar: 'Semence du socle' }, x);
+      }),
+      /* LES RÉGLAGES DE L'AIB (10/11/2026, lot L2) : une fiche par version datée, jamais réécrite. Les défauts (charge : clinique ; branchement :
+         désactivé) naissent « à valider » ; aucun compte n'est semé. Lus par la caisse, les achats et l'écran de paramétrage, donc au socle. */
+      reglagesAib: (D.REGLAGES_AIB_SEMENCE || []).map(function (x, i) {
+        return Object.assign({ id: 'RAI' + C.pad(i + 1, 3), statut: 'actif', dateFin: null, aValider: true, creeLe: '2026-11-09', creePar: 'Semence du socle' }, x);
       }),
 
       /* ====================================================================
@@ -3865,7 +3873,7 @@
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
     'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
-    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'parametresFiscaux',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'parametresFiscaux',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -4171,6 +4179,7 @@
     objectifsPilotage: 'M12|Objectifs et seuils du pilotage',
     situationsAib: 'CFG|Situations de l’acheteur (AIB)',
     baremeAib: 'CFG|Barème de l’AIB par situation',
+    reglagesAib: 'CFG|Réglages de l’AIB',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
     avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',

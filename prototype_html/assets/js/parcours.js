@@ -4331,7 +4331,7 @@
       roles: ['direction', 'da', 'admin'], ecran: 'imp-analyses' },
     { id: 'modeles_messages', libelle: 'Modèles de messages', module: 'CFG', collections: ['modelesMessage'], champs: ['aValider'],
       roles: ['direction', 'da', 'admin'], ecran: 'cfg-notifications' },
-    { id: 'bareme_aib', libelle: 'Barème de l’AIB (taux par situation de l’acheteur)', module: 'CFG', collections: ['baremeAib'], champs: ['aValider'],
+    { id: 'bareme_aib', libelle: 'Barème de l’AIB (taux par situation de l’acheteur)', module: 'CFG', collections: ['baremeAib', 'reglagesAib'], champs: ['aValider'],
       roles: ['direction', 'da', 'admin', 'comptable'], ecran: 'cfg-bareme-aib', champsChiffres: ['taux'] },
     { id: 'bareme_its', libelle: 'Barème de l’ITS', module: 'M11', mode: 'fiche',
       cibles: [{ id: 'bareme-its', libelle: 'Barème de l’impôt sur les traitements et salaires' }],
@@ -5119,8 +5119,10 @@
         detail: 'Branchée par le lot A1 : le taux par défaut vient du barème selon l’IFU saisi, les choix aussi ; le taux et sa version voyagent avec la vente.' },
       { id: 'registre_mecef', lieu: 'Registre fiscal MECeF et impression de la pièce normalisée (mecef.js)', etat: 'non_branche',
         detail: 'Lisent encore le paramètre fiscal fixe (AIB 1 %) pour décomposer les pièces anciennes. À brancher sur le taux et la version portés par chaque vente.' },
-      { id: 'achats', lieu: 'Factures fournisseurs et bons de commande (M7)', etat: 'non_branche',
-        detail: 'L’AIB retenu à l’achat n’est pas calculé d’après ce barème. À brancher sur la situation du fournisseur ; le compte d’acompte à débiter est à définir par le comptable avant tout branchement.' },
+      { id: 'achats', lieu: 'Factures fournisseurs et bons de commande (M7)', etat: aibBranchementALaDate().actif ? 'branche' : 'non_branche',
+        detail: aibBranchementALaDate().actif
+          ? 'Branché par le comptable (réglage arrêté, deux comptes choisis) : une pièce en brouillon par facture listée à l’onglet « Achats à écrire ».'
+          : 'Différé par décision de la Direction : le moteur liste à l’onglet « Achats à écrire » (situation du fournisseur d’après son IFU, taux du barème, charge) et n’écrit rien. Le branchement a son propre réglage, désactivé par défaut.' },
       { id: 'retenues_source', lieu: 'Retenues à la source et échéance mensuelle de l’AIB (M12, calendrier fiscal)', etat: 'non_branche',
         detail: 'L’échéance mensuelle ne lit aucun taux. À brancher pour rapprocher l’AIB prélevé aux ventes de l’AIB déclaré ; imputable sur l’impôt sur les bénéfices, pas une charge.' },
     ];
@@ -5153,6 +5155,205 @@
   global.SIGH.parcours.tauxAibProposes = tauxAibProposes;
   global.SIGH.parcours.nouvelleVersionAib = nouvelleVersionAib;
   global.SIGH.parcours.retirerVersionAib = retirerVersionAib;
+
+  /* ==========================================================================
+   * LES RÉGLAGES DE L'AIB (Direction, 09/11/2026, lot L2) : charge des 5 %, branchement différé sur les achats
+   * --------------------------------------------------------------------------
+   * Quatre réglages DATÉS (`D.REGLAGES_AIB` ne les DÉFINIT que : clé, valeurs admises), lus dans la collection `reglagesAib`, une fiche par version, jamais
+   * réécrite, comme le barème : en changer crée une version à une date d'effet postérieure et ferme la précédente à la veille. Aucun défaut n'est écrit dans ce
+   * moteur : les défauts de la Direction (la clinique supporte le prélèvement ; branchement désactivé) sont SEMÉS. Les comptes ne sont jamais présélectionnés.
+   *   chargePrelevement  : qui supporte les 5 % (« clinique » ou « acheteur »). Texte officiel manquant : réglage non arrêté. AUCUN effet comptable n'en découle ;
+   *                        la valeur à la date est portée par chaque vente et listée aux achats.
+   *   branchementAchats  : « desactive » (défaut) ou « actif ». Désactivé, le moteur LISTE ce qu'il faudrait écrire et n'écrit RIEN (refus nommé si on le demande).
+   *   compteAcompte / compteContrepartie : les deux comptes que le comptable désigne. L'écriture naît en BROUILLON, équilibrée (RG-10), une seule par facture.
+   * L'activation est refusée (refus nommé) tant que les deux comptes ne sont pas arrêtés à la date d'effet ET que la charge n'est pas arrêtée : le branchement ne
+   * rend « actif » que ce qui est arrêté. Elle porte la famille de validation `bareme_aib` : saisie par la famille, une version naît arrêtée (date, auteur, motif).
+   * ======================================================================== */
+  function colReglagesAib() { return S.collection('reglagesAib', { module: 'CFG', entite: 'réglage de l’AIB', prefix: 'RAI' }); }
+  function definitionReglageAib(cle) { return (D.REGLAGES_AIB || []).filter(function (x) { return x.cle === cle; })[0] || null; }
+  function versionsReglageAib(cle) {
+    return colReglagesAib().active().filter(function (v) { return v.cle === cle; })
+      .sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)); });
+  }
+  function compteDuPlan(num) {
+    var n = String(num == null ? '' : num).trim();
+    if (!n) return null;
+    return S.collection('comptes').active().filter(function (c) { return String(c.num) === n; })[0] || null;
+  }
+  /** La valeur du réglage à la date : { ok, valeur, arrete, dateEffet, dateFin, version, versionId, cle, source } ou le refus nommé AIB_REGLAGE_SANS_VERSION (jamais une valeur inventée). */
+  function reglageAibALaDate(cle, date) {
+    var d = dateAib(date);
+    var def = definitionReglageAib(cle);
+    if (!def) return refusAib('AIB_REGLAGE_INCONNU', 'Le réglage « ' + cle + ' » n’existe pas parmi les réglages de l’AIB.', 'Choisir un réglage listé à l’écran « Barème de l’AIB ».', { cle: cle });
+    var toutes = versionsReglageAib(cle);
+    var couvrantes = toutes.filter(function (v) { return String(v.dateEffet) <= d && (!v.dateFin || String(v.dateFin) >= d); });
+    var v = couvrantes[couvrantes.length - 1];
+    if (!v || v.valeur == null || v.valeur === '') {
+      return refusAib('AIB_REGLAGE_SANS_VERSION', 'Aucune version du réglage « ' + def.libelle + ' » ne couvre le ' + C.dateFR(d) + ' : la valeur n’est pas arrêtée, rien n’est supposé.',
+        def.type === 'compte' ? 'Choisir le compte à l’écran « Barème de l’AIB », onglet « Réglages ».' : 'Ajouter une version de ce réglage à l’écran « Barème de l’AIB », onglet « Réglages ».', { cle: cle, date: d });
+    }
+    return { ok: true, cle: cle, valeur: v.valeur, arrete: v.aValider !== true, dateEffet: v.dateEffet, dateFin: v.dateFin || null,
+      version: toutes.indexOf(v) + 1, versionId: v.id, source: v.source || null, date: d };
+  }
+  /** Qui supporte les 5 % à la date. Un réglage non arrêté se DIT (`arrete: false`, `message`) ; il ne change aucune écriture. */
+  function aibChargeALaDate(date) {
+    var r = reglageAibALaDate('chargePrelevement', date);
+    if (!r.ok) return r;
+    var def = definitionReglageAib('chargePrelevement');
+    var lib = (def.valeurs.filter(function (x) { return x.value === r.valeur; })[0] || {}).label || r.valeur;
+    r.libelle = lib;
+    r.message = r.arrete ? null : 'Réglage non arrêté : le texte officiel manque. L’AIB reste affiché comme un acompte imputable, sans écriture.';
+    return r;
+  }
+  /** L'état du branchement sur les achats à la date. `actif` n'est vrai que si la version est « actif » ET arrêtée, les deux comptes choisis et arrêtés, la charge arrêtée. */
+  function aibBranchementALaDate(date) {
+    var d = dateAib(date);
+    var b = reglageAibALaDate('branchementAchats', d);
+    var out = { ok: true, date: d, actif: false, valeur: b.ok ? b.valeur : 'desactive', arrete: b.ok ? b.arrete : null, versionId: b.ok ? b.versionId : null,
+      compteAcompte: null, compteContrepartie: null, raisons: [] };
+    var a = reglageAibALaDate('compteAcompte', d), c = reglageAibALaDate('compteContrepartie', d), ch = aibChargeALaDate(d);
+    if (a.ok) { out.compteAcompte = String(a.valeur); out.compteAcompteArrete = a.arrete; }
+    if (c.ok) { out.compteContrepartie = String(c.valeur); out.compteContrepartieArrete = c.arrete; }
+    out.chargeArretee = ch.ok ? ch.arrete : false;
+    if (!b.ok || b.valeur !== 'actif') { out.raisons.push('Le branchement est désactivé : le moteur liste, il n’écrit rien.'); return out; }
+    if (b.arrete !== true) out.raisons.push('Le réglage du branchement n’est pas arrêté.');
+    if (!a.ok) out.raisons.push('Le compte d’acompte n’est pas choisi.'); else if (a.arrete !== true) out.raisons.push('Le compte d’acompte n’est pas arrêté.');
+    if (!c.ok) out.raisons.push('Le compte de contrepartie n’est pas choisi.'); else if (c.arrete !== true) out.raisons.push('Le compte de contrepartie n’est pas arrêté.');
+    if (!ch.ok || ch.arrete !== true) out.raisons.push('Le réglage de la charge des 5 % n’est pas arrêté.');
+    out.actif = out.raisons.length === 0;
+    return out;
+  }
+  /** Une version nouvelle d'un réglage : valeur admise, date d'effet postérieure à la plus récente, motif. Elle FERME la précédente à la veille. Saisie par la famille, elle naît arrêtée. */
+  function definirReglageAib(o) {
+    o = o || {};
+    var refus = motifEcritureAib();
+    if (refus) return refus;
+    var def = definitionReglageAib(o.cle);
+    if (!def) return refusAib('AIB_REGLAGE_INCONNU', 'Le réglage « ' + o.cle + ' » n’existe pas parmi les réglages de l’AIB.', 'Choisir un réglage listé.');
+    var valeur = o.valeur == null ? '' : String(o.valeur).trim();
+    if (def.type === 'choix' && !def.valeurs.some(function (x) { return x.value === valeur; })) {
+      return refusAib('AIB_VALEUR_INVALIDE', 'La valeur « ' + valeur + ' » n’est pas admise pour « ' + def.libelle + ' » (' + def.valeurs.map(function (x) { return x.value; }).join(', ') + ').', 'Choisir une valeur proposée.');
+    }
+    if (def.type === 'compte' && !compteDuPlan(valeur)) {
+      return refusAib('AIB_COMPTE_INCONNU', 'Le compte « ' + valeur + ' » n’est pas au plan comptable : aucun numéro n’est inventé.', 'Choisir un compte du plan comptable (ou le créer d’abord à l’écran du plan).');
+    }
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateEffet)) return refusAib('AIB_DATE_INVALIDE', 'La date d’effet est absente ou illisible.', 'Choisir la date à partir de laquelle le réglage s’applique.');
+    if (!String(o.motif || '').trim()) return refusAib('AIB_MOTIF_ABSENT', 'Le motif de cette version est obligatoire.', 'Dire pourquoi le réglage change.');
+    var existantes = versionsReglageAib(o.cle);
+    var derniere = existantes[existantes.length - 1] || null;
+    if (existantes.some(function (v) { return String(v.dateEffet) === dateEffet; })) {
+      return refusAib('AIB_DATE_EXISTANTE', 'Une version de ce réglage commence déjà le ' + C.dateFR(dateEffet) + ' : une version ne se réécrit pas.', 'Choisir une date d’effet postérieure.');
+    }
+    if (derniere && String(derniere.dateEffet) > dateEffet) {
+      return refusAib('AIB_DATE_ANTERIEURE', 'La version la plus récente de ce réglage commence le ' + C.dateFR(derniere.dateEffet) + ' : une version insérée avant elle masquerait l’historique.', 'Choisir une date d’effet postérieure au ' + C.dateFR(derniere.dateEffet) + '.');
+    }
+    if (o.cle === 'branchementAchats' && valeur === 'actif') {
+      var a = reglageAibALaDate('compteAcompte', dateEffet), c = reglageAibALaDate('compteContrepartie', dateEffet), ch = aibChargeALaDate(dateEffet);
+      var manque = [];
+      if (!a.ok) manque.push('le compte d’acompte n’est pas choisi'); else if (a.arrete !== true) manque.push('le compte d’acompte n’est pas arrêté');
+      if (!c.ok) manque.push('le compte de contrepartie n’est pas choisi'); else if (c.arrete !== true) manque.push('le compte de contrepartie n’est pas arrêté');
+      if (!ch.ok || ch.arrete !== true) manque.push('le réglage de la charge des 5 % n’est pas arrêté');
+      if (manque.length) {
+        return refusAib('AIB_BRANCHEMENT_INCOMPLET', 'L’activation est refusée : ' + manque.join(', ') + '.',
+          'Choisir les deux comptes à une date d’effet antérieure ou égale, arrêter la charge des 5 %, puis activer.', { manque: manque });
+      }
+    }
+    var veillee = veille(dateEffet);
+    var ferme = null;
+    if (derniere && (!derniere.dateFin || String(derniere.dateFin) > veillee)) {
+      ferme = { id: derniere.id, avant: derniere.dateFin || null };
+      colReglagesAib().update(derniere.id, { dateFin: veillee, modifieLe: aujIso(), modifiePar: acteur() });
+    }
+    var libValeur = def.type === 'choix' ? (def.valeurs.filter(function (x) { return x.value === valeur; })[0] || {}).label || valeur : valeur;
+    var base = { cle: o.cle, valeur: valeur, libelle: def.libelle + ' : ' + libValeur, dateEffet: dateEffet, dateFin: null, source: String(o.source || '').trim() || null,
+      motif: String(o.motif).trim(), creeLe: aujIso(), creePar: acteur() };
+    var mq = marquageEnregistrement('bareme_aib', { avant: null, valeurs: base });
+    var res = colReglagesAib().insert(Object.assign(base, mq.patch), { journal: { action: 'Réglage AIB : nouvelle version', module: 'CFG', entite: 'reglagesAib',
+      avant: { precedente: derniere ? { id: derniere.id, valeur: derniere.valeur, dateFin: ferme ? ferme.avant : derniere.dateFin || null } : null },
+      apres: { etat: mq.valide ? 'validé' : 'à valider', cle: o.cle, valeur: valeur, dateEffet: dateEffet, motif: base.motif, precedenteFermeeLe: ferme ? veillee : null } } });
+    return { ok: true, id: res.record.id, version: existantes.length + 1, cle: o.cle, valeur: valeur, dateEffet: dateEffet,
+      precedente: derniere ? derniere.id : null, precedenteFermeeLe: ferme ? veillee : null, enAttenteDeValidation: !mq.valide, undo: res.undo };
+  }
+  /** Ce que le branchement sur les achats écrirait, facture par facture, SANS rien écrire. La situation du fournisseur se tire de son IFU (même règle que la caisse),
+   *  le taux du barème de la date de la facture, la charge du réglage de la même date. Une ligne sans taux au barème porte son refus nommé, jamais un montant à zéro.
+   *  La base est le montant facturé (la fiche ne distingue pas le hors taxes) et le montant arrondi à l'entier comme la caisse. */
+  function aibAchatsAEcrire(o) {
+    o = o || {};
+    var au = o.au ? isoJour(o.au) : aujIso();
+    var du = o.du ? isoJour(o.du) : au.slice(0, 4) + '-01-01';
+    var br = aibBranchementALaDate(au);
+    var fournisseurs = {};
+    S.collection('fournisseurs').all().forEach(function (f) { fournisseurs[f.code] = f; });
+    var posees = {};
+    S.collection('ecritures').all().forEach(function (e) { if (e.statut !== 'archive' && e.aibFactureId) posees[e.aibFactureId] = e.numero; });
+    var lignes = [];
+    S.collection('facturesFournisseurs').active().filter(function (f) { return f.date && String(f.date) >= du && String(f.date) <= au; })
+      .sort(function (a, b) { return String(a.date).localeCompare(String(b.date)) || String(a.reference).localeCompare(String(b.reference)); })
+      .forEach(function (f) {
+        var four = fournisseurs[f.fournisseur] || {};
+        var ligne = { factureId: f.id, reference: f.reference, date: String(f.date).slice(0, 10), fournisseur: f.fournisseurNom || four.nom || f.fournisseur,
+          ifu: four.ifu || null, base: Number(f.montantFacture) || 0, ecriteSous: posees[f.id] || null };
+        var t = tauxAibPourAcheteur({ ifu: four.ifu || '', date: ligne.date });
+        var ch = aibChargeALaDate(ligne.date);
+        ligne.supporte = ch.ok ? ch.valeur : null;
+        ligne.chargeArretee = ch.ok ? ch.arrete : null;
+        if (!t.ok) { ligne.refus = t.code; ligne.motif = t.motif; lignes.push(ligne); return; }
+        ligne.taux = t.taux; ligne.situation = t.situation; ligne.versionId = t.versionId; ligne.arrete = t.arrete;
+        ligne.aib = divArrondi(ligne.base * t.taux, 100);
+        lignes.push(ligne);
+      });
+    return { ok: true, du: du, au: au, branchement: br, lignes: lignes,
+      aEcrire: lignes.filter(function (l) { return !l.refus && !l.ecriteSous && l.aib > 0; }).length, ecrire: br.actif === true,
+      message: br.actif ? 'Branchement actif : « Écrire » pose en brouillon une pièce par facture listée, rien d’autre.'
+        : 'Branchement non actif : la liste est un APERÇU, aucune écriture n’est posée. ' + br.raisons.join(' ') };
+  }
+  /** Écrit EXACTEMENT ce que la liste affiche, quand le branchement est actif : une pièce de deux lignes (débit acompte, crédit contrepartie) par facture, en brouillon,
+   *  équilibrée (RG-10), jamais deux fois la même facture. Désactivé ou incomplet : refus nommé AIB_BRANCHEMENT_DESACTIVE, RIEN n'est écrit. */
+  function aibEcrireAchats(o) {
+    o = o || {};
+    var refus = motifEcritureAib();
+    if (refus) return refus;
+    var ap = aibAchatsAEcrire(o);
+    if (!ap.branchement.actif) {
+      return refusAib('AIB_BRANCHEMENT_DESACTIVE', 'Le branchement de l’AIB sur les écritures d’achat n’est pas actif : aucune écriture n’est posée. ' + ap.branchement.raisons.join(' '),
+        'Le comptable choisit les deux comptes, arrête la charge puis active le branchement à l’écran « Barème de l’AIB », onglet « Réglages ».', { raisons: ap.branchement.raisons });
+    }
+    var cA = compteDuPlan(ap.branchement.compteAcompte), cC = compteDuPlan(ap.branchement.compteContrepartie);
+    if (!cA || !cC) {
+      return refusAib('AIB_COMPTE_INCONNU', 'Un des deux comptes choisis n’est plus au plan comptable : aucune écriture n’est posée.', 'Rechoisir le compte à l’écran « Barème de l’AIB ».');
+    }
+    var posees = [], refusees = [];
+    ap.lignes.filter(function (l) { return !l.refus && !l.ecriteSous && l.aib > 0; }).forEach(function (l) {
+      var numero = 'AIB-' + l.reference;
+      var base = { numero: numero, date: l.date, journal: 'OD', journalLibelle: 'Opérations diverses', libelle: 'AIB sur achat ' + l.reference + ' (' + l.taux + ' %), ' + l.fournisseur,
+        pieceId: l.factureId, pieceNumero: l.reference, aibFactureId: l.factureId, aibTaux: l.taux, aibSupporte: l.supporte, origine: 'Automatique : AIB sur achat', statut: 'brouillon' };
+      var debit = Object.assign({}, base, { compte: String(cA.num), compteLibelle: cA.libelle, debit: l.aib, credit: 0 });
+      var credit = Object.assign({}, base, { compte: String(cC.num), compteLibelle: cC.libelle, debit: 0, credit: l.aib });
+      if (debit.debit !== credit.credit) { refusees.push(l.factureId); return; }
+      var r1 = col('ecritures').insert(debit);
+      if (!r1 || !r1.record) { refusees.push(l.factureId); return; }
+      var r2 = col('ecritures').insert(credit);
+      posees.push({ factureId: l.factureId, numero: numero, montant: l.aib, ids: [r1.record.id, r2 && r2.record ? r2.record.id : null] });
+    });
+    S.log('AIB sur achats écrit', 'M12', 'Ecriture', 'AIB-achats', null, { pieces: posees.length, compteAcompte: String(cA.num), compteContrepartie: String(cC.num), du: ap.du, au: ap.au });
+    return { ok: true, pieces: posees, refusees: refusees, du: ap.du, au: ap.au };
+  }
+  S.garder('reglagesAib', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colReglagesAib().get(rec.id) : null;
+    if (!avant) return null;
+    if (String(avant.valeur) !== String(rec.valeur) || avant.cle !== rec.cle || String(avant.dateEffet) !== String(rec.dateEffet)) {
+      return 'AIB_VERSION_FIGEE : une version de réglage ne se réécrit pas (valeur, réglage, date d’effet). Ajouter une nouvelle version à une date d’effet postérieure.';
+    }
+    return null;
+  });
+  global.SIGH.reglagesAib = {
+    aLaDate: reglageAibALaDate, charge: aibChargeALaDate, branchement: aibBranchementALaDate, definir: definirReglageAib,
+    achatsAEcrire: aibAchatsAEcrire, ecrireAchats: aibEcrireAchats, versionsDe: versionsReglageAib, definitions: function () { return D.REGLAGES_AIB; },
+  };
+  global.SIGH.parcours.aibChargeALaDate = aibChargeALaDate;
+  global.SIGH.parcours.aibBranchementALaDate = aibBranchementALaDate;
 
   /* ==========================================================================
    * MECeF, LOT M1 (08/11/2026) : montants entiers, acheteur, états de pièce, reprise sans doublon
@@ -5287,7 +5488,14 @@
   /** Les données de l'acheteur que la vente PORTE : le taux, la situation et la version du barème sous lesquels elle est émise. Une pièce émise ne se réécrit jamais. */
   function traceAibAcheteur(ach) {
     return { aibTaux: ach.aibTaux, aibSituation: ach.aibSituation || null, aibVersion: ach.aibVersion || null,
-      aibArrete: ach.aibArrete == null ? null : ach.aibArrete, aibDateBareme: ach.aibDateBareme || null };
+      aibArrete: ach.aibArrete == null ? null : ach.aibArrete, aibDateBareme: ach.aibDateBareme || null,
+      aibCharge: chargeDeLaVente(ach.aibDateBareme).valeur, aibChargeArretee: chargeDeLaVente(ach.aibDateBareme).arretee };
+  }
+  /** Qui supporte les 5 % à la date de la vente (réglage daté, lot L2) : une trace, aucun effet sur les montants. Sans version à la date : null, jamais une valeur supposée. */
+  function chargeDeLaVente(date) {
+    if (!date) return { valeur: null, arretee: null };
+    var r = aibChargeALaDate(date);
+    return r.ok ? { valeur: r.valeur, arretee: r.arrete } : { valeur: null, arretee: null };
   }
 
   /** Contrôle de la fenêtre « Facture normalisée » : IFU de l'acheteur (13 chiffres quand il est renseigné, facultatif pour un particulier), nom, taux d'AIB.

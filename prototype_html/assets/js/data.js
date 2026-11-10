@@ -784,6 +784,32 @@
       motif: 'Prestation de service retenue par le payeur (date d’effet d’attente : début de l’exercice 2026).' },
   ];
 
+  /* --------------------------------------------------------------------------
+   * LES RÉGLAGES DE L'AIB (09/11/2026, lot L2) : quatre réglages DATÉS, versionnés comme le barème, lus dans la collection `reglagesAib`.
+   * Ce tableau ne dit que QUELLES clés existent et QUELLES valeurs elles admettent (une définition, comme au registre des paramètres du poste) ;
+   * la valeur en vigueur se lit à la base, jamais ici. Les défauts viennent de la Direction (Q5 : branchement désactivé ; Q7 : la clinique supporte
+   * le prélèvement). Aucun compte n'est présélectionné : le comptable choisit (un numéro inventé fausserait la balance). Tous les défauts naissent
+   * « à valider » : aucun texte réglementaire n'est au dépôt.
+   * ----------------------------------------------------------------------- */
+  var REGLAGES_AIB = [
+    { cle: 'chargePrelevement', type: 'choix', libelle: 'Qui supporte le prélèvement de 5 %',
+      valeurs: [{ value: 'clinique', label: 'La clinique' }, { value: 'acheteur', label: 'L’acheteur' }], defaut: 'clinique',
+      aide: 'Texte officiel manquant : réglage non arrêté. Aucun effet comptable n’en découle, la valeur est portée par chaque vente et listée aux achats.' },
+    { cle: 'branchementAchats', type: 'choix', libelle: 'Brancher l’AIB sur les écritures d’achat',
+      valeurs: [{ value: 'desactive', label: 'Désactivé (le moteur liste, n’écrit rien)' }, { value: 'actif', label: 'Activé (écrit ce qui est listé)' }], defaut: 'desactive',
+      aide: 'Désactivé par défaut. L’activation exige le compte d’acompte, le compte de contrepartie et le réglage de la charge arrêtés.' },
+    { cle: 'compteAcompte', type: 'compte', libelle: 'Compte d’acompte (débit)', defaut: null,
+      aide: 'Choisi par le comptable dans le plan comptable : aucun numéro n’est proposé d’office.' },
+    { cle: 'compteContrepartie', type: 'compte', libelle: 'Compte de contrepartie (crédit)', defaut: null,
+      aide: 'Choisi par le comptable dans le plan comptable : une écriture s’équilibre sur deux comptes que la clinique désigne.' },
+  ];
+  var REGLAGES_AIB_SEMENCE = [
+    { cle: 'chargePrelevement', valeur: 'clinique', libelle: 'Qui supporte le prélèvement de 5 % : la clinique', dateEffet: '2026-01-01', source: 'Décision de la Direction du 09/11/2026 (Q7) : la clinique supporte le prélèvement, réglage à arrêter avec le texte officiel',
+      motif: 'Défaut de la Direction (date d’effet d’attente : début de l’exercice 2026).' },
+    { cle: 'branchementAchats', valeur: 'desactive', libelle: 'Brancher l’AIB sur les écritures d’achat : désactivé', dateEffet: '2026-01-01', source: 'Décision de la Direction du 09/11/2026 (Q5) : branchement différé',
+      motif: 'Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026).' },
+  ];
+
   var FOURNISSEURS = [
     {
       id: 'F001', code: 'SOBAPS', nom: 'SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé',
@@ -2270,6 +2296,8 @@
     PARAM_FISCAL: PARAM_FISCAL,
     SITUATIONS_AIB: SITUATIONS_AIB,
     BAREME_AIB: BAREME_AIB,
+    REGLAGES_AIB: REGLAGES_AIB,
+    REGLAGES_AIB_SEMENCE: REGLAGES_AIB_SEMENCE,
     PARAM_PAIE: PARAM_PAIE, TYPES_CHAMBRE: TYPES_CHAMBRE, CHAMBRES: CHAMBRES,
     MODES_PAIEMENT: MODES_PAIEMENT, TYPES_PLANNING: TYPES_PLANNING, SERVICES: SERVICES,
     REGLES_PLANNING: REGLES_PLANNING, regleDe: regleDe,

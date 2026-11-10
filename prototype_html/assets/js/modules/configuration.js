@@ -5238,12 +5238,14 @@
     description: 'Taux de l’acompte sur impôt assis sur les bénéfices par situation de l’acheteur, daté, versionné et modifiable sans toucher au code.',
     regle: 'Chaque taux est une <strong>version datée</strong> d’une situation de l’acheteur (IFU actif, sans IFU actif, prestation de service, ou toute situation ajoutée ici). '
       + 'La fenêtre « Facture normalisée » de la caisse en tire son taux par défaut et ses choix ; la vente garde le taux et la version sous lesquels elle est émise. '
-      + 'Une version ne se réécrit pas : la corriger en crée une nouvelle et ferme la précédente à la veille. Un taux sans version est refusé en le nommant, jamais rendu à zéro.',
+      + 'Une version ne se réécrit pas : la corriger en crée une nouvelle et ferme la précédente à la veille. Un taux sans version est refusé en le nommant, jamais rendu à zéro. '
+      + 'L’onglet « Réglages » tient la charge des 5 % (non arrêtée : texte officiel manquant) et le branchement différé sur les achats, désactivé par défaut ; l’onglet « Achats à écrire » liste sans écrire tant qu’il l’est.',
     actions: function () { return []; },
     render: function (root) {
       var B = global.SIGH.baremeAib;
       var colV = S.collection('baremeAib', { module: 'CFG', entite: 'version du barème de l’AIB', prefix: 'BAI' });
       var colS = S.collection('situationsAib', { module: 'CFG', entite: 'situation de l’acheteur (AIB)', prefix: 'SAI' });
+      function colReglages() { return S.collection('reglagesAib', { module: 'CFG', entite: 'réglage de l’AIB', prefix: 'RAI' }); }
       dessiner();
       return null;
 
@@ -5326,6 +5328,135 @@
             U.card('Versions de cette situation', K.miniTable(['Période', 'Taux'], historique)),
           ]),
         });
+      }
+
+      /* --- Les réglages de l'AIB (lot L2) : charge des 5 %, branchement sur les achats, comptes. Une version ne se réécrit pas : « Modifier » en crée une. --- */
+      var RG = global.SIGH.reglagesAib;
+      var periodeAchats = { du: null, au: null };
+      function libelleValeur(def, valeur) {
+        if (valeur == null || valeur === '') return 'Non choisi';
+        if (def.type === 'choix') return (def.valeurs.filter(function (x) { return x.value === valeur; })[0] || {}).label || valeur;
+        var cpt = S.collection('comptes').active().filter(function (c) { return String(c.num) === String(valeur); })[0];
+        return valeur + (cpt ? ' : ' + cpt.libelle : '');
+      }
+      function formulaireReglage(def, courant) {
+        var options = def.type === 'choix' ? def.valeurs
+          : S.collection('comptes').active().slice().sort(function (a, b) { return String(a.num).localeCompare(String(b.num)); })
+            .map(function (c) { return { value: String(c.num), label: c.num + ' : ' + c.libelle }; });
+        var f = U.form([
+          { name: 'valeur', label: def.libelle, type: 'select', required: true, col: 'full', options: options, help: def.aide },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, help: 'Postérieure à la version la plus récente, qui sera fermée à la veille.' },
+          { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, required: true, col: 'full', help: 'Obligatoire : il est porté au journal avec l’état, la date et l’auteur.' },
+          { name: 'source', label: 'Source (facultative)', type: 'textarea', rows: 2, col: 'full', help: 'Le texte, la décision ou l’avis dont le réglage découle, quand il existe.' },
+        ], { valeur: courant && courant.ok ? String(courant.valeur) : (options[0] ? options[0].value : ''), dateEffet: aujourdhui() });
+        var m = U.modal({
+          title: 'Réglage : ' + def.libelle,
+          subtitle: (K.peutValider('bareme_aib') ? 'La version est arrêtée à l’enregistrement (profil de validation) : date, auteur et motif sont portés. ' : 'La version naît « à valider ». ')
+            + 'Elle ferme la précédente à la veille de sa date d’effet.',
+          size: 'lg', body: f,
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer la version', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              var r = RG.definir({ cle: def.cle, valeur: v.valeur, dateEffet: v.dateEffet, motif: v.motif, source: v.source });
+              if (!r.ok) { refuser(r); return; }
+              m.close(); dessiner();
+              U.toast('Réglage enregistré : ' + libelleValeur(def, r.valeur) + ' à compter du ' + C.dateFR(r.dateEffet) + (r.enAttenteDeValidation ? ' (à valider).' : ' (arrêté).'), { type: 'success' });
+            } }),
+          ],
+        });
+      }
+      function detailReglage(def, v) {
+        var historique = RG.versionsDe(def.cle).map(function (x) {
+          return [C.dateFR(x.dateEffet) + (x.dateFin ? ' au ' + C.dateFR(x.dateFin) : ' et après'), libelleValeur(def, x.valeur) + (x.id === v.id ? ' (cette version)' : '')];
+        });
+        U.drawer({
+          title: def.libelle, subtitle: 'Version du ' + C.dateFR(v.dateEffet), width: 'max-w-xl',
+          body: el('div.space-y-4', null, [
+            U.descList([
+              ['Valeur', libelleValeur(def, v.valeur)], ['Date d’effet', C.dateFR(v.dateEffet)], ['Date de fin', v.dateFin ? C.dateFR(v.dateFin) : 'Ouverte'],
+              ['État', v.aValider === true ? 'À valider : réglage non arrêté' : 'Arrêté'],
+              ['Arrêté le', v.valideLe ? C.dateFR(String(v.valideLe).slice(0, 10)) : '—'], ['Arrêté par', v.validePar ? v.validePar + (v.valideRole ? ' (' + v.valideRole + ')' : '') : '—'],
+              ['Motif', v.motif || 'Non renseigné'], ['Source', v.source || 'Non renseignée'],
+              ['Créée', (v.creeLe ? C.dateFR(v.creeLe) : '') + (v.creePar ? ' par ' + v.creePar : '')],
+            ]),
+            U.card('Versions de ce réglage', K.miniTable(['Période', 'Valeur'], historique)),
+          ]),
+        });
+      }
+      function ongletReglages() {
+        var def0 = RG.definitions();
+        var charge = RG.charge();
+        var br = RG.branchement();
+        var lignes = def0.map(function (def) {
+          var r = RG.aLaDate(def.cle);
+          var rec = r.ok ? S.collection('reglagesAib').get(r.versionId) : null;
+          return { def: def, r: r, rec: rec };
+        });
+        return el('div.space-y-3', null, [
+          K.note('<strong>Qui supporte les 5 % : réglage non arrêté.</strong> Le texte officiel manque. Par défaut la clinique supporte le prélèvement (décision de la Direction du 09/11/2026). '
+            + 'Aucun effet comptable n’en découle : la valeur à la date est portée par chaque vente et listée aux achats, l’AIB reste affiché comme un acompte imputable, sans écriture.', { tone: charge.ok && charge.arrete ? 'info' : 'warning', icon: 'scale' }),
+          K.note('<strong>Branchement sur les achats : ' + (br.actif ? 'actif' : 'désactivé') + '.</strong> ' + (br.actif ? 'Le moteur écrit ce qui est listé à l’onglet « Achats à écrire ».'
+            : 'Le moteur liste ce qu’il faudrait écrire et n’écrit rien. L’activation exige les deux comptes et la charge arrêtés, et un motif.'), { tone: br.actif ? 'success' : 'info', icon: 'plug' }),
+          U.dataTable({
+            title: 'Réglages de l’AIB', rows: lignes, pageSize: 10, exportName: 'reglages-aib', searchable: false,
+            onRowClick: function (l) { if (l.rec) detailReglage(l.def, l.rec); },
+            columns: [
+              { key: 'libelle', label: 'Réglage', render: function (l) { return el('span.font-medium.text-slate-800', { text: l.def.libelle }); } },
+              { key: 'valeur', label: 'Valeur en vigueur', render: function (l) { return l.r.ok ? el('span.font-semibold', { text: libelleValeur(l.def, l.r.valeur) }) : U.badge('Non choisi', 'warning'); } },
+              { key: 'depuis', label: 'Depuis', render: function (l) { return l.r.ok ? C.dateFR(l.r.dateEffet) : '—'; } },
+              { key: 'etat', label: 'État', render: function (l) { return l.rec ? (K.badgeValidation('bareme_aib', l.rec.id) || U.badge('À valider', 'warning')) : U.badge('Sans version', 'neutral'); } },
+              { key: 'valide', label: 'Arrêté le (par)', render: function (l) { return l.rec && l.rec.valideLe ? C.dateFR(String(l.rec.valideLe).slice(0, 10)) + (l.rec.validePar ? ' (' + l.rec.validePar + ')' : '') : '—'; } },
+              { key: 'motif', label: 'Motif', render: function (l) { return el('span.text-xs.text-slate-500', { text: l.rec ? String(l.rec.motif || '').slice(0, 90) : '' }); } },
+            ],
+            rowActions: function (l) {
+              return [
+                l.rec ? K.iconBtn('eye', 'Consulter', function () { detailReglage(l.def, l.rec); }) : null,
+                l.rec ? K.boutonValider('bareme_aib', l.rec.id, { size: 'sm', moduleCode: 'CFG', apres: dessiner }) : null,
+                K.commandeIcone('pencil', 'Modifier : nouvelle version', function () { formulaireReglage(l.def, l.r); }, { moduleCode: 'CFG' }),
+              ].filter(Boolean);
+            },
+          }),
+        ]);
+      }
+      function ongletAchats() {
+        var ap = RG.achatsAEcrire(periodeAchats);
+        var f = U.form([
+          { name: 'du', label: 'Factures du', type: 'date', col: 'third', value: ap.du },
+          { name: 'au', label: 'au', type: 'date', col: 'third', value: ap.au },
+        ], {});
+        var lignes = ap.lignes;
+        var tableau = U.dataTable({
+          title: 'Ce que le branchement écrirait', rows: lignes, pageSize: 15, exportName: 'aib-achats', searchable: true,
+          emptyMessage: 'Aucune facture fournisseur sur la période.',
+          columns: [
+            { key: 'reference', label: 'Facture', render: function (l) { return el('span.font-mono.text-xs', { text: l.reference }); } },
+            { key: 'date', label: 'Date', render: function (l) { return C.dateFR(l.date); } },
+            { key: 'fournisseur', label: 'Fournisseur' },
+            { key: 'ifu', label: 'IFU', render: function (l) { return l.ifu ? el('span.font-mono.text-xs', { text: l.ifu }) : '—'; } },
+            { key: 'situation', label: 'Situation', render: function (l) { return l.refus ? U.badge(l.refus, 'warning') : libelleSituation(l.situation); } },
+            { key: 'taux', label: 'Taux', align: 'right', render: function (l) { return l.refus ? '—' : l.taux + ' %'; } },
+            { key: 'base', label: 'Base', align: 'right', render: function (l) { return C.money(l.base, false); } },
+            { key: 'aib', label: 'AIB', align: 'right', render: function (l) { return l.refus ? '—' : C.money(l.aib, false); } },
+            { key: 'supporte', label: 'Supporté par', render: function (l) { return l.supporte ? (l.supporte === 'clinique' ? 'La clinique' : 'L’acheteur') + (l.chargeArretee ? '' : ' (non arrêté)') : '—'; } },
+            { key: 'ecrite', label: 'Pièce', render: function (l) { return l.ecriteSous ? U.badge(l.ecriteSous, 'success') : el('span.text-xs.text-slate-400', { text: 'Non écrite' }); } },
+          ],
+        });
+        return el('div.space-y-3', null, [
+          K.note(ap.message, { tone: ap.ecrire ? 'success' : 'warning', icon: ap.ecrire ? 'check-circle-2' : 'info' }),
+          K.note('Base : le montant facturé (la fiche fournisseur ne distingue pas le hors taxes). Situation du fournisseur d’après son IFU ; un fournisseur sans IFU relève de la situation « sans IFU actif ». Une ligne sans taux au barème porte son refus et n’a pas de montant.', { tone: 'info', icon: 'info' }),
+          f,
+          el('div.flex.gap-2', null, [
+            K.btn('Actualiser la période', { icon: 'refresh-cw', onclick: function () { var v = f.collect(); if (v) { periodeAchats = { du: v.du || null, au: v.au || null }; dessiner(); } } }),
+            ap.ecrire ? K.commande('Écrire ' + C.num(ap.aEcrire) + ' pièce(s) en brouillon', { variant: 'primary', icon: 'pen-line', moduleCode: 'CFG', onclick: function () {
+              var r = RG.ecrireAchats(periodeAchats);
+              if (!r.ok) { refuser(r); return; }
+              dessiner(); U.toast(C.num(r.pieces.length) + ' pièce(s) posée(s) en brouillon, équilibrées.', { type: 'success' });
+            } }) : null,
+          ].filter(Boolean)),
+          tableau,
+        ]);
       }
 
       function dessiner() {
@@ -5412,6 +5543,8 @@
             })(h);
             return h;
           } },
+          { id: 'reglages', label: 'Réglages', badge: colReglages().active().filter(function (v) { return v.aValider === true; }).length || undefined, render: ongletReglages },
+          { id: 'achats', label: 'Achats à écrire', render: ongletAchats },
           { id: 'abrancher', label: 'Ce qu’il faudrait y brancher', badge: B.aBrancher().filter(function (x) { return x.etat !== 'branche'; }).length, render: function () {
             return el('div.space-y-3', null, [
               K.note('Cette liste est en <strong>lecture seule</strong> : le moteur dit ce qu’il faudrait brancher sur le barème, il ne branche rien. Brancher l’AIB sur les écritures d’achat fausserait la comptabilité sans décision de la Direction.', { tone: 'info', icon: 'list-checks' }),
