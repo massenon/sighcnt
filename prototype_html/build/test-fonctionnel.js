@@ -5926,9 +5926,20 @@ async function viderMessages(page) {
         const b = tr.querySelector('button');
         return b ? b.getAttribute('aria-disabled') === 'true' : null;
       });
+      /* Le verrou se juge LIGNE PAR LIGNE sur l'état de SA demande : verrouillée tant que l'échantillon n'est pas parvenu (en attente de règlement, de prélèvement,
+         prélevé), ouverte une fois reçu (en cours, saisi). Compter « toutes les lignes de la première page sont verrouillées » dépendait de ce que cette page
+         contenait, donc de l'ordre des scénarios : une demande reçue (état en_cours du jeu) y est légitimement saisissable. */
+      const AVANT_RECEPTION = ['en_attente', 'attente_prelevement', 'preleve'];
+      const parRef = {}; d.forEach((x) => { parRef[x.reference] = x; });
+      let ecarts = 0, sansDemande = 0;
+      rows.forEach((tr, i) => {
+        const m = /^(LAB-\d{5})/.exec(tr.textContent.trim()), dem = m && parRef[m[1]];
+        if (!dem) { sansDemande++; return; }
+        if ((boutons[i] === true) !== (AVANT_RECEPTION.indexOf(dem.etatAnalyse) >= 0)) ecarts++;
+      });
       return {
         total: d.length, inconnus: inconnus.length, rendus: rendus.length,
-        lignes: rows.length, verrouilles: boutons.filter((x) => x === true).length,
+        lignes: rows.length, verrouilles: boutons.filter((x) => x === true).length, ecarts: ecarts, sansDemande: sansDemande,
       };
     });
     verifier('Aucun état d'+String.fromCharCode(8217)+'analyse hors référentiel',
@@ -5936,8 +5947,8 @@ async function viderMessages(page) {
     verifier('Des résultats sont OPPOSABLES au prescripteur',
       labo.rendus > 0, labo.rendus + ' résultat(s) rendu(s)');
     verifier('La saisie est verrouillée tant que l'+String.fromCharCode(8217)+'échantillon n'+String.fromCharCode(8217)+'est pas reçu',
-      labo.lignes > 0 && labo.verrouilles === labo.lignes,
-      labo.verrouilles + ' / ' + labo.lignes + ' ligne(s)');
+      labo.lignes > 0 && labo.verrouilles > 0 && labo.sansDemande === 0 && labo.ecarts === 0,
+      labo.verrouilles + ' verrouillée(s) / ' + labo.lignes + ' ligne(s), ' + labo.ecarts + ' écart(s) à l’état de la demande, ' + labo.sansDemande + ' ligne(s) sans demande');
 
     /* --- Un seul service « Direction » ----------------------------------- */
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -9386,6 +9397,12 @@ async function viderMessages(page) {
       const S = window.SIGH.store, PR = window.SIGH.parcours;
       S.setSession({ role: 'laborantin', nom: 'KINNOU G.', fonction: 'tsl', secteur: 'LAB' });
       const modele = S.collection('demandesAnalyses').active()[0] || {};
+      /* L'EXAMEN VIENT DU CATALOGUE, pas de la première demande du magasin : celle-ci dépend de ce que les scénarios précédents y ont inséré, et une demande sans
+         variables paramétrées (« Aucune variable paramétrée pour cet examen », aucune modale) faisait échouer ce scénario dès qu'il suivait la navigation, le RBAC
+         et les badges. Un examen qui porte des variables actives rend la saisie ouvrable quel que soit l'ordre. */
+      const avecVariables = S.collection('variablesLabo').active().filter((v) => v.actif !== false).map((v) => v.examen);
+      const examen = S.collection('examensLabo').active().find((e) => avecVariables.indexOf(e.code) >= 0) || null;
+      if (examen) { modele.analyseCode = examen.code; modele.analyse = examen.designation; modele.categorie = examen.section; }
       const res = S.collection('demandesAnalyses', { module: 'M5', entite: 'demande', prefix: 'DEM' }).insert({
         reference: window.SIGH.core.nextRef('LABSONDE-', 4),
         /* La fabrique UNIQUE du code, jamais un code écrit à la main. */
