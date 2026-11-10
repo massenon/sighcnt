@@ -6,7 +6,8 @@
 // arrêtés le 09/11/2026 (`docs/decisions/DECISIONS-A-VALIDER.md`, section D ; `docs/plans/PLAN-decisions-2026-11-09.md`, colonne « Défaut »).
 //
 // `branche: false` : le réglage s'enregistre et se synchronise, mais l'écran qu'il commande ne le lit pas encore (lot à venir) ; l'écran des paramètres le dit.
-// Le lot L3 a branché `mecef.mode` (lu par la normalisation, voir `src/mecef/mode.dart`).
+// Le lot L3 a branché `mecef.mode` (lu par la normalisation, voir `src/mecef/mode.dart`). Les lots L5 et L6 ont branché `planning.circuitPresences` et
+// `planning.agentModifieDirectement` (lus par le moteur du planning RH, `src/rh/planning_rh.dart`, et par la maquette).
 // Aucune de ces définitions n'est envoyée au téléphone (`mobile: false`) : la liste blanche est vide tant qu'un lot ne démontre pas le besoin (RG-13).
 
 import 'parametres.dart';
@@ -85,7 +86,7 @@ const List<DefinitionParametre> definitionsParametres = [
     libelle: 'Circuit de validation des présences et absences',
     aide: 'Surveillant seul, directrice administrative seule, ou surveillant puis directrice administrative. Congés et ordres de mission suivent le même circuit.',
     source: _decisions,
-    branche: false,
+    branche: true,
     appliquePar: 'Lot L5 (circuit des présences)',
   ),
   DefinitionParametre(
@@ -96,7 +97,7 @@ const List<DefinitionParametre> definitionsParametres = [
     libelle: 'L\'agent modifie directement son planning',
     aide: 'Non : l\'agent propose, le surveillant valide.',
     source: _decisions,
-    branche: false,
+    branche: true,
     appliquePar: 'Lot L6 (propositions de planning)',
   ),
   DefinitionParametre(

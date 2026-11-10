@@ -217,7 +217,10 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
           .filter((b) => b.texte || b.titre)
           /* Le bouton de VALIDATION d'un référentiel (K.boutonValider, titre « Valider « … »») n'est pas une écriture de la fiche : il se garde
              par le rôle de la famille et l'ouverture de l'écran (« signer n'est pas saisir »). La Vague 92 le sonde à part. */
-          .filter((b) => !/^Valider «/.test(b.titre));
+          .filter((b) => !/^Valider «/.test(b.titre))
+          /* La VALIDATION du circuit RH (lot L5 : pointage, congé, ordre de mission ; lot L6 : proposition de planning) est un droit PROPRE, tenu au moteur (VALIDATION_RESERVEE) :
+             le surveillant OUVRE ces registres pour trancher sans les saisir (editer: false). La Vague 107 et la Vague 108 la sondent à part, rôle par rôle. */
+          .filter((b) => !/^Valider (ce pointage|cette demande de congé|cet ordre de mission|cette proposition)/.test(b.titre));
         const nom = (b) => (b.texte || b.titre).trim();
         return {
           ecriture: cmd.filter((b) => re.test(nom(b)) && !b.inerte).map(nom),
