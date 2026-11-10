@@ -104,6 +104,16 @@ void main() {
     'm5-banque-sang': {'poches': lignes((vecteursSang['banque'] as Map)['poches'])},
     'm5-donneurs': {'donneurs': lignes((vecteursSang['donneurs'] as Map)['donneurs'])},
   };
+  // m10-propositions-planning : la maquette relève l'écran sous la session de l'administrateur, qui est un agent du personnel (« Proposer une modification » ne
+  // se dessine que pour un agent). Au poste l'acteur du rôle admin est nommé par le libellé du rôle : on pose cet agent le temps de la mesure.
+  fixtures['m10-propositions-planning'] = {
+    'personnel': [
+      for (final e in magasin.collection('personnel').toutes) {...e},
+      {
+        'id': 'EMPPARITE', 'statut': 'actif', 'nomComplet': donnees.matrice.libelle('admin') ?? 'admin', 'matricule': '0', 'fonction': 'medecin', 'service': 'Direction', 'poste': 'Administrateur',
+      },
+    ],
+  };
   // Les écrans du module RLS lisent le relais PAR LA MÈRE (`/admin/etat`, `/admin/supervision`) : sans appareil, la commande « Révoquer » (une par ligne
   // d'appareil non révoqué) ne se dessine pas, et ses en-têtes de tableau non plus. Une mère qui répond avec un appareil actif, un appareil bloqué et un
   // contrôle de liaison fait DESSINER ces écrans comme le panneau de la maquette.

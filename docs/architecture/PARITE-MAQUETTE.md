@@ -5,9 +5,9 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **340** |
+| Écrans du manifeste (hors hubs de module) | **336** |
 | Hubs de module (un par module, engendrés) | 23 |
-| Écrans nommés par au moins un scénario de la maquette | 233 (69 %) |
+| Écrans nommés par au moins un scénario de la maquette | 229 (68 %) |
 | Écrans **sans** scénario (recette à écrire) | 107 |
 | Écrans portés | 336 |
 | Écrans recettés | 0 |
@@ -23,8 +23,8 @@
 | 2 · pharmacie, stocks, achats | 27 | 23 | 27 | 0 |
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 67 | 0 |
-| 5 · assurances et comptabilité | 32 | 22 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 173 | 104 | 170 | 0 |
+| 5 · assurances et comptabilité | 31 | 21 | 31 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 170 | 101 | 170 | 0 |
 
 ## Par écran
 
@@ -205,7 +205,6 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m12-baseline-2025` | Baseline 2025 | M12 | 5 | 38 | porté |
 | `m12-bfr` | Besoin en fonds de roulement | M12 | 5 | 66 | porté |
 | `m12-budgets` | Budgets | M12 | 5 | — | porté |
-| `m12-calendrier-fiscal` | Calendrier fiscal mensuel | M12 | 5 | 101 | non commencé |
 | `m12-cloture` | Exercices & clôtures | M12 | 4 | 43, 69, 71, 76, 80, 83, 87, 102 | porté |
 | `m12-compte-resultat` | Compte de résultat | M12 | 5 | 40, 63 | porté |
 | `m12-cout-activite` | Coût à l’activité | M12 | 5 | — | porté |
@@ -234,7 +233,6 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `error-404` | Page introuvable | AUTH | 20 | — | porté |
 | `index` | Connexion | AUTH | 20 | — | porté |
 | `plan-du-site` | Plan du site | AUTH | 20 | — | porté |
-| `cfg-bareme-aib` | Barème de l’AIB | CFG | 4 | 100, 105, 106 | non commencé |
 | `cfg-branding` | Identité & papier à en-tête | CFG | 3 | 89 | porté |
 | `cfg-catalogue` | Catalogue tarifaire (deux prix) | CFG | 4 | 34 | porté |
 | `cfg-centres-couts` | Centres de coûts | CFG | 3 | 17, 58 | porté |
@@ -252,7 +250,6 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `cfg-poste` | Ce poste (mode fileul / mère) | CFG | 2 | — | porté |
 | `cfg-rappels` | Rappels & messages | CFG | 3 | 1, 95, 105 | porté |
 | `cfg-regles` | Règles métier versionnées | CFG | 3 | 25 | porté |
-| `cfg-sms` | Passerelle SMS | CFG | 3 | 96 | non commencé |
 | `cfg-smtp` | Messagerie (SMTP) | CFG | 2 | 86 | porté |
 | `cfg-systeme` | Paramètres système | CFG | 3 | 17, 24, 68, 77, 84 | porté |
 | `cfg-tarifs` | Référentiel tarifaire | CFG | 4 | 1, 10, 44, 95, 105 | porté |
@@ -336,7 +333,6 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m13-plan-annuel` | Plan annuel de travail | M13 | 5 | — | porté |
 | `m13-repertoire-ambulances` | Répertoire des ambulances | M13 | 8 | 36, 44 | porté |
 | `m13-reunions` | Réunions | M13 | 5 | — | porté |
-| `m13-sms-journal` | Journal des envois SMS | M13 | 4 | 96, 97 | non commencé |
 | `m14-audit` | Journal d’audit | M14 | 3 | — | porté |
 | `m14-roles` | Rôles & permissions (RBAC) | M14 | 3 | 21, 32, 34 | porté |
 | `m14-sauvegardes` | Sauvegardes & restauration | M14 | 3 | 24, 90 | porté |

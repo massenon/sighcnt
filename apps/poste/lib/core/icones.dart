@@ -114,8 +114,6 @@ const Map<String, IconData> iconesLucide = {
   'map': LucideIcons.map,
   'maximize': LucideIcons.maximize,
   'megaphone': LucideIcons.megaphone,
-  'message-square': LucideIcons.messageSquare,
-  'messages-square': LucideIcons.messagesSquare,
   'monitor': LucideIcons.monitor,
   'monitor-smartphone': LucideIcons.monitorSmartphone,
   'network': LucideIcons.network,

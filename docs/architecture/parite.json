@@ -3426,26 +3426,6 @@
    "statut": "porté"
   },
   {
-   "id": "m12-calendrier-fiscal",
-   "label": "Calendrier fiscal mensuel",
-   "module": "M12",
-   "domaine": "Financier",
-   "tranche": 5,
-   "standalone": false,
-   "universel": false,
-   "roles": [
-    "admin",
-    "direction",
-    "da",
-    "comptable",
-    "aide_comptable"
-   ],
-   "scenarios": [
-    101
-   ],
-   "statut": "non commencé"
-  },
-  {
    "id": "m12-cloture",
    "label": "Exercices & clôtures",
    "module": "M12",
@@ -4300,26 +4280,6 @@
    "statut": "porté"
   },
   {
-   "id": "m13-sms-journal",
-   "label": "Journal des envois SMS",
-   "module": "M13",
-   "domaine": "Administration",
-   "tranche": 6,
-   "standalone": false,
-   "universel": false,
-   "roles": [
-    "admin",
-    "direction",
-    "da",
-    "assistant_comptable"
-   ],
-   "scenarios": [
-    96,
-    97
-   ],
-   "statut": "non commencé"
-  },
-  {
    "id": "m13-maintenance",
    "label": "Parc technique & maintenance",
    "module": "M13",
@@ -4995,27 +4955,6 @@
    "statut": "porté"
   },
   {
-   "id": "cfg-bareme-aib",
-   "label": "Barème de l’AIB",
-   "module": "CFG",
-   "domaine": "Système",
-   "tranche": 6,
-   "standalone": false,
-   "universel": false,
-   "roles": [
-    "admin",
-    "direction",
-    "da",
-    "comptable"
-   ],
-   "scenarios": [
-    100,
-    105,
-    106
-   ],
-   "statut": "non commencé"
-  },
-  {
    "id": "cfg-notifications",
    "label": "Notifications",
    "module": "CFG",
@@ -5136,24 +5075,6 @@
     86
    ],
    "statut": "porté"
-  },
-  {
-   "id": "cfg-sms",
-   "label": "Passerelle SMS",
-   "module": "CFG",
-   "domaine": "Système",
-   "tranche": 6,
-   "standalone": false,
-   "universel": false,
-   "roles": [
-    "admin",
-    "direction",
-    "da"
-   ],
-   "scenarios": [
-    96
-   ],
-   "statut": "non commencé"
   },
   {
    "id": "imp-accueil",

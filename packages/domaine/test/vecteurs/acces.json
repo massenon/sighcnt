@@ -1135,10 +1135,6 @@
         "href": "pages/m12-echeances.php"
        },
        {
-        "label": "Calendrier fiscal mensuel",
-        "href": "pages/m12-calendrier-fiscal.php"
-       },
-       {
         "label": "Exercices & clôtures",
         "href": "pages/m12-cloture.php"
        },
@@ -1341,10 +1337,6 @@
         "href": "pages/m13-repertoire-ambulances.php"
        },
        {
-        "label": "Journal des envois SMS",
-        "href": "pages/m13-sms-journal.php"
-       },
-       {
         "label": "Parc technique & maintenance",
         "href": "pages/m13-maintenance.php"
        },
@@ -1507,10 +1499,6 @@
         "href": "pages/cfg-comptabilite.php"
        },
        {
-        "label": "Barème de l’AIB",
-        "href": "pages/cfg-bareme-aib.php"
-       },
-       {
         "label": "Notifications",
         "href": "pages/cfg-notifications.php"
        },
@@ -1537,10 +1525,6 @@
        {
         "label": "Messagerie (SMTP)",
         "href": "pages/cfg-smtp.php"
-       },
-       {
-        "label": "Passerelle SMS",
-        "href": "pages/cfg-sms.php"
        }
       ]
      },
@@ -2036,7 +2020,7 @@
     ]
    }
   ],
-  "pied": "326 écrans métier recensés au manifeste, plus 22 pages d’accès et système.",
+  "pied": "322 écrans métier recensés au manifeste, plus 22 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },
@@ -2048,7 +2032,7 @@
    },
    {
     "label": "Écrans disponibles",
-    "valeur": "326"
+    "valeur": "322"
    },
    {
     "label": "Règles de gestion appliquées",
@@ -2369,7 +2353,7 @@
    "Modules fonctionnels",
    "33",
    "Écrans disponibles",
-   "326",
+   "322",
    "Règles de gestion appliquées",
    "14",
    "Profils d’utilisateur",

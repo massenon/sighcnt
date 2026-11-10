@@ -3682,11 +3682,6 @@
     1,
     1
    ],
-   "m12-calendrier-fiscal": [
-    1,
-    1,
-    1
-   ],
    "m12-cloture": [
     1,
     1,
@@ -3902,11 +3897,6 @@
     1,
     1
    ],
-   "m13-sms-journal": [
-    1,
-    1,
-    1
-   ],
    "m13-maintenance": [
     1,
     1,
@@ -4072,11 +4062,6 @@
     1,
     1
    ],
-   "cfg-bareme-aib": [
-    1,
-    1,
-    1
-   ],
    "cfg-notifications": [
     1,
     1,
@@ -4108,11 +4093,6 @@
     1
    ],
    "cfg-smtp": [
-    1,
-    1,
-    1
-   ],
-   "cfg-sms": [
     1,
     1,
     1
@@ -5374,11 +5354,6 @@
     0,
     0
    ],
-   "m12-calendrier-fiscal": [
-    1,
-    0,
-    0
-   ],
    "m12-cloture": [
     1,
     0,
@@ -5594,11 +5569,6 @@
     1,
     1
    ],
-   "m13-sms-journal": [
-    1,
-    0,
-    0
-   ],
    "m13-maintenance": [
     1,
     1,
@@ -5759,11 +5729,6 @@
     1,
     0
    ],
-   "cfg-bareme-aib": [
-    1,
-    0,
-    0
-   ],
    "cfg-notifications": [
     1,
     1,
@@ -5782,11 +5747,6 @@
    "cfg-systeme": [
     1,
     1,
-    0
-   ],
-   "cfg-sms": [
-    1,
-    0,
     0
    ],
    "imp-accueil": [
@@ -7113,11 +7073,6 @@
     1,
     1
    ],
-   "m12-calendrier-fiscal": [
-    1,
-    1,
-    1
-   ],
    "m12-cloture": [
     1,
     1,
@@ -7333,11 +7288,6 @@
     1,
     1
    ],
-   "m13-sms-journal": [
-    1,
-    1,
-    1
-   ],
    "m13-maintenance": [
     1,
     1,
@@ -7498,11 +7448,6 @@
     1,
     1
    ],
-   "cfg-bareme-aib": [
-    1,
-    1,
-    1
-   ],
    "cfg-notifications": [
     1,
     1,
@@ -7534,11 +7479,6 @@
     1
    ],
    "cfg-smtp": [
-    1,
-    1,
-    1
-   ],
-   "cfg-sms": [
     1,
     1,
     1
@@ -10126,11 +10066,6 @@
     1,
     1
    ],
-   "m12-calendrier-fiscal": [
-    1,
-    1,
-    1
-   ],
    "m12-cloture": [
     1,
     1,
@@ -10225,11 +10160,6 @@
     1,
     1,
     0
-   ],
-   "cfg-bareme-aib": [
-    1,
-    1,
-    1
    ],
    "imp-accueil": [
     1,
@@ -11601,11 +11531,6 @@
     1,
     0
    ],
-   "m13-sms-journal": [
-    1,
-    1,
-    0
-   ],
    "adm-validations": [
     1,
     1,
@@ -12753,11 +12678,6 @@
     0
    ],
    "m12-echeances": [
-    1,
-    1,
-    0
-   ],
-   "m12-calendrier-fiscal": [
     1,
     1,
     0

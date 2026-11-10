@@ -315,6 +315,7 @@
         "m10-badges-modeles",
         "m10-badges-impression",
         "m10-planning",
+        "m10-propositions-planning",
         "m10-stats-gardes",
         "m10-stats-permanences",
         "m10-stats-presence",
@@ -1050,6 +1051,7 @@
         "m10-badges-modeles",
         "m10-badges-impression",
         "m10-planning",
+        "m10-propositions-planning",
         "m10-stats-gardes",
         "m10-stats-permanences",
         "m10-stats-presence",
@@ -1435,6 +1437,19 @@
      ]
     },
     {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Administration",
      "rangees": [
       {
@@ -1716,6 +1731,7 @@
         "m10-badges-modeles",
         "m10-badges-impression",
         "m10-planning",
+        "m10-propositions-planning",
         "m10-stats-gardes",
         "m10-stats-permanences",
         "m10-stats-presence",
@@ -2278,6 +2294,19 @@
      ]
     },
     {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Administration",
      "rangees": [
       {
@@ -2487,6 +2516,19 @@
      ]
     },
     {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Administration",
      "rangees": [
       {
@@ -2605,6 +2647,19 @@
         "m7-receptions",
         "m7-ecarts",
         "m7-pv-reception-reactifs"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
        ]
       }
      ]
@@ -2735,6 +2790,19 @@
         "m8-caisse",
         "m8-operations",
         "m8-recettes"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
        ]
       }
      ]
@@ -2894,6 +2962,19 @@
         "mecef-transmission",
         "mecef-avoirs",
         "mecef-journal"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
        ]
       }
      ]
@@ -3086,6 +3167,14 @@
     {
      "domaine": "RH",
      "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
+       ]
+      },
       {
        "code": "M11",
        "label": "Paie & Primes",
@@ -3325,6 +3414,19 @@
      ]
     },
     {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Administration",
      "rangees": [
       {
@@ -3437,6 +3539,19 @@
        "hub": "hub-m7",
        "ecrans": [
         "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
        ]
       }
      ]
@@ -3564,6 +3679,19 @@
      ]
     },
     {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Administration",
      "rangees": [
       {
@@ -3650,6 +3778,19 @@
        "hub": "hub-m7",
        "ecrans": [
         "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
        ]
       }
      ]
@@ -3791,6 +3932,19 @@
      ]
     },
     {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Administration",
      "rangees": [
       {
@@ -3880,10 +4034,13 @@
         "m10-badges",
         "m10-badges-verification",
         "m10-planning",
+        "m10-propositions-planning",
         "m10-stats-gardes",
         "m10-stats-permanences",
         "m10-stats-presence",
-        "m10-presences"
+        "m10-presences",
+        "m10-conges",
+        "m10-missions"
        ]
       }
      ]
@@ -3979,7 +4136,8 @@
        "hub": "hub-m10",
        "ecrans": [
         "m10-badges",
-        "m10-badges-verification"
+        "m10-badges-verification",
+        "m10-propositions-planning"
        ]
       }
      ]
@@ -4182,6 +4340,19 @@
      ]
     },
     {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Administration",
      "rangees": [
       {
@@ -4325,6 +4496,19 @@
        "hub": "hub-m7",
        "ecrans": [
         "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
        ]
       }
      ]
@@ -4476,6 +4660,19 @@
         "m12-baseline-2025",
         "m12-echeances",
         "m12-ouverture"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-propositions-planning"
        ]
       }
      ]
