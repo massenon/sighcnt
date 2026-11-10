@@ -84,3 +84,10 @@ Les 18 questions ont reçu une réponse. Règle générale posée par la Directi
 - Chaque écran de référentiel ou de registre qui doit recevoir des données en masse porte un bouton « Importer les données » (fenêtre en trois temps : modèle téléchargeable, vérification sans écriture, import). Écrans cités : Catalogue tarifaire, Transferts gros vers détail, Référentiel produits, « et autres écrans » (inventaire en cours : `docs/prd/PRD-IMP-bouton-importer-par-ecran.md`).
 - La rangée « Importation de données » devient VISIBLE aux autres postes, avec un RBAC créé pour l'import (droit distinct par jeu). Cela remplace, pour cette rangée, la décision du 05/11 (onglet Système réservé à l'administrateur et à la DA). Hypothèse à confirmer : seule la rangée IMP est ouverte, le reste de l'onglet Système reste réservé.
 - Réponses du 10/11/2026 : Q1 de l'importation = la rangée « Importation de données » seule (le reste de l'onglet Système reste réservé) ; Q5 = le poste du gestionnaire de stock est un FILEUL (un référentiel importé à un fileul passe par la demande d'import vérifiée, appliquée par la mère).
+
+## F. Tarifs : une seule liste, un seul écran, et le changement de prix validé (Direction, 10/11/2026)
+
+- Les deux listes de prix des prestations (« actes », lue par la caisse, et « Catalogue tarifaire (deux prix) ») sont FUSIONNÉES en une seule, que la caisse lit pour facturer. Un seul écran pour tous les prix (principe du TARIF MASTER, vague 26), pour éviter les doublons et le double travail.
+- Un import de prix porte un champ de validation Oui/Non : Oui, le nouveau prix s'applique ; Non, il ne s'applique pas. Quand le logiciel constate un changement de prix, il crée une ALERTE DE VALIDATION Oui/Non.
+- Le changement d'un prix (produit ou acte) n'influence JAMAIS les anciennes facturations : une pièce émise ne se réécrit pas ; le prix est versionné par date d'effet.
+- Q3 des analyses : même principe (un prix unique, lu par la facturation) ; le modèle de résultat (unités, bornes) reste séparé.
