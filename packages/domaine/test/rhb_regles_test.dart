@@ -607,9 +607,22 @@ void main() {
           {'employeId': 'A', 'date': veille, 'type': c['typeAvant']}
         ], employeId: 'A', jour: jour, type: '${c['typeVoulu']}', repos: regime!.repos);
         expect(r, veille);
-        final detail = f(c['toast'])['detail'] as String;
-        expect(detail, contains(dateFR(DateTime.parse(r!))));
-        expect(f(c['toast'])['message'], 'Incompatibilité — le repos de ${regime.repos == 'repos48' ? 48 : 24} h qui suit une garde n’est pas respecté.');
+        // Lot L4 (E2330) : le refus du poste est celui de la règle UNIQUE du domaine, avec son motif et son geste (le toast de la maquette dit les deux).
+        final toast = f(c['toast']);
+        final nom = RegExp(r'pour (.+)\)\.$').firstMatch('${toast['message']}')!.group(1)!;
+        final refus = controlerVacationRh(
+          agent: {'id': 'A', 'nomComplet': nom},
+          planningActif: [
+            {'id': 'P', 'employeId': 'A', 'date': veille, 'type': c['typeAvant']}
+          ],
+          regime: RegimeRhResolu(date: '${c['jour']}', repos: regime.repos),
+          date: '${c['jour']}',
+          type: '${c['typeVoulu']}',
+        );
+        expect(refus, isNotNull);
+        expect(refus!.code, 'INCOMPATIBILITE_REPOS');
+        expect(refus.motif.replaceAll(RegExp(r'le \d{2}/\d{2}/\d{4}'), 'le #'), '${toast['message']}'.replaceAll(RegExp(r'le \d{2}/\d{2}/\d{4}'), 'le #'));
+        expect(refus.geste, toast['detail']);
         // Les vacations offertes : celles du régime, plus le repos et les quatre absences, dans l'ordre des types.
         final autorisees = rhbVacationsAutorisees(regime);
         expect([for (final t in rhbTypesPlanning) if (autorisees.contains(t.id)) t.id], [for (final o in (c['offerts'] as List)) (o as List)[0]]);

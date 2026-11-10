@@ -543,7 +543,9 @@ void main() {
       await t.tap(find.widgetWithText(BoutonSigh, 'Enregistrer'));
       await t.pump(const Duration(milliseconds: 400));
       final cree = plan.toutes.first;
-      fichesEgales(cree, obj(obj(s['affectation'])['fiche']), ignores: {'id'});
+      // Le contrôle est celui du moteur (E2330) : la vacation naît validée, au nom de l'agent qui la pose (la maquette : sa session de relevé).
+      fichesEgales(cree, obj(obj(s['affectation'])['fiche']), ignores: {'id', 'validePar'});
+      expect([cree['validationEtat'], cree['origine'], '${cree['validePar']}'.isNotEmpty], ['validee', 'poste', true]);
       expect(plan.toutes.length, n0 + 1);
       expect(find.text('OURTCHA Tereyama — Soirée le 27/10/2026'), findsOneWidget);
       await fermerToasts(t);

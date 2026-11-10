@@ -10399,15 +10399,22 @@
     ]
    ],
    "fiche": {
-    "id": "PLAxmvuswn40aam3w",
+    "id": "PLAxmvuswn407j3do",
     "statut": "validee",
-    "type": "soiree",
-    "observation": "Remplacement.",
     "date": "2026-10-27",
     "employeId": "EMP38",
     "employe": "OURTCHA Tereyama",
     "fonction": "securite",
-    "service": "Direction"
+    "service": "Direction",
+    "type": "soiree",
+    "observation": "Remplacement.",
+    "regimeLibelle": "Agents de sécurité",
+    "regimeIndividuelId": null,
+    "derogations": [],
+    "validationEtat": "validee",
+    "validePar": "BASSONGUI Chabi Séko",
+    "valideLe": "2026-10-30",
+    "origine": "poste"
    },
    "texteCellule": "S"
   },
@@ -10428,15 +10435,22 @@
      ]
     ],
     "fiche": {
-     "id": "PLAxmvuswn40aam3w",
+     "id": "PLAxmvuswn407j3do",
      "statut": "validee",
-     "type": "repos24",
-     "observation": "Remplacement.",
      "date": "2026-10-27",
      "employeId": "EMP38",
      "employe": "OURTCHA Tereyama",
      "fonction": "securite",
-     "service": "Direction"
+     "service": "Direction",
+     "type": "repos24",
+     "observation": "Remplacement.",
+     "regimeLibelle": "Agents de sécurité",
+     "regimeIndividuelId": null,
+     "derogations": [],
+     "validationEtat": "validee",
+     "validePar": "BASSONGUI Chabi Séko",
+     "valideLe": "2026-10-30",
+     "origine": "poste"
     },
     "texteCellule": "R"
    }
@@ -10450,16 +10464,23 @@
      ]
     ],
     "fiche": {
-     "id": "PLAxmvuswn40aam3w",
+     "id": "PLAxmvuswn407j3do",
      "statut": "archive",
-     "type": "repos24",
-     "observation": "Remplacement.",
      "date": "2026-10-27",
      "employeId": "EMP38",
      "employe": "OURTCHA Tereyama",
      "fonction": "securite",
      "service": "Direction",
-     "_motifArchivage": null
+     "type": "repos24",
+     "observation": "Remplacement.",
+     "regimeLibelle": "Agents de sécurité",
+     "regimeIndividuelId": null,
+     "derogations": [],
+     "validationEtat": "validee",
+     "validePar": "BASSONGUI Chabi Séko",
+     "valideLe": "2026-10-30",
+     "origine": "poste",
+     "_motifArchivage": "Vacation retirée de la rotation"
     },
     "texteCellule": "+"
    }
@@ -10469,8 +10490,8 @@
    "veille": "2026-10-28",
    "toasts": [
     [
-     "Incompatibilité — le repos de 24 h qui suit une garde n’est pas respecté.",
-     "Garde déjà programmée le 28/10/2026 pour OURTCHA Tereyama."
+     "Incompatibilité : le repos de 24 h qui suit une garde n’est pas respecté (garde déjà programmée le 28/10/2026 pour OURTCHA Tereyama).",
+     "Choisir un jour après le repos de 24 h, ou retirer l’autre garde."
     ]
    ],
    "ecrit": 0,
@@ -10527,7 +10548,7 @@
      ]
     ],
     "fiche": {
-     "id": "PERxmvuswn40i9jb4",
+     "id": "PERxmvuswn4033bgl",
      "statut": "actif",
      "nomComplet": "ADAM Ibrahim",
      "fonction": "entretien",
@@ -10542,7 +10563,7 @@
    },
    "seconde": {
     "fiche": {
-     "id": "PERxmvuswn40fkozi",
+     "id": "PERxmvuswn4054jtu",
      "statut": "actif",
      "nomComplet": "BIO Mama",
      "fonction": "securite",
@@ -10600,7 +10621,7 @@
      ]
     ],
     "fiche": {
-     "id": "PERxmvuswn40i9jb4",
+     "id": "PERxmvuswn4033bgl",
      "statut": "actif",
      "nomComplet": "ADAM Ibrahim",
      "fonction": "entretien",
@@ -10615,7 +10636,7 @@
   },
   "archivageAgent": {
    "fiche": {
-    "id": "PERxmvuswn40i9jb4",
+    "id": "PERxmvuswn4033bgl",
     "statut": "archive",
     "nomComplet": "ADAM Ibrahim",
     "fonction": "entretien",

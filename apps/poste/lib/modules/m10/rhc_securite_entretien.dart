@@ -9,6 +9,7 @@ import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'rhb_commun.dart';
+import 'rhb_circuit.dart';
 import 'rhc_commun.dart';
 
 /// `m10-securite-entretien` — « Sécurité & entretien » : le planning rotatif des agents de sécurité (garde 24 h, soirée 18 h → 8 h, repos) et d'entretien (permanence, entretien
@@ -171,7 +172,7 @@ class EcranSecuriteEntretien extends StatelessWidget with EcranMaquette {
   // ---- Affectation d'une vacation de rotation -------------------------------------------------------------------------------------------------------
 
   void _affecter(BuildContext ctx, ContexteEcran c, Fiche agent, DateTime jour, Fiche? existant) {
-    final col = c.magasin.collection('planning');
+    final p = rhbPlanningPoste(c);
     final types = rhcTypesRotation(agent['fonction']);
     final ctl = ControleurFormulaire([
       ChampDef(nom: 'type', libelle: 'Vacation', type: TypeChamp.select, requis: true, col: ColChamp.demi, options: [for (final t in types) OptionChamp(t.id, rhcLibelleRotation(t))]),
@@ -205,9 +206,13 @@ class EcranSecuriteEntretien extends StatelessWidget with EcranMaquette {
                           libelleOk: 'Retirer',
                           dangereux: true);
                       if (!ok || !ctx.mounted) return;
-                      final annuler = col.archiver(existant['id']);
+                      final r = p.retirerVacation(existant['id']);
+                      if (r['ok'] != true) {
+                        rhbToastRefus(ctx, r);
+                        return;
+                      }
                       fermer();
-                      ToastsSigh.afficher(ctx, 'Vacation retirée.', type: TypeToast.succes, annuler: annuler);
+                      ToastsSigh.afficher(ctx, 'Vacation retirée.', type: TypeToast.succes, annuler: r['annuler'] as VoidCallback);
                     }),
               BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
               BoutonSigh(
@@ -216,28 +221,15 @@ class EcranSecuriteEntretien extends StatelessWidget with EcranMaquette {
                   onPressed: () {
                     final v = ctl.valider();
                     if (v == null) return;
-                    // Le repos de 24 h qui suit une garde reste opposable ici comme au planning général : deux gardes consécutives pour un agent de sécurité sont refusées.
-                    final conflit = rhcIncompatibiliteRotation(rhbActives(c, 'planning'), employeId: agent['id'], jour: jour, type: '${v['type']}');
-                    if (conflit != null) {
-                      ToastsSigh.afficher(ctx, 'Incompatibilité — le repos de 24 h qui suit une garde n’est pas respecté.',
-                          type: TypeToast.erreur, detail: 'Garde déjà programmée le ${dateFR(DateTime.parse(conflit))} pour ${agent['nomComplet']}.');
+                    // Le contrôle du repos et de la double affectation est celui du MOTEUR, le même que le planning général (une règle, une voie, E2330).
+                    final r = p.poserVacation(employeId: agent['id'], date: iso(jour), type: '${v['type']}', observation: v['observation'] as String?, existantId: existant?['id']);
+                    if (r['ok'] != true) {
+                      rhbToastRefus(ctx, r);
                       return;
                     }
-                    final obs = '${v['observation'] ?? ''}';
-                    final fiche = <String, Object?>{
-                      'type': v['type'],
-                      if (obs.isNotEmpty || existant != null) 'observation': obs,
-                      'date': iso(jour),
-                      'employeId': agent['id'],
-                      'employe': agent['nomComplet'],
-                      'fonction': agent['fonction'],
-                      'service': agent['service'],
-                      'statut': 'validee',
-                    };
                     fermer();
-                    final VoidCallback annuler = existant != null ? col.mettreAJour(existant['id'], fiche) : col.inserer(fiche, prefixe: 'PLA').annuler;
                     ToastsSigh.afficher(ctx, 'Rotation enregistrée.',
-                        type: TypeToast.succes, detail: '${agent['nomComplet']} — ${rhbTypePlanningLabel(v['type'])} le ${dateFR(jour)}', annuler: annuler);
+                        type: TypeToast.succes, detail: '${agent['nomComplet']} — ${rhbTypePlanningLabel(v['type'])} le ${dateFR(jour)}', annuler: r['annuler'] as VoidCallback);
                   }),
             ]);
   }
