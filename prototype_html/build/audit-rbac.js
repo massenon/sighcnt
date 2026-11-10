@@ -136,12 +136,14 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
        cache : sonder sans recharger mesurerait l'état d'avant. On repasse
        donc par une page neutre, qui ré-hydrate et reconstruit le cache sous
        le nouveau rôle. */
-    await page.goto('http://127.0.0.1:' + PORT + '/pages/dash-admin.php',
+    /* LA PAGE NEUTRE NE DOIT PAS REBONDIR (10/11/2026, E2336). `dash-admin` est fermée à presque tous les profils : le garde d'accès la renvoie à `error-403`
+       APRÈS un premier rendu, ce qui faisait (1) attendre 180 s, à chaque profil, un `#page-content` que cette page autonome n'a jamais, et (2) détruire le contexte
+       en plein relevé quand le rebond tombait entre deux attentes (« page instable » au profil dm sous charge). On passe directement par `error-403`, page autonome
+       qui monte sans garde, ne rebondit pas, et ré-hydrate le magasin ; l'attente est celle de l'AUTORITÉ du magasin (`faitAutorite`), pas d'un contenu. */
+    await page.goto('http://127.0.0.1:' + PORT + '/pages/error-403.php',
       { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => {
-      const c = document.getElementById('page-content');
-      return !!(window.SIGH && window.SIGH.store && c && c.children.length > 0);
-    }, { timeout: 180000 }).catch(() => null);
+    await page.waitForFunction(() => !!(window.SIGH && window.SIGH.store && window.SIGH.nav && window.SIGH.store.faitAutorite()),
+      { timeout: 120000 }).catch(() => null);
 
     /* Les écrans que ce profil peut ouvrir, et ses droits sur chacun. */
     /* Une page que le profil n'ouvre pas rebondit (403, son propre tableau) APRÈS le
