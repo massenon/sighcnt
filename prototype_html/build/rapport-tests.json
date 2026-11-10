@@ -1,155 +1,189 @@
 [
   {
-    "nom": "Vague 82 : les fausses sauvegardes corrigées écrivent vraiment, ou refusent en nommant (lettrage, dépense, pertes, reprise, pharmacie, édition, authentification, conventions, facture, sauvegarde, MECeF)",
+    "nom": "Vague 94 : passerelle SMS, moteur (consentement, mot médical, doublon de rappel, report et reprise, hors ligne, droits par motif)",
     "etapes": [
       {
-        "libelle": "Lettrage : posé sur les deux lignes (même code) ; sur un exercice clos, LETTRAGE_REFUSE et aucune ligne modifiée",
+        "libelle": "La passerelle est configurée et ACTIVE (Twilio, puits de test)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Dépense : sur exercice clos, refus dit (« refusée ») et ni dépense ni écriture conservée ; sur exercice ouvert, la dépense ET ses 3 écritures existent, débit = crédit = 5 000",
+        "libelle": "L’accueil lit « disponible » : passerelle active et configurée, motifs de son poste (rappel, anniversaire), jamais le test ni l’alerte technique",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Pertes : 1 unité du magasin central décroît stockGros ET stock (détail intact, un mouvement de sortie) ; au-delà du stock du magasin, refus « Perte supérieure » et rien d’écrit (RG-03)",
+        "libelle": "L’accueil ne voit ni ne règle la configuration : état, test, enregistrement et retrait refusés (403 ACCES_REFUSE)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Reprise de stock : la première validation écrit la fiche (« Reprise validée »), la seconde rend REPRISE_DEJA_VALIDEE et ne réécrit rien",
+        "libelle": "Le motif décide du profil : l’accueil n’envoie ni « test » ni « alerte technique » ; le caissier n’envoie rien ; le médecin n’envoie pas d’anniversaire ; sans session, 401",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Pharmacie : chaque délivrance écrit un mouvement de sortie du DÉTAIL (justificatif = ordonnance) ; l’ordonnance reste non servie après la 1re ligne et n’est « servie » qu’à la 2e",
+        "libelle": "L’accueil et le médecin envoient bien un rappel de rendez-vous : acceptés par le puits, numéro masqué, aucun secret dans la réponse",
+        "ok": false,
+        "detail": "[200,200,4]"
+      },
+      {
+        "libelle": "Anniversaire : consentement par défaut, l’accueil envoie à A ; B (consentement retiré) et F (numéro inexploitable) sont REFUSÉS en nommant le motif",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Édition d’un document M1 : changer le patient met à jour `patientId`, `code` ET `patient` (les colonnes ne gardent pas l’ancien dossier)",
+        "libelle": "Le puits n’a reçu QU’UN message : celui de A, au numéro normalisé +229, avec le texte du modèle et le nom, sans aucune donnée de santé",
+        "ok": false,
+        "detail": "[{\"fournisseur\":\"twilio\",\"mode\":\"ok-vee8pbnwyj\",\"a\":\"+2290197009401\",\"de\":\"CLINIQUE\",\"texte\":\"Bonjour SONDE94A Alice, toute l’équipe de CLINIQUE NASSIERA TOO SARL vous souhaite un très joyeux anniversaire. Votre santé, notre raison de vivre.\",\"le\":\"2026-11-10T07:48:24+00:00\"},{\"fournisseur\":\"twilio\",\"mode\":\"ok-vee8pbnwyj\",\"a\":\"+2290197009401\",\"de\":\"CLINIQUE\",\"texte\":\"Bonjour SONDE94A Alice, toute l’équipe de CLINIQUE NASSIERA TOO SARL vous souhaite un très joyeux anniversaire. Votre santé, notre raison de vivre.\",\"le\":\"2026-11-10T07:48:24+00:00\"}]"
+      },
+      {
+        "libelle": "Le texte envoyé vient du modèle d’anniversaire : vœu, nom du patient, aucun mot médical",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Authentification : auth-reset annonce « non modifié », reste sur sa page et n’envoie aucune écriture à l’authentification ; la connexion ne propose plus « Se souvenir de ce poste »",
+        "libelle": "Le journal écrit LES TROIS issues : A accepté avec identifiant de message et numéro masqué, B refusé CONSENTEMENT_RETIRE, F refusé NUMERO_INVALIDE",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Conventions M9 : changer la compagnie d’un souscripteur qui porte des garanties est refusé (« Changement de compagnie refusé », garanties nommées) et la fiche garde sa compagnie",
+        "libelle": "Aucune ligne du journal ne porte un numéro en clair ni le texte du message",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Facture émise avec versement partiel (1 000 sur 3 000) : chaque ligne porte un `id` et un `statutPaiement` (A « paye », B « du »)",
+        "libelle": "Relancé le même jour : rien ne repart (même clé), nommé DEJA_TRAITE, le puits n’a pas bougé et le journal non plus",
+        "ok": false,
+        "detail": "[{\"id\":\"PATxmsvr66vz7gyon\",\"code\":\"DEJA_TRAITE\",\"ok\":false},{\"id\":\"PATxmsvr66vz206at\",\"code\":\"DEJA_TRAITE\",\"ok\":false},{\"id\":\"PATxmsvr66vzt198g\",\"code\":\"DEJA_TRAITE\",\"ok\":false}]"
+      },
+      {
+        "libelle": "Rappel de la veille : TROIS rendez-vous de A pour demain sont rappelés (un message par rendez-vous), acceptés",
+        "ok": false,
+        "detail": "[{\"id\":\"CONxmsvr66vz5ne8c\",\"ok\":true},{\"id\":\"CONxmsvr66vz0vppr\",\"ok\":true},{\"id\":\"CONxmsvr66vz4ghrt\",\"ok\":true}]"
+      },
+      {
+        "libelle": "Le rappel nomme le médecin, la date et l’heure, JAMAIS le motif de la consultation (décision M6)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Sauvegarde M14 : « Générer une sauvegarde » écrit une fiche (fichier .json, date, heure, portée, tables, taille, auteur) sans contenu ; « sauvegarde manuelle » et « Tester une restauration » sont absents",
+        "libelle": "Aucun DOUBLON de rappel : le déclencheur relancé ne renvoie rien (DEJA_TRAITE), le puits garde ses quatre messages",
+        "ok": false,
+        "detail": "[{\"code\":\"DEJA_TRAITE\",\"ok\":false},{\"code\":\"DEJA_TRAITE\",\"ok\":false},{\"code\":\"DEJA_TRAITE\",\"ok\":false}]"
+      },
+      {
+        "libelle": "Même identifiant de demande présenté deux fois au serveur (réponse perdue, ou deux postes) : un SEUL message part, la seconde réponse rend l’envoi d’origine",
+        "ok": false,
+        "detail": "[\"SMa6dce8cb61ad50e1d17ac062\",\"SMa6dce8cb61ad50e1d17ac062\",true,10]"
+      },
+      {
+        "libelle": "Le retrait du consentement est TRACÉ : valeur fausse, date et auteur renseignés, relus par le moteur",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "mecef-config : aucun bouton « Enregistrer », la note « Lecture seule » est présente et les champs sont verrouillés",
+        "libelle": "Consentement retiré : plus AUCUN envoi, refus nommé avec son geste, le puits reste vide",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Aucune erreur JavaScript pendant tout le scénario",
-        "ok": true,
-        "detail": null
-      }
-    ],
-    "ok": true
-  },
-  {
-    "nom": "Vague 105 : MECeF L3 (mode boîtier par défaut, bascule e-MECeF au geste et journalisée, aucun numéro fabriqué, vente en attente, refus nommé, retransmission sans essai consommé, relue sur un second poste)",
-    "etapes": [
+        "libelle": "Consentement rétabli par l’accueil : l’envoi repart (un message au puits)",
+        "ok": false,
+        "detail": "{\"ok\":true}"
+      },
       {
-        "libelle": "Départ : le mode par défaut est « boîtier » (rien n’est réglé), deux modes seulement sont proposés (boîtier physique, e-MECeF), l’écran le montre",
+        "libelle": "Un texte qui porte un mot de la liste médicale est REFUSÉ (DONNEE_MEDICALE) avec son geste : diagnostic, séropositive, positif, accents et casse compris, rien n’est envoyé",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le mode boîtier dit la vérité : modèle, interface et protocole inconnus, aucun numéro fabriqué comme fiscal, maquette seule en démonstration, aucun adaptateur au poste de production",
+        "libelle": "Les trois refus médicaux sont au journal comme REFUS, sans identifiant de message, sans le texte",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "En mode boîtier la maquette garde son appareil de démonstration (adaptateur configuré, marqué démonstration)",
+        "libelle": "Le SMS ne vise que des PATIENTS : un motif interne (alerte technique) et un destinataire qui n’est pas un patient sont refusés (MOTIF_INCONNU, PATIENT_INCONNU)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Choisir e-MECeF puis « Enregistrer le mode » : le réglage est écrit en base (mecefMode = emecef), l’écran dit « non configuré, dossier d’interface DGI requis »",
+        "libelle": "Hors ligne : le message est MIS EN FILE et le dit (statut en_file, code HORS_LIGNE), rien n’est présenté comme envoyé, le puits est vide",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le changement est JOURNALISÉ avec l’ancienne et la nouvelle valeur (RG-12)",
+        "libelle": "Toujours hors ligne : la reprise ne perd rien et ne compte pas d’essai (le message attend)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Un caissier ne règle pas le mode (MODE_RESERVE, avec son geste) ; un mode inconnu est refusé (MODE_INCONNU) ; le mode reste e-MECeF",
+        "libelle": "Rien n’a circulé pendant la coupure : le puits est vide",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Au geste, sans droit d’écriture (comptable, caissier) : l’écran de configuration s’ouvre mais n’offre aucune commande de réglage du mode ni champ actif, et dit qui règle",
+        "libelle": "Au retour de la connexion : UN SEUL message part (celui de la file), le puits le confirme",
+        "ok": false,
+        "detail": "[[{\"id\":\"FSMxmsvr6a5t3hf65\",\"fin\":\"envoye\"}],2]"
+      },
+      {
+        "libelle": "L’entrée de file est CLOSE (envoyé), son texte effacé ; le journal porte « en file » PUIS « accepté » avec le même identifiant de clé",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "« Tester la connexion » en e-MECeF refuse en nommant (MECEF_NON_CONFIGURE) et n’annonce AUCUNE connexion établie ni délai de réponse",
+        "libelle": "Reprises répétées et même clé représentée : AUCUN second envoi (le puits garde un message, la clé est DEJA_TRAITE)",
+        "ok": false,
+        "detail": "[0,\"DEJA_TRAITE\"]"
+      },
+      {
+        "libelle": "Heures calmes (23 h) : le rappel est REPORTÉ et NOMMÉ (HEURES_CALMES), reprise annoncée à 7 h le lendemain, rien n’est parti",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Vente encaissée en e-MECeF : l’encaissement RESTE acquis (soldée, 14 000 réglés) et la normalisation est refusée en nommant MECEF_NON_CONFIGURE (motif, geste)",
+        "libelle": "Le report n’est pas perdu : une entrée de file « reporté » porte l’heure de reprise ; le journal écrit « reporté », sans identifiant de message",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "La pièce reste « en attente » (état stocké en_attente), SANS numéro fiscal, avec le code et le motif portés ; aucun numéro nulle part n’a été fabriqué",
+        "libelle": "Avant l’ouverture de la fenêtre (23 h 30, puis 6 h 59) : la reprise n’envoie RIEN",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "L’appareil de démonstration n’a rien émis (compteur et journal des émissions intacts) : aucun numéro tiré à l’aveugle",
+        "libelle": "À l’ouverture de la fenêtre (7 h 05) : UN message part, le puits le confirme, la file est close, le journal passe « reporté » puis « accepté »",
+        "ok": false,
+        "detail": "[[{\"id\":\"FSMxmsvr6at172yvk\",\"fin\":\"envoye\"}],[\"reporte\",\"accepte\"]]"
+      },
+      {
+        "libelle": "Reprises suivantes : AUCUN doublon (le puits garde un seul message, un seul « accepté » au journal pour cette clé)",
+        "ok": false,
+        "detail": "[{\"fournisseur\":\"twilio\",\"mode\":\"ok-vee8pbnwyj\",\"a\":\"+2290197009404\",\"de\":\"CLINIQUE\",\"texte\":\"Bonjour, rappel de votre rendez-vous demain.\",\"le\":\"2026-11-10T07:48:27+00:00\"},{\"fournisseur\":\"twilio\",\"mode\":\"ok-vee8pbnwyj\",\"a\":\"+2290197009404\",\"de\":\"CLINIQUE\",\"texte\":\"Bonjour, rappel de votre rendez-vous demain.\",\"le\":\"2026-11-10T07:48:27+00:00\"}]"
+      },
+      {
+        "libelle": "UNE SEULE reprise : heures calmes encore en cours à la reprise, le message est ABANDONNÉ (HEURES_CALMES, tentative 1), ne repart pas quand la fenêtre se rouvre, le puits reste vide",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le caissier retransmet deux fois : MECEF_NON_CONFIGURE à chaque fois (jamais RETRANSMISSION_RESERVEE), aucun essai consommé, toujours aucun numéro",
+        "libelle": "Le tour de surveillance des notifications appelle les déclencheurs SMS (une fois par tour)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Vente refusée retransmise en e-MECeF : MECEF_NON_CONFIGURE, la pièce repasse en attente, SANS numéro, et la retransmission n’est PAS comptée",
+        "libelle": "Passerelle désactivée ou profil autre que l’accueil : les déclencheurs ne font RIEN (ni envoi, ni ligne de journal)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "« Synchroniser maintenant » en e-MECeF : refus nommé, aucune confirmation proposée, AUCUN numéro tiré (le nombre de pièces numérotées ne bouge pas)",
+        "libelle": "Le dossier patient porte le champ de consentement SMS, COCHÉ PAR DÉFAUT",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Avoir en e-MECeF : la pièce est ÉMISE (un avoir de plus au registre) mais SANS numéro fiscal, en attente de certification, et le message le dit (MECEF_NON_CONFIGURE)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Second poste : le mode réglé sur le premier (e-MECeF) est relu depuis la base, et son adaptateur est lui aussi non configuré",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Revenu en mode boîtier, la vente laissée en attente se certifie par la retransmission du caissier (appareil de démonstration, pièce marquée non fiscale)",
+        "libelle": "Le journal affiche les nouveaux états (refus nommés du moteur, reporté, en file) sans modification possible",
         "ok": true,
         "detail": null
       },
@@ -159,6 +193,6 @@
         "detail": null
       }
     ],
-    "ok": true
+    "ok": false
   }
 ]

@@ -69,6 +69,17 @@ async function demarrerPhp(racine) {
       + 'l’occupe, et s’y rattacher ferait éprouver SON arbre de fichiers et SA base. Choisir un port libre (SIGH_PORT_PHP=<port>) et une base à soi '
       + '(SIGH_BASE_TEST=<nom>), ou arrêter l’ancien serveur (ps aux | grep "php -S").' };
   }
+  /* LES FICHIERS DE LA PASSERELLE SMS SONT PAR BANC (E2323). Configuration, puits du faux fournisseur, compteur du jour et verrou vivaient dans
+     api/, c'est-à-dire dans l'arbre de fichiers PARTAGÉ : deux bancs (ou un banc et un passage isolé) lisaient le même puits et le même compteur,
+     et un envoi de l'un apparaissait chez l'autre (« 2 messages » au lieu d'un, « HORS_LIGNE » sur une configuration effacée sous les pieds).
+     Le port PHP du banc nomme un dossier à lui, remis à neuf ; SIGH_SMS_DIR explicite l'emporte, et la sonde du scénario 93 lit la même variable. */
+  if (!process.env.SIGH_SMS_DIR) {
+    const fsSms = require('fs'), pathSms = require('path'), osSms = require('os');
+    const dossierSms = pathSms.join(osSms.tmpdir(), 'sigh-sms-banc-' + PORT_PHP);
+    try { fsSms.rmSync(dossierSms, { recursive: true, force: true }); } catch (e) { /* absent */ }
+    fsSms.mkdirSync(dossierSms, { recursive: true });
+    process.env.SIGH_SMS_DIR = dossierSms;
+  }
   const proc = spawn('php', ['-S', '127.0.0.1:' + PORT_PHP, '-t', racine], {
     cwd: racine,
     env: Object.assign({}, process.env, { SIGH_BASE: BASE_TEST, SIGH_BANC: '1' }),
