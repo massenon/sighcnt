@@ -35,7 +35,9 @@
         + 'Personnel (M10), ou régénérer le jeu de démonstration.',
     { tone: 'warning', icon: 'wallet' });
   }
-  function planning() { return S.collection('planning').active(); }
+  /* RG-11 : les primes se calculent sur le planning VALIDÉ. Une vacation proposée par un agent et non encore validée est visible au planning, elle ne compte pas ;
+     celles d'avant le circuit de validation (sans état) sont lues validées. */
+  function planning() { return S.collection('planning').active().filter(function (p) { return !p.validationEtat || p.validationEtat === 'validee'; }); }
   function evaluations() { return S.collection('evaluations').active(); }
   function bulletins() { return S.collection('bulletins', { module: 'M11', entite: 'BulletinPaie' }); }
   function avances() { return S.collection('avances', { module: 'M11', entite: 'AvanceSalaire' }); }

@@ -1,14 +1,16 @@
 {
-  "pages": 2,
-  "jsErrors": [],
+  "pages": 1,
+  "jsErrors": [
+    {
+      "page": "pages/m10-planning.php",
+      "errors": [
+        "console.error: [SIGH] Rendu de « m10-planning » : TypeError: Cannot read properties of undefined (reading 'indexOf')"
+      ]
+    }
+  ],
   "missing": [],
   "brokenLinks": [],
   "notMounted": [],
   "stubs": [],
-  "slow": [
-    {
-      "page": "pages/cfg-systeme.php",
-      "ms": 6954
-    }
-  ]
+  "slow": []
 }

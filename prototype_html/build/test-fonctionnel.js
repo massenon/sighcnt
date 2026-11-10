@@ -17488,6 +17488,214 @@ async function viderMessages(page) {
   });
 
 
+  /* ==========================================================================
+   * Vague 106 : PLANNING, lot L4 (Direction, 09/11/2026, Planning Q1) : le régime INDIVIDUEL déroge champ par champ
+   * -------------------------------------------------------------------------
+   * La dérogation se pose par la modale de « Planning & gardes » (administrateur ou DA), se versionne par date et ne se réécrit pas ; le repos qui suit une
+   * garde est celui du régime EN VIGUEUR à la date, dérogation comprise, pour CET agent seul ; le contrôle est celui du MOTEUR, donc le même par la grille
+   * que par toute autre voie. Les filtres avancés (agent, validation, plage de dates) restreignent la grille ET le registre, et l'état imprimé les retrace.
+   * Données de sonde : vacations en juillet 2027 (aucune au jeu), nettoyées à la sortie.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 106 : planning L4 (dérogation champ par champ au geste, versions datées immuables, repos individuel, contrôle par la grille, filtres avancés et état filtré)');
+    erreursJS = [];
+    await ouvrir('m10-planning.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    await ouvrir('m10-planning.html');
+
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const meds = S.collection('personnel').active().filter((e) => e.fonction === 'medecin');
+      const iso = (n) => C.iso(C.addDays(C.aujourdhui(), n));
+      return { m1: meds[0].id, n1: meds[0].nomComplet, m2: meds[1].id, n2: meds[1].nomComplet, aujourdhui: iso(0), d0: iso(90),
+        plan0: S.collection('planning').all().map((p) => p.id), reg0: S.collection('regimesIndividuels').all().map((p) => p.id) };
+    });
+    const D = (n) => page.evaluate((x) => window.SIGH.core.iso(window.SIGH.core.addDays(window.SIGH.core.aujourdhui(), x)), n);
+    const R = (expr, arg) => page.evaluate(new Function('a', 'return (' + expr + ')(a);'), arg);
+    const texteCarte = () => page.evaluate(() => document.getElementById('page-content').textContent);
+
+    /* --- 1. l'écran : barre de filtres avancés, carte des régimes individuels, commande réservée -------------------------------------------- */
+    const ecran = await page.evaluate(() => {
+      const ids = ['pl_f_q', 'pl_f_agent', 'pl_f_matricule', 'pl_f_service', 'pl_f_fonction', 'pl_f_regime', 'pl_f_type', 'pl_f_validation', 'pl_f_validepar', 'pl_f_du', 'pl_f_au'];
+      return { filtres: ids.filter((i) => document.getElementById(i)), carte: /Régimes individuels/.test(document.getElementById('page-content').textContent),
+        bouton: [...document.querySelectorAll('#page-content button')].some((b) => /Déroger pour un agent/.test(b.textContent)) };
+    });
+    verifier('La barre de filtres avancés porte les onze critères (recherche, agent, matricule, service, fonction, régime, type, validation, validé par, du, au)', ecran.filtres.length === 11, ecran.filtres.length + ' / 11');
+    verifier('La carte des régimes individuels existe et la commande « Déroger pour un agent » est offerte à l’administrateur', ecran.carte && ecran.bouton);
+
+    /* --- 2. sans dérogation, le repos suit la catégorie (48 h pour un médecin) : une garde à D0, une seconde à D0+2 refusée ------------------------- */
+    const avant = await page.evaluate((m) => {
+      const PR = window.SIGH.planningRh, C = window.SIGH.core, iso = (n) => C.iso(C.addDays(m.d0, n));
+      const r1 = PR.poserVacation({ employeId: m.m1, date: iso(0), type: 'garde' });
+      const r2 = PR.poserVacation({ employeId: m.m1, date: iso(2), type: 'garde' });
+      const autreAgent = PR.poserVacation({ employeId: m.m2, date: iso(0), type: 'garde' });
+      const autreAgent2 = PR.poserVacation({ employeId: m.m2, date: iso(2), type: 'garde' });
+      return { r1: r1.ok, r2: { ok: r2.ok, code: r2.code, repos: r2.reposHeures }, a1: autreAgent.ok, a2: autreAgent2.code, regime: PR.regimeALaDate(m.m1, 'medecin', m.d0), doubleCode: PR.poserVacation({ employeId: m.m1, date: iso(0), type: 'garde' }).code };
+    }, monde);
+    verifier('Sans dérogation, la garde est posée et la seconde à J+2 est refusée (repos de 48 h de la catégorie), refus nommé', avant.r1 && !avant.r2.ok && avant.r2.code === 'INCOMPATIBILITE_REPOS' && avant.r2.repos === 48, JSON.stringify(avant.r2));
+    verifier('Le refus s’applique à l’autre médecin aussi : le régime de la catégorie reste la règle', avant.a1 && avant.a2 === 'INCOMPATIBILITE_REPOS', avant.a2);
+    verifier('Poser deux vacations le même jour est refusé en le nommant (DOUBLE_AFFECTATION)', avant.doubleCode === 'DOUBLE_AFFECTATION', avant.doubleCode);
+    verifier('Le régime résolu d’un médecin sans dérogation est celui de sa catégorie (repos 48 h, individuel faux)', avant.regime.individuel === false && avant.regime.repos === 'repos48' && avant.regime.categorie === 'Médecins', JSON.stringify([avant.regime.repos, avant.regime.individuel]));
+
+    /* --- 3. la dérogation par la modale : repos 24 h et honoraire pour M1 seul ----------------------------------------------------------------- */
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].find((b) => /Déroger pour un agent/.test(b.textContent)).click(); });
+    await pause(400);
+    await page.evaluate((m) => {
+      const racine = document.querySelector('.modal-root, [role=dialog]');
+      const dire = (sel, v) => { const c = racine.querySelector(sel); c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); };
+      dire('#f_employeId', m.m1);
+      dire('#f_repos', 'repos24');
+      dire('#f_honoraire', '20000');
+      dire('#f_motif', 'Sonde Vague 106 : gardes de ce médecin au rythme de 24 h');
+    }, monde);
+    await page.evaluate(() => { [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((b) => b.textContent.trim() === 'Enregistrer la version').pop().click(); });
+    await pause(600);
+    const posee = await page.evaluate((m) => {
+      const S = window.SIGH.store, PR = window.SIGH.planningRh;
+      const fiches = S.collection('regimesIndividuels').all().filter((x) => m.reg0.indexOf(x.id) < 0);
+      const r = PR.regimeALaDate(m.m1, 'medecin', m.d0), rAutre = PR.regimeALaDate(m.m2, 'medecin', m.d0);
+      const j = S.raw().audit.filter((x) => x.action === 'Régime individuel : dérogation posée').pop();
+      return { n: fiches.length, champs: fiches[0] && fiches[0].champs, dateEffet: fiches[0] && fiches[0].dateEffet, version: fiches[0] && fiches[0].version,
+        repos: r.repos, honoraire: r.honoraire, cycle: r.cycle, categorie: r.categorie, derogations: r.derogations, individuel: r.individuel, vacations: r.vacations,
+        autreRepos: rAutre.repos, autreIndiv: rAutre.individuel, journal: !!j, tableau: [...document.querySelectorAll('#page-content tbody tr')].some((tr) => tr.textContent.indexOf(m.n1) >= 0 && /Repos : Repos 24h/.test(tr.textContent)) };
+    }, monde);
+    verifier('La modale enregistre UNE version datée d’aujourd’hui qui ne porte que les champs renseignés (repos, honoraire)', posee.n === 1 && posee.dateEffet === monde.aujourdhui && Object.keys(posee.champs).sort().join() === 'honoraire,repos' && posee.version === 1, JSON.stringify(posee.champs));
+    verifier('Le régime résolu déroge champ par champ : repos 24 h et honoraire 20 000 pour M1, le cycle et les vacations suivent la catégorie', posee.repos === 'repos24' && posee.honoraire === 20000 && posee.cycle === 2 && posee.vacations.join() === 'garde' && posee.derogations.join() === 'repos,honoraire' && posee.individuel, JSON.stringify(posee.derogations));
+    verifier('L’autre médecin garde le repos de sa catégorie (48 h) : la dérogation ne touche que M1', posee.autreRepos === 'repos48' && posee.autreIndiv === false);
+    verifier('La carte des régimes individuels montre la dérogation en vigueur et le journal l’a tracée (RG-12)', posee.tableau && posee.journal);
+
+    /* --- 4. le repos individuel gouverne le contrôle : D0+2 passe pour M1, D0+1 est refusé (24 h) ------------------------------------------------- */
+    const apres = await page.evaluate((m) => {
+      const PR = window.SIGH.planningRh, C = window.SIGH.core, iso = (n) => C.iso(C.addDays(m.d0, n));
+      const trop = PR.poserVacation({ employeId: m.m1, date: iso(1), type: 'garde' });
+      const ok = PR.poserVacation({ employeId: m.m1, date: iso(2), type: 'garde' });
+      const rec = ok.ok ? window.SIGH.store.collection('planning').get(ok.id) : null;
+      const encore = PR.poserVacation({ employeId: m.m2, date: iso(2), type: 'garde' });
+      return { trop: { ok: trop.ok, code: trop.code, repos: trop.reposHeures, indiv: trop.individuel }, ok: ok.ok, trace: rec && { reg: rec.regimeLibelle, der: rec.derogations, ver: rec.regimeIndividuelId, origine: rec.origine, etat: rec.validationEtat },
+        encore: encore.code };
+    }, monde);
+    verifier('Avec la dérogation, une garde à J+1 est refusée (repos de 24 h de M1) et l’une à J+2 est acceptée', !apres.trop.ok && apres.trop.code === 'INCOMPATIBILITE_REPOS' && apres.trop.repos === 24 && apres.trop.indiv === true && apres.ok, JSON.stringify(apres.trop));
+    verifier('La vacation porte le régime sous lequel elle est posée (catégorie, dérogations, version) et naît validée par le poste', apres.trace && apres.trace.reg === 'Médecins' && apres.trace.der.join() === 'repos,honoraire' && !!apres.trace.ver && apres.trace.origine === 'poste' && apres.trace.etat === 'validee', JSON.stringify(apres.trace));
+    verifier('L’autre médecin reste soumis aux 48 h (garde à J+2 refusée, MÊME contrôle)', apres.encore === 'INCOMPATIBILITE_REPOS', apres.encore);
+
+    /* --- 5. refus nommés de la dérogation ------------------------------------------------------------------------------------------------------------ */
+    const refus = await page.evaluate((m) => {
+      const PR = window.SIGH.planningRh, C = window.SIGH.core, S = window.SIGH.store;
+      const base = { employeId: m.m2, dateEffet: m.aujourdhui, champs: { cycle: 3 }, motif: 'Sonde' };
+      const code = (o) => { const r = PR.deroger(Object.assign({}, base, o)); return r.ok ? 'OK' : r.code; };
+      const out = {
+        sansMotif: code({ motif: '' }), sansChamp: code({ champs: {} }), passee: code({ dateEffet: C.iso(C.addDays(C.aujourdhui(), -1)) }),
+        repos: code({ champs: { repos: 'repos12' } }), honoraire: code({ champs: { honoraire: -5 } }), vacations: code({ champs: { vacations: ['repos24'] } }),
+        agent: code({ employeId: 'INCONNU' }), memeDate: code({ employeId: m.m1, champs: { cycle: 4 } }),
+      };
+      const sess = S.session();
+      S.setSession(Object.assign({}, sess, { role: 'caissier' }));
+      out.caissier = code({});
+      S.setSession(sess);
+      /* une version à venir (retour à la catégorie), puis une version insérée AVANT elle : refusée */
+      const futur = PR.deroger({ employeId: m.m1, dateEffet: C.iso(C.addDays(C.aujourdhui(), 10)), retourCategorie: true, motif: 'Sonde : fin de la dérogation' });
+      out.retourOk = futur.ok;
+      out.anterieure = PR.deroger({ employeId: m.m1, dateEffet: C.iso(C.addDays(C.aujourdhui(), 5)), champs: { cycle: 3 }, motif: 'Sonde' }).code;
+      const fiche = S.collection('regimesIndividuels').all().filter((x) => x.employeId === m.m1)[0];
+      const avantNb = S.collection('regimesIndividuels').all().length;
+      out.modif = S.collection('regimesIndividuels').update(fiche.id, { motif: 'réécrit' }) === null && S.collection('regimesIndividuels').get(fiche.id).motif.indexOf('réécrit') < 0;
+      out.archive = S.collection('regimesIndividuels').archive(fiche.id, 'x') === null && S.collection('regimesIndividuels').get(fiche.id).statut !== 'archive';
+      out.nb = S.collection('regimesIndividuels').all().length - avantNb;
+      out.pendant = PR.regimeALaDate(m.m1, 'medecin', C.iso(C.addDays(C.aujourdhui(), 5))).individuel;
+      out.apresRetour = PR.regimeALaDate(m.m1, 'medecin', C.iso(C.addDays(C.aujourdhui(), 11)));
+      out.historique = PR.historique(m.m1).map((h) => ({ v: h.version, retour: h.retourCategorie, date: h.dateEffet }));
+      const vac = S.collection('planning').all().filter((p) => p.employeId === m.m1 && p.date === C.iso(C.addDays(m.d0, 2)))[0];
+      out.vacationInchangee = vac.derogations.join() === 'repos,honoraire' && vac.regimeLibelle === 'Médecins';
+      return out;
+    }, monde);
+    verifier('Dérogation refusée en nommant : motif absent, aucun champ, date passée, repos inconnu, honoraire négatif, vacations hors référentiel, agent inconnu, date déjà prise',
+      refus.sansMotif === 'MOTIF_OBLIGATOIRE' && refus.sansChamp === 'AUCUNE_DEROGATION' && refus.passee === 'DATE_PASSEE' && refus.repos === 'CHAMP_INVALIDE' && refus.honoraire === 'CHAMP_INVALIDE'
+        && refus.vacations === 'CHAMP_INVALIDE' && refus.agent === 'AGENT_INTROUVABLE' && refus.memeDate === 'DATE_EXISTANTE', JSON.stringify(refus));
+    verifier('Le caissier ne pose pas de dérogation (DEROGATION_RESERVEE)', refus.caissier === 'DEROGATION_RESERVEE', refus.caissier);
+    verifier('Une version insérée avant la plus récente est refusée (VERSION_ANTERIEURE)', refus.retourOk === true && refus.anterieure === 'VERSION_ANTERIEURE', refus.anterieure);
+    verifier('Une version ne se réécrit pas et ne s’archive pas (garde du magasin), le nombre de fiches ne change pas', refus.modif && refus.archive && refus.nb === 0);
+    verifier('Le retour à la catégorie est une VERSION : la dérogation court jusque-là, puis le régime redevient celui de la catégorie, historique intact (2 versions)',
+      refus.pendant === true && refus.apresRetour.individuel === false && refus.apresRetour.repos === 'repos48' && refus.historique.length === 2 && refus.historique[1].retour === true, JSON.stringify(refus.historique));
+    verifier('La vacation déjà posée garde le régime sous lequel elle l’a été (dérogations conservées) malgré le retour à la catégorie', refus.vacationInchangee);
+
+    /* --- 6. l’historique par la modale ------------------------------------------------------------------------------------------------------------------ */
+    await ouvrir('m10-planning.html');
+    await page.evaluate((m) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(m.n1) >= 0 && /Suit sa catégorie|Repos/.test(x.textContent) && x.querySelector('button[title^="Historique"]'));
+      tr.querySelector('button[title^="Historique"]').click();
+    }, monde);
+    await pause(400);
+    const histo = await page.evaluate(() => {
+      const mod = document.querySelector('.modal-root, [role=dialog]');
+      const lignes = mod ? [...mod.querySelectorAll('tbody tr')].map((x) => x.textContent.replace(/\s+/g, ' ').trim()) : [];
+      return { lignes: lignes };
+    });
+    verifier('L’historique par la modale liste les deux versions (dérogation puis retour à la catégorie) avec motif et auteur', histo.lignes.length === 2 && /Repos : Repos 24h/.test(histo.lignes[0]) && /Retour au régime de la catégorie/.test(histo.lignes[1]) && /Sonde Vague 106/.test(histo.lignes[0]), histo.lignes.join(' || '));
+    await page.evaluate(() => { [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((b) => b.textContent.trim() === 'Fermer').pop().click(); });
+
+    /* --- 7. le contrôle est celui du moteur sur la grille : une garde posée par la cellule, la voisine refusée ------------------------------------- */
+    await page.evaluate((m) => {
+      const sel = document.getElementById('pl_f_agent'); sel.value = m.m2; sel.dispatchEvent(new Event('change', { bubbles: true }));
+      const du = document.getElementById('pl_f_du'); du.value = m.d0; du.dispatchEvent(new Event('change', { bubbles: true }));
+    }, monde);
+    await pause(500);
+    const cellule = (idx) => page.evaluate((i) => { const tr = document.querySelector('#page-content table[class*="60rem"] tbody tr'); const b = tr.querySelectorAll('td')[i + 1].querySelector('button'); return b ? b.textContent : null; }, idx);
+    verifier('Le filtre « Agent » réduit la grille à une seule ligne et la plage « Du » positionne la semaine', await page.evaluate(() => document.querySelectorAll('#page-content table[class*="60rem"] tbody tr').length === 1) && /Planning du/.test(await texteCarte()), '');
+    /* M2 a déjà une garde à D0 (posée plus haut) : sa cellule du jour 0 est remplie, celle du jour 1 est libre */
+    verifier('La cellule du jour 0 de M2 porte sa garde, celle du jour 1 est libre', (await cellule(0)) === 'Garde 24h' && (await cellule(1)) === '+', await cellule(0) + ' / ' + await cellule(1));
+    await page.evaluate(() => { const tr = document.querySelector('#page-content table[class*="60rem"] tbody tr'); tr.querySelectorAll('td')[2].querySelector('button').click(); });
+    await pause(400);
+    await page.evaluate(() => {
+      const racine = document.querySelector('.modal-root, [role=dialog]'); const s = racine.querySelector('#f_type'); s.value = 'garde'; s.dispatchEvent(new Event('change', { bubbles: true }));
+      [...racine.querySelectorAll('button')].filter((b) => b.textContent.trim() === 'Enregistrer').pop().click();
+    });
+    await pause(600);
+    const refusGrille = await page.evaluate((m) => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const d1 = C.iso(C.addDays(m.d0, 1));
+      const posees = S.collection('planning').active().filter((p) => p.employeId === m.m2 && p.date === d1);
+      const toast = [...document.querySelectorAll('[role=status], [role=alert], .toast')].map((x) => x.textContent).join(' ');
+      return { posees: posees.length, toast: /Incompatibilité/.test(toast + document.body.textContent) };
+    }, monde);
+    verifier('Une garde posée par la CELLULE de la grille le lendemain d’une garde est refusée (même moteur) : rien d’écrit, motif lu à l’écran', refusGrille.posees === 0 && refusGrille.toast, JSON.stringify(refusGrille));
+
+    /* --- 8. filtres : validation, type, état imprimé qui retrace les filtres ----------------------------------------------------------------------- */
+    const lignesRegistre = () => page.evaluate(() => [...document.querySelectorAll('#page-content tbody tr')].filter((tr) => !tr.closest('table[class*="60rem"]') && tr.querySelectorAll('td').length >= 9).length);
+    const filtre = (id, v) => page.evaluate((a) => { const c = document.getElementById(a[0]); c.value = a[1]; c.dispatchEvent(new Event('change', { bubbles: true })); }, [id, v]);
+    const tousVisibles = await lignesRegistre();
+    await filtre('pl_f_validation', 'a_valider'); await pause(400);
+    const aValider = await lignesRegistre();
+    await filtre('pl_f_validation', 'validee'); await pause(400);
+    const validees = await lignesRegistre();
+    await filtre('pl_f_validation', '');
+    await filtre('pl_f_type', 'conge'); await pause(400);
+    const conges = await lignesRegistre();
+    await filtre('pl_f_type', '');
+    verifier('Le filtre de validation partitionne le registre : aucune vacation « à valider » (le poste pose validé), toutes les autres « validées »', aValider === 0 && validees === tousVisibles && tousVisibles >= 1, aValider + ' / ' + validees + ' / ' + tousVisibles);
+    verifier('Le filtre de type retient le type choisi seulement (aucun congé pour M2 sur la plage)', conges === 0, String(conges));
+    await page.evaluate(() => { const pris = []; const orig = window.SIGH.print.etat; window.__etatsPris = pris; window.SIGH.print.etat = function (o) { pris.push({ titre: o.titre, texte: o.contenu ? (o.contenu.innerText || o.contenu.textContent) : '', lignes: o.contenu ? o.contenu.querySelectorAll('tbody tr').length : -1, filtres: window.SIGH.print.filtresDeLaPage() }); return orig.apply(this, arguments); }; });
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].find((b) => /Imprimer l.état/.test(b.textContent)).click(); });
+    await pause(500);
+    const etat = await page.evaluate((m) => (window.__etatsPris || [])[0] && { titre: window.__etatsPris[0].titre, lignes: window.__etatsPris[0].lignes, nom2: window.__etatsPris[0].texte.indexOf(m.n2) >= 0, filtres: window.__etatsPris[0].filtres.map((f) => f.join('=')) }, monde);
+    verifier('L’état imprimé du registre ne porte que la ligne de l’agent filtré et retrace les filtres en force (agent, début de plage)', etat && etat.titre === 'Registre des vacations' && etat.nom2 && etat.lignes === 1 && etat.filtres.some((f) => /^Agent=/.test(f)) && etat.filtres.some((f) => /^Du=/.test(f)), JSON.stringify(etat));
+    await page.evaluate(() => { [...document.querySelectorAll('button')].filter((b) => /Fermer|Retour/.test(b.textContent)).forEach((b) => b.click()); document.querySelectorAll('.print-sheet').forEach((x) => x.closest('.modal-root, [role=dialog]') && x.closest('.modal-root, [role=dialog]').remove()); });
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].find((b) => /Effacer les filtres/.test(b.textContent)).click(); });
+    await pause(400);
+    const effaces = await page.evaluate(() => ['pl_f_agent', 'pl_f_du', 'pl_f_validation'].every((i) => !document.getElementById(i).value));
+    verifier('« Effacer les filtres » remet toute la barre à zéro d’un geste', effaces);
+
+    /* --- 9. restitution ------------------------------------------------------------------------------------------------------------------------------------- */
+    await page.evaluate((m) => {
+      const S = window.SIGH.store;
+      S.collection('planning').all().filter((p) => m.plan0.indexOf(p.id) < 0 && p.statut !== 'archive').forEach((p) => S.collection('planning').archive(p.id, 'Sonde Vague 106'));
+      S.raw().regimesIndividuels = S.raw().regimesIndividuels.filter((x) => m.reg0.indexOf(x.id) >= 0);
+      S.save();
+    }, monde);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

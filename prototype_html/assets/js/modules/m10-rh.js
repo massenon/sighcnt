@@ -20,6 +20,12 @@
 
   function personnel() { return S.collection('personnel').active(); }
   function planning() { return S.collection('planning').active(); }
+  /* Lots L4 à L6 : le moteur du planning (régime individuel, circuit de validation, propositions) vit au socle (parcours.js). */
+  function PRH() { return global.SIGH.planningRh; }
+  function roleCourant() { var x = S.session && S.session(); return (x && x.role) || ''; }
+  /** Une vacation COMPTE (primes, statistiques) seulement validée ; celles d'avant le circuit (sans état) le sont. */
+  function vacationCompte(p) { return !p.validationEtat || p.validationEtat === 'validee'; }
+  function planningCompte() { return planning().filter(vacationCompte); }
 
   function fonctionLabel(id) {
     var f = D.FONCTIONS.filter(function (x) { return x.id === id; })[0];
@@ -48,7 +54,7 @@
 
   /* --- Comptage des vacations sur une période ------------------------------ */
   function vacations(employeId, annee, mois) {
-    return planning().filter(function (p) {
+    return planningCompte().filter(function (p) {
       if (p.employeId !== employeId) return false;
       var d = C.toDate(p.date);
       return d.getFullYear() === annee && d.getMonth() === mois;
@@ -603,6 +609,51 @@
   });
 
   /* ==========================================================================
+   * RÉGLAGES DU PLANNING ET DES PRÉSENCES (lots L5 et L6, Direction 09/11/2026) : le circuit de validation et « l'agent modifie directement ».
+   * Réglés au POSTE, enregistrés en base avec leur défaut (surveillant seul, non), jamais au panneau web du relais. Une seule carte, partagée par les écrans
+   * qui s'y réfèrent. La commande est ABSENTE hors administrateur et Directrice Administrative ; le moteur refuse de toute façon (REGLAGE_RESERVE).
+   * ======================================================================== */
+  function carteReglagesRh(apres) {
+    var R = PRH();
+    var circuit = R.CIRCUITS.filter(function (x) { return x.id === R.circuit(); })[0];
+    var direct = R.agentModifieDirectement();
+    var peut = ['admin', 'da'].indexOf(roleCourant()) >= 0;
+    var actions = [];
+    if (peut) {
+      actions.push(K.btn('Régler', { size: 'sm', icon: 'settings-2', onclick: function () {
+        var f = U.form([
+          { name: 'circuit', label: 'Circuit de validation des présences, absences, congés et ordres de mission', type: 'select', required: true, col: 'full',
+            options: R.CIRCUITS.map(function (c) { return { value: c.id, label: c.libelle }; }) },
+          { name: 'direct', label: 'L’agent modifie directement son planning (sans validation du surveillant)', type: 'checkbox', col: 'full' },
+        ], { circuit: R.circuit(), direct: R.agentModifieDirectement() });
+        var m = U.modal({
+          title: 'Réglages du planning et des présences', size: 'md',
+          body: el('div.space-y-3', null, [K.note('Ces réglages se règlent au poste et se synchronisent. Une pièce déjà tranchée garde le circuit sous lequel elle l’a été.', { tone: 'info' }), f]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var r1 = R.definirCircuit(v.circuit);
+              if (!r1.ok) { U.toast(r1.motif, { type: 'error', detail: r1.geste }); return; }
+              var r2 = R.definirAgentDirect(v.direct === true);
+              if (!r2.ok) { U.toast(r2.motif, { type: 'error', detail: r2.geste }); return; }
+              m.close(); if (apres) apres();
+              U.toast('Réglages enregistrés.', { type: 'success' });
+            } }),
+          ],
+        });
+      } }));
+    }
+    return U.card('Réglages du planning et des présences', el('div.space-y-2', null, [
+      U.descList([
+        ['Circuit de validation', circuit ? circuit.libelle : '—'],
+        ['L’agent modifie directement son planning', direct ? 'Oui' : 'Non : il propose, le surveillant valide'],
+      ], 'grid-cols-1'),
+      el('p.text-xs.text-slate-500', { text: 'Une présence, une absence, un congé ou un ordre de mission non validé est visible mais ne compte pas. Un planning proposé ne change rien tant qu’il n’est pas validé.' }),
+    ]), actions);
+  }
+
+  /* ==========================================================================
    * PLANNING & GARDES
    * ======================================================================== */
   global.SIGH.screen('m10-planning', {
@@ -615,13 +666,22 @@
     render: function (root) {
       var col = S.collection('planning', { module: 'M10', entite: 'Planning' });
       var host = el('div.space-y-4');
-      var semaineDebut = C.addDays(AUJ, -3);
       var blocRegimes = el('div');
+      var blocIndividuels = el('div');
+      var blocFiltres = el('div');
+      var blocGrille = el('div');
       var blocRegistre = el('div');
       var blocGraphes = el('div');
+      /* Les filtres avancés du planning (Direction, 09/11/2026) : UNE barre, deux lectures (la grille et le registre). */
+      var F = { q: '', agent: '', matricule: '', service: '', fonction: '', regime: '', type: '', du: '', au: '', validation: '', validePar: '' };
+      var reglagesRh = el('div');
+      /* Déclaré AVANT le premier rendu : une affectation lue par un premier rendu se déclare avant l'appel (piège du dépôt). */
+      var FONCTIONS_PLANNING = ['medecin', 'infirmier', 'sage_femme', 'aide_soignant', 'tsl', 'securite', 'entretien'];
 
       host.appendChild(blocRegimes);
+      host.appendChild(blocIndividuels);
       rendreRegimes();
+      rendreIndividuels();
 
       /* Régimes de travail par catégorie, tels que relevés sur les plannings */
       function tableRegimes() {
@@ -713,59 +773,266 @@
         { label: 'En repos', value: C.num(auj.filter(function (p) { return p.type.indexOf('repos') === 0; }).length), icon: 'bed', tone: 'info' },
       ]));
 
-      /* Grille hebdomadaire */
-      var jours = [];
-      for (var i = 0; i < 7; i++) jours.push(C.addDays(semaineDebut, i));
-      var agents = C.sortBy(personnel().filter(function (e) {
-        return ['medecin', 'infirmier', 'sage_femme', 'aide_soignant', 'tsl', 'securite', 'entretien'].indexOf(e.fonction) !== -1;
-      }), 'nomComplet');
-
-      var grilleWrap = el('div.overflow-x-auto');
-      var grille = el('table.tbl.min-w-\\[60rem\\]');
-      var thead = el('thead'), htr = el('tr');
-      htr.appendChild(el('th', { text: 'Agent' }));
-      jours.forEach(function (j) {
-        htr.appendChild(el('th.text-center', {
-          class: C.iso(j) === C.iso(AUJ) ? 'bg-navy-50 text-navy-800' : '',
-          html: C.JOURS[j.getDay()].slice(0, 3) + '.<br>' + j.getDate() + '/' + C.pad(j.getMonth() + 1),
-        }));
-      });
-      thead.appendChild(htr); grille.appendChild(thead);
-      var tb = el('tbody');
-      agents.forEach(function (e) {
-        var tr = el('tr');
-        tr.appendChild(el('td', null, el('div.min-w-0', null, [
-          el('p.truncate.text-sm.font-medium.text-slate-800', { text: e.nomComplet }),
-          el('p.truncate.text-xs.text-slate-400', { text: fonctionLabel(e.fonction) }),
-        ])));
-        jours.forEach(function (j) {
-          var v = col.active().filter(function (p) { return p.employeId === e.id && p.date === C.iso(j); })[0];
-          var td = el('td.text-center');
-          var btn = el('button.mx-auto.block.w-full.rounded.px-1.py-1.text-\\[10px\\].font-medium.transition-colors', {
-            type: 'button',
-            class: v ? ('bg-' + typePlanningTone(v.type) + '-100 text-' + typePlanningTone(v.type) + '-800 hover:bg-' + typePlanningTone(v.type) + '-200')
-              : 'text-slate-300 hover:bg-slate-100',
-            text: v ? typePlanningLabel(v.type).replace('Permanence', 'Perm.').replace('Remplacement', 'Rempl.') : '+',
-            onclick: function () { affecter(e, j, v); },
-          });
-          td.appendChild(btn);
-          tr.appendChild(td);
-        });
-        tb.appendChild(tr);
-      });
-      grille.appendChild(tb);
-      grilleWrap.appendChild(grille);
-
-      host.appendChild(U.card('Planning du ' + C.dateFR(jours[0]) + ' au ' + C.dateFR(jours[6]), grilleWrap, [
-        K.btn('Imprimer le planning', { size: 'sm', icon: 'printer', onclick: imprimer }),
-      ]));
-
+      /* Grille hebdomadaire et registre : lus à travers les filtres avancés */
+      host.appendChild(reglagesRh);
+      host.appendChild(blocFiltres);
+      host.appendChild(blocGrille);
       host.appendChild(blocRegistre);
       host.appendChild(blocGraphes);
-      rendreRegistre();
-      rendreGraphes();
+      rendreReglages();
+      rendreFiltres();
+      rafraichirVue();
       root.appendChild(host);
       return null;
+
+      /* ----------------------------------------------------------------------
+       * Filtres avancés du planning et du registre des vacations (09/11/2026).
+       * Ils sont relevés SUR LA PAGE par print.js : l'état imprimé retrace ce qui est en force.
+       * -------------------------------------------------------------------- */
+      function joursGrille() {
+        var d0 = F.du ? C.toDate(F.du) : C.addDays(AUJ, -3);
+        var j = [];
+        for (var i = 0; i < 7; i++) j.push(C.addDays(d0, i));
+        return j;
+      }
+      function regimeDeAgent(e) { return PRH().regimeALaDate(e.id, e.fonction, C.iso(AUJ)); }
+      function agentRetenu(e, pourVacation) {
+        if (F.agent && e.id !== F.agent) return false;
+        if (F.matricule && e.matricule !== F.matricule) return false;
+        if (F.service && e.service !== F.service) return false;
+        if (F.fonction && e.fonction !== F.fonction) return false;
+        if (pourVacation) return true;
+        if (F.regime) {
+          var r = regimeDeAgent(e);
+          if (F.regime === '__individuel' ? !r.individuel : r.categorie !== F.regime) return false;
+        }
+        if (F.q && (e.nomComplet + ' ' + e.matricule + ' ' + (e.poste || '')).toLowerCase().indexOf(F.q.toLowerCase()) < 0) return false;
+        return true;
+      }
+      function vacationRetenue(p) {
+        if (F.type && p.type !== F.type) return false;
+        if (F.du && p.date < F.du) return false;
+        if (F.au && p.date > F.au) return false;
+        var etat = p.validationEtat || 'validee';
+        if (F.validation && etat !== F.validation) return false;
+        if (F.validePar && (p.validePar || '__aucun') !== F.validePar) return false;
+        if (F.regime) {
+          if (F.regime === '__individuel' ? !(p.derogations && p.derogations.length) : (p.regimeLibelle || (regleDe(p.fonction) || {}).libelle) !== F.regime) return false;
+        }
+        var e = S.collection('personnel').get(p.employeId);
+        if (e && !agentRetenu(e, true)) return false;
+        if (!e && (F.agent || F.matricule || F.service || F.fonction)) return false;
+        if (F.q && ((p.employe || '') + ' ' + (e ? e.matricule : '') + ' ' + typePlanningLabel(p.type) + ' ' + (p.service || '')).toLowerCase().indexOf(F.q.toLowerCase()) < 0) return false;
+        return true;
+      }
+      function vacationsFiltrees() { return col.active().filter(vacationRetenue); }
+      function agentsPlanning() {
+        return C.sortBy(personnel().filter(function (e) { return FONCTIONS_PLANNING.indexOf(e.fonction) !== -1 && agentRetenu(e); }), 'nomComplet');
+      }
+      function filtresEnForce() { return Object.keys(F).some(function (k) { return F[k]; }); }
+
+      function rendreFiltres() {
+        C.clear(blocFiltres);
+        function liste(id, label, cle, options, vide) {
+          var sel = el('select.select', { id: id });
+          sel.appendChild(el('option', { value: '' }, vide));
+          options.forEach(function (o) { sel.appendChild(el('option', { value: o.value }, o.label)); });
+          sel.value = F[cle];
+          sel.addEventListener('change', function () { F[cle] = sel.value; rafraichirVue(); });
+          return el('div', null, [el('label.label', { for: id, text: label }), sel]);
+        }
+        function date(id, label, cle) {
+          var inp = el('input.input', { type: 'date', id: id, value: F[cle] });
+          inp.addEventListener('change', function () { F[cle] = inp.value; rafraichirVue(); });
+          return el('div', null, [el('label.label', { for: id, text: label }), inp]);
+        }
+        var agents = C.sortBy(personnel().filter(function (e) { return FONCTIONS_PLANNING.indexOf(e.fonction) !== -1; }), 'nomComplet');
+        var regimes = colRegimes().active().map(function (r) { return { value: r.libelle, label: r.libelle }; })
+          .concat([{ value: '__individuel', label: 'Dérogation individuelle' }]);
+        var validateurs = {};
+        col.active().forEach(function (p) { if (p.validePar) validateurs[p.validePar] = true; });
+        var recherche = el('input.input', { type: 'search', id: 'pl_f_q', placeholder: 'Agent, matricule, vacation, service', value: F.q });
+        recherche.addEventListener('input', function () { F.q = recherche.value; rafraichirVue(); });
+        var corps = el('div.card-body.grid.gap-3.md\\:grid-cols-3.lg\\:grid-cols-4');
+        corps.appendChild(el('div.md\\:col-span-2', null, [el('label.label', { for: 'pl_f_q', text: 'Recherche' }), recherche]));
+        corps.appendChild(liste('pl_f_agent', 'Agent', 'agent', agents.map(function (e) { return { value: e.id, label: e.nomComplet }; }), 'Tous les agents'));
+        corps.appendChild(liste('pl_f_matricule', 'Matricule', 'matricule', agents.map(function (e) { return { value: e.matricule, label: e.matricule + ' · ' + e.nomComplet }; }), 'Tous les matricules'));
+        corps.appendChild(liste('pl_f_service', 'Service', 'service', D.SERVICES.map(function (x) { return { value: x.value || x, label: x.label || x }; }), 'Tous les services'));
+        corps.appendChild(liste('pl_f_fonction', 'Fonction', 'fonction', FONCTIONS_PLANNING.map(function (f) { return { value: f, label: fonctionLabel(f) }; }), 'Toutes les fonctions'));
+        corps.appendChild(liste('pl_f_regime', 'Régime', 'regime', regimes, 'Tous les régimes'));
+        corps.appendChild(liste('pl_f_type', 'Type de vacation', 'type', D.TYPES_PLANNING.map(function (t) { return { value: t.id, label: t.label }; }), 'Tous les types'));
+        corps.appendChild(liste('pl_f_validation', 'Validation', 'validation', [{ value: 'validee', label: 'Validées' }, { value: 'a_valider', label: 'À valider' }], 'Validées ou non'));
+        corps.appendChild(liste('pl_f_validepar', 'Validé par', 'validePar', Object.keys(validateurs).sort().map(function (n) { return { value: n, label: n }; })
+          .concat([{ value: '__aucun', label: 'Validation non renseignée (avant le circuit)' }]), 'Tous les validateurs'));
+        corps.appendChild(date('pl_f_du', 'Du', 'du'));
+        corps.appendChild(date('pl_f_au', 'Au', 'au'));
+        corps.appendChild(el('div.flex.items-end.gap-2', null, [
+          K.btn('Effacer les filtres', { icon: 'filter-x', onclick: function () {
+            Object.keys(F).forEach(function (k) { F[k] = ''; });
+            rendreFiltres(); rafraichirVue();
+          } }),
+        ]));
+        blocFiltres.appendChild(U.card('Filtres avancés du planning', corps));
+        U.icons(blocFiltres);
+      }
+
+      function rafraichirVue() { rendreGrille(); rendreRegistre(); rendreGraphes(); }
+
+      function rendreGrille() {
+        C.clear(blocGrille);
+        var jours = joursGrille();
+        var agents = agentsPlanning();
+        var modifiable = K.droits('M10').editer && ['admin', 'da', 'surveillant'].indexOf(roleCourant()) >= 0;
+        var grilleWrap = el('div.overflow-x-auto');
+        var grille = el('table.tbl.min-w-\\[60rem\\]');
+        var thead = el('thead'), htr = el('tr');
+        htr.appendChild(el('th', { text: 'Agent' }));
+        jours.forEach(function (j) {
+          htr.appendChild(el('th.text-center', {
+            class: C.iso(j) === C.iso(AUJ) ? 'bg-navy-50 text-navy-800' : '',
+            html: C.JOURS[j.getDay()].slice(0, 3) + '.<br>' + j.getDate() + '/' + C.pad(j.getMonth() + 1),
+          }));
+        });
+        thead.appendChild(htr); grille.appendChild(thead);
+        var tb = el('tbody');
+        agents.forEach(function (e) {
+          var tr = el('tr');
+          var r = regimeDeAgent(e);
+          tr.appendChild(el('td', null, el('div.min-w-0', null, [
+            el('p.truncate.text-sm.font-medium.text-slate-800', { text: e.nomComplet }),
+            el('p.truncate.text-xs.text-slate-400', { text: fonctionLabel(e.fonction) + (r.individuel ? ' · régime individuel' : '') }),
+          ])));
+          jours.forEach(function (j) {
+            var v = col.active().filter(function (p) { return p.employeId === e.id && p.date === C.iso(j); })[0];
+            var td = el('td.text-center');
+            var masque = v && !vacationRetenue(v);
+            var libelle = v ? typePlanningLabel(v.type).replace('Permanence', 'Perm.').replace('Remplacement', 'Rempl.') : (modifiable ? '+' : '·');
+            var classe = masque ? 'text-slate-300'
+              : (v ? ('bg-' + typePlanningTone(v.type) + '-100 text-' + typePlanningTone(v.type) + '-800' + (modifiable ? ' hover:bg-' + typePlanningTone(v.type) + '-200' : '')) : 'text-slate-300' + (modifiable ? ' hover:bg-slate-100' : ''));
+            var cellule = el(modifiable ? 'button.mx-auto.block.w-full.rounded.px-1.py-1.text-\\[10px\\].font-medium.transition-colors' : 'span.mx-auto.block.w-full.rounded.px-1.py-1.text-\\[10px\\].font-medium', {
+              type: modifiable ? 'button' : null, class: classe, text: masque ? '·' : libelle,
+              title: masque ? 'Masquée par les filtres' : null,
+              onclick: modifiable ? function () { affecter(e, j, v); } : null,
+            });
+            td.appendChild(cellule);
+            tr.appendChild(td);
+          });
+          tb.appendChild(tr);
+        });
+        grille.appendChild(tb);
+        grilleWrap.appendChild(grille);
+        blocGrille.appendChild(U.card('Planning du ' + C.dateFR(jours[0]) + ' au ' + C.dateFR(jours[6]),
+          agents.length ? grilleWrap : U.empty('Aucun agent ne correspond aux filtres.', { icon: 'users', hint: 'Effacer un filtre pour élargir la sélection.' }), [
+            K.btn('Imprimer le planning', { size: 'sm', icon: 'printer', onclick: imprimer }),
+          ]));
+        U.icons(blocGrille);
+      }
+
+      /* --------------------------------------------------------------------
+       * Régimes INDIVIDUELS (lot L4) : une dérogation champ par champ, versionnée par date.
+       * ------------------------------------------------------------------ */
+      function texteDerogations(r) {
+        var morceaux = [];
+        if (r.derogations.indexOf('vacations') >= 0) morceaux.push('Vacations : ' + r.vacations.map(typePlanningLabel).join(', '));
+        if (r.derogations.indexOf('repos') >= 0) morceaux.push('Repos : ' + (r.repos ? typePlanningLabel(r.repos) : 'aucun codifié'));
+        if (r.derogations.indexOf('cycle') >= 0) morceaux.push('Cycle : ' + r.cycle + ' jours');
+        if (r.derogations.indexOf('honoraire') >= 0) morceaux.push('Honoraire : ' + C.money(r.honoraire, false));
+        if (r.derogations.indexOf('honorairePeriodicite') >= 0) morceaux.push('Périodicité : ' + (r.honorairePeriodicite === 'occurrence' ? 'par occurrence' : 'mensuelle'));
+        return morceaux;
+      }
+      function peutDeroger() { return ['admin', 'da'].indexOf(roleCourant()) >= 0 && K.droits('M10').editer; }
+      function rendreIndividuels() {
+        C.clear(blocIndividuels);
+        var ids = {};
+        S.collection('regimesIndividuels').active().forEach(function (v) { ids[v.employeId] = true; });
+        var lignes = Object.keys(ids).map(function (id) {
+          var e = S.collection('personnel').get(id);
+          if (!e) return null;
+          var r = PRH().regimeALaDate(e.id, e.fonction, C.iso(AUJ));
+          return { e: e, r: r, versions: PRH().historique(e.id).length };
+        }).filter(Boolean);
+        var actions = [];
+        if (peutDeroger()) actions.push(K.btn('Déroger pour un agent', { variant: 'primary', size: 'sm', icon: 'user-cog', onclick: function () { deroger(null); } }));
+        var corps = K.miniTable([
+          { label: 'Agent', render: function (l) { return el('div', null, [el('p.text-sm.font-medium.text-slate-800', { text: l.e.nomComplet }), el('p.text-xs.text-slate-400', { text: l.e.matricule + ' · ' + fonctionLabel(l.e.fonction) }) ]); } },
+          { label: 'Catégorie', render: function (l) { return l.r.categorie || '—'; } },
+          { label: 'Aujourd’hui', render: function (l) {
+            return l.r.individuel
+              ? el('div.space-y-0\\.5', null, texteDerogations(l.r).map(function (t) { return el('p.text-xs.text-slate-700', { text: t }); }))
+              : el('span.text-xs.text-slate-400', { text: 'Suit sa catégorie' });
+          } },
+          { label: 'Depuis', render: function (l) { return l.r.dateEffet ? C.dateFR(l.r.dateEffet) : '—'; } },
+          { label: 'Versions', align: 'right', render: function (l) { return String(l.versions); } },
+          { label: '', align: 'right', render: function (l) {
+            var a = [K.iconBtn('history', 'Historique des versions', function () { historique(l.e); }, 'ghost')];
+            if (peutDeroger()) a.push(K.iconBtn('pencil', 'Nouvelle version pour cet agent', function () { deroger(l.e); }));
+            return el('div.flex.justify-end.gap-1', null, a);
+          } },
+        ], lignes, { empty: 'Aucun agent n’a de régime individuel : tous suivent le régime de leur catégorie.' });
+        blocIndividuels.appendChild(U.card('Régimes individuels (dérogations champ par champ)', el('div.space-y-3', null, [
+          K.note('Le régime de la <strong>catégorie</strong> reste la règle. Une dérogation individuelle ne change que les champs renseignés (vacations, repos, cycle, honoraire) : '
+            + 'le reste suit la catégorie. Chaque dérogation est une <strong>version datée</strong> qui ne se réécrit pas ; les vacations déjà posées gardent le régime sous lequel '
+            + 'elles l’ont été.', { tone: 'info' }),
+          corps,
+        ]), actions));
+        U.icons(blocIndividuels);
+      }
+
+      function historique(e) {
+        var h = PRH().historique(e.id);
+        var m = U.modal({
+          title: 'Historique du régime de ' + e.nomComplet, subtitle: e.matricule + ' · ' + fonctionLabel(e.fonction), size: 'lg',
+          body: K.miniTable([
+            { label: 'Version', align: 'right', render: function (x) { return String(x.version); } },
+            { label: 'Date d’effet', render: function (x) { return C.dateFR(x.dateEffet); } },
+            { label: 'Contenu', render: function (x) {
+              if (x.retourCategorie) return el('span.text-xs.text-slate-500', { text: 'Retour au régime de la catégorie' });
+              var r = { derogations: Object.keys(x.champs), vacations: x.champs.vacations || [], repos: x.champs.repos === 'aucun' ? null : x.champs.repos, cycle: x.champs.cycle, honoraire: x.champs.honoraire, honorairePeriodicite: x.champs.honorairePeriodicite };
+              return el('div', null, texteDerogations(r).map(function (t) { return el('p.text-xs.text-slate-700', { text: t }); }));
+            } },
+            { label: 'Motif', render: function (x) { return x.motif || '—'; } },
+            { label: 'Posée par', render: function (x) { return (x.creePar || '—') + (x.creeLe ? ' le ' + C.dateFR(x.creeLe) : ''); } },
+          ], h, { empty: 'Aucune version.' }),
+          footer: [K.btn('Fermer', { onclick: function () { m.close(); } })],
+        });
+      }
+
+      function deroger(agent) {
+        var f = U.form([
+          { name: 'employeId', label: 'Agent', type: 'select', required: true, options: optionsEmployes(), col: 'full' },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true },
+          { name: 'retourCategorie', label: 'Revenir au régime de la catégorie (retire la dérogation)', type: 'checkbox', col: 'full' },
+          { type: 'section', label: 'Champs dérogés (laisser vide pour suivre la catégorie)' },
+          { name: 'vacations', label: 'Vacations', type: 'multiselect', col: 'full',
+            options: D.TYPES_PLANNING.filter(function (t) { return t.duree > 0; }).map(function (t) { return { value: t.id, label: t.label + ' (' + t.debut + ' → ' + t.fin + ')' }; }) },
+          { name: 'repos', label: 'Repos', type: 'select', options: [{ value: '', label: 'Suit la catégorie' }, { value: 'repos24', label: 'Repos 24h' }, { value: 'repos48', label: 'Repos 48h' }, { value: 'aucun', label: 'Aucun repos codifié' }] },
+          { name: 'cycle', label: 'Cycle (jours)', type: 'number', min: 1 },
+          { name: 'honoraire', label: 'Honoraire (FCFA)', type: 'number', min: 0 },
+          { name: 'honorairePeriodicite', label: 'Périodicité de l’honoraire', type: 'select', options: [{ value: '', label: 'Suit la catégorie' }, { value: 'mensuelle', label: 'Mensuelle' }, { value: 'occurrence', label: 'Par occurrence' }] },
+          { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], { employeId: agent ? agent.id : '', dateEffet: C.iso(AUJ), vacations: [], repos: '', honorairePeriodicite: '' });
+        var m = U.modal({
+          title: 'Régime individuel', subtitle: 'Une version datée : elle ne se réécrit pas.', size: 'lg',
+          body: el('div.space-y-3', null, [K.note('Seuls les champs renseignés dérogent à la catégorie. La date d’effet est aujourd’hui ou à venir : les vacations passées gardent leur régime.', { tone: 'info' }), f]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer la version', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var r = PRH().deroger({ employeId: v.employeId, dateEffet: v.dateEffet, retourCategorie: v.retourCategorie === true, motif: v.motif,
+                champs: { vacations: v.vacations, repos: v.repos, cycle: v.cycle, honoraire: v.honoraire, honorairePeriodicite: v.honorairePeriodicite } });
+              if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+              m.close(); rendreIndividuels(); rafraichirVue();
+              U.toast(r.retourCategorie ? 'Retour au régime de la catégorie enregistré.' : 'Dérogation enregistrée.', { type: 'success', detail: 'Version ' + r.version + ' à compter du ' + C.dateFR(r.dateEffet), undo: function () { r.undo(); rendreIndividuels(); rafraichirVue(); } });
+            } }),
+          ],
+        });
+      }
+
+      function rendreReglages() {
+        C.clear(reglagesRh);
+        reglagesRh.appendChild(carteReglagesRh(rendreReglages));
+        U.icons(reglagesRh);
+      }
 
       function colRegimes() {
         return S.collection('regimesTravail', { module: 'M10', entite: 'régime de travail', prefix: 'REG' });
@@ -782,30 +1049,30 @@
       function rendreRegistre() {
         C.clear(blocRegistre);
         blocRegistre.appendChild(U.dataTable({
-        title: 'Registre des vacations',
-        rows: function () { return col.active(); },
+        title: 'Registre des vacations' + (filtresEnForce() ? ' (filtré)' : ''),
+        rows: function () { return vacationsFiltrees(); },
         exportName: 'planning', pageSize: 15,
         defaultSort: 'date', defaultDir: 'desc',
-        filters: [
-          { name: 'type', label: 'Type de vacation', options: D.TYPES_PLANNING.map(function (t) { return { value: t.id, label: t.label }; }) },
-          { name: 'service', label: 'Service', options: D.SERVICES },
-        ],
+        actions: [K.btn('Imprimer l’état', { size: 'sm', icon: 'printer', onclick: imprimerRegistre })],
         columns: [
           { key: 'date', label: 'Date', nowrap: true, text: function (p) { return C.dateFR(p.date); }, render: function (p) { return C.dateFR(p.date); } },
+          { key: 'matricule', label: 'Mat.', nowrap: true, value: function (p) { var e = S.collection('personnel').get(p.employeId); return e ? e.matricule : ''; } },
           { key: 'employe', label: 'Agent' },
           { key: 'fonction', label: 'Fonction', text: fonctionLabel, render: function (p) { return fonctionLabel(p.fonction); } },
           { key: 'service', label: 'Service' },
           { key: 'type', label: 'Vacation', text: typePlanningLabel, render: function (p) { return U.badge(typePlanningLabel(p.type), typePlanningTone(p.type)); } },
           {
             key: 'regime', label: 'Régime appliqué',
-            value: function (p) { return p.regimeLibelle || (regleDe(p.fonction) || {}).libelle || '—'; },
+            value: function (p) { return (p.regimeLibelle || (regleDe(p.fonction) || {}).libelle || '—') + ((p.derogations && p.derogations.length) ? ' (individuel)' : ''); },
             render: function (p) {
               var lib = p.regimeLibelle || (regleDe(p.fonction) || {}).libelle;
               if (!lib) return el('span.text-xs.text-slate-300', { text: '—' });
-              return el('span.text-xs.text-slate-500', { text: lib });
+              return el('span.text-xs.text-slate-500', { text: lib + ((p.derogations && p.derogations.length) ? ' (individuel)' : '') });
             },
           },
-          { key: 'statut2', label: 'Statut', value: function (p) { return p.statut; }, render: function (p) { return U.statut('validee'); } },
+          { key: 'statut2', label: 'Validation', value: function (p) { return p.validationEtat === 'a_valider' ? 'À valider' : 'Validée'; },
+            render: function (p) { return p.validationEtat === 'a_valider' ? U.badge('À valider', 'warning') : U.statut('validee'); } },
+          { key: 'validePar', label: 'Validé par', value: function (p) { return p.validePar || ''; }, render: function (p) { return el('span.text-xs.text-slate-500', { text: p.validePar || '—' }); } },
         ],
         }));
         U.icons(blocRegistre);
@@ -816,8 +1083,8 @@
        * ------------------------------------------------------------------ */
       function rendreGraphes() {
         C.clear(blocGraphes);
-        var vacations = col.active().filter(function (v) {
-          return ['garde', 'garde_hospi', 'garde_soins', 'soiree', 'permanence', 'incineration'].indexOf(v.type) !== -1;
+        var vacations = vacationsFiltrees().filter(function (v) {
+          return vacationCompte(v) && ['garde', 'garde_hospi', 'garde_soins', 'soiree', 'permanence', 'incineration'].indexOf(v.type) !== -1;
         });
 
         var parAgent = C.groupBy(vacations, 'employe');
@@ -1050,16 +1317,15 @@
 
       /** Le registre des vacations suit toute modification de régime. */
       function rafraichirTout() {
-        rendreRegimes(); rendreRegistre(); rendreGraphes();
+        rendreRegimes(); rendreIndividuels(); rafraichirVue();
       }
 
       function affecter(e, jour, existant) {
         /* Les vacations proposées sont celles du régime de la catégorie, afin
            qu'aucun poste étranger à la fonction ne puisse être affecté. */
-        var regle = regleDe(e.fonction);
-        var autorises = regle
-          ? regle.vacations.concat([regle.repos, 'conge', 'absence', 'remplacement'].filter(Boolean))
-          : D.TYPES_PLANNING.map(function (t) { return t.id; });
+        var regle = PRH().regimeALaDate(e.id, e.fonction, C.iso(jour));
+        if (!regle.categorie && !regle.individuel) regle = null;
+        var autorises = PRH().typesAutorises(e.id, e.fonction, C.iso(jour));
         var options = D.TYPES_PLANNING
           .filter(function (t) { return autorises.indexOf(t.id) !== -1; })
           .map(function (t) { return { value: t.id, label: t.label + (t.debut ? ' (' + t.debut + ' → ' + t.fin + ')' : '') }; });
@@ -1072,7 +1338,8 @@
         var body = el('div.space-y-3', null, [
           U.descList([['Agent', e.nomComplet], ['Fonction', fonctionLabel(e.fonction)],
             ['Date', C.dateJour(jour)], ['Vacation actuelle', existant ? typePlanningLabel(existant.type) : 'Aucune']], 'grid-cols-2'),
-          regle ? K.note('<strong>' + regle.libelle + '</strong> — ' + regle.mention, { tone: 'info' }) : null,
+          regle ? K.note('<strong>' + regle.libelle + '</strong>' + (regle.individuel ? ' · <strong>dérogation individuelle</strong> (' + texteDerogations(regle).join(' ; ') + ')' : '')
+            + (regle.mention ? ' — ' + regle.mention : ''), { tone: 'info' }) : null,
           f,
         ].filter(Boolean));
 
@@ -1083,9 +1350,10 @@
             existant ? K.btn('Retirer', {
               variant: 'danger', icon: 'trash-2',
               onclick: function () {
-                var res = col.archive(existant.id);
-                m.close(); global.location.reload();
-                U.toast('Vacation retirée.', { type: 'success', undo: res.undo });
+                var r = PRH().retirerVacation(existant.id, 'Vacation retirée du planning');
+                if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                m.close(); rafraichirVue();
+                U.toast('Vacation retirée.', { type: 'success', undo: function () { r.undo(); rafraichirVue(); } });
               },
             }) : null,
             K.btn('Annuler', { onclick: function () { m.close(); } }),
@@ -1094,42 +1362,41 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
-                /* Contrôle d'incompatibilité : le repos qui suit une garde de
-                   24 h interdit d'en programmer une nouvelle immédiatement.
-                   La durée du repos dépend du régime de la catégorie. */
-                var estGarde24 = ['garde', 'garde_hospi'].indexOf(v.type) !== -1;
-                if (estGarde24) {
-                  var joursRepos = (regle && regle.repos === 'repos48') ? 2 : 1;
-                  for (var k = 1; k <= joursRepos; k++) {
-                    var veille = col.active().filter(function (p) {
-                      return p.employeId === e.id && p.date === C.iso(C.addDays(jour, -k))
-                        && ['garde', 'garde_hospi'].indexOf(p.type) !== -1;
-                    })[0];
-                    if (veille) {
-                      U.toast('Incompatibilité — le repos de ' + (joursRepos * 24) + ' h qui suit une garde n’est pas respecté.', {
-                        type: 'error',
-                        detail: 'Garde déjà programmée le ' + C.dateFR(C.addDays(jour, -k)) + ' pour ' + e.nomComplet + '.',
-                      });
-                      return;
-                    }
-                  }
-                }
-                v.date = C.iso(jour); v.employeId = e.id; v.employe = e.nomComplet;
-                v.fonction = e.fonction; v.service = e.service; v.statut = 'validee';
-                /* La vacation porte le régime sous lequel elle a été posée :
-                   sans cette trace, une modification ultérieure du régime
-                   rendrait l'historique illisible. */
-                v.regimeLibelle = regle ? regle.libelle : null;
-                var res = existant ? col.update(existant.id, v) : col.insert(v);
-                m.close(); global.location.reload();
-                U.toast('Vacation enregistrée.', { type: 'success', undo: res.undo });
+                /* Le contrôle d'incompatibilité (repos après une garde, double affectation) vit au MOTEUR : une seule règle, quelle que soit la voie.
+                   La vacation porte le régime sous lequel elle est posée, dérogation individuelle comprise. */
+                var r = PRH().poserVacation({ employeId: e.id, date: C.iso(jour), type: v.type, observation: v.observation, existantId: existant ? existant.id : null });
+                if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                var res = r;
+                m.close(); rafraichirVue();
+                U.toast('Vacation enregistrée.', { type: 'success', undo: function () { res.undo(); rafraichirVue(); } });
               },
             }),
           ].filter(Boolean),
         });
       }
 
+      function imprimerRegistre() {
+        var rows = vacationsFiltrees().slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+        P.etat({
+          titre: 'Registre des vacations',
+          sousTitre: filtresEnForce() ? 'Extrait filtré du registre' : 'Registre complet',
+          cartouche: [['Vacations retenues', C.num(rows.length)], ['Établi par', S.currentUser()], ['Date d’édition', C.dateFR(AUJ)]],
+          contenu: P.tableau([
+            { label: 'Date', value: function (p) { return C.dateFR(p.date); } },
+            { label: 'Agent', key: 'employe' },
+            { label: 'Fonction', value: function (p) { return fonctionLabel(p.fonction); } },
+            { label: 'Service', key: 'service' },
+            { label: 'Vacation', value: function (p) { return typePlanningLabel(p.type); } },
+            { label: 'Régime', value: function (p) { return (p.regimeLibelle || '—') + ((p.derogations && p.derogations.length) ? ' (individuel)' : ''); } },
+            { label: 'Validation', value: function (p) { return p.validationEtat === 'a_valider' ? 'À valider' : 'Validée'; } },
+            { label: 'Validé par', value: function (p) { return p.validePar || '—'; } },
+          ], rows),
+          signatures: [{ role: 'Le Surveillant Général', nom: 'GARBA Yahouza' }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
+        });
+      }
+
       function imprimer() {
+        var jours = joursGrille(), agents = agentsPlanning();
         var lignes = [];
         agents.forEach(function (e) {
           var ligne = { agent: e.nomComplet, fonction: fonctionLabel(e.fonction) };
@@ -1267,6 +1534,7 @@
       function lignes() {
         var d1 = dDebut.value, d2 = dFin.value;
         return col.active().filter(function (v) {
+          if (!vacationCompte(v)) return false;   /* RG-11 : le planning VALIDÉ seul compte */
           if (VACATIONS_TRAVAILLEES.indexOf(v.type) === -1) return false;
           if (d1 && v.date < d1) return false;
           if (d2 && v.date > d2) return false;
@@ -4562,7 +4830,8 @@
                   confirmLabel: 'Retirer', danger: true,
                 }).then(function (ok) {
                   if (!ok) return;
-                  var res = colPlanning.archive(existant.id);
+                  var res = PRH().retirerVacation(existant.id, 'Vacation retirée de la rotation');
+                  if (!res.ok) { U.toast(res.motif, { type: 'error', detail: res.geste }); return; }
                   m.close(); rendreTout();
                   U.toast('Vacation retirée.', {
                     type: 'success',
@@ -4577,24 +4846,10 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
-                /* Le repos de 24 h qui suit une garde reste opposable ici
-                   comme au planning général : deux gardes consécutives pour un
-                   agent de sécurité sont refusées. */
-                if (v.type === 'garde') {
-                  var veille = planning().filter(function (x) {
-                    return x.employeId === agent.id && x.date === C.iso(C.addDays(jour, -1)) && x.type === 'garde';
-                  })[0];
-                  if (veille) {
-                    U.toast('Incompatibilité — le repos de 24 h qui suit une garde n’est pas respecté.', {
-                      type: 'error',
-                      detail: 'Garde déjà programmée le ' + C.dateFR(C.addDays(jour, -1)) + ' pour ' + agent.nomComplet + '.',
-                    });
-                    return;
-                  }
-                }
-                v.date = C.iso(jour); v.employeId = agent.id; v.employe = agent.nomComplet;
-                v.fonction = agent.fonction; v.service = agent.service; v.statut = 'validee';
-                var res = existant ? colPlanning.update(existant.id, v) : colPlanning.insert(v);
+                /* Le contrôle du repos et de la double affectation est celui du MOTEUR, le même que le planning général. */
+                var r = PRH().poserVacation({ employeId: agent.id, date: C.iso(jour), type: v.type, observation: v.observation, existantId: existant ? existant.id : null });
+                if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                var res = r;
                 m.close(); rendreTout();
                 U.toast('Rotation enregistrée.', {
                   type: 'success',

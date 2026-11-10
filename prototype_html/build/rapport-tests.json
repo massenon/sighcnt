@@ -1,89 +1,139 @@
 [
   {
-    "nom": "Vague 105 : MECeF L3 (mode boîtier par défaut, bascule e-MECeF au geste et journalisée, aucun numéro fabriqué, vente en attente, refus nommé, retransmission sans essai consommé, relue sur un second poste)",
+    "nom": "Vague 106 : planning L4 (dérogation champ par champ au geste, versions datées immuables, repos individuel, contrôle par la grille, filtres avancés et état filtré)",
     "etapes": [
       {
-        "libelle": "Départ : le mode par défaut est « boîtier » (rien n’est réglé), deux modes seulement sont proposés (boîtier physique, e-MECeF), l’écran le montre",
+        "libelle": "La barre de filtres avancés porte les onze critères (recherche, agent, matricule, service, fonction, régime, type, validation, validé par, du, au)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le mode boîtier dit la vérité : modèle, interface et protocole inconnus, aucun numéro fabriqué comme fiscal, maquette seule en démonstration, aucun adaptateur au poste de production",
+        "libelle": "La carte des régimes individuels existe et la commande « Déroger pour un agent » est offerte à l’administrateur",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "En mode boîtier la maquette garde son appareil de démonstration (adaptateur configuré, marqué démonstration)",
+        "libelle": "Sans dérogation, la garde est posée et la seconde à J+2 est refusée (repos de 48 h de la catégorie), refus nommé",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Choisir e-MECeF puis « Enregistrer le mode » : le réglage est écrit en base (mecefMode = emecef), l’écran dit « non configuré, dossier d’interface DGI requis »",
+        "libelle": "Le refus s’applique à l’autre médecin aussi : le régime de la catégorie reste la règle",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le changement est JOURNALISÉ avec l’ancienne et la nouvelle valeur (RG-12)",
+        "libelle": "Poser deux vacations le même jour est refusé en le nommant (DOUBLE_AFFECTATION)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Un caissier ne règle pas le mode (MODE_RESERVE, avec son geste) ; un mode inconnu est refusé (MODE_INCONNU) ; le mode reste e-MECeF",
+        "libelle": "Le régime résolu d’un médecin sans dérogation est celui de sa catégorie (repos 48 h, individuel faux)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Au geste, sans droit d’écriture (comptable, caissier) : l’écran de configuration s’ouvre mais n’offre aucune commande de réglage du mode ni champ actif, et dit qui règle",
+        "libelle": "La modale enregistre UNE version datée d’aujourd’hui qui ne porte que les champs renseignés (repos, honoraire)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "« Tester la connexion » en e-MECeF refuse en nommant (MECEF_NON_CONFIGURE) et n’annonce AUCUNE connexion établie ni délai de réponse",
+        "libelle": "Le régime résolu déroge champ par champ : repos 24 h et honoraire 20 000 pour M1, le cycle et les vacations suivent la catégorie",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Vente encaissée en e-MECeF : l’encaissement RESTE acquis (soldée, 14 000 réglés) et la normalisation est refusée en nommant MECEF_NON_CONFIGURE (motif, geste)",
+        "libelle": "L’autre médecin garde le repos de sa catégorie (48 h) : la dérogation ne touche que M1",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "La pièce reste « en attente » (état stocké en_attente), SANS numéro fiscal, avec le code et le motif portés ; aucun numéro nulle part n’a été fabriqué",
+        "libelle": "La carte des régimes individuels montre la dérogation en vigueur et le journal l’a tracée (RG-12)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "L’appareil de démonstration n’a rien émis (compteur et journal des émissions intacts) : aucun numéro tiré à l’aveugle",
+        "libelle": "Avec la dérogation, une garde à J+1 est refusée (repos de 24 h de M1) et l’une à J+2 est acceptée",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le caissier retransmet deux fois : MECEF_NON_CONFIGURE à chaque fois (jamais RETRANSMISSION_RESERVEE), aucun essai consommé, toujours aucun numéro",
+        "libelle": "La vacation porte le régime sous lequel elle est posée (catégorie, dérogations, version) et naît validée par le poste",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Vente refusée retransmise en e-MECeF : MECEF_NON_CONFIGURE, la pièce repasse en attente, SANS numéro, et la retransmission n’est PAS comptée",
+        "libelle": "L’autre médecin reste soumis aux 48 h (garde à J+2 refusée, MÊME contrôle)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "« Synchroniser maintenant » en e-MECeF : refus nommé, aucune confirmation proposée, AUCUN numéro tiré (le nombre de pièces numérotées ne bouge pas)",
+        "libelle": "Dérogation refusée en nommant : motif absent, aucun champ, date passée, repos inconnu, honoraire négatif, vacations hors référentiel, agent inconnu, date déjà prise",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Avoir en e-MECeF : la pièce est ÉMISE (un avoir de plus au registre) mais SANS numéro fiscal, en attente de certification, et le message le dit (MECEF_NON_CONFIGURE)",
+        "libelle": "Le caissier ne pose pas de dérogation (DEROGATION_RESERVEE)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Second poste : le mode réglé sur le premier (e-MECeF) est relu depuis la base, et son adaptateur est lui aussi non configuré",
+        "libelle": "Une version insérée avant la plus récente est refusée (VERSION_ANTERIEURE)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Revenu en mode boîtier, la vente laissée en attente se certifie par la retransmission du caissier (appareil de démonstration, pièce marquée non fiscale)",
+        "libelle": "Une version ne se réécrit pas et ne s’archive pas (garde du magasin), le nombre de fiches ne change pas",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le retour à la catégorie est une VERSION : la dérogation court jusque-là, puis le régime redevient celui de la catégorie, historique intact (2 versions)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La vacation déjà posée garde le régime sous lequel elle l’a été (dérogations conservées) malgré le retour à la catégorie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’historique par la modale liste les deux versions (dérogation puis retour à la catégorie) avec motif et auteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le filtre « Agent » réduit la grille à une seule ligne et la plage « Du » positionne la semaine",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La cellule du jour 0 de M2 porte sa garde, celle du jour 1 est libre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une garde posée par la CELLULE de la grille le lendemain d’une garde est refusée (même moteur) : rien d’écrit, motif lu à l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le filtre de validation partitionne le registre : aucune vacation « à valider » (le poste pose validé), toutes les autres « validées »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le filtre de type retient le type choisi seulement (aucun congé pour M2 sur la plage)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’état imprimé du registre ne porte que la ligne de l’agent filtré et retrace les filtres en force (agent, début de plage)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Effacer les filtres » remet toute la barre à zéro d’un geste",
         "ok": true,
         "detail": null
       },
