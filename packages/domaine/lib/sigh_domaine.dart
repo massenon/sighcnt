@@ -96,6 +96,7 @@ export 'src/comptabilite/cpc_exercice.dart';
 export 'src/comptabilite/cpc_archive.dart';
 export 'src/comptabilite/cpc_baseline.dart';
 export 'src/comptabilite/cpc_echeances.dart';
+export 'src/comptabilite/aib.dart';
 export 'src/comptabilite/cpc_bfr.dart';
 export 'src/comptabilite/cpc_etats.dart';
 export 'src/rh/rhc_regles.dart';

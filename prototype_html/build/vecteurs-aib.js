@@ -72,9 +72,11 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       out.lectures = [];
       out.lectures.push(lire('2026-08-16'));
       out.gestes = [];
+      out._ids = [];
       const geste = (nom, role, entree, opts) => {
         opts = opts || {};
         const r = sous(role, opts.fileul, () => RG.definir(entree));
+        if (r && r.ok && r.id) out._ids.push(r.id);
         out.gestes.push({ nom, role, fileul: !!opts.fileul, entree: propre(entree), sortie: nettoyer(r), versions: propre(brut().reglagesAib.filter((x) => x.statut !== 'archive')).map(net) });
         return r;
       };
@@ -134,12 +136,11 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       S.save();
       return out;
     });
-    /* Les identifiants des fiches CRÉÉES sont aléatoires : renommés dans l'ordre de leur première apparition (RAI-1, RAI-2…), comme le fait le test Dart. */
+    /* Les identifiants des fiches CRÉÉES sont aléatoires : renommés dans l'ordre de leur CRÉATION (RAI-1, RAI-2…), comme le fait le test Dart. */
     let texte = JSON.stringify(sortie);
-    const vus = [];
-    (texte.match(/RAI(?!00\d)[a-z0-9]{8,}/g) || []).forEach((x) => { if (vus.indexOf(x) < 0) vus.push(x); });
-    vus.forEach((x, i) => { texte = texte.split(x).join('RAI-' + (i + 1)); });
+    sortie._ids.forEach((x, i) => { texte = texte.split(x).join('RAI-' + (i + 1)); });
     const final = JSON.parse(texte);
+    delete final._ids;
     const nb = sortie.tauxALaDate.length + sortie.pourAcheteur.length + sortie.proposes.length + sortie.lectures.length + sortie.gestes.length + Object.keys(sortie.achats).length;
     console.log(`  ${nb} cas : ${sortie.tauxALaDate.length} taux, ${sortie.pourAcheteur.length} acheteurs, ${sortie.gestes.length} gestes, ${Object.keys(sortie.achats).length} états des achats`);
     if (m.erreurs.length) console.log('  avertissements de chargement : ' + m.erreurs.length);

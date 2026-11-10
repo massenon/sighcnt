@@ -887,7 +887,7 @@
     "actif": true,
     "valeur": "actif",
     "arrete": true,
-    "versionId": "RAI-2",
+    "versionId": "RAI-4",
     "compteAcompte": "447000",
     "compteContrepartie": "401110",
     "raisons": [],
@@ -903,7 +903,7 @@
     "dateEffet": "2026-08-16",
     "dateFin": null,
     "version": 1,
-    "versionId": "RAI-3",
+    "versionId": "RAI-2",
     "source": null,
     "date": "2026-08-16"
    },
@@ -915,7 +915,7 @@
     "dateEffet": "2026-08-16",
     "dateFin": null,
     "version": 1,
-    "versionId": "RAI-4",
+    "versionId": "RAI-3",
     "source": null,
     "date": "2026-08-16"
    },
@@ -949,7 +949,7 @@
     "actif": true,
     "valeur": "actif",
     "arrete": true,
-    "versionId": "RAI-2",
+    "versionId": "RAI-4",
     "compteAcompte": "447000",
     "compteContrepartie": "401110",
     "raisons": [],
@@ -965,7 +965,7 @@
     "dateEffet": "2026-08-16",
     "dateFin": null,
     "version": 1,
-    "versionId": "RAI-3",
+    "versionId": "RAI-2",
     "source": null,
     "date": "2026-12-31"
    },
@@ -977,7 +977,7 @@
     "dateEffet": "2026-08-16",
     "dateFin": null,
     "version": 1,
-    "versionId": "RAI-4",
+    "versionId": "RAI-3",
     "source": null,
     "date": "2026-12-31"
    },
@@ -1601,7 +1601,7 @@
    },
    "sortie": {
     "ok": true,
-    "id": "RAI-3",
+    "id": "RAI-2",
     "version": 1,
     "cle": "compteAcompte",
     "valeur": "447000",
@@ -1612,7 +1612,7 @@
    },
    "versions": [
     {
-     "id": "RAI-3",
+     "id": "RAI-2",
      "statut": "actif",
      "cle": "compteAcompte",
      "valeur": "447000",
@@ -1695,7 +1695,7 @@
    },
    "sortie": {
     "ok": true,
-    "id": "RAI-4",
+    "id": "RAI-3",
     "version": 1,
     "cle": "compteContrepartie",
     "valeur": "401110",
@@ -1706,7 +1706,7 @@
    },
    "versions": [
     {
-     "id": "RAI-4",
+     "id": "RAI-3",
      "statut": "actif",
      "cle": "compteContrepartie",
      "valeur": "401110",
@@ -1725,7 +1725,7 @@
      "_creeLe": "@"
     },
     {
-     "id": "RAI-3",
+     "id": "RAI-2",
      "statut": "actif",
      "cle": "compteAcompte",
      "valeur": "447000",
@@ -1814,7 +1814,7 @@
    },
    "versions": [
     {
-     "id": "RAI-4",
+     "id": "RAI-3",
      "statut": "actif",
      "cle": "compteContrepartie",
      "valeur": "401110",
@@ -1833,7 +1833,7 @@
      "_creeLe": "@"
     },
     {
-     "id": "RAI-3",
+     "id": "RAI-2",
      "statut": "actif",
      "cle": "compteAcompte",
      "valeur": "447000",
@@ -1916,7 +1916,7 @@
    },
    "sortie": {
     "ok": true,
-    "id": "RAI-2",
+    "id": "RAI-4",
     "version": 2,
     "cle": "branchementAchats",
     "valeur": "actif",
@@ -1927,7 +1927,7 @@
    },
    "versions": [
     {
-     "id": "RAI-2",
+     "id": "RAI-4",
      "statut": "actif",
      "cle": "branchementAchats",
      "valeur": "actif",
@@ -1946,7 +1946,7 @@
      "_creeLe": "@"
     },
     {
-     "id": "RAI-4",
+     "id": "RAI-3",
      "statut": "actif",
      "cle": "compteContrepartie",
      "valeur": "401110",
@@ -1965,7 +1965,7 @@
      "_creeLe": "@"
     },
     {
-     "id": "RAI-3",
+     "id": "RAI-2",
      "statut": "actif",
      "cle": "compteAcompte",
      "valeur": "447000",
@@ -2057,7 +2057,7 @@
     "cle": "branchementAchats",
     "valeur": "desactive",
     "dateEffet": "2026-12-01",
-    "precedente": "RAI-2",
+    "precedente": "RAI-4",
     "precedenteFermeeLe": "2026-11-30",
     "enAttenteDeValidation": false
    },
@@ -2082,7 +2082,7 @@
      "_creeLe": "@"
     },
     {
-     "id": "RAI-2",
+     "id": "RAI-4",
      "statut": "actif",
      "cle": "branchementAchats",
      "valeur": "actif",
@@ -2105,7 +2105,7 @@
      "_modifieLe": "@"
     },
     {
-     "id": "RAI-4",
+     "id": "RAI-3",
      "statut": "actif",
      "cle": "compteContrepartie",
      "valeur": "401110",
@@ -2124,7 +2124,7 @@
      "_creeLe": "@"
     },
     {
-     "id": "RAI-3",
+     "id": "RAI-2",
      "statut": "actif",
      "cle": "compteAcompte",
      "valeur": "447000",
@@ -2216,7 +2216,7 @@
      "actif": true,
      "valeur": "actif",
      "arrete": true,
-     "versionId": "RAI-2",
+     "versionId": "RAI-4",
      "compteAcompte": "447000",
      "compteContrepartie": "401110",
      "raisons": [],
@@ -2817,7 +2817,7 @@
      "actif": true,
      "valeur": "actif",
      "arrete": true,
-     "versionId": "RAI-2",
+     "versionId": "RAI-4",
      "compteAcompte": "447000",
      "compteContrepartie": "401110",
      "raisons": [],
