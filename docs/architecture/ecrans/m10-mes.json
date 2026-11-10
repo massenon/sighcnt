@@ -1,0 +1,53 @@
+{
+ "id": "m10-mes",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Mon espace",
+ "acces": "ouvert",
+ "titre": "Mon espace",
+ "description": "Mes informations d’agent, en lecture : poste, paie, contrat, planning, présences, congés, missions, primes, événements, assurance, notes de service, agenda.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Mon espace"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Copie de la fiche de paie sur le téléphone",
+  "Rubriques",
+  "Ma fiche de poste"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Régler",
+  "Ma fiche de poste0",
+  "Ma fiche de paie0",
+  "Mon contrat0",
+  "Mes planning et gardes41",
+  "Mes statistiques de garde21",
+  "Mes statistiques des permanences0",
+  "Mon taux de présence par service25",
+  "Mes présences et absences25",
+  "Mes congés0",
+  "Mes ordres de mission0",
+  "Mes primes0",
+  "Événements du personnel9",
+  "Mes frais de participation8",
+  "Mon assurance du personnel5",
+  "Notes de service2",
+  "Mon agenda74",
+  "Mes rendez-vous et visites1",
+  "Ouvrir l’écran de gestion"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

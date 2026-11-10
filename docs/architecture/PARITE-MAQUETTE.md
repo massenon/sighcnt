@@ -5,13 +5,13 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **336** |
+| Écrans du manifeste (hors hubs de module) | **337** |
 | Hubs de module (un par module, engendrés) | 23 |
-| Écrans nommés par au moins un scénario de la maquette | 229 (68 %) |
+| Écrans nommés par au moins un scénario de la maquette | 230 (68 %) |
 | Écrans **sans** scénario (recette à écrire) | 107 |
 | Écrans portés | 336 |
 | Écrans recettés | 0 |
-| Scénarios de la maquette analysés | 111 |
+| Scénarios de la maquette analysés | 113 |
 
 > « Nommé par un scénario » est une **estimation par analyse du texte** du banc (un identifiant d'écran cité dans le scénario) : elle dit où une recette existe déjà à reprendre, pas qu'elle couvre tout l'écran.
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 67 | 0 |
 | 5 · assurances et comptabilité | 31 | 21 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 170 | 101 | 170 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 171 | 102 | 170 | 0 |
 
 ## Par écran
 
@@ -287,11 +287,11 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `imp-plan-comptable` | Importation du plan comptable | IMP | 3 | — | porté |
 | `imp-soldes-ouverture` | Importation des soldes d’ouverture | IMP | 3 | — | porté |
 | `imp-souscripteurs` | Importation des souscripteurs | IMP | 3 | — | porté |
-| `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 27 | porté |
+| `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 27, 112 | porté |
 | `m10-badges` | Badges du personnel | M10 | 5 | 56, 68 | porté |
 | `m10-badges-impression` | Planche d’impression des badges | M10 | 3 | 56 | porté |
 | `m10-badges-modeles` | Modèles de badge | M10 | 3 | 1, 56, 95, 105 | porté |
-| `m10-badges-verification` | Vérifier un badge | M10 | 5 | 56 | porté |
+| `m10-badges-verification` | Vérifier un badge | M10 | 5 | 56, 113 | porté |
 | `m10-conges` | Congés | M10 | 4 | 110 | porté |
 | `m10-contrats` | Contrats | M10 | 3 | 34, 68 | porté |
 | `m10-dashboard` | Tableau de bord RH | M10 | 3 | 77 | porté |
@@ -299,6 +299,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m10-evaluations` | Évaluations (NS 131) | M10 | 3 | 14, 33, 68, 102 | porté |
 | `m10-evenements` | Événements du personnel | M10 | 3 | 27, 33 | porté |
 | `m10-fiches-poste` | Fiches de poste | M10 | 3 | 77 | porté |
+| `m10-mes` | Mon espace | M10 | 20 (universel) | 112 | non commencé |
 | `m10-missions` | Ordres de mission | M10 | 4 | 24, 68, 110 | porté |
 | `m10-participations` | Frais de participation | M10 | 3 | 27 | porté |
 | `m10-personnel` | Personnel | M10 | 3 | 24, 40, 55, 77 | porté |

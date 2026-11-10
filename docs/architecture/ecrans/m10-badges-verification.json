@@ -23,12 +23,15 @@
  "onglets": [],
  "kpis": [],
  "cartes": [
+  "Pointage par badge",
   "Badge présenté",
   "Badges retirés — à refuser à l’entrée"
  ],
  "tableaux": [],
  "commandes": [
-  "Vérifier"
+  "Régler",
+  "Vérifier",
+  "Pointer"
  ],
  "champs": [
   "Numéro de série ou code scanné"

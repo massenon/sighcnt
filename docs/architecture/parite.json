@@ -3600,7 +3600,8 @@
     "assistant_comptable"
    ],
    "scenarios": [
-    56
+    56,
+    113
    ],
    "statut": "porté"
   },
@@ -3698,6 +3699,41 @@
     111
    ],
    "statut": "porté"
+  },
+  {
+   "id": "m10-mes",
+   "label": "Mon espace",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": true,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    112
+   ],
+   "statut": "non commencé"
   },
   {
    "id": "m10-stats-gardes",
@@ -3924,7 +3960,8 @@
     "da"
    ],
    "scenarios": [
-    27
+    27,
+    112
    ],
    "statut": "porté"
   },

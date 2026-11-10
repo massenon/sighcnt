@@ -508,6 +508,7 @@
     "m10-badges-impression",
     "m10-planning",
     "m10-propositions-planning",
+    "m10-mes",
     "m10-stats-gardes",
     "m10-stats-permanences",
     "m10-stats-presence",
@@ -4276,6 +4277,24 @@
    "id": "m10-propositions-planning",
    "label": "Propositions de planning",
    "icone": "calendar-sync",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": true,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-mes",
+   "label": "Mon espace",
+   "icone": "user-round",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",

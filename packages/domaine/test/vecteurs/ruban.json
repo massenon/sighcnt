@@ -316,6 +316,7 @@
         "m10-badges-impression",
         "m10-planning",
         "m10-propositions-planning",
+        "m10-mes",
         "m10-stats-gardes",
         "m10-stats-permanences",
         "m10-stats-presence",
@@ -1052,6 +1053,7 @@
         "m10-badges-impression",
         "m10-planning",
         "m10-propositions-planning",
+        "m10-mes",
         "m10-stats-gardes",
         "m10-stats-permanences",
         "m10-stats-presence",
@@ -1444,7 +1446,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -1732,6 +1735,7 @@
         "m10-badges-impression",
         "m10-planning",
         "m10-propositions-planning",
+        "m10-mes",
         "m10-stats-gardes",
         "m10-stats-permanences",
         "m10-stats-presence",
@@ -2301,7 +2305,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -2523,7 +2528,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -2659,7 +2665,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -2802,7 +2809,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -2974,7 +2982,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -3172,7 +3181,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       },
       {
@@ -3421,7 +3431,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -3551,7 +3562,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -3686,7 +3698,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -3790,7 +3803,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -3939,7 +3953,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -4035,6 +4050,7 @@
         "m10-badges-verification",
         "m10-planning",
         "m10-propositions-planning",
+        "m10-mes",
         "m10-stats-gardes",
         "m10-stats-permanences",
         "m10-stats-presence",
@@ -4137,7 +4153,8 @@
        "ecrans": [
         "m10-badges",
         "m10-badges-verification",
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -4347,7 +4364,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -4508,7 +4526,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]
@@ -4672,7 +4691,8 @@
        "label": "Ressources humaines",
        "hub": "hub-m10",
        "ecrans": [
-        "m10-propositions-planning"
+        "m10-propositions-planning",
+        "m10-mes"
        ]
       }
      ]

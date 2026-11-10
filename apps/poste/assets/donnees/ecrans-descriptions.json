@@ -453,6 +453,10 @@
    "titre": "Fiches de poste",
    "description": "Identification, missions, indicateurs de performance, relations fonctionnelles et compétences requises."
   },
+  "m10-mes": {
+   "titre": "Mon espace",
+   "description": "Mes informations d’agent, en lecture : poste, paie, contrat, planning, présences, congés, missions, primes, événements, assurance, notes de service, agenda."
+  },
   "m10-missions": {
    "titre": "Ordres de mission",
    "description": "Missions et formations du personnel : affectation, prise en charge, validation et états signés."
