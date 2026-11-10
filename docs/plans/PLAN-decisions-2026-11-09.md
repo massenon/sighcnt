@@ -88,3 +88,30 @@ Les défauts viennent de la colonne « Défaut » de ce plan et de la section D 
 - L'écran `cfg-bareme-aib` n'est pas porté au poste : le manifeste du poste (engendré) ne le connaît pas, c'est le lot A5. Au poste, les réglages se règlent aux cartes de la famille « AIB » de l'onglet Paramètres, qui porte aussi la liste « achats à écrire » et la commande « Écrire ».
 - Flutter : `flutter analyze` ne trouve aucune erreur ; une suite complète du poste n'a pas été lancée (voir ECARTS-MAQUETTE E2319).
 
+
+## L3 : MECeF, mode de certification et aucun numéro fabriqué (réalisé le 10/11/2026)
+
+### Ce qui est livré
+
+| Pièce | Où | Vérification |
+|---|---|---|
+| Mode de certification : « Boîtier physique » (défaut) ou « e-MECeF », réglé à « Configuration fiscale » (maquette) et à la même carte du poste (administrateur ou DA, mère seule), journalisé | maquette : réglage `mecefMode`, `PR.mecef.definirMode`, carte « Mode de certification » de `mecef-config` ; poste : paramètre `mecef.mode` du registre L0 (`branche: true`), lu par `donnees/mecef_poste.dart` | scénario « Vague 105 » ; `mecef_test.dart` du poste |
+| Adaptateur du mode : `PR.mecef.adaptateur()` (maquette) et interface `AdaptateurMecef` + `AdaptateurNonConfigure` (domaine), refus nommé `MECEF_NON_CONFIGURE` (motif, geste) | `parcours.js`, `packages/domaine/lib/src/mecef/mode.dart` | vecteurs `mecef_mode.json`, `mecef_mode_test.dart` |
+| Aucun numéro fabriqué sans adaptateur : vente en attente de certification (état stocké `en_attente`, code et motif portés, encaissement acquis), retransmission sans essai consommé, « Synchroniser » sans tirage, avoir émis sans numéro, test de connexion qui ne ment plus | maquette (mode e-MECeF) et poste (les deux modes) | Vague 105 ; `mecef_acheteur_test.dart`, `mecef_test.dart`, `m8_facturation_test.dart` |
+| e-MECeF : « non configuré : dossier d'interface DGI requis », aucun code d'intégration (ni URL, ni jeton, ni format de message) | écrans et refus nommé | revue du code |
+
+### Décisions de conception
+
+- **Un adaptateur par mode, un refus qui se nomme.** La caisse n'est jamais bloquée : l'émission et l'encaissement aboutissent, seule la certification attend. Un seul code (`MECEF_NON_CONFIGURE`), deux motifs (boîtier, e-MECeF).
+- **Écart maquette / poste assumé.** La maquette garde son appareil de démonstration en mode boîtier (elle simule, et le dit) ; le poste n'a aucun adaptateur, donc ne certifie rien dans aucun mode. Les vecteurs ne portent que ce que la maquette fait réellement (mode e-MECeF) ; le refus du boîtier au poste est éprouvé par un test propre.
+- **Le mode n'est pas un usage de pièce.** Il ne fixe aucun contenu de la pièce (elle porte `modeMecef`, le mode sous lequel la tentative a eu lieu) : l'inscrire à `usagesParametres` interdirait de le rebasculer le jour même.
+- **`desactive` reste un détail de la maquette** (démonstration du lot M1) : non proposé, non porté au poste.
+
+### Questions ouvertes (aucun fait inventé)
+
+Voir ECARTS-MAQUETTE E2322 : modèle, interface et protocole du boîtier ; dossier d'interface e-MECeF de la DGI ; asynchronisme de l'orchestration (lot M3) ; granularité du réglage (clinique) face à un boîtier branché à un seul poste.
+
+### Limites
+
+- L'adaptateur réel (lot M3) n'existe pas : le poste ne certifie aucune vente. `normaliserVente` est synchrone et devra le devenir.
+- Le libellé de l'état `en_attente` reste « En attente de transmission » (la parité N1 compare les libellés) ; les messages disent « en attente de certification ».
