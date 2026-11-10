@@ -78,3 +78,8 @@ Les 18 questions ont reçu une réponse. Règle générale posée par la Directi
 2. **Planning Q2** : le **surveillant valide les présences et absences pour tout le personnel et peut valider seul**. Le circuit est paramétrable (surveillant seul, DAF seule, surveillant puis DAF) ; défaut : surveillant seul. La DAF garde son droit d'écran.
 3. **Planning Q7** : le **badge sert de pointage**, réglage oui/non dans les paramètres, **défaut oui** ; le badge se relie au registre des présences.
 4. **MECeF** : **aucun numéro simulé**. Les paramètres du poste offrent le **choix du mode : boîtier ou e-MECeF**. Le mode e-MECeF s'affiche « non configuré : dossier d'interface DGI requis » tant qu'aucun document n'en décrit le protocole ; aucun code d'intégration n'est écrit à l'aveugle.
+
+## E. Importation de données (Direction, 10/11/2026)
+
+- Chaque écran de référentiel ou de registre qui doit recevoir des données en masse porte un bouton « Importer les données » (fenêtre en trois temps : modèle téléchargeable, vérification sans écriture, import). Écrans cités : Catalogue tarifaire, Transferts gros vers détail, Référentiel produits, « et autres écrans » (inventaire en cours : `docs/prd/PRD-IMP-bouton-importer-par-ecran.md`).
+- La rangée « Importation de données » devient VISIBLE aux autres postes, avec un RBAC créé pour l'import (droit distinct par jeu). Cela remplace, pour cette rangée, la décision du 05/11 (onglet Système réservé à l'administrateur et à la DA). Hypothèse à confirmer : seule la rangée IMP est ouverte, le reste de l'onglet Système reste réservé.
