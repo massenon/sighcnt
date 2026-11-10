@@ -173,3 +173,7 @@ Exigences ajoutées à la v1 : (1) filtres avancés et options avancées (colonn
 
 Q1 (déroge champ par champ), Q2 et Q3 (surveillant valide seul, circuit paramétrable, congés et missions au même circuit), Q4 (l'agent propose, réglage de modification directe) sont réalisés dans la maquette, le domaine Dart et la couche données du poste : voir `docs/plans/PLAN-decisions-2026-11-09.md` (section L4, L5, L6) et `ECARTS-MAQUETTE.md` E2325 à E2331. Restent : les écrans du poste, l'espace « Mes », le mobile (L7, L8, L9), l'accord du collègue sur un échange (EX-8).
 
+
+### Réalisation partielle du 10/11/2026 (lots L7 et L8, décisions du 09/11/2026)
+
+Q5 (copie chiffrée de la fiche de paie sur le téléphone, réglage oui par défaut), Q6 (espace « Mes » sur poste partagé en secours, connexion nominative), Q7 (le badge sert de pointage, oui par défaut : **ceci REMPLACE la ligne « désactivé par défaut » de l'addendum du 07/11**) et Q8 (« Mon assurance du personnel » en lecture seule, « non renseigné » sans montant porté) sont réalisés dans la maquette, le domaine Dart et le poste : voir `docs/plans/PLAN-decisions-2026-11-09.md` (section L7, L8) et `ECARTS-MAQUETTE.md` E2343 à E2350. Restent : le profil « agent » du mobile et le canal de la copie de paie (EX-6), l'accord du collègue sur un échange (EX-8), la durée de conservation et la clé de la copie sur le téléphone, le délai de pointage à valider, l'identifiant de personnel sur le compte.

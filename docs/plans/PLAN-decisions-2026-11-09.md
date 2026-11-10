@@ -144,3 +144,32 @@ Voir ECARTS-MAQUETTE E2322 : modèle, interface et protocole du boîtier ; dossi
 ### Limites
 
 Voir ECARTS-MAQUETTE E2331 (faits qui manquent : chef de service, accord du collègue, repère de retard) et E2339 à E2342 (écrans du poste portés ; ce qui est régénéré et ce qui ne l'est pas ; écarts assumés). Restent hors de ce lot : le filtre RG-11 (seul le planning et les présences VALIDÉS comptent) sur les statistiques de garde, de permanence, de présence, les primes et la paie du poste ; l'annulation de la pose d'une dérogation ; les écrans des lots A5 et SMS, que le manifeste du poste n'inclut pas encore (E2341) ; les tables relationnelles des deux collections nouvelles.
+
+
+## L7, L8 : espace « Mes », copie de la fiche de paie, assurance du personnel, badge qui pointe (réalisé le 10/11/2026)
+
+### Ce qui est livré
+
+| Lot | Pièce | Où | Vérification |
+|---|---|---|---|
+| L7 | Moteur `SIGH.espaceMes` : dix-sept rubriques lues sur l'agent de la session, refus `COMPTE_NON_NOMINATIF`, `RUBRIQUE_INCONNUE`, copie de la fiche de paie (`COPIE_PAIE_DESACTIVEE`, `COPIE_PAIE_AUTRE_AGENT`), réglage `paieCopieTelephone` (oui par défaut) | maquette : `parcours.js`, écran `m10-mes` (universel), carte de réglage pour l'administrateur et la DAF, purge de l'affichage à la déconnexion (`store.js`) et au verrou (`app.js`) | « Vague 109 » (15 vérifications au geste ; échoue sur l'arbre d'avant), audit RBAC ciblé : 0 promesse |
+| L7 | « Mon assurance du personnel » : montant porté ou « non renseigné », jamais le prix courant du catalogue | `m10-assurance-personnel` et rubrique de « Mon espace » | « Vague 109 » (la demande ancienne sans montant), `rhc_regles_test` inchangé (les sommes ne bougent pas) |
+| L8 | Moteur `SIGH.pointageBadge` : arrivée puis départ à valider, délai en base, treize refus nommés, journal de chaque passage, commande « Pointer » absente sans droit ni réglage | maquette : `m10-rh.js`, écran `m10-badges-verification` (carte « Pointage par badge », « Régler », « Pointer ») | « Vague 110 » (11 vérifications au geste ; échoue sur l'arbre d'avant) |
+| L7, L8 | Vecteurs tirés des moteurs de la maquette | `prototype_html/build/vecteurs-mes-pointage.js` → `packages/domaine/test/vecteurs/mes_pointage.json` (44 lectures, 9 copies, 7 réglages de copie, 40 passages, 15 réglages de pointage) | régénérables |
+| L7, L8 | Domaine Dart | `packages/domaine/lib/src/rh/espace_mes.dart`, `pointage_badge.dart` ; registre L0 : `paie.copieFichePaieTelephone` et `planning.badgeSertDePointage` passent à `branche: true`, `planning.delaiEntrePointagesBadge` ajouté (5 minutes, proposition à valider) | `dart test test/mes_pointage_test.dart` : 120 verts ; cinq mutations (limite du délai, pièce émise, filtre de l'agent, prix par défaut, présence validée) font tomber le fichier ; `dart test` complet : 3 343 verts |
+| L7, L8 | Poste | `apps/poste/lib/donnees/mes_poste.dart` (`EspaceMesPoste`, `PointageBadgePoste`, `MesAffichage`), `modules/m10/rhd_mes.dart`, `rhc_assurance_personnel.dart`, `rhc_badges_verification.dart`, `acc_session.dart`, `sync/pont_activite.dart` (`presences`) | parité N1 100 % mesuré (m10-mes, badges-verification, assurance) ; `m10_mes_test` 7, `pointage_badge_poste_test` 7 (dont deux postes avec pont) |
+
+### Décisions de conception
+
+- **La copie de la fiche de paie n'est pas un paramètre qui descend.** Le réglage reste fermé au téléphone (famille `paie` réservée, liste blanche vide) ; c'est la PIÈCE ÉMISE de l'agent seul qui voyage, chiffrée, publiée ou retirée par la mère selon le réglage. Le domaine refuse la pièce d'un autre agent et ne recalcule jamais. Voir `ECARTS-MAQUETTE.md` E2344 pour ce qui reste à arbitrer (conservation, clé par agent, canal).
+- **L'espace « Mes » lit, il ne garde rien.** Aucune copie de données ; seule la rubrique ouverte est retenue, gardée au verrou et effacée à la déconnexion. Au poste, l'écran se vide sous le verrou (`TickerMode`) pour ne rien laisser en mémoire sous la couche.
+- **Un moteur par décision, un refus qui se nomme.** Le pointage par badge réutilise le verdict du badge existant (inconnu, retiré, expiré, non remis) et ajoute ses propres refus ; la présence née du badge entre dans le circuit du lot L5 sans règle nouvelle.
+- **Une valeur d'attente se dit.** Le délai de 5 minutes est marqué « proposition à valider » au registre et à l'écran ; aucune heure d'arrivée attendue n'est inventée (le badge n'infère pas le retard).
+
+### Limites
+
+Le canal mère, relais et téléphone de la copie de paie, le profil « agent » du mobile, les stats de garde de « Mon espace » (garde de 24 h seulement), l'écran vidé sous le verrou sondé dans Flutter, les générateurs `vecteurs-qualite.js` et `vecteurs-cfg-b.js` (en panne, fichiers ajustés à la main) : voir `ECARTS-MAQUETTE.md` E2343 à E2350.
+
+### Suite complète du poste (lot Z, 10/11/2026)
+
+Les huit échecs que le lot Y disait préexistants étaient des tests périmés par les lots L1 et la vague 49 (cause de chacun : `ECARTS-MAQUETTE.md` E2343), remis sur ce que la maquette fait aujourd'hui ; huit autres vecteurs ont suivi les lots L7 et L8 (E2351). Exécution complète finale, sortie lue : `flutter test` dans `apps/poste` : **2 404 verts, 1 ignoré (préexistant), 0 échec**, 16 min 22 s ; `dart test` dans `packages/domaine` : 3 343 verts.
