@@ -14328,12 +14328,9 @@ async function viderMessages(page) {
     const lireCentre = () => page.evaluate(() => {
       const S = window.SIGH.store;
       const brut = S.raw();
-      const SPEC = {
-        enquetes: [['enquetes'], ['aValider']], labo_variables: [['variablesLabo', 'unitesLabo'], ['aValider']], pathologies: [['pathologies'], ['aValider']],
-        imagerie: [['examensImagerie', 'variablesImagerie'], ['aValider']], actes: [['actes'], ['tarifProvisoire']], analyses: [['analyses'], ['tarifProvisoire', 'aValider']],
-        valorisation_sage: [['valorisationsSage'], ['aValider']], objectifs_pilotage: [['objectifsPilotage'], ['aValider']],
-        modeles_badge: [['modelesBadge'], ['aValider']], modeles_messages: [['modelesMessage'], ['aValider']], bareme_aib: [['baremeAib'], ['aValider']],
-      };
+      /* La définition d'une famille (collections, champs « à valider ») vient du REGISTRE : la recopier ici la ferait diverger dès qu'une famille gagne une collection (bareme_aib : baremeAib + reglagesAib). */
+      const SPEC = {};
+      window.SIGH.validations.FAMILLES_A_VALIDER.forEach((f) => { if (f.mode !== 'fiche') SPEC[f.id] = [f.collections, f.champs]; });
       const FICHES = { checklists_bloc: 'checklist-bloc', repartition_charges: 'repartition-fixe-variable', jeux_import: 'imp-analyses', bareme_its: 'bareme-its' };
       const lignes = [...document.querySelectorAll('#page-content [data-famille]')].map((n) => {
         const fam = n.getAttribute('data-famille'), lu = n.getAttribute('data-en-attente');
