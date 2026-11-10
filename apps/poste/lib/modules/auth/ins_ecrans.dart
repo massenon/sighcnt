@@ -206,7 +206,6 @@ class SceneCodeSecours extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SceneAcces(
-        icone: LucideIcons.shieldCheck,
         titre: titre,
         sousTitre: sousTitre,
         corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
