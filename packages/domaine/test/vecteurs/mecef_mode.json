@@ -1,0 +1,110 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-mecef-mode.js : mode MECeF et vente sous e-MECeF (maquette). Ne pas éditer.",
+ "modes": [
+  {
+   "reglage": null,
+   "mode": "boitier"
+  },
+  {
+   "reglage": "boitier",
+   "mode": "boitier"
+  },
+  {
+   "reglage": "emecef",
+   "mode": "emecef"
+  },
+  {
+   "reglage": "inconnu",
+   "mode": "boitier"
+  }
+ ],
+ "adaptateurEmecef": {
+  "mode": "emecef",
+  "configure": false,
+  "demonstration": false,
+  "code": "MECEF_NON_CONFIGURE",
+  "motif": "e-MECeF non configuré : dossier d’interface DGI requis.",
+  "geste": "La vente reste en attente de certification. Choisir le mode « Boîtier physique », ou fournir le dossier d’interface de la DGI."
+ },
+ "vente": {
+  "piece": {
+   "statut": "actif",
+   "numero": "FN-2099-V105",
+   "patientId": "P105",
+   "patient": "TEST Mode",
+   "patientCode": "CNT/105/26",
+   "date": "2026-12-31",
+   "type": "Consultation",
+   "lignes": [
+    {
+     "id": "L001",
+     "categorie": "acte",
+     "designation": "Acte L001",
+     "quantite": 1,
+     "prixUnitaire": 10000,
+     "prixUnitaireNet": 10000,
+     "montantBrut": 10000,
+     "remise": 0,
+     "montant": 10000,
+     "partAssureur": 0,
+     "partPersonnel": 0,
+     "partPatient": 10000,
+     "statutPaiement": "du",
+     "montantRegle": 0
+    },
+    {
+     "id": "L002",
+     "categorie": "acte",
+     "designation": "Acte L002",
+     "quantite": 1,
+     "prixUnitaire": 4000,
+     "prixUnitaireNet": 4000,
+     "montantBrut": 4000,
+     "remise": 0,
+     "montant": 4000,
+     "partAssureur": 0,
+     "partPersonnel": 0,
+     "partPatient": 4000,
+     "statutPaiement": "du",
+     "montantRegle": 0
+    }
+   ],
+   "montantHT": 14000,
+   "montantTTC": 14000,
+   "montantRemises": 0,
+   "partAssurance": 0,
+   "partPatient": 14000,
+   "montantPaye": 0,
+   "reliquat": 14000,
+   "modePaiement": "especes",
+   "statutPaiement": "impayee",
+   "statutMecef": "en_attente",
+   "proforma": false,
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-30T12:00:00.388Z"
+  },
+  "acheteur": {
+   "ifu": "3201642748214",
+   "nom": "Acheteur L3",
+   "aibTaux": 1
+  },
+  "normalisation": {
+   "ok": false,
+   "code": "MECEF_NON_CONFIGURE",
+   "motif": "e-MECeF non configuré : dossier d’interface DGI requis.",
+   "geste": "La vente reste en attente de certification. Choisir le mode « Boîtier physique », ou fournir le dossier d’interface de la DGI.",
+   "etat": "en_attente"
+  },
+  "facture": {
+   "statutPaiement": "soldee",
+   "montantPaye": 14000,
+   "statutMecef": "en_attente",
+   "numeroMecef": null,
+   "codeRetour": "MECEF_NON_CONFIGURE",
+   "motifRefusMecef": "e-MECeF non configuré : dossier d’interface DGI requis.",
+   "modeMecef": "emecef"
+  },
+  "numerosFabriques": 0,
+  "emissionsAppareil": 0
+ }
+}

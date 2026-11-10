@@ -18,22 +18,25 @@
   "MECeF — Facture normalisée"
  ],
  "regle": [
-  "Le régime exonéré est celui relevé sur la facture de référence certifiée MECeF, où la TVA est portée à zéro et le net à payer vaut le hors-taxes augmenté du seul AIB. Ce choix doit être confirmé par le service comptable pour les prestations de la clinique.",
-  "Le prototype simule les échanges avec le dispositif fiscal. L’interfaçage réel s’effectuera avec la machine électronique certifiée de facturation lors de la mise en œuvre."
+  "Boîtier physique. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.",
+  "Lecture seule. Ces valeurs sont celles des référentiels du logiciel : les modifier ici ne conserverait rien. L’identité légale se règle à « Identité & papier à en-tête ».",
+  "Le régime exonéré est celui relevé sur la facture de référence certifiée MECeF, où la TVA est portée à zéro et le net à payer vaut le hors-taxes augmenté du seul AIB. Ce choix doit être confirmé par le service comptable pour les prestations de la clinique."
  ],
  "onglets": [],
  "kpis": [],
  "cartes": [
+  "Mode de certification",
   "Paramètres fiscaux",
   "Mentions portées sur chaque facture",
   "Contrôles automatiques à l’émission"
  ],
  "tableaux": [],
  "commandes": [
-  "Enregistrer les paramètres",
+  "Enregistrer le mode",
   "Tester la connexion au dispositif"
  ],
  "champs": [
+  "Mode de certification des factures",
   "Raison sociale *",
   "IFU *",
   "RCCM *",

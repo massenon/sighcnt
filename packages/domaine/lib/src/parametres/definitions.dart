@@ -6,6 +6,7 @@
 // arrêtés le 09/11/2026 (`docs/decisions/DECISIONS-A-VALIDER.md`, section D ; `docs/plans/PLAN-decisions-2026-11-09.md`, colonne « Défaut »).
 //
 // `branche: false` : le réglage s'enregistre et se synchronise, mais l'écran qu'il commande ne le lit pas encore (lot à venir) ; l'écran des paramètres le dit.
+// Le lot L3 a branché `mecef.mode` (lu par la normalisation, voir `src/mecef/mode.dart`).
 // Aucune de ces définitions n'est envoyée au téléphone (`mobile: false`) : la liste blanche est vide tant qu'un lot ne démontre pas le besoin (RG-13).
 
 import 'parametres.dart';
@@ -21,9 +22,9 @@ const List<DefinitionParametre> definitionsParametres = [
     libellesChoix: {'boitier': 'Boîtier physique', 'emecef': 'e-MECeF'},
     defaut: 'boitier',
     libelle: 'Mode de certification des factures',
-    aide: 'Boîtier physique ou e-MECeF. Aucun numéro n\'est simulé au poste ; le mode e-MECeF reste « non configuré : dossier d\'interface DGI requis ».',
+    aide: 'Boîtier physique ou e-MECeF. Aucun numéro n\'est simulé au poste : sans adaptateur configuré, la vente reste en attente de certification. Le mode e-MECeF reste « non configuré : dossier d\'interface DGI requis ».',
     source: _decisions,
-    branche: false,
+    branche: true,
     appliquePar: 'Lot L3 (MECeF)',
   ),
   DefinitionParametre(

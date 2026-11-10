@@ -28,6 +28,7 @@ export 'src/caisse/mecef.dart';
 export 'src/mecef/montants.dart';
 export 'src/mecef/etats.dart';
 export 'src/mecef/normalisation.dart';
+export 'src/mecef/mode.dart';
 export 'src/achats/pv_reception.dart';
 export 'src/achats/fournisseurs_m7.dart';
 export 'src/achats/factures_fournisseurs.dart';

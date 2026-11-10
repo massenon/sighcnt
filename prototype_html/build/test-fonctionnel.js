@@ -17305,8 +17305,8 @@ async function viderMessages(page) {
     });
     verifier('Départ : le mode par défaut est « boîtier » (rien n’est réglé), deux modes seulement sont proposés (boîtier physique, e-MECeF), l’écran le montre',
       d0.mode === 'boitier' && JSON.stringify(d0.propo) === '["boitier","emecef"]' && JSON.stringify(d0.options) === '["boitier=Boîtier physique","emecef=e-MECeF"]' && d0.valeur === 'boitier', JSON.stringify(d0));
-    verifier('Le mode boîtier dit la vérité : modèle, interface et protocole inconnus, aucun adaptateur au poste de production, maquette seule en démonstration',
-      /ne figurent dans aucun document remis/.test(d0.etat) && /aucun adaptateur branché/.test(d0.etat) && /appareil de démonstration/.test(d0.etat), d0.etat.slice(0, 200));
+    verifier('Le mode boîtier dit la vérité : modèle, interface et protocole inconnus, aucun numéro fabriqué comme fiscal, maquette seule en démonstration, aucun adaptateur au poste de production',
+      /ne figurent dans aucun document remis/.test(d0.etat) && /Aucun numéro n’est fabriqué comme s’il était fiscal/.test(d0.etat) && /appareil de démonstration/.test(d0.etat) && /Le poste de production n’a aucun adaptateur/.test(d0.etat), d0.etat.slice(0, 300));
     verifier('En mode boîtier la maquette garde son appareil de démonstration (adaptateur configuré, marqué démonstration)', d0.ad.configure === true && d0.ad.demonstration === true && d0.ad.code === null, JSON.stringify(d0.ad));
 
     /* --- 2. la bascule au geste (liste, bouton), journalisée ------------------------------------------------------------------------- */

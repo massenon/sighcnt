@@ -816,6 +816,7 @@
         var libelles = { boitier: 'Boîtier physique', emecef: 'e-MECeF' };
         var attrsSel = { 'data-mecef-mode': '' };
         if (!peut) attrsSel.disabled = 'disabled';
+        attrsSel.id = 'f_mecefMode';
         var sel = el('select.select', attrsSel, PR.mecef.MODES_PROPOSES.map(function (id) {
           return el('option', { value: id }, libelles[id]);
         }));
@@ -829,12 +830,13 @@
               + 'Une vente est encaissée, reste <strong>en attente de certification</strong> et ne reçoit <strong>aucun numéro</strong> ; elle se retransmet quand l’interface sera branchée.', { tone: 'warning', icon: 'plug-zap' }));
           } else {
             etatTxt.appendChild(K.note('<strong>Boîtier physique.</strong> Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). '
-              + 'Le poste de production n’a aucun adaptateur branché : il ne fabrique aucun numéro. Cette <strong>maquette</strong> garde son appareil de démonstration, dont les numéros ne sont pas fiscaux.', { tone: 'info', icon: 'info' }));
+              + 'Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.', { tone: 'info', icon: 'info' }));
+            etatTxt.appendChild(el('p.mt-2.text-xs.text-slate-500', { text: 'Maquette : un appareil de démonstration tient lieu de boîtier ; ses numéros portent la mention « non fiscal ». Le poste de production n’a aucun adaptateur.' }));
           }
         }
         peindreEtat();
         var corps = el('div.space-y-3', null, [
-          el('label.block.text-sm.font-medium.text-slate-700', null, [ 'Mode de certification des factures', el('div.mt-1', null, [sel]) ]),
+          el('div', null, [ el('label.label', { for: 'f_mecefMode', text: 'Mode de certification des factures' }), el('div.mt-1', null, [sel]) ]),
           etatTxt,
           peut ? el('div.flex.gap-2', null, [K.commande('Enregistrer le mode', { variant: 'primary', icon: 'save', onclick: function () {
             var r = PR.mecef.definirMode(sel.value);
