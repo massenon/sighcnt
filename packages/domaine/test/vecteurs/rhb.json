@@ -27,6 +27,9 @@
    ],
    "cartes": [
     "Régimes de travail par catégorie",
+    "Régimes individuels (dérogations champ par champ)",
+    "Réglages du planning et des présences",
+    "Filtres avancés du planning",
     "Planning du 27/10/2026 au 02/11/2026",
     "Gardes par agent — les dix premiers",
     "Gardes par service",
@@ -134,6 +137,21 @@
      ]
     ]
    },
+   "individuels": null,
+   "reglages": "Réglages du planning et des présences Régler Circuit de validation Surveillant seul L’agent modifie directement son planning Non : il propose, le surveillant valide Une présence, une absence, un congé ou un ordre de mission non validé est visible mais ne compte pas. Un planning proposé ne change rien tant qu’il n’est pas validé.",
+   "filtres": [
+    "Recherche",
+    "Agent",
+    "Matricule",
+    "Service",
+    "Fonction",
+    "Régime",
+    "Type de vacation",
+    "Validation",
+    "Validé par",
+    "Du",
+    "Au"
+   ],
    "grille": {
     "entetes": [
      "AGENT",
@@ -459,151 +477,183 @@
     ]
    },
    "registre": {
-    "titre": null,
+    "titre": "Registre des vacations",
     "entetes": [
      "DATE",
+     "MAT.",
      "AGENT",
      "FONCTION",
      "SERVICE",
      "VACATION",
      "RÉGIME APPLIQUÉ",
-     "STATUT"
+     "VALIDATION",
+     "VALIDÉ PAR"
     ],
     "lignes": [
      [
       "05/09/2026",
+      "1",
       "BASSONGUI Chabi Séko",
       "Médecin",
       "Direction",
       "Garde 24h",
       "Médecins",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "5",
       "YENI M’PO Florent",
       "Médecin",
       "Médecine générale",
       "Repos 48h",
       "Médecins",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "6",
       "TAKI Orou",
       "Médecin",
       "Médecine générale",
       "Garde 24h",
       "Médecins",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "7",
       "AHOHOU Rodrigue",
       "Médecin",
       "Imagerie / Échographie",
       "Repos 48h",
       "Médecins",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "10",
       "GARBA Yahouza",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Repos 48h",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "11",
       "IDRISSOU ANIKI Baba-Toundé",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde soins",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "12",
       "NKOUÉ Jean",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde hospitalisation",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "13",
       "BAGRI Elvyre",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Repos 48h",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "14",
       "PARAISO Abdoul",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde soins",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "15",
       "OURTCHA Bertine",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde hospitalisation",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "16",
       "DOSSOU Moussa",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Repos 48h",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "17",
       "OROU YO Alimatou",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde soins",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "18",
       "BADO BANI A. B. Zoulehath",
       "Sage-femme",
       "Maternité",
       "Garde 24h",
       "Sages-femmes",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "19",
       "BOUKARI Nadège",
       "Sage-femme",
       "Maternité",
       "Repos 24h",
       "Sages-femmes",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "20",
       "ADAM Colette",
       "Sage-femme",
       "Maternité",
       "Garde 24h",
       "Sages-femmes",
-      "Validée"
+      "Validée",
+      "—"
      ]
     ],
     "pied": [],
@@ -613,6 +663,48 @@
    },
    "legende": "Légende : G — Garde 24h GH — Garde hospitalisation GS — Garde soins P — Permanence S — Soirée EGJ — Entretien général de la journée R — Repos 24h R48 — Repos 48h C — Congé A — Absence Rp — Remplacement INC — Incinération des déchets",
    "texteNote": "age de 1 à 15 sur 1394 enregistrements 1 2 3 4 5 Gardes par agent — les dix premiers Gardes par service Gardes par type de vacation Ces répartitions portent sur les vacations travaillées — gardes, soirées, permanences et incinération. Les repos et congés en sont exclus : les compter ferait apparaître comme les plus chargés les agents les plus reposés. Le détail par période se consulte à l’écran Statistiques de garde.",
+   "commandes": [
+    "Nouveau régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Déroger pour un agent",
+    "Régler",
+    "Effacer les filtres",
+    "Imprimer le planning",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+"
+   ],
    "impression": {
     "titre": "Planning de garde et de permanence",
     "sousTitre": "Semaine du 27/10/2026 au 02/11/2026",
@@ -887,9 +979,9 @@
      "au": "2026-10-30",
      "kpis": [
       {
-       "label": "Pointages de la période",
+       "label": "Pointages comptés",
        "valeur": "0",
-       "indice": null
+       "indice": "validés seulement"
       },
       {
        "label": "Présences",
@@ -905,9 +997,16 @@
        "label": "Absences",
        "valeur": "0",
        "indice": null
+      },
+      {
+       "label": "À valider",
+       "valeur": "0",
+       "indice": "visibles, ne comptent pas"
       }
      ],
      "cartes": [
+      "Réglages du planning et des présences",
+      "Filtres avancés des présences",
       "Statistiques"
      ],
      "table": null,
@@ -915,15 +1014,17 @@
     }
    ],
    "boutons": [
-    "Appliquer",
+    "Régler",
     "Mois en cours",
     "Sept derniers jours",
+    "Effacer les filtres",
     "Colonnes affichées",
     "Exporter",
     "Ajouter un pointage",
+    "Imprimer l’état",
     "Tout désélectionner"
    ],
-   "rangs": "Du Au Appliquer Mois en cours Sept derniers jours Pointages de la période 0 Présences 0 Retards 0 Critère NS 131 Absences 0 Les retards et absences non justifiées alimentent le critère « Ponctualité et assiduité » du barème NS 131, avec incidence directe sur la fiche d’évaluation et le solde du mois. Registre des présences — 30/09/2026 au 30/10/2026 État Présent Retard Absent Service Médecine générale Maternité Chirurgie Laboratoire Pharmacie Imagerie / Échographie Soins infirmiers Accueil Direction Comptabilité Colonnes Exporter Ajouter un pointage Aucun enregistrement. Aucun enregistrement Statistiques Aucun pointage sur la plage retenue."
+   "rangs": "Réglages du planning et des présences Régler Circuit de validation Surveillant seul L’agent modifie directement son planning Non : il propose, le surveillant valide Une présence, une absence, un congé ou un ordre de mission non validé est visible mais ne compte pas. Un planning proposé ne change rien tant qu’il n’est pas validé. Filtres avancés des présences Du Au Recherche Agent Tous les agents ADAM Alimatou ADAM Colette AGOSSOU Yahouza AHOHOU Chantal AHOHOU Rodrigue BADO BANI A. B. Zoulehath BAGRI Elvyre BAKO Chantal BASSONGUI Chabi Séko BOUKARI Fatouma BOUKARI Nadège DAOUDA Justine DAOUDA Zoukanéri DIEYABIDI Aïssatou DOSSOU Moussa GARBA Yahouza GBEDJI Hervé GBEDJI Zoukanéri IDRISSOU ANIKI"
   },
   "evaluations": {
    "kpis": [
@@ -3424,6 +3525,9 @@
    ],
    "cartes": [
     "Régimes de travail par catégorie",
+    "Régimes individuels (dérogations champ par champ)",
+    "Réglages du planning et des présences",
+    "Filtres avancés du planning",
     "Planning du 13/08/2026 au 19/08/2026",
     "Gardes par agent — les dix premiers",
     "Gardes par service",
@@ -3531,6 +3635,21 @@
      ]
     ]
    },
+   "individuels": null,
+   "reglages": "Réglages du planning et des présences Régler Circuit de validation Surveillant seul L’agent modifie directement son planning Non : il propose, le surveillant valide Une présence, une absence, un congé ou un ordre de mission non validé est visible mais ne compte pas. Un planning proposé ne change rien tant qu’il n’est pas validé.",
+   "filtres": [
+    "Recherche",
+    "Agent",
+    "Matricule",
+    "Service",
+    "Fonction",
+    "Régime",
+    "Type de vacation",
+    "Validation",
+    "Validé par",
+    "Du",
+    "Au"
+   ],
    "grille": {
     "entetes": [
      "AGENT",
@@ -3856,151 +3975,183 @@
     ]
    },
    "registre": {
-    "titre": null,
+    "titre": "Registre des vacations",
     "entetes": [
      "DATE",
+     "MAT.",
      "AGENT",
      "FONCTION",
      "SERVICE",
      "VACATION",
      "RÉGIME APPLIQUÉ",
-     "STATUT"
+     "VALIDATION",
+     "VALIDÉ PAR"
     ],
     "lignes": [
      [
       "05/09/2026",
+      "1",
       "BASSONGUI Chabi Séko",
       "Médecin",
       "Direction",
       "Garde 24h",
       "Médecins",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "5",
       "YENI M’PO Florent",
       "Médecin",
       "Médecine générale",
       "Repos 48h",
       "Médecins",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "6",
       "TAKI Orou",
       "Médecin",
       "Médecine générale",
       "Garde 24h",
       "Médecins",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "7",
       "AHOHOU Rodrigue",
       "Médecin",
       "Imagerie / Échographie",
       "Repos 48h",
       "Médecins",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "10",
       "GARBA Yahouza",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Repos 48h",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "11",
       "IDRISSOU ANIKI Baba-Toundé",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde soins",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "12",
       "NKOUÉ Jean",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde hospitalisation",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "13",
       "BAGRI Elvyre",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Repos 48h",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "14",
       "PARAISO Abdoul",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde soins",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "15",
       "OURTCHA Bertine",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde hospitalisation",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "16",
       "DOSSOU Moussa",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Repos 48h",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "17",
       "OROU YO Alimatou",
       "Infirmier(ère)",
       "Soins infirmiers",
       "Garde soins",
       "Infirmiers",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "18",
       "BADO BANI A. B. Zoulehath",
       "Sage-femme",
       "Maternité",
       "Garde 24h",
       "Sages-femmes",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "19",
       "BOUKARI Nadège",
       "Sage-femme",
       "Maternité",
       "Repos 24h",
       "Sages-femmes",
-      "Validée"
+      "Validée",
+      "—"
      ],
      [
       "05/09/2026",
+      "20",
       "ADAM Colette",
       "Sage-femme",
       "Maternité",
       "Garde 24h",
       "Sages-femmes",
-      "Validée"
+      "Validée",
+      "—"
      ]
     ],
     "pied": [],
@@ -4010,6 +4161,48 @@
    },
    "legende": "Légende : G — Garde 24h GH — Garde hospitalisation GS — Garde soins P — Permanence S — Soirée EGJ — Entretien général de la journée R — Repos 24h R48 — Repos 48h C — Congé A — Absence Rp — Remplacement INC — Incinération des déchets",
    "texteNote": "age de 1 à 15 sur 1394 enregistrements 1 2 3 4 5 Gardes par agent — les dix premiers Gardes par service Gardes par type de vacation Ces répartitions portent sur les vacations travaillées — gardes, soirées, permanences et incinération. Les repos et congés en sont exclus : les compter ferait apparaître comme les plus chargés les agents les plus reposés. Le détail par période se consulte à l’écran Statistiques de garde.",
+   "commandes": [
+    "Nouveau régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Modifier ce régime",
+    "Archiver ce régime",
+    "Déroger pour un agent",
+    "Régler",
+    "Effacer les filtres",
+    "Imprimer le planning",
+    "Repos 24h",
+    "Garde 24h",
+    "Repos 24h",
+    "Garde 24h",
+    "Repos 24h",
+    "Garde 24h",
+    "Repos 24h",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "+",
+    "Garde 24h",
+    "Repos 48h",
+    "Garde 24h",
+    "Repos 48h",
+    "Garde 24h"
+   ],
    "impression": {
     "titre": "Planning de garde et de permanence",
     "sousTitre": "Semaine du 13/08/2026 au 19/08/2026",
@@ -4046,6 +4239,2348 @@
       "role": "Le Directeur Médical",
       "nom": "BASSONGUI Chabi Séko"
      }
+    ]
+   }
+  },
+  "planningFiltres": {
+   "options": {
+    "Agent": [
+     [
+      "",
+      "Tous les agents"
+     ],
+     [
+      "EMP20",
+      "ADAM Colette"
+     ],
+     [
+      "EMP09",
+      "AGOSSOU Yahouza"
+     ],
+     [
+      "EMP07",
+      "AHOHOU Rodrigue"
+     ],
+     [
+      "EMP18",
+      "BADO BANI A. B. Zoulehath"
+     ],
+     [
+      "EMP13",
+      "BAGRI Elvyre"
+     ],
+     [
+      "EMP42",
+      "BAKO Chantal"
+     ],
+     [
+      "EMP01",
+      "BASSONGUI Chabi Séko"
+     ],
+     [
+      "EMP19",
+      "BOUKARI Nadège"
+     ],
+     [
+      "EMP26",
+      "DAOUDA Justine"
+     ],
+     [
+      "EMP22",
+      "DAOUDA Zoukanéri"
+     ],
+     [
+      "EMP16",
+      "DOSSOU Moussa"
+     ],
+     [
+      "EMP10",
+      "GARBA Yahouza"
+     ],
+     [
+      "EMP28",
+      "GBEDJI Zoukanéri"
+     ],
+     [
+      "EMP11",
+      "IDRISSOU ANIKI Baba-Toundé"
+     ],
+     [
+      "EMP41",
+      "ISSA Rabiatou"
+     ],
+     [
+      "EMP08",
+      "KINNOU A. Ganiou"
+     ],
+     [
+      "EMP12",
+      "NKOUÉ Jean"
+     ],
+     [
+      "EMP17",
+      "OROU YO Alimatou"
+     ],
+     [
+      "EMP43",
+      "OROU YO Bertine"
+     ],
+     [
+      "EMP15",
+      "OURTCHA Bertine"
+     ],
+     [
+      "EMP27",
+      "OURTCHA Marguerite"
+     ],
+     [
+      "EMP38",
+      "OURTCHA Tereyama"
+     ],
+     [
+      "EMP14",
+      "PARAISO Abdoul"
+     ],
+     [
+      "EMP39",
+      "SOULE Edmond"
+     ],
+     [
+      "EMP24",
+      "TAKI Bibata"
+     ],
+     [
+      "EMP06",
+      "TAKI Orou"
+     ],
+     [
+      "EMP21",
+      "TEPA Séraphine"
+     ],
+     [
+      "EMP25",
+      "WOROU Salamatou"
+     ],
+     [
+      "EMP40",
+      "YARO Orou"
+     ],
+     [
+      "EMP05",
+      "YENI M’PO Florent"
+     ],
+     [
+      "EMP23",
+      "YENI Rachida"
+     ]
+    ],
+    "Matricule": [
+     [
+      "",
+      "Tous les matricules"
+     ],
+     [
+      "20",
+      "20 · ADAM Colette"
+     ],
+     [
+      "9",
+      "9 · AGOSSOU Yahouza"
+     ],
+     [
+      "7",
+      "7 · AHOHOU Rodrigue"
+     ],
+     [
+      "18",
+      "18 · BADO BANI A. B. Zoulehath"
+     ],
+     [
+      "13",
+      "13 · BAGRI Elvyre"
+     ],
+     [
+      "42",
+      "42 · BAKO Chantal"
+     ],
+     [
+      "1",
+      "1 · BASSONGUI Chabi Séko"
+     ],
+     [
+      "19",
+      "19 · BOUKARI Nadège"
+     ],
+     [
+      "26",
+      "26 · DAOUDA Justine"
+     ],
+     [
+      "22",
+      "22 · DAOUDA Zoukanéri"
+     ],
+     [
+      "16",
+      "16 · DOSSOU Moussa"
+     ],
+     [
+      "10",
+      "10 · GARBA Yahouza"
+     ],
+     [
+      "28",
+      "28 · GBEDJI Zoukanéri"
+     ],
+     [
+      "11",
+      "11 · IDRISSOU ANIKI Baba-Toundé"
+     ],
+     [
+      "41",
+      "41 · ISSA Rabiatou"
+     ],
+     [
+      "8",
+      "8 · KINNOU A. Ganiou"
+     ],
+     [
+      "12",
+      "12 · NKOUÉ Jean"
+     ],
+     [
+      "17",
+      "17 · OROU YO Alimatou"
+     ],
+     [
+      "43",
+      "43 · OROU YO Bertine"
+     ],
+     [
+      "15",
+      "15 · OURTCHA Bertine"
+     ],
+     [
+      "27",
+      "27 · OURTCHA Marguerite"
+     ],
+     [
+      "38",
+      "38 · OURTCHA Tereyama"
+     ],
+     [
+      "14",
+      "14 · PARAISO Abdoul"
+     ],
+     [
+      "39",
+      "39 · SOULE Edmond"
+     ],
+     [
+      "24",
+      "24 · TAKI Bibata"
+     ],
+     [
+      "6",
+      "6 · TAKI Orou"
+     ],
+     [
+      "21",
+      "21 · TEPA Séraphine"
+     ],
+     [
+      "25",
+      "25 · WOROU Salamatou"
+     ],
+     [
+      "40",
+      "40 · YARO Orou"
+     ],
+     [
+      "5",
+      "5 · YENI M’PO Florent"
+     ],
+     [
+      "23",
+      "23 · YENI Rachida"
+     ]
+    ],
+    "Service": [
+     [
+      "",
+      "Tous les services"
+     ],
+     [
+      "Médecine générale",
+      "Médecine générale"
+     ],
+     [
+      "Maternité",
+      "Maternité"
+     ],
+     [
+      "Chirurgie",
+      "Chirurgie"
+     ],
+     [
+      "Laboratoire",
+      "Laboratoire"
+     ],
+     [
+      "Pharmacie",
+      "Pharmacie"
+     ],
+     [
+      "Imagerie / Échographie",
+      "Imagerie / Échographie"
+     ],
+     [
+      "Soins infirmiers",
+      "Soins infirmiers"
+     ],
+     [
+      "Accueil",
+      "Accueil"
+     ],
+     [
+      "Direction",
+      "Direction"
+     ],
+     [
+      "Comptabilité",
+      "Comptabilité"
+     ]
+    ],
+    "Fonction": [
+     [
+      "",
+      "Toutes les fonctions"
+     ],
+     [
+      "medecin",
+      "Médecin"
+     ],
+     [
+      "infirmier",
+      "Infirmier(ère)"
+     ],
+     [
+      "sage_femme",
+      "Sage-femme"
+     ],
+     [
+      "aide_soignant",
+      "Aide-soignant(e)"
+     ],
+     [
+      "tsl",
+      "TSL (Technicien Supérieur de Laboratoire)"
+     ],
+     [
+      "securite",
+      "Agent de sécurité"
+     ],
+     [
+      "entretien",
+      "Agent d’entretien"
+     ]
+    ],
+    "Régime": [
+     [
+      "",
+      "Tous les régimes"
+     ],
+     [
+      "Médecins",
+      "Médecins"
+     ],
+     [
+      "Infirmiers",
+      "Infirmiers"
+     ],
+     [
+      "Sages-femmes",
+      "Sages-femmes"
+     ],
+     [
+      "Aides-soignants",
+      "Aides-soignants"
+     ],
+     [
+      "Secrétaires médicaux et caisse",
+      "Secrétaires médicaux et caisse"
+     ],
+     [
+      "Agents d’entretien",
+      "Agents d’entretien"
+     ],
+     [
+      "Agents de sécurité",
+      "Agents de sécurité"
+     ],
+     [
+      "Incinération des déchets de l’hôpital",
+      "Incinération des déchets de l’hôpital"
+     ],
+     [
+      "__individuel",
+      "Dérogation individuelle"
+     ]
+    ],
+    "Type de vacation": [
+     [
+      "",
+      "Tous les types"
+     ],
+     [
+      "garde",
+      "Garde 24h"
+     ],
+     [
+      "garde_hospi",
+      "Garde hospitalisation"
+     ],
+     [
+      "garde_soins",
+      "Garde soins"
+     ],
+     [
+      "permanence",
+      "Permanence"
+     ],
+     [
+      "soiree",
+      "Soirée"
+     ],
+     [
+      "entretien_general",
+      "Entretien général de la journée"
+     ],
+     [
+      "repos24",
+      "Repos 24h"
+     ],
+     [
+      "repos48",
+      "Repos 48h"
+     ],
+     [
+      "conge",
+      "Congé"
+     ],
+     [
+      "absence",
+      "Absence"
+     ],
+     [
+      "remplacement",
+      "Remplacement"
+     ],
+     [
+      "incineration",
+      "Incinération des déchets"
+     ]
+    ],
+    "Validation": [
+     [
+      "",
+      "Validées ou non"
+     ],
+     [
+      "validee",
+      "Validées"
+     ],
+     [
+      "a_valider",
+      "À valider"
+     ]
+    ],
+    "Validé par": [
+     [
+      "",
+      "Tous les validateurs"
+     ],
+     [
+      "__aucun",
+      "Validation non renseignée (avant le circuit)"
+     ]
+    ]
+   },
+   "cas": [
+    {
+     "nom": "sans filtre",
+     "reglage": {},
+     "vue": {
+      "grilleAgents": 31,
+      "grilleMasquees": 0,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations",
+      "registreLignes": [
+       [
+        "05/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "5",
+        "YENI M’PO Florent",
+        "Médecin",
+        "Médecine générale",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "6",
+        "TAKI Orou",
+        "Médecin",
+        "Médecine générale",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "7",
+        "AHOHOU Rodrigue",
+        "Médecin",
+        "Imagerie / Échographie",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "11",
+        "IDRISSOU ANIKI Baba-Toundé",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "12",
+        "NKOUÉ Jean",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "13",
+        "BAGRI Elvyre",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "14",
+        "PARAISO Abdoul",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "15",
+        "OURTCHA Bertine",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "16",
+        "DOSSOU Moussa",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "17",
+        "OROU YO Alimatou",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "18",
+        "BADO BANI A. B. Zoulehath",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "19",
+        "BOUKARI Nadège",
+        "Sage-femme",
+        "Maternité",
+        "Repos 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "20",
+        "ADAM Colette",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    },
+    {
+     "nom": "un agent",
+     "reglage": {
+      "Agent": "EMP01"
+     },
+     "vue": {
+      "grilleAgents": 1,
+      "grilleMasquees": 0,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": [
+       [
+        "05/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "03/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "02/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "01/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "31/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "30/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "29/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "28/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "27/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "26/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "25/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "24/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "23/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "22/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    },
+    {
+     "nom": "une fonction",
+     "reglage": {
+      "Fonction": "infirmier"
+     },
+     "vue": {
+      "grilleAgents": 8,
+      "grilleMasquees": 0,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": [
+       [
+        "05/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "11",
+        "IDRISSOU ANIKI Baba-Toundé",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "12",
+        "NKOUÉ Jean",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "13",
+        "BAGRI Elvyre",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "14",
+        "PARAISO Abdoul",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "15",
+        "OURTCHA Bertine",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "16",
+        "DOSSOU Moussa",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "17",
+        "OROU YO Alimatou",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "11",
+        "IDRISSOU ANIKI Baba-Toundé",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "12",
+        "NKOUÉ Jean",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "13",
+        "BAGRI Elvyre",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "14",
+        "PARAISO Abdoul",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "15",
+        "OURTCHA Bertine",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "16",
+        "DOSSOU Moussa",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    },
+    {
+     "nom": "un type de vacation",
+     "reglage": {
+      "Type de vacation": "garde"
+     },
+     "vue": {
+      "grilleAgents": 31,
+      "grilleMasquees": 153,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": [
+       [
+        "05/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "6",
+        "TAKI Orou",
+        "Médecin",
+        "Médecine générale",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "18",
+        "BADO BANI A. B. Zoulehath",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "20",
+        "ADAM Colette",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "22",
+        "DAOUDA Zoukanéri",
+        "Aide-soignant(e)",
+        "Soins infirmiers",
+        "Garde 24h",
+        "Aides-soignants",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "25",
+        "WOROU Salamatou",
+        "Aide-soignant(e)",
+        "Soins infirmiers",
+        "Garde 24h",
+        "Aides-soignants",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "28",
+        "GBEDJI Zoukanéri",
+        "Aide-soignant(e)",
+        "Soins infirmiers",
+        "Garde 24h",
+        "Aides-soignants",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "34",
+        "SAMBIENI Marguerite",
+        "Caissière",
+        "Accueil",
+        "Garde 24h",
+        "Secrétaires médicaux et caisse",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "35",
+        "AHOHOU Chantal",
+        "Accueil / Secrétaire médical",
+        "Accueil",
+        "Garde 24h",
+        "Secrétaires médicaux et caisse",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "39",
+        "SOULE Edmond",
+        "Agent de sécurité",
+        "Direction",
+        "Garde 24h",
+        "Agents de sécurité",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "5",
+        "YENI M’PO Florent",
+        "Médecin",
+        "Médecine générale",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "7",
+        "AHOHOU Rodrigue",
+        "Médecin",
+        "Imagerie / Échographie",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "19",
+        "BOUKARI Nadège",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "23",
+        "YENI Rachida",
+        "Aide-soignant(e)",
+        "Soins infirmiers",
+        "Garde 24h",
+        "Aides-soignants",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "26",
+        "DAOUDA Justine",
+        "Aide-soignant(e)",
+        "Soins infirmiers",
+        "Garde 24h",
+        "Aides-soignants",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    },
+    {
+     "nom": "une plage",
+     "reglage": {
+      "Du": "2026-08-10",
+      "Au": "2026-08-16"
+     },
+     "vue": {
+      "grilleAgents": 31,
+      "grilleMasquees": 0,
+      "grilleVide": false,
+      "titreGrille": "Planning du 10/08/2026 au 16/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": [
+       [
+        "16/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "5",
+        "YENI M’PO Florent",
+        "Médecin",
+        "Médecine générale",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "6",
+        "TAKI Orou",
+        "Médecin",
+        "Médecine générale",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "7",
+        "AHOHOU Rodrigue",
+        "Médecin",
+        "Imagerie / Échographie",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "11",
+        "IDRISSOU ANIKI Baba-Toundé",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "12",
+        "NKOUÉ Jean",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "13",
+        "BAGRI Elvyre",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "14",
+        "PARAISO Abdoul",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "15",
+        "OURTCHA Bertine",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "16",
+        "DOSSOU Moussa",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "17",
+        "OROU YO Alimatou",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "18",
+        "BADO BANI A. B. Zoulehath",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "19",
+        "BOUKARI Nadège",
+        "Sage-femme",
+        "Maternité",
+        "Repos 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "16/08/2026",
+        "20",
+        "ADAM Colette",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    },
+    {
+     "nom": "une fonction et un type",
+     "reglage": {
+      "Fonction": "infirmier",
+      "Type de vacation": "garde_hospi"
+     },
+     "vue": {
+      "grilleAgents": 8,
+      "grilleMasquees": 37,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": [
+       [
+        "05/09/2026",
+        "12",
+        "NKOUÉ Jean",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "15",
+        "OURTCHA Bertine",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "13",
+        "BAGRI Elvyre",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "16",
+        "DOSSOU Moussa",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "03/09/2026",
+        "11",
+        "IDRISSOU ANIKI Baba-Toundé",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "03/09/2026",
+        "14",
+        "PARAISO Abdoul",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "03/09/2026",
+        "17",
+        "OROU YO Alimatou",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "02/09/2026",
+        "12",
+        "NKOUÉ Jean",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "02/09/2026",
+        "15",
+        "OURTCHA Bertine",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "01/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "01/09/2026",
+        "13",
+        "BAGRI Elvyre",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "01/09/2026",
+        "16",
+        "DOSSOU Moussa",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "31/08/2026",
+        "11",
+        "IDRISSOU ANIKI Baba-Toundé",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "31/08/2026",
+        "14",
+        "PARAISO Abdoul",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    },
+    {
+     "nom": "à valider (aucune au jeu)",
+     "reglage": {
+      "Validation": "a_valider"
+     },
+     "vue": {
+      "grilleAgents": 31,
+      "grilleMasquees": 203,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": []
+     }
+    },
+    {
+     "nom": "validées",
+     "reglage": {
+      "Validation": "validee"
+     },
+     "vue": {
+      "grilleAgents": 31,
+      "grilleMasquees": 0,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": [
+       [
+        "05/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "5",
+        "YENI M’PO Florent",
+        "Médecin",
+        "Médecine générale",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "6",
+        "TAKI Orou",
+        "Médecin",
+        "Médecine générale",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "7",
+        "AHOHOU Rodrigue",
+        "Médecin",
+        "Imagerie / Échographie",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "11",
+        "IDRISSOU ANIKI Baba-Toundé",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "12",
+        "NKOUÉ Jean",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "13",
+        "BAGRI Elvyre",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "14",
+        "PARAISO Abdoul",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "15",
+        "OURTCHA Bertine",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "16",
+        "DOSSOU Moussa",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "17",
+        "OROU YO Alimatou",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "18",
+        "BADO BANI A. B. Zoulehath",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "19",
+        "BOUKARI Nadège",
+        "Sage-femme",
+        "Maternité",
+        "Repos 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "20",
+        "ADAM Colette",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    },
+    {
+     "nom": "validées avant le circuit",
+     "reglage": {
+      "Validé par": "__aucun"
+     },
+     "vue": {
+      "grilleAgents": 31,
+      "grilleMasquees": 0,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": [
+       [
+        "05/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "5",
+        "YENI M’PO Florent",
+        "Médecin",
+        "Médecine générale",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "6",
+        "TAKI Orou",
+        "Médecin",
+        "Médecine générale",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "7",
+        "AHOHOU Rodrigue",
+        "Médecin",
+        "Imagerie / Échographie",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "11",
+        "IDRISSOU ANIKI Baba-Toundé",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "12",
+        "NKOUÉ Jean",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "13",
+        "BAGRI Elvyre",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "14",
+        "PARAISO Abdoul",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "15",
+        "OURTCHA Bertine",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "16",
+        "DOSSOU Moussa",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "17",
+        "OROU YO Alimatou",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "18",
+        "BADO BANI A. B. Zoulehath",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "19",
+        "BOUKARI Nadège",
+        "Sage-femme",
+        "Maternité",
+        "Repos 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ],
+       [
+        "05/09/2026",
+        "20",
+        "ADAM Colette",
+        "Sage-femme",
+        "Maternité",
+        "Garde 24h",
+        "Sages-femmes",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    },
+    {
+     "nom": "recherche",
+     "reglage": {
+      "Recherche": "BASSONGUI"
+     },
+     "vue": {
+      "grilleAgents": 1,
+      "grilleMasquees": 0,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": [
+       [
+        "05/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "03/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "02/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "01/09/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "31/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "30/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "29/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "28/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "27/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "26/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "25/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "24/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "23/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Repos 48h",
+        "Médecins",
+        "Validée",
+        "—"
+       ],
+       [
+        "22/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Médecin",
+        "Direction",
+        "Garde 24h",
+        "Médecins",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    },
+    {
+     "nom": "dérogation individuelle (aucune au jeu)",
+     "reglage": {
+      "Régime": "__individuel"
+     },
+     "vue": {
+      "grilleAgents": 0,
+      "grilleMasquees": 0,
+      "grilleVide": true,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": []
+     }
+    },
+    {
+     "nom": "un matricule",
+     "reglage": {
+      "Matricule": "10"
+     },
+     "vue": {
+      "grilleAgents": 1,
+      "grilleMasquees": 0,
+      "grilleVide": false,
+      "titreGrille": "Planning du 13/08/2026 au 19/08/2026",
+      "registreTitre": "Registre des vacations (filtré)",
+      "registreLignes": [
+       [
+        "05/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "04/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "03/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "02/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "01/09/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "31/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "30/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "29/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "28/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "27/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "26/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "25/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "24/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Repos 48h",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "23/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde hospitalisation",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ],
+       [
+        "22/08/2026",
+        "10",
+        "GARBA Yahouza",
+        "Infirmier(ère)",
+        "Soins infirmiers",
+        "Garde soins",
+        "Infirmiers",
+        "Validée",
+        "—"
+       ]
+      ]
+     }
+    }
+   ],
+   "impressionRegistre": {
+    "titre": "Registre des vacations",
+    "sousTitre": "Extrait filtré du registre",
+    "cartouche": [
+     [
+      "Vacations retenues",
+      "30"
+     ],
+     [
+      "Établi par",
+      "BASSONGUI Chabi Séko"
+     ],
+     [
+      "Date d’édition",
+      "16/08/2026"
+     ]
+    ],
+    "contenu": "DateAgentFonctionServiceVacationRégimeValidationValidé par20/08/2026GARBA YahouzaInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—20/08/2026BAGRI ElvyreInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—20/08/2026DOSSOU MoussaInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—19/08/2026IDRISSOU ANIKI Baba-ToundéInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—19/08/2026PARAISO AbdoulInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—19/08/2026OROU YO AlimatouInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—18/08/2026NKOUÉ JeanInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—18/08/2026OURTCHA BertineInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—17/08/2026GARBA YahouzaInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—17/08/2026BAGRI ElvyreInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—17/08/2026DOSSOU MoussaInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—16/08/2026IDRISSOU ANIKI Baba-ToundéInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—16/08/2026PARAISO AbdoulInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—16/08/2026OROU YO AlimatouInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—15/08/2026NKOUÉ JeanInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—15/08/2026OURTCHA BertineInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—14/08/2026GARBA YahouzaInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—14/08/2026BAGRI ElvyreInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—14/08/2026DOSSOU MoussaInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—13/08/2026IDRISSOU ANIKI Baba-ToundéInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—13/08/2026PARAISO AbdoulInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—13/08/2026OROU YO AlimatouInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—12/08/2026NKOUÉ JeanInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—12/08/2026OURTCHA BertineInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—11/08/2026GARBA YahouzaInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—11/08/2026BAGRI ElvyreInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—11/08/2026DOSSOU MoussaInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—10/08/2026IDRISSOU ANIKI Baba-ToundéInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—10/08/2026PARAISO AbdoulInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—10/08/2026OROU YO AlimatouInfirmier(ère)Soins infirmiersGarde hospitalisation—Validée—",
+    "tables": [],
+    "signatures": [
+     {
+      "role": "Le Surveillant Général",
+      "nom": "GARBA Yahouza"
+     },
+     {
+      "role": "La Directrice Administrative",
+      "nom": "TAKI Alimatou"
+     }
+    ],
+    "filtresPage": [
+     [
+      "Fonction",
+      "Infirmier(ère)"
+     ],
+     [
+      "Type de vacation",
+      "Garde hospitalisation"
+     ],
+     [
+      "Du",
+      "10/08/2026"
+     ],
+     [
+      "Au",
+      "20/08/2026"
+     ]
     ]
    }
   },
@@ -9166,9 +11701,9 @@
      "au": "2026-08-16",
      "kpis": [
       {
-       "label": "Pointages de la période",
+       "label": "Pointages comptés",
        "valeur": "1 100",
-       "indice": null
+       "indice": "validés seulement"
       },
       {
        "label": "Présences",
@@ -9184,9 +11719,16 @@
        "label": "Absences",
        "valeur": "61",
        "indice": null
+      },
+      {
+       "label": "À valider",
+       "valeur": "0",
+       "indice": "visibles, ne comptent pas"
       }
      ],
      "cartes": [
+      "Réglages du planning et des présences",
+      "Filtres avancés des présences",
       "Taux de présence par service",
       "Répartition des pointages",
       "Volume de pointages par service",
@@ -9203,6 +11745,7 @@
        "ARRIVÉE",
        "DÉPART",
        "MOTIF",
+       "VALIDATION",
        "ACTIONS"
       ],
       "lignes": [
@@ -9215,6 +11758,7 @@
         "07:55",
         "16:40",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9226,6 +11770,7 @@
         "07:44",
         "18:30",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9237,6 +11782,7 @@
         "07:43",
         "17:58",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9248,6 +11794,7 @@
         "07:55",
         "17:09",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9259,6 +11806,7 @@
         "07:59",
         "17:48",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9270,6 +11818,7 @@
         "07:46",
         "17:17",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9281,6 +11830,7 @@
         "07:50",
         "17:44",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9292,6 +11842,7 @@
         "07:55",
         "16:55",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9303,6 +11854,7 @@
         "07:42",
         "16:49",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9314,6 +11866,7 @@
         "07:43",
         "16:04",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9325,6 +11878,7 @@
         "07:44",
         "16:21",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9336,6 +11890,7 @@
         "07:50",
         "17:17",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9347,6 +11902,7 @@
         "07:44",
         "18:12",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9358,6 +11914,7 @@
         "07:50",
         "17:26",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9369,6 +11926,7 @@
         "07:59",
         "17:35",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9380,6 +11938,7 @@
         "07:51",
         "17:44",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9391,6 +11950,7 @@
         "07:56",
         "16:31",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9402,6 +11962,7 @@
         "07:51",
         "16:12",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9413,6 +11974,7 @@
         "07:58",
         "16:06",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9424,12 +11986,14 @@
         "07:57",
         "18:58",
         "—",
+        "Validé",
         ""
        ]
       ],
       "pied": [],
       "boutons": [
        [
+        "Régulariser ce pointage",
         "Modifier",
         "Archiver"
        ]
@@ -9445,9 +12009,9 @@
      "au": "2026-08-16",
      "kpis": [
       {
-       "label": "Pointages de la période",
+       "label": "Pointages comptés",
        "valeur": "704",
-       "indice": null
+       "indice": "validés seulement"
       },
       {
        "label": "Présences",
@@ -9463,9 +12027,16 @@
        "label": "Absences",
        "valeur": "38",
        "indice": null
+      },
+      {
+       "label": "À valider",
+       "valeur": "0",
+       "indice": "visibles, ne comptent pas"
       }
      ],
      "cartes": [
+      "Réglages du planning et des présences",
+      "Filtres avancés des présences",
       "Taux de présence par service",
       "Répartition des pointages",
       "Volume de pointages par service",
@@ -9482,6 +12053,7 @@
        "ARRIVÉE",
        "DÉPART",
        "MOTIF",
+       "VALIDATION",
        "ACTIONS"
       ],
       "lignes": [
@@ -9494,6 +12066,7 @@
         "07:55",
         "16:40",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9505,6 +12078,7 @@
         "07:44",
         "18:30",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9516,6 +12090,7 @@
         "07:43",
         "17:58",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9527,6 +12102,7 @@
         "07:55",
         "17:09",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9538,6 +12114,7 @@
         "07:59",
         "17:48",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9549,6 +12126,7 @@
         "07:46",
         "17:17",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9560,6 +12138,7 @@
         "07:50",
         "17:44",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9571,6 +12150,7 @@
         "07:55",
         "16:55",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9582,6 +12162,7 @@
         "07:42",
         "16:49",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9593,6 +12174,7 @@
         "07:43",
         "16:04",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9604,6 +12186,7 @@
         "07:44",
         "16:21",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9615,6 +12198,7 @@
         "07:50",
         "17:17",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9626,6 +12210,7 @@
         "07:44",
         "18:12",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9637,6 +12222,7 @@
         "07:50",
         "17:26",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9648,6 +12234,7 @@
         "07:59",
         "17:35",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9659,6 +12246,7 @@
         "07:51",
         "17:44",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9670,6 +12258,7 @@
         "07:56",
         "16:31",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9681,6 +12270,7 @@
         "07:51",
         "16:12",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9692,6 +12282,7 @@
         "07:58",
         "16:06",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9703,12 +12294,14 @@
         "07:57",
         "18:58",
         "—",
+        "Validé",
         ""
        ]
       ],
       "pied": [],
       "boutons": [
        [
+        "Régulariser ce pointage",
         "Modifier",
         "Archiver"
        ]
@@ -9724,9 +12317,9 @@
      "au": "2026-08-16",
      "kpis": [
       {
-       "label": "Pointages de la période",
+       "label": "Pointages comptés",
        "valeur": "308",
-       "indice": null
+       "indice": "validés seulement"
       },
       {
        "label": "Présences",
@@ -9742,9 +12335,16 @@
        "label": "Absences",
        "valeur": "18",
        "indice": null
+      },
+      {
+       "label": "À valider",
+       "valeur": "0",
+       "indice": "visibles, ne comptent pas"
       }
      ],
      "cartes": [
+      "Réglages du planning et des présences",
+      "Filtres avancés des présences",
       "Taux de présence par service",
       "Répartition des pointages",
       "Volume de pointages par service",
@@ -9761,6 +12361,7 @@
        "ARRIVÉE",
        "DÉPART",
        "MOTIF",
+       "VALIDATION",
        "ACTIONS"
       ],
       "lignes": [
@@ -9773,6 +12374,7 @@
         "07:55",
         "16:40",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9784,6 +12386,7 @@
         "07:44",
         "18:30",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9795,6 +12398,7 @@
         "07:43",
         "17:58",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9806,6 +12410,7 @@
         "07:55",
         "17:09",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9817,6 +12422,7 @@
         "07:59",
         "17:48",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9828,6 +12434,7 @@
         "07:46",
         "17:17",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9839,6 +12446,7 @@
         "07:50",
         "17:44",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9850,6 +12458,7 @@
         "07:55",
         "16:55",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9861,6 +12470,7 @@
         "07:42",
         "16:49",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9872,6 +12482,7 @@
         "07:43",
         "16:04",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9883,6 +12494,7 @@
         "07:44",
         "16:21",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9894,6 +12506,7 @@
         "07:50",
         "17:17",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9905,6 +12518,7 @@
         "07:44",
         "18:12",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9916,6 +12530,7 @@
         "07:50",
         "17:26",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9927,6 +12542,7 @@
         "07:59",
         "17:35",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9938,6 +12554,7 @@
         "07:51",
         "17:44",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9949,6 +12566,7 @@
         "07:56",
         "16:31",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9960,6 +12578,7 @@
         "07:51",
         "16:12",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9971,6 +12590,7 @@
         "07:58",
         "16:06",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -9982,12 +12602,14 @@
         "07:57",
         "18:58",
         "—",
+        "Validé",
         ""
        ]
       ],
       "pied": [],
       "boutons": [
        [
+        "Régulariser ce pointage",
         "Modifier",
         "Archiver"
        ]
@@ -10004,9 +12626,9 @@
      "au": "2026-08-10",
      "kpis": [
       {
-       "label": "Pointages de la période",
+       "label": "Pointages comptés",
        "valeur": "440",
-       "indice": null
+       "indice": "validés seulement"
       },
       {
        "label": "Présences",
@@ -10022,9 +12644,16 @@
        "label": "Absences",
        "valeur": "23",
        "indice": null
+      },
+      {
+       "label": "À valider",
+       "valeur": "0",
+       "indice": "visibles, ne comptent pas"
       }
      ],
      "cartes": [
+      "Réglages du planning et des présences",
+      "Filtres avancés des présences",
       "Taux de présence par service",
       "Répartition des pointages",
       "Volume de pointages par service",
@@ -10041,6 +12670,7 @@
        "ARRIVÉE",
        "DÉPART",
        "MOTIF",
+       "VALIDATION",
        "ACTIONS"
       ],
       "lignes": [
@@ -10053,6 +12683,7 @@
         "07:53",
         "18:16",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10064,6 +12695,7 @@
         "07:50",
         "17:10",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10075,6 +12707,7 @@
         "08:26",
         "17:56",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10086,6 +12719,7 @@
         "08:28",
         "18:40",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10097,6 +12731,7 @@
         "07:42",
         "18:34",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10108,6 +12743,7 @@
         "07:48",
         "16:47",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10119,6 +12755,7 @@
         "—",
         "—",
         "Absence non justifiée",
+        "Validé",
         ""
        ],
        [
@@ -10130,6 +12767,7 @@
         "07:56",
         "18:21",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10141,6 +12779,7 @@
         "07:51",
         "17:49",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10152,6 +12791,7 @@
         "07:59",
         "16:05",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10163,6 +12803,7 @@
         "07:41",
         "16:27",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10174,6 +12815,7 @@
         "08:54",
         "18:04",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10185,6 +12827,7 @@
         "07:44",
         "16:30",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10196,6 +12839,7 @@
         "07:46",
         "17:01",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10207,6 +12851,7 @@
         "07:57",
         "16:45",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10218,6 +12863,7 @@
         "07:55",
         "18:35",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10229,6 +12875,7 @@
         "—",
         "—",
         "Autorisation",
+        "Validé",
         ""
        ],
        [
@@ -10240,6 +12887,7 @@
         "07:42",
         "17:14",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10251,6 +12899,7 @@
         "07:46",
         "17:06",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10262,12 +12911,14 @@
         "08:25",
         "16:46",
         "—",
+        "Validé",
         ""
        ]
       ],
       "pied": [],
       "boutons": [
        [
+        "Régulariser ce pointage",
         "Modifier",
         "Archiver"
        ]
@@ -10284,9 +12935,9 @@
      "au": "2026-08-16",
      "kpis": [
       {
-       "label": "Pointages de la période",
+       "label": "Pointages comptés",
        "valeur": "44",
-       "indice": null
+       "indice": "validés seulement"
       },
       {
        "label": "Présences",
@@ -10302,9 +12953,16 @@
        "label": "Absences",
        "valeur": "2",
        "indice": null
+      },
+      {
+       "label": "À valider",
+       "valeur": "0",
+       "indice": "visibles, ne comptent pas"
       }
      ],
      "cartes": [
+      "Réglages du planning et des présences",
+      "Filtres avancés des présences",
       "Taux de présence par service",
       "Répartition des pointages",
       "Volume de pointages par service"
@@ -10320,6 +12978,7 @@
        "ARRIVÉE",
        "DÉPART",
        "MOTIF",
+       "VALIDATION",
        "ACTIONS"
       ],
       "lignes": [
@@ -10332,6 +12991,7 @@
         "07:55",
         "16:40",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10343,6 +13003,7 @@
         "07:44",
         "18:30",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10354,6 +13015,7 @@
         "07:43",
         "17:58",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10365,6 +13027,7 @@
         "07:55",
         "17:09",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10376,6 +13039,7 @@
         "07:59",
         "17:48",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10387,6 +13051,7 @@
         "07:46",
         "17:17",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10398,6 +13063,7 @@
         "07:50",
         "17:44",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10409,6 +13075,7 @@
         "07:55",
         "16:55",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10420,6 +13087,7 @@
         "07:42",
         "16:49",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10431,6 +13099,7 @@
         "07:43",
         "16:04",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10442,6 +13111,7 @@
         "07:44",
         "16:21",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10453,6 +13123,7 @@
         "07:50",
         "17:17",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10464,6 +13135,7 @@
         "07:44",
         "18:12",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10475,6 +13147,7 @@
         "07:50",
         "17:26",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10486,6 +13159,7 @@
         "07:59",
         "17:35",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10497,6 +13171,7 @@
         "07:51",
         "17:44",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10508,6 +13183,7 @@
         "07:56",
         "16:31",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10519,6 +13195,7 @@
         "07:51",
         "16:12",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10530,6 +13207,7 @@
         "07:58",
         "16:06",
         "—",
+        "Validé",
         ""
        ],
        [
@@ -10541,12 +13219,14 @@
         "07:57",
         "18:58",
         "—",
+        "Validé",
         ""
        ]
       ],
       "pied": [],
       "boutons": [
        [
+        "Régulariser ce pointage",
         "Modifier",
         "Archiver"
        ]
@@ -10563,9 +13243,9 @@
      "au": "2030-01-02",
      "kpis": [
       {
-       "label": "Pointages de la période",
+       "label": "Pointages comptés",
        "valeur": "0",
-       "indice": null
+       "indice": "validés seulement"
       },
       {
        "label": "Présences",
@@ -10581,9 +13261,16 @@
        "label": "Absences",
        "valeur": "0",
        "indice": null
+      },
+      {
+       "label": "À valider",
+       "valeur": "0",
+       "indice": "visibles, ne comptent pas"
       }
      ],
      "cartes": [
+      "Réglages du planning et des présences",
+      "Filtres avancés des présences",
       "Statistiques"
      ],
      "table": null,
@@ -10591,19 +13278,19 @@
     }
    ],
    "boutons": [
-    "Appliquer",
+    "Régler",
     "Mois en cours",
     "Sept derniers jours",
+    "Effacer les filtres",
     "Colonnes affichées",
     "Exporter",
     "Ajouter un pointage",
+    "Imprimer l’état",
     "Tout désélectionner",
+    "Régulariser ce pointage",
     "Modifier",
     "Archiver",
-    "Modifier",
-    "Archiver",
-    "Modifier",
-    "Archiver",
+    "Régulariser ce pointage",
     "Modifier"
    ],
    "rangs": "Taux de présence par service Laboratoire 94 % Direction 88 % Pharmacie 88 % Soins infirmiers 86 % Maternité 85 % Accueil 83 % Médecine générale 82 % Comptabilité 76 % Imagerie / Échographie 72 %",
@@ -10635,6 +13322,16 @@
       ""
      ],
      [
+      "motifCode",
+      "select-one",
+      ""
+     ],
+     [
+      "justificatif",
+      "text",
+      ""
+     ],
+     [
       "motif",
       "text",
       ""
@@ -10650,17 +13347,23 @@
      "service": "Direction"
     },
     "nouvelle": {
-     "id": "PRExmsvr6js21wogv",
+     "id": "PRExmsvr6j55i5o81",
      "statut": "actif",
      "employeId": "EMP01",
      "date": "2026-08-16",
      "etat": "retard",
      "heureArrivee": "09:15",
      "heureDepart": "17:00",
+     "motifCode": "",
+     "justificatif": "",
      "motif": "Embouteillage",
      "employe": "BASSONGUI Chabi Séko",
      "matricule": "1",
-     "service": "Direction"
+     "service": "Direction",
+     "validationEtat": "a_valider",
+     "etapesFaites": [],
+     "saisiPar": "BASSONGUI Chabi Séko",
+     "saisiLe": "2026-08-16"
     },
     "delta": 1,
     "toast": {
@@ -10676,7 +13379,4130 @@
      "detail": null
     },
     "delta": 2,
-    "dialogueOuvert": false
+    "dialogueOuvert": false,
+    "secondeFiche": {
+     "id": "PRExmsvr6jjwrhvpa",
+     "statut": "actif",
+     "employeId": "EMP32",
+     "date": "2026-08-16",
+     "etat": "present",
+     "heureArrivee": "07:45",
+     "heureDepart": "",
+     "motifCode": "",
+     "justificatif": "",
+     "motif": "",
+     "employe": "ADAM Alimatou",
+     "matricule": "32",
+     "service": "Pharmacie",
+     "validationEtat": "a_valider",
+     "etapesFaites": [],
+     "saisiPar": "BASSONGUI Chabi Séko",
+     "saisiLe": "2026-08-16"
+    }
+   },
+   "filtres": {
+    "options": {
+     "Agent": [
+      [
+       "",
+       "Tous les agents"
+      ],
+      [
+       "EMP32",
+       "ADAM Alimatou"
+      ],
+      [
+       "EMP20",
+       "ADAM Colette"
+      ],
+      [
+       "EMP09",
+       "AGOSSOU Yahouza"
+      ],
+      [
+       "EMP35",
+       "AHOHOU Chantal"
+      ],
+      [
+       "EMP07",
+       "AHOHOU Rodrigue"
+      ],
+      [
+       "EMP18",
+       "BADO BANI A. B. Zoulehath"
+      ],
+      [
+       "EMP13",
+       "BAGRI Elvyre"
+      ],
+      [
+       "EMP42",
+       "BAKO Chantal"
+      ],
+      [
+       "EMP01",
+       "BASSONGUI Chabi Séko"
+      ],
+      [
+       "EMP30",
+       "BOUKARI Fatouma"
+      ],
+      [
+       "EMP19",
+       "BOUKARI Nadège"
+      ],
+      [
+       "EMP26",
+       "DAOUDA Justine"
+      ],
+      [
+       "EMP22",
+       "DAOUDA Zoukanéri"
+      ],
+      [
+       "EMP29",
+       "DIEYABIDI Aïssatou"
+      ],
+      [
+       "EMP16",
+       "DOSSOU Moussa"
+      ],
+      [
+       "EMP10",
+       "GARBA Yahouza"
+      ],
+      [
+       "EMP04",
+       "GBEDJI Hervé"
+      ],
+      [
+       "EMP28",
+       "GBEDJI Zoukanéri"
+      ],
+      [
+       "EMP11",
+       "IDRISSOU ANIKI Baba-Toundé"
+      ],
+      [
+       "EMP41",
+       "ISSA Rabiatou"
+      ],
+      [
+       "EMP03",
+       "KASSA Augustin"
+      ],
+      [
+       "EMP08",
+       "KINNOU A. Ganiou"
+      ],
+      [
+       "EMP37",
+       "MAMAN Zoukanéri"
+      ],
+      [
+       "EMP12",
+       "NKOUÉ Jean"
+      ],
+      [
+       "EMP17",
+       "OROU YO Alimatou"
+      ],
+      [
+       "EMP43",
+       "OROU YO Bertine"
+      ],
+      [
+       "EMP33",
+       "OROU YO Edmond"
+      ],
+      [
+       "EMP15",
+       "OURTCHA Bertine"
+      ],
+      [
+       "EMP27",
+       "OURTCHA Marguerite"
+      ],
+      [
+       "EMP38",
+       "OURTCHA Tereyama"
+      ],
+      [
+       "EMP14",
+       "PARAISO Abdoul"
+      ],
+      [
+       "EMP34",
+       "SAMBIENI Marguerite"
+      ],
+      [
+       "EMP36",
+       "SANNI Bibata"
+      ],
+      [
+       "EMP39",
+       "SOULE Edmond"
+      ],
+      [
+       "EMP02",
+       "TAKI Alimatou"
+      ],
+      [
+       "EMP24",
+       "TAKI Bibata"
+      ],
+      [
+       "EMP06",
+       "TAKI Orou"
+      ],
+      [
+       "EMP44",
+       "TCHANE Nourou"
+      ],
+      [
+       "EMP31",
+       "TCHANE Sylvie"
+      ],
+      [
+       "EMP21",
+       "TEPA Séraphine"
+      ],
+      [
+       "EMP25",
+       "WOROU Salamatou"
+      ],
+      [
+       "EMP40",
+       "YARO Orou"
+      ],
+      [
+       "EMP05",
+       "YENI M’PO Florent"
+      ],
+      [
+       "EMP23",
+       "YENI Rachida"
+      ]
+     ],
+     "Matricule": [
+      [
+       "",
+       "Tous les matricules"
+      ],
+      [
+       "32",
+       "32 · ADAM Alimatou"
+      ],
+      [
+       "20",
+       "20 · ADAM Colette"
+      ],
+      [
+       "9",
+       "9 · AGOSSOU Yahouza"
+      ],
+      [
+       "35",
+       "35 · AHOHOU Chantal"
+      ],
+      [
+       "7",
+       "7 · AHOHOU Rodrigue"
+      ],
+      [
+       "18",
+       "18 · BADO BANI A. B. Zoulehath"
+      ],
+      [
+       "13",
+       "13 · BAGRI Elvyre"
+      ],
+      [
+       "42",
+       "42 · BAKO Chantal"
+      ],
+      [
+       "1",
+       "1 · BASSONGUI Chabi Séko"
+      ],
+      [
+       "30",
+       "30 · BOUKARI Fatouma"
+      ],
+      [
+       "19",
+       "19 · BOUKARI Nadège"
+      ],
+      [
+       "26",
+       "26 · DAOUDA Justine"
+      ],
+      [
+       "22",
+       "22 · DAOUDA Zoukanéri"
+      ],
+      [
+       "29",
+       "29 · DIEYABIDI Aïssatou"
+      ],
+      [
+       "16",
+       "16 · DOSSOU Moussa"
+      ],
+      [
+       "10",
+       "10 · GARBA Yahouza"
+      ],
+      [
+       "4",
+       "4 · GBEDJI Hervé"
+      ],
+      [
+       "28",
+       "28 · GBEDJI Zoukanéri"
+      ],
+      [
+       "11",
+       "11 · IDRISSOU ANIKI Baba-Toundé"
+      ],
+      [
+       "41",
+       "41 · ISSA Rabiatou"
+      ],
+      [
+       "3",
+       "3 · KASSA Augustin"
+      ],
+      [
+       "8",
+       "8 · KINNOU A. Ganiou"
+      ],
+      [
+       "37",
+       "37 · MAMAN Zoukanéri"
+      ],
+      [
+       "12",
+       "12 · NKOUÉ Jean"
+      ],
+      [
+       "17",
+       "17 · OROU YO Alimatou"
+      ],
+      [
+       "43",
+       "43 · OROU YO Bertine"
+      ],
+      [
+       "33",
+       "33 · OROU YO Edmond"
+      ],
+      [
+       "15",
+       "15 · OURTCHA Bertine"
+      ],
+      [
+       "27",
+       "27 · OURTCHA Marguerite"
+      ],
+      [
+       "38",
+       "38 · OURTCHA Tereyama"
+      ],
+      [
+       "14",
+       "14 · PARAISO Abdoul"
+      ],
+      [
+       "34",
+       "34 · SAMBIENI Marguerite"
+      ],
+      [
+       "36",
+       "36 · SANNI Bibata"
+      ],
+      [
+       "39",
+       "39 · SOULE Edmond"
+      ],
+      [
+       "2",
+       "2 · TAKI Alimatou"
+      ],
+      [
+       "24",
+       "24 · TAKI Bibata"
+      ],
+      [
+       "6",
+       "6 · TAKI Orou"
+      ],
+      [
+       "44",
+       "44 · TCHANE Nourou"
+      ],
+      [
+       "31",
+       "31 · TCHANE Sylvie"
+      ],
+      [
+       "21",
+       "21 · TEPA Séraphine"
+      ],
+      [
+       "25",
+       "25 · WOROU Salamatou"
+      ],
+      [
+       "40",
+       "40 · YARO Orou"
+      ],
+      [
+       "5",
+       "5 · YENI M’PO Florent"
+      ],
+      [
+       "23",
+       "23 · YENI Rachida"
+      ]
+     ],
+     "Service": [
+      [
+       "",
+       "Tous les services"
+      ],
+      [
+       "Médecine générale",
+       "Médecine générale"
+      ],
+      [
+       "Maternité",
+       "Maternité"
+      ],
+      [
+       "Chirurgie",
+       "Chirurgie"
+      ],
+      [
+       "Laboratoire",
+       "Laboratoire"
+      ],
+      [
+       "Pharmacie",
+       "Pharmacie"
+      ],
+      [
+       "Imagerie / Échographie",
+       "Imagerie / Échographie"
+      ],
+      [
+       "Soins infirmiers",
+       "Soins infirmiers"
+      ],
+      [
+       "Accueil",
+       "Accueil"
+      ],
+      [
+       "Direction",
+       "Direction"
+      ],
+      [
+       "Comptabilité",
+       "Comptabilité"
+      ]
+     ],
+     "État": [
+      [
+       "",
+       "Tous les états"
+      ],
+      [
+       "present",
+       "Présent"
+      ],
+      [
+       "retard",
+       "Retard"
+      ],
+      [
+       "absent",
+       "Absent"
+      ],
+      [
+       "conge",
+       "Congé"
+      ]
+     ],
+     "Motif codé": [
+      [
+       "",
+       "Tous les motifs"
+      ],
+      [
+       "maladie",
+       "Maladie"
+      ],
+      [
+       "mission",
+       "Mission"
+      ],
+      [
+       "conge",
+       "Congé"
+      ],
+      [
+       "__aucun",
+       "Sans motif codé"
+      ]
+     ],
+     "Validation": [
+      [
+       "",
+       "Validées ou non"
+      ],
+      [
+       "a_valider",
+       "À valider"
+      ],
+      [
+       "valide_surveillant",
+       "Validé par le surveillant, DAF attendue"
+      ],
+      [
+       "valide",
+       "Validé"
+      ],
+      [
+       "refuse",
+       "Refusé"
+      ]
+     ],
+     "Validé par": [
+      [
+       "",
+       "Tous les validateurs"
+      ],
+      [
+       "__aucun",
+       "Validation non renseignée (avant le circuit)"
+      ]
+     ]
+    },
+    "cas": [
+     {
+      "nom": "plage du jeu",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "704",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "612",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "54",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "38",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "2",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "—",
+          "—",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Retard",
+          "09:15",
+          "17:00",
+          "Embouteillage",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Présent",
+          "07:55",
+          "16:40",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "2",
+          "TAKI Alimatou",
+          "Direction",
+          "Présent",
+          "07:44",
+          "18:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "3",
+          "KASSA Augustin",
+          "Comptabilité",
+          "Présent",
+          "07:43",
+          "17:58",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "4",
+          "GBEDJI Hervé",
+          "Direction",
+          "Présent",
+          "07:55",
+          "17:09",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "5",
+          "YENI M’PO Florent",
+          "Médecine générale",
+          "Présent",
+          "07:59",
+          "17:48",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "6",
+          "TAKI Orou",
+          "Médecine générale",
+          "Présent",
+          "07:46",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "7",
+          "AHOHOU Rodrigue",
+          "Imagerie / Échographie",
+          "Présent",
+          "07:50",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "8",
+          "KINNOU A. Ganiou",
+          "Laboratoire",
+          "Présent",
+          "07:55",
+          "16:55",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "9",
+          "AGOSSOU Yahouza",
+          "Laboratoire",
+          "Présent",
+          "07:42",
+          "16:49",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "10",
+          "GARBA Yahouza",
+          "Soins infirmiers",
+          "Présent",
+          "07:43",
+          "16:04",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "11",
+          "IDRISSOU ANIKI Baba-Toundé",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "16:21",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "12",
+          "NKOUÉ Jean",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "13",
+          "BAGRI Elvyre",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "18:12",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "14",
+          "PARAISO Abdoul",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:26",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "15",
+          "OURTCHA Bertine",
+          "Soins infirmiers",
+          "Présent",
+          "07:59",
+          "17:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "16",
+          "DOSSOU Moussa",
+          "Soins infirmiers",
+          "Présent",
+          "07:51",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "17",
+          "OROU YO Alimatou",
+          "Soins infirmiers",
+          "Présent",
+          "07:56",
+          "16:31",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "18",
+          "BADO BANI A. B. Zoulehath",
+          "Maternité",
+          "Présent",
+          "07:51",
+          "16:12",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "un agent",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "Agent": "EMP32"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "16",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "14",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "1",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "1",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "1",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "—",
+          "—",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:46",
+          "17:06",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:41",
+          "17:50",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:51",
+          "17:08",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:49",
+          "17:13",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:44",
+          "17:32",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:48",
+          "17:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:47",
+          "18:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "09/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Retard",
+          "08:42",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "08/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:56",
+          "16:40",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "07/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:53",
+          "18:39",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "06/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:40",
+          "16:48",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "05/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:47",
+          "16:03",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "04/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Absent",
+          "—",
+          "—",
+          "Maladie",
+          "Validé",
+          ""
+         ],
+         [
+          "03/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:46",
+          "18:03",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "02/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:54",
+          "17:48",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "01/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:47",
+          "18:09",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "un état",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "État": "retard"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "54",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "0",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "54",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "0",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "1",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Retard",
+          "09:15",
+          "17:00",
+          "Embouteillage",
+          "À valider",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "14",
+          "PARAISO Abdoul",
+          "Soins infirmiers",
+          "Retard",
+          "08:46",
+          "17:24",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "24",
+          "TAKI Bibata",
+          "Soins infirmiers",
+          "Retard",
+          "08:52",
+          "18:18",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "34",
+          "SAMBIENI Marguerite",
+          "Accueil",
+          "Retard",
+          "08:26",
+          "17:05",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "5",
+          "YENI M’PO Florent",
+          "Médecine générale",
+          "Retard",
+          "08:53",
+          "17:16",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "17",
+          "OROU YO Alimatou",
+          "Soins infirmiers",
+          "Retard",
+          "08:53",
+          "18:25",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "37",
+          "MAMAN Zoukanéri",
+          "Direction",
+          "Retard",
+          "08:37",
+          "18:59",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "44",
+          "TCHANE Nourou",
+          "Direction",
+          "Retard",
+          "08:35",
+          "16:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "3",
+          "KASSA Augustin",
+          "Comptabilité",
+          "Retard",
+          "08:33",
+          "17:11",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "7",
+          "AHOHOU Rodrigue",
+          "Imagerie / Échographie",
+          "Retard",
+          "08:25",
+          "16:22",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "23",
+          "YENI Rachida",
+          "Soins infirmiers",
+          "Retard",
+          "08:53",
+          "17:45",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Retard",
+          "08:28",
+          "17:47",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "10",
+          "GARBA Yahouza",
+          "Soins infirmiers",
+          "Retard",
+          "08:38",
+          "18:52",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "13",
+          "BAGRI Elvyre",
+          "Soins infirmiers",
+          "Retard",
+          "08:42",
+          "17:58",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "15",
+          "OURTCHA Bertine",
+          "Soins infirmiers",
+          "Retard",
+          "08:25",
+          "16:46",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "35",
+          "AHOHOU Chantal",
+          "Accueil",
+          "Retard",
+          "08:45",
+          "16:20",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "3",
+          "KASSA Augustin",
+          "Comptabilité",
+          "Retard",
+          "08:26",
+          "17:56",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "4",
+          "GBEDJI Hervé",
+          "Direction",
+          "Retard",
+          "08:28",
+          "18:40",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "12",
+          "NKOUÉ Jean",
+          "Soins infirmiers",
+          "Retard",
+          "08:54",
+          "18:04",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Retard",
+          "08:25",
+          "16:46",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "un service",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "Service": "Pharmacie"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "64",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "56",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "3",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "5",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "1",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "—",
+          "—",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "29",
+          "DIEYABIDI Aïssatou",
+          "Pharmacie",
+          "Présent",
+          "07:51",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "30",
+          "BOUKARI Fatouma",
+          "Pharmacie",
+          "Présent",
+          "07:52",
+          "16:33",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "31",
+          "TCHANE Sylvie",
+          "Pharmacie",
+          "Présent",
+          "07:55",
+          "16:54",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:46",
+          "17:06",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "29",
+          "DIEYABIDI Aïssatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "18:12",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "30",
+          "BOUKARI Fatouma",
+          "Pharmacie",
+          "Présent",
+          "07:42",
+          "18:54",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "31",
+          "TCHANE Sylvie",
+          "Pharmacie",
+          "Présent",
+          "07:52",
+          "18:00",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:41",
+          "17:50",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "29",
+          "DIEYABIDI Aïssatou",
+          "Pharmacie",
+          "Présent",
+          "07:59",
+          "17:47",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "30",
+          "BOUKARI Fatouma",
+          "Pharmacie",
+          "Présent",
+          "07:43",
+          "18:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "31",
+          "TCHANE Sylvie",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "17:10",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:51",
+          "17:08",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "29",
+          "DIEYABIDI Aïssatou",
+          "Pharmacie",
+          "Présent",
+          "07:58",
+          "16:23",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "30",
+          "BOUKARI Fatouma",
+          "Pharmacie",
+          "Présent",
+          "07:52",
+          "18:22",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "31",
+          "TCHANE Sylvie",
+          "Pharmacie",
+          "Présent",
+          "07:40",
+          "16:32",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:49",
+          "17:13",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "29",
+          "DIEYABIDI Aïssatou",
+          "Pharmacie",
+          "Présent",
+          "07:46",
+          "17:07",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "30",
+          "BOUKARI Fatouma",
+          "Pharmacie",
+          "Présent",
+          "07:43",
+          "18:04",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "31",
+          "TCHANE Sylvie",
+          "Pharmacie",
+          "Présent",
+          "07:47",
+          "16:06",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "retard minimal",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "État": "retard",
+       "Retard minimal (minutes après 08:00)": "30"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "40",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "0",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "40",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "0",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "1",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Retard",
+          "09:15",
+          "17:00",
+          "Embouteillage",
+          "À valider",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "14",
+          "PARAISO Abdoul",
+          "Soins infirmiers",
+          "Retard",
+          "08:46",
+          "17:24",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "24",
+          "TAKI Bibata",
+          "Soins infirmiers",
+          "Retard",
+          "08:52",
+          "18:18",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "5",
+          "YENI M’PO Florent",
+          "Médecine générale",
+          "Retard",
+          "08:53",
+          "17:16",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "17",
+          "OROU YO Alimatou",
+          "Soins infirmiers",
+          "Retard",
+          "08:53",
+          "18:25",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "37",
+          "MAMAN Zoukanéri",
+          "Direction",
+          "Retard",
+          "08:37",
+          "18:59",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "44",
+          "TCHANE Nourou",
+          "Direction",
+          "Retard",
+          "08:35",
+          "16:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "3",
+          "KASSA Augustin",
+          "Comptabilité",
+          "Retard",
+          "08:33",
+          "17:11",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "23",
+          "YENI Rachida",
+          "Soins infirmiers",
+          "Retard",
+          "08:53",
+          "17:45",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "10",
+          "GARBA Yahouza",
+          "Soins infirmiers",
+          "Retard",
+          "08:38",
+          "18:52",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "13",
+          "BAGRI Elvyre",
+          "Soins infirmiers",
+          "Retard",
+          "08:42",
+          "17:58",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "35",
+          "AHOHOU Chantal",
+          "Accueil",
+          "Retard",
+          "08:45",
+          "16:20",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "12",
+          "NKOUÉ Jean",
+          "Soins infirmiers",
+          "Retard",
+          "08:54",
+          "18:04",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "40",
+          "YARO Orou",
+          "Direction",
+          "Retard",
+          "08:37",
+          "17:10",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "42",
+          "BAKO Chantal",
+          "Direction",
+          "Retard",
+          "08:52",
+          "16:04",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "44",
+          "TCHANE Nourou",
+          "Direction",
+          "Retard",
+          "08:48",
+          "17:25",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "09/08/2026",
+          "5",
+          "YENI M’PO Florent",
+          "Médecine générale",
+          "Retard",
+          "08:40",
+          "16:42",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "09/08/2026",
+          "11",
+          "IDRISSOU ANIKI Baba-Toundé",
+          "Soins infirmiers",
+          "Retard",
+          "08:40",
+          "18:22",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "09/08/2026",
+          "28",
+          "GBEDJI Zoukanéri",
+          "Soins infirmiers",
+          "Retard",
+          "08:39",
+          "16:18",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "09/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Retard",
+          "08:42",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "arrivée entre deux heures",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "Arrivée de": "07:30",
+       "Arrivée à": "07:50"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "350",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "350",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "0",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "0",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "1",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "—",
+          "—",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "2",
+          "TAKI Alimatou",
+          "Direction",
+          "Présent",
+          "07:44",
+          "18:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "3",
+          "KASSA Augustin",
+          "Comptabilité",
+          "Présent",
+          "07:43",
+          "17:58",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "6",
+          "TAKI Orou",
+          "Médecine générale",
+          "Présent",
+          "07:46",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "7",
+          "AHOHOU Rodrigue",
+          "Imagerie / Échographie",
+          "Présent",
+          "07:50",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "9",
+          "AGOSSOU Yahouza",
+          "Laboratoire",
+          "Présent",
+          "07:42",
+          "16:49",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "10",
+          "GARBA Yahouza",
+          "Soins infirmiers",
+          "Présent",
+          "07:43",
+          "16:04",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "11",
+          "IDRISSOU ANIKI Baba-Toundé",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "16:21",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "12",
+          "NKOUÉ Jean",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "13",
+          "BAGRI Elvyre",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "18:12",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "14",
+          "PARAISO Abdoul",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:26",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "21",
+          "TEPA Séraphine",
+          "Soins infirmiers",
+          "Présent",
+          "07:49",
+          "17:07",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "22",
+          "DAOUDA Zoukanéri",
+          "Soins infirmiers",
+          "Présent",
+          "07:40",
+          "18:20",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "25",
+          "WOROU Salamatou",
+          "Soins infirmiers",
+          "Présent",
+          "07:47",
+          "16:14",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "27",
+          "OURTCHA Marguerite",
+          "Soins infirmiers",
+          "Présent",
+          "07:41",
+          "17:05",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "28",
+          "GBEDJI Zoukanéri",
+          "Soins infirmiers",
+          "Présent",
+          "07:49",
+          "16:02",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:46",
+          "17:06",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "33",
+          "OROU YO Edmond",
+          "Accueil",
+          "Présent",
+          "07:49",
+          "18:48",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "35",
+          "AHOHOU Chantal",
+          "Accueil",
+          "Présent",
+          "07:43",
+          "16:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "36",
+          "SANNI Bibata",
+          "Accueil",
+          "Présent",
+          "07:42",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "sans motif codé",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "Motif codé": "__aucun"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "704",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "612",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "54",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "38",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "2",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "—",
+          "—",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Retard",
+          "09:15",
+          "17:00",
+          "Embouteillage",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Présent",
+          "07:55",
+          "16:40",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "2",
+          "TAKI Alimatou",
+          "Direction",
+          "Présent",
+          "07:44",
+          "18:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "3",
+          "KASSA Augustin",
+          "Comptabilité",
+          "Présent",
+          "07:43",
+          "17:58",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "4",
+          "GBEDJI Hervé",
+          "Direction",
+          "Présent",
+          "07:55",
+          "17:09",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "5",
+          "YENI M’PO Florent",
+          "Médecine générale",
+          "Présent",
+          "07:59",
+          "17:48",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "6",
+          "TAKI Orou",
+          "Médecine générale",
+          "Présent",
+          "07:46",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "7",
+          "AHOHOU Rodrigue",
+          "Imagerie / Échographie",
+          "Présent",
+          "07:50",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "8",
+          "KINNOU A. Ganiou",
+          "Laboratoire",
+          "Présent",
+          "07:55",
+          "16:55",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "9",
+          "AGOSSOU Yahouza",
+          "Laboratoire",
+          "Présent",
+          "07:42",
+          "16:49",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "10",
+          "GARBA Yahouza",
+          "Soins infirmiers",
+          "Présent",
+          "07:43",
+          "16:04",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "11",
+          "IDRISSOU ANIKI Baba-Toundé",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "16:21",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "12",
+          "NKOUÉ Jean",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "13",
+          "BAGRI Elvyre",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "18:12",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "14",
+          "PARAISO Abdoul",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:26",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "15",
+          "OURTCHA Bertine",
+          "Soins infirmiers",
+          "Présent",
+          "07:59",
+          "17:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "16",
+          "DOSSOU Moussa",
+          "Soins infirmiers",
+          "Présent",
+          "07:51",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "17",
+          "OROU YO Alimatou",
+          "Soins infirmiers",
+          "Présent",
+          "07:56",
+          "16:31",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "18",
+          "BADO BANI A. B. Zoulehath",
+          "Maternité",
+          "Présent",
+          "07:51",
+          "16:12",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "validés",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "Validation": "valide"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "704",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "612",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "54",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "38",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "0",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Présent",
+          "07:55",
+          "16:40",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "2",
+          "TAKI Alimatou",
+          "Direction",
+          "Présent",
+          "07:44",
+          "18:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "3",
+          "KASSA Augustin",
+          "Comptabilité",
+          "Présent",
+          "07:43",
+          "17:58",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "4",
+          "GBEDJI Hervé",
+          "Direction",
+          "Présent",
+          "07:55",
+          "17:09",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "5",
+          "YENI M’PO Florent",
+          "Médecine générale",
+          "Présent",
+          "07:59",
+          "17:48",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "6",
+          "TAKI Orou",
+          "Médecine générale",
+          "Présent",
+          "07:46",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "7",
+          "AHOHOU Rodrigue",
+          "Imagerie / Échographie",
+          "Présent",
+          "07:50",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "8",
+          "KINNOU A. Ganiou",
+          "Laboratoire",
+          "Présent",
+          "07:55",
+          "16:55",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "9",
+          "AGOSSOU Yahouza",
+          "Laboratoire",
+          "Présent",
+          "07:42",
+          "16:49",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "10",
+          "GARBA Yahouza",
+          "Soins infirmiers",
+          "Présent",
+          "07:43",
+          "16:04",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "11",
+          "IDRISSOU ANIKI Baba-Toundé",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "16:21",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "12",
+          "NKOUÉ Jean",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "13",
+          "BAGRI Elvyre",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "18:12",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "14",
+          "PARAISO Abdoul",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:26",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "15",
+          "OURTCHA Bertine",
+          "Soins infirmiers",
+          "Présent",
+          "07:59",
+          "17:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "16",
+          "DOSSOU Moussa",
+          "Soins infirmiers",
+          "Présent",
+          "07:51",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "17",
+          "OROU YO Alimatou",
+          "Soins infirmiers",
+          "Présent",
+          "07:56",
+          "16:31",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "18",
+          "BADO BANI A. B. Zoulehath",
+          "Maternité",
+          "Présent",
+          "07:51",
+          "16:12",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "19",
+          "BOUKARI Nadège",
+          "Maternité",
+          "Présent",
+          "07:58",
+          "16:06",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:57",
+          "18:58",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "à valider (aucun au jeu)",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "Validation": "a_valider"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "0",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "0",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "0",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "0",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "2",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "—",
+          "—",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Retard",
+          "09:15",
+          "17:00",
+          "Embouteillage",
+          "À valider",
+          ""
+         ]
+        ]
+       },
+       "note": true
+      }
+     },
+     {
+      "nom": "validation non renseignée",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "Validé par": "__aucun"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "704",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "612",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "54",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "38",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "2",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "—",
+          "—",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Retard",
+          "09:15",
+          "17:00",
+          "Embouteillage",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "1",
+          "BASSONGUI Chabi Séko",
+          "Direction",
+          "Présent",
+          "07:55",
+          "16:40",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "2",
+          "TAKI Alimatou",
+          "Direction",
+          "Présent",
+          "07:44",
+          "18:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "3",
+          "KASSA Augustin",
+          "Comptabilité",
+          "Présent",
+          "07:43",
+          "17:58",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "4",
+          "GBEDJI Hervé",
+          "Direction",
+          "Présent",
+          "07:55",
+          "17:09",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "5",
+          "YENI M’PO Florent",
+          "Médecine générale",
+          "Présent",
+          "07:59",
+          "17:48",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "6",
+          "TAKI Orou",
+          "Médecine générale",
+          "Présent",
+          "07:46",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "7",
+          "AHOHOU Rodrigue",
+          "Imagerie / Échographie",
+          "Présent",
+          "07:50",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "8",
+          "KINNOU A. Ganiou",
+          "Laboratoire",
+          "Présent",
+          "07:55",
+          "16:55",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "9",
+          "AGOSSOU Yahouza",
+          "Laboratoire",
+          "Présent",
+          "07:42",
+          "16:49",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "10",
+          "GARBA Yahouza",
+          "Soins infirmiers",
+          "Présent",
+          "07:43",
+          "16:04",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "11",
+          "IDRISSOU ANIKI Baba-Toundé",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "16:21",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "12",
+          "NKOUÉ Jean",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "13",
+          "BAGRI Elvyre",
+          "Soins infirmiers",
+          "Présent",
+          "07:44",
+          "18:12",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "14",
+          "PARAISO Abdoul",
+          "Soins infirmiers",
+          "Présent",
+          "07:50",
+          "17:26",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "15",
+          "OURTCHA Bertine",
+          "Soins infirmiers",
+          "Présent",
+          "07:59",
+          "17:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "16",
+          "DOSSOU Moussa",
+          "Soins infirmiers",
+          "Présent",
+          "07:51",
+          "17:44",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "17",
+          "OROU YO Alimatou",
+          "Soins infirmiers",
+          "Présent",
+          "07:56",
+          "16:31",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "18",
+          "BADO BANI A. B. Zoulehath",
+          "Maternité",
+          "Présent",
+          "07:51",
+          "16:12",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "recherche",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "Recherche": "ADAM"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "32",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "27",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "4",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "1",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "1",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "—",
+          "—",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:57",
+          "18:58",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:46",
+          "17:06",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:47",
+          "18:47",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:41",
+          "17:50",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:57",
+          "16:07",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:51",
+          "17:08",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:58",
+          "17:43",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:49",
+          "17:13",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:46",
+          "16:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:44",
+          "17:32",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:58",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:48",
+          "17:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Retard",
+          "08:25",
+          "16:46",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:47",
+          "18:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "09/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:47",
+          "18:55",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "09/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Retard",
+          "08:42",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "08/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:52",
+          "18:52",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "08/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:56",
+          "16:40",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "07/08/2026",
+          "20",
+          "ADAM Colette",
+          "Maternité",
+          "Présent",
+          "07:44",
+          "18:46",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     },
+     {
+      "nom": "un matricule",
+      "reglage": {
+       "Du": "2026-08-01",
+       "Au": "2026-08-31",
+       "Matricule": "32"
+      },
+      "vue": {
+       "du": "2026-08-01",
+       "au": "2026-08-31",
+       "kpis": [
+        {
+         "label": "Pointages comptés",
+         "valeur": "16",
+         "indice": "validés seulement"
+        },
+        {
+         "label": "Présences",
+         "valeur": "14",
+         "indice": null
+        },
+        {
+         "label": "Retards",
+         "valeur": "1",
+         "indice": "Critère NS 131"
+        },
+        {
+         "label": "Absences",
+         "valeur": "1",
+         "indice": null
+        },
+        {
+         "label": "À valider",
+         "valeur": "1",
+         "indice": "visibles, ne comptent pas"
+        }
+       ],
+       "table": {
+        "titre": null,
+        "entetes": [
+         "DATE",
+         "MAT.",
+         "AGENT",
+         "SERVICE",
+         "ÉTAT",
+         "ARRIVÉE",
+         "DÉPART",
+         "MOTIF",
+         "VALIDATION",
+         "ACTIONS"
+        ],
+        "lignes": [
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:45",
+          "—",
+          "—",
+          "À valider",
+          ""
+         ],
+         [
+          "16/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:46",
+          "17:06",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "15/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:41",
+          "17:50",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "14/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:51",
+          "17:08",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "13/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:49",
+          "17:13",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "12/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:44",
+          "17:32",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "11/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:48",
+          "17:35",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "10/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:47",
+          "18:30",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "09/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Retard",
+          "08:42",
+          "17:17",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "08/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:56",
+          "16:40",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "07/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:53",
+          "18:39",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "06/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:40",
+          "16:48",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "05/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:47",
+          "16:03",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "04/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Absent",
+          "—",
+          "—",
+          "Maladie",
+          "Validé",
+          ""
+         ],
+         [
+          "03/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:46",
+          "18:03",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "02/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:54",
+          "17:48",
+          "—",
+          "Validé",
+          ""
+         ],
+         [
+          "01/08/2026",
+          "32",
+          "ADAM Alimatou",
+          "Pharmacie",
+          "Présent",
+          "07:47",
+          "18:09",
+          "—",
+          "Validé",
+          ""
+         ]
+        ]
+       },
+       "note": false
+      }
+     }
+    ],
+    "impression": {
+     "titre": "État des présences et absences",
+     "sousTitre": "01/08/2026 au 31/08/2026",
+     "cartouche": [
+      [
+       "Pointages retenus",
+       "55"
+      ],
+      [
+       "Dont validés",
+       "54"
+      ],
+      [
+       "Établi par",
+       "BASSONGUI Chabi Séko"
+      ],
+      [
+       "Date d’édition",
+       "16/08/2026"
+      ]
+     ],
+     "filtres": [
+      [
+       "Période",
+       "01/08/2026 au 31/08/2026"
+      ],
+      [
+       "État",
+       "Retard"
+      ],
+      [
+       "Retard minimal (minutes)",
+       "15"
+      ],
+      [
+       "Arrivée de",
+       "07:30"
+      ]
+     ],
+     "contenu": "DateMat.AgentServiceÉtatArrivéeMotifJustificatifValidationValidé par16/08/20261BASSONGUI Chabi SékoDirectionRetard09:15EmbouteillageÀ valider15/08/202614PARAISO AbdoulSoins infirmiersRetard08:46Validé15/08/202624TAKI BibataSoins infirmiersRetard08:52Validé15/08/202634SAMBIENI MargueriteAccueilRetard08:26Validé14/08/20265YENI M’PO FlorentMédecine généraleRetard08:53Validé13/08/202617OROU YO AlimatouSoins infirmiersRetard08:53Validé13/08/202637MAMAN ZoukanériDirectionRetard08:37Validé13/08/202644TCHANE NourouDirectionRetard08:35Validé12/08/20263KASSA AugustinComptabilitéRetard08:33Validé12/08/20267AHOHOU RodrigueImagerie / ÉchographieRetard08:25Validé12/08/202623YENI RachidaSoins infirmiersRetard08:53Validé11/08/20261BASSONGUI Chabi SékoDirectionRetard08:28Validé11/08/202610GARBA YahouzaSoins infirmiersRetard08:38Validé11/08/202613BAGRI ElvyreSoins infirmiersRetard08:42Validé11/08/202615OURTCHA BertineSoins infirmiersRetard08:25Validé11/08/202635AHOHOU ChantalAccueilRetard08:45Validé10/08/20263KASSA AugustinComptabilitéRetard08:26Validé10/08/20264GBEDJI HervéDirectionRetard08:28Validé10/08/202612NKOUÉ JeanSoins infirmiersRetard08:54Validé10/08/202620ADAM ColetteMaternitéRetard08:25Validé10/08/202640YARO OrouDirectionRetard08:37Validé10/08/202642BAKO ChantalDirectionRetard08:52Validé10/08/202644TCHANE NourouDirectionRetard08:48Validé09/08/20265YENI M’PO FlorentMédecine généraleRetard08:40Validé09/08/202611IDRISSOU ANIKI Baba-ToundéSoins infirmiersRetard08:40Validé09/08/202628GBEDJI ZoukanériSoins infirmiersRetard08:39Validé09/08/202632ADAM AlimatouPharmacieRetard08:42Validé09/08/202640YARO OrouDirectionRetard08:35Validé09/08/202643OROU YO BertineDirectionRetard08:48Validé08/08/202625WOROU SalamatouSoins infirmiersRetard08:24Validé08/08/202627OURTCHA MargueriteSoins infirmiersRetard08:39Validé07/08/20267AHOHOU RodrigueImagerie / ÉchographieRetard08:55Validé07/08/202631TCHANE SylviePharmacieRetard08:30Validé07/08/202635AHOHOU ChantalAccueilRetard08:21Validé06/08/202619BOUKARI NadègeMaternitéRetard08:31Validé06/08/202629DIEYABIDI AïssatouPharmacieRetard08:52Validé06/08/202639SOULE EdmondDirectionRetard08:26Validé05/08/202613BAGRI ElvyreSoins infirmiersRetard08:25Validé05/08/202620ADAM ColetteMaternitéRetard08:41Validé05/08/202643OROU YO BertineDirectionRetard08:22Validé04/08/20267AHOHOU RodrigueImagerie / ÉchographieRetard08:22Validé04/08/202619BOUKARI NadègeMaternitéRetard08:42Validé04/08/202620ADAM ColetteMaternitéRetard08:50Validé04/08/202621TEPA SéraphineSoins infirmiersRetard08:27Validé04/08/202623YENI RachidaSoins infirmiersRetard08:35Validé04/08/202633OROU YO EdmondAccueilRetard08:45Validé03/08/20265YENI M’PO FlorentMédecine généraleRetard08:42Validé03/08/202613BAGRI ElvyreSoins infirmiersRetard08:30Validé03/08/202621TEPA SéraphineSoins infirmiersRetard08:35Validé03/08/202633OROU YO EdmondAccueilRetard08:54Validé02/08/20263KASSA AugustinComptabilitéRetard08:36Validé02/08/202619BOUKARI NadègeMaternitéRetard08:52Validé02/08/202623YENI RachidaSoins infirmiersRetard08:40Validé02/08/202637MAMAN ZoukanériDirectionRetard08:31Validé01/08/202625WOROU SalamatouSoins infirmiersRetard08:43Validé",
+     "tables": [],
+     "signatures": [
+      {
+       "role": "Le Surveillant Général",
+       "nom": "GARBA Yahouza"
+      },
+      {
+       "role": "La Directrice Administrative",
+       "nom": "TAKI Alimatou"
+      }
+     ],
+     "filtresPage": [
+      [
+       "État",
+       "Retard"
+      ],
+      [
+       "Du",
+       "01/08/2026"
+      ],
+      [
+       "Au",
+       "31/08/2026"
+      ]
+     ]
+    }
+   },
+   "circuit": {
+    "avant": {
+     "du": "2026-08-16",
+     "au": "2026-08-16",
+     "kpis": [
+      {
+       "label": "Pointages comptés",
+       "valeur": "0",
+       "indice": "validés seulement"
+      },
+      {
+       "label": "Présences",
+       "valeur": "0",
+       "indice": null
+      },
+      {
+       "label": "Retards",
+       "valeur": "0",
+       "indice": "Critère NS 131"
+      },
+      {
+       "label": "Absences",
+       "valeur": "0",
+       "indice": null
+      },
+      {
+       "label": "À valider",
+       "valeur": "5",
+       "indice": "visibles, ne comptent pas"
+      }
+     ],
+     "table": {
+      "titre": null,
+      "entetes": [
+       "DATE",
+       "MAT.",
+       "AGENT",
+       "SERVICE",
+       "ÉTAT",
+       "ARRIVÉE",
+       "DÉPART",
+       "MOTIF",
+       "VALIDATION",
+       "ACTIONS"
+      ],
+      "lignes": [
+       [
+        "16/08/2026",
+        "6",
+        "TAKI Orou",
+        "Médecine générale",
+        "Retard",
+        "09:10",
+        "—",
+        "—",
+        "À valider",
+        ""
+       ],
+       [
+        "16/08/2026",
+        "7",
+        "AHOHOU Rodrigue",
+        "Imagerie / Échographie",
+        "Retard",
+        "09:11",
+        "—",
+        "—",
+        "À valider",
+        ""
+       ],
+       [
+        "16/08/2026",
+        "8",
+        "KINNOU A. Ganiou",
+        "Laboratoire",
+        "Retard",
+        "09:12",
+        "—",
+        "—",
+        "À valider",
+        ""
+       ],
+       [
+        "16/08/2026",
+        "32",
+        "ADAM Alimatou",
+        "Pharmacie",
+        "Présent",
+        "07:45",
+        "—",
+        "—",
+        "À valider",
+        ""
+       ],
+       [
+        "16/08/2026",
+        "1",
+        "BASSONGUI Chabi Séko",
+        "Direction",
+        "Retard",
+        "09:15",
+        "17:00",
+        "Embouteillage",
+        "À valider",
+        ""
+       ]
+      ]
+     },
+     "note": true
+    },
+    "boutonsLigne": [
+     [
+      "Valider ce pointage",
+      "Refuser ce pointage",
+      "Modifier",
+      "Archiver"
+     ]
+    ],
+    "confirmationValider": "Valider ce pointage ? La validation est celle de le surveillant, consignée au journal (RG-12). Circuit en vigueur : Surveillant seul. Annuler Valider",
+    "valider": {
+     "toast": {
+      "message": "Pièce validée.",
+      "type": "success",
+      "detail": null
+     },
+     "fiche": {
+      "id": "PRSCIRC0",
+      "statut": "actif",
+      "employeId": "EMP06",
+      "employe": "TAKI Orou",
+      "matricule": "6",
+      "service": "Médecine générale",
+      "date": "2026-08-16",
+      "etat": "retard",
+      "heureArrivee": "09:10",
+      "validationEtat": "valide",
+      "etapesFaites": [
+       {
+        "etape": "surveillant",
+        "par": "BASSONGUI Chabi Séko",
+        "role": "admin",
+        "le": "2026-08-16",
+        "decision": "valide",
+        "motif": null
+       }
+      ],
+      "validePar": "BASSONGUI Chabi Séko",
+      "valideLe": "2026-08-16",
+      "circuitUtilise": "surveillant"
+     }
+    },
+    "confirmationRefuser": "Refuser ce pointage ? Le refus exige son motif : l’agent le lira. Motif (consigné dans le journal d’audit) Annuler Refuser",
+    "refusSansMotif": {
+     "toast": {
+      "message": "Un refus exige son motif : l’agent doit pouvoir le lire.",
+      "type": "error",
+      "detail": "Écrire le motif du refus."
+     },
+     "dialogueOuvert": false,
+     "fiche": {
+      "id": "PRSCIRC1",
+      "statut": "actif",
+      "employeId": "EMP07",
+      "employe": "AHOHOU Rodrigue",
+      "matricule": "7",
+      "service": "Imagerie / Échographie",
+      "date": "2026-08-16",
+      "etat": "retard",
+      "heureArrivee": "09:11",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    },
+    "refuser": {
+     "toast": {
+      "message": "Un refus exige son motif : l’agent doit pouvoir le lire.",
+      "type": "error",
+      "detail": "Écrire le motif du refus."
+     },
+     "fiche": {
+      "id": "PRSCIRC1",
+      "statut": "actif",
+      "employeId": "EMP07",
+      "employe": "AHOHOU Rodrigue",
+      "matricule": "7",
+      "service": "Imagerie / Échographie",
+      "date": "2026-08-16",
+      "etat": "retard",
+      "heureArrivee": "09:11",
+      "validationEtat": "a_valider",
+      "etapesFaites": []
+     }
+    },
+    "boutonsValide": [
+     "Régulariser ce pointage",
+     "Modifier",
+     "Archiver"
+    ],
+    "formulaireRegul": {
+     "champs": [
+      [
+       "etat",
+       "select-one",
+       "retard"
+      ],
+      [
+       "motifCode",
+       "select-one",
+       ""
+      ],
+      [
+       "justificatif",
+       "text",
+       ""
+      ],
+      [
+       "motif",
+       "textarea",
+       ""
+      ]
+     ],
+     "titre": "Régulariser le pointage TAKI Orou · 16/08/2026 La régularisation est datée et porte son auteur et son motif : l’état d’avant reste lisible au journal. Nouvel état * Présent Retard Absent Congé Motif c"
+    },
+    "regulariser": {
+     "toast": {
+      "message": "Pointage régularisé.",
+      "type": "success",
+      "detail": null
+     },
+     "fiche": {
+      "id": "PRSCIRC0",
+      "statut": "actif",
+      "employeId": "EMP06",
+      "employe": "TAKI Orou",
+      "matricule": "6",
+      "service": "Médecine générale",
+      "date": "2026-08-16",
+      "etat": "present",
+      "heureArrivee": "09:10",
+      "validationEtat": "valide",
+      "etapesFaites": [
+       {
+        "etape": "surveillant",
+        "par": "BASSONGUI Chabi Séko",
+        "role": "admin",
+        "le": "2026-08-16",
+        "decision": "valide",
+        "motif": null
+       }
+      ],
+      "validePar": "BASSONGUI Chabi Séko",
+      "valideLe": "2026-08-16",
+      "circuitUtilise": "surveillant",
+      "regularisations": [
+       {
+        "le": "2026-08-16",
+        "par": "BASSONGUI Chabi Séko",
+        "motif": "Certificat remis",
+        "etatAvant": "retard",
+        "etatApres": "present",
+        "motifCodeAvant": null,
+        "motifCodeApres": "maladie"
+       }
+      ],
+      "motifCode": "maladie",
+      "justificatif": "CERT-7"
+     }
+    }
    }
   },
   "evaluations": {
@@ -11518,7 +18344,90 @@
      45
     ]
    ],
-   "note": null,
+   "note": {
+    "titre": "Note de service",
+    "sousTitre": "N/Réf. : NS 131/07/DM/DA/CNT/2026",
+    "cartouche": [
+     [
+      "Référence",
+      "NS 131/07/DM/DA/CNT/2026"
+     ],
+     [
+      "Objet",
+      "Évaluation du rendement"
+     ],
+     [
+      "Date de signature",
+      "13/07/2026"
+     ],
+     [
+      "Date d’effet",
+      "13/07/2026"
+     ],
+     [
+      "Version",
+      "v1"
+     ],
+     [
+      "Statut",
+      "ACTIVE"
+     ]
+    ],
+    "contenu": "Le Directeur Médical de la Clinique NASSIERA TOO informe tous ses Agents qu’il est procédé à la modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale. La nouvelle formule d’évaluation est présentée dans le tableau ci-dessous.N°Éléments d’évaluationCritèresBonneMoyenne (1er niveau)Faible à mauvaise (2e niveau)01Ponctualité et assiduitéRetard ; Sortie non autorisée ; Absence au poste ; Assemblée de bavardage ; Dormir aux heures de travail ; Usage de portableAucune1 à 2 — moins 6 % du salaire brut3 et plus — 10 % du salaire brut02Exécution des tâchesTâches non exécutées ; Tâches mal exécutéesAucune1 à 2 — moins 10 % du salaire brut3 et plus — 15 % du salaire brut03Attitude envers les patientsParler mal au malade ; Dispute avec malade ; Insulter ou critiquer le malade ; Renvoi de maladeAucune1 à 2 — moins 6 % du salaire brut3 et plus — 10 % du salaire brut04Respect de la hiérarchieManque de courtoisie ; Indiscrétion ; Manque d’intégritéAucune1 à 2 — moins 6 % du salaire brut3 et plus — 10 % du salaire brutAbroge toute disposition antérieure contraire. Entre en vigueur à compter de sa date de signature.Ampliation : Intéressés 41 — Archive 01",
+    "tables": [
+     {
+      "entetes": [
+       "N°",
+       "Éléments d’évaluation",
+       "Critères",
+       "Bonne",
+       "Moyenne (1er niveau)",
+       "Faible à mauvaise (2e niveau)"
+      ],
+      "lignes": [
+       [
+        "01",
+        "Ponctualité et assiduité",
+        "Retard ; Sortie non autorisée ; Absence au poste ; Assemblée de bavardage ; Dormir aux heures de travail ; Usage de portable",
+        "Aucune",
+        "1 à 2 — moins 6 % du salaire brut",
+        "3 et plus — 10 % du salaire brut"
+       ],
+       [
+        "02",
+        "Exécution des tâches",
+        "Tâches non exécutées ; Tâches mal exécutées",
+        "Aucune",
+        "1 à 2 — moins 10 % du salaire brut",
+        "3 et plus — 15 % du salaire brut"
+       ],
+       [
+        "03",
+        "Attitude envers les patients",
+        "Parler mal au malade ; Dispute avec malade ; Insulter ou critiquer le malade ; Renvoi de malade",
+        "Aucune",
+        "1 à 2 — moins 6 % du salaire brut",
+        "3 et plus — 10 % du salaire brut"
+       ],
+       [
+        "04",
+        "Respect de la hiérarchie",
+        "Manque de courtoisie ; Indiscrétion ; Manque d’intégrité",
+        "Aucune",
+        "1 à 2 — moins 6 % du salaire brut",
+        "3 et plus — 10 % du salaire brut"
+       ]
+      ],
+      "pied": []
+     }
+    ],
+    "signatures": [
+     {
+      "role": "Le Directeur Médical",
+      "nom": "BASSONGUI C. Séko Y., Directeur Médical"
+     }
+    ]
+   },
    "fiches": [
     {
      "evaluation": {
@@ -12087,7 +18996,7 @@
      "salaireBase": 350000
     },
     "nouvelle": {
-     "id": "EVAxmsvr6n4kpz6x9",
+     "id": "EVAxmsvr6zppz2mey",
      "statut": "actif",
      "employeId": "EMP02",
      "employe": "TAKI Alimatou",
@@ -12119,7 +19028,7 @@
    },
    "modification": {
     "fiche": {
-     "id": "EVAxmsvr6n4kpz6x9",
+     "id": "EVAxmsvr6zppz2mey",
      "statut": "actif",
      "employeId": "EMP02",
      "employe": "TAKI Alimatou",
@@ -14119,7 +21028,7 @@
      },
      "historique": [
       {
-       "id": "HPRxmsvr6qk6ell5b",
+       "id": "HPRxmsvr71vjhzjol",
        "statut": "actif",
        "primeId": "garde",
        "label": "Garde",
@@ -14137,12 +21046,12 @@
        "remplaceePar": "Version du 16/08/2026",
        "archiveePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:30.966Z"
+       "_creeLe": "2026-08-16T12:00:45.631Z"
       }
      ],
      "audit": {
-      "id": "LOGmsvr6qk6",
-      "dateHeure": "2026-08-16T12:00:30.966Z",
+      "id": "LOGmsvr71vj",
+      "dateHeure": "2026-08-16T12:00:45.631Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de la grille des primes",
       "module": "M10",
@@ -14607,8 +21516,8 @@
      },
      "historique": [],
      "audit": {
-      "id": "LOGmsvr6rxl",
-      "dateHeure": "2026-08-16T12:00:32.745Z",
+      "id": "LOGmsvr72ui",
+      "dateHeure": "2026-08-16T12:00:46.890Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de la grille des primes",
       "module": "M10",
@@ -15071,7 +21980,7 @@
      },
      "historique": [
       {
-       "id": "HPRxmsvr6thtuvtu7",
+       "id": "HPRxmsvr73qs5hck7",
        "statut": "actif",
        "primeId": "aide_bloc",
        "label": "Aide bloc",
@@ -15088,12 +21997,12 @@
        "remplaceePar": "Version du 16/08/2026",
        "archiveePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:34.769Z"
+       "_creeLe": "2026-08-16T12:00:48.052Z"
       }
      ],
      "audit": {
-      "id": "LOGmsvr6tht",
-      "dateHeure": "2026-08-16T12:00:34.769Z",
+      "id": "LOGmsvr73qs",
+      "dateHeure": "2026-08-16T12:00:48.052Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de la grille des primes",
       "module": "M10",
@@ -15841,7 +22750,7 @@
      "detail": "Prime de nuit"
     },
     "fiche": {
-     "id": "GPRxmsvr6uyj13bbe",
+     "id": "GPRxmsvr74ibleq9c",
      "statut": "actif",
      "primeId": "prime-de-nuit",
      "label": "Prime de nuit",
@@ -15880,12 +22789,12 @@
      "version": 1,
      "source": "NS n° 132/07/DM/DA/CNT/2026",
      "_archivePar": "BASSONGUI Chabi Séko",
-     "_archiveLe": "2026-08-16T12:00:38.928Z",
+     "_archiveLe": "2026-08-16T12:00:49.821Z",
      "_motifArchivage": "Prime abrogée par note"
     },
     "historique": [
      {
-      "id": "HPRxmsvr6wpcp5luu",
+      "id": "HPRxmsvr753wlwgw5",
       "statut": "actif",
       "primeId": "caisse",
       "label": "Caisse",
@@ -15899,7 +22808,7 @@
       "remplaceePar": "Prime retirée : Prime abrogée par note",
       "archiveePar": "BASSONGUI Chabi Séko",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-08-16T12:00:38.928Z"
+      "_creeLe": "2026-08-16T12:00:49.820Z"
      }
     ],
     "montantCaisse": 0,
@@ -16011,7 +22920,7 @@
    },
    "primeFixeCreee": {
     "fiche": {
-     "id": "GPRxmsvr6xtgmxrig",
+     "id": "GPRxmsvr75q7jky85",
      "statut": "actif",
      "primeId": "prime-de-sujetion",
      "label": "Prime de sujétion",
@@ -16308,7 +23217,7 @@
      },
      "fiches": [
       {
-       "id": "BPRxmsvr6ysz8b89t",
+       "id": "BPRxmsvr76itr5z9a",
        "statut": "actif",
        "primeId": "accueil",
        "primeLabel": "Accueil",
@@ -16319,13 +23228,13 @@
        "fin": null,
        "designePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:41.651Z"
+       "_creeLe": "2026-08-16T12:00:51.653Z"
       }
      ],
      "texte": "Bénéficiaires : Accueil NS n° 132/07/DM/DA/CNT/2026 Seuls les agents désignés, aux dates indiquées, perçoivent ce forfait. AGENT DEPUIS LE JUSQU’AU OROU YO Edmond 16/08/2026 en cours Désigner des bénéficiaires Agents à désigner * — Aucune sélection — Depuis le * Désigner Fermer",
      "audit": {
-      "id": "LOGmsvr6ysz",
-      "dateHeure": "2026-08-16T12:00:41.651Z",
+      "id": "LOGmsvr76it",
+      "dateHeure": "2026-08-16T12:00:51.653Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Désignation des bénéficiaires d’une prime fixe",
       "module": "M10",
@@ -16738,7 +23647,7 @@
      },
      "historique": [
       {
-       "id": "HBAxmsvr71wnay44u",
+       "id": "HBAxmsvr77sttq3o4",
        "statut": "actif",
        "critereId": "ponctualite",
        "num": "01",
@@ -16761,7 +23670,7 @@
        "remplacePar": "Version du 16/08/2026",
        "archivePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:45.671Z"
+       "_creeLe": "2026-08-16T12:00:53.309Z"
       }
      ],
      "table": {
@@ -16823,8 +23732,8 @@
      },
      "historiqueAffiche": true,
      "audit": {
-      "id": "LOGmsvr71wo",
-      "dateHeure": "2026-08-16T12:00:45.672Z",
+      "id": "LOGmsvr77st",
+      "dateHeure": "2026-08-16T12:00:53.309Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification du barème NS 131",
       "module": "M10",
@@ -16958,8 +23867,8 @@
      },
      "historiqueAffiche": true,
      "audit": {
-      "id": "LOGmsvr736c",
-      "dateHeure": "2026-08-16T12:00:47.316Z",
+      "id": "LOGmsvr78m2",
+      "dateHeure": "2026-08-16T12:00:54.362Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification du barème NS 131",
       "module": "M10",
@@ -16988,7 +23897,7 @@
    ],
    "evaluationApres": {
     "nouvelle": {
-     "id": "EVAxmsvr74u6ki9gp",
+     "id": "EVAxmsvr79kugc0r7",
      "statut": "actif",
      "employeId": "EMP02",
      "employe": "TAKI Alimatou",
@@ -17291,7 +24200,7 @@
      "detail": "Hygiène et tenue"
     },
     "critere": {
-     "id": "BARxmsvr75nq5sm2q",
+     "id": "BARxmsvr7a0noziqo",
      "statut": "actif",
      "critereId": "hygi_ne_et_tenue",
      "num": "05",
@@ -17317,7 +24226,7 @@
      "detail": "Archivage logique (RG-14) — restaurable depuis la corbeille."
     },
     "archive": {
-     "id": "BARxmsvr75nq5sm2q",
+     "id": "BARxmsvr7a0noziqo",
      "statut": "archive",
      "critereId": "hygi_ne_et_tenue",
      "num": "05",
@@ -17335,12 +24244,12 @@
      "version": 1,
      "source": "Créé dans l’application le 16/08/2026 — à couvrir par un avenant",
      "_archivePar": "BASSONGUI Chabi Séko",
-     "_archiveLe": "2026-08-16T12:00:51.572Z",
+     "_archiveLe": "2026-08-16T12:00:56.780Z",
      "_motifArchivage": "Critère abrogé"
     },
     "historique": [
      {
-      "id": "HBAxmsvr76gk01vq4",
+      "id": "HBAxmsvr7ah87or92",
       "statut": "actif",
       "critereId": "hygi_ne_et_tenue",
       "num": "05",
@@ -17359,7 +24268,7 @@
       "remplacePar": "Critère retiré — Critère abrogé",
       "archivePar": "BASSONGUI Chabi Séko",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-08-16T12:00:51.572Z"
+      "_creeLe": "2026-08-16T12:00:56.780Z"
      }
     ]
    }
@@ -17424,8 +24333,8 @@
       }
      ],
      "audit": {
-      "id": "LOGmsvr77fb",
-      "dateHeure": "2026-08-16T12:00:52.823Z",
+      "id": "LOGmsvr7b5d",
+      "dateHeure": "2026-08-16T12:00:57.649Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de régime",
       "module": "M10",
@@ -17493,8 +24402,8 @@
       }
      ],
      "audit": {
-      "id": "LOGmsvr78zg",
-      "dateHeure": "2026-08-16T12:00:54.844Z",
+      "id": "LOGmsvr7bx4",
+      "dateHeure": "2026-08-16T12:00:58.648Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de régime",
       "module": "M10",
@@ -17536,7 +24445,7 @@
       "source": "Planning des agents de sécurité",
       "mention": "Rotation « G » (garde 24 h), « S » (soirée de 18h à 8h) et « R » (repos).",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-08-16T12:00:57.333Z",
+      "_archiveLe": "2026-08-16T12:00:59.316Z",
       "_motifArchivage": null
      }
     }
@@ -17583,9 +24492,9 @@
      ],
      "note": "Affectation de vacation BASSONGUI Chabi Séko — dimanche 16 août 2026 Agent BASSONGUI Chabi Séko Fonction Médecin Date dimanche 16 août 2026 Vacation actuelle Garde 24h Médecins de garde — Garde de 24 h (08h→08h), suivie d’un repos de 48 h. Type de vacation * Garde 24h (08:00 → 08:00) Repos 48h Congé Absence Remplacement Observation Retirer Annuler Enregistrer",
      "toast": {
-      "message": "Incompatibilité — le repos de 48 h qui suit une garde n’est pas respecté.",
+      "message": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde déjà programmée le 15/08/2026 pour BASSONGUI Chabi Séko).",
       "type": "error",
-      "detail": "Garde déjà programmée le 15/08/2026 pour BASSONGUI Chabi Séko."
+      "detail": "Choisir un jour après le repos de 48 h, ou retirer l’autre garde."
      },
      "dialogueOuvert": true,
      "ajoute": 0
@@ -17620,9 +24529,9 @@
      ],
      "note": "Affectation de vacation BASSONGUI Chabi Séko — dimanche 16 août 2026 Agent BASSONGUI Chabi Séko Fonction Médecin Date dimanche 16 août 2026 Vacation actuelle Garde 24h Médecins de garde — Garde de 24 h (08h→08h), suivie d’un repos de 48 h. Type de vacation * Garde 24h (08:00 → 08:00) Repos 48h Congé Absence Remplacement Observation Retirer Annuler Enregistrer",
      "toast": {
-      "message": "Incompatibilité — le repos de 48 h qui suit une garde n’est pas respecté.",
+      "message": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde déjà programmée le 14/08/2026 pour BASSONGUI Chabi Séko).",
       "type": "error",
-      "detail": "Garde déjà programmée le 14/08/2026 pour BASSONGUI Chabi Séko."
+      "detail": "Choisir un jour après le repos de 48 h, ou retirer l’autre garde."
      },
      "dialogueOuvert": true,
      "ajoute": 0
@@ -17657,9 +24566,9 @@
      ],
      "note": "Affectation de vacation BADO BANI A. B. Zoulehath — dimanche 16 août 2026 Agent BADO BANI A. B. Zoulehath Fonction Sage-femme Date dimanche 16 août 2026 Vacation actuelle Garde 24h Sages-femmes — Garde de 24 h en alternance quotidienne, suivie d’un repos de 24 h. Type de vacation * Garde 24h (08:00 → 08:00) Repos 24h Congé Absence Remplacement Observation Retirer Annuler Enregistrer",
      "toast": {
-      "message": "Incompatibilité — le repos de 24 h qui suit une garde n’est pas respecté.",
+      "message": "Incompatibilité : le repos de 24 h qui suit une garde n’est pas respecté (garde déjà programmée le 15/08/2026 pour BADO BANI A. B. Zoulehath).",
       "type": "error",
-      "detail": "Garde déjà programmée le 15/08/2026 pour BADO BANI A. B. Zoulehath."
+      "detail": "Choisir un jour après le repos de 24 h, ou retirer l’autre garde."
      },
      "dialogueOuvert": true,
      "ajoute": 0
@@ -17698,9 +24607,9 @@
      ],
      "note": "Affectation de vacation GARBA Yahouza — lundi 17 août 2026 Agent GARBA Yahouza Fonction Infirmier(ère) Date lundi 17 août 2026 Vacation actuelle Garde hospitalisation Infirmiers (cycle revu) — Deux postes distincts : garde soins de 08h à 18h30 et garde hospitalisation de 08h à 08h. Vingt jours travaillés par mois et par agent. Type de vacation * Garde hospitalisation (08:00 → 08:00) Garde soins (08:00 → 18:30) Repos 48h Congé Absence Remplacement Observation Retirer Annuler Enregistrer",
      "toast": {
-      "message": "Incompatibilité — le repos de 48 h qui suit une garde n’est pas respecté.",
+      "message": "Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde déjà programmée le 15/08/2026 pour GARBA Yahouza).",
       "type": "error",
-      "detail": "Garde déjà programmée le 15/08/2026 pour GARBA Yahouza."
+      "detail": "Choisir un jour après le repos de 48 h, ou retirer l’autre garde."
      },
      "dialogueOuvert": true,
      "ajoute": 0
@@ -17721,15 +24630,21 @@
     "args": [
      "PLN633",
      {
-      "type": "garde",
-      "observation": "Remplace A.",
       "date": "2026-08-14",
       "employeId": "EMP21",
       "employe": "TEPA Séraphine",
       "fonction": "aide_soignant",
       "service": "Soins infirmiers",
+      "type": "garde",
+      "observation": "Remplace A.",
       "statut": "validee",
-      "regimeLibelle": "Aides-soignants"
+      "regimeLibelle": "Aides-soignants",
+      "regimeIndividuelId": null,
+      "derogations": [],
+      "validationEtat": "validee",
+      "validePar": "BASSONGUI Chabi Séko",
+      "valideLe": "2026-08-16",
+      "origine": "poste"
      }
     ]
    }

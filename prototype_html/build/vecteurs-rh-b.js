@@ -50,7 +50,7 @@ async function pilote([jeu, complet]) {
   const pieces = [];
   SIGH.print.etat = function (o) {
     pieces.push({
-      titre: o.titre, sousTitre: o.sousTitre || null, cartouche: propre(o.cartouche || []),
+      titre: o.titre, sousTitre: o.sousTitre || null, cartouche: propre(o.cartouche || []), filtres: o.filtres === undefined ? undefined : propre(o.filtres),
       contenu: o.contenu ? texte(o.contenu) : null,
       tables: o.contenu && o.contenu.querySelectorAll ? [...o.contenu.querySelectorAll('table')].map((tb) => ({
         entetes: [...tb.querySelectorAll('thead th')].map(texte),
@@ -114,18 +114,75 @@ async function pilote([jeu, complet]) {
   /* ---------------- PLANNING : lecture ---------------- */
   {
     const root = await monter('m10-planning');
-    const tables = [...root.querySelectorAll('table')];
+    /* Les tableaux se repèrent par le titre de leur CARTE : l'ordre des blocs a changé avec les lots L4 à L6 (régimes individuels, filtres avancés). */
+    const tableDeCarte = (r, debut) => { const t = [...r.querySelectorAll('table')].find((tb) => { const h = tb.closest('.card') && tb.closest('.card').querySelector('.card-title, h3'); return h && texte(h).startsWith(debut); }); return t || null; };
+    const regimes = tableDeCarte(root, 'Régimes de travail');
+    const grilleT = tableDeCarte(root, 'Planning du');
+    const individuels = tableDeCarte(root, 'Régimes individuels');
+    const registreT = tableDeCarte(root, 'Registre des vacations');
+    const tabAvec = (tb) => { const carte = tb && tb.closest('.card'); const h = carte && carte.querySelector('.card-title, h3'); return tb ? { titre: h ? texte(h) : null, entetes: [...tb.querySelectorAll('thead th')].map(texte), lignes: [...tb.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map(texte)), pied: [...tb.querySelectorAll('tfoot td, tfoot th')].map(texte), boutons: [...tb.querySelectorAll('tbody tr')].slice(0, 1).map((tr) => [...tr.querySelectorAll('button')].map((b) => b.getAttribute('title') || b.getAttribute('aria-label') || texte(b))) } : null; };
+    const carteTexte = (r, debut) => { const c = [...r.querySelectorAll('.card')].find((x) => x.querySelector('.card-title, h3') && texte(x.querySelector('.card-title, h3')).startsWith(debut)); return c ? texte(c) : null; };
     sortie.planning = {
       kpis: kpis(root), cartes: cartes(root),
-      regimes: tableau(root, 0),
-      grille: { entetes: [...tables[1].querySelectorAll('thead th')].map(texte), lignes: [...tables[1].querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map(texte)) },
-      registre: tableau(root, 2),
+      regimes: tabAvec(regimes),
+      individuels: tabAvec(individuels),
+      reglages: carteTexte(root, 'Réglages du planning et des présences'),
+      filtres: [...root.querySelectorAll('label.label')].map(texte),
+      grille: { entetes: [...grilleT.querySelectorAll('thead th')].map(texte), lignes: [...grilleT.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map(texte)) },
+      registre: tabAvec(registreT),
       legende: texte([...root.querySelectorAll('span')].find((s) => texte(s) === 'Légende :').parentElement),
       texteNote: texte(root).slice(-420),
+      commandes: [...root.querySelectorAll('button')].map((b) => b.getAttribute('title') || texte(b)).filter(Boolean).slice(0, 40),
     };
     pieces.length = 0;
     await cliquer(root, /^Imprimer le planning/);
     sortie.planning.impression = pieceDerniere();
+    if (complet) {
+      /* LES FILTRES AVANCÉS, au geste : la grille ET le registre se recalculent ; « Imprimer l'état » retrace les filtres en force (relevés SUR LA PAGE). */
+      const carteDe = (r, debut) => [...r.querySelectorAll('.card')].find((x) => x.querySelector('.card-title, h3') && texte(x.querySelector('.card-title, h3')).startsWith(debut));
+      const lireVue = (r) => {
+        const gt = tableDeCarte(r, 'Planning du'), rt = tableDeCarte(r, 'Registre des vacations');
+        return {
+          grilleAgents: gt ? gt.querySelectorAll('tbody tr').length : 0,
+          grilleMasquees: gt ? [...gt.querySelectorAll('tbody td [title]')].filter((x) => texte(x) === '·' && x.getAttribute('title') === 'Masquée par les filtres').length : 0,
+          grilleVide: !gt && texte(carteDe(r, 'Planning du')).includes('Aucun agent ne correspond aux filtres.'),
+          titreGrille: (() => { const k = carteDe(r, 'Planning du'); return k ? texte(k.querySelector('.card-title, h3')) : null; })(),
+          registreTitre: (() => { const k = carteDe(r, 'Registre des vacations'); return k ? texte(k.querySelector('.card-title, h3')) : null; })(),
+          registreLignes: rt ? [...rt.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map(texte)).slice(0, 15) : [],
+        };
+      };
+      const root2 = await monter('m10-planning');
+      const regler2 = async (o) => { for (const k of Object.keys(o)) { const e = champ(root2, k); e.value = o[k]; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); await dormir(60); } };
+      const effacer = async () => { await cliquer(root2, /^Effacer les filtres/); };
+      const agentG = db().personnel.find((e) => e.fonction === 'medecin' && e.statut !== 'archive');
+      const infG = db().personnel.find((e) => e.fonction === 'infirmier' && e.statut !== 'archive');
+      const essais = [
+        { nom: 'sans filtre', reglage: {} },
+        { nom: 'un agent', reglage: { 'Agent': agentG.id } },
+        { nom: 'une fonction', reglage: { 'Fonction': 'infirmier' } },
+        { nom: 'un type de vacation', reglage: { 'Type de vacation': 'garde' } },
+        { nom: 'une plage', reglage: { 'Du': '2026-08-10', 'Au': '2026-08-16' } },
+        { nom: 'une fonction et un type', reglage: { 'Fonction': 'infirmier', 'Type de vacation': 'garde_hospi' } },
+        { nom: 'à valider (aucune au jeu)', reglage: { 'Validation': 'a_valider' } },
+        { nom: 'validées', reglage: { 'Validation': 'validee' } },
+        { nom: 'validées avant le circuit', reglage: { 'Validé par': '__aucun' } },
+        { nom: 'recherche', reglage: { 'Recherche': agentG.nomComplet.split(' ')[0] } },
+        { nom: 'dérogation individuelle (aucune au jeu)', reglage: { 'Régime': '__individuel' } },
+        { nom: 'un matricule', reglage: { 'Matricule': infG.matricule } },
+      ];
+      sortie.planningFiltres = { options: {}, cas: [] };
+      for (const k of ['Agent', 'Matricule', 'Service', 'Fonction', 'Régime', 'Type de vacation', 'Validation', 'Validé par']) sortie.planningFiltres.options[k] = options(root2, k);
+      for (const e of essais) { await effacer(); await regler2(e.reglage); sortie.planningFiltres.cas.push({ nom: e.nom, reglage: e.reglage, vue: lireVue(root2) }); }
+      await effacer(); await regler2({ 'Fonction': 'infirmier', 'Type de vacation': 'garde_hospi', 'Du': '2026-08-10', 'Au': '2026-08-20' });
+      pieces.length = 0;
+      root2.id = 'page-content';
+      const filtresPage = SIGH.print.filtresDeLaPage ? SIGH.print.filtresDeLaPage() : null;
+      root2.removeAttribute('id');
+      await cliquer(root2, /^Imprimer l’état/);
+      sortie.planningFiltres.impressionRegistre = Object.assign(pieceDerniere(), { filtresPage });
+      await effacer();
+      nettoyer();
+    }
   }
 
   /* ---------------- STATISTIQUES DE GARDE ---------------- */
@@ -230,9 +287,9 @@ async function pilote([jeu, complet]) {
       await cliquer(root, /^Mois en cours/); p.cas.push(await lire(root, { mois: true }));
       await cliquer(root, /^Sept derniers jours/); p.cas.push(await lire(root, { sept: true }));
       for (const e of [{ 'Du': '2026-08-01', 'Au': '2026-08-10' }, { 'Du': '2026-08-16', 'Au': '2026-08-16' }, { 'Du': '2030-01-01', 'Au': '2030-01-02' }]) {
-        await regler(root, e); await cliquer(root, /^Appliquer/); p.cas.push(await lire(root, e));
+        await regler(root, e); p.cas.push(await lire(root, e));
       }
-      await regler(root, { 'Du': '2026-08-01', 'Au': '2026-08-31' }); await cliquer(root, /^Appliquer/);
+      await regler(root, { 'Du': '2026-08-01', 'Au': '2026-08-31' });
       /* Un pointage créé par le formulaire de l'écran. */
       const avant = db().presences.length;
       const agent = db().personnel.find((e) => e.statut !== 'archive');
@@ -247,7 +304,70 @@ async function pilote([jeu, complet]) {
       await cliquer(root, /^Ajouter un pointage/);
       d = dialogue(); toasts.length = 0;
       await cliquer(d, /^Créer/);
-      p.refus = { toast: toasts[toasts.length - 1], delta: db().presences.length - avant, dialogueOuvert: !!dialogue() };
+      p.refus = { toast: toasts[toasts.length - 1], delta: db().presences.length - avant, dialogueOuvert: !!dialogue(), secondeFiche: net(db().presences[0]) };
+      nettoyer();
+      /* LES FILTRES AVANCÉS (onze critères) : le registre, les compteurs et les graphiques se recalculent ; l'état imprimé retrace les filtres. */
+      const root2 = await monter('m10-presences');
+      const effacer = async () => { await cliquer(root2, /^Effacer les filtres/); };
+      const vue = () => ({ du: champ(root2, 'Du').value, au: champ(root2, 'Au').value, kpis: kpis(root2), table: (() => { const t = tableau(root2, 0); return t ? { titre: t.titre, entetes: t.entetes, lignes: t.lignes.slice(0, 20) } : null; })(), note: texte(root2).includes('Aucun pointage validé sur la plage et les filtres retenus.') });
+      const premier = db().presences.find((r) => r.statut !== 'archive');
+      const f = { options: {}, cas: [] };
+      for (const k of ['Agent', 'Matricule', 'Service', 'État', 'Motif codé', 'Validation', 'Validé par']) f.options[k] = options(root2, k);
+      const essais = [
+        { nom: 'plage du jeu', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31' } },
+        { nom: 'un agent', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'Agent': premier.employeId } },
+        { nom: 'un état', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'État': 'retard' } },
+        { nom: 'un service', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'Service': premier.service } },
+        { nom: 'retard minimal', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'État': 'retard', 'Retard minimal (minutes après 08:00)': '30' } },
+        { nom: 'arrivée entre deux heures', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'Arrivée de': '07:30', 'Arrivée à': '07:50' } },
+        { nom: 'sans motif codé', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'Motif codé': '__aucun' } },
+        { nom: 'validés', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'Validation': 'valide' } },
+        { nom: 'à valider (aucun au jeu)', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'Validation': 'a_valider' } },
+        { nom: 'validation non renseignée', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'Validé par': '__aucun' } },
+        { nom: 'recherche', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'Recherche': premier.employe.split(' ')[0] } },
+        { nom: 'un matricule', reglage: { 'Du': '2026-08-01', 'Au': '2026-08-31', 'Matricule': premier.matricule } },
+      ];
+      for (const e of essais) { await effacer(); await regler(root2, e.reglage); f.cas.push({ nom: e.nom, reglage: e.reglage, vue: vue() }); }
+      await effacer(); await regler(root2, { 'Du': '2026-08-01', 'Au': '2026-08-31', 'État': 'retard', 'Arrivée de': '07:30', 'Retard minimal (minutes après 08:00)': '15' });
+      pieces.length = 0;
+      root2.id = 'page-content';
+      const filtresPageP = SIGH.print.filtresDeLaPage ? SIGH.print.filtresDeLaPage() : null;
+      root2.removeAttribute('id');
+      await cliquer(root2, /^Imprimer l’état/);
+      f.impression = Object.assign(pieceDerniere(), { filtresPage: filtresPageP });
+      p.filtres = f;
+      /* LE CIRCUIT AU GESTE : trois pointages à valider ; valider, refuser (motif obligatoire), puis régulariser le pointage validé. */
+      await effacer();
+      const agents3 = db().personnel.filter((e) => e.statut !== 'archive').slice(5, 8);
+      const nouveaux = agents3.map((e, i) => ({ id: 'PRSCIRC' + i, statut: 'actif', employeId: e.id, employe: e.nomComplet, matricule: e.matricule, service: e.service, date: '2026-08-16', etat: 'retard', heureArrivee: '09:' + (10 + i), validationEtat: 'a_valider', etapesFaites: [] }));
+      db().presences = nouveaux.concat(db().presences);
+      await regler(root2, { 'Du': '2026-08-16', 'Au': '2026-08-16', 'Validation': 'a_valider' });
+      const c = { avant: vue(), boutonsLigne: [...root2.querySelectorAll('tbody tr')].slice(0, 1).map((tr) => [...tr.querySelectorAll('button')].map((b) => b.getAttribute('title') || texte(b))) };
+      const ligne = (r, ref) => [...r.querySelectorAll('tbody tr')].find((tr) => texte(tr).includes(ref));
+      const ouvrirBtn = async (tr, titre) => { [...tr.querySelectorAll('button')].find((b) => b.getAttribute('title') === titre).click(); await dormir(150); };
+      let tr = ligne(root2, agents3[0].nomComplet);
+      await ouvrirBtn(tr, 'Valider ce pointage');
+      c.confirmationValider = texte(dialogue()).slice(0, 400);
+      toasts.length = 0; await cliquer(dialogue(), /^Valider$/);
+      c.valider = { toast: toasts[toasts.length - 1], fiche: net(db().presences.find((r) => r.id === 'PRSCIRC0')) };
+      tr = ligne(root2, agents3[1].nomComplet);
+      await ouvrirBtn(tr, 'Refuser ce pointage');
+      c.confirmationRefuser = texte(dialogue()).slice(0, 400);
+      toasts.length = 0; await cliquer(dialogue(), /^Refuser$/);
+      c.refusSansMotif = { toast: toasts[toasts.length - 1] || null, dialogueOuvert: !!dialogue(), fiche: net(db().presences.find((r) => r.id === 'PRSCIRC1')) };
+      if (dialogue()) { const mo = dialogue().querySelector('textarea, input[type=text]'); mo.value = 'Pointage contesté'; mo.dispatchEvent(new Event('input', { bubbles: true })); toasts.length = 0; await cliquer(dialogue(), /^Refuser$/); }
+      c.refuser = { toast: toasts[toasts.length - 1], fiche: net(db().presences.find((r) => r.id === 'PRSCIRC1')) };
+      await effacer(); await regler(root2, { 'Du': '2026-08-16', 'Au': '2026-08-16', 'Validation': 'valide', 'Agent': agents3[0].id });
+      tr = ligne(root2, agents3[0].nomComplet);
+      c.boutonsValide = [...tr.querySelectorAll('button')].map((b) => b.getAttribute('title') || texte(b));
+      await ouvrirBtn(tr, 'Régulariser ce pointage');
+      const dr = dialogue();
+      c.formulaireRegul = { champs: [...dr.querySelectorAll('[id^=f_]')].map((e) => [e.id.slice(2), e.type || e.tagName.toLowerCase(), e.value]), titre: texte(dr).slice(0, 200) };
+      poser(dr, 'etat', 'present'); poser(dr, 'motifCode', 'maladie'); poser(dr, 'justificatif', 'CERT-7'); poser(dr, 'motif', 'Certificat remis');
+      toasts.length = 0; await cliquer(dr, /^Régulariser/);
+      c.regulariser = { toast: toasts[toasts.length - 1], fiche: net(db().presences.find((r) => r.id === 'PRSCIRC0')) };
+      p.circuit = c;
+      db().presences = db().presences.filter((r) => !String(r.id).startsWith('PRSCIRC'));
       nettoyer();
     }
     sortie.presences = p;
@@ -563,7 +683,7 @@ async function pilote([jeu, complet]) {
   /* ---- Planning : l'incompatibilité et l'affectation ---- */
   {
     const root = await monter('m10-planning');
-    const grille = [...root.querySelectorAll('table')][1];
+    const grille = [...root.querySelectorAll('table')].find((tb) => { const h = tb.closest('.card') && tb.closest('.card').querySelector('.card-title'); return h && texte(h).startsWith('Planning du'); });
     const jours = [...grille.querySelectorAll('thead th')].slice(1).map(texte);
     const a = { jours, cas: [] };
     const personnes = db().personnel.filter((e) => e.statut !== 'archive');
@@ -620,7 +740,7 @@ async function affectations(page) {
     document.querySelectorAll('[data-vecteur]').forEach((e) => e.remove());
     const root = document.createElement('div'); root.setAttribute('data-vecteur', 'x'); document.body.appendChild(root);
     SIGH.screens['m10-planning'].render(root); await dormir(150);
-    const grille = [...root.querySelectorAll('table')][1];
+    const grille = [...root.querySelectorAll('table')].find((tb) => { const h = tb.closest('.card') && tb.closest('.card').querySelector('.card-title'); return h && texte(h).startsWith('Planning du'); });
     const agent = S.raw().personnel.find((e) => e.fonction === 'aide_soignant' && e.statut !== 'archive');
     S.raw().planning = S.raw().planning.filter((v) => !(v.employeId === agent.id && v.date >= '2026-08-10' && v.date <= '2026-08-20'));
     const tr = [...grille.querySelectorAll('tbody tr')].find((x) => texte(x).startsWith(agent.nomComplet));

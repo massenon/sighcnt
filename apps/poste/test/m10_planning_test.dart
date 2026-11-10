@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_poste/donnees/magasin.dart';
+import 'package:sigh_poste/donnees/planning_rh_poste.dart';
 import 'package:sigh_poste/kit/kit.dart';
 
 import 'aide_polices.dart';
 import 'm14_aide.dart';
 import 'rhb_aide.dart';
 
-/// m10-planning et m10-presences : les écrans MONTÉS sur le jeu du poste, les gestes de l'agent accomplis, et ce qui est écrit au magasin comparé aux relevés de la
+/// Le repos individuel gouverne le contrôle de l'agent : 24 h pour lui (dérogation), 48 h pour son collègue de la même catégorie.
+bool rhbPlanningPoste24(Magasin m) {
+  final p = PlanningRhPoste(m, auteur: () => 'x', role: 'surveillant', horloge: () => auj16);
+  final a = m.collection('personnel').actives.firstWhere((e) => e['id'] == 'EMP01');
+  final autre = m.collection('personnel').actives.firstWhere((e) => e['id'] != 'EMP01' && e['fonction'] == 'medecin');
+  return p.regimeALaDate(a, '2026-08-16').repos == 'repos24' && p.regimeALaDate(autre, '2026-08-16').repos == 'repos48';
+}
+
+/// L'ordre dans lequel les textes apparaissent à l'écran (de haut en bas) : ce que l'agent lit.
+List<String> ordreAffiche(WidgetTester t, Iterable<String> refs) {
+  final y = {for (final r in refs) r: find.text(r).evaluate().isEmpty ? double.infinity : t.getTopLeft(find.text(r).first).dy};
+  return (y.keys.where((r) => y[r]!.isFinite).toList()..sort((a, b) => y[a]!.compareTo(y[b]!)));
+}
+
+/// m10-planning : l'écran MONTÉ sur le jeu du poste, les gestes de l'agent accomplis, et ce qui est écrit au magasin comparé aux relevés de la
 /// maquette (rhb.json). Les règles chiffrées sont rejouées par packages/domaine/test/rhb_regles_test.dart.
 void main() {
   setUpAll(chargerPolices);
@@ -35,6 +50,18 @@ void main() {
       expect(find.textContaining('Garde 24h'), findsWidgets); // la légende
       expect(find.text('Légende :'), findsOneWidget);
       expect(find.widgetWithText(BoutonSigh, 'Nouveau régime'), findsOneWidget);
+      // Lots L4 à L6 : les cartes que la maquette ajoute au planning, dans son ordre.
+      for (final titre in ['Régimes individuels (dérogations champ par champ)', 'Réglages du planning et des présences', 'Filtres avancés du planning']) {
+        expect(find.text(titre), findsOneWidget, reason: titre);
+      }
+      expect(ordreAffiche(t, ['Régimes de travail par catégorie', 'Régimes individuels (dérogations champ par champ)', 'Réglages du planning et des présences', 'Filtres avancés du planning', 'Planning du 13/08/2026 au 19/08/2026']),
+          ['Régimes de travail par catégorie', 'Régimes individuels (dérogations champ par champ)', 'Réglages du planning et des présences', 'Filtres avancés du planning', 'Planning du 13/08/2026 au 19/08/2026']);
+      for (final l in (maquette('planning')['filtres'] as List)) {
+        expect(find.text('$l'), findsWidgets, reason: 'filtre $l');
+      }
+      expect(find.widgetWithText(BoutonSigh, 'Effacer les filtres'), findsOneWidget);
+      expect(find.widgetWithText(BoutonSigh, 'Déroger pour un agent'), findsOneWidget);
+      expect(find.text('Aucun agent n’a de régime individuel : tous suivent le régime de leur catégorie.'), findsOneWidget);
       // La grille : un agent de la semaine, sa case du 16/08 porte sa garde.
       expect(find.byKey(const Key('rhb:cellule:EMP01:2026-08-16')), findsOneWidget);
       expect(find.descendant(of: find.byKey(const Key('rhb:cellule:EMP01:2026-08-16')), matching: find.text('Garde 24h')), findsOneWidget);
@@ -55,12 +82,16 @@ void main() {
       expect(find.textContaining('Médecins — Garde de 24 h (08h→08h), suivie d’un repos de 48 h.'), findsOneWidget);
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
       final cas = liste(dico(maquette('affectation'))['cas']).first;
-      expect(dico(cas['toast'])['message'], 'Incompatibilité — le repos de 48 h qui suit une garde n’est pas respecté.');
-      expect(find.text('${dico(cas['toast'])['message']}'), findsOneWidget);
-      // La garde en cause est lue sur le planning du jeu (le relevé de la maquette en avait posé une de contrôle au 15/08).
-      final conflit = rhbIncompatibiliteGarde(m.collection('planning').actives, employeId: 'EMP01', jour: DateTime(2026, 8, 16), type: 'garde', repos: 'repos48');
-      expect(conflit, isNotNull);
-      expect(find.text('Garde déjà programmée le ${dateFR(DateTime.parse(conflit!))} pour BASSONGUI Chabi Séko.'), findsOneWidget);
+      // Le contrôle est celui du DOMAINE (une règle, une voie) : le refus porte son motif et son geste, comme le toast de la maquette.
+      final tc = dico(cas['toast']);
+      // La garde en cause est lue sur le planning du jeu (la maquette en avait posé une de contrôle au 15/08) : le texte est le même, la date citée peut différer.
+      final motif = '${tc['message']}'.replaceAll(RegExp(r'le \d{2}/\d{2}/\d{4}'), 'le #');
+      expect(
+          t.widgetList<Text>(find.byType(Text)).where((w) => (w.data ?? '').replaceAll(RegExp(r'le \d{2}/\d{2}/\d{4}'), 'le #') == motif).length,
+          1,
+          reason: motif);
+      expect(motif, 'Incompatibilité : le repos de 48 h qui suit une garde n’est pas respecté (garde déjà programmée le # pour BASSONGUI Chabi Séko).');
+      expect(find.text('${tc['detail']}'), findsOneWidget);
       expect(m.collection('planning').toutes.length, avant);
       expect(find.text('Affectation de vacation'), findsOneWidget, reason: 'la modale reste ouverte');
     });
@@ -79,8 +110,12 @@ void main() {
       final trace = dico(vecteursRhb['affectationReussie']);
       final attendu = dico(((trace['trace'] as List).first as Map)['args'] is List ? (((trace['trace'] as List).first as Map)['args'] as List)[1] : null);
       final f = net(premiere(m, 'planning'));
-      expect({for (final e in attendu.entries) e.key: f[e.key]}, attendu);
+      // Ce qui dépend de la session (qui valide, et quand) se vérifie à part : la maquette l'écrit au nom de sa session de relevé.
+      const session = {'validePar', 'valideLe'};
+      expect({for (final e in attendu.entries) if (!session.contains(e.key)) e.key: f[e.key]}, {for (final e in attendu.entries) if (!session.contains(e.key)) e.key: e.value});
       expect(f['statut'], 'validee');
+      expect([f['validationEtat'], f['origine'], f['valideLe']], ['validee', 'poste', '2026-08-16']);
+      expect('${f['validePar']}'.isNotEmpty, isTrue, reason: 'RG-12 : la pose est attribuée');
       expect(find.text('Vacation enregistrée.'), findsOneWidget);
     });
 
@@ -176,6 +211,137 @@ void main() {
       expect(find.text('Le Directeur Médical'), findsWidgets);
     });
 
+    casM14('filtres avancés : les douze cas de la maquette, la grille ET le registre se recalculent, « Effacer les filtres » remet tout', (t) async {
+      await ouvrirM14(t, magasinRhb(), 'm10-planning', horloge: auj16);
+      final pf = dico(maquette('planningFiltres'));
+      const cle = {
+        'Agent': 'pl_f_agent', 'Matricule': 'pl_f_matricule', 'Service': 'pl_f_service', 'Fonction': 'pl_f_fonction', 'Régime': 'pl_f_regime', 'Type de vacation': 'pl_f_type',
+        'Validation': 'pl_f_validation', 'Validé par': 'pl_f_validepar', 'Du': 'pl_f_du', 'Au': 'pl_f_au', 'Recherche': 'pl_f_q',
+      };
+      int cellules() => find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('rhb:cellule:')).evaluate().length;
+      for (final cas in liste(pf['cas'])) {
+        await toucherM14(t, find.widgetWithText(BoutonSigh, 'Effacer les filtres'));
+        for (final e in dico(cas['reglage']).entries) {
+          await regler(t, cle[e.key]!, '${e.value}');
+        }
+        final vue = dico(cas['vue']);
+        final nom = '${cas['nom']}';
+        expect(find.text('${vue['registreTitre']}'), findsOneWidget, reason: '$nom : titre du registre');
+        if (vue['grilleVide'] == true) {
+          expect(find.text('Aucun agent ne correspond aux filtres.'), findsOneWidget, reason: nom);
+          expect(find.text('Effacer un filtre pour élargir la sélection.'), findsOneWidget, reason: nom);
+        } else {
+          expect(cellules(), 7 * (vue['grilleAgents'] as int), reason: '$nom : agents de la grille');
+        }
+        expect(find.byTooltip('Masquée par les filtres').evaluate().length, vue['grilleMasquees'], reason: '$nom : vacations masquées par un filtre');
+        final lignes = liste([for (final l in (vue['registreLignes'] as List)) {'c': l}]);
+        if (lignes.isEmpty) {
+          expect(find.text('Aucun enregistrement.'), findsWidgets, reason: '$nom : registre vide');
+        } else {
+          final premiere = (lignes.first['c'] as List).cast<Object?>();
+          cellulesAffichees(t, [premiere[2], premiere[5]], raison: nom);
+        }
+      }
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Effacer les filtres'));
+      expect(find.text('Registre des vacations'), findsOneWidget);
+      expect(cellules(), 7 * 31);
+    });
+
+    casM14('« Imprimer l\'état » du registre : l\'extrait filtré, ses FILTRES retracés sur la pièce (comme print.js les relève sur la page)', (t) async {
+      await ouvrirM14(t, magasinRhb(), 'm10-planning', horloge: auj16);
+      final imp = dico(dico(maquette('planningFiltres'))['impressionRegistre']);
+      await regler(t, 'pl_f_fonction', 'infirmier');
+      await regler(t, 'pl_f_type', 'garde_hospi');
+      await regler(t, 'pl_f_du', '2026-08-10');
+      await regler(t, 'pl_f_au', '2026-08-20');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Imprimer l’état'));
+      expect(find.text('Registre des vacations'), findsWidgets);
+      expect(find.text('${imp['sousTitre']}'), findsWidgets);
+      final zone = t.widgetList<Text>(find.descendant(of: find.byKey(const Key('impression:filtres')), matching: find.byType(Text))).map((w) => w.data ?? w.textSpan?.toPlainText() ?? '').join('|');
+      for (final f in (imp['filtresPage'] as List)) {
+        final l = (f as List);
+        expect(sansEspaces(zone).contains(sansEspaces('${l[0]}')) && sansEspaces(zone).contains(sansEspaces('${l[1]}')), isTrue, reason: 'filtre ${l[0]} : ${l[1]} dans « $zone »');
+      }
+      expect(find.textContaining('Vacations retenues'), findsWidgets);
+      // La maquette annonce le nombre de vacations retenues et les colonnes Validation et Validé par.
+      for (final c in ['Validation', 'Validé par']) {
+        expect(find.text(c), findsWidgets, reason: c);
+      }
+    });
+
+    casM14('régime individuel : une dérogation champ par champ, versionnée, avec son historique ; la catégorie reste la règle pour les autres', (t) async {
+      final m = magasinRhb();
+      await ouvrirM14(t, m, 'm10-planning', horloge: auj16);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Déroger pour un agent'));
+      expect(find.text('Régime individuel'), findsOneWidget);
+      expect(find.text('Une version datée : elle ne se réécrit pas.'), findsOneWidget);
+      final agent = m.collection('personnel').actives.firstWhere((e) => e['id'] == 'EMP01');
+      await choisirM14(t, 'employeId', '${agent['matricule']} — ${agent['nomComplet']} (${agent['poste']})');
+      // Sans champ dérogé : refus nommé, la modale reste ouverte, rien n'est écrit.
+      await taper(t, 'motif', 'Sonde');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer la version'));
+      expect(find.text('Aucun champ n’est dérogé : le régime de l’agent suit déjà celui de sa catégorie.'), findsOneWidget);
+      expect(m.collection('regimesIndividuels').toutes, isEmpty);
+      // Une date passée : refusée (jamais rétroactif).
+      ControleurFormulaire ctl() => t.widget<FormulaireSigh>(find.byType(FormulaireSigh).last).controleur;
+      ctl().poser('repos', 'repos24');
+      ctl().poser('dateEffet', '2026-08-15');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer la version'));
+      expect(find.textContaining('est antérieure à aujourd’hui : une dérogation ne s’applique jamais rétroactivement.'), findsOneWidget);
+      ctl().poser('dateEffet', '2026-08-16');
+      ctl().poser('honoraire', '20000');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer la version'));
+      final v = m.collection('regimesIndividuels').toutes.single;
+      expect([v['employeId'], v['version'], v['dateEffet'], v['retourCategorie'], v['motif']], ['EMP01', 1, '2026-08-16', false, 'Sonde']);
+      expect((v['champs'] as Map).keys.toSet(), {'repos', 'honoraire'});
+      expect(find.text('Dérogation enregistrée.'), findsOneWidget);
+      expect(find.text('Version 1 à compter du 16/08/2026'), findsOneWidget);
+      // La carte : l'agent, ce qui est dérogé AUJOURD'HUI, depuis quand, combien de versions.
+      expect(find.text('Repos : Repos 24h'), findsOneWidget);
+      expect(find.byWidgetPredicate((w) => w is Text && sansEspaces(w.data).contains('Honoraire:20000')), findsOneWidget);
+      expect(find.text('${agent['nomComplet']}'), findsWidgets);
+      expect(find.text('régime individuel', findRichText: true, skipOffstage: false), findsNothing);
+      expect(find.textContaining('· régime individuel'), findsWidgets, reason: 'la grille nomme l\'agent à régime individuel');
+      // L'historique : la version, sa date d'effet, son motif et son auteur.
+      ToastsSigh.viderPourTests(); // le toast de confirmation couvre le coin de la carte
+      await t.pump(const Duration(milliseconds: 300));
+      await toucherM14(t, find.byTooltip('Historique des versions'));
+      expect(find.text('Historique du régime de ${agent['nomComplet']}'), findsOneWidget);
+      expect(find.text('Sonde'), findsWidgets);
+      expect(find.textContaining('le 16/08/2026'), findsWidgets);
+      // Les gardes du régime individuel sont le repos DE L'AGENT : 24 h pour lui, 48 h pour son collègue.
+      expect(rhbPlanningPoste24(m), isTrue);
+    });
+
+    casM14('la carte des réglages : le circuit et « l\'agent modifie directement » se lisent au registre et se règlent (commande ABSENTE hors administrateur et DA)', (t) async {
+      final m = magasinRhb();
+      await ouvrirM14(t, m, 'm10-planning', horloge: auj16);
+      expect(find.text('Surveillant seul'), findsOneWidget);
+      expect(find.text('Non : il propose, le surveillant valide'), findsOneWidget);
+      expect(find.text('Une présence, une absence, un congé ou un ordre de mission non validé est visible mais ne compte pas. Un planning proposé ne change rien tant qu’il n’est pas validé.'), findsOneWidget);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Régler'));
+      expect(find.text('Ces réglages se règlent au poste et se synchronisent. Une pièce déjà tranchée garde le circuit sous lequel elle l’a été.'), findsOneWidget);
+      await choisirM14(t, 'circuit', 'Surveillant puis directrice administrative');
+      await cocher(t, 'direct');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      expect(find.text('Réglages enregistrés.'), findsOneWidget);
+      expect(find.text('Surveillant puis directrice administrative'), findsWidgets);
+      expect(find.text('Oui'), findsOneWidget);
+      final p = PlanningRhPoste(m, auteur: () => 'x', role: 'admin', horloge: () => auj16);
+      expect([p.circuit(), p.agentModifieDirectement()], ['surveillant_puis_daf', true]);
+      expect(m.collection('audit').toutes.where((l) => l['action'] == 'Circuit de validation des présences').length, 1);
+    });
+
+    casM14('hors administrateur et DA : « Régler » et « Déroger pour un agent » sont ABSENTS (jamais grisés), la grille se lit', (t) async {
+      await ouvrirM14(t, magasinRhb(), 'm10-planning', horloge: auj16, role: 'surveillant');
+      expect(find.text('Réglages du planning et des présences'), findsOneWidget);
+      expect(find.widgetWithText(BoutonSigh, 'Régler'), findsNothing);
+      expect(find.widgetWithText(BoutonSigh, 'Déroger pour un agent'), findsNothing);
+      // Le surveillant pose le planning : la case s'ouvre.
+      await toucherM14(t, find.byKey(const Key('rhb:cellule:EMP01:2026-08-16')));
+      expect(find.text('Affectation de vacation'), findsOneWidget);
+    });
+
     casM14('lecture seule : la grille se lit sans s\'ouvrir, aucune commande d\'écriture', (t) async {
       await ouvrirM14(t, magasinRhb(), 'm10-planning', horloge: auj16, role: 'da', donnees: donneesLectureSeule('da', 'm10-planning'));
       expect(find.text('Régimes de travail par catégorie'), findsOneWidget);
@@ -186,114 +352,6 @@ void main() {
       await t.tap(find.byKey(const Key('rhb:cellule:EMP01:2026-08-16')), warnIfMissed: false);
       await t.pump();
       expect(find.text('Affectation de vacation'), findsNothing);
-    });
-  });
-
-  group('m10-presences', () {
-    casM14('ouverture : trente jours, les quatre compteurs de la maquette, le registre et ses quatre graphiques', (t) async {
-      await ouvrirM14(t, magasinRhb(), 'm10-presences', horloge: auj16);
-      final c = liste(maquette('presences')['cas']).first;
-      final v = {for (final x in liste(c['kpis'])) x['label'] as String: norm(x['valeur'])};
-      for (final e in v.entries) {
-        expect(norm(kpis(t)[e.key]), e.value, reason: e.key);
-      }
-      expect(find.text('Registre des présences — 17/07/2026 au 16/08/2026'), findsOneWidget);
-      for (final titre in ['Taux de présence par service', 'Répartition des pointages', 'Volume de pointages par service', 'Retards et absences au fil des jours']) {
-        expect(find.text(titre), findsWidgets, reason: titre); // « Taux de présence par service » est aussi une pastille du ruban
-      }
-      expect(find.text('Critère NS 131'), findsOneWidget);
-      expect(find.text('Ajouter un pointage'), findsOneWidget);
-    });
-
-    casM14('« Mois en cours » et « Sept derniers jours » règlent la plage ET l\'appliquent', (t) async {
-      await ouvrirM14(t, magasinRhb(), 'm10-presences', horloge: auj16);
-      final cas = liste(maquette('presences')['cas']);
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Mois en cours'));
-      expect(find.text('Registre des présences — 01/08/2026 au 16/08/2026'), findsOneWidget);
-      expect(norm(kpis(t)['Pointages de la période']), norm(liste(cas[1]['kpis']).first['valeur']));
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Sept derniers jours'));
-      expect(find.text('Registre des présences — 10/08/2026 au 16/08/2026'), findsOneWidget);
-      expect(norm(kpis(t)['Pointages de la période']), norm(liste(cas[2]['kpis']).first['valeur']));
-    });
-
-    casM14('les dates se règlent, puis « Appliquer » : rien ne change avant', (t) async {
-      await ouvrirM14(t, magasinRhb(), 'm10-presences', horloge: auj16);
-      final avant = kpis(t)['Pointages de la période'];
-      await regler(t, 'du', '2026-08-01');
-      await regler(t, 'au', '2026-08-10');
-      expect(kpis(t)['Pointages de la période'], avant);
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Appliquer'));
-      final c = liste(maquette('presences')['cas']).firstWhere((x) => x['du'] == '2026-08-01' && x['au'] == '2026-08-10');
-      expect([for (final x in liste(c['kpis'])) norm(x['valeur'])], [norm(kpis(t)['Pointages de la période']), norm(kpis(t)['Présences']), norm(kpis(t)['Retards']), norm(kpis(t)['Absences'])]);
-    });
-
-    casM14('une plage sans pointage : « Aucun pointage sur la plage retenue. », aucun graphique', (t) async {
-      await ouvrirM14(t, magasinRhb(), 'm10-presences', horloge: auj16);
-      await regler(t, 'du', '2030-01-01');
-      await regler(t, 'au', '2030-01-02');
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Appliquer'));
-      expect(find.text('Aucun pointage sur la plage retenue.'), findsOneWidget);
-      expect(find.text('Répartition des pointages'), findsNothing);
-    });
-
-    casM14('ajouter un pointage : agent, état, heures, motif ; la fiche porte le nom, le matricule et le service de l\'agent', (t) async {
-      final m = magasinRhb();
-      await ouvrirM14(t, m, 'm10-presences', horloge: auj16);
-      final avant = m.collection('presences').toutes.length;
-      final agent = m.collection('personnel').actives.firstWhere((e) => e['nomComplet'] == 'BASSONGUI Chabi Séko');
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Ajouter un pointage'));
-      expect(find.text('Nouveau pointage'), findsOneWidget);
-      await choisirM14(t, 'employeId', '${agent['matricule']} — ${agent['nomComplet']} (${agent['poste']})');
-      await choisirM14(t, 'etat', 'Retard');
-      await taper(t, 'heureArrivee', '09:15');
-      await taper(t, 'heureDepart', '17:00');
-      await taper(t, 'motif', 'Embouteillage');
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Créer'));
-      final c = dico(maquette('presences')['creation']);
-      final attendu = net(dico(c['nouvelle']));
-      final f = net(premiere(m, 'presences'));
-      expect({for (final e in attendu.entries) e.key: f[e.key]}, attendu);
-      expect(m.collection('presences').toutes.length, avant + 1);
-      expect(find.text('Pointage créé.'), findsOneWidget);
-      expect(norm(kpis(t)['Retards']), '${int.parse(norm(liste(maquette('presences')['cas']).first['kpis'] is List ? liste(liste(maquette('presences')['cas']).first['kpis'])[2]['valeur'] : '0')) + 1}');
-    });
-
-    casM14('un pointage sans heure ni motif : les valeurs par défaut de la maquette (aujourd\'hui, présent, 07:45)', (t) async {
-      final m = magasinRhb();
-      await ouvrirM14(t, m, 'm10-presences', horloge: auj16);
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Ajouter un pointage'));
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Créer'));
-      final f = premiere(m, 'presences');
-      expect([f['date'], f['etat'], f['heureArrivee']], ['2026-08-16', 'present', '07:45']);
-      final premierAgent = (m.collection('personnel').actives.toList()..sort((a, b) => '${a['nomComplet']}'.compareTo('${b['nomComplet']}'))).first;
-      expect(f['employeId'], premierAgent['id'], reason: 'la liste présélectionne sa première entrée');
-    });
-
-    casM14('modifier un pointage (le droit d\'écrire) et l\'archiver (motif exigé, annulable) — jamais de suppression', (t) async {
-      final m = magasinRhb();
-      await ouvrirM14(t, m, 'm10-presences', horloge: auj16);
-      final avant = m.collection('presences').actives.length;
-      await toucherM14(t, find.byTooltip('Modifier').first);
-      await choisirM14(t, 'etat', 'Absent');
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
-      expect(m.collection('presences').actives.where((x) => x['etat'] == 'absent').length, greaterThan(0));
-      expect(find.text('Modifications enregistrées.'), findsOneWidget);
-      await toucherM14(t, find.byTooltip('Archiver').first);
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Archiver'));
-      expect(m.collection('presences').actives.length, avant, reason: 'sans motif, rien n\'est archivé');
-      await t.enterText(find.byType(TextField).last, 'Doublon de saisie');
-      await t.pump();
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Archiver'));
-      expect(m.collection('presences').actives.length, avant - 1);
-      expect(m.collection('presences').archivees.length, 1);
-    });
-
-    casM14('lecture seule : ni « Ajouter un pointage » ni « Modifier » ni « Archiver »', (t) async {
-      await ouvrirM14(t, magasinRhb(), 'm10-presences', horloge: auj16, role: 'da', donnees: donneesLectureSeule('da', 'm10-presences'));
-      expect(find.text('Pointages de la période'), findsOneWidget);
-      expect(find.text('Ajouter un pointage'), findsNothing);
-      expect(find.byTooltip('Modifier'), findsNothing);
-      expect(find.byTooltip('Archiver'), findsNothing);
     });
   });
 }

@@ -48,3 +48,19 @@ Map<String, Object?> net(Map<String, Object?> x) => {
       for (final e in x.entries)
         if (!{'id', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', '_archivePar', '_archiveLe', '_motifArchivage', 'modifiePar', 'modifieePar', 'archivePar', 'archiveePar'}.contains(e.key)) e.key: e.value
     };
+
+/// Une espace est neutralisée (fine, insécable, ordinaire) : les montants et les libellés se comparent sur leurs seuls caractères.
+String sansEspaces(Object? x) => '$x'.replaceAll(RegExp(r'[\s\u202f\u00a0]'), '');
+
+/// Tous les textes affichés, sans espaces ni casse.
+String texteAffiche(WidgetTester t) => sansEspaces([for (final w in t.widgetList<Text>(find.byType(Text))) w.data ?? w.textSpan?.toPlainText() ?? ''].join('')).toLowerCase();
+
+/// Chaque cellule du vecteur figure à l'écran (un tiret ou une cellule vide ne se compare pas).
+void cellulesAffichees(WidgetTester t, Iterable<Object?> cellules, {String raison = ''}) {
+  final txt = texteAffiche(t);
+  for (final c in cellules) {
+    final s = sansEspaces(c).toLowerCase();
+    if (s.isEmpty || s == '—') continue;
+    expect(txt.contains(s), isTrue, reason: '$raison « $c » absent de l’écran');
+  }
+}
