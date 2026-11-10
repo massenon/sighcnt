@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sigh_domaine/sigh_domaine.dart' as d;
 
 import 'magasin.dart';
+import 'mecef_poste.dart';
 
 /// Ce que la normalisation d'une vente a rendu : un numéro, un refus nommé (code, motif, geste) ou rien à faire.
 class ResultatNormalisation {
@@ -41,16 +42,18 @@ Set<String> numerosPris(Magasin m) => {
           if ('${f['numeroMecef'] ?? ''}'.isNotEmpty) '${f['numeroMecef']}'
     };
 
-/// NORMALISER UNE VENTE (E2299). Le poste n'a AUCUN boîtier branché et n'invente ni protocole ni adresse : la décision (refus nommés, acheteur,
-/// montants entiers) est celle du domaine ; l'émission du numéro est celle de l'APPAREIL DE DÉMONSTRATION de la maquette, un numéro séquentiel
-/// jamais déjà porté, marqué `mecefSimule` : la pièce l'imprime comme NON FISCAL. Une vente déjà normalisée ne se renormalise jamais ; l'état
-/// `en_attente` est écrit AVANT l'émission ; un refus des montants écrit la pièce `refusee` (identifiant stocké `rejete`) en nommant le code.
+/// NORMALISER UNE VENTE (E2299, lot L3). La décision (refus nommés, acheteur, montants entiers) est celle du domaine. L'ÉMISSION du numéro est celle de
+/// l'ADAPTATEUR du mode en vigueur (`mecef.mode`) : tant qu'aucun adaptateur n'est configuré (boîtier ou e-MECeF, lot M3), le poste ne fabrique AUCUN
+/// numéro : la vente reste EN ATTENTE de certification, avec le code, le motif et le geste du refus nommé `MECEF_NON_CONFIGURE`. L'encaissement reste acquis.
+/// Une vente déjà normalisée ne se renormalise jamais ; un numéro déjà porté n'est jamais réécrit ; l'état `en_attente` est écrit AVANT l'émission ; un refus
+/// des montants écrit la pièce `refusee` (identifiant stocké `rejete`) en nommant le code.
 ResultatNormalisation normaliserVente(
   Magasin m,
   String factureId, {
   Map<String, Object?>? acheteur,
   required DateTime maintenant,
   num tauxTvaCourant = 0,
+  d.AdaptateurMecef? adaptateur,
 }) {
   final col = m.collection('factures');
   final fac = col.parId(factureId);
@@ -95,7 +98,6 @@ ResultatNormalisation normaliserVente(
           'acheteurNom': ach.nom,
           'aibTaux': ach.aibTaux,
         },
-        'mecefSimule': true,
       }));
       m.journaliser('Normalisation refusée', 'MECEF', 'facture',
           '${fac['numero']}', {'statutMecef': fac['statutMecef']}, {'code': r.code});
@@ -107,24 +109,33 @@ ResultatNormalisation normaliserVente(
     'ifuClient': a.ifu,
     'acheteurNom': a.nom,
     'aibTaux': a.aibTaux,
-    'mecefSimule': true,
   };
   // L'état est écrit AVANT l'émission (un redémarrage reprend au bon endroit).
   annulations.add(col.mettreAJour(factureId,
       {'statutMecef': 'en_attente', 'codeRetour': null, 'motifRefusMecef': null, ...bascule}));
   final porte = '${fac['numeroMecef'] ?? ''}';
-  final numero = porte.isNotEmpty
-      ? porte // un numéro déjà porté n'est JAMAIS réécrit
-      : d.numeroMecefLibre(2000001 + numerosPris(m).length, numerosPris(m));
+  if (porte.isEmpty) {
+    // Aucun numéro à poser sans l'appareil : l'adaptateur configuré émettra (asynchrone, lot M3) ; sinon la vente RESTE en attente de certification.
+    final ad = adaptateur ?? adaptateurDuPoste(m, maintenant);
+    if (ad.configure) {
+      throw StateError('Adaptateur MECeF configuré : l’émission est asynchrone (lot M3), normaliserVente doit le devenir.');
+    }
+    final refus = ad.refus!;
+    annulations.add(col.mettreAJour(factureId, d.champsEnAttenteCertification(refus, ad.mode)));
+    m.journaliser('Normalisation en attente (adaptateur non configuré)', 'MECEF', 'facture', '${fac['numero']}',
+        {'statutMecef': fac['statutMecef']}, {'statutMecef': 'en_attente', 'code': refus.code, 'mode': ad.mode});
+    return ResultatNormalisation.refus(refus.code, refus.motif, refus.geste, annuler: undo);
+  }
+  // Un numéro déjà porté (pièce ancienne, ou réponse réconciliée) n'est JAMAIS réécrit : on ne rappelle pas l'appareil.
   annulations.add(col.mettreAJour(factureId, {
     'statutMecef': 'valide',
-    'numeroMecef': numero,
+    'numeroMecef': porte,
     'codeRetour': 'OK-200',
     'dateTransmission': maintenant.toIso8601String(),
     'aibMontant': prep.montants!.aib,
     'normalisePar': m.utilisateur,
   }));
   m.journaliser('Normalisation', 'MECEF', 'facture', '${fac['numero']}',
-      {'statutMecef': 'en_attente'}, {'statutMecef': 'valide', 'numero': numero});
-  return ResultatNormalisation.ok(numero, annuler: undo);
+      {'statutMecef': 'en_attente'}, {'statutMecef': 'valide', 'numero': porte});
+  return ResultatNormalisation.ok(porte, annuler: undo);
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/core/config_poste.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show adaptateurPourMode, mecefCleMode, parametreDateIso;
 import 'package:sigh_poste/core/donnees_navigation.dart';
+import 'package:sigh_poste/core/service_parametres.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
+import 'package:sigh_poste/donnees/mecef_poste.dart';
 import 'package:sigh_poste/donnees/normalisation_mecef.dart';
 import 'package:sigh_poste/impression/apercu.dart';
 import 'package:sigh_poste/kit/kit.dart';
@@ -107,8 +110,9 @@ void main() {
     expect(m.collection('factures').actives.length, avant);
   });
 
-  cas('vente soldée : l\'acheteur est rangé dans la pièce, le numéro vient de la normalisation et se dit non fiscal', (t) async {
+  cas('vente soldée : l\'acheteur est rangé dans la pièce, la vente reste EN ATTENTE de certification et ne reçoit AUCUN numéro (lot L3)', (t) async {
     final m = magasin();
+    final numeros0 = numerosPris(m).length;
     await ouvrir(t, m);
     await ajouterLibre(t, 'Carnet de santé', '500');
     await saisir(t, 'acheteurIfu', '3201 6427 48214');
@@ -116,17 +120,17 @@ void main() {
     await choisir(t, '1 % (taux de la facture de référence, à confirmer)', '5 %');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer et encaisser'));
     final f = m.collection('factures').actives.first;
-    expect(f['statutPaiement'], 'soldee');
+    expect(f['statutPaiement'], 'soldee', reason: 'l\'encaissement reste acquis');
     expect(f['ifuClient'], '3201642748214');
     expect(f['acheteurNom'], 'Clinique X');
     expect(f['aibTaux'], 5);
-    expect(f['statutMecef'], 'valide');
-    expect(RegExp(r'^MECEF\d{7}$').hasMatch('${f['numeroMecef']}'), isTrue);
-    expect(numerosPris(m).where((x) => x == f['numeroMecef']).length, 1,
-        reason: 'jamais un numéro déjà porté');
-    expect(f['mecefSimule'], true);
-    expect(f['aibMontant'], 25);
-    expect(find.textContaining('non fiscal'), findsWidgets);
+    expect(f['statutMecef'], 'en_attente');
+    expect(f['numeroMecef'], isNull, reason: 'aucun numéro fabriqué');
+    expect(f['codeRetour'], 'MECEF_NON_CONFIGURE');
+    expect(f['modeMecef'], 'boitier', reason: 'le défaut du registre');
+    expect(f['mecefSimule'], isNull);
+    expect(numerosPris(m).length, numeros0);
+    expect(find.textContaining('MECEF_NON_CONFIGURE'), findsWidgets);
   });
 
   cas('règlement partiel : aucune normalisation, aucun numéro, la pièce attend le solde', (t) async {
@@ -158,13 +162,56 @@ void main() {
 
     test('une vente normalisée ne se renormalise jamais, et son numéro ne change pas', () {
       final m = magasin();
-      final f = vente(m);
-      final a = normaliserVente(m, '${f['id']}', maintenant: aujourdhui);
-      expect(a.ok, isTrue);
-      final numero = m.collection('factures').parId(f['id'])!['numeroMecef'];
+      final f = vente(m, {'statutMecef': 'valide', 'numeroMecef': 'MECEF2000001'});
       final b = normaliserVente(m, '${f['id']}', maintenant: aujourdhui);
       expect(b.code, 'DEJA_NORMALISEE');
-      expect(m.collection('factures').parId(f['id'])!['numeroMecef'], numero);
+      expect(m.collection('factures').parId(f['id'])!['numeroMecef'], 'MECEF2000001');
+    });
+
+    test('sans adaptateur configuré (boîtier, mode par défaut) : refus nommé, pièce en attente, AUCUN numéro', () {
+      final m = magasin();
+      final f = vente(m);
+      final a = normaliserVente(m, '${f['id']}', maintenant: aujourdhui);
+      expect(a.ok, isFalse);
+      expect(a.code, 'MECEF_NON_CONFIGURE');
+      expect(a.motif, contains('Boîtier non configuré'));
+      expect(a.geste, isNotEmpty);
+      final apres = m.collection('factures').parId(f['id'])!;
+      expect(apres['statutMecef'], 'en_attente');
+      expect(apres['numeroMecef'], isNull);
+      expect(apres['codeRetour'], 'MECEF_NON_CONFIGURE');
+      expect(apres['modeMecef'], 'boitier');
+    });
+
+    test('en mode e-MECeF : « non configuré, dossier d\'interface DGI requis », toujours aucun numéro', () {
+      final m = magasin();
+      final f = vente(m);
+      final a = normaliserVente(m, '${f['id']}', maintenant: aujourdhui, adaptateur: adaptateurPourMode('emecef'));
+      expect(a.code, 'MECEF_NON_CONFIGURE');
+      expect(a.motif, 'e-MECeF non configuré : dossier d’interface DGI requis.');
+      final apres = m.collection('factures').parId(f['id'])!;
+      expect(apres['statutMecef'], 'en_attente');
+      expect(apres['numeroMecef'], isNull);
+      expect(apres['modeMecef'], 'emecef');
+    });
+
+    test('le mode se lit au registre des paramètres : réglé sur e-MECeF, la normalisation suit', () {
+      final m = magasin();
+      final service = serviceParametres(m, auteur: () => 'Test', horloge: () => aujourdhui);
+      expect(modeMecefDuPoste(m, aujourdhui), 'boitier');
+      expect(service.regler(mecefCleMode, 'emecef', parametreDateIso(aujourdhui)).ok, isTrue);
+      expect(modeMecefDuPoste(m, aujourdhui), 'emecef');
+      final f = vente(m);
+      normaliserVente(m, '${f['id']}', maintenant: aujourdhui);
+      expect(m.collection('factures').parId(f['id'])!['modeMecef'], 'emecef');
+    });
+
+    test('un numéro déjà porté par une pièce non normalisée est repris, jamais réécrit ni fabriqué', () {
+      final m = magasin();
+      final f = vente(m, {'numeroMecef': 'MECEF2000007'});
+      final a = normaliserVente(m, '${f['id']}', maintenant: aujourdhui);
+      expect(a.ok, isTrue);
+      expect(a.numero, 'MECEF2000007');
     });
 
     test('annuler restitue la pièce en attente, sans numéro', () {

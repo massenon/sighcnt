@@ -3,11 +3,15 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../core/service_installation.dart';
+import '../../core/service_parametres.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../sync/configuration_sync.dart' show ApplicateurConfiguration;
+import '../../donnees/mecef_poste.dart';
 import '../../donnees/normalisation_mecef.dart';
 import '../m8/commun.dart' show ecrireAvoirEmis, idAvoirSuivant;
 import 'commun.dart';
@@ -429,7 +433,7 @@ class _EtatTransmission extends State<EcranMecefTransmission> {
   List<Fiche> _par(Magasin mag, String s) =>
       normalisees(mag).where((f) => f['statutMecef'] == s).toList();
 
-  /// Transmet UN LOT : une réponse du dispositif par facture, tirée d'une graine (simulation). Annulable d'un geste.
+  /// « Synchroniser maintenant » : tant qu'aucun adaptateur n'est configuré (lot L3), refuse en nommant et n'écrit rien (aucun numéro fabriqué).
   Future<void> _synchroniser(ContexteEcran c) async {
     final mag = c.magasin;
     final att = _par(mag, 'en_attente');
@@ -437,39 +441,21 @@ class _EtatTransmission extends State<EcranMecefTransmission> {
       ToastsSigh.afficher(context, 'Aucune facture en attente de transmission.');
       return;
     }
-    final ok = await confirmerSigh(context,
-        titre: 'Transmettre ${att.length} facture(s) ?',
-        message:
-            'Les factures en attente seront transmises au dispositif fiscal. Un identifiant MECeF sera attribué à chaque facture acceptée.',
-        libelleOk: 'Transmettre');
-    if (!ok || !mounted) return;
-    // Le tirage de la maquette (graine par la taille du lot), E2299 : un numéro DÉJÀ PORTÉ n'est jamais réécrit, un tirage déjà pris est écarté.
-    final col = mag.collection('factures');
-    final reponses = synchroniser(att.length, iso(c.aujourdhui),
-        numerosPortes: [
-          for (final f in att) f['numeroMecef'] == null ? null : '${f['numeroMecef']}'
-        ],
-        pris: numerosPris(mag));
-    final annulations = <VoidCallback>[];
-    var acceptees = 0, refusees = 0;
-    for (var i = 0; i < att.length; i++) {
-      reponses[i].statutMecef == 'valide' ? acceptees++ : refusees++;
-      annulations.add(col.mettreAJour(att[i]['id'], reponses[i].patch));
+    // Lot L3 : sans adaptateur configuré, AUCUN tirage et aucun numéro fabriqué ; les ventes restent en attente de certification. L'envoi d'un lot par un
+    // adaptateur configuré (boîtier ou e-MECeF) est asynchrone et reste à écrire (lot M3).
+    final ad = adaptateurDuPoste(mag, c.aujourdhui);
+    final refus = ad.refus;
+    if (refus != null) {
+      ToastsSigh.afficher(context, '${refus.code} : ${refus.motif}',
+          type: TypeToast.attention,
+          detail: refus.geste,
+          duree: const Duration(seconds: 9));
     }
-    setState(() {});
-    ToastsSigh.afficher(context,
-        'Synchronisation terminée : $acceptees acceptée(s), $refusees rejetée(s).',
-        type: refusees > 0 ? TypeToast.attention : TypeToast.succes,
-        annuler: () {
-      for (final u in annulations.reversed) {
-        u();
-      }
-      setState(() {});
-    });
   }
 
   /// « Normaliser » et « Corriger et retransmettre » : la NORMALISATION de la vente (E2299). Refus nommés du domaine (déjà normalisée, droit de
-  /// retransmettre, acheteur, montants) ; aucun appareil n'est branché, le numéro est celui de l'appareil de démonstration, non fiscal.
+  /// retransmettre, acheteur, montants) ; aucun appareil n'est branché (lot L3) : la vente reste en attente de certification, sans numéro, et le refus
+  /// `MECEF_NON_CONFIGURE` se dit.
   void _normaliser(ContexteEcran c, Fiche f, {required bool reemission}) {
     final mag = c.magasin;
     final refus = refusRetransmission(f, c.role);
@@ -1002,22 +988,31 @@ class EcranMecefAvoirs extends StatelessWidget with EcranMaquette {
                           duree: const Duration(seconds: 9));
                       return;
                     }
-                    final complement = <String, Object?>{
-                      'numeroMecef': numeroMecefSimule(
-                          c.aujourdhui.millisecondsSinceEpoch % 77777),
-                      'statutMecef': 'valide',
-                      'dateTransmission': c.aujourdhui.toUtc().toIso8601String(),
-                    };
-                    final ecrit =
-                        ecrireAvoirEmis(mag, fac!, a.emission, idAvoir, complement: complement);
+                    // Lot L3 : sans adaptateur configuré, l'avoir est ÉMIS (la pièce existe, la contre-passation est écrite) mais n'a AUCUN numéro fiscal.
+                    final ad = adaptateurDuPoste(mag, c.aujourdhui);
+                    final refus = ad.refus;
+                    final ecrit = ecrireAvoirEmis(mag, fac!, a.emission, idAvoir);
                     fermer();
-                    ToastsSigh.afficher(ctx,
-                        'Avoir ${a.fiche['reference']} émis et transmis.',
-                        type: TypeToast.succes, annuler: () {
-                      for (final u in ecrit.annulations.reversed) {
-                        u();
-                      }
-                    });
+                    if (refus == null) {
+                      ToastsSigh.afficher(ctx,
+                          'Avoir ${a.fiche['reference']} émis.',
+                          type: TypeToast.succes, annuler: () {
+                        for (final u in ecrit.annulations.reversed) {
+                          u();
+                        }
+                      });
+                    } else {
+                      ToastsSigh.afficher(ctx,
+                          'Avoir ${a.fiche['reference']} émis, en attente de certification.',
+                          type: TypeToast.attention,
+                          detail: '${refus.code} : ${refus.motif} ${refus.geste}',
+                          duree: const Duration(seconds: 9),
+                          annuler: () {
+                        for (final u in ecrit.annulations.reversed) {
+                          u();
+                        }
+                      });
+                    }
                     _imprimer(ctx, ecrit.fiche, paramFiscal(mag));
                   }),
             ]);
@@ -1197,12 +1192,74 @@ class EcranMecefConfig extends StatefulWidget with EcranMaquette {
 
 class _EtatConfig extends State<EcranMecefConfig> {
   ControleurFormulaire? _f;
+  ControleurFormulaire? _mode;
   bool _pret = false;
 
   @override
   void dispose() {
     _f?.dispose();
+    _mode?.dispose();
     super.dispose();
+  }
+
+  /// LE MODE DE CERTIFICATION (lot L3, décision de la Direction du 09/11/2026) : boîtier physique (défaut) ou e-MECeF, paramètre `mecef.mode` du registre du
+  /// lot L0 (en base, versionné par date, synchronisé par le journal). Réglé par l'administrateur ou la Directrice Administrative, sur la mère ; un fileul le
+  /// reçoit. Aucun adaptateur n'est branché : le mode e-MECeF est « non configuré, dossier d'interface DGI requis » et le boîtier attend son adaptateur (lot M3).
+  Widget _carteMode(ContexteEcran c) {
+    final mag = c.magasin;
+    final fileul = ServiceInstallation.de(mag).rattache;
+    final peut = !fileul && c.droit.editer && (c.role == 'admin' || c.role == 'da');
+    final service = serviceParametres(mag, auteur: () => acteur(c).nom, horloge: () => c.aujourdhui);
+    return ListenableBuilder(
+        listenable: mag.collection(parCollectionParametres),
+        builder: (ctx, _) {
+          final actuel = modeMecefDuPoste(mag, c.aujourdhui);
+          _mode ??= ControleurFormulaire([
+            ChampDef(
+                nom: 'mode',
+                libelle: 'Mode de certification des factures',
+                type: TypeChamp.select,
+                requis: true,
+                col: ColChamp.plein,
+                options: [for (final k in mecefModes) OptionChamp(k, mecefLibellesModes[k])]),
+          ], {'mode': actuel});
+          return CarteSigh(
+              titre: 'Mode de certification',
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                FormulaireSigh(controleur: _mode!),
+                const SizedBox(height: 12),
+                if (actuel == 'emecef')
+                  const NoteSigh(
+                      'e-MECeF : non configuré, dossier d’interface DGI requis. Aucun document remis ne décrit le protocole (adresse, authentification, format des messages) : rien n’est supposé. Une vente est encaissée, reste en attente de certification et ne reçoit aucun numéro ; elle se retransmet quand l’interface sera branchée.',
+                      ton: TonSigh.attention,
+                      icone: LucideIcons.plugZap)
+                else
+                  const NoteSigh(
+                      'Boîtier physique. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). Aucun numéro n’est fabriqué comme s’il était fiscal : tant que l’adaptateur du boîtier n’est pas branché, une vente reste en attente de certification.'),
+                const SizedBox(height: 12),
+                if (fileul)
+                  const NoteSigh(ApplicateurConfiguration.motifGarde, icone: LucideIcons.lock)
+                else if (!peut)
+                  const NoteSigh('Le mode se règle par l’administrateur ou la Directrice Administrative.', icone: LucideIcons.lock)
+                else
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: BoutonSigh(
+                          libelle: 'Enregistrer le mode',
+                          icone: LucideIcons.save,
+                          onPressed: () {
+                            final v = _mode!.valider();
+                            if (v == null) return;
+                            final r = service.regler(mecefCleMode, v['mode'], parametreDateIso(c.aujourdhui), motif: 'Réglé à « Configuration fiscale ».');
+                            if (!r.ok) {
+                              ToastsSigh.afficher(context, '${r.refus!.code} : ${r.refus!.motif}',
+                                  type: TypeToast.erreur, detail: r.refus!.geste, duree: const Duration(seconds: 9));
+                              return;
+                            }
+                            ToastsSigh.afficher(context, 'Mode enregistré : ${mecefLibellesModes[v['mode']] ?? v['mode']}.', type: TypeToast.succes);
+                          })),
+              ]));
+        });
   }
 
   Widget _controle(String libelle) => Padding(
@@ -1304,9 +1361,12 @@ class _EtatConfig extends State<EcranMecefConfig> {
       });
     }
     return LayoutBuilder(builder: (context, k) {
-      final gauche = CarteSigh(
+      final carteConfig = CarteSigh(
         titre: 'Paramètres fiscaux',
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const NoteSigh(
+              'Lecture seule. Ces valeurs sont celles des référentiels du logiciel : les modifier ici ne conserverait rien. L’identité légale se règle à « Identité & papier à en-tête ».'),
+          const SizedBox(height: 12),
           FormulaireSigh(controleur: _f!),
           const SizedBox(height: 16),
           Wrap(spacing: 8, runSpacing: 8, children: [
@@ -1335,12 +1395,22 @@ class _EtatConfig extends State<EcranMecefConfig> {
                 libelle: 'Tester la connexion au dispositif',
                 icone: LucideIcons.plugZap,
                 variante: VarianteBouton.secondaire,
-                onPressed: () => ToastsSigh.afficher(
-                    context, 'Connexion au dispositif fiscal établie.',
-                    type: TypeToast.succes, detail: 'Temps de réponse : 340 ms')),
+                // Lot L3 : le test n'annonce plus une connexion qu'aucun appareil n'a établie (ni délai de réponse inventé) ; sans adaptateur il refuse en nommant.
+                onPressed: () {
+                  final refus = adaptateurDuPoste(mag, c.aujourdhui).refus;
+                  if (refus != null) {
+                    ToastsSigh.afficher(context, '${refus.code} : ${refus.motif}',
+                        type: TypeToast.attention, detail: refus.geste, duree: const Duration(seconds: 9));
+                  }
+                }),
           ]),
         ]),
       );
+      final gauche = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        _carteMode(c),
+        const SizedBox(height: 16),
+        carteConfig,
+      ]);
       final droite = Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

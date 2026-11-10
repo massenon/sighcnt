@@ -91,7 +91,7 @@ void annoncerNormalisation(BuildContext ctx, ResultatNormalisation? n) {
   if (n.ok) {
     ToastsSigh.afficher(ctx, 'Vente normalisée : ${n.numero}.',
         type: TypeToast.succes,
-        detail: 'Numéro de démonstration, non fiscal (aucun boîtier branché).');
+        detail: 'Numéro déjà porté par la pièce : il n’est jamais réécrit (lot L3 : le poste ne fabrique aucun numéro).');
     return;
   }
   ToastsSigh.afficher(ctx,

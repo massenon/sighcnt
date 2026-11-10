@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
+import 'package:sigh_poste/donnees/mecef_poste.dart';
 import 'package:sigh_poste/donnees/normalisation_mecef.dart';
 import 'package:sigh_poste/impression/apercu.dart';
 import 'package:sigh_poste/impression/piece.dart';
@@ -126,42 +127,35 @@ void main() {
     expect(textes(sansNumero), isNot(contains('Code MECeF / DGI')));
   });
 
-  cas('synchroniser : le lot en attente est transmis selon le tirage de la maquette, et l\'annulation le restitue',
+  cas('synchroniser : sans adaptateur configuré (lot L3), refus nommé, AUCUN tirage ni numéro fabriqué, les ventes restent en attente',
       (t) async {
     final m = magasin();
     final att = norm(m, 'en_attente');
-    final attendu = synchroniser(att.length, '2026-10-30',
-        numerosPortes: [
-          for (final f in att) f['numeroMecef'] == null ? null : '${f['numeroMecef']}'
-        ],
-        pris: numerosPris(m));
+    final numeros0 = numerosPris(m).length;
     await ouvrir(t, m, 'mecef-transmission');
     await toucher(t, find.text('Synchroniser maintenant'));
-    await toucher(t, find.widgetWithText(BoutonSigh, 'Transmettre').last);
-    for (var i = 0; i < att.length; i++) {
-      final f = m.collection('factures').parId(att[i]['id'])!;
-      expect(f['statutMecef'], attendu[i].statutMecef, reason: 'facture $i');
-      expect(f['codeRetour'], attendu[i].codeRetour);
-      expect(f['numeroMecef'], attendu[i].numeroMecef);
-    }
-    expect(norm(m, 'en_attente'), isEmpty);
-    final acceptees = attendu.where((r) => r.statutMecef == 'valide').length;
-    expect(find.textContaining('$acceptees acceptée(s), ${att.length - acceptees} rejetée(s)'), findsWidgets);
-    await toucher(t, find.text('Annuler').last);
+    expect(find.textContaining('MECEF_NON_CONFIGURE'), findsWidgets);
+    expect(find.widgetWithText(BoutonSigh, 'Transmettre'), findsNothing, reason: 'aucune confirmation n\'est proposée');
     expect(norm(m, 'en_attente').length, att.length);
+    expect(numerosPris(m).length, numeros0);
   });
 
-  cas('rejet : « Corriger et retransmettre » normalise la facture et le journal la compte en réémission', (t) async {
+  cas('rejet : « Corriger et retransmettre » refuse en nommant (aucun adaptateur), la vente repasse en attente SANS numéro et la retransmission n\'est pas comptée', (t) async {
     final m = magasin();
-    final avant = norm(m, 'rejete').length;
+    final avant = norm(m, 'rejete');
+    final numeros0 = numerosPris(m).length;
     await ouvrir(t, m, 'mecef-transmission');
     await toucher(t, find.text('Rejets'));
     await toucher(t, find.widgetWithText(BoutonSigh, 'Corriger et retransmettre').first);
-    expect(norm(m, 'rejete').length, avant - 1);
-    final reemises = m.collection('factures').actives.where((f) => f['reemise'] == true);
-    expect(reemises.length, 1);
-    expect(reemises.single['statutMecef'], 'valide');
-    expect(RegExp(r'^MECEF\d{7}$').hasMatch('${reemises.single['numeroMecef']}'), isTrue);
+    expect(find.textContaining('MECEF_NON_CONFIGURE'), findsWidgets);
+    expect(numerosPris(m).length, numeros0);
+    expect(m.collection('factures').actives.where((f) => f['reemise'] == true), isEmpty);
+    expect(avant, isNotEmpty);
+    final reprises = m.collection('factures').actives.where((f) => f['codeRetour'] == 'MECEF_NON_CONFIGURE');
+    expect(reprises.length, 1);
+    expect(reprises.single['statutMecef'], 'en_attente');
+    expect(reprises.single['numeroMecef'], isNull);
+    expect(n(reprises.single['retransmissions']), 0);
   });
 
   cas('RBAC : un profil en lecture voit la file sans pouvoir la transmettre', (t) async {
@@ -255,7 +249,7 @@ void main() {
     expect(ifuImprime({...f, 'ifuClient': '3201912345678'}, p), '3201912345678');
   });
 
-  cas('avoir MECeF : transmis et validé d\'office, référence en série annuelle, annulable', (t) async {
+  cas('avoir MECeF : émis SANS numéro fiscal (aucun adaptateur, lot L3), en attente de certification, référence en série annuelle, annulable', (t) async {
     final m = magasin();
     final f = norm(m, 'valide').first;
     await ouvrir(t, m, 'mecef-avoirs');
@@ -269,9 +263,11 @@ void main() {
     await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre l’avoir'));
     final a = m.collection('avoirs').actives.single;
     expect(a['reference'], 'AV-2026-0001');
-    expect(a['statutMecef'], 'valide');
+    expect(a['statutMecef'], isNot('valide'));
     expect(a['factureNumero'], f['numero']);
-    expect(RegExp(r'^MECEF\d{7}$').hasMatch('${a['numeroMecef']}'), isTrue);
+    expect(a['numeroMecef'], isNull, reason: 'aucun numéro fabriqué');
+    expect(find.textContaining('en attente de certification'), findsWidgets);
+    expect(find.textContaining('MECEF_NON_CONFIGURE'), findsWidgets);
     await toucher(t, find.text('Annuler').last);
     expect(m.collection('avoirs').actives, isEmpty);
   });
@@ -291,5 +287,22 @@ void main() {
     await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer les paramètres'));
     expect(m.collection('audit').toutes.any((e) => e['entite'] == 'ConfigurationFiscale'), isTrue);
     expect(find.textContaining('Le prototype simule les échanges avec le dispositif fiscal'), findsOneWidget);
+  });
+
+  cas('configuration : le mode de certification (boîtier par défaut), la bascule e-MECeF versionnée et « non configuré, dossier d\'interface DGI requis » (lot L3)', (t) async {
+    final m = magasin();
+    await ouvrir(t, m, 'mecef-config');
+    expect(find.text('Mode de certification'), findsWidgets);
+    expect(find.textContaining('Boîtier physique. Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis'), findsOneWidget);
+    expect(modeMecefDuPoste(m, aujourdhui), 'boitier');
+    await toucher(t, find.text('Boîtier physique').first);
+    await toucher(t, find.text('e-MECeF').last);
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer le mode'));
+    expect(modeMecefDuPoste(m, aujourdhui), 'emecef');
+    expect(m.collection('parametres').toutes.where((v) => v['cle'] == 'mecef.mode' && v['valeur'] == 'emecef').length, 1);
+    expect(find.textContaining('e-MECeF : non configuré, dossier d’interface DGI requis'), findsOneWidget);
+    await toucher(t, find.text('Tester la connexion au dispositif'));
+    expect(find.textContaining('MECEF_NON_CONFIGURE'), findsWidgets);
+    expect(find.textContaining('340 ms'), findsNothing);
   });
 }
