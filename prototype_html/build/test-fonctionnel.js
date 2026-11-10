@@ -17696,6 +17696,285 @@ async function viderMessages(page) {
 
 
 
+  /* ==========================================================================
+   * Vague 107 : PLANNING, lot L5 (Direction, 09/11/2026, Planning Q2 et Q3, la remarque l'emporte) : le CIRCUIT de validation des présences, absences,
+   * congés et ordres de mission
+   * -------------------------------------------------------------------------
+   * Le surveillant valide pour tout le personnel et peut valider SEUL (défaut) ; le circuit se règle au poste (surveillant seul, DAF seule, surveillant puis
+   * DAF), en base, journalisé. Une pièce non validée est visible et ne compte pas. Le circuit est tenu AU MOTEUR (VALIDATION_RESERVEE, AUTO_VALIDATION,
+   * ETAPE_DEJA_SIGNEE, DEJA_TRANCHEE, MOTIF_OBLIGATOIRE, AVIS_REQUIS). Un pointage validé se régularise, il ne se modifie pas. Pièces de sonde archivées,
+   * réglages restitués.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 107 : planning L5 (circuit surveillant seul par défaut, réglé au geste, deux étapes, refus nommés, pièce non validée qui ne compte pas, congé et mission au même circuit avec avis du chef de service, régularisation)');
+    erreursJS = [];
+    const enTant = async (role, nom, ecran) => {
+      await page.evaluate((a) => window.SIGH.store.setSession({ role: a[0], nom: a[1], nomComplet: a[1], fonction: a[0], identifiant: 's107.' + a[0], secteur: 'DIR' }), [role, nom]);
+      if (ecran) await ouvrir(ecran);
+    };
+    await ouvrir('m10-presences.html');
+    await enTant('admin', 'SONDE107 admin');
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const ag = S.collection('personnel').active().filter((e) => e.fonction === 'infirmier');
+      return { a1: ag[0].id, n1: ag[0].nomComplet, m1: ag[0].matricule, a2: ag[1].id, n2: ag[1].nomComplet, auj: C.iso(C.aujourdhui()),
+        pre0: S.collection('presences').all().map((x) => x.id), con0: S.collection('conges').all().map((x) => x.id), mis0: S.collection('missions').all().map((x) => x.id),
+        pla0: S.collection('planning').all().map((x) => x.id), reglages: { c: S.reglage('planningCircuitPresences', undefined), d: S.reglage('planningAgentModifieDirectement', undefined) } };
+    });
+    const P = (expr, arg) => page.evaluate(new Function('a', 'return (' + expr + ')(a);'), arg);
+    const kpi = (lib) => page.evaluate((l) => { const k = [...document.querySelectorAll('#page-content .kpi')].find((x) => (x.querySelector('.kpi-label') || {}).textContent === l); return k ? Number(k.querySelector('.kpi-value').textContent.replace(/\D/g, '')) : null; }, lib);
+    const cliquer = (sel, texte) => page.evaluate((a) => { const b = [...document.querySelectorAll(a[0])].filter((x) => (a[1] instanceof RegExp ? a[1] : new RegExp(a[1])).test((x.getAttribute('title') || '') + '|' + x.textContent.trim())).pop(); if (!b) return false; b.click(); return true; }, [sel, texte]);
+    const modale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === l).pop(); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+    const champ = (id, v) => page.evaluate((a) => { const c = document.querySelector('.modal-root ' + a[0] + ', [role=dialog] ' + a[0]); if (!c) return false; c.value = a[1]; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); return true; }, [id, v]);
+    const motifSaisi = (t) => page.evaluate(async (m) => { for (let i = 0; i < 40; i++) { const z = [...document.querySelectorAll('.modal-root textarea, [role=dialog] textarea')].pop(); if (z) { z.value = m; z.dispatchEvent(new Event('input', { bubbles: true })); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, t);
+
+    /* --- 1. les défauts : surveillant seul, pas de modification directe ; la carte les dit ---------------------------------------------------------- */
+    const defauts = await page.evaluate(() => { const R = window.SIGH.planningRh; return { circuit: R.circuit(), direct: R.agentModifieDirectement(), etapes: R.etapesDuCircuit(), carte: /Surveillant seul/.test(document.getElementById('page-content').textContent) && /Réglages du planning et des présences/.test(document.getElementById('page-content').textContent) }; });
+    verifier('Le circuit par défaut est « surveillant seul » (une étape), l’agent ne modifie pas directement, et la carte des réglages le dit', defauts.circuit === 'surveillant' && defauts.direct === false && defauts.etapes.join() === 'surveillant' && defauts.carte, JSON.stringify(defauts));
+
+    /* --- 2. un pointage saisi au geste naît à valider et ne compte pas ----------------------------------------------------------------------------- */
+    await enTant('surveillant', 'SONDE107 surveillant', 'm10-presences.html');
+    const avantRetards = await kpi('Retards');
+    await cliquer('#page-content button', 'Ajouter un pointage'); await pause(500);
+    await page.evaluate((m) => {
+      const r = document.querySelector('.modal-root, [role=dialog]');
+      const dire = (s, v) => { const c = r.querySelector(s); c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); };
+      dire('#f_employeId', m.a1); dire('#f_date', m.auj); dire('#f_etat', 'retard'); dire('#f_heureArrivee', '08:30'); dire('#f_motifCode', 'maladie'); dire('#f_justificatif', 'CM-107'); dire('#f_motif', 'Sonde 107');
+    }, monde);
+    await modale('Créer'); await pause(700);
+    const cree = await page.evaluate((m) => { const x = window.SIGH.store.collection('presences').all().filter((p) => m.pre0.indexOf(p.id) < 0); return x.length === 1 ? { id: x[0].id, etat: x[0].validationEtat, faites: (x[0].etapesFaites || []).length, saisiPar: x[0].saisiPar, mc: x[0].motifCode, justif: x[0].justificatif, compte: window.SIGH.planningRh.compte('presences', x[0]) } : { n: x.length }; }, monde);
+    verifier('Le pointage saisi naît « à valider » (aucune étape faite, auteur de la saisie, motif codé et justificatif conservés) et ne compte pas', cree.etat === 'a_valider' && cree.faites === 0 && !!cree.saisiPar && cree.mc === 'maladie' && cree.justif === 'CM-107' && cree.compte === false, JSON.stringify(cree));
+    await ouvrir('m10-presences.html');
+    const kpi1 = await kpi('Retards');
+    verifier('Les retards comptés ne changent pas tant que le pointage n’est pas validé', kpi1 === avantRetards, avantRetards + ' → ' + kpi1);
+
+    /* --- 3. le surveillant valide SEUL, au geste : la pièce compte, le journal le dit ------------------------------------------------------------------ */
+    await page.evaluate((id) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('CM-107') >= 0); window.__tr = tr; }, cree.id);
+    const valide = await page.evaluate(() => { const b = window.__tr && window.__tr.querySelector('button[title^="Valider"]'); if (!b) return false; b.click(); return true; });
+    await pause(400);
+    await modale('Valider'); await pause(700);
+    const apresV = await page.evaluate((id) => { const S = window.SIGH.store, p = S.collection('presences').get(id); const j = S.raw().audit.filter((x) => x.action === 'Validation d’un pointage').pop(); return { etat: p.validationEtat, par: p.validePar, circuit: p.circuitUtilise, etapes: (p.etapesFaites || []).map((e) => e.etape), journal: !!j && j.reference === id }; }, cree.id);
+    verifier('Le surveillant valide SEUL au geste : état « valide », signé par lui, circuit consigné, une étape, journalisé (RG-12)', valide && apresV.etat === 'valide' && apresV.par === 'SONDE107 surveillant' && apresV.circuit === 'surveillant' && apresV.etapes.join() === 'surveillant' && apresV.journal, JSON.stringify(apresV));
+    await ouvrir('m10-presences.html');
+    const kpi2 = await kpi('Retards');
+    verifier('Validé, le pointage COMPTE : un retard de plus', kpi2 === avantRetards + 1, avantRetards + ' → ' + kpi2);
+    const boutonsApres = await page.evaluate(() => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('CM-107') >= 0); return { valider: !!tr.querySelector('button[title^="Valider"]'), regulariser: !!tr.querySelector('button[title^="Régulariser"]') }; });
+    verifier('Une pièce validée n’offre plus « Valider » mais « Régulariser »', !boutonsApres.valider && boutonsApres.regulariser, JSON.stringify(boutonsApres));
+
+    /* --- 4. refus nommés du circuit « surveillant seul » ------------------------------------------------------------------------------------------------- */
+    const refus1 = await page.evaluate((m) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, col = S.collection('presences');
+      const neuf = (agent) => col.insert(Object.assign({ date: m.auj, employeId: agent, employe: 'X', matricule: 'M', service: 'S', etat: 'absent', motif: 'Sonde 107' }, R.naissance())).record.id;
+      const p1 = neuf(m.a2);
+      const sess = S.session();
+      const code = (role, nom, o) => { S.setSession(Object.assign({}, sess, { role: role, nom: nom, nomComplet: nom })); const r = R.trancher(Object.assign({ collection: 'presences', id: p1, decision: 'valider' }, o || {})); return r.ok ? 'OK' : r.code; };
+      const out = { caissier: code('caissier', 'SONDE107 caissier'), da: code('da', 'SONDE107 da'), medecin: code('medecin', 'SONDE107 medecin'),
+        sansMotif: code('surveillant', 'SONDE107 surveillant', { decision: 'refuser' }), decisionInconnue: code('surveillant', 'SONDE107 surveillant', { decision: 'peut-etre' }),
+        introuvable: code('surveillant', 'SONDE107 surveillant', { id: 'PRS-INCONNUE' }), collection: code('surveillant', 'SONDE107 surveillant', { collection: 'factures' }) };
+      /* l'agent concerné ne valide pas sa propre pièce : la session porte son nom */
+      const agent = S.collection('personnel').get(m.a2);
+      out.auto = code('surveillant', agent.nomComplet);
+      const refusDa = (S.setSession(Object.assign({}, sess, { role: 'da', nom: 'SONDE107 da', nomComplet: 'SONDE107 da' })), R.trancher({ collection: 'presences', id: p1, decision: 'valider' }));
+      out.motifDa = refusDa.motif;
+      /* le refus avec motif, puis la pièce tranchée ne se retranche pas */
+      out.refus = code('surveillant', 'SONDE107 surveillant', { decision: 'refuser', motif: 'Pointage contesté (sonde)' });
+      const p = col.get(p1);
+      out.etatRefus = { etat: p.validationEtat, motif: p.motifRefus, par: p.refuseePar, compte: R.compte('presences', p) };
+      out.retranche = code('surveillant', 'SONDE107 surveillant');
+      S.setSession(sess);
+      return out;
+    }, monde);
+    verifier('Refus nommés : caissier, DAF (non étape du circuit) et médecin VALIDATION_RESERVEE ; décision inconnue, pièce et collection introuvables', refus1.caissier === 'VALIDATION_RESERVEE' && refus1.da === 'VALIDATION_RESERVEE' && refus1.medecin === 'VALIDATION_RESERVEE'
+      && refus1.decisionInconnue === 'DECISION_INCONNUE' && refus1.introuvable === 'PIECE_INTROUVABLE' && refus1.collection === 'COLLECTION_INCONNUE', JSON.stringify(refus1));
+    verifier('Le refus de la DAF nomme l’étape attendue (le surveillant) et le circuit ; un refus exige son motif', /le surveillant/.test(refus1.motifDa) && /Surveillant seul/.test(refus1.motifDa) && refus1.sansMotif === 'MOTIF_OBLIGATOIRE', refus1.motifDa);
+    verifier('Personne ne valide sa propre pièce (AUTO_VALIDATION)', refus1.auto === 'AUTO_VALIDATION', refus1.auto);
+    verifier('Refusée avec motif : état « refuse », motif et auteur conservés, la pièce ne compte pas, et une décision ne se réécrit pas (DEJA_TRANCHEE)', refus1.refus === 'OK' && refus1.etatRefus.etat === 'refuse' && refus1.etatRefus.motif === 'Pointage contesté (sonde)' && refus1.etatRefus.compte === false && refus1.retranche === 'DEJA_TRANCHEE', JSON.stringify(refus1.etatRefus));
+
+    /* --- 5. le circuit se règle AU GESTE par la carte (administrateur), en base, journalisé : DAF seule ---------------------------------------------------- */
+    await enTant('admin', 'SONDE107 admin', 'm10-presences.html');
+    await cliquer('#page-content button', 'Régler'); await pause(400);
+    await champ('#f_circuit', 'daf');
+    await modale('Enregistrer'); await pause(600);
+    const reglage = await page.evaluate(() => { const S = window.SIGH.store; const j = S.raw().audit.filter((x) => x.action === 'Circuit de validation des présences').pop(); return { circuit: S.reglage('planningCircuitPresences', null), journal: j ? { avant: j.ancienneValeur, apres: j.nouvelleValeur } : null, carte: /Directrice administrative seule/.test(document.getElementById('page-content').textContent) }; });
+    verifier('Réglé à la carte : « directrice administrative seule » en base, ancienne et nouvelle valeur au journal, la carte le dit', reglage.circuit === 'daf' && reglage.journal && /surveillant/.test(JSON.stringify(reglage.journal.avant)) && /daf/.test(JSON.stringify(reglage.journal.apres)) && reglage.carte, JSON.stringify(reglage.journal));
+    const daf = await page.evaluate((m) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, col = S.collection('presences');
+      const sess = S.session();
+      const p = col.insert(Object.assign({ date: m.auj, employeId: m.a2, employe: 'X', matricule: 'M', service: 'S', etat: 'retard', motif: 'Sonde 107 DAF' }, R.naissance())).record.id;
+      const as = (role, nom) => S.setSession(Object.assign({}, sess, { role: role, nom: nom, nomComplet: nom }));
+      as('surveillant', 'SONDE107 surveillant'); const rs = R.trancher({ collection: 'presences', id: p, decision: 'valider' });
+      as('da', 'SONDE107 da'); const rd = R.trancher({ collection: 'presences', id: p, decision: 'valider' });
+      const piece = col.get(p);
+      S.setSession(sess);
+      return { surveillant: rs.code, motif: rs.motif, da: rd.ok, etat: piece.validationEtat, par: piece.validePar, circuit: piece.circuitUtilise };
+    }, monde);
+    verifier('Circuit « DAF seule » : le surveillant est refusé en nommant la DAF, la DAF valide seule et le circuit est consigné sur la pièce', daf.surveillant === 'VALIDATION_RESERVEE' && /directrice administrative/.test(daf.motif) && daf.da === true && daf.etat === 'valide' && daf.par === 'SONDE107 da' && daf.circuit === 'daf', JSON.stringify(daf));
+
+    /* --- 6. « surveillant puis DAF » : deux étapes, l’intermédiaire ne compte pas, la même personne ne signe pas deux étapes ---------------------------------- */
+    const deux = await page.evaluate((m) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, col = S.collection('presences');
+      const sess = S.session();
+      S.setSession(Object.assign({}, sess, { role: 'admin', nom: 'SONDE107 admin', nomComplet: 'SONDE107 admin' }));
+      const d = R.definirCircuit('surveillant_puis_daf', 'Sonde 107');
+      const neuf = () => col.insert(Object.assign({ date: m.auj, employeId: m.a2, employe: 'X', matricule: 'M', service: 'S', etat: 'retard', motif: 'Sonde 107 deux' }, R.naissance())).record.id;
+      const p = neuf();
+      const as = (role, nom) => S.setSession(Object.assign({}, sess, { role: role, nom: nom, nomComplet: nom }));
+      as('surveillant', 'SONDE107 surveillant'); const r1 = R.trancher({ collection: 'presences', id: p, decision: 'valider' });
+      const midEtat = col.get(p).validationEtat, midCompte = R.compte('presences', col.get(p));   /* lues AVANT la suite : la fiche est vivante */
+      const r1bis = R.trancher({ collection: 'presences', id: p, decision: 'valider' });
+      as('da', 'SONDE107 da'); const r2 = R.trancher({ collection: 'presences', id: p, decision: 'valider' });
+      const fin = col.get(p);
+      /* une seconde pièce : l'administrateur ne signe pas les deux étapes */
+      const q = neuf();
+      as('admin', 'SONDE107 admin'); const a1 = R.trancher({ collection: 'presences', id: q, decision: 'valider' }); const a2 = R.trancher({ collection: 'presences', id: q, decision: 'valider' });
+      S.setSession(sess);
+      return { def: d.ok, r1: { ok: r1.ok, etat: r1.etat, complet: r1.complet }, midEtat: midEtat, midCompte: midCompte, r1bis: r1bis.code, r2: { ok: r2.ok, etat: r2.etat }, finEtapes: (fin.etapesFaites || []).map((e) => e.etape + ':' + e.par), finCompte: R.compte('presences', fin),
+        a1: a1.ok, a2: a2.code };
+    }, monde);
+    verifier('Deux étapes : le surveillant valide (« valide_surveillant », la pièce ne compte pas encore), il ne peut pas signer la seconde, la DAF achève, les deux signatures sont consignées', deux.def && deux.r1.ok && deux.r1.etat === 'valide_surveillant' && deux.r1.complet === false && deux.midEtat === 'valide_surveillant' && deux.midCompte === false && deux.r1bis === 'VALIDATION_RESERVEE' && deux.r2.ok && deux.r2.etat === 'valide'
+      && deux.finEtapes.join() === 'surveillant:SONDE107 surveillant,daf:SONDE107 da' && deux.finCompte, JSON.stringify(deux));
+    verifier('La même personne ne signe pas les deux étapes (administrateur : ETAPE_DEJA_SIGNEE)', deux.a1 === true && deux.a2 === 'ETAPE_DEJA_SIGNEE', JSON.stringify([deux.a1, deux.a2]));
+
+    /* --- 7. le congé suit le même circuit : saisi au geste, il naît « en attente », le surveillant tranche ------------------------------------------------ */
+    await page.evaluate(() => { window.SIGH.store.setSession(Object.assign({}, window.SIGH.store.session(), { role: 'admin', nom: 'SONDE107 admin', nomComplet: 'SONDE107 admin' })); window.SIGH.planningRh.definirCircuit('surveillant', 'Sonde 107 retour'); });
+    await enTant('admin', 'SONDE107 admin', 'm10-conges.html');
+    /* le registre est amorcé à l'ouverture de l'écran : le point de départ se prend APRÈS */
+    monde.con0 = await page.evaluate(() => window.SIGH.store.collection('conges').all().map((x) => x.id));
+    await cliquer('#page-content button', '\\|Nouveau$'); await pause(500);
+    await page.evaluate((m) => {
+      const r = document.querySelector('.modal-root, [role=dialog]');
+      const dire = (s, v) => { const c = r.querySelector(s); c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); };
+      dire('#f_employeId', m.a1); dire('#f_nature', 'Congé annuel'); dire('#f_dateDebut', '2027-03-01'); dire('#f_dateFin', '2027-03-05'); dire('#f_motif', 'Sonde 107 congé');
+    }, monde);
+    await modale('Créer'); await pause(700);
+    const conge = await page.evaluate((m) => { const x = window.SIGH.store.collection('conges').all().filter((c) => m.con0.indexOf(c.id) < 0); return x.length === 1 ? { id: x[0].id, st: x[0].statutConge, ve: x[0].validationEtat, etat: window.SIGH.planningRh.etatValidation('conges', x[0]), compte: window.SIGH.planningRh.compte('conges', x[0]) } : { n: x.length }; }, monde);
+    verifier('Le congé saisi naît « en attente » et à valider, et ne compte pas', conge.st === 'en_attente' && conge.ve === 'a_valider' && conge.etat === 'a_valider' && conge.compte === false, JSON.stringify(conge));
+    await enTant('surveillant', 'SONDE107 surveillant', 'm10-conges.html');
+    const surv = await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].map((x) => x.textContent.trim() + '|' + (x.getAttribute('title') || '')); return { nouveau: b.some((t) => /^Nouveau\|/.test(t)), valider: b.some((t) => /Valider cette demande de congé/.test(t)), page403: /Accès refusé|403/.test(document.body.textContent.slice(0, 400)), droits: window.SIGH.nav.droitsEcran('surveillant', 'm10-conges', 'M10') }; });
+    verifier('Le surveillant OUVRE le registre des congés (écran accordé), sans commande de création, avec la commande de validation', surv.valider && !surv.nouveau && !surv.page403 && surv.droits.voir === true && surv.droits.editer === false, JSON.stringify(surv));
+    await page.evaluate((id) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('Sonde 107') >= 0 || x.textContent.indexOf('01/03/2027') >= 0); tr.querySelector('button[title^="Valider cette demande"]').click(); }, conge.id);
+    await pause(400); await modale('Valider'); await pause(700);
+    const congeV = await page.evaluate((id) => { const c = window.SIGH.store.collection('conges').get(id); return { st: c.statutConge, ve: c.validationEtat, par: c.validePar }; }, conge.id);
+    verifier('Validé par le surveillant : le congé est « accordé » (statutConge), signé, au même circuit que les pointages', congeV.st === 'valide' && congeV.ve === 'valide' && congeV.par === 'SONDE107 surveillant', JSON.stringify(congeV));
+
+    /* --- 8. l’ordre de mission : l’AVIS du chef de service avant la validation ---------------------------------------------------------------------------------- */
+    await enTant('admin', 'SONDE107 admin', 'm10-missions.html');
+    monde.mis0 = await page.evaluate(() => window.SIGH.store.collection('missions').all().map((x) => x.id));
+    await cliquer('#page-content button', '\\|Nouveau$'); await pause(500);
+    await page.evaluate((m) => {
+      const r = document.querySelector('.modal-root, [role=dialog]');
+      const dire = (s, v) => { const c = r.querySelector(s); c.value = v; c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); };
+      dire('#f_libelle', 'Mission de sonde 107'); dire('#f_nature', 'Mission'); dire('#f_objet', 'Sonde du circuit'); dire('#f_agentId', m.a1); dire('#f_structurePrise', 'CLINIQUE NASSIERA TOO SARL');
+      dire('#f_destination', 'Cotonou'); dire('#f_dateDepart', '2027-04-01'); dire('#f_dateRetour', '2027-04-03');
+    }, monde);
+    await modale('Créer'); await pause(700);
+    const mission = await page.evaluate((m) => { const x = window.SIGH.store.collection('missions').all().filter((c) => m.mis0.indexOf(c.id) < 0); return x.length === 1 ? { id: x[0].id, st: x[0].statutMission, ve: x[0].validationEtat } : { n: x.length }; }, monde);
+    verifier('L’ordre de mission saisi naît « en attente de validation » et à valider (l’état ne se saisit plus à la main)', mission.st === 'a_valider' && mission.ve === 'a_valider', JSON.stringify(mission));
+    await enTant('surveillant', 'SONDE107 surveillant', 'm10-missions.html');
+    const sansAvis = await page.evaluate((id) => { const R = window.SIGH.planningRh; const r = R.trancher({ collection: 'missions', id: id, decision: 'valider' }); return { code: r.code }; }, mission.id);
+    verifier('Sans l’avis du chef de service, la validation est refusée en le nommant (AVIS_REQUIS)', sansAvis.code === 'AVIS_REQUIS', sansAvis.code);
+    await page.evaluate(() => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('Mission de sonde 107') >= 0); tr.querySelector('button[title^="Avis du chef de service"]').click(); });
+    await pause(500);
+    await champ('#f_chef', monde.n2); await champ('#f_avis', 'defavorable');
+    await modale('Consigner l’avis'); await pause(500);
+    const avisSansMotif = await page.evaluate((id) => window.SIGH.store.collection('missions').get(id).avisChefService || null, mission.id);
+    verifier('Un avis défavorable sans motif est refusé (rien consigné)', avisSansMotif === null, JSON.stringify(avisSansMotif));
+    await champ('#f_motif', 'Période de forte activité (sonde)');
+    await modale('Consigner l’avis'); await pause(600);
+    const avisOk = await page.evaluate((id) => { const m = window.SIGH.store.collection('missions').get(id); return m.avisChefService; }, mission.id);
+    verifier('L’avis défavorable motivé est consigné (chef, avis, motif, auteur de la saisie)', avisOk && avisOk.avis === 'defavorable' && avisOk.chef === monde.n2 && /forte activité/.test(avisOk.motif) && !!avisOk.consignePar, JSON.stringify(avisOk));
+    const contreAvis = await page.evaluate((id) => { const R = window.SIGH.planningRh; const r = R.trancher({ collection: 'missions', id: id, decision: 'valider' }); return r.code; }, mission.id);
+    verifier('Valider contre un avis défavorable exige un motif (MOTIF_OBLIGATOIRE)', contreAvis === 'MOTIF_OBLIGATOIRE', contreAvis);
+    const missionV = await page.evaluate((id) => { const R = window.SIGH.planningRh; const r = R.trancher({ collection: 'missions', id: id, decision: 'valider', motif: 'Mission indispensable (sonde)' }); const m = window.SIGH.store.collection('missions').get(id); return { ok: r.ok, st: m.statutMission, par: m.valideePar, ve: m.validationEtat, circuit: m.circuitUtilise }; }, mission.id);
+    verifier('Validée malgré l’avis, avec motif : « validée », signée du surveillant, circuit consigné (champs historiques valideePar et statutMission tenus)', missionV.ok && missionV.st === 'validee' && missionV.par === 'SONDE107 surveillant' && missionV.ve === 'valide' && missionV.circuit === 'surveillant', JSON.stringify(missionV));
+
+    /* --- 9. RG-11 : une vacation non validée est visible et ne compte pas dans les statistiques de garde ---------------------------------------------------------- */
+    const stat0 = await page.evaluate((m) => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const e = S.collection('personnel').get(m.a1);
+      const jour = (n) => C.iso(C.addDays(C.aujourdhui(), n));
+      const base = { employeId: e.id, employe: e.nomComplet, fonction: e.fonction, service: e.service, type: 'garde_soins', statut: 'validee' };
+      S.collection('planning').insert(Object.assign({}, base, { date: jour(200), validationEtat: 'validee', validePar: 'sonde' }));
+      S.collection('planning').insert(Object.assign({}, base, { date: jour(201), validationEtat: 'a_valider' }));
+      return { du: jour(199), au: jour(202), nom: e.nomComplet };
+    }, monde);
+    await ouvrir('m10-stats-gardes.html');
+    await page.evaluate((s) => { const set = (i, v) => { const c = document.querySelectorAll('#page-content input[type=date]')[i]; c.value = v; c.dispatchEvent(new Event('change', { bubbles: true })); }; const p = document.querySelector('#page-content select'); p.value = 'libre'; p.dispatchEvent(new Event('change', { bubbles: true })); set(0, s.du); set(1, s.au); }, stat0);
+    await pause(600);
+    const stat1 = await page.evaluate((s) => {
+      /* une colonne se lit par son NOM, jamais par son rang */
+      const entetes = [...document.querySelectorAll('#page-content thead th')].map((x) => x.textContent.trim());
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(s.nom) >= 0);
+      if (!tr) return null;
+      const cel = [...tr.querySelectorAll('td')].map((x) => x.textContent.replace(/\s+/g, ' ').trim());
+      return { total: Number(cel[entetes.indexOf('Total')].replace(/\D/g, '')), gardes: Number(cel[entetes.indexOf('Gardes')].replace(/\D/g, '')) };
+    }, stat0);
+    const comptePlan = await page.evaluate((s) => window.SIGH.store.collection('planning').active().filter((p) => p.date >= s.du && p.date <= s.au).length, stat0);
+    verifier('Deux vacations posées (une validée, une à valider) : les statistiques de garde n’en comptent qu’UNE (le planning validé seul compte, RG-11)', comptePlan === 2 && stat1 && stat1.total === 1 && stat1.gardes === 1, JSON.stringify(stat1));
+
+    /* --- 10. un pointage validé ne se modifie pas : il se régularise (date, auteur, motif) ------------------------------------------------------------------------------- */
+    const reg = await page.evaluate((id) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, col = S.collection('presences');
+      const sess = S.session();
+      const as = (role, nom) => S.setSession(Object.assign({}, sess, { role: role, nom: nom, nomComplet: nom }));
+      as('surveillant', 'SONDE107 surveillant');
+      const direct = col.update(id, { etat: 'present' });
+      const intact = col.get(id).etat === 'retard';
+      const sansMotif = R.regulariser(id, { etat: 'present', motif: '' }).code;
+      const etatInconnu = R.regulariser(id, { etat: 'rêve', motif: 'x' }).code;
+      as('caissier', 'SONDE107 caissier'); const caissier = R.regulariser(id, { etat: 'present', motif: 'x' }).code;
+      as('surveillant', 'SONDE107 surveillant');
+      const ok = R.regulariser(id, { etat: 'present', motifCode: 'maladie', justificatif: 'CM-107-bis', motif: 'Arrivée constatée à 07:55 (sonde)' });
+      const p = col.get(id);
+      const j = S.raw().audit.filter((x) => x.action === 'Régularisation d’un pointage').pop();
+      S.setSession(sess);
+      return { direct: direct === null, intact: intact, sansMotif: sansMotif, etatInconnu: etatInconnu, caissier: caissier, ok: ok.ok, etat: p.etat, justif: p.justificatif, trace: p.regularisations && p.regularisations[0], validation: p.validationEtat, journal: !!j && j.reference === id };
+    }, cree.id);
+    verifier('Un pointage validé ne se modifie pas directement (garde du magasin PRESENCE_VALIDEE : rien changé)', reg.direct && reg.intact);
+    verifier('Régulariser exige un motif, un état connu et un habilité (caissier : REGULARISATION_RESERVEE)', reg.sansMotif === 'MOTIF_OBLIGATOIRE' && reg.etatInconnu === 'ETAT_INCONNU' && reg.caissier === 'REGULARISATION_RESERVEE', JSON.stringify([reg.sansMotif, reg.etatInconnu, reg.caissier]));
+    verifier('La régularisation est datée, porte son auteur, l’état d’avant et celui d’après, le motif ; la pièce reste validée ; journalisée', reg.ok && reg.etat === 'present' && reg.justif === 'CM-107-bis' && reg.trace && reg.trace.par === 'SONDE107 surveillant' && reg.trace.etatAvant === 'retard' && reg.trace.etatApres === 'present' && /07:55/.test(reg.trace.motif) && reg.trace.le === monde.auj && reg.validation === 'valide' && reg.journal, JSON.stringify(reg.trace));
+
+    /* --- 11. filtres avancés des présences et état imprimé qui retrace les filtres (heures comprises) -------------------------------------------------------------- */
+    await enTant('surveillant', 'SONDE107 surveillant', 'm10-presences.html');
+    await page.evaluate((m) => {
+      const dire = (id, v) => { const c = document.getElementById(id); c.value = v; c.dispatchEvent(new Event(c.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true })); };
+      dire('pr_f_agent', m.a1); dire('pr_f_motif', 'maladie'); dire('pr_f_hde', '07:00');
+    }, monde);
+    await pause(500);
+    const lignesTable = () => page.evaluate(() => {
+      const entetes = [...document.querySelectorAll('#page-content thead th')].map((x) => x.textContent.trim());
+      return [...document.querySelectorAll('#page-content tbody tr')].filter((tr) => tr.querySelectorAll('td').length >= 8).map((tr) => {
+        const c = [...tr.querySelectorAll('td')].map((x) => x.textContent.replace(/\s+/g, ' ').trim());
+        return { arrivee: c[entetes.indexOf('Arrivée')], etat: c[entetes.indexOf('État')], motif: c[entetes.indexOf('Motif')] };
+      });
+    });
+    const f1 = await lignesTable();
+    verifier('Les filtres avancés (agent, motif codé, arrivée à partir de 07:00) ne laissent que le pointage de la sonde', f1.length === 1 && /CM-107/.test(f1[0].motif), JSON.stringify(f1));
+    await page.evaluate(() => { window.__pris = []; const orig = window.SIGH.print.etat; window.SIGH.print.etat = function (o) { window.__pris.push({ titre: o.titre, filtres: (o.filtres || []).map((f) => f.join('=')), lignes: o.contenu.querySelectorAll('tbody tr').length }); return orig.apply(this, arguments); }; });
+    await cliquer('#page-content button', 'Imprimer l.état'); await pause(500);
+    const imp = await page.evaluate(() => window.__pris[0]);
+    verifier('L’état imprimé ne porte que la ligne retenue et retrace TOUS les filtres, heures comprises', imp && imp.titre === 'État des présences et absences' && imp.lignes === 1 && imp.filtres.some((f) => /^Agent=/.test(f)) && imp.filtres.some((f) => /^Arrivée de=07:00/.test(f)) && imp.filtres.some((f) => /^Motif codé=Maladie/.test(f)), JSON.stringify(imp));
+    await page.evaluate(() => { document.querySelectorAll('.print-sheet').forEach((x) => { const m = x.closest('.modal-root, [role=dialog]'); if (m) m.remove(); }); });
+    await cliquer('#page-content button', 'Effacer les filtres'); await pause(400);
+    await page.evaluate(() => { const c = document.getElementById('pr_f_retard'); c.value = '40'; c.dispatchEvent(new Event('input', { bubbles: true })); });
+    await pause(500);
+    const f2 = await lignesTable();
+    const minutes = (h) => { const x = /^(\d+):(\d+)/.exec(h || ''); return x ? Number(x[1]) * 60 + Number(x[2]) : -1; };
+    verifier('Le filtre « retard minimal » de 40 minutes après 08:00 ne retient que des retards arrivés à 08:40 ou plus', f2.length > 0 && f2.every((l) => l.etat === 'Retard' && minutes(l.arrivee) >= 8 * 60 + 40), f2.length + ' ligne(s), ex. ' + JSON.stringify(f2[0]));
+
+    /* --- 12. restitution -------------------------------------------------------------------------------------------------------------------------------------------------------------- */
+    await page.evaluate((m) => {
+      const S = window.SIGH.store;
+      [['presences', m.pre0], ['conges', m.con0], ['missions', m.mis0], ['planning', m.pla0]].forEach((a) => { S.raw()[a[0]] = S.raw()[a[0]].filter((x) => a[1].indexOf(x.id) >= 0); });
+      S.setReglage('planningCircuitPresences', m.reglages.c === undefined ? 'surveillant' : m.reglages.c);
+      S.setReglage('planningAgentModifieDirectement', m.reglages.d === undefined ? false : m.reglages.d);
+      S.save();
+    }, monde);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

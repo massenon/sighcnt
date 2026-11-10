@@ -6108,6 +6108,16 @@
     return { ok: true, regularisation: trace, undo: res && res.undo };
   }
 
+  /** UN POINTAGE VALIDÉ NE SE MODIFIE PAS DIRECTEMENT : il se régularise (motif, date et auteur consignés). Les pièces d'avant le circuit (sans état) restent éditables. */
+  S.garder('presences', function (op, rec) {
+    if (op !== 'modifier' || !rec || !rec.id) return null;
+    var avant = S.collection('presences').get(rec.id);
+    if (!avant || avant.validationEtat !== 'valide') return null;
+    var change = ['etat', 'date', 'employeId', 'heureArrivee', 'heureDepart', 'motifCode'].some(function (k) { return String(avant[k] == null ? '' : avant[k]) !== String(rec[k] == null ? '' : rec[k]); });
+    var regularise = (rec.regularisations || []).length > (avant.regularisations || []).length;
+    return change && !regularise ? 'PRESENCE_VALIDEE : un pointage validé ne se modifie pas directement ; le régulariser (motif, date et auteur consignés).' : null;
+  });
+
   /* ==========================================================================
    * RH, LOT L6 (10/11/2026) : L'AGENT PROPOSE, LE SURVEILLANT VALIDE
    * --------------------------------------------------------------------------

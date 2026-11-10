@@ -1700,47 +1700,137 @@
 
   /* ==========================================================================
    * PRÉSENCES & ABSENCES
+   * --------------------------------------------------------------------------
+   * Lot L5 (Direction, 09/11/2026) : le pointage passe par le CIRCUIT de validation (surveillant seul par défaut). Un pointage non validé est visible et
+   * NE COMPTE PAS (taux de présence, retards, absences). Motif codé, justificatif d'absence, régularisation datée avec auteur : un pointage validé ne se
+   * modifie pas directement (garde du magasin), il se régularise.
    * ======================================================================== */
+  /** Le retard se mesure depuis le début des vacations du jour, 08:00 (D.TYPES_PLANNING) : c'est le seul repère horaire documenté. */
+  var DEBUT_VACATIONS = '08:00';
+  function minutesDe(h) { var m = /^(\d{1,2}):(\d{2})/.exec(h || ''); return m ? Number(m[1]) * 60 + Number(m[2]) : null; }
+  function retardMinutes(r) {
+    if (r.etat !== 'retard') return 0;
+    var a = minutesDe(r.heureArrivee), d = minutesDe(DEBUT_VACATIONS);
+    return a == null ? 0 : Math.max(0, a - d);
+  }
+  var ETATS_VALIDATION_RH = {
+    a_valider: ['À valider', 'warning'], valide_surveillant: ['Validé par le surveillant, DAF attendue', 'info'], valide: ['Validé', 'success'], refuse: ['Refusé', 'danger'],
+  };
+  function badgeValidation(nom, r) {
+    var x = ETATS_VALIDATION_RH[PRH().etatValidation(nom, r)] || ['—', 'neutral'];
+    return U.badge(x[0], x[1]);
+  }
+  /** Les commandes de validation d'une pièce : ABSENTES si le rôle courant n'est pas l'étape attendue (jamais grisées). */
+  function commandesValidation(nom, r, apres) {
+    var p = PRH().peutTrancher(nom, r);
+    var a = [];
+    if (!p.ok) return a;
+    var def = { presences: 'ce pointage', conges: 'cette demande de congé', missions: 'cet ordre de mission' }[nom];
+    a.push(K.iconBtn('check', 'Valider ' + def, function (ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
+      U.confirm({ title: 'Valider ' + def + ' ?', message: 'La validation est celle de <strong>' + (p.etape === 'daf' ? 'la directrice administrative' : 'le surveillant') + '</strong>, consignée au journal (RG-12). '
+        + 'Circuit en vigueur : ' + PRH().CIRCUITS.filter(function (c) { return c.id === PRH().circuit(); })[0].libelle + '.', confirmLabel: 'Valider' }).then(function (ok) {
+        if (!ok) return;
+        var res = PRH().trancher({ collection: nom, id: r.id, decision: 'valider' });
+        if (!res.ok) { U.toast(res.motif, { type: 'error', detail: res.geste }); return; }
+        if (apres) apres();
+        U.toast(res.complet ? 'Pièce validée.' : 'Étape validée : la pièce attend la directrice administrative.', { type: 'success', undo: function () { res.undo(); if (apres) apres(); } });
+      });
+    }));
+    a.push(K.iconBtn('x', 'Refuser ' + def, function (ev) {
+      if (ev && ev.stopPropagation) ev.stopPropagation();
+      U.confirm({ title: 'Refuser ' + def + ' ?', message: 'Le refus exige son <strong>motif</strong> : l’agent le lira.', confirmLabel: 'Refuser', danger: true, requireMotif: true }).then(function (rep) {
+        if (!rep) return;
+        var res = PRH().trancher({ collection: nom, id: r.id, decision: 'refuser', motif: rep.motif });
+        if (!res.ok) { U.toast(res.motif, { type: 'error', detail: res.geste }); return; }
+        if (apres) apres();
+        U.toast('Pièce refusée.', { type: 'success', detail: 'Le motif est visible de l’agent.', undo: function () { res.undo(); if (apres) apres(); } });
+      });
+    }, 'ghost'));
+    return a;
+  }
+
   global.SIGH.screen('m10-presences', {
     title: 'Présences & absences',
     description: 'Pointage quotidien, retards et absences, avec incidence sur l’évaluation mensuelle.',
+    regle: 'Un pointage est <strong>validé</strong> selon le circuit réglé au poste (surveillant seul par défaut). Tant qu’il ne l’est pas, il est visible mais <strong>ne compte pas</strong> '
+      + 'dans les retards, les absences ni le taux de présence. Un pointage validé ne se modifie pas : il se <strong>régularise</strong> (motif, date et auteur consignés).',
     render: function (root) {
       /* Le registre est amorcé AU SOCLE : trois écrans le lisent, et une page
          ne charge que le module de son écran. */
       var col = S.collection('presences', { module: 'M10', entite: 'Presence' });
 
+      /* Déclarés AVANT le premier rendu (piège du dépôt). */
+      var F = { q: '', agent: '', matricule: '', service: '', etat: '', motifCode: '', retardMin: '', hDe: '', hA: '', validation: '', validePar: '' };
       var host = el('div.space-y-4');
-      var blocKpi = el('div'), blocTable = el('div'), blocGraphes = el('div');
+      var blocReglages = el('div'), blocKpi = el('div'), blocTable = el('div'), blocGraphes = el('div');
 
       /* Plage de dates : le registre couvre vingt-cinq jours par agent, soit
          plus de mille lignes. Sans bornes, on ne trouve rien. */
-      var dDebut = el('input.input', { type: 'date', value: C.iso(C.addDays(AUJ, -30)) });
-      var dFin = el('input.input', { type: 'date', value: C.iso(AUJ) });
+      var dDebut = el('input.input', { type: 'date', id: 'pr_f_du', value: C.iso(C.addDays(AUJ, -30)) });
+      var dFin = el('input.input', { type: 'date', id: 'pr_f_au', value: C.iso(AUJ) });
       var barre = el('div.card');
-      barre.appendChild(el('div.card-body.flex.flex-wrap.items-end.gap-3', null, [
-        el('div', null, [el('label.label', { text: 'Du' }), dDebut]),
-        el('div', null, [el('label.label', { text: 'Au' }), dFin]),
-        K.btn('Appliquer', { variant: 'primary', icon: 'filter', onclick: rafraichir }),
-        K.btn('Mois en cours', {
-          icon: 'calendar',
-          onclick: function () {
-            var d = new Date(AUJ.getFullYear(), AUJ.getMonth(), 1);
-            dDebut.value = C.iso(d); dFin.value = C.iso(AUJ); rafraichir();
-          },
-        }),
-        K.btn('Sept derniers jours', {
-          icon: 'calendar-days',
-          onclick: function () { dDebut.value = C.iso(C.addDays(AUJ, -6)); dFin.value = C.iso(AUJ); rafraichir(); },
-        }),
+      var corps = el('div.card-body.grid.gap-3.md\\:grid-cols-3.lg\\:grid-cols-4');
+      function liste(id, label, cle, options, vide) {
+        var sel = el('select.select', { id: id });
+        sel.appendChild(el('option', { value: '' }, vide));
+        options.forEach(function (o) { sel.appendChild(el('option', { value: o.value }, o.label)); });
+        sel.value = F[cle];
+        sel.addEventListener('change', function () { F[cle] = sel.value; rafraichir(); });
+        return el('div', null, [el('label.label', { for: id, text: label }), sel]);
+      }
+      function saisie(id, label, cle, type, attrs) {
+        var inp = el('input.input', Object.assign({ type: type, id: id, value: F[cle] }, attrs || {}));
+        inp.addEventListener('input', function () { F[cle] = inp.value; rafraichir(); });
+        return el('div', null, [el('label.label', { for: id, text: label }), inp]);
+      }
+      var agentsListe = C.sortBy(personnel(), 'nomComplet');
+      var validateurs = {};
+      col.active().forEach(function (r) { if (r.validePar) validateurs[r.validePar] = true; });
+      corps.appendChild(el('div', null, [el('label.label', { for: 'pr_f_du', text: 'Du' }), dDebut]));
+      corps.appendChild(el('div', null, [el('label.label', { for: 'pr_f_au', text: 'Au' }), dFin]));
+      corps.appendChild(saisie('pr_f_q', 'Recherche', 'q', 'search', { placeholder: 'Agent, matricule, motif' }));
+      corps.appendChild(liste('pr_f_agent', 'Agent', 'agent', agentsListe.map(function (e) { return { value: e.id, label: e.nomComplet }; }), 'Tous les agents'));
+      corps.appendChild(liste('pr_f_matricule', 'Matricule', 'matricule', agentsListe.map(function (e) { return { value: e.matricule, label: e.matricule + ' · ' + e.nomComplet }; }), 'Tous les matricules'));
+      corps.appendChild(liste('pr_f_service', 'Service', 'service', D.SERVICES.map(function (x) { return { value: x.value || x, label: x.label || x }; }), 'Tous les services'));
+      corps.appendChild(liste('pr_f_etat', 'État', 'etat', [{ value: 'present', label: 'Présent' }, { value: 'retard', label: 'Retard' }, { value: 'absent', label: 'Absent' }, { value: 'conge', label: 'Congé' }], 'Tous les états'));
+      corps.appendChild(liste('pr_f_motif', 'Motif codé', 'motifCode', PRH().MOTIFS_ABSENCE.map(function (m) { return { value: m.id, label: m.libelle }; }).concat([{ value: '__aucun', label: 'Sans motif codé' }]), 'Tous les motifs'));
+      corps.appendChild(saisie('pr_f_retard', 'Retard minimal (minutes après 08:00)', 'retardMin', 'number', { min: '0' }));
+      corps.appendChild(saisie('pr_f_hde', 'Arrivée de', 'hDe', 'time'));
+      corps.appendChild(saisie('pr_f_ha', 'Arrivée à', 'hA', 'time'));
+      corps.appendChild(liste('pr_f_validation', 'Validation', 'validation', Object.keys(ETATS_VALIDATION_RH).map(function (k) { return { value: k, label: ETATS_VALIDATION_RH[k][0] }; }), 'Validées ou non'));
+      corps.appendChild(liste('pr_f_validepar', 'Validé par', 'validePar', Object.keys(validateurs).sort().map(function (n) { return { value: n, label: n }; })
+        .concat([{ value: '__aucun', label: 'Validation non renseignée (avant le circuit)' }]), 'Tous les validateurs'));
+      corps.appendChild(el('div.flex.flex-wrap.items-end.gap-2.md\\:col-span-2', null, [
+        K.btn('Mois en cours', { icon: 'calendar', onclick: function () {
+          var d = new Date(AUJ.getFullYear(), AUJ.getMonth(), 1);
+          dDebut.value = C.iso(d); dFin.value = C.iso(AUJ); rafraichir();
+        } }),
+        K.btn('Sept derniers jours', { icon: 'calendar-days', onclick: function () { dDebut.value = C.iso(C.addDays(AUJ, -6)); dFin.value = C.iso(AUJ); rafraichir(); } }),
+        K.btn('Effacer les filtres', { icon: 'filter-x', onclick: function () {
+          Object.keys(F).forEach(function (k) { F[k] = ''; });
+          dDebut.value = C.iso(C.addDays(AUJ, -30)); dFin.value = C.iso(AUJ);
+          ['pr_f_q', 'pr_f_agent', 'pr_f_matricule', 'pr_f_service', 'pr_f_etat', 'pr_f_motif', 'pr_f_retard', 'pr_f_hde', 'pr_f_ha', 'pr_f_validation', 'pr_f_validepar'].forEach(function (i) {
+            var c = document.getElementById(i); if (c) c.value = '';
+          });
+          rafraichir();
+        } }),
       ]));
+      [dDebut, dFin].forEach(function (c) { c.addEventListener('change', rafraichir); });
+      barre.appendChild(el('div.card-head', null, el('h3.card-title', { text: 'Filtres avancés des présences' })));
+      barre.appendChild(corps);
+      host.appendChild(blocReglages);
       host.appendChild(barre);
       host.appendChild(blocKpi);
       host.appendChild(blocTable);
       host.appendChild(blocGraphes);
 
+      rendreReglages();
       rafraichir();
       root.appendChild(host);
       return null;
+
+      function rendreReglages() { C.clear(blocReglages); blocReglages.appendChild(carteReglagesRh(rendreReglages)); U.icons(blocReglages); }
 
       function dansPlage() {
         return col.active().filter(function (r) {
@@ -1748,6 +1838,29 @@
           if (dFin.value && r.date > dFin.value) return false;
           return true;
         });
+      }
+      /** Les lignes retenues par tous les filtres avancés (le registre, l'export et l'état imprimé lisent la même liste). */
+      function filtrees() {
+        var q = F.q.trim().toLowerCase();
+        return dansPlage().filter(function (r) {
+          if (F.agent && r.employeId !== F.agent) return false;
+          if (F.matricule && r.matricule !== F.matricule) return false;
+          if (F.service && r.service !== F.service) return false;
+          if (F.etat && r.etat !== F.etat) return false;
+          if (F.motifCode && (F.motifCode === '__aucun' ? !!r.motifCode : r.motifCode !== F.motifCode)) return false;
+          if (F.retardMin !== '' && retardMinutes(r) < Number(F.retardMin)) return false;
+          var a = minutesDe(r.heureArrivee);
+          if (F.hDe && (a == null || a < minutesDe(F.hDe))) return false;
+          if (F.hA && (a == null || a > minutesDe(F.hA))) return false;
+          if (F.validation && PRH().etatValidation('presences', r) !== F.validation) return false;
+          if (F.validePar && (r.validePar || '__aucun') !== F.validePar) return false;
+          if (q && ((r.employe || '') + ' ' + (r.matricule || '') + ' ' + (r.motif || '') + ' ' + (r.justificatif || '')).toLowerCase().indexOf(q) < 0) return false;
+          return true;
+        });
+      }
+      function comptees() { return filtrees().filter(function (r) { return PRH().compte('presences', r); }); }
+      function filtresEnForce() {
+        return Object.keys(F).some(function (k) { return F[k] !== ''; });
       }
 
       function rafraichir() { rendreKpi(); rendreTable(); rendreGraphes(); }
@@ -1763,46 +1876,111 @@
           },
           { name: 'heureArrivee', label: 'Heure d’arrivée', type: 'time' },
           { name: 'heureDepart', label: 'Heure de départ', type: 'time' },
+          { name: 'motifCode', label: 'Motif codé', type: 'select', options: [{ value: '', label: 'Aucun (non justifié)' }].concat(PRH().MOTIFS_ABSENCE.map(function (m) { return { value: m.id, label: m.libelle }; })) },
+          { name: 'justificatif', label: 'Justificatif (référence du document)', hint: 'Certificat médical, ordre de mission, décision de congé' },
           { name: 'motif', label: 'Motif / justification', col: 'full' },
         ];
       }
 
       function rendreKpi() {
-        var mois = dansPlage();
+        var tous = filtrees(), mois = comptees();
         C.clear(blocKpi);
         blocKpi.appendChild(U.kpiGrid([
-          { label: 'Pointages de la période', value: C.num(mois.length), icon: 'clipboard-check', tone: 'navy' },
+          { label: 'Pointages comptés', value: C.num(mois.length), icon: 'clipboard-check', tone: 'navy', hint: 'validés seulement' },
           { label: 'Présences', value: C.num(mois.filter(function (r) { return r.etat === 'present'; }).length), icon: 'check-circle-2', tone: 'success' },
           { label: 'Retards', value: C.num(mois.filter(function (r) { return r.etat === 'retard'; }).length), icon: 'clock-alert', tone: 'warning', hint: 'Critère NS 131' },
           { label: 'Absences', value: C.num(mois.filter(function (r) { return r.etat === 'absent'; }).length), icon: 'user-x', tone: 'danger' },
+          { label: 'À valider', value: C.num(tous.filter(function (r) { var e = PRH().etatValidation('presences', r); return e === 'a_valider' || e === 'valide_surveillant'; }).length), icon: 'hourglass', tone: 'warning', hint: 'visibles, ne comptent pas' },
         ]));
-        blocKpi.appendChild(K.note('Les retards et absences non justifiées alimentent le critère '
+        blocKpi.appendChild(K.note('Les retards et absences <strong>validés</strong> et non justifiés alimentent le critère '
           + '<strong>« Ponctualité et assiduité »</strong> du barème NS 131, avec incidence directe sur la fiche '
-          + 'd’évaluation et le solde du mois.', { tone: 'info' }));
+          + 'd’évaluation et le solde du mois. Un pointage à valider est visible mais ne compte pas.', { tone: 'info' }));
         U.icons(blocKpi);
+      }
+
+      function regulariser(r) {
+        var f = U.form([
+          { name: 'etat', label: 'Nouvel état', type: 'select', required: true, options: [{ value: 'present', label: 'Présent' }, { value: 'retard', label: 'Retard' }, { value: 'absent', label: 'Absent' }, { value: 'conge', label: 'Congé' }] },
+          { name: 'motifCode', label: 'Motif codé', type: 'select', options: [{ value: '', label: 'Aucun (non justifié)' }].concat(PRH().MOTIFS_ABSENCE.map(function (m) { return { value: m.id, label: m.libelle }; })) },
+          { name: 'justificatif', label: 'Justificatif (référence du document)', col: 'full' },
+          { name: 'motif', label: 'Motif de la régularisation', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], { etat: r.etat, motifCode: r.motifCode || '', justificatif: r.justificatif || '' });
+        var m = U.modal({
+          title: 'Régulariser le pointage', subtitle: r.employe + ' · ' + C.dateFR(r.date), size: 'md',
+          body: el('div.space-y-3', null, [K.note('La régularisation est <strong>datée</strong> et porte son auteur et son motif : l’état d’avant reste lisible au journal.', { tone: 'info' }), f]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Régulariser', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var res = PRH().regulariser(r.id, { etat: v.etat, motifCode: v.motifCode, justificatif: v.justificatif, motif: v.motif });
+              if (!res.ok) { U.toast(res.motif, { type: 'error', detail: res.geste }); return; }
+              m.close(); rafraichir();
+              U.toast('Pointage régularisé.', { type: 'success', undo: function () { res.undo(); rafraichir(); } });
+            } }),
+          ],
+        });
+      }
+
+      function imprimerEtat() {
+        var rows = filtrees().slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+        var lib = { present: 'Présent', retard: 'Retard', absent: 'Absent', conge: 'Congé' };
+        /* Les filtres relevés par print.js ne couvrent pas les heures ni le seuil de retard : on les déclare tous, pour que la pièce retrace la sélection. */
+        var filtres = [['Période', C.dateFR(dDebut.value) + ' au ' + C.dateFR(dFin.value)]];
+        function val(id) { var c = document.getElementById(id); return c ? c.value : ''; }
+        function txt(id) { var c = document.getElementById(id); return c && c.value ? (c.tagName === 'SELECT' ? c.options[c.selectedIndex].textContent.trim() : c.value) : ''; }
+        [['pr_f_agent', 'Agent'], ['pr_f_matricule', 'Matricule'], ['pr_f_service', 'Service'], ['pr_f_etat', 'État'], ['pr_f_motif', 'Motif codé'], ['pr_f_validation', 'Validation'],
+          ['pr_f_validepar', 'Validé par'], ['pr_f_retard', 'Retard minimal (minutes)'], ['pr_f_hde', 'Arrivée de'], ['pr_f_ha', 'Arrivée à'], ['pr_f_q', 'Recherche']].forEach(function (x) {
+          if (val(x[0])) filtres.push([x[1], txt(x[0])]);
+        });
+        P.etat({
+          titre: 'État des présences et absences',
+          sousTitre: C.dateFR(dDebut.value) + ' au ' + C.dateFR(dFin.value),
+          filtres: filtres,
+          cartouche: [['Pointages retenus', C.num(rows.length)], ['Dont validés', C.num(rows.filter(function (r) { return PRH().compte('presences', r); }).length)],
+            ['Établi par', S.currentUser()], ['Date d’édition', C.dateFR(AUJ)]],
+          contenu: P.tableau([
+            { label: 'Date', value: function (r) { return C.dateFR(r.date); } },
+            { label: 'Mat.', key: 'matricule' },
+            { label: 'Agent', key: 'employe' },
+            { label: 'Service', key: 'service' },
+            { label: 'État', value: function (r) { return lib[r.etat] || r.etat; } },
+            { label: 'Arrivée', value: function (r) { return r.heureArrivee || ''; } },
+            { label: 'Motif', value: function (r) { var m = (PRH().MOTIFS_ABSENCE.filter(function (x) { return x.id === r.motifCode; })[0] || {}).libelle; return m || r.motif || ''; } },
+            { label: 'Justificatif', value: function (r) { return r.justificatif || ''; } },
+            { label: 'Validation', value: function (r) { return (ETATS_VALIDATION_RH[PRH().etatValidation('presences', r)] || ['—'])[0]; } },
+            { label: 'Validé par', value: function (r) { return r.validePar || ''; } },
+          ], rows),
+          signatures: [{ role: 'Le Surveillant Général', nom: 'GARBA Yahouza' }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
+        });
       }
 
       function rendreTable() {
         C.clear(blocTable);
-        blocTable.appendChild(U.dataTable({
-        title: 'Registre des présences — ' + C.dateFR(dDebut.value) + ' au ' + C.dateFR(dFin.value),
-        rows: function () { return dansPlage(); }, exportName: 'presences', pageSize: 20,
-        actions: [K.creer(col, champsPointage(), {
+        var creation = K.creer(col, champsPointage(), {
           module: 'M10', label: 'Ajouter un pointage', titre: 'Nouveau pointage', entite: 'Pointage',
-          defauts: function () { return { date: C.iso(AUJ), etat: 'present', heureArrivee: '07:45' }; },
+          defauts: function () { return { date: C.iso(AUJ), etat: 'present', heureArrivee: '07:45', motifCode: '' }; },
           transform: function (v) {
             var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
             if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.service = e.service; }
-            return v;
+            /* UN POINTAGE NAÎT À VALIDER : visible, il ne compte qu'une fois tranché par le circuit. */
+            return Object.assign(v, PRH().naissance());
           },
           apres: rafraichir,
-        })].filter(Boolean),
-        rowActions: K.actionsLigne(col, champsPointage(), { module: 'M10', refresh: rafraichir }),
+        });
+        var actionsLigne = K.actionsLigne(col, champsPointage(), { module: 'M10', refresh: rafraichir });
+        blocTable.appendChild(U.dataTable({
+        title: 'Registre des présences — ' + C.dateFR(dDebut.value) + ' au ' + C.dateFR(dFin.value) + (filtresEnForce() ? ' (filtré)' : ''),
+        rows: function () { return filtrees(); }, exportName: 'presences', pageSize: 20,
+        actions: [creation, K.btn('Imprimer l’état', { size: 'sm', icon: 'printer', onclick: imprimerEtat })].filter(Boolean),
+        rowActions: function (r) {
+          var a = commandesValidation('presences', r, rafraichir);
+          if (PRH().etatValidation('presences', r) === 'valide' && ['surveillant', 'da', 'admin'].indexOf(roleCourant()) >= 0) {
+            a.push(K.iconBtn('pen-line', 'Régulariser ce pointage', function (ev) { if (ev && ev.stopPropagation) ev.stopPropagation(); regulariser(r); }, 'ghost'));
+          }
+          var base = actionsLigne(r);
+          return a.concat(Array.isArray(base) ? base : (base ? [base] : []));
+        },
         defaultSort: 'date', defaultDir: 'desc',
-        filters: [
-          { name: 'etat', label: 'État', options: [{ value: 'present', label: 'Présent' }, { value: 'retard', label: 'Retard' }, { value: 'absent', label: 'Absent' }] },
-          { name: 'service', label: 'Service', options: D.SERVICES },
-        ],
         columns: [
           { key: 'date', label: 'Date', nowrap: true, text: function (r) { return C.dateFR(r.date); }, render: function (r) { return C.dateFR(r.date); } },
           { key: 'matricule', label: 'Mat.', align: 'right', nowrap: true },
@@ -1811,24 +1989,30 @@
           {
             key: 'etat', label: 'État',
             render: function (r) {
-              var m = { present: ['Présent', 'success'], retard: ['Retard', 'warning'], absent: ['Absent', 'danger'] };
-              return U.badge(m[r.etat][0], m[r.etat][1]);
+              var m = { present: ['Présent', 'success'], retard: ['Retard', 'warning'], absent: ['Absent', 'danger'], conge: ['Congé', 'info'] };
+              var x = m[r.etat] || [r.etat, 'neutral'];
+              return U.badge(x[0], x[1]);
             },
           },
           { key: 'heureArrivee', label: 'Arrivée', align: 'right' },
           { key: 'heureDepart', label: 'Départ', align: 'right' },
-          { key: 'motif', label: 'Motif' },
+          { key: 'motif', label: 'Motif', render: function (r) {
+            var cod = (PRH().MOTIFS_ABSENCE.filter(function (x) { return x.id === r.motifCode; })[0] || {}).libelle;
+            return cod ? el('div', null, [U.badge(cod, 'neutral'), r.justificatif ? el('p.text-xs.text-slate-400', { text: r.justificatif }) : null].filter(Boolean)) : (r.motif || '');
+          } },
+          { key: 'validation', label: 'Validation', value: function (r) { return PRH().etatValidation('presences', r); },
+            render: function (r) { return el('div', null, [badgeValidation('presences', r), r.regularisations && r.regularisations.length ? el('p.text-xs.text-slate-400', { text: 'Régularisé ' + r.regularisations.length + ' fois' }) : null].filter(Boolean)); } },
         ],
         }));
         U.icons(blocTable);
       }
 
       function rendreGraphes() {
-        var mois = dansPlage();
+        var mois = comptees();
         C.clear(blocGraphes);
         if (!mois.length) {
           blocGraphes.appendChild(U.card('Statistiques',
-            U.empty('Aucun pointage sur la plage retenue.', { icon: 'calendar-x' })));
+            U.empty('Aucun pointage validé sur la plage et les filtres retenus.', { icon: 'calendar-x' })));
           return;
         }
         var parService = C.groupBy(mois, 'service');
@@ -1945,6 +2129,9 @@
       return K.crud({
         collection: 'conges', entite: 'congé', entiteP: 'congés', module: 'M10',
         apresTableau: graphiquesConges,
+        /* Lot L5 : le circuit de validation (réglage du poste) s'affiche ici et gouverne la décision ; la décision ne se saisit plus à la main. */
+        avantTableau: function (c, rafraichir) { return carteReglagesRh(rafraichir); },
+        actionsSup: function (c, rafraichir) { return commandesValidation('conges', c, rafraichir); },
         defaultSort: 'dateDebut', defaultDir: 'desc', pageSize: 15,
         columns: [
           { key: 'reference', label: 'N°', nowrap: true, render: function (c) { return el('span.font-mono.text-xs', { text: c.reference }); } },
@@ -1957,10 +2144,14 @@
           { key: 'remplacant', label: 'Remplaçant' },
           {
             key: 'statutConge', label: 'Décision',
+            text: function (c) { return ({ valide: 'Accordé', en_attente: 'En attente', refuse: 'Refusé' })[c.statutConge] || ''; },
             render: function (c) {
               var m = { valide: ['Accordé', 'success'], en_attente: ['En attente', 'warning'], refuse: ['Refusé', 'danger'] };
               var x = m[c.statutConge] || ['—', 'neutral'];
-              return U.badge(x[0], x[1]);
+              var etat = PRH().etatValidation('conges', c);
+              return el('div', null, [U.badge(x[0], x[1]),
+                etat === 'valide_surveillant' ? el('p.text-xs.text-info-700', { text: 'Surveillant : validé, DAF attendue' }) : null,
+                c.motifRefus ? el('p.text-xs.text-danger-700', { text: 'Motif : ' + c.motifRefus }) : null].filter(Boolean));
             },
           },
         ],
@@ -1974,7 +2165,6 @@
               name: 'remplacant', label: 'Remplaçant désigné', type: 'select',
               options: personnel().map(function (e) { return { value: e.nomComplet, label: e.nomComplet }; }),
             },
-            { name: 'statutConge', label: 'Décision', type: 'select', required: true, options: [{ value: 'en_attente', label: 'En attente' }, { value: 'valide', label: 'Accordé' }, { value: 'refuse', label: 'Refusé' }] },
             { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, col: 'full' },
           ];
         },
@@ -1984,6 +2174,8 @@
           v.duree = Math.max(1, C.daysBetween(v.dateDebut, v.dateFin));
           /* E620 (suite) : même défaut que les contrats. */
           v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('CG-', 4, col.all());
+          /* UNE DEMANDE NAÎT À VALIDER (lot L5) : la décision ne se saisit pas à la main, elle se tranche par le circuit. */
+          if (!rec) { v.statutConge = 'en_attente'; Object.assign(v, PRH().naissance()); }
           return v;
         },
         beforeSave: function (v) {
@@ -4973,12 +5165,13 @@
 
   var STATUTS_MISSION = [
     { id: 'projet', label: 'En projet', tone: 'neutral' },
-    { id: 'a_valider', label: 'En attente de validation DA', tone: 'warning' },
+    { id: 'a_valider', label: 'En attente de validation', tone: 'warning' },
     { id: 'validee', label: 'Validée', tone: 'info' },
     { id: 'en_cours', label: 'En cours', tone: 'info' },
     { id: 'terminee', label: 'Terminée', tone: 'success' },
     { id: 'reportee', label: 'Reportée', tone: 'warning' },
     { id: 'annulee', label: 'Annulée', tone: 'danger' },
+    { id: 'refusee', label: 'Refusée', tone: 'danger' },
   ];
 
   function statutMission(id) {
@@ -5051,10 +5244,6 @@
       { name: 'moyen', label: 'Moyen de déplacement', type: 'select', options: ['Véhicule de service', 'Transport en commun', 'Ambulance', 'Moyen personnel'] },
       { name: 'dateDepart', label: 'Date de départ', type: 'date', required: true },
       { name: 'dateRetour', label: 'Date de retour', type: 'date', required: true },
-      {
-        name: 'statutMission', label: 'État', type: 'select', required: true,
-        options: STATUTS_MISSION.map(function (s) { return { value: s.id, label: s.label }; }),
-      },
       { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
     ];
   }
@@ -5064,8 +5253,8 @@
     description: 'Missions et formations du personnel : affectation, prise en charge, validation et états signés.',
     regle: 'Un départ en mission ou en formation suppose un <strong>ordre écrit</strong> précisant l’agent, '
       + 'l’objet, la destination, les dates et la <strong>structure qui prend en charge</strong>. '
-      + 'La <strong>Directrice Administrative valide</strong> avant le départ ; l’ordre imprimé porte les '
-      + 'signatures de départ et de retour, et justifie l’absence au planning.',
+      + 'L’<strong>avis du chef de service</strong> est consigné, puis l’ordre est validé selon le <strong>circuit réglé au poste</strong> (surveillant seul par défaut) avant le départ ; '
+      + 'l’ordre imprimé porte les signatures de départ et de retour, et justifie l’absence au planning.',
     render: function (root) {
       amorcerMissions();
       dessiner();
@@ -5083,7 +5272,7 @@
           {
             label: 'En attente de validation', value: C.num(aValider.length), icon: 'stamp',
             tone: aValider.length ? 'warning' : 'success',
-            hint: aValider.length ? 'Validation de la DA attendue' : 'Rien en attente',
+            hint: aValider.length ? 'Validation attendue (circuit réglé au poste)' : 'Rien en attente',
           },
           { label: 'Missions en cours', value: C.num(enCours.length), icon: 'plane', tone: 'info' },
           { label: 'Terminées', value: C.num(rows.filter(function (m) { return m.statutMission === 'terminee'; }).length), icon: 'check-circle-2', tone: 'success' },
@@ -5091,15 +5280,16 @@
 
         if (aValider.length) {
           host.appendChild(K.note('<strong>' + aValider.length + ' ordre(s) en attente de validation.</strong> '
-            + 'Aucun départ ne devrait intervenir avant la signature de la Directrice Administrative.',
+            + 'Aucun départ ne devrait intervenir avant la validation du circuit.',
           { tone: 'warning', icon: 'stamp' }));
         }
 
+        host.appendChild(carteReglagesRh(dessiner));
         var creer = K.creer(colMissions(), champsMission, {
           titre: 'Nouvel ordre de mission', entite: 'Ordre de mission',
           defauts: function () {
             return {
-              nature: 'Mission', statutMission: 'a_valider',
+              nature: 'Mission',
               dateDepart: C.iso(AUJ), dateRetour: C.iso(C.addDays(AUJ, 2)),
               structurePrise: C.BRAND.nom,
             };
@@ -5110,7 +5300,9 @@
             v.reference = C.referenceSuivante('OM-' + String(v.dateDepart || C.iso(AUJ)).slice(0, 4) + '-', 4, colMissions().all().concat(colMissions().archived()));
             v.agent = a ? a.nomComplet : '—';
             v.fonction = a ? a.poste : '';
-            return v;
+            /* UN ORDRE NAÎT À VALIDER (lot L5) : l'avis du chef de service puis le circuit le tranchent ; l'état ne se saisit pas à la main. */
+            v.statutMission = 'a_valider';
+            return Object.assign(v, PRH().naissance());
           },
           apres: dessiner,
         });
@@ -5169,12 +5361,16 @@
             {
               key: 'valideePar', label: 'Validation',
               render: function (m) {
-                return m.valideePar
-                  ? el('div', null, [
+                var etat = PRH().etatValidation('missions', m);
+                var avis = m.avisChefService;
+                return el('div', null, [
+                  m.valideePar ? el('div', null, [
                     el('p.text-xs.text-success-700', { text: m.valideePar }),
                     el('p.text-\\[10px\\].text-slate-400', { text: m.valideeLe ? C.dateFR(m.valideeLe) : '' }),
-                  ])
-                  : el('span.text-xs.text-warning-600', { text: 'non validé' });
+                  ]) : (etat === 'refuse' ? el('p.text-xs.text-danger-700', { text: 'Refusé : ' + (m.motifRefus || '') })
+                    : el('span.text-xs.text-warning-600', { text: etat === 'valide_surveillant' ? 'validé par le surveillant, DAF attendue' : 'non validé' })),
+                  avis ? el('p.text-xs.text-slate-500', { text: 'Avis ' + (avis.avis === 'favorable' ? 'favorable' : 'défavorable') + ' de ' + avis.chef }) : el('p.text-xs.text-slate-400', { text: 'Avis du chef de service : à consigner' }),
+                ]);
               },
             },
           ],
@@ -5183,9 +5379,10 @@
             var actions = [];
             /* E623 : valider, terminer et reporter ÉCRIVENT — commandes déclarées comme telles (absentes sans le droit d'édition). */
             var ecrit = function (c) { if (c) actions.push(c); };
-            if (m.statutMission === 'a_valider') {
-              ecrit(K.commandeIcone('stamp', 'Valider (Directrice Administrative)', function () { valider(m); }));
+            if (m.statutMission === 'a_valider' && ['surveillant', 'da', 'admin'].indexOf(roleCourant()) >= 0 && PRH().etatValidation('missions', m) !== 'valide') {
+              actions.push(K.iconBtn('message-square-quote', 'Avis du chef de service', function (ev) { if (ev && ev.stopPropagation) ev.stopPropagation(); avisChef(m); }, 'ghost'));
             }
+            commandesValidation('missions', m, dessiner).forEach(function (x) { actions.push(x); });
             if (m.statutMission === 'validee' || m.statutMission === 'en_cours') {
               ecrit(K.commandeIcone('check', 'Marquer terminée', function () { changerEtat(m, 'terminee', 'Mission terminée.'); }));
               ecrit(K.commandeIcone('calendar-clock', 'Reporter', function () { changerEtat(m, 'reportee', 'Mission reportée.'); }));
@@ -5200,23 +5397,26 @@
         U.icons(root);
       }
 
-      function valider(m) {
-        U.confirm({
-          title: 'Valider l’ordre de mission ' + m.reference + ' ?',
-          message: 'La validation autorise le départ de ' + m.agent + ' du ' + C.dateFR(m.dateDepart)
-            + ' au ' + C.dateFR(m.dateRetour) + ', aux frais de ' + m.structurePrise + '. '
-            + 'Elle est journalisée au nom de la Directrice Administrative (RG-12).',
-          confirmLabel: 'Valider l’ordre',
-        }).then(function (ok) {
-          if (!ok) return;
-          var res = colMissions().update(m.id, {
-            statutMission: 'validee', valideePar: 'TAKI Alimatou', valideeLe: C.iso(AUJ),
-          });
-          dessiner();
-          U.toast('Ordre de mission validé.', {
-            type: 'success', detail: m.agent + ' — départ le ' + C.dateFR(m.dateDepart),
-            undo: function () { res.undo(); dessiner(); },
-          });
+      /** L'avis du chef de service, consigné par un habilité du circuit (le chef n'a pas de compte : il donne son avis, un autre le consigne). */
+      function avisChef(m) {
+        var f = U.form([
+          { name: 'chef', label: 'Chef de service qui donne l’avis', type: 'select', required: true, col: 'full',
+            options: C.sortBy(personnel().filter(function (e) { return e.id !== m.agentId; }), 'nomComplet').map(function (e) { return { value: e.nomComplet, label: e.nomComplet, detail: e.poste }; }) },
+          { name: 'avis', label: 'Avis', type: 'select', required: true, options: [{ value: 'favorable', label: 'Favorable' }, { value: 'defavorable', label: 'Défavorable' }] },
+          { name: 'motif', label: 'Motif (obligatoire si défavorable)', type: 'textarea', rows: 2, col: 'full' },
+        ], { avis: 'favorable', chef: m.avisChefService ? m.avisChefService.chef : '' });
+        var mod = U.modal({
+          title: 'Avis du chef de service', subtitle: m.reference + ' · ' + m.agent, size: 'md', body: f,
+          footer: [
+            K.btn('Annuler', { onclick: function () { mod.close(); } }),
+            K.btn('Consigner l’avis', { variant: 'primary', icon: 'save', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var r = PRH().avisMission(m.id, { avis: v.avis, chef: v.chef, motif: v.motif });
+              if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+              mod.close(); dessiner();
+              U.toast('Avis consigné.', { type: 'success', undo: function () { r.undo(); dessiner(); } });
+            } }),
+          ],
         });
       }
 
@@ -5918,6 +6118,7 @@
 
       function pointages() {
         return S.collection('presences').active().filter(function (x) {
+          if (!PRH().compte('presences', x)) return false;   /* un pointage non validé ne compte pas dans le taux de présence */
           var d = String(x.date || '').slice(0, 10);
           if (dDu.value && d < dDu.value) return false;
           if (dAu.value && d > dAu.value) return false;

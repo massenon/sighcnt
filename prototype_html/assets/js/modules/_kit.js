@@ -610,6 +610,9 @@
             var cibleV = cfg.validation ? (cfg.validation.cible ? cfg.validation.cible(r) : r.id) : null;
             var bvc = cibleV ? boutonValider(cfg.validation.famille, cibleV, { size: 'sm', moduleCode: cfg.module, apres: refresh, label: cfg.validation.label }) : null;
             if (bvc) acts.push(bvc);
+            /* `actionsSup(r, refresh)` : des commandes propres à l'écran (validation d'un circuit, par exemple), posées après « Consulter ».
+               L'AUTEUR décide de leur présence (droit propre, jamais le droit d'édition du module). */
+            if (cfg.actionsSup) { (cfg.actionsSup(r, refresh) || []).forEach(function (x) { if (x) acts.push(x); }); }
             if (cfg.etat) acts.push(iconBtn('printer', 'Imprimer l’état', function () { cfg.etat(r); }));
             /* Pas de duplication : un doublon que rien ne distingue de
                l'original est un doublon que quelqu'un modifiera par erreur.
@@ -700,6 +703,8 @@
         render: function () { return makeTable(function () { return col.archived().filter(dansPlage); }, true); },
       });
 
+      /* `avantTableau(col, refresh)` : un bloc posé ENTRE les indicateurs et le tableau (réglage qui s'applique à l'écran, par exemple). */
+      if (cfg.avantTableau) host.appendChild(cfg.avantTableau(col, refresh));
       host.appendChild(U.tabs(onglets));
       /* Bloc libre sous le tableau : la lecture graphique vient APRÈS les
          données, jamais à leur place. */

@@ -3520,7 +3520,7 @@
     render: K.dash({
       premierRegard: function () {
         var pres = S.collection('presences').active().filter(function (x) {
-          return String(x.date || '').slice(0, 10) === C.iso(AUJ);
+          return String(x.date || '').slice(0, 10) === C.iso(AUJ) && global.SIGH.planningRh.compte('presences', x);   /* un pointage non validé ne compte pas */
         });
         var retards = pres.filter(function (x) { return x.etat === 'retard'; });
         return {
@@ -3535,7 +3535,7 @@
       },
       kpis: function () {
         var pres = S.collection('presences').active().filter(function (x) {
-          return String(x.date || '').slice(0, 10) === C.iso(AUJ);
+          return String(x.date || '').slice(0, 10) === C.iso(AUJ) && global.SIGH.planningRh.compte('presences', x);
         });
         var planning = S.collection('planning').active().filter(function (x) {
           return String(x.date || '').slice(0, 10) === C.iso(AUJ);

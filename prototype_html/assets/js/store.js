@@ -109,8 +109,10 @@
      sur DEUX exercices (le jeu et le suivant) : sans incrément un poste garderait un seul exercice et des jours plafonnés à 28.
      76 (10/11/2026) : les réglages de l'AIB (lot L2). La collection `reglagesAib` (charge du prélèvement, branchement sur les achats, comptes
      d'acompte et de contrepartie : une fiche par version datée) est semée au socle avec les défauts de la Direction ; la famille de validation
-     `bareme_aib` la compte aussi. Sans incrément un poste n'aurait ni les défauts ni la collection. */
-  var VERSION = 76;
+     `bareme_aib` la compte aussi. Sans incrément un poste n'aurait ni les défauts ni la collection.
+     77 (10/11/2026) : le circuit de validation des présences, congés et ordres de mission (lot L5). La fiche RBAC09 (surveillant) OUVRE `m10-conges` et
+     `m10-missions` en lecture pour qu'il tranche (signer n'est pas saisir) ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice. */
+  var VERSION = 77;
   var db = null;
   var listeners = {};
 
@@ -2622,6 +2624,11 @@
             'm10-stats-permanences': { voir: true, editer: false, annuler: false },
             'm10-stats-presence': { voir: true, editer: false, annuler: false },
             'm10-presences': { voir: true, editer: true, annuler: false },
+            /* LE SURVEILLANT VALIDE LES CONGÉS ET LES ORDRES DE MISSION (Direction, 09/11/2026, Planning Q2 et Q3 : le circuit des présences vaut aussi pour eux). Il
+               OUVRE les deux registres pour trancher ; il ne les SAISIT ni ne les modifie (editer: false) : signer n'est pas saisir. La validation est un droit du
+               circuit (moteur : VALIDATION_RESERVEE), pas un droit d'édition du module. */
+            'm10-conges': { voir: true, editer: false, annuler: false },
+            'm10-missions': { voir: true, editer: false, annuler: false },
             /* LA BIBLIOTHÈQUE DES ÉTATS RESTE OUVERTE. Le cahier des charges
                fait de l'impression une exigence de CHAQUE poste, et c'est un
                catalogue : aucune écriture n'y est possible. Les trois écrans

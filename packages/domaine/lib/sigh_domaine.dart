@@ -101,6 +101,7 @@ export 'src/comptabilite/aib.dart';
 export 'src/comptabilite/aib_donnees.dart';
 export 'src/comptabilite/cpc_bfr.dart';
 export 'src/comptabilite/cpc_etats.dart';
+export 'src/rh/planning_rh.dart';
 export 'src/rh/rhc_regles.dart';
 export 'src/tableaux_de_bord/tbb_regles.dart';
 export 'src/pilotage/pil_vue.dart';
