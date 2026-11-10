@@ -814,17 +814,12 @@
         var ad = PR.mecef.adaptateur();
         var peut = ['admin', 'da'].indexOf((S.session() || {}).role) >= 0;
         var libelles = { boitier: 'Boîtier physique', emecef: 'e-MECeF' };
-        var attrsSel = { 'data-mecef-mode': '' };
-        if (!peut) attrsSel.disabled = 'disabled';
-        attrsSel.id = 'f_mecefMode';
-        var sel = el('select.select', attrsSel, PR.mecef.MODES_PROPOSES.map(function (id) {
-          return el('option', { value: id }, libelles[id]);
-        }));
-        sel.value = ad.mode === 'emecef' ? 'emecef' : 'boitier';
         var etatTxt = el('div', { 'data-mecef-mode-etat': '' });
+        var modeTxt = el('span.font-semibold', { 'data-mecef-mode-courant': '' });
         function peindreEtat() {
           var a = PR.mecef.adaptateur();
           C.clear(etatTxt);
+          modeTxt.textContent = libelles[a.mode === 'emecef' ? 'emecef' : 'boitier'];
           if (a.mode === 'emecef') {
             etatTxt.appendChild(K.note('<strong>e-MECeF : non configuré, dossier d’interface DGI requis.</strong> Aucun document remis ne décrit le protocole (adresse, authentification, format des messages) : rien n’est supposé. '
               + 'Une vente est encaissée, reste <strong>en attente de certification</strong> et ne reçoit <strong>aucun numéro</strong> ; elle se retransmet quand l’interface sera branchée.', { tone: 'warning', icon: 'plug-zap' }));
@@ -834,16 +829,33 @@
             etatTxt.appendChild(el('p.mt-2.text-xs.text-slate-500', { text: 'Maquette : un appareil de démonstration tient lieu de boîtier ; ses numéros portent la mention « non fiscal ». Le poste de production n’a aucun adaptateur.' }));
           }
         }
+        /* Le réglage s'ouvre en MODALE par une commande d'écriture : absente pour qui n'a pas le droit (RG-13), et l'écran reste
+           sans champ actif ni bouton d'enregistrement tant qu'on ne règle rien. Le moteur refuse de toute façon (MODE_RESERVE). */
+        function ouvrirReglage() {
+          var sel = el('select.select', { id: 'f_mecefMode', 'data-mecef-mode': '' }, PR.mecef.MODES_PROPOSES.map(function (id) {
+            return el('option', { value: id }, libelles[id]);
+          }));
+          sel.value = PR.mecef.adaptateur().mode === 'emecef' ? 'emecef' : 'boitier';
+          var m = U.modal({
+            title: 'Mode de certification', subtitle: 'Boîtier physique ou e-MECeF', size: 'md',
+            body: el('div', null, [ el('label.label', { for: 'f_mecefMode', text: 'Mode de certification des factures' }), el('div.mt-1', null, [sel]) ]),
+            footer: [
+              K.btn('Annuler', { onclick: function () { m.close(); } }),
+              K.commande('Enregistrer le mode', { variant: 'primary', icon: 'save', onclick: function () {
+                var r = PR.mecef.definirMode(sel.value);
+                if (!r.ok) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 9000 }); return; }
+                m.close();
+                U.toast('Mode enregistré : ' + libelles[r.mode] + '.', { type: 'success' });
+                peindreEtat();
+              } }),
+            ],
+          });
+        }
         peindreEtat();
         var corps = el('div.space-y-3', null, [
-          el('div', null, [ el('label.label', { for: 'f_mecefMode', text: 'Mode de certification des factures' }), el('div.mt-1', null, [sel]) ]),
+          el('p.text-sm', null, [ 'Mode en vigueur : ', modeTxt ]),
           etatTxt,
-          peut ? el('div.flex.gap-2', null, [K.commande('Enregistrer le mode', { variant: 'primary', icon: 'save', onclick: function () {
-            var r = PR.mecef.definirMode(sel.value);
-            if (!r.ok) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 9000 }); return; }
-            U.toast('Mode enregistré : ' + libelles[r.mode] + '.', { type: 'success' });
-            peindreEtat();
-          } })])
+          peut ? el('div.flex.gap-2', null, [K.commande('Régler le mode', { variant: 'primary', icon: 'settings', onclick: ouvrirReglage })])
             : K.note('Le mode se règle par l’administrateur ou la Directrice Administrative.', { tone: 'info', icon: 'lock' }),
         ]);
         return U.card('Mode de certification', corps);

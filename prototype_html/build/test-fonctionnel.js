@@ -17297,12 +17297,16 @@ async function viderMessages(page) {
     const compteNumeros = () => page.evaluate(() => ['factures', 'avoirs'].reduce((n, c) => n + window.SIGH.store.collection(c).all().filter((x) => x.numeroMecef).length, 0));
 
     /* --- 1. l'état de départ : boîtier, deux modes proposés, rien d'inventé ---------------------------------------------------------- */
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.trim() === 'Régler le mode').click(); });
+    await pause(300);
     const d0 = await page.evaluate(() => {
       const M = window.SIGH.mecef;
-      const sel = document.querySelector('#page-content select[data-mecef-mode]');
+      const sel = document.querySelector('[role="dialog"] select[data-mecef-mode]');
       return { mode: M.mode(), propo: M.MODES_PROPOSES.slice(), ad: M.adaptateur(), options: sel ? [...sel.options].map((o) => o.value + '=' + o.textContent) : null, valeur: sel ? sel.value : null,
         etat: (document.querySelector('[data-mecef-mode-etat]') || {}).textContent || '' };
     });
+    await page.evaluate(() => { const d = [...document.querySelectorAll('[role="dialog"] button')].find((bt) => bt.textContent.trim() === 'Annuler'); if (d) d.click(); });
+    await pause(300);
     verifier('Départ : le mode par défaut est « boîtier » (rien n’est réglé), deux modes seulement sont proposés (boîtier physique, e-MECeF), l’écran le montre',
       d0.mode === 'boitier' && JSON.stringify(d0.propo) === '["boitier","emecef"]' && JSON.stringify(d0.options) === '["boitier=Boîtier physique","emecef=e-MECeF"]' && d0.valeur === 'boitier', JSON.stringify(d0));
     verifier('Le mode boîtier dit la vérité : modèle, interface et protocole inconnus, aucun numéro fabriqué comme fiscal, maquette seule en démonstration, aucun adaptateur au poste de production',
@@ -17310,10 +17314,12 @@ async function viderMessages(page) {
     verifier('En mode boîtier la maquette garde son appareil de démonstration (adaptateur configuré, marqué démonstration)', d0.ad.configure === true && d0.ad.demonstration === true && d0.ad.code === null, JSON.stringify(d0.ad));
 
     /* --- 2. la bascule au geste (liste, bouton), journalisée ------------------------------------------------------------------------- */
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.trim() === 'Régler le mode').click(); });
+    await pause(300);
     await page.evaluate(() => {
-      const sel = document.querySelector('#page-content select[data-mecef-mode]');
+      const sel = document.querySelector('[role="dialog"] select[data-mecef-mode]');
       sel.value = 'emecef'; sel.dispatchEvent(new Event('change', { bubbles: true }));
-      [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.trim() === 'Enregistrer le mode').click();
+      [...document.querySelectorAll('[role="dialog"] button')].find((b) => b.textContent.trim() === 'Enregistrer le mode').click();
     });
     await pause(500);
     const b1 = await page.evaluate(() => {
@@ -17337,6 +17343,26 @@ async function viderMessages(page) {
       return { r: r.code, geste: r.geste, r2: r2.code, mode: M.mode() };
     });
     verifier('Un caissier ne règle pas le mode (MODE_RESERVE, avec son geste) ; un mode inconnu est refusé (MODE_INCONNU) ; le mode reste e-MECeF', reserve.r === 'MODE_RESERVE' && !!reserve.geste && reserve.r2 === 'MODE_INCONNU' && reserve.mode === 'emecef', JSON.stringify(reserve));
+
+    /* AU GESTE : un profil sans le droit de régler le mode ne se voit offrir AUCUNE commande de réglage (ni « Régler le mode », ni
+       « Enregistrer le mode »), aucun champ actif, et l'écran dit qui règle (RG-13). Le profil est restauré ensuite. */
+    const baseSession105 = await page.evaluate(() => JSON.parse(JSON.stringify(window.SIGH.store.session())));
+    const sansDroit = {};
+    for (const r of ['comptable', 'caissier']) {
+      await page.evaluate((s, role) => window.SIGH.store.setSession(Object.assign({}, s, { role })), baseSession105, r);
+      await ouvrir('mecef-config.html');
+      sansDroit[r] = await page.evaluate(() => {
+        const pc = document.querySelector('#page-content');
+        const tb = [...document.querySelectorAll('button')].map((b) => b.textContent.replace(/\s+/g, ' ').trim());
+        return { ouverte: !!pc && /Mode de certification/.test(pc.textContent), regler: tb.some((t) => /Régler le mode|Enregistrer le mode/.test(t)),
+          actifs: [...document.querySelectorAll('#page-content select[data-mecef-mode], #page-content input:not([type="search"])')].filter((e) => !e.disabled).length,
+          dit: /administrateur ou la Directrice Administrative/.test(pc ? pc.textContent : '') };
+      });
+    }
+    await page.evaluate((s) => window.SIGH.store.setSession(s), baseSession105);
+    await ouvrir('mecef-config.html');
+    verifier('Au geste, sans droit d’écriture (comptable, caissier) : l’écran de configuration s’ouvre mais n’offre aucune commande de réglage du mode ni champ actif, et dit qui règle',
+      Object.keys(sansDroit).every((r) => sansDroit[r].ouverte ? (!sansDroit[r].regler && sansDroit[r].actifs === 0 && sansDroit[r].dit) : true) && Object.keys(sansDroit).some((r) => sansDroit[r].ouverte), JSON.stringify(sansDroit));
 
     /* « Tester la connexion » ne ment plus */
     const test = await page.evaluate(async () => {

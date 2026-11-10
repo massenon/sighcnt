@@ -1,59 +1,155 @@
 [
   {
-    "nom": "Vague 104 : l’organigramme imprimé reproduit le papier de la clinique en A4 paysage (titre, une boîte par poste de la collection, connecteurs, aucun numéro de téléphone manuscrit, orientation mesurée sur le PDF)",
+    "nom": "Vague 82 : les fausses sauvegardes corrigées écrivent vraiment, ou refusent en nommant (lettrage, dépense, pertes, reprise, pharmacie, édition, authentification, conventions, facture, sauvegarde, MECeF)",
     "etapes": [
       {
-        "libelle": "L’écran garde son arbre (une ligne par poste), son bouton d’impression, et DIT que l’impression suit la collection des postes",
+        "libelle": "Lettrage : posé sur les deux lignes (même code) ; sur un exercice clos, LETTRAGE_REFUSE et aucune ligne modifiée",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le clic imprime un état en PAYSAGE : feuille 297 mm de large pour 210 mm de haut, drapeau d’orientation porté par la feuille",
+        "libelle": "Dépense : sur exercice clos, refus dit (« refusée ») et ni dépense ni écriture conservée ; sur exercice ouvert, la dépense ET ses 3 écritures existent, débit = crédit = 5 000",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le titre est « ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO », sous l’en-tête officiel et avec le pied normalisé (mêmes que les autres états)",
+        "libelle": "Pertes : 1 unité du magasin central décroît stockGros ET stock (détail intact, un mouvement de sortie) ; au-delà du stock du magasin, refus « Perte supérieure » et rien d’écrit (RG-03)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Une boîte par poste de la COLLECTION (16), avec son effectif entre parenthèses et son titulaire, et chaque poste rattaché est dessiné SOUS son parent",
+        "libelle": "Reprise de stock : la première validation écrit la fiche (« Reprise validée »), la seconde rend REPRISE_DEJA_VALIDEE et ne réécrit rien",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Les connecteurs existent (un tronc et une descente par rattachement, 15 flèches) et AUCUNE étoile n’est tracée : aucune donnée ne la porte",
+        "libelle": "Pharmacie : chaque délivrance écrit un mouvement de sortie du DÉTAIL (justificatif = ordonnance) ; l’ordonnance reste non servie après la 1re ligne et n’est « servie » qu’à la 2e",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Aucun numéro de téléphone dans le diagramme ni aucune mention manuscrite de la photo, et aucune couleur en dur",
+        "libelle": "Édition d’un document M1 : changer le patient met à jour `patientId`, `code` ET `patient` (les colonnes ne gardent pas l’ancien dossier)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "À l’impression, la feuille passe dans la racine d’impression et la feuille de style annonce A4 landscape",
+        "libelle": "Authentification : auth-reset annonce « non modifié », reste sur sa page et n’envoie aucune écriture à l’authentification ; la connexion ne propose plus « Se souvenir de ce poste »",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "PDF mesuré : page A4 en PAYSAGE (largeur > hauteur, 842 x 595 pt) et UNE seule page",
+        "libelle": "Conventions M9 : changer la compagnie d’un souscripteur qui porte des garanties est refusé (« Changement de compagnie refusé », garanties nommées) et la fiche garde sa compagnie",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le texte du PDF (pdftotext) porte le titre et les boîtes de la collection, et aucun numéro manuscrit de la photo",
+        "libelle": "Facture émise avec versement partiel (1 000 sur 3 000) : chaque ligne porte un `id` et un `statutPaiement` (A « paye », B « du »)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Un poste ajouté à la collection apparaît sur la feuille (effectif, titulaire, C/S) ; l’étoile ne se trace que pour le poste qui la porte",
+        "libelle": "Sauvegarde M14 : « Générer une sauvegarde » écrit une fiche (fichier .json, date, heure, portée, tables, taille, auteur) sans contenu ; « sauvegarde manuelle » et « Tester une restauration » sont absents",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Un état existant (répartition des secteurs) reste en A4 portrait, sans drapeau d’orientation",
+        "libelle": "mecef-config : aucun bouton « Enregistrer », la note « Lecture seule » est présente et les champs sont verrouillés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript pendant tout le scénario",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 105 : MECeF L3 (mode boîtier par défaut, bascule e-MECeF au geste et journalisée, aucun numéro fabriqué, vente en attente, refus nommé, retransmission sans essai consommé, relue sur un second poste)",
+    "etapes": [
+      {
+        "libelle": "Départ : le mode par défaut est « boîtier » (rien n’est réglé), deux modes seulement sont proposés (boîtier physique, e-MECeF), l’écran le montre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le mode boîtier dit la vérité : modèle, interface et protocole inconnus, aucun numéro fabriqué comme fiscal, maquette seule en démonstration, aucun adaptateur au poste de production",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "En mode boîtier la maquette garde son appareil de démonstration (adaptateur configuré, marqué démonstration)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Choisir e-MECeF puis « Enregistrer le mode » : le réglage est écrit en base (mecefMode = emecef), l’écran dit « non configuré, dossier d’interface DGI requis »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le changement est JOURNALISÉ avec l’ancienne et la nouvelle valeur (RG-12)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un caissier ne règle pas le mode (MODE_RESERVE, avec son geste) ; un mode inconnu est refusé (MODE_INCONNU) ; le mode reste e-MECeF",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Au geste, sans droit d’écriture (comptable, caissier) : l’écran de configuration s’ouvre mais n’offre aucune commande de réglage du mode ni champ actif, et dit qui règle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Tester la connexion » en e-MECeF refuse en nommant (MECEF_NON_CONFIGURE) et n’annonce AUCUNE connexion établie ni délai de réponse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Vente encaissée en e-MECeF : l’encaissement RESTE acquis (soldée, 14 000 réglés) et la normalisation est refusée en nommant MECEF_NON_CONFIGURE (motif, geste)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pièce reste « en attente » (état stocké en_attente), SANS numéro fiscal, avec le code et le motif portés ; aucun numéro nulle part n’a été fabriqué",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’appareil de démonstration n’a rien émis (compteur et journal des émissions intacts) : aucun numéro tiré à l’aveugle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le caissier retransmet deux fois : MECEF_NON_CONFIGURE à chaque fois (jamais RETRANSMISSION_RESERVEE), aucun essai consommé, toujours aucun numéro",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Vente refusée retransmise en e-MECeF : MECEF_NON_CONFIGURE, la pièce repasse en attente, SANS numéro, et la retransmission n’est PAS comptée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Synchroniser maintenant » en e-MECeF : refus nommé, aucune confirmation proposée, AUCUN numéro tiré (le nombre de pièces numérotées ne bouge pas)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Avoir en e-MECeF : la pièce est ÉMISE (un avoir de plus au registre) mais SANS numéro fiscal, en attente de certification, et le message le dit (MECEF_NON_CONFIGURE)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Second poste : le mode réglé sur le premier (e-MECeF) est relu depuis la base, et son adaptateur est lui aussi non configuré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Revenu en mode boîtier, la vente laissée en attente se certifie par la retransmission du caissier (appareil de démonstration, pièce marquée non fiscale)",
         "ok": true,
         "detail": null
       },
