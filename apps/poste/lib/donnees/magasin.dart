@@ -507,6 +507,8 @@ class Magasin {
     'identiteLegale': 'CFG',
     'obligationsFiscales': 'CFG',
     'historiqueObligations': 'CFG',
+    'situationsAib': 'CFG',
+    'baremeAib': 'CFG',
     'support': 'SUP',
   };
 

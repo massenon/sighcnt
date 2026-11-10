@@ -201,6 +201,7 @@ class _CrudStockState extends State<CrudStock> {
                     }
                     fermer();
                     if (existante == null) {
+                      final r = widget.collection.inserer({
                         'statut': 'actif',
                         ...fiche,
                         '_creePar': acteur(c).nom,

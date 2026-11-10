@@ -4,10 +4,12 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../core/service_parametres.dart';
+import '../../donnees/aib_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../../sync/configuration_sync.dart' show ApplicateurConfiguration;
 import 'cfa_commun.dart';
+import 'cfg_aib_achats.dart';
 
 /// L'onglet « Paramètres » de « Paramètres système » (lot L0, décision de la Direction du 09/11/2026) : TOUT ce qui est paramétrable se règle ici, est ENREGISTRÉ
 /// EN BASE avec un défaut semé, et se VERSIONNE PAR DATE. Un réglage n'écrase jamais l'ancien : il ajoute une version à partir d'une date d'effet, de sorte que
@@ -40,7 +42,13 @@ class PanneauParametres extends StatelessWidget {
                 ton: TonSigh.info,
                 icone: LucideIcons.history),
             for (final e in familles.entries)
-              cfaSection(libellesFamillesParametres[e.key] ?? e.key, cfaPile([for (final p in e.value) _Carte(c: c, service: service, p: p, aujourdhui: aujourdhui, peutRegler: peutRegler)], espace: 12)),
+              cfaSection(
+                  libellesFamillesParametres[e.key] ?? e.key,
+                  cfaPile([
+                    for (final p in e.value) _Carte(c: c, service: service, p: p, aujourdhui: aujourdhui, peutRegler: peutRegler, estMere: estMere),
+                    // Famille AIB (lot L2) : l'état de la charge et du branchement, et ce que le branchement écrirait sur les achats.
+                    if (e.key == 'bareme_aib') SectionAibAchats(c: c, estMere: estMere),
+                  ], espace: 12)),
             cfaSource('Défauts : décisions de la Direction du 09/11/2026 (DECISIONS-A-VALIDER, section D). Rien n’est codé dans l’écran : valeurs et versions sont en base.'),
           ]);
         });
@@ -54,12 +62,13 @@ String _libelleValeur(DefinitionParametre d, Object? v) {
 }
 
 class _Carte extends StatelessWidget {
-  const _Carte({required this.c, required this.service, required this.p, required this.aujourdhui, required this.peutRegler});
+  const _Carte({required this.c, required this.service, required this.p, required this.aujourdhui, required this.peutRegler, required this.estMere});
   final ContexteEcran c;
   final ServiceParametres service;
   final ParametreAffiche p;
   final String aujourdhui;
   final bool peutRegler;
+  final bool estMere;
 
   DefinitionParametre get d => p.definition;
 
@@ -158,6 +167,15 @@ class _Carte extends StatelessWidget {
                     final valeur = _convertir(saisie['valeur']);
                     if (valeur == null) {
                       ToastsSigh.afficher(ctx, 'La valeur saisie n’est pas du bon type.', type: TypeToast.erreur, detail: 'Saisir ${_typeLisible(d.type)}.');
+                      return;
+                    }
+                    // Les réglages de l'AIB (lot L2) passent par le contrôle du moteur : rôle d'écriture, compte au plan, motif, date postérieure, activation du
+                    // branchement complète. Un refus se NOMME (code AIB_*, motif, geste) et rien n'est écrit.
+                    final aib = AibPoste(c.magasin,
+                        auteur: () => acteurNom(c), role: c.role, libelleRole: c.donnees?.matrice.libelle(c.role) ?? c.role, fileul: !estMere, horloge: () => c.aujourdhui);
+                    final refusAib = aib.controlerReglage(d.cle, valeur.$1, '${saisie['dateEffet']}', '${saisie['motif'] ?? ''}');
+                    if (refusAib != null) {
+                      ToastsSigh.afficher(ctx, '${refusAib['code']} : ${refusAib['motif']}', type: TypeToast.erreur, detail: '${refusAib['geste'] ?? ''}', duree: const Duration(seconds: 12));
                       return;
                     }
                     final r = service.regler(d.cle, valeur.$1, '${saisie['dateEffet']}', motif: '${saisie['motif'] ?? ''}');
