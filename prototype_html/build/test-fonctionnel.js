@@ -11728,6 +11728,62 @@ async function viderMessages(page) {
   });
 
   /* ========================================================================
+   * Vague 70 (planning RH) : un régime individuel et une proposition de planning s'écrivent et SE RETROUVENT en table
+   * ------------------------------------------------------------------------
+   * Les deux collections des lots L4 et L6 n'avaient pas de table : la projection les nommait dans `projection_erreurs`. La sonde écrit une dérogation (administrateur)
+   * et une proposition (agent) PAR LES MOTEURS, pousse, relit la LIGNE en table (colonnes typées, tableau et objet en jsonb) et exige zéro écart de parité et zéro
+   * erreur de projection. Elle restitue ensuite le magasin (la dérogation est immuable : retirée à la main du magasin, comme au scénario de la Vague 106).
+   * ===================================================================== */
+  await etape(async () => {
+    scenario('Vague 70 (planning RH) : régime individuel et proposition de planning écrits par les moteurs, retrouvés en table, parité et projection sans erreur');
+    erreursJS = [];
+    await page.evaluate((s) => window.SIGH.store.setSession(s), { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' });
+    await ouvrir('m14-taches.html');
+    const appel = (query) => page.evaluate(async (qs) => {
+      const S = window.SIGH.store;
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/parite.php' + qs, { headers: { 'X-Sigh-Jeton': S.jetonServeur() } });
+      return { statut: r.status, corps: await r.json() };
+    }, query);
+    const m = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core, R = window.SIGH.planningRh;
+      const med = S.collection('personnel').active().filter((e) => e.fonction === 'medecin')[0];
+      const m0 = { reg0: S.collection('regimesIndividuels').all().map((x) => x.id), pro0: S.collection('propositionsPlanning').all().map((x) => x.id) };
+      const aujourdhui = C.iso(C.aujourdhui());
+      const der = R.deroger({ employeId: med.id, dateEffet: aujourdhui, motif: 'Sonde tables planning : repos de 24 h', champs: { repos: 'repos24', honoraire: 20000 } });
+      S.setSession({ role: 'medecin', fonction: 'medecin', nom: med.nomComplet, nomComplet: med.nomComplet, identifiant: 's70pl.medecin', secteur: 'DIR' });
+      const prop = R.proposer({ type: 'ajout', date: '2027-08-03', typeVacation: 'garde', motif: 'Sonde tables planning : je prends cette garde' });
+      S.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' });
+      S.pousserMaintenant();
+      return Object.assign(m0, { med: med.id, der: der, prop: prop });
+    });
+    verifier('Le moteur pose la dérogation et la proposition (aucun refus)', !!(m.der && m.der.ok && m.prop && m.prop.ok && !m.prop.direct), JSON.stringify([m.der && (m.der.code || m.der.ok), m.prop && (m.prop.code || m.prop.ok)]));
+    const lr = await appel('?collection=regimesIndividuels&id=' + encodeURIComponent(m.der.id));
+    const l1 = lr.corps.ligne || {};
+    const champs = typeof l1.champs === 'string' ? JSON.parse(l1.champs) : l1.champs;
+    verifier('La dérogation est en table m10.regimes_individuels : colonnes typées, champs dérogés en jsonb, version et date d’effet lues',
+      lr.corps.table === 'm10.regimes_individuels' && l1.employe_id === m.med && l1.version === 1 && !!l1.date_effet && l1.retour_categorie === false && champs && champs.repos === 'repos24' && champs.honoraire === 20000 && /Sonde tables planning/.test(l1.motif || ''),
+      JSON.stringify(lr.corps).slice(0, 300));
+    const lp = await appel('?collection=propositionsPlanning&id=' + encodeURIComponent(m.prop.id));
+    const l2 = lp.corps.ligne || {};
+    verifier('La proposition est en table m10.propositions_planning : type, état « proposée », agent, date et motif lus',
+      lp.corps.table === 'm10.propositions_planning' && l2.type === 'ajout' && l2.etat === 'proposee' && l2.employe_id === m.med && String(l2.date).slice(0, 10) === '2027-08-03' && /Sonde tables planning/.test(l2.motif || ''), JSON.stringify(lp.corps).slice(0, 300));
+    verifier('Aucune colonne de ces deux fiches ne tombe dans « extra » (le schéma porte tous leurs champs)',
+      [l1, l2].every((l) => !l.extra || l.extra === '{}' || Object.keys(typeof l.extra === 'string' ? JSON.parse(l.extra) : l.extra).length === 0), JSON.stringify([l1.extra, l2.extra]));
+    const bilan = await appel('');
+    verifier('Parité magasin et tables : zéro écart, et les deux collections font partie des collections projetées', bilan.corps.parite && bilan.corps.parite.ecarts.length === 0, JSON.stringify(bilan.corps.parite && bilan.corps.parite.ecarts.slice(0, 5)));
+    verifier('Aucune erreur de projection récente (les deux collections ne sont plus nommées absentes du schéma)', (bilan.corps.erreurs || []).length === 0, JSON.stringify(bilan.corps.erreurs));
+    await page.evaluate((m) => {
+      const S = window.SIGH.store;
+      S.raw().regimesIndividuels = S.raw().regimesIndividuels.filter((x) => m.reg0.indexOf(x.id) >= 0);
+      S.raw().propositionsPlanning = S.raw().propositionsPlanning.filter((x) => m.pro0.indexOf(x.id) >= 0);
+      S.save();
+    }, m);
+    erreursJS = [];
+  });
+
+  /* ========================================================================
    * Vague 70 — deux postes : l'écriture de l'un apparaît chez l'autre
    * ======================================================================== */
   await etape(async () => {

@@ -214,6 +214,37 @@ Object.values(tables).forEach((t) => {
   });
 });
 
+/* LES CLÉS ÉTRANGÈRES D'UNE COLLECTION NON RELUE SE CONSERVENT (10/11/2026, E2332). Les clés se déduisent des données (aucun orphelin) : sur un magasin
+   RESTREINT, une collection reprise du manifeste n'a ni fiches ni identifiants à comparer, donc aucune clé n'était recalculée et le fichier des clés
+   étrangères perdait toutes celles des collections absentes (59 sur 59 mesurées). Les clés de la copie précédente (0002_cles_etrangeres.sql, le manifeste
+   ne les portait plus) sont reprises quand l'un des deux bouts n'a pas été relu, et que les deux tables et la colonne existent encore. Quand les DEUX
+   collections sont dans le magasin d'entrée, le calcul sur les données décide seul : une clé que les données violent maintenant disparaît. */
+(function () {
+  const relues = (n) => aDesFiches(n) && REPRISES.indexOf(n) < 0;
+  const parTable = {};
+  Object.values(tables).forEach((t) => { parTable[t.schema + '.' + t.table] = t; });
+  let precFks = [];
+  try {
+    const src = fs.readFileSync(path.resolve(RACINE, '../packages/schema/postgres/0002_cles_etrangeres.sql'), 'utf8');
+    const rx = /ALTER TABLE "([^"]+)"\."([^"]+)" ADD CONSTRAINT "[^"]*" FOREIGN KEY \("([^"]+)"\) REFERENCES "([^"]+)"\."([^"]+)" \("id"\)/g;
+    let m;
+    while ((m = rx.exec(src))) precFks.push({ de: parTable[m[1] + '.' + m[2]], col: m[3], vers: parTable[m[4] + '.' + m[5]] });
+  } catch (e) { precFks = []; }
+  precFks.forEach((p) => {
+    if (!p.de || !p.vers || !p.vers.aId) return;
+    if (relues(p.de.collection) && relues(p.vers.collection)) return;
+    if (!p.de.colonnes.some((c) => c.col === p.col)) return;
+    if (fks.some((k) => k.de === p.de.collection && k.col === p.col)) return;
+    fks.push({ de: p.de.collection, col: p.col, vers: p.vers.collection });
+  });
+  /* Ordre de la copie précédente (pas de diff d'ordre), puis par collection et rang de colonne pour une clé nouvelle. */
+  const rang = (k) => tables[k.de].colonnes.findIndex((c) => c.col === k.col);
+  const ordre = {};
+  precFks.forEach((p, i) => { if (p.de) ordre[p.de.collection + '.' + p.col] = i; });
+  const pos = (k) => { const o = ordre[k.de + '.' + k.col]; return o === undefined ? Infinity : o; };
+  fks.sort((a, b) => (pos(a) !== pos(b) ? (pos(a) < pos(b) ? -1 : 1) : (a.de < b.de ? -1 : a.de > b.de ? 1 : rang(a) - rang(b))));
+})();
+
 /* --- DDL ------------------------------------------------------------------- */
 const out = [];
 out.push('-- =============================================================================');

@@ -954,6 +954,66 @@ CREATE TABLE IF NOT EXISTS "m10"."prestataires" (
 COMMENT ON TABLE "m10"."prestataires" IS 'Collection « prestataires » — M10 Ressources humaines';
 CREATE INDEX IF NOT EXISTS "ix_prestataires_statut" ON "m10"."prestataires" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_prestataires_reference" ON "m10"."prestataires" ("reference");
+CREATE TABLE IF NOT EXISTS "m10"."propositions_planning" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "type" text,
+  "employe_id" text,
+  "employe" text,
+  "fonction" text,
+  "service" text,
+  "motif" text,
+  "date" date,
+  "type_vacation" text,
+  "vacation_id" text,
+  "contrepartie_id" text,
+  "vacation_type" text,
+  "vacation_date" date,
+  "contrepartie" text,
+  "contrepartie_date" date,
+  "contrepartie_type" text,
+  "etat" text,
+  "proposee_le" date,
+  "proposee_par" text,
+  "tranche_par" text,
+  "tranche_le" date,
+  "motif_refus" text,
+  "motif_validation" text,
+  "appliquees" jsonb,
+  "cree_le" timestamptz,
+  "cree_par" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m10"."propositions_planning" IS 'Collection « propositionsPlanning » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_propositions_planning_statut" ON "m10"."propositions_planning" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_propositions_planning_type" ON "m10"."propositions_planning" ("type");
+CREATE INDEX IF NOT EXISTS "ix_propositions_planning_employe_id" ON "m10"."propositions_planning" ("employe_id");
+CREATE INDEX IF NOT EXISTS "ix_propositions_planning_date" ON "m10"."propositions_planning" ("date");
+CREATE INDEX IF NOT EXISTS "ix_propositions_planning_vacation_id" ON "m10"."propositions_planning" ("vacation_id");
+CREATE INDEX IF NOT EXISTS "ix_propositions_planning_contrepartie_id" ON "m10"."propositions_planning" ("contrepartie_id");
+CREATE INDEX IF NOT EXISTS "ix_propositions_planning_etat" ON "m10"."propositions_planning" ("etat");
+CREATE TABLE IF NOT EXISTS "m10"."regimes_individuels" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "employe_id" text,
+  "employe" text,
+  "matricule" text,
+  "fonction" text,
+  "categorie" text,
+  "champs" jsonb,
+  "retour_categorie" boolean,
+  "date_effet" date,
+  "motif" text,
+  "version" integer,
+  "cree_le" date,
+  "cree_par" text,
+  "cree_le_2" timestamptz,
+  "cree_par_2" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m10"."regimes_individuels" IS 'Collection « regimesIndividuels » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_regimes_individuels_statut" ON "m10"."regimes_individuels" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_regimes_individuels_employe_id" ON "m10"."regimes_individuels" ("employe_id");
 CREATE TABLE IF NOT EXISTS "m10"."regimes_travail" (
   "id" text PRIMARY KEY,
   "cycle" integer,
