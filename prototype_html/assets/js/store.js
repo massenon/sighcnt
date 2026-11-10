@@ -3872,7 +3872,7 @@
     /* Comptes, droits et activation des modules */
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
-    'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
+    'regimesTravail', 'regimesIndividuels', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
     'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'parametresFiscaux',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
@@ -4204,6 +4204,8 @@
     historiqueObligations: 'CFG|Versions antérieures des obligations fiscales',
     parametresFiscaux: 'CFG|Paramètres du calendrier fiscal (délais d’alerte, montant de la CCIB)',
     regimesTravail: 'M10|Régimes de travail par catégorie',
+    regimesIndividuels: 'M10|Régimes individuels (dérogations datées, une fiche par version)',
+    propositionsPlanning: 'M10|Propositions de planning des agents',
     modulesActifs: 'CFG|Activité des modules', notifications: 'M14|Notifications',
     emplacements: 'M6|Emplacements de rangement',
     baremeNS131: 'M10|Barème d’évaluation NS 131', historiqueBareme: 'M10|Versions antérieures du barème',

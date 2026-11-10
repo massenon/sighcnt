@@ -5746,4 +5746,500 @@
     fauxBoitier: fauxBoitier, numeroSuivant: function () { return fauxBoitier.numeroSuivant(); },
   };
   global.SIGH.parcours.mecef = global.SIGH.mecef;
+
+  /* ==========================================================================
+   * RH, LOT L4 (10/11/2026) : LE RÉGIME INDIVIDUEL DÉROGE CHAMP PAR CHAMP, LE RESTE SUIT LA CATÉGORIE
+   * --------------------------------------------------------------------------
+   * Décision de la Direction du 09/11/2026 (Planning Q1) : le régime de la catégorie reste la règle ; le régime INDIVIDUEL d'un agent (vacations,
+   * repos, cycle, honoraire) ne déroge que sur les champs RENSEIGNÉS, tous les autres suivent la catégorie. Deux médecins peuvent donc avoir des gardes
+   * différentes sans toucher à leurs collègues. Le contrôle d'incompatibilité (repos obligatoire après une garde) s'applique à TOUTE saisie, quelle que
+   * soit la voie (grille, rotation, proposition validée, application directe) : il vit ICI, une seule fois.
+   *
+   * UNE DÉROGATION SE VERSIONNE PAR DATE, ELLE NE SE RÉÉCRIT JAMAIS (même principe que la grille des primes, les plages par lot et le barème AIB) : une
+   * fiche immuable par version (collection `regimesIndividuels`), la valeur en vigueur à une date est une fonction pure des fiches. « Revenir au régime de
+   * la catégorie » est une VERSION (`retourCategorie`), pas une suppression. Une vacation porte le régime sous lequel elle a été posée (`regimeLibelle`,
+   * `derogations`) : relever une dérogation ne change jamais une vacation passée.
+   * ======================================================================== */
+  var CHAMPS_DEROGEABLES = [
+    { cle: 'vacations', libelle: 'Vacations du régime' },
+    { cle: 'repos', libelle: 'Repos appliqué' },
+    { cle: 'cycle', libelle: 'Cycle (jours)' },
+    { cle: 'honoraire', libelle: 'Honoraire (FCFA)' },
+    { cle: 'honorairePeriodicite', libelle: 'Périodicité de l’honoraire' },
+  ];
+  var VACATIONS_GARDE_RH = ['garde', 'garde_hospi'];
+  function refusRh(code, motif, geste, extra) { return Object.assign({ ok: false, code: code, motif: motif, geste: geste }, extra || {}); }
+  function colRegimesInd() { return S.collection('regimesIndividuels', { module: 'M10', entite: 'régime individuel', prefix: 'RGI' }); }
+  function colPlanningRh() { return S.collection('planning', { module: 'M10', entite: 'Planning' }); }
+  function employeRh(id) { return S.collection('personnel').get(id) || null; }
+  /** L'agent de la session, retrouvé par son nom : la session ne porte pas d'identifiant de personnel. */
+  function employeDeSession() {
+    var nom = acteur();
+    return S.collection('personnel').active().filter(function (e) { return e.nomComplet === nom; })[0] || null;
+  }
+  function typePlanning(id) { return (D.TYPES_PLANNING || []).filter(function (t) { return t.id === id; })[0] || null; }
+  function libelleType(id) { var t = typePlanning(id); return t ? t.label : id; }
+
+  /** Le régime de la CATÉGORIE : celui du magasin (modifiable), à défaut la règle relevée sur les plannings. */
+  function regimeCategorieRh(fonction) {
+    var r = S.collection('regimesTravail').active().filter(function (x) { return (x.fonctions || []).indexOf(fonction) !== -1; })[0];
+    return r || D.regleDe(fonction) || null;
+  }
+  function versionsRegimeInd(employeId) {
+    return colRegimesInd().active().filter(function (v) { return v.employeId === employeId; })
+      .sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)); });
+  }
+  function champRenseigne(x) { return x !== undefined && x !== null && x !== '' && !(Array.isArray(x) && !x.length); }
+
+  /** LE RÉGIME EN VIGUEUR POUR UN AGENT À UNE DATE : la catégorie, puis les champs dérogés de la dernière version à date d'effet atteinte. */
+  function regimeALaDate(employeId, fonction, date) {
+    var d = date ? isoJour(date) : aujIso();
+    var base = regimeCategorieRh(fonction);
+    var out = {
+      date: d, categorie: base ? base.libelle : null, libelle: base ? base.libelle : null, fonctions: base ? (base.fonctions || []).slice() : [],
+      vacations: base ? (base.vacations || []).slice() : [], repos: base ? (base.repos || null) : null, cycle: base ? base.cycle : null,
+      honoraire: base ? (base.honoraire || null) : null, honorairePeriodicite: base ? (base.honorairePeriodicite || null) : null,
+      source: base ? (base.source || null) : null, mention: base ? (base.mention || null) : null,
+      individuel: false, derogations: [], versionId: null, dateEffet: null,
+    };
+    var v = versionsRegimeInd(employeId).filter(function (x) { return String(x.dateEffet) <= d; }).pop();
+    if (!v) return out;
+    out.versionId = v.id; out.dateEffet = v.dateEffet;
+    if (v.retourCategorie) return out;
+    CHAMPS_DEROGEABLES.forEach(function (c) {
+      var x = v.champs ? v.champs[c.cle] : undefined;
+      if (!champRenseigne(x)) return;
+      out[c.cle] = c.cle === 'vacations' ? x.slice() : (c.cle === 'repos' && x === 'aucun' ? null : x);
+      out.derogations.push(c.cle);
+    });
+    out.individuel = out.derogations.length > 0;
+    return out;
+  }
+  /** L'historique d'un agent, version par version, avec le motif et l'auteur. */
+  function historiqueRegimeInd(employeId) {
+    return versionsRegimeInd(employeId).map(function (v, i) {
+      return { id: v.id, version: i + 1, dateEffet: v.dateEffet, retourCategorie: v.retourCategorie === true, champs: JSON.parse(JSON.stringify(v.champs || {})),
+        motif: v.motif, creePar: v.creePar, creeLe: v.creeLe };
+    });
+  }
+  /** Les types de vacation qu'un agent peut recevoir à une date : ceux de son régime, le repos, et congé, absence, remplacement. */
+  function typesAutorisesRh(employeId, fonction, date) {
+    var r = regimeALaDate(employeId, fonction, date);
+    if (!r.categorie && !r.individuel) return (D.TYPES_PLANNING || []).map(function (t) { return t.id; });
+    return r.vacations.concat([r.repos, 'conge', 'absence', 'remplacement'].filter(Boolean));
+  }
+
+  /** POSER UNE DÉROGATION (ou le retour à la catégorie). Réservé à l'administrateur et à la Directrice Administrative : un honoraire et un repos
+   *  engagent la paie et la santé de l'agent. */
+  function derogerRegime(o) {
+    o = o || {};
+    if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusRh('DEROGATION_RESERVEE', 'Le régime individuel se règle par la Directrice Administrative ou l’administrateur.', 'Demander à la Directrice Administrative de poser la dérogation.');
+    var e = employeRh(o.employeId);
+    if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent ' + (o.employeId || '—') + ' n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateEffet)) return refusRh('DATE_INVALIDE', 'La date d’effet est absente ou illisible.', 'Choisir la date à partir de laquelle la dérogation s’applique.');
+    if (!String(o.motif || '').trim()) return refusRh('MOTIF_OBLIGATOIRE', 'Le motif de la dérogation est obligatoire.', 'Dire pourquoi le régime de cet agent diffère de celui de sa catégorie.');
+    if (dateEffet < aujIso()) return refusRh('DATE_PASSEE', 'La date d’effet (' + C.dateFR(dateEffet) + ') est antérieure à aujourd’hui : une dérogation ne s’applique jamais rétroactivement.',
+      'Choisir aujourd’hui ou une date à venir. Les vacations passées gardent le régime sous lequel elles ont été posées.');
+    var retour = o.retourCategorie === true;
+    var champs = {};
+    if (!retour) {
+      var c = o.champs || {};
+      var vac = c.vacations;
+      if (champRenseigne(vac)) {
+        var admises = (D.TYPES_PLANNING || []).filter(function (t) { return t.duree > 0; }).map(function (t) { return t.id; });
+        if (!Array.isArray(vac) || vac.some(function (x) { return admises.indexOf(x) < 0; })) return refusRh('CHAMP_INVALIDE', 'Les vacations proposées ne sont pas toutes des vacations travaillées du référentiel.', 'Choisir parmi les types de vacation du référentiel.', { champ: 'vacations' });
+        champs.vacations = vac.slice();
+      }
+      if (champRenseigne(c.repos)) {
+        if (['repos24', 'repos48', 'aucun'].indexOf(c.repos) < 0) return refusRh('CHAMP_INVALIDE', 'Le repos « ' + c.repos + ' » n’existe pas.', 'Choisir repos de 24 h, repos de 48 h ou aucun repos codifié.', { champ: 'repos' });
+        champs.repos = c.repos;
+      }
+      if (champRenseigne(c.cycle)) {
+        var cy = Number(c.cycle);
+        if (!(cy >= 1) || Math.floor(cy) !== cy) return refusRh('CHAMP_INVALIDE', 'Le cycle doit être un nombre entier de jours, au moins 1.', 'Corriger le cycle.', { champ: 'cycle' });
+        champs.cycle = cy;
+      }
+      if (champRenseigne(c.honoraire)) {
+        var h = Number(c.honoraire);
+        if (!(h >= 0)) return refusRh('CHAMP_INVALIDE', 'L’honoraire doit être un montant positif ou nul.', 'Corriger l’honoraire.', { champ: 'honoraire' });
+        champs.honoraire = h;
+      }
+      if (champRenseigne(c.honorairePeriodicite)) {
+        if (['mensuelle', 'occurrence'].indexOf(c.honorairePeriodicite) < 0) return refusRh('CHAMP_INVALIDE', 'La périodicité de l’honoraire est mensuelle ou par occurrence.', 'Corriger la périodicité.', { champ: 'honorairePeriodicite' });
+        champs.honorairePeriodicite = c.honorairePeriodicite;
+      }
+      if (!Object.keys(champs).length) return refusRh('AUCUNE_DEROGATION', 'Aucun champ n’est dérogé : le régime de l’agent suit déjà celui de sa catégorie.', 'Renseigner au moins un champ, ou choisir « revenir au régime de la catégorie ».');
+    }
+    var existantes = versionsRegimeInd(e.id);
+    var derniere = existantes[existantes.length - 1] || null;
+    if (existantes.some(function (v) { return String(v.dateEffet) === dateEffet; })) return refusRh('DATE_EXISTANTE', 'Une version commence déjà le ' + C.dateFR(dateEffet) + ' pour cet agent : une version ne se réécrit pas.', 'Choisir une date d’effet postérieure.');
+    if (derniere && String(derniere.dateEffet) > dateEffet) return refusRh('VERSION_ANTERIEURE', 'La version la plus récente de cet agent commence le ' + C.dateFR(derniere.dateEffet) + ' : une version insérée avant elle masquerait l’historique.', 'Choisir une date d’effet postérieure à la dernière version.');
+    var avant = regimeALaDate(e.id, e.fonction, dateEffet);
+    var res = colRegimesInd().insert({
+      employeId: e.id, employe: e.nomComplet, matricule: e.matricule, fonction: e.fonction, categorie: avant.categorie,
+      champs: champs, retourCategorie: retour, dateEffet: dateEffet, motif: String(o.motif).trim(), version: existantes.length + 1, creeLe: aujIso(), creePar: acteur(),
+    }, { journal: { action: retour ? 'Régime individuel : retour à la catégorie' : 'Régime individuel : dérogation posée', module: 'M10', entite: 'regimesIndividuels',
+      avant: { derogations: avant.derogations, dateEffet: avant.dateEffet }, apres: { champs: champs, retourCategorie: retour, dateEffet: dateEffet, motif: String(o.motif).trim() } } });
+    if (!res) return refusRh('ECRITURE_REFUSEE', 'L’écriture a été refusée par le magasin.', 'Relire le journal.');
+    return { ok: true, id: res.record.id, version: existantes.length + 1, dateEffet: dateEffet, derogations: Object.keys(champs), retourCategorie: retour, undo: res.undo };
+  }
+  S.garder('regimesIndividuels', function (op) {
+    if (op === 'modifier' || op === 'archiver') return 'REGIME_INDIVIDUEL_FIGE : une version de régime individuel ne se réécrit ni ne s’archive (elle explique des vacations déjà posées). Ajouter une nouvelle version à une date d’effet postérieure, ou « revenir au régime de la catégorie ».';
+    return null;
+  });
+
+  /** LE CONTRÔLE D'INCOMPATIBILITÉ, UNE SEULE FOIS : le repos qui suit une garde (durée du régime EN VIGUEUR À LA DATE, dérogation comprise), avant comme après,
+   *  et la double affectation. `ignoreId` : la vacation qu'on remplace ou qu'on déplace. */
+  function controlerVacationRh(o) {
+    var e = employeRh(o.employeId);
+    if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent ' + (o.employeId || '—') + ' n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    var d = isoJour(o.date);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return refusRh('DATE_INVALIDE', 'La date de la vacation est absente ou illisible.', 'Choisir une date.');
+    if (!typePlanning(o.type)) return refusRh('TYPE_INCONNU', 'Le type de vacation « ' + o.type + ' » n’existe pas.', 'Choisir un type du référentiel.');
+    var regime = regimeALaDate(e.id, e.fonction, d);
+    var autres = colPlanningRh().active().filter(function (p) { return p.employeId === e.id && p.id !== o.ignoreId; });
+    var memeJour = autres.filter(function (p) { return p.date === d; })[0];
+    if (memeJour) return refusRh('DOUBLE_AFFECTATION', e.nomComplet + ' a déjà une vacation le ' + C.dateFR(d) + ' (' + libelleType(memeJour.type) + ').', 'Modifier la vacation existante, ou choisir un autre jour.', { date: d, existante: memeJour.id });
+    if (VACATIONS_GARDE_RH.indexOf(o.type) >= 0) {
+      var joursRepos = regime.repos === 'repos48' ? 2 : 1;
+      for (var k = 1; k <= joursRepos; k++) {
+        var veille = autres.filter(function (p) { return p.date === C.iso(C.addDays(d, -k)) && VACATIONS_GARDE_RH.indexOf(p.type) >= 0; })[0];
+        if (veille) return refusRh('INCOMPATIBILITE_REPOS', 'Incompatibilité : le repos de ' + (joursRepos * 24) + ' h qui suit une garde n’est pas respecté (garde déjà programmée le ' + C.dateFR(veille.date) + ' pour ' + e.nomComplet + ').',
+          'Choisir un jour après le repos de ' + (joursRepos * 24) + ' h, ou retirer l’autre garde.', { date: d, autre: veille.id, reposHeures: joursRepos * 24, individuel: regime.individuel });
+        var lendemain = autres.filter(function (p) { return p.date === C.iso(C.addDays(d, k)) && VACATIONS_GARDE_RH.indexOf(p.type) >= 0; })[0];
+        if (lendemain) return refusRh('INCOMPATIBILITE_REPOS', 'Incompatibilité : le repos de ' + (joursRepos * 24) + ' h qui suivrait cette garde serait entamé par la garde déjà programmée le ' + C.dateFR(lendemain.date) + ' pour ' + e.nomComplet + '.',
+          'Choisir un autre jour, ou retirer l’autre garde.', { date: d, autre: lendemain.id, reposHeures: joursRepos * 24, individuel: regime.individuel });
+      }
+    }
+    return { ok: true, regime: regime, agent: e.id };
+  }
+  /** Ce qu'une vacation porte à l'écriture : l'agent, le régime sous lequel elle est posée (jamais réécrit ensuite). */
+  function fabriquerVacationRh(o, regime, e, extra) {
+    return Object.assign({
+      date: isoJour(o.date), employeId: e.id, employe: e.nomComplet, fonction: e.fonction, service: e.service, type: o.type, observation: o.observation || null,
+      statut: 'validee', regimeLibelle: regime.categorie || null, regimeIndividuelId: regime.versionId, derogations: regime.derogations.slice(),
+    }, extra || {});
+  }
+  /** POSER OU REMPLACER une vacation depuis le poste : DAF, surveillant (ou administrateur). Écrite VALIDÉE (celui qui la pose est celui qui valide). */
+  function poserVacationRh(o) {
+    o = o || {};
+    if (['admin', 'da', 'surveillant'].indexOf(roleCourant()) < 0) return refusRh('PLANNING_RESERVE', 'Le planning du personnel se pose par le surveillant ou la Directrice Administrative.', 'Un agent propose ses vacations (propositions de planning) ; le surveillant valide.');
+    var ctrl = controlerVacationRh({ employeId: o.employeId, date: o.date, type: o.type, ignoreId: o.existantId });
+    if (!ctrl.ok) return ctrl;
+    var e = employeRh(o.employeId);
+    var rec = fabriquerVacationRh(o, ctrl.regime, e, { validationEtat: 'validee', validePar: acteur(), valideLe: aujIso(), origine: 'poste' });
+    var res = o.existantId ? colPlanningRh().update(o.existantId, rec) : colPlanningRh().insert(rec);
+    if (!res) return refusRh('ECRITURE_REFUSEE', 'L’écriture a été refusée par le magasin.', 'Relire le journal.');
+    return { ok: true, id: o.existantId || res.record.id, regime: ctrl.regime, undo: res.undo };
+  }
+  function retirerVacationRh(id, motif) {
+    if (['admin', 'da', 'surveillant'].indexOf(roleCourant()) < 0) return refusRh('PLANNING_RESERVE', 'Le planning du personnel se retire par le surveillant ou la Directrice Administrative.', 'Demander au surveillant.');
+    var v = colPlanningRh().get(id);
+    if (!v || v.statut === 'archive') return refusRh('VACATION_INTROUVABLE', 'La vacation ' + id + ' n’existe pas ou est déjà retirée.', 'Choisir une vacation du registre.');
+    var res = colPlanningRh().archive(id, motif || 'Vacation retirée');
+    return { ok: true, id: id, undo: res && res.undo };
+  }
+
+  /* ==========================================================================
+   * RH, LOT L5 (10/11/2026) : LE CIRCUIT DE VALIDATION DES PRÉSENCES, ABSENCES, CONGÉS ET ORDRES DE MISSION
+   * --------------------------------------------------------------------------
+   * Décision de la Direction du 09/11/2026 (Planning Q2 et Q3, la remarque l'emporte sur la case) : le SURVEILLANT valide les présences et absences de tout
+   * le personnel et PEUT VALIDER SEUL. Le circuit est un réglage du poste, enregistré en base, avec son défaut : « surveillant seul » (défaut), « directrice
+   * administrative seule », « surveillant puis directrice administrative ». Les congés et les ordres de mission suivent le même circuit ; la mission porte en
+   * plus l'AVIS du chef de service. La DAF garde son droit d'écran.
+   *
+   * UNE PIÈCE NON VALIDÉE EST VISIBLE ET NE COMPTE PAS (RG-11, RG-12) : les lectures qui comptent passent par `compte()`. Les pièces d'AVANT le circuit (sans
+   * `validationEtat`) sont lues d'après leur état d'origine (congé : `statutConge`, mission : `statutMission`, présence : validée) : ni les dire non validées
+   * ni les dire validées toutes serait vrai. Le circuit en vigueur est lu à chaque geste ; la pièce tranchée note celui qui l'a tranchée (`circuitUtilise`) :
+   * changer de circuit ne rouvre jamais une pièce déjà tranchée (une pièce à mi-circuit se complète au prochain geste habilité).
+   * LE CIRCUIT SE TIENT AU MOTEUR, pas à l'écran : refus nommé VALIDATION_RESERVEE pour un rôle qui n'est pas l'étape attendue.
+   * ======================================================================== */
+  var CIRCUITS_PRESENCES = [
+    { id: 'surveillant', libelle: 'Surveillant seul', etapes: ['surveillant'] },
+    { id: 'daf', libelle: 'Directrice administrative seule', etapes: ['daf'] },
+    { id: 'surveillant_puis_daf', libelle: 'Surveillant puis directrice administrative', etapes: ['surveillant', 'daf'] },
+  ];
+  var ROLES_ETAPE = { surveillant: ['surveillant', 'admin'], daf: ['da', 'admin'] };
+  var NOM_ETAPE = { surveillant: 'le surveillant', daf: 'la directrice administrative' };
+  var PIECES_RH = {
+    presences: { meta: { module: 'M10', entite: 'Presence' }, nom: 'pointage', agent: 'employeId' },
+    conges: { meta: { module: 'M10', entite: 'Conge' }, nom: 'demande de congé', agent: 'employeId' },
+    missions: { meta: { module: 'M10', entite: 'Ordre de mission' }, nom: 'ordre de mission', agent: 'agentId' },
+  };
+  function circuitPresencesRh() {
+    var c = S.reglage('planningCircuitPresences', 'surveillant');
+    return CIRCUITS_PRESENCES.filter(function (x) { return x.id === c; })[0] ? c : 'surveillant';
+  }
+  function etapesDuCircuitRh(id) { return (CIRCUITS_PRESENCES.filter(function (x) { return x.id === (id || circuitPresencesRh()); })[0] || CIRCUITS_PRESENCES[0]).etapes.slice(); }
+  function definirCircuitRh(id, motif) {
+    if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusRh('REGLAGE_RESERVE', 'Le circuit de validation se règle par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.');
+    if (!CIRCUITS_PRESENCES.some(function (x) { return x.id === id; })) return refusRh('CIRCUIT_INCONNU', 'Le circuit « ' + id + ' » n’existe pas.', 'Choisir surveillant seul, directrice administrative seule, ou surveillant puis directrice administrative.');
+    var avant = circuitPresencesRh();
+    S.setReglage('planningCircuitPresences', id);
+    S.log('Circuit de validation des présences', 'M10', 'reglage', 'planningCircuitPresences', { circuit: avant }, { circuit: id, motif: motif || null });
+    return { ok: true, circuit: id, avant: avant };
+  }
+  function agentModifieDirectementRh() { return S.reglage('planningAgentModifieDirectement', false) === true; }
+  function definirAgentDirectRh(oui) {
+    if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusRh('REGLAGE_RESERVE', 'Ce réglage se fait par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.');
+    var avant = agentModifieDirectementRh();
+    S.setReglage('planningAgentModifieDirectement', oui === true);
+    S.log('Planning : l’agent modifie directement', 'M10', 'reglage', 'planningAgentModifieDirectement', { valeur: avant }, { valeur: oui === true });
+    return { ok: true, valeur: oui === true, avant: avant };
+  }
+
+  /** L'état de validation d'une pièce : a_valider, valide_surveillant, valide, refuse. */
+  function etatValidationRh(nom, rec) {
+    if (!rec) return null;
+    if (rec.validationEtat) return rec.validationEtat;
+    if (nom === 'conges') return { en_attente: 'a_valider', refuse: 'refuse' }[rec.statutConge] || 'valide';
+    if (nom === 'missions') return (rec.statutMission === 'a_valider' || rec.statutMission === 'projet') ? 'a_valider' : (rec.statutMission === 'refusee' ? 'refuse' : 'valide');
+    return 'valide';
+  }
+  /** Une pièce COMPTE (primes, évaluation, taux de présence, soldes) seulement validée. */
+  function compteRh(nom, rec) { return etatValidationRh(nom, rec) === 'valide'; }
+  function prochaineEtapeRh(rec) {
+    var faites = (rec.etapesFaites || []).filter(function (x) { return x.decision !== 'refuse'; }).map(function (x) { return x.etape; });
+    return etapesDuCircuitRh().filter(function (e) { return faites.indexOf(e) < 0; })[0] || null;
+  }
+  /** Le rôle courant peut-il trancher CETTE pièce ? { ok, etape } ou le refus nommé. */
+  function peutTrancherRh(nom, rec) {
+    var def = PIECES_RH[nom];
+    if (!def) return refusRh('COLLECTION_INCONNUE', 'La collection « ' + nom + ' » ne passe pas par le circuit de validation.', 'Choisir pointage, congé ou ordre de mission.');
+    if (!rec || rec.statut === 'archive') return refusRh('PIECE_INTROUVABLE', 'La pièce n’existe pas ou est archivée.', 'Choisir une ligne du registre.');
+    var etat = etatValidationRh(nom, rec);
+    if (etat === 'valide' || etat === 'refuse') return refusRh('DEJA_TRANCHEE', 'Cette pièce est déjà ' + (etat === 'valide' ? 'validée' : 'refusée') + ' : une décision ne se réécrit pas.', nom === 'presences' ? 'Pour corriger un pointage validé, le régulariser (motif, date et auteur consignés).' : 'Saisir une nouvelle demande.');
+    var etapes = etapesDuCircuitRh();
+    var etape = prochaineEtapeRh(rec) || etapes[etapes.length - 1];
+    if (ROLES_ETAPE[etape].indexOf(roleCourant()) < 0) {
+      return refusRh('VALIDATION_RESERVEE', 'L’étape en attente est celle de ' + NOM_ETAPE[etape] + ' (circuit : ' + CIRCUITS_PRESENCES.filter(function (x) { return x.id === circuitPresencesRh(); })[0].libelle + ').',
+        'Demander à ' + NOM_ETAPE[etape] + ' de trancher.', { etape: etape });
+    }
+    var moi = employeDeSession();
+    if (moi && String(rec[def.agent]) === String(moi.id)) return refusRh('AUTO_VALIDATION', 'Personne ne valide sa propre pièce : ' + def.nom + ' de ' + moi.nomComplet + '.', 'Demander à un autre habilité de trancher.');
+    if ((rec.etapesFaites || []).some(function (x) { return x.par === acteur() && x.decision !== 'refuse'; })) {
+      return refusRh('ETAPE_DEJA_SIGNEE', 'Vous avez déjà signé une étape de cette pièce : deux étapes ne se signent pas par la même personne.', 'Demander à ' + NOM_ETAPE[etape] + ' de trancher.');
+    }
+    return { ok: true, etape: etape };
+  }
+  /** L'AVIS DU CHEF DE SERVICE sur un ordre de mission : consigné par un habilité du circuit, lu à la validation. */
+  function avisMissionRh(id, o) {
+    o = o || {};
+    var c = S.collection('missions', PIECES_RH.missions.meta), rec = c.get(id);
+    if (!rec || rec.statut === 'archive') return refusRh('PIECE_INTROUVABLE', 'L’ordre de mission n’existe pas ou est archivé.', 'Choisir une ligne du registre.');
+    if (['surveillant', 'da', 'admin'].indexOf(roleCourant()) < 0) return refusRh('AVIS_RESERVE', 'L’avis du chef de service se consigne par le surveillant, la Directrice Administrative ou l’administrateur.', 'Demander au surveillant.');
+    if (['favorable', 'defavorable'].indexOf(o.avis) < 0) return refusRh('AVIS_INCONNU', 'L’avis est « favorable » ou « défavorable ».', 'Choisir l’avis.');
+    var chef = String(o.chef || '').trim();
+    if (!chef) return refusRh('CHEF_ABSENT', 'Le nom du chef de service qui donne l’avis est obligatoire.', 'Choisir le chef de service de l’agent.');
+    if (o.avis === 'defavorable' && !String(o.motif || '').trim()) return refusRh('MOTIF_OBLIGATOIRE', 'Un avis défavorable exige son motif.', 'Dire pourquoi l’avis est défavorable.');
+    if (['valide', 'refuse'].indexOf(etatValidationRh('missions', rec)) >= 0) return refusRh('DEJA_TRANCHEE', 'L’ordre de mission est déjà tranché : l’avis se donne avant la décision.', 'Saisir un nouvel ordre.');
+    var res = c.update(id, { avisChefService: { avis: o.avis, chef: chef, motif: String(o.motif || '').trim() || null, le: aujIso(), consignePar: acteur() } },
+      { journal: { action: 'Avis du chef de service sur un ordre de mission', module: 'M10', entite: 'Ordre de mission', avant: { avis: rec.avisChefService || null }, apres: { avis: o.avis, chef: chef, motif: o.motif || null } } });
+    return { ok: true, avis: o.avis, undo: res && res.undo };
+  }
+  /** TRANCHER une pièce : valider (étape par étape selon le circuit) ou refuser (motif obligatoire). */
+  function trancherPieceRh(o) {
+    o = o || {};
+    var def = PIECES_RH[o.collection];
+    if (!def) return refusRh('COLLECTION_INCONNUE', 'La collection « ' + o.collection + ' » ne passe pas par le circuit de validation.', 'Choisir pointage, congé ou ordre de mission.');
+    var c = S.collection(o.collection, def.meta), rec = c.get(o.id);
+    if (['valider', 'refuser'].indexOf(o.decision) < 0) return refusRh('DECISION_INCONNUE', 'La décision est « valider » ou « refuser ».', 'Choisir une décision.');
+    var p = peutTrancherRh(o.collection, rec);
+    if (!p.ok) return p;
+    var motif = String(o.motif || '').trim();
+    if (o.decision === 'refuser' && !motif) return refusRh('MOTIF_OBLIGATOIRE', 'Un refus exige son motif : l’agent doit pouvoir le lire.', 'Écrire le motif du refus.');
+    if (o.collection === 'missions') {
+      if (rec.statutMission === 'projet') return refusRh('PAS_SOUMISE', 'L’ordre est encore en projet : il n’a pas été soumis à validation.', 'Le soumettre d’abord (état « en attente de validation »).');
+      if (o.decision === 'valider') {
+        if (!rec.avisChefService) return refusRh('AVIS_REQUIS', 'L’avis du chef de service est requis avant la validation d’un ordre de mission.', 'Consigner l’avis du chef de service, puis valider.');
+        if (rec.avisChefService.avis === 'defavorable' && !motif) return refusRh('MOTIF_OBLIGATOIRE', 'Valider contre un avis défavorable exige un motif.', 'Écrire pourquoi la mission est validée malgré l’avis.');
+      }
+    }
+    var trace = { etape: p.etape, par: acteur(), role: roleCourant(), le: aujIso(), decision: o.decision === 'valider' ? 'valide' : 'refuse', motif: motif || null };
+    var etapes = (rec.etapesFaites || []).concat([trace]);
+    var patch = { etapesFaites: etapes };
+    var etatApres;
+    if (o.decision === 'refuser') {
+      etatApres = 'refuse';
+      patch.validationEtat = 'refuse'; patch.motifRefus = motif; patch.refuseePar = acteur(); patch.refuseeLe = aujIso(); patch.circuitUtilise = circuitPresencesRh();
+      if (o.collection === 'conges') patch.statutConge = 'refuse';
+      if (o.collection === 'missions') patch.statutMission = 'refusee';
+    } else {
+      var faites = etapes.filter(function (x) { return x.decision === 'valide'; }).map(function (x) { return x.etape; });
+      var restantes = etapesDuCircuitRh().filter(function (e) { return faites.indexOf(e) < 0; });
+      if (restantes.length) {
+        etatApres = 'valide_surveillant';
+        patch.validationEtat = 'valide_surveillant';
+      } else {
+        etatApres = 'valide';
+        patch.validationEtat = 'valide'; patch.validePar = acteur(); patch.valideLe = aujIso(); patch.circuitUtilise = circuitPresencesRh();
+        if (o.collection === 'conges') patch.statutConge = 'valide';
+        if (o.collection === 'missions') { patch.statutMission = 'validee'; patch.valideePar = acteur(); patch.valideeLe = aujIso(); }
+      }
+    }
+    var res = c.update(o.id, patch, { journal: { action: o.decision === 'valider' ? 'Validation d’un ' + def.nom : 'Refus d’un ' + def.nom, module: 'M10', entite: def.meta.entite,
+      avant: { etat: etatValidationRh(o.collection, rec) }, apres: { etat: etatApres, etape: p.etape, circuit: circuitPresencesRh(), motif: motif || null } } });
+    if (!res) return refusRh('ECRITURE_REFUSEE', 'L’écriture a été refusée par le magasin.', 'Relire le journal.');
+    return { ok: true, etat: etatApres, etape: p.etape, circuit: circuitPresencesRh(), complet: etatApres === 'valide', undo: res.undo };
+  }
+  /** Une pièce NAÎT à valider : l'état est posé à la création par la porte d'écriture de l'écran. */
+  function naissanceRh() { return { validationEtat: 'a_valider', etapesFaites: [], saisiPar: acteur(), saisiLe: aujIso() }; }
+
+  /** RÉGULARISER un pointage : correction DATÉE, avec auteur et motif obligatoire, réservée aux habilités du circuit (la pièce reste validée). */
+  var MOTIFS_ABSENCE = [
+    { id: 'maladie', libelle: 'Maladie' }, { id: 'mission', libelle: 'Mission' }, { id: 'conge', libelle: 'Congé' },
+  ];
+  function regulariserPresenceRh(id, o) {
+    o = o || {};
+    var c = S.collection('presences', PIECES_RH.presences.meta), rec = c.get(id);
+    if (!rec || rec.statut === 'archive') return refusRh('PIECE_INTROUVABLE', 'Le pointage n’existe pas ou est archivé.', 'Choisir une ligne du registre.');
+    if (['surveillant', 'da', 'admin'].indexOf(roleCourant()) < 0) return refusRh('REGULARISATION_RESERVEE', 'La régularisation d’un pointage se fait par le surveillant ou la Directrice Administrative.', 'Demander au surveillant.');
+    if (!String(o.motif || '').trim()) return refusRh('MOTIF_OBLIGATOIRE', 'Le motif de la régularisation est obligatoire.', 'Dire ce qui justifie la correction.');
+    if (['present', 'retard', 'absent', 'conge'].indexOf(o.etat) < 0) return refusRh('ETAT_INCONNU', 'L’état « ' + o.etat + ' » n’existe pas.', 'Choisir présent, retard, absent ou congé.');
+    if (o.motifCode && !MOTIFS_ABSENCE.some(function (x) { return x.id === o.motifCode; })) return refusRh('MOTIF_CODE_INCONNU', 'Le motif codé « ' + o.motifCode + ' » n’existe pas.', 'Choisir maladie, mission ou congé.');
+    var moi = employeDeSession();
+    if (moi && String(rec.employeId) === String(moi.id)) return refusRh('AUTO_VALIDATION', 'Personne ne régularise son propre pointage.', 'Demander à un autre habilité.');
+    var trace = { le: aujIso(), par: acteur(), motif: String(o.motif).trim(), etatAvant: rec.etat, etatApres: o.etat, motifCodeAvant: rec.motifCode || null, motifCodeApres: o.motifCode || rec.motifCode || null };
+    var patch = { etat: o.etat, regularisations: (rec.regularisations || []).concat([trace]) };
+    if (o.motifCode !== undefined) patch.motifCode = o.motifCode || null;
+    if (o.justificatif !== undefined) patch.justificatif = o.justificatif || null;
+    var res = c.update(id, patch, { journal: { action: 'Régularisation d’un pointage', module: 'M10', entite: 'Presence', avant: { etat: rec.etat, motifCode: rec.motifCode || null }, apres: { etat: o.etat, motifCode: patch.motifCode === undefined ? rec.motifCode || null : patch.motifCode, motif: trace.motif } } });
+    return { ok: true, regularisation: trace, undo: res && res.undo };
+  }
+
+  /* ==========================================================================
+   * RH, LOT L6 (10/11/2026) : L'AGENT PROPOSE, LE SURVEILLANT VALIDE
+   * --------------------------------------------------------------------------
+   * Décision de la Direction du 09/11/2026 (Planning Q4) : l'agent PROPOSE une modification ou un échange de son planning ; le surveillant valide. Le réglage
+   * « l'agent modifie directement » (non par défaut, en base) lui laisse poser SES vacations sans validation : le contrôle d'incompatibilité s'applique
+   * pareil, la vacation naît validée et marquée `modifieDirectement`. Un échange touche le planning d'un AUTRE agent : il passe toujours par la validation.
+   * UNE PROPOSITION NE CHANGE JAMAIS LE PLANNING VALIDÉ TANT QU'ELLE N'EST PAS VALIDÉE. Le contrôle est fait à la proposition (l'agent apprend tout de suite)
+   * ET refait à la validation (le planning a pu bouger entre-temps).
+   * ======================================================================== */
+  var TYPES_PROPOSITION = [
+    { id: 'ajout', libelle: 'Ajouter une vacation' }, { id: 'modification', libelle: 'Modifier une vacation' },
+    { id: 'retrait', libelle: 'Retirer une vacation' }, { id: 'echange', libelle: 'Échanger une vacation avec un collègue' },
+  ];
+  function colPropositionsRh() { return S.collection('propositionsPlanning', { module: 'M10', entite: 'proposition de planning', prefix: 'PPL' }); }
+  /** Ce que la session peut lire : l'agent ne voit que SES propositions (RG-13), le surveillant, la DAF et l'administrateur voient tout. */
+  function propositionsVisiblesRh() {
+    var toutes = colPropositionsRh().active();
+    if (['surveillant', 'da', 'admin'].indexOf(roleCourant()) >= 0) return toutes;
+    var moi = employeDeSession();
+    return moi ? toutes.filter(function (p) { return p.employeId === moi.id; }) : [];
+  }
+  /** Contrôle commun à la proposition et à la validation : { ok } ou le refus nommé (rien n'est écrit). */
+  function controlerPropositionRh(p) {
+    var cv = p.vacationId ? colPlanningRh().get(p.vacationId) : null;
+    if (p.type === 'ajout') return controlerVacationRh({ employeId: p.employeId, date: p.date, type: p.typeVacation });
+    if (!cv || cv.statut === 'archive') return refusRh('VACATION_INTROUVABLE', 'La vacation visée n’existe plus au planning.', 'Choisir une vacation du planning.');
+    if (cv.employeId !== p.employeId) return refusRh('VACATION_D_AUTRUI', 'La vacation visée n’est pas celle de l’agent qui propose.', 'Choisir une de ses propres vacations.');
+    if (p.type === 'retrait') return { ok: true };
+    if (p.type === 'modification') return controlerVacationRh({ employeId: p.employeId, date: p.date || cv.date, type: p.typeVacation, ignoreId: cv.id });
+    if (p.type === 'echange') {
+      var cb = p.contrepartieId ? colPlanningRh().get(p.contrepartieId) : null;
+      if (!cb || cb.statut === 'archive') return refusRh('ECHANGE_SANS_CONTREPARTIE', 'L’échange désigne une vacation de collègue qui n’existe plus.', 'Choisir la vacation du collègue.');
+      if (cb.employeId === cv.employeId) return refusRh('ECHANGE_MEME_AGENT', 'Un échange se fait avec un autre agent.', 'Choisir la vacation d’un collègue.');
+      var eA = employeRh(cv.employeId), eB = employeRh(cb.employeId);
+      if (typesAutorisesRh(eB.id, eB.fonction, cv.date).indexOf(cv.type) < 0) return refusRh('ECHANGE_HORS_REGIME', libelleType(cv.type) + ' n’est pas une vacation du régime de ' + eB.nomComplet + '.', 'Choisir un collègue de même régime.');
+      if (typesAutorisesRh(eA.id, eA.fonction, cb.date).indexOf(cb.type) < 0) return refusRh('ECHANGE_HORS_REGIME', libelleType(cb.type) + ' n’est pas une vacation du régime de ' + eA.nomComplet + '.', 'Choisir un collègue de même régime.');
+      var r1 = controlerVacationRh({ employeId: eB.id, date: cv.date, type: cv.type, ignoreId: cb.id });
+      if (!r1.ok) return r1;
+      return controlerVacationRh({ employeId: eA.id, date: cb.date, type: cb.type, ignoreId: cv.id });
+    }
+    return refusRh('TYPE_PROPOSITION_INCONNU', 'Le type de proposition « ' + p.type + ' » n’existe pas.', 'Choisir ajout, modification, retrait ou échange.');
+  }
+  function proposerPlanningRh(o) {
+    o = o || {};
+    var moi = employeDeSession();
+    if (!moi) return refusRh('AGENT_NON_IDENTIFIE', 'La session ne correspond à aucun agent du personnel : aucune proposition ne peut être rattachée.', 'Se connecter avec le compte nominatif de l’agent.');
+    if (!TYPES_PROPOSITION.some(function (t) { return t.id === o.type; })) return refusRh('TYPE_PROPOSITION_INCONNU', 'Le type de proposition « ' + o.type + ' » n’existe pas.', 'Choisir ajout, modification, retrait ou échange.');
+    if (!String(o.motif || '').trim()) return refusRh('MOTIF_OBLIGATOIRE', 'Le motif de la proposition est obligatoire : le surveillant doit savoir pourquoi.', 'Dire pourquoi le planning doit changer.');
+    var p = { type: o.type, employeId: moi.id, employe: moi.nomComplet, fonction: moi.fonction, service: moi.service, motif: String(o.motif).trim(),
+      date: o.date ? isoJour(o.date) : null, typeVacation: o.typeVacation || null, vacationId: o.vacationId || null, contrepartieId: o.contrepartieId || null };
+    if (o.type !== 'retrait' && o.type !== 'echange' && !p.typeVacation) return refusRh('TYPE_INCONNU', 'Le type de vacation est obligatoire.', 'Choisir un type du référentiel.');
+    if ((o.type === 'ajout') && !p.date) return refusRh('DATE_INVALIDE', 'La date de la vacation est obligatoire.', 'Choisir une date.');
+    if (p.vacationId) { var cv = colPlanningRh().get(p.vacationId); if (cv) { p.date = p.date || cv.date; p.vacationType = cv.type; p.vacationDate = cv.date; } }
+    if (p.contrepartieId) { var cb = colPlanningRh().get(p.contrepartieId); if (cb) { p.contrepartie = cb.employe; p.contrepartieDate = cb.date; p.contrepartieType = cb.type; } }
+    var ctrl = controlerPropositionRh(p);
+    if (!ctrl.ok) return ctrl;
+    /* L'application directe : seulement pour SES vacations, sans échange. */
+    if (agentModifieDirectementRh() && o.type !== 'echange') {
+      var rec = null, res = null;
+      if (o.type === 'retrait') { res = colPlanningRh().archive(p.vacationId, 'Retrait direct par l’agent'); }
+      else {
+        var regime = ctrl.regime;
+        var fab = fabriquerVacationRh({ date: p.date, type: p.typeVacation, observation: p.motif }, regime, moi, { validationEtat: 'validee', validePar: 'l’agent (réglage « modifie directement »)', valideLe: aujIso(), origine: 'agent', modifieDirectement: true });
+        res = o.type === 'ajout' ? colPlanningRh().insert(fab) : colPlanningRh().update(p.vacationId, fab);
+        rec = res && res.record;
+      }
+      if (!res) return refusRh('ECRITURE_REFUSEE', 'L’écriture a été refusée par le magasin.', 'Relire le journal.');
+      S.log('Planning modifié directement par l’agent', 'M10', 'Planning', (rec && rec.id) || p.vacationId, null, { type: o.type, date: p.date, vacation: p.typeVacation, motif: p.motif });
+      return { ok: true, direct: true, vacationId: (rec && rec.id) || p.vacationId, undo: res.undo };
+    }
+    var ins = colPropositionsRh().insert(Object.assign(p, { etat: 'proposee', proposeeLe: aujIso(), proposeePar: acteur() }),
+      { journal: { action: 'Proposition de planning', module: 'M10', entite: 'propositionsPlanning', avant: null, apres: { type: p.type, date: p.date, typeVacation: p.typeVacation, motif: p.motif } } });
+    if (!ins) return refusRh('ECRITURE_REFUSEE', 'L’écriture a été refusée par le magasin.', 'Relire le journal.');
+    return { ok: true, direct: false, id: ins.record.id, undo: ins.undo };
+  }
+  function annulerPropositionRh(id) {
+    var c = colPropositionsRh(), p = c.get(id);
+    if (!p || p.statut === 'archive') return refusRh('PROPOSITION_INTROUVABLE', 'La proposition n’existe pas.', 'Choisir une proposition de la liste.');
+    var moi = employeDeSession();
+    if (!moi || p.employeId !== moi.id) return refusRh('PROPOSITION_D_AUTRUI', 'Seul l’agent qui a proposé peut retirer sa proposition.', 'Se connecter avec son compte.');
+    if (p.etat !== 'proposee') return refusRh('DEJA_TRANCHEE', 'La proposition est déjà ' + (p.etat === 'validee' ? 'validée' : (p.etat === 'refusee' ? 'refusée' : 'retirée')) + '.', 'Faire une nouvelle proposition.');
+    var res = c.update(id, { etat: 'annulee', annuleeLe: aujIso() }, { journal: { action: 'Proposition de planning retirée', module: 'M10', entite: 'propositionsPlanning', avant: { etat: 'proposee' }, apres: { etat: 'annulee' } } });
+    return { ok: true, undo: res && res.undo };
+  }
+  function trancherPropositionRh(o) {
+    o = o || {};
+    var c = colPropositionsRh(), p = c.get(o.id);
+    if (['surveillant', 'da', 'admin'].indexOf(roleCourant()) < 0) return refusRh('VALIDATION_RESERVEE', 'Le planning se valide par le surveillant (ou la Directrice Administrative).', 'Demander au surveillant.');
+    if (!p || p.statut === 'archive') return refusRh('PROPOSITION_INTROUVABLE', 'La proposition n’existe pas.', 'Choisir une proposition de la liste.');
+    if (['valider', 'refuser'].indexOf(o.decision) < 0) return refusRh('DECISION_INCONNUE', 'La décision est « valider » ou « refuser ».', 'Choisir une décision.');
+    if (p.etat !== 'proposee') return refusRh('DEJA_TRANCHEE', 'La proposition est déjà ' + (p.etat === 'validee' ? 'validée' : (p.etat === 'refusee' ? 'refusée' : 'retirée')) + ' : une décision ne se réécrit pas.', 'Attendre une nouvelle proposition.');
+    var moi = employeDeSession();
+    if (moi && p.employeId === moi.id) return refusRh('AUTO_VALIDATION', 'Personne ne valide sa propre proposition.', 'Demander à un autre habilité.');
+    var motif = String(o.motif || '').trim();
+    if (o.decision === 'refuser') {
+      if (!motif) return refusRh('MOTIF_OBLIGATOIRE', 'Un refus exige son motif : l’agent doit pouvoir le lire.', 'Écrire le motif du refus.');
+      var rr = c.update(p.id, { etat: 'refusee', motifRefus: motif, tranchePar: acteur(), trancheLe: aujIso() }, { journal: { action: 'Proposition de planning refusée', module: 'M10', entite: 'propositionsPlanning', avant: { etat: 'proposee' }, apres: { etat: 'refusee', motif: motif } } });
+      return { ok: true, etat: 'refusee', undo: rr && rr.undo };
+    }
+    var ctrl = controlerPropositionRh(p);
+    if (!ctrl.ok) return Object.assign({}, ctrl, { cause: ctrl.code, code: 'CONTROLE_ECHOUE', motif: 'Le planning a changé depuis la proposition : ' + ctrl.motif });
+    var appliquees = [];
+    var plan = colPlanningRh();
+    var marque = { validationEtat: 'validee', validePar: acteur(), valideLe: aujIso(), origine: 'proposition', propositionId: p.id };
+    if (p.type === 'ajout') {
+      var r1 = plan.insert(fabriquerVacationRh({ date: p.date, type: p.typeVacation, observation: p.motif }, ctrl.regime, employeRh(p.employeId), marque));
+      appliquees.push(r1.record.id);
+    } else if (p.type === 'modification') {
+      plan.update(p.vacationId, fabriquerVacationRh({ date: p.date, type: p.typeVacation, observation: p.motif }, ctrl.regime, employeRh(p.employeId), marque));
+      appliquees.push(p.vacationId);
+    } else if (p.type === 'retrait') {
+      plan.archive(p.vacationId, 'Retrait validé (proposition ' + p.id + ')');
+      appliquees.push(p.vacationId);
+    } else {
+      var cv = plan.get(p.vacationId), cb = plan.get(p.contrepartieId);
+      var eA = employeRh(cv.employeId), eB = employeRh(cb.employeId);
+      plan.update(cv.id, { employeId: eB.id, employe: eB.nomComplet, fonction: eB.fonction, service: eB.service, validationEtat: 'validee', validePar: acteur(), valideLe: aujIso(), origine: 'proposition', propositionId: p.id, echangeAvec: eA.nomComplet });
+      plan.update(cb.id, { employeId: eA.id, employe: eA.nomComplet, fonction: eA.fonction, service: eA.service, validationEtat: 'validee', validePar: acteur(), valideLe: aujIso(), origine: 'proposition', propositionId: p.id, echangeAvec: eB.nomComplet });
+      appliquees.push(cv.id, cb.id);
+    }
+    var rv = c.update(p.id, { etat: 'validee', tranchePar: acteur(), trancheLe: aujIso(), appliquees: appliquees, motifValidation: motif || null },
+      { journal: { action: 'Proposition de planning validée', module: 'M10', entite: 'propositionsPlanning', avant: { etat: 'proposee' }, apres: { etat: 'validee', appliquees: appliquees } } });
+    return { ok: true, etat: 'validee', appliquees: appliquees, undo: rv && rv.undo };
+  }
+
+  global.SIGH.planningRh = {
+    CHAMPS_DEROGEABLES: CHAMPS_DEROGEABLES, CIRCUITS: CIRCUITS_PRESENCES, MOTIFS_ABSENCE: MOTIFS_ABSENCE, TYPES_PROPOSITION: TYPES_PROPOSITION,
+    regimeCategorie: regimeCategorieRh, regimeALaDate: regimeALaDate, historique: historiqueRegimeInd, deroger: derogerRegime, typesAutorises: typesAutorisesRh,
+    controlerVacation: controlerVacationRh, poserVacation: poserVacationRh, retirerVacation: retirerVacationRh,
+    circuit: circuitPresencesRh, etapesDuCircuit: etapesDuCircuitRh, definirCircuit: definirCircuitRh, agentModifieDirectement: agentModifieDirectementRh, definirAgentDirect: definirAgentDirectRh,
+    etatValidation: etatValidationRh, compte: compteRh, peutTrancher: peutTrancherRh, trancher: trancherPieceRh, avisMission: avisMissionRh, naissance: naissanceRh, regulariser: regulariserPresenceRh,
+    proposer: proposerPlanningRh, annulerProposition: annulerPropositionRh, trancherProposition: trancherPropositionRh, propositionsVisibles: propositionsVisiblesRh, controlerProposition: controlerPropositionRh,
+    employeDeSession: employeDeSession,
+  };
 })(window);
