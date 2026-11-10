@@ -2,14 +2,14 @@
 
 Dossier de présentation du projet : un spécimen PDF de chaque état imprimé que le logiciel sait produire, rangé par module. Ouvrir `index.html` pour la consultation en vignettes (aucune dépendance réseau).
 
-**182 spécimens**, 50.3 Mo. Tous portent le filigrane et le bandeau « SPÉCIMEN, données fictives ».
+**182 spécimens**, 50.2 Mo. Tous portent le filigrane et le bandeau « SPÉCIMEN, données fictives ».
 
 ## Méthode
 
 1. La maquette (`prototype_html/`) est pilotée dans Chrome sur un banc isolé (base jetable, horloge décalée sur la date du jeu, 16/08/2026).
 2. Les points d'entrée de l'impression (`SIGH.print.etat`, `ticket`, `badge`, `planche`) sont enveloppés : la feuille que le logiciel bâtit est relevée telle quelle, avec le site d'appel (fichier et ligne) lu dans la pile. Rien n'est redessiné.
 3. Chaque écran est exploré : commandes d'impression de la page, de chaque onglet, des tiroirs de fiche et des fenêtres de paramétrage. Un spécimen est gardé par site d'appel et par intitulé d'état (au plus 6 variantes par site).
-4. Les identités sont substituées dans le texte (voir Confidentialité), puis la feuille est rendue en PDF par Chrome (`page.pdf`) avec la même feuille de style que le logiciel : A4 portrait, ticket 80 mm, carte CR80 aux dimensions réelles.
+4. Les identités sont substituées dans le texte (voir Confidentialité), puis la feuille est rendue en PDF par Chrome (`page.pdf`) avec la même feuille de style que le logiciel : A4 portrait ou paysage, ticket 80 mm, carte CR80 aux dimensions réelles.
 5. Les 13 états que cette exploration n'atteint pas seule (formulaire à champs obligatoires, plusieurs postes en chaîne, autre profil, activité fermée) sont joués par des scénarios dédiés sur un banc à part (voir « Les 13 spécimens produits par un scénario dédié »).
 6. Régénération : `npm run presentation` depuis `prototype_html/` (`build/presentation.js`, phases `capture`, `complements`, `pdf`, `index`).
 
@@ -303,7 +303,7 @@ Inventaire : 169 sites d'appel d'un état (`P.etat`, `P.ticket`, `P.badge`, `P.p
 | Aperçu du papier à en-tête | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-branding-apercu-du-papier-a-en-tete.pdf`](specimens/CFG-configuration-clinique/cfg-branding-apercu-du-papier-a-en-tete.pdf) |
 | CERTIFICAT MÉDICAL DE REPOS | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-certificats-certificat-medical-de-repos.pdf`](specimens/CFG-configuration-clinique/cfg-certificats-certificat-medical-de-repos.pdf) |
 | Répartition des secteurs de la clinique | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-organisation-repartition-des-secteurs-de-la-clinique.pdf`](specimens/CFG-configuration-clinique/cfg-organisation-repartition-des-secteurs-de-la-clinique.pdf) |
-| Organigramme de la Clinique NASSIERA TOO | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-organisation-organigramme-de-la-clinique-nassiera-too.pdf`](specimens/CFG-configuration-clinique/cfg-organisation-organigramme-de-la-clinique-nassiera-too.pdf) |
+| ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO | A4 paysage | [`specimens/CFG-configuration-clinique/cfg-organisation-organigramme-de-la-clinique-nassiera-too.pdf`](specimens/CFG-configuration-clinique/cfg-organisation-organigramme-de-la-clinique-nassiera-too.pdf) |
 | Matrice de traçabilité des règles métier | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-regles-matrice-de-tracabilite-des-regles-metier.pdf`](specimens/CFG-configuration-clinique/cfg-regles-matrice-de-tracabilite-des-regles-metier.pdf) |
 | Grille tarifaire des actes et prestations | A4 portrait | [`specimens/CFG-configuration-clinique/cfg-tarifs-grille-tarifaire-des-actes-et-prestations.pdf`](specimens/CFG-configuration-clinique/cfg-tarifs-grille-tarifaire-des-actes-et-prestations.pdf) |
 
@@ -384,7 +384,7 @@ Il est signalé, non corrigé : ce dossier ne modifie aucun fichier de l'applica
 - Les montants et les lignes sont ceux du jeu de démonstration, à la date du banc (16/08/2026) : un état peut sortir avec des zéros ou des tableaux vides quand le jeu n'a rien à cette date (l'arrêté de caisse du jour, par exemple). Rien n'est inventé pour le remplir.
 - Un site d'impression peut produire plusieurs documents (selon le patient, la modalité, le mois) : seuls les premiers intitulés distincts sont gardés (au plus 6 par site).
 - Les écrans sont explorés avec le profil administrateur : un état réservé à un autre profil par surcharge d'écran reste atteignable tant que l'écran s'ouvre à l'administrateur ; les écrans fermés à tous (activités désactivées) ne sont explorés que par les scénarios dédiés (banque de sang).
-- Les états de la maquette sont tous en A4 portrait, sauf le ticket de caisse (rouleau 80 mm) et le badge (carte CR80, recto et verso sur une feuille de 93,6 mm).
+- Les états de la maquette sont en A4 portrait, sauf le ticket de caisse (rouleau 80 mm), le badge (carte CR80, recto et verso sur une feuille de 93,6 mm) et l'organigramme (A4 paysage, quatrième gabarit de `print.js`).
 - La taille tient à Chrome, qui écrit la police Inter (variable) en Type 3 ; les objets identiques sont dédoublonnés après coup (pypdf), sans perte.
 
 ## Confidentialité

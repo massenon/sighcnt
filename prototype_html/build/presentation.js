@@ -9,6 +9,9 @@
  *   node build/presentation.js --phase=complements  joue les 13 sites que la capture n'atteint pas (banc dédié, --n=1,2 pour un sous-ensemble)
  *   node build/presentation.js --phase=pdf      substitue les identités, rend les PDF
  *   node build/presentation.js --phase=index    index.html, README.md, contrôle
+ *   --incremental (phases pdf et index) : ne rend que les captures présentes et ne retouche que leurs lignes de l'index et du README
+ *     (ex. un seul état : --phase=capture --pages=cfg-organisation, puis --phase=pdf --incremental, puis --phase=index --incremental,
+ *     avec SIGH_PRES_TMP sur un dossier neuf et SIGH_PORT_PHP / SIGH_BASE_TEST à soi).
  *
  * Options : --worker=i/n (répartit les écrans entre n processus, chacun avec son
  * serveur PHP, son port et sa base), --modules=M8,M9, --pages=a,b, --max=N.
@@ -1133,12 +1136,14 @@ function substituerDansPage(src, donnees) {
 function gabarit(largeur, fonction) {
   const w = parseFloat(largeur) || 210;
   if (largeur && /mm$/.test(largeur) && w <= 120) return { code: fonction === 'badge' ? 'carte CR80 (recto et verso)' : 'ticket 80 mm', w: w };
+  /* Quatrième gabarit : le A4 paysage (organigramme, 10/11/2026), reconnu à la largeur de la feuille. */
+  if (largeur && /mm$/.test(largeur) && w >= 290) return { code: 'A4 paysage', w: 297, paysage: true };
   return { code: 'A4 portrait', w: 210 };
 }
 
 /* Chrome écrit les polices variables d'Inter en Type 3, dupliquées : on dédoublonne les objets identiques
    et on recompresse les flux (pypdf). Sans Python ou sans pypdf, les PDF restent tels que Chrome les écrit. */
-function compresserPdf(dossier) {
+function compresserPdf(dossier, seulement) {
   const code = [
     'import sys, os, warnings',
     'warnings.filterwarnings("ignore")',
@@ -1147,6 +1152,7 @@ function compresserPdf(dossier) {
     'for racine, _, fichiers in os.walk(sys.argv[1]):',
     '    for f in fichiers:',
     '        if not f.endswith(".pdf"): continue',
+    '        if len(sys.argv) > 2 and f not in sys.argv[2].split("|"): continue',
     '        p = os.path.join(racine, f)',
     '        avant += os.path.getsize(p)',
     '        w = PdfWriter(clone_from=PdfReader(p))',
@@ -1156,7 +1162,7 @@ function compresserPdf(dossier) {
     '        apres += os.path.getsize(p)',
     'print("compression: %.1f Mo -> %.1f Mo" % (avant / 1048576, apres / 1048576))',
   ].join('\n');
-  const r = spawnSync('python3', ['-I', '-c', code, dossier], { encoding: 'utf8', maxBuffer: 1 << 26 });
+  const r = spawnSync('python3', ['-I', '-c', code, dossier].concat(seulement ? [seulement.join('|')] : []), { encoding: 'utf8', maxBuffer: 1 << 26 });
   console.log(r.status === 0 ? r.stdout.trim() : 'compression ignorée (python3 ou pypdf absent) : ' + String(r.stderr).slice(-160));
 }
 
@@ -1173,7 +1179,8 @@ async function pdf() {
   const browser = await puppeteer.launch({ executablePath: trouverChrome(), headless: true, args: ['--no-sandbox'] });
   const capDir = path.join(TMP, 'captures');
   const specs = path.join(SORTIE, 'specimens'); const vign = path.join(SORTIE, 'vignettes');
-  fs.rmSync(specs, { recursive: true, force: true }); fs.rmSync(vign, { recursive: true, force: true });
+  /* --incremental : ne rend QUE les captures présentes (régénérer un spécimen sans retoucher les 181 autres). */
+  if (!FLAG('incremental')) { fs.rmSync(specs, { recursive: true, force: true }); fs.rmSync(vign, { recursive: true, force: true }); }
   const fichiers = [];
   fs.readdirSync(capDir).sort().forEach((p) => fs.readdirSync(path.join(capDir, p)).sort().forEach((f) => fichiers.push(path.join(capDir, p, f))));
   const manifeste = [];
@@ -1198,7 +1205,7 @@ async function pdf() {
       + '.pres-filigrane{position:fixed;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:9999}'
       + '.pres-filigrane span{transform:rotate(-32deg);font:700 ' + (petit ? '15px' : '46px') + '/1.1 Inter,Arial,sans-serif;color:rgba(185,28,28,.16);text-transform:uppercase;letter-spacing:.06em;text-align:center;white-space:nowrap}'
       + '.pres-bandeau{position:fixed;left:0;right:0;bottom:0;text-align:center;font:600 ' + (petit ? '6px' : '8px') + '/1.4 Inter,Arial,sans-serif;color:#b91c1c;background:rgba(254,226,226,.85);padding:1px 0;z-index:9999;text-transform:uppercase;letter-spacing:.08em}'
-      + '@page{' + (petit ? '' : 'size:A4;') + 'margin:0}</style></head><body>'
+      + '@page{' + (petit ? '' : (g.paysage ? 'size:A4 landscape;' : 'size:A4;')) + 'margin:0}</style></head><body>'
       + c.html + '<div class="pres-filigrane"><span>' + filigrane + '</span></div><div class="pres-bandeau">' + filigrane + '</div></body></html>';
     await page.setViewport({ width: Math.ceil(g.w / 25.4 * 96) + 2, height: 1200 });
     await page.setContent(html, { waitUntil: 'load', timeout: 60000 });
@@ -1218,18 +1225,19 @@ async function pdf() {
       /* La feuille de style du logiciel déclare @page A4 : le format réduit se redéclare ici, au mm près. */
       await page.addStyleTag({ content: '@page{size:' + g.w + 'mm ' + (Math.ceil(hpx * 25.4 / 96) + 2) + 'mm;margin:0}' });
       opts.preferCSSPageSize = true;
-    } else { opts.format = 'A4'; opts.preferCSSPageSize = true; }
+    } else { opts.format = 'A4'; opts.preferCSSPageSize = true; if (g.paysage) opts.landscape = true; }
     await page.pdf(Object.assign({ path: path.join(specs, dossier, nom + '.pdf') }, opts));
     /* Vignette : haut de la première page, JPEG léger. */
     const largeurPx = Math.ceil(g.w / 25.4 * 96);
     await page.screenshot({ path: path.join(vign, dossier, nom + '.jpg'), type: 'jpeg', quality: 45,
-      clip: { x: 0, y: 0, width: largeurPx, height: Math.min(hpx, petit ? 1000 : 1123), scale: petit ? 0.5 : 0.36 } });
+      clip: { x: 0, y: 0, width: largeurPx, height: Math.min(hpx, petit ? 1000 : (g.paysage ? 794 : 1123)), scale: petit ? 0.5 : (g.paysage ? 0.3 : 0.36) } });
     manifeste.push({ module: c.module, moduleLabel: c.moduleLabel, dossier: dossier, fichier: nom + '.pdf', vignette: nom + '.jpg', titre: c.titre, gabarit: g.code,
       pageId: c.pageId, ecran: c.ecran, site: c.site, fonction: c.fonction, declencheur: c.declencheur, note: c.note || null });
     process.stdout.write('.');
   }
   console.log('\n' + manifeste.length + ' PDF');
-  compresserPdf(specs);
+  if (FLAG('incremental')) [...new Set(manifeste.map((m) => m.dossier))].forEach((d) => compresserPdf(path.join(specs, d), manifeste.filter((m) => m.dossier === d).map((m) => m.fichier)));
+  else compresserPdf(specs);
   fs.writeFileSync(path.join(TMP, 'manifeste.json'), JSON.stringify(manifeste));
   await browser.close(); web.close();
 }
@@ -1340,7 +1348,7 @@ function indexer() {
     + '1. La maquette (`prototype_html/`) est pilotée dans Chrome sur un banc isolé (base jetable, horloge décalée sur la date du jeu, 16/08/2026).\n'
     + '2. Les points d\'entrée de l\'impression (`SIGH.print.etat`, `ticket`, `badge`, `planche`) sont enveloppés : la feuille que le logiciel bâtit est relevée telle quelle, avec le site d\'appel (fichier et ligne) lu dans la pile. Rien n\'est redessiné.\n'
     + '3. Chaque écran est exploré : commandes d\'impression de la page, de chaque onglet, des tiroirs de fiche et des fenêtres de paramétrage. Un spécimen est gardé par site d\'appel et par intitulé d\'état (au plus ' + MAX_PAR_SITE + ' variantes par site).\n'
-    + '4. Les identités sont substituées dans le texte (voir Confidentialité), puis la feuille est rendue en PDF par Chrome (`page.pdf`) avec la même feuille de style que le logiciel : A4 portrait, ticket 80 mm, carte CR80 aux dimensions réelles.\n'
+    + '4. Les identités sont substituées dans le texte (voir Confidentialité), puis la feuille est rendue en PDF par Chrome (`page.pdf`) avec la même feuille de style que le logiciel : A4 portrait ou paysage, ticket 80 mm, carte CR80 aux dimensions réelles.\n'
     + '5. Les ' + COMPLEMENTS.length + ' états que cette exploration n\'atteint pas seule (formulaire à champs obligatoires, plusieurs postes en chaîne, autre profil, activité fermée) sont joués par des scénarios dédiés sur un banc à part (voir « Les 13 spécimens produits par un scénario dédié »).\n'
     + '6. Régénération : `npm run presentation` depuis `prototype_html/` (`build/presentation.js`, phases `capture`, `complements`, `pdf`, `index`).\n\n';
   r += '## Couverture mesurée\n\n'
@@ -1395,7 +1403,7 @@ function indexer() {
     + '- Les montants et les lignes sont ceux du jeu de démonstration, à la date du banc (16/08/2026) : un état peut sortir avec des zéros ou des tableaux vides quand le jeu n\'a rien à cette date (l\'arrêté de caisse du jour, par exemple). Rien n\'est inventé pour le remplir.\n'
     + '- Un site d\'impression peut produire plusieurs documents (selon le patient, la modalité, le mois) : seuls les premiers intitulés distincts sont gardés (au plus ' + MAX_PAR_SITE + ' par site).\n'
     + '- Les écrans sont explorés avec le profil administrateur : un état réservé à un autre profil par surcharge d\'écran reste atteignable tant que l\'écran s\'ouvre à l\'administrateur ; les écrans fermés à tous (activités désactivées) ne sont explorés que par les scénarios dédiés (banque de sang).\n'
-    + '- Les états de la maquette sont tous en A4 portrait, sauf le ticket de caisse (rouleau 80 mm) et le badge (carte CR80, recto et verso sur une feuille de 93,6 mm).\n'
+    + '- Les états de la maquette sont en A4 portrait, sauf le ticket de caisse (rouleau 80 mm), le badge (carte CR80, recto et verso sur une feuille de 93,6 mm) et l\'organigramme (A4 paysage, quatrième gabarit de `print.js`).\n'
     + '- La taille tient à Chrome, qui écrit la police Inter (variable) en Type 3 ; les objets identiques sont dédoublonnés après coup (pypdf), sans perte.\n\n';
   r += '## Confidentialité\n\n'
     + 'Le jeu de démonstration porte les noms du personnel de l\'organigramme réel. Avant le PDF, une table de substitution déterministe remplace dans le texte de chaque état ('
@@ -1411,6 +1419,31 @@ function indexer() {
   fs.writeFileSync(path.join(TMP, 'couverture.json'), JSON.stringify({ atteints: nbAtt, total: etatsSites.length, parModule: Object.keys(parModule).map((m) => [m, parModule[m].atteints, parModule[m].total]), conf: conf }, null, 1));
 }
 
+/* Mise à jour de l'index et du README après un rendu --incremental : seules les lignes des spécimens rendus changent
+   (intitulé, gabarit), plus les totaux. La couverture et le contrôle de confidentialité sont rejoués sur tous les PDF. */
+function indexerIncremental() {
+  const manifeste = JSON.parse(fs.readFileSync(path.join(TMP, 'manifeste.json'), 'utf8'));
+  const rd = path.join(SORTIE, 'README.md'), ix = path.join(SORTIE, 'index.html');
+  let readme = fs.readFileSync(rd, 'utf8'), index = fs.readFileSync(ix, 'utf8');
+  manifeste.forEach((m) => {
+    const lien = 'specimens/' + m.dossier + '/' + m.fichier;
+    readme = readme.split('\n').map((l) => l.indexOf('`' + lien + '`') < 0 ? l : '| ' + m.titre.replace(/\|/g, '/') + (m.note ? ' (voir la section « Les 13 spécimens produits par un scénario dédié »)' : '') + ' | ' + m.gabarit + ' | [`' + lien + '`](' + lien + ') |').join('\n');
+    index = index.replace(new RegExp('(<a class="carte" href="' + lien.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '">)(<img[^>]*>)<div><b>[^<]*</b><span>[^<]*</span></div>'),
+      (_, a, img) => a + img + '<div><b>' + esc(m.titre) + '</b><span>' + esc(m.gabarit) + ' · ' + esc(m.ecran || m.pageId) + '</span></div>');
+  });
+  const taille = tailleDossier(SORTIE);
+  readme = readme.replace(/\*\*(\d+) spécimens\*\*, [\d.]+ Mo\./, (_, n) => '**' + n + ' spécimens**, ' + (taille / 1048576).toFixed(1) + ' Mo.');
+  readme = readme.replace(/- Les états de la maquette sont tous en A4 portrait, sauf le ticket de caisse \(rouleau 80 mm\) et le badge \(carte CR80, recto et verso sur une feuille de 93,6 mm\)\./,
+    '- Les états de la maquette sont en A4 portrait, sauf le ticket de caisse (rouleau 80 mm), le badge (carte CR80, recto et verso sur une feuille de 93,6 mm) et l\'organigramme (A4 paysage, quatrième gabarit de `print.js`).');
+  readme = readme.replace('A4 portrait, ticket 80 mm, carte CR80 aux dimensions réelles.', 'A4 portrait ou paysage, ticket 80 mm, carte CR80 aux dimensions réelles.');
+  index = index.replace(/(<p>)(\d+) spécimens, par module/, (_, a, n) => a + n + ' spécimens, par module');
+  fs.writeFileSync(rd, readme); fs.writeFileSync(ix, index);
+  const conf = controleConfidentialite();
+  console.log('index.html, README.md mis à jour (' + manifeste.length + ' spécimen(s) rendu(s)), ' + (taille / 1048576).toFixed(2) + ' Mo, confidentialité : ' + conf.nbPdf + ' PDF relus, ' + conf.trouvailles.length + ' trouvaille(s)');
+  if (conf.trouvailles.length) console.log(JSON.stringify(conf.trouvailles.slice(0, 20)));
+  if (taille > 60 * 1048576) { console.error('TAILLE > 60 Mo'); process.exit(1); }
+}
+
 if (require.main !== module) {
   module.exports = { instrumentation, servirFichiers, trouverChrome, slug, attendre, ROOT, SORTIE, TMP, aidesPage };
 } else (async () => {
@@ -1423,6 +1456,6 @@ if (require.main !== module) {
     if (r.status !== 0) { console.error('phase complements en échec'); process.exit(1); }
   }
   if (PHASE === 'pdf' || PHASE === 'tout') await pdf();
-  if (PHASE === 'index' || PHASE === 'tout') indexer();
+  if (PHASE === 'index' || PHASE === 'tout') (FLAG('incremental') ? indexerIncremental : indexer)();
   process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });
