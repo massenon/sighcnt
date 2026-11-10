@@ -17106,6 +17106,17 @@ async function viderMessages(page) {
     const { spawnSync } = require('child_process');
     await O.sessionDe('admin');
     await ouvrir('cfg-organisation.html');
+    /* Un scénario voisin (« Référentiels administrables ») ajoute un poste et le laisse : celui-ci repart de la collection SEMÉE
+       (16 postes, celle de l'organigramme du document) puis restitue ce qu'il a trouvé. */
+    const postesAvant = await page.evaluate(() => {
+      const brut = window.SIGH.store.raw(); window.SIGH.store.collection('postes').all();
+      brut.postes = brut.postes || []; const copie = JSON.parse(JSON.stringify(brut.postes)); brut.postes.length = 0; window.SIGH.store.save();
+      return copie;
+    });
+    const restituerPostes = () => page.evaluate((c) => {
+      const brut = window.SIGH.store.raw(); brut.postes = brut.postes || []; brut.postes.length = 0; c.forEach((x) => brut.postes.push(x)); window.SIGH.store.save();
+    }, postesAvant);
+    await ouvrir('cfg-organisation.html');
     const avant = await page.evaluate(async () => {
       [...document.querySelectorAll('.tab')].find((t) => /Organigramme/.test(t.textContent)).click();
       await new Promise((r) => setTimeout(r, 350));
@@ -17192,7 +17203,7 @@ async function viderMessages(page) {
     const pages = (pdfTxt.match(/\/Type\s*\/Page[^s]/g) || []).length;
     const fichierPdf = path.join(os.tmpdir(), 'sigh-org-' + process.pid + '.pdf');
     fs.writeFileSync(fichierPdf, pdfBuf);
-    const pt = spawnSync('pdftotext', ['-layout', fichierPdf, '-'], { encoding: 'utf8' });
+    const pt = spawnSync('pdftotext', ['-raw', fichierPdf, '-'], { encoding: 'utf8' });
     try { fs.unlinkSync(fichierPdf); } catch (e) { /* déjà retiré */ }
     const txt = pt.status === 0 ? pt.stdout : null;
     verifier('PDF mesuré : page A4 en PAYSAGE (largeur > hauteur, 842 x 595 pt) et UNE seule page',
@@ -17247,6 +17258,7 @@ async function viderMessages(page) {
       return out;
     });
     verifier('Un état existant (répartition des secteurs) reste en A4 portrait, sans drapeau d’orientation', portrait.larg === 210 && portrait.attr === null, JSON.stringify(portrait));
+    await restituerPostes();
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 

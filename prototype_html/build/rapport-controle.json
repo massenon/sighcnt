@@ -1,9 +1,14 @@
 {
-  "pages": 4,
+  "pages": 2,
   "jsErrors": [],
   "missing": [],
   "brokenLinks": [],
   "notMounted": [],
   "stubs": [],
-  "slow": []
+  "slow": [
+    {
+      "page": "pages/cfg-systeme.php",
+      "ms": 6954
+    }
+  ]
 }
