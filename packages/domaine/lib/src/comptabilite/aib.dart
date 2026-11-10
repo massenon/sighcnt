@@ -10,6 +10,9 @@
 // (désactivé par défaut : le moteur liste, n'écrit rien) ; Q7 qui supporte les 5 % est un réglage (défaut « clinique », non arrêté : le texte officiel manque, aucun
 // effet comptable n'en découle). Symboles préfixés `aib` / `Aib`.
 
+import '../parametres/definitions.dart' show definitionDeParametre;
+import '../parametres/parametres.dart' show Parametre;
+
 typedef AibFiche = Map<String, Object?>;
 
 /// Les rôles qui écrivent le barème et ses réglages (comme `ROLES_ECRITURE_AIB`) : la Direction lit, ne les écrit pas.
@@ -611,4 +614,63 @@ AibFiche aibEcrireAchats(
     pieces.add({'factureId': l['factureId'], 'numero': numero, 'montant': l['aib']});
   }
   return {'ok': true, 'pieces': pieces, 'refusees': <Object?>[], 'du': ap['du'], 'au': ap['au'], 'lignesEcritures': ecritures};
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// Les réglages au REGISTRE DES PARAMÈTRES du poste (lot L0) : une version datée de `parametres` devient une fiche de réglage
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+/// Le préfixe des quatre réglages au registre des paramètres : `bareme_aib.chargePrelevement`, `bareme_aib.branchementAchats`, `bareme_aib.compteAcompte`,
+/// `bareme_aib.compteContrepartie`.
+const String aibPrefixeParametre = 'bareme_aib.';
+
+/// Les versions du registre des paramètres relues sous la forme des fiches de réglage que les fonctions ci-dessus lisent. Le registre est le SEUL endroit où
+/// le poste tient ces valeurs (famille R : la mère écrit, les fileuls reçoivent) ; cette fonction ne stocke rien.
+///
+/// Une version posée par un agent (date d'effet) est ARRÊTÉE : elle l'a été par un profil qui peut régler le paramètre. La version 0, semée avec le défaut de la
+/// Direction (date d'effet absente, « depuis toujours »), est « à valider » : elle ne devient arrêtée que lorsqu'une version datée la remplace. Une version sans valeur
+/// (compte vide) n'est pas une valeur : elle se lit « sans version ». La date de fin de chaque version est la veille de la date d'effet de la suivante, comme la
+/// maquette la pose à la fermeture. Sans version 0 en base (poste qui n'a pas encore reçu la mère), la définition du registre porte le défaut.
+List<AibFiche> aibReglagesDepuisParametres(Iterable<Parametre> versions) {
+  final out = <AibFiche>[];
+  for (final def in aibDefinitionsReglages) {
+    final cle = '${def['cle']}';
+    final vs = versions.where((v) => v.cle == '$aibPrefixeParametre$cle').toList()
+      ..sort((a, b) {
+        final c = (a.dateEffet ?? '').compareTo(b.dateEffet ?? '');
+        return c != 0 ? c : a.version.compareTo(b.version);
+      });
+    if (!vs.any((v) => v.dateEffet == null)) {
+      final d = definitionDeParametre('$aibPrefixeParametre$cle');
+      if (d != null) {
+        out.add({'id': '$aibPrefixeParametre$cle@defaut@0', 'statut': 'actif', 'cle': cle, 'valeur': d.defaut, 'dateEffet': '0001-01-01', 'dateFin': null, 'aValider': true,
+          'source': d.source, 'motif': 'Défaut semé', 'creePar': 'semis'});
+      }
+    }
+    final fiches = <AibFiche>[
+      for (final v in vs)
+        {
+          'id': v.id,
+          'statut': 'actif',
+          'cle': cle,
+          'valeur': v.valeur,
+          'dateEffet': v.dateEffet ?? '0001-01-01',
+          'dateFin': null,
+          'aValider': v.dateEffet == null,
+          'source': v.source,
+          'motif': v.motif,
+          'creeLe': v.creeLe,
+          'creePar': v.auteur,
+        }
+    ];
+    // La version 0 semée passe en tête (elle porte « depuis toujours »).
+    final existante = out.where((f) => f['cle'] == cle).toList();
+    final toutes = [...existante, ...fiches]..sort((a, b) => _comparer(_s(a['dateEffet']), _s(b['dateEffet'])));
+    out.removeWhere((f) => f['cle'] == cle);
+    for (var i = 0; i < toutes.length; i++) {
+      final suivante = toutes.skip(i + 1).where((x) => _s(x['dateEffet']).compareTo(_s(toutes[i]['dateEffet'])) > 0).toList();
+      out.add({...toutes[i], 'dateFin': suivante.isEmpty ? null : aibVeille(_s(suivante.first['dateEffet']))});
+    }
+  }
+  return out;
 }

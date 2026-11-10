@@ -145,5 +145,15 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
     console.log(`  ${nb} cas : ${sortie.tauxALaDate.length} taux, ${sortie.pourAcheteur.length} acheteurs, ${sortie.gestes.length} gestes, ${Object.keys(sortie.achats).length} états des achats`);
     if (m.erreurs.length) console.log('  avertissements de chargement : ' + m.erreurs.length);
     ecrire('packages/domaine/test/vecteurs/aib.json', final);
+    /* Les SEMENCES du barème (situations et versions, `D.SITUATIONS_AIB`, `D.BAREME_AIB`) : lues sur le magasin amorcé, écrites en constantes Dart pour que
+       le poste les sème telles quelles (une copie à la main divergerait au premier correctif). */
+    const champs = (l, ks) => l.map((f) => '  {' + ks.filter((k) => f[k] !== undefined).map((k) => `'${k}': ${typeof f[k] === 'string' ? "'" + f[k].replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\$/g, '\\$') + "'" : f[k] === null ? 'null' : f[k]}`).join(', ') + '},').join('\n');
+    const entete = '// ENGENDRÉ par prototype_html/build/vecteurs-aib.js (SIGH.data.SITUATIONS_AIB et BAREME_AIB, tels que la maquette les sème au socle), ne pas éditer.\n'
+      + '// Les semences du barème de l\'AIB : trois situations de l\'acheteur et quatre versions datées, toutes « à valider » (aucun texte réglementaire au dépôt, Direction 09/11/2026).\n\n';
+    const sit = final.semences.situations, bar = final.semences.bareme;
+    const src = entete
+      + 'const List<Map<String, Object?>> aibSituationsSemees = [\n' + champs(sit, ['id', 'code', 'libelle', 'declencheur', 'ordre', 'description']) + '\n];\n\n'
+      + 'const List<Map<String, Object?>> aibBaremeSeme = [\n' + champs(bar, ['id', 'situation', 'taux', 'dateEffet', 'dateFin', 'source', 'motif']) + '\n];\n';
+    ecrire('packages/domaine/lib/src/comptabilite/aib_donnees.dart', src);
   } finally { await m.fermer(); }
 })().catch((e) => { console.error(e); process.exit(1); });
