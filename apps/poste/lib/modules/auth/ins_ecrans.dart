@@ -39,7 +39,6 @@ class EcranAccueilInstallation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SceneAcces(
-        icone: LucideIcons.rocket,
         titre: 'Installation du poste',
         sousTitre: 'Ce poste n’a encore aucun compte. Choisissez ce que vous voulez faire.',
         corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
