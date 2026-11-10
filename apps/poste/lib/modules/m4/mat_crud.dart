@@ -52,7 +52,12 @@ class CrudMat extends StatefulWidget {
     this.apresTableau,
     this.validation,
     this.intro,
+    this.actionsSup,
   });
+
+  /// `actionsSup(r, refresh)` du `K.crud` : des commandes propres à l'écran (validation d'un circuit, par exemple), posées après « Consulter ». Une commande
+  /// interdite est ABSENTE : c'est à l'appelant de ne pas la rendre.
+  final List<Widget> Function(BuildContext, Fiche)? actionsSup;
 
   /// `cfg.intro` : l'encadré d'explication, APRÈS les indicateurs et avant les onglets.
   final Widget Function(BuildContext)? intro;
@@ -458,6 +463,7 @@ class _CrudMatState extends State<CrudMat> {
                   icone: LucideIcons.eye,
                   libelle: 'Consulter',
                   onPressed: () => _ouvrirDetail(ctx, f)),
+              ...?widget.actionsSup?.call(context, f),
               if (widget.validation != null) ...ValidationPoste(c).boutonsDeLigne(context, widget.validation!, f),
               if (widget.etat != null)
                 BoutonIcone(

@@ -223,8 +223,10 @@ void main() {
       }
       await t.scrollUntilVisible(find.text('Jours de congé accordés par mois'), 400, scrollable: find.byType(Scrollable).first);
       for (final titre in (obj(c['ecran'])['cartes'] as List)) {
-        expect(find.text('$titre'), findsWidgets, reason: '$titre');
+        // Le relevé de la maquette lit l'en-tête de la carte : titre ET commande (« Réglages du planning et des présences Régler »).
+        expect(find.text('$titre'.replaceAll(RegExp(r' Régler$'), '')), findsWidgets, reason: '$titre');
       }
+      expect(find.widgetWithText(BoutonSigh, 'Régler'), findsOneWidget);
       await t.pump(const Duration(seconds: 10));
     });
 
@@ -235,9 +237,12 @@ void main() {
       final n0 = col.toutes.length;
       await cliquer(t, find.widgetWithText(BoutonSigh, 'Nouveau').first);
       final defauts = obj(obj(c['creation'])['defauts']);
-      for (final k in ['employeId', 'nature', 'dateDebut', 'statutConge']) {
+      for (final k in ['employeId', 'nature', 'dateDebut']) {
         expect('${formulaire(t)[k]}', '${defauts[k]}', reason: 'défaut $k');
       }
+      // La décision ne se saisit plus à la main : elle se tranche par le circuit (lot L5).
+      expect(obj(c['creation'])['sansDecision'], isTrue);
+      expect(find.byKey(const Key('kit:champ:statutConge')), findsNothing);
       poser(t, {'employeId': 'EMP10', 'dateDebut': '2026-11-10', 'dateFin': '2026-11-05'});
       await t.tap(find.widgetWithText(BoutonSigh, 'Créer'));
       await t.pump(const Duration(milliseconds: 300));
@@ -246,17 +251,75 @@ void main() {
       poser(t, {'dateFin': '2026-11-16', 'remplacant': 'GARBA Yahouza', 'motif': 'Repos annuel'});
       await t.tap(find.widgetWithText(BoutonSigh, 'Créer'));
       await t.pump(const Duration(milliseconds: 400));
-      fichesEgales(col.toutes.first, obj(obj(c['creation'])['creee'])['fiche'] as M);
+      // Une demande NAÎT À VALIDER ; qui l'a saisie dépend de la session (la maquette : sa session de relevé).
+      fichesEgales(col.toutes.first, obj(obj(c['creation'])['creee'])['fiche'] as M, ignores: {'saisiPar'});
       expect(col.toutes.first['reference'], 'CG-0023');
       expect(col.toutes.first['duree'], 6);
+      expect([col.toutes.first['statutConge'], col.toutes.first['validationEtat']], ['en_attente', 'a_valider']);
+      expect('${col.toutes.first['saisiPar']}'.isNotEmpty, isTrue, reason: 'RG-12');
       kpisIdentiques(t, obj(obj(c['creation'])['apres'])['kpis']);
       await chercher(t, 'CG-0023');
       await cliquer(t, find.byTooltip('Modifier').first);
-      poser(t, {'statutConge': 'valide', 'dateFin': '2026-11-20'});
+      poser(t, {'dateFin': '2026-11-20'});
       await t.tap(find.widgetWithText(BoutonSigh, 'Enregistrer'));
       await t.pump(const Duration(milliseconds: 400));
       final f = col.toutes.firstWhere((x) => x['reference'] == 'CG-0023');
-      fichesEgales(f, obj(obj(obj(c['modification'])['enregistre'])['fiche']));
+      fichesEgales(f, obj(obj(obj(c['modification'])['enregistre'])['fiche']), ignores: {'saisiPar'});
+      await t.pump(const Duration(seconds: 10));
+    });
+
+    testWidgets('le circuit (lot L5) : Valider accorde (confirmation nommée, étape et circuit consignés) ; Refuser exige son motif et l\'écrit', (t) async {
+      final m = poste({'conges': jeu('conges')});
+      await ouvrir(t, m, 'm10-conges');
+      final col = m.collection('conges');
+      final circuit = obj(c['circuit']);
+      await chercher(t, 'CG-0010');
+      for (final b in (circuit['boutonsLigne'] as List)) {
+        expect(find.byTooltip('$b'), findsWidgets, reason: 'commande $b');
+      }
+      await cliquer(t, find.byTooltip('Valider cette demande de congé').first);
+      expect(find.text('Valider cette demande de congé ?'), findsOneWidget);
+      expect(find.textContaining('Circuit en vigueur : Surveillant seul.'), findsOneWidget);
+      await cliquer(t, find.widgetWithText(BoutonSigh, 'Valider'));
+      final f = col.toutes.firstWhere((x) => x['reference'] == 'CG-0010');
+      final attendu = obj(obj(circuit['valider'])['fiche']);
+      expect([f['statutConge'], f['validationEtat'], f['circuitUtilise'], f['valideLe']], [attendu['statutConge'], attendu['validationEtat'], attendu['circuitUtilise'], attendu['valideLe']]);
+      final etape = (f['etapesFaites'] as List).single as Map;
+      expect([etape['etape'], etape['decision'], etape['le']], ['surveillant', 'valide', '2026-10-30']);
+      expect('${f['validePar']}'.isNotEmpty, isTrue, reason: 'RG-12');
+      expect(find.text('Pièce validée.'), findsOneWidget);
+      // Refuser : sans motif le moteur dit pourquoi (rien n'est écrit) ; avec motif, la demande est refusée et le motif se lit dans la colonne.
+      await chercher(t, 'CG-0004');
+      await cliquer(t, find.byTooltip('Refuser cette demande de congé').first);
+      await cliquer(t, find.widgetWithText(BoutonSigh, 'Refuser'));
+      expect(col.toutes.firstWhere((x) => x['reference'] == 'CG-0004')['statutConge'], 'en_attente');
+      expect(find.text('Un refus exige son motif : l’agent doit pouvoir le lire.'), findsOneWidget);
+      ToastsSigh.viderPourTests(); // le toast couvre les commandes de la ligne
+      await t.pump(const Duration(milliseconds: 300));
+      await chercher(t, 'CG-0004');
+      await cliquer(t, find.byTooltip('Refuser cette demande de congé').first);
+      await t.enterText(find.byType(TextField).last, 'Période de forte activité');
+      await t.pump();
+      await cliquer(t, find.widgetWithText(BoutonSigh, 'Refuser'));
+      final r = col.toutes.firstWhere((x) => x['reference'] == 'CG-0004');
+      expect([r['statutConge'], r['validationEtat'], r['motifRefus']], ['refuse', 'refuse', 'Période de forte activité']);
+      expect(find.text('Motif : Période de forte activité'), findsOneWidget);
+      await t.pump(const Duration(seconds: 10));
+    });
+
+    testWidgets('droits : le surveillant OUVRE les congés en lecture et tranche sans saisir ; la DA, hors étape du circuit par défaut, ne voit aucune commande de décision', (t) async {
+      final m = poste({'conges': jeu('conges')});
+      await ouvrir(t, m, 'm10-conges', role: 'surveillant');
+      await chercher(t, 'CG-0010');
+      expect(find.byTooltip('Valider cette demande de congé'), findsOneWidget);
+      expect(find.byTooltip('Refuser cette demande de congé'), findsOneWidget);
+      expect(find.widgetWithText(BoutonSigh, 'Nouveau'), findsNothing, reason: 'le surveillant tranche sans saisir');
+      expect(find.byTooltip('Modifier'), findsNothing);
+      await t.pump(const Duration(seconds: 10));
+      await ouvrir(t, poste({'conges': jeu('conges')}), 'm10-conges', role: 'da');
+      await chercher(t, 'CG-0010');
+      expect(find.byTooltip('Valider cette demande de congé'), findsNothing);
+      expect(find.widgetWithText(BoutonSigh, 'Régler'), findsOneWidget, reason: 'la DA règle le circuit');
       await t.pump(const Duration(seconds: 10));
     });
 
@@ -440,9 +503,11 @@ void main() {
       await ouvrir(t, m, 'm10-missions');
       kpisIdentiques(t, obj(o['ecran'])['kpis']);
       ordreIdentique(t, (obj(o['ecran'])['tableaux'] as List).first, max: 14);
-      expect(find.textContaining('2 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la signature de la Directrice Administrative.'), findsOneWidget);
-      expect(find.text('En attente de validation DA'), findsWidgets);
+      expect(find.textContaining('2 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la validation du circuit.'), findsOneWidget);
+      expect(find.text('En attente de validation'), findsWidgets);
       expect(find.text('non validé'), findsWidgets);
+      expect(find.text('Avis du chef de service : à consigner'), findsWidgets);
+      expect(find.text('Réglages du planning et des présences'), findsOneWidget);
       expect(find.text('Registre des ordres de mission'), findsWidgets);
       await t.pump(const Duration(seconds: 10));
     });
@@ -450,37 +515,103 @@ void main() {
     testWidgets('commandes de la ligne selon l’état : valider seulement pour un ordre à valider', (t) async {
       final m = poste({'missions': jeu('missions')});
       await ouvrir(t, m, 'm10-missions');
-      expect(find.byTooltip('Valider (Directrice Administrative)'), findsNWidgets(2), reason: 'deux ordres en attente');
+      // L'avis ne se consigne que sur un ordre à valider ; la décision se propose aussi pour un projet (état lu « à valider », le moteur refuse PAS_SOUMISE : comme la maquette).
+      final aValider = m.collection('missions').actives.where((x) => x['statutMission'] == 'a_valider').length;
+      final aDecider = m.collection('missions').actives.where((x) => x['statutMission'] == 'a_valider' || x['statutMission'] == 'projet').length;
+      expect(aValider, 2, reason: 'deux ordres en attente');
+      expect(find.byTooltip('Avis du chef de service'), findsNWidgets(aValider));
+      for (final b in ['Valider cet ordre de mission', 'Refuser cet ordre de mission']) {
+        expect(find.byTooltip(b), findsNWidgets(aDecider), reason: b);
+      }
+      expect(find.byTooltip('Valider (Directrice Administrative)'), findsNothing, reason: 'la validation suit le circuit réglé au poste');
       expect(find.byTooltip('Marquer terminée'), findsNothing, reason: 'aucun ordre validé ou en cours au jeu');
       expect(find.byTooltip('Imprimer l’ordre'), findsWidgets);
       await t.pump(const Duration(seconds: 10));
     });
 
-    testWidgets('validation : confirmation nommée, état « Validée », validatrice et date, KPI de la maquette', (t) async {
+    testWidgets('le circuit : AVIS du chef de service requis avant la validation, puis le surveillant valide ; état « Validée », validateur et date, KPI de la maquette', (t) async {
       final m = poste({'missions': jeu('missions')});
       await ouvrir(t, m, 'm10-missions');
       final col = m.collection('missions');
+      final val = obj(o['validation']);
+      Map<String, Object?> om() => col.toutes.firstWhere((x) => x['reference'] == 'OM-2026-0004');
       await chercher(t, 'OM-2026-0004');
-      await cliquer(t, find.byTooltip('Valider (Directrice Administrative)').first);
-      expect(find.text('Valider l’ordre de mission OM-2026-0004 ?'), findsOneWidget);
-      expect(find.textContaining('La validation autorise le départ de NKOUÉ Jean du 18/11/2026 au 22/11/2026, aux frais de Ministère de la Santé.'), findsOneWidget);
-      await t.tap(find.widgetWithText(BoutonSigh, 'Valider l’ordre'));
-      await t.pump(const Duration(milliseconds: 400));
-      final f = col.toutes.firstWhere((x) => x['reference'] == 'OM-2026-0004');
-      // E625 levé (A1) : la maquette écrit « TAKI Alimatou » quelle que soit la personne connectée ; le poste écrit l'AGENT qui valide.
-      fichesEgales(f, obj(obj(obj(o['validation'])['apres'])['fiche']), ignores: {'valideePar', 'valideeParId'});
-      expect(f['valideePar'], 'Administrateur système', reason: 'agent de démonstration du rôle admin');
-      expect(f['valideeParId'], 'demo:admin');
-      expect(f['valideeLe'], '2026-10-30');
+      // Sans avis : le moteur refuse en le nommant, rien n'est écrit.
+      await cliquer(t, find.byTooltip('Valider cet ordre de mission').first);
+      expect(find.text('Valider cet ordre de mission ?'), findsOneWidget);
+      expect(find.textContaining('Circuit en vigueur : Surveillant seul.'), findsOneWidget);
+      await cliquer(t, find.widgetWithText(BoutonSigh, 'Valider'));
+      final sans = obj(val['sansAvis']);
+      for (final x in (sans['toasts'] as List).first as List) {
+        expect(find.text('$x'), findsOneWidget);
+      }
+      expect(om()['statutMission'], 'a_valider');
+      ToastsSigh.viderPourTests();
+      await t.pump(const Duration(milliseconds: 300));
+      // L'avis du chef de service : défavorable sans motif refusé (la modale reste ouverte), puis favorable consigné.
+      await chercher(t, 'OM-2026-0004');
+      await cliquer(t, find.byTooltip('Avis du chef de service').first);
+      final avis = obj(o['avis']);
+      for (final l in (avis['champs'] as List)) {
+        expect(find.textContaining('$l'.replaceAll(' *', '')), findsWidgets, reason: '$l');
+      }
+      poser(t, {'chef': 'GARBA Yahouza', 'avis': 'defavorable'});
+      await cliquer(t, find.widgetWithText(BoutonSigh, 'Consigner l’avis'));
+      expect(find.text('Un avis défavorable exige son motif.'), findsOneWidget);
+      expect(find.text('Consigner l’avis'), findsWidgets, reason: 'la modale reste ouverte');
+      expect(om().containsKey('avisChefService'), isFalse);
+      poser(t, {'avis': 'favorable'});
+      await cliquer(t, find.widgetWithText(BoutonSigh, 'Consigner l’avis'));
+      final a = om()['avisChefService'] as Map;
+      expect([a['avis'], a['chef'], a['motif'], a['le']], ['favorable', 'GARBA Yahouza', null, '2026-10-30']);
+      expect('${a['consignePar']}'.isNotEmpty, isTrue, reason: 'RG-12');
+      expect(find.text('Avis consigné.'), findsOneWidget);
+      ToastsSigh.viderPourTests();
+      await t.pump(const Duration(milliseconds: 300));
+      // Valider : l'étape du surveillant (l'administrateur la tient), consignée, puis « Validée ».
+      await chercher(t, 'OM-2026-0004');
+      await cliquer(t, find.byTooltip('Valider cet ordre de mission').first);
+      await cliquer(t, find.widgetWithText(BoutonSigh, 'Valider'));
+      final f = om();
+      final attendu = obj(obj(val['apres'])['fiche']);
+      // La maquette l'écrit au nom de sa session de relevé : le poste l'écrit au nom de l'AGENT qui valide.
+      const session = {'avisChefService', 'etapesFaites', 'validePar', 'valideePar'};
+      fichesEgales(f, attendu, ignores: session);
+      expect([f['statutMission'], f['validationEtat'], f['circuitUtilise'], f['valideeLe'], f['valideLe']], ['validee', 'valide', 'surveillant', '2026-10-30', '2026-10-30']);
+      expect('${f['valideePar']}'.isNotEmpty && f['valideePar'] == f['validePar'], isTrue);
+      expect((f['etapesFaites'] as List).length, 1);
       await chercher(t, '');
-      kpisIdentiques(t, obj(obj(o['validation'])['ecran'])['kpis']);
-      expect(find.text('Ordre de mission validé.'), findsWidgets);
+      kpisIdentiques(t, obj(val['ecran'])['kpis']);
+      expect(find.text('Pièce validée.'), findsWidgets);
       // la mission validée peut être terminée ou reportée
       await chercher(t, 'OM-2026-0004');
       expect(find.byTooltip('Marquer terminée'), findsOneWidget);
       expect(find.byTooltip('Reporter'), findsOneWidget);
       await cliquer(t, find.byTooltip('Marquer terminée'));
-      expect(col.toutes.firstWhere((x) => x['reference'] == 'OM-2026-0004')['statutMission'], 'terminee');
+      expect(om()['statutMission'], 'terminee');
+      await t.pump(const Duration(seconds: 10));
+    });
+
+    testWidgets('refuser un ordre : le motif est exigé (nommé par le moteur), il est écrit et se lit dans la colonne Validation', (t) async {
+      final m = poste({'missions': jeu('missions')});
+      await ouvrir(t, m, 'm10-missions');
+      final col = m.collection('missions');
+      await chercher(t, 'OM-2026-0013');
+      await cliquer(t, find.byTooltip('Refuser cet ordre de mission').first);
+      await cliquer(t, find.widgetWithText(BoutonSigh, 'Refuser'));
+      expect(find.text('Un refus exige son motif : l’agent doit pouvoir le lire.'), findsOneWidget);
+      expect(col.toutes.firstWhere((x) => x['reference'] == 'OM-2026-0013')['statutMission'], 'a_valider');
+      ToastsSigh.viderPourTests();
+      await t.pump(const Duration(milliseconds: 300));
+      await chercher(t, 'OM-2026-0013');
+      await cliquer(t, find.byTooltip('Refuser cet ordre de mission').first);
+      await t.enterText(find.byType(TextField).last, 'Pas de budget');
+      await t.pump();
+      await cliquer(t, find.widgetWithText(BoutonSigh, 'Refuser'));
+      final r = col.toutes.firstWhere((x) => x['reference'] == 'OM-2026-0013');
+      expect([r['statutMission'], r['validationEtat'], r['motifRefus']], ['refusee', 'refuse', 'Pas de budget']);
+      expect(find.text('Refusée'), findsWidgets);
+      expect(find.text('Refusé : Pas de budget'), findsOneWidget);
       await t.pump(const Duration(seconds: 10));
     });
 
@@ -496,9 +627,12 @@ void main() {
       final n0 = col.toutes.length;
       await cliquer(t, find.widgetWithText(BoutonSigh, 'Nouveau').first);
       final defauts = obj(obj(o['creation'])['defauts']);
-      for (final k in ['nature', 'agentId', 'structurePrise', 'dateDepart', 'dateRetour', 'statutMission']) {
+      for (final k in ['nature', 'agentId', 'structurePrise', 'dateDepart', 'dateRetour']) {
         expect('${formulaire(t)[k]}', '${defauts[k]}', reason: 'défaut $k');
       }
+      // L'état ne se saisit plus à la main : l'ordre naît À VALIDER (lot L5).
+      expect(obj(o['creation'])['sansEtat'], isTrue);
+      expect(find.byKey(const Key('kit:champ:statutMission')), findsNothing);
       await t.tap(find.widgetWithText(BoutonSigh, 'Créer'));
       await t.pump(const Duration(milliseconds: 300));
       expect(find.text('Le formulaire comporte des erreurs.'), findsWidgets);
@@ -507,15 +641,17 @@ void main() {
       await t.tap(find.widgetWithText(BoutonSigh, 'Créer'));
       await t.pump(const Duration(milliseconds: 400));
       expect(col.toutes.length, n0 + 1);
-      fichesEgales(col.toutes.first, obj(obj(o['creation'])['creee'])['fiche'] as M);
+      fichesEgales(col.toutes.first, obj(obj(o['creation'])['creee'])['fiche'] as M, ignores: {'saisiPar'});
+      expect([col.toutes.first['statutMission'], col.toutes.first['validationEtat']], ['a_valider', 'a_valider']);
+      expect('${col.toutes.first['saisiPar']}'.isNotEmpty, isTrue, reason: 'RG-12');
       expect(col.toutes.first['reference'], 'OM-2026-0015');
       kpisIdentiques(t, obj(obj(o['creation'])['apres'])['kpis']);
       await chercher(t, 'OM-2026-0015');
       await cliquer(t, find.byTooltip('Modifier').first);
-      poser(t, {'destination': 'Djougou', 'statutMission': 'projet'});
+      poser(t, {'destination': 'Djougou'});
       await t.tap(find.widgetWithText(BoutonSigh, 'Enregistrer'));
       await t.pump(const Duration(milliseconds: 400));
-      fichesEgales(col.toutes.firstWhere((x) => x['reference'] == 'OM-2026-0015'), obj(obj(obj(o['modification'])['enregistre'])['fiche']));
+      fichesEgales(col.toutes.firstWhere((x) => x['reference'] == 'OM-2026-0015'), obj(obj(obj(o['modification'])['enregistre'])['fiche']), ignores: {'saisiPar'});
       await archiverLigne(t, 'Doublon');
       expect(col.toutes.firstWhere((x) => x['reference'] == 'OM-2026-0015')['statut'], 'archive');
       await t.pump(const Duration(seconds: 10));
@@ -533,10 +669,11 @@ void main() {
       await t.pump(const Duration(seconds: 10));
     });
 
-    testWidgets('droits : un profil qui lit M10 sans écrire n’a NI « Valider » NI « Nouveau » (commandes ABSENTES, jamais grisées)', (t) async {
+    testWidgets('droits : un profil qui lit M10 sans être l\'étape du circuit n’a NI « Valider » NI « Avis » NI « Nouveau » (commandes ABSENTES, jamais grisées)', (t) async {
       final m = poste({'missions': jeu('missions')});
       await ouvrir(t, m, 'm10-missions', role: 'direction');
-      expect(find.byTooltip('Valider (Directrice Administrative)'), findsNothing);
+      expect(find.byTooltip('Valider cet ordre de mission'), findsNothing);
+      expect(find.byTooltip('Avis du chef de service'), findsNothing);
       expect(find.widgetWithText(BoutonSigh, 'Nouveau'), findsNothing);
       expect(find.byTooltip('Imprimer l’ordre'), findsWidgets);
       await t.pump(const Duration(seconds: 10));

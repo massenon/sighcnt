@@ -10,6 +10,7 @@ import '../../shell/contexte_ecran.dart';
 import '../m4/mat_commun.dart';
 import '../m4/mat_crud.dart';
 import 'rha_commun.dart';
+import 'rhb_circuit.dart';
 
 /// `m10-conges` — demandes, validation et suivi des congés. Un congé qui finit AUJOURD'HUI n'est plus « en cours » (la fin est lue à minuit) ; refus
 /// nommé si la fin précède le début ; la lecture graphique vient APRÈS le tableau. La référence suit la série du registre (E620).
@@ -26,9 +27,14 @@ class EcranConges extends StatelessWidget with EcranMaquette {
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     final col = c.magasin.collection('conges');
-    Fiche fiche(BuildContext ctx, Map<String, Object?> v, Fiche? existante) => rhaCongeEnregistrable(
-        {...v}, rhaAgentPar(c.magasin, v['employeId']),
-        reference: '${existante?['reference'] ?? ''}'.isNotEmpty ? '${existante!['reference']}' : admReferenceSuivante('CG-', 4, col.toutes));
+    Fiche fiche(BuildContext ctx, Map<String, Object?> v, Fiche? existante) {
+      final f = rhaCongeEnregistrable(
+          {...v}, rhaAgentPar(c.magasin, v['employeId']),
+          reference: '${existante?['reference'] ?? ''}'.isNotEmpty ? '${existante!['reference']}' : admReferenceSuivante('CG-', 4, col.toutes));
+      // UNE DEMANDE NAÎT À VALIDER (lot L5) : la décision ne se saisit pas à la main, elle se tranche par le circuit réglé au poste.
+      if (existante == null) return {...f, 'statutConge': 'en_attente', ...rhbPlanningPoste(c).naissance()};
+      return f;
+    }
 
     return ListenableBuilder(
         listenable: col,
@@ -56,7 +62,11 @@ class EcranConges extends StatelessWidget with EcranMaquette {
                     texte: (r) => rhaDecisionsConge['${r['statutConge']}']?.$1 ?? '—',
                     rendu: (_, r) {
                       final x = rhaDecisionsConge['${r['statutConge']}'] ?? ('—', 'neutral');
-                      return BadgeSigh(x.$1, ton: matTon(x.$2));
+                      return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                        BadgeSigh(x.$1, ton: matTon(x.$2)),
+                        if (etatValidationRh('conges', r) == 'valide_surveillant') const Text('Surveillant : validé, DAF attendue', style: TextStyle(color: JetonsShell.info700, fontSize: 12, height: 16 / 12)),
+                        if (r['motifRefus'] != null && r['motifRefus'] != '') Text('Motif : ${r['motifRefus']}', style: const TextStyle(color: JetonsShell.danger700, fontSize: 12, height: 16 / 12)),
+                      ]);
                     }),
               ],
               champs: (m) => [
@@ -70,12 +80,11 @@ class EcranConges extends StatelessWidget with EcranMaquette {
                     type: TypeChamp.select,
                     // `personnel().map(...)` : l'ordre de la collection, pas un tri.
                     options: [for (final e in m.collection('personnel').actives) OptionChamp('${e['nomComplet']}')]),
-                ChampDef(nom: 'statutConge', libelle: 'Décision', type: TypeChamp.select, requis: true, options: [
-                  for (final k in const ['en_attente', 'valide', 'refuse']) OptionChamp(k, rhaDecisionsConge[k]!.$1),
-                ]),
                 const ChampDef(nom: 'motif', libelle: 'Motif', type: TypeChamp.textarea, lignes: 2, col: ColChamp.plein),
               ],
-              valeursInitiales: () => {'statutConge': 'en_attente', 'nature': 'Congé annuel', 'dateDebut': iso(c.aujourdhui)},
+              valeursInitiales: () => {'nature': 'Congé annuel', 'dateDebut': iso(c.aujourdhui)},
+              intro: (ctx) => const RhbCarteReglages(),
+              actionsSup: (ctx, r) => rhbCommandesValidation(ctx, c, 'conges', r),
               refuser: (v) => rhaRefuserConge(v['dateDebut'], v['dateFin']),
               transformer: (ctx, v) => fiche(ctx, v, null),
               transformerExistante: fiche,

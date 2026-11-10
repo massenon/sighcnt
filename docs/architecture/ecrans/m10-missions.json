@@ -18,7 +18,7 @@
   "Ressources humaines"
  ],
  "regle": [
-  "2 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la signature de la Directrice Administrative."
+  "2 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la validation du circuit."
  ],
  "onglets": [],
  "kpis": [
@@ -28,6 +28,7 @@
   "Terminées"
  ],
  "cartes": [
+  "Réglages du planning et des présences",
   "Registre des ordres de mission"
  ],
  "tableaux": [
@@ -43,6 +44,7 @@
   ]
  ],
  "commandes": [
+  "Régler",
   "Colonnes",
   "Exporter",
   "Nouveau"

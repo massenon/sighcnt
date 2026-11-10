@@ -239,11 +239,13 @@ void main() {
       kpisEgaux(rhaKpisMissions(m), obj(e['ecran'])['kpis']);
       final apres = [
         for (final x in m)
-          if (x['reference'] == 'OM-2026-0004') {...x, ...rhaCorrectifValidationMission(auj)} else x
+          if (x['reference'] == 'OM-2026-0004') {...x, 'statutMission': 'validee'} else x
       ];
       kpisEgaux(rhaKpisMissions(apres), obj(obj(e['validation'])['ecran'])['kpis']);
+      // Lot L5 : la validation passe par le circuit (`trancherRh`, rejoué par planning_rh_test) et s'attribue à la personne qui valide, plus à « TAKI Alimatou ».
       final fiche = obj(obj(obj(e['validation'])['apres'])['fiche']);
-      expect(fiche['valideePar'], 'TAKI Alimatou');
+      expect(fiche['statutMission'], 'validee');
+      expect('${fiche['valideePar']}'.isNotEmpty, isTrue);
       expect(fiche['valideeLe'], '2026-10-30');
     });
 
@@ -254,7 +256,8 @@ void main() {
       expect(rhaGestesMission('en_cours').terminerReporter, isTrue);
       expect(rhaGestesMission('terminee').terminerReporter, isFalse);
       expect(rhaStatutMission('???').$2, 'En projet');
-      expect(rhaStatutMission('a_valider').$2, 'En attente de validation DA');
+      expect(rhaStatutMission('a_valider').$2, 'En attente de validation');
+      expect(rhaStatutMission('refusee').$2, 'Refusée');
     });
 
     test('création : référence OM-AAAA-NNNN (année de la date de départ, rang par année), agent et poste repris du dossier', () {

@@ -31,6 +31,7 @@
   "Jours accordés"
  ],
  "cartes": [
+  "Réglages du planning et des présences",
   "Congés par service",
   "Répartition par nature",
   "Décisions",
@@ -51,6 +52,7 @@
   ]
  ],
  "commandes": [
+  "Régler",
   "Tous les congés22",
   "Archivés0",
   "Colonnes",

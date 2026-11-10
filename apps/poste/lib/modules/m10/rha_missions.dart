@@ -10,6 +10,7 @@ import '../../shell/contexte_ecran.dart';
 import '../m13/adm_commun.dart';
 import '../m4/mat_commun.dart';
 import 'rha_commun.dart';
+import 'rhb_circuit.dart';
 
 /// `m10-missions` — ordres de mission et de formation : affectation, prise en charge, validation et états signés. Un départ suppose un ORDRE ÉCRIT que la
 /// Directrice Administrative valide ; valider, terminer et reporter ÉCRIVENT : ces commandes sont absentes sans le droit d'édition (E623).
@@ -41,7 +42,6 @@ class EcranMissions extends StatelessWidget with EcranMaquette {
         ChampDef(nom: 'moyen', libelle: 'Moyen de déplacement', type: TypeChamp.select, options: rhaOptions(rhaMoyensMission)),
         const ChampDef(nom: 'dateDepart', libelle: 'Date de départ', type: TypeChamp.date, requis: true),
         const ChampDef(nom: 'dateRetour', libelle: 'Date de retour', type: TypeChamp.date, requis: true),
-        ChampDef(nom: 'statutMission', libelle: 'État', type: TypeChamp.select, requis: true, options: [for (final s in rhaStatutsMission) OptionChamp(s.$1, s.$2)]),
         const ChampDef(nom: 'observation', libelle: 'Observation', type: TypeChamp.textarea, lignes: 2, col: ColChamp.plein),
       ];
 
@@ -58,9 +58,10 @@ class EcranMissions extends StatelessWidget with EcranMaquette {
             KpiGrilleSigh(kpis: rhaKpisW(rhaKpisMissions(rows), const [LucideIcons.briefcase, LucideIcons.stamp, LucideIcons.plane, LucideIcons.circleCheck])),
             if (aValider > 0) ...[
               const SizedBox(height: 16),
-              NoteSigh('$aValider ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la signature de la Directrice Administrative.',
-                  ton: TonSigh.attention, icone: LucideIcons.stamp),
+              NoteSigh('$aValider ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la validation du circuit.', ton: TonSigh.attention, icone: LucideIcons.stamp),
             ],
+            const SizedBox(height: 16),
+            const RhbCarteReglages(),
             const SizedBox(height: 16),
             TableauSigh(
               titre: 'Registre des ordres de mission',
@@ -95,12 +96,24 @@ class EcranMissions extends StatelessWidget with EcranMaquette {
                     cle: 'valideePar',
                     libelle: 'Validation',
                     texte: (m) => rhaVrai(m['valideePar']) ? '${m['valideePar']} ${rhaDateFR(m['valideeLe'])}' : 'non validé',
-                    rendu: (_, m) => rhaVrai(m['valideePar'])
-                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                    rendu: (_, m) {
+                      final etat = etatValidationRh('missions', m);
+                      final avis = m['avisChefService'] as Map?;
+                      return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                        if (rhaVrai(m['valideePar']))
+                          Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                             Text('${m['valideePar']}', style: const TextStyle(color: JetonsShell.success700, fontSize: 12, height: 16 / 12)),
                             Text(rhaVrai(m['valideeLe']) ? rhaDateFR(m['valideeLe']) : '', style: const TextStyle(color: JetonsShell.slate400, fontSize: 10)),
                           ])
-                        : const Text('non validé', style: TextStyle(color: JetonsShell.warning600, fontSize: 12, height: 16 / 12))),
+                        else if (etat == 'refuse')
+                          Text('Refusé : ${m['motifRefus'] ?? ''}', style: const TextStyle(color: JetonsShell.danger700, fontSize: 12, height: 16 / 12))
+                        else
+                          Text(etat == 'valide_surveillant' ? 'validé par le surveillant, DAF attendue' : 'non validé', style: const TextStyle(color: JetonsShell.warning600, fontSize: 12, height: 16 / 12)),
+                        avis != null
+                            ? Text('Avis ${avis['avis'] == 'favorable' ? 'favorable' : 'défavorable'} de ${avis['chef']}', style: const TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12))
+                            : const Text('Avis du chef de service : à consigner', style: TextStyle(color: JetonsShell.slate400, fontSize: 12, height: 16 / 12)),
+                      ]);
+                    }),
               ],
               lignes: rows,
               taillePage: 15,
@@ -126,17 +139,21 @@ class EcranMissions extends StatelessWidget with EcranMaquette {
                           prefixeId: 'OM',
                           initiales: {
                             'nature': 'Mission',
-                            'statutMission': 'a_valider',
                             'dateDepart': iso(c.aujourdhui),
                             'dateRetour': iso(c.aujourdhui.add(const Duration(days: 2))),
                             'structurePrise': 'CLINIQUE NASSIERA TOO SARL',
                           },
-                          fiche: (v, ex) => matSansNuls(ex == null ? rhaMissionEnregistrable({...v}, rhaAgentPar(c.magasin, v['agentId']), toutes: col.toutes) : {...v}),
+                          fiche: (v, ex) => matSansNuls(ex == null
+                              // UN ORDRE NAÎT À VALIDER (lot L5) : l'avis du chef de service puis le circuit le tranchent ; l'état ne se saisit pas à la main.
+                              ? {...rhaMissionEnregistrable({...v}, rhaAgentPar(c.magasin, v['agentId']), toutes: col.toutes), 'statutMission': 'a_valider', ...rhbPlanningPoste(c).naissance()}
+                              : {...v}),
                           detailToast: (f) => '${f['libelle'] ?? ''}')),
               ],
               actionsLigne: (ctx, m) => [
-                if (c.droit.editer && rhaGestesMission(m['statutMission']).valider)
-                  BoutonIcone(icone: LucideIcons.stamp, libelle: 'Valider (Directrice Administrative)', onPressed: () => _valider(context, c, col, m)),
+                // L'avis du chef de service se consigne par un habilité du circuit (le chef n'a pas de compte : il donne son avis, un autre le consigne).
+                if (m['statutMission'] == 'a_valider' && const ['surveillant', 'da', 'admin'].contains(c.role) && etatValidationRh('missions', m) != 'valide')
+                  BoutonIcone(icone: LucideIcons.messageSquareQuote, libelle: 'Avis du chef de service', onPressed: () => _avisChef(context, c, m)),
+                ...rhbCommandesValidation(ctx, c, 'missions', m),
                 if (c.droit.editer && rhaGestesMission(m['statutMission']).terminerReporter) ...[
                   BoutonIcone(icone: LucideIcons.check, libelle: 'Marquer terminée', onPressed: () => _changerEtat(context, col, m, 'terminee', 'Mission terminée.')),
                   BoutonIcone(icone: LucideIcons.calendarClock, libelle: 'Reporter', onPressed: () => _changerEtat(context, col, m, 'reportee', 'Mission reportée.')),
@@ -151,15 +168,38 @@ class EcranMissions extends StatelessWidget with EcranMaquette {
         });
   }
 
-  Future<void> _valider(BuildContext ctx, ContexteEcran c, CollectionMagasin col, Fiche m) async {
-    final ok = await confirmerSigh(ctx,
-        titre: 'Valider l’ordre de mission ${m['reference']} ?',
-        message:
-            'La validation autorise le départ de ${m['agent']} du ${rhaDateFR(m['dateDepart'])} au ${rhaDateFR(m['dateRetour'])}, aux frais de ${m['structurePrise']}. Elle est journalisée au nom de la Directrice Administrative (RG-12).',
-        libelleOk: 'Valider l’ordre');
-    if (!ok || !ctx.mounted) return;
-    final annuler = col.mettreAJour(m['id'], rhaCorrectifValidationMission(c.aujourdhui, par: acteur(c).nom, parId: acteur(c).utilisateurId));
-    ToastsSigh.afficher(ctx, 'Ordre de mission validé.', type: TypeToast.succes, detail: '${m['agent']} — départ le ${rhaDateFR(m['dateDepart'])}', annuler: annuler);
+  /// L'AVIS DU CHEF DE SERVICE, consigné par un habilité du circuit : lu à la validation (requis avant, motif exigé s'il est défavorable).
+  void _avisChef(BuildContext ctx, ContexteEcran c, Fiche m) {
+    final p = rhbPlanningPoste(c);
+    final ctl = ControleurFormulaire([
+      ChampDef(nom: 'chef', libelle: 'Chef de service qui donne l’avis', type: TypeChamp.select, requis: true, col: ColChamp.plein, options: [
+        for (final e in trierPar([for (final x in rhaAgents(c.magasin)) if (x['id'] != m['agentId']) x], (e) => e['nomComplet'])) OptionChamp('${e['nomComplet']}', '${e['nomComplet']}')
+      ]),
+      const ChampDef(nom: 'avis', libelle: 'Avis', type: TypeChamp.select, requis: true, options: [OptionChamp('favorable', 'Favorable'), OptionChamp('defavorable', 'Défavorable')]),
+      const ChampDef(nom: 'motif', libelle: 'Motif (obligatoire si défavorable)', type: TypeChamp.textarea, lignes: 2, col: ColChamp.plein),
+    ], {'avis': 'favorable', 'chef': (m['avisChefService'] as Map?)?['chef'] ?? ''});
+    afficherModale<void>(ctx,
+        titre: 'Avis du chef de service',
+        sousTitre: '${m['reference']} · ${m['agent']}',
+        taille: TailleModale.md,
+        corps: FormulaireSigh(controleur: ctl),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Consigner l’avis',
+                  icone: LucideIcons.save,
+                  onPressed: () {
+                    final v = ctl.valider();
+                    if (v == null) return;
+                    final r = p.avisMission(m['id'], {'avis': v['avis'], 'chef': v['chef'], 'motif': v['motif']});
+                    if (r['ok'] != true) {
+                      rhbToastRefus(ctx, r);
+                      return;
+                    }
+                    fermer();
+                    ToastsSigh.afficher(ctx, 'Avis consigné.', type: TypeToast.succes, annuler: r['annuler'] as VoidCallback);
+                  }),
+            ]);
   }
 
   void _changerEtat(BuildContext ctx, CollectionMagasin col, Fiche m, String etat, String message) {

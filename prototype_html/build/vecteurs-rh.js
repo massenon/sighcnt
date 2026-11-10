@@ -400,8 +400,9 @@ const COLLECTIONS = ['personnel', 'contrats', 'conges', 'missions', 'prestataire
       // création
       H.bouton(racine, 'Nouveau').click(); await H.dormir(300);
       out.creation = { modale: H.modale().slice(0, 160), champs: H.champs(), defauts: {}, options: {} };
-      ['employeId', 'nature', 'dateDebut', 'dateFin', 'remplacant', 'statutConge', 'motif'].forEach((n) => { out.creation.defauts[n] = H.valeur(n); });
-      ['employeId', 'nature', 'remplacant', 'statutConge'].forEach((n) => { out.creation.options[n] = H.optsDe(n); });
+      ['employeId', 'nature', 'dateDebut', 'dateFin', 'remplacant', 'motif'].forEach((n) => { out.creation.defauts[n] = H.valeur(n); });
+      out.creation.sansDecision = H.valeur('statutConge') === '(absent)';
+      ['employeId', 'nature', 'remplacant'].forEach((n) => { out.creation.options[n] = H.optsDe(n); });
       H.viderToasts(); H.cliquer('Créer'); await H.dormir(200);
       out.creation.refus = { toasts: H.toasts(), total: col.all().length };
       H.poser('employeId', 'EMP10'); H.poser('dateDebut', '2026-11-10'); H.poser('dateFin', '2026-11-05');
@@ -415,10 +416,27 @@ const COLLECTIONS = ['personnel', 'contrats', 'conges', 'missions', 'prestataire
       out.creation.apres = { kpis: H.kpis(racine), lignes: H.lignesPage(racine) };
       H.icone(H.ligne(racine, ref), 'Modifier').click(); await H.dormir(300);
       out.modification = { valeurs: {} };
-      ['employeId', 'nature', 'dateDebut', 'dateFin', 'remplacant', 'statutConge', 'motif'].forEach((n) => { out.modification.valeurs[n] = H.valeur(n); });
-      H.poser('statutConge', 'valide'); H.poser('dateFin', '2026-11-20');
+      ['employeId', 'nature', 'dateDebut', 'dateFin', 'remplacant', 'motif'].forEach((n) => { out.modification.valeurs[n] = H.valeur(n); });
+      H.poser('dateFin', '2026-11-20');
       H.viderToasts(); H.cliquer('Enregistrer'); await H.dormir(300);
       out.modification.enregistre = { toasts: H.toasts(), fiche: H.net(col.all().find((x) => x.reference === ref)) };
+      // LE CIRCUIT (lot L5) : la demande née à valider est tranchée par le surveillant (circuit par défaut) ; le refus exige son motif.
+      out.circuit = { boutonsLigne: [...H.ligne(racine, ref).querySelectorAll('button')].map((b) => b.getAttribute('aria-label') || b.title) };
+      H.icone(H.ligne(racine, ref), 'Valider cette demande de congé').click(); await H.dormir(300);
+      out.circuit.confirmation = H.modale();
+      H.viderToasts(); H.cliquer('Valider'); await H.dormir(300);
+      out.circuit.valider = { toasts: H.toasts(), fiche: H.net(col.all().find((x) => x.reference === ref)) };
+      const moiRh = SIGH.planningRh.employeDeSession();
+      const enAttente = col.all().find((x) => x.statutConge === 'en_attente' && x.reference !== ref && !(moiRh && x.employeId === moiRh.id));
+      await H.chercher(racine, enAttente.reference);
+      H.icone(H.ligne(racine, enAttente.reference), 'Refuser cette demande de congé').click(); await H.dormir(300);
+      out.circuit.confirmationRefus = H.modale();
+      H.viderToasts(); H.cliquer('Refuser'); await H.dormir(300);
+      out.circuit.refusSansMotif = { toasts: H.toasts(), dialogueOuvert: !!document.querySelector('[role=dialog]'), fiche: H.net(col.all().find((x) => x.id === enAttente.id)) };
+      const zone = document.querySelector('[role=dialog]');
+      if (zone) { const ta = zone.querySelector('textarea, input[type=text]'); ta.value = 'Période de forte activité'; ta.dispatchEvent(new Event('input')); H.viderToasts(); H.cliquer('Refuser'); await H.dormir(300); }
+      out.circuit.refuser = { toasts: H.toasts(), fiche: H.net(col.all().find((x) => x.id === enAttente.id)) };
+      await H.chercher(racine, ref);
       H.icone(H.ligne(racine, ref), 'Archiver').click(); await H.confirmer('Annulé');
       await H.chercher(racine, '');
       out.archivage = { fiche: H.net(col.all().find((x) => x.reference === ref)), kpis: H.kpis(racine), onglets: H.onglets(racine) };
@@ -452,10 +470,24 @@ const COLLECTIONS = ['personnel', 'contrats', 'conges', 'missions', 'prestataire
         H.icone(ligneDe(mi.reference), 'Imprimer l’ordre').click(); await H.dormir(200);
         out.etats[cle] = { reference: mi.reference, etat: H.propre(window.__etats[0]) };
       }
-      // validation : confirmation, puis état « Validée »
-      H.icone(ligneDe(aValider[0].reference), 'Valider (Directrice Administrative)').click(); await H.dormir(300);
-      out.validation = { modale: H.modale() };
-      H.viderToasts(); H.cliquer('Valider l’ordre'); await H.dormir(400);
+      // LE CIRCUIT (lot L5) : l'AVIS du chef de service est requis avant la validation, puis le surveillant (circuit par défaut) valide.
+      const refV = aValider[0].reference;
+      out.validation = { boutonsAvant: [...ligneDe(refV).querySelectorAll('button')].map((b) => b.getAttribute('aria-label') || b.title) };
+      H.icone(ligneDe(refV), 'Valider cet ordre de mission').click(); await H.dormir(300);
+      out.validation.modale = H.modale();
+      H.viderToasts(); H.cliquer('Valider'); await H.dormir(300);
+      out.validation.sansAvis = { toasts: H.toasts(), fiche: H.net(col.all().find((x) => x.id === aValider[0].id)) };
+      H.icone(ligneDe(refV), 'Avis du chef de service').click(); await H.dormir(300);
+      out.avis = { modale: H.modale().slice(0, 300), champs: H.champs(), options: { chef: H.optsDe('chef').length, avis: H.optsDe('avis') } };
+      H.poser('chef', 'GARBA Yahouza'); H.poser('avis', 'defavorable');
+      H.viderToasts(); H.cliquer('Consigner l’avis'); await H.dormir(300);
+      out.avis.defavorableSansMotif = { toasts: H.toasts(), dialogueOuvert: !!document.querySelector('[role=dialog]'), fiche: H.net(col.all().find((x) => x.id === aValider[0].id)) };
+      H.poser('avis', 'favorable');
+      H.viderToasts(); H.cliquer('Consigner l’avis'); await H.dormir(300);
+      out.avis.consigne = { toasts: H.toasts(), fiche: H.net(col.all().find((x) => x.id === aValider[0].id)) };
+      out.validation.boutonsApres = [...ligneDe(refV).querySelectorAll('button')].map((b) => b.getAttribute('aria-label') || b.title);
+      H.icone(ligneDe(refV), 'Valider cet ordre de mission').click(); await H.dormir(300);
+      H.viderToasts(); H.cliquer('Valider'); await H.dormir(400);
       racine = document.getElementById('page-content') || racine;
       out.validation.apres = { fiche: H.net(col.all().find((x) => x.id === aValider[0].id)), toasts: H.toasts() };
       const racine2 = [...document.querySelectorAll('div')].find((d) => d.querySelector && d.querySelector('table') && d.innerText.includes('Registre des ordres de mission'));
@@ -470,8 +502,9 @@ const COLLECTIONS = ['personnel', 'contrats', 'conges', 'missions', 'prestataire
       racine = await H.monter('m10-missions');
       H.bouton(racine, 'Nouveau').click(); await H.dormir(300);
       out.creation = { modale: H.modale().slice(0, 160), champs: H.champs(), defauts: {}, options: {} };
-      ['libelle', 'nature', 'objet', 'agentId', 'structurePrise', 'destination', 'moyen', 'dateDepart', 'dateRetour', 'statutMission', 'observation'].forEach((n) => { out.creation.defauts[n] = H.valeur(n); });
-      ['nature', 'agentId', 'moyen', 'statutMission'].forEach((n) => { out.creation.options[n] = H.optsDe(n); });
+      ['libelle', 'nature', 'objet', 'agentId', 'structurePrise', 'destination', 'moyen', 'dateDepart', 'dateRetour', 'observation'].forEach((n) => { out.creation.defauts[n] = H.valeur(n); });
+      out.creation.sansEtat = H.valeur('statutMission') === '(absent)';
+      ['nature', 'agentId', 'moyen'].forEach((n) => { out.creation.options[n] = H.optsDe(n); });
       H.viderToasts(); H.cliquer('Créer'); await H.dormir(200);
       out.creation.refus = { toasts: H.toasts(), total: col.all().length };
       H.poser('libelle', 'Formation en gestion de stock'); H.poser('objet', 'Se former à la gestion des stocks de médicaments.'); H.poser('agentId', 'EMP37'); H.poser('destination', 'Parakou');
@@ -483,8 +516,8 @@ const COLLECTIONS = ['personnel', 'contrats', 'conges', 'missions', 'prestataire
       const nouvelle = col.all()[0];
       H.icone(H.ligne(racine3, nouvelle.reference), 'Modifier').click(); await H.dormir(300);
       out.modification = { valeurs: {} };
-      ['libelle', 'nature', 'objet', 'agentId', 'structurePrise', 'destination', 'moyen', 'dateDepart', 'dateRetour', 'statutMission', 'observation'].forEach((n) => { out.modification.valeurs[n] = H.valeur(n); });
-      H.poser('destination', 'Djougou'); H.poser('statutMission', 'projet');
+      ['libelle', 'nature', 'objet', 'agentId', 'structurePrise', 'destination', 'moyen', 'dateDepart', 'dateRetour', 'observation'].forEach((n) => { out.modification.valeurs[n] = H.valeur(n); });
+      H.poser('destination', 'Djougou');
       H.viderToasts(); H.cliquer('Enregistrer'); await H.dormir(300);
       out.modification.enregistre = { toasts: H.toasts(), fiche: H.net(col.all().find((x) => x.id === nouvelle.id)) };
       // archivage

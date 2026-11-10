@@ -81,12 +81,13 @@ const List<String> rhaMoyensMission = ['Véhicule de service', 'Transport en com
 /// `STATUTS_MISSION` : (identifiant, libellé, ton).
 const List<(String, String, String)> rhaStatutsMission = [
   ('projet', 'En projet', 'neutral'),
-  ('a_valider', 'En attente de validation DA', 'warning'),
+  ('a_valider', 'En attente de validation', 'warning'),
   ('validee', 'Validée', 'info'),
   ('en_cours', 'En cours', 'info'),
   ('terminee', 'Terminée', 'success'),
   ('reportee', 'Reportée', 'warning'),
   ('annulee', 'Annulée', 'danger'),
+  ('refusee', 'Refusée', 'danger'),
 ];
 
 /// `statutMission(id)` : un identifiant inconnu retombe sur « En projet », comme la maquette.
@@ -534,7 +535,7 @@ List<RhaKpi> rhaKpisMissions(List<RhaFiche> rows) {
   final enCours = rows.where((m) => m['statutMission'] == 'en_cours' || m['statutMission'] == 'validee').length;
   return [
     RhaKpi('Ordres de mission', nombre(rows.length), ton: 'navy'),
-    RhaKpi('En attente de validation', nombre(aValider), indice: aValider > 0 ? 'Validation de la DA attendue' : 'Rien en attente', ton: aValider > 0 ? 'warning' : 'success'),
+    RhaKpi('En attente de validation', nombre(aValider), indice: aValider > 0 ? 'Validation attendue (circuit réglé au poste)' : 'Rien en attente', ton: aValider > 0 ? 'warning' : 'success'),
     RhaKpi('Missions en cours', nombre(enCours), ton: 'info'),
     RhaKpi('Terminées', nombre(rows.where((m) => m['statutMission'] == 'terminee').length), ton: 'success'),
   ];
@@ -551,12 +552,6 @@ RhaFiche rhaMissionEnregistrable(RhaFiche v, RhaFiche? agent, {required Iterable
 /// Les trois gestes de la ligne d'un ordre, selon son état : (valider, terminer/reporter).
 ({bool valider, bool terminerReporter}) rhaGestesMission(Object? statut) =>
     (valider: statut == 'a_valider', terminerReporter: statut == 'validee' || statut == 'en_cours');
-
-/// Ce que la validation écrit : état « Validée », la validatrice et la date (la maquette ne connaît que la Directrice Administrative).
-/// [par] / [parId] (A1, E625 levé) : l'AGENT qui valide, nom et identifiant de compte. Sans eux (vecteurs de la maquette, qui écrit « TAKI Alimatou » quelle
-/// que soit la personne connectée), la valeur d'origine est conservée.
-RhaFiche rhaCorrectifValidationMission(DateTime auj, {String? par, String? parId}) =>
-    {'statutMission': 'validee', 'valideePar': par ?? 'TAKI Alimatou', if (parId != null) 'valideeParId': parId, 'valideeLe': iso(auj)};
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // Prestataires externes

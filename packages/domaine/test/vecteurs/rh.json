@@ -1719,7 +1719,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "FDPxmvuswn40va6fk",
+    "id": "FDPxmvuswn40yxc8m",
     "statut": "archive",
     "missions": [],
     "redigee": true,
@@ -2859,7 +2859,7 @@
      ]
     ],
     "fiche": {
-     "id": "PERxmvuswn40sfwr0",
+     "id": "PERxmvuswn40e1g2c",
      "statut": "actif",
      "matricule": "99",
      "nom": "AGBO",
@@ -2944,7 +2944,7 @@
      ]
     ],
     "fiche": {
-     "id": "PERxmvuswn40sfwr0",
+     "id": "PERxmvuswn40e1g2c",
      "statut": "actif",
      "matricule": "99",
      "nom": "AGBO",
@@ -2965,7 +2965,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "PERxmvuswn40sfwr0",
+    "id": "PERxmvuswn40e1g2c",
     "statut": "archive",
     "matricule": "99",
     "nom": "AGBO",
@@ -6531,7 +6531,7 @@
      ]
     ],
     "fiche": {
-     "id": "ASSxmvuswn40fc5we",
+     "id": "ASSxmvuswn40cssri",
      "statut": "actif",
      "type": "CNSS — régime général",
      "organisme": "CNSS Bénin",
@@ -7640,7 +7640,7 @@
      ]
     ],
     "fiche": {
-     "id": "CONxmvuswn40an1fa",
+     "id": "CONxmvuswn400niof",
      "statut": "actif",
      "employeId": "EMP10",
      "nature": "CDD",
@@ -7714,7 +7714,7 @@
      ]
     ],
     "fiche": {
-     "id": "CONxmvuswn40an1fa",
+     "id": "CONxmvuswn400niof",
      "statut": "actif",
      "employeId": "EMP10",
      "nature": "CDI",
@@ -7734,7 +7734,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "CONxmvuswn40an1fa",
+    "id": "CONxmvuswn400niof",
     "statut": "archive",
     "employeId": "EMP10",
     "nature": "CDI",
@@ -7808,6 +7808,7 @@
     "Archivés0"
    ],
    "cartes": [
+    "Réglages du planning et des présences Régler",
     "Congés par service",
     "Répartition par nature",
     "Décisions",
@@ -8015,6 +8016,7 @@
     "La répartition par nature distingue le congé annuel des congés de maternité et de maladie : ces derniers ne s’imputent pas sur le solde annuel et ne se compensent pas de la même manière au planning."
    ],
    "boutons": [
+    "Régler",
     "Tous les congés22",
     "Archivés0",
     "Colonnes",
@@ -8027,8 +8029,7 @@
     "Imprimer l’état",
     "Modifier",
     "Archiver",
-    "Consulter",
-    "Imprimer l’état"
+    "Consulter"
    ]
   },
   "graphes": [
@@ -8114,6 +8115,7 @@
    }
   ],
   "cartes": [
+   "Réglages du planning et des présences Régler Circuit de validation Surveillant seul L’agent modifie directement son planning Non : il propose, le surveillant valide Une présence, une absence, un congé ou un ordre de mission non validé est visible mais ne compte pas. Un planning proposé ne change rien tant qu’il n’est pas validé.",
    "Nature Congé annuel Congé de maternité Congé de maladie Absence autorisée Congé exceptionnel Décision Accordé En attente Refusé Colonnes Exporter Nouveau N° AGENT SERVICE NATURE DU AU JOURS REMPLAÇANT DÉCISION ACTIONS CG-0021 TEPA Séraphine Soins infirmiers Congé annuel 26/12/2026 03/01/2027 8 — Refusé CG-0001 BASSONGUI Chabi Séko Direction Congé de maternité 21/12/2026 24/12/2026 3 — En attente CG-0007 AHOHOU Rodrigue Imagerie / Échographie Congé de maternité 19/12/2026 23/12/2026 4 — Refusé CG-0010 GARBA Yahouza Soins infirmiers Congé annuel 13/12/2026 17/12/2026 4 IDRISSOU ANIKI Baba-Toundé En attente CG-0008 KINNOU A. Ganiou Laboratoire Congé de maternité 06/12/2026 09/12/2026 3 TEPA Séraphine Accordé CG-0006 TAKI Orou Médecine générale Congé annuel 27/11/2026 01/12/2026 4 — Accordé CG-0019 BOUKARI Nadège Maternité Absence autorisée 09/11/2026 15/11/2026 6 ISSA Rabiatou Accordé CG-0003 KASSA Augustin Comptabilité Congé de maladie 26/10/2026 29/10/2026 3 — Accordé CG-0005 YENI M’PO Florent Médecine générale Congé annuel 26/10/2026 30/10/2026 4 TAKI Orou Accordé CG-0009 AGOSSOU Yahouza Laboratoire Congé de maladie 21/10/2026 24/10/2026 3 DOSSOU Moussa En attente CG-0022 DAOUDA Zoukanéri Soins infirmiers Absence autorisée 19/10/2026 21/10/2026 2 OURTCHA Bertine En attente CG-0017 OROU YO Alimatou Soins infirmiers Congé annuel 12/10/2026 21/10/2026 9 TEPA Séraphine Accordé CG-0012 NKOUÉ Jean Soins infirmiers Congé annuel 23/09/2026 26/09/2026 3 — Accordé CG-0020 ADAM Colette Maternité Congé de maladie 22/09/2026 27/09/2026 5 — Accordé CG-0015 OURTCHA Bertine Soins infirmiers Congé annuel 04/09/2026 07/09/2026 3 — Refusé Affichage de 1 à 15 sur 22 enregistrements 1 2",
    "Congés par service",
    "Répartition par nature",
@@ -8529,7 +8531,6 @@
     "Date de début *",
     "Date de fin *",
     "Remplaçant désigné",
-    "Décision *",
     "Motif"
    ],
    "defauts": {
@@ -8538,7 +8539,6 @@
     "dateDebut": "2026-10-30",
     "dateFin": "",
     "remplacant": "",
-    "statutConge": "en_attente",
     "motif": ""
    },
    "options": {
@@ -8919,22 +8919,9 @@
       "TCHANE Nourou",
       "TCHANE Nourou"
      ]
-    ],
-    "statutConge": [
-     [
-      "en_attente",
-      "En attente"
-     ],
-     [
-      "valide",
-      "Accordé"
-     ],
-     [
-      "refuse",
-      "Refusé"
-     ]
     ]
    },
+   "sansDecision": true,
    "refus": {
     "toasts": [
      [
@@ -8959,20 +8946,24 @@
      ]
     ],
     "fiche": {
-     "id": "CONxmvuswn40hoafy",
+     "id": "CONxmvuswn40wv03d",
      "statut": "actif",
      "employeId": "EMP10",
      "nature": "Congé annuel",
      "dateDebut": "2026-11-10",
      "dateFin": "2026-11-16",
      "remplacant": "GARBA Yahouza",
-     "statutConge": "en_attente",
      "motif": "Repos annuel",
      "employe": "GARBA Yahouza",
      "matricule": "10",
      "service": "Soins infirmiers",
      "duree": 6,
-     "reference": "CG-0023"
+     "reference": "CG-0023",
+     "statutConge": "en_attente",
+     "validationEtat": "a_valider",
+     "etapesFaites": [],
+     "saisiPar": "BASSONGUI Chabi Séko",
+     "saisiLe": "2026-10-30"
     },
     "total": 23
    },
@@ -9023,7 +9014,6 @@
     "dateDebut": "2026-11-10",
     "dateFin": "2026-11-16",
     "remplacant": "GARBA Yahouza",
-    "statutConge": "en_attente",
     "motif": "Repos annuel"
    },
    "enregistre": {
@@ -9034,39 +9024,155 @@
      ]
     ],
     "fiche": {
-     "id": "CONxmvuswn40hoafy",
+     "id": "CONxmvuswn40wv03d",
      "statut": "actif",
      "employeId": "EMP10",
      "nature": "Congé annuel",
      "dateDebut": "2026-11-10",
      "dateFin": "2026-11-20",
      "remplacant": "GARBA Yahouza",
-     "statutConge": "valide",
      "motif": "Repos annuel",
      "employe": "GARBA Yahouza",
      "matricule": "10",
      "service": "Soins infirmiers",
      "duree": 10,
-     "reference": "CG-0023"
+     "reference": "CG-0023",
+     "statutConge": "en_attente",
+     "validationEtat": "a_valider",
+     "etapesFaites": [],
+     "saisiPar": "BASSONGUI Chabi Séko",
+     "saisiLe": "2026-10-30"
+    }
+   }
+  },
+  "circuit": {
+   "boutonsLigne": [
+    "Consulter",
+    "Valider cette demande de congé",
+    "Refuser cette demande de congé",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "confirmation": "Valider cette demande de congé ? La validation est celle de le surveillant, consignée au journal (RG-12). Circuit en vigueur : Surveillant seul. Annuler Valider",
+   "valider": {
+    "toasts": [
+     [
+      "Pièce validée."
+     ]
+    ],
+    "fiche": {
+     "id": "CONxmvuswn40wv03d",
+     "statut": "actif",
+     "employeId": "EMP10",
+     "nature": "Congé annuel",
+     "dateDebut": "2026-11-10",
+     "dateFin": "2026-11-20",
+     "remplacant": "GARBA Yahouza",
+     "motif": "Repos annuel",
+     "employe": "GARBA Yahouza",
+     "matricule": "10",
+     "service": "Soins infirmiers",
+     "duree": 10,
+     "reference": "CG-0023",
+     "statutConge": "valide",
+     "validationEtat": "valide",
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "BASSONGUI Chabi Séko",
+       "role": "admin",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "saisiPar": "BASSONGUI Chabi Séko",
+     "saisiLe": "2026-10-30",
+     "validePar": "BASSONGUI Chabi Séko",
+     "valideLe": "2026-10-30",
+     "circuitUtilise": "surveillant"
+    }
+   },
+   "confirmationRefus": "Refuser cette demande de congé ? Le refus exige son motif : l’agent le lira. Motif (consigné dans le journal d’audit) Annuler Refuser",
+   "refusSansMotif": {
+    "toasts": [
+     [
+      "Un refus exige son motif : l’agent doit pouvoir le lire.",
+      "Écrire le motif du refus."
+     ]
+    ],
+    "dialogueOuvert": false,
+    "fiche": {
+     "id": "CNG0004",
+     "statut": "actif",
+     "reference": "CG-0004",
+     "employeId": "EMP04",
+     "employe": "GBEDJI Hervé",
+     "matricule": "4",
+     "service": "Direction",
+     "nature": "Congé annuel",
+     "dateDebut": "2026-08-06",
+     "dateFin": "2026-08-16",
+     "duree": 10,
+     "statutConge": "en_attente"
+    }
+   },
+   "refuser": {
+    "toasts": [
+     [
+      "Un refus exige son motif : l’agent doit pouvoir le lire.",
+      "Écrire le motif du refus."
+     ]
+    ],
+    "fiche": {
+     "id": "CNG0004",
+     "statut": "actif",
+     "reference": "CG-0004",
+     "employeId": "EMP04",
+     "employe": "GBEDJI Hervé",
+     "matricule": "4",
+     "service": "Direction",
+     "nature": "Congé annuel",
+     "dateDebut": "2026-08-06",
+     "dateFin": "2026-08-16",
+     "duree": 10,
+     "statutConge": "en_attente"
     }
    }
   },
   "archivage": {
    "fiche": {
-    "id": "CONxmvuswn40hoafy",
+    "id": "CONxmvuswn40wv03d",
     "statut": "archive",
     "employeId": "EMP10",
     "nature": "Congé annuel",
     "dateDebut": "2026-11-10",
     "dateFin": "2026-11-20",
     "remplacant": "GARBA Yahouza",
-    "statutConge": "valide",
     "motif": "Repos annuel",
     "employe": "GARBA Yahouza",
     "matricule": "10",
     "service": "Soins infirmiers",
     "duree": 10,
     "reference": "CG-0023",
+    "statutConge": "valide",
+    "validationEtat": "valide",
+    "etapesFaites": [
+     {
+      "etape": "surveillant",
+      "par": "BASSONGUI Chabi Séko",
+      "role": "admin",
+      "le": "2026-10-30",
+      "decision": "valide",
+      "motif": null
+     }
+    ],
+    "saisiPar": "BASSONGUI Chabi Séko",
+    "saisiLe": "2026-10-30",
+    "validePar": "BASSONGUI Chabi Séko",
+    "valideLe": "2026-10-30",
+    "circuitUtilise": "surveillant",
     "_motifArchivage": "Annulé"
    },
    "kpis": [
@@ -9109,7 +9215,7 @@
     {
      "libelle": "En attente de validation",
      "valeur": "2",
-     "indice": "Validation de la DA attendue"
+     "indice": "Validation attendue (circuit réglé au poste)"
     },
     {
      "libelle": "Missions en cours",
@@ -9124,6 +9230,7 @@
    ],
    "onglets": [],
    "cartes": [
+    "Réglages du planning et des présences Régler",
     "Registre des ordres de mission"
    ],
    "tableaux": [
@@ -9146,7 +9253,7 @@
        "OMS Bénin",
        "19/11/2026 au 23/11/2026",
        "En projet",
-       "non validé",
+       "non validé Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9155,8 +9262,8 @@
        "NKOUÉ Jean Infirmier",
        "Ministère de la Santé",
        "18/11/2026 au 22/11/2026",
-       "En attente de validation DA",
-       "non validé",
+       "En attente de validation",
+       "non validé Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9165,8 +9272,8 @@
        "TCHANE Sylvie Dispensatrice",
        "CLINIQUE NASSIERA TOO SARL",
        "10/11/2026 au 15/11/2026",
-       "En attente de validation DA",
-       "non validé",
+       "En attente de validation",
+       "non validé Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9176,7 +9283,7 @@
        "CLINIQUE NASSIERA TOO SARL",
        "30/10/2026 au 04/11/2026",
        "Terminée",
-       "TAKI Alimatou 27/10/2026",
+       "TAKI Alimatou 27/10/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9186,7 +9293,7 @@
        "CLINIQUE NASSIERA TOO SARL",
        "28/10/2026 au 30/10/2026",
        "Terminée",
-       "TAKI Alimatou 25/10/2026",
+       "TAKI Alimatou 25/10/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9196,7 +9303,7 @@
        "UNFPA",
        "25/10/2026 au 30/10/2026",
        "Terminée",
-       "TAKI Alimatou 22/10/2026",
+       "TAKI Alimatou 22/10/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9206,7 +9313,7 @@
        "Direction Départementale de la Santé",
        "21/09/2026 au 23/09/2026",
        "Terminée",
-       "TAKI Alimatou 18/09/2026",
+       "TAKI Alimatou 18/09/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9216,7 +9323,7 @@
        "CLINIQUE NASSIERA TOO SARL",
        "18/09/2026 au 20/09/2026",
        "Terminée",
-       "TAKI Alimatou 15/09/2026",
+       "TAKI Alimatou 15/09/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9226,7 +9333,7 @@
        "UNFPA",
        "14/09/2026 au 19/09/2026",
        "Terminée",
-       "TAKI Alimatou 11/09/2026",
+       "TAKI Alimatou 11/09/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9236,7 +9343,7 @@
        "CLINIQUE NASSIERA TOO SARL",
        "03/09/2026 au 06/09/2026",
        "Reportée",
-       "TAKI Alimatou 31/08/2026",
+       "TAKI Alimatou 31/08/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9246,7 +9353,7 @@
        "OMS Bénin",
        "27/08/2026 au 01/09/2026",
        "Terminée",
-       "TAKI Alimatou 24/08/2026",
+       "TAKI Alimatou 24/08/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9256,7 +9363,7 @@
        "UNFPA",
        "24/08/2026 au 28/08/2026",
        "Terminée",
-       "TAKI Alimatou 21/08/2026",
+       "TAKI Alimatou 21/08/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9266,7 +9373,7 @@
        "UNFPA",
        "14/08/2026 au 16/08/2026",
        "Terminée",
-       "TAKI Alimatou 11/08/2026",
+       "TAKI Alimatou 11/08/2026 Avis du chef de service : à consigner",
        ""
       ],
       [
@@ -9276,30 +9383,30 @@
        "CLINIQUE NASSIERA TOO SARL",
        "31/07/2026 au 02/08/2026",
        "Reportée",
-       "TAKI Alimatou 28/07/2026",
+       "TAKI Alimatou 28/07/2026 Avis du chef de service : à consigner",
        ""
       ]
      ]
     }
    ],
    "notes": [
-    "2 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la signature de la Directrice Administrative."
+    "2 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la validation du circuit."
    ],
    "boutons": [
+    "Régler",
     "Colonnes",
     "Exporter",
     "Nouveau",
     "Tout désélectionner",
+    "Valider cet ordre de mission",
+    "Refuser cet ordre de mission",
     "Imprimer l’ordre",
     "Modifier",
     "Archiver",
-    "Valider (Directrice Administrative)",
-    "Imprimer l’ordre",
-    "Modifier",
-    "Archiver",
-    "Valider (Directrice Administrative)",
-    "Imprimer l’ordre",
-    "Modifier"
+    "Avis du chef de service",
+    "Valider cet ordre de mission",
+    "Refuser cet ordre de mission",
+    "Imprimer l’ordre"
    ]
   },
   "lignes": [
@@ -9310,7 +9417,7 @@
     "OMS Bénin",
     "19/11/2026 au 23/11/2026",
     "En projet",
-    "non validé",
+    "non validé Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9319,8 +9426,8 @@
     "NKOUÉ Jean Infirmier",
     "Ministère de la Santé",
     "18/11/2026 au 22/11/2026",
-    "En attente de validation DA",
-    "non validé",
+    "En attente de validation",
+    "non validé Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9329,8 +9436,8 @@
     "TCHANE Sylvie Dispensatrice",
     "CLINIQUE NASSIERA TOO SARL",
     "10/11/2026 au 15/11/2026",
-    "En attente de validation DA",
-    "non validé",
+    "En attente de validation",
+    "non validé Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9340,7 +9447,7 @@
     "CLINIQUE NASSIERA TOO SARL",
     "30/10/2026 au 04/11/2026",
     "Terminée",
-    "TAKI Alimatou 27/10/2026",
+    "TAKI Alimatou 27/10/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9350,7 +9457,7 @@
     "CLINIQUE NASSIERA TOO SARL",
     "28/10/2026 au 30/10/2026",
     "Terminée",
-    "TAKI Alimatou 25/10/2026",
+    "TAKI Alimatou 25/10/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9360,7 +9467,7 @@
     "UNFPA",
     "25/10/2026 au 30/10/2026",
     "Terminée",
-    "TAKI Alimatou 22/10/2026",
+    "TAKI Alimatou 22/10/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9370,7 +9477,7 @@
     "Direction Départementale de la Santé",
     "21/09/2026 au 23/09/2026",
     "Terminée",
-    "TAKI Alimatou 18/09/2026",
+    "TAKI Alimatou 18/09/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9380,7 +9487,7 @@
     "CLINIQUE NASSIERA TOO SARL",
     "18/09/2026 au 20/09/2026",
     "Terminée",
-    "TAKI Alimatou 15/09/2026",
+    "TAKI Alimatou 15/09/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9390,7 +9497,7 @@
     "UNFPA",
     "14/09/2026 au 19/09/2026",
     "Terminée",
-    "TAKI Alimatou 11/09/2026",
+    "TAKI Alimatou 11/09/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9400,7 +9507,7 @@
     "CLINIQUE NASSIERA TOO SARL",
     "03/09/2026 au 06/09/2026",
     "Reportée",
-    "TAKI Alimatou 31/08/2026",
+    "TAKI Alimatou 31/08/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9410,7 +9517,7 @@
     "OMS Bénin",
     "27/08/2026 au 01/09/2026",
     "Terminée",
-    "TAKI Alimatou 24/08/2026",
+    "TAKI Alimatou 24/08/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9420,7 +9527,7 @@
     "UNFPA",
     "24/08/2026 au 28/08/2026",
     "Terminée",
-    "TAKI Alimatou 21/08/2026",
+    "TAKI Alimatou 21/08/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9430,7 +9537,7 @@
     "UNFPA",
     "14/08/2026 au 16/08/2026",
     "Terminée",
-    "TAKI Alimatou 11/08/2026",
+    "TAKI Alimatou 11/08/2026 Avis du chef de service : à consigner",
     ""
    ],
    [
@@ -9440,7 +9547,7 @@
     "CLINIQUE NASSIERA TOO SARL",
     "31/07/2026 au 02/08/2026",
     "Reportée",
-    "TAKI Alimatou 28/07/2026",
+    "TAKI Alimatou 28/07/2026 Avis du chef de service : à consigner",
     ""
    ]
   ],
@@ -9483,7 +9590,7 @@
      ],
      [
       "a_valider",
-      "En attente de validation DA"
+      "En attente de validation"
      ],
      [
       "validee",
@@ -9504,6 +9611,10 @@
      [
       "annulee",
       "Annulée"
+     ],
+     [
+      "refusee",
+      "Refusée"
      ]
     ]
    ]
@@ -9516,7 +9627,9 @@
    "terminee": "OM-2026-0001"
   },
   "boutonsAValider": [
-   "Valider (Directrice Administrative)",
+   "Avis du chef de service",
+   "Valider cet ordre de mission",
+   "Refuser cet ordre de mission",
    "Imprimer l’ordre",
    "Modifier",
    "Archiver"
@@ -9643,7 +9756,49 @@
    }
   },
   "validation": {
-   "modale": "Valider l’ordre de mission OM-2026-0004 ? La validation autorise le départ de NKOUÉ Jean du 18/11/2026 au 22/11/2026, aux frais de Ministère de la Santé. Elle est journalisée au nom de la Directrice Administrative (RG-12). Annuler Valider l’ordre",
+   "boutonsAvant": [
+    "Avis du chef de service",
+    "Valider cet ordre de mission",
+    "Refuser cet ordre de mission",
+    "Imprimer l’ordre",
+    "Modifier",
+    "Archiver"
+   ],
+   "modale": "Valider cet ordre de mission ? La validation est celle de le surveillant, consignée au journal (RG-12). Circuit en vigueur : Surveillant seul. Annuler Valider",
+   "sansAvis": {
+    "toasts": [
+     [
+      "L’avis du chef de service est requis avant la validation d’un ordre de mission.",
+      "Consigner l’avis du chef de service, puis valider."
+     ]
+    ],
+    "fiche": {
+     "id": "OM0004",
+     "statut": "actif",
+     "reference": "OM-2026-0004",
+     "libelle": "Formation en hygiène hospitalière",
+     "nature": "Formation",
+     "objet": "Formation en hygiène hospitalière",
+     "agentId": "EMP12",
+     "agent": "NKOUÉ Jean",
+     "fonction": "Infirmier",
+     "structurePrise": "Ministère de la Santé",
+     "destination": "Parakou",
+     "dateDepart": "2026-11-18",
+     "dateRetour": "2026-11-22",
+     "moyen": "Transport en commun",
+     "observation": "",
+     "statutMission": "a_valider"
+    }
+   },
+   "boutonsApres": [
+    "Avis du chef de service",
+    "Valider cet ordre de mission",
+    "Refuser cet ordre de mission",
+    "Imprimer l’ordre",
+    "Modifier",
+    "Archiver"
+   ],
    "apres": {
     "fiche": {
      "id": "OM0004",
@@ -9662,13 +9817,33 @@
      "moyen": "Transport en commun",
      "observation": "",
      "statutMission": "validee",
-     "valideePar": "TAKI Alimatou",
+     "avisChefService": {
+      "avis": "favorable",
+      "chef": "GARBA Yahouza",
+      "motif": null,
+      "le": "2026-10-30",
+      "consignePar": "BASSONGUI Chabi Séko"
+     },
+     "etapesFaites": [
+      {
+       "etape": "surveillant",
+       "par": "BASSONGUI Chabi Séko",
+       "role": "admin",
+       "le": "2026-10-30",
+       "decision": "valide",
+       "motif": null
+      }
+     ],
+     "validationEtat": "valide",
+     "validePar": "BASSONGUI Chabi Séko",
+     "valideLe": "2026-10-30",
+     "circuitUtilise": "surveillant",
+     "valideePar": "BASSONGUI Chabi Séko",
      "valideeLe": "2026-10-30"
     },
     "toasts": [
      [
-      "Ordre de mission validé.",
-      "NKOUÉ Jean — départ le 18/11/2026"
+      "Pièce validée."
      ]
     ]
    },
@@ -9682,7 +9857,7 @@
      {
       "libelle": "En attente de validation",
       "valeur": "1",
-      "indice": "Validation de la DA attendue"
+      "indice": "Validation attendue (circuit réglé au poste)"
      },
      {
       "libelle": "Missions en cours",
@@ -9697,6 +9872,7 @@
     ],
     "onglets": [],
     "cartes": [
+     "Réglages du planning et des présences Régler",
      "Registre des ordres de mission"
     ],
     "tableaux": [
@@ -9719,7 +9895,7 @@
         "OMS Bénin",
         "19/11/2026 au 23/11/2026",
         "En projet",
-        "non validé",
+        "non validé Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9729,7 +9905,7 @@
         "Ministère de la Santé",
         "18/11/2026 au 22/11/2026",
         "Validée",
-        "TAKI Alimatou 30/10/2026",
+        "BASSONGUI Chabi Séko 30/10/2026 Avis favorable de GARBA Yahouza",
         ""
        ],
        [
@@ -9738,8 +9914,8 @@
         "TCHANE Sylvie Dispensatrice",
         "CLINIQUE NASSIERA TOO SARL",
         "10/11/2026 au 15/11/2026",
-        "En attente de validation DA",
-        "non validé",
+        "En attente de validation",
+        "non validé Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9749,7 +9925,7 @@
         "CLINIQUE NASSIERA TOO SARL",
         "30/10/2026 au 04/11/2026",
         "Terminée",
-        "TAKI Alimatou 27/10/2026",
+        "TAKI Alimatou 27/10/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9759,7 +9935,7 @@
         "CLINIQUE NASSIERA TOO SARL",
         "28/10/2026 au 30/10/2026",
         "Terminée",
-        "TAKI Alimatou 25/10/2026",
+        "TAKI Alimatou 25/10/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9769,7 +9945,7 @@
         "UNFPA",
         "25/10/2026 au 30/10/2026",
         "Terminée",
-        "TAKI Alimatou 22/10/2026",
+        "TAKI Alimatou 22/10/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9779,7 +9955,7 @@
         "Direction Départementale de la Santé",
         "21/09/2026 au 23/09/2026",
         "Terminée",
-        "TAKI Alimatou 18/09/2026",
+        "TAKI Alimatou 18/09/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9789,7 +9965,7 @@
         "CLINIQUE NASSIERA TOO SARL",
         "18/09/2026 au 20/09/2026",
         "Terminée",
-        "TAKI Alimatou 15/09/2026",
+        "TAKI Alimatou 15/09/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9799,7 +9975,7 @@
         "UNFPA",
         "14/09/2026 au 19/09/2026",
         "Terminée",
-        "TAKI Alimatou 11/09/2026",
+        "TAKI Alimatou 11/09/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9809,7 +9985,7 @@
         "CLINIQUE NASSIERA TOO SARL",
         "03/09/2026 au 06/09/2026",
         "Reportée",
-        "TAKI Alimatou 31/08/2026",
+        "TAKI Alimatou 31/08/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9819,7 +9995,7 @@
         "OMS Bénin",
         "27/08/2026 au 01/09/2026",
         "Terminée",
-        "TAKI Alimatou 24/08/2026",
+        "TAKI Alimatou 24/08/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9829,7 +10005,7 @@
         "UNFPA",
         "24/08/2026 au 28/08/2026",
         "Terminée",
-        "TAKI Alimatou 21/08/2026",
+        "TAKI Alimatou 21/08/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9839,7 +10015,7 @@
         "UNFPA",
         "14/08/2026 au 16/08/2026",
         "Terminée",
-        "TAKI Alimatou 11/08/2026",
+        "TAKI Alimatou 11/08/2026 Avis du chef de service : à consigner",
         ""
        ],
        [
@@ -9849,31 +10025,111 @@
         "CLINIQUE NASSIERA TOO SARL",
         "31/07/2026 au 02/08/2026",
         "Reportée",
-        "TAKI Alimatou 28/07/2026",
+        "TAKI Alimatou 28/07/2026 Avis du chef de service : à consigner",
         ""
        ]
       ]
      }
     ],
     "notes": [
-     "1 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la signature de la Directrice Administrative."
+     "1 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la validation du circuit."
     ],
     "boutons": [
+     "Régler",
      "Colonnes",
      "Exporter",
      "Nouveau",
      "Tout désélectionner",
+     "Valider cet ordre de mission",
+     "Refuser cet ordre de mission",
      "Imprimer l’ordre",
      "Modifier",
      "Archiver",
      "Marquer terminée",
      "Reporter",
      "Imprimer l’ordre",
-     "Modifier",
-     "Archiver",
-     "Valider (Directrice Administrative)",
-     "Imprimer l’ordre"
+     "Modifier"
     ]
+   }
+  },
+  "avis": {
+   "modale": "Avis du chef de service OM-2026-0004 · NKOUÉ Jean Chef de service qui donne l’avis * ADAM Alimatou Avis * Favorable Défavorable Motif (obligatoire si défavorable) Annuler Consigner l’avis",
+   "champs": [
+    "Chef de service qui donne l’avis *",
+    "Avis *",
+    "Motif (obligatoire si défavorable)"
+   ],
+   "options": {
+    "chef": 43,
+    "avis": [
+     [
+      "favorable",
+      "Favorable"
+     ],
+     [
+      "defavorable",
+      "Défavorable"
+     ]
+    ]
+   },
+   "defavorableSansMotif": {
+    "toasts": [
+     [
+      "Un avis défavorable exige son motif.",
+      "Dire pourquoi l’avis est défavorable."
+     ]
+    ],
+    "dialogueOuvert": true,
+    "fiche": {
+     "id": "OM0004",
+     "statut": "actif",
+     "reference": "OM-2026-0004",
+     "libelle": "Formation en hygiène hospitalière",
+     "nature": "Formation",
+     "objet": "Formation en hygiène hospitalière",
+     "agentId": "EMP12",
+     "agent": "NKOUÉ Jean",
+     "fonction": "Infirmier",
+     "structurePrise": "Ministère de la Santé",
+     "destination": "Parakou",
+     "dateDepart": "2026-11-18",
+     "dateRetour": "2026-11-22",
+     "moyen": "Transport en commun",
+     "observation": "",
+     "statutMission": "a_valider"
+    }
+   },
+   "consigne": {
+    "toasts": [
+     [
+      "Avis consigné."
+     ]
+    ],
+    "fiche": {
+     "id": "OM0004",
+     "statut": "actif",
+     "reference": "OM-2026-0004",
+     "libelle": "Formation en hygiène hospitalière",
+     "nature": "Formation",
+     "objet": "Formation en hygiène hospitalière",
+     "agentId": "EMP12",
+     "agent": "NKOUÉ Jean",
+     "fonction": "Infirmier",
+     "structurePrise": "Ministère de la Santé",
+     "destination": "Parakou",
+     "dateDepart": "2026-11-18",
+     "dateRetour": "2026-11-22",
+     "moyen": "Transport en commun",
+     "observation": "",
+     "statutMission": "a_valider",
+     "avisChefService": {
+      "avis": "favorable",
+      "chef": "GARBA Yahouza",
+      "motif": null,
+      "le": "2026-10-30",
+      "consignePar": "BASSONGUI Chabi Séko"
+     }
+    }
    }
   },
   "terminer": {
@@ -9894,7 +10150,28 @@
     "moyen": "Transport en commun",
     "observation": "",
     "statutMission": "terminee",
-    "valideePar": "TAKI Alimatou",
+    "avisChefService": {
+     "avis": "favorable",
+     "chef": "GARBA Yahouza",
+     "motif": null,
+     "le": "2026-10-30",
+     "consignePar": "BASSONGUI Chabi Séko"
+    },
+    "etapesFaites": [
+     {
+      "etape": "surveillant",
+      "par": "BASSONGUI Chabi Séko",
+      "role": "admin",
+      "le": "2026-10-30",
+      "decision": "valide",
+      "motif": null
+     }
+    ],
+    "validationEtat": "valide",
+    "validePar": "BASSONGUI Chabi Séko",
+    "valideLe": "2026-10-30",
+    "circuitUtilise": "surveillant",
+    "valideePar": "BASSONGUI Chabi Séko",
     "valideeLe": "2026-10-30"
    },
    "toasts": [
@@ -9902,8 +10179,7 @@
      "Mission terminée."
     ],
     [
-     "Ordre de mission validé.",
-     "NKOUÉ Jean — départ le 18/11/2026"
+     "Pièce validée."
     ]
    ]
   },
@@ -9919,7 +10195,6 @@
     "Moyen de déplacement",
     "Date de départ *",
     "Date de retour *",
-    "État *",
     "Observation"
    ],
    "defauts": {
@@ -9932,7 +10207,6 @@
     "moyen": "",
     "dateDepart": "2026-10-30",
     "dateRetour": "2026-11-01",
-    "statutMission": "a_valider",
     "observation": ""
    },
    "options": {
@@ -10153,38 +10427,9 @@
       "Moyen personnel",
       "Moyen personnel"
      ]
-    ],
-    "statutMission": [
-     [
-      "projet",
-      "En projet"
-     ],
-     [
-      "a_valider",
-      "En attente de validation DA"
-     ],
-     [
-      "validee",
-      "Validée"
-     ],
-     [
-      "en_cours",
-      "En cours"
-     ],
-     [
-      "terminee",
-      "Terminée"
-     ],
-     [
-      "reportee",
-      "Reportée"
-     ],
-     [
-      "annulee",
-      "Annulée"
-     ]
     ]
    },
+   "sansEtat": true,
    "refus": {
     "toasts": [
      [
@@ -10201,7 +10446,7 @@
      ]
     ],
     "fiche": {
-     "id": "OMxmvuswn40b4se4",
+     "id": "OMxmvuswn40ruhm0",
      "statut": "actif",
      "libelle": "Formation en gestion de stock",
      "nature": "Mission",
@@ -10212,11 +10457,15 @@
      "moyen": "",
      "dateDepart": "2026-10-30",
      "dateRetour": "2026-11-01",
-     "statutMission": "a_valider",
      "observation": "",
      "reference": "OM-2026-0015",
      "agent": "MAMAN Zoukanéri",
-     "fonction": "Gestionnaire de Stock"
+     "fonction": "Gestionnaire de Stock",
+     "statutMission": "a_valider",
+     "validationEtat": "a_valider",
+     "etapesFaites": [],
+     "saisiPar": "BASSONGUI Chabi Séko",
+     "saisiLe": "2026-10-30"
     },
     "total": 15
    },
@@ -10230,7 +10479,7 @@
      {
       "libelle": "En attente de validation",
       "valeur": "2",
-      "indice": "Validation de la DA attendue"
+      "indice": "Validation attendue (circuit réglé au poste)"
      },
      {
       "libelle": "Missions en cours",
@@ -10244,7 +10493,7 @@
      }
     ],
     "note": [
-     "2 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la signature de la Directrice Administrative."
+     "2 ordre(s) en attente de validation. Aucun départ ne devrait intervenir avant la validation du circuit."
     ]
    }
   },
@@ -10259,7 +10508,6 @@
     "moyen": "",
     "dateDepart": "2026-10-30",
     "dateRetour": "2026-11-01",
-    "statutMission": "a_valider",
     "observation": ""
    },
    "enregistre": {
@@ -10269,7 +10517,7 @@
      ]
     ],
     "fiche": {
-     "id": "OMxmvuswn40b4se4",
+     "id": "OMxmvuswn40ruhm0",
      "statut": "actif",
      "libelle": "Formation en gestion de stock",
      "nature": "Mission",
@@ -10280,17 +10528,21 @@
      "moyen": "",
      "dateDepart": "2026-10-30",
      "dateRetour": "2026-11-01",
-     "statutMission": "projet",
      "observation": "",
      "reference": "OM-2026-0015",
      "agent": "MAMAN Zoukanéri",
-     "fonction": "Gestionnaire de Stock"
+     "fonction": "Gestionnaire de Stock",
+     "statutMission": "a_valider",
+     "validationEtat": "a_valider",
+     "etapesFaites": [],
+     "saisiPar": "BASSONGUI Chabi Séko",
+     "saisiLe": "2026-10-30"
     }
    }
   },
   "archivage": {
    "fiche": {
-    "id": "OMxmvuswn40b4se4",
+    "id": "OMxmvuswn40ruhm0",
     "statut": "archive",
     "libelle": "Formation en gestion de stock",
     "nature": "Mission",
@@ -10301,11 +10553,15 @@
     "moyen": "",
     "dateDepart": "2026-10-30",
     "dateRetour": "2026-11-01",
-    "statutMission": "projet",
     "observation": "",
     "reference": "OM-2026-0015",
     "agent": "MAMAN Zoukanéri",
     "fonction": "Gestionnaire de Stock",
+    "statutMission": "a_valider",
+    "validationEtat": "a_valider",
+    "etapesFaites": [],
+    "saisiPar": "BASSONGUI Chabi Séko",
+    "saisiLe": "2026-10-30",
     "_motifArchivage": "Doublon"
    },
    "kpis": [
@@ -10317,7 +10573,7 @@
     {
      "libelle": "En attente de validation",
      "valeur": "2",
-     "indice": "Validation de la DA attendue"
+     "indice": "Validation attendue (circuit réglé au poste)"
     },
     {
      "libelle": "Missions en cours",
@@ -11047,7 +11303,7 @@
      ]
     ],
     "fiche": {
-     "id": "PRExmvuswn40irpou",
+     "id": "PRExmvuswn40jl79x",
      "statut": "actif",
      "nom": "Dr ZOUMAROU Ali",
      "specialite": "Échographie",
@@ -11118,7 +11374,7 @@
      ]
     ],
     "fiche": {
-     "id": "PRExmvuswn40irpou",
+     "id": "PRExmvuswn40jl79x",
      "statut": "actif",
      "nom": "Dr ZOUMAROU Ali",
      "specialite": "Échographie",
@@ -11133,7 +11389,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "PRExmvuswn40irpou",
+    "id": "PRExmvuswn40jl79x",
     "statut": "archive",
     "nom": "Dr ZOUMAROU Ali",
     "specialite": "Échographie",
