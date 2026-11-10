@@ -89,7 +89,8 @@ Future<void> ajouterLibre(WidgetTester t, String libelle, String prix,
 void cas(String nom, Future<void> Function(WidgetTester) corps) =>
     testWidgets(nom, (t) async {
       await corps(t);
-      await t.pump(const Duration(seconds: 10));
+      // 15 s : le refus nommé de la normalisation (MECEF_NON_CONFIGURE) vit 12 s, plus que les autres messages (lot L3).
+      await t.pump(const Duration(seconds: 15));
     });
 
 void main() {

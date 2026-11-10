@@ -142,6 +142,10 @@ void main() {
 
   cas('rejet : « Corriger et retransmettre » refuse en nommant (aucun adaptateur), la vente repasse en attente SANS numéro et la retransmission n\'est pas comptée', (t) async {
     final m = magasin();
+    // Les pièces refusées du jeu portent un numéro semé (un numéro déjà porté est repris, jamais réécrit) : on le retire pour éprouver le cas d'une vente SANS numéro.
+    for (final f in norm(m, 'rejete')) {
+      m.collection('factures').mettreAJour(f['id'], {'numeroMecef': null});
+    }
     final avant = norm(m, 'rejete');
     final numeros0 = numerosPris(m).length;
     await ouvrir(t, m, 'mecef-transmission');
