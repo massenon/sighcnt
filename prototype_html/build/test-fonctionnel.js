@@ -17554,7 +17554,7 @@ async function viderMessages(page) {
       const S = window.SIGH.store, PR = window.SIGH.planningRh;
       const fiches = S.collection('regimesIndividuels').all().filter((x) => m.reg0.indexOf(x.id) < 0);
       const r = PR.regimeALaDate(m.m1, 'medecin', m.d0), rAutre = PR.regimeALaDate(m.m2, 'medecin', m.d0);
-      const j = S.raw().audit.filter((x) => x.action === 'Régime individuel : dérogation posée').pop();
+      const j = S.raw().audit.filter((x) => x.action === 'Régime individuel : dérogation posée')[0];
       return { n: fiches.length, champs: fiches[0] && fiches[0].champs, dateEffet: fiches[0] && fiches[0].dateEffet, version: fiches[0] && fiches[0].version,
         repos: r.repos, honoraire: r.honoraire, cycle: r.cycle, categorie: r.categorie, derogations: r.derogations, individuel: r.individuel, vacations: r.vacations,
         autreRepos: rAutre.repos, autreIndiv: rAutre.individuel, journal: !!j, tableau: [...document.querySelectorAll('#page-content tbody tr')].some((tr) => tr.textContent.indexOf(m.n1) >= 0 && /Repos : Repos 24h/.test(tr.textContent)) };
@@ -17753,7 +17753,7 @@ async function viderMessages(page) {
     const valide = await page.evaluate(() => { const b = window.__tr && window.__tr.querySelector('button[title^="Valider"]'); if (!b) return false; b.click(); return true; });
     await pause(400);
     await modale('Valider'); await pause(700);
-    const apresV = await page.evaluate((id) => { const S = window.SIGH.store, p = S.collection('presences').get(id); const j = S.raw().audit.filter((x) => x.action === 'Validation d’un pointage').pop(); return { etat: p.validationEtat, par: p.validePar, circuit: p.circuitUtilise, etapes: (p.etapesFaites || []).map((e) => e.etape), journal: !!j && j.reference === id }; }, cree.id);
+    const apresV = await page.evaluate((id) => { const S = window.SIGH.store, p = S.collection('presences').get(id); const j = S.raw().audit.filter((x) => x.action === 'Validation d’un pointage')[0]; return { etat: p.validationEtat, par: p.validePar, circuit: p.circuitUtilise, etapes: (p.etapesFaites || []).map((e) => e.etape), journal: !!j && j.reference === id }; }, cree.id);
     verifier('Le surveillant valide SEUL au geste : état « valide », signé par lui, circuit consigné, une étape, journalisé (RG-12)', valide && apresV.etat === 'valide' && apresV.par === 'SONDE107 surveillant' && apresV.circuit === 'surveillant' && apresV.etapes.join() === 'surveillant' && apresV.journal, JSON.stringify(apresV));
     await ouvrir('m10-presences.html');
     const kpi2 = await kpi('Retards');
@@ -17795,7 +17795,7 @@ async function viderMessages(page) {
     await cliquer('#page-content button', 'Régler'); await pause(400);
     await champ('#f_circuit', 'daf');
     await modale('Enregistrer'); await pause(600);
-    const reglage = await page.evaluate(() => { const S = window.SIGH.store; const j = S.raw().audit.filter((x) => x.action === 'Circuit de validation des présences').pop(); return { circuit: S.reglage('planningCircuitPresences', null), journal: j ? { avant: j.ancienneValeur, apres: j.nouvelleValeur } : null, carte: /Directrice administrative seule/.test(document.getElementById('page-content').textContent) }; });
+    const reglage = await page.evaluate(() => { const S = window.SIGH.store; const j = S.raw().audit.filter((x) => x.action === 'Circuit de validation des présences')[0]; return { circuit: S.reglage('planningCircuitPresences', null), journal: j ? { avant: j.ancienneValeur, apres: j.nouvelleValeur } : null, carte: /Directrice administrative seule/.test(document.getElementById('page-content').textContent) }; });
     verifier('Réglé à la carte : « directrice administrative seule » en base, ancienne et nouvelle valeur au journal, la carte le dit', reglage.circuit === 'daf' && reglage.journal && /surveillant/.test(JSON.stringify(reglage.journal.avant)) && /daf/.test(JSON.stringify(reglage.journal.apres)) && reglage.carte, JSON.stringify(reglage.journal));
     const daf = await page.evaluate((m) => {
       const S = window.SIGH.store, R = window.SIGH.planningRh, col = S.collection('presences');
@@ -17926,7 +17926,7 @@ async function viderMessages(page) {
       as('surveillant', 'SONDE107 surveillant');
       const ok = R.regulariser(id, { etat: 'present', motifCode: 'maladie', justificatif: 'CM-107-bis', motif: 'Arrivée constatée à 07:55 (sonde)' });
       const p = col.get(id);
-      const j = S.raw().audit.filter((x) => x.action === 'Régularisation d’un pointage').pop();
+      const j = S.raw().audit.filter((x) => x.action === 'Régularisation d’un pointage')[0];
       S.setSession(sess);
       return { direct: direct === null, intact: intact, sansMotif: sansMotif, etatInconnu: etatInconnu, caissier: caissier, ok: ok.ok, etat: p.etat, justif: p.justificatif, trace: p.regularisations && p.regularisations[0], validation: p.validationEtat, journal: !!j && j.reference === id };
     }, cree.id);
@@ -18063,7 +18063,7 @@ async function viderMessages(page) {
       const S = window.SIGH.store;
       const p = S.collection('propositionsPlanning').all().filter((x) => m.pro0.indexOf(x.id) < 0)[0];
       const v = S.collection('planning').all().filter((x) => m.pla0.indexOf(x.id) < 0 && x.employeId === m.a && x.date === m.j[3])[0];
-      const j = S.raw().audit.filter((x) => x.action === 'Proposition de planning validée').pop();
+      const j = S.raw().audit.filter((x) => x.action === 'Proposition de planning validée')[0];
       return { etat: p.etat, par: p.tranchePar, vac: v ? { type: v.type, etat: v.validationEtat, origine: v.origine, prop: v.propositionId, regime: v.regimeLibelle, par: v.validePar } : null, journal: !!j && j.reference === p.id, pid: p.id };
     }, monde);
     verifier('Validée au geste : la vacation naît au planning, validée, avec l’origine « proposition », la proposition, le régime et le validateur ; journalisé (RG-12)', bouton && v1.etat === 'validee' && v1.par === 'SONDE108 surveillant' && v1.vac && v1.vac.type === 'garde' && v1.vac.etat === 'validee' && v1.vac.origine === 'proposition' && v1.vac.prop === v1.pid && v1.vac.regime === 'Médecins' && v1.journal, JSON.stringify(v1));
@@ -18157,7 +18157,7 @@ async function viderMessages(page) {
     await cliquer('#page-content button', 'Régler'); await pause(400);
     await page.evaluate(() => { const c = document.querySelector('.modal-root #f_direct, [role=dialog] #f_direct'); c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); });
     await modale('Enregistrer'); await pause(600);
-    const regle = await page.evaluate(() => { const S = window.SIGH.store; const j = S.raw().audit.filter((x) => x.action === 'Planning : l’agent modifie directement').pop(); return { valeur: S.reglage('planningAgentModifieDirectement', null), journal: j ? { avant: j.ancienneValeur, apres: j.nouvelleValeur } : null, carte: /Oui/.test(document.getElementById('page-content').textContent) }; });
+    const regle = await page.evaluate(() => { const S = window.SIGH.store; const j = S.raw().audit.filter((x) => x.action === 'Planning : l’agent modifie directement')[0]; return { valeur: S.reglage('planningAgentModifieDirectement', null), journal: j ? { avant: j.ancienneValeur, apres: j.nouvelleValeur } : null, carte: /Oui/.test(document.getElementById('page-content').textContent) }; });
     verifier('Réglé à la carte : « l’agent modifie directement » = oui en base, ancienne et nouvelle valeur au journal', regle.valeur === true && regle.journal && /false/.test(regle.journal.avant) && /true/.test(regle.journal.apres) && regle.carte, JSON.stringify(regle.journal));
     const direct = await page.evaluate((m) => {
       const S = window.SIGH.store, R = window.SIGH.planningRh, s = S.session();
@@ -18167,7 +18167,7 @@ async function viderMessages(page) {
       const v = ok.ok ? S.collection('planning').get(ok.vacationId) : null;
       const trop = R.proposer({ type: 'ajout', date: m.j[13], typeVacation: 'garde', motif: 'Sonde 108 : trop tôt' });
       const echange = R.proposer({ type: 'echange', vacationId: ok.vacationId, contrepartieId: m.gB, motif: 'Sonde 108 : échange' });
-      const j = S.raw().audit.filter((x) => x.action === 'Planning modifié directement par l’agent').pop();
+      const j = S.raw().audit.filter((x) => x.action === 'Planning modifié directement par l’agent')[0];
       S.setSession(s);
       return { ok: ok.ok, direct: ok.direct, vac: v && { etat: v.validationEtat, origine: v.origine, directe: v.modifieDirectement, par: v.validePar, employe: v.employeId === m.b }, nouvellesProp: S.collection('propositionsPlanning').all().length - nProp0,
         trop: trop.code, echange: { ok: echange.ok, direct: echange.direct, code: echange.code, motif: echange.motif }, journal: !!j };

@@ -5835,7 +5835,7 @@
     o = o || {};
     if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusRh('DEROGATION_RESERVEE', 'Le régime individuel se règle par la Directrice Administrative ou l’administrateur.', 'Demander à la Directrice Administrative de poser la dérogation.');
     var e = employeRh(o.employeId);
-    if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent ' + (o.employeId || '—') + ' n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
     var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateEffet)) return refusRh('DATE_INVALIDE', 'La date d’effet est absente ou illisible.', 'Choisir la date à partir de laquelle la dérogation s’applique.');
     if (!String(o.motif || '').trim()) return refusRh('MOTIF_OBLIGATOIRE', 'Le motif de la dérogation est obligatoire.', 'Dire pourquoi le régime de cet agent diffère de celui de sa catégorie.');
@@ -5893,7 +5893,7 @@
    *  et la double affectation. `ignoreId` : la vacation qu'on remplace ou qu'on déplace. */
   function controlerVacationRh(o) {
     var e = employeRh(o.employeId);
-    if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent ' + (o.employeId || '—') + ' n’existe pas au personnel.', 'Choisir un agent du personnel.');
+    if (!e) return refusRh('AGENT_INTROUVABLE', 'L’agent désigné n’existe pas au personnel.', 'Choisir un agent du personnel.');
     var d = isoJour(o.date);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return refusRh('DATE_INVALIDE', 'La date de la vacation est absente ou illisible.', 'Choisir une date.');
     if (!typePlanning(o.type)) return refusRh('TYPE_INCONNU', 'Le type de vacation « ' + o.type + ' » n’existe pas.', 'Choisir un type du référentiel.');
