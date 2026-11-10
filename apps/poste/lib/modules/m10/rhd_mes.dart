@@ -10,7 +10,7 @@ import '../../shell/contexte_ecran.dart';
 import 'rhb_commun.dart';
 import 'rhc_commun.dart';
 
-/// `m10-mes` — « Mon espace » (lot L7, Direction, 09/11/2026, Planning Q5, Q6, Q8) : l'espace « Mes » de l'agent, ses dix-sept rubriques, en LECTURE. Ouvert à tout agent
+/// `m10-mes`, « Mon espace » (lot L7, Direction, 09/11/2026, Planning Q5, Q6, Q8) : l'espace « Mes » de l'agent, ses dix-sept rubriques, en LECTURE. Ouvert à tout agent
 /// connecté sous son propre compte (`universel` au manifeste), y compris sur un POSTE PARTAGÉ en secours. Chaque rubrique est lue par `EspaceMesPoste.lire` (domaine
 /// `lireMes`, rejoué sur les vecteurs de la maquette) : filtrée sur l'agent de la session, sans droit d'écran sur la collection entière (RG-13) ; un compte NON NOMINATIF
 /// reçoit un refus nommé. Rien ne se saisit ici : chaque demande reste à son écran. La fiche de paie est la PIÈCE ÉMISE, jamais recalculée.
@@ -33,7 +33,7 @@ class EcranMes extends StatefulWidget with EcranMaquette {
   State<EcranMes> createState() => _EtatMes();
 }
 
-/// Les colonnes de chaque rubrique : libellé, champ, format (`date`, `money`) — comme `COLONNES_MES` de la maquette.
+/// Les colonnes de chaque rubrique : libellé, champ, format (`date`, `money`), comme `COLONNES_MES` de la maquette.
 const Map<String, List<(String, String, String?)>> _colonnes = {
   'fiche_poste': [('Intitulé', 'intitule', null), ('Rattachement', 'rattachement', null), ('Résumé', 'resume', null)],
   'fiche_paie': [('Référence', 'reference', null), ('Période', 'periode', null), ('Brut', 'brut', 'money'), ('Retenues', 'totalRetenues', 'money'), ('Net à payer', 'net', 'money'), ('Diffusée le', 'dateDiffusion', 'date')],

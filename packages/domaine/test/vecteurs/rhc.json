@@ -6535,7 +6535,7 @@
      {
       "libelle": "Valeur de l’avantage",
       "valeur": "24 000 FCFA",
-      "indice": "Ni recette, ni créance"
+      "indice": "Ni recette, ni créance · 4 sans montant renseigné (non comptées)"
      },
      {
       "libelle": "Agents effectivement soignés",
@@ -6551,7 +6551,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -6571,7 +6571,7 @@
       "Hospitalisation",
       "— lit B2 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -6601,7 +6601,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -6611,7 +6611,7 @@
       "Hospitalisation",
       "— lit A2 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -6652,7 +6652,7 @@
      "Prestations par fonction",
      "Les dix agents les plus pris en charge"
     ],
-    "texte": "Période Depuis toujours 30 derniers jours Trois derniers mois Six derniers mois Douze derniers mois Fonction Toutes les fonctions Aide-soignant(e) Caissière Accueil / Secrétaire médical Infirmier(ère) Sage-femme TSL (Technicien Supérieur de Laboratoire) Ingénieur biomédical Médecin Direction Comptable Gestionnaire de stock Dispensatrice Agent de sécurité Agent d’entretien Chauffeur coursier Imprimer l’état Agents ayant un dossier patient 18 sur 44 agents Prestations prises en charge 10 Valeur de l’avantage 24 000 FCFA Ni recette, ni créance Agents effectivement soignés 9 Ce tableau ne se saisit pas. Il se remplit dès qu’un agent est reçu en consultation, qu’une analyse lui est prescrite ou qu’il est hospitalisé — parce que son dossier patient porte son matricule. Pour corriger une ligne, il faut corriger la prestation d’origine dans son module : une saisie ici créerait une seconde vérité",
+    "texte": "Période Depuis toujours 30 derniers jours Trois derniers mois Six derniers mois Douze derniers mois Fonction Toutes les fonctions Aide-soignant(e) Caissière Accueil / Secrétaire médical Infirmier(ère) Sage-femme TSL (Technicien Supérieur de Laboratoire) Ingénieur biomédical Médecin Direction Comptable Gestionnaire de stock Dispensatrice Agent de sécurité Agent d’entretien Chauffeur coursier Imprimer l’état Agents ayant un dossier patient 18 sur 44 agents Prestations prises en charge 10 Valeur de l’avantage 24 000 FCFA Ni recette, ni créance · 4 sans montant renseigné (non comptées) Agents effectivement soignés 9 Ce tableau ne se saisit pas. Il se remplit dès qu’un agent est reçu en consultation, qu’une analyse lui est prescrite ou qu’il est hospitalisé — parce que son dossier patient porte son matricule. Pour corriger une ligne, il faut corriger la prestation d’origine dans son module : ",
     "etat": {
      "titre": "État de la prise en charge du personnel",
      "sousTitre": "Trois derniers mois",
@@ -6692,7 +6692,7 @@
        "nom": "BASSONGUI Chabi Séko"
       }
      ],
-     "texte": "MatriculeAgentFonctionConsult.AnalysesHospit.Valeur prise en charge17OROU YO AlimatouInfirmier(ère)2008 0009AGOSSOU YahouzaTSL (Technicien Supérieur de Laboratoire)1005 00018BADO BANI A. B. ZoulehathSage-femme1005 0001BASSONGUI Chabi SékoMédecin1003 00010GARBA YahouzaInfirmier(ère)1003 00013BAGRI ElvyreInfirmier(ère)00102TAKI AlimatouDirection001011IDRISSOU ANIKI Baba-ToundéInfirmier(ère)00105YENI M’PO FlorentMédecin0010TOTAL60424 000Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par l’établissement. Elles ne constituent ni une recette, ni une créance sur un tiers payeur, et ne donnent lieu à aucune écriture comptable. La valeur portée au présent état mesure l’avantage consenti au personnel ; elle ne correspond à aucun encaissement.",
+     "texte": "MatriculeAgentFonctionConsult.AnalysesHospit.Valeur prise en charge17OROU YO AlimatouInfirmier(ère)2008 0009AGOSSOU YahouzaTSL (Technicien Supérieur de Laboratoire)1005 00018BADO BANI A. B. ZoulehathSage-femme1005 0001BASSONGUI Chabi SékoMédecin1003 00010GARBA YahouzaInfirmier(ère)1003 00013BAGRI ElvyreInfirmier(ère)0010 (1 non renseignée)2TAKI AlimatouDirection0010 (1 non renseignée)11IDRISSOU ANIKI Baba-ToundéInfirmier(ère)0010 (1 non renseignée)5YENI M’PO FlorentMédecin0010 (1 non renseignée)TOTAL60424 000Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par l’établissement. Elles ne constituent ni une recette, ni une créance sur un tiers payeur, et ne donnent lieu à aucune écriture comptable. La valeur portée au présent état mesure l’avantage consenti au personnel ; elle ne correspond à aucun encaissement.",
      "tableaux": [
       {
        "entetes": [
@@ -6757,7 +6757,7 @@
          "0",
          "0",
          "1",
-         "0"
+         "0 (1 non renseignée)"
         ],
         [
          "2",
@@ -6766,7 +6766,7 @@
          "0",
          "0",
          "1",
-         "0"
+         "0 (1 non renseignée)"
         ],
         [
          "11",
@@ -6775,7 +6775,7 @@
          "0",
          "0",
          "1",
-         "0"
+         "0 (1 non renseignée)"
         ],
         [
          "5",
@@ -6784,7 +6784,7 @@
          "0",
          "0",
          "1",
-         "0"
+         "0 (1 non renseignée)"
         ]
        ],
        "pied": [
@@ -6817,7 +6817,7 @@
      {
       "libelle": "Valeur de l’avantage",
       "valeur": "214 000 FCFA",
-      "indice": "Ni recette, ni créance"
+      "indice": "Ni recette, ni créance · 8 sans montant renseigné (non comptées)"
      },
      {
       "libelle": "Agents effectivement soignés",
@@ -6833,7 +6833,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -6853,7 +6853,7 @@
       "Hospitalisation",
       "— lit B2 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -6883,7 +6883,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -6893,7 +6893,7 @@
       "Hospitalisation",
       "— lit A2 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -7035,7 +7035,7 @@
      "Les dix agents les plus pris en charge",
      "Valeur mensuelle de l’avantage"
     ],
-    "texte": "Période Depuis toujours 30 derniers jours Trois derniers mois Six derniers mois Douze derniers mois Fonction Toutes les fonctions Aide-soignant(e) Caissière Accueil / Secrétaire médical Infirmier(ère) Sage-femme TSL (Technicien Supérieur de Laboratoire) Ingénieur biomédical Médecin Direction Comptable Gestionnaire de stock Dispensatrice Agent de sécurité Agent d’entretien Chauffeur coursier Imprimer l’état Agents ayant un dossier patient 18 sur 44 agents Prestations prises en charge 57 Valeur de l’avantage 214 000 FCFA Ni recette, ni créance Agents effectivement soignés 17 Ce tableau ne se saisit pas. Il se remplit dès qu’un agent est reçu en consultation, qu’une analyse lui est prescrite ou qu’il est hospitalisé — parce que son dossier patient porte son matricule. Pour corriger une ligne, il faut corriger la prestation d’origine dans son module : une saisie ici créerait une seconde véri",
+    "texte": "Période Depuis toujours 30 derniers jours Trois derniers mois Six derniers mois Douze derniers mois Fonction Toutes les fonctions Aide-soignant(e) Caissière Accueil / Secrétaire médical Infirmier(ère) Sage-femme TSL (Technicien Supérieur de Laboratoire) Ingénieur biomédical Médecin Direction Comptable Gestionnaire de stock Dispensatrice Agent de sécurité Agent d’entretien Chauffeur coursier Imprimer l’état Agents ayant un dossier patient 18 sur 44 agents Prestations prises en charge 57 Valeur de l’avantage 214 000 FCFA Ni recette, ni créance · 8 sans montant renseigné (non comptées) Agents effectivement soignés 17 Ce tableau ne se saisit pas. Il se remplit dès qu’un agent est reçu en consultation, qu’une analyse lui est prescrite ou qu’il est hospitalisé — parce que son dossier patient porte son matricule. Pour corriger une ligne, il faut corriger la prestation d’origine dans son module ",
     "etat": {
      "titre": "État de la prise en charge du personnel",
      "sousTitre": "Six derniers mois",
@@ -7075,7 +7075,7 @@
        "nom": "BASSONGUI Chabi Séko"
       }
      ],
-     "texte": "MatriculeAgentFonctionConsult.AnalysesHospit.Valeur prise en charge14PARAISO AbdoulInfirmier(ère)33136 00011IDRISSOU ANIKI Baba-ToundéInfirmier(ère)40126 0005YENI M’PO FlorentMédecin23123 0008KINNOU A. GaniouTSL (Technicien Supérieur de Laboratoire)30016 0001BASSONGUI Chabi SékoMédecin14015 5009AGOSSOU YahouzaTSL (Technicien Supérieur de Laboratoire)30113 0004GBEDJI HervéComptable04012 50013BAGRI ElvyreInfirmier(ère)30111 0003KASSA AugustinComptable13011 00015OURTCHA BertineInfirmier(ère)20010 00017OROU YO AlimatouInfirmier(ère)2008 00012NKOUÉ JeanInfirmier(ère)2018 0007AHOHOU RodrigueMédecin2008 00016DOSSOU MoussaInfirmier(ère)2018 00018BADO BANI A. B. ZoulehathSage-femme1005 00010GARBA YahouzaInfirmier(ère)1003 0002TAKI AlimatouDirection0010TOTAL32178214 000Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par l’établissement. Elles ne constituent ni une recette, ni une créance sur un tiers payeur, et ne donnent lieu à aucune écriture comptable. La valeur portée au présent état mesure l’avantage consenti au personnel ; elle ne correspond à aucun encaissement.",
+     "texte": "MatriculeAgentFonctionConsult.AnalysesHospit.Valeur prise en charge14PARAISO AbdoulInfirmier(ère)33136 000 (1 non renseignée)11IDRISSOU ANIKI Baba-ToundéInfirmier(ère)40126 000 (1 non renseignée)5YENI M’PO FlorentMédecin23123 000 (1 non renseignée)8KINNOU A. GaniouTSL (Technicien Supérieur de Laboratoire)30016 0001BASSONGUI Chabi SékoMédecin14015 5009AGOSSOU YahouzaTSL (Technicien Supérieur de Laboratoire)30113 000 (1 non renseignée)4GBEDJI HervéComptable04012 50013BAGRI ElvyreInfirmier(ère)30111 000 (1 non renseignée)3KASSA AugustinComptable13011 00015OURTCHA BertineInfirmier(ère)20010 00017OROU YO AlimatouInfirmier(ère)2008 00012NKOUÉ JeanInfirmier(ère)2018 000 (1 non renseignée)7AHOHOU RodrigueMédecin2008 00016DOSSOU MoussaInfirmier(ère)2018 000 (1 non renseignée)18BADO BANI A. B. ZoulehathSage-femme1005 00010GARBA YahouzaInfirmier(ère)1003 0002TAKI AlimatouDirection0010 (1 non renseignée)TOTAL32178214 000Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par l’établissement. Elles ne constituent ni une recette, ni une créance sur un tiers payeur, et ne donnent lieu à aucune écriture comptable. La valeur portée au présent état mesure l’avantage consenti au personnel ; elle ne correspond à aucun encaissement.",
      "tableaux": [
       {
        "entetes": [
@@ -7095,7 +7095,7 @@
          "3",
          "3",
          "1",
-         "36 000"
+         "36 000 (1 non renseignée)"
         ],
         [
          "11",
@@ -7104,7 +7104,7 @@
          "4",
          "0",
          "1",
-         "26 000"
+         "26 000 (1 non renseignée)"
         ],
         [
          "5",
@@ -7113,7 +7113,7 @@
          "2",
          "3",
          "1",
-         "23 000"
+         "23 000 (1 non renseignée)"
         ],
         [
          "8",
@@ -7140,7 +7140,7 @@
          "3",
          "0",
          "1",
-         "13 000"
+         "13 000 (1 non renseignée)"
         ],
         [
          "4",
@@ -7158,7 +7158,7 @@
          "3",
          "0",
          "1",
-         "11 000"
+         "11 000 (1 non renseignée)"
         ],
         [
          "3",
@@ -7194,7 +7194,7 @@
          "2",
          "0",
          "1",
-         "8 000"
+         "8 000 (1 non renseignée)"
         ],
         [
          "7",
@@ -7212,7 +7212,7 @@
          "2",
          "0",
          "1",
-         "8 000"
+         "8 000 (1 non renseignée)"
         ],
         [
          "18",
@@ -7239,7 +7239,7 @@
          "0",
          "0",
          "1",
-         "0"
+         "0 (1 non renseignée)"
         ]
        ],
        "pied": [
@@ -7272,7 +7272,7 @@
      {
       "libelle": "Valeur de l’avantage",
       "valeur": "280 500 FCFA",
-      "indice": "Ni recette, ni créance"
+      "indice": "Ni recette, ni créance · 10 sans montant renseigné (non comptées)"
      },
      {
       "libelle": "Agents effectivement soignés",
@@ -7288,7 +7288,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -7308,7 +7308,7 @@
       "Hospitalisation",
       "— lit B2 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -7338,7 +7338,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -7348,7 +7348,7 @@
       "Hospitalisation",
       "— lit A2 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -7490,7 +7490,7 @@
      "Les dix agents les plus pris en charge",
      "Valeur mensuelle de l’avantage"
     ],
-    "texte": "Période Depuis toujours 30 derniers jours Trois derniers mois Six derniers mois Douze derniers mois Fonction Toutes les fonctions Aide-soignant(e) Caissière Accueil / Secrétaire médical Infirmier(ère) Sage-femme TSL (Technicien Supérieur de Laboratoire) Ingénieur biomédical Médecin Direction Comptable Gestionnaire de stock Dispensatrice Agent de sécurité Agent d’entretien Chauffeur coursier Imprimer l’état Agents ayant un dossier patient 18 sur 44 agents Prestations prises en charge 71 Valeur de l’avantage 280 500 FCFA Ni recette, ni créance Agents effectivement soignés 18 Ce tableau ne se saisit pas. Il se remplit dès qu’un agent est reçu en consultation, qu’une analyse lui est prescrite ou qu’il est hospitalisé — parce que son dossier patient porte son matricule. Pour corriger une ligne, il faut corriger la prestation d’origine dans son module : une saisie ici créerait une seconde véri",
+    "texte": "Période Depuis toujours 30 derniers jours Trois derniers mois Six derniers mois Douze derniers mois Fonction Toutes les fonctions Aide-soignant(e) Caissière Accueil / Secrétaire médical Infirmier(ère) Sage-femme TSL (Technicien Supérieur de Laboratoire) Ingénieur biomédical Médecin Direction Comptable Gestionnaire de stock Dispensatrice Agent de sécurité Agent d’entretien Chauffeur coursier Imprimer l’état Agents ayant un dossier patient 18 sur 44 agents Prestations prises en charge 71 Valeur de l’avantage 280 500 FCFA Ni recette, ni créance · 10 sans montant renseigné (non comptées) Agents effectivement soignés 18 Ce tableau ne se saisit pas. Il se remplit dès qu’un agent est reçu en consultation, qu’une analyse lui est prescrite ou qu’il est hospitalisé — parce que son dossier patient porte son matricule. Pour corriger une ligne, il faut corriger la prestation d’origine dans son module",
     "etat": {
      "titre": "État de la prise en charge du personnel",
      "sousTitre": "Douze derniers mois",
@@ -7530,7 +7530,7 @@
        "nom": "BASSONGUI Chabi Séko"
       }
      ],
-     "texte": "MatriculeAgentFonctionConsult.AnalysesHospit.Valeur prise en charge14PARAISO AbdoulInfirmier(ère)33336 00013BAGRI ElvyreInfirmier(ère)42130 00018BADO BANI A. B. ZoulehathSage-femme14029 00011IDRISSOU ANIKI Baba-ToundéInfirmier(ère)40126 00016DOSSOU MoussaInfirmier(ère)32125 5005YENI M’PO FlorentMédecin23123 0008KINNOU A. GaniouTSL (Technicien Supérieur de Laboratoire)40019 0001BASSONGUI Chabi SékoMédecin14015 5009AGOSSOU YahouzaTSL (Technicien Supérieur de Laboratoire)30113 0004GBEDJI HervéComptable04012 5003KASSA AugustinComptable13011 00015OURTCHA BertineInfirmier(ère)20010 00017OROU YO AlimatouInfirmier(ère)2008 00012NKOUÉ JeanInfirmier(ère)2018 0007AHOHOU RodrigueMédecin2008 00010GARBA YahouzaInfirmier(ère)1003 0006TAKI OrouMédecin1003 0002TAKI AlimatouDirection0010TOTAL362510280 500Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par l’établissement. Elles ne constituent ni une recette, ni une créance sur un tiers payeur, et ne donnent lieu à aucune écriture comptable. La valeur portée au présent état mesure l’avantage consenti au personnel ; elle ne correspond à aucun encaissement.",
+     "texte": "MatriculeAgentFonctionConsult.AnalysesHospit.Valeur prise en charge14PARAISO AbdoulInfirmier(ère)33336 000 (3 non renseignées)13BAGRI ElvyreInfirmier(ère)42130 000 (1 non renseignée)18BADO BANI A. B. ZoulehathSage-femme14029 00011IDRISSOU ANIKI Baba-ToundéInfirmier(ère)40126 000 (1 non renseignée)16DOSSOU MoussaInfirmier(ère)32125 500 (1 non renseignée)5YENI M’PO FlorentMédecin23123 000 (1 non renseignée)8KINNOU A. GaniouTSL (Technicien Supérieur de Laboratoire)40019 0001BASSONGUI Chabi SékoMédecin14015 5009AGOSSOU YahouzaTSL (Technicien Supérieur de Laboratoire)30113 000 (1 non renseignée)4GBEDJI HervéComptable04012 5003KASSA AugustinComptable13011 00015OURTCHA BertineInfirmier(ère)20010 00017OROU YO AlimatouInfirmier(ère)2008 00012NKOUÉ JeanInfirmier(ère)2018 000 (1 non renseignée)7AHOHOU RodrigueMédecin2008 00010GARBA YahouzaInfirmier(ère)1003 0006TAKI OrouMédecin1003 0002TAKI AlimatouDirection0010 (1 non renseignée)TOTAL362510280 500Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par l’établissement. Elles ne constituent ni une recette, ni une créance sur un tiers payeur, et ne donnent lieu à aucune écriture comptable. La valeur portée au présent état mesure l’avantage consenti au personnel ; elle ne correspond à aucun encaissement.",
      "tableaux": [
       {
        "entetes": [
@@ -7550,7 +7550,7 @@
          "3",
          "3",
          "3",
-         "36 000"
+         "36 000 (3 non renseignées)"
         ],
         [
          "13",
@@ -7559,7 +7559,7 @@
          "4",
          "2",
          "1",
-         "30 000"
+         "30 000 (1 non renseignée)"
         ],
         [
          "18",
@@ -7577,7 +7577,7 @@
          "4",
          "0",
          "1",
-         "26 000"
+         "26 000 (1 non renseignée)"
         ],
         [
          "16",
@@ -7586,7 +7586,7 @@
          "3",
          "2",
          "1",
-         "25 500"
+         "25 500 (1 non renseignée)"
         ],
         [
          "5",
@@ -7595,7 +7595,7 @@
          "2",
          "3",
          "1",
-         "23 000"
+         "23 000 (1 non renseignée)"
         ],
         [
          "8",
@@ -7622,7 +7622,7 @@
          "3",
          "0",
          "1",
-         "13 000"
+         "13 000 (1 non renseignée)"
         ],
         [
          "4",
@@ -7667,7 +7667,7 @@
          "2",
          "0",
          "1",
-         "8 000"
+         "8 000 (1 non renseignée)"
         ],
         [
          "7",
@@ -7703,7 +7703,7 @@
          "0",
          "0",
          "1",
-         "0"
+         "0 (1 non renseignée)"
         ]
        ],
        "pied": [
@@ -7736,7 +7736,7 @@
      {
       "libelle": "Valeur de l’avantage",
       "valeur": "280 500 FCFA",
-      "indice": "Ni recette, ni créance"
+      "indice": "Ni recette, ni créance · 10 sans montant renseigné (non comptées)"
      },
      {
       "libelle": "Agents effectivement soignés",
@@ -7752,7 +7752,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -7772,7 +7772,7 @@
       "Hospitalisation",
       "— lit B2 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -7802,7 +7802,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -7812,7 +7812,7 @@
       "Hospitalisation",
       "— lit A2 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -7954,7 +7954,7 @@
      "Les dix agents les plus pris en charge",
      "Valeur mensuelle de l’avantage"
     ],
-    "texte": "Période Depuis toujours 30 derniers jours Trois derniers mois Six derniers mois Douze derniers mois Fonction Toutes les fonctions Aide-soignant(e) Caissière Accueil / Secrétaire médical Infirmier(ère) Sage-femme TSL (Technicien Supérieur de Laboratoire) Ingénieur biomédical Médecin Direction Comptable Gestionnaire de stock Dispensatrice Agent de sécurité Agent d’entretien Chauffeur coursier Imprimer l’état Agents ayant un dossier patient 18 sur 44 agents Prestations prises en charge 71 Valeur de l’avantage 280 500 FCFA Ni recette, ni créance Agents effectivement soignés 18 Ce tableau ne se saisit pas. Il se remplit dès qu’un agent est reçu en consultation, qu’une analyse lui est prescrite ou qu’il est hospitalisé — parce que son dossier patient porte son matricule. Pour corriger une ligne, il faut corriger la prestation d’origine dans son module : une saisie ici créerait une seconde véri",
+    "texte": "Période Depuis toujours 30 derniers jours Trois derniers mois Six derniers mois Douze derniers mois Fonction Toutes les fonctions Aide-soignant(e) Caissière Accueil / Secrétaire médical Infirmier(ère) Sage-femme TSL (Technicien Supérieur de Laboratoire) Ingénieur biomédical Médecin Direction Comptable Gestionnaire de stock Dispensatrice Agent de sécurité Agent d’entretien Chauffeur coursier Imprimer l’état Agents ayant un dossier patient 18 sur 44 agents Prestations prises en charge 71 Valeur de l’avantage 280 500 FCFA Ni recette, ni créance · 10 sans montant renseigné (non comptées) Agents effectivement soignés 18 Ce tableau ne se saisit pas. Il se remplit dès qu’un agent est reçu en consultation, qu’une analyse lui est prescrite ou qu’il est hospitalisé — parce que son dossier patient porte son matricule. Pour corriger une ligne, il faut corriger la prestation d’origine dans son module",
     "etat": {
      "titre": "État de la prise en charge du personnel",
      "sousTitre": "Depuis l’origine",
@@ -7994,7 +7994,7 @@
        "nom": "BASSONGUI Chabi Séko"
       }
      ],
-     "texte": "MatriculeAgentFonctionConsult.AnalysesHospit.Valeur prise en charge14PARAISO AbdoulInfirmier(ère)33336 00013BAGRI ElvyreInfirmier(ère)42130 00018BADO BANI A. B. ZoulehathSage-femme14029 00011IDRISSOU ANIKI Baba-ToundéInfirmier(ère)40126 00016DOSSOU MoussaInfirmier(ère)32125 5005YENI M’PO FlorentMédecin23123 0008KINNOU A. GaniouTSL (Technicien Supérieur de Laboratoire)40019 0001BASSONGUI Chabi SékoMédecin14015 5009AGOSSOU YahouzaTSL (Technicien Supérieur de Laboratoire)30113 0004GBEDJI HervéComptable04012 5003KASSA AugustinComptable13011 00015OURTCHA BertineInfirmier(ère)20010 00017OROU YO AlimatouInfirmier(ère)2008 00012NKOUÉ JeanInfirmier(ère)2018 0007AHOHOU RodrigueMédecin2008 00010GARBA YahouzaInfirmier(ère)1003 0006TAKI OrouMédecin1003 0002TAKI AlimatouDirection0010TOTAL362510280 500Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par l’établissement. Elles ne constituent ni une recette, ni une créance sur un tiers payeur, et ne donnent lieu à aucune écriture comptable. La valeur portée au présent état mesure l’avantage consenti au personnel ; elle ne correspond à aucun encaissement.",
+     "texte": "MatriculeAgentFonctionConsult.AnalysesHospit.Valeur prise en charge14PARAISO AbdoulInfirmier(ère)33336 000 (3 non renseignées)13BAGRI ElvyreInfirmier(ère)42130 000 (1 non renseignée)18BADO BANI A. B. ZoulehathSage-femme14029 00011IDRISSOU ANIKI Baba-ToundéInfirmier(ère)40126 000 (1 non renseignée)16DOSSOU MoussaInfirmier(ère)32125 500 (1 non renseignée)5YENI M’PO FlorentMédecin23123 000 (1 non renseignée)8KINNOU A. GaniouTSL (Technicien Supérieur de Laboratoire)40019 0001BASSONGUI Chabi SékoMédecin14015 5009AGOSSOU YahouzaTSL (Technicien Supérieur de Laboratoire)30113 000 (1 non renseignée)4GBEDJI HervéComptable04012 5003KASSA AugustinComptable13011 00015OURTCHA BertineInfirmier(ère)20010 00017OROU YO AlimatouInfirmier(ère)2008 00012NKOUÉ JeanInfirmier(ère)2018 000 (1 non renseignée)7AHOHOU RodrigueMédecin2008 00010GARBA YahouzaInfirmier(ère)1003 0006TAKI OrouMédecin1003 0002TAKI AlimatouDirection0010 (1 non renseignée)TOTAL362510280 500Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par l’établissement. Elles ne constituent ni une recette, ni une créance sur un tiers payeur, et ne donnent lieu à aucune écriture comptable. La valeur portée au présent état mesure l’avantage consenti au personnel ; elle ne correspond à aucun encaissement.",
      "tableaux": [
       {
        "entetes": [
@@ -8014,7 +8014,7 @@
          "3",
          "3",
          "3",
-         "36 000"
+         "36 000 (3 non renseignées)"
         ],
         [
          "13",
@@ -8023,7 +8023,7 @@
          "4",
          "2",
          "1",
-         "30 000"
+         "30 000 (1 non renseignée)"
         ],
         [
          "18",
@@ -8041,7 +8041,7 @@
          "4",
          "0",
          "1",
-         "26 000"
+         "26 000 (1 non renseignée)"
         ],
         [
          "16",
@@ -8050,7 +8050,7 @@
          "3",
          "2",
          "1",
-         "25 500"
+         "25 500 (1 non renseignée)"
         ],
         [
          "5",
@@ -8059,7 +8059,7 @@
          "2",
          "3",
          "1",
-         "23 000"
+         "23 000 (1 non renseignée)"
         ],
         [
          "8",
@@ -8086,7 +8086,7 @@
          "3",
          "0",
          "1",
-         "13 000"
+         "13 000 (1 non renseignée)"
         ],
         [
          "4",
@@ -8131,7 +8131,7 @@
          "2",
          "0",
          "1",
-         "8 000"
+         "8 000 (1 non renseignée)"
         ],
         [
          "7",
@@ -8167,7 +8167,7 @@
          "0",
          "0",
          "1",
-         "0"
+         "0 (1 non renseignée)"
         ]
        ],
        "pied": [
@@ -8202,7 +8202,7 @@
      {
       "libelle": "Valeur de l’avantage",
       "valeur": "280 500 FCFA",
-      "indice": "Ni recette, ni créance"
+      "indice": "Ni recette, ni créance · 10 sans montant renseigné (non comptées)"
      },
      {
       "libelle": "Agents effectivement soignés",
@@ -8238,7 +8238,7 @@
         "Hospitalisation",
         "— lit A4 LIT2",
         "—",
-        "0 pris en charge 100 %",
+        "Non renseigné pris en charge 100 %",
         ""
        ],
        [
@@ -8258,7 +8258,7 @@
         "Hospitalisation",
         "— lit B2 LIT2",
         "—",
-        "0 pris en charge 100 %",
+        "Non renseigné pris en charge 100 %",
         ""
        ],
        [
@@ -8288,7 +8288,7 @@
         "Hospitalisation",
         "— lit A4 LIT2",
         "—",
-        "0 pris en charge 100 %",
+        "Non renseigné pris en charge 100 %",
         ""
        ],
        [
@@ -8298,7 +8298,7 @@
         "Hospitalisation",
         "— lit A2 LIT2",
         "—",
-        "0 pris en charge 100 %",
+        "Non renseigné pris en charge 100 %",
         ""
        ],
        [
@@ -8753,7 +8753,7 @@
      "Hospitalisation",
      "— lit A4 LIT2",
      "—",
-     "0 pris en charge 100 %",
+     "Non renseigné pris en charge 100 %",
      ""
     ],
     [
@@ -8773,7 +8773,7 @@
      "Hospitalisation",
      "— lit B2 LIT2",
      "—",
-     "0 pris en charge 100 %",
+     "Non renseigné pris en charge 100 %",
      ""
     ],
     [
@@ -8803,7 +8803,7 @@
      "Hospitalisation",
      "— lit A4 LIT2",
      "—",
-     "0 pris en charge 100 %",
+     "Non renseigné pris en charge 100 %",
      ""
     ],
     [
@@ -8813,7 +8813,7 @@
      "Hospitalisation",
      "— lit A2 LIT2",
      "—",
-     "0 pris en charge 100 %",
+     "Non renseigné pris en charge 100 %",
      ""
     ],
     [
@@ -8965,7 +8965,7 @@
      {
       "libelle": "Valeur de l’avantage",
       "valeur": "49 500 FCFA",
-      "indice": "Ni recette, ni créance"
+      "indice": "Ni recette, ni créance · 1 sans montant renseigné (non comptées)"
      },
      {
       "libelle": "Agents effectivement soignés",
@@ -8991,7 +8991,7 @@
       "Hospitalisation",
       "— lit A2 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -9132,7 +9132,7 @@
      {
       "libelle": "Valeur de l’avantage",
       "valeur": "146 500 FCFA",
-      "indice": "Ni recette, ni créance"
+      "indice": "Ni recette, ni créance · 7 sans montant renseigné (non comptées)"
      },
      {
       "libelle": "Agents effectivement soignés",
@@ -9148,7 +9148,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -9178,7 +9178,7 @@
       "Hospitalisation",
       "— lit A4 LIT2",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -9288,7 +9288,7 @@
       "Hospitalisation",
       "— lit D2 LIT1",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -9318,7 +9318,7 @@
       "Hospitalisation",
       "— lit C3 LIT1",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [
@@ -9328,7 +9328,7 @@
       "Hospitalisation",
       "— lit D2 LIT1",
       "—",
-      "0 pris en charge 100 %",
+      "Non renseigné pris en charge 100 %",
       ""
      ],
      [

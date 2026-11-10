@@ -2665,10 +2665,10 @@
        "onglet": null
       },
       {
-       "label": "Tableaux de bord par poste",
-       "detail": "Tableaux de bord par poste",
-       "icone": "gauge",
-       "ecran": "hub-dash",
+       "label": "Mon espace",
+       "detail": "Ressources humaines",
+       "icone": "user-round",
+       "ecran": "m10-mes",
        "onglet": null
       }
      ]
@@ -3581,6 +3581,13 @@
        "onglet": null
       },
       {
+       "label": "Mon espace",
+       "detail": "Ressources humaines",
+       "icone": "user-round",
+       "ecran": "m10-mes",
+       "onglet": null
+      },
+      {
        "label": "Tableaux de bord par poste",
        "detail": "Tableaux de bord par poste",
        "icone": "gauge",
@@ -3651,6 +3658,13 @@
        "detail": "Patients & Dossier médical",
        "icone": "thermometer",
        "ecran": "m1-constantes",
+       "onglet": null
+      },
+      {
+       "label": "Mon espace",
+       "detail": "Ressources humaines",
+       "icone": "user-round",
+       "ecran": "m10-mes",
        "onglet": null
       },
       {
