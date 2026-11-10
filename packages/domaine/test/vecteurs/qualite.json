@@ -2611,7 +2611,7 @@
     ],
     [
      "Le badge sert-il de support de POINTAGE ?",
-     "Valeur d’attente : Non — décision non prise · S’il pointe, il se relie au registre des présences et la conception change : lecteur à l’entrée, horodatage, traitement des oublis de badge."
+     "Valeur d’attente : Oui par défaut (décision du 09/11/2026) · Réglable au poste. Reste à arrêter par la Direction : le délai entre deux pointages (5 minutes proposées) et le traitement des oublis de badge."
     ]
    ],
    "validees": [
@@ -2993,7 +2993,7 @@
     ],
     [
      "Le badge sert-il de support de POINTAGE ?",
-     "Valeur d’attente : Non — décision non prise · S’il pointe, il se relie au registre des présences et la conception change : lecteur à l’entrée, horodatage, traitement des oublis de badge."
+     "Valeur d’attente : Oui par défaut (décision du 09/11/2026) · Réglable au poste. Reste à arrêter par la Direction : le délai entre deux pointages (5 minutes proposées) et le traitement des oublis de badge."
     ]
    ],
    "validees": [
@@ -3484,7 +3484,7 @@
     ],
     [
      "Le badge sert-il de support de POINTAGE ?",
-     "Valeur d’attente : Non — décision non prise · S’il pointe, il se relie au registre des présences et la conception change : lecteur à l’entrée, horodatage, traitement des oublis de badge."
+     "Valeur d’attente : Oui par défaut (décision du 09/11/2026) · Réglable au poste. Reste à arrêter par la Direction : le délai entre deux pointages (5 minutes proposées) et le traitement des oublis de badge."
     ]
    ],
    "validees": [

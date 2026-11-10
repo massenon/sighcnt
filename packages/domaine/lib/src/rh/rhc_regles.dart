@@ -10,6 +10,7 @@ import '../format/js.dart';
 import '../format/recherche.dart' show trierPar;
 import '../referentiels/periodes.dart' show ajouterJours;
 import '../referentiels/regles.dart' show joursEntre;
+import 'espace_mes.dart' show montantPorte;
 import 'rhb_regles.dart';
 
 typedef FicheRhc = Map<String, Object?>;
@@ -71,8 +72,8 @@ const rhcDecisionsBadge = <RhcDecisionBadge>[
       'Proposé par analogie avec les pièces certifiantes, dont la série repart à 1 chaque année comme le registre papier. À confirmer : la clinique tient peut-être déjà une numérotation de badges qu’il faudrait reprendre.'),
   RhcDecisionBadge('Mentions portées au verso', 'Restitution, perte, propriété de la clinique', null,
       'Rédigées faute de texte remis. Elles engagent la clinique vis-à-vis du porteur : c’est à la Direction de les arrêter.'),
-  RhcDecisionBadge('Le badge sert-il de support de POINTAGE ?', 'Non — décision non prise', null,
-      'S’il pointe, il se relie au registre des présences (M10) et la conception change : lecteur à l’entrée, horodatage, traitement des oublis de badge. Tant que ce n’est pas tranché, le badge IDENTIFIE seulement.'),
+  RhcDecisionBadge('Le badge sert-il de support de POINTAGE ?', 'Oui par défaut (décision du 09/11/2026)', null,
+      'Réglable au poste : un badge vérifié valide crée un pointage « à valider » au registre des présences (M10). Reste à arrêter par la Direction : le délai entre deux pointages (5 minutes proposées) et le traitement des oublis de badge.'),
 ];
 
 /// Date « AAAA-MM-JJ » (ou instant) → jour local ; `null` si illisible.
@@ -357,8 +358,8 @@ String? rhcBorneMin(String valeur, DateTime auj) {
 }
 
 /// `prestations()` — consultations reçues, analyses prescrites et hospitalisations des agents ayant un dossier patient. Lues dans les collections d'ORIGINE,
-/// jamais recopiées : une copie divergerait du dossier au premier changement. [prixAnalyse] : `D.ANALYSES` (code ou libellé → prix), pour les demandes sans
-/// montant propre. Plus récent d'abord (`C.sortBy(date).reverse()`).
+/// jamais recopiées : une copie divergerait du dossier au premier changement. Le MONTANT est celui que la prestation PORTE (lot L7, Planning Q8) : une demande
+/// ancienne sans montant vaut `null` (« non renseigné »), jamais le prix courant du catalogue ni un zéro. Plus récent d'abord (`C.sortBy(date).reverse()`).
 List<FicheRhc> rhcPrestations({
   required List<FicheRhc> patients,
   required List<FicheRhc> consultations,
@@ -366,13 +367,12 @@ List<FicheRhc> rhcPrestations({
   required List<FicheRhc> admissions,
   String? min,
   String fonction = '',
-  num? Function(Object? analyse) prixAnalyse = _aucunPrix,
   String Function(Object? analyse)? libelleAnalyse,
 }) {
   final agents = [for (final p in patients) if (_vrai(p['personnelId'])) p];
   final parPatient = {for (final p in agents) p['id']: p};
   final out = <FicheRhc>[];
-  FicheRhc base(FicheRhc pat, String id, String d, String nature, String detail, Object? praticien, num valeur) => {
+  FicheRhc base(FicheRhc pat, String id, String d, String nature, String detail, Object? praticien, num? valeur) => {
         'id': id,
         'date': d,
         'agent': '${_js(pat['nom'])} ${_js(pat['prenom'])}',
@@ -396,7 +396,7 @@ List<FicheRhc> rhcPrestations({
     if (pat == null) continue;
     final d = jour10(c['date']);
     if (min != null && d.compareTo(min) < 0) continue;
-    out.add(base(pat, '${c['id']}', d, 'Consultation', '${_js(c['type'])} — ${_vrai(c['motif']) ? c['motif'] : ''}', c['medecin'], nombreOuZero(c['tarif'])));
+    out.add(base(pat, '${c['id']}', d, 'Consultation', '${_js(c['type'])} — ${_vrai(c['motif']) ? c['motif'] : ''}', c['medecin'], montantPorte(c['tarif'])));
   }
   for (final a in analyses) {
     final pat = parPatient[a['patientId']];
@@ -404,8 +404,7 @@ List<FicheRhc> rhcPrestations({
     final d = jour10(_vrai(a['date']) ? a['date'] : (_vrai(a['dateDemande']) ? a['dateDemande'] : a['dateHeure']));
     if (d.isEmpty || (min != null && d.compareTo(min) < 0)) continue;
     final nom = _vrai(a['analyse']) ? '${a['analyse']}' : (libelleAnalyse?.call(a['analyse']) ?? 'Analyse');
-    final propre = nombreOuZero(a['montant']) != 0 ? nombreOuZero(a['montant']) : nombreOuZero(a['prix']);
-    final valeur = propre != 0 ? propre : nombreOuZero(prixAnalyse(a['analyse']));
+    final valeur = montantPorte(a['montant'] != null && a['montant'] != '' ? a['montant'] : a['prix']);
     out.add(base(pat, '${a['id']}', d, 'Analyse', nom, _vrai(a['prescripteur']) ? a['prescripteur'] : (_vrai(a['demandeur']) ? a['demandeur'] : '—'), valeur));
   }
   for (final h in admissions) {
@@ -414,13 +413,12 @@ List<FicheRhc> rhcPrestations({
     final d = jour10(h['dateEntree']);
     if (d.isEmpty || (min != null && d.compareTo(min) < 0)) continue;
     out.add(base(pat, '${h['id']}', d, 'Hospitalisation', '${_vrai(h['service']) ? h['service'] : ''} — lit ${_vrai(h['lit']) ? h['lit'] : '—'}',
-        _vrai(h['medecin']) ? h['medecin'] : '—', nombreOuZero(h['montant'])));
+        _vrai(h['medecin']) ? h['medecin'] : '—', montantPorte(h['montant'])));
   }
   final filtrees = fonction.isEmpty ? out : [for (final x in out) if (x['fonction'] == fonction) x];
   return trierPar(filtrees, (x) => x['date']).reversed.toList();
 }
 
-num? _aucunPrix(Object? _) => null;
 
 /// Les agents les plus pris en charge (valeur décroissante, ex æquo dans l'ordre d'apparition), dix au plus.
 List<(String, num)> rhcDixPremiersAgents(List<FicheRhc> rows) {

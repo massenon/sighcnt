@@ -13,6 +13,7 @@ import 'rhb_evaluations.dart';
 import 'rhb_planning.dart';
 import 'rhb_presences.dart';
 import 'rhb_propositions.dart';
+import 'rhd_mes.dart';
 import 'rhb_primes.dart';
 import 'rhb_sanctions.dart';
 import 'rhb_stats_gardes.dart';
@@ -43,6 +44,7 @@ final Map<String, ConstruireEcran> ecransM10 = {
   'm10-planning': (c, cfg) => const EcranPlanning(),
   'm10-presences': (c, cfg) => const EcranPresences(),
   'm10-propositions-planning': (c, cfg) => const EcranPropositionsPlanning(),
+  'm10-mes': (c, cfg) => const EcranMes(),
   'm10-evaluations': (c, cfg) => const EcranEvaluations(),
   'm10-sanctions': (c, cfg) => const EcranSanctions(),
   'm10-primes': (c, cfg) => const EcranPrimes(),

@@ -85,7 +85,7 @@ void main() {
         'BDG-NNNNN-AAAA',
         'Mentions portées au verso',
         'Le badge sert-il de support de POINTAGE ?',
-        'Non — décision non prise'
+        'Oui par défaut (décision du 09/11/2026)'
       ]) {
         expect(find.text(d), findsWidgets, reason: d);
       }

@@ -54,8 +54,8 @@ const qualArbitrages = [
       'Proposé par analogie avec les pièces certifiantes (série annuelle). La clinique tient peut-être déjà une numérotation qu’il faudrait reprendre.'),
   QualArbitrage('Mentions portées au verso du badge', 'Restitution, perte, propriété', 'm10-badges-modeles',
       'Elles engagent la clinique envers le porteur : c’est à la Direction de les arrêter.'),
-  QualArbitrage('Le badge sert-il de support de POINTAGE ?', 'Non — décision non prise', 'm10-badges',
-      'S’il pointe, il se relie au registre des présences et la conception change : lecteur à l’entrée, horodatage, traitement des oublis de badge.'),
+  QualArbitrage('Le badge sert-il de support de POINTAGE ?', 'Oui par défaut (décision du 09/11/2026)', 'm10-badges',
+      'Réglable au poste. Reste à arrêter par la Direction : le délai entre deux pointages (5 minutes proposées) et le traitement des oublis de badge.'),
 ];
 
 /// Ce que la Direction a validé le 01/09/2026 (vague 49) : (référentiel, décision).

@@ -114,6 +114,8 @@ void main() {
       },
     ],
   };
+  // m10-mes (lot L7) : même session de relevé (l'administrateur est un agent du personnel à la maquette, sans quoi l'espace « Mes » n'a aucune rubrique à dessiner).
+  fixtures['m10-mes'] = fixtures['m10-propositions-planning']!;
   // Les écrans du module RLS lisent le relais PAR LA MÈRE (`/admin/etat`, `/admin/supervision`) : sans appareil, la commande « Révoquer » (une par ligne
   // d'appareil non révoqué) ne se dessine pas, et ses en-têtes de tableau non plus. Une mère qui répond avec un appareil actif, un appareil bloqué et un
   // contrôle de liaison fait DESSINER ces écrans comme le panneau de la maquette.

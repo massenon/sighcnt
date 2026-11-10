@@ -3,6 +3,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../donnees/magasin.dart' show Fiche;
+import '../../donnees/mes_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'rhb_commun.dart';
@@ -12,6 +14,9 @@ import 'rhc_commun.dart';
 /// `m10-badges-verification` — « Vérifier un badge » : on saisit ou l'on scanne le numéro ; le logiciel répond VALIDE, EXPIRÉ, RETIRÉ ou INCONNU (et « non remis »),
 /// montre la photo et la fonction, et JOURNALISE la vérification (RG-12). C'est ce contrôle qui donne sa valeur au badge : sans lui, une carte plastifiée n'atteste rien.
 /// La saisie MANUELLE est acceptée autant que le scan : la refuser rendrait le contrôle impossible le jour où le QR est abîmé, c'est-à-dire le jour où il sert le plus.
+///
+/// Lot L8 (Direction, 09/11/2026, Planning Q7) : le badge sert de POINTAGE (réglage oui par défaut). La commande « Pointer » (absente sans droit ni quand le réglage est coupé)
+/// écrit l'arrivée puis le départ au registre des présences, « à valider » par le circuit du lot L5 ; chaque refus se nomme (code, motif, geste) et chaque passage se journalise.
 class EcranBadgesVerification extends StatefulWidget with EcranMaquette {
   const EcranBadgesVerification({super.key});
 
@@ -105,11 +110,107 @@ class _EtatVerification extends State<EcranBadgesVerification> {
   }
 
   @override
-  Widget build(BuildContext context) => RhbEcoute(collections: const ['badges'], construire: _corps);
+  Widget build(BuildContext context) => RhbEcoute(collections: const ['badges', 'parametres', 'presences'], construire: _corps);
+
+  PointageBadgePoste _pointage(ContexteEcran c) => PointageBadgePoste(c.magasin, auteur: () => acteur(c).nom, role: c.role, horloge: () => c.aujourdhui);
+
+  void _pointer(ContexteEcran c, BuildContext ctx) {
+    final texte = _saisie.text.trim();
+    if (texte.isEmpty) {
+      setState(() => _reponse = null);
+      ToastsSigh.afficher(ctx, 'Saisir ou scanner un numéro de badge.', type: TypeToast.attention);
+      return;
+    }
+    final r = _pointage(c).pointer(texte);
+    if (r['ok'] != true) {
+      setState(() => _reponse = Container(
+            key: const Key('rhc:pointage-refuse'),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: JetonsShell.danger50, borderRadius: BorderRadius.circular(12), border: Border.all(color: JetonsShell.danger300)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('Pointage refusé', style: TextStyle(color: JetonsShell.danger700, fontSize: 20, height: 28 / 20, fontWeight: FontWeight.w700)),
+              Padding(padding: const EdgeInsets.only(top: 4), child: Text('${r['motif']}', style: const TextStyle(color: JetonsShell.slate700, fontSize: 14, height: 20 / 14))),
+              Padding(padding: const EdgeInsets.only(top: 4), child: Text('${r['geste']}', style: const TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12))),
+            ]),
+          ));
+      return;
+    }
+    Fiche? ag;
+    for (final e in c.magasin.collection('personnel').toutes) {
+      if (e['id'] == r['agentId']) ag = e;
+    }
+    setState(() => _reponse = Container(
+          key: const Key('rhc:pointage-ok'),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: JetonsShell.success50, borderRadius: BorderRadius.circular(12), border: Border.all(color: JetonsShell.success300)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(r['geste'] == 'arrivee' ? 'Arrivée pointée' : 'Départ pointé', style: const TextStyle(color: JetonsShell.success700, fontSize: 20, height: 28 / 20, fontWeight: FontWeight.w700)),
+            Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text('${ag?['nomComplet'] ?? ''} à ${r['heure']}. Présence à valider par le circuit.', style: const TextStyle(color: JetonsShell.slate700, fontSize: 14, height: 20 / 14))),
+          ]),
+        ));
+  }
+
+  /// La carte du pointage : l'état du réglage, le délai (valeur d'attente dite telle), et « Régler » pour l'administrateur et la DA seuls.
+  Widget _cartePointage(BuildContext context, ContexteEcran c) {
+    final p = _pointage(c);
+    final peut = c.role == 'admin' || c.role == 'da';
+    final d = p.delai();
+    return CarteSigh(
+        titre: 'Pointage par badge',
+        actions: [
+          if (peut) BoutonSigh(libelle: 'Régler', icone: LucideIcons.settings2, taille: TailleBouton.sm, variante: VarianteBouton.secondaire, onPressed: () => _regler(context, c, p)),
+        ],
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          DescListeSigh([
+            ('Le badge sert de pointage', p.actif() ? 'Oui' : 'Non'),
+            ('Délai minimal entre deux pointages', '$d minute${d > 1 ? 's' : ''}${d == delaiPointageBadgeDefaut ? ' (valeur d’attente, à valider)' : ''}'),
+          ]),
+          const SizedBox(height: 8),
+          const Text(
+              'Un badge vérifié valide crée une présence « à valider » (arrivée, puis départ au passage suivant) : elle ne compte pas tant que le circuit de validation ne l’a pas tranchée.',
+              style: TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12)),
+        ]));
+  }
+
+  void _regler(BuildContext ctx, ContexteEcran c, PointageBadgePoste p) {
+    final ctl = ControleurFormulaire([
+      const ChampDef(nom: 'actif', libelle: 'Le badge sert de pointage', type: TypeChamp.case_, col: ColChamp.plein),
+      const ChampDef(nom: 'delai', libelle: 'Délai minimal entre deux pointages (minutes)', type: TypeChamp.nombre, requis: true, col: ColChamp.plein),
+    ], {'actif': p.actif(), 'delai': '${p.delai()}'});
+    afficherModale<void>(ctx,
+        titre: 'Pointage par badge',
+        taille: TailleModale.md,
+        corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+          NoteSigh('Le délai de $delaiPointageBadgeDefaut minutes est une proposition à valider par la Direction. Le réglage se règle à la mère et se synchronise.'),
+          const SizedBox(height: 12),
+          FormulaireSigh(controleur: ctl),
+        ]),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Enregistrer',
+                  icone: LucideIcons.save,
+                  onPressed: () {
+                    final v = ctl.valider();
+                    if (v == null) return;
+                    final r = p.regler(actif: v['actif'] == true, delai: v['delai']);
+                    if (r['ok'] != true) {
+                      ToastsSigh.afficher(ctx, '${r['motif']}', type: TypeToast.erreur, detail: '${r['geste']}');
+                      return;
+                    }
+                    fermer();
+                    ToastsSigh.afficher(ctx, 'Réglage enregistré.', type: TypeToast.succes);
+                  }),
+            ]);
+  }
 
   Widget _corps(BuildContext context, ContexteEcran c) {
     final retires = trierPar([for (final b in rhbActives(c, 'badges')) if (!rhcEtatBadge(b['etat']).actif) b], (b) => b['retireLe']).reversed.take(10).toList();
+    final peutPointer = rolesPointageBadge.contains(c.role) && _pointage(c).actif();
     return rhbEspace([
+      _cartePointage(context, c),
       CarteSigh(
           titre: 'Badge présenté',
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -134,6 +235,7 @@ class _EtatVerification extends State<EcranBadgesVerification> {
                     ),
                   ])),
               BoutonSigh(libelle: 'Vérifier', icone: LucideIcons.scanFace, onPressed: () => _verifier(c, context)),
+              if (peutPointer) BoutonSigh(libelle: 'Pointer', icone: LucideIcons.logIn, variante: VarianteBouton.succes, onPressed: () => _pointer(c, context)),
             ]),
             const SizedBox(height: 12),
             const NoteSigh(

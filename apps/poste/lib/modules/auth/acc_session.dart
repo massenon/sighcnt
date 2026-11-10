@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../donnees/mes_poste.dart' show MesAffichage;
+
 /// L'état de la session du poste. Elle est SUSPENDUE par le verrou, jamais fermée : le travail en cours reste monté sous l'écran verrouillé.
 enum EtatSession { deconnectee, connectee, verrouillee }
 
@@ -77,6 +79,8 @@ class SessionPoste extends ChangeNotifier {
 
   /// Ferme la session (l'agent change de compte).
   void deconnecter() {
+    // Poste partagé (lot L7) : l'affichage de l'espace « Mes » part avec la session, l'agent suivant n'en hérite pas.
+    MesAffichage.purger();
     sessionId = null;
     estCloturee = null;
     surEtat = null;
@@ -120,6 +124,7 @@ class SessionPoste extends ChangeNotifier {
   bool verifier(String ecranCourant, {String? onglet}) {
     if (_etat != EtatSession.connectee || !verrou.echu(horloge())) return false;
     verrou.verrouiller(horloge(), ecranCourant, onglet: onglet);
+    MesAffichage.purger(garderRubrique: true);
     _etat = EtatSession.verrouillee;
     if (sessionId != null) surEtat?.call(sessionId!, 'suspendue');
     notifyListeners();
@@ -131,6 +136,7 @@ class SessionPoste extends ChangeNotifier {
   bool verrouillerMaintenant(String ecranCourant, {String? onglet}) {
     if (_etat != EtatSession.connectee) return false;
     verrou.verrouiller(horloge(), ecranCourant, onglet: onglet);
+    MesAffichage.purger(garderRubrique: true);
     _etat = EtatSession.verrouillee;
     if (sessionId != null) surEtat?.call(sessionId!, 'suspendue');
     notifyListeners();
@@ -150,6 +156,7 @@ class SessionPoste extends ChangeNotifier {
 
   /// « Se connecter avec un autre compte » : la session et l'adresse de retour disparaissent.
   void abandonner() {
+    MesAffichage.purger();
     sessionId = null;
     estCloturee = null;
     surEtat = null;

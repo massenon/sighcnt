@@ -16,7 +16,9 @@ import 'rhc_commun.dart';
 /// AUCUNE SAISIE. L'écran se remplit depuis les consultations, analyses et hospitalisations de l'agent (son dossier patient porte son matricule) ; en ouvrir une ici créerait une
 /// seconde vérité, divergente du dossier. Les prestations sont LUES dans leurs collections d'origine, jamais recopiées.
 ///
-/// E747 — une hospitalisation n'a pas de montant dans le jeu : sa valeur s'affiche « 0 » alors qu'elle est INCONNUE (« non calculable » n'est pas zéro). Porté fidèlement, signalé.
+/// Lot L7 (Planning Q8, Direction 09/11/2026) : le montant est celui que la prestation PORTE ; une prestation sans montant (hospitalisations du jeu, demande ancienne) se dit
+/// « Non renseigné », jamais un zéro ni le prix courant du catalogue (E747 corrigé, comme à la maquette). Le total ne compte que les montants portés et dit combien de lignes n'en
+/// ont pas. Écran en LECTURE SEULE : aucune saisie, rien ne remonte à la comptabilité.
 /// E748 ✅ corrigé dans la maquette — les analyses prescrites n'étaient JAMAIS comptées (la date était lue sur `date` / `dateDemande`, le poste écrit `dateHeure`, et le prix sur
 /// `montant`, absent : 25 analyses d'agents invisibles).
 class EcranAssurancePersonnel extends StatefulWidget with EcranMaquette {
@@ -69,6 +71,7 @@ class _EtatAssurance extends State<EcranAssurancePersonnel> {
   List<Fiche> _agents(ContexteEcran c) => [for (final p in rhbActives(c, 'patients')) if (p['personnelId'] != null && p['personnelId'] != '') p];
 
   List<Fiche> _prestations(ContexteEcran c) {
+    // Le libellé seul vient du catalogue (une demande sans désignation) ; le PRIX n'en vient jamais (lot L7).
     final analyses = c.magasin.referentiel('analyses');
     Fiche? analyseDe(Object? a) {
       for (final x in analyses) {
@@ -84,7 +87,6 @@ class _EtatAssurance extends State<EcranAssurancePersonnel> {
         admissions: rhbActives(c, 'admissions'),
         min: rhcBorneMin(_periode!.valeur, c.aujourdhui),
         fonction: _fonction!.valeur,
-        prixAnalyse: (a) => analyseDe(a)?['prix'] as num?,
         libelleAnalyse: (a) => '${analyseDe(a)?['libelle'] ?? 'Analyse'}');
   }
 
@@ -99,7 +101,12 @@ class _EtatAssurance extends State<EcranAssurancePersonnel> {
       KpiGrilleSigh(kpis: [
         KpiSigh(libelle: 'Agents ayant un dossier patient', valeur: nombre(couverts.length), icone: LucideIcons.shieldCheck, ton: TonSigh.navy, indice: 'sur ${nombre(rhcPersonnel(c).length)} agents'),
         KpiSigh(libelle: 'Prestations prises en charge', valeur: nombre(rows.length), icone: LucideIcons.stethoscope, ton: TonSigh.info),
-        KpiSigh(libelle: 'Valeur de l’avantage', valeur: money(rhcSomme(rows, 'valeur')), icone: LucideIcons.gift, ton: TonSigh.succes, indice: 'Ni recette, ni créance'),
+        KpiSigh(
+            libelle: 'Valeur de l’avantage',
+            valeur: money(rhcSomme(rows, 'valeur')),
+            icone: LucideIcons.gift,
+            ton: TonSigh.succes,
+            indice: _sansMontant(rows) > 0 ? 'Ni recette, ni créance · ${_sansMontant(rows)} sans montant renseigné (non comptées)' : 'Ni recette, ni créance'),
         KpiSigh(libelle: 'Agents effectivement soignés', valeur: nombre(rows.map((r) => r['patientId']).toSet().length), icone: LucideIcons.users, ton: TonSigh.neutre),
       ]),
       const NoteSigh(
@@ -146,9 +153,9 @@ class _EtatAssurance extends State<EcranAssurancePersonnel> {
                 cle: 'valeur',
                 libelle: 'Valeur',
                 droite: true,
-                texte: (r) => rhcMontant(r['valeur']),
+                texte: (r) => _texteMontant(r['valeur']),
                 rendu: (_, r) => Column(crossAxisAlignment: CrossAxisAlignment.end, mainAxisSize: MainAxisSize.min, children: [
-                      Text(rhcMontant(r['valeur']), style: const TextStyle(color: Color(0xFF64748B), fontSize: 14, height: 20 / 14)),
+                      Text(_texteMontant(r['valeur']), style: const TextStyle(color: Color(0xFF64748B), fontSize: 14, height: 20 / 14)),
                       const Text('pris en charge 100 %', style: TextStyle(color: Color(0xFF15803D), fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w600)),
                     ])),
           ],
@@ -161,6 +168,11 @@ class _EtatAssurance extends State<EcranAssurancePersonnel> {
           'Prise en charge du personnel à 100 % — décision de la Direction. Ces montants sont volontairement absents du chiffre d’affaires, des relevés assureur et des écritures comptables : les y porter gonflerait des recettes qui n’ont jamais été encaissées.'),
     ]);
   }
+
+  /// Les lignes dont le montant n'est PAS porté par la prestation : elles ne comptent pas au total, et l'écran le dit.
+  static int _sansMontant(List<Fiche> rows) => rows.where((r) => r['valeur'] == null).length;
+
+  static String _texteMontant(Object? v) => v == null ? 'Non renseigné' : rhcMontant(v);
 
   Widget _graphiques(List<Fiche> rows) {
     final parNature = rhcGrouper(rows, (r) => '${r['nature']}');
@@ -201,6 +213,7 @@ class _EtatAssurance extends State<EcranAssurancePersonnel> {
           'analyses': e.value.where((x) => x['nature'] == 'Analyse').length,
           'hospitalisations': e.value.where((x) => x['nature'] == 'Hospitalisation').length,
           'valeur': rhcSomme(e.value, 'valeur'),
+          'sansMontant': _sansMontant(e.value),
         }
     ], (l) => l['valeur'], descendant: true);
     ColonneEtat n(String lib, String k) => ColonneEtat(libelle: lib, valeur: (r) => nombre(r[k]), droite: true, somme: (r) => r[k] as num);
@@ -226,7 +239,7 @@ class _EtatAssurance extends State<EcranAssurancePersonnel> {
                 n('Consult.', 'consultations'),
                 n('Analyses', 'analyses'),
                 n('Hospit.', 'hospitalisations'),
-                ColonneEtat(libelle: 'Valeur prise en charge', valeur: (r) => rhcMontant(r['valeur']), droite: true, somme: (r) => r['valeur'] as num),
+                ColonneEtat(libelle: 'Valeur prise en charge', valeur: (r) => '${rhcMontant(r['valeur'])}${(r['sansMontant'] as int) > 0 ? ' (${r['sansMontant']} non renseignée${(r['sansMontant'] as int) > 1 ? 's' : ''})' : ''}', droite: true, somme: (r) => r['valeur'] as num),
               ], lignes: lignes)),
               const BlocTexte(
                   'Les prestations dispensées au personnel de la clinique sont prises en charge à 100 % par l’établissement. Elles ne constituent ni une recette, ni une créance sur un tiers payeur, et ne donnent lieu à aucune écriture comptable. La valeur portée au présent état mesure l’avantage consenti au personnel ; elle ne correspond à aucun encaissement.',
