@@ -17975,6 +17975,219 @@ async function viderMessages(page) {
 
 
 
+  /* ==========================================================================
+   * Vague 108 : PLANNING, lot L6 (Direction, 09/11/2026, Planning Q4) : l'agent PROPOSE, le surveillant VALIDE
+   * -------------------------------------------------------------------------
+   * Une proposition (ajout, modification, retrait, échange) ne change JAMAIS le planning validé tant qu'elle n'est pas validée ; le contrôle d'incompatibilité est fait
+   * à la proposition ET à la validation ; chaque agent ne voit que les siennes (RG-13) ; le réglage « l'agent modifie directement » (non par défaut) lui laisse poser
+   * ses vacations, le même contrôle s'appliquant, sauf l'échange qui passe toujours par la validation. Vacations de sonde en juin 2027, nettoyées à la sortie.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 108 : planning L6 (proposition sans effet sur le planning validé, contrôle à la proposition et à la validation, validation au geste, refus motivé, échange, retrait, visibilité par agent, application directe réglée au poste)');
+    erreursJS = [];
+    const enTant = async (role, nom, ecran) => {
+      await page.evaluate((a) => window.SIGH.store.setSession({ role: a[0], nom: a[1], nomComplet: a[1], fonction: a[0], identifiant: 's108.' + a[0], secteur: 'DIR' }), [role, nom]);
+      if (ecran) await ouvrir(ecran);
+    };
+    await ouvrir('m10-propositions-planning.html');
+    await enTant('admin', 'SONDE108 admin');
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const meds = S.collection('personnel').active().filter((e) => e.fonction === 'medecin');
+      const inf = S.collection('personnel').active().filter((e) => e.fonction === 'infirmier')[0];
+      const j = (n) => C.iso(C.addDays('2027-06-01', n));
+      return { a: meds[0].id, na: meds[0].nomComplet, b: meds[1].id, nb: meds[1].nomComplet, i: inf.id, ni: inf.nomComplet, j: Array.from({ length: 41 }, (_, n) => j(n)),
+        pla0: S.collection('planning').all().map((x) => x.id), pro0: S.collection('propositionsPlanning').all().map((x) => x.id), reglage: S.reglage('planningAgentModifieDirectement', undefined) };
+    });
+    const cliquer = (sel, texte) => page.evaluate((a) => { const b = [...document.querySelectorAll(a[0])].filter((x) => new RegExp(a[1]).test((x.getAttribute('title') || '') + '|' + x.textContent.trim())).pop(); if (!b) return false; b.click(); return true; }, [sel, texte]);
+    const modale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === l).pop(); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+    const dans = (champs) => page.evaluate((c) => { const r = document.querySelector('.modal-root, [role=dialog]'); Object.keys(c).forEach((k) => { const e = r.querySelector('#f_' + k); e.value = c[k]; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }); }, champs);
+    const motifSaisi = (t) => page.evaluate(async (m) => { for (let i = 0; i < 40; i++) { const z = [...document.querySelectorAll('.modal-root textarea, [role=dialog] textarea')].pop(); if (z) { z.value = m; z.dispatchEvent(new Event('input', { bubbles: true })); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, t);
+    const nbVacations = () => page.evaluate((m) => window.SIGH.store.collection('planning').all().filter((x) => m.pla0.indexOf(x.id) < 0 && x.statut !== 'archive').length, monde);
+    const propositions = () => page.evaluate((m) => window.SIGH.store.collection('propositionsPlanning').all().filter((x) => m.pro0.indexOf(x.id) < 0).map((x) => ({ id: x.id, etat: x.etat, type: x.type, emp: x.employeId, motifRefus: x.motifRefus || null, appliquees: x.appliquees || null })), monde);
+    const poser = (agent, date, type) => page.evaluate((a) => { const S = window.SIGH.store; const s = S.session(); S.setSession(Object.assign({}, s, { role: 'surveillant', nom: 'SONDE108 surveillant', nomComplet: 'SONDE108 surveillant' })); const r = window.SIGH.planningRh.poserVacation({ employeId: a[0], date: a[1], type: a[2] }); S.setSession(s); return r.ok ? r.id : r.code; }, [agent, date, type]);
+
+    /* --- 1. le planning de départ : une garde du médecin A le jour 0, une du médecin B le jour 6 ; défaut du réglage ------------------------------------------------------- */
+    const gA = await poser(monde.a, monde.j[0], 'garde');
+    const gB = await poser(monde.b, monde.j[6], 'garde');
+    const defaut = await page.evaluate(() => window.SIGH.planningRh.agentModifieDirectement());
+    verifier('Deux gardes de départ posées par le surveillant, et « l’agent modifie directement » vaut NON par défaut', /^[A-Za-z0-9-]{4,}$/.test(gA) && /^[A-Za-z0-9-]{4,}$/.test(gB) && defaut === false, gA + ' / ' + gB + ' / ' + defaut);
+
+    /* --- 2. l'agent propose AU GESTE : le planning validé ne bouge pas ------------------------------------------------------------------------------------------------------ */
+    await enTant('medecin', monde.na, 'm10-propositions-planning.html');
+    const ecranAgent = await page.evaluate(() => ({ propose: [...document.querySelectorAll('#page-content button')].some((b) => /Proposer une modification/.test(b.textContent)), valider: [...document.querySelectorAll('#page-content button')].some((b) => /Valider cette proposition/.test(b.getAttribute('title') || '')), page403: /Accès refusé/.test(document.body.textContent.slice(0, 300)) }));
+    verifier('Un médecin ouvre l’écran des propositions (écran de tout agent), voit « Proposer » et aucune commande de validation', ecranAgent.propose && !ecranAgent.valider && !ecranAgent.page403, JSON.stringify(ecranAgent));
+    const avant = await nbVacations();
+    await cliquer('#page-content button', 'Proposer une modification'); await pause(500);
+    await dans({ type: 'ajout', date: monde.j[3], typeVacation: 'garde', motif: 'Sonde 108 : je prends cette garde' });
+    await modale('Transmettre la proposition'); await pause(700);
+    const p1 = await propositions();
+    verifier('La proposition est enregistrée « à valider » et le planning n’a pas bougé d’une vacation', p1.length === 1 && p1[0].etat === 'proposee' && p1[0].type === 'ajout' && (await nbVacations()) === avant, JSON.stringify(p1) + ' / ' + avant);
+
+    /* --- 3. le contrôle est fait AUSSI à la proposition : garde le lendemain d'une garde (repos 48 h) refusée, rien d'écrit ----------------------------------------------------- */
+    await cliquer('#page-content button', 'Proposer une modification'); await pause(500);
+    await dans({ type: 'ajout', date: monde.j[1], typeVacation: 'garde', motif: 'Sonde 108 : trop tôt' });
+    await modale('Transmettre la proposition'); await pause(600);
+    const toast = await page.evaluate(() => /Incompatibilité/.test(document.body.textContent));
+    const p2 = await propositions();
+    verifier('Une proposition qui violerait le repos est refusée à la proposition (motif lu à l’écran) : aucune proposition de plus', toast && p2.length === 1, String(p2.length));
+    await page.evaluate(() => { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === 'Annuler').pop(); if (b) b.click(); });
+
+    /* --- 4. chacun ne voit que SES propositions (RG-13) ; le surveillant voit tout -------------------------------------------------------------------------------------------- */
+    const visibles = await page.evaluate((m) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, s = S.session();
+      const lire = (role, nom) => { S.setSession(Object.assign({}, s, { role: role, nom: nom, nomComplet: nom })); return R.propositionsVisibles().length; };
+      return { a: lire('medecin', m.na), b: lire('medecin', m.nb), inconnu: lire('medecin', 'SONDE108 inconnu'), surveillant: lire('surveillant', 'SONDE108 surveillant'), da: lire('da', 'SONDE108 da'), caissier: lire('caissier', 'SONDE108 caissier') };
+    }, monde);
+    verifier('L’agent proposant voit sa proposition, un autre médecin et un compte sans agent n’en voient aucune, le surveillant et la DAF les voient toutes', visibles.a === 1 && visibles.b === 0 && visibles.inconnu === 0 && visibles.surveillant === 1 && visibles.da === 1 && visibles.caissier === 0, JSON.stringify(visibles));
+    await enTant('medecin', monde.nb, 'm10-propositions-planning.html');
+    const lignesB = await page.evaluate(() => [...document.querySelectorAll('#page-content tbody tr')].filter((tr) => tr.querySelectorAll('td').length >= 6).length);
+    verifier('Sur l’écran du médecin B, le registre ne montre aucune ligne du médecin A', lignesB === 0, String(lignesB));
+
+    /* --- 5. refus nommés de la décision : médecin, auto-validation ---------------------------------------------------------------------------------------------------------- */
+    const refus = await page.evaluate((m) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, s = S.session();
+      const id = S.collection('propositionsPlanning').all().filter((x) => m.pro0.indexOf(x.id) < 0)[0].id;
+      const essai = (role, nom, o) => { S.setSession(Object.assign({}, s, { role: role, nom: nom, nomComplet: nom })); const r = R.trancherProposition(Object.assign({ id: id, decision: 'valider' }, o || {})); return r.ok ? 'OK' : r.code; };
+      const out = { id: id, medecin: essai('medecin', m.nb), auto: essai('surveillant', m.na), sansMotif: essai('surveillant', 'SONDE108 surveillant', { decision: 'refuser' }), inconnue: essai('surveillant', 'SONDE108 surveillant', { id: 'PPL-INCONNUE' }) };
+      S.setSession(s);
+      return out;
+    }, monde);
+    verifier('Refus nommés : un médecin ne valide pas (VALIDATION_RESERVEE), nul ne valide sa proposition (AUTO_VALIDATION), un refus exige son motif, proposition introuvable', refus.medecin === 'VALIDATION_RESERVEE' && refus.auto === 'AUTO_VALIDATION' && refus.sansMotif === 'MOTIF_OBLIGATOIRE' && refus.inconnue === 'PROPOSITION_INTROUVABLE', JSON.stringify(refus));
+
+    /* --- 6. le surveillant valide AU GESTE : le planning change, la vacation porte sa provenance ------------------------------------------------------------------------ */
+    await enTant('surveillant', 'SONDE108 surveillant', 'm10-propositions-planning.html');
+    const bouton = await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content tbody button')].find((x) => /Valider cette proposition/.test(x.getAttribute('title') || '')); if (!b) return false; b.click(); return true; });
+    await pause(400); await modale('Valider'); await pause(800);
+    const v1 = await page.evaluate((m) => {
+      const S = window.SIGH.store;
+      const p = S.collection('propositionsPlanning').all().filter((x) => m.pro0.indexOf(x.id) < 0)[0];
+      const v = S.collection('planning').all().filter((x) => m.pla0.indexOf(x.id) < 0 && x.employeId === m.a && x.date === m.j[3])[0];
+      const j = S.raw().audit.filter((x) => x.action === 'Proposition de planning validée').pop();
+      return { etat: p.etat, par: p.tranchePar, vac: v ? { type: v.type, etat: v.validationEtat, origine: v.origine, prop: v.propositionId, regime: v.regimeLibelle, par: v.validePar } : null, journal: !!j && j.reference === p.id, pid: p.id };
+    }, monde);
+    verifier('Validée au geste : la vacation naît au planning, validée, avec l’origine « proposition », la proposition, le régime et le validateur ; journalisé (RG-12)', bouton && v1.etat === 'validee' && v1.par === 'SONDE108 surveillant' && v1.vac && v1.vac.type === 'garde' && v1.vac.etat === 'validee' && v1.vac.origine === 'proposition' && v1.vac.prop === v1.pid && v1.vac.regime === 'Médecins' && v1.journal, JSON.stringify(v1));
+    const retranche = await page.evaluate((id) => window.SIGH.planningRh.trancherProposition({ id: id, decision: 'valider' }).code, v1.pid);
+    verifier('Une proposition validée ne se retranche pas (DEJA_TRANCHEE)', retranche === 'DEJA_TRANCHEE', retranche);
+
+    /* --- 7. la validation REFAIT le contrôle : le planning a bougé depuis la proposition ------------------------------------------------------------------------------------ */
+    const refait = await page.evaluate((m) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, s = S.session();
+      S.setSession(Object.assign({}, s, { role: 'medecin', nom: m.na, nomComplet: m.na }));
+      const p = R.proposer({ type: 'ajout', date: m.j[31], typeVacation: 'garde', motif: 'Sonde 108 : jour libre à la proposition' });
+      /* entre-temps, le surveillant pose une garde la veille : la proposition devient incompatible */
+      S.setSession(Object.assign({}, s, { role: 'surveillant', nom: 'SONDE108 surveillant', nomComplet: 'SONDE108 surveillant' }));
+      const entre = R.poserVacation({ employeId: m.a, date: m.j[30], type: 'garde' });
+      const t = R.trancherProposition({ id: p.id, decision: 'valider' });
+      const apres = S.collection('propositionsPlanning').get(p.id);
+      const vac = S.collection('planning').all().filter((x) => x.employeId === m.a && x.date === m.j[31] && x.statut !== 'archive').length;
+      S.setSession(s);
+      return { propose: p.ok, entre: entre.ok, valider: { ok: t.ok, code: t.code, cause: t.cause, motif: t.motif }, etat: apres.etat, vacationCreee: vac, id: p.id };
+    }, monde);
+    verifier('Le planning a changé depuis la proposition : la validation REFAIT le contrôle et refuse en nommant (CONTROLE_ECHOUE, cause INCOMPATIBILITE_REPOS), rien d’écrit, la proposition reste à trancher', refait.propose && refait.entre && !refait.valider.ok && refait.valider.code === 'CONTROLE_ECHOUE' && refait.valider.cause === 'INCOMPATIBILITE_REPOS' && refait.etat === 'proposee' && refait.vacationCreee === 0, JSON.stringify(refait.valider));
+
+    /* --- 8. le refus par le geste : motif exigé, lisible de l'agent ------------------------------------------------------------------------------------------------------- */
+    await enTant('surveillant', 'SONDE108 surveillant', 'm10-propositions-planning.html');
+    await page.evaluate((id) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => /Sonde 108 : jour libre/.test(x.textContent)); tr.querySelector('button[title^="Refuser cette proposition"]').click(); }, refait.id);
+    await pause(400);
+    await motifSaisi('Effectif insuffisant ce jour-là (sonde)');
+    await modale('Refuser'); await pause(800);
+    const refusee = await propositions();
+    const r1 = refusee.filter((x) => x.id === refait.id)[0];
+    verifier('Refusée au geste avec son motif : état « refusée », motif conservé', r1 && r1.etat === 'refusee' && /Effectif insuffisant/.test(r1.motifRefus), JSON.stringify(r1));
+    await enTant('medecin', monde.na, 'm10-propositions-planning.html');
+    const lisible = await page.evaluate(() => /Motif du refus : Effectif insuffisant/.test(document.getElementById('page-content').textContent));
+    verifier('L’agent lit le motif du refus sur son écran', lisible);
+
+    /* --- 9. modification, retrait, échange, retrait de la proposition ---------------------------------------------------------------------------------------------------- */
+    const suite = await page.evaluate((m) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, s = S.session();
+      const as = (role, nom) => S.setSession(Object.assign({}, s, { role: role, nom: nom, nomComplet: nom }));
+      const plan = (id) => S.collection('planning').get(id);
+      const surv = () => as('surveillant', 'SONDE108 surveillant');
+      const out = {};
+      surv();
+      const gA2 = R.poserVacation({ employeId: m.a, date: m.j[20], type: 'garde' }).id;
+      /* modification : la garde de A du jour 20 passe au jour 25 en permanence */
+      as('medecin', m.na);
+      const pm = R.proposer({ type: 'modification', vacationId: gA2, date: m.j[25], typeVacation: 'permanence', motif: 'Sonde 108' });
+      surv(); const tm = R.trancherProposition({ id: pm.id, decision: 'valider' });
+      out.modif = { ok: tm.ok, date: plan(gA2).date, type: plan(gA2).type, ancienne: m.j[20] };
+      /* retrait */
+      as('medecin', m.na);
+      const pr = R.proposer({ type: 'retrait', vacationId: gA2, motif: 'Sonde 108' });
+      surv(); const tr = R.trancherProposition({ id: pr.id, decision: 'valider' });
+      out.retrait = { ok: tr.ok, statut: plan(gA2).statut };
+      /* échange : la garde de A du jour 0 contre celle de B du jour 6 */
+      as('medecin', m.na);
+      const pe = R.proposer({ type: 'echange', vacationId: m.gA, contrepartieId: m.gB, motif: 'Sonde 108' });
+      out.echangeProp = { ok: pe.ok, direct: pe.direct };
+      surv(); const te = R.trancherProposition({ id: pe.id, decision: 'valider' });
+      out.echange = { ok: te.ok, a: plan(m.gA).employeId === m.b, b: plan(m.gB).employeId === m.a, valides: plan(m.gA).validationEtat === 'validee' && plan(m.gB).validationEtat === 'validee', avec: plan(m.gA).echangeAvec };
+      /* échange hors régime : une garde de médecin contre une garde soins d'infirmier */
+      surv();
+      const gI = R.poserVacation({ employeId: m.i, date: m.j[7], type: 'garde_soins' });
+      as('medecin', m.nb);
+      const ph = R.proposer({ type: 'echange', vacationId: m.gA, contrepartieId: gI.id, motif: 'Sonde 108' });
+      out.horsRegime = ph.code;
+      /* échange sans contrepartie, vacation d'autrui, motif absent, agent non identifié */
+      out.sansContrepartie = R.proposer({ type: 'echange', vacationId: m.gA, contrepartieId: 'ABSENTE', motif: 'x' }).code;
+      out.autrui = R.proposer({ type: 'retrait', vacationId: m.gB, motif: 'x' }).code;
+      out.sansMotif = R.proposer({ type: 'retrait', vacationId: m.gA, motif: '' }).code;
+      as('medecin', 'SONDE108 inconnu'); out.sansAgent = R.proposer({ type: 'retrait', vacationId: m.gA, motif: 'x' }).code;
+      /* retirer sa proposition : seul l'auteur, et seulement tant qu'elle est à valider */
+      as('medecin', m.na);
+      const pa = R.proposer({ type: 'retrait', vacationId: m.gA, motif: 'x' });   /* gA appartient désormais à B (échange validé) */
+      out.retraitAutrui = pa.code;
+      const pa2 = R.proposer({ type: 'ajout', date: m.j[4], typeVacation: 'permanence', motif: 'Sonde 108 retirée' });
+      as('medecin', m.nb); out.retireParAutre = R.annulerProposition(pa2.id).code;
+      as('medecin', m.na); const ra = R.annulerProposition(pa2.id); out.retire = { ok: ra.ok, etat: S.collection('propositionsPlanning').get(pa2.id).etat };
+      surv(); out.retranche = R.trancherProposition({ id: pa2.id, decision: 'valider' }).code;
+      out.retireDeNouveau = (as('medecin', m.na), R.annulerProposition(pa2.id).code);
+      S.setSession(s);
+      return out;
+    }, Object.assign({}, monde, { gA: gA, gB: gB }));
+    verifier('Modification validée : la vacation change de date et de type ; retrait validé : la vacation est archivée (RG-14)', suite.modif.ok && suite.modif.date === monde.j[25] && suite.modif.type === 'permanence' && suite.retrait.ok && suite.retrait.statut === 'archive', JSON.stringify([suite.modif, suite.retrait]));
+    verifier('Échange : proposé (jamais appliqué directement), validé par le surveillant : les deux vacations changent d’agent, restent validées et portent le collègue', suite.echangeProp.ok && suite.echangeProp.direct === false && suite.echange.ok && suite.echange.a && suite.echange.b && suite.echange.valides && suite.echange.avec === monde.na, JSON.stringify(suite.echange));
+    verifier('Refus nommés d’une proposition : échange hors régime, contrepartie introuvable, vacation d’autrui, motif absent, agent non identifié', suite.horsRegime === 'ECHANGE_HORS_REGIME' && suite.sansContrepartie === 'ECHANGE_SANS_CONTREPARTIE' && suite.autrui === 'VACATION_D_AUTRUI' && suite.sansMotif === 'MOTIF_OBLIGATOIRE' && suite.sansAgent === 'AGENT_NON_IDENTIFIE' && suite.retraitAutrui === 'VACATION_D_AUTRUI', JSON.stringify(suite));
+    verifier('Retirer sa proposition : seul l’auteur (PROPOSITION_D_AUTRUI sinon), le surveillant ne tranche plus une proposition retirée (DEJA_TRANCHEE), et on ne la retire pas deux fois', suite.retireParAutre === 'PROPOSITION_D_AUTRUI' && suite.retire.ok && suite.retire.etat === 'annulee' && suite.retranche === 'DEJA_TRANCHEE' && suite.retireDeNouveau === 'DEJA_TRANCHEE', JSON.stringify([suite.retireParAutre, suite.retire, suite.retranche, suite.retireDeNouveau]));
+
+    /* --- 10. L'APPLICATION DIRECTE, réglée AU POSTE par la carte : l'agent pose ses vacations, le contrôle s'applique, l'échange reste soumis ------------------------------- */
+    await enTant('admin', 'SONDE108 admin', 'm10-propositions-planning.html');
+    await cliquer('#page-content button', 'Régler'); await pause(400);
+    await page.evaluate(() => { const c = document.querySelector('.modal-root #f_direct, [role=dialog] #f_direct'); c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); });
+    await modale('Enregistrer'); await pause(600);
+    const regle = await page.evaluate(() => { const S = window.SIGH.store; const j = S.raw().audit.filter((x) => x.action === 'Planning : l’agent modifie directement').pop(); return { valeur: S.reglage('planningAgentModifieDirectement', null), journal: j ? { avant: j.ancienneValeur, apres: j.nouvelleValeur } : null, carte: /Oui/.test(document.getElementById('page-content').textContent) }; });
+    verifier('Réglé à la carte : « l’agent modifie directement » = oui en base, ancienne et nouvelle valeur au journal', regle.valeur === true && regle.journal && /false/.test(regle.journal.avant) && /true/.test(regle.journal.apres) && regle.carte, JSON.stringify(regle.journal));
+    const direct = await page.evaluate((m) => {
+      const S = window.SIGH.store, R = window.SIGH.planningRh, s = S.session();
+      S.setSession(Object.assign({}, s, { role: 'medecin', nom: m.nb, nomComplet: m.nb }));
+      const nProp0 = S.collection('propositionsPlanning').all().length;
+      const ok = R.proposer({ type: 'ajout', date: m.j[12], typeVacation: 'garde', motif: 'Sonde 108 : direct' });
+      const v = ok.ok ? S.collection('planning').get(ok.vacationId) : null;
+      const trop = R.proposer({ type: 'ajout', date: m.j[13], typeVacation: 'garde', motif: 'Sonde 108 : trop tôt' });
+      const echange = R.proposer({ type: 'echange', vacationId: ok.vacationId, contrepartieId: m.gB, motif: 'Sonde 108 : échange' });
+      const j = S.raw().audit.filter((x) => x.action === 'Planning modifié directement par l’agent').pop();
+      S.setSession(s);
+      return { ok: ok.ok, direct: ok.direct, vac: v && { etat: v.validationEtat, origine: v.origine, directe: v.modifieDirectement, par: v.validePar, employe: v.employeId === m.b }, nouvellesProp: S.collection('propositionsPlanning').all().length - nProp0,
+        trop: trop.code, echange: { ok: echange.ok, direct: echange.direct, code: echange.code, motif: echange.motif }, journal: !!j };
+    }, Object.assign({}, monde, { gA: gA, gB: gB }));
+    verifier('Réglage « oui » : l’agent pose sa vacation aussitôt (validée, origine « agent », marquée modifiée directement), sans proposition, et le contrôle du repos reste opposable', direct.ok && direct.direct === true && direct.vac && direct.vac.etat === 'validee' && direct.vac.origine === 'agent' && direct.vac.directe === true && direct.vac.employe && direct.trop === 'INCOMPATIBILITE_REPOS' && direct.journal, JSON.stringify(direct));
+    verifier('Même en application directe, un échange touche un autre agent : il devient une PROPOSITION à valider', direct.echange.ok && direct.echange.direct === false && direct.nouvellesProp === 1, JSON.stringify(direct.echange));
+
+    /* --- 11. restitution --------------------------------------------------------------------------------------------------------------------------------------------------------- */
+    await page.evaluate((m) => {
+      const S = window.SIGH.store;
+      S.raw().planning = S.raw().planning.filter((x) => m.pla0.indexOf(x.id) >= 0);
+      S.raw().propositionsPlanning = S.raw().propositionsPlanning.filter((x) => m.pro0.indexOf(x.id) >= 0);
+      S.setReglage('planningAgentModifieDirectement', m.reglage === undefined ? false : m.reglage);
+      S.save();
+    }, monde);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

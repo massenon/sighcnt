@@ -1,154 +1,99 @@
 [
   {
-    "nom": "Vague 107 : planning L5 (circuit surveillant seul par défaut, réglé au geste, deux étapes, refus nommés, pièce non validée qui ne compte pas, congé et mission au même circuit avec avis du chef de service, régularisation)",
+    "nom": "Vague 108 : planning L6 (proposition sans effet sur le planning validé, contrôle à la proposition et à la validation, validation au geste, refus motivé, échange, retrait, visibilité par agent, application directe réglée au poste)",
     "etapes": [
       {
-        "libelle": "Le circuit par défaut est « surveillant seul » (une étape), l’agent ne modifie pas directement, et la carte des réglages le dit",
+        "libelle": "Deux gardes de départ posées par le surveillant, et « l’agent modifie directement » vaut NON par défaut",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le pointage saisi naît « à valider » (aucune étape faite, auteur de la saisie, motif codé et justificatif conservés) et ne compte pas",
+        "libelle": "Un médecin ouvre l’écran des propositions (écran de tout agent), voit « Proposer » et aucune commande de validation",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Les retards comptés ne changent pas tant que le pointage n’est pas validé",
+        "libelle": "La proposition est enregistrée « à valider » et le planning n’a pas bougé d’une vacation",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le surveillant valide SEUL au geste : état « valide », signé par lui, circuit consigné, une étape, journalisé (RG-12)",
+        "libelle": "Une proposition qui violerait le repos est refusée à la proposition (motif lu à l’écran) : aucune proposition de plus",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Validé, le pointage COMPTE : un retard de plus",
+        "libelle": "L’agent proposant voit sa proposition, un autre médecin et un compte sans agent n’en voient aucune, le surveillant et la DAF les voient toutes",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Une pièce validée n’offre plus « Valider » mais « Régulariser »",
+        "libelle": "Sur l’écran du médecin B, le registre ne montre aucune ligne du médecin A",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Refus nommés : caissier, DAF (non étape du circuit) et médecin VALIDATION_RESERVEE ; décision inconnue, pièce et collection introuvables",
+        "libelle": "Refus nommés : un médecin ne valide pas (VALIDATION_RESERVEE), nul ne valide sa proposition (AUTO_VALIDATION), un refus exige son motif, proposition introuvable",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le refus de la DAF nomme l’étape attendue (le surveillant) et le circuit ; un refus exige son motif",
+        "libelle": "Validée au geste : la vacation naît au planning, validée, avec l’origine « proposition », la proposition, le régime et le validateur ; journalisé (RG-12)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Personne ne valide sa propre pièce (AUTO_VALIDATION)",
+        "libelle": "Une proposition validée ne se retranche pas (DEJA_TRANCHEE)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Refusée avec motif : état « refuse », motif et auteur conservés, la pièce ne compte pas, et une décision ne se réécrit pas (DEJA_TRANCHEE)",
+        "libelle": "Le planning a changé depuis la proposition : la validation REFAIT le contrôle et refuse en nommant (CONTROLE_ECHOUE, cause INCOMPATIBILITE_REPOS), rien d’écrit, la proposition reste à trancher",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Réglé à la carte : « directrice administrative seule » en base, ancienne et nouvelle valeur au journal, la carte le dit",
+        "libelle": "Refusée au geste avec son motif : état « refusée », motif conservé",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Circuit « DAF seule » : le surveillant est refusé en nommant la DAF, la DAF valide seule et le circuit est consigné sur la pièce",
+        "libelle": "L’agent lit le motif du refus sur son écran",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Deux étapes : le surveillant valide (« valide_surveillant », la pièce ne compte pas encore), il ne peut pas signer la seconde, la DAF achève, les deux signatures sont consignées",
+        "libelle": "Modification validée : la vacation change de date et de type ; retrait validé : la vacation est archivée (RG-14)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "La même personne ne signe pas les deux étapes (administrateur : ETAPE_DEJA_SIGNEE)",
+        "libelle": "Échange : proposé (jamais appliqué directement), validé par le surveillant : les deux vacations changent d’agent, restent validées et portent le collègue",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le congé saisi naît « en attente » et à valider, et ne compte pas",
+        "libelle": "Refus nommés d’une proposition : échange hors régime, contrepartie introuvable, vacation d’autrui, motif absent, agent non identifié",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le surveillant OUVRE le registre des congés (écran accordé), sans commande de création, avec la commande de validation",
+        "libelle": "Retirer sa proposition : seul l’auteur (PROPOSITION_D_AUTRUI sinon), le surveillant ne tranche plus une proposition retirée (DEJA_TRANCHEE), et on ne la retire pas deux fois",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Validé par le surveillant : le congé est « accordé » (statutConge), signé, au même circuit que les pointages",
+        "libelle": "Réglé à la carte : « l’agent modifie directement » = oui en base, ancienne et nouvelle valeur au journal",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "L’ordre de mission saisi naît « en attente de validation » et à valider (l’état ne se saisit plus à la main)",
+        "libelle": "Réglage « oui » : l’agent pose sa vacation aussitôt (validée, origine « agent », marquée modifiée directement), sans proposition, et le contrôle du repos reste opposable",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Sans l’avis du chef de service, la validation est refusée en le nommant (AVIS_REQUIS)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Un avis défavorable sans motif est refusé (rien consigné)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "L’avis défavorable motivé est consigné (chef, avis, motif, auteur de la saisie)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Valider contre un avis défavorable exige un motif (MOTIF_OBLIGATOIRE)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Validée malgré l’avis, avec motif : « validée », signée du surveillant, circuit consigné (champs historiques valideePar et statutMission tenus)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Deux vacations posées (une validée, une à valider) : les statistiques de garde n’en comptent qu’UNE (le planning validé seul compte, RG-11)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Un pointage validé ne se modifie pas directement (garde du magasin PRESENCE_VALIDEE : rien changé)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Régulariser exige un motif, un état connu et un habilité (caissier : REGULARISATION_RESERVEE)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La régularisation est datée, porte son auteur, l’état d’avant et celui d’après, le motif ; la pièce reste validée ; journalisée",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les filtres avancés (agent, motif codé, arrivée à partir de 07:00) ne laissent que le pointage de la sonde",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "L’état imprimé ne porte que la ligne retenue et retrace TOUS les filtres, heures comprises",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le filtre « retard minimal » de 40 minutes après 08:00 ne retient que des retards arrivés à 08:40 ou plus",
+        "libelle": "Même en application directe, un échange touche un autre agent : il devient une PROPOSITION à valider",
         "ok": true,
         "detail": null
       },

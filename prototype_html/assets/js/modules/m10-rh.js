@@ -1427,6 +1427,140 @@
   });
 
   /* ==========================================================================
+   * PROPOSITIONS DE PLANNING (lot L6, Direction, 09/11/2026, Planning Q4)
+   * --------------------------------------------------------------------------
+   * L'agent PROPOSE une modification ou un échange de son planning, le surveillant valide. Une proposition ne change JAMAIS le planning validé tant qu'elle n'est
+   * pas validée ; le contrôle d'incompatibilité est fait à la proposition (l'agent l'apprend tout de suite) et refait à la validation. Réglage du poste
+   * « l'agent modifie directement » (non par défaut) : il pose alors SES vacations sans validation, le même contrôle s'appliquant ; un échange touche un autre
+   * agent et passe toujours par la validation. L'écran est celui de TOUT agent (`universel`) : chacun n'y voit que ses propres propositions (RG-13) ; le
+   * surveillant, la DAF et l'administrateur voient tout et tranchent.
+   * ======================================================================== */
+  global.SIGH.screen('m10-propositions-planning', {
+    title: 'Propositions de planning',
+    description: 'L’agent propose une modification ou un échange de son planning ; le surveillant valide.',
+    regle: 'Une proposition <strong>ne change jamais le planning validé</strong> tant qu’elle n’est pas validée par le surveillant. Le contrôle d’incompatibilité (repos après une garde) est fait '
+      + 'à la proposition puis refait à la validation. Chaque agent ne voit que <strong>ses propres</strong> propositions. Selon le réglage du poste, l’agent peut aussi modifier directement ses vacations ; '
+      + 'un échange avec un collègue passe toujours par la validation.',
+    render: function (root) {
+      var R = PRH();
+      var host = el('div.space-y-4');
+      root.appendChild(host);
+      dessiner();
+      return null;
+
+      function etatBadge(p) {
+        var m = { proposee: ['À valider', 'warning'], validee: ['Validée', 'success'], refusee: ['Refusée', 'danger'], annulee: ['Retirée', 'neutral'] }[p.etat] || [p.etat, 'neutral'];
+        return U.badge(m[0], m[1]);
+      }
+      function typeLabel(id) { return (R.TYPES_PROPOSITION.filter(function (t) { return t.id === id; })[0] || {}).libelle || id; }
+
+      function dessiner() {
+        C.clear(host);
+        var moi = R.employeDeSession();
+        var valideur = ['surveillant', 'da', 'admin'].indexOf(roleCourant()) >= 0;
+        var rows = R.propositionsVisibles().slice().sort(function (a, b) { return String(b.proposeeLe).localeCompare(String(a.proposeeLe)); });
+        host.appendChild(carteReglagesRh(dessiner));
+        host.appendChild(U.kpiGrid([
+          { label: 'À valider', value: C.num(rows.filter(function (p) { return p.etat === 'proposee'; }).length), icon: 'hourglass', tone: 'warning' },
+          { label: 'Validées', value: C.num(rows.filter(function (p) { return p.etat === 'validee'; }).length), icon: 'check-circle-2', tone: 'success' },
+          { label: 'Refusées', value: C.num(rows.filter(function (p) { return p.etat === 'refusee'; }).length), icon: 'x-circle', tone: 'danger' },
+        ], 'grid-cols-3'));
+        if (!moi && !valideur) {
+          host.appendChild(K.note('Votre compte ne correspond à aucun agent du personnel : aucune proposition ne peut être rattachée. Se connecter avec le compte nominatif de l’agent.', { tone: 'warning' }));
+        }
+        var actions = [];
+        if (moi) actions.push(K.btn('Proposer une modification', { variant: 'primary', size: 'sm', icon: 'calendar-plus', onclick: proposer }));
+        host.appendChild(U.dataTable({
+          title: valideur ? 'Propositions des agents' : 'Mes propositions',
+          rows: rows, exportName: 'propositions-planning', pageSize: 15, searchable: true, actions: actions,
+          columns: [
+            { key: 'proposeeLe', label: 'Proposée le', nowrap: true, text: function (p) { return C.dateFR(p.proposeeLe); }, render: function (p) { return C.dateFR(p.proposeeLe); } },
+            { key: 'employe', label: 'Agent' },
+            { key: 'type', label: 'Demande', text: function (p) { return typeLabel(p.type); }, render: function (p) { return typeLabel(p.type); } },
+            { key: 'vacation', label: 'Vacation visée', value: function (p) { return p.vacationDate ? C.dateFR(p.vacationDate) + ' · ' + typePlanningLabel(p.vacationType) : ''; } },
+            { key: 'propose', label: 'Proposition', value: function (p) {
+              if (p.type === 'retrait') return 'Retirer la vacation';
+              if (p.type === 'echange') return 'Avec ' + (p.contrepartie || '—') + ' (' + C.dateFR(p.contrepartieDate) + ' · ' + typePlanningLabel(p.contrepartieType) + ')';
+              return C.dateFR(p.date) + ' · ' + typePlanningLabel(p.typeVacation);
+            } },
+            { key: 'motif', label: 'Motif' },
+            { key: 'etat', label: 'État', text: function (p) { return p.etat; }, render: function (p) {
+              return el('div', null, [etatBadge(p), p.motifRefus ? el('p.text-xs.text-danger-700', { text: 'Motif du refus : ' + p.motifRefus }) : null].filter(Boolean));
+            } },
+          ],
+          rowActions: function (p) {
+            var a = [];
+            if (p.etat !== 'proposee') return a;
+            if (moi && p.employeId === moi.id) a.push(K.iconBtn('undo-2', 'Retirer ma proposition', function () { retirer(p); }, 'ghost'));
+            if (valideur) {
+              a.push(K.iconBtn('check', 'Valider cette proposition', function () { trancher(p, 'valider'); }));
+              a.push(K.iconBtn('x', 'Refuser cette proposition', function () { trancher(p, 'refuser'); }, 'ghost'));
+            }
+            return a;
+          },
+        }));
+        U.icons(host);
+      }
+
+      function proposer() {
+        var moi = R.employeDeSession();
+        var auj = C.iso(AUJ);
+        var miennes = planning().filter(function (v) { return v.employeId === moi.id && v.date >= auj; });
+        var autres = planning().filter(function (v) { return v.employeId !== moi.id && v.date >= auj && (D.TYPES_PLANNING.filter(function (t) { return t.id === v.type; })[0] || {}).duree > 0; });
+        var f = U.form([
+          { name: 'type', label: 'Demande', type: 'select', required: true, col: 'full', options: R.TYPES_PROPOSITION.map(function (t) { return { value: t.id, label: t.libelle }; }) },
+          { name: 'vacationId', label: 'Ma vacation', type: 'select', required: true, col: 'full', condition: { controle: 'type', quand: ['modification', 'retrait', 'echange'] },
+            options: C.sortBy(miennes, 'date').map(function (v) { return { value: v.id, label: C.dateFR(v.date) + ' · ' + typePlanningLabel(v.type) }; }) },
+          { name: 'contrepartieId', label: 'Vacation du collègue', type: 'select', required: true, col: 'full', condition: { controle: 'type', quand: ['echange'] },
+            options: C.sortBy(autres, 'date').map(function (v) { return { value: v.id, label: v.employe + ' · ' + C.dateFR(v.date) + ' · ' + typePlanningLabel(v.type) }; }) },
+          { name: 'date', label: 'Date', type: 'date', required: true, condition: { controle: 'type', quand: ['ajout', 'modification'] } },
+          { name: 'typeVacation', label: 'Vacation', type: 'select', required: true, condition: { controle: 'type', quand: ['ajout', 'modification'] },
+            options: D.TYPES_PLANNING.map(function (t) { return { value: t.id, label: t.label }; }) },
+          { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], { type: 'ajout', date: C.iso(C.addDays(AUJ, 1)) });
+        var m = U.modal({
+          title: 'Proposer une modification de mon planning', subtitle: moi.nomComplet, size: 'lg',
+          body: el('div.space-y-3', null, [
+            K.note(R.agentModifieDirectement()
+              ? 'Réglage du poste : vos modifications s’appliquent <strong>aussitôt</strong> (le contrôle du repos reste opposable). Un échange passe toujours par la validation du surveillant.'
+              : 'Votre proposition ne change rien tant que le <strong>surveillant</strong> ne l’a pas validée.', { tone: 'info' }), f]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Transmettre la proposition', { variant: 'primary', icon: 'send', onclick: function () {
+              var v = f.collect(); if (!v) return;
+              var r = R.proposer({ type: v.type, date: v.date, typeVacation: v.typeVacation, vacationId: v.vacationId, contrepartieId: v.contrepartieId, motif: v.motif });
+              if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+              m.close(); dessiner();
+              U.toast(r.direct ? 'Planning modifié directement.' : 'Proposition transmise au surveillant.', { type: 'success', undo: function () { r.undo(); dessiner(); } });
+            } }),
+          ],
+        });
+      }
+
+      function retirer(p) {
+        var r = R.annulerProposition(p.id);
+        if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+        dessiner();
+        U.toast('Proposition retirée.', { type: 'success', undo: function () { r.undo(); dessiner(); } });
+      }
+
+      function trancher(p, decision) {
+        var resume = typeLabel(p.type) + ' · ' + p.employe;
+        var etape = decision === 'valider'
+          ? U.confirm({ title: 'Valider cette proposition ?', message: resume + '. Le planning est modifié à la validation, le contrôle du repos étant refait.', confirmLabel: 'Valider' })
+          : U.confirm({ title: 'Refuser cette proposition ?', message: resume + '. Le refus exige son <strong>motif</strong> : l’agent le lira.', confirmLabel: 'Refuser', danger: true, requireMotif: true });
+        etape.then(function (rep) {
+          if (!rep) return;
+          var r = R.trancherProposition({ id: p.id, decision: decision, motif: rep && rep.motif });
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          dessiner();
+          U.toast(decision === 'valider' ? 'Proposition validée : planning modifié.' : 'Proposition refusée.', { type: 'success', undo: decision === 'refuser' ? function () { r.undo(); dessiner(); } : null });   /* une validation a modifié le planning : elle ne s'annule pas par un clic, on propose une nouvelle modification */
+        });
+      }
+    },
+  });
+
+  /* ==========================================================================
    * STATISTIQUES DE GARDE
    * --------------------------------------------------------------------------
    * La question posée par la Direction : « combien de gardes cet agent a-t-il

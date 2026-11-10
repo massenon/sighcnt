@@ -521,6 +521,9 @@
             { id: 'm10-badges-modeles', label: 'Modèles de badge', icon: 'layout-template' },
             { id: 'm10-badges-impression', label: 'Planche d’impression des badges', icon: 'printer' },
             { id: 'm10-planning', label: 'Planning & gardes', icon: 'calendar-days' },
+            /* L'agent PROPOSE une modification ou un échange de son planning, le surveillant valide (lot L6, 09/11/2026). Écran de TOUT agent (`universel`, comme
+               les bons de besoins) : chacun n'y voit que ses propres propositions, le surveillant, la DAF et l'administrateur voient tout et tranchent. */
+            { id: 'm10-propositions-planning', label: 'Propositions de planning', icon: 'calendar-sync', universel: true },
             { id: 'm10-stats-gardes', label: 'Statistiques de garde', icon: 'chart-column' },
             { id: 'm10-stats-permanences', label: 'Statistiques des permanences', icon: 'clock-9' },
             { id: 'm10-stats-presence', label: 'Taux de présence par service', icon: 'user-check' },

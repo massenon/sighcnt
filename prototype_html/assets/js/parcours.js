@@ -6240,7 +6240,8 @@
     }
     var rv = c.update(p.id, { etat: 'validee', tranchePar: acteur(), trancheLe: aujIso(), appliquees: appliquees, motifValidation: motif || null },
       { journal: { action: 'Proposition de planning validée', module: 'M10', entite: 'propositionsPlanning', avant: { etat: 'proposee' }, apres: { etat: 'validee', appliquees: appliquees } } });
-    return { ok: true, etat: 'validee', appliquees: appliquees, undo: rv && rv.undo };
+    /* Pas d'annulation : la validation a modifié le planning, une nouvelle proposition corrige. */
+    return { ok: true, etat: 'validee', appliquees: appliquees };
   }
 
   global.SIGH.planningRh = {

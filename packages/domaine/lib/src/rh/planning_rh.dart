@@ -362,7 +362,7 @@ String? prochaineEtapeRh(FichePlanning rec, String circuit) {
 }) {
   final def = piecesRh[nom];
   if (def == null) {
-    return (refus: const RefusRh('COLLECTION_INCONNUE', 'La collection « — » ne passe pas par le circuit de validation.', 'Choisir pointage, congé ou ordre de mission.'), etape: null);
+    return (refus: RefusRh('COLLECTION_INCONNUE', 'La collection « $nom » ne passe pas par le circuit de validation.', 'Choisir pointage, congé ou ordre de mission.'), etape: null);
   }
   if (rec == null || rec['statut'] == 'archive') {
     return (refus: const RefusRh('PIECE_INTROUVABLE', 'La pièce n’existe pas ou est archivée.', 'Choisir une ligne du registre.'), etape: null);
@@ -411,7 +411,7 @@ String? prochaineEtapeRh(FichePlanning rec, String circuit) {
 }) {
   final def = piecesRh[collection];
   ({RefusRh? refus, Map<String, Object?>? patch, String? etat, String? etape, bool complet}) non(RefusRh r) => (refus: r, patch: null, etat: null, etape: null, complet: false);
-  if (def == null) return non(const RefusRh('COLLECTION_INCONNUE', 'La collection « — » ne passe pas par le circuit de validation.', 'Choisir pointage, congé ou ordre de mission.'));
+  if (def == null) return non(RefusRh('COLLECTION_INCONNUE', 'La collection « $collection » ne passe pas par le circuit de validation.', 'Choisir pointage, congé ou ordre de mission.'));
   if (decision != 'valider' && decision != 'refuser') return non(const RefusRh('DECISION_INCONNUE', 'La décision est « valider » ou « refuser ».', 'Choisir une décision.'));
   final p = peutTrancherRh(nom: collection, rec: rec, role: role, circuit: circuit, acteur: acteur, moiId: moiId, moiNom: moiNom);
   if (p.refus != null) return non(p.refus!);
