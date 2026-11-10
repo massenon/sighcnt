@@ -182,7 +182,7 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
     let accessibles = null;
     for (let essai = 0; essai < 6 && accessibles === null; essai++) {
       try { accessibles = await page.evaluate(sonderAccessibles, role); }
-      catch (e) { await new Promise((r) => setTimeout(r, 2000)); await page.waitForFunction(() => !!(window.SIGH && window.SIGH.nav), { timeout: 60000 }).catch(() => null); }
+      catch (e) { await new Promise((r) => setTimeout(r, 2000)); try { await page.waitForFunction(() => !!(window.SIGH && window.SIGH.nav), { timeout: 60000 }); } catch (e2) { /* cadre détaché par le rebond : on réessaie au tour suivant */ } }
     }
     if (accessibles === null) throw new Error('profil ' + role + ' : page instable, sondage impossible');
 
