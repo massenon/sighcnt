@@ -93,7 +93,7 @@ void main() {
     await toucher(t, find.text('Valider l’encaissement'));
     expect(find.textContaining('dépasse le reste dû'), findsOneWidget);
     expect(m.collection('factures').parId(f['id'])!['montantPaye'], avant);
-    await t.pump(const Duration(seconds: 10));
+    await t.pump(const Duration(seconds: 15));
   });
 
   testWidgets(
@@ -128,8 +128,10 @@ void main() {
     expect(apres['acheteurNom'], 'Clinique X');
     expect(apres['aibTaux'], 1);
     expect(apres['statutPaiement'], 'soldee');
-    expect(apres['statutMecef'], 'valide');
-    expect(RegExp(r'^MECEF\d{7}$').hasMatch('${apres['numeroMecef']}'), isTrue);
+    // Lot L3 : le poste ne fabrique aucun numéro ; la vente soldée reste en attente de certification (refus nommé MECEF_NON_CONFIGURE).
+    expect(apres['statutMecef'], 'en_attente');
+    expect(apres['numeroMecef'], isNull);
+    expect(apres['codeRetour'], 'MECEF_NON_CONFIGURE');
     await t.pump(const Duration(seconds: 15));
   });
 
@@ -180,7 +182,7 @@ void main() {
     // Un encaissement ne s'annule pas : remboursement ou avoir.
     await toucher(t, find.text('Fermer').last);
     expect(find.widgetWithText(BoutonSigh, 'Annuler'), findsNothing);
-    await t.pump(const Duration(seconds: 10));
+    await t.pump(const Duration(seconds: 15));
   });
 
   testWidgets(
@@ -249,7 +251,7 @@ void main() {
     await toucher(t, find.widgetWithText(BoutonSigh, 'Annuler').last);
     expect(
         m.collection('factures').parId(premiere['id'])!['insolvable'], isNull);
-    await t.pump(const Duration(seconds: 10));
+    await t.pump(const Duration(seconds: 15));
   });
 
   testWidgets(
@@ -266,7 +268,7 @@ void main() {
     expect((avecEngagement.first['engagement'] as Map)['tranches'], 1);
     expect(find.textContaining('reconnais devoir à la Clinique NASSIERA TOO'),
         findsOneWidget);
-    await t.pump(const Duration(seconds: 10));
+    await t.pump(const Duration(seconds: 15));
   });
 
   testWidgets(

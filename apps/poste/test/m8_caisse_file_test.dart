@@ -266,7 +266,7 @@ void main() {
     await toucher(t, find.text('Valider l’encaissement'));
     expect(find.text('Aucune prestation cochée.'), findsOneWidget);
     expect(m.collection('factures').parId('F1')!['montantPaye'], 0);
-    await t.pump(const Duration(seconds: 10));
+    await t.pump(const Duration(seconds: 15));
   });
 
   testWidgets(
