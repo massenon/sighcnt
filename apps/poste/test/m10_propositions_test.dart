@@ -125,6 +125,10 @@ void main() {
       expect(find.text('Refuser cette proposition ?'), findsOneWidget);
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Refuser'));
       expect(col.parId(aRefuser)!['etat'], 'proposee');
+      expect(find.text('Un refus exige son motif : l’agent doit pouvoir le lire.'), findsOneWidget, reason: 'le refus sans motif est NOMMÉ par le moteur');
+      ToastsSigh.viderPourTests();
+      await t.pump(const Duration(milliseconds: 300));
+      await toucherM14(t, find.byTooltip('Refuser cette proposition'));
       await t.enterText(find.byType(TextField).last, 'Effectif insuffisant');
       await t.pump();
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Refuser'));

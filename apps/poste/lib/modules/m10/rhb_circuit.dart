@@ -75,7 +75,7 @@ List<Widget> rhbCommandesValidation(BuildContext ctx, ContexteEcran c, String no
         libelle: 'Refuser $def',
         onPressed: () async {
           final motif = await confirmerAvecMotif(ctx,
-              titre: 'Refuser $def ?', message: 'Le refus exige son motif : l’agent le lira.', libelleOk: 'Refuser', dangereux: true);
+              titre: 'Refuser $def ?', message: 'Le refus exige son motif : l’agent le lira.', libelleOk: 'Refuser', dangereux: true, motifObligatoire: false);
           if (motif == null || !ctx.mounted) return;
           final res = p.trancher(nom, r['id'], 'refuser', motif: motif);
           if (res['ok'] != true) {

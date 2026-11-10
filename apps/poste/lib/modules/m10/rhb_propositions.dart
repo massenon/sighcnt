@@ -126,7 +126,7 @@ class EcranPropositionsPlanning extends StatelessWidget with EcranMaquette {
       final ok = await confirmerSigh(ctx, titre: 'Valider cette proposition ?', message: '$resume. Le planning est modifié à la validation, le contrôle du repos étant refait.', libelleOk: 'Valider');
       if (!ok || !ctx.mounted) return;
     } else {
-      motif = await confirmerAvecMotif(ctx, titre: 'Refuser cette proposition ?', message: '$resume. Le refus exige son motif : l’agent le lira.', libelleOk: 'Refuser', dangereux: true);
+      motif = await confirmerAvecMotif(ctx, titre: 'Refuser cette proposition ?', message: '$resume. Le refus exige son motif : l’agent le lira.', libelleOk: 'Refuser', dangereux: true, motifObligatoire: false);
       if (motif == null || !ctx.mounted) return;
     }
     final r = p.trancherProposition(x['id'], decision, motif: motif);

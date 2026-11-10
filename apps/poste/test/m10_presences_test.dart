@@ -195,6 +195,13 @@ void main() {
       expect(find.text('Refuser ce pointage ?'), findsOneWidget);
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Refuser'));
       expect(m.collection('presences').parId('PRSCIRC1')!['validationEtat'], 'a_valider');
+      // Le refus sans motif est NOMMÉ par le moteur (code MOTIF_OBLIGATOIRE, motif et geste), comme le toast de la maquette ; rien n'est écrit.
+      expect(find.text('Un refus exige son motif : l’agent doit pouvoir le lire.'), findsOneWidget);
+      expect(find.text('Écrire le motif du refus.'), findsOneWidget);
+      ToastsSigh.viderPourTests();
+      await t.pump(const Duration(milliseconds: 300));
+      await chercherTableau(t, '${agents3[1]['nomComplet']}');
+      await toucherM14(t, find.byTooltip('Refuser ce pointage').first);
       await t.enterText(find.byType(TextField).last, 'Pointage contesté');
       await t.pump();
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Refuser'));

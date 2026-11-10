@@ -259,11 +259,15 @@ Future<T?> afficherTiroir<T>(
     );
 
 /// `U.confirm({requireMotif: true})` : confirmation qui EXIGE un motif (journalisé, RG-12). Renvoie le motif, ou `null` si annulée.
+///
+/// [motifObligatoire] `false` : le motif VIDE est rendu tel quel (`''`) et c'est l'appelant qui refuse en le nommant (code, motif, geste), comme la maquette dont
+/// `U.confirm({requireMotif})` ne contrôle pas : le moteur du domaine dit pourquoi, la modale ne bloque pas en silence.
 Future<String?> confirmerAvecMotif(BuildContext context,
     {required String titre,
     required String message,
     String libelleOk = 'Confirmer',
-    bool dangereux = false}) {
+    bool dangereux = false,
+    bool motifObligatoire = true}) {
   final t = TextEditingController();
   final erreur = ValueNotifier<String?>(null);
   return afficherModale<String>(context,
@@ -329,7 +333,7 @@ Future<String?> confirmerAvecMotif(BuildContext context,
                     dangereux ? VarianteBouton.danger : VarianteBouton.primaire,
                 onPressed: () {
                   // Le motif est obligatoire : un geste sans motif ne se retrouve pas à l'audit.
-                  if (t.text.trim().isEmpty) {
+                  if (motifObligatoire && t.text.trim().isEmpty) {
                     erreur.value = 'Le motif est obligatoire.';
                     return;
                   }
