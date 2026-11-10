@@ -60,3 +60,31 @@ Les défauts viennent de la colonne « Défaut » de ce plan et de la section D 
 - Si la base de la mère était reconstruite de zéro, les anciennes versions seraient republiées après les usages déjà connus et pourraient être refusées (`parametre_deja_utilise`) alors qu'elles précédaient la pièce. La restauration par l'archive du relais (R8r) rejoue le journal tel quel et n'y passe pas.
 - La date d'une pièce (`dateEffet`, usage) est une date locale AAAA-MM-JJ fournie par l'appelant ; le domaine ne lit jamais l'horloge.
 - Revue de sécurité du chiffrement, SQLCipher, service Windows, charge : non couverts par ce lot (voir le README du banc).
+
+## L2 : AIB, charge des 5 % et branchement différé (réalisé le 10/11/2026)
+
+### Ce qui est livré
+
+| Pièce | Où | Vérification |
+|---|---|---|
+| Quatre réglages datés (charge des 5 %, branchement sur les achats, compte d'acompte, compte de contrepartie) | maquette : collection `reglagesAib` (semée au socle, VERSION 76), moteur `SIGH.reglagesAib` (parcours.js), écran `cfg-bareme-aib` onglets « Réglages » et « Achats à écrire » | scénario « Vague 103 » (15 vérifications, au geste) |
+| Défauts de la Direction | charge `clinique` (non arrêtée : texte officiel manquant), branchement `desactive`, aucun compte semé | Vague 103, vecteurs `aib.json` |
+| Validation | les réglages relèvent de la famille `bareme_aib` (collections `baremeAib` et `reglagesAib`) : « Valider » au geste pour Direction, DAF, comptable, administrateur ; écrire par le comptable, la DAF ou l'administrateur arrête la version (date, auteur, motif) | Vague 103 (caissier refusé, Direction valide), Vague 100 à 102 inchangées |
+| Charge portée par la vente | `aibCharge` et `aibChargeArretee` sur la facture normalisée, à la date du barème de la vente ; aucun effet sur les montants | Vague 103 |
+| Branchement différé | désactivé : le moteur liste (situation d'après l'IFU du fournisseur, taux du barème de la date de la facture, charge), n'écrit rien (refus nommé `AIB_BRANCHEMENT_DESACTIVE`) ; actif : une pièce de deux lignes en brouillon, équilibrée, par facture listée, une seule fois | Vague 103, vecteurs |
+| Vecteurs | `prototype_html/build/vecteurs-aib.js` → `packages/domaine/test/vecteurs/aib.json` (62 cas) et `aib_donnees.dart` (semences du barème) | régénérables |
+| Domaine Dart | `packages/domaine/lib/src/comptabilite/aib.dart` (+ `aib_donnees.dart`) | `dart test` : `aib_test.dart` (17), `aib_parametres_test.dart` (6), suite complète 3 034 verts ; quatre mutations font tomber `aib_test.dart` |
+| Registre des paramètres | `definitions.dart` : `bareme_aib.chargePrelevement` passe à `branche: true`, trois définitions ajoutées (`branchementAchats`, `compteAcompte`, `compteContrepartie`) | `aib_parametres_test.dart` |
+| Poste | `apps/poste/lib/donnees/aib_poste.dart`, `modules/cfg/cfg_aib_achats.dart` (section de la famille « AIB » de l'onglet Paramètres), contrôle des réglages dans `cfg_parametres.dart` | `flutter test test/aib_poste_test.dart` (4 verts), `flutter analyze` sans erreur |
+
+### Décisions de conception
+
+- **Un seul versionnement par date.** Maquette et poste ne tiennent pas la même mécanique de stockage (la maquette a sa collection `reglagesAib`, le poste le registre des paramètres du lot L0, famille R), mais les mêmes règles : le domaine lit des fiches de réglage ; `aibReglagesDepuisParametres` relit les versions du registre sous cette forme. La version 0 semée est « à valider » ; toute version datée est arrêtée (un profil qui peut régler l'a posée).
+- **Rien d'inventé.** Aucun compte n'est semé ni proposé : le comptable le choisit dans le plan comptable. La base des 5 % aux achats est le montant facturé (la fiche fournisseur ne distingue pas le hors taxes), dit à l'écran.
+- **L'activation se refuse en nommant** (`AIB_BRANCHEMENT_INCOMPLET`) tant que les deux comptes et la charge ne sont pas arrêtés à la date d'effet.
+
+### Limites
+
+- L'écran `cfg-bareme-aib` n'est pas porté au poste : le manifeste du poste (engendré) ne le connaît pas, c'est le lot A5. Au poste, les réglages se règlent aux cartes de la famille « AIB » de l'onglet Paramètres, qui porte aussi la liste « achats à écrire » et la commande « Écrire ».
+- Flutter : `flutter analyze` ne trouve aucune erreur ; une suite complète du poste n'a pas été lancée (voir ECARTS-MAQUETTE E2319).
+
