@@ -17262,6 +17262,206 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
+  /* ===========================================================================
+   * Vague 105 : MECeF, lot L3 (Direction, 09/11/2026) : le MODE de certification (boîtier par défaut, ou e-MECeF) et AUCUN numéro fabriqué
+   * -------------------------------------------------------------------------
+   * Le mode se règle à « Configuration fiscale » (administrateur ou DA, journalisé avec l'ancienne et la nouvelle valeur) et se relit sur un second
+   * poste. En e-MECeF rien n'est branché : « non configuré, dossier d'interface DGI requis ». La vente est ENCAISSÉE et reste EN ATTENTE de
+   * certification, SANS numéro (ni l'encaissement, ni la retransmission, ni « Synchroniser », ni l'avoir n'en fabriquent) ; le refus se nomme
+   * (MECEF_NON_CONFIGURE, motif, geste) ; la retransmission du caissier ne consomme pas son unique essai. Revenu au boîtier, la même vente se
+   * certifie (appareil de démonstration de la maquette). Pièces de SONDE `FN-2099-S105…` archivées, mode et journal de l'appareil restitués.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 105 : MECeF L3 (mode boîtier par défaut, bascule e-MECeF au geste et journalisée, aucun numéro fabriqué, vente en attente, refus nommé, retransmission sans essai consommé, relue sur un second poste)');
+    erreursJS = [];
+    await ouvrir('mecef-config.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), Object.assign({}, BANC.SESSION_BANC, { role: 'admin' }));
+    await ouvrir('mecef-config.html');
+
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const sauve = { reglage: S.reglage('mecefBoitier', { compteur: 0, emissions: [] }), mode: S.reglage('mecefMode', undefined) };
+      const ecr0 = S.collection('ecritures').all().map((e) => e.id);
+      const avoirs0 = S.collection('avoirs').all().map((a) => a.id);
+      const mk = (cle) => {
+        const L = (id, brut) => ({ id, categorie: 'acte', designation: 'Acte ' + id, quantite: 1, prixUnitaire: brut, prixUnitaireNet: brut, montantBrut: brut, remise: 0, montant: brut,
+          partAssureur: 0, partPersonnel: 0, partPatient: brut, statutPaiement: 'du', montantRegle: 0 });
+        return S.collection('factures', { module: 'M8', entite: 'Facture' }).insert({ numero: 'FN-2099-S105' + cle, patientId: 'P105', patient: 'SONDE Mecef L3', patientCode: 'CNT/105/26', date: '2026-12-31', type: 'Consultation',
+          lignes: [L('L001', 10000), L('L002', 4000)], montantHT: 14000, montantTTC: 14000, montantRemises: 0, partAssurance: 0, partPatient: 14000, montantPaye: 0, reliquat: 14000, modePaiement: 'especes',
+          statutPaiement: 'impayee', statutMecef: 'en_attente', proforma: false }).record.id;
+      };
+      return { ids: { a: mk('A'), b: mk('B') }, sauve, ecr0, avoirs0 };
+    });
+    const lire = (id) => page.evaluate((i) => JSON.parse(JSON.stringify(window.SIGH.store.collection('factures').get(i))), id);
+    const appareil = () => page.evaluate(() => window.SIGH.store.reglage('mecefBoitier', { compteur: 0, emissions: [] }));
+    const compteNumeros = () => page.evaluate(() => ['factures', 'avoirs'].reduce((n, c) => n + window.SIGH.store.collection(c).all().filter((x) => x.numeroMecef).length, 0));
+
+    /* --- 1. l'état de départ : boîtier, deux modes proposés, rien d'inventé ---------------------------------------------------------- */
+    const d0 = await page.evaluate(() => {
+      const M = window.SIGH.mecef;
+      const sel = document.querySelector('#page-content select[data-mecef-mode]');
+      return { mode: M.mode(), propo: M.MODES_PROPOSES.slice(), ad: M.adaptateur(), options: sel ? [...sel.options].map((o) => o.value + '=' + o.textContent) : null, valeur: sel ? sel.value : null,
+        etat: (document.querySelector('[data-mecef-mode-etat]') || {}).textContent || '' };
+    });
+    verifier('Départ : le mode par défaut est « boîtier » (rien n’est réglé), deux modes seulement sont proposés (boîtier physique, e-MECeF), l’écran le montre',
+      d0.mode === 'boitier' && JSON.stringify(d0.propo) === '["boitier","emecef"]' && JSON.stringify(d0.options) === '["boitier=Boîtier physique","emecef=e-MECeF"]' && d0.valeur === 'boitier', JSON.stringify(d0));
+    verifier('Le mode boîtier dit la vérité : modèle, interface et protocole inconnus, aucun adaptateur au poste de production, maquette seule en démonstration',
+      /ne figurent dans aucun document remis/.test(d0.etat) && /aucun adaptateur branché/.test(d0.etat) && /appareil de démonstration/.test(d0.etat), d0.etat.slice(0, 200));
+    verifier('En mode boîtier la maquette garde son appareil de démonstration (adaptateur configuré, marqué démonstration)', d0.ad.configure === true && d0.ad.demonstration === true && d0.ad.code === null, JSON.stringify(d0.ad));
+
+    /* --- 2. la bascule au geste (liste, bouton), journalisée ------------------------------------------------------------------------- */
+    await page.evaluate(() => {
+      const sel = document.querySelector('#page-content select[data-mecef-mode]');
+      sel.value = 'emecef'; sel.dispatchEvent(new Event('change', { bubbles: true }));
+      [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.trim() === 'Enregistrer le mode').click();
+    });
+    await pause(500);
+    const b1 = await page.evaluate(() => {
+      const S = window.SIGH.store, M = window.SIGH.mecef;
+      const aud = S.raw().audit || [];
+      /* L'ordre du journal n'est pas supposé : on cherche l'entrée qui porte CE changement (boîtier vers e-MECeF). */
+      const e = aud.find((x) => /Mode de facturation normalisée/.test(x.action || '') && /boitier/.test(String(x.ancienneValeur)) && /emecef/.test(String(x.nouvelleValeur)));
+      return { mode: M.mode(), reglage: S.reglage('mecefMode', null), etat: (document.querySelector('[data-mecef-mode-etat]') || {}).textContent || '', journal: e ? JSON.stringify(e) : null,
+        toasts: [...document.querySelectorAll('.toast, [role="status"]')].map((t) => t.textContent.trim()) };
+    });
+    verifier('Choisir e-MECeF puis « Enregistrer le mode » : le réglage est écrit en base (mecefMode = emecef), l’écran dit « non configuré, dossier d’interface DGI requis »',
+      b1.mode === 'emecef' && b1.reglage === 'emecef' && /non configuré, dossier d’interface DGI requis/.test(b1.etat) && b1.toasts.some((t) => /e-MECeF/.test(t)), JSON.stringify(b1).slice(0, 400));
+    verifier('Le changement est JOURNALISÉ avec l’ancienne et la nouvelle valeur (RG-12)', !!b1.journal && /boitier/.test(b1.journal) && /emecef/.test(b1.journal), String(b1.journal).slice(0, 300));
+
+    /* un profil hors administrateur et DA : refus nommé MODE_RESERVE, le mode ne bouge pas */
+    const reserve = await page.evaluate(() => {
+      const S = window.SIGH.store, M = window.SIGH.mecef, base = S.session();
+      S.setSession(Object.assign({}, base, { role: 'caissier' }));
+      const r = M.definirMode('boitier'); const r2 = M.definirMode('inconnu');
+      S.setSession(base);
+      return { r: r.code, geste: r.geste, r2: r2.code, mode: M.mode() };
+    });
+    verifier('Un caissier ne règle pas le mode (MODE_RESERVE, avec son geste) ; un mode inconnu est refusé (MODE_INCONNU) ; le mode reste e-MECeF', reserve.r === 'MODE_RESERVE' && !!reserve.geste && reserve.r2 === 'MODE_INCONNU' && reserve.mode === 'emecef', JSON.stringify(reserve));
+
+    /* « Tester la connexion » ne ment plus */
+    const test = await page.evaluate(async () => {
+      [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.indexOf('Tester la connexion') >= 0).click();
+      await new Promise((r) => setTimeout(r, 400));
+      return [...document.querySelectorAll('.toast, [role="status"]')].map((t) => t.textContent.trim()).join(' | ');
+    });
+    verifier('« Tester la connexion » en e-MECeF refuse en nommant (MECEF_NON_CONFIGURE) et n’annonce AUCUNE connexion établie ni délai de réponse', /MECEF_NON_CONFIGURE/.test(test) && /dossier d’interface DGI requis/.test(test) && !/340 ms|établie/.test(test), test.slice(0, 300));
+
+    /* --- 3. l'émission en e-MECeF : encaissée, en attente, AUCUN numéro --------------------------------------------------------------- */
+    const n0 = await compteNumeros(), ap0 = await appareil();
+    const emis = await page.evaluate((i) => { const r = window.SIGH.parcours.encaisser(i, { mode: 'especes', acheteur: { ifu: '3201642748214', nom: 'Acheteur L3' } }); return { n: r.normalisation, refus: r.refus }; }, monde.ids.a);
+    const a1 = await lire(monde.ids.a), n1 = await compteNumeros(), ap1 = await appareil();
+    verifier('Vente encaissée en e-MECeF : l’encaissement RESTE acquis (soldée, 14 000 réglés) et la normalisation est refusée en nommant MECEF_NON_CONFIGURE (motif, geste)',
+      !emis.refus && emis.n && emis.n.ok === false && emis.n.code === 'MECEF_NON_CONFIGURE' && /dossier d’interface DGI requis/.test(emis.n.motif) && !!emis.n.geste && emis.n.etat === 'en_attente' && a1.statutPaiement === 'soldee' && a1.montantPaye === 14000, JSON.stringify([emis, a1.statutPaiement, a1.montantPaye]));
+    verifier('La pièce reste « en attente » (état stocké en_attente), SANS numéro fiscal, avec le code et le motif portés ; aucun numéro nulle part n’a été fabriqué',
+      a1.statutMecef === 'en_attente' && !a1.numeroMecef && a1.codeRetour === 'MECEF_NON_CONFIGURE' && /dossier d’interface DGI requis/.test(a1.motifRefusMecef || '') && n1 === n0, JSON.stringify([a1.statutMecef, a1.numeroMecef, a1.codeRetour, n0, n1]));
+    verifier('L’appareil de démonstration n’a rien émis (compteur et journal des émissions intacts) : aucun numéro tiré à l’aveugle', ap1.compteur === ap0.compteur && (ap1.emissions || []).length === (ap0.emissions || []).length, JSON.stringify([ap0.compteur, ap1.compteur]));
+
+    /* la retransmission du caissier : même refus, et son unique essai n'est PAS consommé */
+    const retrans = await page.evaluate((i) => {
+      const S = window.SIGH.store, M = window.SIGH.mecef, base = S.session();
+      S.setSession(Object.assign({}, base, { role: 'caissier' }));
+      const r1 = M.retransmettre(i); const r2 = M.retransmettre(i);
+      S.setSession(base);
+      return { r1: r1.code, r2: r2.code, motif: r1.motif };
+    }, monde.ids.a);
+    const a2 = await lire(monde.ids.a);
+    verifier('Le caissier retransmet deux fois : MECEF_NON_CONFIGURE à chaque fois (jamais RETRANSMISSION_RESERVEE), aucun essai consommé, toujours aucun numéro', retrans.r1 === 'MECEF_NON_CONFIGURE' && retrans.r2 === 'MECEF_NON_CONFIGURE' && !(a2.retransmissions > 0) && !a2.numeroMecef && a2.statutMecef === 'en_attente', JSON.stringify([retrans, a2.retransmissions]));
+
+    /* une vente REFUSÉE (état d'avant le changement de mode) se retransmet : même refus nommé, elle repasse en attente, l'essai du caissier n'est pas consommé */
+    const refusee = await page.evaluate((i) => {
+      const S = window.SIGH.store, M = window.SIGH.mecef, base = S.session();
+      S.collection('factures').update(i, { statutPaiement: 'soldee', montantPaye: 14000, reliquat: 0, statutMecef: 'rejete', codeRetour: 'REFUS_SIMULE', motifRefusMecef: 'Refus d\u2019avant' });
+      S.setSession(Object.assign({}, base, { role: 'caissier' }));
+      const r = M.retransmettre(i);
+      S.setSession(base);
+      const f = S.collection('factures').get(i);
+      return { code: r.code, etat: r.etat, statut: f.statutMecef, retrans: f.retransmissions || 0, numero: f.numeroMecef || null };
+    }, monde.ids.b);
+    verifier('Vente refusée retransmise en e-MECeF : MECEF_NON_CONFIGURE, la pièce repasse en attente, SANS numéro, et la retransmission n’est PAS comptée', refusee.code === 'MECEF_NON_CONFIGURE' && refusee.statut === 'en_attente' && refusee.retrans === 0 && !refusee.numero, JSON.stringify(refusee));
+
+    /* « Synchroniser maintenant » : aucun tirage */
+    await ouvrir('mecef-transmission.html');
+    const syn = await page.evaluate(async () => {
+      const S = window.SIGH.store;
+      const avant = S.collection('factures').all().filter((f) => f.numeroMecef).length;
+      const btn = [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.indexOf('Synchroniser maintenant') >= 0);
+      if (!btn) return { sansBouton: true };
+      btn.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const modale = !!document.querySelector('.modal-root button, [role=dialog] button');
+      return { avant, apres: S.collection('factures').all().filter((f) => f.numeroMecef).length, modale,
+        toasts: [...document.querySelectorAll('.toast, [role="status"]')].map((t) => t.textContent.trim()).join(' | ') };
+    });
+    verifier('« Synchroniser maintenant » en e-MECeF : refus nommé, aucune confirmation proposée, AUCUN numéro tiré (le nombre de pièces numérotées ne bouge pas)',
+      !syn.sansBouton && /MECEF_NON_CONFIGURE/.test(syn.toasts) && !syn.modale && syn.apres === syn.avant, JSON.stringify(syn).slice(0, 300));
+
+    /* l'avoir : émis, sans numéro fiscal, en attente */
+    await ouvrir('mecef-avoirs.html');
+    const nbAvoirs0 = await page.evaluate(() => window.SIGH.store.collection('avoirs').all().length);
+    const avoir = await page.evaluate(async () => {
+      const S = window.SIGH.store;
+      const cible = S.collection('factures').active().find((f) => f.statutMecef === 'valide' && f.numeroMecef && !f.proforma && f.montantTTC > 1000);
+      if (!cible) return { sansCible: true };
+      [...document.querySelectorAll('#page-content button')].find((b) => b.textContent.indexOf('Émettre un avoir') >= 0).click();
+      await new Promise((r) => setTimeout(r, 400));
+      const racine = document.querySelector('.modal-root, [role=dialog]');
+      const champ = (n) => racine.querySelector('#f_' + n + ', [name="' + n + '"]');
+      const f = champ('factureId'); f.value = cible.id; f.dispatchEvent(new Event('input', { bubbles: true })); f.dispatchEvent(new Event('change', { bubbles: true }));
+      const mt = champ('montant'); mt.value = '500'; mt.dispatchEvent(new Event('input', { bubbles: true })); mt.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 200));
+      [...racine.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Émettre l’avoir').click();
+      await new Promise((r) => setTimeout(r, 600));
+      const av = S.collection('avoirs').all().slice(-1)[0];
+      return { facture: cible.numero, avoir: av ? { reference: av.reference, numeroMecef: av.numeroMecef || null, statutMecef: av.statutMecef, origine: av.origine } : null,
+        toasts: [...document.querySelectorAll('.toast, [role="status"]')].map((t) => t.textContent.trim()).join(' | ') };
+    });
+    const nbAvoirs1 = await page.evaluate(() => window.SIGH.store.collection('avoirs').all().length);
+    verifier('Avoir en e-MECeF : la pièce est ÉMISE (un avoir de plus au registre) mais SANS numéro fiscal, en attente de certification, et le message le dit (MECEF_NON_CONFIGURE)',
+      !avoir.sansCible && nbAvoirs1 === nbAvoirs0 + 1 && avoir.avoir && !avoir.avoir.numeroMecef && avoir.avoir.statutMecef !== 'valide' && /en attente de certification/.test(avoir.toasts) && /MECEF_NON_CONFIGURE/.test(avoir.toasts), JSON.stringify(avoir).slice(0, 400));
+
+    /* --- 4. relu sur un SECOND poste (autre contexte de navigateur, même base) ------------------------------------------------------------ */
+    await page.evaluate(() => window.SIGH.store.pousserMaintenant());
+    await pause(1500);
+    const ctxB = await browser.createBrowserContext();
+    const pageB = await ctxB.newPage();
+    pageB.setDefaultTimeout(120000);
+    const repB = await BANC.connecter('e.orouyo');
+    await pageB.evaluateOnNewDocument((jeton) => {
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: 'reception', fonction: 'accueil', nom: 'OROU YO Edmond', identifiant: 'e.orouyo', secteur: 'ACC', jeton: jeton }));
+      localStorage.setItem('sigh-cnt:jeton', jeton);
+    }, repB.jeton);
+    await pageB.goto(`http://127.0.0.1:${PORT}/pages/m1-patients.php`, { waitUntil: 'domcontentloaded' });
+    await pageB.waitForFunction(() => window.SIGH && window.SIGH.app && window.SIGH.app.entry() && document.querySelector('#page-content') && document.querySelector('#page-content').children.length > 0, { timeout: 150000 });
+    const surB = await pageB.evaluate(() => ({ mode: window.SIGH.mecef.mode(), ad: window.SIGH.mecef.adaptateur() }));
+    verifier('Second poste : le mode réglé sur le premier (e-MECeF) est relu depuis la base, et son adaptateur est lui aussi non configuré', surB.mode === 'emecef' && surB.ad.configure === false && surB.ad.code === 'MECEF_NON_CONFIGURE', JSON.stringify(surB));
+    await ctxB.close();
+
+    /* --- 5. retour au boîtier : la MÊME vente se certifie (démonstration), sans doublon ------------------------------------------------------ */
+    await page.evaluate(() => window.SIGH.mecef.definirMode('boitier'));
+    const retour = await page.evaluate((i) => {
+      const S = window.SIGH.store, M = window.SIGH.mecef, base = S.session();
+      S.setSession(Object.assign({}, base, { role: 'caissier' }));
+      const r = M.retransmettre(i);
+      S.setSession(base);
+      return { ok: r.ok, numero: r.numero, etat: r.etat };
+    }, monde.ids.a);
+    const a3 = await lire(monde.ids.a);
+    verifier('Revenu en mode boîtier, la vente laissée en attente se certifie par la retransmission du caissier (appareil de démonstration, pièce marquée non fiscale)', retour.ok === true && a3.statutMecef === 'valide' && /^MECEF\d+$/.test(a3.numeroMecef || '') && a3.mecefSimule === true, JSON.stringify([retour, a3.statutMecef, a3.numeroMecef, a3.mecefSimule]));
+
+    /* --- restitution -------------------------------------------------------------------------------------------------------------------- */
+    await page.evaluate((mo) => {
+      const S = window.SIGH.store;
+      Object.values(mo.ids).forEach((id) => { try { S.collection('factures').archive(id, 'Sonde Vague 105'); } catch (e) { /* déjà archivée */ } });
+      S.collection('avoirs').all().filter((a) => mo.avoirs0.indexOf(a.id) < 0 && a.statut !== 'archive').forEach((a) => { try { window.SIGH.parcours.retirerAvoir(a.id); } catch (e) { /* idem */ } });
+      S.collection('ecritures').all().filter((e) => mo.ecr0.indexOf(e.id) < 0 && e.statut !== 'archive').forEach((e) => { try { S.collection('ecritures').archive(e.id, 'Sonde Vague 105'); } catch (e2) { /* idem */ } });
+      S.setReglage('mecefBoitier', mo.sauve.reglage);
+      S.setReglage('mecefMode', mo.sauve.mode === undefined ? 'boitier' : mo.sauve.mode);
+      window.SIGH.mecef.fauxBoitier.panne = null;
+    }, monde);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

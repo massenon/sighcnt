@@ -7,6 +7,8 @@
  *
  * Le prototype simule les échanges avec le dispositif fiscal : l'interfaçage
  * réel s'appuiera sur la machine électronique certifiée de facturation.
+ * Lot L3 : le mode (boîtier ou e-MECeF) se règle à « Configuration fiscale » ;
+ * en e-MECeF, rien n'est branché : aucun numéro n'est fabriqué (PR.mecef.adaptateur).
  * ========================================================================== */
 (function (global) {
   'use strict';
@@ -457,6 +459,9 @@
           onclick: function () {
             var att = enAttente();
             if (!att.length) { U.toast('Aucune facture en attente de transmission.', { type: 'info' }); return; }
+            /* Lot L3 : sans adaptateur configuré (e-MECeF), AUCUN tirage : aucun numéro n'est fabriqué, les ventes restent en attente. */
+            var ad = PR.mecef.adaptateur();
+            if (!ad.configure) { U.toast(ad.code + ' : ' + ad.motif, { type: 'warning', detail: ad.geste, duration: 9000 }); return; }
             U.confirm({
               title: 'Transmettre ' + att.length + ' facture(s) ?',
               message: 'Les factures en attente seront transmises au dispositif fiscal. Un identifiant MECeF sera attribué à chaque facture acceptée.',
@@ -689,12 +694,17 @@
                   remboursement: 'creance', origine: 'mecef',
                 });
                 if (emis.erreur) { U.toast('Avoir refusé.', { type: 'error', detail: emis.erreur, duration: 9000 }); return; }
-                var numeroMecef = 'MECEF' + C.between(C.seeded(Date.now() % 77777), 1000000, 9999999);
-                col.update(emis.record.id, { numeroMecef: numeroMecef, statutMecef: 'valide', dateTransmission: new Date().toISOString() });
+                var adAvoir = PR.mecef.adaptateur();
+                if (adAvoir.configure) {
+                  var numeroMecef = 'MECEF' + C.between(C.seeded(Date.now() % 77777), 1000000, 9999999);
+                  col.update(emis.record.id, { numeroMecef: numeroMecef, statutMecef: 'valide', dateTransmission: new Date().toISOString() });
+                }
                 v.reference = emis.record.reference;
                 var res = { record: col.get(emis.record.id), undo: function () { PR.retirerAvoir(emis.record.id); } };
                 m.close(); table.refresh();
-                U.toast('Avoir ' + v.reference + ' émis et transmis.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+                /* Lot L3 : sans adaptateur configuré, l'avoir est ÉMIS (la pièce existe, la contre-passation est écrite) mais n'a AUCUN numéro fiscal. */
+                if (adAvoir.configure) U.toast('Avoir ' + v.reference + ' émis et transmis.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+                else U.toast('Avoir ' + v.reference + ' émis, en attente de certification.', { type: 'warning', detail: adAvoir.code + ' : ' + adAvoir.motif + ' ' + adAvoir.geste, duration: 9000, undo: function () { res.undo(); table.refresh(); } });
                 etat(res.record);
               },
             }),
@@ -795,9 +805,47 @@
   global.SIGH.screen('mecef-config', {
     title: 'Configuration fiscale',
     description: 'Paramètres d’émission : identifiants légaux, numérotation, taux de TVA et préfixes.',
-    regle: 'Cet écran <strong>affiche</strong> la configuration fiscale en vigueur (identité de la clinique, régime de TVA, taux d’AIB, préfixes). Elle est lue des référentiels du logiciel et <strong>ne se modifie pas ici</strong> : l’identité se règle à « Identité & papier à en-tête », le régime de TVA est arrêté par la comptabilité. Rien n’est saisi facture par facture.',
+    regle: 'Cet écran <strong>affiche</strong> la configuration fiscale en vigueur (identité de la clinique, régime de TVA, taux d’AIB, préfixes). Elle est lue des référentiels du logiciel et <strong>ne se modifie pas ici</strong>, à une exception : le <strong>mode de certification</strong> (boîtier ou e-MECeF), réglé par l’administrateur ou la Directrice Administrative. L’identité se règle à « Identité & papier à en-tête », le régime de TVA est arrêté par la comptabilité. Rien n’est saisi facture par facture.',
     render: function (root) {
       var host = el('div.grid.gap-4.lg\\:grid-cols-2');
+
+      /* LE MODE DE CERTIFICATION (lot L3, Direction 09/11/2026) : boîtier physique (défaut) ou e-MECeF, réglé par l'administrateur ou la DA. */
+      function carteMode() {
+        var ad = PR.mecef.adaptateur();
+        var peut = ['admin', 'da'].indexOf((S.session() || {}).role) >= 0;
+        var libelles = { boitier: 'Boîtier physique', emecef: 'e-MECeF' };
+        var attrsSel = { 'data-mecef-mode': '' };
+        if (!peut) attrsSel.disabled = 'disabled';
+        var sel = el('select.select', attrsSel, PR.mecef.MODES_PROPOSES.map(function (id) {
+          return el('option', { value: id }, libelles[id]);
+        }));
+        sel.value = ad.mode === 'emecef' ? 'emecef' : 'boitier';
+        var etatTxt = el('div', { 'data-mecef-mode-etat': '' });
+        function peindreEtat() {
+          var a = PR.mecef.adaptateur();
+          C.clear(etatTxt);
+          if (a.mode === 'emecef') {
+            etatTxt.appendChild(K.note('<strong>e-MECeF : non configuré, dossier d’interface DGI requis.</strong> Aucun document remis ne décrit le protocole (adresse, authentification, format des messages) : rien n’est supposé. '
+              + 'Une vente est encaissée, reste <strong>en attente de certification</strong> et ne reçoit <strong>aucun numéro</strong> ; elle se retransmet quand l’interface sera branchée.', { tone: 'warning', icon: 'plug-zap' }));
+          } else {
+            etatTxt.appendChild(K.note('<strong>Boîtier physique.</strong> Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis (dix questions au fournisseur et à la DGI restent à poser). '
+              + 'Le poste de production n’a aucun adaptateur branché : il ne fabrique aucun numéro. Cette <strong>maquette</strong> garde son appareil de démonstration, dont les numéros ne sont pas fiscaux.', { tone: 'info', icon: 'info' }));
+          }
+        }
+        peindreEtat();
+        var corps = el('div.space-y-3', null, [
+          el('label.block.text-sm.font-medium.text-slate-700', null, [ 'Mode de certification des factures', el('div.mt-1', null, [sel]) ]),
+          etatTxt,
+          peut ? el('div.flex.gap-2', null, [K.commande('Enregistrer le mode', { variant: 'primary', icon: 'save', onclick: function () {
+            var r = PR.mecef.definirMode(sel.value);
+            if (!r.ok) { U.toast(r.code + ' : ' + r.motif, { type: 'error', detail: r.geste, duration: 9000 }); return; }
+            U.toast('Mode enregistré : ' + libelles[r.mode] + '.', { type: 'success' });
+            peindreEtat();
+          } })])
+            : K.note('Le mode se règle par l’administrateur ou la Directrice Administrative.', { tone: 'info', icon: 'lock' }),
+        ]);
+        return U.card('Mode de certification', corps);
+      }
 
       var champsConfig = [
         { type: 'section', label: 'Identification légale de l’émetteur' },
@@ -844,11 +892,15 @@
           K.btn('Tester la connexion au dispositif', {
             icon: 'plug-zap',
             onclick: function () {
-              U.toast('Connexion au dispositif fiscal établie.', { type: 'success', detail: 'Temps de réponse : 340 ms' });
+              /* Lot L3 : le test n'annonce plus une connexion qu'aucun appareil n'a établie (ni délai de réponse inventé). */
+              var ad = PR.mecef.adaptateur();
+              if (!ad.configure) { U.toast(ad.code + ' : ' + ad.motif, { type: 'warning', detail: ad.geste, duration: 9000 }); return; }
+              U.toast('Appareil de démonstration : aucune connexion réelle.', { type: 'info', detail: 'Le modèle, l’interface et le protocole du boîtier ne figurent dans aucun document remis. Aucun numéro émis ici n’est fiscal.', duration: 9000 });
             },
           }),
         ]),
       ])));
+      host.insertBefore(el('div.lg\\:col-span-2', null, [carteMode()]), host.firstChild);
       host.appendChild(carte);
 
       /* Aperçu de l'entête fiscale */

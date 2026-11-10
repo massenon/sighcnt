@@ -5542,15 +5542,33 @@
       aibDateBareme: dateBareme, aibDefaut: defaut.ok ? defaut.taux : null, aibHorsDefaut: horsDefaut } };
   }
 
-  /* --- Le mode : réglage d'exploitation (l'interface du réglage vient au lot M2) -------------------------------------------------- */
+  /* --- Le mode : réglage d'exploitation (le réglage se fait à « Configuration fiscale », lot L3) -------------------------------------------------- */
   var MODES_MECEF = ['desactive', 'boitier', 'emecef'];
   function modeMecef() { var m = S.reglage('mecefMode', 'boitier'); return MODES_MECEF.indexOf(m) >= 0 ? m : 'boitier'; }
   function definirModeMecef(m) {
-    if (MODES_MECEF.indexOf(m) < 0) return refusMecef('MODE_INCONNU', 'Le mode « ' + m + ' » n’existe pas.', 'Choisir désactivé, boîtier ou e-MECeF.');
+    if (MODES_MECEF.indexOf(m) < 0) return refusMecef('MODE_INCONNU', 'Le mode « ' + m + ' » n’existe pas.', 'Choisir boîtier physique ou e-MECeF.');
     if (['admin', 'da'].indexOf(roleCourant()) < 0) return refusMecef('MODE_RESERVE', 'Le mode de facturation normalisée se règle par l’administrateur ou la Directrice Administrative.', 'Demander le changement à la DA.');
+    var avant = modeMecef();
     S.setReglage('mecefMode', m);
-    S.log('Mode de facturation normalisée', 'MECEF', 'reglage', 'mecefMode', null, { mode: m });
+    S.log('Mode de facturation normalisée', 'MECEF', 'reglage', 'mecefMode', { mode: avant }, { mode: m });
     return { ok: true, mode: m };
+  }
+
+  /* --- L'ADAPTATEUR du mode en vigueur (lot L3, Direction 09/11/2026) ------------------------------------------------------------
+     AUCUN NUMÉRO SIMULÉ NE SE PRÉSENTE COMME FISCAL. Deux modes se proposent : le BOÎTIER physique (défaut) et e-MECeF. Aucun document remis ne
+     donne le modèle du boîtier, son interface ni son protocole, ni le dossier d'interface e-MECeF de la DGI : ni URL, ni jeton, ni format de message
+     n'est supposé. La maquette garde, en mode boîtier, son APPAREIL DE DÉMONSTRATION (la pièce porte `mecefSimule`, l'impression le dit). En mode
+     e-MECeF, rien n'est branché : l'adaptateur est « non configuré », refuse en nommant (code, motif, geste), et la vente reste EN ATTENTE sans
+     qu'aucun numéro ne soit fabriqué. L'émission de la vente n'est jamais bloquée par ce refus. */
+  var CODE_NON_CONFIGURE = 'MECEF_NON_CONFIGURE';
+  function adaptateurMecef() {
+    var mode = modeMecef();
+    if (mode === 'emecef') {
+      return { mode: mode, configure: false, demonstration: false, code: CODE_NON_CONFIGURE,
+        motif: 'e-MECeF non configuré : dossier d’interface DGI requis.',
+        geste: 'La vente reste en attente de certification. Choisir le mode « Boîtier physique », ou fournir le dossier d’interface de la DGI.' };
+    }
+    return { mode: mode, configure: true, demonstration: true, code: null, motif: null, geste: null };
   }
 
   /* --- L'appareil de démonstration ------------------------------------------------------------------------------------------------ */
@@ -5568,6 +5586,9 @@
       return { numero: num, compteur: n };
     },
     emettre: function (demande) {
+      /* Garde de fond : sans adaptateur configuré, l'appareil de démonstration ne fabrique JAMAIS de numéro (ni compteur, ni journal d'émission). */
+      var ad = adaptateurMecef();
+      if (!ad.configure) return { ok: false, code: ad.code, motif: ad.motif, geste: ad.geste, nonConfigure: true };
       if (this.panne === 'refus') return { ok: false, code: 'REFUS_SIMULE', motif: 'Refus simulé par l’appareil de démonstration.' };
       if (this.panne === 'delai') return { ok: false, code: 'DELAI_DEPASSE', motif: 'Délai simulé dépassé : la facture non confirmée a expiré.', expiree: true };
       var nx = this.numeroSuivant();
@@ -5649,6 +5670,13 @@
     var aib = m.aib;
     /* L'état est écrit AVANT l'appel à l'appareil. */
     col('factures').update(factureId, Object.assign({ statutMecef: 'en_attente', codeRetour: null, motifRefusMecef: null }, bascule));
+    /* Lot L3 : sans adaptateur configuré (e-MECeF), la vente RESTE en attente de certification, aucun numéro n'est fabriqué ; le refus se nomme. */
+    var ad = adaptateurMecef();
+    if (!ad.configure && !fac.numeroMecef) {
+      col('factures').update(factureId, { statutMecef: 'en_attente', codeRetour: ad.code, motifRefusMecef: ad.motif });
+      S.log('Normalisation en attente (adaptateur non configuré)', 'MECEF', 'facture', fac.numero, { statutMecef: fac.statutMecef }, { statutMecef: 'en_attente', code: ad.code, mode: ad.mode });
+      return { ok: false, code: ad.code, motif: ad.motif, geste: ad.geste, etat: 'en_attente' };
+    }
     var rep;
     if (fac.numeroMecef) {
       /* Un numéro déjà porté (pièce ancienne, ou réponse reconciliée) n'est JAMAIS réécrit : on ne rappelle pas l'appareil. */
@@ -5702,7 +5730,8 @@
     var deja = fac.retransmissions || 0;
     if (role === 'caissier' && deja >= 1) return refusMecef('RETRANSMISSION_RESERVEE', 'Le caissier ne retransmet qu’une fois : la facture ' + fac.numero + ' l’a déjà été.', 'Demander la retransmission à la Directrice Administrative.');
     if (['caissier', 'da', 'admin'].indexOf(role) < 0) return refusMecef('RETRANSMISSION_INTERDITE', 'La retransmission est réservée au caissier (une fois) et à la Directrice Administrative.', 'Demander à la caisse ou à la DA.');
-    if (etat !== 'en_attente') col('factures').update(factureId, { retransmissions: deja + 1 });
+    /* Lot L3 : sans adaptateur configuré, la retransmission n'émet rien et ne consomme PAS l'unique essai du caissier. */
+    if (etat !== 'en_attente' && adaptateurMecef().configure) col('factures').update(factureId, { retransmissions: deja + 1 });
     return normaliserVente(factureId, opts);
   }
 
@@ -5711,7 +5740,8 @@
     ETATS: ETATS_MECEF, MODES: MODES_MECEF,
     etat: etatMecef, fiche: etatMecefFiche,
     montants: mecefMontants, validerAcheteur: validerAcheteurMecef, aibTauxDefaut: aibTauxDefaut, tauxPropose: tauxAibProposes, traceAibAcheteur: traceAibAcheteur,
-    mode: modeMecef, definirMode: definirModeMecef,
+    mode: modeMecef, definirMode: definirModeMecef, adaptateur: adaptateurMecef, CODE_NON_CONFIGURE: CODE_NON_CONFIGURE,
+    MODES_PROPOSES: ['boitier', 'emecef'],
     normaliser: normaliserVente, reprendre: reprendreMecef, retransmettre: retransmettreMecef,
     fauxBoitier: fauxBoitier, numeroSuivant: function () { return fauxBoitier.numeroSuivant(); },
   };
