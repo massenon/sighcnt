@@ -163,4 +163,106 @@ void main() {
     final m = _magasin();
     expect(_p(m, role: 'medecin', nom: 'Compte inconnu').proposer(type: 'retrait', vacationId: 'X', motif: 'x')['code'], 'AGENT_NON_IDENTIFIE');
   });
+
+  group('les gestes de l\'écran (lot Y)', () {
+    test('le circuit et « l\'agent modifie directement » se RÈGLENT au registre (version datée d\'aujourd\'hui, journalisée), par la DA et l\'administrateur seulement', () {
+      final m = _magasin();
+      expect(_p(m).definirCircuit('daf')['code'], 'REGLAGE_RESERVE', reason: 'le surveillant ne règle pas');
+      expect(_p(m, role: 'da', nom: 'DAF').definirCircuit('tous')['code'], 'CIRCUIT_INCONNU');
+      final r = _p(m, role: 'da', nom: 'DAF').definirCircuit('surveillant_puis_daf', motif: 'Sonde');
+      expect(r, {'ok': true, 'circuit': 'surveillant_puis_daf', 'avant': 'surveillant'});
+      expect(_p(m).circuit(), 'surveillant_puis_daf');
+      expect(m.collection('audit').toutes.any((l) => l['action'] == 'Circuit de validation des présences' && (l['avant'] as Map)['circuit'] == 'surveillant' && (l['apres'] as Map)['circuit'] == 'surveillant_puis_daf'), isTrue);
+      expect(_p(m, role: 'medecin', nom: 'Dr Aaa').definirAgentDirect(true)['code'], 'REGLAGE_RESERVE');
+      expect(_p(m, role: 'admin', nom: 'Admin').definirAgentDirect(true)['ok'], isTrue);
+      expect(_p(m).agentModifieDirectement(), isTrue);
+      expect(_p(m, role: 'admin', nom: 'Admin').definirAgentDirect('oui')['valeur'], isFalse, reason: 'tout ce qui n\'est pas vrai vaut non');
+    });
+
+    test('poser une vacation : réservé au surveillant, à la DA et à l\'administrateur ; le contrôle du domaine s\'applique ; la vacation naît validée avec son régime', () {
+      final m = _magasin();
+      expect(_p(m, role: 'medecin', nom: 'Dr Aaa').poserVacation(employeId: 'A', date: '2026-11-20', type: 'garde')['code'], 'PLANNING_RESERVE');
+      final r = _p(m).poserVacation(employeId: 'A', date: '2026-11-20', type: 'garde', observation: 'Remplace B');
+      expect(r['ok'], isTrue);
+      final v = m.collection('planning').toutes.single;
+      expect([v['validationEtat'], v['origine'], v['statut'], v['regimeLibelle'], v['observation']], ['validee', 'poste', 'validee', 'Médecins', 'Remplace B']);
+      expect(_p(m).poserVacation(employeId: 'A', date: '2026-11-21', type: 'garde')['code'], 'INCOMPATIBILITE_REPOS');
+      expect(m.collection('planning').toutes.length, 1, reason: 'rien n\'est écrit si refus');
+      expect(_p(m).poserVacation(employeId: 'A', date: '2026-11-20', type: 'permanence')['code'], 'DOUBLE_AFFECTATION');
+      expect(_p(m).poserVacation(employeId: 'A', date: '2026-11-20', type: 'permanence', existantId: v['id'])['ok'], isTrue, reason: 'on remplace sa propre vacation');
+      expect(m.collection('planning').parId(v['id'])!['type'], 'permanence');
+    });
+
+    test('retirer une vacation archive (RG-14), annulablement ; refus nommés', () {
+      final m = _magasin();
+      final id = m.collection('planning').inserer({'employeId': 'A', 'date': '2026-11-20', 'type': 'garde', 'statut': 'actif'}, prefixe: 'PLN').fiche['id'];
+      expect(_p(m, role: 'medecin', nom: 'Dr Aaa').retirerVacation(id)['code'], 'PLANNING_RESERVE');
+      expect(_p(m).retirerVacation('ABSENTE')['code'], 'VACATION_INTROUVABLE');
+      final r = _p(m).retirerVacation(id);
+      expect(r['ok'], isTrue);
+      expect(m.collection('planning').archivees.length, 1);
+      (r['annuler'] as void Function())();
+      expect(m.collection('planning').actives.length, 1);
+    });
+
+    test('régulariser un pointage VALIDÉ : l\'état change, la trace est datée avec son auteur et son motif ; un pointage validé ne se modifie pas directement (garde)', () {
+      final m = _magasin();
+      _p(m).trancher('presences', 'PR1', 'valider');
+      final col = m.collection('presences');
+      expect(() => col.mettreAJour('PR1', {'etat': 'present'}), throwsA(isA<EcritureRefusee>()), reason: 'PRESENCE_VALIDEE');
+      expect(col.parId('PR1')!['etat'], 'retard');
+      expect(_p(m, role: 'medecin', nom: 'Dr Aaa').regulariser('PR1', {'etat': 'present', 'motif': 'x'})['code'], 'REGULARISATION_RESERVEE');
+      expect(_p(m).regulariser('PR1', {'etat': 'present', 'motif': ' '})['code'], 'MOTIF_OBLIGATOIRE');
+      final r = _p(m).regulariser('PR1', {'etat': 'present', 'motifCode': 'maladie', 'justificatif': 'CERT-1', 'motif': 'Certificat remis'});
+      expect(r['ok'], isTrue);
+      final f = col.parId('PR1')!;
+      expect([f['etat'], f['motifCode'], f['justificatif']], ['present', 'maladie', 'CERT-1']);
+      final trace = (f['regularisations'] as List).single as Map;
+      expect([trace['le'], trace['par'], trace['etatAvant'], trace['etatApres']], ['2026-11-09', 'Surveillant de test', 'retard', 'present']);
+      expect(f['validationEtat'], 'valide', reason: 'la pièce reste validée');
+    });
+
+    test('l\'avis du chef de service : consigné par un habilité, requis avant la validation d\'un ordre, un avis défavorable exige son motif', () {
+      final m = Magasin({
+        'audit': <M>[],
+        'personnel': <M>[],
+        'missions': <M>[{'id': 'OM1', 'statut': 'actif', 'agentId': 'B', 'statutMission': 'a_valider'}],
+      }, 'POSTE');
+      expect(_p(m).trancher('missions', 'OM1', 'valider')['code'], 'AVIS_REQUIS');
+      expect(_p(m, role: 'medecin', nom: 'Dr Aaa').avisMission('OM1', {'avis': 'favorable', 'chef': 'Dr Chef'})['code'], 'AVIS_RESERVE');
+      expect(_p(m).avisMission('OM1', {'avis': 'defavorable', 'chef': 'Dr Chef'})['code'], 'MOTIF_OBLIGATOIRE');
+      expect(_p(m).avisMission('OM1', {'avis': 'favorable', 'chef': 'Dr Chef'})['ok'], isTrue);
+      final avis = m.collection('missions').parId('OM1')!['avisChefService'] as Map;
+      expect([avis['avis'], avis['chef'], avis['consignePar'], avis['le']], ['favorable', 'Dr Chef', 'Surveillant de test', '2026-11-09']);
+      expect(_p(m).trancher('missions', 'OM1', 'valider')['ok'], isTrue);
+      expect(m.collection('missions').parId('OM1')!['statutMission'], 'validee');
+      expect(_p(m).avisMission('OM1', {'avis': 'favorable', 'chef': 'Dr Chef'})['code'], 'DEJA_TRANCHEE');
+    });
+
+    test('l\'agent retire sa propre proposition tant qu\'elle n\'est pas tranchée ; jamais celle d\'un autre', () {
+      final m = _magasin();
+      final id = _p(m, role: 'medecin', nom: 'Dr Aaa').proposer(type: 'ajout', date: '2026-11-25', typeVacation: 'garde', motif: 'Ok')['id'];
+      expect(_p(m, role: 'medecin', nom: 'Dr Bbb').annulerProposition(id)['code'], 'PROPOSITION_D_AUTRUI');
+      final r = _p(m, role: 'medecin', nom: 'Dr Aaa').annulerProposition(id);
+      expect(r['ok'], isTrue);
+      expect(m.collection('propositionsPlanning').parId(id)!['etat'], 'annulee');
+      expect(_p(m, role: 'medecin', nom: 'Dr Aaa').annulerProposition(id)['code'], 'DEJA_TRANCHEE');
+      (r['annuler'] as void Function())();
+      expect(m.collection('propositionsPlanning').parId(id)!['etat'], 'proposee');
+    });
+
+    test('une version de régime individuel est FIGÉE : ni modifiée ni archivée (garde du moteur), l\'historique est numéroté', () {
+      final m = _magasin();
+      final da = _p(m, role: 'da', nom: 'DAF');
+      expect(da.deroger(employeId: 'A', dateEffet: '2026-11-09', champs: {'repos': 'repos24'}, motif: 'Sonde')['ok'], isTrue);
+      expect(da.deroger(employeId: 'A', dateEffet: '2026-12-01', champs: {}, retourCategorie: true, motif: 'Retour')['ok'], isTrue);
+      final id = m.collection('regimesIndividuels').toutes.first['id'];
+      expect(() => m.collection('regimesIndividuels').mettreAJour(id, {'motif': 'Réécrit'}), throwsA(isA<EcritureRefusee>()));
+      expect(() => m.collection('regimesIndividuels').archiver(id), throwsA(isA<EcritureRefusee>()));
+      final h = da.historique('A');
+      expect([for (final x in h) x['version']], [1, 2]);
+      expect([for (final x in h) x['dateEffet']], ['2026-11-09', '2026-12-01']);
+      expect(h.last['retourCategorie'], isTrue);
+    });
+  });
 }

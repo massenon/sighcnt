@@ -187,6 +187,97 @@ void main() {
     }
   });
 
+  group('les gestes de l\'écran : réglages, pose et retrait, régularisation, avis, retrait d\'une proposition', () {
+    void refusAttendu(RefusRh? r, Map<String, Object?> a) {
+      if (a['ok'] == true) {
+        expect(r, isNull, reason: 'attendu accepté');
+      } else {
+        expect(r, isNotNull, reason: 'attendu refusé : ${a['code']}');
+        expect(r!.code, a['code']);
+        expect(r.motif, a['motif']);
+        expect(r.geste, a['geste']);
+      }
+    }
+
+    for (final c in liste(j['reglages'])) {
+      test('réglage, ${c['nom']}', () {
+        refusAttendu(controlerReglageRh(role: c['role'] as String, genre: c['genre'] as String, valeur: c['valeur']), m(c['attendu']));
+      });
+    }
+    for (final c in liste(j['poses'])) {
+      test('planning, ${c['nom']}', () {
+        final retrait = c['genre'] == 'retrait';
+        final planning = liste(c['planning']);
+        final vac = planning.where((p) => p['id'] == c['id']).firstOrNull;
+        final r = retrait ? controlerRetraitVacationRh(role: c['role'] as String, vacation: vac, id: c['id']) : peutPoserPlanningRh(c['role'] as String);
+        refusAttendu(r, m(c['attendu']));
+      });
+    }
+    for (final c in liste(j['regularisations'])) {
+      test('régularisation, ${c['nom']}', () {
+        final rec = m(c['rec']);
+        final introuvable = c['id'] != 'PIECE';
+        final r = regulariserPresenceRh(
+            rec: introuvable ? null : rec, role: c['role'] as String, acteur: c['acteur'] as String, aujourdhui: '2026-10-30', o: m(c['o']), moiId: c['moiId'] as String?);
+        final a = m(c['attendu']);
+        refusAttendu(r.refus, a);
+        if (a['ok'] == true) {
+          final attendu = m(a['patch']);
+          for (final k in attendu.keys) {
+            memes(r.patch![k], attendu[k], 'patch.$k');
+          }
+          // une clé écrite par le domaine mais absente du relevé de la maquette n'a pas changé la fiche
+          for (final k in r.patch!.keys) {
+            if (!attendu.containsKey(k)) expect(r.patch![k], rec[k], reason: 'patch.$k aurait dû changer la fiche');
+          }
+        }
+      });
+    }
+    for (final c in liste(j['avis'])) {
+      test('avis du chef, ${c['nom']}', () {
+        final introuvable = c['id'] != 'PIECE';
+        final r = avisMissionRh(rec: introuvable ? null : m(c['rec']), role: c['role'] as String, acteur: c['acteur'] as String, aujourdhui: '2026-10-30', o: m(c['o']));
+        final a = m(c['attendu']);
+        refusAttendu(r.refus, a);
+        if (a['ok'] == true) memes(r.patch!['avisChefService'], a['avis'], 'avis');
+      });
+    }
+    for (final c in liste(j['retraits'])) {
+      test('retrait de proposition, ${c['nom']}', () {
+        final prop = c['absente'] == true
+            ? null
+            : {'id': 'PROP', 'statut': 'actif', 'etat': 'proposee', 'employeId': agentDe(j), 'type': 'retrait', 'vacationId': 'P1', 'motif': 'Vecteur', ...m(c['proposition'])};
+        final r = annulerPropositionRh(proposition: prop, aujourdhui: '2026-10-30', moiId: c['moiId'] as String?);
+        final a = m(c['attendu']);
+        refusAttendu(r.refus, a);
+        if (a['ok'] == true) {
+          expect(r.patch!['etat'], a['etat']);
+          expect(r.patch!['annuleeLe'], a['annuleeLe']);
+        }
+      });
+    }
+  });
+
+  group('les gardes de collection (REGIME_INDIVIDUEL_FIGE, PRESENCE_VALIDEE)', () {
+    // Textes et conditions repris de `S.garder('regimesIndividuels', …)` et `S.garder('presences', …)` de la maquette (parcours.js).
+    test('une version de régime individuel : l\'insertion passe, modifier et archiver sont refusés en nommant la garde', () {
+      expect(gardeRegimeIndividuelRh('inserer'), isNull);
+      expect(gardeRegimeIndividuelRh('modifier'), startsWith('REGIME_INDIVIDUEL_FIGE'));
+      expect(gardeRegimeIndividuelRh('archiver'), startsWith('REGIME_INDIVIDUEL_FIGE'));
+    });
+    test('un pointage validé : un champ qui change est refusé, une régularisation passe, un pointage d\'avant le circuit reste éditable', () {
+      final valide = {'id': 'P', 'validationEtat': 'valide', 'etat': 'retard', 'date': '2026-10-29', 'employeId': 'A', 'heureArrivee': '09:10', 'motifCode': null, 'regularisations': <Object?>[]};
+      expect(gardePresenceValideeRh('modifier', valide, {...valide, 'etat': 'present'}), startsWith('PRESENCE_VALIDEE'));
+      expect(gardePresenceValideeRh('modifier', valide, {...valide, 'motifCode': 'maladie'}), startsWith('PRESENCE_VALIDEE'));
+      expect(gardePresenceValideeRh('modifier', valide, {...valide, 'etat': 'present', 'regularisations': [{'le': '2026-10-30'}]}), isNull);
+      expect(gardePresenceValideeRh('modifier', valide, {...valide, 'justificatif': 'CERT'}), isNull, reason: 'un champ hors liste ne fige pas');
+      expect(gardePresenceValideeRh('modifier', {...valide, 'validationEtat': 'a_valider'}, {...valide, 'etat': 'present'}), isNull);
+      expect(gardePresenceValideeRh('modifier', {'id': 'P', 'etat': 'retard'}, {'id': 'P', 'etat': 'present'}), isNull);
+      expect(gardePresenceValideeRh('inserer', null, valide), isNull);
+      expect(gardePresenceValideeRh('archiver', valide, valide), isNull);
+    });
+  });
+
   group('ce que chacun voit des propositions (RG-13)', () {
     for (final c in liste(j['visibles'])) {
       test('rôle ${c['role']}', () {

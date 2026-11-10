@@ -9,7 +9,8 @@ import 'magasin.dart';
 /// (`planning.circuitPresences`, `planning.agentModifieDirectement`, versionnés par date, synchronisés par le journal), jamais une constante. Ce fichier
 /// assemble les fiches, écrit ce que le domaine rend, et journalise par les collections (RG-12).
 ///
-/// Ce qui n'est PAS porté ici (voir ECARTS-MAQUETTE E2333) : les écrans (filtres avancés, cartes, commandes de validation, écran des propositions).
+/// Les écrans (carte des régimes individuels, filtres avancés, commandes de validation, écran des propositions) sont portés au lot Y (E2339 et suivants) : ils
+/// n'appellent que ce fichier et le domaine, jamais une règle écrite à l'écran.
 class PlanningRhPoste {
   PlanningRhPoste(this.m, {required this.auteur, required this.role, DateTime Function()? horloge}) : _horloge = horloge ?? DateTime.now;
   final Magasin m;
@@ -182,8 +183,7 @@ class PlanningRhPoste {
     if (refus != null) return refus.toJson();
     if (agentModifieDirectement() && type != 'echange') {
       if (type == 'retrait') {
-        plan.archiver(vacationId);
-        return {'ok': true, 'direct': true, 'vacationId': vacationId};
+        return {'ok': true, 'direct': true, 'vacationId': vacationId, 'annuler': plan.archiver(vacationId)};
       }
       final regime = regimeALaDate(me, '${p['date']}');
       final fiche = <String, Object?>{
@@ -193,13 +193,12 @@ class PlanningRhPoste {
       };
       if (type == 'ajout') {
         final r = plan.inserer(fiche, prefixe: 'PLN');
-        return {'ok': true, 'direct': true, 'vacationId': r.fiche['id']};
+        return {'ok': true, 'direct': true, 'vacationId': r.fiche['id'], 'annuler': r.annuler};
       }
-      plan.mettreAJour(vacationId, fiche);
-      return {'ok': true, 'direct': true, 'vacationId': vacationId};
+      return {'ok': true, 'direct': true, 'vacationId': vacationId, 'annuler': plan.mettreAJour(vacationId, fiche)};
     }
     final r = m.collection('propositionsPlanning').inserer({...p, 'etat': 'proposee', 'proposeeLe': aujourdhui, 'proposeePar': auteur(), 'statut': 'actif'}, prefixe: 'PPL');
-    return {'ok': true, 'direct': false, 'id': r.fiche['id']};
+    return {'ok': true, 'direct': false, 'id': r.fiche['id'], 'annuler': r.annuler};
   }
 
   /// La décision du surveillant : le refus nommé, ou la proposition appliquée au planning (le contrôle est REFAIT à la validation).
@@ -248,5 +247,132 @@ class PlanningRhPoste {
     }
     col.mettreAJour(id, {'etat': 'validee', 'tranchePar': auteur(), 'trancheLe': aujourdhui, 'appliquees': appliquees, 'motifValidation': (motif ?? '').trim().isEmpty ? null : motif!.trim()});
     return {'ok': true, 'etat': 'validee', 'appliquees': appliquees};
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // Les gestes de l'écran : réglages, pose et retrait du planning, historique, régularisation, avis du chef, retrait d'une proposition
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  /// Règle le circuit de validation : une NOUVELLE VERSION du paramètre `planning.circuitPresences` effective aujourd'hui (registre du lot L0), journalisée avec
+  /// l'ancienne et la nouvelle valeur (RG-12). Réservé à l'administrateur et à la DA : le refus est nommé.
+  Map<String, Object?> definirCircuit(Object? id, {String? motif}) {
+    final refus = controlerReglageRh(role: role, genre: 'circuit', valeur: id);
+    if (refus != null) return refus.toJson();
+    final avant = circuit();
+    final r = service.regler('planning.circuitPresences', id, aujourdhui, motif: motif);
+    if (!r.ok) return {'ok': false, 'code': r.refus!.code, 'motif': r.refus!.motif, 'geste': r.refus!.geste};
+    m.journaliser('Circuit de validation des présences', 'M10', 'reglage', 'planningCircuitPresences', {'circuit': avant}, {'circuit': id, 'motif': motif});
+    return {'ok': true, 'circuit': id, 'avant': avant};
+  }
+
+  /// Règle « l'agent modifie directement son planning » (`planning.agentModifieDirectement`) : tout ce qui n'est pas vrai vaut non.
+  Map<String, Object?> definirAgentDirect(Object? oui) {
+    final refus = controlerReglageRh(role: role, genre: 'direct', valeur: oui);
+    if (refus != null) return refus.toJson();
+    final avant = agentModifieDirectement();
+    final r = service.regler('planning.agentModifieDirectement', oui == true, aujourdhui);
+    if (!r.ok) return {'ok': false, 'code': r.refus!.code, 'motif': r.refus!.motif, 'geste': r.refus!.geste};
+    m.journaliser('Planning : l’agent modifie directement', 'M10', 'reglage', 'planningAgentModifieDirectement', {'valeur': avant}, {'valeur': oui == true});
+    return {'ok': true, 'valeur': oui == true, 'avant': avant};
+  }
+
+  /// Les types de vacation qu'un agent peut recevoir à une date : ceux de son régime en vigueur (dérogation comprise), le repos, congé, absence, remplacement.
+  List<String> typesAutorises(Fiche agent, String date) => typesAutorisesRh(regimeALaDate(agent, date));
+
+  /// L'historique des versions du régime individuel d'un agent, de la plus ancienne à la plus récente (numérotées).
+  List<Map<String, Object?>> historique(Object? employeId) {
+    final vs = _versions(employeId)..sort((a, b) => '${a['dateEffet']}'.compareTo('${b['dateEffet']}'));
+    return [
+      for (final (i, v) in vs.indexed)
+        {
+          'id': v['id'], 'version': i + 1, 'dateEffet': v['dateEffet'], 'retourCategorie': v['retourCategorie'] == true,
+          'champs': (v['champs'] as Map?)?.cast<String, Object?>() ?? const <String, Object?>{}, 'motif': v['motif'], 'creePar': v['creePar'], 'creeLe': v['creeLe'],
+        }
+    ];
+  }
+
+  Fiche? _agent(Object? id) {
+    for (final e in m.collection('personnel').actives) {
+      if (e['id'] == id) return e;
+    }
+    return null;
+  }
+
+  /// POSER OU REMPLACER une vacation depuis le poste : DA, surveillant (ou administrateur). Le contrôle de repos et de double affectation est celui du domaine
+  /// (une seule règle, quelle que soit la voie) ; la vacation est écrite VALIDÉE (celui qui la pose est celui qui valide), avec le régime sous lequel elle l'est.
+  Map<String, Object?> poserVacation({required Object? employeId, required String? date, required String? type, String? observation, Object? existantId}) {
+    final reserve = peutPoserPlanningRh(role);
+    if (reserve != null) return reserve.toJson();
+    final ctrl = controlerVacation(employeId, date ?? '', type ?? '', ignoreId: existantId as String?);
+    if (ctrl != null) return ctrl.toJson();
+    final e = _agent(employeId)!;
+    final d = date!.substring(0, 10);
+    final regime = regimeALaDate(e, d);
+    final rec = <String, Object?>{
+      'date': d, 'employeId': e['id'], 'employe': e['nomComplet'], 'fonction': e['fonction'], 'service': e['service'], 'type': type,
+      'observation': (observation ?? '').isEmpty ? null : observation, 'statut': 'validee', 'regimeLibelle': regime.categorie, 'regimeIndividuelId': regime.versionId,
+      'derogations': [...regime.derogations], 'validationEtat': 'validee', 'validePar': auteur(), 'valideLe': aujourdhui, 'origine': 'poste',
+    };
+    final plan = m.collection('planning');
+    if (existantId != null) {
+      final annuler = plan.mettreAJour(existantId, rec);
+      return {'ok': true, 'id': existantId, 'annuler': annuler};
+    }
+    final res = plan.inserer(rec, prefixe: 'PLN');
+    return {'ok': true, 'id': res.fiche['id'], 'annuler': res.annuler};
+  }
+
+  /// RETIRER une vacation (archivage logique, annulable) : DA, surveillant ou administrateur.
+  Map<String, Object?> retirerVacation(Object? id) {
+    final plan = m.collection('planning');
+    final refus = controlerRetraitVacationRh(role: role, vacation: plan.parId(id), id: id);
+    if (refus != null) return refus.toJson();
+    return {'ok': true, 'id': id, 'annuler': plan.archiver(id)};
+  }
+
+  /// Une pièce NAÎT à valider : l'état est posé à la création par la porte d'écriture de l'écran.
+  Map<String, Object?> naissance() => {'validationEtat': 'a_valider', 'etapesFaites': const <Object?>[], 'saisiPar': auteur(), 'saisiLe': aujourdhui};
+
+  /// Peut-on trancher CETTE pièce (rôle, étape attendue du circuit, auto-validation) ? Rend l'étape, ou le refus nommé : l'écran n'offre la commande que si `ok`.
+  ({RefusRh? refus, String? etape}) peutTrancher(String collection, Fiche rec) {
+    final me = moi();
+    return peutTrancherRh(
+        nom: collection, rec: rec, role: role, circuit: circuit(), acteur: auteur(), moiId: me == null ? null : '${me['id']}', moiNom: me == null ? null : '${me['nomComplet']}');
+  }
+
+  /// RÉGULARISER un pointage validé : correction DATÉE, auteur et motif consignés (la pièce reste validée).
+  Map<String, Object?> regulariser(Object? id, Map<String, Object?> o) {
+    final col = m.collection('presences');
+    final me = moi();
+    final r = regulariserPresenceRh(rec: col.parId(id), role: role, acteur: auteur(), aujourdhui: aujourdhui, o: o, moiId: me == null ? null : '${me['id']}');
+    if (r.refus != null) return r.refus!.toJson();
+    final avant = col.parId(id)!;
+    final annuler = col.mettreAJour(id, r.patch!, journaliser: false);
+    m.journaliser('Régularisation d’un pointage', 'M10', 'Presence', '$id', {'etat': avant['etat'], 'motifCode': avant['motifCode']},
+        {'etat': o['etat'], 'motifCode': r.patch!.containsKey('motifCode') ? r.patch!['motifCode'] : avant['motifCode'], 'motif': o['motif']});
+    return {'ok': true, 'annuler': annuler};
+  }
+
+  /// L'AVIS DU CHEF DE SERVICE sur un ordre de mission, consigné par un habilité du circuit.
+  Map<String, Object?> avisMission(Object? id, Map<String, Object?> o) {
+    final col = m.collection('missions');
+    final r = avisMissionRh(rec: col.parId(id), role: role, acteur: auteur(), aujourdhui: aujourdhui, o: o);
+    if (r.refus != null) return r.refus!.toJson();
+    final avant = col.parId(id)!;
+    final annuler = col.mettreAJour(id, r.patch!, journaliser: false);
+    m.journaliser('Avis du chef de service sur un ordre de mission', 'M10', 'Ordre de mission', '$id', {'avis': avant['avisChefService']},
+        {'avis': o['avis'], 'chef': o['chef'], 'motif': o['motif']});
+    return {'ok': true, 'avis': o['avis'], 'annuler': annuler};
+  }
+
+  /// L'agent RETIRE sa propre proposition tant qu'elle n'est pas tranchée.
+  Map<String, Object?> annulerProposition(Object? id) {
+    final col = m.collection('propositionsPlanning');
+    final me = moi();
+    final r = annulerPropositionRh(proposition: col.parId(id), aujourdhui: aujourdhui, moiId: me == null ? null : '${me['id']}');
+    if (r.refus != null) return r.refus!.toJson();
+    final annuler = col.mettreAJour(id, r.patch!, journaliser: false);
+    m.journaliser('Proposition de planning retirée', 'M10', 'propositionsPlanning', '$id', {'etat': 'proposee'}, {'etat': 'annulee'});
+    return {'ok': true, 'annuler': annuler};
   }
 }

@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:sigh_domaine/sigh_domaine.dart' show Agent, cpaDoublonsDuPlan, cpcGardeArchives, cpcGardeClotures, cpcGardeEcritures;
+import 'package:sigh_domaine/sigh_domaine.dart' show Agent, cpaDoublonsDuPlan, cpcGardeArchives, cpcGardeClotures, cpcGardeEcritures, gardePresenceValideeRh, gardeRegimeIndividuelRh;
 
 import 'persistance.dart';
 
@@ -545,6 +545,10 @@ class Magasin {
         // L'archive d'une clôture est IMMUABLE et le registre des clôtures est une piste d'audit (arbitrage du 05/11/2026).
         if (nom == 'archivesExercice') c.garder((op, f) => cpcGardeArchives(collection('archivesExercice').toutes, op, f['reference']));
         if (nom == 'clotures') c.garder((op, f) => cpcGardeClotures(op));
+        // Lots L4 et L5 (planning individuel, circuit de validation) : une version de régime individuel est FIGÉE (elle explique des vacations déjà posées) et un
+        // pointage validé ne se modifie pas directement, il se régularise. Tenus AU MOTEUR (`S.garder` de la maquette) : masquer un bouton ne protège rien.
+        if (nom == 'regimesIndividuels') c.garder((op, f) => gardeRegimeIndividuelRh(op));
+        if (nom == 'presences') c.garder((op, f) => gardePresenceValideeRh(op, collection('presences').parId(f['id']), f));
         // Lot L0 : une version de paramètre ne se réécrit jamais (on en ajoute une, avec sa date d'effet) et un usage est un journal : seule l'insertion passe, tenue
         // AU MOTEUR (masquer un bouton ne protège rien). La réception d'une fiche de la mère (`appliquerDistante`) ne passe pas par les gardes.
         if (nom == 'parametres' || nom == 'usagesParametres') {

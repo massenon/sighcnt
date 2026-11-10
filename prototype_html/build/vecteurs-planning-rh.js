@@ -282,11 +282,123 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         return { role: role, moiId: A.id, avecAgent: ids, sansAgent: sansAgent, actives: [{ id: 'X1', employeId: A.id }, { id: 'X2', employeId: B.id }] };
       });
 
+      /* ===== 6. les gestes de l'écran : réglages, pose et retrait du planning, régularisation, avis du chef, retrait d'une proposition ================================ */
+      const nomDe = (o) => o.nom || ('Vecteur ' + o.role);
+      const reglage = (o) => {
+        seConnecter(o.role, nomDe(o));
+        const avant = { c: S.reglage('planningCircuitPresences', 'surveillant'), d: S.reglage('planningAgentModifieDirectement', false) };
+        const r = o.genre === 'circuit' ? R.definirCircuit(o.valeur) : R.definirAgentDirect(o.valeur);
+        const apres = { c: S.reglage('planningCircuitPresences', 'surveillant'), d: S.reglage('planningAgentModifieDirectement', false) };
+        S.setReglage('planningCircuitPresences', 'surveillant'); S.setReglage('planningAgentModifieDirectement', false);
+        return { nom: o.nom_cas, role: o.role, genre: o.genre, valeur: o.valeur === undefined ? null : o.valeur,
+          attendu: r.ok ? { ok: true, valeur: o.genre === 'circuit' ? apres.c : apres.d, avant: o.genre === 'circuit' ? avant.c : avant.d } : { ok: false, code: r.code, motif: r.motif, geste: r.geste } };
+      };
+      const casReglage = [
+        reglage({ nom_cas: 'circuit : l’administrateur règle', role: 'admin', genre: 'circuit', valeur: 'daf' }),
+        reglage({ nom_cas: 'circuit : la DAF règle', role: 'da', genre: 'circuit', valeur: 'surveillant_puis_daf' }),
+        reglage({ nom_cas: 'circuit : le surveillant ne règle pas', role: 'surveillant', genre: 'circuit', valeur: 'daf' }),
+        reglage({ nom_cas: 'circuit : circuit inconnu', role: 'admin', genre: 'circuit', valeur: 'tous' }),
+        reglage({ nom_cas: 'circuit : le défaut se confirme', role: 'da', genre: 'circuit', valeur: 'surveillant' }),
+        reglage({ nom_cas: 'direct : l’administrateur ouvre', role: 'admin', genre: 'direct', valeur: true }),
+        reglage({ nom_cas: 'direct : la DAF ferme', role: 'da', genre: 'direct', valeur: false }),
+        reglage({ nom_cas: 'direct : le médecin ne règle pas', role: 'medecin', genre: 'direct', valeur: true }),
+        reglage({ nom_cas: 'direct : valeur non booléenne = non', role: 'admin', genre: 'direct', valeur: 'oui' }),
+      ];
+      const pose = (o) => {
+        seConnecter(o.role, nomDe(o));
+        poserVersions([]); poserPlanning(o.planning || []);
+        const r = o.genre === 'retrait' ? R.retirerVacation(o.id || 'P1', 'Vecteur') : R.poserVacation({ employeId: A.id, date: o.date || '2026-11-20', type: o.type || 'garde', existantId: o.existantId || null });
+        poserPlanning([]);
+        return { nom: o.nom_cas, role: o.role, genre: o.genre, id: o.id || 'P1', planning: propre(o.planning || []), date: o.date || '2026-11-20',
+          attendu: r.ok ? { ok: true } : { ok: false, code: r.code, motif: r.motif, geste: r.geste } };
+      };
+      const casPose = [
+        pose({ nom_cas: 'pose : le surveillant', role: 'surveillant', genre: 'pose' }),
+        pose({ nom_cas: 'pose : la DAF', role: 'da', genre: 'pose' }),
+        pose({ nom_cas: 'pose : l’administrateur', role: 'admin', genre: 'pose' }),
+        pose({ nom_cas: 'pose : le médecin est refusé', role: 'medecin', genre: 'pose' }),
+        pose({ nom_cas: 'pose : le caissier est refusé', role: 'caissier', genre: 'pose' }),
+        pose({ nom_cas: 'retrait : le surveillant retire', role: 'surveillant', genre: 'retrait', planning: [g('P1', A, '2026-11-20')] }),
+        pose({ nom_cas: 'retrait : le médecin est refusé', role: 'medecin', genre: 'retrait', planning: [g('P1', A, '2026-11-20')] }),
+        pose({ nom_cas: 'retrait : vacation introuvable', role: 'surveillant', genre: 'retrait', planning: [] }),
+        pose({ nom_cas: 'retrait : vacation déjà archivée', role: 'surveillant', genre: 'retrait', planning: [Object.assign(g('P1', A, '2026-11-20'), { statut: 'archive' })] }),
+      ];
+      const regul = (o) => {
+        seConnecter(o.role, nomDe(o));
+        raw.presences = (raw.presences || []).filter((x) => x.id !== 'PIECE');
+        raw.presences.push(Object.assign({ id: 'PIECE', statut: 'actif', employeId: A.id, employe: A.nomComplet, date: '2026-10-29', etat: 'retard', heureArrivee: '09:10', motifCode: null }, propre(o.rec || {})));
+        const avant = propre(raw.presences.find((x) => x.id === 'PIECE'));
+        const r = R.regulariser(o.id || 'PIECE', propre(o.o));
+        const apres = propre(S.collection('presences').get('PIECE'));
+        const patch = {};
+        if (r.ok) ['etat', 'motifCode', 'justificatif', 'regularisations'].forEach((k) => { if (JSON.stringify(apres[k]) !== JSON.stringify(avant[k]) && apres[k] !== undefined) patch[k] = apres[k]; });
+        raw.presences = raw.presences.filter((x) => x.id !== 'PIECE');
+        const moi = S.collection('personnel').active().filter((e) => e.nomComplet === nomDe(o))[0] || null;
+        return { nom: o.nom_cas, role: o.role, acteur: nomDe(o), moiId: moi ? moi.id : null, moiNom: moi ? moi.nomComplet : null, id: o.id || 'PIECE', rec: propre(avant), o: propre(o.o),
+          attendu: r.ok ? { ok: true, patch: patch } : { ok: false, code: r.code, motif: r.motif, geste: r.geste } };
+      };
+      const casRegul = [
+        regul({ nom_cas: 'le surveillant régularise : absent à présent, motif codé et justificatif', role: 'surveillant', o: { etat: 'present', motifCode: 'maladie', justificatif: 'CERT-12', motif: 'Certificat remis' } }),
+        regul({ nom_cas: 'la DAF régularise', role: 'da', o: { etat: 'conge', motif: 'Congé accordé' } }),
+        regul({ nom_cas: 'sans motif codé : la valeur existante reste', role: 'admin', rec: { motifCode: 'mission' }, o: { etat: 'present', motif: 'Mission confirmée' } }),
+        regul({ nom_cas: 'motif codé vidé explicitement', role: 'admin', rec: { motifCode: 'mission' }, o: { etat: 'absent', motifCode: '', motif: 'Mission annulée' } }),
+        regul({ nom_cas: 'le caissier est refusé', role: 'caissier', o: { etat: 'present', motif: 'x' } }),
+        regul({ nom_cas: 'motif absent', role: 'surveillant', o: { etat: 'present', motif: '  ' } }),
+        regul({ nom_cas: 'état inconnu', role: 'surveillant', o: { etat: 'sieste', motif: 'x' } }),
+        regul({ nom_cas: 'motif codé inconnu', role: 'surveillant', o: { etat: 'present', motifCode: 'vacances', motif: 'x' } }),
+        regul({ nom_cas: 'nul ne régularise son propre pointage', role: 'surveillant', nom: A.nomComplet, o: { etat: 'present', motif: 'x' } }),
+        regul({ nom_cas: 'pointage introuvable', role: 'surveillant', id: 'ABSENT', o: { etat: 'present', motif: 'x' } }),
+        regul({ nom_cas: 'seconde régularisation : la trace s’ajoute', role: 'surveillant', rec: { regularisations: [{ le: '2026-10-28', par: 'S0', motif: 'Première', etatAvant: 'absent', etatApres: 'retard', motifCodeAvant: null, motifCodeApres: null }] }, o: { etat: 'present', motif: 'Seconde' } }),
+      ];
+      const avis = (o) => {
+        seConnecter(o.role, nomDe(o));
+        raw.missions = (raw.missions || []).filter((x) => x.id !== 'PIECE');
+        raw.missions.push(Object.assign({ id: 'PIECE', statut: 'actif', agentId: A.id, agent: A.nomComplet, statutMission: 'a_valider' }, propre(o.rec || {})));
+        const avant = propre(raw.missions.find((x) => x.id === 'PIECE'));
+        const r = R.avisMission(o.id || 'PIECE', propre(o.o));
+        const apres = propre(S.collection('missions').get('PIECE'));
+        raw.missions = raw.missions.filter((x) => x.id !== 'PIECE');
+        return { nom: o.nom_cas, role: o.role, acteur: nomDe(o), id: o.id || 'PIECE', rec: avant, o: propre(o.o),
+          attendu: r.ok ? { ok: true, avis: propre(apres.avisChefService) } : { ok: false, code: r.code, motif: r.motif, geste: r.geste } };
+      };
+      const casAvis = [
+        avis({ nom_cas: 'avis favorable consigné par le surveillant', role: 'surveillant', o: { avis: 'favorable', chef: 'Dr Chef', motif: '' } }),
+        avis({ nom_cas: 'avis défavorable motivé', role: 'da', o: { avis: 'defavorable', chef: 'Dr Chef', motif: 'Effectif insuffisant' } }),
+        avis({ nom_cas: 'avis défavorable sans motif', role: 'surveillant', o: { avis: 'defavorable', chef: 'Dr Chef', motif: ' ' } }),
+        avis({ nom_cas: 'le médecin ne consigne pas', role: 'medecin', o: { avis: 'favorable', chef: 'Dr Chef' } }),
+        avis({ nom_cas: 'avis inconnu', role: 'surveillant', o: { avis: 'peut-etre', chef: 'Dr Chef' } }),
+        avis({ nom_cas: 'chef absent', role: 'surveillant', o: { avis: 'favorable', chef: '  ' } }),
+        avis({ nom_cas: 'ordre déjà validé', role: 'surveillant', rec: { validationEtat: 'valide', statutMission: 'validee' }, o: { avis: 'favorable', chef: 'Dr Chef' } }),
+        avis({ nom_cas: 'ordre déjà refusé', role: 'surveillant', rec: { validationEtat: 'refuse', statutMission: 'refusee' }, o: { avis: 'favorable', chef: 'Dr Chef' } }),
+        avis({ nom_cas: 'ordre introuvable', role: 'surveillant', id: 'ABSENT', o: { avis: 'favorable', chef: 'Dr Chef' } }),
+        avis({ nom_cas: 'un nouvel avis remplace le précédent', role: 'surveillant', rec: { avisChefService: { avis: 'defavorable', chef: 'Ancien', motif: 'x', le: '2026-10-20', consignePar: 'S0' } }, o: { avis: 'favorable', chef: 'Dr Chef' } }),
+      ];
+      const retirerP = (o) => {
+        seConnecter(o.role, nomDe(o));
+        raw.propositionsPlanning = o.absente ? [] : [Object.assign({ id: 'PROP', statut: 'actif', etat: 'proposee', employeId: A.id, type: 'retrait', vacationId: 'P1', motif: 'Vecteur' }, propre(o.proposition || {}))];
+        const r = R.annulerProposition('PROP');
+        const apres = propre((raw.propositionsPlanning || [])[0] || null);
+        raw.propositionsPlanning = [];
+        const moi = S.collection('personnel').active().filter((e) => e.nomComplet === nomDe(o))[0] || null;
+        return { nom: o.nom_cas, role: o.role, absente: o.absente === true, proposition: propre(o.proposition || {}), moiId: moi ? moi.id : null,
+          attendu: r.ok ? { ok: true, etat: apres.etat, annuleeLe: apres.annuleeLe } : { ok: false, code: r.code, motif: r.motif, geste: r.geste } };
+      };
+      const casRetrait = [
+        retirerP({ nom_cas: 'l’agent retire sa proposition', role: 'medecin', nom: A.nomComplet }),
+        retirerP({ nom_cas: 'un autre agent ne la retire pas', role: 'medecin', nom: B.nomComplet }),
+        retirerP({ nom_cas: 'le surveillant, sans être l’agent, ne la retire pas', role: 'surveillant' }),
+        retirerP({ nom_cas: 'déjà validée', role: 'medecin', nom: A.nomComplet, proposition: { etat: 'validee' } }),
+        retirerP({ nom_cas: 'déjà refusée', role: 'medecin', nom: A.nomComplet, proposition: { etat: 'refusee' } }),
+        retirerP({ nom_cas: 'déjà retirée', role: 'medecin', nom: A.nomComplet, proposition: { etat: 'annulee' } }),
+        retirerP({ nom_cas: 'introuvable', role: 'medecin', nom: A.nomComplet, absente: true }),
+      ];
+      S.setReglage('planningCircuitPresences', 'surveillant'); S.setReglage('planningAgentModifieDirectement', false);
+
       seConnecter(sess0.role, sess0.nom);
-      return { regimesActifs, agents, regime: casRegime, deroger: casDeroger, controle: casControle, etats: cEtat, circuit: casCircuit, propositions: casProposition, decisions: casDecision, visibles };
+      return { regimesActifs, agents, regime: casRegime, deroger: casDeroger, controle: casControle, etats: cEtat, circuit: casCircuit, propositions: casProposition, decisions: casDecision, visibles, reglages: casReglage, poses: casPose, regularisations: casRegul, avis: casAvis, retraits: casRetrait };
     });
     ecrire('packages/domaine/test/vecteurs/planning_rh.json', Object.assign({ _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-planning-rh.js : planning RH (régime individuel, circuit de validation, propositions), le moteur de la maquette piloté dans Chrome. Ne pas éditer.' }, sortie));
-    ['regime', 'deroger', 'controle', 'etats', 'circuit', 'propositions', 'decisions', 'visibles'].forEach((k) => console.log('  ' + k + ' : ' + sortie[k].length + ' cas'));
+    ['regime', 'deroger', 'controle', 'etats', 'circuit', 'propositions', 'decisions', 'visibles', 'reglages', 'poses', 'regularisations', 'avis', 'retraits'].forEach((k) => console.log('  ' + k + ' : ' + sortie[k].length + ' cas'));
     if (m.erreurs.length) console.log('  avertissements : ' + m.erreurs.slice(0, 3).join(' | '));
   } finally { await m.fermer(); }
 })().catch((e) => { console.error(e); process.exit(1); });

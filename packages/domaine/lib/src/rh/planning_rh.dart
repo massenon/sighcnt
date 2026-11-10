@@ -571,3 +571,152 @@ RefusRh? peutTrancherPropositionRh({
   }
   return null;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Les gestes de l'écran (lots L5 et L6) : réglages, pose et retrait du planning, régularisation, avis du chef de service, retrait d'une proposition
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Qui règle le circuit de validation et « l'agent modifie directement » : l'administrateur et la Directrice Administrative. [genre] : `circuit` ou `direct`.
+/// Une valeur de circuit hors référentiel est refusée ; pour `direct`, toute valeur autre que vrai vaut non (comme la maquette).
+RefusRh? controlerReglageRh({required String role, required String genre, Object? valeur}) {
+  if (role != 'admin' && role != 'da') {
+    return genre == 'circuit'
+        ? const RefusRh('REGLAGE_RESERVE', 'Le circuit de validation se règle par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.')
+        : const RefusRh('REGLAGE_RESERVE', 'Ce réglage se fait par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.');
+  }
+  if (genre == 'circuit' && !circuitsRh.containsKey(valeur)) {
+    return RefusRh('CIRCUIT_INCONNU', 'Le circuit « $valeur » n’existe pas.', 'Choisir surveillant seul, directrice administrative seule, ou surveillant puis directrice administrative.');
+  }
+  return null;
+}
+
+/// Le planning du personnel se pose et se retire par le surveillant, la Directrice Administrative ou l'administrateur ; un agent PROPOSE.
+RefusRh? peutPoserPlanningRh(String role, {bool retrait = false}) {
+  if (role == 'admin' || role == 'da' || role == 'surveillant') return null;
+  return retrait
+      ? const RefusRh('PLANNING_RESERVE', 'Le planning du personnel se retire par le surveillant ou la Directrice Administrative.', 'Demander au surveillant.')
+      : const RefusRh('PLANNING_RESERVE', 'Le planning du personnel se pose par le surveillant ou la Directrice Administrative.',
+          'Un agent propose ses vacations (propositions de planning) ; le surveillant valide.');
+}
+
+/// Le retrait d'une vacation : le droit, puis l'existence (une vacation archivée n'existe plus).
+RefusRh? controlerRetraitVacationRh({required String role, required FichePlanning? vacation, required Object? id}) {
+  final r = peutPoserPlanningRh(role, retrait: true);
+  if (r != null) return r;
+  if (vacation == null || vacation['statut'] == 'archive') {
+    return RefusRh('VACATION_INTROUVABLE', 'La vacation $id n’existe pas ou est déjà retirée.', 'Choisir une vacation du registre.');
+  }
+  return null;
+}
+
+String? _texteOuNull(Object? x) => x is String && x.isNotEmpty ? x : null;
+
+/// RÉGULARISER un pointage : correction DATÉE, avec auteur et motif obligatoire, réservée aux habilités du circuit. Rend le refus nommé, ou le patch à écrire
+/// (l'état, la trace ajoutée à `regularisations`, et `motifCode` / `justificatif` seulement s'ils sont fournis).
+({RefusRh? refus, Map<String, Object?>? patch}) regulariserPresenceRh({
+  required FichePlanning? rec,
+  required String role,
+  required String acteur,
+  required String aujourdhui,
+  required Map<String, Object?> o,
+  String? moiId,
+}) {
+  ({RefusRh? refus, Map<String, Object?>? patch}) non(RefusRh r) => (refus: r, patch: null);
+  if (rec == null || rec['statut'] == 'archive') return non(const RefusRh('PIECE_INTROUVABLE', 'Le pointage n’existe pas ou est archivé.', 'Choisir une ligne du registre.'));
+  if (role != 'surveillant' && role != 'da' && role != 'admin') {
+    return non(const RefusRh('REGULARISATION_RESERVEE', 'La régularisation d’un pointage se fait par le surveillant ou la Directrice Administrative.', 'Demander au surveillant.'));
+  }
+  final motif = '${o['motif'] ?? ''}'.trim();
+  if (motif.isEmpty) return non(const RefusRh('MOTIF_OBLIGATOIRE', 'Le motif de la régularisation est obligatoire.', 'Dire ce qui justifie la correction.'));
+  const etats = ['present', 'retard', 'absent', 'conge'];
+  if (!etats.contains(o['etat'])) {
+    return non(RefusRh('ETAT_INCONNU', 'L’état « ${o['etat']} » n’existe pas.', 'Choisir présent, retard, absent ou congé.'));
+  }
+  final code = _texteOuNull(o['motifCode']);
+  if (code != null && !motifsAbsenceRh.any((x) => x.id == code)) {
+    return non(RefusRh('MOTIF_CODE_INCONNU', 'Le motif codé « $code » n’existe pas.', 'Choisir maladie, mission ou congé.'));
+  }
+  if (moiId != null && '${rec['employeId']}' == moiId) {
+    return non(const RefusRh('AUTO_VALIDATION', 'Personne ne régularise son propre pointage.', 'Demander à un autre habilité.'));
+  }
+  final trace = <String, Object?>{
+    'le': aujourdhui,
+    'par': acteur,
+    'motif': motif,
+    'etatAvant': rec['etat'],
+    'etatApres': o['etat'],
+    'motifCodeAvant': _texteOuNull(rec['motifCode']),
+    'motifCodeApres': code ?? _texteOuNull(rec['motifCode']),
+  };
+  final patch = <String, Object?>{
+    'etat': o['etat'],
+    'regularisations': [for (final x in (rec['regularisations'] as List? ?? const [])) x, trace],
+  };
+  if (o.containsKey('motifCode')) patch['motifCode'] = code;
+  if (o.containsKey('justificatif')) patch['justificatif'] = _texteOuNull(o['justificatif']);
+  return (refus: null, patch: patch);
+}
+
+/// L'AVIS DU CHEF DE SERVICE sur un ordre de mission : consigné par un habilité du circuit, lu à la validation. Rend le refus nommé, ou le patch à écrire.
+({RefusRh? refus, Map<String, Object?>? patch}) avisMissionRh({
+  required FichePlanning? rec,
+  required String role,
+  required String acteur,
+  required String aujourdhui,
+  required Map<String, Object?> o,
+}) {
+  ({RefusRh? refus, Map<String, Object?>? patch}) non(RefusRh r) => (refus: r, patch: null);
+  if (rec == null || rec['statut'] == 'archive') return non(const RefusRh('PIECE_INTROUVABLE', 'L’ordre de mission n’existe pas ou est archivé.', 'Choisir une ligne du registre.'));
+  if (role != 'surveillant' && role != 'da' && role != 'admin') {
+    return non(const RefusRh('AVIS_RESERVE', 'L’avis du chef de service se consigne par le surveillant, la Directrice Administrative ou l’administrateur.', 'Demander au surveillant.'));
+  }
+  final avis = o['avis'];
+  if (avis != 'favorable' && avis != 'defavorable') return non(const RefusRh('AVIS_INCONNU', 'L’avis est « favorable » ou « défavorable ».', 'Choisir l’avis.'));
+  final chef = '${o['chef'] ?? ''}'.trim();
+  if (chef.isEmpty) return non(const RefusRh('CHEF_ABSENT', 'Le nom du chef de service qui donne l’avis est obligatoire.', 'Choisir le chef de service de l’agent.'));
+  final motif = '${o['motif'] ?? ''}'.trim();
+  if (avis == 'defavorable' && motif.isEmpty) return non(const RefusRh('MOTIF_OBLIGATOIRE', 'Un avis défavorable exige son motif.', 'Dire pourquoi l’avis est défavorable.'));
+  final etat = etatValidationRh('missions', rec);
+  if (etat == 'valide' || etat == 'refuse') {
+    return non(const RefusRh('DEJA_TRANCHEE', 'L’ordre de mission est déjà tranché : l’avis se donne avant la décision.', 'Saisir un nouvel ordre.'));
+  }
+  return (
+    refus: null,
+    patch: {
+      'avisChefService': {'avis': avis, 'chef': chef, 'motif': motif.isEmpty ? null : motif, 'le': aujourdhui, 'consignePar': acteur}
+    }
+  );
+}
+
+/// L'agent RETIRE sa propre proposition tant qu'elle n'est pas tranchée. Rend le refus nommé, ou le patch à écrire.
+({RefusRh? refus, Map<String, Object?>? patch}) annulerPropositionRh({required FichePlanning? proposition, required String aujourdhui, String? moiId}) {
+  ({RefusRh? refus, Map<String, Object?>? patch}) non(RefusRh r) => (refus: r, patch: null);
+  if (proposition == null || proposition['statut'] == 'archive') return non(const RefusRh('PROPOSITION_INTROUVABLE', 'La proposition n’existe pas.', 'Choisir une proposition de la liste.'));
+  if (moiId == null || proposition['employeId'] != moiId) {
+    return non(const RefusRh('PROPOSITION_D_AUTRUI', 'Seul l’agent qui a proposé peut retirer sa proposition.', 'Se connecter avec son compte.'));
+  }
+  final etat = proposition['etat'];
+  if (etat != 'proposee') {
+    return non(RefusRh('DEJA_TRANCHEE', 'La proposition est déjà ${etat == 'validee' ? 'validée' : (etat == 'refusee' ? 'refusée' : 'retirée')}.', 'Faire une nouvelle proposition.'));
+  }
+  return (refus: null, patch: {'etat': 'annulee', 'annuleeLe': aujourdhui});
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Les gardes de collection : ce que le MOTEUR refuse, quoi que montre l'écran (masquer un bouton ne protège rien)
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Une version de régime individuel ne se réécrit ni ne s'archive : elle explique des vacations déjà posées. `null` : l'opération passe (l'insertion seule).
+String? gardeRegimeIndividuelRh(String operation) => operation == 'modifier' || operation == 'archiver'
+    ? 'REGIME_INDIVIDUEL_FIGE : une version de régime individuel ne se réécrit ni ne s’archive (elle explique des vacations déjà posées). Ajouter une nouvelle version à une date d’effet postérieure, ou « revenir au régime de la catégorie ».'
+    : null;
+
+/// Un pointage validé ne se modifie pas directement : il se régularise (motif, date et auteur consignés). [avant] : la fiche telle qu'elle est ; [apres] : telle
+/// qu'elle serait après la mise à jour. Une pièce d'avant le circuit (sans état validé) reste éditable ; une régularisation (la trace s'allonge) passe.
+String? gardePresenceValideeRh(String operation, FichePlanning? avant, FichePlanning apres) {
+  if (operation != 'modifier' || avant == null || avant['validationEtat'] != 'valide') return null;
+  String v(FichePlanning f, String k) => f[k] == null ? '' : '${f[k]}';
+  final change = ['etat', 'date', 'employeId', 'heureArrivee', 'heureDepart', 'motifCode'].any((k) => v(avant, k) != v(apres, k));
+  final regularise = ((apres['regularisations'] as List?)?.length ?? 0) > ((avant['regularisations'] as List?)?.length ?? 0);
+  return change && !regularise ? 'PRESENCE_VALIDEE : un pointage validé ne se modifie pas directement ; le régulariser (motif, date et auteur consignés).' : null;
+}

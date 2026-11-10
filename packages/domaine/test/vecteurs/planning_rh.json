@@ -3663,5 +3663,1004 @@
     }
    ]
   }
+ ],
+ "reglages": [
+  {
+   "nom": "circuit : l’administrateur règle",
+   "role": "admin",
+   "genre": "circuit",
+   "valeur": "daf",
+   "attendu": {
+    "ok": true,
+    "valeur": "daf",
+    "avant": "surveillant"
+   }
+  },
+  {
+   "nom": "circuit : la DAF règle",
+   "role": "da",
+   "genre": "circuit",
+   "valeur": "surveillant_puis_daf",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant_puis_daf",
+    "avant": "surveillant"
+   }
+  },
+  {
+   "nom": "circuit : le surveillant ne règle pas",
+   "role": "surveillant",
+   "genre": "circuit",
+   "valeur": "daf",
+   "attendu": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Le circuit de validation se règle par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative."
+   }
+  },
+  {
+   "nom": "circuit : circuit inconnu",
+   "role": "admin",
+   "genre": "circuit",
+   "valeur": "tous",
+   "attendu": {
+    "ok": false,
+    "code": "CIRCUIT_INCONNU",
+    "motif": "Le circuit « tous » n’existe pas.",
+    "geste": "Choisir surveillant seul, directrice administrative seule, ou surveillant puis directrice administrative."
+   }
+  },
+  {
+   "nom": "circuit : le défaut se confirme",
+   "role": "da",
+   "genre": "circuit",
+   "valeur": "surveillant",
+   "attendu": {
+    "ok": true,
+    "valeur": "surveillant",
+    "avant": "surveillant"
+   }
+  },
+  {
+   "nom": "direct : l’administrateur ouvre",
+   "role": "admin",
+   "genre": "direct",
+   "valeur": true,
+   "attendu": {
+    "ok": true,
+    "valeur": true,
+    "avant": false
+   }
+  },
+  {
+   "nom": "direct : la DAF ferme",
+   "role": "da",
+   "genre": "direct",
+   "valeur": false,
+   "attendu": {
+    "ok": true,
+    "valeur": false,
+    "avant": false
+   }
+  },
+  {
+   "nom": "direct : le médecin ne règle pas",
+   "role": "medecin",
+   "genre": "direct",
+   "valeur": true,
+   "attendu": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative."
+   }
+  },
+  {
+   "nom": "direct : valeur non booléenne = non",
+   "role": "admin",
+   "genre": "direct",
+   "valeur": "oui",
+   "attendu": {
+    "ok": true,
+    "valeur": false,
+    "avant": false
+   }
+  }
+ ],
+ "poses": [
+  {
+   "nom": "pose : le surveillant",
+   "role": "surveillant",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "pose : la DAF",
+   "role": "da",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "pose : l’administrateur",
+   "role": "admin",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "pose : le médecin est refusé",
+   "role": "medecin",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "PLANNING_RESERVE",
+    "motif": "Le planning du personnel se pose par le surveillant ou la Directrice Administrative.",
+    "geste": "Un agent propose ses vacations (propositions de planning) ; le surveillant valide."
+   }
+  },
+  {
+   "nom": "pose : le caissier est refusé",
+   "role": "caissier",
+   "genre": "pose",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "PLANNING_RESERVE",
+    "motif": "Le planning du personnel se pose par le surveillant ou la Directrice Administrative.",
+    "geste": "Un agent propose ses vacations (propositions de planning) ; le surveillant valide."
+   }
+  },
+  {
+   "nom": "retrait : le surveillant retire",
+   "role": "surveillant",
+   "genre": "retrait",
+   "id": "P1",
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-20",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": true
+   }
+  },
+  {
+   "nom": "retrait : le médecin est refusé",
+   "role": "medecin",
+   "genre": "retrait",
+   "id": "P1",
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "actif",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-20",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "PLANNING_RESERVE",
+    "motif": "Le planning du personnel se retire par le surveillant ou la Directrice Administrative.",
+    "geste": "Demander au surveillant."
+   }
+  },
+  {
+   "nom": "retrait : vacation introuvable",
+   "role": "surveillant",
+   "genre": "retrait",
+   "id": "P1",
+   "planning": [],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "VACATION_INTROUVABLE",
+    "motif": "La vacation P1 n’existe pas ou est déjà retirée.",
+    "geste": "Choisir une vacation du registre."
+   }
+  },
+  {
+   "nom": "retrait : vacation déjà archivée",
+   "role": "surveillant",
+   "genre": "retrait",
+   "id": "P1",
+   "planning": [
+    {
+     "id": "P1",
+     "statut": "archive",
+     "employeId": "EMP01",
+     "employe": "BASSONGUI Chabi Séko",
+     "fonction": "medecin",
+     "service": "Direction",
+     "date": "2026-11-20",
+     "type": "garde"
+    }
+   ],
+   "date": "2026-11-20",
+   "attendu": {
+    "ok": false,
+    "code": "VACATION_INTROUVABLE",
+    "motif": "La vacation P1 n’existe pas ou est déjà retirée.",
+    "geste": "Choisir une vacation du registre."
+   }
+  }
+ ],
+ "regularisations": [
+  {
+   "nom": "le surveillant régularise : absent à présent, motif codé et justificatif",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motifCode": "maladie",
+    "justificatif": "CERT-12",
+    "motif": "Certificat remis"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "present",
+     "motifCode": "maladie",
+     "justificatif": "CERT-12",
+     "regularisations": [
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur surveillant",
+       "motif": "Certificat remis",
+       "etatAvant": "retard",
+       "etatApres": "present",
+       "motifCodeAvant": null,
+       "motifCodeApres": "maladie"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "la DAF régularise",
+   "role": "da",
+   "acteur": "Vecteur da",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "conge",
+    "motif": "Congé accordé"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "conge",
+     "regularisations": [
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur da",
+       "motif": "Congé accordé",
+       "etatAvant": "retard",
+       "etatApres": "conge",
+       "motifCodeAvant": null,
+       "motifCodeApres": null
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "sans motif codé : la valeur existante reste",
+   "role": "admin",
+   "acteur": "Vecteur admin",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": "mission"
+   },
+   "o": {
+    "etat": "present",
+    "motif": "Mission confirmée"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "present",
+     "regularisations": [
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur admin",
+       "motif": "Mission confirmée",
+       "etatAvant": "retard",
+       "etatApres": "present",
+       "motifCodeAvant": "mission",
+       "motifCodeApres": "mission"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "motif codé vidé explicitement",
+   "role": "admin",
+   "acteur": "Vecteur admin",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": "mission"
+   },
+   "o": {
+    "etat": "absent",
+    "motifCode": "",
+    "motif": "Mission annulée"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "absent",
+     "motifCode": null,
+     "regularisations": [
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur admin",
+       "motif": "Mission annulée",
+       "etatAvant": "retard",
+       "etatApres": "absent",
+       "motifCodeAvant": "mission",
+       "motifCodeApres": "mission"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "nom": "le caissier est refusé",
+   "role": "caissier",
+   "acteur": "Vecteur caissier",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "REGULARISATION_RESERVEE",
+    "motif": "La régularisation d’un pointage se fait par le surveillant ou la Directrice Administrative.",
+    "geste": "Demander au surveillant."
+   }
+  },
+  {
+   "nom": "motif absent",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motif": "  "
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Le motif de la régularisation est obligatoire.",
+    "geste": "Dire ce qui justifie la correction."
+   }
+  },
+  {
+   "nom": "état inconnu",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "sieste",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ETAT_INCONNU",
+    "motif": "L’état « sieste » n’existe pas.",
+    "geste": "Choisir présent, retard, absent ou congé."
+   }
+  },
+  {
+   "nom": "motif codé inconnu",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motifCode": "vacances",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_CODE_INCONNU",
+    "motif": "Le motif codé « vacances » n’existe pas.",
+    "geste": "Choisir maladie, mission ou congé."
+   }
+  },
+  {
+   "nom": "nul ne régularise son propre pointage",
+   "role": "surveillant",
+   "acteur": "BASSONGUI Chabi Séko",
+   "moiId": "EMP01",
+   "moiNom": "BASSONGUI Chabi Séko",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "AUTO_VALIDATION",
+    "motif": "Personne ne régularise son propre pointage.",
+    "geste": "Demander à un autre habilité."
+   }
+  },
+  {
+   "nom": "pointage introuvable",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "ABSENT",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null
+   },
+   "o": {
+    "etat": "present",
+    "motif": "x"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "PIECE_INTROUVABLE",
+    "motif": "Le pointage n’existe pas ou est archivé.",
+    "geste": "Choisir une ligne du registre."
+   }
+  },
+  {
+   "nom": "seconde régularisation : la trace s’ajoute",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "moiId": null,
+   "moiNom": null,
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "employeId": "EMP01",
+    "employe": "BASSONGUI Chabi Séko",
+    "date": "2026-10-29",
+    "etat": "retard",
+    "heureArrivee": "09:10",
+    "motifCode": null,
+    "regularisations": [
+     {
+      "le": "2026-10-28",
+      "par": "S0",
+      "motif": "Première",
+      "etatAvant": "absent",
+      "etatApres": "retard",
+      "motifCodeAvant": null,
+      "motifCodeApres": null
+     }
+    ]
+   },
+   "o": {
+    "etat": "present",
+    "motif": "Seconde"
+   },
+   "attendu": {
+    "ok": true,
+    "patch": {
+     "etat": "present",
+     "regularisations": [
+      {
+       "le": "2026-10-28",
+       "par": "S0",
+       "motif": "Première",
+       "etatAvant": "absent",
+       "etatApres": "retard",
+       "motifCodeAvant": null,
+       "motifCodeApres": null
+      },
+      {
+       "le": "2026-10-30",
+       "par": "Vecteur surveillant",
+       "motif": "Seconde",
+       "etatAvant": "retard",
+       "etatApres": "present",
+       "motifCodeAvant": null,
+       "motifCodeApres": null
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "avis": [
+  {
+   "nom": "avis favorable consigné par le surveillant",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef",
+    "motif": ""
+   },
+   "attendu": {
+    "ok": true,
+    "avis": {
+     "avis": "favorable",
+     "chef": "Dr Chef",
+     "motif": null,
+     "le": "2026-10-30",
+     "consignePar": "Vecteur surveillant"
+    }
+   }
+  },
+  {
+   "nom": "avis défavorable motivé",
+   "role": "da",
+   "acteur": "Vecteur da",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "defavorable",
+    "chef": "Dr Chef",
+    "motif": "Effectif insuffisant"
+   },
+   "attendu": {
+    "ok": true,
+    "avis": {
+     "avis": "defavorable",
+     "chef": "Dr Chef",
+     "motif": "Effectif insuffisant",
+     "le": "2026-10-30",
+     "consignePar": "Vecteur da"
+    }
+   }
+  },
+  {
+   "nom": "avis défavorable sans motif",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "defavorable",
+    "chef": "Dr Chef",
+    "motif": " "
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MOTIF_OBLIGATOIRE",
+    "motif": "Un avis défavorable exige son motif.",
+    "geste": "Dire pourquoi l’avis est défavorable."
+   }
+  },
+  {
+   "nom": "le médecin ne consigne pas",
+   "role": "medecin",
+   "acteur": "Vecteur medecin",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "AVIS_RESERVE",
+    "motif": "L’avis du chef de service se consigne par le surveillant, la Directrice Administrative ou l’administrateur.",
+    "geste": "Demander au surveillant."
+   }
+  },
+  {
+   "nom": "avis inconnu",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "peut-etre",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "AVIS_INCONNU",
+    "motif": "L’avis est « favorable » ou « défavorable ».",
+    "geste": "Choisir l’avis."
+   }
+  },
+  {
+   "nom": "chef absent",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "  "
+   },
+   "attendu": {
+    "ok": false,
+    "code": "CHEF_ABSENT",
+    "motif": "Le nom du chef de service qui donne l’avis est obligatoire.",
+    "geste": "Choisir le chef de service de l’agent."
+   }
+  },
+  {
+   "nom": "ordre déjà validé",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "validee",
+    "validationEtat": "valide"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "L’ordre de mission est déjà tranché : l’avis se donne avant la décision.",
+    "geste": "Saisir un nouvel ordre."
+   }
+  },
+  {
+   "nom": "ordre déjà refusé",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "refusee",
+    "validationEtat": "refuse"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "L’ordre de mission est déjà tranché : l’avis se donne avant la décision.",
+    "geste": "Saisir un nouvel ordre."
+   }
+  },
+  {
+   "nom": "ordre introuvable",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "ABSENT",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider"
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "PIECE_INTROUVABLE",
+    "motif": "L’ordre de mission n’existe pas ou est archivé.",
+    "geste": "Choisir une ligne du registre."
+   }
+  },
+  {
+   "nom": "un nouvel avis remplace le précédent",
+   "role": "surveillant",
+   "acteur": "Vecteur surveillant",
+   "id": "PIECE",
+   "rec": {
+    "id": "PIECE",
+    "statut": "actif",
+    "agentId": "EMP01",
+    "agent": "BASSONGUI Chabi Séko",
+    "statutMission": "a_valider",
+    "avisChefService": {
+     "avis": "defavorable",
+     "chef": "Ancien",
+     "motif": "x",
+     "le": "2026-10-20",
+     "consignePar": "S0"
+    }
+   },
+   "o": {
+    "avis": "favorable",
+    "chef": "Dr Chef"
+   },
+   "attendu": {
+    "ok": true,
+    "avis": {
+     "avis": "favorable",
+     "chef": "Dr Chef",
+     "motif": null,
+     "le": "2026-10-30",
+     "consignePar": "Vecteur surveillant"
+    }
+   }
+  }
+ ],
+ "retraits": [
+  {
+   "nom": "l’agent retire sa proposition",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {},
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": true,
+    "etat": "annulee",
+    "annuleeLe": "2026-10-30"
+   }
+  },
+  {
+   "nom": "un autre agent ne la retire pas",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {},
+   "moiId": "EMP05",
+   "attendu": {
+    "ok": false,
+    "code": "PROPOSITION_D_AUTRUI",
+    "motif": "Seul l’agent qui a proposé peut retirer sa proposition.",
+    "geste": "Se connecter avec son compte."
+   }
+  },
+  {
+   "nom": "le surveillant, sans être l’agent, ne la retire pas",
+   "role": "surveillant",
+   "absente": false,
+   "proposition": {},
+   "moiId": null,
+   "attendu": {
+    "ok": false,
+    "code": "PROPOSITION_D_AUTRUI",
+    "motif": "Seul l’agent qui a proposé peut retirer sa proposition.",
+    "geste": "Se connecter avec son compte."
+   }
+  },
+  {
+   "nom": "déjà validée",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {
+    "etat": "validee"
+   },
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "La proposition est déjà validée.",
+    "geste": "Faire une nouvelle proposition."
+   }
+  },
+  {
+   "nom": "déjà refusée",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {
+    "etat": "refusee"
+   },
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "La proposition est déjà refusée.",
+    "geste": "Faire une nouvelle proposition."
+   }
+  },
+  {
+   "nom": "déjà retirée",
+   "role": "medecin",
+   "absente": false,
+   "proposition": {
+    "etat": "annulee"
+   },
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": false,
+    "code": "DEJA_TRANCHEE",
+    "motif": "La proposition est déjà retirée.",
+    "geste": "Faire une nouvelle proposition."
+   }
+  },
+  {
+   "nom": "introuvable",
+   "role": "medecin",
+   "absente": true,
+   "proposition": {},
+   "moiId": "EMP01",
+   "attendu": {
+    "ok": false,
+    "code": "PROPOSITION_INTROUVABLE",
+    "motif": "La proposition n’existe pas.",
+    "geste": "Choisir une proposition de la liste."
+   }
+  }
  ]
 }
