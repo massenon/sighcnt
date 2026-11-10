@@ -651,6 +651,35 @@ CREATE TABLE IF NOT EXISTS "cfg"."rappels" (
 );
 ALTER TABLE "cfg"."rappels" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."rappels" IS 'Collection « rappels » — Configuration';
+CREATE TABLE IF NOT EXISTS "cfg"."reglages_aib" (
+  "id" text PRIMARY KEY,
+  "cle" text,
+  "motif" text,
+  "cree_le" date,
+  "source" text,
+  "statut" text,
+  "valeur" text,
+  "cree_par" text,
+  "date_fin" text,
+  "libelle" text,
+  "a_valider" boolean,
+  "date_effet" date,
+  "extra" jsonb
+);
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "cle" text; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "cree_le" date; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "valeur" text; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "date_fin" text; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "a_valider" boolean; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
+ALTER TABLE "cfg"."reglages_aib" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "cfg"."reglages_aib" IS 'Collection « reglagesAib » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_reglages_aib_statut" ON "cfg"."reglages_aib" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."ressources" (
   "id" text PRIMARY KEY,
   "statut" text,

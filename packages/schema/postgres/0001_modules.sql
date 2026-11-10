@@ -398,6 +398,23 @@ CREATE TABLE IF NOT EXISTS "cfg"."rappels" (
   "extra" jsonb
 );
 COMMENT ON TABLE "cfg"."rappels" IS 'Collection « rappels » — Configuration';
+CREATE TABLE IF NOT EXISTS "cfg"."reglages_aib" (
+  "id" text PRIMARY KEY,
+  "cle" text,
+  "motif" text,
+  "cree_le" date,
+  "source" text,
+  "statut" text,
+  "valeur" text,
+  "cree_par" text,
+  "date_fin" text,
+  "libelle" text,
+  "a_valider" boolean,
+  "date_effet" date,
+  "extra" jsonb
+);
+COMMENT ON TABLE "cfg"."reglages_aib" IS 'Collection « reglagesAib » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_reglages_aib_statut" ON "cfg"."reglages_aib" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."ressources" (
   "id" text PRIMARY KEY,
   "statut" text,
