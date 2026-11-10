@@ -118,8 +118,13 @@ void admSaisir(BuildContext ctx,
                     ToastsSigh.afficher(ctx, '$entite créé.', type: TypeToast.succes, detail: detailToast?.call(r.fiche), annuler: r.annuler);
                     apres?.call(r.fiche);
                   } else {
-                    final annuler = col.mettreAJour(existante['id'], f);
-                    ToastsSigh.afficher(ctx, 'Modifications enregistrées.', type: TypeToast.succes, annuler: annuler);
+                    // Une garde de la collection (un pointage validé ne se modifie pas) refuse EN LE DISANT : le journal est déjà écrit par la collection.
+                    try {
+                      final annuler = col.mettreAJour(existante['id'], f);
+                      ToastsSigh.afficher(ctx, 'Modifications enregistrées.', type: TypeToast.succes, annuler: annuler);
+                    } on EcritureRefusee catch (e) {
+                      ToastsSigh.afficher(ctx, 'Écriture refusée.', type: TypeToast.erreur, detail: e.motif);
+                    }
                   }
                 }),
           ]);

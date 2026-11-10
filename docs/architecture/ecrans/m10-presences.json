@@ -18,32 +18,48 @@
   "Ressources humaines"
  ],
  "regle": [
-  "Les retards et absences non justifiées alimentent le critère « Ponctualité et assiduité » du barème NS 131, avec incidence directe sur la fiche d’évaluation et le solde du mois."
+  "Les retards et absences validés et non justifiés alimentent le critère « Ponctualité et assiduité » du barème NS 131, avec incidence directe sur la fiche d’évaluation et le solde du mois. Un pointage à valider est visible mais ne compte pas."
  ],
  "onglets": [],
  "kpis": [
-  "Pointages de la période",
+  "Pointages comptés",
   "Présences",
   "Retards",
-  "Absences"
+  "Absences",
+  "À valider"
  ],
  "cartes": [
+  "Réglages du planning et des présences",
+  "Filtres avancés des présences",
   "Registre des présences — 30/09/2026 au 30/10/2026",
   "Statistiques"
  ],
  "tableaux": [],
  "commandes": [
-  "Appliquer",
+  "Régler",
   "Mois en cours",
   "Sept derniers jours",
+  "Effacer les filtres",
   "Colonnes",
   "Exporter",
-  "Ajouter un pointage"
+  "Ajouter un pointage",
+  "Imprimer l’état"
  ],
  "champs": [
   "Du",
-  "Au"
+  "Au",
+  "Recherche",
+  "Agent",
+  "Matricule",
+  "Service",
+  "État",
+  "Motif codé",
+  "Retard minimal (minutes après 08:00)",
+  "Arrivée de",
+  "Arrivée à",
+  "Validation",
+  "Validé par"
  ],
  "nbTableaux": 0,
- "nbKpis": 4
+ "nbKpis": 5
 }
