@@ -137,6 +137,21 @@ void main() {
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Imprimer la grille tarifaire'));
     expect(find.text('Grille tarifaire des actes et prestations'), findsWidgets);
     expect(find.textContaining('Prestations au catalogue'), findsWidgets);
+    // Les tarifs d'attente de la Direction sont ARRÊTÉS (vague 49) : le jeu n'a plus aucun tarif à valider, et la maquette (`aValider.length ? … : null`) n'imprime
+    // alors que « Tarifs validés ». La ligne « Tarifs à valider » ne paraît que s'il en reste (cas suivant).
+    expect(find.textContaining('Tarifs validés'), findsWidgets);
+    expect(find.textContaining('Tarifs à valider'), findsNothing);
+  });
+
+  casM14('« Imprimer la grille tarifaire » : un acte créé sans tarif fait paraître « Tarifs à valider » à l’état', (t) async {
+    final m = magasinM14();
+    await ouvrirM14(t, m, 'cfg-tarifs');
+    await onglet(t, 'Actes & hospitalisation');
+    await toucherM14(t, find.widgetWithText(BoutonSigh, 'Nouveau'));
+    await saisir(t, 'libelle', 'Acte Test Sans Prix');
+    await toucherM14(t, find.widgetWithText(BoutonSigh, 'Créer'));
+    await toucherM14(t, find.widgetWithText(BoutonSigh, 'Imprimer la grille tarifaire'));
+    expect(find.text('Grille tarifaire des actes et prestations'), findsWidgets);
     expect(find.textContaining('Tarifs à valider'), findsWidgets);
   });
 

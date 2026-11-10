@@ -991,7 +991,7 @@
      "indice": "Datés et révocables"
     },
     {
-     "label": "Modèles à valider",
+     "label": "Modèles en attente de validation",
      "valeur": "0",
      "indice": "Propositions — aucun document ne les fixe"
     }
@@ -1400,9 +1400,10 @@
       ]
      }
     ],
-    "aValider": true,
+    "aValider": false,
     "creeLe": "2026-08-16",
-    "source": "Créé dans l’application — à valider"
+    "source": "Créé dans l’application",
+    "valideRole": "Administrateur système"
    },
    "toastsApres": [
     "Modèle créé.",
@@ -1492,7 +1493,7 @@
       "indice": "Datés et révocables"
      },
      {
-      "label": "Modèles à valider",
+      "label": "Modèles en attente de validation",
       "valeur": "0",
       "indice": "Propositions — aucun document ne les fixe"
      }
@@ -1541,7 +1542,7 @@
       "indice": "Datés et révocables"
      },
      {
-      "label": "Modèles à valider",
+      "label": "Modèles en attente de validation",
       "valeur": "0",
       "indice": "Propositions — aucun document ne les fixe"
      }

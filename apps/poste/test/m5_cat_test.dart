@@ -411,7 +411,11 @@ void main() {
       expect(v['aValider'], true, reason: 'déplacer une borne remet la variable « à valider » : le biologiste revalide (moteur de validation commun)');
       expect(v['valideLe'], isNull);
       expect(find.text('Paramètres enregistrés.'), findsOneWidget);
-      expect(m.collection('audit').toutes.first['action'], 'Modification d’une valeur de référence');
+      // Lot L1 (une seule ligne de journal, EF-VAL-05) : la ligne porte l'ÉTAT de validation. La borne était documentée (validée) et le profil n'est pas celui de la famille :
+      // la modification la REMET « à valider » (action « Remise à valider », comme `suivreEnregistrement` de la maquette), et non plus « Modification d'une valeur de référence ».
+      final j = m.collection('audit').toutes.first;
+      expect(j['action'], 'Remise à valider');
+      expect(j['reference'], 'VAR-NFS-GB');
     });
 
     cas('E182 : corriger seulement l\'intitulé ne fait PAS sortir la borne du document', (t) async {
@@ -444,7 +448,10 @@ void main() {
       expect(v['section'], 'serologie');
       expect(v['examenLibelle'], 'VIH');
       expect(v['source'], 'Créée dans l’application le 30/10/2026 — à valider');
-      expect(m.collection('audit').toutes.first['action'], 'Création d’une variable de résultat');
+      // Lot L1 : une seule ligne, « Création » (la variable naît « à valider » pour un profil hors famille), et non plus « Création d'une variable de résultat ».
+      final j = m.collection('audit').toutes.first;
+      expect(j['action'], 'Création');
+      expect('${j['reference']}', fiche(m, 'variablesLabo', (x) => x['code'] == 'ZZ2')['id']);
     });
 
     cas('intitulé manquant : refus, rien n\'est écrit', (t) async {

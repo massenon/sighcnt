@@ -27,6 +27,10 @@ final roles = [for (final r in (obj(jsonDecode(File('assets/donnees/rbac.json').
 Finder boutons(String famille) =>
     find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('val:valider:$famille:'));
 
+/// Le choix « Valider » du pied de la modale de mise à jour (la clé porte famille et identifiant), distinct des « Valider » du registre.
+Finder modaleValider(String famille) =>
+    find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('val:modale:$famille:'));
+
 String sp(Object? s) => '$s'.replaceAll(RegExp(r'[\s  ]+'), ' ').trim();
 
 void main() {
@@ -215,7 +219,8 @@ void main() {
       final avant = m.collection('audit').toutes.length;
       await ouvrirPathologies(t, m, 'dm');
       await toucherM14(t, find.byTooltip('Modifier').first);
-      expect(find.widgetWithText(BoutonSigh, 'Valider'), findsOneWidget, reason: 'le choix Valider du pied de modale (profil de la famille, élément en attente)');
+      // Le registre porte lui aussi un « Valider » par ligne en attente (clé `val:valider:…`) : le choix du PIED DE MODALE se désigne par sa propre clé (`val:modale:…`).
+      expect(modaleValider('pathologies'), findsOneWidget, reason: 'le choix Valider du pied de modale (profil de la famille, élément en attente)');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
       final validees = col.actives.where((f) => f['aValider'] == false && f['valideLe'] != null).toList();
       expect(validees.length, 1, reason: 'UNE pathologie est validée par l’enregistrement');
@@ -232,7 +237,7 @@ void main() {
       }
       await ouvrirPathologies(t, m, 'admin');
       await toucherM14(t, find.byTooltip('Modifier').first);
-      expect(find.widgetWithText(BoutonSigh, 'Valider'), findsNothing, reason: 'commande ABSENTE hors famille, jamais grisée');
+      expect(modaleValider('pathologies'), findsNothing, reason: 'commande ABSENTE hors famille, jamais grisée');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
       expect(col.actives.where((f) => f['aValider'] == true).length, 1, reason: 'UNE pathologie est revenue « à valider »');
       expect(col.actives.where((f) => f['aValider'] == true).first['valideLe'], isNull);
