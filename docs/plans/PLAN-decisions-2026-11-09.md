@@ -130,6 +130,8 @@ Voir ECARTS-MAQUETTE E2322 : modèle, interface et protocole du boîtier ; dossi
 | L4 à L6 | Vecteurs tirés du moteur de la maquette | `prototype_html/build/vecteurs-planning-rh.js` → `packages/domaine/test/vecteurs/planning_rh.json` (126 cas) | régénérables |
 | L4 à L6 | Domaine Dart | `packages/domaine/lib/src/rh/planning_rh.dart`, registre L0 (`planning.circuitPresences` et `planning.agentModifieDirectement` à `branche: true`) | `dart test test/planning_rh_test.dart` : 129 verts, mutations vérifiées |
 | L4 à L6 | Poste : couche données et règles | `apps/poste/lib/donnees/planning_rh_poste.dart` | `flutter test test/planning_rh_poste_test.dart` : 11 verts |
+| L4 à L6 | Poste : gestes au domaine et gardes du moteur | `planning_rh.dart` (réglages, pose et retrait, régularisation, avis, retrait d'une proposition, `gardeRegimeIndividuelRh`, `gardePresenceValideeRh`), `magasin.dart` | `dart test test/planning_rh_test.dart` : 177 verts ; `planning_rh_poste_test` : 18 verts (E2340) |
+| L4 à L6 | Poste : écrans | `m10-planning`, `m10-presences`, `m10-propositions-planning`, `m10-conges`, `m10-missions`, rotation `m10-securite-entretien` (`rhb_planning.dart`, `rhb_presences.dart`, `rhb_propositions.dart`, `rhb_circuit.dart`, `rha_conges.dart`, `rha_missions.dart`) | parité N1 = 100 % mesuré ; `m10_planning_test` 16, `m10_presences_test` 12, `m10_propositions_test` 6, `m10_test` (congés, missions) ; filtres et circuit rejoués sur les relevés de la maquette (E2339) |
 
 ### Décisions de conception
 
@@ -141,4 +143,4 @@ Voir ECARTS-MAQUETTE E2322 : modèle, interface et protocole du boîtier ; dossi
 
 ### Limites
 
-Voir ECARTS-MAQUETTE E2330 et E2331 : les écrans du poste ne sont pas portés (le moteur du poste l'est) ; vecteurs de parité `rhb.json`, fiches d'écran, `rbac.json` et `manifeste.json` non régénérés (écart du lot A5) ; accord du collègue sur un échange non recueilli ; tables relationnelles non ajoutées au schéma engendré ; suite complète du poste et de la maquette non lancées ; échec préexistant d'un scénario isolé (« Dépenses, compte de résultat… »).
+Voir ECARTS-MAQUETTE E2331 (faits qui manquent : chef de service, accord du collègue, repère de retard) et E2339 à E2342 (écrans du poste portés ; ce qui est régénéré et ce qui ne l'est pas ; écarts assumés). Restent hors de ce lot : le filtre RG-11 (seul le planning et les présences VALIDÉS comptent) sur les statistiques de garde, de permanence, de présence, les primes et la paie du poste ; l'annulation de la pose d'une dérogation ; les écrans des lots A5 et SMS, que le manifeste du poste n'inclut pas encore (E2341) ; les tables relationnelles des deux collections nouvelles.
