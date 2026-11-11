@@ -12794,8 +12794,10 @@ async function viderMessages(page) {
       autres[role].interdites = await page.evaluate((r) => [...document.querySelectorAll('#page-content a.hub-card')].map((a) => (a.getAttribute('href') || '').replace(/^.*\//, '').replace(/\.(php|html).*$/, ''))
         .filter((id) => { const e = window.SIGH.nav.get(id); return e && !window.SIGH.nav.can(r, { id: id, roles: e.roles, module: e.module }); }), role);
     }
-    verifier('Direction, comptable, réception : pas d’onglet « Système » au ruban, et jamais « Relais en ligne »',
-      Object.keys(autres).every((r) => !autres[r].ruban.includes('Système') && !autres[r].ruban.includes('Relais en ligne')), JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].ruban])));
+    /* Décision du 10/11/2026 (Q1, lot IMP-A) : un profil qui détient un droit sur un jeu d'import voit un onglet « Système » réduit à la rangée Importation
+       (la Vague 122 sonde ce contenu) ; le reste de l'onglet et « Relais en ligne » restent réservés. Ici : jamais « Relais en ligne ». */
+    verifier('Direction, comptable, réception : jamais « Relais en ligne » au ruban (l’onglet « Système » n’y est que la rangée Importation, sondée à la Vague 122)',
+      Object.keys(autres).every((r) => !autres[r].ruban.includes('Relais en ligne')), JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].ruban])));
     verifier('Le profil offre le bouton « Paramètres système » vers la page de cartes pour ces profils',
       Object.keys(autres).every((r) => /parametres-hub/.test(autres[r].bouton || '')), JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].bouton])));
     verifier('La page de cartes ne montre JAMAIS un écran interdit au profil (RG-13), et la direction y retrouve ses écrans de sécurité',
