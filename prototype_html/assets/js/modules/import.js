@@ -1205,7 +1205,7 @@
       void premiere;
     },
     dependances: function () { return null; },
-    /* L'ANNULATION RESTITUE LES STOCKS : le gros retrouve ce qui est parti, le détail rend ce qu'il a reçu — et ne peut pas descendre sous zéro (RG-03) : s'il a déjà dispensé, le refus le dit. */
+    /* L'ANNULATION RESTITUE LES STOCKS : le gros retrouve ce qui est parti, le détail rend ce qu'il a reçu, et ne peut pas descendre sous zéro (RG-03) : s'il a déjà dispensé, le refus le dit. */
     annuler: function (lot, motif) {
       var bon = null, mouvs = [];
       lot.ecrits.forEach(function (e) {
