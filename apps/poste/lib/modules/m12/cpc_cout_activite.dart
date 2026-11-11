@@ -9,6 +9,7 @@ import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m6/points_commun.dart' show champUnique, commande;
+import '../../donnees/tarifs_poste.dart';
 import 'cpc_commun.dart';
 
 /// `m12-cout-activite` — « Coût à l'activité » : les consommables réellement sortis pour un séjour ou un acte, face au montant facturé — marge sur
@@ -77,7 +78,7 @@ class _EtatCout extends State<EcranCoutActivite> {
       produits: c.magasin.collection('produits').actives,
       du: _d,
       au: _f,
-      secteurParCode: secteursDesActes(c.magasin.collection('actes').toutes));
+      secteurParCode: secteursDesActes(TarifsPoste.actesPourSecteurs(c.magasin)));
 
   void _imprimer(BuildContext ctx, ContexteEcran c) {
     final r = _calcul(c);
@@ -152,7 +153,7 @@ class _EtatCout extends State<EcranCoutActivite> {
     final c = ContexteEcran.of(context);
     return ListenableBuilder(
       listenable: Listenable.merge(
-          [for (final k in ['factures', 'mouvements', 'produits', 'actes', 'admissions', 'facturesFournisseurs']) c.magasin.collection(k)]),
+          [for (final k in ['factures', 'mouvements', 'produits', 'tarifs', 'admissions', 'facturesFournisseurs']) c.magasin.collection(k)]),
       builder: (context, _) {
         final r = _calcul(c);
         final recette = r.recette, cout = r.cout;

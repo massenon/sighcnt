@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -14,7 +15,12 @@ import 'cat_commun.dart';
 
 const _delais = ['Immédiat', '1 h', '2 h', '4 h', '6 h', '24 h', '48 h', '72 h'];
 
-String _tarif(Fiche a) => money(a['prix'], avecDevise: false);
+/// Le tarif d'une analyse se LIT au référentiel de prix (version en vigueur aujourd'hui) : il ne se modifie plus ici (PRD-TARIFS, lot T6), il se propose à « Tarifs et prix ».
+num? _prixDe(ContexteEcran c, Fiche a) => TarifsPoste.prixAnalyse(c.magasin, a['code'], aujourdhui: c.aujourdhui);
+String _tarif(ContexteEcran c, Fiche a) {
+  final p = _prixDe(c, a);
+  return p == null ? 'à valider' : money(p, avecDevise: false);
+}
 
 /// `m5-catalogue` — « Catalogue des analyses » : le référentiel des 48 analyses de la clinique (catégorie, échantillon, délai, tarif). Création et
 /// modification en modale, archivage annulable (RG-14), onglet « Par catégorie », état imprimable. Les tarifs sont des valeurs d'attente : le document
@@ -43,7 +49,8 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
 
   /// « Imprimer le catalogue » : toutes les analyses actives, dans l'ordre du catalogue (N°) — pas les lignes filtrées de l'écran.
   void _imprimer(BuildContext ctx) {
-    final rows = trierPar(collectionAnalyses(ContexteEcran.of(ctx).magasin).actives, (a) => a['n']);
+    final c = ContexteEcran.of(ctx);
+    final rows = trierPar(collectionAnalyses(c.magasin).actives, (a) => a['n']);
     afficherApercu(
         ctx,
         pieceCat(ctx,
@@ -55,7 +62,7 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
                 ColonneEtat(libelle: 'Désignation', valeur: (r) => r['designation']),
                 ColonneEtat(libelle: 'Catégorie', valeur: (r) => r['categorie']),
                 ColonneEtat(libelle: 'Échantillon', valeur: (r) => r['echantillon']),
-                ColonneEtat(libelle: 'Tarif', valeur: _tarif, droite: true),
+                ColonneEtat(libelle: 'Tarif', valeur: (r) => _tarif(c, r), droite: true),
               ], lignes: rows)),
             ],
             signatures: const [
@@ -98,12 +105,12 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
           const ColonneTableau(cle: 'echantillon', libelle: 'Échantillon'),
           ColonneTableau(
               cle: 'prix',
-              libelle: 'Tarif',
+              libelle: 'Tarif (lecture)',
               droite: true,
-              valeur: (a) => nombreOuZero(a['prix']),
-              texte: _tarif,
+              valeur: (a) => nombreOuZero(_prixDe(c, a)),
+              texte: (a) => _tarif(c, a),
               rendu: (_, a) => Row(mainAxisSize: MainAxisSize.min, children: [
-                    Text(_tarif(a), style: styleCat(couleur: JetonsShell.slate700, poids: FontWeight.w600)),
+                    Text(_tarif(c, a), style: styleCat(couleur: JetonsShell.slate700, poids: FontWeight.w600)),
                     if (a['tarifProvisoire'] == true) ...[
                       const SizedBox(width: 4),
                       const Tooltip(
@@ -128,7 +135,7 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
               options: [for (final x in echantillons) OptionChamp(x)]),
         ],
         kpis: (ctx, rows) {
-          final k = catKpisCatalogue(rows);
+          final k = catKpisCatalogue([for (final a in rows) {...a, 'prix': _prixDe(c, a)}]);
           return [
             KpiSigh(
                 libelle: 'Analyses au catalogue',
@@ -174,11 +181,7 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
               libelle: 'Délai de rendu',
               type: TypeChamp.select,
               options: [for (final x in _delais) OptionChamp(x)]),
-          const ChampDef(
-              nom: 'prix',
-              libelle: 'Tarif (FCFA)',
-              type: TypeChamp.nombre,
-              requis: true),
+          // Le TARIF n'est plus saisi ici : il se propose à « Tarifs et prix » (Oui ou Non, date d'effet) ; cet écran garde la désignation, la catégorie, l'échantillon et le délai.
         ],
         valeursInitiales: () => {},
         transformer: (_, v) => catTransformAnalyse(v),
@@ -188,7 +191,7 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
           ('Désignation', '${a['designation'] ?? ''}'),
           ('Catégorie', BadgeSigh('${a['categorie'] ?? ''}', ton: TonSigh.navy)),
           ('Échantillon', '${a['echantillon'] ?? ''}'),
-          ('Tarif', _tarif(a)),
+          ('Tarif', _tarif(c, a)),
           ('Statut', statutBadge(a['statut'])),
           ('Délai de rendu', '${a['delai'] ?? ''}'),
         ]),
@@ -200,7 +203,7 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
           OngletDef(
               id: 'categories',
               libelle: 'Par catégorie',
-              construire: (_) => _ParCategorie(col)),
+              construire: (_) => _ParCategorie(c, col)),
         ],
       ),
       const SourceFlux('Tarifs des analyses de laboratoire — 48 désignations.'),
@@ -210,7 +213,8 @@ class EcranCatalogueAnalyses extends StatelessWidget with EcranMaquette {
 
 /// L'onglet « Par catégorie » : une carte par catégorie, ses analyses classées par désignation avec leur tarif.
 class _ParCategorie extends StatelessWidget {
-  const _ParCategorie(this.col);
+  const _ParCategorie(this.c, this.col);
+  final ContexteEcran c;
   final CollectionMagasin col;
 
   @override
@@ -236,7 +240,7 @@ class _ParCategorie extends StatelessWidget {
                       child: Text('${a['designation']}',
                           style: styleCat(taille: 12, couleur: JetonsShell.slate600))),
                   const SizedBox(width: 12),
-                  Text(_tarif(a),
+                  Text(_tarif(c, a),
                       style: styleCat(taille: 12, couleur: JetonsShell.slate800, poids: FontWeight.w500)),
                 ])),
         ])),

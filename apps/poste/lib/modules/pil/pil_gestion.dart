@@ -9,6 +9,7 @@ import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../donnees/tarifs_poste.dart';
 import 'pil_commun.dart';
 
 /// Le pilotage de GESTION : m10-cout-agent (coût global d'un agent), m12-rentabilite-groupes (recettes et charges par groupe) et m12-tableau-decisionnel
@@ -150,13 +151,13 @@ class _EtatRentabilite extends State<EcranRentabiliteGroupes> {
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     return ListenableBuilder(
-      listenable: Listenable.merge([pilEcoute(c, ['factures', 'ecritures', 'centresCouts', 'actes']), _f]),
+      listenable: Listenable.merge([pilEcoute(c, ['factures', 'ecritures', 'centresCouts', 'tarifs']), _f]),
       builder: (context, _) {
         final r = pilRentabilite(
             factures: pilActives(c, 'factures'),
             ecritures: pilActives(c, 'ecritures'),
             centresCouts: pilToutes(c, 'centresCouts'),
-            secteurParCode: secteursDesActes(pilActives(c, 'actes')),
+            secteurParCode: secteursDesActes(TarifsPoste.actesPourSecteurs(c.magasin)),
             du: pilBorne(_f, 'du'),
             au: pilBorne(_f, 'au'));
         final v = r.vue;

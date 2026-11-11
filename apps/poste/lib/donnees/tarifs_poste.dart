@@ -136,6 +136,81 @@ class TarifsPoste {
   static ResolutionTarif prixGrille(Magasin m, Object? code, {required DateTime aujourdhui, Object? date, bool assure = false}) =>
       lire(m).prixGrille(code, date, assure, aujourdhui: tarIso(aujourdhui));
 
+  /// Les analyses du catalogue (le MODÈLE : désignation, catégorie, échantillon, délai) avec le prix EN VIGUEUR à [date] (la colonne que [assure] décide). `prix` vaut `null`
+  /// quand aucun prix n'est en vigueur (« à valider »), jamais un zéro. Le catalogue est la collection `analyses` quand le jeu la porte, le référentiel livré sinon.
+  static List<Map<String, Object?>> analyses(Magasin m, {required DateTime aujourdhui, Object? date, bool assure = false}) {
+    final base = m.collection('analyses').actives;
+    final modele = base.isNotEmpty ? base : m.referentiel('analyses');
+    final h = lire(m);
+    final j = tarJourDe(date, tarIso(aujourdhui));
+    return [
+      for (final a in modele)
+        {
+          ...a,
+          'prix': h.prixAnalyse(a['code'], j, assure, aujourdhui: j).connu ? h.prixAnalyse(a['code'], j, assure, aujourdhui: j).montant : null,
+        }
+    ];
+  }
+
+  /// Les types de chambre (la nomenclature livrée) avec le prix de la JOURNÉE en vigueur à [date] : la journée facturée est une prestation du référentiel (`HO01` à `HO03`).
+  static List<Map<String, Object?>> typesChambre(Magasin m, {required DateTime aujourdhui, Object? date}) {
+    final h = lire(m);
+    final j = tarJourDe(date, tarIso(aujourdhui));
+    final out = <Map<String, Object?>>[];
+    var i = 0;
+    for (final t in m.referentiel('typesChambre')) {
+      i++;
+      final code = 'HO${i < 10 ? '0' : ''}$i';
+      final r = h.prixActe(code, j, false, aujourdhui: j);
+      out.add({...t, 'code': code, 'tarif': r.connu ? r.montant : t['tarif']});
+    }
+    return out;
+  }
+
+  /// L'entrée de GRILLE d'un code (imagerie, soins AMI, certificats) : libellé de la grille, famille, assurabilité et les deux colonnes EN VIGUEUR à [date], dans la forme que
+  /// l'ancien catalogue tarifaire donnait à ses lecteurs. `null` : le code n'est pas une ligne de grille du référentiel.
+  static Map<String, Object?>? entreeGrille(Magasin m, Object? code, {required DateTime aujourdhui, Object? date}) {
+    final h = lire(m);
+    final p = h.parGrille['$code'];
+    return p == null ? null : _entreeGrille(h, p, tarJourDe(date, tarIso(aujourdhui)));
+  }
+
+  /// Toutes les lignes de grille du référentiel (filtrées par [famille] : `AMI`, `GYNECO`, `CERTIFICAT`, `IMAGERIE`, `LABO`, `CONSULTATION`), avec les prix en vigueur.
+  static List<Map<String, Object?>> grille(Magasin m, {required DateTime aujourdhui, Object? date, String? famille}) {
+    final h = lire(m);
+    final j = tarJourDe(date, tarIso(aujourdhui));
+    return [
+      for (final p in h.tarifs)
+        if (p['statut'] != 'archive' && p['codeGrille'] != null && (famille == null || p['famille'] == famille)) _entreeGrille(h, p, j)
+    ];
+  }
+
+  static Map<String, Object?> _entreeGrille(ReferentielTarifs h, Map<String, Object?> p, String jour) {
+    final s = h.instantane(p, jour);
+    return {
+      'id': 'TAR-${p['codeGrille']}',
+      'statut': 'actif',
+      'code': p['codeGrille'],
+      'libelle': p['libelleGrille'] ?? p['libelle'],
+      'famille': p['famille'],
+      'prixNonAssure': s?.na,
+      'prixAssure': (s == null || s.nc) ? null : s.pa,
+      'nonCouvert': s?.nc ?? false,
+      if (p.containsKey('assurable')) 'assurable': p['assurable'],
+      'prixAValider': s == null || s.na == null || (s.pa == null && !s.nc && p['assurable'] != false),
+      if (p['source'] != null) 'source': p['source'],
+    };
+  }
+
+  /// La prestation (l'identité) d'un code d'ACTE : libellé de facturation, secteur, famille. `null` : inconnu.
+  static Map<String, Object?>? prestationActe(Magasin m, Object? code) => lire(m).parActe['$code'];
+
+  /// Les secteurs des actes (code d'acte vers secteur) : ce que les points de ventes, le coût d'activité et le pilotage lisent pour ranger une ligne par secteur.
+  static List<Map<String, Object?>> actesPourSecteurs(Magasin m) => [
+        for (final p in lire(m).tarifs)
+          if (p['statut'] != 'archive' && p['codeActe'] != null) {'code': p['codeActe'], 'libelle': p['libelle'], 'secteur': p['secteur'] ?? ''}
+      ];
+
   // --- Le contexte d'un geste ------------------------------------------------------------------------------------------------------------------------------
 
   String get aujourdhui => tarIso(_horloge());

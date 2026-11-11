@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m6/stock_crud.dart';
@@ -191,8 +192,8 @@ class EcranDemandesAnalyses extends StatelessWidget with EcranMaquette {
     final p = patients.actives
         .where((x) => x['code'] == v['patientCode'])
         .firstOrNull;
-    final analyse = m
-        .referentiel('analyses')
+    // Le MODÈLE vient du catalogue, le PRIX du référentiel (version en vigueur à la date de la demande).
+    final analyse = TarifsPoste.analyses(m, aujourdhui: c.aujourdhui, date: v['dateHeure'])
         .where((a) => a['code'] == v['analyseCode'])
         .firstOrNull;
     return demPreparerDemande(

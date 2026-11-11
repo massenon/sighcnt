@@ -10,6 +10,7 @@ import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../m5/cat_commun.dart' show collectionAnalyses;
 import 'pil_commun.dart';
 
@@ -630,7 +631,7 @@ class _EtatCroise extends State<EcranCroise> {
             factures: pilActives(c, 'factures'),
             patients: pilActives(c, 'patients'),
             personnel: pilActives(c, 'personnel'),
-            actes: pilActives(c, 'actes'),
+            actes: TarifsPoste.actesPourSecteurs(c.magasin),
             administrations: pilActives(c, 'administrations'),
             planning: pilActives(c, 'planning'));
         final r = pilCroiser(source: s, donnees: d, lignes: _lignes, colonnes: _colonnes, mesure: _mesure, periode: _periode);

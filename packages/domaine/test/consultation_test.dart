@@ -106,6 +106,10 @@ void main() {
   final cat = (v['catalogues'] as Map).cast<String, Object?>();
   final jour = DateTime.parse('${v['jourCourant']}T12:00:00');
 
+  // Le prix vient du RÉFÉRENTIEL (lot T6). Les vecteurs ont été tirés AVANT lui, des listes `actes`, `catalogueTarifs` et des analyses : la migration les reprend SANS changer un
+  // prix (c'est sa règle), donc chaque sortie attendue reste vraie : c'est la preuve que l'accesseur daté donne ce que les trois listes donnaient.
+  final migration = tarMigrer(actes: liste(cat['actes']), grille: liste(cat['catalogueTarifs']), analyses: liste(cat['analyses']));
+
   Memoire memoire(Map<String, Object?> entree) {
     final m = Memoire({
       'patients': liste(cat['patients']),
@@ -115,6 +119,8 @@ void main() {
       'produits': liste(cat['produits']),
       'actes': liste(cat['actes']),
       'catalogueTarifs': liste(cat['catalogueTarifs']),
+      tarCollectionTarifs: migration.tarifs,
+      tarCollectionVersions: migration.versions,
       'examensImagerie': [...liste(cat['examens']), (cat['examenSansTarif'] as Map).cast<String, Object?>()],
       'couverturesAssurance': [],
       'dossiersConsultation': liste(entree['dossiers']),

@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cs_commun.dart';
@@ -313,16 +314,14 @@ class _EtatFiche extends State<EcranFicheConsultation> {
       final pr = m.collection('produits').parId(l['produitId']);
       mMed += nombreOuZero(pr?['prixAchat']) * nombreOuZero(l['quantite']);
     }
-    final analyses = m.referentiel('analyses');
     for (final code in (_examens['analyses'] as List? ?? const [])) {
-      final a = analyses.where((x) => x['code'] == code).firstOrNull;
-      mAna += nombreOuZero(a?['prix']);
+      mAna += nombreOuZero(TarifsPoste.prixAnalyse(m, code, aujourdhui: c.aujourdhui, assure: assure));
     }
     final sansTarif = <String>[];
     final examens = m.collection('examensImagerie').actives;
     for (final code in (_examens['imagerie'] as List? ?? const [])) {
       final ex = examens.where((x) => x['code'] == code).firstOrNull;
-      final pr = csTarifPrix(s, vrai(ex?['tarifCode']) ? ex!['tarifCode'] : code, assure);
+      final pr = csTarifPrix(s, vrai(ex?['tarifCode']) ? ex!['tarifCode'] : code, assure, date: c.aujourdhui);
       if (pr.montant == null) sansTarif.add('${ex?['label'] ?? code}');
       mImg += nombreOuZero(pr.montant);
     }

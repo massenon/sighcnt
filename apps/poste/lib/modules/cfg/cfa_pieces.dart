@@ -4,18 +4,14 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cfa_commun.dart';
 
-/// Un acte du catalogue tarifaire par son code (`D.tarif(code)`).
-Fiche? _tarif(Magasin m, Object? code) {
-  for (final r in m.collection('catalogueTarifs').actives) {
-    if (r['code'] == code) return r;
-  }
-  return null;
-}
+/// Un acte de la GRILLE par son code (`D.tarif(code)`), au prix du RÉFÉRENTIEL en vigueur à [date] (PRD-TARIFS, lot T6).
+Fiche? _tarif(Magasin m, Object? code, DateTime date) => TarifsPoste.entreeGrille(m, code, aujourdhui: date);
 
 // =============================================================================================================================================
 // cfg-types-piece
@@ -39,14 +35,14 @@ class EcranTypesPiece extends StatelessWidget with EcranMaquette {
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     final col = c.magasin.collection('typesPiece');
-    final catalogue = c.magasin.collection('catalogueTarifs');
+    final catalogue = c.magasin.collection('versionsTarif');
     final pieces = c.magasin.collection('pieces');
     return ListenableBuilder(
         listenable: Listenable.merge([col, catalogue, pieces]),
         builder: (ctx, _) {
           final rows = col.actives;
           final collisions = rows.where((r) => cfaVrai(r['collision'])).length;
-          final tarifs = [for (final r in catalogue.actives) if (r['famille'] == 'CERTIFICAT') r];
+          final tarifs = TarifsPoste.grille(c.magasin, aujourdhui: c.aujourdhui, famille: 'CERTIFICAT');
           return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             cfaLectureSeule(c),
             cfaKpis(cfaKpisTypesPiece(types: rows.length, tarifes: rows.where((r) => cfaVrai(r['tarifCode'])).length, collisions: collisions, delivrees: pieces.actives.length)),
@@ -83,7 +79,7 @@ class EcranTypesPiece extends StatelessWidget with EcranMaquette {
                     libelle: 'Tarif',
                     droite: true,
                     texte: (r) {
-                      final t = cfaVrai(r['tarifCode']) ? _tarif(c.magasin, r['tarifCode']) : null;
+                      final t = cfaVrai(r['tarifCode']) ? _tarif(c.magasin, r['tarifCode'], c.aujourdhui) : null;
                       return t == null ? '—' : cfaMoney(t['prixNonAssure'], devise: true);
                     }),
               ],
@@ -97,7 +93,7 @@ class EcranTypesPiece extends StatelessWidget with EcranMaquette {
                 ]),
               ],
               detail: (ctx2, r) {
-                final t = cfaVrai(r['tarifCode']) ? _tarif(c.magasin, r['tarifCode']) : null;
+                final t = cfaVrai(r['tarifCode']) ? _tarif(c.magasin, r['tarifCode'], c.aujourdhui) : null;
                 final examens = r['examens'] is List ? (r['examens'] as List) : null;
                 return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                   DescListeSigh([
@@ -116,7 +112,7 @@ class EcranTypesPiece extends StatelessWidget with EcranMaquette {
                   if (examens != null) ...[
                     const SizedBox(height: 16),
                     NoteSigh(
-                        'Cette pièce se remplit depuis les résultats validés biologiquement du patient — ${examens.length} examens : ${examens.map((x) => _tarif(c.magasin, x)?['libelle'] ?? '$x').join(', ')}. Un examen non validé ne peut pas y être coché.',
+                        'Cette pièce se remplit depuis les résultats validés biologiquement du patient — ${examens.length} examens : ${examens.map((x) => _tarif(c.magasin, x, c.aujourdhui)?['libelle'] ?? '$x').join(', ')}. Un examen non validé ne peut pas y être coché.',
                         icone: LucideIcons.flaskConical),
                   ],
                 ]);

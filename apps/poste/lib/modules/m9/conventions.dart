@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -625,7 +626,7 @@ class _OngletSouscripteurs extends StatelessWidget {
   void _editerExclusions(BuildContext ctx, Fiche s) {
     final actes = [
       ...AssBareme.actesExclus,
-      for (final a in actives(c, 'actes')) '${a['libelle']}'
+      for (final a in TarifsPoste.actes(c.magasin, aujourdhui: c.aujourdhui)) '${a['libelle']}'
     ];
     List<String> liste(Object? v) => [for (final x in (v as List? ?? const [])) '$x'];
     final ctl = ControleurFormulaire([

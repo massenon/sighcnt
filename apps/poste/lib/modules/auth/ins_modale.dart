@@ -18,7 +18,7 @@ const List<(String id, String libelle)> ecransConfigurationsInstallation = [
   ('cfg-entetes', 'Papier à en-tête officiel'),
   ('cfg-fiscalite', 'Paramètres fiscaux (IFU / RCCM)'),
   ('cfg-modules', 'Activité des modules'),
-  ('cfg-tarifs', 'Référentiel tarifaire'),
+  ('cfg-tarifs', 'Tarifs et prix'),
   ('cfg-natures-facture', 'Natures de facture'),
   ('cfg-comptabilite', 'Paramètres comptables & obligations'),
   ('mecef-config', 'Configuration fiscale (MECeF)'),

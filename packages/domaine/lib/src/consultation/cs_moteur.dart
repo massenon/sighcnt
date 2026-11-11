@@ -18,6 +18,7 @@ import '../imagerie/img_demandes_etats.dart' show modaliteDemandeDeExamen;
 import '../imagerie/img_demandes_ouverture.dart' show referenceSerie;
 import '../labo/dem_regles.dart' show demCodeAnalyse;
 import '../referentiels/regles.dart' show joursEntre;
+import '../tarifs/tarifs.dart';
 import 'cs_referentiels.dart';
 
 /// Refus NOMMÉ : [message] s'affiche tel quel ; [code] distingue `SANS_DOSSIER`.
@@ -498,36 +499,19 @@ FicheCs _creerTache(StockCs s, String type, FicheCs ord, FicheCs? facture,
   });
 }
 
-/// Le tarif d'un code : le catalogue tarifaire (`D.CATALOGUE`) — RG-09, le prix applicable dépend de la VALIDITÉ de la carte à la date.
-({num? montant, String? tarif, String? motif, FicheCs? entree}) csTarifPrix(
-    StockCs s, Object? code, bool assure) {
-  final e = s
-      .actives('catalogueTarifs')
-      .where((t) => t['code'] == code)
-      .firstOrNull;
+/// Le référentiel de prix du stock (`tarifs` et `versionsTarif`, PRD-TARIFS) : UNE source pour toutes les voies de tarification. Indexé à chaque appel (le stock est la seule source).
+ReferentielTarifs csReferentielTarifs(StockCs s) => ReferentielTarifs(s.toutes(tarCollectionTarifs), s.toutes(tarCollectionVersions));
+
+/// Le tarif d'un code de GRILLE (imagerie, soins AMI, certificats) : le prix de la version EN VIGUEUR à [date] (celle de la PIÈCE, jamais l'horloge au moment du calcul),
+/// colonne choisie par la validité de la carte à cette même date (RG-09). Un code absent se NOMME ; un prix manquant n'est ni un zéro ni une exclusion.
+({num? montant, String? tarif, String? motif, FicheCs? entree}) csTarifPrix(StockCs s, Object? code, bool assure, {Object? date, ReferentielTarifs? referentiel}) {
+  final h = referentiel ?? csReferentielTarifs(s);
+  final e = h.parGrille['$code'];
   if (e == null) {
     return (montant: null, tarif: null, motif: 'Acte absent du catalogue tarifaire.', entree: null);
   }
-  if (!assure) {
-    return (montant: e['prixNonAssure'] as num?, tarif: 'non assuré', motif: null, entree: e);
-  }
-  if (e['assurable'] == false || csVrai(e['nonCouvert'])) {
-    return (
-      montant: e['prixNonAssure'] as num?,
-      tarif: 'non assuré',
-      motif: 'Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré.',
-      entree: e
-    );
-  }
-  if (e['assurable'] == 'sos') {
-    return (
-      montant: e['prixNonAssure'] as num?,
-      tarif: 'non assuré',
-      motif: 'Les certificats ne sont couverts que par SOS — vérifier la compagnie.',
-      entree: e
-    );
-  }
-  return (montant: e['prixAssure'] as num?, tarif: 'assuré', motif: null, entree: e);
+  final r = h.resoudre(e, tarJourDe(date, tarIso(s.maintenant)), assure);
+  return (montant: r.montant, tarif: r.tarif, motif: r.motif, entree: e);
 }
 
 /// Rang suivant d'une SÉRIE ANNUELLE de pièces de caisse (`FP-2026-`) : le plus grand rang déjà porté par les factures du même préfixe
@@ -668,19 +652,25 @@ ResultatPrescription csPrescrire(
       }()
   ].where((l) => _n(l['quantite']) > 0).toList();
 
+  // PRD-TARIFS (lot T6) : le prix vient du RÉFÉRENTIEL, à la date de la prescription ; le référentiel statique des analyses ne porte plus que le modèle (désignation,
+  // catégorie, échantillon, délai). RG-09 décide la colonne, comme pour les actes : carte valide à CETTE date.
+  final h = csReferentielTarifs(s);
+  final jourPiece = tarJourDe(date, tarIso(s.maintenant));
   final referentielAnalyses = s.referentiel('analyses');
+  final assureAnalyses = csVrai(p['assureur']) && _carteValide(s, p, date);
   final analyses = <FicheCs>[
     for (final code in (v['analyses'] as List? ?? const []))
       () {
         final a = referentielAnalyses.where((x) => x['code'] == code).firstOrNull ??
             const <String, Object?>{};
+        final pr = h.prixAnalyse(code, jourPiece, assureAnalyses, aujourdhui: jourPiece);
         return <String, Object?>{
           'code': code,
           'designation': _ou(a['designation'], code),
           'categorie': _ou(a['categorie'], ''),
           'echantillon': _ou(a['echantillon'], ''),
           'delai': _ou(a['delai'], ''),
-          'prix': _ou(a['prix'], 0),
+          'prix': _ou(pr.montant, 0),
         };
       }()
   ];
@@ -688,17 +678,14 @@ ResultatPrescription csPrescrire(
   // C3 (corrigé dans la maquette le 31/10/2026, puis porté) : le tarif ASSURÉ d'un acte (pansement : 6 000 contre 9 000, colonnes inversées)
   // s'applique réellement quand la carte est valide à la date (RG-09). Seule la colonne assurée change le prix (`prixAssure` de l'acte du catalogue) :
   // sans carte valide, ou pour un acte que la grille exclut de l'assurance, le catalogue administrable reste la référence.
-  final assureActes = csVrai(p['assureur']) && _carteValide(s, p, date);
+  final assureActes = assureAnalyses;
   final actes = <FicheCs>[
     for (final code in (v['actes'] as List? ?? const []))
       () {
-        final a = s.actives('actes').where((x) => x['code'] == code).firstOrNull ??
-            const <String, Object?>{};
-        final tarifAssure = assureActes &&
-            a['assurable'] == true &&
-            !csVrai(a['nonCouvert']) &&
-            a['prixAssure'] != null;
-        final Object? prixActe = tarifAssure ? a['prixAssure'] : a['prix'];
+        // Le libellé et le secteur sont ceux de la prestation ; la colonne ASSURÉE ne s'applique que si l'acte est assurable ET porte un montant assuré (la règle historique).
+        final a = h.parActe['$code'] ?? const <String, Object?>{};
+        final pr = h.prixActe(code, jourPiece, assureActes, aujourdhui: jourPiece);
+        final Object? prixActe = pr.montant;
         return <String, Object?>{
           'code': code,
           'libelle': _ou(a['libelle'], code),
@@ -962,10 +949,11 @@ ResultatPrescription csPrescrire(
     StockCs s, FicheCs p, List<String> codes, String date, FicheCs v) {
   final assure = _carteValide(s, p, date);
   final catalogue = s.actives('examensImagerie');
+  final h = csReferentielTarifs(s);
   final demandes = <FicheCs>[];
   for (final code in codes) {
     final ex = catalogue.where((x) => x['code'] == code).firstOrNull;
-    final pr = csTarifPrix(s, _ou(ex?['tarifCode'], code), assure);
+    final pr = csTarifPrix(s, _ou(ex?['tarifCode'], code), assure, date: date, referentiel: h);
     demandes.add(s.inserer('demandesImagerie', {
       'reference': referenceSerie('IME-', 5, s.toutes('demandesImagerie')),
       'dateHeure': date,
@@ -1030,19 +1018,18 @@ FicheCs csPrescrireSoins(StockCs s, Map<String, Object?> v) {
   }
   final date = csVrai(v['date']) ? '${v['date']}' : _iso(s.maintenant);
   final assure = _carteValide(s, p, date);
+  final h = csReferentielTarifs(s);
   final lignes = <FicheCs>[
     for (final a in (v['actes'] as List? ?? const []))
       () {
         final obj = a is Map ? a.cast<String, Object?>() : null;
         final code = obj != null ? obj['code'] : a;
-        final t = s
-            .actives('catalogueTarifs')
-            .where((e) => e['code'] == code)
-            .firstOrNull;
-        final pr = csTarifPrix(s, code, assure);
+        final t = h.parGrille['$code'];
+        final pr = csTarifPrix(s, code, assure, date: date, referentiel: h);
         return <String, Object?>{
           'acteCode': code,
-          'libelle': t != null ? t['libelle'] : code,
+          // Le libellé de la GRILLE (celui que la ligne de soins a toujours porté), le libellé de facturation à défaut.
+          'libelle': t != null ? _ou(t['libelleGrille'], t['libelle']) : code,
           'famille': t != null ? t['famille'] : null,
           'quantite': csVrai(obj?['quantite']) ? obj!['quantite'] : 1,
           'frequence': _ou(obj?['frequence'], ''),

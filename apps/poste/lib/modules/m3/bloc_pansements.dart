@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -35,8 +36,9 @@ class EcranBonsPansements extends StatelessWidget with EcranMaquette {
   String get regle =>
       'Le bon réutilise la chaîne existante : la prescription porte une ligne payable par séance — la caisse encaisse des séances NOMMÉES, et un règlement partiel libère exactement celles qu’il couvre. L’exécution passe par la file de la salle de soins, débloquée par l’encaissement.';
 
-  static List<Fiche> actesPansement(Magasin m) => [
-        for (final a in m.collection('actes').actives)
+  /// Les actes de pansement du RÉFÉRENTIEL de prix, au prix en vigueur à [aujourdhui] (le tarif du pansement se lit ici, jamais à une liste de lecture).
+  static List<Fiche> actesPansement(Magasin m, [DateTime? aujourdhui]) => [
+        for (final a in TarifsPoste.actes(m, aujourdhui: aujourdhui ?? DateTime.now()))
           if (blocCodesPansement.contains(a['code'])) a
       ];
 
@@ -196,11 +198,11 @@ class EcranBonsPansements extends StatelessWidget with EcranMaquette {
     final ords = c.magasin.collection('ordonnances');
     final facs = c.magasin.collection('factures');
     return ListenableBuilder(
-      listenable: Listenable.merge([ords, facs, c.magasin.collection('actes')]),
+      listenable: Listenable.merge([ords, facs, c.magasin.collection('versionsTarif')]),
       builder: (context, _) {
         final rows = blocBonsPansement(ords.actives);
         final k = blocKpisPansements(rows, facs.actives);
-        final types = actesPansement(c.magasin);
+        final types = actesPansement(c.magasin, c.aujourdhui);
         final so09 = types.where((a) => a['code'] == 'SO09').firstOrNull;
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           bandeauLectureSeule(c),

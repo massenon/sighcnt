@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cs_commun.dart';
@@ -474,12 +475,10 @@ class _EtatOrdonnanceNouvelle extends State<EcranOrdonnanceNouvelle> {
           nombreOuZero(l['quantite']);
     }
     for (final code in (_complements['analyses'] as List? ?? const [])) {
-      mAna += nombreOuZero(
-          m.referentiel('analyses').where((x) => x['code'] == code).firstOrNull?['prix']);
+      mAna += nombreOuZero(TarifsPoste.prixAnalyse(m, code, aujourdhui: c.aujourdhui));
     }
     for (final code in (_complements['actes'] as List? ?? const [])) {
-      mAct += nombreOuZero(
-          m.collection('actes').actives.where((x) => x['code'] == code).firstOrNull?['prix']);
+      mAct += nombreOuZero(TarifsPoste.prixActe(m, code, aujourdhui: c.aujourdhui));
     }
     return '${money(mMed + mAna + mAct)}  (médicaments ${money(mMed, avecDevise: false)} · analyses ${money(mAna, avecDevise: false)} · actes ${money(mAct, avecDevise: false)})';
   }

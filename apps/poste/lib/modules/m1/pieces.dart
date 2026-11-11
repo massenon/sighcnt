@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -23,8 +24,8 @@ List<PatTypePiece> typesPiece(Magasin m) {
   ];
 }
 
-Fiche? _tarif(Magasin m, String? code) =>
-    code == null ? null : m.collection('catalogueTarifs').actives.where((t) => t['code'] == code).firstOrNull;
+/// La ligne de GRILLE d'un type de pièce, au prix du RÉFÉRENTIEL en vigueur à [date] (la date de délivrance : le prix d'une pièce est celui de sa date).
+Fiche? _tarif(Magasin m, String? code, DateTime date) => code == null ? null : TarifsPoste.entreeGrille(m, code, aujourdhui: date, date: date);
 
 class EcranPieces extends StatelessWidget with EcranMaquette {
   const EcranPieces({super.key});
@@ -126,7 +127,7 @@ class EcranPieces extends StatelessWidget with EcranMaquette {
       pt = patients.inserer(d, prefixe: 'PAT').fiche;
     }
     final nu = patNumeroter(t, m.collection('pieces').toutes, c.aujourdhui.year);
-    final tarif = _tarif(m, t.tarifCode);
+    final tarif = _tarif(m, t.tarifCode, c.aujourdhui);
     final montant = tarif == null ? null : tarif['prixNonAssure'] as num?;
     PatFacturePiece? fac;
     if (patVrai(montant)) {

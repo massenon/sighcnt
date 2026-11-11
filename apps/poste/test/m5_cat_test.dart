@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show tarMigrer;
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
@@ -34,7 +35,10 @@ Magasin jeu() => Magasin.depuisDossier([
       'variablesLabo',
       'plagesReactif',
       'produits',
-      'mouvements'
+      'mouvements',
+      // Le TARIF d'une analyse se lit au référentiel de prix (lot T6).
+      'tarifs',
+      'versionsTarif'
     ]);
 
 Future<void> ouvrir(WidgetTester t, Magasin m, String ecran,
@@ -171,18 +175,18 @@ void main() {
       expect(find.text('7 analyses'), findsWidgets);
     });
 
-    cas('création : la fiche est écrite (tarif en nombre), l\'indicateur suit, le geste est journalisé et s\'annule', (t) async {
+    cas('création : la fiche est écrite (sans tarif), l\'indicateur suit, le geste est journalisé et s\'annule', (t) async {
       final m = jeu();
       await ouvrir(t, m, 'm5-catalogue');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau'));
       await saisir(t, 'code', 'L99');
       await saisir(t, 'designation', 'TEST ANALYSE');
       await choisir(t, 'categorie', 'Biochimie');
-      await saisir(t, 'prix', '1500');
+      expect(find.byKey(const Key('kit:champ:prix')), findsNothing, reason: 'le tarif ne se saisit plus ici : il se propose à « Tarifs et prix »');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
       final f = ficheAnalyse(m, (x) => x['code'] == 'L99');
       expect(f['statut'], 'actif');
-      expect(f['prix'], 1500);
+      expect(f.containsKey('prix'), isFalse, reason: 'aucun prix inventé : sans version de prix en vigueur, le tarif se dit « à valider »');
       expect(f['categorie'], 'Biochimie');
       expect(f['echantillon'], '');
       expect(find.text('Nouveau analyse créé.'), findsOneWidget);
@@ -201,23 +205,25 @@ void main() {
       await ouvrir(t, m, 'm5-catalogue');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau'));
       await saisir(t, 'code', 'L97');
-      await saisir(t, 'prix', '800');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
       expect(find.text('Ce champ est obligatoire.'), findsOneWidget);
       expect(find.text('Le formulaire comporte des erreurs.'), findsOneWidget);
       expect(collectionAnalyses(m).toutes.any((x) => x['code'] == 'L97'), isFalse);
     });
 
-    cas('modification du tarif : seul le tarif change, il reste un nombre', (t) async {
+    cas('le tarif est en LECTURE : la modification garde la désignation, le tarif se lit au référentiel et ne s\'écrit plus dans cette liste', (t) async {
       final m = jeu();
       await ouvrir(t, m, 'm5-catalogue');
       await toucher(t, find.byTooltip('Modifier').first);
-      await saisir(t, 'prix', '2300');
+      expect(find.byKey(const Key('kit:champ:prix')), findsNothing);
+      await saisir(t, 'designation', 'AKOP révisé');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
       final f = ficheAnalyse(m, (x) => x['code'] == 'L01');
-      expect(f['prix'], 2300);
-      expect(f['designation'], 'AKOP');
+      expect(f['designation'], 'AKOP révisé');
+      expect(f['prix'], 2000, reason: 'le tarif de la liste de lecture reflète le référentiel');
       expect(f['tarifProvisoire'], true, reason: 'modifier ne confirme pas un tarif');
+      // Un prix écrit directement dans la liste est refusé AU MOTEUR (garde du magasin), en nommant l\'écran où le proposer.
+      expect(() => m.collection('analyses').mettreAJour(f['id'], {'prix': 2300}), throwsA(isA<EcritureRefusee>()));
     });
 
     cas('archiver est annulable (RG-14) et passe l\'analyse dans l\'onglet « Archivés »', (t) async {
@@ -243,12 +249,12 @@ void main() {
     });
 
     cas('un tarif ARRÊTÉ n\'a pas l\'icône « à confirmer » ; un tarif d\'attente l\'a', (t) async {
-      final m = Magasin({'audit': const []}, 'POSTE', {
-        'analyses': [
-          {'id': 'A1', 'n': 1, 'code': 'L01', 'designation': 'ARRÊTÉ', 'categorie': 'Biochimie', 'prix': 2000, 'echantillon': 'Sang', 'delai': '24 h', 'statut': 'Actif', 'tarifProvisoire': false},
-          {'id': 'A2', 'n': 2, 'code': 'L02', 'designation': 'D\'ATTENTE', 'categorie': 'Biochimie', 'prix': 3000, 'echantillon': 'Sang', 'delai': '24 h', 'statut': 'Actif', 'tarifProvisoire': true},
-        ]
-      });
+      final analyses = [
+        {'id': 'A1', 'n': 1, 'code': 'L01', 'designation': 'ARRÊTÉ', 'categorie': 'Biochimie', 'prix': 2000, 'echantillon': 'Sang', 'delai': '24 h', 'statut': 'Actif', 'tarifProvisoire': false},
+        {'id': 'A2', 'n': 2, 'code': 'L02', 'designation': 'D\'ATTENTE', 'categorie': 'Biochimie', 'prix': 3000, 'echantillon': 'Sang', 'delai': '24 h', 'statut': 'Actif', 'tarifProvisoire': true},
+      ];
+      final migration = tarMigrer(actes: const [], grille: const [], analyses: analyses);
+      final m = Magasin({'audit': const [], 'tarifs': migration.tarifs, 'versionsTarif': migration.versions}, 'POSTE', {'analyses': analyses});
       await ouvrir(t, m, 'm5-catalogue');
       expect(find.byTooltip('Tarif à confirmer'), findsOneWidget);
       expect(kpi(t, 'Tarifs à confirmer'), '1');

@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
 import 'cfa_natures.dart';
-import 'cfa_catalogue.dart';
 import 'cfa_identite.dart';
 import 'cfa_imagerie.dart';
 import 'cfa_organisation.dart';
 import 'cfa_pieces.dart';
 import 'cfa_rappels.dart';
-import 'cfa_tarifs.dart';
+import 'cft_tarifs.dart';
 import 'cfb_centres.dart';
 import 'cfb_compte.dart';
 import 'cfb_fiscal.dart';
@@ -25,8 +24,8 @@ typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste con
 /// d'entrée du module dans `registre.dart` ; on y ajoute une ligne par écran porté.
 final Map<String, ConstruireEcran> ecransCFG = {
   'cfg-organisation': (c, cfg) => const EcranOrganisation(),
-  'cfg-tarifs': (c, cfg) => const EcranTarifs(),
-  'cfg-catalogue': (c, cfg) => const EcranCatalogue(),
+  'cfg-tarifs': (c, cfg) => const EcranTarifsEtPrix(),
+  'cfg-catalogue': (c, cfg) => const EcranCatalogueRenvoi(),
   'cfg-branding': (c, cfg) => const EcranBranding(),
   'cfg-entetes': (c, cfg) => const EcranEntetes(),
   'cfg-types-piece': (c, cfg) => const EcranTypesPiece(),

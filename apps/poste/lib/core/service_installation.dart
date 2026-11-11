@@ -204,7 +204,7 @@ class ServiceInstallation extends ChangeNotifier {
     'cfg-entetes': {'ressources'},
     'cfg-fiscalite': {'identiteLegale'},
     'cfg-modules': {'modulesActifs'},
-    'cfg-tarifs': {'actes', 'analyses', 'catalogueTarifs', 'produits', 'typesPiece'},
+    'cfg-tarifs': {'actes', 'analyses', 'catalogueTarifs', 'tarifs', 'versionsTarif', 'prix', 'produits', 'typesPiece'},
     'cfg-natures-facture': {'naturesFacture'},
     'cfg-comptabilite': {'obligationsFiscales'},
     'mecef-config': {'reglages'},

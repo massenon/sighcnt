@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -137,11 +138,7 @@ class EcranCro extends StatelessWidget with EcranMaquette {
       listenable: col,
       builder: (context, _) {
         final k = blocKpisCro(col.actives, c.aujourdhui);
-        final actesGyneco = c.magasin
-            .collection('catalogueTarifs')
-            .actives
-            .where((e) => e['famille'] == 'GYNECO')
-            .length;
+        final actesGyneco = TarifsPoste.grille(c.magasin, aujourdhui: c.aujourdhui, famille: 'GYNECO').length;
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           bandeauLectureSeule(c),
           kpisBloc([

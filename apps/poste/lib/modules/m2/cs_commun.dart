@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -117,14 +118,15 @@ List<OptionChamp> optionsMedicamentsCs(Magasin m) => [
               '${p['designation']} — ${money(p['prixAchat'], avecDevise: false)} · stock ${p['stockDetail'] ?? p['stock']}')
     ];
 
-List<OptionChamp> optionsAnalysesCs(Magasin m) => [
-      for (final a in m.referentiel('analyses'))
+/// Les analyses proposées à la prescription : le MODÈLE (désignation, catégorie) du catalogue, le PRIX du référentiel (version en vigueur à [aujourdhui]).
+List<OptionChamp> optionsAnalysesCs(Magasin m, [DateTime? aujourdhui]) => [
+      for (final a in TarifsPoste.analyses(m, aujourdhui: aujourdhui ?? DateTime.now()))
         OptionChamp('${a['code']}',
             '${a['designation']} — ${a['categorie']} · ${money(a['prix'], avecDevise: false)}')
     ];
 
-List<OptionChamp> optionsActesCs(Magasin m) => [
-      for (final a in m.collection('actes').actives)
+List<OptionChamp> optionsActesCs(Magasin m, [DateTime? aujourdhui]) => [
+      for (final a in TarifsPoste.actes(m, aujourdhui: aujourdhui ?? DateTime.now()))
         OptionChamp('${a['code']}',
             '${a['libelle']} — ${a['secteur']}${vrai(a['prix']) ? ' · ${money(a['prix'], avecDevise: false)}' : ' · tarif à valider'}')
     ];

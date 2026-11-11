@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -123,7 +124,7 @@ class EcranDemandeExamen extends StatelessWidget with EcranMaquette {
           'secteurDemandeur': blocSecteurDemandeur(v['serviceDemandeur']),
         },
         codesAnalyses: [for (final x in (v['analyses'] as List)) '$x'],
-        catalogue: collectionAnalyses(m).actives,
+        catalogue: TarifsPoste.analyses(m, aujourdhui: c.aujourdhui),
         patients: m.collection('patients').toutes,
         demandesExistantes: m.collection('demandesAnalyses').toutes,
         nbFactures: m.collection('factures').toutes.length,

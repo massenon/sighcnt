@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../kit/kit.dart';
 
 /// Poste d'imagerie médicale (M2) : ce que partagent le registre des demandes, le poste et la galerie des clichés.
@@ -47,22 +48,16 @@ List<OptionChamp> optionsPatientsImagerie(Magasin m) => [
         OptionChamp('${p['code']}', '${p['code']} — ${p['nom']} ${p['prenom']}')
     ];
 
-/// `D.tarifPrix(code, assure)` : le catalogue tarifaire est lu au magasin (`catalogueTarifs`), puis aux actes rapprochés d'une grille
-/// (`actes` : `codeTarif` + prix non assuré / assuré). Aucun prix n'est inventé : sans entrée, le code est ABSENT et la demande est refusée en le nommant.
-PrixImagerie Function(String code, bool assure) prixDepuisMagasin(Magasin m) {
-  final tarifs = <String, Fiche>{};
-  for (final a in m.collection('actes').actives) {
-    final c = a['codeTarif'];
-    if (c != null && a['prixNonAssure'] != null) tarifs.putIfAbsent('$c', () => a);
-  }
-  for (final t in m.collection('catalogueTarifs').actives) {
-    tarifs['${t['code']}'] = t;
-  }
+/// `D.tarifPrix(code, assure)` : le prix d'un examen d'imagerie est celui de la version EN VIGUEUR à [date], la date de la PIÈCE (jamais l'horloge au moment du calcul) ; la
+/// colonne est décidée par la validité de la carte à cette même date (RG-09, passée par le domaine). Le référentiel de prix est la seule source (PRD-TARIFS, lot T6). Aucun
+/// prix n'est inventé : sans ligne de grille, le code est ABSENT et la demande est refusée en le nommant.
+PrixImagerie Function(String code, bool assure) prixDepuisMagasin(Magasin m, DateTime date) {
   final examens = catalogueExamens(m);
   return (code, assure) {
     final ex = examens.where((x) => x['code'] == code).firstOrNull;
     final cle = '${(ex?['tarifCode'] ?? '') == '' ? code : ex!['tarifCode']}';
-    return prixTarif(tarifs[cle], assure);
+    final r = TarifsPoste.prixGrille(m, cle, aujourdhui: date, date: date, assure: assure);
+    return PrixImagerie(r.montant, r.motif);
   };
 }
 

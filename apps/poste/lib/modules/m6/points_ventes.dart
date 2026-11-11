@@ -6,6 +6,7 @@ import 'package:sigh_domaine/src/stock/points.dart' as pts show etatStock, trier
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../donnees/tarifs_poste.dart';
 import 'points_commun.dart';
 
 /// `m6-point-ventes` — « Suivi des ventes ». Un écran CALCULÉ : le point se lit selon QUATRE axes (période, client, article, groupe) sur la MÊME
@@ -151,7 +152,7 @@ class _EtatPointVentes extends State<EcranPointVentes> {
   List<String> get _selArticles => choix(_articles!['articles']);
 
   List<LigneVendue> _lignes(ContexteEcran c, Bornes b) {
-    final secteurs = secteursDesActes(c.magasin.collection('actes').toutes);
+    final secteurs = secteursDesActes(TarifsPoste.actesPourSecteurs(c.magasin));
     final toutes = lignesVendues(c.magasin.collection('factures').actives, b,
         secteurParCode: secteurs);
     return filtrerVentes(toutes,

@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cs_commun.dart';
@@ -49,10 +50,8 @@ class _Corps extends StatelessWidget {
 
   List<ChampDef> _champs() {
     final m = c.magasin;
-    final catalogue = [
-      for (final t in m.collection('catalogueTarifs').actives)
-        if (t['famille'] == 'AMI') t
-    ];
+    // Les lignes de GRILLE de la famille des soins AMI, au prix du référentiel en vigueur aujourd'hui.
+    final catalogue = TarifsPoste.grille(m, aujourdhui: c.aujourdhui, famille: 'AMI');
     return [
       ChampDef(
           nom: 'patientCode',

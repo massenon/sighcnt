@@ -490,7 +490,7 @@ class _EtatModaleDemande extends State<_ModaleDemande> {
         couvertures: m.collection('couverturesAssurance').actives,
         demandesExistantes: demandes.toutes,
         nbFactures: m.collection('factures').toutes.length,
-        prixDe: prixDepuisMagasin(m),
+        prixDe: prixDepuisMagasin(m, c.aujourdhui),
         nouvelId: nouvelIdImagerie,
         date: maintenant,
         maintenant: maintenant,

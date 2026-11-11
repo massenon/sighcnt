@@ -5,6 +5,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../impression/identite_poste.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/apercu.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -220,10 +221,12 @@ class _EtatFacturation extends State<EcranFacturation> {
   // --- catalogue ---------------------------------------------------------------------------------------------------
   void _remplirArticles(Magasin m) {
     final nature = '${_ajout['nature']}';
+    final jour = _c?.aujourdhui ?? DateTime.now();
     final liste = <_Article>[];
     switch (nature) {
       case 'acte':
-        for (final a in m.collection('actes').actives) {
+        // La liste des actes est celle du RÉFÉRENTIEL de prix, au prix EN VIGUEUR le jour de la pièce (PRD-TARIFS, lot T6) : jamais une liste de lecture.
+        for (final a in TarifsPoste.actes(m, aujourdhui: jour)) {
           if (a['prix'] == null) continue;
           liste.add((
             libelle: '${a['libelle']}',
@@ -241,7 +244,8 @@ class _EtatFacturation extends State<EcranFacturation> {
           ));
         }
       case 'analyse':
-        for (final a in m.referentiel('analyses')) {
+        for (final a in TarifsPoste.analyses(m, aujourdhui: jour)) {
+          if (a['prix'] == null) continue;
           liste.add((
             libelle: '${a['designation']}',
             prix: n(a['prix']),
@@ -261,7 +265,7 @@ class _EtatFacturation extends State<EcranFacturation> {
           ));
         }
       case 'hospitalisation':
-        for (final t in m.referentiel('typesChambre')) {
+        for (final t in TarifsPoste.typesChambre(m, aujourdhui: jour)) {
           liste.add((
             libelle: 'Journée — chambre ${t['label']}',
             prix: n(t['tarif']),

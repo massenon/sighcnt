@@ -6,6 +6,7 @@ import '../core/donnees_navigation.dart';
 import '../core/icones.dart';
 import '../core/jetons_shell.dart';
 import '../donnees/magasin.dart';
+import '../donnees/tarifs_poste.dart';
 import '../kit/modale.dart';
 
 /// Un résultat de la recherche globale : où il mène (écran, et onglet si c'est une rubrique).
@@ -49,7 +50,9 @@ List<GroupeRecherche> rechercheGlobale({
   required String role,
   required DonneesNavigation nav,
   required Magasin magasin,
+  DateTime? aujourdhui,
 }) {
+  final auj = aujourdhui ?? DateTime.now();
   final q = requete.trim();
   if (q.length < 2) return const [];
   bool autorise(String id) => ecranOuvertAuRole(nav, role, id);
@@ -104,12 +107,12 @@ List<GroupeRecherche> rechercheGlobale({
       (e) => ResultatRecherche(
           label: t(e['nomComplet']), detail: 'Mat. ${t(e['matricule'])}, ${t(e['poste'])}', icone: 'id-card', ecran: 'm10-personnel'),
       droit: 'm10-personnel');
-  // Le catalogue administrable, pas la semence : un acte ajouté ou renommé dans cfg-tarifs se trouve par la recherche.
-  famille('Actes & prestations', magasin.collection('actes').actives, (a) => ok('${t(a['libelle'])} ${t(a['secteur'])} ${t(a['code'])}'), 5,
+  // Le RÉFÉRENTIEL de prix (PRD-TARIFS), pas une liste de lecture : une prestation ajoutée ou renommée à « Tarifs et prix » se trouve par la recherche, au prix en vigueur.
+  famille('Actes & prestations', TarifsPoste.actes(magasin, aujourdhui: auj), (a) => ok('${t(a['libelle'])} ${t(a['secteur'])} ${t(a['code'])}'), 5,
       (a) => ResultatRecherche(
           label: t(a['libelle']), icone: 'stethoscope', detail: '${t(a['secteur'])}, ${_tarifCourt(a)}', ecran: 'cfg-tarifs', onglet: 'prestations'),
       droit: 'cfg-tarifs');
-  famille('Analyses', magasin.referentiel('analyses'), (a) => ok('${t(a['designation'])} ${t(a['categorie'])} ${t(a['code'])}'), 5,
+  famille('Analyses', TarifsPoste.analyses(magasin, aujourdhui: auj), (a) => ok('${t(a['designation'])} ${t(a['categorie'])} ${t(a['code'])}'), 5,
       (a) => ResultatRecherche(
           label: t(a['designation']),
           icone: 'flask-conical',

@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -380,7 +381,7 @@ class EcranObservation extends StatelessWidget with EcranMaquette {
             type: TypeChamp.multiselect,
             col: ColChamp.plein,
             options: [
-              for (final a in m.collection('actes').actives)
+              for (final a in TarifsPoste.actes(m, aujourdhui: DateTime.now()))
                 if (RegExp(r'Soins|Médecine générale').hasMatch('${a['secteur']}'))
                   OptionChamp('${a['code']}', '${a['libelle']}')
             ]),

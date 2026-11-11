@@ -4,6 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/tarifs_poste.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -182,7 +183,8 @@ class EcranExterne extends StatelessWidget with EcranMaquette {
           if (v['naissanceConnue'] == 'age') 'dateNaissance': null else 'age': null,
         },
         codesAnalyses: codes,
-        catalogue: collectionAnalyses(m).actives,
+        // Le MODÈLE de l'analyse vient du catalogue, son PRIX du référentiel (version en vigueur à la date de la demande).
+        catalogue: TarifsPoste.analyses(m, aujourdhui: c.aujourdhui),
         patients: m.collection('patients').toutes,
         demandesExistantes: m.collection('demandesAnalyses').toutes,
         nbFactures: m.collection('factures').toutes.length,
@@ -209,7 +211,7 @@ class EcranExterne extends StatelessWidget with EcranMaquette {
         couvertures: m.collection('couverturesAssurance').actives,
         demandesExistantes: m.collection('demandesImagerie').toutes,
         nbFactures: m.collection('factures').toutes.length,
-        prixDe: prixDepuisMagasin(m),
+        prixDe: prixDepuisMagasin(m, c.aujourdhui),
         nouvelId: nouvelIdImagerie,
         date: maintenant,
         maintenant: maintenant,

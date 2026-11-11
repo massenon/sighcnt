@@ -94,11 +94,15 @@ void main() {
   final cat = (v['catalogues'] as Map).cast<String, Object?>();
   final jour = DateTime.parse('2026-10-31T12:00:00');
 
+  // Le prix vient du référentiel (lot T6) : les analyses du vecteur, reprises SANS changer un prix.
+  final migration = tarMigrer(actes: const [], grille: const [], analyses: liste(cat['analyses']));
   Memoire memoire() {
     final m = Memoire({
       'patients': liste(cat['patients']),
       'produits': liste(cat['produits']),
       'couverturesAssurance': [],
+      tarCollectionTarifs: migration.tarifs,
+      tarCollectionVersions: migration.versions,
     }, jour);
     m.referentiels['analyses'] = liste(cat['analyses']);
     return m;
