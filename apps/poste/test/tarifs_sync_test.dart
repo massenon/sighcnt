@@ -104,6 +104,7 @@ void main() {
       expect(TarifsPoste.prixActe(mf, 'MG01', aujourdhui: auj, date: plus(2)), 5000, reason: 'la veille de la date d\'effet : l\'ancien prix');
       expect(TarifsPoste.prixActe(mf, 'MG01', aujourdhui: auj, date: plus(3)), 5300, reason: 'le jour dit : le nouveau prix, sans connexion ni horloge');
       // La décision de la Direction (fileul) est une demande, que la mère applique sous le rôle `direction`.
+      await converger(() => mf.collection('versionsTarif').toutes.any((x) => x['code'] == 'MG02' && x['statut'] == 'propose'), 'la seconde proposition arrive au fileul, qui peut la trancher');
       final autre = f.decider('${mm.collection('versionsTarif').toutes.firstWhere((x) => x['code'] == 'MG02' && x['statut'] == 'propose')['id']}', 'non', motif: 'Prix hors grille');
       expect(autre.depose, isTrue, reason: '${autre.refus}');
       await converger(() => mm.collection('versionsTarif').toutes.any((x) => x['code'] == 'MG02' && x['statut'] == 'refuse'), 'le Non de la Direction (fileul) est appliqué par la mère');
@@ -127,14 +128,27 @@ void main() {
       Future<List<String>> recues(String role, Map<String, Object?> extra) async {
         final c = (await appel('POST', '/admin/code', corps: {'etiquette': role, 'role': role, ...extra}, entetes: {'x-admin': 'secret-test'}))['code'];
         final jetons = await appel('POST', '/appairage', corps: {'code': c, 'uuid': 'dev-$role', 'plateforme': 'test'});
-        final pull = await appel('GET', '/sync/pull?depuis=0&limite=500&epoch=${jetons['epoch']}', entetes: {'authorization': 'Bearer ${jetons['jeton']}'});
-        return [for (final o in (pull['ops'] as List)) '${(o as Map)['collection']}'];
+        // Le journal est lu PAGE PAR PAGE jusqu'à sa fin : le jeu porte plus de 400 fiches de prix, la première page seule ne prouverait rien.
+        final noms = <String>[];
+        var depuis = 0;
+        while (true) {
+          final pull = await appel('GET', '/sync/pull?depuis=$depuis&limite=500&epoch=${jetons['epoch']}', entetes: {'authorization': 'Bearer ${jetons['jeton']}'});
+          if (pull['ops'] == null) fail('pull de $role à $depuis : $pull');
+          final ops = (pull['ops'] as List).cast<Map>();
+          for (final o in ops) {
+            noms.add('${o['collection']}');
+            depuis = (o['seq'] as num).toInt();
+          }
+          if (pull['fin'] == true || ops.isEmpty) break;
+        }
+        return noms;
       }
 
       // La mère a écrit les versions, et les demandes ont voyagé : le journal les porte bien (un fileul les reçoit).
       final fileulOps = await recues('fileul', {});
       expect(fileulOps, containsAll(['tarifs', 'versionsTarif', 'propositionsTarif']), reason: 'un fileul reçoit tout');
-      final mobileOps = await recues('mobile', {'profil': 'soignant'});
+      final mobileOps = await recues('mobile', {'profil': 'soignant', 'fonction': 'infirmier'});
+      expect(mobileOps, isNotEmpty, reason: 'le téléphone lit bien le journal (le reste de la configuration lui est servi) : l\'absence des prix est une EXCLUSION, pas un journal vide');
       expect(mobileOps, isNot(contains('tarifs')), reason: 'le référentiel de prix ne part jamais vers un téléphone');
       expect(mobileOps, isNot(contains('versionsTarif')));
       expect(mobileOps, isNot(contains('propositionsTarif')), reason: 'ni les propositions, ni les refus, ni les motifs');

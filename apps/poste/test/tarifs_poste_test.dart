@@ -66,6 +66,35 @@ void main() {
     });
   });
 
+  group('les lecteurs en LISTE résolvent à la date de la PIÈCE, jamais à celle de l\'horloge (sonde de la mutation « prix d\'aujourd\'hui »)', () {
+    test('actes, analyses, types de chambre, entrée de grille et grille : l\'ancien prix la veille de la date d\'effet, le nouveau le jour dit', () {
+      final m = jeu();
+      final t = poste(m, 'da', nom: 'DAF');
+      final h = TarifsPoste.lire(m);
+      // Un acte, une chambre et une ligne de grille : des versions validées à venir (J+5).
+      final grilleEcho = '${h.parGrille['IMG-ECHO-PEL']!['code']}';
+      for (final code in ['MG01', 'HO01', grilleEcho]) {
+        expect(t.proposer(prop(code, 77777, date: plus(5), valider: true)).ok, isTrue, reason: code);
+      }
+      // Une analyse : on tranche Oui, à J+5, la proposition de la grille imprimée qui attend.
+      final propose = h.versionsDe('L01').last;
+      expect(propose['statut'], 'propose');
+      expect(t.decider('${propose['id']}', 'oui', dateEffet: plus(5)).ok, isTrue);
+      final nouveauL01 = TarifsPoste.lire(m).versionsDe('L01').last['prixNonAssure'];
+      expect(nouveauL01, isNot(2000), reason: 'la grille imprimée porte un autre prix que la migration');
+      for (final (jour, attendu) in [(plus(4), false), (plus(5), true)]) {
+        final nom = attendu ? 'le jour dit' : 'la veille';
+        expect(TarifsPoste.actes(m, aujourdhui: auj, date: jour).firstWhere((a) => a['code'] == 'MG01')['prix'], attendu ? 77777 : 5000, reason: 'actes, $nom');
+        expect(TarifsPoste.analyses(m, aujourdhui: auj, date: jour).firstWhere((a) => a['code'] == 'L01')['prix'], attendu ? nouveauL01 : 2000, reason: 'analyses, $nom');
+        expect(TarifsPoste.typesChambre(m, aujourdhui: auj, date: jour).first['tarif'], attendu ? 77777 : isNot(77777), reason: 'chambres, $nom');
+        expect(TarifsPoste.entreeGrille(m, 'IMG-ECHO-PEL', aujourdhui: auj, date: jour)!['prixNonAssure'], attendu ? 77777 : 9000, reason: 'entrée de grille, $nom');
+        expect(TarifsPoste.grille(m, aujourdhui: auj, date: jour, famille: 'IMAGERIE').firstWhere((e) => e['code'] == 'IMG-ECHO-PEL')['prixNonAssure'], attendu ? 77777 : 9000, reason: 'grille, $nom');
+      }
+      // Sans date : le jour de l'horloge fournie (le 30/10), donc l'ancien prix.
+      expect(TarifsPoste.actes(m, aujourdhui: auj).firstWhere((a) => a['code'] == 'MG01')['prix'], 5000);
+    });
+  });
+
   group('les gardes du magasin tiennent la règle AU MOTEUR (masquer un bouton ne protège rien)', () {
     test('une version est IMMUABLE : le prix, l\'archivage et le retrait d\'une version valide sont refusés', () {
       final m = jeu();
