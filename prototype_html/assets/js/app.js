@@ -487,8 +487,9 @@
     var barre = el('div.flex.items-center.gap-2.border-t.border-white\\/10.px-2', null, [
       onglets,
       buildRaccourcis(session),
-      el('a.ribbon-tool.hidden.sm\\:inline-flex', { href: href('plan-du-site'), title: 'Plan du site' },
-        C.icon('map', 'h-4 w-4')),
+      /* Le plan du site n'est offert que si le réglage en base l'affiche (défaut non) : `N.ouvertParReglage` le lit à la source. */
+      N.ouvertParReglage('plan-du-site') ? el('a.ribbon-tool.hidden.sm\\:inline-flex', { href: href('plan-du-site'), title: 'Plan du site' },
+        C.icon('map', 'h-4 w-4')) : null,
       replier,
     ]);
     header.appendChild(barre);

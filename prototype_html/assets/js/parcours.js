@@ -6857,4 +6857,29 @@
     DEFAUT_MIN: SECOURS_DEFAUT_MIN, BORNES: SECOURS_BORNES, delaiSecours: delaiSecoursMinutes, delaiOrdinaire: delaiOrdinaireMinutes, posteDeSecours: posteDeSecours,
     delaiPoste: delaiVerrouPosteMinutes, peutRegler: reglerVerrouSecoursOk, definirDelai: definirDelaiSecours, definirPoste: definirPosteDeSecours,
   };
+  /* ==========================================================================
+   * LE PLAN DU SITE EST UN RÉGLAGE, DÉSACTIVÉ PAR DÉFAUT (11/11/2026, Direction)
+   * --------------------------------------------------------------------------
+   * Réglage EN BASE (`planDuSiteAffiche`, défaut NON), jamais une constante ni un masquage écrit dans l'écran : le manifeste porte la page (elle ne s'en retire
+   * jamais) et son entrée déclare `sousReglage` ; `N.can` et `N.ouvertParReglage` lisent CE réglage, donc le ruban, la recherche, les cartes de hub, les accès
+   * rapides, le menu profil et l'adresse directe suivent d'un seul mouvement. Réglable par l'administrateur et la Directrice Administrative seuls (le moteur
+   * refuse en nommant), journalisé avec l'ancienne et la nouvelle valeur (RG-12). Réglage de BRANCHE : il voyage aux fileuls par le journal de configuration,
+   * jamais aux mobiles.
+   * ======================================================================== */
+  var PLAN_CLE = 'planDuSiteAffiche';
+  function planDuSiteAffiche() { return S.reglage(PLAN_CLE, false) === true; }
+  function reglerPlanDuSiteOk() { return ['admin', 'da'].indexOf(roleCourant()) >= 0; }
+  function definirPlanDuSite(oui, motif) {
+    if (!reglerPlanDuSiteOk()) {
+      return { ok: false, code: 'REGLAGE_RESERVE', motif: 'Ce réglage se fait par l’administrateur ou la Directrice Administrative.', geste: 'Demander à la Directrice Administrative.' };
+    }
+    if (oui !== true && oui !== false) {
+      return { ok: false, code: 'VALEUR_INVALIDE', motif: 'Le plan du site est affiché ou masqué : oui ou non.', geste: 'Choisir Afficher ou Masquer.' };
+    }
+    var avant = planDuSiteAffiche();
+    S.setReglage(PLAN_CLE, oui);
+    S.log('Plan du site', 'M14', 'reglage', PLAN_CLE, { affiche: avant }, { affiche: oui, motif: motif || null });
+    return { ok: true, affiche: oui, avant: avant };
+  }
+  global.SIGH.planDuSite = { CLE: PLAN_CLE, DEFAUT: false, affiche: planDuSiteAffiche, peutRegler: reglerPlanDuSiteOk, definir: definirPlanDuSite };
 })(window);

@@ -944,7 +944,9 @@
     { id: 'auth-lock', label: 'Écran verrouillé', icon: 'lock' },
     { id: 'error-404', label: 'Page introuvable', icon: 'file-search' },
     { id: 'error-403', label: 'Accès refusé', icon: 'shield-alert' },
-    { id: 'plan-du-site', label: 'Plan du site', icon: 'map' },
+    /* Le plan du site est un écran du manifeste qui ne s'en retire JAMAIS ; son affichage dépend d'un RÉGLAGE en base (`planDuSiteAffiche`, défaut non), lu
+       par `ouvertParReglage` et par `can()` : aucun masquage écrit à côté. */
+    { id: 'plan-du-site', label: 'Plan du site', icon: 'map', sousReglage: 'planDuSiteAffiche' },
     {
       id: 'aide-apropos', label: 'Aide & À propos', icon: 'life-buoy',
       module: 'SUP', moduleLabel: 'Aide & assistance', domain: 'Système', dansRecherche: true,
@@ -1144,6 +1146,8 @@
       /* Le registre qu'une page de saisie alimente : c'est sur LUI que ses
          droits se résolvent, et pas sur son module. */
       servant: item.servant || null,
+      /* Le réglage en base dont dépend l'affichage de l'écran (null : aucun). */
+      sousReglage: item.sousReglage || null,
     };
   });
 
@@ -1258,6 +1262,17 @@
     if (id && d.ecrans[id]) return false;
     if (code && d.modules[code]) return false;
     return true;
+  }
+
+  /**
+   * Un écran peut dépendre d'un RÉGLAGE en base (`sousReglage` au manifeste) : ouvert seulement quand le réglage vaut vrai, quel que soit le rôle. Un écran sans
+   * `sousReglage` est toujours ouvert par ce test. Le réglage est lu à la source à chaque appel, jamais mis en cache.
+   */
+  function ouvertParReglage(id) {
+    var e = id ? INDEX[id] : null;
+    if (!e || !e.sousReglage) return true;
+    var St = magasin();
+    try { return !!(St && St.reglage && St.reglage(e.sousReglage, false) === true); } catch (x) { return false; }
   }
 
   /** La fiche d'activité qui ferme un écran, pour pouvoir le DIRE. */
@@ -1506,6 +1521,8 @@
        administrateur compris : ce n'est pas une habilitation, et rien ne la
        rouvre — pas même une surcharge. */
     if (!ecranActif(entry.id, code)) return false;
+    /* Un écran dont l'affichage est un RÉGLAGE se ferme tant que le réglage n'est pas posé (plan du site) : même rang qu'une activité fermée. */
+    if (!ouvertParReglage(entry.id)) return false;
 
     /* LA SURCHARGE DÉCIDE quand elle se prononce — dans les deux sens. Une
        matrice administrable qui ne saurait qu'enlever ne permettrait jamais
@@ -1765,7 +1782,7 @@
     droitsOrigine: droitsOrigine,
     DROITS: DROITS,
     roleArchive: roleArchive,
-    moduleActif: moduleActif, ecranActif: ecranActif, fermeturePour: fermeturePour,
+    moduleActif: moduleActif, ecranActif: ecranActif, ouvertParReglage: ouvertParReglage, fermeturePour: fermeturePour,
     modulesDesactives: modulesDesactives,
     invaliderModules: invaliderModules,
     invaliderRbac: invaliderRbac,

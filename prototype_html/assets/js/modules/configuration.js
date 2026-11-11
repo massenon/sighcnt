@@ -2614,10 +2614,46 @@
         { id: 'bareme', label: 'Barème NS 131', render: ongletBaremeNS131 },
         { id: 'reinitialisation', label: 'Jeux de test', render: ongletReinitialisation },
         { id: 'relais', label: 'Relais en ligne', render: ongletRelais },
+        { id: 'affichage', label: 'Affichage', render: ongletAffichage },
       ]));
       return null;
     },
   });
+
+  /* --- Onglet « Affichage » : le plan du site est un réglage en base, désactivé par défaut (Direction, 11/11/2026) ------------------------------ */
+  function ongletAffichage() {
+    var PS = global.SIGH.planDuSite;
+    var hote = el('div.space-y-3');
+    dessiner();
+    return hote;
+
+    function dessiner() {
+      C.clear(hote);
+      var oui = PS.affiche();
+      var actions = [];
+      /* La commande est ABSENTE pour qui ne règle pas : le rôle décide au moteur, le droit de l'écran ici ; le moteur refuse de toute façon en nommant. */
+      if (PS.peutRegler() && K.droits().editer) {
+        actions.push(K.btn(oui ? 'Masquer le plan du site' : 'Afficher le plan du site', {
+          size: 'sm', icon: oui ? 'eye-off' : 'eye',
+          onclick: function () {
+            var r = PS.definir(!oui);
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            U.toast(r.affiche ? 'Le plan du site est affiché.' : 'Le plan du site est masqué.', { type: 'success' });
+            dessiner();
+          },
+        }));
+      }
+      var corps = el('div.space-y-3');
+      corps.appendChild(K.note('Le plan du site liste tous les écrans du logiciel. Il est <strong>désactivé par défaut</strong> : tant que ce réglage reste sur « non », '
+        + 'son lien disparaît du ruban, des paramètres, des pages d’erreur et de la recherche, et son adresse directe ouvre un accès refusé. '
+        + 'Le réglage est enregistré en base, journalisé, et propre à la clinique : il se règle ici par l’administrateur ou la Directrice Administrative.', { tone: 'info', icon: 'map' }));
+      corps.appendChild(el('dl', { class: 'text-sm' }, [
+        el('dt.text-xs.text-slate-500', { text: 'Afficher le plan du site' }),
+        el('dd.font-semibold.text-slate-800', { 'data-plan-site': 'etat', text: oui ? 'Oui' : 'Non' }),
+      ]));
+      hote.appendChild(U.card('Plan du site', corps, actions));
+    }
+  }
 
   /* --- Onglet « Relais en ligne » : les écrans du relais, en cartes de hub (ils ont quitté le ruban, arbitrage du 05/11/2026) --------------- */
   function ongletRelais() {
@@ -2787,7 +2823,7 @@
             }
           },
         }),
-        K.lien('plan-du-site', 'Plan du site', { icon: 'map' }),
+        N.ouvertParReglage('plan-du-site') ? K.lien('plan-du-site', 'Plan du site', { icon: 'map' }) : null,
         K.lien('m14-sauvegardes', 'Sauvegardes', { icon: 'database-backup' }),
       ])));
 
