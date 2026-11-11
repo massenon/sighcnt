@@ -46,8 +46,10 @@ const List<RubriqueMes> rubriquesMes = [
   RubriqueMes(17, 'rendez_vous', 'Mes rendez-vous et visites', 'm2-rendezvous', source: 'consultations', lien: 'patientDeLAgent'),
 ];
 
+/// LA GARDE SOINS COMPTE COMME GARDE (Direction, 11/11/2026, P4) : « Mes statistiques de garde » comptait la garde de 24 h (`garde`, `garde_hospi`) et laissait la garde
+/// soins de 08h à 18h30 (`garde_soins`) à la seule rubrique du planning ; un agent du régime « garde soins » y lisait zéro garde.
 const Map<String, List<String>> _travailMes = {
-  'garde': ['garde', 'garde_hospi'],
+  'garde': ['garde', 'garde_hospi', 'garde_soins'],
   'permanence': ['permanence'],
 };
 

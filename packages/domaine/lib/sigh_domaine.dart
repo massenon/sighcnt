@@ -70,6 +70,7 @@ export 'src/patients/pat_fiche.dart';
 export 'src/maternite/mat_regles.dart';
 export 'src/administration/adm_regles.dart';
 export 'src/configuration/cfa_regles.dart';
+export 'src/configuration/organigramme.dart';
 export 'src/configuration/cfb_donnees.dart';
 export 'src/configuration/cfb_regles.dart';
 // Configuration fiscale validée et datée (06/11/2026) : identité par versions, obligations et ORTB datés, échéances, validation réservée.
@@ -82,6 +83,7 @@ export 'src/qualite/qual_ged.dart';
 export 'src/validation/validation.dart';
 export 'src/assurances/ass_regles.dart';
 export 'src/securite/securite.dart';
+export 'src/securite/verrou_secours.dart';
 export 'src/rh/rha_regles.dart';
 export 'src/paie/pai_moteur.dart';
 export 'src/comptabilite/cpa_referentiels.dart';

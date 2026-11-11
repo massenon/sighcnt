@@ -9,6 +9,7 @@
 // Le lot L3 a branché `mecef.mode` (lu par la normalisation, voir `src/mecef/mode.dart`). Les lots L5 et L6 ont branché `planning.circuitPresences` et
 // `planning.agentModifieDirectement` (lus par le moteur du planning RH, `src/rh/planning_rh.dart`, et par la maquette). Les lots L7 et L8 ont branché
 // `paie.copieFichePaieTelephone` (`src/rh/espace_mes.dart`), `planning.badgeSertDePointage` et `planning.delaiEntrePointagesBadge` (`src/rh/pointage_badge.dart`).
+// Le lot ORG2 a branché `securite.delaiVerrouPosteSecours` (`src/securite/verrou_secours.dart`, lu par le verrou de session d'un poste désigné de secours).
 // Aucune de ces définitions n'est envoyée au téléphone (`mobile: false`) : la liste blanche est vide tant qu'un lot ne démontre pas le besoin (RG-13).
 
 import 'parametres.dart';
@@ -134,6 +135,17 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot L8 (badge et pointage)',
   ),
+  DefinitionParametre(
+    cle: 'securite.delaiVerrouPosteSecours',
+    famille: 'securite',
+    type: TypeParametre.entier,
+    defaut: 5,
+    libelle: 'Délai de verrou d\'un poste de secours (minutes)',
+    aide: 'Un poste partagé de secours, où un agent sans téléphone ouvre sa propre session, se verrouille plus vite qu\'un poste ordinaire. Entier de 1 à 120. Valeur d\'attente de 5 minutes proposée par l\'équipe : aucun document ne la fixe, à valider par la Direction. Le délai ordinaire de 15 minutes (CDCT 12.2, politique de sécurité) ne change pas. Quel poste est « de secours » se désigne à ce poste même (donnée locale, jamais synchronisée).',
+    source: 'Proposition à valider (décision P3 du 11/11/2026) : aucun document ne fixe ce délai',
+    branche: true,
+    appliquePar: 'Lot ORG2 (verrou d\'un poste de secours)',
+  ),
 ];
 
 /// Le libellé d'une famille de paramètres, pour les onglets de l'écran des paramètres. Une famille absente de la table s'affiche sous son identifiant.
@@ -142,6 +154,7 @@ const Map<String, String> libellesFamillesParametres = {
   'bareme_aib': 'AIB',
   'planning': 'Planning et présences',
   'paie': 'Paie',
+  'securite': 'Sécurité',
 };
 
 /// La définition d'une clé, ou `null`.
