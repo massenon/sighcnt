@@ -115,3 +115,9 @@ Sur `docs/prd/PRD-DOCS-numerisation-courriers-dossier-et-antecedents.md` : Q1 à
 - **Q9 seuils de variation brutale : VIDES par défaut.** Le Biologiste médical les saisit. La liste des variables du laboratoire et de l'hospitalisation est établie dans `docs/prd/ANNEXE-DOCS-variables-delta-check-laboratoire-hospitalisation.md` (72 variables numériques du laboratoire ; constantes d'hospitalisation sans alerte).
 - **Q10 antériorités affichées : trois, réglable.**
 - Q1 (10 Mo, réglable), Q2 (lecteur natif du navigateur), Q3 (visionneuse écrite pour le projet), Q4 (session plus règle par famille), Q5 (nom normalisé `AAAA-MM-JJ_ARR_NNNN.ext`) : acceptées telles que proposées.
+
+### H bis. Compléments du 11/11/2026
+
+- **Chemin local des scans** : la conservation reste illimitée, **et la fiche indique le chemin local du fichier** (celui de ce poste ; « pas encore reçu sur ce poste » quand la copie n'est pas arrivée). PRD documents, EF-DOC-3b.
+- **Seuils de variation : bouton Valider.** Chaque seuil passe de **Enregistré** à **Validé** par le bouton Valider ; seul un seuil Validé alerte. Lecture retenue de « Valider qui transforme en Enregistrer ou Validée » : deux états, Enregistré (sans effet) et Validé (en vigueur). À corriger si vous entendiez autre chose. PRD documents, EF-ANT-3b.
+- **Droits modifiés, menus à jour automatiquement** : quand l'administrateur modifie les rôles (matrice, modules actifs), le ruban, le méga-menu, les cartes de hub et les accès rapides des sessions ouvertes se mettent à jour d'eux-mêmes (Afficher/Masquer), au pire à la reconnexion. Lot à mesurer puis à faire après le lot des prix : mesurer d'abord ce que fait l'existant (le ruban est construit une fois au chargement de l'écran, `app.js` `buildMenubar`), puis corriger la maquette, puis le poste.
