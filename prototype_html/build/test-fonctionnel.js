@@ -18794,9 +18794,12 @@ async function viderMessages(page) {
     const daApres = await page.evaluate(() => window.SIGH.store.collection('postes').get('PST002').statut);
     verifier('À l’écran, archiver la DA (qui porte le Comptable, les Dispensatrices et les Agents de Sécurités) est refusé en le disant (« porte encore 3 postes »), le poste reste actif',
       /porte encore 3 postes/.test(toast) && daApres === 'actif', JSON.stringify([toast.slice(0, 300), daApres]));
-    const droit = await page.evaluate(() => { const S = window.SIGH.store, s = S.session(); const out = {}; S.setSession(Object.assign({}, s, { role: 'caissier', nom: 'SONDE111 caissier', nomComplet: 'SONDE111 caissier' })); out.caissier = window.SIGH.organigramme.reaffecter('PST013', 'PST001'); S.setSession(s); return JSON.parse(JSON.stringify(out)); });
-    verifier('Sans le droit d’écrire à l’écran, le moteur refuse en le nommant (ORGANIGRAMME_RESERVE : caissier) et rien n’est écrit',
-      code(droit.caissier) === 'ORGANIGRAMME_RESERVE' && (await page.evaluate(() => window.SIGH.store.collection('postes').get('PST013').parentId)) === 'PST001', JSON.stringify(droit));
+    const droit = await page.evaluate(() => { const S = window.SIGH.store, s = S.session(); const out = {}; S.setSession(Object.assign({}, s, { role: 'caissier', nom: 'SONDE111 caissier', nomComplet: 'SONDE111 caissier' })); out.caissier = window.SIGH.organigramme.reaffecter('PST013', 'PST001');
+      S.setSession(Object.assign({}, s, { role: 'direction', nom: 'SONDE111 direction', nomComplet: 'SONDE111 direction' })); out.directionArchive = window.SIGH.organigramme.archiver('PST016', 'sonde 111'); out.directionModifie = window.SIGH.organigramme.modifier('PST016', { effectif: 8 }).ok; S.setSession(s);
+      out.statutAideSoignante = S.collection('postes').get('PST016').statut; return JSON.parse(JSON.stringify(out)); });
+    verifier('Sans le droit d’écrire à l’écran, le moteur refuse en le nommant (ORGANIGRAMME_RESERVE : caissier) et rien n’est écrit ; la Direction (qui écrit sans annuler) modifie mais n’archive pas (RG-14)',
+      code(droit.caissier) === 'ORGANIGRAMME_RESERVE' && (await page.evaluate(() => window.SIGH.store.collection('postes').get('PST013').parentId)) === 'PST001'
+      && code(droit.directionArchive) === 'ORGANIGRAMME_RESERVE' && droit.directionModifie === true && droit.statutAideSoignante === 'actif', JSON.stringify(droit));
     await O.sessionDe('admin');
 
     /* --- 7. aucune étoile : un champ `etoile` n'est jamais tracé, la reprise le retire ---------------------------------------------------------------------------- */

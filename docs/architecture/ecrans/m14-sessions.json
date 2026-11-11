@@ -18,7 +18,8 @@
   "Sécurité & Utilisateurs"
  ],
  "regle": [
-  "Sur les postes partagés (accueil et caisse), un délai d’inactivité de 15 minutes entraîne le verrouillage automatique de l’écran. Clôturer une session va plus loin : elle est fermée, et l’agent doit se reconnecter."
+  "Sur les postes partagés (accueil et caisse), un délai d’inactivité de 15 minutes entraîne le verrouillage automatique de l’écran. Clôturer une session va plus loin : elle est fermée, et l’agent doit se reconnecter.",
+  "Un poste partagé de secours, où un agent sans téléphone ouvre sa propre session, se verrouille plus vite qu’un poste ordinaire. Le délai de secours est une valeur d’attente proposée par l’équipe, à valider par la Direction : aucun document ne la fixe. Le délai ordinaire (CDCT 12.2) ne change pas."
  ],
  "onglets": [],
  "kpis": [
@@ -29,6 +30,7 @@
   "Délai de verrouillage"
  ],
  "cartes": [
+  "Verrou d’un poste de secours",
   "Sessions"
  ],
  "tableaux": [
@@ -46,6 +48,8 @@
   ]
  ],
  "commandes": [
+  "Régler le délai de secours",
+  "Désigner ce poste comme poste de secours",
   "Colonnes",
   "Exporter",
   "Clôturer"

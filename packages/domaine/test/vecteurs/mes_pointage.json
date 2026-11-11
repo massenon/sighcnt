@@ -712,9 +712,10 @@
     "lectureSeule": false,
     "ids": [
      "PLA1",
-     "PLA2"
+     "PLA2",
+     "PLA6"
     ],
-    "total": 2,
+    "total": 3,
     "valeur": null,
     "sansMontant": null,
     "presents": null,

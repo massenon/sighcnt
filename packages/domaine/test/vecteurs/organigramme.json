@@ -1,0 +1,6203 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-organigramme.js : organigramme (lot ORG2) et verrou d’un poste de secours (P3), tirés des moteurs de la maquette. Ne pas éditer à la main.",
+ "semence": [
+  {
+   "id": "PST001",
+   "statut": "actif",
+   "parentId": null,
+   "poste": "Directeur Médical",
+   "effectif": 1,
+   "titulaire": "BASSONGUI Chabi Séko",
+   "chef": false,
+   "role": "dm",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST002",
+   "statut": "actif",
+   "parentId": "PST001",
+   "poste": "Directrice Administrative (DA)",
+   "effectif": 1,
+   "titulaire": "TAKI Alimatou épse BASSONGUI",
+   "chef": false,
+   "role": "da",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST003",
+   "statut": "actif",
+   "parentId": "PST002",
+   "poste": "Comptable",
+   "effectif": 1,
+   "titulaire": "KASSA Augustin",
+   "chef": false,
+   "role": "comptable",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST004",
+   "statut": "actif",
+   "parentId": "PST003",
+   "poste": "Assistant comptable",
+   "effectif": 1,
+   "titulaire": "GBEDJI Hervé",
+   "chef": false,
+   "role": "comptable",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST005",
+   "statut": "actif",
+   "parentId": "PST004",
+   "poste": "Gestionnaire de Stock",
+   "effectif": 1,
+   "titulaire": "MAMAN Zoukanéri",
+   "chef": false,
+   "role": "stock",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST007",
+   "statut": "actif",
+   "parentId": "PST002",
+   "poste": "Dispensatrices",
+   "effectif": 4,
+   "titulaire": "DIEYABIDI Aïssatou",
+   "chef": true,
+   "role": "pharmacien",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST008",
+   "statut": "actif",
+   "parentId": "PST002",
+   "poste": "Agents de Sécurités",
+   "effectif": 3,
+   "titulaire": "OURTCHA TEREYAMA",
+   "chef": true,
+   "role": "agentadmin",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST014",
+   "statut": "actif",
+   "parentId": "PST001",
+   "poste": "Infirmiers",
+   "effectif": 8,
+   "titulaire": "GARBA Yahouza",
+   "chef": false,
+   "role": "infirmier",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST015",
+   "statut": "actif",
+   "parentId": "PST014",
+   "poste": "Sages-Femmes",
+   "effectif": 3,
+   "titulaire": null,
+   "chef": false,
+   "role": "infirmier",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST016",
+   "statut": "actif",
+   "parentId": "PST014",
+   "poste": "Aide-Soignante",
+   "effectif": 8,
+   "titulaire": "TEPA Séraphine",
+   "chef": true,
+   "role": "aide_soignant",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST013",
+   "statut": "actif",
+   "parentId": "PST001",
+   "poste": "Laborantins",
+   "effectif": 2,
+   "titulaire": "KINNOU Addoul Ganiou",
+   "chef": true,
+   "role": "laborantin",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST012",
+   "statut": "actif",
+   "parentId": "PST001",
+   "poste": "Echographiste",
+   "effectif": 1,
+   "titulaire": "AHOHOU Rodrigue",
+   "chef": false,
+   "role": "medecin",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST011",
+   "statut": "actif",
+   "parentId": "PST001",
+   "poste": "Médecins Généralistes",
+   "effectif": 2,
+   "titulaire": "YENI M’PO Florent",
+   "chef": false,
+   "role": "medecin",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST006",
+   "statut": "actif",
+   "parentId": "PST001",
+   "poste": "Secrétaires Médicaux",
+   "effectif": 4,
+   "titulaire": "OROU YO Edmond",
+   "chef": true,
+   "role": "reception",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST010",
+   "statut": "actif",
+   "parentId": "PST006",
+   "poste": "Chauffeur Coursier",
+   "effectif": 1,
+   "titulaire": "TCHANE Nourou",
+   "chef": false,
+   "role": "ambulancier",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  },
+  {
+   "id": "PST009",
+   "statut": "actif",
+   "parentId": "PST001",
+   "poste": "Agents d’Entretiens",
+   "effectif": 3,
+   "titulaire": "ISSA Rabiatou",
+   "chef": true,
+   "role": "agentadmin",
+   "source": "Organigramme de la Clinique NASSIERA TOO",
+   "semence": 2
+  }
+ ],
+ "precedent": [
+  {
+   "id": "PST001",
+   "parentId": null,
+   "poste": "Directeur Médical",
+   "effectif": 1,
+   "titulaire": "BASSONGUI Chabi Séko",
+   "chef": false,
+   "role": "dm"
+  },
+  {
+   "id": "PST002",
+   "parentId": "PST001",
+   "poste": "Directrice Administrative",
+   "effectif": 1,
+   "titulaire": "TAKI Alimatou épse BASSONGUI",
+   "chef": false,
+   "role": "da"
+  },
+  {
+   "id": "PST003",
+   "parentId": "PST002",
+   "poste": "Comptable",
+   "effectif": 1,
+   "titulaire": "KASSA Augustin",
+   "chef": false,
+   "role": "comptable"
+  },
+  {
+   "id": "PST004",
+   "parentId": "PST003",
+   "poste": "Assistant Comptable",
+   "effectif": 1,
+   "titulaire": "GBEDJI Hervé",
+   "chef": false,
+   "role": "comptable"
+  },
+  {
+   "id": "PST005",
+   "parentId": "PST002",
+   "poste": "Gestionnaire de Stock",
+   "effectif": 1,
+   "titulaire": "MAMAN Zoukanéri",
+   "chef": false,
+   "role": "stock"
+  },
+  {
+   "id": "PST006",
+   "parentId": "PST002",
+   "poste": "Secrétaires Médicaux",
+   "effectif": 4,
+   "titulaire": "OROU YO Edmond",
+   "chef": true,
+   "role": "reception"
+  },
+  {
+   "id": "PST007",
+   "parentId": "PST002",
+   "poste": "Dispensatrices",
+   "effectif": 4,
+   "titulaire": "DIEYABIDI Aïssatou",
+   "chef": true,
+   "role": "pharmacien"
+  },
+  {
+   "id": "PST008",
+   "parentId": "PST002",
+   "poste": "Agents de Sécurité",
+   "effectif": 3,
+   "titulaire": "OURTCHA TEREYAMA",
+   "chef": true,
+   "role": "agentadmin"
+  },
+  {
+   "id": "PST009",
+   "parentId": "PST002",
+   "poste": "Agents d’Entretien",
+   "effectif": 3,
+   "titulaire": "ISSA Rabiatou",
+   "chef": true,
+   "role": "agentadmin"
+  },
+  {
+   "id": "PST010",
+   "parentId": "PST002",
+   "poste": "Chauffeur Coursier",
+   "effectif": 1,
+   "titulaire": "TCHANE Nourou",
+   "chef": false,
+   "role": "ambulancier"
+  },
+  {
+   "id": "PST011",
+   "parentId": "PST001",
+   "poste": "Médecins Généralistes",
+   "effectif": 2,
+   "titulaire": "YENI M’PO Florent",
+   "chef": false,
+   "role": "medecin"
+  },
+  {
+   "id": "PST012",
+   "parentId": "PST001",
+   "poste": "Échographiste",
+   "effectif": 1,
+   "titulaire": "AHOHOU Rodrigue",
+   "chef": false,
+   "role": "medecin"
+  },
+  {
+   "id": "PST013",
+   "parentId": "PST001",
+   "poste": "Laborantins",
+   "effectif": 2,
+   "titulaire": "KINNOU Addoul Ganiou",
+   "chef": true,
+   "role": "laborantin"
+  },
+  {
+   "id": "PST014",
+   "parentId": "PST001",
+   "poste": "Infirmiers",
+   "effectif": 8,
+   "titulaire": "GARBA Yahouza",
+   "chef": true,
+   "role": "infirmier"
+  },
+  {
+   "id": "PST015",
+   "parentId": "PST001",
+   "poste": "Sages-Femmes",
+   "effectif": 3,
+   "titulaire": null,
+   "chef": false,
+   "role": "infirmier"
+  },
+  {
+   "id": "PST016",
+   "parentId": "PST001",
+   "poste": "Aide-Soignantes",
+   "effectif": 8,
+   "titulaire": "TEPA Séraphine",
+   "chef": true,
+   "role": "aide_soignant"
+  }
+ ],
+ "monde": {
+  "postes": [
+   {
+    "id": "PST001",
+    "statut": "actif",
+    "parentId": null,
+    "poste": "Directeur Médical",
+    "effectif": 1,
+    "titulaire": "BASSONGUI Chabi Séko",
+    "chef": false,
+    "role": "dm",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST002",
+    "statut": "actif",
+    "parentId": "PST001",
+    "poste": "Directrice Administrative (DA)",
+    "effectif": 1,
+    "titulaire": "TAKI Alimatou épse BASSONGUI",
+    "chef": false,
+    "role": "da",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST003",
+    "statut": "actif",
+    "parentId": "PST002",
+    "poste": "Comptable",
+    "effectif": 1,
+    "titulaire": "KASSA Augustin",
+    "chef": false,
+    "role": "comptable",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST004",
+    "statut": "actif",
+    "parentId": "PST003",
+    "poste": "Assistant comptable",
+    "effectif": 1,
+    "titulaire": "GBEDJI Hervé",
+    "chef": false,
+    "role": "comptable",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST005",
+    "statut": "actif",
+    "parentId": "PST004",
+    "poste": "Gestionnaire de Stock",
+    "effectif": 1,
+    "titulaire": "MAMAN Zoukanéri",
+    "chef": false,
+    "role": "stock",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST007",
+    "statut": "actif",
+    "parentId": "PST002",
+    "poste": "Dispensatrices",
+    "effectif": 4,
+    "titulaire": "DIEYABIDI Aïssatou",
+    "chef": true,
+    "role": "pharmacien",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST008",
+    "statut": "actif",
+    "parentId": "PST002",
+    "poste": "Agents de Sécurités",
+    "effectif": 3,
+    "titulaire": "OURTCHA TEREYAMA",
+    "chef": true,
+    "role": "agentadmin",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST014",
+    "statut": "actif",
+    "parentId": "PST001",
+    "poste": "Infirmiers",
+    "effectif": 8,
+    "titulaire": "GARBA Yahouza",
+    "chef": false,
+    "role": "infirmier",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST015",
+    "statut": "actif",
+    "parentId": "PST014",
+    "poste": "Sages-Femmes",
+    "effectif": 3,
+    "titulaire": null,
+    "chef": false,
+    "role": "infirmier",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST016",
+    "statut": "actif",
+    "parentId": "PST014",
+    "poste": "Aide-Soignante",
+    "effectif": 8,
+    "titulaire": "TEPA Séraphine",
+    "chef": true,
+    "role": "aide_soignant",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST013",
+    "statut": "actif",
+    "parentId": "PST001",
+    "poste": "Laborantins",
+    "effectif": 2,
+    "titulaire": "KINNOU Addoul Ganiou",
+    "chef": true,
+    "role": "laborantin",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST012",
+    "statut": "actif",
+    "parentId": "PST001",
+    "poste": "Echographiste",
+    "effectif": 1,
+    "titulaire": "AHOHOU Rodrigue",
+    "chef": false,
+    "role": "medecin",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST011",
+    "statut": "actif",
+    "parentId": "PST001",
+    "poste": "Médecins Généralistes",
+    "effectif": 2,
+    "titulaire": "YENI M’PO Florent",
+    "chef": false,
+    "role": "medecin",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST006",
+    "statut": "actif",
+    "parentId": "PST001",
+    "poste": "Secrétaires Médicaux",
+    "effectif": 4,
+    "titulaire": "OROU YO Edmond",
+    "chef": true,
+    "role": "reception",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST010",
+    "statut": "actif",
+    "parentId": "PST006",
+    "poste": "Chauffeur Coursier",
+    "effectif": 1,
+    "titulaire": "TCHANE Nourou",
+    "chef": false,
+    "role": "ambulancier",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PST009",
+    "statut": "actif",
+    "parentId": "PST001",
+    "poste": "Agents d’Entretiens",
+    "effectif": 3,
+    "titulaire": "ISSA Rabiatou",
+    "chef": true,
+    "role": "agentadmin",
+    "source": "Organigramme de la Clinique NASSIERA TOO",
+    "semence": 2
+   },
+   {
+    "id": "PSTA",
+    "statut": "archive",
+    "parentId": "PST001",
+    "poste": "Ancien service",
+    "effectif": 1,
+    "titulaire": null,
+    "chef": false,
+    "role": "agentadmin",
+    "source": "Vecteur",
+    "_archiveLe": "2026-01-01T08:00:00.000Z"
+   }
+  ],
+  "personnel": [
+   {
+    "id": "E1",
+    "nomComplet": "GARBA Yahouza",
+    "statut": "actif",
+    "titreOrganigramme": "SG"
+   },
+   {
+    "id": "E2",
+    "nomComplet": "AHOHOU Rodrigue",
+    "statut": "actif"
+   },
+   {
+    "id": "E3",
+    "nomComplet": "TAKI Alimatou",
+    "statut": "actif"
+   },
+   {
+    "id": "E4",
+    "nomComplet": "KASSA Augustin",
+    "statut": "actif"
+   },
+   {
+    "id": "E5",
+    "nomComplet": "Aïssatou DIEYABIDI",
+    "statut": "actif"
+   },
+   {
+    "id": "E6",
+    "nomComplet": "ARCHIVÉ Ancien",
+    "statut": "archive",
+    "titreOrganigramme": "XX"
+   }
+  ]
+ },
+ "arbre": [
+  {
+   "id": "PST001",
+   "poste": "Directeur Médical",
+   "parentId": null,
+   "niveau": 0,
+   "titreAgent": null,
+   "enfants": [
+    "PST002",
+    "PST014",
+    "PST013",
+    "PST012",
+    "PST011",
+    "PST006",
+    "PST009"
+   ]
+  },
+  {
+   "id": "PST002",
+   "poste": "Directrice Administrative (DA)",
+   "parentId": "PST001",
+   "niveau": 1,
+   "titreAgent": null,
+   "enfants": [
+    "PST003",
+    "PST007",
+    "PST008"
+   ]
+  },
+  {
+   "id": "PST003",
+   "poste": "Comptable",
+   "parentId": "PST002",
+   "niveau": 2,
+   "titreAgent": null,
+   "enfants": [
+    "PST004"
+   ]
+  },
+  {
+   "id": "PST004",
+   "poste": "Assistant comptable",
+   "parentId": "PST003",
+   "niveau": 3,
+   "titreAgent": null,
+   "enfants": [
+    "PST005"
+   ]
+  },
+  {
+   "id": "PST005",
+   "poste": "Gestionnaire de Stock",
+   "parentId": "PST004",
+   "niveau": 4,
+   "titreAgent": null,
+   "enfants": []
+  },
+  {
+   "id": "PST007",
+   "poste": "Dispensatrices",
+   "parentId": "PST002",
+   "niveau": 2,
+   "titreAgent": null,
+   "enfants": []
+  },
+  {
+   "id": "PST008",
+   "poste": "Agents de Sécurités",
+   "parentId": "PST002",
+   "niveau": 2,
+   "titreAgent": null,
+   "enfants": []
+  },
+  {
+   "id": "PST014",
+   "poste": "Infirmiers",
+   "parentId": "PST001",
+   "niveau": 1,
+   "titreAgent": "SG",
+   "enfants": [
+    "PST015",
+    "PST016"
+   ]
+  },
+  {
+   "id": "PST015",
+   "poste": "Sages-Femmes",
+   "parentId": "PST014",
+   "niveau": 2,
+   "titreAgent": null,
+   "enfants": []
+  },
+  {
+   "id": "PST016",
+   "poste": "Aide-Soignante",
+   "parentId": "PST014",
+   "niveau": 2,
+   "titreAgent": null,
+   "enfants": []
+  },
+  {
+   "id": "PST013",
+   "poste": "Laborantins",
+   "parentId": "PST001",
+   "niveau": 1,
+   "titreAgent": null,
+   "enfants": []
+  },
+  {
+   "id": "PST012",
+   "poste": "Echographiste",
+   "parentId": "PST001",
+   "niveau": 1,
+   "titreAgent": null,
+   "enfants": []
+  },
+  {
+   "id": "PST011",
+   "poste": "Médecins Généralistes",
+   "parentId": "PST001",
+   "niveau": 1,
+   "titreAgent": null,
+   "enfants": []
+  },
+  {
+   "id": "PST006",
+   "poste": "Secrétaires Médicaux",
+   "parentId": "PST001",
+   "niveau": 1,
+   "titreAgent": null,
+   "enfants": [
+    "PST010"
+   ]
+  },
+  {
+   "id": "PST010",
+   "poste": "Chauffeur Coursier",
+   "parentId": "PST006",
+   "niveau": 2,
+   "titreAgent": null,
+   "enfants": []
+  },
+  {
+   "id": "PST009",
+   "poste": "Agents d’Entretiens",
+   "parentId": "PST001",
+   "niveau": 1,
+   "titreAgent": null,
+   "enfants": []
+  }
+ ],
+ "cas": [
+  {
+   "nom": "réaffecter les Sages-Femmes sous le Directeur Médical",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST015",
+    "parentId": "PST001"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST015"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "réaffecter les Sages-Femmes au sommet",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST015",
+    "parentId": null
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST015"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":null}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "réaffecter sous le même parent : rien ne change",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST015",
+    "parentId": "PST014"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": true,
+    "titre": null,
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "cycle : un poste sous lui-même",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST002",
+    "parentId": "PST002"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "RATTACHEMENT_CYCLE",
+    "motif": "Rattacher « Directrice Administrative (DA) » à « Directrice Administrative (DA) » ferait de lui son propre supérieur : un poste ne se rattache pas à lui-même.",
+    "geste": "Choisir un poste qui ne dépende pas de celui-ci, ou réaffecter d’abord ses rattachés.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "cycle : la DA sous l’Assistant comptable",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST002",
+    "parentId": "PST004"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "RATTACHEMENT_CYCLE",
+    "motif": "Rattacher « Directrice Administrative (DA) » à « Assistant comptable » ferait de lui son propre supérieur : « Assistant comptable » dépend déjà de « Directrice Administrative (DA) ».",
+    "geste": "Choisir un poste qui ne dépende pas de celui-ci, ou réaffecter d’abord ses rattachés.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "cycle : le sommet sous le bout de la chaîne",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST001",
+    "parentId": "PST005"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "RATTACHEMENT_CYCLE",
+    "motif": "Rattacher « Directeur Médical » à « Gestionnaire de Stock » ferait de lui son propre supérieur : « Gestionnaire de Stock » dépend déjà de « Directeur Médical ».",
+    "geste": "Choisir un poste qui ne dépende pas de celui-ci, ou réaffecter d’abord ses rattachés.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "parent inconnu",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST013",
+    "parentId": "PSTxxx"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "PARENT_INTROUVABLE",
+    "motif": "Le poste de rattachement demandé n’existe pas.",
+    "geste": "Choisir un poste de la liste.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "parent archivé",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST013",
+    "parentId": "PSTA"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "PARENT_ARCHIVE",
+    "motif": "Le poste « Ancien service » est archivé : on ne rattache rien à un poste archivé (RG-14).",
+    "geste": "Restaurer ce poste depuis la corbeille, ou choisir un poste actif.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "poste inconnu",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PSTxxx",
+    "parentId": "PST001"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "POSTE_INTROUVABLE",
+    "motif": "Ce poste n’existe pas.",
+    "geste": "Rouvrir l’écran puis choisir un poste de la liste.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "poste archivé",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PSTA",
+    "parentId": "PST001"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "POSTE_ARCHIVE",
+    "motif": "Le poste « Ancien service » est archivé : il ne se modifie pas.",
+    "geste": "Le restaurer depuis la corbeille d’abord.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "renommer le titulaire des Laborantins",
+   "role": "admin",
+   "appel": {
+    "fn": "renommerTitulaire",
+    "posteId": "PST013",
+    "nom": "NOUVEAU Titulaire"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST013"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Changement de titulaire d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Laborantins\",\"titulaire\":\"KINNOU Addoul Ganiou\"}",
+      "nouvelle": "{\"titulaire\":\"NOUVEAU Titulaire\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "vider le titulaire : le poste devient vacant",
+   "role": "admin",
+   "appel": {
+    "fn": "renommerTitulaire",
+    "posteId": "PST013",
+    "nom": ""
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST013"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Changement de titulaire d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Laborantins\",\"titulaire\":\"KINNOU Addoul Ganiou\"}",
+      "nouvelle": "{\"titulaire\":null}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "poser le titre ECH à l’échographiste",
+   "role": "admin",
+   "appel": {
+    "fn": "poserTitre",
+    "posteId": "PST012",
+    "titre": "ECH"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": "ECH",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E2",
+      "ECH"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Titre d’un agent dans l’organigramme",
+      "module": "CFG",
+      "entite": "Agent",
+      "ancienne": "{\"agent\":\"AHOHOU Rodrigue\",\"titre\":null}",
+      "nouvelle": "{\"titre\":\"ECH\",\"poste\":\"Echographiste\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "retirer le titre du surveillant général",
+   "role": "admin",
+   "appel": {
+    "fn": "poserTitre",
+    "posteId": "PST014",
+    "titre": ""
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Titre d’un agent dans l’organigramme",
+      "module": "CFG",
+      "entite": "Agent",
+      "ancienne": "{\"agent\":\"GARBA Yahouza\",\"titre\":\"SG\"}",
+      "nouvelle": "{\"titre\":null,\"poste\":\"Infirmiers\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "poser le même titre : rien ne change",
+   "role": "admin",
+   "appel": {
+    "fn": "poserTitre",
+    "posteId": "PST014",
+    "titre": "SG"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": true,
+    "titre": null,
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "titre sur une titulaire qui porte « épse » : retrouvée par son nom",
+   "role": "admin",
+   "appel": {
+    "fn": "poserTitre",
+    "posteId": "PST002",
+    "titre": "DA"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": "DA",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E3",
+      "DA"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Titre d’un agent dans l’organigramme",
+      "module": "CFG",
+      "entite": "Agent",
+      "ancienne": "{\"agent\":\"TAKI Alimatou\",\"titre\":null}",
+      "nouvelle": "{\"titre\":\"DA\",\"poste\":\"Directrice Administrative (DA)\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "titre : titulaire absent du personnel",
+   "role": "admin",
+   "appel": {
+    "fn": "poserTitre",
+    "posteId": "PST013",
+    "titre": "XX"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "AGENT_INTROUVABLE",
+    "motif": "Aucun agent du personnel ne porte le nom « KINNOU Addoul Ganiou » : le titre est porté par l’agent, pas par le poste.",
+    "geste": "Corriger le nom du titulaire pour qu’il corresponde à une fiche du personnel, ou enregistrer l’agent au personnel.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "titre : poste vacant",
+   "role": "admin",
+   "appel": {
+    "fn": "poserTitre",
+    "posteId": "PST015",
+    "titre": "SF"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "POSTE_VACANT",
+    "motif": "Le poste n’a pas de titulaire : le titre est porté par un agent, il n’y en a pas à qui le poser.",
+    "geste": "Saisir d’abord le titulaire du poste.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "titre de plus de douze caractères",
+   "role": "admin",
+   "appel": {
+    "fn": "poserTitre",
+    "posteId": "PST012",
+    "titre": "TITRE BEAUCOUP TROP LONG"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "TITRE_TROP_LONG",
+    "motif": "Le titre dans l’organigramme tient en 12 caractères au plus (« SG », « C/S »).",
+    "geste": "Abréger le titre.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "modifier : intitulé vide",
+   "role": "admin",
+   "appel": {
+    "fn": "modifier",
+    "posteId": "PST012",
+    "champs": {
+     "poste": "   "
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "INTITULE_VIDE",
+    "motif": "L’intitulé du poste est obligatoire.",
+    "geste": "Saisir l’intitulé du poste.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "modifier : effectif fractionnaire",
+   "role": "admin",
+   "appel": {
+    "fn": "modifier",
+    "posteId": "PST012",
+    "champs": {
+     "effectif": 1.5
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "EFFECTIF_INVALIDE",
+    "motif": "L’effectif d’un poste est un nombre entier, zéro ou plus.",
+    "geste": "Saisir un nombre entier.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "modifier : rôle inconnu",
+   "role": "admin",
+   "appel": {
+    "fn": "modifier",
+    "posteId": "PST012",
+    "champs": {
+     "role": "inconnu"
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ROLE_INCONNU",
+    "motif": "Le rôle « inconnu » n’existe pas.",
+    "geste": "Choisir un rôle de la liste.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "modifier plusieurs champs d’un coup (intitulé, rattachement, effectif, chef, titulaire, titre)",
+   "role": "admin",
+   "appel": {
+    "fn": "modifier",
+    "posteId": "PST012",
+    "champs": {
+     "poste": "Echographiste (chef)",
+     "parentId": "PST014",
+     "effectif": "2",
+     "titulaire": "GARBA Yahouza",
+     "chef": true,
+     "titreAgent": "SG2"
+    }
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": "SG2",
+    "postesChanges": [
+     "PST012"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG2"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Modification d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Echographiste\",\"parentId\":\"Directeur Médical\",\"effectif\":1,\"titulaire\":\"AHOHOU Rodrigue\",\"",
+      "nouvelle": "{\"poste\":\"Echographiste (chef)\",\"parentId\":\"Infirmiers\",\"effectif\":2,\"titulaire\":\"GARBA Yahouza\",\"ch"
+     },
+     {
+      "action": "Titre d’un agent dans l’organigramme",
+      "module": "CFG",
+      "entite": "Agent",
+      "ancienne": "{\"agent\":\"GARBA Yahouza\",\"titre\":\"SG\"}",
+      "nouvelle": "{\"titre\":\"SG2\",\"poste\":\"Echographiste (chef)\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "une autre personne est affectée : le titre se pose sur le NOUVEAU titulaire",
+   "role": "admin",
+   "appel": {
+    "fn": "modifier",
+    "posteId": "PST012",
+    "champs": {
+     "titulaire": "KASSA Augustin",
+     "titreAgent": "CPT"
+    }
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": "CPT",
+    "postesChanges": [
+     "PST012"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E4",
+      "CPT"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Changement de titulaire d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Echographiste\",\"titulaire\":\"AHOHOU Rodrigue\"}",
+      "nouvelle": "{\"titulaire\":\"KASSA Augustin\"}"
+     },
+     {
+      "action": "Titre d’un agent dans l’organigramme",
+      "module": "CFG",
+      "entite": "Agent",
+      "ancienne": "{\"agent\":\"KASSA Augustin\",\"titre\":null}",
+      "nouvelle": "{\"titre\":\"CPT\",\"poste\":\"Echographiste\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "rien d’écrit si un seul champ est refusé (cycle + intitulé valide)",
+   "role": "admin",
+   "appel": {
+    "fn": "modifier",
+    "posteId": "PST002",
+    "champs": {
+     "poste": "Autre",
+     "parentId": "PST004"
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "RATTACHEMENT_CYCLE",
+    "motif": "Rattacher « Directrice Administrative (DA) » à « Assistant comptable » ferait de lui son propre supérieur : « Assistant comptable » dépend déjà de « Directrice Administrative (DA) ».",
+    "geste": "Choisir un poste qui ne dépende pas de celui-ci, ou réaffecter d’abord ses rattachés.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "créer un poste sous le Directeur Médical",
+   "role": "admin",
+   "appel": {
+    "fn": "creer",
+    "champs": {
+     "poste": "Service Neuf",
+     "parentId": "PST001",
+     "effectif": "3",
+     "role": "agentadmin"
+    }
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [],
+    "nouveaux": [
+     {
+      "id": null,
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Service Neuf",
+      "effectif": 3,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     }
+    ],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Création",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": null,
+      "nouvelle": null
+     }
+    ],
+    "nbPostes": 18
+   }
+  },
+  {
+   "nom": "créer un poste sans rattachement : un sommet",
+   "role": "admin",
+   "appel": {
+    "fn": "creer",
+    "champs": {
+     "poste": "Poste isolé",
+     "effectif": 1,
+     "titulaire": "Un Nom",
+     "chef": true,
+     "role": "infirmier"
+    }
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [],
+    "nouveaux": [
+     {
+      "id": null,
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Poste isolé",
+      "effectif": 1,
+      "titulaire": "Un Nom",
+      "chef": true,
+      "role": "infirmier"
+     }
+    ],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Création",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": null,
+      "nouvelle": null
+     }
+    ],
+    "nbPostes": 18
+   }
+  },
+  {
+   "nom": "créer sous un poste archivé",
+   "role": "admin",
+   "appel": {
+    "fn": "creer",
+    "champs": {
+     "poste": "Sous archivé",
+     "parentId": "PSTA",
+     "effectif": 1,
+     "role": "agentadmin"
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "PARENT_ARCHIVE",
+    "motif": "Le poste « Ancien service » est archivé : on ne rattache rien à un poste archivé (RG-14).",
+    "geste": "Restaurer ce poste depuis la corbeille, ou choisir un poste actif.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "créer sans intitulé",
+   "role": "admin",
+   "appel": {
+    "fn": "creer",
+    "champs": {
+     "effectif": 1,
+     "role": "agentadmin"
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "INTITULE_VIDE",
+    "motif": "L’intitulé du poste est obligatoire.",
+    "geste": "Saisir l’intitulé du poste.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "archiver une feuille",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST015",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST015"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Archivage",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": "{\"statut\":\"actif\"}",
+      "nouvelle": "{\"statut\":\"archive\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "archiver un poste qui porte encore des postes",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST014",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "POSTE_PORTE_DES_POSTES",
+    "motif": "Le poste « Infirmiers » porte encore 2 postes (Sages-Femmes, Aide-Soignante) : l’archiver les ferait remonter au sommet sans que personne l’ait décidé.",
+    "geste": "Réaffecter d’abord ces postes, puis archiver celui-ci.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "archiver un poste déjà archivé",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PSTA",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "POSTE_ARCHIVE",
+    "motif": "Le poste « Ancien service » est déjà archivé.",
+    "geste": "Le restaurer depuis la corbeille si besoin.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "archiver un poste inconnu",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PSTxxx",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "POSTE_INTROUVABLE",
+    "motif": "Ce poste n’existe pas.",
+    "geste": "Rouvrir l’écran puis choisir un poste de la liste.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : caissier réaffecte",
+   "role": "caissier",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST015",
+    "parentId": "PST001"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ORGANIGRAMME_RESERVE",
+    "motif": "La modification de l’organigramme est réservée aux profils qui écrivent à l’écran « Organisation & organigramme ».",
+    "geste": "Demander à l’administrateur ou à la Directrice Administrative.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : caissier archive",
+   "role": "caissier",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST015",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ORGANIGRAMME_RESERVE",
+    "motif": "L’archivage d’un poste est réservé aux profils qui annulent à l’écran « Organisation & organigramme » (RG-14).",
+    "geste": "Demander à l’administrateur ou à la Directrice Administrative.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : medecin réaffecte",
+   "role": "medecin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST015",
+    "parentId": "PST001"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ORGANIGRAMME_RESERVE",
+    "motif": "La modification de l’organigramme est réservée aux profils qui écrivent à l’écran « Organisation & organigramme ».",
+    "geste": "Demander à l’administrateur ou à la Directrice Administrative.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : medecin archive",
+   "role": "medecin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST015",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ORGANIGRAMME_RESERVE",
+    "motif": "L’archivage d’un poste est réservé aux profils qui annulent à l’écran « Organisation & organigramme » (RG-14).",
+    "geste": "Demander à l’administrateur ou à la Directrice Administrative.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : da réaffecte",
+   "role": "da",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST015",
+    "parentId": "PST001"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST015"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : da archive",
+   "role": "da",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST015",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST015"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Archivage",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": "{\"statut\":\"actif\"}",
+      "nouvelle": "{\"statut\":\"archive\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : direction réaffecte",
+   "role": "direction",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST015",
+    "parentId": "PST001"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST015"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : direction archive",
+   "role": "direction",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST015",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ORGANIGRAMME_RESERVE",
+    "motif": "L’archivage d’un poste est réservé aux profils qui annulent à l’écran « Organisation & organigramme » (RG-14).",
+    "geste": "Demander à l’administrateur ou à la Directrice Administrative.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : sans session, rien ne s’écrit",
+   "role": "admin",
+   "appel": {
+    "fn": "reaffecter",
+    "posteId": "PST015",
+    "parentId": "PST001",
+    "sansRole": true
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ORGANIGRAMME_RESERVE",
+    "motif": "La modification de l’organigramme est réservée aux profils qui écrivent à l’écran « Organisation & organigramme ».",
+    "geste": "Demander à l’administrateur ou à la Directrice Administrative.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  }
+ ],
+ "controles": [
+  {
+   "nom": "création : sous archivé",
+   "posteId": null,
+   "champs": {
+    "parentId": "PSTA"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "PARENT_ARCHIVE",
+    "motif": "Le poste « Ancien service » est archivé : on ne rattache rien à un poste archivé (RG-14).",
+    "geste": "Restaurer ce poste depuis la corbeille, ou choisir un poste actif."
+   }
+  },
+  {
+   "nom": "création : intitulé vide",
+   "posteId": null,
+   "champs": {
+    "poste": " "
+   },
+   "attendu": {
+    "ok": false,
+    "code": "INTITULE_VIDE",
+    "motif": "L’intitulé du poste est obligatoire.",
+    "geste": "Saisir l’intitulé du poste."
+   }
+  },
+  {
+   "nom": "création : tout va bien",
+   "posteId": null,
+   "champs": {
+    "poste": "X",
+    "parentId": "PST001",
+    "effectif": 2
+   },
+   "attendu": null
+  },
+  {
+   "nom": "modification : cycle",
+   "posteId": "PST002",
+   "champs": {
+    "parentId": "PST004"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "RATTACHEMENT_CYCLE",
+    "motif": "Rattacher « Directrice Administrative (DA) » à « Assistant comptable » ferait de lui son propre supérieur : « Assistant comptable » dépend déjà de « Directrice Administrative (DA) ».",
+    "geste": "Choisir un poste qui ne dépende pas de celui-ci, ou réaffecter d’abord ses rattachés."
+   }
+  },
+  {
+   "nom": "modification : titre sans agent",
+   "posteId": "PST013",
+   "champs": {
+    "titreAgent": "ZZ"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "AGENT_INTROUVABLE",
+    "motif": "Aucun agent du personnel ne porte le nom « KINNOU Addoul Ganiou » : le titre est porté par l’agent, pas par le poste.",
+    "geste": "Corriger le nom du titulaire pour qu’il corresponde à une fiche du personnel, ou enregistrer l’agent au personnel."
+   }
+  },
+  {
+   "nom": "modification : tout va bien",
+   "posteId": "PST012",
+   "champs": {
+    "effectif": 2
+   },
+   "attendu": null
+  }
+ ],
+ "reprises": [
+  {
+   "nom": "une fiche intacte est réécrite, une fiche modifiée par l’écran ne l’est jamais",
+   "entree": [
+    {
+     "id": "PST002",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Directrice Administrative",
+     "effectif": 1,
+     "titulaire": "TAKI Alimatou épse BASSONGUI",
+     "chef": false,
+     "role": "da"
+    },
+    {
+     "id": "PST003",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Comptable",
+     "effectif": 1,
+     "titulaire": "KASSA Augustin",
+     "chef": false,
+     "role": "comptable",
+     "_modifieLe": "2026-11-01T08:00:00.000Z"
+    },
+    {
+     "id": "PST004",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST003",
+     "poste": "Assistant Comptable",
+     "effectif": 2,
+     "titulaire": "GBEDJI Hervé",
+     "chef": false,
+     "role": "comptable"
+    },
+    {
+     "id": "PST005",
+     "statut": "archive",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Gestionnaire de Stock",
+     "effectif": 1,
+     "titulaire": "MAMAN Zoukanéri",
+     "chef": false,
+     "role": "stock",
+     "_archiveLe": "2026-11-02T08:00:00.000Z"
+    },
+    {
+     "id": "PST006",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Secrétaires Médicaux",
+     "effectif": 4,
+     "titulaire": "OROU YO Edmond",
+     "chef": true,
+     "role": "reception",
+     "etoile": true
+    }
+   ],
+   "attendu": {
+    "bilan": {
+     "reecrits": [
+      "PST002",
+      "PST006"
+     ],
+     "gardes": [
+      "PST003",
+      "PST004",
+      "PST005"
+     ],
+     "etoiles": 1
+    },
+    "second": {
+     "reecrits": [],
+     "gardes": [
+      "PST003",
+      "PST004",
+      "PST005"
+     ],
+     "etoiles": 0
+    },
+    "postes": [
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da",
+      "semence": 2
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable",
+      "_modifieLe": "2026-11-01T08:00:00.000Z"
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST003",
+      "poste": "Assistant Comptable",
+      "effectif": 2,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST005",
+      "statut": "archive",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST002",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock",
+      "_archiveLe": "2026-11-02T08:00:00.000Z"
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception",
+      "semence": 2
+     }
+    ]
+   }
+  },
+  {
+   "nom": "toute la semence d’avant est reprise",
+   "entree": [
+    {
+     "id": "PST001",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "poste": "Directeur Médical",
+     "effectif": 1,
+     "titulaire": "BASSONGUI Chabi Séko",
+     "chef": false,
+     "role": "dm"
+    },
+    {
+     "id": "PST002",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Directrice Administrative",
+     "effectif": 1,
+     "titulaire": "TAKI Alimatou épse BASSONGUI",
+     "chef": false,
+     "role": "da"
+    },
+    {
+     "id": "PST003",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Comptable",
+     "effectif": 1,
+     "titulaire": "KASSA Augustin",
+     "chef": false,
+     "role": "comptable"
+    },
+    {
+     "id": "PST004",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST003",
+     "poste": "Assistant Comptable",
+     "effectif": 1,
+     "titulaire": "GBEDJI Hervé",
+     "chef": false,
+     "role": "comptable"
+    },
+    {
+     "id": "PST005",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Gestionnaire de Stock",
+     "effectif": 1,
+     "titulaire": "MAMAN Zoukanéri",
+     "chef": false,
+     "role": "stock"
+    },
+    {
+     "id": "PST006",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Secrétaires Médicaux",
+     "effectif": 4,
+     "titulaire": "OROU YO Edmond",
+     "chef": true,
+     "role": "reception"
+    },
+    {
+     "id": "PST007",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Dispensatrices",
+     "effectif": 4,
+     "titulaire": "DIEYABIDI Aïssatou",
+     "chef": true,
+     "role": "pharmacien"
+    },
+    {
+     "id": "PST008",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Agents de Sécurité",
+     "effectif": 3,
+     "titulaire": "OURTCHA TEREYAMA",
+     "chef": true,
+     "role": "agentadmin"
+    },
+    {
+     "id": "PST009",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Agents d’Entretien",
+     "effectif": 3,
+     "titulaire": "ISSA Rabiatou",
+     "chef": true,
+     "role": "agentadmin"
+    },
+    {
+     "id": "PST010",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST002",
+     "poste": "Chauffeur Coursier",
+     "effectif": 1,
+     "titulaire": "TCHANE Nourou",
+     "chef": false,
+     "role": "ambulancier"
+    },
+    {
+     "id": "PST011",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Médecins Généralistes",
+     "effectif": 2,
+     "titulaire": "YENI M’PO Florent",
+     "chef": false,
+     "role": "medecin"
+    },
+    {
+     "id": "PST012",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Échographiste",
+     "effectif": 1,
+     "titulaire": "AHOHOU Rodrigue",
+     "chef": false,
+     "role": "medecin"
+    },
+    {
+     "id": "PST013",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Laborantins",
+     "effectif": 2,
+     "titulaire": "KINNOU Addoul Ganiou",
+     "chef": true,
+     "role": "laborantin"
+    },
+    {
+     "id": "PST014",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Infirmiers",
+     "effectif": 8,
+     "titulaire": "GARBA Yahouza",
+     "chef": true,
+     "role": "infirmier"
+    },
+    {
+     "id": "PST015",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Sages-Femmes",
+     "effectif": 3,
+     "chef": false,
+     "role": "infirmier"
+    },
+    {
+     "id": "PST016",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Aide-Soignantes",
+     "effectif": 8,
+     "titulaire": "TEPA Séraphine",
+     "chef": true,
+     "role": "aide_soignant"
+    }
+   ],
+   "attendu": {
+    "bilan": {
+     "reecrits": [
+      "PST001",
+      "PST002",
+      "PST003",
+      "PST004",
+      "PST005",
+      "PST006",
+      "PST007",
+      "PST008",
+      "PST009",
+      "PST010",
+      "PST011",
+      "PST012",
+      "PST013",
+      "PST014",
+      "PST015",
+      "PST016"
+     ],
+     "gardes": [],
+     "etoiles": 0
+    },
+    "second": {
+     "reecrits": [],
+     "gardes": [],
+     "etoiles": 0
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm",
+      "semence": 2
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da",
+      "semence": 2
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable",
+      "semence": 2
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable",
+      "semence": 2
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock",
+      "semence": 2
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception",
+      "semence": 2
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien",
+      "semence": 2
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin",
+      "semence": 2
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin",
+      "semence": 2
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier",
+      "semence": 2
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin",
+      "semence": 2
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin",
+      "semence": 2
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin",
+      "semence": 2
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier",
+      "semence": 2
+     },
+     {
+      "id": "PST015",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST014",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "chef": false,
+      "role": "infirmier",
+      "semence": 2
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST014",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant",
+      "semence": 2
+     }
+    ]
+   }
+  },
+  {
+   "nom": "une semence déjà reprise n’est pas retouchée",
+   "entree": [
+    {
+     "id": "PST001",
+     "statut": "actif",
+     "poste": "Directeur Médical",
+     "effectif": 1,
+     "titulaire": "BASSONGUI Chabi Séko",
+     "chef": false,
+     "role": "dm",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST002",
+     "statut": "actif",
+     "parentId": "PST001",
+     "poste": "Directrice (nom choisi par la clinique)",
+     "effectif": 1,
+     "titulaire": "TAKI Alimatou épse BASSONGUI",
+     "chef": false,
+     "role": "da",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST003",
+     "statut": "actif",
+     "parentId": "PST002",
+     "poste": "Comptable",
+     "effectif": 1,
+     "titulaire": "KASSA Augustin",
+     "chef": false,
+     "role": "comptable",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST004",
+     "statut": "actif",
+     "parentId": "PST003",
+     "poste": "Assistant comptable",
+     "effectif": 1,
+     "titulaire": "GBEDJI Hervé",
+     "chef": false,
+     "role": "comptable",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST005",
+     "statut": "actif",
+     "parentId": "PST004",
+     "poste": "Gestionnaire de Stock",
+     "effectif": 1,
+     "titulaire": "MAMAN Zoukanéri",
+     "chef": false,
+     "role": "stock",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST007",
+     "statut": "actif",
+     "parentId": "PST002",
+     "poste": "Dispensatrices",
+     "effectif": 4,
+     "titulaire": "DIEYABIDI Aïssatou",
+     "chef": true,
+     "role": "pharmacien",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST008",
+     "statut": "actif",
+     "parentId": "PST002",
+     "poste": "Agents de Sécurités",
+     "effectif": 3,
+     "titulaire": "OURTCHA TEREYAMA",
+     "chef": true,
+     "role": "agentadmin",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST014",
+     "statut": "actif",
+     "parentId": "PST001",
+     "poste": "Infirmiers",
+     "effectif": 8,
+     "titulaire": "GARBA Yahouza",
+     "chef": false,
+     "role": "infirmier",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST015",
+     "statut": "actif",
+     "parentId": "PST014",
+     "poste": "Sages-Femmes",
+     "effectif": 3,
+     "chef": false,
+     "role": "infirmier",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST016",
+     "statut": "actif",
+     "parentId": "PST014",
+     "poste": "Aide-Soignante",
+     "effectif": 8,
+     "titulaire": "TEPA Séraphine",
+     "chef": true,
+     "role": "aide_soignant",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST013",
+     "statut": "actif",
+     "parentId": "PST001",
+     "poste": "Laborantins",
+     "effectif": 2,
+     "titulaire": "KINNOU Addoul Ganiou",
+     "chef": true,
+     "role": "laborantin",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST012",
+     "statut": "actif",
+     "parentId": "PST001",
+     "poste": "Echographiste",
+     "effectif": 1,
+     "titulaire": "AHOHOU Rodrigue",
+     "chef": false,
+     "role": "medecin",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST011",
+     "statut": "actif",
+     "parentId": "PST001",
+     "poste": "Médecins Généralistes",
+     "effectif": 2,
+     "titulaire": "YENI M’PO Florent",
+     "chef": false,
+     "role": "medecin",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST006",
+     "statut": "actif",
+     "parentId": "PST001",
+     "poste": "Secrétaires Médicaux",
+     "effectif": 4,
+     "titulaire": "OROU YO Edmond",
+     "chef": true,
+     "role": "reception",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST010",
+     "statut": "actif",
+     "parentId": "PST006",
+     "poste": "Chauffeur Coursier",
+     "effectif": 1,
+     "titulaire": "TCHANE Nourou",
+     "chef": false,
+     "role": "ambulancier",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    },
+    {
+     "id": "PST009",
+     "statut": "actif",
+     "parentId": "PST001",
+     "poste": "Agents d’Entretiens",
+     "effectif": 3,
+     "titulaire": "ISSA Rabiatou",
+     "chef": true,
+     "role": "agentadmin",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2
+    }
+   ],
+   "attendu": {
+    "bilan": {
+     "reecrits": [],
+     "gardes": [],
+     "etoiles": 0
+    },
+    "second": {
+     "reecrits": [],
+     "gardes": [],
+     "etoiles": 0
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Directrice (nom choisi par la clinique)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST015",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "chef": false,
+      "role": "infirmier",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "semence": 2
+     }
+    ]
+   }
+  },
+  {
+   "nom": "un champ étoile est retiré de toute fiche",
+   "entree": [
+    {
+     "id": "PST013",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Laborantins",
+     "effectif": 2,
+     "titulaire": "KINNOU Addoul Ganiou",
+     "chef": true,
+     "role": "laborantin",
+     "etoile": true
+    },
+    {
+     "id": "PST014",
+     "statut": "actif",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "parentId": "PST001",
+     "poste": "Infirmiers",
+     "effectif": 8,
+     "titulaire": "GARBA Yahouza",
+     "chef": true,
+     "role": "infirmier",
+     "etoile": false,
+     "_modifieLe": "2026-11-03T08:00:00.000Z"
+    }
+   ],
+   "attendu": {
+    "bilan": {
+     "reecrits": [
+      "PST013"
+     ],
+     "gardes": [
+      "PST014"
+     ],
+     "etoiles": 2
+    },
+    "second": {
+     "reecrits": [],
+     "gardes": [
+      "PST014"
+     ],
+     "etoiles": 0
+    },
+    "postes": [
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin",
+      "semence": 2
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "source": "Organigramme de la Clinique NASSIERA TOO",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": true,
+      "role": "infirmier",
+      "_modifieLe": "2026-11-03T08:00:00.000Z"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "un identifiant inconnu n’est pas touché",
+   "entree": [
+    {
+     "id": "PSTzz",
+     "statut": "actif",
+     "poste": "Autre",
+     "effectif": 1,
+     "role": "agentadmin"
+    }
+   ],
+   "attendu": {
+    "bilan": {
+     "reecrits": [],
+     "gardes": [],
+     "etoiles": 0
+    },
+    "second": {
+     "reecrits": [],
+     "gardes": [],
+     "etoiles": 0
+    },
+    "postes": [
+     {
+      "id": "PSTzz",
+      "statut": "actif",
+      "poste": "Autre",
+      "effectif": 1,
+      "role": "agentadmin"
+     }
+    ]
+   }
+  }
+ ],
+ "mises": [
+  {
+   "nom": "la semence de la photo",
+   "options": null,
+   "entree": [
+    {
+     "id": "PST001",
+     "statut": "actif",
+     "parentId": null,
+     "poste": "Directeur Médical",
+     "effectif": 1,
+     "titulaire": "BASSONGUI Chabi Séko",
+     "chef": false,
+     "role": "dm",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2,
+     "enfants": [
+      {
+       "id": "PST002",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Directrice Administrative (DA)",
+       "effectif": 1,
+       "titulaire": "TAKI Alimatou épse BASSONGUI",
+       "chef": false,
+       "role": "da",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST003",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Comptable",
+         "effectif": 1,
+         "titulaire": "KASSA Augustin",
+         "chef": false,
+         "role": "comptable",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [
+          {
+           "id": "PST004",
+           "statut": "actif",
+           "parentId": "PST003",
+           "poste": "Assistant comptable",
+           "effectif": 1,
+           "titulaire": "GBEDJI Hervé",
+           "chef": false,
+           "role": "comptable",
+           "source": "Organigramme de la Clinique NASSIERA TOO",
+           "semence": 2,
+           "enfants": [
+            {
+             "id": "PST005",
+             "statut": "actif",
+             "parentId": "PST004",
+             "poste": "Gestionnaire de Stock",
+             "effectif": 1,
+             "titulaire": "MAMAN Zoukanéri",
+             "chef": false,
+             "role": "stock",
+             "source": "Organigramme de la Clinique NASSIERA TOO",
+             "semence": 2,
+             "enfants": [],
+             "titreAgent": null
+            }
+           ],
+           "titreAgent": null
+          }
+         ],
+         "titreAgent": null
+        },
+        {
+         "id": "PST007",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Dispensatrices",
+         "effectif": 4,
+         "titulaire": "DIEYABIDI Aïssatou",
+         "chef": true,
+         "role": "pharmacien",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        },
+        {
+         "id": "PST008",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Agents de Sécurités",
+         "effectif": 3,
+         "titulaire": "OURTCHA TEREYAMA",
+         "chef": true,
+         "role": "agentadmin",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": null
+      },
+      {
+       "id": "PST014",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Infirmiers",
+       "effectif": 8,
+       "titulaire": "GARBA Yahouza",
+       "chef": false,
+       "role": "infirmier",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST015",
+         "statut": "actif",
+         "parentId": "PST014",
+         "poste": "Sages-Femmes",
+         "effectif": 3,
+         "titulaire": null,
+         "chef": false,
+         "role": "infirmier",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        },
+        {
+         "id": "PST016",
+         "statut": "actif",
+         "parentId": "PST014",
+         "poste": "Aide-Soignante",
+         "effectif": 8,
+         "titulaire": "TEPA Séraphine",
+         "chef": true,
+         "role": "aide_soignant",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": "SG"
+      },
+      {
+       "id": "PST013",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Laborantins",
+       "effectif": 2,
+       "titulaire": "KINNOU Addoul Ganiou",
+       "chef": true,
+       "role": "laborantin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST012",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Echographiste",
+       "effectif": 1,
+       "titulaire": "AHOHOU Rodrigue",
+       "chef": false,
+       "role": "medecin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST011",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Médecins Généralistes",
+       "effectif": 2,
+       "titulaire": "YENI M’PO Florent",
+       "chef": false,
+       "role": "medecin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST006",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Secrétaires Médicaux",
+       "effectif": 4,
+       "titulaire": "OROU YO Edmond",
+       "chef": true,
+       "role": "reception",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST010",
+         "statut": "actif",
+         "parentId": "PST006",
+         "poste": "Chauffeur Coursier",
+         "effectif": 1,
+         "titulaire": "TCHANE Nourou",
+         "chef": false,
+         "role": "ambulancier",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": null
+      },
+      {
+       "id": "PST009",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Agents d’Entretiens",
+       "effectif": 3,
+       "titulaire": "ISSA Rabiatou",
+       "chef": true,
+       "role": "agentadmin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      }
+     ],
+     "titreAgent": null
+    }
+   ],
+   "attendu": {
+    "largeur": 273,
+    "hauteur": 120,
+    "niveaux": 5,
+    "boites": [
+     {
+      "poste": "Directeur Médical",
+      "gauche": 124.15,
+      "haut": 0,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Directeur Médical (01)",
+       "BASSONGUI Chabi Séko"
+      ]
+     },
+     {
+      "poste": "Directrice Administrative (DA)",
+      "gauche": 14.95,
+      "haut": 25.25,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Directrice Administrative (DA) (01)",
+       "TAKI Alimatou épse BASSONGUI"
+      ]
+     },
+     {
+      "poste": "Infirmiers",
+      "gauche": 89.97,
+      "haut": 25.25,
+      "largeur": 38.45,
+      "hauteur": 19,
+      "lignes": [
+       "Infirmiers (08)",
+       "GARBA Yahouza (SG)"
+      ]
+     },
+     {
+      "poste": "Laborantins",
+      "gauche": 137.75,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Laborantins (02)",
+       "KINNOU Addoul Ganiou C/S"
+      ]
+     },
+     {
+      "poste": "Echographiste",
+      "gauche": 165.05,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Echographiste (01)",
+       "AHOHOU Rodrigue"
+      ]
+     },
+     {
+      "poste": "Médecins Généralistes",
+      "gauche": 192.35,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Médecins Généralistes (02)",
+       "YENI M’PO Florent"
+      ]
+     },
+     {
+      "poste": "Secrétaires Médicaux",
+      "gauche": 219.65,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Secrétaires Médicaux (04)",
+       "OROU YO Edmond C/S"
+      ]
+     },
+     {
+      "poste": "Agents d’Entretiens",
+      "gauche": 246.95,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Agents d’Entretiens (03)",
+       "ISSA Rabiatou C/S"
+      ]
+     },
+     {
+      "poste": "Comptable",
+      "gauche": 1.25,
+      "haut": 50.5,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Comptable (01)",
+       "KASSA Augustin"
+      ]
+     },
+     {
+      "poste": "Dispensatrices",
+      "gauche": 28.55,
+      "haut": 50.5,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Dispensatrices (04)",
+       "DIEYABIDI Aïssatou C/S"
+      ]
+     },
+     {
+      "poste": "Agents de Sécurités",
+      "gauche": 55.85,
+      "haut": 50.5,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Agents de Sécurités (03)",
+       "OURTCHA TEREYAMA C/S"
+      ]
+     },
+     {
+      "poste": "Sages-Femmes",
+      "gauche": 83.15,
+      "haut": 50.5,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Sages-Femmes (03)"
+      ]
+     },
+     {
+      "poste": "Aide-Soignante",
+      "gauche": 110.45,
+      "haut": 50.5,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Aide-Soignante (08)",
+       "TEPA Séraphine C/S"
+      ]
+     },
+     {
+      "poste": "Chauffeur Coursier",
+      "gauche": 206.05,
+      "haut": 50.5,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Chauffeur Coursier (01)",
+       "TCHANE Nourou"
+      ]
+     },
+     {
+      "poste": "Assistant comptable",
+      "gauche": 0,
+      "haut": 75.75,
+      "largeur": 27.3,
+      "hauteur": 19,
+      "lignes": [
+       "Assistant comptable (01)",
+       "GBEDJI Hervé"
+      ]
+     },
+     {
+      "poste": "Gestionnaire de Stock",
+      "gauche": 0,
+      "haut": 101,
+      "largeur": 27.3,
+      "hauteur": 19,
+      "lignes": [
+       "Gestionnaire de Stock (01)",
+       "MAMAN Zoukanéri"
+      ]
+     }
+    ],
+    "traits": [
+     [
+      150.15,
+      19,
+      150.15,
+      22.13
+     ],
+     [
+      40.95,
+      22.13,
+      259.35,
+      22.13
+     ],
+     [
+      40.95,
+      22.13,
+      40.95,
+      24.65
+     ],
+     [
+      109.2,
+      22.13,
+      109.2,
+      24.65
+     ],
+     [
+      150.15,
+      22.13,
+      150.15,
+      24.65
+     ],
+     [
+      177.45,
+      22.13,
+      177.45,
+      24.65
+     ],
+     [
+      204.75,
+      22.13,
+      204.75,
+      24.65
+     ],
+     [
+      232.05,
+      22.13,
+      232.05,
+      24.65
+     ],
+     [
+      259.35,
+      22.13,
+      259.35,
+      24.65
+     ],
+     [
+      40.95,
+      44.25,
+      40.95,
+      47.38
+     ],
+     [
+      13.65,
+      47.38,
+      68.25,
+      47.38
+     ],
+     [
+      13.65,
+      47.38,
+      13.65,
+      49.9
+     ],
+     [
+      40.95,
+      47.38,
+      40.95,
+      49.9
+     ],
+     [
+      68.25,
+      47.38,
+      68.25,
+      49.9
+     ],
+     [
+      109.2,
+      44.25,
+      109.2,
+      47.38
+     ],
+     [
+      95.55,
+      47.38,
+      122.85,
+      47.38
+     ],
+     [
+      95.55,
+      47.38,
+      95.55,
+      49.9
+     ],
+     [
+      122.85,
+      47.38,
+      122.85,
+      49.9
+     ],
+     [
+      232.05,
+      44.25,
+      232.05,
+      47.38
+     ],
+     [
+      232.05,
+      47.38,
+      232.05,
+      47.38
+     ],
+     [
+      232.05,
+      47.38,
+      232.05,
+      49.9
+     ],
+     [
+      13.65,
+      69.5,
+      13.65,
+      72.63
+     ],
+     [
+      13.65,
+      72.63,
+      13.65,
+      72.63
+     ],
+     [
+      13.65,
+      72.63,
+      13.65,
+      75.15
+     ],
+     [
+      13.65,
+      94.75,
+      13.65,
+      97.88
+     ],
+     [
+      13.65,
+      97.88,
+      13.65,
+      97.88
+     ],
+     [
+      13.65,
+      97.88,
+      13.65,
+      100.4
+     ]
+    ],
+    "fleches": [
+     "M40.05 23.45 L40.95 25.05 L41.85 23.45 Z",
+     "M108.30 23.45 L109.20 25.05 L110.10 23.45 Z",
+     "M149.25 23.45 L150.15 25.05 L151.05 23.45 Z",
+     "M176.55 23.45 L177.45 25.05 L178.35 23.45 Z",
+     "M203.85 23.45 L204.75 25.05 L205.65 23.45 Z",
+     "M231.15 23.45 L232.05 25.05 L232.95 23.45 Z",
+     "M258.45 23.45 L259.35 25.05 L260.25 23.45 Z",
+     "M12.75 48.70 L13.65 50.30 L14.55 48.70 Z",
+     "M40.05 48.70 L40.95 50.30 L41.85 48.70 Z",
+     "M67.35 48.70 L68.25 50.30 L69.15 48.70 Z",
+     "M94.65 48.70 L95.55 50.30 L96.45 48.70 Z",
+     "M121.95 48.70 L122.85 50.30 L123.75 48.70 Z",
+     "M231.15 48.70 L232.05 50.30 L232.95 48.70 Z",
+     "M12.75 73.95 L13.65 75.55 L14.55 73.95 Z",
+     "M12.75 99.20 L13.65 100.80 L14.55 99.20 Z"
+    ]
+   }
+  },
+  {
+   "nom": "les Sages-Femmes réaffectées sous le Directeur Médical",
+   "options": null,
+   "entree": [
+    {
+     "id": "PST001",
+     "statut": "actif",
+     "parentId": null,
+     "poste": "Directeur Médical",
+     "effectif": 1,
+     "titulaire": "BASSONGUI Chabi Séko",
+     "chef": false,
+     "role": "dm",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2,
+     "enfants": [
+      {
+       "id": "PST002",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Directrice Administrative (DA)",
+       "effectif": 1,
+       "titulaire": "TAKI Alimatou épse BASSONGUI",
+       "chef": false,
+       "role": "da",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST003",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Comptable",
+         "effectif": 1,
+         "titulaire": "KASSA Augustin",
+         "chef": false,
+         "role": "comptable",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [
+          {
+           "id": "PST004",
+           "statut": "actif",
+           "parentId": "PST003",
+           "poste": "Assistant comptable",
+           "effectif": 1,
+           "titulaire": "GBEDJI Hervé",
+           "chef": false,
+           "role": "comptable",
+           "source": "Organigramme de la Clinique NASSIERA TOO",
+           "semence": 2,
+           "enfants": [
+            {
+             "id": "PST005",
+             "statut": "actif",
+             "parentId": "PST004",
+             "poste": "Gestionnaire de Stock",
+             "effectif": 1,
+             "titulaire": "MAMAN Zoukanéri",
+             "chef": false,
+             "role": "stock",
+             "source": "Organigramme de la Clinique NASSIERA TOO",
+             "semence": 2,
+             "enfants": [],
+             "titreAgent": null
+            }
+           ],
+           "titreAgent": null
+          }
+         ],
+         "titreAgent": null
+        },
+        {
+         "id": "PST007",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Dispensatrices",
+         "effectif": 4,
+         "titulaire": "DIEYABIDI Aïssatou",
+         "chef": true,
+         "role": "pharmacien",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        },
+        {
+         "id": "PST008",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Agents de Sécurités",
+         "effectif": 3,
+         "titulaire": "OURTCHA TEREYAMA",
+         "chef": true,
+         "role": "agentadmin",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": null
+      },
+      {
+       "id": "PST014",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Infirmiers",
+       "effectif": 8,
+       "titulaire": "GARBA Yahouza",
+       "chef": false,
+       "role": "infirmier",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST016",
+         "statut": "actif",
+         "parentId": "PST014",
+         "poste": "Aide-Soignante",
+         "effectif": 8,
+         "titulaire": "TEPA Séraphine",
+         "chef": true,
+         "role": "aide_soignant",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": "SG"
+      },
+      {
+       "id": "PST015",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Sages-Femmes",
+       "effectif": 3,
+       "titulaire": null,
+       "chef": false,
+       "role": "infirmier",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "_modifiePar": "Vecteur admin",
+       "_modifieLe": "2026-10-30T12:00:00.361Z",
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST013",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Laborantins",
+       "effectif": 2,
+       "titulaire": "KINNOU Addoul Ganiou",
+       "chef": true,
+       "role": "laborantin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST012",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Echographiste",
+       "effectif": 1,
+       "titulaire": "AHOHOU Rodrigue",
+       "chef": false,
+       "role": "medecin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST011",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Médecins Généralistes",
+       "effectif": 2,
+       "titulaire": "YENI M’PO Florent",
+       "chef": false,
+       "role": "medecin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST006",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Secrétaires Médicaux",
+       "effectif": 4,
+       "titulaire": "OROU YO Edmond",
+       "chef": true,
+       "role": "reception",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST010",
+         "statut": "actif",
+         "parentId": "PST006",
+         "poste": "Chauffeur Coursier",
+         "effectif": 1,
+         "titulaire": "TCHANE Nourou",
+         "chef": false,
+         "role": "ambulancier",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": null
+      },
+      {
+       "id": "PST009",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Agents d’Entretiens",
+       "effectif": 3,
+       "titulaire": "ISSA Rabiatou",
+       "chef": true,
+       "role": "agentadmin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      }
+     ],
+     "titreAgent": null
+    }
+   ],
+   "attendu": {
+    "largeur": 273,
+    "hauteur": 120,
+    "niveaux": 5,
+    "boites": [
+     {
+      "poste": "Directeur Médical",
+      "gauche": 124.15,
+      "haut": 0,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Directeur Médical (01)",
+       "BASSONGUI Chabi Séko"
+      ]
+     },
+     {
+      "poste": "Directrice Administrative (DA)",
+      "gauche": 14.95,
+      "haut": 25.25,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Directrice Administrative (DA) (01)",
+       "TAKI Alimatou épse BASSONGUI"
+      ]
+     },
+     {
+      "poste": "Infirmiers",
+      "gauche": 83.15,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Infirmiers (08)",
+       "GARBA Yahouza (SG)"
+      ]
+     },
+     {
+      "poste": "Sages-Femmes",
+      "gauche": 110.45,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Sages-Femmes (03)"
+      ]
+     },
+     {
+      "poste": "Laborantins",
+      "gauche": 137.75,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Laborantins (02)",
+       "KINNOU Addoul Ganiou C/S"
+      ]
+     },
+     {
+      "poste": "Echographiste",
+      "gauche": 165.05,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Echographiste (01)",
+       "AHOHOU Rodrigue"
+      ]
+     },
+     {
+      "poste": "Médecins Généralistes",
+      "gauche": 192.35,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Médecins Généralistes (02)",
+       "YENI M’PO Florent"
+      ]
+     },
+     {
+      "poste": "Secrétaires Médicaux",
+      "gauche": 219.65,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Secrétaires Médicaux (04)",
+       "OROU YO Edmond C/S"
+      ]
+     },
+     {
+      "poste": "Agents d’Entretiens",
+      "gauche": 246.95,
+      "haut": 25.25,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Agents d’Entretiens (03)",
+       "ISSA Rabiatou C/S"
+      ]
+     },
+     {
+      "poste": "Comptable",
+      "gauche": 1.25,
+      "haut": 50.5,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Comptable (01)",
+       "KASSA Augustin"
+      ]
+     },
+     {
+      "poste": "Dispensatrices",
+      "gauche": 28.55,
+      "haut": 50.5,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Dispensatrices (04)",
+       "DIEYABIDI Aïssatou C/S"
+      ]
+     },
+     {
+      "poste": "Agents de Sécurités",
+      "gauche": 55.85,
+      "haut": 50.5,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Agents de Sécurités (03)",
+       "OURTCHA TEREYAMA C/S"
+      ]
+     },
+     {
+      "poste": "Aide-Soignante",
+      "gauche": 83.15,
+      "haut": 50.5,
+      "largeur": 24.8,
+      "hauteur": 19,
+      "lignes": [
+       "Aide-Soignante (08)",
+       "TEPA Séraphine C/S"
+      ]
+     },
+     {
+      "poste": "Chauffeur Coursier",
+      "gauche": 206.05,
+      "haut": 50.5,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Chauffeur Coursier (01)",
+       "TCHANE Nourou"
+      ]
+     },
+     {
+      "poste": "Assistant comptable",
+      "gauche": 0,
+      "haut": 75.75,
+      "largeur": 27.3,
+      "hauteur": 19,
+      "lignes": [
+       "Assistant comptable (01)",
+       "GBEDJI Hervé"
+      ]
+     },
+     {
+      "poste": "Gestionnaire de Stock",
+      "gauche": 0,
+      "haut": 101,
+      "largeur": 27.3,
+      "hauteur": 19,
+      "lignes": [
+       "Gestionnaire de Stock (01)",
+       "MAMAN Zoukanéri"
+      ]
+     }
+    ],
+    "traits": [
+     [
+      150.15,
+      19,
+      150.15,
+      22.13
+     ],
+     [
+      40.95,
+      22.13,
+      259.35,
+      22.13
+     ],
+     [
+      40.95,
+      22.13,
+      40.95,
+      24.65
+     ],
+     [
+      95.55,
+      22.13,
+      95.55,
+      24.65
+     ],
+     [
+      122.85,
+      22.13,
+      122.85,
+      24.65
+     ],
+     [
+      150.15,
+      22.13,
+      150.15,
+      24.65
+     ],
+     [
+      177.45,
+      22.13,
+      177.45,
+      24.65
+     ],
+     [
+      204.75,
+      22.13,
+      204.75,
+      24.65
+     ],
+     [
+      232.05,
+      22.13,
+      232.05,
+      24.65
+     ],
+     [
+      259.35,
+      22.13,
+      259.35,
+      24.65
+     ],
+     [
+      40.95,
+      44.25,
+      40.95,
+      47.38
+     ],
+     [
+      13.65,
+      47.38,
+      68.25,
+      47.38
+     ],
+     [
+      13.65,
+      47.38,
+      13.65,
+      49.9
+     ],
+     [
+      40.95,
+      47.38,
+      40.95,
+      49.9
+     ],
+     [
+      68.25,
+      47.38,
+      68.25,
+      49.9
+     ],
+     [
+      95.55,
+      44.25,
+      95.55,
+      47.38
+     ],
+     [
+      95.55,
+      47.38,
+      95.55,
+      47.38
+     ],
+     [
+      95.55,
+      47.38,
+      95.55,
+      49.9
+     ],
+     [
+      232.05,
+      44.25,
+      232.05,
+      47.38
+     ],
+     [
+      232.05,
+      47.38,
+      232.05,
+      47.38
+     ],
+     [
+      232.05,
+      47.38,
+      232.05,
+      49.9
+     ],
+     [
+      13.65,
+      69.5,
+      13.65,
+      72.63
+     ],
+     [
+      13.65,
+      72.63,
+      13.65,
+      72.63
+     ],
+     [
+      13.65,
+      72.63,
+      13.65,
+      75.15
+     ],
+     [
+      13.65,
+      94.75,
+      13.65,
+      97.88
+     ],
+     [
+      13.65,
+      97.88,
+      13.65,
+      97.88
+     ],
+     [
+      13.65,
+      97.88,
+      13.65,
+      100.4
+     ]
+    ],
+    "fleches": [
+     "M40.05 23.45 L40.95 25.05 L41.85 23.45 Z",
+     "M94.65 23.45 L95.55 25.05 L96.45 23.45 Z",
+     "M121.95 23.45 L122.85 25.05 L123.75 23.45 Z",
+     "M149.25 23.45 L150.15 25.05 L151.05 23.45 Z",
+     "M176.55 23.45 L177.45 25.05 L178.35 23.45 Z",
+     "M203.85 23.45 L204.75 25.05 L205.65 23.45 Z",
+     "M231.15 23.45 L232.05 25.05 L232.95 23.45 Z",
+     "M258.45 23.45 L259.35 25.05 L260.25 23.45 Z",
+     "M12.75 48.70 L13.65 50.30 L14.55 48.70 Z",
+     "M40.05 48.70 L40.95 50.30 L41.85 48.70 Z",
+     "M67.35 48.70 L68.25 50.30 L69.15 48.70 Z",
+     "M94.65 48.70 L95.55 50.30 L96.45 48.70 Z",
+     "M231.15 48.70 L232.05 50.30 L232.95 48.70 Z",
+     "M12.75 73.95 L13.65 75.55 L14.55 73.95 Z",
+     "M12.75 99.20 L13.65 100.80 L14.55 99.20 Z"
+    ]
+   }
+  },
+  {
+   "nom": "une forêt : le sommet de la photo et un poste isolé",
+   "options": null,
+   "entree": [
+    {
+     "id": "PST001",
+     "statut": "actif",
+     "parentId": null,
+     "poste": "Directeur Médical",
+     "effectif": 1,
+     "titulaire": "BASSONGUI Chabi Séko",
+     "chef": false,
+     "role": "dm",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2,
+     "enfants": [
+      {
+       "id": "PST002",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Directrice Administrative (DA)",
+       "effectif": 1,
+       "titulaire": "TAKI Alimatou épse BASSONGUI",
+       "chef": false,
+       "role": "da",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST003",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Comptable",
+         "effectif": 1,
+         "titulaire": "KASSA Augustin",
+         "chef": false,
+         "role": "comptable",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [
+          {
+           "id": "PST004",
+           "statut": "actif",
+           "parentId": "PST003",
+           "poste": "Assistant comptable",
+           "effectif": 1,
+           "titulaire": "GBEDJI Hervé",
+           "chef": false,
+           "role": "comptable",
+           "source": "Organigramme de la Clinique NASSIERA TOO",
+           "semence": 2,
+           "enfants": [
+            {
+             "id": "PST005",
+             "statut": "actif",
+             "parentId": "PST004",
+             "poste": "Gestionnaire de Stock",
+             "effectif": 1,
+             "titulaire": "MAMAN Zoukanéri",
+             "chef": false,
+             "role": "stock",
+             "source": "Organigramme de la Clinique NASSIERA TOO",
+             "semence": 2,
+             "enfants": [],
+             "titreAgent": null
+            }
+           ],
+           "titreAgent": null
+          }
+         ],
+         "titreAgent": null
+        },
+        {
+         "id": "PST007",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Dispensatrices",
+         "effectif": 4,
+         "titulaire": "DIEYABIDI Aïssatou",
+         "chef": true,
+         "role": "pharmacien",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        },
+        {
+         "id": "PST008",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Agents de Sécurités",
+         "effectif": 3,
+         "titulaire": "OURTCHA TEREYAMA",
+         "chef": true,
+         "role": "agentadmin",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": null
+      },
+      {
+       "id": "PST014",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Infirmiers",
+       "effectif": 8,
+       "titulaire": "GARBA Yahouza",
+       "chef": false,
+       "role": "infirmier",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST015",
+         "statut": "actif",
+         "parentId": "PST014",
+         "poste": "Sages-Femmes",
+         "effectif": 3,
+         "titulaire": null,
+         "chef": false,
+         "role": "infirmier",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        },
+        {
+         "id": "PST016",
+         "statut": "actif",
+         "parentId": "PST014",
+         "poste": "Aide-Soignante",
+         "effectif": 8,
+         "titulaire": "TEPA Séraphine",
+         "chef": true,
+         "role": "aide_soignant",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": "SG"
+      },
+      {
+       "id": "PST013",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Laborantins",
+       "effectif": 2,
+       "titulaire": "KINNOU Addoul Ganiou",
+       "chef": true,
+       "role": "laborantin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST012",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Echographiste",
+       "effectif": 1,
+       "titulaire": "AHOHOU Rodrigue",
+       "chef": false,
+       "role": "medecin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST011",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Médecins Généralistes",
+       "effectif": 2,
+       "titulaire": "YENI M’PO Florent",
+       "chef": false,
+       "role": "medecin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST006",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Secrétaires Médicaux",
+       "effectif": 4,
+       "titulaire": "OROU YO Edmond",
+       "chef": true,
+       "role": "reception",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST010",
+         "statut": "actif",
+         "parentId": "PST006",
+         "poste": "Chauffeur Coursier",
+         "effectif": 1,
+         "titulaire": "TCHANE Nourou",
+         "chef": false,
+         "role": "ambulancier",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": null
+      },
+      {
+       "id": "PST009",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Agents d’Entretiens",
+       "effectif": 3,
+       "titulaire": "ISSA Rabiatou",
+       "chef": true,
+       "role": "agentadmin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      }
+     ],
+     "titreAgent": null
+    },
+    {
+     "id": "PSTX",
+     "poste": "Poste isolé",
+     "effectif": 2,
+     "titulaire": "Un Nom",
+     "chef": true,
+     "role": "agentadmin",
+     "enfants": [],
+     "titreAgent": null
+    }
+   ],
+   "attendu": {
+    "largeur": 273,
+    "hauteur": 120,
+    "niveaux": 5,
+    "boites": [
+     {
+      "poste": "Directeur Médical",
+      "gauche": 110.5,
+      "haut": 0,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Directeur Médical (01)",
+       "BASSONGUI Chabi Séko"
+      ]
+     },
+     {
+      "poste": "Poste isolé",
+      "gauche": 248.18,
+      "haut": 0,
+      "largeur": 24.82,
+      "hauteur": 19,
+      "lignes": [
+       "Poste isolé (02)",
+       "Un Nom C/S"
+      ]
+     },
+     {
+      "poste": "Directrice Administrative (DA)",
+      "gauche": 11.23,
+      "haut": 25.25,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Directrice Administrative (DA) (01)",
+       "TAKI Alimatou épse BASSONGUI"
+      ]
+     },
+     {
+      "poste": "Infirmiers",
+      "gauche": 81.91,
+      "haut": 25.25,
+      "largeur": 34.73,
+      "hauteur": 19,
+      "lignes": [
+       "Infirmiers (08)",
+       "GARBA Yahouza (SG)"
+      ]
+     },
+     {
+      "poste": "Laborantins",
+      "gauche": 124.5,
+      "haut": 25.25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Laborantins (02)",
+       "KINNOU Addoul Ganiou C/S"
+      ]
+     },
+     {
+      "poste": "Echographiste",
+      "gauche": 149.32,
+      "haut": 25.25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Echographiste (01)",
+       "AHOHOU Rodrigue"
+      ]
+     },
+     {
+      "poste": "Médecins Généralistes",
+      "gauche": 174.14,
+      "haut": 25.25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Médecins Généralistes (02)",
+       "YENI M’PO Florent"
+      ]
+     },
+     {
+      "poste": "Secrétaires Médicaux",
+      "gauche": 198.95,
+      "haut": 25.25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Secrétaires Médicaux (04)",
+       "OROU YO Edmond C/S"
+      ]
+     },
+     {
+      "poste": "Agents d’Entretiens",
+      "gauche": 223.77,
+      "haut": 25.25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Agents d’Entretiens (03)",
+       "ISSA Rabiatou C/S"
+      ]
+     },
+     {
+      "poste": "Comptable",
+      "gauche": 0.41,
+      "haut": 50.5,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Comptable (01)",
+       "KASSA Augustin"
+      ]
+     },
+     {
+      "poste": "Dispensatrices",
+      "gauche": 25.23,
+      "haut": 50.5,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Dispensatrices (04)",
+       "DIEYABIDI Aïssatou C/S"
+      ]
+     },
+     {
+      "poste": "Agents de Sécurités",
+      "gauche": 50.05,
+      "haut": 50.5,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Agents de Sécurités (03)",
+       "OURTCHA TEREYAMA C/S"
+      ]
+     },
+     {
+      "poste": "Sages-Femmes",
+      "gauche": 74.86,
+      "haut": 50.5,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Sages-Femmes (03)"
+      ]
+     },
+     {
+      "poste": "Aide-Soignante",
+      "gauche": 99.68,
+      "haut": 50.5,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Aide-Soignante (08)",
+       "TEPA Séraphine C/S"
+      ]
+     },
+     {
+      "poste": "Chauffeur Coursier",
+      "gauche": 184.95,
+      "haut": 50.5,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Chauffeur Coursier (01)",
+       "TCHANE Nourou"
+      ]
+     },
+     {
+      "poste": "Assistant comptable",
+      "gauche": 0,
+      "haut": 75.75,
+      "largeur": 24.82,
+      "hauteur": 19,
+      "lignes": [
+       "Assistant comptable (01)",
+       "GBEDJI Hervé"
+      ]
+     },
+     {
+      "poste": "Gestionnaire de Stock",
+      "gauche": 0,
+      "haut": 101,
+      "largeur": 24.82,
+      "hauteur": 19,
+      "lignes": [
+       "Gestionnaire de Stock (01)",
+       "MAMAN Zoukanéri"
+      ]
+     }
+    ],
+    "traits": [
+     [
+      136.5,
+      19,
+      136.5,
+      22.13
+     ],
+     [
+      37.23,
+      22.13,
+      235.77,
+      22.13
+     ],
+     [
+      37.23,
+      22.13,
+      37.23,
+      24.65
+     ],
+     [
+      99.27,
+      22.13,
+      99.27,
+      24.65
+     ],
+     [
+      136.5,
+      22.13,
+      136.5,
+      24.65
+     ],
+     [
+      161.32,
+      22.13,
+      161.32,
+      24.65
+     ],
+     [
+      186.14,
+      22.13,
+      186.14,
+      24.65
+     ],
+     [
+      210.95,
+      22.13,
+      210.95,
+      24.65
+     ],
+     [
+      235.77,
+      22.13,
+      235.77,
+      24.65
+     ],
+     [
+      37.23,
+      44.25,
+      37.23,
+      47.38
+     ],
+     [
+      12.41,
+      47.38,
+      62.05,
+      47.38
+     ],
+     [
+      12.41,
+      47.38,
+      12.41,
+      49.9
+     ],
+     [
+      37.23,
+      47.38,
+      37.23,
+      49.9
+     ],
+     [
+      62.05,
+      47.38,
+      62.05,
+      49.9
+     ],
+     [
+      99.27,
+      44.25,
+      99.27,
+      47.38
+     ],
+     [
+      86.86,
+      47.38,
+      111.68,
+      47.38
+     ],
+     [
+      86.86,
+      47.38,
+      86.86,
+      49.9
+     ],
+     [
+      111.68,
+      47.38,
+      111.68,
+      49.9
+     ],
+     [
+      210.95,
+      44.25,
+      210.95,
+      47.38
+     ],
+     [
+      210.95,
+      47.38,
+      210.95,
+      47.38
+     ],
+     [
+      210.95,
+      47.38,
+      210.95,
+      49.9
+     ],
+     [
+      12.41,
+      69.5,
+      12.41,
+      72.63
+     ],
+     [
+      12.41,
+      72.63,
+      12.41,
+      72.63
+     ],
+     [
+      12.41,
+      72.63,
+      12.41,
+      75.15
+     ],
+     [
+      12.41,
+      94.75,
+      12.41,
+      97.88
+     ],
+     [
+      12.41,
+      97.88,
+      12.41,
+      97.88
+     ],
+     [
+      12.41,
+      97.88,
+      12.41,
+      100.4
+     ]
+    ],
+    "fleches": [
+     "M36.33 23.45 L37.23 25.05 L38.13 23.45 Z",
+     "M98.37 23.45 L99.27 25.05 L100.17 23.45 Z",
+     "M135.60 23.45 L136.50 25.05 L137.40 23.45 Z",
+     "M160.42 23.45 L161.32 25.05 L162.22 23.45 Z",
+     "M185.24 23.45 L186.14 25.05 L187.04 23.45 Z",
+     "M210.05 23.45 L210.95 25.05 L211.85 23.45 Z",
+     "M234.87 23.45 L235.77 25.05 L236.67 23.45 Z",
+     "M11.51 48.70 L12.41 50.30 L13.31 48.70 Z",
+     "M36.33 48.70 L37.23 50.30 L38.13 48.70 Z",
+     "M61.15 48.70 L62.05 50.30 L62.95 48.70 Z",
+     "M85.96 48.70 L86.86 50.30 L87.76 48.70 Z",
+     "M110.78 48.70 L111.68 50.30 L112.58 48.70 Z",
+     "M210.05 48.70 L210.95 50.30 L211.85 48.70 Z",
+     "M11.51 73.95 L12.41 75.55 L13.31 73.95 Z",
+     "M11.51 99.20 L12.41 100.80 L13.31 99.20 Z"
+    ]
+   }
+  },
+  {
+   "nom": "une chaîne unique",
+   "options": null,
+   "entree": [
+    {
+     "id": "a",
+     "poste": "Premier",
+     "effectif": 1,
+     "enfants": [
+      {
+       "id": "b",
+       "poste": "Deuxième",
+       "effectif": 2,
+       "titulaire": "X",
+       "enfants": [
+        {
+         "id": "c",
+         "poste": "Troisième",
+         "effectif": 3,
+         "enfants": []
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "attendu": {
+    "largeur": 273,
+    "hauteur": 85,
+    "niveaux": 3,
+    "boites": [
+     {
+      "poste": "Premier",
+      "gauche": 110.5,
+      "haut": 0,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Premier (01)"
+      ]
+     },
+     {
+      "poste": "Deuxième",
+      "gauche": 110.5,
+      "haut": 33,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Deuxième (02)",
+       "X"
+      ]
+     },
+     {
+      "poste": "Troisième",
+      "gauche": 110.5,
+      "haut": 66,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Troisième (03)"
+      ]
+     }
+    ],
+    "traits": [
+     [
+      136.5,
+      19,
+      136.5,
+      26
+     ],
+     [
+      136.5,
+      26,
+      136.5,
+      26
+     ],
+     [
+      136.5,
+      26,
+      136.5,
+      32.4
+     ],
+     [
+      136.5,
+      52,
+      136.5,
+      59
+     ],
+     [
+      136.5,
+      59,
+      136.5,
+      59
+     ],
+     [
+      136.5,
+      59,
+      136.5,
+      65.4
+     ]
+    ],
+    "fleches": [
+     "M135.60 31.20 L136.50 32.80 L137.40 31.20 Z",
+     "M135.60 64.20 L136.50 65.80 L137.40 64.20 Z"
+    ]
+   }
+  },
+  {
+   "nom": "un seul poste",
+   "options": null,
+   "entree": [
+    {
+     "id": "a",
+     "poste": "Seul",
+     "effectif": 1,
+     "titulaire": "Y",
+     "titreAgent": "ZZ",
+     "chef": true,
+     "enfants": []
+    }
+   ],
+   "attendu": {
+    "largeur": 273,
+    "hauteur": 19,
+    "niveaux": 1,
+    "boites": [
+     {
+      "poste": "Seul",
+      "gauche": 110.5,
+      "haut": 0,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Seul (01)",
+       "Y (ZZ) C/S"
+      ]
+     }
+    ],
+    "traits": [],
+    "fleches": []
+   }
+  },
+  {
+   "nom": "largeur et hauteur d’une autre feuille",
+   "options": {
+    "largeur": 200,
+    "hauteurMax": 100
+   },
+   "entree": [
+    {
+     "id": "PST001",
+     "statut": "actif",
+     "parentId": null,
+     "poste": "Directeur Médical",
+     "effectif": 1,
+     "titulaire": "BASSONGUI Chabi Séko",
+     "chef": false,
+     "role": "dm",
+     "source": "Organigramme de la Clinique NASSIERA TOO",
+     "semence": 2,
+     "enfants": [
+      {
+       "id": "PST002",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Directrice Administrative (DA)",
+       "effectif": 1,
+       "titulaire": "TAKI Alimatou épse BASSONGUI",
+       "chef": false,
+       "role": "da",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST003",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Comptable",
+         "effectif": 1,
+         "titulaire": "KASSA Augustin",
+         "chef": false,
+         "role": "comptable",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [
+          {
+           "id": "PST004",
+           "statut": "actif",
+           "parentId": "PST003",
+           "poste": "Assistant comptable",
+           "effectif": 1,
+           "titulaire": "GBEDJI Hervé",
+           "chef": false,
+           "role": "comptable",
+           "source": "Organigramme de la Clinique NASSIERA TOO",
+           "semence": 2,
+           "enfants": [
+            {
+             "id": "PST005",
+             "statut": "actif",
+             "parentId": "PST004",
+             "poste": "Gestionnaire de Stock",
+             "effectif": 1,
+             "titulaire": "MAMAN Zoukanéri",
+             "chef": false,
+             "role": "stock",
+             "source": "Organigramme de la Clinique NASSIERA TOO",
+             "semence": 2,
+             "enfants": [],
+             "titreAgent": null
+            }
+           ],
+           "titreAgent": null
+          }
+         ],
+         "titreAgent": null
+        },
+        {
+         "id": "PST007",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Dispensatrices",
+         "effectif": 4,
+         "titulaire": "DIEYABIDI Aïssatou",
+         "chef": true,
+         "role": "pharmacien",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        },
+        {
+         "id": "PST008",
+         "statut": "actif",
+         "parentId": "PST002",
+         "poste": "Agents de Sécurités",
+         "effectif": 3,
+         "titulaire": "OURTCHA TEREYAMA",
+         "chef": true,
+         "role": "agentadmin",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": null
+      },
+      {
+       "id": "PST014",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Infirmiers",
+       "effectif": 8,
+       "titulaire": "GARBA Yahouza",
+       "chef": false,
+       "role": "infirmier",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST015",
+         "statut": "actif",
+         "parentId": "PST014",
+         "poste": "Sages-Femmes",
+         "effectif": 3,
+         "titulaire": null,
+         "chef": false,
+         "role": "infirmier",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        },
+        {
+         "id": "PST016",
+         "statut": "actif",
+         "parentId": "PST014",
+         "poste": "Aide-Soignante",
+         "effectif": 8,
+         "titulaire": "TEPA Séraphine",
+         "chef": true,
+         "role": "aide_soignant",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": "SG"
+      },
+      {
+       "id": "PST013",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Laborantins",
+       "effectif": 2,
+       "titulaire": "KINNOU Addoul Ganiou",
+       "chef": true,
+       "role": "laborantin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST012",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Echographiste",
+       "effectif": 1,
+       "titulaire": "AHOHOU Rodrigue",
+       "chef": false,
+       "role": "medecin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST011",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Médecins Généralistes",
+       "effectif": 2,
+       "titulaire": "YENI M’PO Florent",
+       "chef": false,
+       "role": "medecin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      },
+      {
+       "id": "PST006",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Secrétaires Médicaux",
+       "effectif": 4,
+       "titulaire": "OROU YO Edmond",
+       "chef": true,
+       "role": "reception",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [
+        {
+         "id": "PST010",
+         "statut": "actif",
+         "parentId": "PST006",
+         "poste": "Chauffeur Coursier",
+         "effectif": 1,
+         "titulaire": "TCHANE Nourou",
+         "chef": false,
+         "role": "ambulancier",
+         "source": "Organigramme de la Clinique NASSIERA TOO",
+         "semence": 2,
+         "enfants": [],
+         "titreAgent": null
+        }
+       ],
+       "titreAgent": null
+      },
+      {
+       "id": "PST009",
+       "statut": "actif",
+       "parentId": "PST001",
+       "poste": "Agents d’Entretiens",
+       "effectif": 3,
+       "titulaire": "ISSA Rabiatou",
+       "chef": true,
+       "role": "agentadmin",
+       "source": "Organigramme de la Clinique NASSIERA TOO",
+       "semence": 2,
+       "enfants": [],
+       "titreAgent": null
+      }
+     ],
+     "titreAgent": null
+    }
+   ],
+   "attendu": {
+    "largeur": 200,
+    "hauteur": 119,
+    "niveaux": 5,
+    "boites": [
+     {
+      "poste": "Directeur Médical",
+      "gauche": 84,
+      "haut": 0,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Directeur Médical (01)",
+       "BASSONGUI Chabi Séko"
+      ]
+     },
+     {
+      "poste": "Directrice Administrative (DA)",
+      "gauche": 6.25,
+      "haut": 25,
+      "largeur": 47.5,
+      "hauteur": 19,
+      "lignes": [
+       "Directrice Administrative (DA) (01)",
+       "TAKI Alimatou épse BASSONGUI"
+      ]
+     },
+     {
+      "poste": "Infirmiers",
+      "gauche": 66.25,
+      "haut": 25,
+      "largeur": 27.5,
+      "hauteur": 19,
+      "lignes": [
+       "Infirmiers (08)",
+       "GARBA Yahouza (SG)"
+      ]
+     },
+     {
+      "poste": "Laborantins",
+      "gauche": 98,
+      "haut": 25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Laborantins (02)",
+       "KINNOU Addoul Ganiou C/S"
+      ]
+     },
+     {
+      "poste": "Echographiste",
+      "gauche": 118,
+      "haut": 25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Echographiste (01)",
+       "AHOHOU Rodrigue"
+      ]
+     },
+     {
+      "poste": "Médecins Généralistes",
+      "gauche": 138,
+      "haut": 25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Médecins Généralistes (02)",
+       "YENI M’PO Florent"
+      ]
+     },
+     {
+      "poste": "Secrétaires Médicaux",
+      "gauche": 158,
+      "haut": 25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Secrétaires Médicaux (04)",
+       "OROU YO Edmond C/S"
+      ]
+     },
+     {
+      "poste": "Agents d’Entretiens",
+      "gauche": 178,
+      "haut": 25,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Agents d’Entretiens (03)",
+       "ISSA Rabiatou C/S"
+      ]
+     },
+     {
+      "poste": "Comptable",
+      "gauche": -2,
+      "haut": 50,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Comptable (01)",
+       "KASSA Augustin"
+      ]
+     },
+     {
+      "poste": "Dispensatrices",
+      "gauche": 18,
+      "haut": 50,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Dispensatrices (04)",
+       "DIEYABIDI Aïssatou C/S"
+      ]
+     },
+     {
+      "poste": "Agents de Sécurités",
+      "gauche": 38,
+      "haut": 50,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Agents de Sécurités (03)",
+       "OURTCHA TEREYAMA C/S"
+      ]
+     },
+     {
+      "poste": "Sages-Femmes",
+      "gauche": 58,
+      "haut": 50,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Sages-Femmes (03)"
+      ]
+     },
+     {
+      "poste": "Aide-Soignante",
+      "gauche": 78,
+      "haut": 50,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Aide-Soignante (08)",
+       "TEPA Séraphine C/S"
+      ]
+     },
+     {
+      "poste": "Chauffeur Coursier",
+      "gauche": 144,
+      "haut": 50,
+      "largeur": 52,
+      "hauteur": 19,
+      "lignes": [
+       "Chauffeur Coursier (01)",
+       "TCHANE Nourou"
+      ]
+     },
+     {
+      "poste": "Assistant comptable",
+      "gauche": -2,
+      "haut": 75,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Assistant comptable (01)",
+       "GBEDJI Hervé"
+      ]
+     },
+     {
+      "poste": "Gestionnaire de Stock",
+      "gauche": -2,
+      "haut": 100,
+      "largeur": 24,
+      "hauteur": 19,
+      "lignes": [
+       "Gestionnaire de Stock (01)",
+       "MAMAN Zoukanéri"
+      ]
+     }
+    ],
+    "traits": [
+     [
+      110,
+      19,
+      110,
+      22
+     ],
+     [
+      30,
+      22,
+      190,
+      22
+     ],
+     [
+      30,
+      22,
+      30,
+      24.4
+     ],
+     [
+      80,
+      22,
+      80,
+      24.4
+     ],
+     [
+      110,
+      22,
+      110,
+      24.4
+     ],
+     [
+      130,
+      22,
+      130,
+      24.4
+     ],
+     [
+      150,
+      22,
+      150,
+      24.4
+     ],
+     [
+      170,
+      22,
+      170,
+      24.4
+     ],
+     [
+      190,
+      22,
+      190,
+      24.4
+     ],
+     [
+      30,
+      44,
+      30,
+      47
+     ],
+     [
+      10,
+      47,
+      50,
+      47
+     ],
+     [
+      10,
+      47,
+      10,
+      49.4
+     ],
+     [
+      30,
+      47,
+      30,
+      49.4
+     ],
+     [
+      50,
+      47,
+      50,
+      49.4
+     ],
+     [
+      80,
+      44,
+      80,
+      47
+     ],
+     [
+      70,
+      47,
+      90,
+      47
+     ],
+     [
+      70,
+      47,
+      70,
+      49.4
+     ],
+     [
+      90,
+      47,
+      90,
+      49.4
+     ],
+     [
+      170,
+      44,
+      170,
+      47
+     ],
+     [
+      170,
+      47,
+      170,
+      47
+     ],
+     [
+      170,
+      47,
+      170,
+      49.4
+     ],
+     [
+      10,
+      69,
+      10,
+      72
+     ],
+     [
+      10,
+      72,
+      10,
+      72
+     ],
+     [
+      10,
+      72,
+      10,
+      74.4
+     ],
+     [
+      10,
+      94,
+      10,
+      97
+     ],
+     [
+      10,
+      97,
+      10,
+      97
+     ],
+     [
+      10,
+      97,
+      10,
+      99.4
+     ]
+    ],
+    "fleches": [
+     "M29.10 23.20 L30.00 24.80 L30.90 23.20 Z",
+     "M79.10 23.20 L80.00 24.80 L80.90 23.20 Z",
+     "M109.10 23.20 L110.00 24.80 L110.90 23.20 Z",
+     "M129.10 23.20 L130.00 24.80 L130.90 23.20 Z",
+     "M149.10 23.20 L150.00 24.80 L150.90 23.20 Z",
+     "M169.10 23.20 L170.00 24.80 L170.90 23.20 Z",
+     "M189.10 23.20 L190.00 24.80 L190.90 23.20 Z",
+     "M9.10 48.20 L10.00 49.80 L10.90 48.20 Z",
+     "M29.10 48.20 L30.00 49.80 L30.90 48.20 Z",
+     "M49.10 48.20 L50.00 49.80 L50.90 48.20 Z",
+     "M69.10 48.20 L70.00 49.80 L70.90 48.20 Z",
+     "M89.10 48.20 L90.00 49.80 L90.90 48.20 Z",
+     "M169.10 48.20 L170.00 49.80 L170.90 48.20 Z",
+     "M9.10 73.20 L10.00 74.80 L10.90 73.20 Z",
+     "M9.10 98.20 L10.00 99.80 L10.90 98.20 Z"
+    ]
+   }
+  }
+ ],
+ "miseVide": {
+  "texte": "Aucun poste actif à représenter."
+ },
+ "secours": {
+  "cas": [
+   {
+    "role": "admin",
+    "minutes": 7,
+    "attendu": {
+     "ok": true,
+     "minutes": 7,
+     "avant": 5,
+     "enBase": 7
+    }
+   },
+   {
+    "role": "da",
+    "minutes": 7,
+    "attendu": {
+     "ok": true,
+     "minutes": 7,
+     "avant": 5,
+     "enBase": 7
+    }
+   },
+   {
+    "role": "direction",
+    "minutes": 7,
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "medecin",
+    "minutes": 7,
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "surveillant",
+    "minutes": 7,
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "caissier",
+    "minutes": 7,
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": "",
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai de verrou d’un poste de secours est un nombre entier de minutes, de 1 à 120.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": "2.5",
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai de verrou d’un poste de secours est un nombre entier de minutes, de 1 à 120.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": "0",
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai de verrou d’un poste de secours est un nombre entier de minutes, de 1 à 120.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": "121",
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai de verrou d’un poste de secours est un nombre entier de minutes, de 1 à 120.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": "-1",
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai de verrou d’un poste de secours est un nombre entier de minutes, de 1 à 120.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": "abc",
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai de verrou d’un poste de secours est un nombre entier de minutes, de 1 à 120.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": null,
+    "attendu": {
+     "ok": false,
+     "code": "DELAI_INVALIDE",
+     "motif": "Le délai de verrou d’un poste de secours est un nombre entier de minutes, de 1 à 120.",
+     "geste": "Saisir un nombre entier de minutes.",
+     "enBase": null
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": "1",
+    "attendu": {
+     "ok": true,
+     "minutes": 1,
+     "avant": 5,
+     "enBase": 1
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": "120",
+    "attendu": {
+     "ok": true,
+     "minutes": 120,
+     "avant": 5,
+     "enBase": 120
+    }
+   },
+   {
+    "role": "admin",
+    "minutes": 7,
+    "attendu": {
+     "ok": true,
+     "minutes": 7,
+     "avant": 5,
+     "enBase": 7
+    }
+   }
+  ],
+  "poste": [
+   {
+    "role": "admin",
+    "attendu": {
+     "ok": true,
+     "secours": true,
+     "avant": false,
+     "delaiMinutes": 7,
+     "drapeau": "1"
+    }
+   },
+   {
+    "role": "da",
+    "attendu": {
+     "ok": true,
+     "secours": true,
+     "avant": false,
+     "delaiMinutes": 7,
+     "drapeau": "1"
+    }
+   },
+   {
+    "role": "direction",
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Cette désignation se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "drapeau": null
+    }
+   },
+   {
+    "role": "medecin",
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Cette désignation se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "drapeau": null
+    }
+   },
+   {
+    "role": "surveillant",
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Cette désignation se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "drapeau": null
+    }
+   },
+   {
+    "role": "caissier",
+    "attendu": {
+     "ok": false,
+     "code": "REGLAGE_RESERVE",
+     "motif": "Cette désignation se fait par l’administrateur ou la Directrice Administrative.",
+     "geste": "Demander à la Directrice Administrative.",
+     "drapeau": null
+    }
+   }
+  ],
+  "delais": [
+   {
+    "politiqueInactiviteMin": null,
+    "reglageSecours": null,
+    "posteDeSecours": false,
+    "attendu": {
+     "ordinaire": 15,
+     "secours": 5,
+     "poste": 15,
+     "verrouMs": 900000
+    }
+   },
+   {
+    "politiqueInactiviteMin": null,
+    "reglageSecours": null,
+    "posteDeSecours": true,
+    "attendu": {
+     "ordinaire": 15,
+     "secours": 5,
+     "poste": 5,
+     "verrouMs": 300000
+    }
+   },
+   {
+    "politiqueInactiviteMin": 10,
+    "reglageSecours": null,
+    "posteDeSecours": false,
+    "attendu": {
+     "ordinaire": 10,
+     "secours": 5,
+     "poste": 10,
+     "verrouMs": 600000
+    }
+   },
+   {
+    "politiqueInactiviteMin": 10,
+    "reglageSecours": null,
+    "posteDeSecours": true,
+    "attendu": {
+     "ordinaire": 10,
+     "secours": 5,
+     "poste": 5,
+     "verrouMs": 300000
+    }
+   },
+   {
+    "politiqueInactiviteMin": 10,
+    "reglageSecours": 3,
+    "posteDeSecours": false,
+    "attendu": {
+     "ordinaire": 10,
+     "secours": 3,
+     "poste": 10,
+     "verrouMs": 600000
+    }
+   },
+   {
+    "politiqueInactiviteMin": 10,
+    "reglageSecours": 3,
+    "posteDeSecours": true,
+    "attendu": {
+     "ordinaire": 10,
+     "secours": 3,
+     "poste": 3,
+     "verrouMs": 180000
+    }
+   },
+   {
+    "politiqueInactiviteMin": null,
+    "reglageSecours": "abc",
+    "posteDeSecours": true,
+    "attendu": {
+     "ordinaire": 15,
+     "secours": 5,
+     "poste": 5,
+     "verrouMs": 300000
+    }
+   },
+   {
+    "politiqueInactiviteMin": null,
+    "reglageSecours": 0,
+    "posteDeSecours": true,
+    "attendu": {
+     "ordinaire": 15,
+     "secours": 5,
+     "poste": 5,
+     "verrouMs": 300000
+    }
+   },
+   {
+    "politiqueInactiviteMin": null,
+    "reglageSecours": 121,
+    "posteDeSecours": true,
+    "attendu": {
+     "ordinaire": 15,
+     "secours": 5,
+     "poste": 5,
+     "verrouMs": 300000
+    }
+   }
+  ],
+  "defauts": {
+   "delaiSecours": 5,
+   "ordinaire": 15,
+   "posteDeSecours": false,
+   "delaiPoste": 15,
+   "defautMin": 5,
+   "bornes": [
+    1,
+    120
+   ]
+  }
+ }
+}

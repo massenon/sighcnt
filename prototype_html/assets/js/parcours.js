@@ -6439,14 +6439,17 @@
     return colPersonnelOrg().active().filter(function (a) { return cleNomOrg(a.nomComplet) === cle; })[0] || null;
   }
   function titreDuPosteOrg(p) { var a = agentDuPosteOrg(p); return a && a.titreOrganigramme ? String(a.titreOrganigramme) : null; }
-  function droitEcritureOrg() {
+  function droitOrg(quoi) {
     var N = global.SIGH.nav, role = roleCourant();
     if (!role) return false;
-    try { return !!N.droitsEcran(role, 'cfg-organisation', 'CFG').editer; } catch (e) { return false; }
+    try { return !!N.droitsEcran(role, 'cfg-organisation', 'CFG')[quoi]; } catch (e) { return false; }
   }
-  function refusDroitOrg() {
-    return refusOrg('ORGANIGRAMME_RESERVE', 'La modification de l’organigramme est réservée aux profils qui écrivent à l’écran « Organisation & organigramme ».',
-      'Demander à l’administrateur ou à la Directrice Administrative.');
+  function droitEcritureOrg() { return droitOrg('editer'); }
+  function refusDroitOrg(archivage) {
+    return refusOrg('ORGANIGRAMME_RESERVE', archivage
+      ? 'L’archivage d’un poste est réservé aux profils qui annulent à l’écran « Organisation & organigramme » (RG-14).'
+      : 'La modification de l’organigramme est réservée aux profils qui écrivent à l’écran « Organisation & organigramme ».',
+    'Demander à l’administrateur ou à la Directrice Administrative.');
   }
   function nomPosteOrg(id) { var p = id ? colPostesOrg().get(id) : null; return p ? p.poste : null; }
 
@@ -6592,7 +6595,7 @@
   }
   /** Archive un poste (RG-14). Un poste qui porte encore des postes actifs ne s'archive pas : les rattachés deviendraient des sommets sans que personne l'ait décidé. */
   function archiverPosteOrg(posteId, motif) {
-    if (!droitEcritureOrg()) return refusDroitOrg();
+    if (!droitOrg('annuler')) return refusDroitOrg(true);
     var col = colPostesOrg(), poste = col.get(posteId);
     if (!poste) return refusOrg('POSTE_INTROUVABLE', 'Ce poste n’existe pas.', 'Rouvrir l’écran puis choisir un poste de la liste.');
     if (poste.statut === 'archive') return refusOrg('POSTE_ARCHIVE', 'Le poste « ' + poste.poste + ' » est déjà archivé.', 'Le restaurer depuis la corbeille si besoin.');

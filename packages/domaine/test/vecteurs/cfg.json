@@ -670,7 +670,7 @@
      ""
     ],
     [
-     "Directrice Administrative",
+     "Directrice Administrative (DA)",
      "Directeur Médical",
      "1",
      "TAKI Alimatou épse BASSONGUI",
@@ -679,14 +679,14 @@
     ],
     [
      "Comptable",
-     "Directrice Administrative",
+     "Directrice Administrative (DA)",
      "1",
      "KASSA Augustin",
      "Comptable",
      ""
     ],
     [
-     "Assistant Comptable",
+     "Assistant comptable",
      "Comptable",
      "1",
      "GBEDJI Hervé",
@@ -695,66 +695,50 @@
     ],
     [
      "Gestionnaire de Stock",
-     "Directrice Administrative",
+     "Assistant comptable",
      "1",
      "MAMAN Zoukanéri",
      "Gestionnaire de Stock",
      ""
     ],
     [
-     "Secrétaires Médicaux",
-     "Directrice Administrative",
-     "4",
-     "OROU YO Edmond — chef de service",
-     "Réception / Accueil",
-     ""
-    ],
-    [
      "Dispensatrices",
-     "Directrice Administrative",
+     "Directrice Administrative (DA)",
      "4",
      "DIEYABIDI Aïssatou — chef de service",
      "Pharmacien",
      ""
     ],
     [
-     "Agents de Sécurité",
-     "Directrice Administrative",
+     "Agents de Sécurités",
+     "Directrice Administrative (DA)",
      "3",
      "OURTCHA TEREYAMA — chef de service",
      "Agent Administratif",
      ""
     ],
     [
-     "Agents d’Entretien",
-     "Directrice Administrative",
+     "Infirmiers",
+     "Directeur Médical",
+     "8",
+     "GARBA Yahouza (SG)",
+     "Infirmier / Sage-femme",
+     ""
+    ],
+    [
+     "Sages-Femmes",
+     "Infirmiers",
      "3",
-     "ISSA Rabiatou — chef de service",
-     "Agent Administratif",
+     "vacant",
+     "Infirmier / Sage-femme",
      ""
     ],
     [
-     "Chauffeur Coursier",
-     "Directrice Administrative",
-     "1",
-     "TCHANE Nourou",
-     "Ambulancier",
-     ""
-    ],
-    [
-     "Médecins Généralistes",
-     "Directeur Médical",
-     "2",
-     "YENI M’PO Florent",
-     "Médecin",
-     ""
-    ],
-    [
-     "Échographiste",
-     "Directeur Médical",
-     "1",
-     "AHOHOU Rodrigue",
-     "Médecin",
+     "Aide-Soignante",
+     "Infirmiers",
+     "8",
+     "TEPA Séraphine — chef de service",
+     "Aide-soignante",
      ""
     ],
     [
@@ -766,81 +750,71 @@
      ""
     ],
     [
-     "Infirmiers",
+     "Echographiste",
      "Directeur Médical",
-     "8",
-     "GARBA Yahouza — chef de service",
-     "Infirmier / Sage-femme",
+     "1",
+     "AHOHOU Rodrigue",
+     "Médecin",
      ""
     ],
     [
-     "Sages-Femmes",
+     "Médecins Généralistes",
+     "Directeur Médical",
+     "2",
+     "YENI M’PO Florent",
+     "Médecin",
+     ""
+    ],
+    [
+     "Secrétaires Médicaux",
+     "Directeur Médical",
+     "4",
+     "OROU YO Edmond — chef de service",
+     "Réception / Accueil",
+     ""
+    ],
+    [
+     "Chauffeur Coursier",
+     "Secrétaires Médicaux",
+     "1",
+     "TCHANE Nourou",
+     "Ambulancier",
+     ""
+    ],
+    [
+     "Agents d’Entretiens",
      "Directeur Médical",
      "3",
-     "vacant",
-     "Infirmier / Sage-femme",
-     ""
-    ],
-    [
-     "Aide-Soignantes",
-     "Directeur Médical",
-     "8",
-     "TEPA Séraphine — chef de service",
-     "Aide-soignante",
+     "ISSA Rabiatou — chef de service",
+     "Agent Administratif",
      ""
     ]
    ]
   },
   "arbre": [
    "Directeur Médical(01)BASSONGUI Chabi SékoDirecteur Médical",
-   "Directrice Administrative(01)TAKI Alimatou épse BASSONGUIDirectrice de l’Administration et des Finances (DAF)",
+   "Directrice Administrative (DA)(01)TAKI Alimatou épse BASSONGUIDirectrice de l’Administration et des Finances (DAF)",
    "Comptable(01)KASSA AugustinComptable",
-   "Assistant Comptable(01)GBEDJI HervéComptable",
+   "Assistant comptable(01)GBEDJI HervéComptable",
    "Gestionnaire de Stock(01)MAMAN ZoukanériGestionnaire de Stock",
-   "Secrétaires Médicaux(04)OROU YO Edmond — chef de serviceRéception / Accueil",
    "Dispensatrices(04)DIEYABIDI Aïssatou — chef de servicePharmacien",
-   "Agents de Sécurité(03)OURTCHA TEREYAMA — chef de serviceAgent Administratif",
-   "Agents d’Entretien(03)ISSA Rabiatou — chef de serviceAgent Administratif",
-   "Chauffeur Coursier(01)TCHANE NourouAmbulancier",
-   "Médecins Généralistes(02)YENI M’PO FlorentMédecin",
-   "Échographiste(01)AHOHOU RodrigueMédecin",
-   "Laborantins(02)KINNOU Addoul Ganiou — chef de serviceBiologiste médical",
-   "Infirmiers(08)GARBA Yahouza — chef de serviceInfirmier / Sage-femme",
+   "Agents de Sécurités(03)OURTCHA TEREYAMA — chef de serviceAgent Administratif",
+   "Infirmiers(08)GARBA Yahouza (SG)Infirmier / Sage-femme",
    "Sages-Femmes(03)Infirmier / Sage-femme",
-   "Aide-Soignantes(08)TEPA Séraphine — chef de serviceAide-soignante"
+   "Aide-Soignante(08)TEPA Séraphine — chef de serviceAide-soignante",
+   "Laborantins(02)KINNOU Addoul Ganiou — chef de serviceBiologiste médical",
+   "Echographiste(01)AHOHOU RodrigueMédecin",
+   "Médecins Généralistes(02)YENI M’PO FlorentMédecin",
+   "Secrétaires Médicaux(04)OROU YO Edmond — chef de serviceRéception / Accueil",
+   "Chauffeur Coursier(01)TCHANE NourouAmbulancier",
+   "Agents d’Entretiens(03)ISSA Rabiatou — chef de serviceAgent Administratif"
   ],
   "impressionOrganigramme": {
-   "titre": "Organigramme de la Clinique NASSIERA TOO",
-   "sousTitre": "Structure organisationnelle et correspondance des rôles",
-   "cartouche": [
-    [
-     "Effectif total",
-     "44 agents"
-    ],
-    [
-     "Postes distincts",
-     "16"
-    ],
-    [
-     "Rôles définis",
-     "22"
-    ],
-    [
-     "Date d’édition",
-     "01/11/2026"
-    ]
-   ],
-   "signatures": [
-    {
-     "role": "La Directrice Administrative",
-     "nom": "TAKI Alimatou"
-    },
-    {
-     "role": "Le Directeur Médical",
-     "nom": "BASSONGUI Chabi Séko"
-    }
-   ],
-   "texte": "PosteRattaché àEffectifTitulaire / chef de serviceRôle dans le systèmeDirecteur Médical—1BASSONGUI Chabi SékoDirecteur MédicalDirectrice AdministrativeDirecteur Médical1TAKI Alimatou épse BASSONGUIDirectrice de l’Administration et des Finances (DAF)ComptableDirectrice Administrative1KASSA AugustinComptableAssistant ComptableComptable1GBEDJI HervéComptableGestionnaire de StockDirectrice Administrative1MAMAN ZoukanériGestionnaire de StockSecrétaires MédicauxDirectrice Administrative4OROU YO EdmondRéception / AccueilDispensatricesDirectrice Administrative4DIEYABIDI AïssatouPharmacienAgents de SécuritéDirectrice Administrative3OURTCHA TEREYAMAAgent AdministratifAgents d’EntretienDirectrice Administrative3ISSA RabiatouAgent AdministratifChauffeur CoursierDirectrice Administrative1TCHANE NourouAmbulancierMédecins GénéralistesDirecteur Médical2YENI M’PO FlorentMédecinÉchographisteDirecteur Médical1AHOHOU RodrigueMédecinLaborantinsDirecteur Médical2KINNOU Addoul GaniouBiologiste médicalInfirmiersDirecteur Médical8GARBA YahouzaInfirmier / Sage-femmeSages-FemmesDirecteur Médical3—Infirmier / Sage-femmeAide-SoignantesDirecteur Médical8TEPA SéraphineAide-soignante"
+   "titre": "ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO",
+   "sousTitre": null,
+   "cartouche": null,
+   "signatures": null,
+   "texte": "Directeur Médical (01)BASSONGUI Chabi SékoDirectrice Administrative (DA) (01)TAKI Alimatou épse BASSONGUIInfirmiers (08)GARBA Yahouza (SG)Laborantins (02)KINNOU Addoul Ganiou C/SEchographiste (01)AHOHOU RodrigueMédecins Généralistes (02)YENI M’PO FlorentSecrétaires Médicaux (04)OROU YO Edmond C/SAgents d’Entretiens (03)ISSA Rabiatou C/SComptable (01)KASSA AugustinDispensatrices (04)DIEYABIDI Aïssatou C/SAgents de Sécurités (03)OURTCHA TEREYAMA C/SSages-Femmes (03)Aide-Soignante (08)TEPA Séraphine C/SChauffeur Coursier (01)TCHANE NourouAssistant comptable (01)GBEDJI HervéGestionnaire de Stock (01)MAMAN ZoukanériEffectif entre parenthèses. C/S : chef de service."
   },
   "roles": {
    "entetes": [
@@ -859,7 +833,7 @@
      "M2M1M13M1M2M2M3M4M5M6M7M8M13RAPPILDASHM10"
     ],
     [
-     "Directrice Administrative",
+     "Directrice Administrative (DA)",
      "1",
      "TAKI Alimatou épse BASSONGUI",
      "Directrice de l’Administration et des Finances (DAF)",
@@ -873,7 +847,7 @@
      "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPIMPPILM12DASHM10"
     ],
     [
-     "Assistant Comptable",
+     "Assistant comptable",
      "1",
      "GBEDJI Hervé",
      "Comptable",
@@ -887,13 +861,6 @@
      "M6M7M8RAPIMPDASHM10"
     ],
     [
-     "Secrétaires Médicaux",
-     "4",
-     "OROU YO Edmond",
-     "Réception / Accueil",
-     "M2M1M13CFGM1M2M3M7M13RAPCFGIMPDASHM10"
-    ],
-    [
      "Dispensatrices",
      "4",
      "DIEYABIDI Aïssatou",
@@ -901,46 +868,11 @@
      ""
     ],
     [
-     "Agents de Sécurité",
+     "Agents de Sécurités",
      "3",
      "OURTCHA TEREYAMA",
      "Agent Administratif",
      "M1M13M1M7M13GEDRAPIMPDASHM10"
-    ],
-    [
-     "Agents d’Entretien",
-     "3",
-     "ISSA Rabiatou",
-     "Agent Administratif",
-     "M1M13M1M7M13GEDRAPIMPDASHM10"
-    ],
-    [
-     "Chauffeur Coursier",
-     "1",
-     "TCHANE Nourou",
-     "Ambulancier",
-     "M1M13M1M7M13RAPDASHM10"
-    ],
-    [
-     "Médecins Généralistes",
-     "2",
-     "YENI M’PO Florent",
-     "Médecin",
-     "M2M1M1M2M2M3M4M5M6M7RAPPILDASHM10"
-    ],
-    [
-     "Échographiste",
-     "1",
-     "AHOHOU Rodrigue",
-     "Médecin",
-     "M2M1M1M2M2M3M4M5M6M7RAPPILDASHM10"
-    ],
-    [
-     "Laborantins",
-     "2",
-     "KINNOU Addoul Ganiou",
-     "Biologiste médical",
-     "M1M13M1M5M7RAPIMPPILDASHM10"
     ],
     [
      "Infirmiers",
@@ -957,11 +889,53 @@
      "M2M1M13M1M2M2M3M4M5M7M13RAPPILDASHM10"
     ],
     [
-     "Aide-Soignantes",
+     "Aide-Soignante",
      "8",
      "TEPA Séraphine",
      "Aide-soignante",
      "M1M1M3M7RAPDASHM10"
+    ],
+    [
+     "Laborantins",
+     "2",
+     "KINNOU Addoul Ganiou",
+     "Biologiste médical",
+     "M1M13M1M5M7RAPIMPPILDASHM10"
+    ],
+    [
+     "Echographiste",
+     "1",
+     "AHOHOU Rodrigue",
+     "Médecin",
+     "M2M1M1M2M2M3M4M5M6M7RAPPILDASHM10"
+    ],
+    [
+     "Médecins Généralistes",
+     "2",
+     "YENI M’PO Florent",
+     "Médecin",
+     "M2M1M1M2M2M3M4M5M6M7RAPPILDASHM10"
+    ],
+    [
+     "Secrétaires Médicaux",
+     "4",
+     "OROU YO Edmond",
+     "Réception / Accueil",
+     "M2M1M13CFGM1M2M3M7M13RAPCFGIMPDASHM10"
+    ],
+    [
+     "Chauffeur Coursier",
+     "1",
+     "TCHANE Nourou",
+     "Ambulancier",
+     "M1M13M1M7M13RAPDASHM10"
+    ],
+    [
+     "Agents d’Entretiens",
+     "3",
+     "ISSA Rabiatou",
+     "Agent Administratif",
+     "M1M13M1M7M13GEDRAPIMPDASHM10"
     ]
    ]
   },
