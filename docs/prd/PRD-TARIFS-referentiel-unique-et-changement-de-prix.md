@@ -1,6 +1,6 @@
 # PRD-TARIFS : un référentiel de tarifs unique, un écran unique, et un changement de prix validé qui n'est jamais rétroactif
 
-Statut : **proposé le 10/11/2026** (brouillon pour la Direction). Aucune ligne de code n'est écrite par ce document.
+Statut : **proposé le 10/11/2026** ; décisions T1 à T15 de la Direction du 11/11/2026 appliquées ; **lots T0, T1 et T2 livrés en maquette le 11/11/2026** (plan : `docs/plans/PLAN-tarifs-referentiel-unique.md`, écarts E2361 à E2369) ; T3 à T7 restent à faire. Les sections 2 et 3 décrivent l'état D'AVANT les lots (les constats 1, 2 et 9 sont mesurés et le 9 est faux, voir 2.4) ; les sections 4 à 9 décrivent la cible, avec les écarts de mise en œuvre notés ci-dessous.
 Sources : décisions de la Direction du 10/11/2026 (`docs/decisions/DECISIONS-A-VALIDER.md`, section F, lignes 88 à 93) ; `prototype_html/assets/js/data.js`, `data-tarifs.js`, `store.js`, `parcours.js`, `notifications.js`, `modules/configuration.js`, `modules/import.js`, `modules/m8-facturation.js`, `modules/m5-laboratoire.js`, `modules/m6-stock.js`, `modules/m10-rh.js`, `nav.js` ; `packages/rbac/data/rbac.json` ; `packages/domaine/lib/src/consultation/cs_moteur.dart`, `parametres/` ; `apps/poste/lib/` ; `docs/prd/PRD-IMP-bouton-importer-par-ecran.md`, `PRD-M13-validation-par-modale-et-fin-du-statut-a-valider.md` ; `docs/specs/SPEC-protocole-synchronisation.md` ; `docs/architecture/ECARTS-MAQUETTE.md`, `DICTIONNAIRE-DONNEES.md` ; `CLAUDE.md`.
 
 Règle de lecture : chaque affirmation sur le code cite `fichier:ligne`. Ce qui n'a pas été vérifié est dit **non vérifié**. Une valeur, un seuil ou un libellé proposé sans source documentaire est une **proposition à valider**. Le code n'a été que **lu** : aucun banc, aucun serveur, aucune écriture hors de ce document. Les chiffres de la semence (69 actes, 147 lignes de grille, 48 analyses) ont été mesurés en chargeant `data.js` et `data-tarifs.js` hors navigateur ; les effectifs des collections viennent de `DICTIONNAIRE-DONNEES.md` (actes 73 fiches, catalogueTarifs 147, analyses 48, examensLabo 70, produits 184, valorisationsSage 34). Les lignes marquées (g) n'ont été trouvées que par recherche textuelle, sans ouvrir le contexte.
@@ -182,6 +182,8 @@ Mon avis : **faire la fusion, mais pas en un seul lot**. L'écran unique est la 
 
 Pourquoi deux et pas une : les primes ont `grillePrimes` (le courant) et `historiquePrimes` (les versions) ; `parametres` n'a que des versions. Ici l'identité porte des champs mutables qui ne se versionnent pas par date (libellé, secteur, archivage), et les **mêler** aux versions obligerait à les recopier sur chaque version, exactement ce que les badges ont évité (CLAUDE.md, vague 54).
 
+**Écarts de mise en œuvre (lot T1, E2362 à E2364).** (1) Le code d'une prestation est canonique (acte, sinon analyse, sinon grille) et la fiche porte `codeActe`, `codeGrille`, `codeAnalyse` : chaque lecteur historique garde son espace de codes ; `codesAlias` sert l'accesseur nouveau. (2) `etatAssure` a un QUATRIÈME état, `unique` (prix unique, la colonne assurée vaut la colonne non assurée) : les actes sans grille, les journées et les analyses n'ont jamais eu de prix assuré distinct. (3) `etatNonAssure` n'est écrit que quand il vaut `manquant` (quota). (4) Une proposition issue de la grille imprimée n'a pas de date d'effet : `aDater: true`, la décision la fixe (seule mutation permise d'une version, avec le statut). (5) `source` et `secteur` ne sont portés que quand ils existent (les 73 actes pour le secteur). (6) Les motifs des deux états `NON COUVERT` et `SOS` sont repris MOT POUR MOT de l'ancien `prix()`.
+
 **`en vigueur` n'est jamais stocké.** C'est un état **calculé** (`valide`, `dateEffet` ≤ date, plus grande `(dateEffet, version)`) : un poste hors ligne n'a pas de tâche de minuit, et une bascule stockée serait fausse dès que l'horloge passe la date d'effet sans que personne ouvre le logiciel. Les états affichés sont `en vigueur`, `à venir`, `remplacée`, `en attente`, `refusée`, `retirée`.
 
 ### 4.2 Les trois états de la colonne assurée, conservés
@@ -311,7 +313,7 @@ Un **Non** n'est pas une erreur : il ne fait pas échouer le fichier (la règle 
 
 ### 6.1 Identité et plan
 
-Un seul écran, **proposition de nom : « Tarifs et prix »** (rubrique de recherche, libellé de ruban, parité N1 : à valider avec la Direction), dans le domaine CFG. Identifiant technique proposé : **`cfg-tarifs`** (le plus ancien et le plus référencé : alias d'ACCUEIL, recherche `nav.js:1625`, jeux d'import, vecteurs).
+Un seul écran, **« Tarifs et prix »** (T15, décidé le 11/11/2026), dans le domaine CFG. Livré au lot T2 : les six onglets ci-dessous, avec les identifiants `prestations`, `analyses`, `imagerie`, `produits`, `alertes`, `historique`. Identifiant technique proposé : **`cfg-tarifs`** (le plus ancien et le plus référencé : alias d'ACCUEIL, recherche `nav.js:1625`, jeux d'import, vecteurs).
 
 | Onglet | Contenu |
 |---|---|

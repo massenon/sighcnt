@@ -33,6 +33,7 @@ Index détaillé : [`architecture/README.md`](architecture/README.md).
 | [`PRD-M12-cloture-exercice`](prd/PRD-M12-cloture-exercice.md) | Clôture d'exercice, à-nouveaux, lecture seule des exercices clos | livré (vague 69) |
 | [`PRD-M6-suivi-ventes-secteurs`](prd/PRD-M6-suivi-ventes-secteurs.md) | Ventes par patient et par secteur | livré (vague 69) |
 | [`PRD-SOCLE-application-sans-rechargement`](prd/PRD-SOCLE-application-sans-rechargement.md) | Document unique, notifications, planificateur | P0/P1 livrés (vagues 69-70) ; flux poussé et deltas par séquence restent |
+| [`PRD-TARIFS-referentiel-unique-et-changement-de-prix`](prd/PRD-TARIFS-referentiel-unique-et-changement-de-prix.md) | Une liste de prix, un écran « Tarifs et prix », un changement de prix validé (Oui/Non) et jamais rétroactif | T0 à T2 livrés en maquette (11/11/2026) ; T3 à T7 à faire |
 | [`PRD-SOCLE-synchronisation-bidirectionnelle`](prd/PRD-SOCLE-synchronisation-bidirectionnelle.md) | Synchronisation dans les deux sens : poste, hub, client web, mobile | brouillon 26/10/2026 |
 
 Index : [`prd/README.md`](prd/README.md).
@@ -45,6 +46,7 @@ Index : [`prd/README.md`](prd/README.md).
 | [`plans/PLAN-implementation-laravel-flutter-pwa`](plans/PLAN-implementation-laravel-flutter-pwa.md) | Plan d'implémentation Flutter + Laravel (API de synchro, panneau) + PWA : NFR calibrées, phases P0→P7, compétences |
 | [`plans/PLAN-implementation-v2`](plans/PLAN-implementation-v2.md) | **Plan en vigueur (30/10/2026)** : `sigh_web` abandonné, `apps/web` seul Laravel, poste fileul/mère = une application, tâches T1→T8 et leur état |
 | [`plans/PLAN-SPRINTS`](plans/PLAN-SPRINTS.md) | **Plan en sprints complet** (S0→S23) : règles, quatre pistes, dépendances externes, risques |
+| [`plans/PLAN-tarifs-referentiel-unique`](plans/PLAN-tarifs-referentiel-unique.md) | Référentiel de prix unique, écran « Tarifs et prix », changement de prix validé et jamais rétroactif : lots T0 à T7 et leur état |
 | [`plans/PLAN-conversion-305-ecrans`](plans/PLAN-conversion-305-ecrans.md) | Conversion fidèle des 305 écrans PHP/JS en Dart : mesures, niveaux de parité N1–N4, tranches, tâches T9→T20 |
 | [`architecture/MODULES-COMPLEMENTAIRES-MERE`](architecture/MODULES-COMPLEMENTAIRES-MERE.md) | Les 22 modules complémentaires du poste mère (5 faits, 17 à écrire) et l'activation du mode mère |
 | [`architecture/MODULES-WEB-RELAIS`](architecture/MODULES-WEB-RELAIS.md) | Les 12 modules du relais en ligne (`apps/web`) : 4 existants, 8 attendus |

@@ -331,7 +331,7 @@
       var tarifAssure = assureActes && a.assurable === true && !a.nonCouvert && a.prixAssure != null;
       var prixActe = tarifAssure ? a.prixAssure : a.prix;
       /* PRD-TARIFS (T1) : le prix vient du référentiel, à la date de la prescription ; la collection `actes` n'est plus qu'une projection de lecture. */
-      var prixRef = a.code ? prixActeALaDate(code, date, assureActes) : undefined;
+      var prixRef = a.code ? prixActeALaDate(code, null, assureActes) : undefined;
       if (prixRef !== undefined) prixActe = prixRef;
       return { code: code, libelle: a.libelle || code, secteur: a.secteur || '', prix: prixActe || 0,
         tarifValide: prixActe != null };
