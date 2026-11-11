@@ -3,21 +3,39 @@
  "rubriques": [
   {
    "ecran": "cfg-tarifs",
-   "onglet": "produits",
-   "label": "Produits & médicaments",
-   "motsCles": "tarif prix médicament produit pharmacie prix d’achat prix de vente marge RG-02"
+   "onglet": "prestations",
+   "label": "Prestations et actes tarifés",
+   "motsCles": "tarif prix acte actes soin chirurgie accouchement consultation hospitalisation chambre journée certificat prestation deux prix assuré non assuré"
   },
   {
    "ecran": "cfg-tarifs",
    "onglet": "analyses",
-   "label": "Analyses de laboratoire",
-   "motsCles": "tarif prix analyse laboratoire biologie examen catalogue"
+   "label": "Prix des analyses de laboratoire",
+   "motsCles": "tarif prix analyse laboratoire biologie examen catalogue grille"
   },
   {
    "ecran": "cfg-tarifs",
-   "onglet": "actes",
-   "label": "Actes & hospitalisation",
-   "motsCles": "acte actes soin chirurgie accouchement échographie consultation hospitalisation chambre tarif prix"
+   "onglet": "imagerie",
+   "label": "Prix de l’imagerie médicale",
+   "motsCles": "tarif prix imagerie échographie radiographie scanner IRM mammographie examen"
+  },
+  {
+   "ecran": "cfg-tarifs",
+   "onglet": "produits",
+   "label": "Produits et médicaments (lecture)",
+   "motsCles": "tarif prix médicament produit pharmacie prix d’achat prix de vente marge RG-02"
+  },
+  {
+   "ecran": "cfg-tarifs",
+   "onglet": "alertes",
+   "label": "Changements de prix en attente",
+   "motsCles": "alerte validation changement de prix proposition Oui Non décision Direction DAF en attente"
+  },
+  {
+   "ecran": "cfg-tarifs",
+   "onglet": "historique",
+   "label": "Historique des prix et versions",
+   "motsCles": "historique version prix date d’effet comparaison ancien nouveau"
   },
   {
    "ecran": "cfg-natures-facture",

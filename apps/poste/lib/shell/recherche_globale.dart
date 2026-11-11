@@ -107,7 +107,7 @@ List<GroupeRecherche> rechercheGlobale({
   // Le catalogue administrable, pas la semence : un acte ajouté ou renommé dans cfg-tarifs se trouve par la recherche.
   famille('Actes & prestations', magasin.collection('actes').actives, (a) => ok('${t(a['libelle'])} ${t(a['secteur'])} ${t(a['code'])}'), 5,
       (a) => ResultatRecherche(
-          label: t(a['libelle']), icone: 'stethoscope', detail: '${t(a['secteur'])}, ${_tarifCourt(a)}', ecran: 'cfg-tarifs', onglet: 'actes'),
+          label: t(a['libelle']), icone: 'stethoscope', detail: '${t(a['secteur'])}, ${_tarifCourt(a)}', ecran: 'cfg-tarifs', onglet: 'prestations'),
       droit: 'cfg-tarifs');
   famille('Analyses', magasin.referentiel('analyses'), (a) => ok('${t(a['designation'])} ${t(a['categorie'])} ${t(a['code'])}'), 5,
       (a) => ResultatRecherche(

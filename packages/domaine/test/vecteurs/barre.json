@@ -402,6 +402,281 @@
     "debit": 0,
     "credit": 300
    }
+  ],
+  "versionsTarif": [
+   {
+    "id": "L01@a-dater@2",
+    "code": "L01",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L02@a-dater@2",
+    "code": "L02",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L03@a-dater@2",
+    "code": "L03",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L04@a-dater@2",
+    "code": "L04",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L06@a-dater@2",
+    "code": "L06",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L07@a-dater@2",
+    "code": "L07",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L08@a-dater@2",
+    "code": "L08",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L09@a-dater@2",
+    "code": "L09",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L10@a-dater@2",
+    "code": "L10",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L12@a-dater@2",
+    "code": "L12",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L13@a-dater@2",
+    "code": "L13",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L14@a-dater@2",
+    "code": "L14",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L15@a-dater@2",
+    "code": "L15",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L16@a-dater@2",
+    "code": "L16",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L17@a-dater@2",
+    "code": "L17",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L18@a-dater@2",
+    "code": "L18",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L19@a-dater@2",
+    "code": "L19",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L20@a-dater@2",
+    "code": "L20",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L21@a-dater@2",
+    "code": "L21",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L22@a-dater@2",
+    "code": "L22",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L23@a-dater@2",
+    "code": "L23",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L24@a-dater@2",
+    "code": "L24",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L25@a-dater@2",
+    "code": "L25",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L26@a-dater@2",
+    "code": "L26",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L28@a-dater@2",
+    "code": "L28",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L32@a-dater@2",
+    "code": "L32",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L35@a-dater@2",
+    "code": "L35",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L36@a-dater@2",
+    "code": "L36",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L37@a-dater@2",
+    "code": "L37",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L38@a-dater@2",
+    "code": "L38",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L39@a-dater@2",
+    "code": "L39",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L40@a-dater@2",
+    "code": "L40",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L41@a-dater@2",
+    "code": "L41",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L42@a-dater@2",
+    "code": "L42",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L43@a-dater@2",
+    "code": "L43",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L44@a-dater@2",
+    "code": "L44",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L45@a-dater@2",
+    "code": "L45",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L46@a-dater@2",
+    "code": "L46",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   },
+   {
+    "id": "L47@a-dater@2",
+    "code": "L47",
+    "statut": "propose",
+    "origine": "semence-grille",
+    "proposePar": "Semence du socle"
+   }
   ]
  },
  "roles": [
@@ -430,6 +705,16 @@
  ],
  "notifications": {
   "admin": [
+   {
+    "source": "prix_a_valider",
+    "domaine": "À valider",
+    "priorite": "important",
+    "titre": "39 changements de prix à valider",
+    "detail": "Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.",
+    "lien": "cfg-tarifs",
+    "groupe": false,
+    "nombre": 1
+   },
    {
     "source": "poste",
     "domaine": "Poste",
@@ -489,6 +774,16 @@
     "titre": "SANLAM ASSURANCE : 5 000 en souffrance",
     "detail": "1 facture(s), jusqu’à 137 jours d’ancienneté (seuil retenu : 60 jours). Cette créance pèse sur le besoin en fonds de roulement.",
     "lien": "m9-relances",
+    "groupe": false,
+    "nombre": 1
+   },
+   {
+    "source": "prix_a_valider",
+    "domaine": "À valider",
+    "priorite": "important",
+    "titre": "39 changements de prix à valider",
+    "detail": "Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.",
+    "lien": "cfg-tarifs",
     "groupe": false,
     "nombre": 1
    },
@@ -605,6 +900,16 @@
     "lien": "m6-alertes",
     "groupe": true,
     "nombre": 3
+   },
+   {
+    "source": "prix_a_valider",
+    "domaine": "À valider",
+    "priorite": "important",
+    "titre": "39 changements de prix à valider",
+    "detail": "Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.",
+    "lien": "cfg-tarifs",
+    "groupe": false,
+    "nombre": 1
    },
    {
     "source": "a_valider_besoins",
@@ -1806,6 +2111,13 @@
      "groupe": "Rubriques",
      "resultats": [
       {
+       "label": "Historique des prix et versions",
+       "detail": "Tarifs et prix, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "historique"
+      },
+      {
        "label": "Secteurs de la clinique (NS 145)",
        "detail": "Organisation & organigramme, onglet",
        "icone": "network",
@@ -1839,13 +2151,6 @@
        "icone": "building-2",
        "ecran": "m9-compagnies",
        "onglet": "assures"
-      },
-      {
-       "label": "Factures d’une compagnie",
-       "detail": "Compagnies partenaires, onglet",
-       "icone": "building-2",
-       "ecran": "m9-compagnies",
-       "onglet": "factures"
       }
      ]
     },
@@ -1900,7 +2205,7 @@
        "detail": "Maternité, 35 000 (valeur d’attente)",
        "icone": "stethoscope",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     },
@@ -1955,11 +2260,11 @@
      "groupe": "Rubriques",
      "resultats": [
       {
-       "label": "Actes & hospitalisation",
-       "detail": "Référentiel tarifaire, onglet",
+       "label": "Prestations et actes tarifés",
+       "detail": "Tarifs et prix, onglet",
        "icone": "tag",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     }
@@ -2089,11 +2394,11 @@
      "groupe": "Rubriques",
      "resultats": [
       {
-       "label": "Actes & hospitalisation",
-       "detail": "Référentiel tarifaire, onglet",
+       "label": "Prestations et actes tarifés",
+       "detail": "Tarifs et prix, onglet",
        "icone": "tag",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       },
       {
        "label": "Primes (NS 132)",
@@ -2112,7 +2417,7 @@
        "detail": "Maternité, 35 000 (valeur d’attente)",
        "icone": "stethoscope",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     }
@@ -2177,6 +2482,13 @@
      "groupe": "Rubriques",
      "resultats": [
       {
+       "label": "Prix de l’imagerie médicale",
+       "detail": "Tarifs et prix, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "imagerie"
+      },
+      {
        "label": "Radiographie",
        "detail": "Tableau Radiographie, onglet",
        "icone": "bone",
@@ -2193,7 +2505,7 @@
        "detail": "Imagerie médicale, tarif à valider",
        "icone": "stethoscope",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     }
@@ -2420,6 +2732,13 @@
      "groupe": "Rubriques",
      "resultats": [
       {
+       "label": "Historique des prix et versions",
+       "detail": "Tarifs et prix, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "historique"
+      },
+      {
        "label": "Liens de partage d’une enquête",
        "detail": "Enquêtes & questionnaires, onglet",
        "icone": "clipboard-list",
@@ -2455,7 +2774,7 @@
        "detail": "Maternité, 35 000 (valeur d’attente)",
        "icone": "stethoscope",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     },
@@ -2498,11 +2817,11 @@
      "groupe": "Rubriques",
      "resultats": [
       {
-       "label": "Actes & hospitalisation",
-       "detail": "Référentiel tarifaire, onglet",
+       "label": "Prestations et actes tarifés",
+       "detail": "Tarifs et prix, onglet",
        "icone": "tag",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     }
@@ -2543,11 +2862,11 @@
      "groupe": "Rubriques",
      "resultats": [
       {
-       "label": "Actes & hospitalisation",
-       "detail": "Référentiel tarifaire, onglet",
+       "label": "Prestations et actes tarifés",
+       "detail": "Tarifs et prix, onglet",
        "icone": "tag",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     },
@@ -2559,7 +2878,7 @@
        "detail": "Maternité, 35 000 (valeur d’attente)",
        "icone": "stethoscope",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     }
@@ -2609,6 +2928,18 @@
    "paludisme": [],
    "radio": [
     {
+     "groupe": "Rubriques",
+     "resultats": [
+      {
+       "label": "Prix de l’imagerie médicale",
+       "detail": "Tarifs et prix, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "imagerie"
+      }
+     ]
+    },
+    {
      "groupe": "Actes & prestations",
      "resultats": [
       {
@@ -2616,7 +2947,7 @@
        "detail": "Imagerie médicale, tarif à valider",
        "icone": "stethoscope",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     }
@@ -3187,6 +3518,13 @@
      "groupe": "Rubriques",
      "resultats": [
       {
+       "label": "Historique des prix et versions",
+       "detail": "Tarifs et prix, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "historique"
+      },
+      {
        "label": "Secteurs de la clinique (NS 145)",
        "detail": "Organisation & organigramme, onglet",
        "icone": "network",
@@ -3220,13 +3558,6 @@
        "icone": "building-2",
        "ecran": "m9-compagnies",
        "onglet": "assures"
-      },
-      {
-       "label": "Factures d’une compagnie",
-       "detail": "Compagnies partenaires, onglet",
-       "icone": "building-2",
-       "ecran": "m9-compagnies",
-       "onglet": "factures"
       }
      ]
     },
@@ -3281,7 +3612,7 @@
        "detail": "Maternité, 35 000 (valeur d’attente)",
        "icone": "stethoscope",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     },
@@ -3336,11 +3667,11 @@
      "groupe": "Rubriques",
      "resultats": [
       {
-       "label": "Actes & hospitalisation",
-       "detail": "Référentiel tarifaire, onglet",
+       "label": "Prestations et actes tarifés",
+       "detail": "Tarifs et prix, onglet",
        "icone": "tag",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     }
@@ -3456,11 +3787,11 @@
      "groupe": "Rubriques",
      "resultats": [
       {
-       "label": "Actes & hospitalisation",
-       "detail": "Référentiel tarifaire, onglet",
+       "label": "Prestations et actes tarifés",
+       "detail": "Tarifs et prix, onglet",
        "icone": "tag",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       },
       {
        "label": "Primes (NS 132)",
@@ -3479,7 +3810,7 @@
        "detail": "Maternité, 35 000 (valeur d’attente)",
        "icone": "stethoscope",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     }
@@ -3544,6 +3875,13 @@
      "groupe": "Rubriques",
      "resultats": [
       {
+       "label": "Prix de l’imagerie médicale",
+       "detail": "Tarifs et prix, onglet",
+       "icone": "tag",
+       "ecran": "cfg-tarifs",
+       "onglet": "imagerie"
+      },
+      {
        "label": "Radiographie",
        "detail": "Tableau Radiographie, onglet",
        "icone": "bone",
@@ -3560,7 +3898,7 @@
        "detail": "Imagerie médicale, tarif à valider",
        "icone": "stethoscope",
        "ecran": "cfg-tarifs",
-       "onglet": "actes"
+       "onglet": "prestations"
       }
      ]
     }
@@ -3741,7 +4079,7 @@
    "Accueil",
    "Système",
    "Configuration Clinique",
-   "Référentiel tarifaire"
+   "Tarifs et prix"
   ],
   "m14-roles": [
    "Accueil",

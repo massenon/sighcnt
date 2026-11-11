@@ -133,7 +133,10 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
           recherche[r][q] = A.rechercher(q, r).map((g) => ({ groupe: g[0], resultats: g[1].map((x) => ({ label: x.label, detail: x.detail, icone: x.icon, ecran: x.ecran, onglet: x.onglet || null })) }));
         });
       });
-      return { roles, notifications, actions, recherche, version: S.VERSION || null };
+      /* La source `prix_a_valider` lit les versions de prix `propose` de la maquette (la grille imprimée semée au socle) : elles voyagent avec la sonde, le poste les
+         rejoue. Les REMPLACER par une fiche d'essai viderait le référentiel dont `D.ANALYSES[i].prix` lit le prix en vigueur (le détail de la recherche passait à 0). */
+      const versionsTarifPropose = S.collection('versionsTarif').all().filter((v) => v.statut === 'propose').map((v) => ({ id: v.id, code: v.code, statut: v.statut, lot: v.lot, origine: v.origine, proposePar: v.proposePar }));
+      return { roles, notifications, actions, recherche, version: S.VERSION || null, versionsTarifPropose };
     }, FIXTURE);
     /* Fil d'Ariane lu dans le DOM de pages réelles (le rôle de la session du banc voit tout). */
     const fil = {};
@@ -145,7 +148,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
     if (m.erreurs.length) console.log('  (erreurs de page : ' + m.erreurs.length + ')');
     ecrire('packages/domaine/test/vecteurs/barre.json', {
       _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-barre.js depuis la maquette RÉELLE (horloge figée au 16/08/2026 12:00), ne pas éditer.',
-      horloge: '2026-08-16T12:00:00', jeu: FIXTURE, ...sortie, fil,
+      horloge: '2026-08-16T12:00:00', jeu: Object.assign({}, FIXTURE, { versionsTarif: sortie.versionsTarifPropose }), ...Object.assign({}, sortie, { versionsTarifPropose: undefined }), fil,
     });
     const n = Object.values(sortie.notifications).reduce((a, l) => a + l.length, 0);
     console.log(`  ${sortie.roles.length} rôles · ${n} lignes de notification · fil : ${Object.keys(fil).length} pages`);

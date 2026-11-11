@@ -15,7 +15,8 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
   const m = await ouvrirMaquette();
   try {
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/configuration.js') });
-    const sortie = await m.page.evaluate(async () => {
+    const ARRET = process.env.SIGH_ARRET_APRES || '';
+    const sortie = await m.page.evaluate(async (ARRET) => {
       const S = SIGH.store, C = SIGH.core, N = SIGH.nav, D = SIGH.data, U = SIGH.ui;
       const propre = (x) => JSON.parse(JSON.stringify(x === undefined ? null : x));
       const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -81,6 +82,9 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         posteSommet: await creerPar('cfg-organisation', 'Nouveau', { poste: 'Poste Test Sommet', effectif: 2, role: 'infirmier', parentId: '' }, 'Créer', () => S.collection('postes'), 'Organigramme'),
       };
 
+      /* SIGH_ARRET_APRES=organisationCreations : ne rejoue que les sections qui précèdent, les suivantes (tarifs, catalogue…) décrivent des écrans refaits par le lot des prix (E2370) ; le fichier existant est conservé pour elles. */
+      if (ARRET === 'organisationCreations') return propre(sortie);
+
       /* ---------- 2. cfg-branding ---------- */
       sortie.branding = await (async () => {
         const root = await montrer('cfg-branding');
@@ -93,7 +97,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         const nbAudit = (S.raw().audit || []).length; const nb = toasts.length;
         bouton('Enregistrer', root).click(); await dormir(40);
         o.enregistrement = { toasts: toasts.slice(nb), audit: propre((S.raw().audit || [])[0] || null), nbAudit: (S.raw().audit || []).length - nbAudit };
-        poser('nom', ''); poser('ifu', '');
+        poser('nom', ''); if (document.getElementById('f_ifu')) poser('ifu', ''); /* l'IFU a quitté cet écran (identité fiscale versionnée, cfg-fiscalite) : le refus se sonde sur le champ qui reste */
         const nb2 = toasts.length; bouton('Enregistrer', root).click(); await dormir(40);
         o.refus = toasts.slice(nb2);
         return o;
@@ -289,7 +293,14 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
 
       sortie.rechargements = rechargements;
       return propre(sortie);
-    });
+    }, ARRET);
+    if (ARRET) {
+      const fichier = path.resolve(ROOT, '..', 'packages', 'domaine', 'test', 'vecteurs', 'cfg.json');
+      const existant = JSON.parse(require('fs').readFileSync(fichier, 'utf8'));
+      /* `constantes` (dont le JOUR de l'horloge d'extraction) reste celle du fichier : les sections non rejouées (rappels, certificats…) portent des dates tirées de ce jour. */
+      const rejouees = Object.assign({}, sortie); delete rejouees.constantes;
+      ecrire('packages/domaine/test/vecteurs/cfg.json', Object.assign({}, existant, rejouees));
+    } else
     ecrire('packages/domaine/test/vecteurs/cfg.json', sortie);
     if (m.erreurs.length) console.log('  erreurs JS de la page :', m.erreurs.slice(0, 5));
   } finally { await m.fermer(); }

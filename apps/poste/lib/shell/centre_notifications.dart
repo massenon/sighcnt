@@ -111,6 +111,7 @@ const _libellesGroupe = <String, (String, String)>{
   'labo_a_traiter': ('analyse(s) réglée(s), prélèvement à faire', 'Les patients ont payé : ils peuvent être appelés en salle de prélèvement.'),
   'labo_a_saisir': ('échantillon(s) reçu(s), résultat à saisir', 'Le prescripteur ne verra rien tant que le résultat n’est pas validé.'),
   'a_valider_besoins': ('bon(s) de besoins à valider', 'Arbitrer chaque bon : validé, complément demandé ou rejeté avec son motif.'),
+  'prix_a_valider': ('lot(s) de changements de prix à valider', 'Décider chaque changement (Oui ou Non) à « Tarifs et prix », onglet Alertes.'),
   'a_valider_ecritures': ('pièce(s) comptable(s) en brouillon', 'Contrôler l’équilibre (RG-10) puis valider.'),
   'pair_conflits': ('champ(s) modifié(s) en même temps sur deux postes', 'Deux valeurs coexistent, la plus récente est retenue provisoirement : la personne habilitée tranche.'),
   'poste': ('notification(s) de poste', 'À consulter dans les écrans concernés.'),
@@ -210,6 +211,29 @@ final List<_Source> _sources = [
                 'm7-besoins',
                 const ['da', 'direction']),
       ]),
+  // Changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3, `notifications.js`) : UNE alerte par LOT (une proposition isolée est un lot d'une ligne). La source LIT
+  // l'état des versions et ne décide d'aucun seuil ; les destinataires sont les profils de la famille de décision de la maquette (`PR.ROLES_VALIDATION_TARIFS`).
+  // Le poste ne porte pas encore l'écran « Tarifs et prix » (lot T6) : tant que la collection `versionsTarif` n'y est pas, la source ne produit rien.
+  _Source('prix_a_valider', 'metier', 'À valider', (m, auj) {
+    final lots = <String, List<Map<String, Object?>>>{};
+    for (final v in m.collection('versionsTarif').actives) {
+      if (v['statut'] != 'propose') continue;
+      final cle = _v(v['lot']) ? '${v['lot']}' : (v['origine'] == 'semence-grille' ? 'grille' : '${v['id']}');
+      (lots[cle] ??= []).add(v);
+    }
+    return [
+      for (final e in lots.entries)
+        _Ligne(
+            'prix:${e.key}',
+            'important',
+            e.value.length > 1 ? '${nombre(e.value.length)} changements de prix à valider' : 'Changement de prix à valider : ${e.value.first['code']}',
+            e.value.length > 1
+                ? 'Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.'
+                : '${_v(e.value.first['proposePar']) ? 'Proposé par ${e.value.first['proposePar']}. ' : ''}Le prix en vigueur ne change pas avant le Oui.',
+            'cfg-tarifs',
+            const ['admin', 'da', 'direction']),
+    ];
+  }),
   _Source('a_valider_ecritures', 'metier', 'À valider', (m, auj) {
     // Une PIÈCE comptable en brouillon (deux lignes de même numéro) compte pour une : le comptable valide des pièces, pas des lignes (RG-10).
     final vues = <String>{};
