@@ -3,6 +3,12 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import 'magasin.dart';
 
+/// Le résultat d'un archivage : le refus nommé, ou la cible, les postes réaffectés et l'annulation.
+typedef ResultatArchivage = ({RefusRh? refus, OrgPosteNomme? cible, List<OrgPosteNomme> reaffectes, AnnulationArchivage Function()? annuler});
+
+/// Le résultat d'une annulation : le refus nommé, ou les postes remis sous le poste restauré et ceux qu'elle a laissés (avec la raison).
+typedef AnnulationArchivage = ({RefusRh? refus, List<OrgPosteNomme> restaures, List<OrgLaisse> laisses});
+
 /// L'organigramme au poste (lot ORG2, Direction, 11/11/2026, O1 à O5) : le SEUL chemin d'écriture des postes depuis l'écran « Organisation & organigramme ».
 ///
 /// Les règles sont celles du domaine (`organigramme.dart`, rejouées sur les vecteurs de la maquette) : le service applique le PLAN qu'elles rendent, fiche par fiche, avec
@@ -72,11 +78,71 @@ class OrganigrammePoste {
     return (refus: null, fiche: ins.fiche, annuler: ins.annuler);
   }
 
-  /// Archive un poste (RG-14) ; un poste qui porte encore des postes actifs ne s'archive pas.
-  ({RefusRh? refus, VoidCallback? annuler}) archiver(String posteId) {
-    final refus = orgControlerArchivage(posteId, droitAnnulation: droitAnnuler, postes: _postes.toutes);
-    if (refus != null) return (refus: refus, annuler: null);
-    return (refus: null, annuler: _postes.archiver(posteId));
+  /// L'aperçu d'un archivage sans rien écrire : les postes portés, la cible (par défaut le rattachement du poste), les postes qui peuvent les accueillir. Sert la modale.
+  OrgApercuArchivage apercuArchivage(String posteId, {String? cibleId}) => orgApercuArchivage(posteId, cibleId, _postes.toutes);
+
+  /// Archive un poste (RG-14). S'il porte des postes actifs, ils sont RÉAFFECTÉS à [cibleId] (par défaut son rattachement), tout ou rien (lot ORG3, décision de la Direction du
+  /// 11/11/2026) : une écriture refusée en cours de route défait les précédentes et l'abandon s'écrit au journal. Une ligne de journal pour l'archivage (motif et cible), une par
+  /// poste réaffecté. [annuler] restaure le poste ET remet chaque poste sous son ancien parent, sauf celui qu'on a déplacé depuis (laissé, et dit) ; il rend le refus nommé
+  /// quand il ne peut pas.
+  ResultatArchivage archiver(String posteId, {String? motif, String? cibleId}) {
+    final plan = orgPlanifierArchivage(posteId, cibleId: cibleId, motif: motif, droitAnnulation: droitAnnuler, droitEcriture: droitEditer, postes: _postes.toutes);
+    if (!plan.ok) return (refus: plan.refus, cible: null, reaffectes: const [], annuler: null);
+    final poste = _postes.parId(posteId)!;
+    final defaits = <VoidCallback>[];
+    void defaire(String raison) {
+      for (final u in defaits.reversed) {
+        u();
+      }
+      m.journaliser('Archivage abandonné', 'CFG', 'Poste', posteId, {'poste': '${poste['poste']}', 'sousPostes': plan.reaffectes.length},
+          {'raison': raison, 'remisEnPlace': defaits.length});
+    }
+
+    Fiche trace() => {'_modifiePar': auteur(), '_modifieLe': maintenant().toIso8601String()};
+    for (var i = 0; i < plan.reaffectes.length; i++) {
+      final p = plan.reaffectes[i];
+      try {
+        defaits.add(_postes.mettreAJour(p.id, {'parentId': plan.cible!.id, ...trace()}, journaliser: false));
+      } on EcritureRefusee {
+        defaire('écriture refusée pour « ${p.poste} »');
+        return (
+          refus: RefusRh('REAFFECTATION_REFUSEE',
+              'L’écriture du poste « ${p.poste} » a été refusée par le magasin : l’archivage de « ${poste['poste']} » est abandonné, aucun poste n’a changé de place.', 'Voir le journal, puis réessayer.', {'posteId': p.id}),
+          cible: null,
+          reaffectes: const [],
+          annuler: null
+        );
+      }
+      final j = plan.journalReaffectations[i];
+      m.journaliser(j.action, j.module, j.entite, p.id, j.avant, j.apres);
+    }
+    try {
+      defaits.add(_postes.archiver(posteId, journaliser: false));
+    } on EcritureRefusee {
+      defaire('archivage refusé par le magasin');
+      return (
+        refus: RefusRh('ECRITURE_REFUSEE', 'L’archivage du poste « ${poste['poste']} » a été refusé par le magasin : aucun poste n’a changé de place.', 'Voir le journal, puis réessayer.'),
+        cible: null,
+        reaffectes: const [],
+        annuler: null
+      );
+    }
+    final ja = plan.journalArchivage!;
+    m.journaliser(ja.action, ja.module, ja.entite, posteId, ja.avant, ja.apres);
+    AnnulationArchivage annuler() {
+      final u = orgPlanifierAnnulationArchivage(posteId,
+          cible: plan.cible, reaffectes: plan.reaffectes, droitAnnulation: droitAnnuler, droitEcriture: droitEditer, postes: _postes.toutes);
+      if (!u.ok) return (refus: u.refus, restaures: const [], laisses: const []);
+      _postes.restaurer(posteId);
+      for (var i = 0; i < u.restaures.length; i++) {
+        _postes.mettreAJour(u.restaures[i].id, {'parentId': posteId, ...trace()}, journaliser: false);
+        final j = u.journalReaffectations[i];
+        m.journaliser(j.action, j.module, j.entite, u.restaures[i].id, j.avant, j.apres);
+      }
+      return (refus: null, restaures: u.restaures, laisses: u.laisses);
+    }
+
+    return (refus: null, cible: plan.cible, reaffectes: plan.reaffectes, annuler: annuler);
   }
 
   /// LA REPRISE (VERSION 78 de la maquette) : remplace par la semence de la photo les postes que la clinique n'a pas touchés, garde les autres, retire tout champ `etoile`.

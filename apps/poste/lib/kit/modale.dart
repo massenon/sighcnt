@@ -267,12 +267,14 @@ Future<String?> confirmerAvecMotif(BuildContext context,
     required String message,
     String libelleOk = 'Confirmer',
     bool dangereux = false,
-    bool motifObligatoire = true}) {
+    bool motifObligatoire = true,
+    Widget? corps,
+    TailleModale taille = TailleModale.sm}) {
   final t = TextEditingController();
   final erreur = ValueNotifier<String?>(null);
   return afficherModale<String>(context,
       titre: titre,
-      taille: TailleModale.sm,
+      taille: taille,
       corps: ValueListenableBuilder<String?>(
           valueListenable: erreur,
           builder: (_, e, __) => Column(
@@ -284,6 +286,8 @@ Future<String?> confirmerAvecMotif(BuildContext context,
                             color: JetonsShell.slate600,
                             fontSize: 14,
                             height: 20 / 14)),
+                    // `corps` : un bloc posé sous le message (la liste des postes réaffectés et le choix du poste d'accueil), comme `corps` de `U.confirm` de la maquette.
+                    if (corps != null) ...[const SizedBox(height: 12), corps],
                     const SizedBox(height: 12),
                     const Padding(
                         padding: EdgeInsets.only(bottom: 6),

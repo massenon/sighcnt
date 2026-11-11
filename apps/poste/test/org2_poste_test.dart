@@ -109,15 +109,15 @@ void main() {
       expect(o.titreDe(poste(m, 'PST012')), isNull);
     });
 
-    test('refus nommés : cycle, parent archivé, poste qui porte des postes, agent introuvable, poste vacant, droit ; rien n\'est écrit', () {
+    test('refus nommés : cycle, parent archivé, sommet sans poste d\'accueil, agent introuvable, poste vacant, droit ; rien n\'est écrit', () {
       final m = magasinM14();
       final o = org(m);
       final avant = jsonEncode(m.collection('postes').toutes);
       final nAudit = m.collection('audit').toutes.length;
       expect(o.reaffecter('PST002', 'PST004').refus!.code, 'RATTACHEMENT_CYCLE');
       expect(o.reaffecter('PST002', 'PST002').refus!.code, 'RATTACHEMENT_CYCLE');
-      expect(o.archiver('PST014').refus!.code, 'POSTE_PORTE_DES_POSTES');
-      expect(o.archiver('PST014').refus!.motif, contains('Aide-Soignante'));
+      expect(o.archiver('PST001').refus!.code, 'CIBLE_REQUISE', reason: 'le sommet qui porte des postes exige un poste d\'accueil (l\'ancien refus POSTE_PORTE_DES_POSTES est remplacé, lot ORG3)');
+      expect(o.archiver('PST001').refus!.motif, contains('Infirmiers'));
       expect(o.poserTitre('PST013', 'XX').refus!.code, 'AGENT_INTROUVABLE');
       expect(o.poserTitre('PST015', 'SF').refus!.code, 'POSTE_VACANT');
       expect(o.poserTitre('PST012', 'TITRE BEAUCOUP TROP LONG').refus!.code, 'TITRE_TROP_LONG');
@@ -144,6 +144,154 @@ void main() {
       expect(audit(m)['action'], 'Création');
       o.archiver('PST015');
       expect(o.creer({'poste': 'Sous archivé', 'parentId': 'PST015', 'effectif': 1, 'role': 'agentadmin'}).refus!.code, 'PARENT_ARCHIVE');
+    });
+
+    group('ORG3 : archiver un poste qui porte des postes les RÉAFFECTE (parent par défaut, autre cible, tout ou rien, annulable)', () {
+      List<String> actions(Magasin m, int n) => [for (final l in m.collection('audit').toutes.take(n)) '${l['action']}'];
+      String etat(Magasin m, List<String> ids) => [for (final i in ids) '$i:${poste(m, i)['statut']}:${poste(m, i)['parentId']}'].join(' ');
+      const trois = ['PST014', 'PST015', 'PST016'];
+
+      test('par défaut les postes remontent sous le parent, trois lignes de journal (une par poste, une pour l\'archivage), annuler remet chacun en place', () {
+        final m = magasinM14();
+        final o = org(m);
+        final avant = etat(m, trois);
+        final nAudit = m.collection('audit').toutes.length;
+        final r = o.archiver('PST014', motif: 'Sonde ORG3');
+        expect(r.refus, isNull);
+        expect(r.cible!.id, 'PST001');
+        expect({for (final x in r.reaffectes) x.id}, {'PST015', 'PST016'});
+        expect(etat(m, trois), 'PST014:archive:PST001 PST015:actif:PST001 PST016:actif:PST001');
+        expect(m.collection('audit').toutes.length, nAudit + 3);
+        expect(actions(m, 3).where((a) => a == 'Réaffectation d’un poste').length, 2);
+        final a = audit(m);
+        expect(a['action'], 'Archivage');
+        expect((a['apres'] as Map)['motif'], 'Sonde ORG3');
+        expect((a['apres'] as Map)['cible'], 'Directeur Médical');
+        for (final l in m.collection('audit').toutes.take(3).where((l) => l['action'] == 'Réaffectation d’un poste')) {
+          expect((l['avant'] as Map)['parentId'], 'Infirmiers');
+          expect((l['apres'] as Map)['parentId'], 'Directeur Médical');
+          expect((l['apres'] as Map)['motif'], 'Sonde ORG3');
+        }
+        final b = r.annuler!();
+        expect(b.refus, isNull);
+        expect(b.laisses, isEmpty);
+        expect({for (final x in b.restaures) x.id}, {'PST015', 'PST016'});
+        expect(etat(m, trois), avant);
+      });
+
+      test('une autre cible au choix ; une feuille s\'archive sans cible ; l\'aperçu n\'écrit rien', () {
+        final m = magasinM14();
+        final o = org(m);
+        final nAudit = m.collection('audit').toutes.length;
+        final ap = o.apercuArchivage('PST014');
+        expect(ap.ok, isTrue);
+        expect(ap.cible!.id, 'PST001');
+        expect(ap.parDefaut, isTrue);
+        expect([for (final p in ap.portes) p.id], ['PST015', 'PST016']);
+        expect(ap.candidats.any((c) => c.id == 'PST015' || c.id == 'PST014'), isFalse);
+        expect(m.collection('audit').toutes.length, nAudit);
+        expect(o.archiver('PST014', cibleId: 'PST012').refus, isNull);
+        expect(etat(m, trois), 'PST014:archive:PST001 PST015:actif:PST012 PST016:actif:PST012');
+        final feuille = o.archiver('PST013', cibleId: 'PST012');
+        expect(feuille.refus, isNull);
+        expect(feuille.reaffectes, isEmpty);
+        expect(feuille.cible, isNull);
+      });
+
+      test('un sommet qui porte des postes exige son poste d\'accueil : refus nommé sinon, rien d\'écrit ; avec lui, ses postes passent dessous', () {
+        final m = magasinM14();
+        final o = org(m);
+        final avant = jsonEncode(m.collection('postes').toutes);
+        final r0 = o.archiver('PST001');
+        expect(r0.refus!.code, 'CIBLE_REQUISE');
+        expect(r0.refus!.geste, contains('Créer d’abord le poste d’accueil'));
+        final accueil = o.creer({'poste': 'Direction générale', 'effectif': 1, 'role': 'direction'}).fiche!;
+        final avant2 = jsonEncode(m.collection('postes').toutes);
+        final r1 = o.archiver('PST001');
+        expect(r1.refus!.code, 'CIBLE_REQUISE');
+        expect(r1.refus!.geste, contains('Désigner le poste d’accueil'));
+        expect(jsonEncode(m.collection('postes').toutes), avant2);
+        expect(avant2, isNot(avant));
+        final r2 = o.archiver('PST001', cibleId: '${accueil['id']}');
+        expect(r2.refus, isNull);
+        expect(r2.reaffectes.length, 7);
+        expect(poste(m, 'PST001')['statut'], 'archive');
+        for (final i in ['PST002', 'PST006', 'PST009', 'PST011', 'PST012', 'PST013', 'PST014']) {
+          expect(poste(m, i)['parentId'], accueil['id']);
+        }
+        expect(poste(m, 'PST015')['parentId'], 'PST014', reason: 'les petits-enfants gardent leur parent : la hiérarchie sous les postes réaffectés ne bouge pas');
+      });
+
+      test('cible refusée en le nommant : le poste, un descendant, un poste porté, un poste archivé, un poste inconnu ; rien n\'est écrit', () {
+        final m = magasinM14();
+        final o = org(m);
+        final feuille = o.creer({'poste': 'Poste sonde', 'parentId': 'PST001', 'effectif': 1, 'role': 'agentadmin'}).fiche!;
+        o.archiver('${feuille['id']}');
+        final avant = jsonEncode(m.collection('postes').toutes);
+        expect(o.archiver('PST002', cibleId: 'PST002').refus!.code, 'CIBLE_CYCLE');
+        final c = o.archiver('PST002', cibleId: 'PST004').refus!;
+        expect(c.code, 'CIBLE_CYCLE');
+        expect(c.motif, contains('Assistant comptable'));
+        expect(o.archiver('PST014', cibleId: 'PST015').refus!.code, 'CIBLE_CYCLE');
+        expect(o.archiver('PST014', cibleId: '${feuille['id']}').refus!.code, 'CIBLE_ARCHIVEE');
+        expect(o.archiver('PST014', cibleId: 'PSTxxx').refus!.code, 'CIBLE_INTROUVABLE');
+        expect(jsonEncode(m.collection('postes').toutes), avant);
+      });
+
+      test('tout ou rien : le second poste refusé par le magasin fait refuser l\'archivage entier, le premier est remis en place SANS trace, l\'abandon est journalisé', () {
+        final m = magasinM14();
+        final o = org(m);
+        final avant = jsonEncode(m.collection('postes').toutes);
+        final archivagesAvant = m.collection('audit').toutes.where((l) => l['action'] == 'Archivage').length;
+        m.collection('postes').garder((op, f) => op == 'modifier' && f['id'] == 'PST016' ? 'Sonde ORG3' : null);
+        final r = o.archiver('PST014', motif: 'Sonde atomique');
+        expect(r.refus!.code, 'REAFFECTATION_REFUSEE');
+        expect(r.refus!.motif, contains('Aide-Soignante'));
+        expect(jsonEncode(m.collection('postes').toutes), avant, reason: 'octet pour octet, marques d\'écran comprises');
+        expect(poste(m, 'PST015').containsKey('_modifieLe'), isFalse);
+        expect(m.collection('audit').toutes.any((l) => l['action'] == 'Archivage abandonné'), isTrue);
+        expect(m.collection('audit').toutes.where((l) => l['action'] == 'Archivage').length, archivagesAvant, reason: 'aucun archivage n\'a été écrit');
+      });
+
+      test('annuler laisse un poste déplacé depuis et le dit ; un poste déjà restauré refuse l\'annulation en le nommant ; sans le droit, refusé', () {
+        final m = magasinM14();
+        final o = org(m);
+        final r = o.archiver('PST014');
+        expect(o.reaffecter('PST016', 'PST012').refus, isNull);
+        final b = r.annuler!();
+        expect(b.refus, isNull);
+        expect(poste(m, 'PST014')['statut'], 'actif');
+        expect(poste(m, 'PST015')['parentId'], 'PST014');
+        expect(poste(m, 'PST016')['parentId'], 'PST012');
+        expect(b.laisses.single.id, 'PST016');
+        expect(b.laisses.single.motif, contains('Echographiste'));
+
+        final m2 = magasinM14();
+        final o2 = org(m2);
+        final r2 = o2.archiver('PST014');
+        m2.collection('postes').restaurer('PST014');
+        final avant = jsonEncode(m2.collection('postes').toutes);
+        final b2 = r2.annuler!();
+        expect(b2.refus!.code, 'ANNULATION_IMPOSSIBLE');
+        expect(jsonEncode(m2.collection('postes').toutes), avant);
+
+        final m3 = magasinM14();
+        final r3 = org(m3).archiver('PST014');
+        final b3 = OrganigrammePoste(m3, droitEditer: false, droitAnnuler: false, rolesConnus: const {}, maintenant: () => aujourdhui, auteur: () => 'x');
+        expect(b3.archiver('PST015').refus!.code, 'ORGANIGRAMME_RESERVE');
+        expect(r3.annuler!().refus, isNull);
+      });
+
+      test('le droit : annuler sans écrire archive une feuille mais pas un poste qui en porte (réaffecter est une modification) ; écrire sans annuler n\'archive pas', () {
+        final m = magasinM14();
+        final avant = jsonEncode(m.collection('postes').toutes);
+        final r = org(m, editer: false).archiver('PST014');
+        expect(r.refus!.code, 'ORGANIGRAMME_RESERVE');
+        expect(r.refus!.motif, contains('réaffecte'));
+        expect(org(m, annuler: false).archiver('PST014').refus!.code, 'ORGANIGRAMME_RESERVE');
+        expect(jsonEncode(m.collection('postes').toutes), avant);
+        expect(org(m, editer: false).archiver('PST015').refus, isNull);
+      });
     });
 
     test('la reprise : un poste intact est réécrit, un poste modifié ou archivé ne l\'est jamais, un champ étoile est retiré, une seconde passe ne fait rien, une ligne est journalisée', () {
@@ -221,16 +369,56 @@ void main() {
       expect(audit(m)['action'], 'Titre d’un agent dans l’organigramme');
     });
 
-    casM14('un refus du moteur se DIT à l\'écran et rien n\'est écrit : archiver la DA, qui porte encore trois postes', (t) async {
+    casM14('ORG3 AU GESTE : archiver la DA RÉAFFECTE ses trois postes sous le Directeur Médical, la modale les nomme, « Annuler » du message remet tout', (t) async {
       final m = magasinM14();
       await ouvrirOrganigramme(t, m);
       await toucherM14(t, find.byTooltip('Archiver').at(rang(m, 'PST002')));
-      await t.enterText(find.byType(TextField).last, 'Sonde ORG2');
+      expect(find.byKey(const Key('org:archivage-liste')), findsOneWidget);
+      expect(find.textContaining('3 postes réaffectés : '), findsOneWidget);
+      expect(find.widgetWithText(BoutonSigh, 'Archiver et réaffecter'), findsOneWidget);
+      await t.enterText(find.byType(TextField).last, 'Sonde ORG3');
+      await t.pump();
+      await t.tap(find.widgetWithText(BoutonSigh, 'Archiver et réaffecter').last);
+      await t.pump(const Duration(milliseconds: 400));
+      expect(find.textContaining('3 postes réaffectés sous « Directeur Médical »'), findsOneWidget);
+      expect(poste(m, 'PST002')['statut'], 'archive');
+      for (final i in ['PST003', 'PST007', 'PST008']) {
+        expect(poste(m, i)['parentId'], 'PST001');
+      }
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Annuler'));
+      expect(poste(m, 'PST002')['statut'], 'actif');
+      for (final i in ['PST003', 'PST007', 'PST008']) {
+        expect(poste(m, i)['parentId'], 'PST002');
+      }
+      expect(find.text('Archivage annulé.'), findsOneWidget);
+    });
+
+    casM14('ORG3 AU GESTE : le sommet qui porte des postes n\'a pas de cible par défaut, la confirmation sans choix est refusée en le disant et rien n\'est écrit', (t) async {
+      final m = magasinM14();
+      await ouvrirOrganigramme(t, m);
+      final avant = jsonEncode(m.collection('postes').toutes);
+      await toucherM14(t, find.byTooltip('Archiver').at(rang(m, 'PST001')));
+      expect(find.textContaining('7 postes réaffectés : '), findsOneWidget);
+      expect(find.textContaining('il n’a pas de rattachement'), findsOneWidget);
+      await t.enterText(find.byType(TextField).last, 'Sonde ORG3');
+      await t.pump();
+      await t.tap(find.widgetWithText(BoutonSigh, 'Archiver et réaffecter').last);
+      await t.pump(const Duration(milliseconds: 400));
+      expect(find.textContaining('au sommet de l’organigramme'), findsOneWidget);
+      expect(jsonEncode(m.collection('postes').toutes), avant);
+    });
+
+    casM14('ORG3 AU GESTE : un poste sans poste porté s\'archive comme avant (modale sobre, bouton « Archiver »)', (t) async {
+      final m = magasinM14();
+      await ouvrirOrganigramme(t, m);
+      await toucherM14(t, find.byTooltip('Archiver').at(rang(m, 'PST015')));
+      expect(find.byKey(const Key('org:archivage-liste')), findsNothing);
+      await t.enterText(find.byType(TextField).last, 'Sonde ORG3');
       await t.pump();
       await t.tap(find.widgetWithText(BoutonSigh, 'Archiver').last);
       await t.pump(const Duration(milliseconds: 400));
-      expect(find.textContaining('porte encore 3 postes'), findsOneWidget);
-      expect(poste(m, 'PST002')['statut'], 'actif');
+      expect(poste(m, 'PST015')['statut'], 'archive');
+      expect(find.text('Poste archivé.'), findsOneWidget);
     });
 
     casM14('l\'impression est A4 PAYSAGE : 16 boîtes, « GARBA Yahouza (SG) », aucune étoile, aucune boîte qui en chevauche une autre', (t) async {

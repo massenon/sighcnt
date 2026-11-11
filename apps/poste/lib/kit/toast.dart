@@ -22,13 +22,14 @@ class ToastsSigh {
       {TypeToast type = TypeToast.info,
       String? detail,
       VoidCallback? annuler,
+      bool Function()? annulerOuRefuser,
       String messageAnnulation = 'Action annulée.',
       Duration? duree}) {
     // Le contexte d'un message fermé est défunt : l'annonce « Action annulée. » réutilise l'overlay déjà obtenu.
     final overlay =
         context.mounted ? Overlay.of(context, rootOverlay: true) : _overlay!;
     _overlay = overlay;
-    final e = _Entree(message, type, detail, annuler, messageAnnulation);
+    final e = _Entree(message, type, detail, annuler, messageAnnulation, annulerOuRefuser);
     _pile.insert(0, e);
     // `OverlayEntry.mounted` ne devient vrai qu'à l'image suivante : deux messages posés dans le même geste (une surveillance enregistrée ET son alerte
     // d'incident) insérait deux fois la même entrée. On retient donc l'overlay où l'hôte a été posé.
@@ -71,11 +72,14 @@ class ToastsSigh {
 
 class _Entree {
   _Entree(this.message, this.type, this.detail, this.annuler,
-      this.messageAnnulation);
+      this.messageAnnulation, this.annulerOuRefuser);
   final String message;
   final TypeToast type;
   final String? detail;
   final VoidCallback? annuler;
+
+  /// Une annulation qui peut SE REFUSER (`false` : elle l'a dit elle-même, on n'annonce pas qu'elle a réussi), comme `undo` de `U.toast` de la maquette.
+  final bool Function()? annulerOuRefuser;
   final String messageAnnulation;
   Timer? minuterie;
 }
@@ -156,15 +160,20 @@ class _Carte extends StatelessWidget {
             ]),
           ),
           const SizedBox(width: 12),
-          if (e.annuler != null)
+          if (e.annuler != null || e.annulerOuRefuser != null)
             BoutonSigh(
                 libelle: 'Annuler',
                 taille: TailleBouton.sm,
                 variante: VarianteBouton.secondaire,
                 onPressed: () {
-                  e.annuler!();
+                  var reussie = true;
+                  if (e.annulerOuRefuser != null) {
+                    reussie = e.annulerOuRefuser!();
+                  } else {
+                    e.annuler!();
+                  }
                   ToastsSigh._fermer(e);
-                  ToastsSigh.afficher(context, e.messageAnnulation);
+                  if (reussie) ToastsSigh.afficher(context, e.messageAnnulation);
                 }),
           const SizedBox(width: 4),
           BoutonIcone(

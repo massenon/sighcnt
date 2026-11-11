@@ -272,19 +272,78 @@ class _OngletOrganigramme extends StatelessWidget {
             ]);
   }
 
+  /// ARCHIVER UN POSTE QUI PORTE DES POSTES LES RÉAFFECTE (lot ORG3, décision de la Direction du 11/11/2026). La modale NOMME les postes concernés et le poste d'accueil (par défaut
+  /// le rattachement du poste archivé, au choix un autre), exige un motif, et jamais d'action silencieuse ; un sommet qui porte des postes n'a pas de rattachement : l'accueil est à
+  /// choisir, sans quoi le moteur refuse en le disant. L'annulation remet chaque poste à sa place et dit celui qu'elle laisse.
   static void _archiver(BuildContext ctx, OrganigrammePoste org, Fiche p) async {
+    final id = '${p['id']}';
+    final ap = org.apercuArchivage(id);
+    if (!ap.ok && ap.refus!.code != 'CIBLE_REQUISE') {
+      _dire(ctx, ap.refus!);
+      return;
+    }
+    final portes = ap.portes;
+    final cible = ValueNotifier<String>(ap.ok && ap.cible != null ? ap.cible!.id : '');
+    final candidats = [...ap.candidats]..sort((a, b) => a.poste.compareTo(b.poste));
+    final n = portes.length;
+    Widget? corps;
+    if (n > 0) {
+      corps = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+        Text('$n poste${n > 1 ? 's' : ''} réaffecté${n > 1 ? 's' : ''} : ${portes.map((x) => x.poste).join(', ')}.',
+            key: const Key('org:archivage-liste'), style: const TextStyle(color: JetonsShell.slate700, fontSize: 14, height: 20 / 14)),
+        const SizedBox(height: 8),
+        const Padding(
+            padding: EdgeInsets.only(bottom: 6),
+            child: Text('Poste d’accueil de ces postes', style: TextStyle(color: JetonsShell.slate600, fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w500))),
+        ValueListenableBuilder<String>(
+            valueListenable: cible,
+            builder: (_, v, __) => SelecteurSigh(
+                key: const Key('org:archivage-cible'),
+                libelle: 'Poste d’accueil de ces postes',
+                valeur: v,
+                surChange: (x) => cible.value = x,
+                options: [
+                  if (!ap.ok) const OptionChamp('', '— Choisir le poste d’accueil —'),
+                  for (final x in candidats) OptionChamp(x.id, x.poste + (ap.ok && ap.parDefaut && ap.cible!.id == x.id ? ' (son rattachement)' : '')),
+                ])),
+        const SizedBox(height: 6),
+        Text(
+            ap.ok
+                ? 'Par défaut ces postes remontent d’un cran, sous le rattachement du poste archivé : la hiérarchie ne se creuse pas.'
+                : 'Ce poste est au sommet de l’organigramme : il n’a pas de rattachement vers lequel faire remonter ces postes, le poste d’accueil est à choisir.',
+            style: const TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12)),
+      ]);
+    }
     final motif = await confirmerAvecMotif(ctx,
         titre: 'Archiver ce poste ?',
-        message: 'Archivage logique (RG-14) : le poste reste consultable à la corbeille et l’opération est annulable.',
-        libelleOk: 'Archiver',
-        dangereux: true);
+        message: 'Archivage logique (RG-14) : le poste « ${p['poste']} » reste consultable à la corbeille et l’opération est annulable${n > 0 ? ' (les postes réaffectés retrouvent leur place).' : '.'}',
+        libelleOk: n > 0 ? 'Archiver et réaffecter' : 'Archiver',
+        dangereux: true,
+        corps: corps,
+        taille: n > 0 ? TailleModale.md : TailleModale.sm);
     if (motif == null || !ctx.mounted) return;
-    final r = org.archiver('${p['id']}');
+    final r = org.archiver(id, motif: motif, cibleId: cible.value.isEmpty ? null : cible.value);
     if (r.refus != null) {
       _dire(ctx, r.refus!);
       return;
     }
-    ToastsSigh.afficher(ctx, 'Poste archivé.', type: TypeToast.succes, annuler: r.annuler, messageAnnulation: 'Archivage annulé.');
+    final k = r.reaffectes.length;
+    ToastsSigh.afficher(ctx, 'Poste archivé${k > 0 ? ' ; $k poste${k > 1 ? 's' : ''} réaffecté${k > 1 ? 's' : ''} sous « ${r.cible!.poste} ».' : '.'}',
+        type: TypeToast.succes,
+        annulerOuRefuser: () {
+          final b = r.annuler!();
+          if (b.refus != null) {
+            if (ctx.mounted) _dire(ctx, b.refus!);
+            return false;
+          }
+          if (b.laisses.isNotEmpty && ctx.mounted) {
+            final l = b.laisses.length;
+            ToastsSigh.afficher(ctx, 'Archivage annulé, mais $l poste${l > 1 ? 's' : ''} laissé${l > 1 ? 's' : ''} où ${l > 1 ? 'ils sont' : 'il est'}.',
+                type: TypeToast.attention, detail: b.laisses.map((x) => '« ${x.poste} » : ${x.motif}').join(' ; '));
+          }
+          return true;
+        },
+        messageAnnulation: 'Archivage annulé.');
   }
 
   @override

@@ -162,14 +162,18 @@ class CollectionMagasin extends ChangeNotifier {
 
   /// Archive la fiche (`statut: 'archive'`, ancien statut conservé) et rend la fonction qui ANNULE — une annulation doit être possible
   /// et visible (CLAUDE.md, « quatre pièges »).
-  VoidCallback archiver(Object? id) {
+  ///
+  /// [journaliser] `false` : l'appelant écrit lui-même la ligne de journal (l'archivage d'un poste y porte son motif et sa cible, lot ORG3).
+  VoidCallback archiver(Object? id, {bool journaliser = true}) {
     final f = parId(id);
     if (f == null || estArchivee(f)) return () {};
     if (_gardes.isNotEmpty) _controler('archiver', f);
     f['statutAvantArchivage'] = f['statut'];
     f['statut'] = 'archive';
-    journal?.call('Archivage', module, entite ?? nom, _ref(f),
-        {'statut': f['statutAvantArchivage']}, {'statut': 'archive'});
+    if (journaliser) {
+      journal?.call('Archivage', module, entite ?? nom, _ref(f),
+          {'statut': f['statutAvantArchivage']}, {'statut': 'archive'});
+    }
     notifyListeners();
     return () => restaurer(id);
   }
