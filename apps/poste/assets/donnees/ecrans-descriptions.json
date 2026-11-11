@@ -23,7 +23,7 @@
   },
   "cfg-catalogue": {
    "titre": "Catalogue tarifaire (deux prix)",
-   "description": "Les six grilles officielles : consultations, imageries, analyses, AMI, gynéco-obstétrique, certificats."
+   "description": "Page de renvoi : les deux prix de chaque prestation figurent à « Tarifs et prix »."
   },
   "cfg-centres-couts": {
    "titre": "Centres de coûts",
@@ -94,8 +94,8 @@
    "description": "Configuration technique, environnement d’exécution et outils de maintenance du prototype."
   },
   "cfg-tarifs": {
-   "titre": "Référentiel tarifaire",
-   "description": "Tarif unique consommé par la pharmacie, la facturation, les assurances, les rapports et la comptabilité."
+   "titre": "Tarifs et prix",
+   "description": "Le référentiel de prix unique : prestations, analyses et imagerie, l’historique de chaque prix et les changements en attente de décision."
   },
   "cfg-types-piece": {
    "titre": "Types de pièces certifiantes",

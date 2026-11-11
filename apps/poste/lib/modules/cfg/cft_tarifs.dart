@@ -3,7 +3,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
-import '../../donnees/magasin.dart';
 import '../../donnees/tarifs_poste.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -293,7 +292,7 @@ class _TableauPrestations extends StatelessWidget {
               cle: 'na',
               libelle: 'Prix non assuré',
               droite: true,
-              valeur: (r) => r['na'] == null ? -1 : r['na'],
+              valeur: (r) => r['na'] ?? -1,
               texte: (r) => r['na'] == null ? 'à valider' : money(r['na'], avecDevise: false),
               rendu: (_, r) => r['na'] == null
                   ? const Text('à valider', style: TextStyle(fontSize: 12, height: 16 / 12, fontStyle: FontStyle.italic, color: JetonsShell.danger600))
@@ -766,19 +765,18 @@ class _SelectVersion extends StatelessWidget {
   final ValueChanged<int> alChange;
 
   @override
-  Widget build(BuildContext context) => Semantics(
-      label: libelle,
-      child: DropdownButton<int>(
-          value: valeur,
-          items: [
-            for (final v in vs)
-              DropdownMenuItem(
-                  value: v['version'] as int,
-                  child: Text('Version ${v['version']}${v['dateEffet'] != null ? ' (${dateFR(DateTime.parse('${v['dateEffet']}'))})' : ''}')),
-          ],
-          onChanged: (x) {
-            if (x != null) alChange(x);
-          }));
+  Widget build(BuildContext context) => SelecteurSigh(
+      libelle: libelle,
+      recherche: false,
+      valeur: '$valeur',
+      options: [
+        for (final v in vs)
+          OptionChamp('${v['version']}', 'Version ${v['version']}${v['dateEffet'] != null ? ' (${dateFR(DateTime.parse('${v['dateEffet']}'))})' : ''}'),
+      ],
+      surChange: (x) {
+        final n = int.tryParse(x);
+        if (n != null) alChange(n);
+      });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
