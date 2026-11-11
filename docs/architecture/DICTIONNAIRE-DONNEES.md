@@ -4,25 +4,25 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 
 | Schéma (module) | Tables | Tables filles | Colonnes typées | Fiches observées |
 |---|---:|---:|---:|---:|
-| `cfg` — Configuration | 16 | 4 | 216 | 594 |
-| `ged` — GED | 1 | 0 | 26 | 224 |
-| `imp` — Importation de données (IMP) | 1 | 2 | 17 | 1 |
-| `m1` — M1 Patients & DMI | 6 | 0 | 156 | 427 |
-| `m10` — M10 Ressources humaines | 20 | 1 | 226 | 2986 |
-| `m11` — M11 Paie & primes | 4 | 0 | 66 | 15 |
-| `m12` — M12 Comptabilité SYSCOHADA | 13 | 2 | 188 | 702 |
-| `m13` — M13 Administration & ambulance | 10 | 1 | 106 | 90 |
-| `m14` — M14 Sécurité & audit | 10 | 0 | 146 | 733 |
-| `m2` — M2 RDV, visites, consultations, imagerie | 10 | 3 | 238 | 1223 |
+| `cfg` — Configuration | 23 | 4 | 312 | 1043 |
+| `ged` — GED | 1 | 0 | 26 | 220 |
+| `imp` — Importation de données (IMP) | 1 | 2 | 17 | 0 |
+| `m1` — M1 Patients & DMI | 6 | 0 | 159 | 427 |
+| `m10` — M10 Ressources humaines | 22 | 1 | 270 | 2957 |
+| `m11` — M11 Paie & primes | 4 | 0 | 66 | 12 |
+| `m12` — M12 Comptabilité SYSCOHADA | 13 | 2 | 188 | 691 |
+| `m13` — M13 Administration & ambulance | 12 | 1 | 142 | 90 |
+| `m14` — M14 Sécurité & audit | 10 | 0 | 146 | 650 |
+| `m2` — M2 RDV, visites, consultations, imagerie | 10 | 4 | 242 | 1221 |
 | `m3` — M3 Hospitalisation & bloc | 10 | 3 | 181 | 599 |
 | `m4` — M4 Maternité, naissances, décès | 13 | 4 | 283 | 331 |
-| `m5` — M5 Laboratoire | 8 | 0 | 109 | 661 |
+| `m5` — M5 Laboratoire | 8 | 0 | 111 | 659 |
 | `m6` — M6 Pharmacie & stocks | 8 | 1 | 82 | 1286 |
 | `m7` — M7 Achats & fournisseurs | 6 | 4 | 78 | 39 |
-| `m8` — M8 Facturation & caisse | 2 | 1 | 39 | 411 |
-| `m9` — M9 Assurances & créances | 5 | 1 | 60 | 55 |
-| `socle` — Socle commun (référentiels lus par plusieurs modules) | 3 | 0 | 49 | 454 |
-| `sup` — Support | 1 | 0 | 17 | 2 |
+| `m8` — M8 Facturation & caisse | 2 | 1 | 55 | 409 |
+| `m9` — M9 Assurances & créances | 5 | 1 | 60 | 35 |
+| `socle` — Socle commun (référentiels lus par plusieurs modules) | 3 | 0 | 49 | 450 |
+| `sup` — Support | 1 | 0 | 17 | 0 |
 
 ## Détail par table
 
@@ -48,6 +48,34 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 | `motif_prix` | motifPrix | text |  |
 
 Table fille `cfg.actes_variantes_grille` — 16 lignes : code text, source text, statut text, famille text, libelle text, a_arbitrer text, arbitrage text, assurable boolean, motif_prix text, non_couvert boolean, prix_assure integer, prix_a_valider boolean, prix_non_assure integer, grille_colonne1 integer, grille_colonne2 integer, inverse_depuis_grille boolean
+
+### `cfg.bareme_aib` (collection « baremeAib », 4 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `taux` | taux | integer |  |
+| `motif` | motif | text |  |
+| `cree_le` | creeLe | date |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `cree_par` | creePar | text |  |
+| `date_fin` | dateFin | date |  |
+| `a_valider` | aValider | boolean |  |
+| `date_effet` | dateEffet | date |  |
+| `situation` | situation | text |  |
+| `cree_le_2` | _creeLe | timestamptz |  |
+| `cree_par_2` | _creePar | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `archive_par` | _archivePar | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
+| `valide_le` | valideLe | timestamptz |  |
+| `valide_par` | validePar | text |  |
+| `valide_role` | valideRole | text |  |
+| `modifie_le_2` | modifieLe | date |  |
+| `modifie_par_2` | modifiePar | text |  |
 
 ### `cfg.catalogue_tarifs` (collection « catalogueTarifs », 147 fiches)
 
@@ -91,7 +119,7 @@ Table fille `cfg.actes_variantes_grille` — 16 lignes : code text, source text,
 | `tarif_code` | tarifCode | text |  |
 | `a_valider` | aValider | text |  |
 
-### `cfg.historique_obligations` (collection « historiqueObligations », 3 fiches)
+### `cfg.historique_obligations` (collection « historiqueObligations », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -130,9 +158,9 @@ Table fille `cfg.actes_variantes_grille` — 16 lignes : code text, source text,
 | `declaration` | declaration | text |  |
 | `periodicite` | periodicite | text |  |
 
-Table fille `cfg.historique_obligations_redevances` — 2 lignes : id text, code text, mois integer, libelle text, montant integer, assiette text, seuil_max text, seuil_min integer, categorie text, mois_label text
+Table fille `cfg.historique_obligations_redevances` — 0 lignes : id text, code text, mois integer, libelle text, montant integer, assiette text, seuil_max text, seuil_min integer, categorie text, mois_label text
 
-### `cfg.identite_legale` (collection « identiteLegale », 2 fiches)
+### `cfg.identite_legale` (collection « identiteLegale », 1 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -144,37 +172,37 @@ Table fille `cfg.historique_obligations_redevances` — 2 lignes : id text, code
 | `logo` | logo | text |  |
 | `pays` | pays | text |  |
 | `rccm` | rccm | text |  |
-| `debut` | debut | date |  |
+| `debut` | debut | text |  |
 | `email` | email | text |  |
 | `forme` | forme | text |  |
 | `motif` | motif | text |  |
 | `sigle` | sigle | text |  |
-| `cree_le` | creeLe | timestamptz |  |
+| `cree_le` | creeLe | date |  |
 | `devise` | devise | text |  |
 | `slogan` | slogan | text |  |
 | `source` | source | text |  |
 | `statut` | statut | text |  |
-| `cree_le_2` | _creeLe | timestamptz |  |
 | `adresse` | adresse | text |  |
 | `cree_par` | creePar | text |  |
 | `version` | version | integer |  |
-| `cree_par_2` | _creePar | text |  |
 | `valide_le` | valideLe | text |  |
 | `regime_tva` | regimeTva | text |  |
 | `valide_par` | validePar | text |  |
-| `archive_le` | _archiveLe | timestamptz |  |
-| `modifie_le` | _modifieLe | timestamptz |  |
 | `code_devise` | codeDevise | text |  |
 | `telephones` | telephones | jsonb |  |
-| `archive_par` | _archivePar | text |  |
-| `modifie_par` | _modifiePar | text |  |
 | `autorisation` | autorisation | text |  |
 | `telephone_rdv` | telephoneRdv | text |  |
 | `formule_arrete` | formuleArrete | text |  |
-| `motif_archivage` | _motifArchivage | text |  |
 | `formule_politesse` | formulePolitesse | text |  |
 | `autorisation_exercice` | autorisationExercice | text |  |
 | `autorisation_exercice_motif` | autorisationExerciceMotif | text |  |
+| `cree_le_2` | _creeLe | timestamptz |  |
+| `cree_par_2` | _creePar | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `archive_par` | _archivePar | text |  |
+| `modifie_par` | _modifiePar | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
 | `modifie_le_2` | modifieLe | text |  |
 | `modifie_par_2` | modifiePar | text |  |
 
@@ -218,7 +246,7 @@ Table fille `cfg.historique_obligations_redevances` — 2 lignes : id text, code
 | `libelle` | libelle | text |  |
 | `secteur` | secteur | text |  |
 
-### `cfg.obligations_fiscales` (collection « obligationsFiscales », 20 fiches)
+### `cfg.obligations_fiscales` (collection « obligationsFiscales », 21 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -238,15 +266,35 @@ Table fille `cfg.historique_obligations_redevances` — 2 lignes : id text, code
 | `date_effet` | dateEffet | text |  |
 | `modifie_le` | modifieLe | text |  |
 | `valide_par` | validePar | text |  |
-| `modifie_le_2` | _modifieLe | timestamptz |  |
+| `a_confirmer` | aConfirmer | boolean |  |
 | `modifie_par` | modifiePar | text |  |
-| `modifie_par_2` | _modifiePar | text |  |
 | `declaration` | declaration | text |  |
 | `periodicite` | periodicite | text |  |
 | `seuil_tele` | seuilTele | integer |  |
 | `cumul_maximum` | cumulMaximum | integer |  |
+| `modifie_le_2` | _modifieLe | timestamptz |  |
+| `modifie_par_2` | _modifiePar | text |  |
 
 Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code text, mois integer, libelle text, montant integer, assiette text, seuil_max text, seuil_min integer, categorie text, mois_label text
+
+### `cfg.parametres_fiscaux` (collection « parametresFiscaux », 2 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `code` | code | text |  |
+| `motif` | motif | text |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `libelle` | libelle | text |  |
+| `a_valider` | aValider | boolean |  |
+| `date_effet` | dateEffet | text |  |
+| `modifie_le` | modifieLe | text |  |
+| `modifie_par` | modifiePar | text |  |
+| `delai_a_payer` | delaiAPayer | integer |  |
+| `delai_declaration` | delaiDeclaration | integer |  |
+| `tranches` | tranches | integer |  |
+| `montant_total` | montantTotal | integer |  |
 
 ### `cfg.postes` (collection « postes », 0 fiches)
 
@@ -267,7 +315,24 @@ Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code t
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 
-### `cfg.ressources` (collection « ressources », 1 fiches)
+### `cfg.reglages_aib` (collection « reglagesAib », 2 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `cle` | cle | text |  |
+| `motif` | motif | text |  |
+| `cree_le` | creeLe | date |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `valeur` | valeur | text |  |
+| `cree_par` | creePar | text |  |
+| `date_fin` | dateFin | text |  |
+| `libelle` | libelle | text |  |
+| `a_valider` | aValider | boolean |  |
+| `date_effet` | dateEffet | date |  |
+
+### `cfg.ressources` (collection « ressources », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -297,6 +362,39 @@ Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code t
 | `responsable` | responsable | text |  |
 | `qualification` | qualification | text |  |
 
+### `cfg.situations_aib` (collection « situationsAib », 3 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `code` | code | text |  |
+| `ordre` | ordre | integer |  |
+| `cree_le` | creeLe | date |  |
+| `statut` | statut | text |  |
+| `cree_par` | creePar | text |  |
+| `libelle` | libelle | text |  |
+| `declencheur` | declencheur | text |  |
+| `description` | description | text |  |
+
+### `cfg.tarifs` (collection « tarifs », 201 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `code` | code | text |  |
+| `statut` | statut | text |  |
+| `famille` | famille | text |  |
+| `libelle` | libelle | text |  |
+| `secteur` | secteur | text |  |
+| `code_acte` | codeActe | text |  |
+| `assurable` | assurable | jsonb |  |
+| `code_grille` | codeGrille | text |  |
+| `codes_alias` | codesAlias | jsonb |  |
+| `variantes_grille` | variantesGrille | jsonb |  |
+| `libelle_grille` | libelleGrille | text |  |
+| `code_analyse` | codeAnalyse | text |  |
+| `source` | source | text |  |
+
 ### `cfg.types_piece` (collection « typesPiece », 14 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -309,6 +407,19 @@ Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code t
 | `collision` | collision | text |  |
 | `direction` | direction | text |  |
 | `tarif_code` | tarifCode | text |  |
+
+### `cfg.validations_referentiels` (collection « validationsReferentiels », 1 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `cible` | cible | text |  |
+| `statut` | statut | text |  |
+| `famille` | famille | text |  |
+| `libelle` | libelle | text |  |
+| `valide_le` | valideLe | date |  |
+| `valide_par` | validePar | text |  |
+| `valide_role` | valideRole | text |  |
 
 ### `cfg.variables_imagerie` (collection « variablesImagerie », 280 fiches)
 
@@ -330,7 +441,27 @@ Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code t
 
 Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, quand jsonb, libelle text
 
-### `ged.documents` (collection « documents », 224 fiches)
+### `cfg.versions_tarif` (collection « versionsTarif », 240 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `code` | code | text |  |
+| `statut` | statut | text |  |
+| `origine` | origine | text |  |
+| `version` | version | integer |  |
+| `etat_assure` | etatAssure | text |  |
+| `prix_assure` | prixAssure | integer |  |
+| `prix_non_assure` | prixNonAssure | integer |  |
+| `arrete_le` | arreteLe | date |  |
+| `motif` | motif | text |  |
+| `provisoire` | provisoire | boolean |  |
+| `a_dater` | aDater | boolean |  |
+| `propose_le` | proposeLe | date |  |
+| `propose_par` | proposePar | text |  |
+| `etat_non_assure` | etatNonAssure | text |  |
+
+### `ged.documents` (collection « documents », 220 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -340,28 +471,28 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `format` | format | text |  |
 | `statut` | statut | text |  |
 | `taille` | taille | integer |  |
-| `cree_le` | _creeLe | timestamptz |  |
 | `archive` | archive | boolean |  |
-| `contenu` | contenu | text |  |
 | `libelle` | libelle | text |  |
 | `version` | version | integer |  |
-| `cree_par` | _creePar | text |  |
-| `resultat` | resultat | integer |  |
 | `categorie` | categorie | text |  |
 | `depose_par` | deposePar | text |  |
-| `empreinte` | empreinte | text |  |
 | `rattache_a` | rattacheA | text |  |
 | `reference` | reference | text |  |
 | `conservation` | conservation | integer |  |
 | `rattachement` | rattachement | text |  |
 | `consultations` | consultations | integer |  |
 | `etat_validation` | etatValidation | text |  |
-| `archive_exercice` | archiveExercice | text |  |
 | `code_rattachement` | codeRattachement | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `contenu` | contenu | text |  |
+| `cree_par` | _creePar | text |  |
+| `resultat` | resultat | integer |  |
+| `empreinte` | empreinte | text |  |
+| `archive_exercice` | archiveExercice | text |  |
 | `empreinte_balance` | empreinteBalance | text |  |
 | `manifeste_empreinte` | manifesteEmpreinte | text |  |
 
-### `imp.lots_importation` (collection « lotsImportation », 1 fiches)
+### `imp.lots_importation` (collection « lotsImportation », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -383,9 +514,9 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `cree_le` | _creeLe | timestamptz |  |
 | `cree_par` | _creePar | text |  |
 
-Table fille `imp.lots_importation_ecrits` — 1 lignes : collection text, id text
+Table fille `imp.lots_importation_ecrits` — 0 lignes : collection text, id text
 
-Table fille `imp.lots_importation_erreurs` — 1 lignes : n integer, colonne text, valeur text, code text, niveau text, motif text, geste text
+Table fille `imp.lots_importation_erreurs` — 0 lignes : n integer, colonne text, valeur text, code text, niveau text, motif text, geste text
 
 ### `m10.assurances_personnel` (collection « assurancesPersonnel », 0 fiches)
 
@@ -512,7 +643,7 @@ Table fille `imp.lots_importation_erreurs` — 1 lignes : n integer, colonne tex
 | `montant_par_agent` | montantParAgent | integer |  |
 | `periode_paiement` | periodePaiement | text |  |
 
-### `m10.fiches_poste` (collection « fichesPoste », 28 fiches)
+### `m10.fiches_poste` (collection « fichesPoste », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -539,7 +670,7 @@ Table fille `imp.lots_importation_erreurs` — 1 lignes : n integer, colonne tex
 | `relations_externes` | relationsExternes | text |  |
 | `relations_internes` | relationsInternes | text |  |
 
-Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites jsonb, indicateurs jsonb
+Table fille `m10.fiches_poste_missions` — 0 lignes : mission text, activites jsonb, indicateurs jsonb
 
 ### `m10.grille_primes` (collection « grillePrimes », 11 fiches)
 
@@ -603,33 +734,33 @@ Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites j
 | `orientation` | orientation | text |  |
 | `mentions_verso` | mentionsVerso | text |  |
 
-### `m10.participations` (collection « participations », 388 fiches)
+### `m10.participations` (collection « participations », 387 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
 | `mode` | mode | text |  |
-| `recu` | recu | text |  |
 | `agent` | agent | text |  |
+| `nature` | nature | text |  |
 | `statut` | statut | text |  |
 | `cree_le` | _creeLe | timestamptz |  |
 | `montant` | montant | integer |  |
-| `cree_par` | _creePar | text |  |
-| `employe_id` | employeId | text |  |
-| `modifie_le` | _modifieLe | timestamptz |  |
-| `modifie_par` | _modifiePar | text |  |
-| `encaisse_par` | encaissePar | text |  |
-| `date_paiement` | datePaiement | date |  |
-| `periode_retenue` | periodeRetenue | text |  |
-| `statut_paiement` | statutPaiement | text |  |
-| `evenement_libelle` | evenementLibelle | text |  |
-| `nature` | nature | text |  |
 | `service` | service | text |  |
+| `cree_par` | _creePar | text |  |
 | `fonction` | fonction | text |  |
+| `employe_id` | employeId | text |  |
 | `matricule` | matricule | text |  |
 | `reference` | reference | text |  |
 | `evenement_id` | evenementId | text | → evenements (FK) |
+| `date_paiement` | datePaiement | date |  |
 | `date_evenement` | dateEvenement | date |  |
+| `periode_retenue` | periodeRetenue | text |  |
+| `statut_paiement` | statutPaiement | text |  |
+| `evenement_libelle` | evenementLibelle | text |  |
+| `recu` | recu | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
+| `encaisse_par` | encaissePar | text |  |
 
 ### `m10.personnel` (collection « personnel », 44 fiches)
 
@@ -651,6 +782,7 @@ Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites j
 | `nom_complet` | nomComplet | text |  |
 | `salaire_base` | salaireBase | integer |  |
 | `date_embauche` | dateEmbauche | date |  |
+| `titre_organigramme` | titreOrganigramme | text |  |
 
 ### `m10.planning` (collection « planning », 1394 fiches)
 
@@ -697,6 +829,59 @@ Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites j
 | `actes_realises` | actesRealises | integer |  |
 | `facture_normalisee` | factureNormalisee | boolean |  |
 
+### `m10.propositions_planning` (collection « propositionsPlanning », 0 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `type` | type | text |  |
+| `employe_id` | employeId | text |  |
+| `employe` | employe | text |  |
+| `fonction` | fonction | text |  |
+| `service` | service | text |  |
+| `motif` | motif | text |  |
+| `date` | date | date |  |
+| `type_vacation` | typeVacation | text |  |
+| `vacation_id` | vacationId | text |  |
+| `contrepartie_id` | contrepartieId | text |  |
+| `vacation_type` | vacationType | text |  |
+| `vacation_date` | vacationDate | date |  |
+| `contrepartie` | contrepartie | text |  |
+| `contrepartie_date` | contrepartieDate | date |  |
+| `contrepartie_type` | contrepartieType | text |  |
+| `etat` | etat | text |  |
+| `proposee_le` | proposeeLe | date |  |
+| `proposee_par` | proposeePar | text |  |
+| `tranche_par` | tranchePar | text |  |
+| `tranche_le` | trancheLe | date |  |
+| `motif_refus` | motifRefus | text |  |
+| `motif_validation` | motifValidation | text |  |
+| `appliquees` | appliquees | jsonb |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `cree_par` | _creePar | text |  |
+
+### `m10.regimes_individuels` (collection « regimesIndividuels », 0 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `employe_id` | employeId | text |  |
+| `employe` | employe | text |  |
+| `matricule` | matricule | text |  |
+| `fonction` | fonction | text |  |
+| `categorie` | categorie | text |  |
+| `champs` | champs | jsonb |  |
+| `retour_categorie` | retourCategorie | boolean |  |
+| `date_effet` | dateEffet | date |  |
+| `motif` | motif | text |  |
+| `version` | version | integer |  |
+| `cree_le` | creeLe | date |  |
+| `cree_par` | creePar | text |  |
+| `cree_le_2` | _creeLe | timestamptz |  |
+| `cree_par_2` | _creePar | text |  |
+
 ### `m10.regimes_travail` (collection « regimesTravail », 8 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -715,7 +900,7 @@ Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites j
 | `honoraire_mode` | honoraireMode | text |  |
 | `honoraire_periodicite` | honorairePeriodicite | text |  |
 
-### `m11.avances` (collection « avances », 1 fiches)
+### `m11.avances` (collection « avances », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -738,7 +923,7 @@ Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites j
 | `service` | service | text |  |
 | `matricule` | matricule | text |  |
 
-### `m11.bulletins` (collection « bulletins », 1 fiches)
+### `m11.bulletins` (collection « bulletins », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -777,31 +962,31 @@ Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites j
 | `majoration` | majoration | integer |  |
 | `taux_horaire` | tauxHoraire | integer |  |
 
-### `m11.prets_etudes` (collection « pretsEtudes », 13 fiches)
+### `m11.prets_etudes` (collection « pretsEtudes », 12 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
+| `agent` | agent | text |  |
 | `objet` | objet | text |  |
 | `nature` | nature | text |  |
 | `statut` | statut | text |  |
 | `cree_le` | _creeLe | timestamptz |  |
-| `employe` | employe | text |  |
 | `montant` | montant | integer |  |
 | `cree_par` | _creePar | text |  |
 | `retenues` | retenues | jsonb |  |
 | `employe_id` | employeId | text |  |
-| `reference` | reference | text |  |
-| `modifie_le` | _modifieLe | timestamptz |  |
-| `modifie_par` | _modifiePar | text |  |
-| `nb_echeances` | nbEcheances | integer |  |
-| `premiere_echeance` | premiereEcheance | text |  |
-| `agent` | agent | text |  |
 | `matricule` | matricule | text |  |
+| `reference` | reference | text |  |
 | `date_accord` | dateAccord | date |  |
 | `autorise_par` | autorisePar | text |  |
+| `nb_echeances` | nbEcheances | integer |  |
+| `premiere_echeance` | premiereEcheance | text |  |
+| `employe` | employe | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
 
-### `m12.archives_exercice` (collection « archivesExercice », 4 fiches)
+### `m12.archives_exercice` (collection « archivesExercice », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -818,7 +1003,7 @@ Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites j
 | `reference` | reference | text |  |
 | `manifeste_empreinte` | manifesteEmpreinte | text |  |
 
-Table fille `m12.archives_exercice_fichiers` — 16 lignes : nom text, type text, taille integer, contenu text, empreinte text
+Table fille `m12.archives_exercice_fichiers` — 0 lignes : nom text, type text, taille integer, contenu text, empreinte text
 
 ### `m12.banques` (collection « banques », 4 fiches)
 
@@ -860,7 +1045,7 @@ Table fille `m12.archives_exercice_fichiers` — 16 lignes : nom text, type text
 | `libelle` | libelle | text |  |
 | `responsable` | responsable | text |  |
 
-### `m12.clotures` (collection « clotures », 6 fiches)
+### `m12.clotures` (collection « clotures », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -879,7 +1064,7 @@ Table fille `m12.archives_exercice_fichiers` — 16 lignes : nom text, type text
 | `empreinte` | empreinte | text |  |
 | `contre_passe` | contrePasse | jsonb |  |
 
-### `m12.comptes_resultat` (collection « comptesResultat », 2 fiches)
+### `m12.comptes_resultat` (collection « comptesResultat », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -911,7 +1096,7 @@ Table fille `m12.archives_exercice_fichiers` — 16 lignes : nom text, type text
 
 Table fille `m12.depenses_lignes` — 0 lignes : libelle text, montant integer, compte_charge text
 
-### `m12.echeances_fiscales` (collection « echeancesFiscales », 68 fiches)
+### `m12.echeances_fiscales` (collection « echeancesFiscales », 150 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -921,34 +1106,34 @@ Table fille `m12.depenses_lignes` — 0 lignes : libelle text, montant integer, 
 | `part` | part | integer |  |
 | `paye` | paye | boolean |  |
 | `statut` | statut | text |  |
-| `cree_le` | _creeLe | timestamptz |  |
 | `famille` | famille | text |  |
 | `libelle` | libelle | text |  |
 | `montant` | montant | text |  |
 | `periode` | periode | text |  |
-| `cree_par` | _creePar | text |  |
 | `echeance` | echeance | date |  |
 | `exercice` | exercice | integer |  |
 | `reportee` | reportee | boolean |  |
 | `reference` | reference | text |  |
-| `archive_le` | _archiveLe | timestamptz |  |
-| `modifie_le` | _modifieLe | timestamptz |  |
 | `validee_par` | valideePar | text |  |
-| `archive_par` | _archivePar | text |  |
-| `modifie_par` | _modifiePar | text |  |
 | `declaration` | declaration | text |  |
 | `periodicite` | periodicite | text |  |
-| `regeneree_le` | regenereeLe | timestamptz |  |
 | `date_paiement` | datePaiement | date |  |
-| `regeneree_par` | regenereePar | text |  |
-| `motif_archivage` | _motifArchivage | text |  |
 | `echeance_theorique` | echeanceTheorique | date |  |
-| `version_obligation` | versionObligation | date |  |
+| `version_obligation` | versionObligation | text |  |
 | `paye_le` | payeLe | date |  |
 | `paye_par` | payePar | text |  |
 | `quittance` | quittance | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `cree_par` | _creePar | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `archive_par` | _archivePar | text |  |
+| `regeneree_le` | regenereeLe | timestamptz |  |
+| `regeneree_par` | regenereePar | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
 
-### `m12.ecritures` (collection « ecritures », 596 fiches)
+### `m12.ecritures` (collection « ecritures », 519 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -963,24 +1148,24 @@ Table fille `m12.depenses_lignes` — 0 lignes : libelle text, montant integer, 
 | `journal` | journal | text |  |
 | `libelle` | libelle | text |  |
 | `origine` | origine | text |  |
-| `piece_id` | pieceId | text | → pieces (265 orphelin(s) sur 265, pas de FK) |
+| `piece_id` | pieceId | text | → pieces (259 orphelin(s) sur 259, pas de FK) |
 | `cree_par` | _creePar | text |  |
 | `piece_numero` | pieceNumero | text |  |
 | `compte_libelle` | compteLibelle | text |  |
 | `journal_libelle` | journalLibelle | text |  |
+| `valide_le` | valideLe | date |  |
+| `valide_par` | validePar | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
 | `centre_cout` | centreCout | text |  |
 | `piece_origine` | pieceOrigine | text |  |
 | `origine_cloture` | origineCloture | text |  |
 | `contre_passe_de` | contrePasseDe | text |  |
 | `archive_le` | _archiveLe | timestamptz |  |
-| `modifie_le` | _modifieLe | timestamptz |  |
-| `modifie_par` | _modifiePar | text |  |
 | `motif_archivage` | _motifArchivage | text |  |
 | `lettrage` | lettrage | text |  |
-| `valide_le` | valideLe | date |  |
-| `valide_par` | validePar | text |  |
 
-### `m12.exercices` (collection « exercices », 7 fiches)
+### `m12.exercices` (collection « exercices », 3 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -992,7 +1177,7 @@ Table fille `m12.depenses_lignes` — 0 lignes : libelle text, montant integer, 
 | `motif` | motif | text |  |
 | `source` | source | text |  |
 | `statut` | statut | text |  |
-| `valide_le` | valideLe | timestamptz |  |
+| `valide_le` | valideLe | date |  |
 | `valide_par` | validePar | text |  |
 | `an_numero` | anNumero | text |  |
 | `cl_numero` | clNumero | text |  |
@@ -1150,7 +1335,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `reference` | reference | text |  |
 | `responsable` | responsable | text |  |
 
-### `m13.file_sms` (collection « fileSms », 3 fiches)
+### `m13.file_sms` (collection « fileSms », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1164,7 +1349,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `cree_par` | _creePar | text |  |
 | `id_client` | idClient | text |  |
 | `reporte_a` | reporteA | text |  |
-| `patient_id` | patientId | text | → patients (FK) |
+| `patient_id` | patientId | text |  |
 | `raison_fin` | raisonFin | text |  |
 | `modifie_le` | _modifieLe | timestamptz |  |
 | `tentatives` | tentatives | integer |  |
@@ -1195,7 +1380,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `periodicite_mois` | periodiciteMois | integer |  |
 | `dernier_entretien` | dernierEntretien | date |  |
 
-### `m13.messages_sms` (collection « messagesSms », 17 fiches)
+### `m13.messages_sms` (collection « messagesSms », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1214,7 +1399,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `longueur` | longueur | integer |  |
 | `reporte_a` | reporteA | timestamptz |  |
 | `id_message` | idMessage | text |  |
-| `patient_id` | patientId | text | → patients (FK) |
+| `patient_id` | patientId | text |  |
 | `tentative` | tentative | integer |  |
 | `fournisseur` | fournisseur | text |  |
 | `motif_libelle` | motifLibelle | text |  |
@@ -1267,21 +1452,21 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
-| `role` | role | text |  |
-| `apres` | apres | text |  |
-| `avant` | avant | text |  |
+| `poste` | poste | text |  |
 | `action` | action | text |  |
 | `entite` | entite | text |  |
-| `statut` | statut | text |  |
-| `reference` | reference | text |  |
-| `horodatage` | horodatage | timestamptz |  |
-| `utilisateur` | utilisateur | text |  |
-| `poste` | poste | text |  |
 | `module` | module | text |  |
 | `succes` | succes | boolean |  |
 | `date_heure` | dateHeure | timestamptz |  |
+| `reference` | reference | text |  |
+| `utilisateur` | utilisateur | text |  |
 | `ancienne_valeur` | ancienneValeur | text |  |
 | `nouvelle_valeur` | nouvelleValeur | text |  |
+| `role` | role | text |  |
+| `apres` | apres | text |  |
+| `avant` | avant | text |  |
+| `statut` | statut | text |  |
+| `horodatage` | horodatage | timestamptz |  |
 
 ### `m14.comptes` (collection « comptes », 112 fiches)
 
@@ -1309,7 +1494,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `fichier` | fichier | text |  |
 | `generee_par` | genereePar | text |  |
 
-### `m14.notifications` (collection « notifications », 111 fiches)
+### `m14.notifications` (collection « notifications », 100 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1331,7 +1516,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `destinataire` | destinataire | text |  |
 | `ordonnance_id` | ordonnanceId | text |  |
 
-### `m14.politique_securite` (collection « politiqueSecurite », 1 fiches)
+### `m14.politique_securite` (collection « politiqueSecurite », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1369,7 +1554,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `couleur` | couleur | text |  |
 | `nouveau` | nouveau | boolean |  |
 
-### `m14.sessions_utilisateur` (collection « sessionsUtilisateur », 23 fiches)
+### `m14.sessions_utilisateur` (collection « sessionsUtilisateur », 1 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1394,7 +1579,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `cloture_motif` | clotureMotif | text |  |
 | `cloture_propre` | cloturePropre | boolean |  |
 | `cloture_par_identifiant` | clotureParIdentifiant | text |  |
-| `utilisateur_id` | utilisateurId | text | → utilisateurs (FK) |
+| `utilisateur_id` | utilisateurId | text |  |
 
 ### `m14.soignants` (collection « soignants », 15 fiches)
 
@@ -1413,7 +1598,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `personnel_id` | personnelId | text | → personnel (FK) |
 | `realise_imagerie` | realiseImagerie | boolean |  |
 
-### `m14.tentatives_connexion` (collection « tentativesConnexion », 1 fiches)
+### `m14.tentatives_connexion` (collection « tentativesConnexion », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1427,7 +1612,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `horodatage` | horodatage | timestamptz |  |
 | `identifiant` | identifiant | text |  |
 
-### `m14.utilisateurs` (collection « utilisateurs », 48 fiches)
+### `m14.utilisateurs` (collection « utilisateurs », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1575,32 +1760,29 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `centre_destination` | centreDestination | text |  |
 | `formation_sanitaire` | formationSanitaire | text |  |
 
-### `m1.patients` (collection « patients », 216 fiches)
+### `m1.patients` (collection « patients », 210 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
+| `age` | age | integer |  |
 | `nom` | nom | text |  |
 | `code` | code | text |  |
 | `sexe` | sexe | text |  |
+| `assure` | assure | boolean |  |
 | `prenom` | prenom | text |  |
 | `statut` | statut | text |  |
 | `cree_le` | _creeLe | timestamptz |  |
-| `cree_par` | _creePar | text |  |
-| `telephone` | telephone | text |  |
-| `date_naissance` | dateNaissance | date |  |
-| `consentement_sms` | consentementSms | boolean |  |
-| `modifie_le` | _modifieLe | timestamptz |  |
-| `modifie_par` | _modifiePar | text |  |
-| `consentement_sms_le` | consentementSmsLe | timestamptz |  |
-| `consentement_sms_par` | consentementSmsPar | text |  |
-| `age` | age | integer |  |
-| `assure` | assure | boolean |  |
 | `adresse` | adresse | text |  |
 | `externe` | externe | boolean |  |
+| `cree_par` | _creePar | text |  |
 | `assureur` | assureur | text |  |
 | `quartier` | quartier | text |  |
+| `telephone` | telephone | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
 | `date_creation` | dateCreation | date |  |
+| `date_naissance` | dateNaissance | date |  |
 | `age_reference_le` | ageReferenceLe | text |  |
 | `origine_dossier` | origineDossier | text |  |
 | `taux_prise_en_charge` | tauxPriseEnCharge | integer |  |
@@ -1610,7 +1792,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `assureur_nom` | assureurNom | text |  |
 | `numero_police` | numeroPolice | text |  |
 | `groupe_sanguin` | groupeSanguin | text |  |
-| `souscripteur_id` | souscripteurId | text |  |
+| `souscripteur_id` | souscripteurId | text | → souscripteurs (FK) |
 | `carte_expiration` | carteExpiration | date |  |
 | `antecedents_autres` | antecedentsAutres | text |  |
 | `personne_a_prevenir` | personneAPrevenir | text |  |
@@ -1618,9 +1800,12 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `categorie_assurance` | categorieAssurance | text |  |
 | `souscripteur` | souscripteur | text |  |
 | `matricule` | matricule | text |  |
-| `personnel_id` | personnelId | text |  |
+| `personnel_id` | personnelId | text | → personnel (FK) |
 | `fonction_agent` | fonctionAgent | text |  |
 | `prise_en_charge_personnel` | priseEnChargePersonnel | boolean |  |
+| `consentement_sms` | consentementSms | boolean |  |
+| `consentement_sms_le` | consentementSmsLe | timestamptz |  |
+| `consentement_sms_par` | consentementSmsPar | text |  |
 
 ### `m1.pieces` (collection « pieces », 90 fiches)
 
@@ -1721,6 +1906,9 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `regle_le` | regleLe | timestamptz |  |
 | `valide_le` | valideLe | timestamptz |  |
 | `execute_le` | executeLe | timestamptz |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `archive_par` | _archivePar | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
 
 ### `m2.dossiers_consultation` (collection « dossiersConsultation », 28 fiches)
 
@@ -1800,7 +1988,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `poste_label` | posteLabel | text |  |
 | `patient_code` | patientCode | text |  |
 
-### `m2.ordonnances` (collection « ordonnances », 134 fiches)
+### `m2.ordonnances` (collection « ordonnances », 132 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1835,9 +2023,11 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `statut_dispensation` | statutDispensation | text |  |
 | `dossier_consultation_id` | dossierConsultationId | text |  |
 
-Table fille `m2.ordonnances_analyses` — 329 lignes : code text, prix integer, delai text, categorie text, designation text, echantillon text
+Table fille `m2.ordonnances_analyses` — 327 lignes : code text, prix integer, delai text, categorie text, designation text, echantillon text
 
 Table fille `m2.ordonnances_medicaments` — 179 lignes : prix integer, duree text, total integer, unite text, produit text, quantite integer, posologie text, produit_id text
+
+Table fille `m2.ordonnances_actes` — 0 lignes : code text, prix integer, libelle text, secteur text, tarif_valide boolean
 
 ### `m2.pathologies` (collection « pathologies », 55 fiches)
 
@@ -1853,6 +2043,7 @@ Table fille `m2.ordonnances_medicaments` — 179 lignes : prix integer, duree te
 | `valide_le` | valideLe | date |  |
 | `valide_par` | validePar | text |  |
 | `notifiable` | notifiable | boolean |  |
+| `valide_role` | valideRole | text |  |
 
 ### `m2.prescriptions` (collection « prescriptions », 157 fiches)
 
@@ -2549,7 +2740,7 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 | `echantillon` | echantillon | text |  |
 | `tarif_provisoire` | tarifProvisoire | boolean |  |
 
-### `m5.demandes_analyses` (collection « demandesAnalyses », 357 fiches)
+### `m5.demandes_analyses` (collection « demandesAnalyses », 355 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -2562,14 +2753,26 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 | `analyse_` | analyse | text |  |
 | `origine` | origine | text |  |
 | `patient` | patient | text |  |
+| `recu_par` | recuPar | text |  |
 | `regle_le` | regleLe | timestamptz |  |
+| `saisi_le` | saisiLe | timestamptz |  |
+| `valeurs` | valeurs | jsonb |  |
+| `version` | version | integer |  |
 | `cree_par` | _creePar | text |  |
+| `resultat` | resultat | text |  |
+| `saisi_par` | saisiPar | text |  |
+| `valide_le` | valideLe | timestamptz |  |
+| `anormales` | anormales | integer |  |
 | `categorie` | categorie | text |  |
 | `date_heure` | dateHeure | timestamptz |  |
 | `patient_id` | patientId | text | → patients (FK) |
+| `preleve_le` | preleveLe | timestamptz |  |
 | `reference` | reference | text |  |
 | `modifie_le` | _modifieLe | timestamptz |  |
+| `conclusion` | conclusion | text |  |
 | `laborantin` | laborantin | text |  |
+| `preleve_par` | prelevePar | text |  |
+| `recu_labo_le` | recuLaboLe | timestamptz |  |
 | `modifie_par` | _modifiePar | text |  |
 | `analyse_code` | analyseCode | text |  |
 | `code_analyse` | codeAnalyse | text |  |
@@ -2577,31 +2780,20 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 | `etat_analyse` | etatAnalyse | text |  |
 | `patient_code` | patientCode | text |  |
 | `ordonnance_id` | ordonnanceId | text | → ordonnances (FK) |
+| `preleve_par_id` | preleveParId | text |  |
 | `prescripteur` | prescripteur | text |  |
 | `statut_paiement` | statutPaiement | text |  |
 | `ordonnance_numero` | ordonnanceNumero | text |  |
 | `secteur_demandeur` | secteurDemandeur | text |  |
 | `bloque_par_paiement` | bloqueParPaiement | boolean |  |
-| `dossier_consultation_id` | dossierConsultationId | text |  |
-| `recu_par` | recuPar | text |  |
-| `saisi_le` | saisiLe | timestamptz |  |
-| `valeurs` | valeurs | jsonb |  |
-| `version` | version | integer |  |
-| `resultat` | resultat | text |  |
-| `saisi_par` | saisiPar | text |  |
-| `valide_le` | valideLe | timestamptz |  |
-| `anormales` | anormales | integer |  |
-| `preleve_le` | preleveLe | timestamptz |  |
-| `conclusion` | conclusion | text |  |
-| `preleve_par` | prelevePar | text |  |
-| `recu_labo_le` | recuLaboLe | timestamptz |  |
-| `preleve_par_id` | preleveParId | text |  |
 | `qualite_validateur` | qualiteValidateur | text |  |
 | `resultat_structure` | resultatStructure | boolean |  |
 | `valide_technique_le` | valideTechniqueLe | timestamptz |  |
 | `valide_technique_par` | valideTechniquePar | text |  |
 | `valide_biologique_par` | valideBiologiquePar | text |  |
+| `dossier_consultation_id` | dossierConsultationId | text |  |
 | `facture_id` | factureId | text | → factures (FK) |
+| `residence` | residence | text |  |
 | `indication` | indication | text |  |
 | `hospitalise` | hospitalise | boolean |  |
 | `facture_numero` | factureNumero | text |  |
@@ -2682,6 +2874,7 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 | `accompagnement` | accompagnement | boolean |  |
 | `valide_le` | valideLe | date |  |
 | `valide_par` | validePar | text |  |
+| `valide_role` | valideRole | text |  |
 
 ### `m6.dispensations` (collection « dispensations », 0 fiches)
 
@@ -2928,7 +3121,7 @@ Table fille `m7.pv_receptions_lignes` — 0 lignes : ecart integer, unite text, 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 
-### `m8.factures` (collection « factures », 411 fiches)
+### `m8.factures` (collection « factures », 409 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -2938,16 +3131,26 @@ Table fille `m7.pv_receptions_lignes` — 0 lignes : ecart integer, unite text, 
 | `numero` | numero | text |  |
 | `statut` | statut | text |  |
 | `cree_le` | _creeLe | timestamptz |  |
+| `aib_taux` | aibTaux | integer |  |
 | `patient` | patient | text |  |
 | `cree_par` | _creePar | text |  |
 | `assureur` | assureur | text |  |
 | `reliquat` | reliquat | integer |  |
+| `aib_arrete` | aibArrete | boolean |  |
+| `aib_charge` | aibCharge | text |  |
 | `base_mecef` | baseMecef | integer |  |
+| `ifu_client` | ifuClient | text |  |
+| `mode_mecef` | modeMecef | text |  |
 | `montant_ht` | montantHT | integer |  |
 | `patient_id` | patientId | text | → patients (FK) |
 | `modifie_le` | _modifieLe | timestamptz |  |
+| `aib_montant` | aibMontant | integer |  |
+| `aib_version` | aibVersion | text |  |
+| `code_retour` | codeRetour | text |  |
 | `montant_ttc` | montantTTC | integer |  |
 | `modifie_par` | _modifiePar | text |  |
+| `acheteur_nom` | acheteurNom | text |  |
+| `mecef_simule` | mecefSimule | boolean |  |
 | `montant_brut` | montantBrut | integer |  |
 | `montant_paye` | montantPaye | integer |  |
 | `numero_mecef` | numeroMecef | text |  |
@@ -2956,11 +3159,17 @@ Table fille `m7.pv_receptions_lignes` — 0 lignes : ecart integer, unite text, 
 | `personnel_id` | personnelId | text | → personnel (FK) |
 | `statut_mecef` | statutMecef | text |  |
 | `total_remise` | totalRemise | integer |  |
+| `aib_situation` | aibSituation | text |  |
 | `mode_paiement` | modePaiement | text |  |
+| `normalise_par` | normalisePar | text |  |
 | `ordonnance_id` | ordonnanceId | text | → ordonnances (FK) |
+| `aib_date_bareme` | aibDateBareme | date |  |
 | `part_assurance` | partAssurance | integer |  |
 | `part_personnel` | partPersonnel | integer |  |
 | `statut_paiement` | statutPaiement | text |  |
+| `motif_refus_mecef` | motifRefusMecef | text |  |
+| `aib_charge_arretee` | aibChargeArretee | boolean |  |
+| `date_transmission` | dateTransmission | timestamptz |  |
 | `dernier_reglement` | dernierReglement | jsonb |  |
 | `ordonnance_numero` | ordonnanceNumero | text |  |
 | `taux_prise_en_charge` | tauxPriseEnCharge | integer |  |
@@ -2972,7 +3181,7 @@ Table fille `m7.pv_receptions_lignes` — 0 lignes : ecart integer, unite text, 
 | `motif_remise` | motifRemise | text |  |
 | `souscripteur` | souscripteur | text |  |
 
-Table fille `m8.factures_lignes` — 1034 lignes : id text, paye_le timestamptz, remise integer, montant integer, paye_par text, acte_code text, quantite integer, categorie text, demande_id text, produit_id text, designation text, montant_brut integer, motif_remise text, part_patient integer, montant_regle integer, part_assureur integer, prix_unitaire integer, part_personnel integer, statut_paiement text, prix_unitaire_net integer, demande_imagerie_id text, taux_remise integer
+Table fille `m8.factures_lignes` — 1032 lignes : id text, paye_le timestamptz, remise integer, montant integer, paye_par text, acte_code text, quantite integer, categorie text, demande_id text, produit_id text, designation text, montant_brut integer, motif_remise text, part_patient integer, montant_regle integer, part_assureur integer, prix_unitaire integer, part_personnel integer, statut_paiement text, prix_unitaire_net integer, demande_imagerie_id text, taux_remise integer
 
 ### `m9.assureurs` (collection « assureurs », 13 fiches)
 
@@ -3023,7 +3232,7 @@ Table fille `m8.factures_lignes` — 1034 lignes : id text, paye_le timestamptz,
 
 Table fille `m9.factures_mere_souscripteurs` — 31 lignes : montant integer, patient integer, assureur integer, nb_factures integer, souscripteur text
 
-### `m9.garanties` (collection « garanties », 20 fiches)
+### `m9.garanties` (collection « garanties », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -3038,7 +3247,7 @@ Table fille `m9.factures_mere_souscripteurs` — 31 lignes : montant integer, pa
 | `assureur` | assureur | text |  |
 | `categorie` | categorie | text |  |
 | `unite_plafond` | unitePlafond | text |  |
-| `souscripteur_id` | souscripteurId | text | → souscripteurs (FK) |
+| `souscripteur_id` | souscripteurId | text |  |
 
 ### `m9.souscripteurs` (collection « souscripteurs », 9 fiches)
 
@@ -3076,7 +3285,7 @@ Table fille `m9.factures_mere_souscripteurs` — 31 lignes : montant integer, pa
 | `telephone` | telephone | text |  |
 | `interlocuteur` | interlocuteur | text |  |
 
-### `socle.taches` (collection « taches », 454 fiches)
+### `socle.taches` (collection « taches », 450 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -3125,7 +3334,7 @@ Table fille `m9.factures_mere_souscripteurs` — 31 lignes : montant integer, pa
 | `observation` | observation | text |  |
 | `patient_code` | patientCode | text |  |
 
-### `sup.support` (collection « support », 2 fiches)
+### `sup.support` (collection « support », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|

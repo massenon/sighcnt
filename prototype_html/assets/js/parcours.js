@@ -103,6 +103,11 @@
    * ======================================================================== */
   function colTarifs() { return S.collection('tarifs', { module: 'CFG', entite: 'prestation tarifée', prefix: 'TRF' }); }
   function colVersionsTarif() { return S.collection('versionsTarif', { module: 'CFG', entite: 'version de prix', prefix: 'VTR' }); }
+  /* Les trois collections de LECTURE gardent leur module au schéma relationnel (le générateur lit la déclaration dans les sources) : leurs écrans d'édition ont quitté
+     le code, la déclaration reste ici. */
+  function colActes() { return S.collection('actes', { module: 'CFG', entite: 'acte', prefix: 'ACT' }); }
+  function colAnalyses() { return S.collection('analyses', { module: 'M5', entite: 'analyse', prefix: 'ANA' }); }
+  function colCatalogueTarifs() { return S.collection('catalogueTarifs', { module: 'CFG', entite: 'tarif', prefix: 'TAR' }); }
   function tarifALaDate(code, date, assure) {
     var TA = D.TARIFS, h = TA && TA.lire();
     if (!h) return { absent: true, montant: null, code: code, motif: 'Le référentiel de prix n’est pas chargé.' };
@@ -3197,6 +3202,7 @@
     repartir: repartir, garantiesDe: garantiesDe, souscripteurDe: souscripteurDe,
     carteValide: carteValide, categoriser: categoriser, libelleUnite: libelleUnite,
     colTarifs: colTarifs, colVersionsTarif: colVersionsTarif,
+    colActes: colActes, colAnalyses: colAnalyses, colCatalogueTarifs: colCatalogueTarifs,
     ROLES_VALIDATION_TARIFS: ROLES_VALIDATION_TARIFS, peutDeciderTarif: peutDeciderTarif, peutProposerTarif: peutProposerTarif,
     proposerTarif: proposerTarif, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
     tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate,
