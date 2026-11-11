@@ -16,12 +16,17 @@ Source : `docs/prd/PRD-IMP-bouton-importer-par-ecran.md` (décisions de la Direc
 ### Lot T4 : le jeu `tarifs` [FAIT 11/11/2026, maquette]
 - Fichiers : `assets/js/parcours.js` (`PR.evaluerProposition`, `proposerTarif` en mode essai et par l'import), `assets/js/modules/import.js` (jeu `tarifs`, `analyses-modele`), `assets/js/modules/configuration.js` (bouton sur `cfg-tarifs`).
 - Preuve : scénarios Vague 124 (décisions Oui, vide, Non, inchangée, tiret, zéro, NC, tout ou rien) et 125 (gestionnaire de stock, prix déjà utilisé, annulation). Voir E2416, E2417.
-### Lot IMP-B : stock et autres référentiels [À FAIRE]
-- `produits-referentiel`, `emplacements`, `transfert-lignes`, `stock-detail-initial`, `inventaire-comptage`, `tarifs-produits` (prix d'achat, T5), `couvertures-assurance`, `garanties`, `centres-couts`, `natures-facture`, `catalogue-imagerie`, `unites-labo`, `prestataires`, `immobilisations`, `budgets`, `courriers`. Chaque jeu s'ajoute à `N.IMPORTS` et au moteur : `gen-pages` refuse l'un sans l'autre.
+### Lot IMP-B1 : les cinq jeux du stock [FAIT 11/11/2026, maquette]
+- Jeux : `produits-referentiel` (hôte `m6-produits`), `emplacements` (`m6-etiquetage`), `stock-detail-initial` (`m6-stock-detail`, décision I6), `transfert-lignes` (`m6-transferts`), `inventaire-comptage` (`m6-inventaire`, décision I13). Détenus par le gestionnaire de stock, la DAF et l'administrateur ; `ignorer` pour les deux premiers (I8).
+- Fichiers : `assets/js/nav.js` (`N.IMPORTS`, cinq pages `imp-*`), `assets/js/modules/import.js` (les cinq jeux, motifs fixes, colonne de détail de la vérification), `assets/js/parcours.js` (fabriques uniques `PR.emettreTransfert`, `PR.controlerTransfert`, `PR.refusLigneTransfert`, `PR.lotFefo`, `PR.regulariserInventaire`), `assets/js/modules/m6-stock.js` (le geste du transfert et la feuille d'inventaire passent par ces fabriques, boutons des hôtes, régularisation d'un comptage importé).
+- Preuve : scénarios Vague 127 (droit, bouton, pages, ruban, moteur), 128 (référentiel produits), 129 (emplacements), 130 (stock détail initial), 131 (bon de transfert comparé au geste), 132 (comptage d'inventaire) ; mutations et mesures : voir E2434 et E2435 ; hypothèses : E2428 à E2433.
+### Lot IMP-B2 : les autres référentiels [À FAIRE]
+- `tarifs-produits` (prix d'achat, T5, après IMP-B1), `couvertures-assurance`, `garanties`, `centres-couts`, `natures-facture`, `catalogue-imagerie`, `unites-labo`, `prestataires`, `immobilisations`, `budgets`, `courriers`. Chaque jeu s'ajoute à `N.IMPORTS` et au moteur : `gen-pages` refuse l'un sans l'autre.
 ### Lot IMP-C : le poste Flutter et la demande d'import fileul vers mère [À FAIRE, derrière la maquette]
 - Section `import` de `rbac.json` lue par la matrice du poste, `BoutonImporter`, jeux portés dans `packages/domaine`, vecteurs tirés de la maquette ; le poste du gestionnaire de stock est un FILEUL (réponse Q5) : demande d'import vérifiée (collection `demandesImport`, famille B) appliquée par la mère.
 
 ## Commandes
+- `node prototype_html/build/test-fonctionnel.js --seul=Vague_127|Vague_128|Vague_129|Vague_130|Vague_131|Vague_132` : les cinq jeux du stock (lot IMP-B1).
 - `node prototype_html/build/test-import.js` : non-régression des jeux (banc isolé : `SIGH_PORT_PHP`, `SIGH_BASE_TEST`, `SIGH_PORT_TEST`, `CHROME_PATH`).
 - `node prototype_html/build/test-fonctionnel.js --seul=Vague_121|Vague_122|Vague_123|Vague_124|Vague_125`
 - `node prototype_html/build/audit-rbac.js --pages=m7-fournisseurs,imp-fournisseurs` (la sonde du droit d'import s'exécute pour les hôtes et pages de jeu cités)
