@@ -57,7 +57,7 @@ const MAGASIN = {
 
 /* Un cas : [id, jeu, lignes d'objets {cle: valeur}, enteteSansCle?]. `null` dans une ligne = cellule vide. */
 const GS = (o) => Object.assign({ code: null, designation: null, categorie: null, unite: null, quantite: null, lot: null, peremption: null, prixRevient: null, seuil: null, emplacement: null, fournisseur: null }, o);
-const PA = (o) => Object.assign({ code: null, nom: null, prenom: null, sexe: null, dateNaissance: null, age: null, telephone: null, quartier: null, adresse: null, personneAPrevenir: null, groupeSanguin: null, assureur: null, numeroPolice: null, dateCreation: null }, o);
+const PA = (o) => Object.assign({ code: null, nom: null, prenom: null, sexe: null, dateNaissance: null, age: null, telephone: null, quartier: null, adresse: null, personneAPrevenir: null, assureur: null, numeroPolice: null, dateCreation: null }, o);
 const SO = (o) => Object.assign({ date: '2026-01-01', compte: null, libelle: null, tiers: null, debit: null, credit: null }, o);
 const AC = (o) => Object.assign({ code: null, libelle: null, secteur: 'Médecine générale', prixNonAssure: null, prixAssure: null, codeTarif: null }, o);
 const PE = (o) => Object.assign({ matricule: null, nom: null, prenom: null, sexe: 'F', fonction: 'infirmier', poste: 'Infirmière', service: 'Soins infirmiers', categorie: null, dateEmbauche: null, telephone: null, cnss: null, situation: null, salaireBase: null }, o);
@@ -115,14 +115,8 @@ const CAS = [
   ['so-compte-inconnu', 'soldes-ouverture', [SO({ compte: '999999', debit: 1000 }), SO({ compte: '101100', credit: 1000 })]],
   ['so-an-existant', 'soldes-ouverture', [SO({ date: '2025-01-01', compte: '571000', debit: 10 }), SO({ date: '2025-01-01', compte: '101100', credit: 10 })]],
   ['so-dates-multiples', 'soldes-ouverture', [SO({ compte: '571000', debit: 10 }), SO({ date: '2026-01-02', compte: '101100', credit: 10 })]],
-  ['ac-valide', 'actes', [
-    AC({ code: 'X1', libelle: 'Acte A', prixNonAssure: 5000, prixAssure: 3000, codeTarif: 'T1' }),
-    AC({ code: 'X2', libelle: 'Acte B', secteur: 'Chirurgie', prixNonAssure: 8000, prixAssure: 'NC' }),
-    AC({ code: 'X3', libelle: 'Acte C', prixNonAssure: '-', prixAssure: '-' }),
-  ]],
-  ['ac-nc-non-assure', 'actes', [AC({ code: 'X4', libelle: 'Acte D', prixNonAssure: 'NC', prixAssure: 3000 })]],
-  ['ac-type-invalide', 'actes', [AC({ code: 'X5', libelle: 'Acte E', prixNonAssure: '12,5', prixAssure: 3000 })]],
-  ['ac-secteur-inconnu', 'actes', [AC({ code: 'X6', libelle: 'Acte F', secteur: 'Astrologie', prixNonAssure: 1000, prixAssure: 500 })]],
+  /* Les cas du jeu `actes` (prix) quittent ce tirage : le jeu s'appelle `tarifs` (lot IMP-A), il écrit par PR.proposerTarif sur le référentiel de prix, que le magasin contrôlé
+     d'ici ne pose pas ; ses preuves sont les scénarios Vague 124 et 125 de test-fonctionnel.js. Le port Dart de ce jeu est du lot IMP-C. */
   ['pe-valide', 'personnel', [
     PE({ matricule: '45', nom: 'ADJOVI', prenom: 'Marie', categorie: 'E3-2', dateEmbauche: '2024-03-01', telephone: '0197000020', cnss: '294011541', situation: 'Marié(e)', salaireBase: 150000 }),
     PE({ matricule: '46', nom: 'HOUNKPATIN', prenom: 'Jean', sexe: 'M', fonction: 'stock', poste: 'Magasinier', service: 'Pharmacie' }),
@@ -144,8 +138,8 @@ const CAS = [
   ['pc-valide', 'plan-comptable', [PC({ num: '605000', libelle: 'Fournitures consommables', journal: 'ACH' }), PC({ num: '6051', libelle: 'Eau' })]],
   ['pc-doublon', 'plan-comptable', [PC({ num: '571000', libelle: 'Caisse bis' })]],
   ['pc-numero-invalide', 'plan-comptable', [PC({ num: '05', libelle: 'Trop court' })]],
-  ['an-valide', 'analyses', [AN({ code: 'HBA1C', designation: 'Hémoglobine glyquée', section: 'Biochimie', echantillon: 'Sang total (EDTA)', delai: '24 h' })]],
-  ['an-section-inconnue', 'analyses', [AN({ code: 'GLY', designation: 'Glycémie', section: 'Magie' })]],
+  ['an-valide', 'analyses-modele', [AN({ code: 'HBA1C', designation: 'Hémoglobine glyquée', section: 'Biochimie', echantillon: 'Sang total (EDTA)', delai: '24 h' })]],
+  ['an-section-inconnue', 'analyses-modele', [AN({ code: 'GLY', designation: 'Glycémie', section: 'Magie' })]],
 ];
 
 (async () => {
@@ -207,7 +201,7 @@ const CAS = [
         };
       });
       /* 3. Application, relevé des fiches, annulation. L'ordre fixe les références de lot. */
-      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'ac-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide'];
+      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide'];
       out.applications = [];
       const refus = I.analyserOctets('grand-stock', Uint8Array.from(out.fixtures['gs-quantite-negative']), 'gs-quantite-negative.xlsx');
       const lotRefus = I.consigner(I.jeu('grand-stock'), refus);

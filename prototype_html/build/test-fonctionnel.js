@@ -350,6 +350,26 @@ async function viderMessages(page) {
   const texteCorps = () => page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
 
 
+  /* ==========================================================================
+   * Vagues 124 et 125 : LOT IMP-A, jeu `tarifs` (PRD-TARIFS 7.2, T4). Un seul jeu, écrit par le MÊME chemin que la saisie à l'écran (PR.proposerTarif) :
+   * Oui (par un détenteur du droit de décider : version validée ; sans ce droit : proposition + alerte), Non avec motif (aucune version, pas une erreur), ligne
+   * identique « inchangée » comptée, tiret, zéro, NC en non assuré, prix déjà utilisé, tout ou rien sur les erreurs, ligne à ligne sur les décisions.
+   * ======================================================================== */
+  const ENT_TARIFS = ['Code', 'Désignation', 'Famille', 'Secteur', 'Prix non assuré', 'Prix assuré', 'Couverture', 'Date d’effet', 'Valider (Oui/Non)', 'Motif', 'Source'];
+  const cibleTarifs = () => page.evaluate(() => {
+    /* trois prestations existantes à prix assuré chiffré, sans proposition en attente, jamais portées par une pièce à cette date lointaine */
+    const D = window.SIGH.data, PR = window.SIGH.parcours, h = D.TARIFS.lire(), out = [];
+    h.tarifs.filter((p) => p.statut !== 'archive' && p.famille !== 'LABO' && p.famille !== 'IMAGERIE' && !/^ZZ/.test(p.code)).forEach((p) => {
+      if (out.length >= 5) return;
+      const s = D.TARIFS.instantane(h, p, '2027-03-01');
+      if (!s || s.etatAssure !== 'montant' || !s.na || !s.pa) return;
+      if ((h.vers[p.code] || []).some((v) => v.statut === 'propose')) return;
+      if (PR.usagesTarif(p, '2027-03-01').length) return;
+      out.push({ code: p.code, na: s.na, pa: s.pa });
+    });
+    return out;
+  });
+
   console.log('\nExécution des parcours fonctionnels…\n');
 
   /* =========================================================================
@@ -20463,7 +20483,7 @@ async function viderMessages(page) {
     await cliquer('Tailles maximales', '[role="tab"], button');
     await pause(500);
     const tab = await page.evaluate(() => ({ crayons: [...document.querySelectorAll('#page-content button[title="Régler la taille maximale"]')].length, texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' ') }));
-    verifier('L’onglet « Tailles maximales » propose le réglage à la supervision (un crayon par jeu), avec un défaut', tab.crayons >= 8 && /25\s?000/.test(tab.texte), JSON.stringify({ c: tab.crayons, t: tab.texte.slice(0, 200) }));
+    verifier('L’onglet « Tailles maximales » propose le réglage à la supervision (un crayon par jeu), avec un défaut', tab.crayons >= 8 && /5\D?000/.test(tab.texte), JSON.stringify({ c: tab.crayons, t: tab.texte.slice(0, 200) }));
     const reglage = await page.evaluate(() => { const I = window.SIGH.importer; const r = I.definirBorne('fournisseurs', 2, 'Sonde 123 : borne de test'); return { r: r.ok, borne: I.borneDe('fournisseurs'), enBase: window.SIGH.store.reglage('importBornes', null) }; });
     await ouvrir('imp-fournisseurs.html');
     await televerserBanc(await classeurBanc('f123-gros.xlsx', [ENT_F, ['TG1', 'Un', '', '', '', '', '', '', '', ''], ['TG2', 'Deux', '', '', '', '', '', '', '', ''], ['TG3', 'Trois', '', '', '', '', '', '', '', '']]));
@@ -20525,6 +20545,156 @@ async function viderMessages(page) {
       annule === 'LOT_D_UN_AUTRE' && annuleDa.ok === true, JSON.stringify({ annule: annule, annuleDa: annuleDa }));
     const e123 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
     verifier('Aucune erreur JavaScript', e123.length === 0, e123.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 124 : IMP-A le jeu « tarifs » (un seul jeu, PR.proposerTarif) : la vérification montre ancien prix, nouveau et variation ; Oui d’un détenteur du droit de décider = version validée, Oui sans ce droit = proposition, Non avec motif = aucune version, ligne identique = inchangée comptée, tout ou rien sur les erreurs');
+    erreursJS = [];
+    await poserSessionServeur(roleImp('da', 'DAF124'));
+    await ouvrir('imp-actes.html');
+    const cibles = await cibleTarifs();
+    verifier('Banc : cinq prestations existantes se prêtent à l’essai', cibles.length === 5, JSON.stringify(cibles));
+    const [c2, c3, c4, c5, c6] = cibles;
+    const avantVersions = await page.evaluate(() => window.SIGH.store.collection('versionsTarif').all().length);
+    const DATE = '2027-03-01';
+    /* -- (1) Erreurs : le fichier ENTIER est refusé, et nomme chaque refus ; rien n'est écrit -- */
+    await televerserBanc(await classeurBanc('t124-erreurs.xlsx', [ENT_TARIFS,
+      [c2.code, '', '', '', c2.na + 100, c2.pa, '', DATE, '', 'Sonde 124', ''],
+      [c3.code, '', '', '', '-', c3.pa, '', DATE, '', 'Sonde 124', ''],
+      [c4.code, '', '', '', 0, c4.pa, '', DATE, '', 'Sonde 124', ''],
+      [c5.code, '', '', '', 'NC', c5.pa, '', DATE, '', 'Sonde 124', ''],
+      [c6.code, '', '', '', c6.na + 100, c6.pa, '', '2020-01-01', '', 'Sonde 124', ''],
+      ['ZZ124X', '', '', '', 5000, 3000, '', DATE, '', 'Sonde 124', '']]));
+    const erreurs = await page.evaluate(() => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 't124-erreurs.xlsx')[0]; return l ? { etat: l.etat, codes: (l.erreurs || []).map((e) => e.code), ecrits: l.ecrits.length } : null; });
+    const apresErreurs = await page.evaluate(() => window.SIGH.store.collection('versionsTarif').all().length);
+    verifier('Tout ou rien sur les ERREURS : le tiret au prix non assuré (PRIX_ABSENT), le zéro (PRIX_ZERO), NC en colonne non assuré (NC_INTERDIT), une date passée (DATE_PASSEE) et un code inconnu sans désignation sont nommés ; le fichier est refusé et rien n’est écrit',
+      erreurs && erreurs.etat === 'refuse' && ['PRIX_ABSENT', 'PRIX_ZERO', 'NC_INTERDIT', 'DATE_PASSEE', 'IDENTITE_INCOMPLETE'].every((c) => erreurs.codes.indexOf(c) >= 0) && erreurs.ecrits === 0 && apresErreurs === avantVersions, JSON.stringify({ erreurs, avantVersions, apresErreurs }));
+
+    /* -- (2) Les décisions, ligne à ligne : Oui (nouvelle prestation), vide, Non, identique, nouvelle prestation proposée -- */
+    await televerserBanc(await classeurBanc('t124-decisions.xlsx', [ENT_TARIFS,
+      ['ZZ124V', 'Prestation de sonde validée', 'Actes', '', 7000, 5000, 'Toutes compagnies', DATE, 'Oui', 'Sonde 124 : Oui', 'Grille de sonde'],
+      [c2.code, '', '', '', c2.na + 500, c2.pa + 300, '', DATE, '', 'Sonde 124 : vide', ''],
+      [c3.code, '', '', '', c3.na + 900, c3.pa, '', DATE, 'Non', 'Sonde 124 : refusé par l’importateur', ''],
+      [c4.code, '', '', '', c4.na, c4.pa, '', DATE, 'Oui', 'Sonde 124 : identique', ''],
+      ['ZZ124P', 'Prestation de sonde proposée', 'Actes', '', 8000, 'UNIQUE', '', DATE, '', 'Sonde 124 : proposition', '']]));
+    const verif = await page.evaluate(() => {
+      const t = document.body.innerText.replace(/\s+/g, ' ');
+      return { texte: t, entetes: [...document.querySelectorAll('[role="dialog"] th, #page-content th')].map((x) => x.textContent.trim()) };
+    });
+    verifier('La vérification affiche, pour chaque ligne qui change, l’ANCIEN prix, le NOUVEAU et la VARIATION (colonnes dédiées, pourcentage lisible)',
+      ['Ancien prix', 'Nouveau prix', 'Variation', 'Décision'].every((c) => verif.entetes.indexOf(c) >= 0) && /nouvelle prestation/.test(verif.texte) && /\d+(,\d)? %/.test(verif.texte), JSON.stringify(verif.entetes));
+    verifier('Le résumé compte une ligne INCHANGÉE et une ligne « Non » (jamais une erreur) ; le fichier est conforme et dit ce que le Oui devient pour ce profil',
+      /1 inchangée\(s\)/.test(verif.texte) && /1 « Non »/.test(verif.texte) && /Analyse conforme/.test(verif.texte) && /Oui : prestation créée, version 1 validée/.test(verif.texte) && /Proposition \(alerte Oui\/Non\)/.test(verif.texte), verif.texte.slice(0, 300));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1500);
+    const R = await page.evaluate((c2c, c3c, c4c, DATE) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, vs = S.collection('versionsTarif').all();
+      const lot = window.SIGH.importer.lots().all().filter((x) => x.fichier === 't124-decisions.xlsx')[0];
+      const de = (c) => vs.filter((v) => v.code === c);
+      const v1 = de('ZZ124V')[0], p2 = de(c2c).filter((v) => v.origine === 'import')[0];
+      const audit = (S.db ? S.db().audit : []);
+      return { lot: lot ? { etat: lot.etat, ref: lot.reference, nbNon: lot.nbNon, nbInchanges: lot.nbInchanges, ecrits: lot.ecrits.length } : null,
+        v1: v1 ? [v1.statut, v1.origine, v1.lot, v1.dateEffet, /Validée à l’import/.test(v1.motifDecision || '')] : null,
+        ident: S.collection('tarifs').all().filter((p) => p.code === 'ZZ124V' || p.code === 'ZZ124P').map((p) => p.code).sort(),
+        p2: p2 ? [p2.statut, p2.origine, p2.lot] : null, nonC3: de(c3c).filter((v) => v.origine === 'import').length, inchangeC4: de(c4c).filter((v) => v.origine === 'import').length,
+        zzP: de('ZZ124P').map((v) => [v.statut, v.etatAssure]),
+        aujourdhuiV1: PR.tarifALaDate('ZZ124V', null, false).absent === true, auDate: PR.tarifALaDate('ZZ124V', DATE, false).montant,
+        alerte: window.SIGH.notifications.collecter({ poste: 'da', detaille: true }).filter((n) => n.source === 'prix_a_valider').length,
+        journal: (window.SIGH.store.audit ? window.SIGH.store.audit() : []).some((a) => /validation à l’import/.test(a.action || '')) };
+    }, c2.code, c3.code, c4.code, DATE);
+    verifier('Oui par un détenteur du droit de décider (la DAF) : la prestation est créée et sa version 1 est VALIDÉE d’emblée, tracée « validée à l’import IMP-… », effective à sa date d’effet (rien aujourd’hui, 7 000 au 01/03/2027)',
+      R.lot && R.lot.etat === 'applique' && R.v1 && R.v1[0] === 'valide' && R.v1[1] === 'import' && R.v1[2] === R.lot.ref && R.v1[3] === DATE && R.v1[4] && R.aujourdhuiV1 && R.auDate === 7000, JSON.stringify(R));
+    verifier('Une ligne au Oui/Non vide devient une PROPOSITION (version « propose », origine import, lot nommé) et déclenche l’alerte Oui/Non ; la nouvelle prestation proposée naît avec sa fiche d’identité',
+      R.p2 && R.p2[0] === 'propose' && R.p2[1] === 'import' && R.p2[2] === R.lot.ref && R.zzP.length === 1 && R.zzP[0][0] === 'propose' && R.zzP[0][1] === 'unique' && R.ident.join() === 'ZZ124P,ZZ124V' && R.alerte >= 1, JSON.stringify(R));
+    verifier('Une ligne « Non » ne crée AUCUNE version et n’est pas une erreur ; une ligne identique au prix en vigueur est « inchangée » : comptée, aucune version ; le lot porte les deux comptes et ses cinq fiches (deux prestations créées, trois versions)',
+      R.nonC3 === 0 && R.inchangeC4 === 0 && R.lot.nbNon === 1 && R.lot.nbInchanges === 1 && R.lot.ecrits === 5, JSON.stringify(R));
+    const rap = await page.evaluate(() => { const I = window.SIGH.importer, l = I.lots().all().filter((x) => x.fichier === 't124-decisions.xlsx')[0]; const c = window.SIGH.xlsx.lire(I.rapport(l, I.jeu('tarifs')));
+      return c.feuilles.map((f) => f.lignes.map((x) => x.join(' ')).join(' | ')).join(' // '); });
+    verifier('Le Non est consigné au rapport avec son motif (colonne motif de la ligne) ; la ligne inchangée aussi', /LIGNE_NON_APPLIQUEE/.test(rap) && /PRIX_INCHANGE/.test(rap) && /refusé par l’importateur/.test(rap), rap.slice(0, 300));
+
+    /* -- (3) Un Non SANS motif est une erreur du fichier (tout ou rien, les autres lignes valides ne s’écrivent pas) -- */
+    await ouvrir('imp-actes.html');
+    const avant3 = await page.evaluate(() => window.SIGH.store.collection('versionsTarif').all().length);
+    await televerserBanc(await classeurBanc('t124-nonsansmotif.xlsx', [ENT_TARIFS,
+      [c5.code, '', '', '', c5.na + 100, c5.pa, '', DATE, '', 'Sonde 124 : valide mais le fichier est refusé', ''],
+      [c6.code, '', '', '', c6.na + 100, c6.pa, '', DATE, 'Non', '', '']]));
+    const nsm = await page.evaluate(() => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 't124-nonsansmotif.xlsx')[0]; return { etat: l && l.etat, codes: l ? (l.erreurs || []).map((e) => e.code) : [], versions: window.SIGH.store.collection('versionsTarif').all().length }; });
+    verifier('Un Non sans motif refuse le fichier (MOTIF_REQUIS) et la ligne valide voisine n’est PAS écrite (tout ou rien)', nsm.etat === 'refuse' && nsm.codes.indexOf('MOTIF_REQUIS') >= 0 && nsm.versions === avant3, JSON.stringify({ nsm, avant3 }));
+
+    /* -- (4) Le tiret au prix ASSURÉ n'est jamais zéro : avertissement, proposition à assuré « non renseigné » -- */
+    await televerserBanc(await classeurBanc('t124-tiret.xlsx', [ENT_TARIFS, [c5.code, '', '', '', c5.na + 200, '-', '', DATE, '', 'Sonde 124 : tiret assuré', '']]));
+    const tir = await texteCorps();
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1200);
+    const tiret = await page.evaluate((c) => window.SIGH.store.collection('versionsTarif').all().filter((v) => v.code === c && v.origine === 'import').map((v) => [v.statut, v.etatAssure, v.prixAssure, v.prixNonAssure]), c5.code);
+    verifier('Un tiret en colonne assurée est un avertissement (jamais un zéro) : la proposition porte « non renseignée » et aucun montant assuré',
+      /PRIX_MANQUANT|prix assuré manquant/.test(tir) && tiret.length === 1 && tiret[0][0] === 'propose' && tiret[0][1] === 'manquant' && tiret[0][2] === null && tiret[0][3] === c5.na + 200, JSON.stringify(tiret));
+    const e124 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e124.length === 0, e124.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 125 : IMP-A le gestionnaire de stock importe des prix depuis son poste (I4) : son Oui vaut proposition et déclenche l’alerte, la saisie à l’écran lui reste fermée ; prix déjà utilisé refusé (tarif_deja_utilise) ; annulation d’un lot de propositions par retrait, d’une version validée refusée');
+    erreursJS = [];
+    await poserSessionServeur(roleImp('stock', 'STOCK125'));
+    await ouvrir('cfg-tarifs.html');
+    const ferme = await page.evaluate(() => /error-403/.test(location.pathname));
+    verifier('Le gestionnaire de stock n’ouvre pas « Tarifs et prix » (CFG reste fermé) : l’import des prix se fait par sa rangée « Importation de données »', ferme, '');
+    await ouvrir('imp-actes.html');
+    const page_ = await page.evaluate(() => ({ televerser: [...document.querySelectorAll('#page-content button')].some((b) => /Téléverser un fichier/.test(b.textContent)), droit: window.SIGH.nav.droitImport('stock', 'tarifs').importer,
+      saisie: window.SIGH.parcours.proposerTarif({ code: 'CONS-GEN', prixNonAssure: 6000, etatAssure: 'unique', dateEffet: '2027-03-02', motif: 'Sonde 125' }).code }));
+    verifier('Il détient l’import des prix (bouton « Téléverser » sur la page du jeu) mais PAS la saisie à l’écran : proposer hors import est refusé en le nommant (PROPOSITION_RESERVEE)',
+      page_.televerser && page_.droit && page_.saisie === 'PROPOSITION_RESERVEE', JSON.stringify(page_));
+    const cibles = await cibleTarifs();
+    const [c1, c2, c3] = cibles;
+    const DATE = '2027-03-01';
+    await televerserBanc(await classeurBanc('t125-stock.xlsx', [ENT_TARIFS,
+      [c1.code, '', '', '', c1.na + 400, c1.pa + 200, '', DATE, 'Oui', 'Sonde 125 : le Oui du stock', 'Fiche fournisseur'],
+      [c2.code, '', '', '', c2.na + 400, c2.pa, '', DATE, '', 'Sonde 125', '']]));
+    const t125 = await texteCorps();
+    verifier('La vérification DIT, ligne par ligne, que le Oui d’un profil sans droit de décider vaut proposition (avertissement nommé, alerte annoncée)',
+      /votre Oui vaut proposition/.test(t125) && /Proposition \(votre Oui vaut proposition\)/.test(t125) && /Analyse conforme/.test(t125), t125.slice(0, 300));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1500);
+    const S125 = await page.evaluate((a, b) => { const S = window.SIGH.store, vs = S.collection('versionsTarif').all().filter((v) => v.origine === 'import' && (v.code === a || v.code === b));
+      const lot = window.SIGH.importer.lots().all().filter((x) => x.fichier === 't125-stock.xlsx')[0];
+      return { vs: vs.map((v) => [v.code, v.statut, v.proposePar]), lot: lot ? { etat: lot.etat, ref: lot.reference, ecrits: lot.ecrits.length } : null,
+        alerte: window.SIGH.notifications.collecter({ poste: 'da', detaille: true }).filter((n) => n.source === 'prix_a_valider').length }; }, c1.code, c2.code);
+    verifier('Son Oui est écrit en PROPOSITION (jamais validée : il n’a pas le droit de décider), au nom du gestionnaire, et l’alerte Oui/Non de la DAF et de la Direction l’annonce',
+      S125.lot && S125.lot.etat === 'applique' && S125.vs.length === 2 && S125.vs.every((v) => v[1] === 'propose' && /STOCK125/.test(v[2])) && S125.alerte >= 1, JSON.stringify(S125));
+    const enAttente = await page.evaluate((a) => { const PR = window.SIGH.parcours; return PR.proposerTarif({ code: a, prixNonAssure: 99999, etatAssure: 'unique', dateEffet: '2027-03-05', motif: 'Sonde 125', import: { jeu: 'tarifs' }, essai: true }).code; }, c1.code);
+    verifier('Une seule proposition en attente par prestation : une seconde ligne sur la même prestation est refusée en la nommant (CHANGEMENT_EN_ATTENTE) tant que la première n’est pas décidée', enAttente === 'CHANGEMENT_EN_ATTENTE', enAttente);
+
+    /* -- Un prix déjà porté par une pièce émise est refusé en nommant la pièce (tarif_deja_utilise) -- */
+    await poserSessionServeur(roleImp('da', 'DAF125'));
+    await ouvrir('imp-actes.html');
+    const piece = await page.evaluate((code) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core;
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const f = PR.prescrire({ patientCode: pt.code, medecin: 'S125', diagnostic: 's', actes: [code] }).facture;
+      return { numero: f.numero, jour: C.iso(C.aujourdhui()) };
+    }, c3.code);
+    await televerserBanc(await classeurBanc('t125-utilise.xlsx', [ENT_TARIFS, [c3.code, '', '', '', c3.na + 700, c3.pa, '', piece.jour, '', 'Sonde 125 : pièce déjà émise', '']]));
+    const utilise = await page.evaluate(() => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 't125-utilise.xlsx')[0]; return l ? { etat: l.etat, codes: (l.erreurs || []).map((e) => e.code), motif: (l.erreurs || []).map((e) => e.motif).join(' ') } : null; });
+    verifier('Prix déjà utilisé : la date d’effet d’aujourd’hui sur une prestation portée par une pièce du jour est refusée par TARIF_DEJA_UTILISE, qui nomme la facture ; rien n’est écrit',
+      utilise && utilise.etat === 'refuse' && utilise.codes.indexOf('TARIF_DEJA_UTILISE') >= 0 && utilise.motif.indexOf(piece.numero) >= 0, JSON.stringify(utilise));
+
+    /* -- Annulation : un lot de propositions se retire, une version validée ne s'efface pas -- */
+    await poserSessionServeur(roleImp('stock', 'STOCK125'));
+    const annul = await page.evaluate(() => { const I = window.SIGH.importer, l = I.lots().all().filter((x) => x.fichier === 't125-stock.xlsx')[0]; const r = I.annulerLot(l.id, 'sonde 125');
+      const vs = window.SIGH.store.collection('versionsTarif').all().filter((v) => v.lot === l.reference); return { ok: r.ok, code: r.code, statuts: vs.map((v) => v.statut), etat: window.SIGH.importer.lots().get(l.id).etat }; });
+    verifier('L’auteur annule son lot de propositions : elles sont RETIRÉES (statut « retire », lisibles à l’historique, RG-14), le lot passe « annulé »', annul.ok === true && annul.statuts.length === 2 && annul.statuts.every((s) => s === 'retire') && annul.etat === 'annule', JSON.stringify(annul));
+    await poserSessionServeur(roleImp('da', 'DAF124'));
+    const annulDecidee = await page.evaluate(() => { const I = window.SIGH.importer, l = I.lots().all().filter((x) => x.fichier === 't124-decisions.xlsx')[0]; const r = I.annulerLot(l.id, 'sonde 125'); return { ok: r.ok, code: r.code }; });
+    verifier('Un lot qui porte une version déjà VALIDÉE ne s’annule pas (VERSION_DEJA_VALIDEE) : une décision se remplace par une nouvelle version', annulDecidee.ok === false && annulDecidee.code === 'VERSION_DEJA_VALIDEE', JSON.stringify(annulDecidee));
+    /* Restitution : les propositions de la Vague 124 sont retirées (une version validée ne se retire pas). */
+    await page.evaluate(() => { const PR = window.SIGH.parcours, S = window.SIGH.store; S.collection('versionsTarif').all().filter((v) => v.origine === 'import' && v.statut === 'propose').forEach((v) => PR.retirerProposition(v.id, 'Sonde 125 : restitution')); });
+    await attendreEcritures();
+    const e125 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e125.length === 0, e125.join(' | '));
   });
 
   await browser.close();

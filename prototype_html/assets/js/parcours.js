@@ -157,6 +157,12 @@
     var d = N.droitsEcran(r, 'cfg-tarifs', 'CFG');
     return !!(d && d.editer);
   }
+  /** PROPOSER PAR L'IMPORT (lot IMP-A, I4) : le droit est celui d'IMPORTER le jeu `tarifs`, non celui d'éditer l'écran « Tarifs et prix » : le gestionnaire de stock importe des prix sans
+      pouvoir éditer cet écran (CFG lui est fermé). Ce que l'import peut devenir (proposition ou, avec le droit de décider, version validée) reste réglé par la MÊME fonction. */
+  function peutProposerParImport() {
+    var N = global.SIGH.nav;
+    return !!(N && N.droitImport && N.droitImport(roleDeLaSession(), 'tarifs').importer);
+  }
   function auteurDeLaSession() { var s = S.session(); return (s && (s.nomComplet || s.nom)) || '(inconnu)'; }
   function versionsDe(code) {
     return colVersionsTarif().all().filter(function (v) { return v.code === code; })
@@ -251,10 +257,16 @@
     return null;
   }
 
-  /** Propose une version de prix pour une prestation existante (ou, avec `creation`, crée la prestation et sa première version). */
-  function proposerTarif(o) {
+  /** TOUS LES CONTRÔLES d'une proposition, SANS RIEN ÉCRIRE : la saisie à l'écran, l'import (vérification d'une ligne) et l'écriture passent par ELLE, jamais par un second chemin.
+      Rend un refus nommé, ou `{ ok: true, plan }`. `o.import = { jeu: 'tarifs', lot }` change l'autorité de proposer (droit d'importer au lieu du droit d'éditer l'écran). */
+  function evaluerProposition(o) {
     o = o || {};
-    if (!peutProposerTarif()) return refusTarif('PROPOSITION_RESERVEE', 'Proposer un prix se fait depuis « Tarifs et prix », par un profil qui peut modifier cet écran.', 'Demander la modification à la Directrice Administrative ou à la Direction.');
+    var viaImport = !!(o.import && o.import.jeu === 'tarifs');
+    if (viaImport ? !peutProposerParImport() : !peutProposerTarif()) {
+      return viaImport
+        ? refusTarif('PROPOSITION_RESERVEE', 'Proposer un prix par un fichier revient aux profils qui détiennent le droit d’importer le jeu « Importation des tarifs et prix ».', 'Demander ce droit à l’administrateur (« Rôles & permissions », section Importation).')
+        : refusTarif('PROPOSITION_RESERVEE', 'Proposer un prix se fait depuis « Tarifs et prix », par un profil qui peut modifier cet écran.', 'Demander la modification à la Directrice Administrative ou à la Direction.');
+    }
     /* VALIDER EN UN GESTE (PRD 5.4, Q3) : la liste de rôles de la famille décide, jamais le simple droit d'éditer ; le moteur refuse en nommant, il ne dégrade pas
        silencieusement une demande de validation en proposition. */
     if (o.valider === true && !peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Enregistrer le changement comme proposition : la décision revient à l’un de ces profils.');
@@ -293,6 +305,16 @@
       if (us.length) return refusUsage(code, o.dateEffet, us, false);
     }
     var rang = existantes.reduce(function (m, v) { return Math.max(m, v.version || 0); }, 0) + 1;
+    return { ok: true, plan: { code: code, p: p, h: h, rang: rang, etatA: etatA, passee: passee, viaImport: viaImport, enUnGeste: o.valider === true } };
+  }
+
+  /** Propose une version de prix pour une prestation existante (ou, avec `creation`, crée la prestation et sa première version). `o.essai` : tous les contrôles, aucune écriture. */
+  function proposerTarif(o) {
+    o = o || {};
+    var ev = evaluerProposition(o);
+    if (!ev.ok) return ev;
+    if (o.essai === true) return { ok: true, essai: true, creation: !!o.creation, valideeEnUnGeste: o.valider === true, rang: ev.plan.rang };
+    var code = ev.plan.code, rang = ev.plan.rang, etatA = ev.plan.etatA, passee = ev.plan.passee, viaImport = ev.plan.viaImport, identite = null;
     if (o.creation) {
       var c = o.creation, famille = c.famille;
       var ident = { id: code, code: code, libelle: String(c.libelle).trim(), famille: famille, statut: 'actif' };
@@ -302,26 +324,29 @@
       else if (famille === 'LABO') ident.codeAnalyse = code;
       else ident.codeGrille = code;
       if (o.assurable !== undefined) ident.assurable = o.assurable;
-      colTarifs().insert(ident);
+      identite = colTarifs().insert(ident);
     }
     var v = {
       id: code + '@' + o.dateEffet + '@' + rang, code: code, version: rang, dateEffet: o.dateEffet,
       prixNonAssure: Number(o.prixNonAssure), prixAssure: etatA === 'montant' ? Number(o.prixAssure) : null, etatAssure: etatA,
-      motif: String(o.motif).trim(), origine: 'ecran', statut: 'propose',
+      motif: String(o.motif).trim(), origine: viaImport ? 'import' : 'ecran', statut: 'propose',
       proposePar: auteurDeLaSession(), proposeLe: C.iso(C.aujourdhui()), proposeRole: roleDeLaSession(),
     };
+    if (viaImport && o.import.lot) v.lot = o.import.lot;
+    if (o.source) v.source = String(o.source).trim();
     if (passee) v.datePassee = true;
     var enUnGeste = o.valider === true;
     if (enUnGeste) {
       /* Née VALIDE en un geste, avec le rôle de l'auteur tracé : la correction de la DAF n'attend pas la Direction. */
-      v.statut = 'valide'; v.decidePar = v.proposePar; v.decideLe = v.proposeLe; v.roleDecision = v.proposeRole; v.motifDecision = 'Validée en un geste à la saisie';
+      v.statut = 'valide'; v.decidePar = v.proposePar; v.decideLe = v.proposeLe; v.roleDecision = v.proposeRole;
+      v.motifDecision = viaImport ? 'Validée à l’import ' + (o.import.lot || '') : 'Validée en un geste à la saisie';
     }
-    journalPrix(enUnGeste ? 'validation en un geste' : 'proposition', v, { motif: v.motif, role: v.proposeRole });
+    journalPrix(viaImport ? (enUnGeste ? 'validation à l’import' : 'proposition à l’import') : (enUnGeste ? 'validation en un geste' : 'proposition'), v, { motif: v.motif, role: v.proposeRole });
     var rec = colVersionsTarif().insert(v);
     if (!rec) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Réessayer ; le refus est au journal.');
     D.TARIFS.invalider();
     if (enUnGeste) { leverMarquageTarif(code); S.projeterTarifs(); }
-    return { ok: true, version: rec.record, creation: !!o.creation, valideeEnUnGeste: enUnGeste };
+    return { ok: true, version: rec.record, identite: identite ? identite.record : null, creation: !!o.creation, valideeEnUnGeste: enUnGeste };
   }
 
   /** Décide une proposition : Oui (elle devient la version en vigueur à sa date d'effet) ou Non (refusée, motif obligatoire). */
@@ -3405,7 +3430,7 @@
     ROLES_DATE_PASSEE: ROLES_DATE_PASSEE, peutDatePasseeTarif: peutDatePasseeTarif, profilsDatePassee: profilsDatePassee, usagesTarif: usagesTarif, piecesRecentesTarif: piecesRecentesTarif,
     deciderTousTarifs: deciderTousTarifs, variationPropositionPct: variationPropositionPct, seuilVariationAlerte: seuilVariationAlerte,
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
-    proposerTarif: proposerTarif, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
+    proposerTarif: proposerTarif, evaluerProposition: evaluerProposition, peutProposerParImport: peutProposerParImport, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
     tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate,
     couvertureALaDate: couvertureALaDate, historiqueCouverture: historiqueCouverture,
     changerCouverture: changerCouverture,

@@ -46,7 +46,7 @@
    * Mesurée AVANT d'être posée (I12) : voir ECARTS-MAQUETTE.md. Jamais une constante du code : la valeur lue est celle du réglage `importBornes`, le défaut ci-dessous ne
    * sert que tant que la clinique n'a rien réglé. Le refus se nomme et dit où relever la borne. */
   var BORNE_DEFAUT_GENERALE = 5000;
-  var BORNES_DEFAUT = { patients: 25000 };
+  var BORNES_DEFAUT = {};
   var BORNE_MAXIMALE = 100000;
   function bornesImport() { return Object.assign({}, BORNES_DEFAUT, S.reglage('importBornes', null) || {}); }
   function borneDe(j) {
@@ -154,6 +154,7 @@
       var tv = String(v).trim();
       if (/^(-|\u2013|\u2014)$/.test(tv)) return { valeur: { etat: 'manquant' } };
       if (/^(nc|non couvert)$/i.test(tv)) return { valeur: { etat: 'nc' } };
+      if (col.unique && /^(unique|prix unique)$/i.test(tv)) return { valeur: { etat: 'unique' } };
       var nn = typeof v === 'number' ? v : Number(tv.replace(/\s/g, '').replace(',', '.'));
       if (!isFinite(nn) || Math.floor(nn) !== nn || nn < 0) {
         return erreur('TYPE_INVALIDE', '« ' + v + ' » n’est ni un montant entier, ni NC, ni un tiret', 'Saisissez un montant en francs, NC (non couvert) ou un tiret (valeur manquante).');
@@ -474,57 +475,154 @@
     },
   });
 
-  /* --- 4. ACTES ET TARIFS ----------------------------------------------------------------------------------------------- */
+  /* --- 4. TARIFS ET PRIX (PRD-TARIFS 7.2, lot IMP-A) ----------------------------------------------------------------------------- *
+   * UN SEUL JEU pour tous les prix de prestation : il REMPLACE les jeux « actes » et « catalogue tarifaire » du PRD d'import (la facturation lit désormais le seul référentiel de
+   * prix) et porte les prix d'analyses, d'imagerie, de consultations et de soins. Il écrit par le MÊME chemin que la saisie à l'écran (`PR.proposerTarif`, contrôles, journal,
+   * alerte) : pas une seconde vérification. Le prix en vigueur ne bouge jamais à l'import :
+   *   Oui + droit de décider   → version VALIDÉE d'emblée (tracée « validée à l'import IMP-… »), effective à sa date d'effet ;
+   *   Oui sans ce droit / vide → PROPOSITION : l'alerte Oui/Non de la DAF ou de la Direction (le Oui d'un importateur vaut proposition, la vérification le dit ligne par ligne) ;
+   *   Non (motif obligatoire)  → ligne NON appliquée, aucune version, ni erreur ni refus du fichier (c'est la décision de l'importateur) ;
+   *   prix identique à celui en vigueur à cette date → « inchangée », comptée, jamais une version.
+   * Les ERREURS refusent le fichier entier (tout ou rien) ; les DÉCISIONS se prennent ligne à ligne. Un tiret n'est jamais zéro ; NC n'existe qu'en colonne assurée ; zéro est refusé. */
+  var FAMILLES_PRIX = [['CONSULTATION', 'Consultations'], ['ACTE', 'Actes'], ['HOSPITALISATION', 'Hospitalisation'], ['AMI', 'Actes médico-infirmiers'],
+    ['GYNECO', 'Gynéco-obstétrique et kits'], ['CERTIFICAT', 'Certificats et attestations'], ['LABO', 'Analyses de laboratoire'], ['IMAGERIE', 'Imagerie médicale']];
+  var COUVERTURES = [{ valeur: 'toutes', label: 'Toutes compagnies' }, { valeur: 'sos', label: 'SOS seule' }, { valeur: 'non', label: 'Non couvert' }];
+  var ASSURABLE_DE = { toutes: true, sos: 'sos', non: false };
+  var COLONNE_DU_REFUS = { MOTIF_REQUIS: 'Motif', DATE_EFFET_REQUISE: 'Date d’effet', DATE_PASSEE: 'Date d’effet', DATE_PASSEE_RESERVEE: 'Date d’effet', TARIF_DEJA_UTILISE: 'Date d’effet',
+    CHANGEMENT_EN_ATTENTE: 'Code', PRESTATION_INTROUVABLE: 'Code', CODE_EXISTANT: 'Code', IDENTITE_INCOMPLETE: 'Désignation', PRIX_ABSENT: 'Prix non assuré', PRIX_INVALIDE: 'Prix non assuré' };
+  function prixAffiche(na, etatA, pa) {
+    var a = etatA === 'montant' ? C.num(pa) : (etatA === 'nc' ? 'NC' : (etatA === 'unique' ? 'unique' : 'absent'));
+    return (na == null ? 'absent' : C.num(na)) + ' / ' + a;
+  }
+  function pourcent(avant, apres) { return avant ? (Math.round((apres - avant) / avant * 1000) / 10) + ' %' : ''; }
+  /** Ce que la ligne propose, dans la forme que `PR.proposerTarif` attend. */
+  function offreDeLigne(v, h, lot) {
+    var p = h && h.parCode[v.code], etatA = v.prixAssure.etat;
+    var o = { code: v.code, prixNonAssure: v.prixNonAssure.etat === 'montant' ? v.prixNonAssure.montant : null, etatAssure: etatA, prixAssure: etatA === 'montant' ? v.prixAssure.montant : null,
+      dateEffet: v.dateEffet, motif: v.motif, source: v.source || undefined, import: { jeu: 'tarifs', lot: lot || undefined } };
+    if (!p) {
+      o.creation = { libelle: v.designation, famille: v.famille, secteur: v.secteur || undefined, source: v.source || undefined };
+      if (v.couverture) o.assurable = ASSURABLE_DE[v.couverture]; else if (etatA === 'nc') o.assurable = false;
+    }
+    return o;
+  }
   JEUX.push({
     id: 'tarifs', ecran: 'imp-actes', libelle: 'Importation des tarifs et prix', module: 'IMP', statut: 'supporte',
-    description: 'Actes et tarifs à deux prix (non assuré, assuré) avec les trois états de la colonne assurée : montant, NC (non couvert), tiret (valeur manquante).',
+    description: 'Prix des prestations (consultations, actes, soins, analyses, imagerie, certificats) à deux colonnes, avec les trois états de la colonne assurée, une date d’effet et la décision Oui ou Non : chaque ligne qui change devient une version datée, jamais un écrasement.',
     source: 'Six grilles tarifaires imprimées et « Répartition des activités » (docs/) ; les prix du fichier font foi, aucun n’est complété par le logiciel.',
-    cibles: ['actes'],
-    fichierModele: 'modele-import-actes',
+    limite: 'Un import de prix ne change jamais le prix en vigueur par lui-même : la ligne devient une proposition soumise à l’alerte Oui/Non de la Directrice Administrative ou de la Direction, sauf si votre profil détient le droit de décider ET que la ligne dit Oui.',
+    cibles: ['tarifs', 'versionsTarif'],
+    fichierModele: 'modele-import-tarifs',
     colonnes: [
-      oblig('code', 'Code acte', 'texte', { longueurMax: 20, exemple: 'MG01' }),
-      oblig('libelle', 'Libellé', 'texte', { longueurMax: 160, exemple: 'Consultation généraliste' }),
-      oblig('secteur', 'Secteur', 'liste', { liste: function (ctx) { return ctx.secteurs; }, exemple: 'Médecine générale' }),
-      oblig('prixNonAssure', 'Prix non assuré', 'tarif', { exemple: 5000, aide: 'Montant entier en FCFA, ou un tiret si le prix manque. Un tiret n’est pas un zéro : l’acte ne se facture pas.' }),
-      oblig('prixAssure', 'Prix assuré', 'tarif', { exemple: 3000, aide: 'Montant, NC (aucune compagnie ne couvre l’acte : l’assuré paie le prix non assuré) ou un tiret (valeur manquante).' }),
-      col('codeTarif', 'Code tarif', 'texte', { longueurMax: 30, exemple: 'CONS-GEN' }),
+      oblig('code', 'Code', 'texte', { longueurMax: 30, exemple: 'MG01', aide: 'Code d’une prestation connue (changement de prix) ou d’une prestation nouvelle (création : désignation et famille obligatoires). Un code d’alias est reconnu.' }),
+      col('designation', 'Désignation', 'texte', { longueurMax: 160, exemple: 'Consultation généraliste', aide: 'Libellé de facturation. Obligatoire pour créer une prestation ; jamais appliqué à une prestation connue (un import ne modifie pas l’identité d’une fiche tenue).' }),
+      col('famille', 'Famille', 'liste', { liste: FAMILLES_PRIX.map(function (f) { return { valeur: f[0], label: f[1] }; }), exemple: 'Actes', aide: 'Obligatoire pour créer une prestation.' }),
+      col('secteur', 'Secteur', 'liste', { liste: function (ctx) { return ctx.secteurs; }, exemple: 'Médecine générale' }),
+      oblig('prixNonAssure', 'Prix non assuré', 'tarif', { exemple: 5000, aide: 'Montant entier strictement positif en FCFA. NC n’existe pas dans cette colonne ; un tiret n’est pas un zéro : une ligne sans prix non assuré est refusée.' }),
+      oblig('prixAssure', 'Prix assuré', 'tarif', { unique: true, exemple: 3000, aide: 'Montant, NC (aucune compagnie ne couvre l’acte : l’assuré paie le prix non assuré), UNIQUE (prix unique : la colonne assurée vaut la colonne non assurée) ou un tiret (valeur manquante, la ligne ne se facture pas aux assurés).' }),
+      col('couverture', 'Couverture', 'liste', { liste: COUVERTURES, exemple: 'Toutes compagnies', aide: 'Pour une création seulement ; vide : toutes les compagnies (ou non couvert si le prix assuré est NC).' }),
+      oblig('dateEffet', 'Date d’effet', 'date', { exemple: '2027-01-01', aide: 'Obligatoire : le prix en vigueur ne change qu’à cette date. Une date passée est refusée (elle se propose à l’écran, avec sa case et son motif).' }),
+      col('valider', 'Valider (Oui/Non)', 'liste', { liste: [{ valeur: 'oui', label: 'Oui' }, { valeur: 'non', label: 'Non' }], exemple: 'Oui', aide: 'Oui : le prix s’applique (validé d’emblée si votre profil décide, sinon proposition). Non : la ligne n’est pas appliquée, le motif est obligatoire. Vide : proposition.' }),
+      col('motif', 'Motif', 'texte', { longueurMax: 160, exemple: 'Nouvelle grille tarifaire', aide: 'Obligatoire pour toute ligne qui change un prix et pour tout Non.' }),
+      col('source', 'Source', 'texte', { longueurMax: 160, exemple: 'Grille du 01/12/2026' }),
     ],
     contexte: function () {
-      var c = {}, sec = {};
-      /* Les secteurs viennent du catalogue de référence (D.ACTES) ET des actes déjà tenus : une clinique qui démarre n'a pas encore d'acte. */
+      var h = D.TARIFS.lire(), sec = {};
+      (h ? h.tarifs : []).forEach(function (p) { if (p.statut !== 'archive' && p.secteur) sec[p.secteur] = true; });
       D.ACTES.forEach(function (a) { if (a.secteur) sec[a.secteur] = true; });
-      toutes('actes').forEach(function (a) { c[C.norm(a.code)] = a; if (a.statut !== 'archive' && a.secteur) sec[a.secteur] = true; });
-      return { actes: c, secteurs: Object.keys(sec).sort() };
+      return { h: h, secteurs: Object.keys(sec).sort(), jour: aujourdhuiIso(), peutDecider: !!(global.SIGH.parcours && global.SIGH.parcours.peutDeciderTarif()) };
     },
     cle: function (v) { return [C.norm(v.code)]; },
-    existe: function (v, ctx) { var a = ctx.actes[C.norm(v.code)]; return a ? 'l’acte « ' + a.code + ' » existe déjà (' + a.libelle + ')' : null; },
-    gesteExiste: 'Retirez la ligne : un tarif en vigueur se modifie à l’écran Catalogue des actes, versionné, jamais écrasé par un import.',
-    regles: function (v) {
-      var pb = [];
-      if (v.prixNonAssure.etat === 'nc') pb.push({ colonne: 'Prix non assuré', valeur: 'NC', code: 'NC_INTERDIT', niveau: 'refus', motif: 'NC n’a de sens que dans la colonne assurée', geste: 'Saisissez le prix de guichet, ou un tiret s’il manque.' });
-      if (v.prixNonAssure.etat === 'manquant') pb.push({ colonne: 'Prix non assuré', valeur: '-', code: 'PRIX_MANQUANT', niveau: 'avertissement', motif: 'prix non assuré manquant : l’acte ne se facturera pas (un tiret n’est pas un zéro)', geste: 'Saisissez le prix au catalogue dès qu’il est arrêté.' });
-      if (v.prixAssure.etat === 'manquant') pb.push({ colonne: 'Prix assuré', valeur: '-', code: 'PRIX_MANQUANT', niveau: 'avertissement', motif: 'prix assuré manquant : l’acte ne se facturera pas aux assurés', geste: 'Saisissez le prix assuré, ou NC si aucune compagnie ne couvre l’acte.' });
+    regles: function (v, ctx, sc, n) {
+      var pb = [], ligne = sc.ligne, PR_ = global.SIGH.parcours;
+      function pb_(colonne, valeur, code, niveau, motif, geste) { pb.push({ colonne: colonne, valeur: valeur, code: code, niveau: niveau, motif: motif, geste: geste }); }
+      if (!ctx.h) { pb_('Code', v.code, 'REFERENTIEL_ABSENT', 'refus', 'le référentiel de prix n’est pas chargé', 'Rechargez la page.'); return pb; }
+      var p = ctx.h.parCode[v.code], na = v.prixNonAssure, pa = v.prixAssure;
+      var s = p ? D.TARIFS.instantane(ctx.h, p, v.dateEffet) : null;
+      var extra = { ancien: s ? prixAffiche(s.na, s.etatAssure, s.pa) : 'nouvelle prestation', nouveau: prixAffiche(na.etat === 'montant' ? na.montant : null, pa.etat, pa.montant), variation: '', decision: '' };
+      sc.extras[n] = extra;
+      if (s && na.etat === 'montant' && s.na) {
+        extra.variation = pourcent(s.na, na.montant);
+        if (pa.etat === 'montant' && s.etatAssure === 'montant' && s.pa && s.pa !== pa.montant) extra.variation += ' (assuré ' + pourcent(s.pa, pa.montant) + ')';
+      }
+      /* Un NON est la décision de l'importateur : ni version, ni erreur. Son motif est obligatoire (il se lit au rapport et au lot). */
+      if (v.valider === 'non') {
+        if (!v.motif) pb_('Motif', '', 'MOTIF_REQUIS', 'refus', 'une ligne « Non » se motive : sans motif, on ne sait pas pourquoi le prix n’est pas appliqué', 'Saisissez le motif de la ligne ' + n + '.');
+        else { ligne.sansEcriture = 'non'; extra.decision = 'Non : non appliquée'; pb_('Valider (Oui/Non)', 'Non', 'LIGNE_NON_APPLIQUEE', 'info', 'ligne non appliquée sur décision de l’importateur (motif : ' + v.motif + ')', 'Aucune version n’est créée.'); }
+        return pb;
+      }
+      if (na.etat === 'nc') pb_('Prix non assuré', 'NC', 'NC_INTERDIT', 'refus', 'NC n’a de sens que dans la colonne assurée', 'Saisissez le prix de guichet en francs.');
+      else if (na.etat === 'manquant') pb_('Prix non assuré', '-', 'PRIX_ABSENT', 'refus', 'un tiret n’est pas un zéro, et un prix non assuré absent n’est pas un tarif : la ligne ne se facturerait pas', 'Saisissez le prix non assuré, ou retirez la ligne.');
+      else if (pa.etat === 'manquant') pb_('Prix assuré', '-', 'PRIX_MANQUANT', 'avertissement', 'prix assuré manquant : la ligne ne se facturera pas aux assurés (un tiret n’est pas un zéro)', 'Saisissez le prix assuré dès qu’il est arrêté, ou NC si aucune compagnie ne couvre la prestation.');
+      if (pb.some(function (x) { return x.niveau === 'refus'; })) return pb;
+      if (s && na.etat === 'montant' && pa.etat === 'montant' && s.etatAssure === 'montant' && na.montant === s.pa && pa.montant === s.na && s.pa !== s.na) {
+        pb_('Prix assuré', pa.montant, 'COLONNES_INVERSEES', 'avertissement', 'les deux colonnes paraissent inversées par rapport au prix en vigueur (non assuré ' + C.num(s.na) + ', assuré ' + C.num(s.pa) + ') : le fichier fait foi, rien n’est corrigé', 'Vérifiez l’orientation des colonnes avant de confirmer.');
+      }
+      if (p) {
+        if (v.designation && p.libelle && C.norm(v.designation) !== C.norm(p.libelle)) pb_('Désignation', v.designation, 'IDENTITE_DIFFERENTE', 'avertissement', 'la désignation du fichier diffère de celle de la fiche : elle n’est pas appliquée (un import ne modifie pas l’identité d’une prestation)', 'Modifiez le libellé à l’écran « Tarifs et prix ».');
+        else if (v.famille && p.famille && v.famille !== p.famille) pb_('Famille', v.famille, 'IDENTITE_DIFFERENTE', 'avertissement', 'la famille du fichier diffère de celle de la fiche : elle n’est pas appliquée', 'Modifiez la fiche à l’écran « Tarifs et prix ».');
+        else if (v.couverture && ASSURABLE_DE[v.couverture] !== p.assurable && !(ASSURABLE_DE[v.couverture] === true && p.assurable === undefined)) pb_('Couverture', v.couverture, 'IDENTITE_DIFFERENTE', 'avertissement', 'la couverture du fichier diffère de celle de la fiche : elle n’est pas appliquée', 'Modifiez la fiche à l’écran « Tarifs et prix ».');
+      } else if (!v.designation) pb_('Désignation', '', 'IDENTITE_INCOMPLETE', 'refus', 'le code « ' + v.code + ' » est inconnu : une nouvelle prestation porte une désignation', 'Renseignez la désignation et la famille, ou corrigez le code.');
+      else if (!v.famille) pb_('Famille', '', 'IDENTITE_INCOMPLETE', 'refus', 'le code « ' + v.code + ' » est inconnu : une nouvelle prestation porte une famille', 'Renseignez la famille, ou corrigez le code.');
+      if (pb.some(function (x) { return x.niveau === 'refus'; })) return pb;
+      /* LE MÊME CHEMIN QUE L'ÉCRAN : tous les contrôles de la proposition, sans écrire (essai). */
+      var o = offreDeLigne(v, ctx.h, null);
+      o.essai = true; o.valider = ctx.peutDecider && v.valider === 'oui';
+      var ev = PR_.proposerTarif(o);
+      if (!ev.ok && o.valider === true && (ev.code === 'VALIDATION_RESERVEE' || ev.code === 'CONFIGURATION_DE_LA_MERE')) { o.valider = false; ev = PR_.proposerTarif(o); }
+      if (!ev.ok && ev.code === 'PRIX_INCHANGE') {
+        ligne.sansEcriture = 'inchange'; extra.decision = 'Inchangée';
+        pb_('Prix non assuré', '', 'PRIX_INCHANGE', 'info', 'ce prix est déjà celui en vigueur à cette date : aucune version, la ligne est comptée', 'Rien à faire.');
+        return pb;
+      }
+      if (!ev.ok) { pb_(COLONNE_DU_REFUS[ev.code] || 'Prix non assuré', '', ev.code, 'refus', ev.motif, ev.geste); return pb; }
+      if (!p) extra.decision = (o.valider ? 'Oui : prestation créée, version 1 validée' : 'Prestation créée, version 1 proposée (alerte)');
+      else if (o.valider) extra.decision = 'Oui : version validée à l’import';
+      else if (v.valider === 'oui') {
+        extra.decision = 'Proposition (votre Oui vaut proposition)';
+        pb_('Valider (Oui/Non)', 'Oui', 'OUI_VAUT_PROPOSITION', 'avertissement', 'votre profil ne détient pas le droit de décider un prix : le Oui vaut proposition, la décision revient à la Directrice Administrative ou à la Direction (alerte)', 'Aucune action : la ligne sera proposée.');
+      } else extra.decision = 'Proposition (alerte Oui/Non)';
       return pb;
     },
-    ecrire: function (lignes, ecrireFiche, lot) {
+    ecrire: function (lignes, ecrireFiche, lot, ctx, declarer) {
+      var PR_ = global.SIGH.parcours;
       lignes.forEach(function (l) {
-        var v = l.v, na = v.prixNonAssure, as = v.prixAssure;
-        var f = {
-          code: v.code, libelle: v.libelle, secteur: v.secteur, codeTarif: v.codeTarif || null,
-          prixNonAssure: na.etat === 'montant' ? na.montant : null,
-          prixAssure: as.etat === 'montant' ? as.montant : null,
-          nonCouvert: as.etat === 'nc', assurable: as.etat !== 'nc',
-          prix: na.etat === 'montant' ? na.montant : null, tarifProvisoire: false,
-        };
-        if (na.etat === 'manquant' || as.etat === 'manquant') f.motifPrix = 'Valeur manquante à l’import ' + lot.reference + ' : l’acte ne se facture pas tant que le prix n’est pas saisi.';
-        ecrireFiche('actes', f);
+        var v = l.v, o = offreDeLigne(v, D.TARIFS.lire(), lot.reference);
+        o.valider = PR_.peutDeciderTarif() && v.valider === 'oui';
+        var r = PR_.proposerTarif(o);
+        if (!r.ok && o.valider === true && (r.code === 'VALIDATION_RESERVEE' || r.code === 'CONFIGURATION_DE_LA_MERE')) { o.valider = false; r = PR_.proposerTarif(o); }
+        if (!r.ok) throw new Error('ligne ' + l.n + ' (' + v.code + ') : ' + r.motif);
+        if (r.identite) declarer('tarifs', r.identite.id);
+        declarer('versionsTarif', r.version.id);
       });
     },
+    /* Un lot de prix s'annule en RETIRANT ses propositions (RG-14, rien ne se supprime) ; une version déjà validée se remplace par une nouvelle version, elle ne s'efface pas. */
     dependances: function (lot) {
-      var codes = {};
-      lot.ecrits.forEach(function (e) { var a = S.collection('actes').get(e.id); if (a) codes[a.code] = true; });
-      var u = S.collection('prescriptions').active().filter(function (x) { return codes[x.acteCode]; })[0];
-      return u ? { code: 'ACTE_UTILISE', motif: 'l’acte « ' + u.acteCode + ' » est déjà prescrit', geste: 'Archivez l’acte au catalogue plutôt que d’annuler son lot.' } : null;
+      if (lot.ecrits.some(function (e) { return e.collection === 'actes'; })) {
+        return { code: 'LOT_ANCIEN', motif: 'ce lot a écrit l’ancienne liste des actes, devenue une projection de lecture du référentiel de prix', geste: 'Corrigez le prix à l’écran « Tarifs et prix » : une version se remplace par une nouvelle version.' };
+      }
+      var valide = lot.ecrits.filter(function (e) { return e.collection === 'versionsTarif'; }).map(function (e) { return S.collection('versionsTarif').get(e.id); })
+        .filter(function (x) { return x && x.statut === 'valide'; })[0];
+      return valide ? { code: 'VERSION_DEJA_VALIDEE', motif: 'la version ' + valide.id + ' est déjà validée : une décision se remplace par une nouvelle version, elle ne s’efface pas',
+        geste: 'Proposez une nouvelle version à l’écran « Tarifs et prix » ; seules les propositions encore en attente se retirent avec leur lot.' } : null;
+    },
+    annuler: function (lot, motif) {
+      var PR_ = global.SIGH.parcours, retirees = 0, archivees = 0;
+      for (var i = 0; i < lot.ecrits.length; i++) {
+        var e = lot.ecrits[i];
+        if (e.collection !== 'versionsTarif') continue;
+        var v = S.collection('versionsTarif').get(e.id);
+        if (!v || v.statut !== 'propose') continue;
+        var r = PR_.retirerProposition(e.id, 'Lot ' + lot.reference + ' annulé' + (motif ? ' : ' + motif : ''));
+        if (!r.ok) return { ok: false, code: r.code, motif: r.motif, geste: r.geste };
+        retirees++;
+      }
+      lot.ecrits.forEach(function (e) {
+        if (e.collection !== 'tarifs') return;
+        var vivantes = S.collection('versionsTarif').all().filter(function (x) { return x.code === e.id && (x.statut === 'propose' || x.statut === 'valide'); });
+        if (!vivantes.length && S.collection('tarifs').archive(e.id, 'Annulation du lot ' + lot.reference)) archivees++;
+      });
+      return { ok: true, archives: retirees + archivees };
     },
   });
 
@@ -1046,6 +1144,14 @@
     }
     var dep = j && j.dependances ? j.dependances(lot) : null;
     if (dep) return { ok: false, code: dep.code, motif: dep.motif, geste: dep.geste };
+    /* Un jeu qui ne s'annule pas par archivage de ses fiches (les VERSIONS de prix sont immuables : une proposition se RETIRE) porte son propre geste d'annulation. */
+    if (j && typeof j.annuler === 'function') {
+      var ra = j.annuler(lot, motif);
+      if (!ra.ok) return ra;
+      col_.update(lot.id, { etat: 'annule', annulePar: S.currentUser(), annuleLe: aujourdhuiIso(), motifAnnulation: motif || null });
+      S.log('Import annulé', 'IMP', 'LotImport', lot.reference, { etat: 'applique' }, { etat: 'annule', fiches: ra.archives });
+      return { ok: true, lot: col_.get(lot.id), archives: ra.archives };
+    }
     var faits = [], echec = null;
     for (var i = 0; i < lot.ecrits.length && !echec; i++) {
       var e = lot.ecrits[i], c = S.collection(e.collection);
@@ -1071,7 +1177,7 @@
   function valeursPermises(c, ctx) {
     if (c.type === 'liste') return valeursListe(c, ctx).map(function (x) { return x.label; }).join(' ; ');
     if (c.type === 'entier') return 'entier' + (c.min !== undefined ? ' ≥ ' + c.min : '') + (c.max !== undefined ? ' et ≤ ' + c.max : '');
-    if (c.type === 'tarif') return 'montant entier en FCFA ; NC ; tiret (-)';
+    if (c.type === 'tarif') return 'montant entier en FCFA ; NC ; tiret (-)' + (c.unique ? ' ; UNIQUE (prix unique)' : '');
     if (c.motifTexte) return c.motifTexte;
     if (c.longueurMax) return 'jusqu’à ' + c.longueurMax + ' caractères';
     return '';
@@ -1135,7 +1241,7 @@
     /* Pour un jeu RESTREINT : ni valeur de cellule, ni motif qui la cite (une lecture d'un lot déjà masqué reste masquée : `masquer` est idempotent). */
     var ps = (lotOuAnalyse.erreurs || problemes(lotOuAnalyse)).map(function (p) { return j ? masquer(j, p) : p; });
     var sans = !!(j && restreint(j));
-    var LIB = { refus: 'refus', avertissement: 'avertissement', ignore: 'ignorée' };
+    var LIB = { refus: 'refus', avertissement: 'avertissement', ignore: 'ignorée', info: 'information' };
     var entete = sans ? ['Ligne', 'Colonne', 'Niveau', 'Code', 'Motif', 'Geste de correction'] : ['Ligne', 'Colonne', 'Valeur', 'Niveau', 'Code', 'Motif', 'Geste de correction'];
     var lignes = [entete].concat(ps.map(function (p) {
       var base = [p.n || '', p.colonne || ''];
@@ -1176,6 +1282,10 @@
   /** Les jeux que ce profil VOIT : calculé du droit de la matrice, jamais d'une liste de rôles. */
   function jeuxVisibles() { return JEUX.filter(function (j) { return droitDe(j).voir; }); }
 
+  function peutOuvrirPage(j) {
+    var e = N.get(j.ecran);
+    return !!e && N.can(roleCourant(), { id: e.id, roles: e.roles, module: e.module });
+  }
   /** Un lot se lit de son AUTEUR et des profils qui SUPERVISENT (droit d'annuler sur chaque jeu : liste tirée du droit, pas d'un nom de rôle), pour un jeu que le profil voit. */
   function lotVisible(l) {
     var j = jeuDeLot(l);
@@ -1252,8 +1362,21 @@
     o = o || {};
     var host = el('div.space-y-4'), zone = el('div.space-y-4'), histo = el('div'), etat = { analyse: null };
     var d = droitDe(j);
+    /* La REPRISE valorisée du Grand Stock a ses propres droits (ceux de M6) : elle reste atteignable de qui l'a, même sans détenir le JEU. */
+    function ajouterReprise() {
+      if (o.modale || j.id !== 'grand-stock' || typeof global.SIGH.rendreRepriseGrandStock !== 'function') return;
+      host.appendChild(el('h2.text-base.font-semibold.text-navy-900', { text: 'Stock repris : traçabilité et valorisation' }));
+      host.appendChild(K.note('Le stock initial n’a pas été saisi manuellement : il provient de l’import de l’inventaire « Grand Stock ». '
+        + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises des '
+        + 'mouvements opérationnels ultérieurs. Les références que le document ne tarife pas se valorisent ici, à part, datées et signées.',
+        { tone: 'info', icon: 'history' }));
+      var reprise = el('div.space-y-4');
+      host.appendChild(reprise);
+      global.SIGH.rendreRepriseGrandStock(reprise);
+    }
     if (!d.voir) {
       host.appendChild(K.note('Votre profil ne détient pas ce jeu d’import : ni son modèle, ni son historique ne vous sont ouverts.', { tone: 'warning', icon: 'lock' }));
+      ajouterReprise();
       return host;
     }
 
@@ -1298,6 +1421,12 @@
         + 'Un fichier peut donc être rejoué sans refus (mode arrêté par la Direction pour ce jeu seulement).', { tone: 'info', icon: 'copy-minus' }));
     }
 
+    if (mode === 'versionner') {
+      host.appendChild(K.note('<strong>Une ligne qui change un prix devient une version datée, jamais un écrasement.</strong> La vérification montre, pour chaque ligne, l’ancien prix, le nouveau et la variation. '
+        + 'Les erreurs refusent le fichier entier ; les décisions se prennent ligne à ligne : <em>Oui</em> (validé d’emblée si votre profil décide, sinon proposition), <em>Non</em> (non appliquée, motif obligatoire), vide (proposition). '
+        + 'Le prix en vigueur ne change jamais à l’import par lui-même.', { tone: 'info', icon: 'tags' }));
+    }
+
     var cols = colonnesDe(j);
     /* 1. Le modèle */
     var colTable = K.miniTable(['Colonne', 'Obligatoire', 'Type', 'Valeurs permises', 'Exemple'], cols.map(function (c) {
@@ -1338,20 +1467,8 @@
       dessinerHistorique();
     }
 
-    /* LE GRAND STOCK A DEUX FACES SUR LE MÊME ÉCRAN (E2158, corrigé le 06/11/2026) : l'IMPORT l'écrit (ci-dessus), la REPRISE le
-       suit et le valorise (ci-dessous : lot de migration, articles repris, points à traiter, rapprochement au catalogue). Les deux
-       lots du 01/11 avaient enregistré le même identifiant d'écran, le dernier chargé effaçant l'autre : la valorisation des
-       références sans prix (vague 33, 34 fiches arrêtées par la Direction en vague 49) n'était plus atteignable. */
-    if (!o.modale && j.id === 'grand-stock' && typeof global.SIGH.rendreRepriseGrandStock === 'function') {
-      host.appendChild(el('h2.text-base.font-semibold.text-navy-900', { text: 'Stock repris : traçabilité et valorisation' }));
-      host.appendChild(K.note('Le stock initial n’a pas été saisi manuellement : il provient de l’import de l’inventaire « Grand Stock ». '
-        + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises des '
-        + 'mouvements opérationnels ultérieurs. Les références que le document ne tarife pas se valorisent ici, à part, datées et signées.',
-        { tone: 'info', icon: 'history' }));
-      var reprise = el('div.space-y-4');
-      host.appendChild(reprise);
-      global.SIGH.rendreRepriseGrandStock(reprise);
-    }
+    /* LE GRAND STOCK A DEUX FACES SUR LE MÊME ÉCRAN (E2158, corrigé le 06/11/2026) : l'IMPORT l'écrit (ci-dessus), la REPRISE le suit et le valorise (ci-dessous). */
+    ajouterReprise();
 
     function analyser(octets, nom) {
       var a = analyserOctets(j.id, octets, nom);
@@ -1407,7 +1524,7 @@
           text: function (r) { return r.problemes.map(function (p) { return p.colonne + ' : ' + p.motif; }).join(' | '); },
           render: function (r) {
             return el('div.space-y-1', null, r.problemes.map(function (p) {
-              return el('p.text-xs', { class: p.niveau === 'refus' ? 'text-danger-700' : (p.niveau === 'ignore' ? 'text-slate-500' : 'text-warning-700') }, [
+              return el('p.text-xs', { class: p.niveau === 'refus' ? 'text-danger-700' : (p.niveau === 'ignore' || p.niveau === 'info' ? 'text-slate-500' : 'text-warning-700') }, [
                 el('strong', { text: p.colonne + ' ' }), (p.valeur !== '' && p.valeur !== undefined ? '« ' + p.valeur + ' » : ' : ': ') + p.motif + '. ', el('em', { text: p.geste }),
               ]);
             }));
@@ -1525,7 +1642,7 @@
             el('p.text-sm.text-slate-600', { text: j.description }),
             el('p.text-xs.text-slate-500', { text: 'Source : ' + j.source }),
             el('p.text-xs.text-slate-500', { text: 'Écrit dans : ' + j.cibles.join(', ') + '. ' + (dernier ? 'Dernier lot : ' + dernier.reference + ' (' + (TONS_ETAT[dernier.etat] || [dernier.etat])[0] + ').' : 'Aucun lot à ce jour.') }),
-            K.lien(j.ecran, 'Ouvrir', { variant: 'primary', icon: 'arrow-right' }),
+            peutOuvrirPage(j) ? K.lien(j.ecran, 'Ouvrir', { variant: 'primary', icon: 'arrow-right' }) : el('p.text-xs.text-slate-400', { text: 'La page de ce jeu n’est pas ouverte à votre profil.' }),
           ])));
         });
         return grille;
