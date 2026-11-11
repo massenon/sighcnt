@@ -2224,6 +2224,9 @@
                deux activités — c'est un seul poste, Caissière-Dispensatrice. */
             'dash-caissier': { voir: true, editer: true, annuler: true },
             'dash-pharmacien': { voir: true, editer: true, annuler: true },
+            /* PRD-TARIFS (Q9, réponse de la Direction du 10/11/2026) : il sert, il ne tarife pas. Le référentiel des produits se LIT à la caisse ; le prix d'achat qui
+               fonde le prix de vente (RG-02) se modifie par le gestionnaire de stock (réception, importation) et la Direction. */
+            'm6-produits': { voir: true, editer: false, annuler: false },
 
             /* Le patient s'identifie au guichet ; son dossier ne s'y ouvre pas. */
             'm1-patients': { voir: true, editer: false, annuler: false },
@@ -4602,6 +4605,22 @@
   D.TARIFS.brancher(function () { return db ? { tarifs: db.tarifs, versions: db.versionsTarif } : null; });
   on('tarifs', D.TARIFS.invalider);
   on('versionsTarif', D.TARIFS.invalider);
+  /* LES COLLECTIONS DE LECTURE NE S'ÉDITENT PLUS POUR UN PRIX : `actes`, `analyses` et `catalogueTarifs` sont des projections du référentiel, que le moteur
+     reconstruit (écriture directe, hors de ce chemin). Un prix modifié ici serait réécrit à la projection suivante sans que personne l'ait voulu, et ne
+     serait jamais facturé : l'écriture est refusée EN NOMMANT où le proposer. Les autres champs (libellé, échantillon, délai, marquages) restent libres. */
+  var CHAMPS_PRIX_LECTURE = { actes: ['prix', 'prixNonAssure', 'prixAssure', 'nonCouvert'], analyses: ['prix'], catalogueTarifs: ['prixNonAssure', 'prixAssure', 'nonCouvert', 'prixAValider'] };
+  Object.keys(CHAMPS_PRIX_LECTURE).forEach(function (nom) {
+    garder(nom, function (op, rec) {
+      if (op !== 'modifier' || !rec || !db || !D.TARIFS.lire()) return null;
+      var avant = (db[nom] || []).filter(function (x) { return x.id === rec.id; })[0];
+      if (!avant) return null;
+      for (var i = 0; i < CHAMPS_PRIX_LECTURE[nom].length; i++) {
+        var k = CHAMPS_PRIX_LECTURE[nom][i];
+        if (!(avant[k] == null && rec[k] == null) && avant[k] !== rec[k]) return 'Le prix (« ' + k + ' ») ne se modifie plus dans cette liste : elle reflète le référentiel de prix. Le proposer à l’écran « Tarifs et prix » (Oui ou Non, date d’effet).';
+      }
+      return null;
+    });
+  });
   var VERSION_IMMUABLE = ['code', 'version', 'prixNonAssure', 'etatNonAssure', 'prixAssure', 'etatAssure', 'origine', 'proposePar', 'proposeLe', 'lot'];
   garder('versionsTarif', function (op, rec) {
     if (op === 'archiver') return 'Une version de prix ne s’archive pas : elle se REFUSE ou se RETIRE, et reste lisible (RG-14 : le prix d’une pièce émise doit pouvoir se relire).';

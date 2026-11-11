@@ -888,444 +888,378 @@
   }
 
   /* ==========================================================================
-   * RÉFÉRENTIEL TARIFAIRE
-   * ======================================================================== */
-  global.SIGH.screen('cfg-tarifs', {
-    title: 'Référentiel tarifaire',
-    description: 'Tarif unique consommé par la pharmacie, la facturation, les assurances, les rapports et la comptabilité.',
-    regle: 'Règle d’or (draf1 §22) : <strong>une seule source de vérité tarifaire</strong>. '
-      + 'Les prix ne sont jamais dupliqués entre modules — la pharmacie, la facturation et la comptabilité lisent le même référentiel.',
-    render: function (root) {
-      var host = el('div.space-y-4');
-      var produits = S.collection('produits').active();
-      var analyses = S.collection('analyses').active();
-
-      host.appendChild(U.kpiGrid([
-        { label: 'Produits tarifés', value: C.num(produits.length), icon: 'pill', tone: 'navy' },
-        { label: 'Analyses tarifées', value: C.num(analyses.length), icon: 'flask-conical', tone: 'info' },
-        { label: 'Actes et prestations', value: C.num(actes().length), icon: 'stethoscope', tone: 'success', hint: D.SECTEURS_ACTIVITE.length + ' secteurs' },
-        {
-          label: 'Tarifs à confirmer',
-          value: C.num(analyses.filter(function (a) { return a.tarifProvisoire; }).length + actes().filter(function (a) { return a.prix == null; }).length),
-          icon: 'help-circle', tone: 'warning', hint: 'Colonnes de prix vierges aux sources',
-        },
-      ]));
-
-      /* Schéma de propagation du tarif */
-      var flux = el('div.flex.flex-wrap.items-center.justify-center.gap-2');
-      flux.appendChild(el('span.rounded-lg.border-2.border-navy-400.bg-navy-50.px-4.py-2\\.5.text-sm.font-semibold.text-navy-900', { text: 'TARIF MASTER' }));
-      flux.appendChild(C.icon('arrow-right', 'h-4 w-4 text-slate-300'));
-      var cible = el('div.flex.flex-wrap.gap-2');
-      [['Pharmacie', 'pill'], ['Facturation', 'receipt'], ['Assurances', 'shield-check'], ['Rapports', 'bar-chart-3'], ['Comptabilité', 'book-open-check']].forEach(function (x) {
-        cible.appendChild(el('span.inline-flex.items-center.gap-1\\.5.rounded-lg.border.border-slate-200.bg-white.px-3.py-2.text-xs.font-medium.text-slate-700', null, [
-          C.icon(x[1], 'h-3.5 w-3.5'), x[0],
-        ]));
-      });
-      flux.appendChild(cible);
-      host.appendChild(U.card('Propagation du tarif', flux));
-
-      host.appendChild(U.tabs([
-        {
-          id: 'produits', label: 'Produits & médicaments', badge: produits.length,
-          render: function () {
-            return el('div.space-y-3', null, [
-              K.note('<strong>RG-02</strong> — pour les médicaments, le prix de vente est strictement égal au prix d’achat : aucune marge n’est appliquée.', { tone: 'info' }),
-              U.dataTable({
-                rows: produits, exportName: 'tarifs-produits', pageSize: 15,
-                actions: [K.creer(S.collection('produits', { module: 'M6', entite: 'Produit' }), CHAMPS_PRODUIT, {
-                  titre: 'Nouveau produit tarifé', entite: 'Produit',
-                  defauts: function () { return { categorie: 'medicament' }; },
-                  transform: function (v) {
-                    /* RG-02 : sur un médicament, le prix de vente suit le prix d achat. */
-                    if (v.categorie === 'medicament') v.prixVente = v.prixAchat;
-                    if (!v.code) v.code = 'PRD-' + C.pad(S.collection('produits').all().length + 1, 4);
-                    v.stock = v.stock || 0; v.stockGros = v.stockGros || 0; v.stockDetail = v.stockDetail || 0;
-                    return v;
-                  },
-                  apres: function () { global.location.reload(); },
-                })],
-                rowActions: K.actionsLigne(S.collection('produits', { module: 'M6', entite: 'Produit' }), [
-                  { name: 'designation', label: 'Désignation', required: true, col: 'full' },
-                  { name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'number', min: 0, required: true },
-                  {
-                    name: 'prixVente', label: 'Prix de vente (FCFA)', type: 'number', min: 0, required: true,
-                    help: 'RG-02 — pour un médicament, le prix de vente doit rester égal au prix d’achat.',
-                  },
-                  { name: 'unite', label: 'Unité' },
-                ], {
-                  archivable: false,
-                }),
-                defaultSort: 'designation',
-                filters: [{ name: 'categorie', label: 'Catégorie', options: D.CATEGORIES_PRODUIT.map(function (c) { return { value: c.id, label: c.label }; }) }],
-                columns: [
-                  { key: 'code', label: 'Code', nowrap: true, render: function (p) { return el('span.font-mono.text-xs', { text: p.code }); } },
-                  { key: 'designation', label: 'Désignation' },
-                  {
-                    key: 'categorie', label: 'Catégorie',
-                    text: function (p) { var c = D.CATEGORIES_PRODUIT.filter(function (x) { return x.id === p.categorie; })[0]; return c ? c.label : p.categorie; },
-                    render: function (p) {
-                      var c = D.CATEGORIES_PRODUIT.filter(function (x) { return x.id === p.categorie; })[0];
-                      return U.badge(c ? c.label : p.categorie, 'navy');
-                    },
-                  },
-                  { key: 'unite', label: 'Unité' },
-                  { key: 'prixAchat', label: 'Prix d’achat', align: 'right', text: function (p) { return C.money(p.prixAchat, false); }, render: function (p) { return C.money(p.prixAchat, false); } },
-                  { key: 'prixVente', label: 'Prix de vente', align: 'right', text: function (p) { return C.money(p.prixVente, false); }, render: function (p) { return el('span.font-semibold', { text: C.money(p.prixVente, false) }); } },
-                  {
-                    key: 'marge', label: 'Marge', align: 'right',
-                    value: function (p) { return p.prixVente - p.prixAchat; },
-                    render: function (p) {
-                      var m = p.prixVente - p.prixAchat;
-                      return m === 0 ? U.badge('Sans marge', 'success') : el('span.font-semibold.text-warning-600', { text: C.money(m, false) });
-                    },
-                  },
-                ],
-              }),
-            ]);
-          },
-        },
-        {
-          id: 'analyses', label: 'Analyses de laboratoire', badge: analyses.length,
-          render: function () {
-            return el('div.space-y-3', null, [
-              analyses.some(function (a) { return a.tarifProvisoire; })
-                ? K.note('Les 48 désignations proviennent du document « Tarifs des analyses de laboratoire » de la clinique. '
-                  + 'Le document source ne renseignant pas la colonne des prix, les tarifs portés ici sont des <strong>valeurs d’attente à confirmer</strong>.', { tone: 'warning', icon: 'help-circle' })
-                : K.note('Les 48 désignations proviennent du document « Tarifs des analyses de laboratoire » de la clinique. Tous les tarifs portés ici sont arrêtés.', { tone: 'info', icon: 'check-circle-2' }),
-              U.dataTable({
-                rows: analyses, exportName: 'tarifs-analyses', pageSize: 15, defaultSort: 'n',
-                actions: [K.creer(S.collection('analyses', { module: 'M5', entite: 'Analyse' }), CHAMPS_ANALYSE, {
-                  titre: 'Nouvelle analyse au catalogue', entite: 'Analyse', validation: { famille: 'analyses' },
-                  transform: function (v) {
-                    var n = S.collection('analyses').all().length + 1;
-                    v.n = n; v.code = v.code || 'L' + C.pad(n, 2);
-                    v.tarifProvisoire = true;
-                    return v;
-                  },
-                  apres: function () { global.location.reload(); },
-                })],
-                rowActions: K.actionsLigne(S.collection('analyses', { module: 'M5', entite: 'Analyse' }), [
-                  { name: 'designation', label: 'Désignation', required: true, col: 'full' },
-                  { name: 'categorie', label: 'Catégorie' },
-                  {
-                    name: 'prix', label: 'Tarif (FCFA)', type: 'number', min: 0, required: true,
-                    help: 'Valeur d’attente : le document source ne renseigne pas la colonne des prix.',
-                  },
-                  { name: 'delai', label: 'Délai de rendu' },
-                ], { entite: 'analyse', module: 'CFG', validation: { famille: 'analyses' } }),
-                filters: [{ name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(analyses, 'categorie')).sort() }],
-                columns: [
-                  { key: 'n', label: 'N°', align: 'right', nowrap: true },
-                  { key: 'code', label: 'Code', nowrap: true, render: function (a) { return el('span.font-mono.text-xs', { text: a.code }); } },
-                  { key: 'designation', label: 'Désignation' },
-                  { key: 'categorie', label: 'Catégorie', render: function (a) { return U.badge(a.categorie, 'navy'); } },
-                  { key: 'prix', label: 'Tarif', align: 'right', text: function (a) { return C.money(a.prix, false); }, render: function (a) { return el('span.font-semibold', { text: C.money(a.prix, false) }); } },
-                  {
-                    key: 'tarifProvisoire', label: 'Statut',
-                    text: function (a) { return a.tarifProvisoire ? 'À confirmer' : 'Confirmé'; },
-                    render: function (a) {
-                      return a.tarifProvisoire || a.aValider || a.valideLe ? K.badgeValidation('analyses', a.id) : U.badge('Confirmé', 'success');
-                    },
-                  },
-                ],
-              }),
-            ]);
-          },
-        },
-        {
-          id: 'actes', label: 'Actes & hospitalisation', badge: actes().length,
-          render: function (panneau) {
-            dessinerActes(panneau);
-            return null;
-          },
-        },
-        {
-          /* QUATRIÈME ONGLET (Bug 12 des Instructions) : les certificats et
-             attestations, LUS depuis le catalogue tarifaire et les types de
-             pièces — une seule vérité, la modification se fait à sa source. */
-          id: 'certificats', label: 'Certificats et Attestations',
-          badge: (D.tarifParFamille ? D.tarifParFamille('CERTIFICAT') : []).length,
-          render: function () {
-            var tarifes = D.tarifParFamille ? D.tarifParFamille('CERTIFICAT') : [];
-            var types = S.collection('typesPiece').active();
-            var sansTarif = types.filter(function (t) { return !t.tarifCode; });
-            return el('div.space-y-3', null, [
-              K.note('Les certificats ne sont couverts par <strong>aucune assurance à l’exception de '
-                + 'SOS</strong> — mention manuscrite de la grille tarifaire. Les tarifs se corrigent au '
-                + '<strong>catalogue tarifaire</strong>, les pièces dans « Types de pièces certifiantes » : '
-                + 'cet onglet les lit, il ne les duplique pas.', { tone: 'info', icon: 'file-badge' }),
-              U.dataTable({
-                rows: tarifes, exportName: 'tarifs-certificats', pageSize: 15,
-                defaultSort: 'libelle',
-                emptyMessage: 'Aucun certificat tarifé au catalogue.',
-                columns: [
-                  { key: 'code', label: 'Code', nowrap: true, render: function (t) { return el('span.font-mono.text-xs', { text: t.code }); } },
-                  { key: 'libelle', label: 'Pièce' },
-                  {
-                    key: 'prixNonAssure', label: 'Prix non assuré', align: 'right',
-                    text: function (t) { return C.money(t.prixNonAssure, false); },
-                    render: function (t) { return C.money(t.prixNonAssure, false); },
-                  },
-                  {
-                    key: 'prixAssure', label: 'Prix assuré', align: 'right',
-                    text: function (t) { return t.assurable === 'sos' ? C.money(t.prixAssure, false) + ' (SOS)' : 'NON COUVERT'; },
-                    render: function (t) {
-                      return t.assurable === 'sos'
-                        ? el('span', null, [el('span', { text: C.money(t.prixAssure, false) + ' ' }), U.badge('SOS seule', 'info')])
-                        : U.badge('NON COUVERT', 'warning');
-                    },
-                  },
-                ],
-              }),
-              sansTarif.length
-                ? K.note('<strong>' + C.num(sansTarif.length) + ' type(s) de pièce sans tarif au '
-                  + 'catalogue</strong> : ' + sansTarif.map(function (t) { return t.libelle; }).join(', ')
-                  + '. Une pièce non tarifée se délivre, elle ne se facture pas — rattacher son acte '
-                  + 'depuis « Types de pièces certifiantes ».', { tone: 'warning', icon: 'triangle-alert' })
-                : null,
-            ]);
-          },
-        },
-      ]));
-      root.appendChild(host);
-      return null;
-    },
-  });
-
-  /* --------------------------------------------------------------------------
-   * CATALOGUE DES ACTES — administrable, et non plus écrit en dur
+   * TARIFS ET PRIX : l'écran unique du référentiel de prix (PRD-TARIFS, lot T2)
    * --------------------------------------------------------------------------
-   * L'onglet présentait auparavant quatorze tarifs inscrits dans le code, dont
-   * aucun ne figurait dans un document de la clinique. Il lit désormais la
-   * collection `actes`, amorcée depuis le document « Répartition des activités
-   * permettant l'évaluation des différents secteurs » : la Direction y crée,
-   * corrige et archive ses prestations elle-même (draf1 §1 — rien en dur).
-   * ----------------------------------------------------------------------- */
-  /* Champs de saisie des deux autres onglets du référentiel — définis ici pour
-     que la création et la modification partagent exactement le même formulaire. */
-  var CHAMPS_PRODUIT = [
-    { name: 'designation', label: 'Désignation', required: true, col: 'full' },
-    {
-      name: 'categorie', label: 'Catégorie', type: 'select', required: true,
-      options: [{ value: 'medicament', label: 'Médicament' }, { value: 'conso_medical', label: 'Consommable médical' },
-        { value: 'reactif', label: 'Réactif de laboratoire' }, { value: 'conso_labo', label: 'Consommable de laboratoire' },
-        { value: 'divers', label: 'Divers' }],
-    },
-    { name: 'code', label: 'Code article', help: 'Laisser vide pour une attribution automatique.' },
-    { name: 'unite', label: 'Unité' },
-    { name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'money', min: 0, required: true },
-    {
-      name: 'prixVente', label: 'Prix de vente (FCFA)', type: 'money', min: 0,
-      help: 'RG-02 — pour un médicament, il est aligné d’office sur le prix d’achat : aucune marge.',
-    },
-    { name: 'seuilAlerte', label: 'Seuil d’alerte', type: 'number', min: 0 },
+   * Il remplace trois écrans qui portaient chacun un morceau des prix (le référentiel tarifaire, le catalogue tarifaire à deux prix, et le prix des
+   * analyses du laboratoire) : la caisse, la prescription, les soins, l'imagerie et les certificats lisent désormais UNE liste, au prix EN VIGUEUR à la
+   * date de la pièce. Il n'écrit que dans `tarifs` et `versionsTarif` : les anciennes collections (`actes`, `analyses`, `catalogueTarifs`) sont des
+   * projections de lecture, que le moteur reconstruit.
+   *
+   * PROPOSER et DÉCIDER sont deux droits. Une proposition ne change rien tant qu'elle n'est pas validée (Oui) ; à la date d'effet, le prix bascule sans
+   * rechargement ni connexion ; une pièce émise garde son prix. Le produit (médicament) reste au prix d'achat sans marge (RG-02) : il se lit ici, il
+   * se modifie au référentiel des produits.
+   * ======================================================================== */
+  var FAMILLES_PRESTATIONS = [
+    ['CONSULTATION', 'Consultations'], ['ACTE', 'Actes'], ['HOSPITALISATION', 'Hospitalisation'],
+    ['AMI', 'Actes médico-infirmiers'], ['GYNECO', 'Gynéco-obstétrique et kits'], ['CERTIFICAT', 'Certificats et attestations'],
   ];
+  var ETATS_PRIX = ['En vigueur', 'Proposition en attente', 'Changement à venir', 'Provisoire', 'Sans prix en vigueur'];
+  var LIBELLE_ORIGINE = { migration: 'Migration des listes d’avant', 'semence-grille': 'Grille imprimée des analyses', ecran: 'Saisie à l’écran', import: 'Importation' };
 
-  var CHAMPS_ANALYSE = [
-    { name: 'designation', label: 'Désignation', required: true, col: 'full' },
-    { name: 'categorie', label: 'Catégorie', required: true },
-    { name: 'code', label: 'Code', help: 'Laisser vide pour une attribution automatique.' },
-    {
-      name: 'prix', label: 'Tarif (FCFA)', type: 'money', min: 0, required: true,
-      help: 'Le document source ne renseigne pas les prix : toute valeur saisie ici reste à confirmer.',
-    },
-    { name: 'echantillon', label: 'Échantillon' },
-    { name: 'delai', label: 'Délai de rendu' },
-  ];
+  function PRC() { return global.SIGH.parcours; }
+  function jourPrix() { return C.iso(C.aujourdhui()); }
+  function argent(x) { return x == null ? 'Non renseigné' : C.money(x, false); }
 
-  function colActes() { return S.collection('actes', { module: 'CFG', entite: 'acte', prefix: 'ACT' }); }
-  function actes() { return colActes().active(); }
-  /* L'amorçage du catalogue vit dans store.seed() — les actes sont lus par la
-     consultation, l'hospitalisation, la facturation, la recherche globale et le
-     moteur de parcours : un référentiel multi-lecteurs ne s'amorce jamais ici. */
-
-  function champsActe() {
-    return [
-      { name: 'libelle', label: 'Libellé de la prestation', required: true, col: 'full' },
-      {
-        name: 'secteur', label: 'Secteur', type: 'select', required: true,
-        options: D.SECTEURS_ACTIVITE.concat(['Hospitalisation']),
-        help: 'Secteur qui exécute l’acte — sert aussi à l’évaluation de son activité.',
-      },
-      { name: 'code', label: 'Code', help: 'Laisser vide pour une attribution automatique.' },
-      {
-        name: 'prix', label: 'Tarif (FCFA)', type: 'money', min: 0,
-        help: 'Laisser vide tant que la Direction n’a pas validé le tarif : l’acte est alors signalé « à valider ».',
-      },
-      { name: 'source', label: 'Document d’origine', col: 'full',
-        help: 'Traçabilité : d’où vient ce tarif (facture, note de service, décision).' },
-    ];
+  /** Les lignes du tableau : une par prestation, avec ce qui est en vigueur AUJOURD'HUI et ce qui attend. */
+  function lignesTarifs(filtre) {
+    var h = D.TARIFS.lire(), jour = jourPrix();
+    if (!h) return [];
+    return h.tarifs.filter(function (p) { return p.statut !== 'archive' && filtre(p); }).map(function (p) {
+      var s = D.TARIFS.instantane(h, p, jour);
+      var vs = h.vers[p.code] || [];
+      var attente = vs.filter(function (v) { return v.statut === 'propose'; }).length;
+      var avenir = vs.filter(function (v) { return v.statut === 'valide' && v.dateEffet && v.dateEffet > jour; }).length;
+      var etat = !s ? 'Sans prix en vigueur' : attente ? 'Proposition en attente' : avenir ? 'Changement à venir' : s.provisoire ? 'Provisoire' : 'En vigueur';
+      var couv = p.assurable === 'sos' ? 'SOS seule' : (p.assurable === false || (s && s.nc) ? 'Non couvert' : 'Toutes compagnies');
+      return { id: p.id, code: p.code, libelle: p.libelle, famille: p.famille, secteur: p.secteur || null, na: s ? s.na : null, pa: s ? s.pa : null,
+        etatAssure: s ? s.etatAssure : null, nc: s ? s.nc : false, depuis: s ? s.dateEffet : null, version: s ? s.version : null, attente: attente, avenir: avenir,
+        etat: etat, couverture: couv, libelleGrille: p.libelleGrille || null, alias: (p.codesAlias || []).join(', '), source: p.source || null };
+    });
   }
 
-  function dessinerActes(panneau) {
-    C.clear(panneau);
-    var rows = actes();
-    var aValider = rows.filter(function (a) { return a.prix == null || a.tarifProvisoire; });
-    var host = el('div.space-y-3');
+  function badgeEtatPrix(r) {
+    var ton = { 'En vigueur': 'success', 'Proposition en attente': 'warning', 'Changement à venir': 'info', 'Provisoire': 'warning', 'Sans prix en vigueur': 'danger' }[r.etat] || 'neutral';
+    return U.badge(r.etat, ton);
+  }
+  function celluleAssure(r) {
+    if (r.etat === 'Sans prix en vigueur') return el('span.text-xs.italic.text-rose-600', { text: 'à valider' });
+    if (r.etatAssure === 'nc') return U.badge('NON COUVERT', 'warning');
+    if (r.etatAssure === 'manquant') return el('span.text-xs.italic.text-rose-600', { text: 'à valider' });
+    if (r.etatAssure === 'unique') return el('span.text-xs.text-slate-500', { text: 'prix unique' });
+    return el('span', { text: C.money(r.pa, false) });
+  }
 
-    /* Trois populations, et il faut les distinguer : un tarif repris d'une
-       grille imprimée, une valeur d'attente, et un acte que la grille décline
-       en variantes — ce dernier n'est pas « sans prix », il attend qu'on dise
-       DE QUEL acte il s'agit. Les confondre ferait chercher un prix là où
-       c'est une question de nomenclature. */
-    var repris = rows.filter(function (a) { return a.codeTarif; });
-    var declines = rows.filter(function (a) { return a.variantesGrille && a.variantesGrille.length; });
-
-    if (repris.length) {
-      host.appendChild(K.note('<strong>' + repris.length + ' prestation(s) reprennent leur tarif des grilles '
-        + 'imprimées de la clinique</strong>, avec leurs <strong>deux colonnes</strong> — assuré et non assuré. '
-        + 'Le rapprochement est fait sur <strong>libellé identique</strong> ou par une '
-        + '<strong>correspondance nommée</strong>, jamais par approximation : apparier « Consultation '
-        + 'généraliste à domicile » avec « Consultation généraliste » ferait perdre le déplacement.',
-        { tone: 'success', icon: 'check-circle' }));
+  /** L'historique d'un prix : toutes les versions, la comparaison de deux d'entre elles. */
+  function blocHistorique(code) {
+    var h = D.TARIFS.lire();
+    var vs = PRC().versionsTarifDe(code);
+    var wrap = el('div.space-y-3');
+    if (!vs.length) { wrap.appendChild(K.note('Aucune version de prix pour cette prestation.', { tone: 'info' })); return wrap; }
+    var jour = jourPrix();
+    var enVigueur = h ? D.TARIFS.enVigueur(h, code, jour) : null;
+    function etatVersion(v) {
+      if (v.statut === 'propose') return U.badge('Proposée', 'warning');
+      if (v.statut === 'refuse') return U.badge('Refusée', 'danger');
+      if (v.statut === 'retire') return U.badge('Retirée', 'neutral');
+      if (enVigueur && enVigueur.id === v.id) return U.badge('En vigueur', 'success');
+      if (v.dateEffet && v.dateEffet > jour) return U.badge('À venir', 'info');
+      return U.badge('Remplacée', 'neutral');
     }
-    if (aValider.length) {
-      host.appendChild(K.note('<strong>' + aValider.length + ' prestation(s) portent encore un tarif '
-        + 'd’attente.</strong> Elles ne figurent sur aucune des six grilles : la valeur permet d’exercer la '
-        + 'facturation, elle reste signalée tant que la Direction ne l’a pas validée.',
-        { tone: 'warning', icon: 'help-circle' }));
+    function colonneAssure(v) {
+      return v.etatAssure === 'nc' ? 'NON COUVERT' : v.etatAssure === 'manquant' ? 'à valider' : v.etatAssure === 'unique' ? 'prix unique' : C.money(v.prixAssure, false);
     }
-    if (declines.length) {
-      host.appendChild(K.note('<strong>' + declines.length + ' prestation(s) sont déclinées par la grille en '
-        + 'plusieurs variantes</strong> — sept accouchements, quatre paliers d’oxygénothérapie, trois '
-        + 'épisiotomies, deux ponctions lombaires. Ce n’est pas un prix manquant : c’est à la clinique de dire '
-        + '<strong>quelle variante</strong> son acte désigne. Choisir à sa place facturerait le mauvais tarif.',
-        { tone: 'info', icon: 'git-branch' }));
-    }
-
-    host.appendChild(U.dataTable({
-      rows: rows, exportName: 'tarifs-actes', pageSize: 20, defaultSort: 'secteur', searchable: true,
-      filters: [{
-        name: 'secteur', label: 'Secteur',
-        options: Object.keys(C.groupBy(rows, 'secteur')).sort(),
-      }, {
-        name: 'tarife', label: 'Tarif',
-        options: [{ value: 'grille', label: 'Repris d’une grille' },
-          { value: 'valide', label: 'Validé sur pièce' },
-          { value: 'attente', label: 'Valeur d’attente' },
-          { value: 'decline', label: 'Décliné par la grille' },
-          { value: 'absent', label: 'Sans tarif' }],
-        match: function (r, v) {
-          if (v === 'grille') return !!r.codeTarif;
-          if (v === 'valide') return r.prix != null && !r.tarifProvisoire;
-          if (v === 'attente') return !!r.tarifProvisoire;
-          if (v === 'decline') return !!(r.variantesGrille && r.variantesGrille.length);
-          return r.prix == null;
-        },
-      }],
+    wrap.appendChild(U.dataTable({
+      rows: vs.slice().reverse(), searchable: false, pageSize: 20, exportName: 'historique-prix-' + code,
       columns: [
-        { key: 'code', label: 'Code', nowrap: true, render: function (a) { return el('span.font-mono.text-xs', { text: a.code || '—' }); } },
-        { key: 'libelle', label: 'Prestation' },
-        { key: 'secteur', label: 'Secteur', render: function (a) { return U.badge(a.secteur, 'navy'); } },
-        {
-          key: 'prix', label: 'Tarif non assuré', align: 'right',
-          text: function (a) { return a.prix == null ? 'à valider' : C.money(a.prix, false); },
-          sortValue: function (a) { return a.prix == null ? -1 : a.prix; },
-          render: function (a) {
-            if (a.prix == null) return U.badge('à valider', 'warning');
-            return el('div', null, [
-              el('span.font-semibold', {
-                class: a.tarifProvisoire ? 'text-warning-700' : 'text-slate-800',
-                text: C.money(a.prix, false),
-              }),
-              a.tarifProvisoire || a.valideLe ? el('div.mt-0\\.5', null, K.badgeValidation('actes', a.id)) : null,
-            ]);
-          },
-        },
-        {
-          /* La colonne assurée n'est pas un doublon : c'est la règle de la
-             Direction rendue vérifiable d'un coup d'œil. « NON COUVERT » y est
-             une VALEUR, pas une absence — les actes de planification familiale
-             et l'hydrotubation sont exclus délibérément. */
-          key: 'prixAssure', label: 'Tarif assuré', align: 'right',
-          text: function (a) {
-            if (a.nonCouvert) return 'non couvert';
-            return a.prixAssure == null ? '—' : C.money(a.prixAssure, false);
-          },
-          sortValue: function (a) { return a.prixAssure == null ? -1 : a.prixAssure; },
-          render: function (a) {
-            if (a.nonCouvert) return U.badge('non couvert', 'neutral');
-            if (a.prixAssure == null) {
-              return el('span.text-xs.text-slate-300', { text: '—' });
-            }
-            var ecart = a.prix != null ? a.prix - a.prixAssure : null;
-            return el('div', null, [
-              el('span.font-semibold.text-success-700', { text: C.money(a.prixAssure, false) }),
-              ecart ? el('p.text-[10px].text-slate-400', { text: '− ' + C.money(ecart, false) }) : null,
-            ].filter(Boolean));
-          },
-        },
-        {
-          key: 'source', label: 'Origine du tarif',
-          render: function (a) {
-            var lignes = [];
-            /* Un tarif ARRÊTÉ ne dit plus « à valider » : la mention d'attente tombe du texte d'origine (lot L1). */
-            var texteArrete = function (t) {
-              return String(t || '').replace(/^[^;]*à valider[^;]*;\s*/i, '').replace(/\s*(?:[—–:-]\s*)?(?:(?:tarif|proposition|modèle|valeur)\s+)?à\s+(?:valider|arrêter|confirmer)\b[^.;]*$/i, '');
-            };
-            var sourceAffichee = a.tarifProvisoire ? a.source : texteArrete(a.source);
-            lignes.push(sourceAffichee
-              ? el('span.text-xs.text-slate-500', { text: sourceAffichee })
-              : el('span.text-xs.text-slate-300', { text: '—' }));
-            /* Par quelle voie le rapprochement s'est fait : une correspondance
-               nommée est une DÉCISION, elle doit pouvoir se relire. */
-            if (a.rapprochement) {
-              lignes.push(el('p.text-[10px].text-slate-400', { text: 'rapproché par ' + a.rapprochement }));
-            }
-            /* Un tarif ARRÊTÉ ne dit plus « à valider » : la mention d'attente tombe du texte d'origine (lot L1). */
-            var motifAffiche = a.tarifProvisoire ? a.motifPrix : String(a.motifPrix || '')
-              .replace(/^[^;]*à valider[^;]*;\s*/i, '').replace(/\s*(?:[—–:-]\s*)?(?:(?:tarif|proposition|modèle|valeur)\s+)?à\s+(?:valider|arrêter|confirmer)\b[^.;]*$/i, '');
-            if (motifAffiche) {
-              lignes.push(el('p.text-[10px].text-info-600', { text: motifAffiche }));
-            }
-            return el('div', null, lignes);
-          },
-        },
-      ],
-      rowActions: K.actionsLigne(colActes(), champsActe, { entite: 'acte', module: 'CFG', validation: { famille: 'actes' }, refresh: function () { dessinerActes(panneau); } }),
-      actions: [
-        K.creer(colActes(), champsActe, {
-          titre: 'Nouvelle prestation', entite: 'Acte', validation: { famille: 'actes' },
-          defauts: function () { return { secteur: D.SECTEURS_ACTIVITE[0] }; },
-          transform: function (v) {
-            if (!v.code) v.code = 'ACT-' + C.pad(colActes().all().length + 1, 3);
-            if (v.prix === '' || v.prix == null) v.prix = null;
-            /* Défaut 6 : un acte créé ici n'est PAS un tarif arrêté : il naît « à valider » (valeur d'attente), daté et sourcé. */
-            v.tarifProvisoire = true;
-            v.motifPrix = v.motifPrix || 'Créé le ' + C.dateFR(AUJ) + ' : tarif à valider par la Direction';
-            return v;
-          },
-          apres: function () { dessinerActes(panneau); },
-        }),
-        K.btn('Imprimer la grille tarifaire', {
-          size: 'sm', icon: 'printer',
-          onclick: function () {
-            P.etat({
-              titre: 'Grille tarifaire des actes et prestations',
-              sousTitre: 'Catalogue par secteur — ' + C.dateFR(AUJ),
-              cartouche: [['Prestations au catalogue', C.num(rows.length)],
-                ['Tarifs validés', C.num(rows.length - aValider.length)],
-                aValider.length ? ['Tarifs à valider', C.num(aValider.length)] : null,
-                ['Date d’édition', C.dateFR(AUJ)]].filter(Boolean),
-              contenu: P.tableau([
-                { label: 'Code', key: 'code' },
-                { label: 'Prestation', key: 'libelle' },
-                { label: 'Secteur', key: 'secteur' },
-                { label: 'Tarif', align: 'right', value: function (a) { return a.prix == null ? 'à valider' : C.money(a.prix, false); } },
-              ], C.sortBy(rows, 'secteur')),
-              signatures: [{ role: 'La Directrice Administrative', nom: 'TAKI Alimatou' },
-                { role: 'Le Directeur Médical', nom: 'BASSONGUI Chabi Séko' }],
-            });
-          },
-        }),
+        { key: 'version', label: 'Version', align: 'right', nowrap: true },
+        { key: 'dateEffet', label: 'Date d’effet', nowrap: true, render: function (v) { return v.dateEffet ? C.dateFR(v.dateEffet) : (v.aDater ? el('span.text-xs.italic.text-slate-500', { text: 'à fixer à la décision' }) : 'Depuis l’origine'); } },
+        { key: 'prixNonAssure', label: 'Non assuré', align: 'right', render: function (v) { return argent(v.etatNonAssure === 'manquant' ? null : v.prixNonAssure); } },
+        { key: 'prixAssure', label: 'Assuré', align: 'right', render: function (v) { return colonneAssure(v); }, text: colonneAssure },
+        { key: 'statut', label: 'Statut', render: etatVersion, text: function (v) { return v.statut; } },
+        { key: 'origine', label: 'Origine', render: function (v) { return LIBELLE_ORIGINE[v.origine] || v.origine || 'Non renseigné'; } },
+        { key: 'proposePar', label: 'Proposée par', render: function (v) { return v.proposePar ? v.proposePar + (v.proposeLe ? ' le ' + C.dateFR(v.proposeLe) : '') : 'Non renseigné'; } },
+        { key: 'decidePar', label: 'Décidée par', render: function (v) { return v.decidePar ? v.decidePar + (v.roleDecision ? ' (' + v.roleDecision + ')' : '') + (v.decideLe ? ' le ' + C.dateFR(v.decideLe) : '') : (v.statut === 'propose' ? 'En attente' : 'Non renseigné'); } },
+        { key: 'motif', label: 'Motif', render: function (v) { return v.motifDecision ? v.motif + ' / ' + v.motifDecision : (v.motif || 'Non renseigné'); } },
       ],
     }));
-
-    host.appendChild(K.source('Répartition des activités permettant l’évaluation des différents secteurs de la clinique '
-      + '— complétée des types de chambre du CDCT.'));
-    panneau.appendChild(host);
-    U.icons(panneau);
+    if (vs.length > 1) {
+      var opts = vs.map(function (v) { return { value: String(v.version), label: 'Version ' + v.version + (v.dateEffet ? ' (' + C.dateFR(v.dateEffet) + ')' : '') }; });
+      var a = el('select.select.w-auto', { 'aria-label': 'Version de départ' }), b = el('select.select.w-auto', { 'aria-label': 'Version comparée' });
+      opts.forEach(function (o) { a.appendChild(el('option', { value: o.value }, o.label)); b.appendChild(el('option', { value: o.value }, o.label)); });
+      a.value = String(vs[vs.length - 2].version); b.value = String(vs[vs.length - 1].version);
+      var sortie = el('div');
+      function comparer() {
+        C.clear(sortie);
+        var va = vs.filter(function (v) { return String(v.version) === a.value; })[0], vb = vs.filter(function (v) { return String(v.version) === b.value; })[0];
+        if (!va || !vb) return;
+        function ecart(x, y) { return x == null || y == null ? 'non comparable' : (y - x >= 0 ? '+' : '') + C.money(y - x, false) + (x ? ' (' + (Math.round((y - x) / x * 1000) / 10).toLocaleString('fr-FR') + ' %)' : ''); }
+        sortie.appendChild(U.descList([
+          ['Prix non assuré', argent(va.etatNonAssure === 'manquant' ? null : va.prixNonAssure) + ' vers ' + argent(vb.etatNonAssure === 'manquant' ? null : vb.prixNonAssure)],
+          ['Variation du non assuré', ecart(va.etatNonAssure === 'manquant' ? null : va.prixNonAssure, vb.etatNonAssure === 'manquant' ? null : vb.prixNonAssure)],
+          ['Prix assuré', colonneAssure(va) + ' vers ' + colonneAssure(vb)],
+          ['Variation de l’assuré', va.etatAssure === 'montant' && vb.etatAssure === 'montant' ? ecart(va.prixAssure, vb.prixAssure) : 'non comparable'],
+        ], 'grid-cols-1'));
+      }
+      a.addEventListener('change', comparer); b.addEventListener('change', comparer);
+      wrap.appendChild(U.card('Comparer deux versions', el('div.space-y-3', null, [el('div.flex.flex-wrap.items-center.gap-2', null, [a, el('span.text-sm.text-slate-500', { text: 'vers' }), b]), sortie])));
+      comparer();
+    }
+    return wrap;
   }
+
+  /** La modale de proposition d'un changement de prix (ou, avec `creation`, d'une nouvelle prestation). */
+  function modaleProposition(ligne, apres) {
+    var h = D.TARIFS.lire();
+    var p = ligne ? h.parCode[ligne.code] : null;
+    var s = p ? D.TARIFS.instantane(h, p, jourPrix()) : null;
+    var champs = [];
+    if (!ligne) {
+      champs.push({ name: 'code', label: 'Code', type: 'text', required: true });
+      champs.push({ name: 'libelle', label: 'Libellé de facturation', type: 'text', required: true, col: 'full' });
+      champs.push({ name: 'famille', label: 'Famille', type: 'select', required: true,
+        options: FAMILLES_PRESTATIONS.map(function (f) { return { value: f[0], label: f[1] }; }).concat([{ value: 'LABO', label: 'Analyses de laboratoire' }, { value: 'IMAGERIE', label: 'Imagerie médicale' }]) });
+      champs.push({ name: 'secteur', label: 'Secteur', type: 'text' });
+    }
+    champs.push({ name: 'prixNonAssure', label: 'Prix non assuré (FCFA)', type: 'money', required: true, value: s ? s.na : null, hint: 'Un montant entier, strictement positif.' });
+    champs.push({ name: 'etatAssure', label: 'Colonne assurée', type: 'select', required: true, value: s ? s.etatAssure : 'montant',
+      options: [{ value: 'montant', label: 'Un montant' }, { value: 'nc', label: 'NON COUVERT par les assurances' }, { value: 'manquant', label: 'Non renseignée (ligne non facturable à l’assuré)' }, { value: 'unique', label: 'Prix unique (aucune colonne assurée)' }] });
+    champs.push({ name: 'prixAssure', label: 'Prix assuré (FCFA)', type: 'money', value: s && s.etatAssure === 'montant' ? s.pa : null, hint: 'Renseigné seulement quand la colonne assurée est un montant.' });
+    champs.push({ name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, value: jourPrix(), hint: 'Au plus tôt aujourd’hui : une date passée n’est pas acceptée. Le prix en vigueur ne change qu’à cette date, et seulement après un Oui.' });
+    champs.push({ name: 'motif', label: 'Motif du changement', type: 'textarea', required: true, col: 'full' });
+    var f = U.form(champs, {});
+    var info = ligne
+      ? K.note('Prix en vigueur aujourd’hui : <strong>' + argent(s ? s.na : null) + '</strong> non assuré. Une proposition <strong>ne change rien</strong> tant que la Direction, la Directrice Administrative ou l’administrateur n’a pas répondu Oui ; les pièces déjà émises gardent leur prix.', { tone: 'info' })
+      : K.note('La prestation est créée sans prix en vigueur : elle ne se facture qu’après le Oui qui valide sa première version.', { tone: 'info' });
+    var m = U.modal({
+      title: ligne ? 'Proposer un changement de prix' : 'Nouvelle prestation', subtitle: ligne ? ligne.code + ' : ' + ligne.libelle : null, size: 'md',
+      body: el('div.space-y-3', null, [info, f]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Proposer', {
+          variant: 'primary', icon: 'send',
+          onclick: function () {
+            var v = f.collect(); if (!v) return;
+            var o = { code: ligne ? ligne.code : v.code, prixNonAssure: v.prixNonAssure, etatAssure: v.etatAssure, prixAssure: v.prixAssure, dateEffet: v.dateEffet, motif: v.motif };
+            if (!ligne) o.creation = { libelle: v.libelle, famille: v.famille, secteur: v.secteur || null, source: 'Saisi à l’écran « Tarifs et prix »' };
+            var r = PRC().proposerTarif(o);
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            m.close();
+            U.toast('Proposition enregistrée : elle attend la décision (Oui ou Non).', { type: 'success', detail: 'Le prix en vigueur ne change pas avant le Oui.' });
+            if (apres) apres('alertes');
+          },
+        }),
+      ],
+    });
+  }
+
+  function decider(v, decision, apres) {
+    var r;
+    if (decision === 'oui') {
+      var champDate = v.dateEffet ? null : el('input.input', { type: 'date', value: jourPrix(), min: jourPrix(), 'aria-label': 'Date d’effet' });
+      var msg = 'Le prix <strong>' + v.code + '</strong> passera à <strong>' + argent(v.prixNonAssure) + '</strong> non assuré'
+        + (v.etatAssure === 'montant' ? ' et <strong>' + C.money(v.prixAssure, false) + '</strong> assuré' : '') + (v.dateEffet ? ', à partir du <strong>' + C.dateFR(v.dateEffet) + '</strong>' : ', à la date que vous fixez ci-dessous')
+        + '. Les pièces déjà émises gardent leur prix.';
+      var corps = el('div.space-y-3', null, [K.note(msg, { tone: 'info' }), champDate ? el('div', null, [el('label.label', { text: 'Date d’effet' }), champDate]) : null]);
+      var mo = U.modal({
+        title: 'Valider ce changement de prix ?', size: 'sm', body: corps,
+        footer: [K.btn('Annuler', { onclick: function () { mo.close(); } }), K.btn('Oui, valider', { variant: 'primary', icon: 'check', onclick: function () {
+          r = PRC().deciderTarif(v.id, 'oui', { dateEffet: champDate ? champDate.value : null });
+          if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+          mo.close(); U.toast('Changement de prix validé.', { type: 'success' }); apres('alertes');
+        } })],
+      });
+      return;
+    }
+    U.confirm({ title: 'Refuser ce changement de prix ?', message: 'Le prix de <strong>' + v.code + '</strong> ne change pas. Le refus reste lisible à l’historique avec son motif.', confirmLabel: 'Non, refuser', danger: true, requireMotif: true })
+      .then(function (rep) {
+        if (!rep) return;
+        r = PRC().deciderTarif(v.id, 'non', { motif: rep.motif });
+        if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+        U.toast('Changement de prix refusé.', { type: 'success' }); apres('alertes');
+      });
+  }
+
+  function imprimerGrille(lignes, titre) {
+    P.etat({
+      titre: titre, sousTitre: 'Prix en vigueur au ' + C.dateFR(jourPrix()) + ' : ' + lignes.length + ' prestations',
+      contenu: P.tableau([
+        { label: 'Code', key: 'code' }, { label: 'Libellé', key: 'libelle' },
+        { label: 'Non assuré', align: 'right', value: function (r) { return argent(r.na); } },
+        { label: 'Assuré', align: 'right', value: function (r) { return r.etatAssure === 'nc' ? 'NON COUVERT' : r.etatAssure === 'unique' ? 'prix unique' : argent(r.pa); } },
+        { label: 'Version', align: 'right', value: function (r) { return r.version == null ? '' : String(r.version); } },
+      ], lignes),
+      signatures: [{ role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }, { role: 'La Direction', nom: '' }],
+    });
+  }
+
+  global.SIGH.screen('cfg-tarifs', {
+    title: 'Tarifs et prix',
+    description: 'Le référentiel de prix unique : prestations, analyses et imagerie, l’historique de chaque prix et les changements en attente de décision.',
+    regle: 'Une <strong>seule liste de prix</strong> est lue par la caisse, la prescription, les soins, l’imagerie et les certificats. Le prix d’une pièce est celui '
+      + 'qui était en vigueur à la <strong>date de la pièce</strong> : un changement <strong>ne touche jamais une pièce déjà émise</strong>, il se versionne par date d’effet. '
+      + '<strong>Proposer</strong> un changement et le <strong>valider</strong> (Oui ou Non) sont deux droits distincts ; une proposition ne change rien avant le Oui. '
+      + 'Un prix absent se dit « à valider », jamais zéro.',
+    actions: function () {
+      var a = [
+        K.commande('Nouvelle prestation', { variant: 'primary', icon: 'plus', onclick: function () { modaleProposition(null, rafraichirEcran); } }),
+        K.btn('Imprimer la grille', { icon: 'printer', onclick: function () { imprimerGrille(lignesTarifs(function () { return true; }).filter(function (r) { return r.etat !== 'Sans prix en vigueur'; }), 'Grille tarifaire'); } }),
+      ];
+      return a.filter(Boolean);
+    },
+    render: function (root) {
+      var host = el('div.space-y-4');
+      root.appendChild(host);
+      var onglet = null, tabs = null;
+      rafraichirEcran = function (vers) { onglet = vers || onglet; peindre(); };
+      peindre();
+      return null;
+
+      function peindre() {
+        var tous = lignesTarifs(function () { return true; });
+        var h = D.TARIFS.lire();
+        var peutDecider = PRC().peutDeciderTarif();
+        var enAttente = h ? h.versions.filter(function (v) { return v.statut === 'propose'; }) : [];
+        C.clear(host);
+        host.appendChild(U.kpiGrid([
+          { label: 'Prestations tarifées', value: C.num(tous.length), icon: 'tags', tone: 'navy', hint: 'au jour du ' + C.dateFR(jourPrix()) },
+          { label: 'Prix en vigueur', value: C.num(tous.filter(function (r) { return r.etat !== 'Sans prix en vigueur'; }).length), icon: 'badge-check', tone: 'success' },
+          { label: 'Propositions en attente', value: C.num(enAttente.length), icon: 'hourglass', tone: enAttente.length ? 'warning' : 'success', hint: 'Oui ou Non à donner' },
+          { label: 'Sans prix en vigueur', value: C.num(tous.filter(function (r) { return r.etat === 'Sans prix en vigueur'; }).length), icon: 'triangle-alert', tone: tous.some(function (r) { return r.etat === 'Sans prix en vigueur'; }) ? 'danger' : 'success', hint: 'ligne non facturable' },
+        ]));
+
+        function tableauPrestations(lignes, vide) {
+          return U.dataTable({
+            rows: C.sortBy(lignes, 'code'), pageSize: 15, exportName: 'tarifs-et-prix', emptyMessage: vide || 'Aucune prestation.',
+            filters: [{ name: 'etat', label: 'État du prix', options: ETATS_PRIX }, { name: 'couverture', label: 'Couverture', options: ['Toutes compagnies', 'SOS seule', 'Non couvert'] }],
+            columns: [
+              { key: 'code', label: 'Code', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold.text-navy-800', { text: r.code }); } },
+              { key: 'libelle', label: 'Libellé de facturation' },
+              { key: 'famille', label: 'Famille', render: function (r) { var f = FAMILLES_PRESTATIONS.filter(function (x) { return x[0] === r.famille; })[0]; return f ? f[1] : (r.famille === 'LABO' ? 'Analyses' : r.famille === 'IMAGERIE' ? 'Imagerie' : r.famille); } },
+              { key: 'secteur', label: 'Secteur', render: function (r) { return r.secteur || el('span.text-xs.italic.text-slate-400', { text: 'Non renseigné' }); } },
+              { key: 'na', label: 'Prix non assuré', align: 'right', render: function (r) { return r.na == null ? el('span.text-xs.italic.text-rose-600', { text: 'à valider' }) : el('span.font-semibold', { text: C.money(r.na, false) }); }, text: function (r) { return r.na == null ? 'à valider' : C.money(r.na, false); } },
+              { key: 'pa', label: 'Prix assuré', align: 'right', render: celluleAssure, text: function (r) { return r.etatAssure === 'nc' ? 'NON COUVERT' : r.pa == null ? 'à valider' : C.money(r.pa, false); } },
+              { key: 'couverture', label: 'Couverture' },
+              { key: 'depuis', label: 'En vigueur depuis', nowrap: true, render: function (r) { return r.version == null ? '' : (r.depuis ? C.dateFR(r.depuis) : 'L’origine'); }, text: function (r) { return r.depuis || ''; } },
+              { key: 'version', label: 'Version', align: 'right', render: function (r) { return r.version == null ? '' : 'v' + r.version; }, text: function (r) { return r.version == null ? '' : 'v' + r.version; } },
+              { key: 'etat', label: 'État', render: badgeEtatPrix, text: function (r) { return r.etat; } },
+            ],
+            rowActions: function (r) {
+              return [
+                K.iconBtn('eye', 'Consulter', function () {
+                  U.drawer({
+                    title: r.code + ' : ' + r.libelle, subtitle: 'Version en vigueur et historique des prix', width: 'max-w-3xl',
+                    body: el('div.space-y-4', null, [
+                      K.grid([['Code', r.code], ['Libellé de facturation', r.libelle], ['Libellé de la grille', r.libelleGrille || 'Identique'], ['Famille', r.famille],
+                        ['Autres codes', r.alias || 'Aucun'], ['Secteur', r.secteur || 'Non renseigné'], ['Couverture', r.couverture],
+                        ['Origine du prix', r.source || 'Non renseigné']]),
+                      r.attente ? K.note('<strong>' + r.attente + ' proposition(s) en attente</strong> pour cette prestation : le prix en vigueur ne change pas avant le Oui.', { tone: 'warning', icon: 'hourglass' }) : null,
+                      blocHistorique(r.code),
+                    ]),
+                  });
+                }),
+                K.commandeIcone('pencil', 'Proposer un changement', function () { modaleProposition(r, rafraichirEcran); }),
+              ].filter(Boolean);
+            },
+          });
+        }
+
+        var enveloppeFamille = function (codes) { return function (p) { return codes.indexOf(p.famille) >= 0; }; };
+        var items = [
+          { id: 'prestations', label: 'Prestations', badge: tous.filter(function (r) { return FAMILLES_PRESTATIONS.some(function (f) { return f[0] === r.famille; }); }).length,
+            render: function () {
+              var lignes = lignesTarifs(enveloppeFamille(FAMILLES_PRESTATIONS.map(function (f) { return f[0]; })));
+              return el('div.space-y-3', null, [
+                K.note('Consultations, actes, hospitalisation (la journée par type de chambre), actes médico-infirmiers, gynéco-obstétrique et certificats. Le <strong>libellé de facturation</strong> est celui sur lequel les conventions d’assurance s’appuient pour leurs exclusions : il ne se change pas à la légère.', { tone: 'info', icon: 'tags' }),
+                tableauPrestations(lignes, 'Aucune prestation dans cette famille.'),
+              ]);
+            } },
+          { id: 'analyses', label: 'Analyses', badge: tous.filter(function (r) { return r.famille === 'LABO'; }).length,
+            render: function () {
+              var lignes = lignesTarifs(enveloppeFamille(['LABO']));
+              var sansGrille = h.tarifs.filter(function (p) { return p.codeAnalyse && !p.codeGrille; }).map(function (p) { return p.code; });
+              var sansAnalyse = h.tarifs.filter(function (p) { return p.famille === 'LABO' && p.codeGrille && !p.codeAnalyse && !p.codeActe; }).map(function (p) { return p.code; });
+              return el('div.space-y-3', null, [
+                K.note('Le <strong>prix</strong> des analyses se propose et se décide ici. La désignation, l’échantillon, le délai et le modèle de résultat restent au <strong>catalogue des analyses</strong> du laboratoire. Les prix de la grille imprimée sont des <strong>propositions</strong> (onglet Alertes) : le prix facturé aujourd’hui reste en vigueur tant que la Direction n’a pas répondu.', { tone: 'info', icon: 'flask-conical' }),
+                (sansGrille.length || sansAnalyse.length) ? K.note('<strong>Écarts entre les sources.</strong> ' + sansGrille.length + ' analyse(s) n’ont aucune ligne de grille de même libellé (' + sansGrille.join(', ') + ') : un seul prix, celui de la caisse. '
+                  + sansAnalyse.length + ' ligne(s) de grille LABO n’ont pas d’analyse (' + (sansAnalyse.join(', ') || 'aucune') + ').', { tone: 'warning', icon: 'scale' }) : null,
+                K.btn('Ouvrir le catalogue des analyses', { icon: 'list-checks', onclick: function () { global.SIGH.app.go('m5-catalogue'); } }),
+                tableauPrestations(lignes, 'Aucune analyse.'),
+              ]);
+            } },
+          { id: 'imagerie', label: 'Imagerie', badge: tous.filter(function (r) { return r.famille === 'IMAGERIE'; }).length,
+            render: function () {
+              var lignes = lignesTarifs(enveloppeFamille(['IMAGERIE']));
+              return el('div.space-y-3', null, [
+                K.note('Les prix des examens d’imagerie. Le modèle de compte rendu (variables, modalités) reste au <strong>catalogue de l’imagerie</strong>. Les seize tarifs d’attente (radiographie, mammographie, scanner, IRM) sont marqués « provisoire » tant que la Direction ne les a pas arrêtés.', { tone: 'info', icon: 'scan-line' }),
+                K.btn('Ouvrir le catalogue de l’imagerie', { icon: 'scan-line', onclick: function () { global.SIGH.app.go('cfg-imagerie-catalogue'); } }),
+                tableauPrestations(lignes, 'Aucun examen d’imagerie.'),
+              ]);
+            } },
+          { id: 'produits', label: 'Produits', badge: S.collection('produits').active().length,
+            render: function () {
+              var produits = S.collection('produits').active();
+              return el('div.space-y-3', null, [
+                K.note('<strong>Lecture seule.</strong> RG-02 : un médicament se facture au <strong>prix d’achat, sans marge</strong>. Son prix se modifie au référentiel des produits, avec le prix d’achat qui le fonde.', { tone: 'info', icon: 'pill' }),
+                global.SIGH.nav.can(S.session().role, global.SIGH.nav.get('m6-produits'))
+                  ? K.btn('Ouvrir le référentiel des produits', { icon: 'pill', onclick: function () { global.SIGH.app.go('m6-produits'); } }) : null,
+                U.dataTable({
+                  rows: produits, pageSize: 15, exportName: 'produits-lecture', defaultSort: 'designation',
+                  filters: [{ name: 'categorie', label: 'Catégorie', options: D.CATEGORIES_PRODUIT.map(function (c) { return { value: c.id, label: c.label }; }) }],
+                  columns: [
+                    { key: 'code', label: 'Code', nowrap: true, render: function (p) { return el('span.font-mono.text-xs', { text: p.code }); } },
+                    { key: 'designation', label: 'Désignation' },
+                    { key: 'categorie', label: 'Catégorie', text: function (p) { var c = D.CATEGORIES_PRODUIT.filter(function (x) { return x.id === p.categorie; })[0]; return c ? c.label : p.categorie; } },
+                    { key: 'prixAchat', label: 'Prix d’achat', align: 'right', text: function (p) { return argent(p.prixAchat); }, render: function (p) { return argent(p.prixAchat); } },
+                    { key: 'prixVente', label: 'Prix de vente', align: 'right', text: function (p) { return argent(p.prixVente); }, render: function (p) { return el('span.font-semibold', { text: argent(p.prixVente) }); } },
+                    { key: 'marge', label: 'Marge', align: 'right', value: function (p) { return p.prixVente - p.prixAchat; }, render: function (p) { var m = p.prixVente - p.prixAchat; return m === 0 ? U.badge('Sans marge', 'success') : el('span.font-semibold.text-warning-600', { text: C.money(m, false) }); } },
+                  ],
+                }),
+              ].filter(Boolean));
+            } },
+          { id: 'alertes', label: 'Alertes', badge: enAttente.length,
+            render: function () {
+              var lignes = enAttente.map(function (v) {
+                var p = h.parCode[v.code] || {};
+                var s = D.TARIFS.instantane(h, p, v.dateEffet || jourPrix());
+                var delta = s && s.na != null && v.prixNonAssure != null && s.na ? Math.round((v.prixNonAssure - s.na) / s.na * 1000) / 10 : null;
+                return { id: v.id, v: v, code: v.code, libelle: p.libelle || v.code, actuelNA: s ? s.na : null, actuelPA: s ? s.pa : null, actuelEtat: s ? s.etatAssure : null,
+                  propose: v.prixNonAssure, proposeA: v.etatAssure === 'montant' ? v.prixAssure : null, etatA: v.etatAssure, delta: delta, lot: LIBELLE_ORIGINE[v.origine] || v.origine,
+                  dateEffet: v.dateEffet || '', par: v.proposePar || '', motif: v.motif || '' };
+              });
+              return el('div.space-y-3', null, [
+                K.note('Chaque ligne est un <strong>changement de prix en attente</strong> : l’ancien prix reste en vigueur, le nouveau ne s’applique qu’après le <strong>Oui</strong>, à sa date d’effet. Un <strong>Non</strong> exige son motif. '
+                  + (peutDecider ? 'Vous pouvez décider.' : 'Décider revient à la Direction, à la Directrice Administrative et à l’administrateur : vous lisez les propositions sans les trancher.'), { tone: 'warning', icon: 'hourglass' }),
+                U.dataTable({
+                  rows: lignes, pageSize: 15, exportName: 'prix-en-attente', emptyMessage: 'Aucun changement de prix en attente.',
+                  filters: [{ name: 'lot', label: 'Origine', options: Object.keys(LIBELLE_ORIGINE).map(function (k) { return LIBELLE_ORIGINE[k]; }) }],
+                  columns: [
+                    { key: 'code', label: 'Code', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold.text-navy-800', { text: r.code }); } },
+                    { key: 'libelle', label: 'Prestation' },
+                    { key: 'actuelNA', label: 'Non assuré en vigueur', align: 'right', render: function (r) { return argent(r.actuelNA); }, text: function (r) { return argent(r.actuelNA); } },
+                    { key: 'propose', label: 'Non assuré proposé', align: 'right', render: function (r) { return el('span.font-semibold', { text: argent(r.propose) }); }, text: function (r) { return argent(r.propose); } },
+                    { key: 'delta', label: 'Variation', align: 'right', render: function (r) { return r.delta == null ? 'non comparable' : (r.delta > 0 ? '+' : '') + r.delta.toLocaleString('fr-FR') + ' %'; }, text: function (r) { return r.delta == null ? '' : String(r.delta); } },
+                    { key: 'proposeA', label: 'Assuré proposé', align: 'right', render: function (r) { return r.etatA === 'nc' ? 'NON COUVERT' : r.etatA === 'montant' ? C.money(r.proposeA, false) : r.etatA === 'unique' ? 'prix unique' : 'à valider'; }, text: function (r) { return r.etatA === 'montant' ? C.money(r.proposeA, false) : r.etatA; } },
+                    { key: 'dateEffet', label: 'Date d’effet', nowrap: true, render: function (r) { return r.dateEffet ? C.dateFR(r.dateEffet) : el('span.text-xs.italic.text-slate-500', { text: 'à fixer au Oui' }); } },
+                    { key: 'lot', label: 'Origine' },
+                    { key: 'par', label: 'Proposée par' },
+                    { key: 'motif', label: 'Motif', render: function (r) { return el('span.text-xs.text-slate-600', { text: r.motif.length > 90 ? r.motif.slice(0, 90) + '…' : r.motif }); } },
+                  ],
+                  rowActions: function (r) {
+                    if (!peutDecider) return [];
+                    return [
+                      K.btn('Oui', { size: 'sm', variant: 'primary', icon: 'check', onclick: function () { decider(r.v, 'oui', rafraichirEcran); } }),
+                      K.btn('Non', { size: 'sm', icon: 'x', onclick: function () { decider(r.v, 'non', rafraichirEcran); } }),
+                    ];
+                  },
+                }),
+              ]);
+            } },
+          { id: 'historique', label: 'Historique',
+            render: function (panneau) {
+              var cadre = el('div.space-y-3');
+              var sel = U.combo(C.sortBy(h.tarifs.filter(function (p) { return p.statut !== 'archive'; }), 'code').map(function (p) { return { value: p.code, label: p.code + ' : ' + p.libelle }; }), { placeholder: 'Choisir une prestation', searchPlaceholder: 'Code ou libellé…' });
+              sel.addEventListener('change', function () { C.clear(cadre); if (sel.value) cadre.appendChild(blocHistorique(sel.value)); U.icons(cadre); });
+              return el('div.space-y-3', null, [K.note('Toutes les versions d’un prix, y compris les propositions refusées ou retirées : l’historique ne vit pas au journal d’audit, qui est plafonné.', { tone: 'info', icon: 'history' }), el('div.max-w-xl', null, sel), cadre]);
+            } },
+        ];
+        tabs = U.tabs(items, { onChange: function (id) { onglet = id; } });
+        host.appendChild(tabs);
+        if (onglet) setTimeout(function () { tabs.selectTab(onglet); }, 0);
+        U.icons(host);
+      }
+    },
+  });
+  var rafraichirEcran = function () { /* posé au rendu */ };
 
   /* ==========================================================================
    * NATURES DE FACTURE
@@ -1358,7 +1292,7 @@
     actions: function () {
       return [
         K.btn('Émettre une facture', { variant: 'primary', icon: 'receipt', onclick: function () { global.SIGH.app.go('m8-facturation'); } }),
-        K.btn('Référentiel tarifaire', { icon: 'tag', onclick: function () { global.SIGH.app.go('cfg-tarifs'); } }),
+        K.btn('Tarifs et prix', { icon: 'tag', onclick: function () { global.SIGH.app.go('cfg-tarifs'); } }),
       ];
     },
     render: function (root) {
@@ -3984,182 +3918,29 @@
 
 
   /* ==========================================================================
-   * CATALOGUE TARIFAIRE — DEUX PRIX PAR ACTE
+   * CATALOGUE TARIFAIRE (DEUX PRIX) : PAGE DE RENVOI (PRD-TARIFS, lot T2)
    * --------------------------------------------------------------------------
-   * Les six grilles officielles de la clinique portent chacune DEUX colonnes,
-   * « PRIX NON ASSURE » et « PRIX ASSURE », et le prix assuré est presque
-   * toujours le plus élevé. Ce n'est pas une coquille : le tarif conventionné
-   * opposable à une compagnie n'est pas le tarif de guichet. Un modèle à prix
-   * unique fausserait à la fois la facture du patient, la créance de
-   * l'assureur et la recette comptable.
+   * Les six grilles officielles, avec leurs deux colonnes (non assuré, assuré) et les trois états de la colonne assurée (un montant, NON COUVERT, un
+   * tiret), vivent désormais dans le référentiel de prix unique : l'écran « Tarifs et prix ». Ce catalogue-ci n'alimentait AUCUNE facture (mesuré au lot
+   * T0) : le garder à part aurait laissé deux écrans, dont l'un sans effet.
    *
-   * TROIS ÉTATS et non deux dans la colonne assurée — un montant, NON COUVERT,
-   * ou un tiret. Le tiret n'est ni un zéro ni une exclusion : c'est une valeur
-   * que le document ne donne pas. Trois actes sont dans ce cas et l'écran les
-   * compte, les nomme, et refuse de les facturer.
+   * La page subsiste parce que RETIRER UNE ENTRÉE DU MANIFESTE N'EST JAMAIS LA BONNE FAÇON DE FERMER UN ÉCRAN : elle casserait tout lien qui la vise.
    * ======================================================================== */
-  function colCatalogue() {
-    return S.collection('catalogueTarifs', { module: 'CFG', entite: 'tarif', prefix: 'TAR' });
-  }
-
   global.SIGH.screen('cfg-catalogue', {
     title: 'Catalogue tarifaire (deux prix)',
-    description: 'Les six grilles officielles : consultations, imageries, analyses, AMI, gynéco-obstétrique, certificats.',
-    regle: 'Chaque acte porte <strong>deux prix</strong> — non assuré et assuré. C’est la validité de la carte '
-      + '<strong>à la date de facturation</strong> qui décide lequel s’applique (RG-09), et non le fait de '
-      + 'posséder une carte. Un acte <strong>NON COUVERT</strong> reste facturé au patient au tarif non assuré, '
-      + 'motif à l’appui. Un prix <strong>absent</strong> bloque la ligne : il n’est jamais présumé nul.',
+    description: 'Page de renvoi : les deux prix de chaque prestation figurent à « Tarifs et prix ».',
     render: function (root) {
-      var vue = el('div.space-y-4');
-      root.appendChild(vue);
-      afficher();
+      root.appendChild(el('div.mx-auto.max-w-xl.space-y-4.py-10', null, [
+        K.note('Le catalogue tarifaire à <strong>deux prix</strong> a rejoint le <strong>référentiel de prix unique</strong> : « Tarifs et prix » porte, pour chaque prestation, '
+          + 'le prix non assuré, le prix assuré (ou NON COUVERT), la version en vigueur, l’historique et les changements en attente de décision. '
+          + 'Un prix corrigé ici n’aurait atteint aucune facture : il se propose désormais là où la caisse le lit.', { tone: 'info', icon: 'tags' }),
+        el('div.text-center', null,
+          K.btn('Ouvrir « Tarifs et prix »', {
+            variant: 'primary', icon: 'tags',
+            onclick: function () { global.SIGH.app.go('cfg-tarifs', { onglet: 'prestations' }); },
+          })),
+      ]));
       return null;
-
-      function champs() {
-        return [
-          { name: 'code', label: 'Code', type: 'text', required: true },
-          { name: 'libelle', label: 'Désignation', type: 'text', required: true },
-          { name: 'famille', label: 'Famille', type: 'select', required: true,
-            options: (D.FAMILLES_TARIF || []).map(function (f) { return { value: f.code, label: f.label }; }) },
-          { name: 'prixNonAssure', label: 'Prix non assuré (FCFA)', type: 'money' },
-          { name: 'prixAssure', label: 'Prix assuré (FCFA)', type: 'money',
-            hint: 'Laisser vide si le document ne le renseigne pas — un vide n’est pas un zéro.' },
-          { name: 'nonCouvert', label: 'NON COUVERT par les assurances', type: 'checkbox',
-            hint: 'L’acte existe et il est tarifé, mais aucune compagnie ne le prend en charge.' },
-          { name: 'source', label: 'Document d’origine', type: 'text' },
-        ];
-      }
-
-      function afficher() {
-        var rows = colCatalogue().active();
-        var sansPrix = rows.filter(function (r) { return r.prixAValider; });
-        var nonCouverts = rows.filter(function (r) { return r.nonCouvert; });
-        var sosSeul = rows.filter(function (r) { return r.assurable === 'sos'; });
-
-        C.clear(vue);
-        vue.appendChild(U.kpiGrid([
-          { label: 'Actes au catalogue', value: C.num(rows.length), icon: 'list-ordered', tone: 'navy',
-            hint: C.num((D.FAMILLES_TARIF || []).length) + ' familles' },
-          { label: 'Non couverts par les assurances', value: C.num(nonCouverts.length), icon: 'shield-off',
-            tone: 'warning', hint: 'planification familiale et hydrotubation' },
-          { label: 'Couverts par SOS seule', value: C.num(sosSeul.length), icon: 'shield-alert', tone: 'info',
-            hint: 'les certificats' },
-          { label: 'Prix non renseigné', value: C.num(sansPrix.length), icon: 'triangle-alert',
-            tone: sansPrix.length ? 'danger' : 'success', hint: 'ligne non facturable' },
-        ]));
-
-        if (sansPrix.length) {
-          vue.appendChild(K.note('<strong>' + sansPrix.length + ' acte(s) sans prix au document</strong> : '
-            + sansPrix.map(function (r) { return r.libelle; }).join(' · ')
-            + '. Un tiret sur la grille n’est ni un zéro ni une exclusion — c’est une valeur manquante. '
-            + 'Ces lignes ne peuvent pas être facturées tant que la Direction ne les a pas arrêtées.',
-          { tone: 'danger', icon: 'triangle-alert' }));
-        }
-
-        var aArbitrer = rows.filter(function (r) { return r.aArbitrer; });
-        if (aArbitrer.length) {
-          vue.appendChild(K.note('<strong>Divergence à arbitrer</strong> — '
-            + aArbitrer.map(function (r) { return r.libelle + ' : ' + r.aArbitrer; }).join(' ; ')
-            + ' Le prototype retient le <strong>document</strong> ; écraser une pièce écrite par une phrase, '
-            + 'ou l’inverse, serait décider à la place de la clinique.',
-          { tone: 'warning', icon: 'scale' }));
-        }
-
-        var arbitres = rows.filter(function (r) { return r.arbitrage; });
-        if (arbitres.length) {
-          vue.appendChild(K.note('<strong>' + arbitres.length + ' acte(s) arbitré(s) par la Direction</strong>, '
-            + 'dont le tarif ne suit pas la grille relevée : '
-            + arbitres.map(function (r) { return r.code + ' — ' + r.libelle; }).join(' · ')
-            + '. Un arbitrage tranché n’est pas une divergence en attente : il est appliqué et daté. '
-            + 'Ne pas le « corriger » sans nouvelle décision écrite.',
-          { tone: 'info', icon: 'gavel' }));
-        }
-
-        vue.appendChild(U.tabs((D.FAMILLES_TARIF || []).map(function (f) {
-          var sous = rows.filter(function (r) { return r.famille === f.code; });
-          return {
-            id: f.code.toLowerCase(), label: f.label, badge: sous.length,
-            render: function () { return tableau(sous); },
-          };
-        })));
-        U.icons(vue);
-      }
-
-      function tableau(rows) {
-        return U.dataTable({
-          rows: C.sortBy(rows, 'code'),
-          empty: 'Aucun acte dans cette famille.',
-          actions: [K.creer(colCatalogue(), champs(), {
-            module: 'CFG', label: 'Nouvel acte', titre: 'Ajouter un acte au catalogue',
-            entite: 'Acte', apres: afficher,
-            transform: function (v) {
-              return Object.assign({}, v, {
-                assurable: v.nonCouvert ? false : true,
-                prixAValider: v.prixNonAssure == null || (v.prixAssure == null && !v.nonCouvert),
-                source: v.source || 'Saisi par l’administrateur',
-                statut: 'actif',
-              });
-            },
-          })].filter(Boolean),
-          columns: [
-            { key: 'code', label: 'Code' },
-            { key: 'libelle', label: 'Désignation' },
-            { key: 'prixNonAssure', label: 'Prix non assuré', align: 'right',
-              render: function (r) {
-                return r.prixNonAssure == null
-                  ? el('span.text-xs.italic.text-rose-600', { text: 'non renseigné' })
-                  : C.money(r.prixNonAssure);
-              } },
-            { key: 'prixAssure', label: 'Prix assuré', align: 'right',
-              render: function (r) {
-                if (r.nonCouvert) return U.badge('NON COUVERT', 'warning');
-                if (r.assurable === 'sos') return U.badge('SOS seule — ' + C.money(r.prixAssure), 'info');
-                if (r.prixAssure == null) return el('span.text-xs.italic.text-rose-600', { text: 'non renseigné' });
-                /* Un tarif arbitré porte sa marque : sinon un assuré payant
-                   moins qu'un non-assuré se lit comme une inversion de saisie. */
-                if (r.arbitrage) {
-                  return el('span.inline-flex.items-center.gap-1', null, [
-                    el('span', { text: C.money(r.prixAssure) }),
-                    U.badge('arbitré', 'info'),
-                  ]);
-                }
-                return C.money(r.prixAssure);
-              } },
-            { key: 'ecart', label: 'Écart', align: 'right',
-              render: function (r) {
-                if (r.prixNonAssure == null || r.prixAssure == null || r.nonCouvert) return '—';
-                var e = r.prixAssure - r.prixNonAssure;
-                return el('span', { class: e > 0 ? 'text-emerald-700' : 'text-slate-500',
-                  text: (e > 0 ? '+' : '') + C.money(e) });
-              } },
-            { key: 'source', label: 'Document d’origine',
-              render: function (r) { return el('span.text-xs.text-slate-500', { text: r.source || '—' }); } },
-          ],
-          rowActions: K.actionsLigne(colCatalogue(), champs(), {
-            module: 'CFG', refresh: afficher,
-            titre: function (r) { return r.code + ' — ' + r.libelle; },
-            detail: function (r) {
-              return el('div.space-y-4', null,
-                K.grid([
-                  ['Code', r.code], ['Désignation', r.libelle],
-                  ['Famille', r.famille],
-                  ['Prix non assuré', r.prixNonAssure == null ? 'non renseigné' : C.money(r.prixNonAssure)],
-                  ['Prix assuré', r.nonCouvert ? 'NON COUVERT'
-                    : (r.prixAssure == null ? 'non renseigné' : C.money(r.prixAssure))],
-                  ['Couverture', r.assurable === 'sos' ? 'SOS seule'
-                    : (r.assurable === false || r.nonCouvert ? 'Aucune' : 'Toutes compagnies')],
-                  ['Document d’origine', r.source || '—'],
-                ]),
-                r.motifPrix ? K.note(r.motifPrix, { tone: 'danger', icon: 'triangle-alert' }) : null,
-                r.aArbitrer ? K.note(r.aArbitrer, { tone: 'warning', icon: 'scale' }) : null,
-                r.arbitrage ? K.note(r.arbitrage, { tone: 'info', icon: 'gavel' }) : null,
-                r.nonCouvert ? K.note('Cet acte est <strong>NON COUVERT</strong> : l’assuré le règle au tarif '
-                  + 'non assuré, et la facture en porte le motif. Tous les actes de planification familiale '
-                  + 'sont dans ce cas.', { tone: 'warning', icon: 'shield-off' }) : null);
-            },
-          }),
-        });
-      }
     },
   });
 

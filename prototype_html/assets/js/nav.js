@@ -145,8 +145,7 @@
         {
           code: 'CFG', label: 'Tarification & information patient', icon: 'tags', alias: true,
           items: [
-            { id: 'cfg-tarifs', label: 'Référentiel tarifaire public', icon: 'tags', alias: true },
-            { id: 'cfg-catalogue', label: 'Catalogue des prestations', icon: 'book-open', alias: true },
+            { id: 'cfg-tarifs', label: 'Tarifs et prix', icon: 'tags', alias: true },
             { id: 'cfg-certificats', label: 'Tarifs des certificats & attestations', icon: 'file-badge', alias: true },
           ],
         },
@@ -666,8 +665,7 @@
           items: [
             { id: 'cfg-organisation', label: 'Organisation & organigramme', icon: 'network' },
             { id: 'cfg-branding', label: 'Identité & papier à en-tête', icon: 'image' },
-            { id: 'cfg-tarifs', label: 'Référentiel tarifaire', icon: 'tag' },
-            { id: 'cfg-catalogue', label: 'Catalogue tarifaire (deux prix)', icon: 'list-ordered' },
+            { id: 'cfg-tarifs', label: 'Tarifs et prix', icon: 'tag' },
             { id: 'cfg-imagerie-catalogue', label: 'Catalogue de l’imagerie', icon: 'scan-line' },
             { id: 'cfg-entetes', label: 'Papier à en-tête officiel', icon: 'file-badge' },
             { id: 'cfg-types-piece', label: 'Types de pièces certifiantes', icon: 'stamp' },
@@ -1032,6 +1030,12 @@
     {
       id: 'm2-visites', label: 'Registre des visites de suivi clinique', icon: 'user-check',
       module: 'M2', moduleLabel: 'RDV, Visites & Consultations', domain: 'Accueil',
+    },
+    /* Le catalogue tarifaire à deux prix a rejoint « Tarifs et prix » (PRD-TARIFS, lot T2) : un seul référentiel de prix, un seul écran. La page subsiste
+       hors ruban et renvoie ; retirer l'entrée du manifeste casserait tout lien qui la vise. */
+    {
+      id: 'cfg-catalogue', label: 'Catalogue tarifaire (deux prix)', icon: 'list-ordered',
+      module: 'CFG', moduleLabel: 'Configuration Clinique', domain: 'Système',
     },
     /* Les certificats des externes ont rejoint le registre unique : la page
        subsiste et renvoie, elle n'affiche plus de second registre. */
@@ -1624,12 +1628,18 @@
    * ici, et nulle part ailleurs, que se déclare un point d'entrée.
    * ======================================================================== */
   var RUBRIQUES = [
-    { ecran: 'cfg-tarifs', onglet: 'produits', label: 'Produits & médicaments',
+    { ecran: 'cfg-tarifs', onglet: 'prestations', label: 'Prestations et actes tarifés',
+      motsCles: 'tarif prix acte actes soin chirurgie accouchement consultation hospitalisation chambre journée certificat prestation deux prix assuré non assuré' },
+    { ecran: 'cfg-tarifs', onglet: 'analyses', label: 'Prix des analyses de laboratoire',
+      motsCles: 'tarif prix analyse laboratoire biologie examen catalogue grille' },
+    { ecran: 'cfg-tarifs', onglet: 'imagerie', label: 'Prix de l’imagerie médicale',
+      motsCles: 'tarif prix imagerie échographie radiographie scanner IRM mammographie examen' },
+    { ecran: 'cfg-tarifs', onglet: 'produits', label: 'Produits et médicaments (lecture)',
       motsCles: 'tarif prix médicament produit pharmacie prix d’achat prix de vente marge RG-02' },
-    { ecran: 'cfg-tarifs', onglet: 'analyses', label: 'Analyses de laboratoire',
-      motsCles: 'tarif prix analyse laboratoire biologie examen catalogue' },
-    { ecran: 'cfg-tarifs', onglet: 'actes', label: 'Actes & hospitalisation',
-      motsCles: 'acte actes soin chirurgie accouchement échographie consultation hospitalisation chambre tarif prix' },
+    { ecran: 'cfg-tarifs', onglet: 'alertes', label: 'Changements de prix en attente',
+      motsCles: 'alerte validation changement de prix proposition Oui Non décision Direction DAF en attente' },
+    { ecran: 'cfg-tarifs', onglet: 'historique', label: 'Historique des prix et versions',
+      motsCles: 'historique version prix date d’effet comparaison ancien nouveau' },
     { ecran: 'cfg-natures-facture', onglet: null, label: 'Natures de facture',
       motsCles: 'nature facture type émission maternité observation consultation CPN spécialiste généraliste' },
     { ecran: 'cfg-centres-couts', onglet: null, label: 'Centres de coûts',

@@ -1194,7 +1194,8 @@
     title: 'Catalogue des analyses',
     description: 'Référentiel des 48 analyses réalisées par le laboratoire de la clinique, avec catégorie, échantillon, délai et tarif.',
     regle: 'Les désignations reprennent fidèlement le document « Tarifs des analyses de laboratoire » de la clinique. '
-      + 'Les <strong>tarifs</strong> portés ici sont des valeurs d’attente : le document source ne renseigne pas la colonne des prix et ceux-ci doivent être confirmés avant recette.',
+      + 'Le laboratoire tient ici la désignation, la catégorie, l’échantillon et le délai. Le <strong>prix</strong> se propose et se décide à l’écran « Tarifs et prix » (référentiel de prix unique) : '
+      + 'la colonne Tarif ci-dessous le lit, elle ne le modifie pas.',
     render: K.crud({
       collection: 'analyses', entite: 'analyse', entiteP: 'analyses', module: 'M5',
       defaultSort: 'n', pageSize: 20,
@@ -1207,9 +1208,10 @@
         { key: 'echantillon', label: 'Échantillon' },
 
         {
-          key: 'prix', label: 'Tarif', align: 'right',
-          text: function (r) { return C.money(r.prix, false); },
+          key: 'prix', label: 'Tarif (lecture)', align: 'right',
+          text: function (r) { return r.prix == null ? 'À valider' : C.money(r.prix, false); },
           render: function (r) {
+            if (r.prix == null) return el('span.text-xs.italic.text-rose-600', { text: 'à valider' });
             return el('span.inline-flex.items-center.gap-1', null, [
               el('span.font-semibold', { text: C.money(r.prix, false) }),
               r.tarifProvisoire ? el('span.text-warning-500', { title: 'Tarif à confirmer' }, C.icon('help-circle', 'h-3.5 w-3.5')) : null,
@@ -1224,7 +1226,6 @@
         { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: Object.keys(C.groupBy(analysesCatalogue(), 'categorie')).sort() },
         { name: 'echantillon', label: 'Type d’échantillon', type: 'select', options: Object.keys(C.groupBy(analysesCatalogue(), 'echantillon')).sort() },
         { name: 'delai', label: 'Délai de rendu', type: 'select', options: ['Immédiat', '1 h', '2 h', '4 h', '6 h', '24 h', '48 h', '72 h'] },
-        { name: 'prix', label: 'Tarif (FCFA)', type: 'money', required: true, min: 0 },
       ],
       filters: [
         { name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(analysesCatalogue(), 'categorie')).sort() },
@@ -1234,7 +1235,7 @@
         return [
           { label: 'Analyses au catalogue', value: C.num(rows.length), icon: 'list-checks', tone: 'navy' },
           { label: 'Catégories', value: C.num(Object.keys(C.groupBy(rows, 'categorie')).length), icon: 'layers', tone: 'info' },
-          { label: 'Tarif moyen', value: C.money(rows.length ? C.sum(rows, 'prix') / rows.length : 0), icon: 'coins', tone: 'success' },
+          { label: 'Tarif moyen', value: C.moneyOu(C.moyenneOuNul(rows, 'prix')), icon: 'coins', tone: 'success' },
           { label: 'Tarifs à confirmer', value: C.num(rows.filter(function (r) { return r.tarifProvisoire; }).length), icon: 'help-circle', tone: 'warning' },
         ];
       },

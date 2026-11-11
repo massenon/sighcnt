@@ -128,6 +128,7 @@
     });
   }
   function naviguerSansRecharger(id, opts) {
+    try { if (S.projeterTarifs) S.projeterTarifs(); } catch (e) { /* voir boot() */ }
     var entry = N.get(id);
     if (!entry || id === 'index' || !spaPermise()) return false;
     if (/^(auth-|error-|enquete-publique)/.test(id)) return false;
@@ -736,7 +737,7 @@
         /* Contenu des référentiels : ce que l'utilisateur cherche est souvent
            une ligne de catalogue, pas un écran. */
         /* Le catalogue administrable, pas la semence D.ACTES : un acte ajouté
-           ou renommé dans cfg-tarifs doit se trouver par la recherche. */
+           ou renommé dans « Tarifs et prix » doit se trouver par la recherche. */
         var actes = S.collection('actes').active().filter(function (a) {
           return C.matches(a.libelle + ' ' + a.secteur + ' ' + a.code, q);
         }).slice(0, 5);
@@ -744,7 +745,7 @@
           return {
             label: a.libelle, icon: 'stethoscope',
             detail: a.secteur + ', ' + tarifCourt(a),
-            ecran: 'cfg-tarifs', onglet: 'actes',
+            ecran: 'cfg-tarifs', onglet: 'prestations',
           };
         })]);
 
@@ -1406,6 +1407,10 @@
       }
 
       var session = requireSession();
+
+      /* LE CHANGEMENT DE JOUR (PRD-TARIFS, T1) : les listes de lecture (actes, analyses, catalogue) portent les prix EN VIGUEUR aujourd'hui. Un poste hors ligne n'a
+         pas de tâche de minuit : on les ramène à l'ouverture de l'écran, sans écriture quand rien ne change. */
+      try { if (S.projeterTarifs) S.projeterTarifs(); } catch (e) { /* le moteur de prix n'est pas prêt : les lecteurs retombent sur leurs valeurs */ }
 
       /* Contrôle RBAC de l'écran demandé.
          Il passe par N.can() et non par une lecture directe de entry.roles :

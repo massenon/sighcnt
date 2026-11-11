@@ -131,6 +131,143 @@
   }
 
   /* ==========================================================================
+   * PROPOSER UN PRIX, DÉCIDER OUI OU NON (PRD-TARIFS, lot T2 : le noyau ; le lot T3 y ajoute le contrôle d'usage, l'alerte, la notification et l'import)
+   * --------------------------------------------------------------------------
+   * Deux droits DISTINCTS. PROPOSER est le droit d'éditer l'écran « Tarifs et prix » ; DÉCIDER (Oui ou Non) est porté par la LISTE DE RÔLES de la famille,
+   * jamais par `editer` : un `editer` sur l'écran ne vaut pas décision. Le moteur refuse aussi : masquer un bouton ne protège rien.
+   * Une proposition ne change RIEN : le prix en vigueur ne bouge qu'au Oui, à la date d'effet. Le Non exige son motif et reste lisible à l'historique.
+   * Un refus se nomme : code, motif, geste.
+   * ======================================================================== */
+  var ROLES_VALIDATION_TARIFS = ['admin', 'da', 'direction'];
+  function refusTarif(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
+  function roleDeLaSession() { var s = S.session(); return s && s.role; }
+  function peutDeciderTarif() { return ROLES_VALIDATION_TARIFS.indexOf(roleDeLaSession()) >= 0; }
+  function peutProposerTarif() {
+    var N = global.SIGH.nav, r = roleDeLaSession();
+    if (!N || !N.droitsEcran) return ROLES_VALIDATION_TARIFS.indexOf(r) >= 0;
+    var d = N.droitsEcran(r, 'cfg-tarifs', 'CFG');
+    return !!(d && d.editer);
+  }
+  function auteurDeLaSession() { var s = S.session(); return (s && (s.nomComplet || s.nom)) || '(inconnu)'; }
+  function versionsDe(code) {
+    return colVersionsTarif().all().filter(function (v) { return v.code === code; })
+      .sort(function (a, b) { return a.version - b.version; });
+  }
+  function jourTarif(d) { return D.TARIFS.jourDe(d); }
+  function entierPositif(x) { return typeof x === 'number' && isFinite(x) && x > 0 && Math.floor(x) === x; }
+
+  /** Valide les champs d'une version proposée. Rend un refus nommé, ou null. */
+  function controleProposition(o) {
+    var etatA = o.etatAssure || 'montant';
+    if (o.prixNonAssure === null || o.prixNonAssure === undefined || o.prixNonAssure === '') {
+      return refusTarif('PRIX_ABSENT', 'Le prix non assuré est absent : un prix vide n’est pas un tarif, la ligne ne se facturerait pas.', 'Saisir le prix non assuré.');
+    }
+    var na = Number(o.prixNonAssure);
+    if (na === 0) return refusTarif('PRIX_ZERO', 'Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul »).', 'Saisir un prix strictement positif ; la gratuité passe par la remise motivée ou la prise en charge du personnel.');
+    if (!entierPositif(na)) return refusTarif('PRIX_INVALIDE', 'Le prix non assuré doit être un nombre entier de francs, strictement positif (le boîtier fiscal n’accepte que des montants entiers).', 'Corriger le prix non assuré.');
+    if (['montant', 'nc', 'manquant', 'unique'].indexOf(etatA) < 0) return refusTarif('ETAT_ASSURE_INCONNU', 'La colonne assurée est un montant, NON COUVERT, non renseignée ou sans objet.', 'Choisir l’un de ces états.');
+    if (etatA === 'montant') {
+      var pa = Number(o.prixAssure);
+      if (o.prixAssure === null || o.prixAssure === undefined || o.prixAssure === '') return refusTarif('PRIX_ABSENT', 'La colonne assurée annonce un montant, mais il est absent.', 'Saisir le prix assuré, ou choisir un autre état.');
+      if (pa === 0) return refusTarif('PRIX_ZERO', 'Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul »).', 'Saisir un prix strictement positif.');
+      if (!entierPositif(pa)) return refusTarif('PRIX_INVALIDE', 'Le prix assuré doit être un nombre entier de francs, strictement positif.', 'Corriger le prix assuré.');
+    }
+    if (!String(o.motif || '').trim()) return refusTarif('MOTIF_REQUIS', 'Un changement de prix se motive : sans motif, la Direction ne peut pas décider.', 'Saisir le motif du changement.');
+    return null;
+  }
+
+  /** Propose une version de prix pour une prestation existante (ou, avec `creation`, crée la prestation et sa première version). */
+  function proposerTarif(o) {
+    o = o || {};
+    if (!peutProposerTarif()) return refusTarif('PROPOSITION_RESERVEE', 'Proposer un prix se fait depuis « Tarifs et prix », par un profil qui peut modifier cet écran.', 'Demander la modification à la Directrice Administrative ou à la Direction.');
+    var h = D.TARIFS.lire();
+    if (!h) return refusTarif('REFERENTIEL_ABSENT', 'Le référentiel de prix n’est pas chargé.', 'Recharger la page.');
+    var p = h.parCode[o.code];
+    if (o.creation) {
+      if (p) return refusTarif('CODE_EXISTANT', 'Le code « ' + o.code + ' » existe déjà au référentiel (code ou alias) : un code ne se réutilise pas.', 'Choisir un autre code, ou proposer un changement de prix à la prestation existante.');
+      if (!String(o.code || '').trim() || !String(o.creation.libelle || '').trim()) return refusTarif('IDENTITE_INCOMPLETE', 'Une prestation porte un code et un libellé.', 'Renseigner le code et le libellé.');
+    } else if (!p) {
+      return refusTarif('PRESTATION_INTROUVABLE', 'Aucune prestation ne porte le code « ' + o.code + ' ».', 'Choisir une prestation de la liste.');
+    }
+    var refus = controleProposition(o);
+    if (refus) return refus;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(o.dateEffet || ''))) return refusTarif('DATE_EFFET_REQUISE', 'Un changement de prix prend effet à une date : sans date d’effet, on ne sait pas à partir de quand il s’applique.', 'Saisir la date d’effet.');
+    var aujourdhui = jourTarif(null);
+    if (o.dateEffet < aujourdhui) return refusTarif('DATE_PASSEE', 'La date d’effet (' + o.dateEffet + ') est antérieure à aujourd’hui (' + aujourdhui + ') : un prix ne se change pas dans le passé.', 'Choisir aujourd’hui ou une date future.');
+    var code = o.creation ? String(o.code).trim() : p.code;
+    var existantes = versionsDe(code);
+    var enAttente = existantes.filter(function (v) { return v.statut === 'propose'; })[0];
+    if (enAttente) return refusTarif('CHANGEMENT_EN_ATTENTE', 'Une proposition est déjà en attente de décision pour « ' + code + ' » (version ' + enAttente.version + ').', 'La décider (Oui ou Non) ou la retirer avant d’en proposer une autre.');
+    var etatA = o.etatAssure || 'montant';
+    if (p) {
+      var s = D.TARIFS.instantane(h, p, o.dateEffet);
+      if (s && s.na === Number(o.prixNonAssure) && s.etatAssure === etatA && (etatA !== 'montant' || s.pa === Number(o.prixAssure))) {
+        return refusTarif('PRIX_INCHANGE', 'Ce prix est déjà celui en vigueur à cette date : rien à proposer.', 'Modifier au moins un des prix, ou ne rien changer.');
+      }
+    }
+    var rang = existantes.reduce(function (m, v) { return Math.max(m, v.version || 0); }, 0) + 1;
+    if (o.creation) {
+      var c = o.creation, famille = c.famille;
+      var ident = { id: code, code: code, libelle: String(c.libelle).trim(), famille: famille, statut: 'actif' };
+      if (c.secteur) ident.secteur = c.secteur;
+      if (c.source) ident.source = c.source;
+      if (famille === 'ACTE' || famille === 'HOSPITALISATION') ident.codeActe = code;
+      else if (famille === 'LABO') ident.codeAnalyse = code;
+      else ident.codeGrille = code;
+      if (o.assurable !== undefined) ident.assurable = o.assurable;
+      colTarifs().insert(ident);
+    }
+    var v = {
+      id: code + '@' + o.dateEffet + '@' + rang, code: code, version: rang, dateEffet: o.dateEffet,
+      prixNonAssure: Number(o.prixNonAssure), prixAssure: etatA === 'montant' ? Number(o.prixAssure) : null, etatAssure: etatA,
+      motif: String(o.motif).trim(), origine: 'ecran', statut: 'propose',
+      proposePar: auteurDeLaSession(), proposeLe: C.iso(C.aujourdhui()),
+    };
+    var rec = colVersionsTarif().insert(v);
+    if (!rec) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Réessayer ; le refus est au journal.');
+    D.TARIFS.invalider();
+    return { ok: true, version: rec.record, creation: !!o.creation };
+  }
+
+  /** Décide une proposition : Oui (elle devient la version en vigueur à sa date d'effet) ou Non (refusée, motif obligatoire). */
+  function deciderTarif(versionId, decision, o) {
+    o = o || {};
+    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Demander la décision à l’un de ces profils.');
+    if (decision !== 'oui' && decision !== 'non') return refusTarif('DECISION_INCONNUE', 'La décision est Oui ou Non.', 'Choisir Oui ou Non.');
+    var col = colVersionsTarif(), v = col.get(versionId);
+    if (!v) return refusTarif('VERSION_INTROUVABLE', 'Aucune version ne porte l’identifiant « ' + versionId + ' ».', 'Actualiser la liste des alertes.');
+    if (v.statut !== 'propose') return refusTarif('DEJA_DECIDEE', 'Cette version est déjà « ' + v.statut + ' » : une décision ne se rejoue pas.', 'Proposer une nouvelle version si le prix doit encore changer.');
+    var motif = String(o.motif || '').trim();
+    var patch = { decidePar: auteurDeLaSession(), decideLe: C.iso(C.aujourdhui()), roleDecision: roleDeLaSession() };
+    if (motif) patch.motifDecision = motif;
+    if (decision === 'non') {
+      if (!motif) return refusTarif('MOTIF_REQUIS', 'Un refus se motive : le service doit pouvoir lire pourquoi le changement n’est pas appliqué.', 'Saisir le motif du refus.');
+      patch.statut = 'refuse';
+    } else {
+      if (v.prixNonAssure === null || v.prixNonAssure === undefined || v.etatNonAssure === 'manquant') return refusTarif('TARIF_ABSENT', 'Cette version ne porte pas de prix non assuré : elle ne se valide pas.', 'La refuser, puis proposer une version chiffrée.');
+      var date = v.dateEffet || o.dateEffet;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date || ''))) return refusTarif('DATE_EFFET_REQUISE', 'Cette proposition n’a pas de date d’effet : la décision la fixe.', 'Saisir la date d’effet avec le Oui.');
+      if (date < jourTarif(null)) return refusTarif('DATE_PASSEE', 'La date d’effet (' + date + ') est antérieure à aujourd’hui : un prix ne se change pas dans le passé.', 'Choisir aujourd’hui ou une date future.');
+      patch.statut = 'valide';
+      if (!v.dateEffet) patch.dateEffet = date;
+    }
+    var maj = col.update(versionId, patch);
+    if (!maj) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé la décision.', 'Réessayer ; le refus est au journal.');
+    D.TARIFS.invalider();
+    if (decision === 'oui') S.projeterTarifs();
+    return { ok: true, decision: decision, version: maj.record };
+  }
+  function retirerProposition(versionId, motif) {
+    var col = colVersionsTarif(), v = col.get(versionId);
+    if (!v) return refusTarif('VERSION_INTROUVABLE', 'Aucune version ne porte l’identifiant « ' + versionId + ' ».', 'Actualiser la liste.');
+    if (v.statut !== 'propose') return refusTarif('DEJA_DECIDEE', 'Seule une proposition en attente se retire.', 'Une version décidée se remplace par une nouvelle version.');
+    if (v.proposePar !== auteurDeLaSession() && !peutDeciderTarif()) return refusTarif('RETRAIT_RESERVE', 'Une proposition se retire par son auteur, ou par un profil qui décide.', 'Demander le retrait à son auteur.');
+    var maj = col.update(versionId, { statut: 'retire', decidePar: auteurDeLaSession(), decideLe: C.iso(C.aujourdhui()), roleDecision: roleDeLaSession(), motifDecision: String(motif || 'Retirée par son auteur') });
+    D.TARIFS.invalider();
+    return maj ? { ok: true, version: maj.record } : refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé le retrait.', 'Réessayer.');
+  }
+
+  /* ==========================================================================
    * 1. LE MÉDECIN PRESCRIT
    * --------------------------------------------------------------------------
    * Un seul geste engendre l'ordonnance, les demandes d'analyses, la facture et
@@ -3060,6 +3197,8 @@
     repartir: repartir, garantiesDe: garantiesDe, souscripteurDe: souscripteurDe,
     carteValide: carteValide, categoriser: categoriser, libelleUnite: libelleUnite,
     colTarifs: colTarifs, colVersionsTarif: colVersionsTarif,
+    ROLES_VALIDATION_TARIFS: ROLES_VALIDATION_TARIFS, peutDeciderTarif: peutDeciderTarif, peutProposerTarif: peutProposerTarif,
+    proposerTarif: proposerTarif, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
     tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate,
     couvertureALaDate: couvertureALaDate, historiqueCouverture: historiqueCouverture,
     changerCouverture: changerCouverture,
