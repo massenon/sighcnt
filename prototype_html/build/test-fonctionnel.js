@@ -351,6 +351,58 @@ async function viderMessages(page) {
   };
   const texteCorps = () => page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
 
+  /* --- Outils du lot IMP-B1 (Vagues 127 à 132) : les cinq jeux du stock. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
+  const outilsB1 = (() => {
+    const ENT = {
+      produits: ['Code article', 'Désignation', 'Catégorie', 'Unité', 'Prix d’achat', 'Prix de vente', 'Seuil d’alerte', 'Emplacement', 'Code fournisseur'],
+      emplacements: ['Code du casier', 'Intitulé', 'Zone', 'Température de conservation', 'Capacité (références)', 'Observation'],
+      detail: ['Code article', 'N° de lot', 'Date de péremption', 'Quantité'],
+      transfert: ['Code article', 'N° de lot', 'Quantité', 'Service destinataire', 'Date du transfert', 'Motif'],
+      inventaire: ['Magasin', 'Code article', 'Quantité comptée', 'Type d’inventaire', 'Date du comptage'],
+    };
+    const JEUX = ['produits-referentiel', 'emplacements', 'stock-detail-initial', 'transfert-lignes', 'inventaire-comptage'];
+    /** Les collections que le lot touche : on photographie les identifiants AVANT, on archive le NEUF APRÈS (RG-14), jamais une suppression. */
+    const COLS = ['produits', 'lots', 'mouvements', 'transferts', 'inventaires', 'emplacements', 'lotsImportation', 'factures', 'ordonnances', 'taches', 'notifications'];
+    const photographier = () => page.evaluate((cols) => { const S = window.SIGH.store, o = {}; cols.forEach((c) => { o[c] = S.collection(c).all().map((r) => r.id); }); sessionStorage.setItem('sigh-b1', JSON.stringify(o)); return cols.length; }, COLS);
+    const restituer = async () => {
+      await page.evaluate(() => { const S = window.SIGH.store, avant = JSON.parse(sessionStorage.getItem('sigh-b1') || '{}');
+        Object.keys(avant).forEach((c) => { const vus = {}; avant[c].forEach((i) => { vus[i] = true; }); S.collection(c).all().forEach((r) => { if (!vus[r.id] && r.statut !== 'archive') r.statut = 'archive'; }); });
+        S.save(); });
+      await attendreEcritures();
+    };
+    /** Une fiche article de sonde : valeurs de test, jamais un tarif qui aurait une source. */
+    const produit = (o) => page.evaluate((x) => { const S = window.SIGH.store;
+      const r = S.collection('produits', { module: 'M6', entite: 'Produit' }).insert(Object.assign({ unite: 'Boîte', categorie: 'consommable', prixAchat: 100, prixVente: 100, cump: 100, seuilAlerte: 5, stockGros: 0, stockDetail: 0, stock: 0, emplacement: '', fournisseur: '', sondeB1: true }, x));
+      return { id: r.record.id, code: r.record.code }; }, o);
+    const lot = (o) => page.evaluate((x) => { const S = window.SIGH.store;
+      const r = S.collection('lots', { module: 'M6', entite: 'Lot' }).insert(Object.assign({ statut: 'actif', quantiteRestante: 10, sondeB1: true }, x)); return r.record.id; }, o);
+    /** L'analyse du moteur sur des LIGNES (en-tête compris) : ce que la vérification afficherait, sans passer par le sélecteur de fichier. */
+    const analyser = (jeu, lignes, nom) => page.evaluate((j, l, n) => { const I = window.SIGH.importer, a = I.analyserLignes(I.jeu(j), l, n || 'b1.csv');
+      return { accepte: a.accepte, aEcrire: a.aEcrire, droitRefuse: !!a.droitRefuse, compte: a.compte, nbLignes: a.nbLignes,
+        globaux: a.globaux.map((p) => ({ code: p.code, colonne: p.colonne, motif: p.motif, geste: p.geste, niveau: p.niveau })),
+        lignes: a.lignes.map((x) => ({ n: x.n, etat: x.etat, detail: x.extra && x.extra.detail, problemes: x.problemes.map((p) => ({ code: p.code, colonne: p.colonne, motif: p.motif, geste: p.geste, niveau: p.niveau })) })) }; }, jeu, lignes, nom);
+    const codes = (a) => a.globaux.map((p) => p.code).concat(...a.lignes.map((l) => l.problemes.filter((p) => p.niveau === 'refus').map((p) => p.code)));
+    const toutCodes = (a) => a.globaux.map((p) => p.code).concat(...a.lignes.map((l) => l.problemes.map((p) => p.code)));
+    /** Analyse PUIS application, comme le bouton le fait (le moteur rejoue l'analyse avant d'écrire). */
+    const appliquer = (jeu, lignes, nom) => page.evaluate((j, l, n) => { const I = window.SIGH.importer, a = I.analyserLignes(I.jeu(j), l, n || 'b1.csv'); const r = I.appliquer(j, a);
+      const lot = r.lot || null; return { ok: !!r.ok, code: r.code || null, motif: r.motif || null, geste: r.geste || null, ref: lot ? lot.reference : null, id: lot ? lot.id : null, ecrits: r.ecrits || 0, analyse: a.accepte }; }, jeu, lignes, nom);
+    const annuler = (id, motif) => page.evaluate((i, m) => { const r = window.SIGH.importer.annulerLot(i, m || 'sonde'); return { ok: !!r.ok, code: r.code || null, motif: r.motif || null, archives: r.archives }; }, id, motif);
+    const produitPar = (code) => page.evaluate((c) => { const p = window.SIGH.store.collection('produits').all().filter((x) => x.code === c)[0]; return p ? { id: p.id, statut: p.statut, stockGros: p.stockGros, stockDetail: p.stockDetail, stock: p.stock, prixAchat: p.prixAchat, prixVente: p.prixVente, cump: p.cump, seuilAlerte: p.seuilAlerte, unite: p.unite, categorie: p.categorie, emplacement: p.emplacement, fournisseur: p.fournisseur, valorisationProvisoire: !!p.valorisationProvisoire, lotImport: p.lotImport || null, validePar: p.validePar || null } : null; }, code);
+    const mouvementsDe = (produitId) => page.evaluate((id) => window.SIGH.store.collection('mouvements').all().filter((m) => m.produitId === id).map((m) => ({ type: m.type, typeLabel: m.typeLabel, quantite: m.quantite, stockType: m.stockType, justificatif: m.justificatif, statut: m.statut, reference: m.reference })), produitId);
+    const lotsDe = (produitId) => page.evaluate((id) => window.SIGH.store.collection('lots').all().filter((l) => l.produitId === id).map((l) => ({ numeroLot: l.numeroLot, datePeremption: l.datePeremption, quantiteRestante: l.quantiteRestante, statut: l.statut, magasin: l.magasin || null })), produitId);
+    /** Les mesures d'un envoi au serveur : octets et requêtes POST vers le magasin, pendant `f`. */
+    const mesurerEnvoi = async (f) => {
+      let octets = 0, requetes = 0;
+      const ecoute = (r) => { if (r.method() === 'POST' && /api\/(magasin|crud)\.php/.test(r.url())) { requetes++; octets += (r.postData() || '').length; } };
+      page.on('request', ecoute);
+      const t0 = Date.now(); const retour = await f(); const tF = Date.now() - t0;
+      const t1 = Date.now(); await attendreEcritures(); const tE = Date.now() - t1;
+      page.off('request', ecoute);
+      return { retour: retour, msFonction: tF, msEnvoi: tE, octets: octets, requetes: requetes };
+    };
+    return { ENT, JEUX, photographier, restituer, produit, lot, analyser, codes, toutCodes, appliquer, annuler, produitPar, mouvementsDe, lotsDe, mesurerEnvoi };
+  })();
+
 
   /* ==========================================================================
    * Vagues 124 et 125 : LOT IMP-A, jeu `tarifs` (PRD-TARIFS 7.2, T4). Un seul jeu, écrit par le MÊME chemin que la saisie à l'écran (PR.proposerTarif) :
@@ -20374,10 +20426,10 @@ async function viderMessages(page) {
       return !!b;
     });
     await pause(600);
-    const fen = await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); return d ? { lignes: d.querySelectorAll('tr[data-jeu]').length, texte: d.innerText.replace(/\s+/g, ' ').slice(0, 300),
+    const fen = await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); return d ? { lignes: d.querySelectorAll('tr[data-jeu]').length, total: window.SIGH.nav.IMPORTS.length, texte: d.innerText.replace(/\s+/g, ' ').slice(0, 300),
       voirPlan: (d.querySelector('tr[data-jeu="plan-comptable"] input[data-droit="voir"]') || {}).checked, impPlan: (d.querySelector('tr[data-jeu="plan-comptable"] input[data-droit="importer"]') || {}).checked } : null; });
     verifier('« Rôles & permissions » : une section Importation (une ligne par jeu, trois cases), l’assistant comptable voit mais n’importe pas',
-      ouvert && fen && fen.lignes === 10 && fen.voirPlan === true && fen.impPlan === false && /Importations du rôle/.test(fen.texte), JSON.stringify(fen));
+      ouvert && fen && fen.lignes === fen.total && fen.total >= 15 && fen.voirPlan === true && fen.impPlan === false && /Importations du rôle/.test(fen.texte), JSON.stringify(fen));
     await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); d.querySelector('tr[data-jeu="plan-comptable"] input[data-droit="importer"]').click(); });
     await cliquer('Enregistrer', '[role="dialog"] button');
     await pause(900);
@@ -20527,8 +20579,10 @@ async function viderMessages(page) {
       return c.feuilles.map((f) => f.lignes.map((x) => x.join(' ')).join(' | ')).join(' // '); });
     verifier('Le rapport .xlsx dit les lignes ignorées (colonne niveau « ignorée » et ligne de résumé)', /ignorée/.test(rapIgn) && /Lignes ignorées \(fiche déjà tenue\) 1/.test(rapIgn), rapIgn.slice(0, 300));
     const modes = await page.evaluate(() => window.SIGH.nav.IMPORTS.map((j) => j.id + ':' + j.doublon).join(','));
-    verifier('Le mode de doublon est DÉCLARÉ par jeu au manifeste : « ignorer » sur les fournisseurs seulement, « versionner » sur les prix, « refuser » partout ailleurs (aucun « mettre à jour en place »)',
-      /fournisseurs:ignorer/.test(modes) && /tarifs:versionner/.test(modes) && /patients:refuser/.test(modes) && modes.split(',').filter((x) => /ignorer/.test(x)).length === 1 && !/mettre/.test(modes), modes);
+    /* « Ignorer » : la liste FERMÉE de la Direction (produits, fournisseurs, emplacements, courriers) ; le lot IMP-B1 y a ajouté le référentiel produits et les emplacements (Vague 127). Jamais patients, comptes ni pièces. */
+    verifier('Le mode de doublon est DÉCLARÉ par jeu au manifeste : « ignorer » sur fournisseurs, référentiel produits et emplacements SEULEMENT (liste fermée, I8), « versionner » sur les prix, « refuser » partout ailleurs, patients compris (aucun « mettre à jour en place »)',
+      /fournisseurs:ignorer/.test(modes) && /produits-referentiel:ignorer/.test(modes) && /emplacements:ignorer/.test(modes) && /tarifs:versionner/.test(modes) && /patients:refuser/.test(modes) && /grand-stock:refuser/.test(modes)
+      && modes.split(',').filter((x) => /ignorer/.test(x)).length === 3 && !/mettre/.test(modes), modes);
 
     /* (6) Chacun lit SES lots ; la supervision les lit tous ; un lot se défait par son auteur ou la supervision. */
     await poserSessionServeur(roleImp('stock', 'STOCKEUR'));
@@ -21022,6 +21076,639 @@ async function viderMessages(page) {
     await restituer();
     await pause(500);
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  /* ==========================================================================
+   * Vagues 127 à 132 : LOT IMP-B1 (11/11/2026), les cinq jeux d'import du STOCK : `produits-referentiel`, `emplacements`, `stock-detail-initial`, `transfert-lignes`,
+   * `inventaire-comptage`. Tout se mesure AU GESTE : le bouton est cherché dans la page ouverte sous le profil, le fichier est téléversé par le sélecteur réel (une fois par
+   * jeu au moins), les refus se lisent dans l'analyse du moteur, les stocks se comparent avant et après. Chaque scénario photographie les identifiants AVANT et archive le NEUF
+   * APRÈS (RG-14) ; aucune ligne n'est lue par son rang, tout se cherche par référence ou par code.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 127 : IMP-B1 les cinq jeux du stock : droit distinct (gestionnaire de stock, DAF, administrateur ; ni le comptable ni la Direction), bouton « Importer les données » présent chez le détenteur et ABSENT d’un profil qui ouvre l’écran sans le détenir, pages de jeu, rangée du ruban, le moteur refuse aussi');
+    erreursJS = [];
+    const B = outilsB1;
+    await ouvrir('imp-accueil.html');
+    const M = await page.evaluate((jeux) => {
+      const N = window.SIGH.nav, g = (r, j) => { const d = N.droitImport(r, j); return (d.voir ? 'V' : '') + (d.importer ? 'I' : '') + (d.annuler ? 'A' : ''); };
+      const out = { roles: {} };
+      ['stock', 'admin', 'da', 'comptable', 'direction', 'aide_comptable', 'reception', 'caissier', 'laborantin', 'medecin', 'assistant_comptable'].forEach((r) => { out.roles[r] = jeux.map((j) => g(r, j)).join(','); });
+      out.decl = jeux.map((j) => { const x = N.jeuImport(j); return j + ':' + x.hotes.join('+') + ':' + x.sensibilite + ':' + x.doublon + ':' + x.module; });
+      out.gros = { comptable: g('comptable', 'grand-stock'), stock: g('stock', 'grand-stock') };
+      out.superviseurs = ['admin', 'da', 'direction', 'stock', 'comptable'].filter((r) => N.superviseImport(r)).join(',');
+      out.ignorer = N.IMPORTS.filter((j) => j.doublon === 'ignorer').map((j) => j.id).sort().join(',');
+      return out;
+    }, B.JEUX);
+    verifier('Matrice d’origine : le gestionnaire de stock importe ses CINQ jeux (voir, importer, annuler), la DAF et l’administrateur aussi',
+      ['stock', 'da', 'admin'].every((r) => M.roles[r] === 'VIA,VIA,VIA,VIA,VIA'), JSON.stringify(M.roles));
+    verifier('Aucun autre profil : ni le comptable (qui ne lit que le Grand Stock), ni la Direction, ni l’assistant comptable, ni l’accueil, le caissier, le biologiste, le médecin',
+      ['comptable', 'direction', 'aide_comptable', 'reception', 'caissier', 'laborantin', 'medecin', 'assistant_comptable'].every((r) => M.roles[r] === ',,,,') && M.gros.comptable === 'V' && M.gros.stock === 'VIA', JSON.stringify(M));
+    verifier('Déclarations : un hôte par jeu, les trois jeux qui écrivent des stocks sont RESTREINTS (aucune valeur recopiée), « ignorer » n’est admis que pour les produits et les emplacements (liste fermée, I8)',
+      M.decl.join('|') === 'produits-referentiel:m6-produits:courante:ignorer:M6|emplacements:m6-etiquetage:courante:ignorer:M6|stock-detail-initial:m6-stock-detail:restreinte:refuser:M6|transfert-lignes:m6-transferts:restreinte:refuser:M6|inventaire-comptage:m6-inventaire:restreinte:refuser:M6'
+      && M.ignorer === 'emplacements,fournisseurs,produits-referentiel', JSON.stringify(M));
+    verifier('La supervision (lire tous les lots) reste celle de la DAF et de l’administrateur : détenir cinq jeux ne suffit pas à superviser', M.superviseurs === 'admin,da', M.superviseurs);
+
+    /* Le bouton sur chaque hôte : présent pour un détenteur, ABSENT pour un profil qui ouvre l'écran sans détenir le jeu. */
+    const roles = await page.evaluate(() => Object.keys(window.SIGH.nav.ROLES).filter((r) => !window.SIGH.nav.roleArchive(r)));
+    const bilan = [];
+    for (const jeu of B.JEUX) {
+      const hote = await page.evaluate((j) => window.SIGH.nav.jeuImport(j).hotes[0], jeu);
+      const cand = await page.evaluate((j, e, rs) => {
+        const N = window.SIGH.nav, x = N.get(e);
+        const ouvre = rs.filter((r) => N.can(r, { id: e, roles: x.roles, module: x.module }));
+        return { detenteurs: ouvre.filter((r) => N.droitImport(r, j).importer), autres: ouvre.filter((r) => !N.droitImport(r, j).importer) };
+      }, jeu, hote, roles);
+      /* le gestionnaire de stock d'abord, puis le premier profil qui ouvre l'écran sans détenir le jeu */
+      const choisis = [['detenteur', 'stock'], ['detenteur', cand.detenteurs.filter((r) => r !== 'stock')[0]], ['autre', cand.autres[0]], ['autre', cand.autres[1]]].filter((x) => x[1]);
+      for (const [genre, r] of choisis) {
+        await poserSessionServeur(roleImp(r));
+        await ouvrir(hote + '.html');
+        const b = await boutonsImport();
+        bilan.push({ hote: hote, jeu: jeu, role: r, genre: genre, present: b.some((x) => x.split(',').indexOf(jeu) >= 0) });
+      }
+      if (!cand.autres.length) bilan.push({ hote: hote, jeu: jeu, genre: 'aucun profil sans le droit qui ouvre l’écran' });
+    }
+    const faux = bilan.filter((x) => x.genre === 'detenteur' ? !x.present : (x.genre === 'autre' ? x.present : true));
+    verifier('Sur chacun des cinq hôtes (produits, étiquetage, stock détail, transferts, inventaires), le bouton est présent pour le gestionnaire de stock et la DAF ou l’administrateur, ABSENT de tout profil qui ouvre l’écran sans le jeu (' + bilan.length + ' sondages)',
+      bilan.length >= 15 && faux.length === 0 && B.JEUX.every((j) => bilan.some((b) => b.jeu === j && b.genre === 'autre')), JSON.stringify(faux.concat([{ lignes: bilan.length }])));
+
+    /* Les pages de jeu : visibles de qui détient le jeu, FERMÉES (403) aux autres. */
+    await poserSessionServeur(roleImp('stock'));
+    await ouvrir('imp-transfert-lignes.html');
+    const pageStock = await page.evaluate(() => ({ televerser: [...document.querySelectorAll('#page-content button')].some((b) => /Téléverser un fichier/.test(b.textContent)), restreint: /Jeu restreint/.test(document.getElementById('page-content').innerText),
+      modele: [...document.querySelectorAll('#page-content button')].some((b) => /Télécharger le modèle/.test(b.textContent)), colonnes: [...document.querySelectorAll('#page-content table tbody tr td:first-child')].map((t) => t.textContent.trim()) }));
+    verifier('La page du jeu « bon de transfert » s’ouvre au gestionnaire de stock : modèle, téléversement, note « jeu restreint », colonnes lues de la déclaration',
+      pageStock.televerser && pageStock.restreint && pageStock.modele && pageStock.colonnes.indexOf('Code article') >= 0 && pageStock.colonnes.indexOf('Service destinataire') >= 0, JSON.stringify(pageStock));
+    await poserSessionServeur(roleImp('comptable'));
+    await ouvrir('imp-transfert-lignes.html');
+    const ferme = await page.evaluate(() => /error-403/.test(location.pathname));
+    verifier('…et elle est FERMÉE (403) au comptable : sa visibilité vient du droit « voir » du jeu', ferme, '');
+
+    /* La rangée du ruban : CALCULÉE de la matrice. */
+    await poserSessionServeur(roleImp('stock'));
+    await ouvrir('imp-accueil.html');
+    const rub = await page.evaluate(() => { const N = window.SIGH.nav, sys = N.treeRuban('stock').filter((d) => d.domain === 'Système')[0];
+      return { modules: sys ? sys.modules.map((m) => m.code) : null, items: sys ? sys.modules[0].items.map((i) => i.id) : [], compt: N.importsVisibles('comptable') }; });
+    verifier('Le gestionnaire de stock voit, dans la rangée « Importation de données » SEULE, ses jeux du stock (et toujours fournisseurs et tarifs), jamais les patients ni le personnel ; le comptable n’y gagne aucun des cinq',
+      JSON.stringify(rub.modules) === '["IMP"]' && ['imp-produits-referentiel', 'imp-emplacements', 'imp-stock-detail-initial', 'imp-transfert-lignes', 'imp-inventaire-comptage', 'imp-fournisseurs', 'imp-actes'].every((x) => rub.items.indexOf(x) >= 0)
+      && rub.items.indexOf('imp-patients') < 0 && rub.items.indexOf('imp-personnel') < 0 && B.JEUX.every((j) => rub.compt.indexOf(j) < 0), JSON.stringify(rub));
+
+    /* LE MOTEUR REFUSE AUSSI : un profil qui ne détient pas le jeu n'analyse, n'applique ni n'annule rien, et aucun lot n'est consigné. */
+    await poserSessionServeur(roleImp('comptable'));
+    await ouvrir('imp-accueil.html');
+    const refus = await page.evaluate((jeux) => { const I = window.SIGH.importer, lots0 = I.lots().all().length, out = [];
+      jeux.forEach((j) => { const a = I.analyserLignes(I.jeu(j), [['x'], ['y']], 'refus.csv'); const faux = { accepte: true, aEcrire: 1, lignesBrutes: [['x'], ['y']], fichier: 'refus.csv', lignes: [], nbLignes: 1, compte: {}, globaux: [] };
+        out.push([j, a.droitRefuse === true && a.accepte === false && a.globaux[0].code === 'DROIT_IMPORT_REFUSE', I.appliquer(j, faux).code]); });
+      return { out: out, lotsApres: I.lots().all().length - lots0 }; }, B.JEUX);
+    verifier('Le MOTEUR refuse sans le droit : pour chacun des cinq jeux, l’analyse et l’application du comptable rendent DROIT_IMPORT_REFUSE, rien n’est consigné',
+      refus.out.length === 5 && refus.out.every((x) => x[1] === true && x[2] === 'DROIT_IMPORT_REFUSE') && refus.lotsApres === 0, JSON.stringify(refus));
+    const e127 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e127.length === 0, e127.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 128 : IMP-B1 le référentiel produits : fiches NEUVES sans stock ni lot, quantité et lot refusés en les nommant (renvoi au Grand Stock), catégorie, prix, RG-02, doublons, « ignorer les existants » qui liste ses lignes, tout ou rien, annulation tant qu’aucun acte ne s’appuie dessus, une facture émise avant garde son prix');
+    erreursJS = [];
+    const B = outilsB1, ENT = B.ENT.produits;
+    await poserSessionServeur(roleImp('stock', 'STOCK128'));
+    await ouvrir('m6-produits.html');
+    await B.photographier();
+
+    /* --- 1. Le geste : bouton de l'écran, fichier téléversé par le sélecteur, confirmation ------------------------------------------------------------------------ */
+    await cliquer('Importer les données', 'button');
+    await page.waitForFunction(() => !!document.querySelector('[role="dialog"] input[data-import-fichier]'), { timeout: 20000 }).catch(() => null);
+    await televerserBanc(await classeurBanc('p128.xlsx', [ENT,
+      ['ZZB1-P1', 'Paracétamol sonde B1', 'Médicaments', 'Boîte', 350, '', 20, '', ''],
+      ['ZZB1-P2', 'Gants sonde B1', 'Consommables médicaux', 'Paire', 1200, 1500, '', '', ''],
+      ['ZZB1-P3', 'Lancettes sonde B1', 'Consommables médicaux', 'Boîte', '', '', 15, '', '']]));
+    const t1 = await texteCorps();
+    verifier('La vérification annonce une analyse conforme de 3 lignes, avec deux avertissements NOMMÉS (prix d’achat absent « à valoriser », seuil absent « sans seuil »), sans rien écrire',
+      /Analyse conforme/.test(t1) && /3 ligne\(s\) lue\(s\)/.test(t1) && /A_VALORISER|à valoriser/.test(t1) && /sans seuil/.test(t1) && !(await page.evaluate(() => window.SIGH.store.collection('produits').all().some((p) => p.code === 'ZZB1-P1'))), t1.slice(0, 400));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1200);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Fermer'); if (b) b.click(); });
+    await pause(1500);
+    const p1 = await B.produitPar('ZZB1-P1'), p2 = await B.produitPar('ZZB1-P2'), p3 = await B.produitPar('ZZB1-P3');
+    verifier('Les trois fiches sont NEUVES et SANS STOCK : stock gros, détail et total à zéro, aucun lot, aucun mouvement ; chacune porte son lot d’import et le nom de celui qui a validé (RG-12)',
+      p1 && p2 && p3 && [p1, p2, p3].every((p) => p.stockGros === 0 && p.stockDetail === 0 && p.stock === 0 && /^IMP-\d{4}-\d+$/.test(p.lotImport || '') && /STOCK128/.test(p.validePar || ''))
+      && (await B.lotsDe(p1.id)).length === 0 && (await B.mouvementsDe(p1.id)).length === 0 && (await B.lotsDe(p2.id)).length === 0, JSON.stringify([p1, p2, p3]));
+    verifier('RG-02 : le prix de vente d’un MÉDICAMENT est son prix d’achat (350 / 350), le CUMP part du prix d’achat ; un article hors médicament garde le prix de vente fourni (1 200 / 1 500)',
+      p1.prixAchat === 350 && p1.prixVente === 350 && p1.cump === 350 && p2.prixAchat === 1200 && p2.prixVente === 1500, JSON.stringify([p1, p2]));
+    verifier('Le seuil vide est « sans seuil », JAMAIS zéro (seuilAlerte absent) ; le prix d’achat absent crée l’article « à valoriser » (marqué, source dite), jamais un prix inventé',
+      p2.seuilAlerte == null && p1.seuilAlerte === 20 && p3.valorisationProvisoire === true && p3.prixAchat === 0 && p1.valorisationProvisoire === false, JSON.stringify([p1, p2, p3]));
+    const lot1 = await page.evaluate(() => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 'p128.xlsx')[0]; return l ? { etat: l.etat, jeu: l.jeu, ecrits: l.ecrits.map((e) => e.collection).join(','), ref: l.reference, id: l.id } : null; });
+    verifier('Le lot est appliqué, il n’a écrit que trois fiches de « produits » (jamais un lot de stock, jamais un mouvement)', lot1 && lot1.etat === 'applique' && lot1.jeu === 'produits-referentiel' && lot1.ecrits === 'produits,produits,produits', JSON.stringify(lot1));
+
+    /* --- 2. Les refus, nommés : colonnes retirées, catégorie, prix, RG-02, doublon du fichier, doublon du magasin ----------------------------------------- */
+    const avecQte = await B.analyser('produits-referentiel', [ENT.concat(['Quantité', 'N° de lot']), ['ZZB1-Q1', 'Article quantité', 'Médicaments', 'Boîte', 100, '', 5, '', '', 40, 'L1']]);
+    verifier('Une colonne « Quantité » ou « N° de lot » REFUSE le fichier en la nommant (COLONNE_RETIREE) et renvoie au jeu Grand Stock : un référentiel ne porte jamais de stock',
+      avecQte.accepte === false && B.codes(avecQte).filter((c) => c === 'COLONNE_RETIREE').length === 2 && avecQte.globaux.some((p) => p.colonne === 'Quantité' && /Grand Stock/.test(p.motif)) && avecQte.globaux.some((p) => p.colonne === 'N° de lot'), JSON.stringify(avecQte.globaux));
+    const refus = await B.analyser('produits-referentiel', [ENT,
+      ['ZZB1-R1', 'Catégorie inconnue', 'Alimentation', 'Boîte', 100, '', 5, '', ''],
+      ['ZZB1-R2', 'Prix négatif', 'Médicaments', 'Boîte', -5, '', 5, '', ''],
+      ['ZZB1-R3', 'Médicament avec marge', 'Médicaments', 'Boîte', 100, 130, 5, '', ''],
+      ['ZZB1-R4', 'Sans unité', 'Médicaments', '', 100, '', 5, '', ''],
+      ['ZZB1-R5', 'Doublon A', 'Médicaments', 'Boîte', 100, '', 5, '', ''],
+      ['zzb1-r5', 'Doublon B', 'Médicaments', 'Boîte', 100, '', 5, '', '']]);
+    const c = (n) => (refus.lignes.filter((l) => l.n === n)[0] || { problemes: [] }).problemes.map((p) => p.code);
+    verifier('Refus NOMMÉS, ligne par ligne : catégorie inconnue (VALEUR_HORS_LISTE), prix négatif (HORS_BORNES), médicament à prix de vente libre (RG02_PRIX_DE_VENTE), unité absente (CHAMP_OBLIGATOIRE), code en double dans le fichier (DOUBLON_FICHIER)',
+      refus.accepte === false && c(2).indexOf('VALEUR_HORS_LISTE') >= 0 && c(3).indexOf('HORS_BORNES') >= 0 && c(4).indexOf('RG02_PRIX_DE_VENTE') >= 0 && c(5).indexOf('CHAMP_OBLIGATOIRE') >= 0 && c(7).indexOf('DOUBLON_FICHIER') >= 0, JSON.stringify(refus.lignes.map((l) => [l.n, l.problemes.map((p) => p.code)])));
+    verifier('Le refus RG-02 dit le geste (laisser le prix de vente vide : il est le prix d’achat) et celui de la catégorie dit les valeurs permises',
+      refus.lignes.filter((l) => l.n === 4)[0].problemes.some((p) => /prix d’achat/.test(p.geste) && /RG-02/.test(p.motif)) && refus.lignes.filter((l) => l.n === 2)[0].problemes.some((p) => /Médicaments/.test(p.geste)), JSON.stringify(refus.lignes[0]));
+
+    /* --- 3. TOUT OU RIEN : une ligne refusée n'écrit rien du fichier ----------------------------------------------------------------------------------------------- */
+    const avantRien = await page.evaluate(() => window.SIGH.store.collection('produits').all().length);
+    const rien = await B.appliquer('produits-referentiel', [ENT, ['ZZB1-T1', 'Ligne valide', 'Médicaments', 'Boîte', 100, '', 5, '', ''], ['ZZB1-T2', 'Ligne fautive', 'Alimentation', 'Boîte', 100, '', 5, '', '']], 'p128-rien.csv');
+    const apresRien = await page.evaluate(() => ({ n: window.SIGH.store.collection('produits').all().length, t1: window.SIGH.store.collection('produits').all().some((p) => p.code === 'ZZB1-T1') }));
+    verifier('Atomicité : le fichier qui porte une ligne valide et une ligne fautive est refusé en entier, la ligne valide n’est PAS écrite',
+      rien.ok === false && rien.code === 'ANALYSE_REFUSEE' && apresRien.n === avantRien && apresRien.t1 === false, JSON.stringify({ rien, avantRien, apresRien }));
+
+    /* --- 4. « Ignorer les existants » (I8) : le nombre et la liste ; la fiche tenue n'est ni modifiée ni dupliquée ------------------------------------------------ */
+    const ign = await B.appliquer('produits-referentiel', [ENT, ['ZZB1-P1', 'Autre désignation', 'Médicaments', 'Boîte', 999, '', 1, '', ''], ['ZZB1-N1', 'Article neuf sonde B1', 'Fournitures administratives', 'Ramette', 2500, '', 4, '', '']], 'p128-ign.csv');
+    const lotIgn = await page.evaluate((id) => { const l = window.SIGH.importer.lots().get(id); return l ? { n: l.ignoresTotal, liste: l.ignores, nbIgnores: l.nbIgnores, ecrits: l.ecrits.length } : null; }, ign.id);
+    const p1b = await B.produitPar('ZZB1-P1');
+    verifier('« Ignorer les existants » : la ligne dont l’article existe déjà n’écrit RIEN, elle est COMPTÉE et NOMMÉE au lot (nombre 1, ligne et code listés), l’article neuf s’écrit, la fiche tenue n’a pas bougé (prix 350, désignation, seuil)',
+      ign.ok === true && lotIgn.n === 1 && lotIgn.nbIgnores === 1 && lotIgn.liste.length === 1 && lotIgn.liste[0].cle === 'ZZB1-P1' && lotIgn.ecrits === 1
+      && p1b.prixAchat === 350 && p1b.seuilAlerte === 20 && (await B.produitPar('ZZB1-N1')) !== null, JSON.stringify({ lotIgn, p1b }));
+    await ouvrir('imp-produits-referentiel.html');
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => /Téléverser un fichier/.test(x.textContent)); return !!b; });
+    await televerserBanc(await classeurBanc('p128-ign2.xlsx', [ENT, ['ZZB1-P1', 'Autre désignation', 'Médicaments', 'Boîte', 999, '', 1, '', ''], ['ZZB1-P2', 'Autre', 'Médicaments', 'Boîte', 1, '', 1, '', '']]));
+    const t2 = await texteCorps();
+    const rap = await page.evaluate(() => { const I = window.SIGH.importer, j = I.jeu('produits-referentiel'); const a = I.analyserLignes(j, [['Code article', 'Désignation', 'Catégorie', 'Unité'], ['ZZB1-P1', 'x', 'Médicaments', 'Boîte']], 'r.csv');
+      const rapp = window.SIGH.xlsx.lire(new Uint8Array(I.rapport(a, j))); const cel = []; rapp.feuilles.forEach((f) => f.lignes.forEach((l) => l.forEach((x) => cel.push(String(x))))); return cel.join('|'); });
+    verifier('Quand TOUTES les lignes sont ignorées, la vérification le dit (« rien à écrire », aucun lot) ; le rapport .xlsx porte la ligne « ignorée » et le total des lignes ignorées',
+      /Rien à écrire/.test(t2) && /2 ignorée\(s\)/.test(t2) && /ignorée/.test(rap) && /IGNORE_EXISTANT/.test(rap) && /Lignes ignorées/.test(rap), (t2 + ' ' + rap).slice(0, 400));
+
+    /* --- 5. Une facture émise AVANT l'import garde son prix : l'import ne modifie jamais une fiche tenue ---------------------------------------------------------- */
+    await poserSessionServeur(roleImp('da', 'DAF128'));
+    await ouvrir('imp-accueil.html');
+    const fact = await page.evaluate(() => { const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const pr = S.collection('produits').all().filter((p) => p.code === 'ZZB1-P1')[0];
+      S.collection('produits').update(pr.id, { stockGros: 30, stock: 30 });
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const f = PR.prescrire({ patientCode: pt.code, medecin: 'S128', diagnostic: 's', medicaments: [{ produitId: pr.id, quantite: 2 }] }).facture;
+      const l = (f.lignes || []).filter((x) => x.produitId === pr.id)[0];
+      return { numero: f.numero, ligne: l ? { pu: l.prixUnitaire != null ? l.prixUnitaire : l.prix, total: l.total != null ? l.total : l.montant } : null, id: f.id }; });
+    const reimp = await B.appliquer('produits-referentiel', [ENT, ['ZZB1-P1', 'Autre désignation', 'Médicaments', 'Boîte', 999, '', 1, '', ''], ['ZZB1-N2', 'Article neuf 2 sonde B1', 'Fournitures administratives', 'Ramette', 2500, '', 4, '', '']], 'p128-apres-facture.csv');
+    const apresFact = await page.evaluate((id) => { const f = window.SIGH.store.collection('factures').get(id); const p = window.SIGH.store.collection('produits').all().filter((x) => x.code === 'ZZB1-P1')[0];
+      const l = (f.lignes || []).filter((x) => x.produitId === p.id)[0]; return { pu: l.prixUnitaire != null ? l.prixUnitaire : l.prix, total: l.total != null ? l.total : l.montant, prix: p.prixAchat }; }, fact.id);
+    verifier('Une facture émise AVANT un import de produits garde son prix : le même code ré-importé à 999 est IGNORÉ, la fiche garde 350, et la ligne de la facture ' + fact.numero + ' est inchangée',
+      reimp.ok === true && fact.ligne && fact.ligne.pu === 350 && apresFact.pu === fact.ligne.pu && apresFact.total === fact.ligne.total && apresFact.prix === 350, JSON.stringify({ fact, reimp: reimp.ok, apresFact }));
+
+    /* --- 6. L'annulation d'un lot : par archivage, tant qu'aucun acte ne s'appuie sur ses fiches ---------------------------------------------------------------- */
+    await poserSessionServeur(roleImp('stock', 'STOCK128'));
+    await ouvrir('imp-accueil.html');
+    const nouveau = await B.appliquer('produits-referentiel', [ENT, ['ZZB1-A1', 'Article à annuler', 'Fournitures administratives', 'Ramette', 100, '', 4, '', '']], 'p128-annul.csv');
+    const annulOk = await B.annuler(nouveau.id, 'sonde 128');
+    const archive = await B.produitPar('ZZB1-A1');
+    verifier('Annulation d’un lot sans acte : la fiche est ARCHIVÉE (RG-14), jamais supprimée, le lot passe « annulé »', annulOk.ok === true && archive && archive.statut === 'archive', JSON.stringify({ annulOk, archive }));
+    const refusAnnul = await B.annuler(lot1.id, 'sonde 128');
+    const refusAnnul2 = await page.evaluate(() => { const I = window.SIGH.importer, S = window.SIGH.store;
+      const n = I.lots().all().filter((x) => x.fichier === 'p128-apres-facture.csv')[0]; return n ? { id: n.id } : null; });
+    verifier('Le lot de P1 ne s’annule PLUS : l’article a servi (stock, puis facture) ; le refus est NOMMÉ et dit le geste (archiver l’article à l’écran, RG-14)',
+      refusAnnul.ok === false && /^(STOCK_PRESENT|PRODUIT_FACTURE|MOUVEMENT_POSTERIEUR|LOT_RATTACHE)$/.test(refusAnnul.code || ''), JSON.stringify(refusAnnul));
+
+    /* --- 7. MESURE : un import de 184 articles (la taille de l'inventaire SAGE), temps et envoi au serveur ----------------------------------------------------- */
+    const grosses = [ENT];
+    for (let i = 1; i <= 184; i++) grosses.push(['ZZB1-M' + String(i).padStart(3, '0'), 'Article de mesure ' + i, i % 3 ? 'Consommables médicaux' : 'Médicaments', 'Boîte', 100 + i, '', 10, '', '']);
+    const mes = await B.mesurerEnvoi(() => page.evaluate((l) => { const I = window.SIGH.importer, t0 = performance.now(); const a = I.analyserLignes(I.jeu('produits-referentiel'), l, 'mesure184.csv'); const tA = performance.now() - t0;
+      const t1 = performance.now(); const r = I.appliquer('produits-referentiel', a); return { ok: !!r.ok, ecrits: r.ecrits, msAnalyse: Math.round(tA), msApplication: Math.round(performance.now() - t1) }; }, grosses));
+    console.log('\n  MESURE IMP-B1 : import de 184 articles : analyse ' + mes.retour.msAnalyse + ' ms, application en mémoire ' + mes.retour.msApplication + ' ms, envoi au serveur ' + mes.msEnvoi + ' ms, ' + mes.requetes + ' requête(s), ' + mes.octets + ' octets');
+    verifier('Mesure : 184 articles s’importent d’un seul lot, sans erreur, et la file d’écriture est vidée (temps et octets envoyés dits au journal du banc)', mes.retour.ok && mes.retour.ecrits === 184 && mes.requetes >= 1, JSON.stringify(mes));
+    await B.restituer();
+    const e128 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e128.length === 0, e128.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 129 : IMP-B1 les emplacements de rangement : fiches neuves (zone et conservation vides restent vides, « à préciser »), code en double refusé ou ignoré en listant la ligne, zone et conservation en liste fermée, capacité entière positive, tout ou rien, annulation refusée quand un article y est rangé');
+    erreursJS = [];
+    const B = outilsB1, ENT = B.ENT.emplacements;
+    await poserSessionServeur(roleImp('stock', 'STOCK129'));
+    await ouvrir('m6-etiquetage.html');
+    await B.photographier();
+
+    await cliquer('Importer les données', 'button');
+    await page.waitForFunction(() => !!document.querySelector('[role="dialog"] input[data-import-fichier]'), { timeout: 20000 }).catch(() => null);
+    await televerserBanc(await classeurBanc('e129.xlsx', [ENT,
+      ['ZZB1-C1', 'Casier froid sonde B1', 'Chaîne du froid', '2 à 8 °C', 30, 'Sérums'],
+      ['ZZB1-C2', 'Casier sans zone sonde B1', '', '', '', '']]));
+    const t1 = await texteCorps();
+    verifier('La vérification annonce une analyse conforme de 2 lignes et NOMME l’avertissement de la zone absente ; rien n’est écrit avant la confirmation',
+      /Analyse conforme/.test(t1) && /2 ligne\(s\) lue\(s\)/.test(t1) && /zone non renseignée/.test(t1) && !(await page.evaluate(() => window.SIGH.store.collection('emplacements').all().some((e) => e.code === 'ZZB1-C1'))), t1.slice(0, 300));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1200);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Fermer'); if (b) b.click(); });
+    await pause(1500);
+    const fiches = await page.evaluate(() => window.SIGH.store.collection('emplacements').all().filter((e) => /^ZZB1-C/.test(e.code)).map((e) => ({ code: e.code, zone: e.zone == null ? null : e.zone, temperature: e.temperature == null ? null : e.temperature, capacite: e.capacite == null ? null : e.capacite, lot: !!e.lotImport, par: e.validePar })));
+    const f1 = fiches.filter((f) => f.code === 'ZZB1-C1')[0], f2 = fiches.filter((f) => f.code === 'ZZB1-C2')[0];
+    verifier('Deux casiers écrits : le premier avec sa zone, sa conservation et sa capacité ; le second SANS zone ni conservation (rien d’inventé), tous deux signés du lot et de leur auteur',
+      f1 && f2 && f1.zone === 'Chaîne du froid' && f1.temperature === '2 à 8 °C' && f1.capacite === 30 && f2.zone === null && f2.temperature === null && f2.capacite === null && f1.lot && f2.lot && /STOCK129/.test(f1.par), JSON.stringify(fiches));
+    await outils100.chercher('ZZB1-C2');
+    const ecran = await page.evaluate(() => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('ZZB1-C2') >= 0); return tr ? tr.innerText.replace(/\s+/g, ' ') : null; });
+    verifier('À l’écran des emplacements, le casier sans zone dit « à préciser » (il ne s’affiche pas « undefined »)', ecran && /à préciser/.test(ecran) && !/undefined|null/.test(ecran), String(ecran));
+
+    /* --- Refus nommés ---------------------------------------------------------------------------------------------------------------------------------------------- */
+    const r = await B.analyser('emplacements', [ENT,
+      ['ZZB1-D1', 'Zone inconnue', 'Cave', 'Ambiante', 10, ''],
+      ['ZZB1-D2', 'Conservation inconnue', 'Réserve', 'Congelé', 10, ''],
+      ['ZZB1-D3', 'Capacité négative', 'Réserve', 'Ambiante', -3, ''],
+      ['ZZB1-D4', 'Capacité décimale', 'Réserve', 'Ambiante', '2,5', ''],
+      ['ZZB1-D5', '', 'Réserve', 'Ambiante', 3, ''],
+      ['ZZB1-D6', 'Casier A', 'Réserve', 'Ambiante', 3, ''],
+      ['zzb1-d6', 'Casier A bis', 'Réserve', 'Ambiante', 3, '']]);
+    const c = (n) => (r.lignes.filter((l) => l.n === n)[0] || { problemes: [] }).problemes.map((p) => p.code);
+    verifier('Refus NOMMÉS : zone et conservation hors de la liste fermée (VALEUR_HORS_LISTE), capacité négative (HORS_BORNES) ou décimale (TYPE_INVALIDE), intitulé absent (CHAMP_OBLIGATOIRE), code en double dans le fichier à la casse près (DOUBLON_FICHIER)',
+      r.accepte === false && c(2).indexOf('VALEUR_HORS_LISTE') >= 0 && c(3).indexOf('VALEUR_HORS_LISTE') >= 0 && c(4).indexOf('HORS_BORNES') >= 0 && c(5).indexOf('TYPE_INVALIDE') >= 0 && c(6).indexOf('CHAMP_OBLIGATOIRE') >= 0 && c(8).indexOf('DOUBLON_FICHIER') >= 0, JSON.stringify(r.lignes.map((l) => [l.n, l.problemes.map((p) => p.code)])));
+
+    /* --- Tout ou rien, puis « ignorer les existants » : la ligne existante est ignorée ET nommée -------------------------------------------------------------- */
+    const avant = await page.evaluate(() => window.SIGH.store.collection('emplacements').all().length);
+    const rien = await B.appliquer('emplacements', [ENT, ['ZZB1-T1', 'Valide', 'Réserve', 'Ambiante', 3, ''], ['ZZB1-T2', 'Fautive', 'Cave', 'Ambiante', 3, '']], 'e129-rien.csv');
+    const apres = await page.evaluate(() => window.SIGH.store.collection('emplacements').all().length);
+    verifier('Atomicité : une ligne fautive refuse le fichier entier, la ligne valide n’est pas écrite', rien.ok === false && rien.code === 'ANALYSE_REFUSEE' && apres === avant, JSON.stringify({ rien, avant, apres }));
+    const ign = await B.appliquer('emplacements', [ENT, ['zzb1-c1', 'Autre intitulé', 'Réserve', 'Ambiante', 99, ''], ['ZZB1-C3', 'Casier neuf sonde B1', 'Rayonnage sec', 'Ambiante', 12, '']], 'e129-ign.csv');
+    const lotIgn = await page.evaluate((id) => { const l = window.SIGH.importer.lots().get(id); return l ? { n: l.ignoresTotal, liste: l.ignores, ecrits: l.ecrits.length } : null; }, ign.id);
+    const c1 = await page.evaluate(() => { const e = window.SIGH.store.collection('emplacements').all().filter((x) => x.code === 'ZZB1-C1'); return { n: e.length, libelle: e[0].libelle, capacite: e[0].capacite }; });
+    verifier('« Ignorer les existants » : le casier existant (retrouvé à la casse près) n’est ni modifié ni dupliqué, il est COMPTÉ et NOMMÉ au lot (1 ignoré, code listé), le casier neuf s’écrit',
+      ign.ok === true && lotIgn.n === 1 && lotIgn.liste[0].cle === 'zzb1-c1' && lotIgn.ecrits === 1 && c1.n === 1 && c1.libelle === 'Casier froid sonde B1' && c1.capacite === 30, JSON.stringify({ lotIgn, c1 }));
+
+    /* --- Annulation : par archivage, refusée tant qu'un article est rangé dans le casier --------------------------------------------------------------------- */
+    const annul = await B.annuler(ign.id, 'sonde 129');
+    verifier('Annulation d’un lot dont aucun article n’est rangé : le casier est ARCHIVÉ (RG-14)', annul.ok === true && (await page.evaluate(() => window.SIGH.store.collection('emplacements').all().filter((x) => x.code === 'ZZB1-C3')[0].statut)) === 'archive', JSON.stringify(annul));
+    const lotC = await page.evaluate(() => window.SIGH.importer.lots().all().filter((x) => x.fichier === 'e129.xlsx')[0].id);
+    await B.produit({ code: 'ZZB1-RANGE', designation: 'Article rangé sonde B1', emplacement: 'ZZB1-C1' });
+    const refus = await B.annuler(lotC, 'sonde 129');
+    verifier('Quand un article est rangé dans le casier, l’annulation du lot est REFUSÉE en nommant l’article (EMPLACEMENT_UTILISE) : rien n’est archivé',
+      refus.ok === false && refus.code === 'EMPLACEMENT_UTILISE' && /Article rangé sonde B1/.test(refus.motif) && (await page.evaluate(() => window.SIGH.store.collection('emplacements').all().filter((x) => x.code === 'ZZB1-C1')[0].statut)) !== 'archive', JSON.stringify(refus));
+    await B.restituer();
+    const e129 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e129.length === 0, e129.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 130 : IMP-B1 le stock détail initial (I6) : UNE SEULE FOIS par article, tant qu’aucun mouvement n’existe ; RG-03, RG-05 (lot et péremption), article connu, gros et détail cohérents ; un mouvement « entrée » au détail justifié par le lot d’import ; annulation par archivage qui restitue les compteurs ; aucune valeur recopiée à l’historique');
+    erreursJS = [];
+    const B = outilsB1, ENT = B.ENT.detail;
+    await poserSessionServeur(roleImp('stock', 'STOCK130'));
+    await ouvrir('m6-stock-detail.html');
+    await B.photographier();
+    const D1 = await B.produit({ code: 'ZZB1-D1', designation: 'Médicament détail sonde B1', categorie: 'medicament' });
+    const D2 = await B.produit({ code: 'ZZB1-D2', designation: 'Consommable détail sonde B1', categorie: 'conso_medical', unite: 'Paire' });
+    const D3 = await B.produit({ code: 'ZZB1-D3', designation: 'Article déjà mouvementé sonde B1', categorie: 'medicament', stockGros: 10, stock: 10 });
+    await page.evaluate((id) => { window.SIGH.store.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({ reference: 'MZZB1-3', date: '2026-07-01', produitId: id, produit: 'Article déjà mouvementé sonde B1', type: 'entree', typeLabel: 'Entrée', quantite: 10, stockType: 'gros', justificatif: 'Sonde B1' }); }, D3.id);
+    const D4 = await B.produit({ code: 'ZZB1-D4', designation: 'Article au détail déjà en stock sonde B1', stockDetail: 5, stock: 5 });
+    const D5 = await B.produit({ code: 'ZZB1-D5', designation: 'Article incohérent sonde B1', stockGros: 10, stockDetail: 0, stock: 3 });
+    const D6 = await B.produit({ code: 'ZZB1-D6', designation: 'Réactif détail sonde B1', categorie: 'reactif' });
+    const D7 = await B.produit({ code: 'ZZB1-D7', designation: 'Consommable négatif sonde B1', categorie: 'conso_medical' });
+
+    /* --- 1. Le geste : bouton de l'écran, sélecteur de fichier, confirmation ----------------------------------------------------------------------------------------------- */
+    await cliquer('Importer les données', 'button');
+    await page.waitForFunction(() => !!document.querySelector('[role="dialog"] input[data-import-fichier]'), { timeout: 20000 }).catch(() => null);
+    await televerserBanc(await classeurBanc('d130.xlsx', [ENT,
+      ['ZZB1-D1', 'L-D1-A', '2028-06-30', 40], ['ZZB1-D1', 'L-D1-B', '2029-01-31', 10], ['ZZB1-D2', '', '', 25]]));
+    const t1 = await texteCorps();
+    verifier('La vérification annonce une analyse conforme de 3 lignes (un article à deux lots, un consommable sans lot) et ne touche à aucun stock avant la confirmation',
+      /Analyse conforme/.test(t1) && /3 ligne\(s\) lue\(s\)/.test(t1) && (await B.produitPar('ZZB1-D1')).stockDetail === 0, t1.slice(0, 300));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1200);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Fermer'); if (b) b.click(); });
+    await pause(1500);
+    const p1 = await B.produitPar('ZZB1-D1'), p2 = await B.produitPar('ZZB1-D2');
+    const m1 = await B.mouvementsDe(D1.id), m2 = await B.mouvementsDe(D2.id), l1 = await B.lotsDe(D1.id);
+    verifier('Le stock DÉTAIL de chaque article est la somme de ses lignes (50 et 25), le stock total le suit, le stock gros ne bouge pas',
+      p1.stockDetail === 50 && p1.stock === 50 && p1.stockGros === 0 && p2.stockDetail === 25 && p2.stock === 25 && p2.stockGros === 0, JSON.stringify([p1, p2]));
+    verifier('UN mouvement « entrée » au DÉTAIL par ligne, justifié par le lot d’import et le lot du produit (RG-03) ; aucun mouvement au stock gros',
+      m1.length === 2 && m1.every((m) => m.type === 'entree' && m.stockType === 'detail' && /^Import IMP-\d{4}-\d+ \(stock détail initial, lot L-D1-[AB]\)$/.test(m.justificatif)) && m1.map((m) => m.quantite).sort().join() === '10,40'
+      && m2.length === 1 && m2[0].quantite === 25 && /^Import IMP-\d{4}-\d+ \(stock détail initial\)$/.test(m2[0].justificatif), JSON.stringify([m1, m2]));
+    verifier('RG-05 : les deux lots du médicament sont recensés avec leur péremption, tenus au DÉTAIL (ils ne partent pas du gros : le lot FEFO d’un transfert les ignore) ; le consommable sans lot n’en crée aucun',
+      l1.length === 2 && l1.every((l) => l.magasin === 'detail' && l.statut === 'actif') && l1.map((l) => l.datePeremption).sort().join() === '2028-06-30,2029-01-31' && (await B.lotsDe(D2.id)).length === 0
+      && (await page.evaluate((id) => window.SIGH.parcours.lotFefo(id), D1.id)) === null, JSON.stringify(l1));
+    const lotRef = await page.evaluate(() => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 'd130.xlsx')[0]; return l ? { id: l.id, etat: l.etat, ecrits: l.ecrits.map((e) => e.collection).sort().join(',') } : null; });
+    verifier('Le lot est appliqué : deux lots de stock et trois mouvements écrits, les compteurs mis à jour', lotRef && lotRef.etat === 'applique' && lotRef.ecrits === 'lots,lots,mouvements,mouvements,mouvements', JSON.stringify(lotRef));
+
+    /* --- 2. Les refus nommés, règle par règle -------------------------------------------------------------------------------------------------------------------------------- */
+    const a = await B.analyser('stock-detail-initial', [ENT,
+      ['ZZB1-INCONNU', '', '', 5],
+      ['ZZB1-D3', 'L3', '2028-01-01', 5],
+      ['ZZB1-D4', '', '', 5],
+      ['ZZB1-D5', '', '', 5],
+      ['ZZB1-D6', '', '', 5],
+      ['ZZB1-D6', 'L6', '', 5],
+      ['ZZB1-D7', 'L7', '', 5],
+      ['ZZB1-D7', 'L8', '2028-01-01', -4],
+      ['ZZB1-D1', '', '', 3]]);
+    const c = (n) => (a.lignes.filter((l) => l.n === n)[0] || { problemes: [] }).problemes.map((p) => p.code);
+    verifier('Refus NOMMÉS : article inconnu (ARTICLE_INCONNU), article DÉJÀ MOUVEMENTÉ (DETAIL_DEJA_MOUVEMENTE), détail déjà en stock (DETAIL_DEJA_EN_STOCK), gros et détail incohérents avec le total (STOCK_INCOHERENT)',
+      a.accepte === false && c(2).indexOf('ARTICLE_INCONNU') >= 0 && c(3).indexOf('DETAIL_DEJA_MOUVEMENTE') >= 0 && c(4).indexOf('DETAIL_DEJA_EN_STOCK') >= 0 && c(5).indexOf('STOCK_INCOHERENT') >= 0, JSON.stringify(a.lignes.map((l) => [l.n, l.problemes.map((p) => p.code)])));
+    verifier('RG-05 : un réactif sans lot ni péremption (ou avec un lot sans péremption) est refusé (LOT_OBLIGATOIRE), un lot sans péremption sur un consommable aussi (LOT_INCOMPLET) ; RG-03 : une quantité négative est refusée (RG03_STOCK_NEGATIF)',
+      c(6).indexOf('LOT_OBLIGATOIRE') >= 0 && c(7).indexOf('LOT_OBLIGATOIRE') >= 0 && c(8).indexOf('LOT_INCOMPLET') >= 0 && c(9).indexOf('RG03_STOCK_NEGATIF') >= 0, JSON.stringify(a.lignes.map((l) => [l.n, l.problemes.map((p) => p.code)])));
+    verifier('UNE SEULE FOIS : l’article dont le stock initial vient d’être posé a désormais un mouvement : une seconde ligne le concernant est refusée (DETAIL_DEJA_MOUVEMENTE) en nommant le mouvement',
+      c(10).indexOf('DETAIL_DEJA_MOUVEMENTE') >= 0 && a.lignes.filter((l) => l.n === 10)[0].problemes.some((p) => /Entrée/.test(p.motif) && /M\d{6}/.test(p.motif)), JSON.stringify(a.lignes.filter((l) => l.n === 10)));
+    const dbl = await B.analyser('stock-detail-initial', [ENT, ['ZZB1-D7', 'L7', '2028-01-01', 5], ['zzb1-d7', 'l7', '2028-01-01', 6]]);
+    verifier('Une ligne dupliquée dans le fichier (même article et même lot, à la casse près) est refusée (DOUBLON_FICHIER)', dbl.accepte === false && B.codes(dbl).indexOf('DOUBLON_FICHIER') >= 0, JSON.stringify(dbl.lignes));
+    const per = await B.analyser('stock-detail-initial', [ENT, ['ZZB1-D7', 'L7', '2020-01-01', 5]]);
+    verifier('Un lot déjà périmé est un AVERTISSEMENT (créé « périmé » pour être retiré), pas un refus', per.accepte === true && B.toutCodes(per).indexOf('PEREMPTION_PASSEE') >= 0, JSON.stringify(per));
+
+    /* --- 3. TOUT OU RIEN : une ligne refusée n'écrit rien --------------------------------------------------------------------------------------------------------------------- */
+    const avantMv = await page.evaluate(() => window.SIGH.store.collection('mouvements').all().length);
+    const rien = await B.appliquer('stock-detail-initial', [ENT, ['ZZB1-D7', '', '', 8], ['ZZB1-D3', '', '', 5]], 'd130-rien.csv');
+    const apresRien = await page.evaluate(() => ({ mv: window.SIGH.store.collection('mouvements').all().length })), p7 = await B.produitPar('ZZB1-D7');
+    verifier('Atomicité : la ligne valide d’un fichier dont l’autre ligne est refusée n’écrit RIEN (ni stock, ni mouvement)', rien.ok === false && apresRien.mv === avantMv && p7.stockDetail === 0 && p7.stock === 0, JSON.stringify({ rien, avantMv, apresRien, p7 }));
+
+    /* --- 4. MASQUAGE : un jeu restreint ne recopie aucune valeur à l'historique ---------------------------------------------------------------------------------------------- */
+    const masque = await page.evaluate(() => { const I = window.SIGH.importer, j = I.jeu('stock-detail-initial');
+      const a = I.analyserLignes(j, [['Code article', 'N° de lot', 'Date de péremption', 'Quantité'], ['ZZB1-D3', 'LSENTINELLE', '2028-01-01', 77777], ['ZZB1-SENTINELLE', '', '', 5]], 'masque130.csv');
+      const lot = I.consigner(j, a); return JSON.stringify(window.SIGH.importer.lots().get(lot.id)); });
+    verifier('MASQUAGE : le lot refusé consigne colonne, code et geste, JAMAIS le nom de l’article déjà tenu, le code saisi, le lot ni la quantité',
+      ['Article déjà mouvementé sonde B1', 'ZZB1-SENTINELLE', 'LSENTINELLE', '77777'].every((x) => masque.indexOf(x) < 0) && /DETAIL_DEJA_MOUVEMENTE/.test(masque) && /ARTICLE_INCONNU/.test(masque), masque.slice(0, 300));
+
+    /* --- 5. ANNULATION : par archivage tant qu'aucun acte ne s'appuie dessus, refusée sinon -------------------------------------------------------------------------- */
+    await page.evaluate((id) => { window.SIGH.store.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({ reference: 'MZZB1-S', date: '2026-07-02', produitId: id, produit: 'Médicament détail sonde B1', type: 'dispensation', typeLabel: 'Dispensation', quantite: 1, stockType: 'detail', justificatif: 'Sonde B1', sondeB1: true }); }, D1.id);
+    const refus = await B.annuler(lotRef.id, 'sonde 130');
+    verifier('Un mouvement postérieur sur l’article REFUSE l’annulation du lot en le nommant (MOUVEMENT_POSTERIEUR) : rien n’est archivé, les stocks restent',
+      refus.ok === false && refus.code === 'MOUVEMENT_POSTERIEUR' && /Dispensation/.test(refus.motif) && (await B.produitPar('ZZB1-D1')).stockDetail === 50, JSON.stringify(refus));
+    await page.evaluate(() => { const S = window.SIGH.store; S.collection('mouvements').all().filter((m) => m.reference === 'MZZB1-S').forEach((m) => S.collection('mouvements').archive(m.id, 'sonde')); });
+    const ok = await B.annuler(lotRef.id, 'sonde 130');
+    const apr1 = await B.produitPar('ZZB1-D1'), apr2 = await B.produitPar('ZZB1-D2');
+    const mv1 = await B.mouvementsDe(D1.id), lt1 = await B.lotsDe(D1.id);
+    verifier('Plus d’acte : l’annulation ARCHIVE les trois mouvements et les deux lots du lot (RG-14) et RESTITUE les compteurs (détail et total retombent à zéro, gros inchangé)',
+      ok.ok === true && apr1.stockDetail === 0 && apr1.stock === 0 && apr1.stockGros === 0 && apr2.stockDetail === 0 && apr2.stock === 0
+      && mv1.filter((m) => /^Import/.test(m.justificatif)).every((m) => m.statut === 'archive') && lt1.every((l) => l.statut === 'archive'), JSON.stringify({ ok, apr1, apr2, mv1, lt1 }));
+    const nouveauLot = await B.appliquer('stock-detail-initial', [ENT, ['ZZB1-D1', 'L-D1-C', '2028-09-01', 7]], 'd130-bis.csv');
+    verifier('Une fois le lot annulé, ses mouvements ne comptent plus : le stock initial de l’article peut être posé de nouveau (une seule fois à la fois)', nouveauLot.ok === true && (await B.produitPar('ZZB1-D1')).stockDetail === 7, JSON.stringify(nouveauLot));
+
+    /* --- 6. Le détail ne redescend jamais sous zéro : si une partie a déjà été dispensée, l'annulation est refusée ------------------------------------------- */
+    const d9 = await B.produit({ code: 'ZZB1-D9', designation: 'Article dispensé sonde B1', categorie: 'conso_medical' });
+    const l9 = await B.appliquer('stock-detail-initial', [ENT, ['ZZB1-D9', '', '', 20]], 'd130-d9.csv');
+    await page.evaluate((id) => window.SIGH.store.collection('produits').update(id, { stockDetail: 5, stock: 5 }), d9.id);
+    const refus9 = await B.annuler(l9.id, 'sonde 130');
+    verifier('Si le stock détail est tombé sous la quantité du lot, l’annulation est REFUSÉE (DETAIL_DEJA_DISPENSE, RG-03) : le stock ne devient jamais négatif', refus9.ok === false && refus9.code === 'DETAIL_DEJA_DISPENSE' && (await B.produitPar('ZZB1-D9')).stockDetail === 5, JSON.stringify(refus9));
+    await B.restituer();
+    const e130 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e130.length === 0, e130.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 131 : IMP-B1 un bon de transfert importé (une feuille = UN bon neuf) passe par la MÊME fabrique que le geste : mêmes stocks, mêmes mouvements, même bon numéroté, comparés sur les deux voies ; RG-03 ligne par ligne en nommant l’article, lot FEFO, ligne dupliquée, numéro pris après la vérification, tout ou rien, annulation qui restitue les stocks');
+    erreursJS = [];
+    const B = outilsB1, ENT = B.ENT.transfert;
+    await poserSessionServeur(roleImp('stock', 'STOCK131'));
+    await ouvrir('m6-transferts.html');
+    await B.photographier();
+    const DEST = 'Pharmacie d’urgence', MOTIF = 'Réappro sonde B1';
+    /* Deux jeux d'articles IDENTIQUES : l'un pour la voie « import », l'autre pour la voie « geste » (mêmes stocks, mêmes lots, mêmes CUMP). */
+    const mk = async (suffixe) => {
+      const a = await B.produit({ code: 'ZZB1-T1' + suffixe, designation: 'Médicament transfert sonde B1' + suffixe, categorie: 'medicament', stockGros: 50, stock: 50, cump: 80, prixAchat: 80, prixVente: 80 });
+      const b = await B.produit({ code: 'ZZB1-T2' + suffixe, designation: 'Consommable transfert sonde B1' + suffixe, categorie: 'conso_medical', stockGros: 20, stock: 20, cump: 40, prixAchat: 40, prixVente: 40, unite: 'Paire' });
+      await B.lot({ produitId: a.id, produit: 'Médicament transfert sonde B1' + suffixe, numeroLot: 'L-T1-B', datePeremption: '2028-06-30', quantiteRestante: 20 });
+      await B.lot({ produitId: a.id, produit: 'Médicament transfert sonde B1' + suffixe, numeroLot: 'L-T1-A', datePeremption: '2027-01-31', quantiteRestante: 30 });
+      await B.lot({ produitId: a.id, produit: 'Médicament transfert sonde B1' + suffixe, numeroLot: 'L-T1-P', datePeremption: '2020-01-01', quantiteRestante: 5, statut: 'perime' });
+      return [a, b];
+    };
+    const [I1, I2] = await mk('-I'), [G1, G2] = await mk('-G');
+
+    /* --- 1. VOIE « IMPORT » : le geste de l'écran, fichier téléversé par le sélecteur ----------------------------------------------------------------------------------- */
+    const refAvant = await page.evaluate(() => window.SIGH.store.collection('transferts').all().reduce((m, x) => { const r = /^TR-(\d+)$/.exec(x.reference || ''); return r ? Math.max(m, Number(r[1])) : m; }, 0));
+    await cliquer('Importer les données', 'button');
+    await page.waitForFunction(() => !!document.querySelector('[role="dialog"] input[data-import-fichier]'), { timeout: 20000 }).catch(() => null);
+    await televerserBanc(await classeurBanc('t131.xlsx', [ENT, ['ZZB1-T1-I', '', 12, DEST, '', MOTIF], ['ZZB1-T2-I', '', 5, '', '', '']]));
+    const t1 = await texteCorps();
+    verifier('La vérification annonce une analyse conforme de 2 lignes, montre pour chacune le disponible et le LOT RETENU (FEFO : L-T1-A part avant L-T1-B), et n’écrit rien avant la confirmation',
+      /Analyse conforme/.test(t1) && /lot retenu : L-T1-A/.test(t1) && !/lot retenu : L-T1-B/.test(t1) && (await B.produitPar('ZZB1-T1-I')).stockGros === 50, t1.slice(0, 400));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1500);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Fermer'); if (b) b.click(); });
+    await pause(1500);
+
+    /* --- 2. VOIE « GESTE » : la modale de l'écran, mêmes articles, même service, même motif -------------------------------------------------------------------------- */
+    await ouvrir('m6-transferts.html');
+    await cliquer('Nouveau transfert', '#page-content button');
+    await pause(500);
+    await page.evaluate(async (ids, q, d, m) => {
+      const dlg = document.querySelector('[role="dialog"]');
+      const sel = dlg.querySelector('#f_demandeur'); sel.value = d; sel.dispatchEvent(new Event('change', { bubbles: true }));
+      const mo = dlg.querySelector('#f_motif'); mo.value = m; mo.dispatchEvent(new Event('input', { bubbles: true }));
+      const combo = dlg.querySelector('.combo'), qi = dlg.querySelector('#transfert-quantite');
+      const btn = [...dlg.querySelectorAll('button')].find((b) => /^Ajouter$/.test(b.textContent.trim()));
+      for (let i = 0; i < ids.length; i++) { combo.value = ids[i]; qi.value = String(q[i]); qi.dispatchEvent(new Event('input', { bubbles: true })); btn.click(); await new Promise((r) => setTimeout(r, 250)); }
+    }, [G1.id, G2.id], [12, 5], DEST, MOTIF);
+    await cliquer('Valider le transfert', '[role="dialog"] button');
+    await pause(1500);
+    const effets = (codes) => page.evaluate((cs) => { const S = window.SIGH.store, out = {};
+      const ps = cs.map((c) => S.collection('produits').all().filter((p) => p.code === c)[0]);
+      const ids = ps.map((p) => p.id);
+      const mv = S.collection('mouvements').all().filter((m) => ids.indexOf(m.produitId) >= 0 && m.type === 'transfert' && m.statut !== 'archive');
+      const refs = {}; mv.forEach((m) => { refs[m.reference] = true; });
+      const ref = Object.keys(refs)[0];
+      const bon = S.collection('transferts').all().filter((t) => t.reference === ref)[0];
+      return { ref: ref, nbRefs: Object.keys(refs).length,
+        stocks: ps.map((p) => [p.stockGros, p.stockDetail, p.stock]),
+        mouvements: mv.map((m) => [m.type, m.typeLabel, m.quantite, m.stockType, m.justificatif.replace(ref, 'REF'), m.produit.replace(/-[IG]$/, '')]).sort().map((x) => x.join('|')),
+        bon: bon ? { demandeur: bon.demandeur, motif: bon.motif, etat: bon.etat, nbLignes: bon.nbLignes, quantiteTotale: bon.quantiteTotale, valeur: bon.valeur, date: bon.date, dateReception: bon.dateReception, produit: bon.produit, unite: bon.unite, quantite: bon.quantite,
+          lignes: (bon.lignes || []).map((l) => [l.code.replace(/-[IG]$/, ''), l.produit.replace(/-[IG]$/, ''), l.categorie, l.unite, l.cump, l.quantite, l.lot, l.peremption].join('|')), cles: Object.keys(bon).filter((k) => !/^(_|id$|reference$|source|lotImport|validePar|dateImport)/.test(k)).sort().join(',') } : null }; }, codes);
+    const eI = await effets(['ZZB1-T1-I', 'ZZB1-T2-I']), eG = await effets(['ZZB1-T1-G', 'ZZB1-T2-G']);
+    verifier('Même effet sur les STOCKS : le gros perd ce qui part, le détail le reçoit, le total ne change pas (38 / 12 / 50 et 15 / 5 / 20), par l’import comme par le geste',
+      JSON.stringify(eI.stocks) === '[[38,12,50],[15,5,20]]' && JSON.stringify(eG.stocks) === JSON.stringify(eI.stocks), JSON.stringify([eI.stocks, eG.stocks]));
+    verifier('Mêmes MOUVEMENTS : DEUX par ligne et symétriques (sortie magasin au gros, entrée pharmacie au détail), justifiés par le bon, identiques à la voie du geste',
+      eI.mouvements.length === 4 && eI.mouvements.join(';') === eG.mouvements.join(';') && eI.mouvements.some((m) => /Transfert — sortie magasin\|12\|gros\|Bon de transfert REF/.test(m)) && eI.mouvements.some((m) => /Transfert — entrée pharmacie\|12\|detail/.test(m)), JSON.stringify([eI.mouvements, eG.mouvements]));
+    verifier('Même BON : mêmes champs (destination, motif, état, lignes, quantités, valeur au CUMP, lot FEFO et péremption portés par chaque ligne), un SEUL bon par voie',
+      eI.nbRefs === 1 && eG.nbRefs === 1 && eI.bon && eG.bon && JSON.stringify(eI.bon) === JSON.stringify(eG.bon) && eI.bon.nbLignes === 2 && eI.bon.quantiteTotale === 17 && eI.bon.valeur === 12 * 80 + 5 * 40 && eI.bon.lignes[0].indexOf('L-T1-A|2027-01-31') > 0, JSON.stringify([eI.bon, eG.bon]));
+    const n1 = Number(/^TR-(\d+)$/.exec(eI.ref)[1]), n2 = Number(/^TR-(\d+)$/.exec(eG.ref)[1]);
+    verifier('Même NUMÉROTATION : les deux bons se suivent dans la série du registre (le premier à la suite du dernier, le second à la suite du premier)', n1 === refAvant + 1 && n2 === n1 + 1, JSON.stringify([refAvant, eI.ref, eG.ref]));
+    await ouvrir('imp-accueil.html');
+    const lotI = await page.evaluate(() => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 't131.xlsx')[0]; return l ? { id: l.id, etat: l.etat, ecrits: l.ecrits.map((e) => e.collection).sort().join(',') } : null; });
+    const marque = await page.evaluate((ref) => { const b = window.SIGH.store.collection('transferts').all().filter((t) => t.reference === ref)[0]; return { lotImport: b.lotImport, validePar: b.validePar }; }, eI.ref);
+    verifier('Le bon importé porte son LOT D’IMPORT et son auteur (RG-12) ; le lot recense un bon et quatre mouvements',
+      lotI && lotI.etat === 'applique' && lotI.ecrits === 'mouvements,mouvements,mouvements,mouvements,transferts' && /^IMP-\d{4}-\d+$/.test(marque.lotImport || '') && /STOCK131/.test(marque.validePar || ''), JSON.stringify([lotI, marque]));
+
+    /* --- 3. RG-03 LIGNE PAR LIGNE, en nommant l'article ------------------------------------------------------------------------------------------------------------------ */
+    const T3 = await B.produit({ code: 'ZZB1-T3', designation: 'Article court sonde B1', stockGros: 5, stock: 5 });
+    const T4 = await B.produit({ code: 'ZZB1-T4', designation: 'Article cumulé sonde B1', categorie: 'medicament', stockGros: 10, stock: 10 });
+    await B.lot({ produitId: T4.id, produit: 'Article cumulé sonde B1', numeroLot: 'L-T4-A', datePeremption: '2027-03-31', quantiteRestante: 10 });
+    const a = await B.analyser('transfert-lignes', [ENT, ['ZZB1-T3', '', 8, DEST, '', ''], ['ZZB1-T4', '', 6, '', '', ''], ['ZZB1-T4', 'L-T4-A', 6, '', '', '']]);
+    const c = (n) => (a.lignes.filter((l) => l.n === n)[0] || { problemes: [] }).problemes;
+    verifier('RG-03 ligne par ligne : 8 demandés pour 5 disponibles est refusé (RG03_STOCK_INSUFFISANT) en NOMMANT l’article et le disponible',
+      a.accepte === false && c(2).some((p) => p.code === 'RG03_STOCK_INSUFFISANT' && /Article court sonde B1/.test(p.motif) && /5/.test(p.motif)), JSON.stringify(c(2)));
+    verifier('Le disponible tient compte des lignes DÉJÀ POSÉES sur le bon : 6 puis 6 d’un stock de 10 refuse la seconde en disant « déjà 6 sur ce bon » (le même article, deux lignes), la première passe',
+      c(3).filter((p) => p.niveau === 'refus').length === 0 && c(4).some((p) => p.code === 'RG03_STOCK_INSUFFISANT' && /déjà 6 sur ce bon/.test(p.motif) && /Article cumulé sonde B1/.test(p.motif)), JSON.stringify([c(3), c(4)]));
+    const b = await B.analyser('transfert-lignes', [ENT,
+      ['ZZB1-INCONNU', '', 1, DEST, '', ''],
+      ['ZZB1-T3', '', -2, '', '', ''],
+      ['ZZB1-T2-I', '', 0, '', '', ''],
+      ['ZZB1-T1-I', 'L-T1-X', 1, '', '', ''],
+      ['ZZB1-T1-I', 'L-T1-P', 1, '', '', ''],
+      ['ZZB1-T1-I', 'L-T1-B', 1, '', '', ''],
+      ['ZZB1-T1-G', '', 1, '', '2999-01-01', '']]);
+    const cb = (n) => (b.lignes.filter((l) => l.n === n)[0] || { problemes: [] }).problemes;
+    verifier('Refus NOMMÉS : article inconnu (ARTICLE_INCONNU), quantité négative (RG03_STOCK_NEGATIF) ou nulle (QUANTITE_NULLE), lot inconnu (LOT_INCONNU), lot périmé (LOT_PERIME), date future (DATE_FUTURE)',
+      cb(2).some((p) => p.code === 'ARTICLE_INCONNU') && cb(3).some((p) => p.code === 'RG03_STOCK_NEGATIF') && cb(4).some((p) => p.code === 'QUANTITE_NULLE') && cb(5).some((p) => p.code === 'LOT_INCONNU') && cb(6).some((p) => p.code === 'LOT_PERIME') && cb(8).some((p) => p.code === 'DATE_FUTURE'), JSON.stringify(b.lignes.map((l) => [l.n, l.problemes.map((p) => p.code)])));
+    verifier('RG-05 : un lot précisé qui n’est pas le premier à sortir (L-T1-B alors que L-T1-A part avant) est refusé (LOT_NON_FEFO) en NOMMANT le lot qui part en premier',
+      cb(7).some((p) => p.code === 'LOT_NON_FEFO' && /L-T1-A/.test(p.motif)), JSON.stringify(cb(7)));
+    const dup = await B.analyser('transfert-lignes', [ENT, ['ZZB1-T3', '', 1, DEST, '', ''], ['zzb1-t3', '', 2, '', '', '']]);
+    verifier('Une ligne dupliquée dans le fichier (même article, même lot, à la casse près) est refusée (DOUBLON_FICHIER) : le geste cumule, l’import refuse', dup.accepte === false && B.codes(dup).indexOf('DOUBLON_FICHIER') >= 0, JSON.stringify(dup.lignes));
+    const sansDest = await B.analyser('transfert-lignes', [ENT, ['ZZB1-T3', '', 1, '', '', '']]);
+    const deux = await B.analyser('transfert-lignes', [ENT, ['ZZB1-T3', '', 1, 'Maternité', '', ''], ['ZZB1-T2-I', '', 1, 'Laboratoire', '', '']]);
+    const dates = await B.analyser('transfert-lignes', [ENT, ['ZZB1-T3', '', 1, DEST, '2026-08-01', ''], ['ZZB1-T2-I', '', 1, '', '2026-08-02', '']]);
+    verifier('Une feuille est UN bon : sans service destinataire (DESTINATION_ABSENTE), avec deux services (DESTINATIONS_MULTIPLES) ou deux dates (BON_UNIQUE), le fichier est refusé en entier',
+      B.codes(sansDest).indexOf('DESTINATION_ABSENTE') >= 0 && B.codes(deux).indexOf('DESTINATIONS_MULTIPLES') >= 0 && B.codes(dates).indexOf('BON_UNIQUE') >= 0 && !sansDest.accepte && !deux.accepte && !dates.accepte, JSON.stringify([sansDest.globaux, deux.globaux, dates.globaux]));
+
+    /* --- 4. TOUT OU RIEN, et le numéro n'est pris qu'APRÈS la vérification --------------------------------------------------------------------------------------------- */
+    const avant = await page.evaluate(() => { const S = window.SIGH.store; return { mv: S.collection('mouvements').all().length, bons: S.collection('transferts').all().length, t3: S.collection('produits').all().filter((p) => p.code === 'ZZB1-T3')[0].stockGros }; });
+    const rien = await B.appliquer('transfert-lignes', [ENT, ['ZZB1-T3', '', 3, DEST, '', ''], ['ZZB1-T4', '', 99, '', '', '']], 't131-rien.csv');
+    const apres = await page.evaluate(() => { const S = window.SIGH.store; return { mv: S.collection('mouvements').all().length, bons: S.collection('transferts').all().length, t3: S.collection('produits').all().filter((p) => p.code === 'ZZB1-T3')[0].stockGros }; });
+    verifier('Atomicité : une ligne refusée par RG-03 empêche TOUT le bon : ni bon, ni mouvement, aucun stock touché (même la ligne valide)', rien.ok === false && JSON.stringify(avant) === JSON.stringify(apres), JSON.stringify({ rien, avant, apres }));
+    const bon3 = await B.appliquer('transfert-lignes', [ENT, ['ZZB1-T3', '', 2, DEST, '', ''], ['ZZB1-T2-I', '', 1, '', '', '']], 't131-suite.csv');
+    const ref3 = await page.evaluate((id) => { const l = window.SIGH.importer.lots().get(id); const b = window.SIGH.store.collection('transferts').get(l.ecrits.filter((e) => e.collection === 'transferts')[0].id); return b.reference; }, bon3.id);
+    verifier('Le refus n’a consommé AUCUN numéro de bon : le bon suivant porte le numéro qui suit le dernier émis (TR-' + String(n2 + 1).padStart(5, '0') + ')', bon3.ok === true && ref3 === 'TR-' + String(n2 + 1).padStart(5, '0'), JSON.stringify({ bon3: bon3.ok, ref3 }));
+
+    /* --- 5. MASQUAGE : aucune valeur recopiée à l'historique du jeu restreint ------------------------------------------------------------------------------------------- */
+    const masque = await page.evaluate(() => { const I = window.SIGH.importer, j = I.jeu('transfert-lignes');
+      const a = I.analyserLignes(j, [['Code article', 'N° de lot', 'Quantité', 'Service destinataire'], ['ZZB1-T3', 'LSENTINELLE', 88888, 'Maternité'], ['ZZB1-SENTINELLE', '', 5, 'Maternité']], 'masque131.csv');
+      const lot = I.consigner(j, a); return JSON.stringify(window.SIGH.importer.lots().get(lot.id)); });
+    verifier('MASQUAGE : le lot refusé ne recopie ni le nom de l’article, ni le code saisi, ni le lot, ni la quantité', ['Article court sonde B1', 'ZZB1-SENTINELLE', 'LSENTINELLE', '88888'].every((x) => masque.indexOf(x) < 0) && /RG03_STOCK_INSUFFISANT|LOT_INCONNU/.test(masque), masque.slice(0, 300));
+
+    /* --- 6. ANNULATION : archive le bon et ses mouvements, RESTITUE les stocks ; refusée si le détail a déjà dispensé ------------------------------------------------- */
+    const annul = await B.annuler(lotI.id, 'sonde 131');
+    const apr = await effets(['ZZB1-T1-I', 'ZZB1-T2-I']);
+    const bonArch = await page.evaluate((ref) => { const S = window.SIGH.store; return { bon: S.collection('transferts').all().filter((t) => t.reference === ref)[0].statut, mv: S.collection('mouvements').all().filter((m) => m.justificatif === 'Bon de transfert ' + ref).map((m) => m.statut) }; }, eI.ref);
+    const stI = [await B.produitPar('ZZB1-T1-I'), await B.produitPar('ZZB1-T2-I')];
+    verifier('Annulation du lot : le bon et ses quatre mouvements sont ARCHIVÉS (RG-14), le gros retrouve ce qui était parti, le détail le rend (50 / 0 / 50) ; le second article garde l’unité du bon SUIVANT (19 / 1 / 20), qui n’est pas touché',
+      annul.ok === true && bonArch.bon === 'archive' && bonArch.mv.length === 4 && bonArch.mv.every((s) => s === 'archive') && [stI[0].stockGros, stI[0].stockDetail, stI[0].stock].join('/') === '50/0/50' && [stI[1].stockGros, stI[1].stockDetail, stI[1].stock].join('/') === '19/1/20', JSON.stringify({ annul, bonArch, stI, apr: apr.stocks }));
+    const lot6 = await B.appliquer('transfert-lignes', [ENT, ['ZZB1-T1-I', '', 10, DEST, '', '']], 't131-d.csv');
+    await page.evaluate(() => { const S = window.SIGH.store, p = S.collection('produits').all().filter((x) => x.code === 'ZZB1-T1-I')[0]; S.collection('produits').update(p.id, { stockDetail: 4, stock: 44 }); });
+    const refus = await B.annuler(lot6.id, 'sonde 131');
+    verifier('Quand le détail a déjà dispensé une partie, l’annulation est REFUSÉE (TRANSFERT_DEJA_DISPENSE, RG-03) en nommant l’article ; rien n’est archivé ni restitué',
+      refus.ok === false && refus.code === 'TRANSFERT_DEJA_DISPENSE' && /Médicament transfert sonde B1-I/.test(refus.motif) && (await B.produitPar('ZZB1-T1-I')).stockDetail === 4 && (await B.produitPar('ZZB1-T1-I')).stockGros === 40, JSON.stringify(refus));
+
+    /* --- 7. MESURE : un bon de 100 lignes ------------------------------------------------------------------------------------------------------------------------------------- */
+    await page.evaluate(() => { const S = window.SIGH.store, col = S.collection('produits', { module: 'M6', entite: 'Produit' });
+      for (let i = 1; i <= 100; i++) col.insert({ code: 'ZZB1-X' + String(i).padStart(3, '0'), designation: 'Article de mesure transfert ' + i, unite: 'Boîte', categorie: 'conso_medical', prixAchat: 100, prixVente: 100, cump: 100, seuilAlerte: 5, stockGros: 50, stockDetail: 0, stock: 50, emplacement: '', fournisseur: '', sondeB1: true }); });
+    await attendreEcritures();
+    const grosses = [ENT];
+    for (let i = 1; i <= 100; i++) grosses.push(['ZZB1-X' + String(i).padStart(3, '0'), '', 3, i === 1 ? DEST : '', '', '']);
+    const mes = await B.mesurerEnvoi(() => page.evaluate((l) => { const I = window.SIGH.importer, t0 = performance.now(); const a = I.analyserLignes(I.jeu('transfert-lignes'), l, 'mesure100.csv'); const tA = performance.now() - t0;
+      const t1 = performance.now(); const r = I.appliquer('transfert-lignes', a); return { ok: !!r.ok, ecrits: r.ecrits, accepte: a.accepte, msAnalyse: Math.round(tA), msApplication: Math.round(performance.now() - t1) }; }, grosses));
+    console.log('\n  MESURE IMP-B1 : bon de 100 lignes : analyse ' + mes.retour.msAnalyse + ' ms, application en mémoire ' + mes.retour.msApplication + ' ms, envoi au serveur ' + mes.msEnvoi + ' ms, ' + mes.requetes + ' requête(s), ' + mes.octets + ' octets, ' + mes.retour.ecrits + ' fiches');
+    const stX = await B.produitPar('ZZB1-X100');
+    verifier('Mesure : un bon de 100 lignes s’écrit d’un seul geste (un bon, 200 mouvements) et tous les stocks bougent (50 → 47 au gros, 3 au détail)', mes.retour.ok && mes.retour.accepte && mes.retour.ecrits === 201 && stX.stockGros === 47 && stX.stockDetail === 3, JSON.stringify(mes));
+    await B.restituer();
+    const e131 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e131.length === 0, e131.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 132 : IMP-B1 un comptage d’inventaire importé (I13) crée une feuille par magasin nommé (gros ou détail) sans toucher à aucun stock : l’écart se calcule du stock théorique du magasin choisi, la régularisation reste un geste humain (refusée si le stock a bougé), annulation par archivage tant qu’elle n’est pas régularisée');
+    erreursJS = [];
+    const B = outilsB1, ENT = B.ENT.inventaire;
+    await poserSessionServeur(roleImp('stock', 'STOCK132'));
+    await ouvrir('m6-inventaire.html');
+    await B.photographier();
+    const I1 = await B.produit({ code: 'ZZB1-I1', designation: 'Article compté 1 sonde B1', stockGros: 30, stock: 30, cump: 50 });
+    const I2 = await B.produit({ code: 'ZZB1-I2', designation: 'Article compté 2 sonde B1', stockGros: 10, stockDetail: 6, stock: 16, cump: 20 });
+    const instantane = () => page.evaluate((ids) => { const S = window.SIGH.store; return ids.map((id) => { const p = S.collection('produits').get(id); return [p.stockGros, p.stockDetail, p.stock].join('/'); }).join(' ; '); }, [I1.id, I2.id]);
+
+    /* --- 1. Le geste : bouton du registre, fichier téléversé, confirmation -------------------------------------------------------------------------------------------------------- */
+    const avantInv = await page.evaluate(() => window.SIGH.store.collection('inventaires').all().length);
+    const avantStocks = await instantane();
+    await cliquer('Importer les données', 'button');
+    await page.waitForFunction(() => !!document.querySelector('[role="dialog"] input[data-import-fichier]'), { timeout: 20000 }).catch(() => null);
+    await televerserBanc(await classeurBanc('i132.xlsx', [ENT,
+      ['Stock gros', 'ZZB1-I1', 28, 'Mensuel', ''], ['gros', 'ZZB1-I2', 10, '', ''], ['Stock détail', 'ZZB1-I2', 7, '', '']]));
+    const t1 = await texteCorps();
+    verifier('La vérification annonce une analyse conforme de 3 lignes et montre, par ligne, le magasin, le stock théorique DE CE MAGASIN, le compté et l’écart (30 → 28 : −2 ; détail 6 → 7 : +1)',
+      /Analyse conforme/.test(t1) && /3 ligne\(s\) lue\(s\)/.test(t1) && /Stock gros \(magasin central\) : théorique 30, compté 28, écart -2/.test(t1) && /Stock détail \(pharmacie d’urgence\) : théorique 6, compté 7, écart \+1/.test(t1), t1.slice(0, 500));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1200);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Fermer'); if (b) b.click(); });
+    await pause(1500);
+    const lot = await page.evaluate(() => { const I = window.SIGH.importer, l = I.lots().all().filter((x) => x.fichier === 'i132.xlsx')[0], S = window.SIGH.store;
+      return { id: l.id, etat: l.etat, ecrits: l.ecrits.map((e) => e.collection).join(','), feuilles: l.ecrits.map((e) => S.collection('inventaires').get(e.id)).map((f) => ({ ref: f.reference, magasin: f.magasin, statutInv: f.statutInv, nbArticles: f.nbArticles, nbEcarts: f.nbEcarts, type: f.type, valeurEcart: f.valeurEcart, lignes: f.lignes.map((x) => [x.code, x.theorique, x.physique, x.ecart].join(':')), perimetre: f.perimetre, lotImport: f.lotImport })) }; });
+    const fg = lot.feuilles.filter((f) => f.magasin === 'gros')[0], fd = lot.feuilles.filter((f) => f.magasin === 'detail')[0];
+    verifier('Le lot crée DEUX feuilles, une par magasin nommé : le gros (2 articles, 1 écart de −2 valorisé −100 au CUMP, type Mensuel) et le détail (1 article, +1 valorisé 20), état « importé » et non « valide »',
+      lot.etat === 'applique' && lot.ecrits === 'inventaires,inventaires' && fg && fd && fg.statutInv === 'importe' && fd.statutInv === 'importe' && fg.nbArticles === 2 && fg.nbEcarts === 1 && fg.type === 'Mensuel' && fg.valeurEcart === -100
+      && fg.lignes.join(',') === 'ZZB1-I1:30:28:-2,ZZB1-I2:10:10:0' && fd.nbArticles === 1 && fd.lignes.join(',') === 'ZZB1-I2:6:7:1' && fd.valeurEcart === 20 && fd.type === 'Ponctuel' && /^IMP-\d{4}-\d+$/.test(fg.lotImport), JSON.stringify(lot));
+    const apresStocks = await instantane(), mvInv = await page.evaluate((ids) => window.SIGH.store.collection('mouvements').all().filter((m) => m.type === 'inventaire' && ids.indexOf(m.produitId) >= 0).length, [I1.id, I2.id]);
+    verifier('AUCUN STOCK NE BOUGE à l’import (30/0/30 et 10/6/16) et aucun mouvement de régularisation n’est écrit : l’import ne régularise JAMAIS', apresStocks === avantStocks && apresStocks === '30/0/30 ; 10/6/16' && mvInv === 0, JSON.stringify({ avantStocks, apresStocks, mvInv }));
+
+    /* --- 2. Le registre : état « comptage importé », et la régularisation est un GESTE HUMAIN réservé à qui écrit dans M6 ---------------------------------------------- */
+    await ouvrir('m6-inventaire.html');
+    await outils100.chercher(fg.ref);
+    const ligne = await page.evaluate((ref) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(ref) >= 0);
+      return tr ? { texte: tr.innerText.replace(/\s+/g, ' '), bouton: !!tr.querySelector('button[title="Régulariser le comptage"]') } : null; }, fg.ref);
+    verifier('Au registre, la feuille importée dit « Comptage importé, à régulariser » et offre « Régulariser le comptage » au gestionnaire de stock (qui écrit dans M6)', ligne && /Comptage importé, à régulariser/.test(ligne.texte) && ligne.bouton, JSON.stringify(ligne));
+    const lecteur = await page.evaluate(() => { const N = window.SIGH.nav; return Object.keys(N.ROLES).filter((r) => !N.roleArchive(r) && N.can(r, { id: 'm6-inventaire', roles: N.get('m6-inventaire').roles, module: 'M6' }) && !N.droitsEcran(r, 'm6-inventaire', 'M6').editer)[0] || null; });
+    if (lecteur) {
+      await poserSessionServeur(roleImp(lecteur, 'LECT132'));
+      await ouvrir('m6-inventaire.html');
+      await outils100.chercher(fg.ref);
+      const sans = await page.evaluate((ref) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(ref) >= 0); return tr ? !!tr.querySelector('button[title="Régulariser le comptage"]') : 'ligne absente'; }, fg.ref);
+      verifier('Le profil « ' + lecteur + ' » qui ouvre le registre SANS écrire dans M6 lit la feuille mais n’a PAS la commande « Régulariser le comptage » (absente, non grisée)', sans === false, String(sans));
+      await poserSessionServeur(roleImp('stock', 'STOCK132'));
+    } else verifier('Un profil qui ouvre le registre en lecture seule existe', false, 'aucun');
+    await ouvrir('m6-inventaire.html');
+    await outils100.chercher(fg.ref);
+    verifier('Régularisation au geste : la ligne de la feuille est choisie par sa RÉFÉRENCE, le bouton est cliqué', (await outils100.cliquerLigne('Régulariser', fg.ref)) === 'ok', '');
+    await outils100.cliquerModale('Régulariser');
+    await pause(1200);
+    const reg = await page.evaluate((ref, ids) => { const S = window.SIGH.store, f = S.collection('inventaires').all().filter((x) => x.reference === ref)[0];
+      const mv = S.collection('mouvements').all().filter((m) => m.type === 'inventaire' && ids.indexOf(m.produitId) >= 0 && m.statut !== 'archive').map((m) => [m.stockType, m.quantite, m.justificatif, m.typeLabel].join('|'));
+      return { statut: f.statutInv, par: f.regularisePar, mv: mv }; }, fg.ref, [I1.id, I2.id]);
+    const stApres = await instantane();
+    verifier('La régularisation écrit UN mouvement par écart sur le magasin COMPTÉ (gros, 2, justifié par l’inventaire), met le stock gros et le total à 28, laisse le détail ; l’autre feuille reste « importée »',
+      reg.statut === 'valide' && /STOCK132/.test(reg.par || '') && reg.mv.length === 1 && reg.mv[0] === 'gros|2|Inventaire ' + fg.ref + '|Régularisation inventaire' && stApres === '28/0/28 ; 10/6/16'
+      && (await page.evaluate((ref) => window.SIGH.store.collection('inventaires').all().filter((x) => x.reference === ref)[0].statutInv, fd.ref)) === 'importe', JSON.stringify({ reg, stApres }));
+
+    /* --- 3. Le stock a bougé depuis le comptage : la régularisation est REFUSÉE en nommant l'article ---------------------------------------------------------------- */
+    await page.evaluate((id) => window.SIGH.store.collection('produits').update(id, { stockDetail: 8, stock: 18 }), I2.id);
+    const periml = await page.evaluate((ref) => { const S = window.SIGH.store, f = S.collection('inventaires').all().filter((x) => x.reference === ref)[0]; const r = window.SIGH.parcours.regulariserInventaire(f, { strict: true, operateur: 'sonde' });
+      return { ok: r.ok, code: r.code, motif: r.motif, statut: f.statutInv }; }, fd.ref);
+    verifier('Si le stock du magasin a bougé depuis le comptage (6 au comptage, 8 aujourd’hui), la régularisation est REFUSÉE (REGULARISATION_PERIMEE) en nommant l’article, théorique et valeur du jour ; rien n’est écrit',
+      periml.ok === false && periml.code === 'REGULARISATION_PERIMEE' && /Article compté 2 sonde B1/.test(periml.motif) && /théorique 6, aujourd’hui 8/.test(periml.motif) && (await instantane()) === '28/0/28 ; 10/8/18', JSON.stringify(periml));
+    await page.evaluate((id) => window.SIGH.store.collection('produits').update(id, { stockDetail: 6, stock: 16 }), I2.id);
+
+    /* --- 4. Refus NOMMÉS ------------------------------------------------------------------------------------------------------------------------------------------------------- */
+    await ouvrir('imp-accueil.html');
+    const a = await B.analyser('inventaire-comptage', [ENT,
+      ['Stock laboratoire', 'ZZB1-I1', 5, '', ''],
+      ['gros', 'ZZB1-INCONNU', 5, '', ''],
+      ['gros', 'ZZB1-I1', -2, '', ''],
+      ['gros', 'ZZB1-I2', 5, 'Quotidien', ''],
+      ['detail', 'ZZB1-I1', 5, '', '2999-01-01'],
+      ['gros', 'ZZB1-I2', 4, '', ''],
+      ['', 'ZZB1-I2', 4, '', '']]);
+    const c = (n) => (a.lignes.filter((l) => l.n === n)[0] || { problemes: [] }).problemes;
+    verifier('Refus NOMMÉS : magasin « Stock laboratoire » hors de la liste (VALEUR_HORS_LISTE, qui dit « Stock gros, Stock détail »), article inconnu (ARTICLE_INCONNU), quantité négative (RG03_STOCK_NEGATIF), type hors liste, date future (DATE_FUTURE), magasin absent (CHAMP_OBLIGATOIRE)',
+      a.accepte === false && c(2).some((p) => p.code === 'VALEUR_HORS_LISTE' && /Stock gros, Stock détail/.test(p.geste)) && c(3).some((p) => p.code === 'ARTICLE_INCONNU') && c(4).some((p) => p.code === 'RG03_STOCK_NEGATIF') && c(5).some((p) => p.code === 'VALEUR_HORS_LISTE' && p.colonne === 'Type d’inventaire')
+      && c(6).some((p) => p.code === 'DATE_FUTURE') && c(8).some((p) => p.code === 'CHAMP_OBLIGATOIRE'), JSON.stringify(a.lignes.map((l) => [l.n, l.problemes.map((p) => p.code)])));
+    const dbl = await B.analyser('inventaire-comptage', [ENT, ['gros', 'ZZB1-I1', 5, '', ''], ['Stock gros', 'zzb1-i1', 6, '', '']]);
+    const deuxMag = await B.analyser('inventaire-comptage', [ENT, ['gros', 'ZZB1-I1', 5, '', ''], ['detail', 'ZZB1-I1', 0, '', '']]);
+    const types = await B.analyser('inventaire-comptage', [ENT, ['gros', 'ZZB1-I1', 5, 'Mensuel', ''], ['gros', 'ZZB1-I2', 5, 'Annuel', '']]);
+    verifier('Même article deux fois dans le MÊME magasin : refusé (DOUBLON_FICHIER) ; le même article dans les DEUX magasins : accepté (la clé est magasin + article) ; deux types dans une même feuille : refusé (FEUILLE_UNIQUE)',
+      dbl.accepte === false && B.codes(dbl).indexOf('DOUBLON_FICHIER') >= 0 && deuxMag.accepte === true && types.accepte === false && B.codes(types).indexOf('FEUILLE_UNIQUE') >= 0, JSON.stringify([B.codes(dbl), deuxMag.accepte, B.codes(types)]));
+    const avInv = await page.evaluate(() => window.SIGH.store.collection('inventaires').all().length);
+    const rien = await B.appliquer('inventaire-comptage', [ENT, ['gros', 'ZZB1-I1', 5, '', ''], ['Stock laboratoire', 'ZZB1-I2', 5, '', '']], 'i132-rien.csv');
+    verifier('Atomicité : une ligne refusée empêche TOUTE feuille (la ligne valide n’en crée aucune)', rien.ok === false && rien.code === 'ANALYSE_REFUSEE' && (await page.evaluate(() => window.SIGH.store.collection('inventaires').all().length)) === avInv, JSON.stringify(rien));
+    const masque = await page.evaluate(() => { const I = window.SIGH.importer, j = I.jeu('inventaire-comptage');
+      const a = I.analyserLignes(j, [['Magasin', 'Code article', 'Quantité comptée'], ['gros', 'ZZB1-SENTINELLE', 99999], ['Stock laboratoire', 'ZZB1-I1', 5]], 'masque132.csv');
+      const l = I.consigner(j, a); return JSON.stringify(window.SIGH.importer.lots().get(l.id)); });
+    verifier('MASQUAGE : le lot refusé ne recopie ni le code saisi, ni la quantité, ni le nom de l’article', ['ZZB1-SENTINELLE', '99999', 'Article compté 1 sonde B1', 'Stock laboratoire'].every((x) => masque.indexOf(x) < 0) && /ARTICLE_INCONNU/.test(masque) && /VALEUR_HORS_LISTE/.test(masque), masque.slice(0, 300));
+
+    /* --- 5. Annulation : par archivage tant que la feuille n'est pas régularisée, refusée sinon -------------------------------------------------------------------------- */
+    const refus = await B.annuler(lot.id, 'sonde 132');
+    verifier('Le lot dont une feuille a été RÉGULARISÉE ne s’annule pas : refus nommé (INVENTAIRE_REGULARISE), rien n’est archivé', refus.ok === false && refus.code === 'INVENTAIRE_REGULARISE' && refus.motif.indexOf(fg.ref) >= 0
+      && (await page.evaluate((ref) => window.SIGH.store.collection('inventaires').all().filter((x) => x.reference === ref)[0].statut, fd.ref)) !== 'archive', JSON.stringify(refus));
+    const l2 = await B.appliquer('inventaire-comptage', [ENT, ['detail', 'ZZB1-I2', 9, '', '']], 'i132-bis.csv');
+    const ok = await B.annuler(l2.id, 'sonde 132');
+    const arch = await page.evaluate((id) => { const l = window.SIGH.importer.lots().get(id); return { etat: l.etat, statuts: l.ecrits.map((e) => window.SIGH.store.collection('inventaires').get(e.id).statut) }; }, l2.id);
+    verifier('Une feuille non régularisée s’annule : elle est ARCHIVÉE (RG-14), le lot passe « annulé », les stocks n’ont jamais bougé', ok.ok === true && arch.etat === 'annule' && arch.statuts.join() === 'archive' && (await instantane()) === '28/0/28 ; 10/6/16', JSON.stringify({ ok, arch }));
+    await B.restituer();
+    const e132 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e132.length === 0, e132.join(' | '));
   });
 
   await browser.close();

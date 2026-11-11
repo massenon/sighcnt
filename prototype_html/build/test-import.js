@@ -124,8 +124,9 @@ function verifier(libelle, condition, detail) {
   await role('admin');
   await ouvrir('imp-accueil');
   let t = await texte();
-  verifier('L’accueil du module liste les dix jeux d’import, chacun marqué « Supporté » ou « Proposition à valider »',
-    (await ev(() => [...document.querySelectorAll('#page-content a')].filter((a) => a.textContent.trim() === 'Ouvrir').length)) === 10
+  /* Le nombre de jeux se DÉRIVE du manifeste (dix à l'origine, quinze avec les cinq jeux du stock du lot IMP-B1) : un compte écrit en dur diverge au premier jeu ajouté. */
+  verifier('L’accueil du module liste tous les jeux d’import déclarés, chacun marqué « Supporté » ou « Proposition à valider »',
+    (await ev(() => [...document.querySelectorAll('#page-content a')].filter((a) => a.textContent.trim() === 'Ouvrir').length)) === (await ev(() => window.SIGH.nav.IMPORTS.length))
       && /Proposition à valider/.test(t) && (t.match(/Supporté/g) || []).length >= 9, t.slice(0, 300));
   verifier('Chaque jeu dit sa source et ses collections cibles (rien d’inventé)', /Source : Inventaire SAGE 100/.test(t) && /Écrit dans : produits, lots, mouvements/.test(t), t.slice(0, 200));
 
