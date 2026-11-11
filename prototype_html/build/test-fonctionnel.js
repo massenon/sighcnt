@@ -4402,6 +4402,9 @@ async function viderMessages(page) {
         sansPrix: rows.filter((r) => r.prixAValider).map((r) => r.libelle),
         arbitres: rows.filter((r) => r.arbitrage).length,
         hiv: D.tarif('LAB-HIV'),
+        /* PRD-TARIFS (T1) : la ligne LABO du VIH est fusionnée avec l'analyse ; le prix arrêté le 26/08 (3 500 / 2 500) est la version 2 PROPOSÉE, le prix facturé
+           aujourd'hui (celui de la caisse) reste en vigueur tant que la Direction n'a pas répondu Oui. */
+        hivV2: (function () { const p = window.SIGH.store.raw().tarifs.filter((x) => x.codeGrille === 'LAB-HIV')[0]; return p ? window.SIGH.store.raw().versionsTarif.filter((v) => v.code === p.code && v.statut === 'propose')[0] : null; })(),
         nonCouverts: rows.filter((r) => r.nonCouvert).length,
         sos: rows.filter((r) => r.assurable === 'sos').length,
         ecoAbdo: D.tarif('IMG-ECHO-ABP'),
@@ -4429,9 +4432,9 @@ async function viderMessages(page) {
     verifier('Chaque prix arbitré porte SON MOTIF — une valeur décidée n’est pas une valeur relevée',
       cat.arbitres === 3, cat.arbitres + ' acte(s) portent la trace de leur arbitrage — '
       + 'le soin intraveineux n en porte plus : l inversion des colonnes l explique');
-    verifier('Le VIH est tarifé et sa décision est tracée',
-      cat.hiv.prixAssure === 2500 && cat.hiv.prixNonAssure === 3500 && !!cat.hiv.arbitrage,
-      cat.hiv.prixAssure + ' assuré / ' + cat.hiv.prixNonAssure + ' non assuré');
+    verifier('Le VIH est tarifé et sa décision est tracée : la décision du 26/08 (3 500 non assuré, 2 500 assuré) est la version 2 PROPOSÉE de l’analyse, son arbitrage reste lisible, et le prix facturé aujourd’hui reste en vigueur',
+      !!cat.hivV2 && cat.hivV2.prixAssure === 2500 && cat.hivV2.prixNonAssure === 3500 && !!cat.hiv.arbitrage && cat.hiv.prixNonAssure === 2500,
+      JSON.stringify([cat.hivV2, cat.hiv && cat.hiv.prixNonAssure, cat.hiv && cat.hiv.prixAssure]));
 
     /* --- NON COUVERT n'est pas un prix ------------------------------------ */
     const couv = await page.evaluate(() => {
@@ -6498,23 +6501,29 @@ async function viderMessages(page) {
 
     /* --- Une seule vérité tarifaire : l'écran modifie, le moteur suit ---- */
     const verite = await page.evaluate(() => {
-      const S = window.SIGH.store, PR = window.SIGH.parcours;
-      const col = S.collection('actes');
-      const acte = col.active().filter((a) => a.prix != null && a.code)[0];
+      const S = window.SIGH.store, PR = window.SIGH.parcours, TA = window.SIGH.data.TARIFS;
       /* Un patient non assuré : une seule pièce, pas de partage -A / -B. */
       const patient = S.collection('patients').active().filter((p) => !p.assureur)[0];
-      if (!acte || !patient) return { possible: false };
-      const avant = acte.prix;
-      col.update(acte.id, { prix: avant + 555 });
-      const res = PR.prescrire({ patientCode: patient.code, actes: [acte.code] });
-      const ligne = ((res.facture && res.facture.lignes) || [])
-        .filter((l) => l.acteCode === acte.code)[0];
-      col.update(acte.id, { prix: avant });
-      return { possible: true, attendu: avant + 555, facture: ligne ? ligne.prixUnitaire : null };
+      if (!patient) return { possible: false };
+      /* PRD-TARIFS (T1) : le prix vit au référentiel de versions ; la collection `actes` n'en est que la projection de lecture. On pose donc un acte de sonde
+         (une prestation neuve : une version qui ne se retire pas du serveur, RG-14, ne doit pas déplacer un prix que d'autres scénarios lisent), puis on le
+         CHANGE par une seconde version valide du même jour (la plus grande version l'emporte). */
+      const jour = window.SIGH.core.iso(window.SIGH.core.aujourdhui()), code = 'SOCLE-T';
+      S.collection('tarifs').insert({ id: code, code: code, codeActe: code, libelle: 'Acte de sonde du socle', famille: 'ACTE', statut: 'actif' });
+      const VT = S.collection('versionsTarif');
+      VT.insert({ id: code + '@' + jour + '@1', code: code, version: 1, dateEffet: jour, prixNonAssure: 1000, etatAssure: 'unique', origine: 'ecran', statut: 'valide' });
+      TA.invalider(); S.projeterTarifs();
+      const avant = PR.prescrire({ patientCode: patient.code, actes: [code] });
+      VT.insert({ id: code + '@' + jour + '@2', code: code, version: 2, dateEffet: jour, prixNonAssure: 1555, etatAssure: 'unique', origine: 'ecran', statut: 'valide' });
+      TA.invalider(); S.projeterTarifs();
+      const res = PR.prescrire({ patientCode: patient.code, actes: [code] });
+      const prixDe = (r) => (((r.facture && r.facture.lignes) || []).filter((l) => l.acteCode === code)[0] || {}).prixUnitaire;
+      const projete = S.collection('actes').active().filter((a) => a.code === code)[0];
+      return { possible: true, attendu: 1555, facture: prixDe(res), avantChangement: prixDe(avant), projete: projete ? projete.prix : null };
     });
-    verifier('Un tarif modifié dans le catalogue est celui que PR.prescrire facture',
-      verite.possible && verite.facture === verite.attendu,
-      verite.facture + ' / attendu ' + verite.attendu);
+    verifier('Un tarif modifié au référentiel est celui que PR.prescrire facture (1 000 puis 1 555 à la seconde version du jour), et la collection de lecture le suit',
+      verite.possible && verite.avantChangement === 1000 && verite.facture === verite.attendu && verite.projete === verite.attendu,
+      verite.avantChangement + ' puis ' + verite.facture + ' / attendu ' + verite.attendu + ' ; projection ' + verite.projete);
 
     /* --- Les KPI de l'agent administratif sont COMPTÉS ------------------- */
     const kpiAgent = await page.evaluate(() => {
@@ -18938,144 +18947,185 @@ async function viderMessages(page) {
   });
 
   /* ==========================================================================
-   * VAGUE 113 — LOT T0 : CARACTÉRISATION DES TARIFS (état AVANT le référentiel unique)
+   * VAGUE 113, LOT T1 : LE RÉFÉRENTIEL DE PRIX UNIQUE, ADAPTATEUR DE LECTURE (migration sans changer un prix)
    * --------------------------------------------------------------------------
-   * Ce scénario ne corrige rien : il MESURE ce que le code fait aujourd'hui, pour que les constats 1, 2 et 9 du PRD-TARIFS passent
-   * de « lus » à « mesurés ». Il porte l'état d'AVANT T1 ; au lot T1 ses assertions deviennent les scénarios de non régression
-   * (une seule liste, cinq voies) et le présent bloc est REMPLACÉ, pas conservé.
+   * La preuve exigée par le PRD-TARIFS 9 : pour chaque code des trois espaces (grille, actes, analyses) et chaque voie, le prix lu APRÈS la migration est
+   * celui d'AVANT, assuré et non assuré. L'état d'avant est le fichier `build/tarifs/prix-avant-t1.json`, relevé sur l'arbre d'avant par
+   * `build/capture-prix.js` (points d'entrée réels de chaque voie, 2 000 appels) ; le même relevé, relancé sur l'arbre d'après, est comparé par
+   * `build/tarifs/comparer-prix.js`. Ici, les accesseurs sont comparés code par code sans rien écrire, et un ÉCHANTILLON de chaque voie est rejoué en vrai.
    * ======================================================================== */
   await etape(async () => {
-    scenario('Vague 113 : T0 tarifs, caractérisation de l’état actuel (la caisse ne lit pas catalogueTarifs ni analyses, le constat 9 est déjà soldé, marge de quota mesurée)');
+    scenario('Vague 113 : T1 référentiel de prix unique (migration sans changer un prix : 268 codes, accesseurs et collections de lecture identiques à l’état d’avant, ligne LABO en version 2 proposée, écarts listés, reprise, parité, version immuable, quota)');
     erreursJS = [];
     await page.evaluate(() => {
       sessionStorage.clear();
       window.SIGH.store.setSession({ role: 'admin', nom: 'SONDE113', nomComplet: 'SONDE113', fonction: 'direction', identifiant: 's113', secteur: 'DIR' });
     });
-    const sonde = {};
-    /* --- (a) cfg-catalogue : un prix modifié AU GESTE change-t-il l'imagerie et les soins ? ------------------------------------------------------------- */
-    await ouvrir('cfg-catalogue.html');
-    sonde.avantImg = await page.evaluate(() => {
-      const D = window.SIGH.data;
-      return { grille: D.tarifPrix('IMG-ECHO-PEL', false).montant, col: window.SIGH.store.collection('catalogueTarifs').all().filter((c) => c.code === 'IMG-ECHO-PEL')[0].prixNonAssure };
-    });
-    const geste = await page.evaluate(async () => {
-      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
-      const tab = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((t) => /Imagerie/i.test(t.textContent));
-      if (!tab) return { erreur: 'onglet' };
-      tab.click(); await pause(500);
-      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((r) => /IMG-ECHO-PEL/.test(r.textContent));
-      if (!tr) return { erreur: 'ligne' };
-      tr.querySelector('button[title="Modifier"]').click(); await pause(500);
-      const champ = document.querySelector('[role=dialog] #f_prixNonAssure, .modal-root #f_prixNonAssure');
-      if (!champ) return { erreur: 'champ' };
-      champ.value = '9100'; champ.dispatchEvent(new Event('input', { bubbles: true })); champ.dispatchEvent(new Event('change', { bubbles: true }));
-      const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === 'Enregistrer').pop();
-      b.click(); await pause(800);
-      return { ok: true };
-    });
-    sonde.geste = geste;
-    sonde.apresImg = await page.evaluate(() => {
-      const S = window.SIGH.store, PR = window.SIGH.parcours, D = window.SIGH.data;
-      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
-      const res = PR.ouvrirDemandeImagerie({ patientId: pt.id, examens: ['IMG-ECHO-PEL'], prescripteur: 'SONDE113', indication: 'sonde' });
-      const col = S.collection('catalogueTarifs').all().filter((c) => c.code === 'IMG-ECHO-PEL')[0];
-      const lignePel = (res.facture.lignes || []).filter((l) => l.categorie === 'imagerie')[0];
-      const r = { colonne: col.prixNonAssure, grille: D.tarifPrix('IMG-ECHO-PEL', false).montant, demande: res.demandes[0].prix, ligne: lignePel ? lignePel.prixUnitaire : null };
-      /* Soins AMI : même épreuve sur SIV (soin intraveineux), en écrivant la collection comme le fait l'écran. */
-      const siv = S.collection('catalogueTarifs').all().filter((c) => c.code === 'SIV')[0];
-      const avantSiv = D.tarifPrix('SIV', false).montant;
-      S.collection('catalogueTarifs').update(siv.id, { prixNonAssure: avantSiv + 100 });
-      const soins = PR.prescrireSoins({ patientCode: pt.code, prescripteurId: null, actes: ['SIV'], secteur: 'salle_soins' });
-      const lSiv = (soins.lignes || []).filter((l) => l.acteCode === 'SIV')[0] || null;
-      r.siv = { avant: avantSiv, colonne: S.collection('catalogueTarifs').all().filter((c) => c.code === 'SIV')[0].prixNonAssure, grille: D.tarifPrix('SIV', false).montant, ligne: lSiv ? (lSiv.prix != null ? lSiv.prix : lSiv.prixUnitaire) : null };
-      /* Restitution : les deux prix de la collection reviennent. */
-      S.collection('catalogueTarifs').update(siv.id, { prixNonAssure: avantSiv });
-      S.collection('catalogueTarifs').update(col.id, { prixNonAssure: 9000 });
-      return r;
-    });
-    verifier('CONSTAT 1 MESURÉ : un prix d’imagerie modifié AU GESTE à cfg-catalogue entre dans la collection (9 100) mais la demande d’imagerie reste à 9 000 (la grille lue est la constante)',
-      geste.ok === true && sonde.avantImg.grille === 9000 && sonde.apresImg.colonne === 9100 && sonde.apresImg.grille === 9000 && sonde.apresImg.demande === 9000 && sonde.apresImg.ligne === 9000, JSON.stringify([geste, sonde.avantImg, sonde.apresImg]));
-    verifier('CONSTAT 1 MESURÉ (soins) : le prix du soin SIV écrit dans catalogueTarifs n’atteint ni D.tarifPrix ni la ligne de la prescription de soins',
-      sonde.apresImg.siv.colonne === sonde.apresImg.siv.avant + 100 && sonde.apresImg.siv.grille === sonde.apresImg.siv.avant && sonde.apresImg.siv.ligne === sonde.apresImg.siv.avant, JSON.stringify(sonde.apresImg.siv));
-    /* --- (a bis) aucun lecteur de la collection catalogueTarifs hors store et configuration (lecture statique des sources) -------------------------------- */
-    const lecteurs = (() => {
-      const dir = path.join(ROOT, 'assets/js'); const trouves = {};
-      const parcourir = (d) => fs.readdirSync(d, { withFileTypes: true }).forEach((e) => {
-        const p = path.join(d, e.name);
-        if (e.isDirectory()) { if (e.name !== 'vendor') parcourir(p); return; }
-        if (!/\.js$/.test(e.name)) return;
-        const t = fs.readFileSync(p, 'utf8');
-        if (/collection\(\s*'catalogueTarifs'/.test(t)) trouves[path.relative(dir, p).replace(/\\/g, '/')] = true;
+    await ouvrir('cfg-tarifs.html');
+    const avant = JSON.parse(fs.readFileSync(path.join(ROOT, 'build/tarifs/prix-avant-t1.json'), 'utf8'));
+    const m = await page.evaluate((av) => {
+      const S = window.SIGH.store, D = window.SIGH.data, PR = window.SIGH.parcours;
+      const brut = S.raw();
+      /* Une base de banc porte les fiches que d'AUTRES scénarios y ont créées (actes, analyses de sonde) : on ne compte et on ne compare que la SEMENCE,
+         c'est-à-dire les codes du relevé d'avant. */
+      const K = av.voies['accesseur.tarifPrix'];
+      const dansSemence = (p) => !!K[p.code];
+      const r = { version: brut._version, nTarifs: brut.tarifs.filter(dansSemence).length, nVersions: brut.versionsTarif.filter((v) => !!K[v.code]).length };
+      const prop = brut.versionsTarif.filter((v) => v.origine === 'semence-grille' && !!K[v.code]);
+      r.nProposees = prop.length; r.proposeesStatut = prop.every((v) => v.statut === 'propose' && v.aDater === true && !v.dateEffet);
+      r.v1Valides = brut.versionsTarif.filter((v) => v.version === 1 && !!K[v.code]).every((v) => v.statut === 'valide' && v.origine === 'migration' && !v.dateEffet);
+      const attendus = {}; prop.forEach((v) => { const p = brut.tarifs.filter((x) => x.code === v.code)[0]; attendus[p.codeGrille] = v; });
+      /* 1. Les accesseurs, code par code : D.tarifPrix (trois états, motifs, réserve SOS), D.tarif (libellé, famille, deux prix) */
+      const ecarts = [], lecteurs = { tarifPrix: 0, tarif: 0 };
+      Object.keys(av.voies['accesseur.tarifPrix']).forEach((c) => {
+        [false, true].forEach((assure, col) => {
+          const pr = D.tarifPrix(c, assure);
+          const lu = [pr.montant, pr.tarif || null, pr.motif || null, pr.reserveSos === true];
+          lecteurs.tarifPrix++;
+          if (JSON.stringify(lu) !== JSON.stringify(av.voies['accesseur.tarifPrix'][c][col]) && !attendus[c]) ecarts.push(['tarifPrix', c, assure, lu, av.voies['accesseur.tarifPrix'][c][col]]);
+        });
+        const t = D.tarif(c);
+        const luT = t ? [t.libelle, t.famille, t.prixNonAssure, t.prixAssure, !!t.nonCouvert, t.assurable, !!t.prixAValider] : null;
+        lecteurs.tarif++;
+        if (JSON.stringify(luT) !== JSON.stringify(av.voies['accesseur.tarif'][c]) && !attendus[c]) ecarts.push(['tarif', c, luT, av.voies['accesseur.tarif'][c]]);
       });
-      parcourir(dir); return Object.keys(trouves).sort();
-    })();
-    verifier('CONSTAT 1 MESURÉ (lecteurs) : la collection catalogueTarifs n’est ouverte (`collection(…)`) que par configuration.js (son propre écran) : store.js ne fait que la semer et la nommer à la corbeille',
-      lecteurs.join() === 'modules/configuration.js', JSON.stringify(lecteurs));
-    /* --- (b) analyses : un prix modifié dans la collection `analyses` est-il facturé ? ----------------------------------------------------------------- */
-    const analyses = await page.evaluate(() => {
-      const S = window.SIGH.store, PR = window.SIGH.parcours, D = window.SIGH.data;
-      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
-      const a = S.collection('analyses').all().filter((x) => x.code === 'L01')[0];
-      const avant = a.prix;
-      S.collection('analyses').update(a.id, { prix: avant + 100 });
-      const res = PR.prescrire({ patientCode: pt.code, medecin: 'SONDE113', diagnostic: 'sonde', analyses: ['L01'] });
-      const ligne = (res.facture.lignes || []).filter((l) => /AKOP/.test(l.designation || l.libelle || ''))[0];
-      const r = { avant: avant, colonne: S.collection('analyses').all().filter((x) => x.code === 'L01')[0].prix, constante: D.ANALYSES.filter((x) => x.code === 'L01')[0].prix,
-        ordonnance: (res.ordonnance.analyses || []).filter((x) => x.code === 'L01')[0].prix, ligne: ligne ? ligne.prixUnitaire : null };
-      S.collection('analyses').update(a.id, { prix: avant });
+      r.ecartsAccesseurs = ecarts.slice(0, 5); r.nEcartsAccesseurs = ecarts.length; r.lecteurs = lecteurs;
+      /* 2. Les trois collections de lecture et les journées d'hospitalisation (chaque lecteur non migré reçoit exactement ce qu'il recevait) */
+      const pick = (o, ks) => ks.map((k) => (o[k] === undefined ? null : o[k]));
+      const sem = (rows, i) => rows.filter((x) => !!K[x[i]]);
+      const col = {
+        actes: S.collection('actes').all().map((a) => [a.id, a.code, a.libelle, a.secteur].concat(pick(a, ['prix', 'prixNonAssure', 'prixAssure', 'nonCouvert', 'assurable', 'codeTarif', 'tarifProvisoire', 'tarifArreteLe', 'statut']))),
+        analyses: S.collection('analyses').all().map((a) => [a.id, a.code, a.designation].concat(pick(a, ['prix', 'tarifProvisoire', 'aValider', 'statut']))),
+        catalogueTarifs: S.collection('catalogueTarifs').all().map((a) => [a.id, a.code, a.libelle, a.famille].concat(pick(a, ['prixNonAssure', 'prixAssure', 'nonCouvert', 'assurable', 'prixAValider', 'statut']))),
+        typesChambre: D.TYPES_CHAMBRE.map((t) => [t.id, t.label, t.tarif]),
+      };
+      col.actes = sem(col.actes, 1); col.analyses = sem(col.analyses, 1); col.catalogueTarifs = sem(col.catalogueTarifs, 1);
+      /* Le catalogue tarifaire : les 39 lignes LABO fusionnées portent désormais le prix FACTURÉ (version 1) au lieu de la grille ; les 108 autres lignes sont identiques. */
+      const horsLabo = (rows) => rows.filter((x) => !attendus[x[1]]);
+      r.collections = {};
+      Object.keys(col).forEach((k) => { r.collections[k] = JSON.stringify(k === 'catalogueTarifs' ? horsLabo(col[k]) : col[k]) === JSON.stringify(k === 'catalogueTarifs' ? horsLabo(av.collections[k]) : av.collections[k]); });
+      r.catalogueLabo = col.catalogueTarifs.filter((x) => attendus[x[1]]).every((x) => { const an = D.ANALYSES.filter((a) => a.code === brut.tarifs.filter((p) => p.codeGrille === x[1])[0].codeAnalyse)[0]; return x[4] === an.prix; });
+      r.nbCollections = [col.actes.length, col.analyses.length, col.catalogueTarifs.length, col.typesChambre.length];
+      r.analysesConstante = JSON.stringify(D.ANALYSES.map((a) => [a.code, a.prix])) === JSON.stringify(av.voies['caisse.analyse'].map((x, i) => [D.ANALYSES[i].code, x[2]]));
+      /* 3. Les lignes LABO fusionnées : le lecteur de grille rend le prix FACTURÉ (version 1), la grille est la version 2 proposée, à l'identique de l'état d'avant */
+      const fusion = { n: 0, prixFacture: true, grilleConservee: true };
+      Object.keys(attendus).forEach((c) => {
+        const v2 = attendus[c], p = brut.tarifs.filter((x) => x.code === v2.code)[0];
+        const prixAn = D.ANALYSES.filter((a) => a.code === p.codeAnalyse)[0].prix;
+        const lu = [D.tarifPrix(c, false).montant, D.tarifPrix(c, true).montant];
+        fusion.n++;
+        if (lu[0] !== prixAn || lu[1] !== prixAn) fusion.prixFacture = false;
+        const avNA = av.voies['accesseur.tarifPrix'][c][0][0], avA = av.voies['accesseur.tarifPrix'][c][1][0];
+        if (v2.prixNonAssure !== avNA || (v2.etatAssure === 'montant' ? v2.prixAssure !== avA : false)) fusion.grilleConservee = false;
+      });
+      r.fusion = fusion;
+      /* 4. Un échantillon de CHAQUE voie, rejoué en vrai avec les points d'entrée publics, contre l'état d'avant */
+      const ptNon = S.collection('patients').active().filter((p) => p.code === av.patients.nonAssure)[0];
+      const ptAss = S.collection('patients').active().filter((p) => p.code === av.patients.assure)[0];
+      const echant = [], essai = (nom, f, att) => { let lu; try { lu = f(); } catch (e) { lu = 'ERREUR:' + String(e.message).slice(0, 80); } if (JSON.stringify(lu) !== JSON.stringify(att)) echant.push([nom, lu, att]); };
+      [['SO09', 0], ['SO09', 1], ['MG01', 0], ['MG01', 1], ['GY-SAA', 1], ['HO02', 0]].forEach((x) => {
+        const pt = x[1] ? ptAss : ptNon;
+        essai('prescrire.acte ' + x[0] + ' ' + x[1], () => { const res = PR.prescrire({ patientCode: pt.code, medecin: 'SONDE113', diagnostic: 'sonde', actes: [x[0]] }); const l = (res.facture.lignes || []).filter((y) => y.acteCode === x[0])[0]; return l ? [l.prixUnitaire, l.montant, l.partAssureur, l.partPatient] : 'AUCUNE LIGNE'; }, av.voies['prescrire.acte'][x[0]][x[1]]);
+      });
+      [['L01', 0], ['L01', 1], ['L20', 1]].forEach((x) => {
+        const pt = x[1] ? ptAss : ptNon;
+        essai('prescrire.analyse ' + x[0] + ' ' + x[1], () => { const res = PR.prescrire({ patientCode: pt.code, medecin: 'SONDE113', diagnostic: 'sonde', analyses: [x[0]] }); const a = (res.ordonnance.analyses || []).filter((y) => y.code === x[0])[0]; const l = (res.facture.lignes || []).filter((y) => y.demandeId || y.categorie === 'analyse')[0]; return a ? [a.prix, l ? l.prixUnitaire : null, l ? l.partAssureur : null] : 'AUCUNE ANALYSE'; }, av.voies['prescrire.analyse'][x[0]][x[1]]);
+      });
+      [['SIV', 0], ['SIV', 1], ['PANP', 1], ['AMIU', 0]].forEach((x) => {
+        const pt = x[1] ? ptAss : ptNon;
+        essai('soins ' + x[0] + ' ' + x[1], () => { const p = PR.prescrireSoins({ patientCode: pt.code, prescripteurId: null, actes: [x[0]], secteurDestinataire: 'salle_soins' }); const l = (p.lignes || [])[0]; return l ? [l.prix, l.tarif, l.motifTarif, l.prixAValider, l.libelle, l.famille] : 'AUCUNE LIGNE'; }, av.voies.soins[x[0]][x[1]]);
+      });
+      [['IMG-ECHO-PEL', 0], ['IMG-ECHO-PEL', 1], ['IMG-ECG', 1]].forEach((x) => {
+        const pt = x[1] ? ptAss : ptNon;
+        essai('imagerie ' + x[0] + ' ' + x[1], () => { const res = PR.ouvrirDemandeImagerie({ patientId: pt.id, examens: [x[0]], prescripteur: 'SONDE113', indication: 'sonde' }); const d = res.demandes[0]; const l = (res.facture.lignes || []).filter((y) => y.categorie === 'imagerie')[0]; return [d.prix, l ? l.prixUnitaire : null, l ? l.partAssureur : null]; }, av.voies.imagerie[x[0]][x[1]]);
+      });
+      Object.keys(av.voies.certificats).forEach((k) => {
+        const t = S.collection('typesPiece').all().filter((x) => (x.code || x.id) === k)[0];
+        const tf = t && t.tarifCode ? D.tarif(t.tarifCode) : null;
+        essai('certificats ' + k, () => (tf ? [t.tarifCode, tf.prixNonAssure, tf.assurable, tf.libelle] : [t ? t.tarifCode || null : null, null]), av.voies.certificats[k]);
+      });
+      r.echantillon = echant.slice(0, 4); r.nEchantillonEcarts = echant.length;
       return r;
+    }, avant);
+    verifier('Les collections sont semées : 201 prestations (73 actes, 48 analyses, 80 lignes de grille propres) et 240 versions (une version 1 par prestation, 39 versions 2 proposées), VERSION portée à 79 au moins',
+      m.nTarifs === 201 && m.nVersions === 240 && m.nProposees === 39 && m.version >= 79, JSON.stringify([m.nTarifs, m.nVersions, m.nProposees, m.version]));
+    verifier('Les versions 1 sont toutes VALIDES, d’origine « migration », sans date d’effet (depuis toujours) ; les 39 versions 2 (grille imprimée des analyses) sont PROPOSÉES, « à dater », sans date d’effet : elles ne changent rien tant qu’elles ne sont pas validées',
+      m.v1Valides && m.proposeesStatut, JSON.stringify([m.v1Valides, m.proposeesStatut]));
+    verifier('COMPARAISON EXHAUSTIVE des accesseurs : ' + 268 + ' codes x 2 colonnes (D.tarifPrix : montant, tarif, motif, réserve SOS) et D.tarif (libellé, famille, deux prix, non couvert, assurable, à valider) : aucun écart avec l’état d’avant, hors les lignes LABO fusionnées',
+      m.lecteurs.tarifPrix === 536 && m.lecteurs.tarif === 268 && m.nEcartsAccesseurs === 0, JSON.stringify([m.lecteurs, m.nEcartsAccesseurs, m.ecartsAccesseurs]));
+    verifier('Les trois collections de lecture (73 actes, 48 analyses, 147 fiches du catalogue) et les trois journées d’hospitalisation sont IDENTIQUES à l’état d’avant, champ à champ (les 39 lignes LABO fusionnées du catalogue portent le prix facturé) ; la caisse manuelle liste les 48 analyses aux mêmes prix',
+      m.collections.actes && m.collections.analyses && m.collections.catalogueTarifs && m.catalogueLabo && m.collections.typesChambre && m.analysesConstante && m.nbCollections.join() === '73,48,147,3', JSON.stringify([m.collections, m.nbCollections, m.analysesConstante]));
+    verifier('Les 39 lignes LABO fusionnées avec leur analyse lisent le prix FACTURÉ aujourd’hui (version 1) sur les deux colonnes, et leur version 2 PROPOSÉE porte exactement les prix de la grille imprimée d’avant',
+      m.fusion.n === 39 && m.fusion.prixFacture && m.fusion.grilleConservee, JSON.stringify(m.fusion));
+    verifier('ÉCHANTILLON de chaque voie rejoué avec les points d’entrée publics (prescription d’actes et d’analyses, soins, imagerie, certificats ; assuré et non assuré) : prix, parts assureur et patient identiques à l’état d’avant',
+      m.nEchantillonEcarts === 0, JSON.stringify(m.echantillon));
+    /* --- Les écarts entre les sources, LISTÉS (à la Direction) ----------------------------------------------------------------------------------------- */
+    const ecarts = await page.evaluate((av) => {
+      const S = window.SIGH.store, D = window.SIGH.data, K = av.voies['accesseur.tarifPrix'];
+      const m = S.migrerTarifsDepuis({ actes: S.raw().actes.filter((a) => !!K[a.code]), analyses: D.TARIFS.semence.analyses, catalogueTarifs: [] });
+      const par = {}; m.ecarts.forEach((e) => { par[e.type] = (par[e.type] || 0) + 1; });
+      return { par: par, sansGrille: m.ecarts.filter((e) => e.type === 'analyse-sans-grille').map((e) => e.code), laboSansAnalyse: m.ecarts.filter((e) => e.type === 'grille-sans-analyse').map((e) => e.code),
+        grille: m.ecarts.filter((e) => e.type === 'analyse-grille').map((e) => e.code + ' ' + e.facture.na + ' F facturé -> grille ' + e.ligneDeGrille.na + '/' + (e.ligneDeGrille.pa == null ? e.ligneDeGrille.etat : e.ligneDeGrille.pa)), n: m.tarifs.length + '/' + m.versions.length };
+    }, avant);
+    console.log('\n  T1 écarts entre les sources : ' + JSON.stringify(ecarts.par) + '\n   analyses sans ligne de grille : ' + ecarts.sansGrille.join(', ') + '\n   lignes LABO sans analyse : ' + ecarts.laboSansAnalyse.join(', ')
+      + '\n   prix de grille proposés en version 2 (facturé -> grille non assuré/assuré) :\n     ' + ecarts.grille.join('\n     '));
+    verifier('Les écarts entre les sources sont LISTÉS et chiffrés : 39 analyses dont la grille diffère (version 2 proposée), 9 analyses sans ligne de grille, 1 ligne LABO sans analyse (SDW ; BU est déjà l’alias de l’acte MA18), aucun écart acte/grille sur la semence',
+      ecarts.par['analyse-grille'] === 39 && ecarts.par['analyse-sans-grille'] === 9 && ecarts.par['grille-sans-analyse'] === 1 && !ecarts.par['acte-grille'] && !ecarts.par['catalogue-grille'] && ecarts.n === '201/240', JSON.stringify(ecarts.par));
+    /* --- Reprise d'un magasin d'avant : le prix facturé aujourd'hui (collection actes) devient la version 1, les éditions sans effet sont listées ----------------- */
+    const reprise = await page.evaluate(() => {
+      const S = window.SIGH.store, clone = (x) => JSON.parse(JSON.stringify(x));
+      const actes = clone(S.raw().actes), an = clone(S.raw().analyses), cat = clone(S.raw().catalogueTarifs);
+      const mg = actes.filter((a) => a.code === 'MG01')[0]; mg.prix = 5100; mg.prixNonAssure = 5100;
+      an.filter((a) => a.code === 'L01')[0].prix = 2100;
+      cat.filter((c) => c.code === 'SIV')[0].prixNonAssure = 1300;
+      const m = S.migrerTarifsDepuis({ actes: actes, analyses: an, catalogueTarifs: cat });
+      const v1 = (code) => m.versions.filter((v) => v.code === code && v.version === 1)[0];
+      const types = m.ecarts.map((e) => e.type + ':' + e.code);
+      return { mg01: v1('MG01').prixNonAssure, l01: v1('L01').prixNonAssure, siv: v1('SO02').prixNonAssure, sivAvant: S.raw().actes.filter((a) => a.code === 'SO02')[0].prix, types: types.filter((x) => !/^analyse-|^grille-/.test(x)) };
     });
-    verifier('CONSTAT 2 MESURÉ (prescription) : un prix d’analyse modifié dans la collection `analyses` (cfg-tarifs, m5-catalogue) n’est PAS facturé par PR.prescrire (la ligne reste au prix de la constante)',
-      analyses.colonne === analyses.avant + 100 && analyses.constante === analyses.avant && analyses.ordonnance === analyses.avant && analyses.ligne === analyses.avant, JSON.stringify(analyses));
-    /* --- (b bis) caisse manuelle : lit la constante pour les analyses, la collection `actes` pour les actes, la constante TYPES_CHAMBRE pour les journées -- */
-    const caisse = await (async () => {
-      await page.evaluate(() => { const S = window.SIGH.store; const a = S.collection('analyses').all().filter((x) => x.code === 'L01')[0]; S.collection('analyses').update(a.id, { prix: a.prix + 100 }); const ac = S.collection('actes').all().filter((x) => x.code === 'MG01')[0]; S.collection('actes').update(ac.id, { prix: ac.prix + 100 }); });
-      await ouvrir('m8-facturation.html');
-      const lire = (nature) => page.evaluate(async (n) => {
-        const sel = [...document.querySelectorAll('#page-content select')].find((s) => [...s.options].some((o) => o.value === 'analyse'));
-        sel.value = n; sel.dispatchEvent(new Event('change', { bubbles: true })); await new Promise((r) => setTimeout(r, 300));
-        const h = [...document.querySelectorAll('#page-content *')].find((e) => e._liste);
-        return h ? h._liste.map((x) => ({ label: x.label, prix: x.prix, code: x.code || null })) : null;
-      }, nature);
-      const an = await lire('analyse'), ac = await lire('acte'), ho = await lire('hospitalisation');
-      await page.evaluate(() => { const S = window.SIGH.store; const a = S.collection('analyses').all().filter((x) => x.code === 'L01')[0]; S.collection('analyses').update(a.id, { prix: a.prix - 100 }); const c = S.collection('actes').all().filter((x) => x.code === 'MG01')[0]; S.collection('actes').update(c.id, { prix: c.prix - 100 }); });
-      return { akop: (an || []).filter((x) => x.label === 'AKOP')[0], mg01: (ac || []).filter((x) => x.code === 'MG01')[0], nbActes: (ac || []).length, nbAnalyses: (an || []).length, nbJournees: (ho || []).length };
-    })();
-    verifier('CONSTAT 2 MESURÉ (caisse manuelle) : la liste des analyses de la caisse ignore la collection modifiée (AKOP reste à 2 000), celle des actes la suit (MG01 à 5 100) ; 73 actes, 48 analyses, 3 journées',
-      caisse.akop && caisse.akop.prix === 2000 && caisse.mg01 && caisse.mg01.prix === 5100 && caisse.nbActes === 73 && caisse.nbAnalyses === 48 && caisse.nbJournees === 3, JSON.stringify(caisse));
-    /* --- (c) pièce émise : aucun lecteur ne relit le catalogue (lignes copiées), avoir et assurance du personnel compris ----------------------------------- */
-    const piece = await page.evaluate(() => {
-      const S = window.SIGH.store, PR = window.SIGH.parcours;
-      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
-      const res = PR.prescrire({ patientCode: pt.code, medecin: 'SONDE113', diagnostic: 'sonde', actes: ['MG01'] });
-      const f0 = S.collection('factures').get(res.facture.id);
-      const avant = { total: f0.montantTTC, lignes: f0.lignes.map((l) => [l.designation || l.libelle, l.prixUnitaire, l.montant]) };
-      const ac = S.collection('actes').all().filter((x) => x.code === 'MG01')[0];
-      S.collection('actes').update(ac.id, { prix: ac.prix + 900, prixNonAssure: ac.prix + 900 });
-      const f1 = S.collection('factures').get(res.facture.id);
-      const apres = { total: f1.montantTTC, lignes: f1.lignes.map((l) => [l.designation || l.libelle, l.prixUnitaire, l.montant]) };
-      S.collection('actes').update(ac.id, { prix: ac.prix - 900, prixNonAssure: ac.prix - 900 });
-      return { avant: avant, apres: apres };
+    verifier('REPRISE : le prix d’un acte corrigé par la clinique (MG01 à 5 100) devient la version 1 ; une analyse éditée dans la collection `analyses` (L01 à 2 100) garde le prix de la caisse (2 000) ; un soin édité au catalogue tarifaire reste au prix de l’acte ; les trois éditions sont LISTÉES, aucune n’est appliquée en silence',
+      reprise.mg01 === 5100 && reprise.l01 === 2000 && reprise.siv === reprise.sivAvant && reprise.types.indexOf('acte-grille:MG01') >= 0 && reprise.types.indexOf('analyses-collection:L01') >= 0 && reprise.types.some((x) => /^catalogue-grille:SIV/.test(x)), JSON.stringify(reprise));
+    /* --- Garde de parité : une fiche de lecture qui s'écarte du référentiel est une ERREUR nommée, et la projection la ramène ---------------------------------- */
+    const parite = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const a = S.raw().actes.filter((x) => x.code === 'MG01')[0];
+      const avant = { ecarts: S.paritesTarifs().length, prix: a.prix };
+      a.prix = a.prix + 7;
+      const casse = S.paritesTarifs();
+      const n = S.projeterTarifs();
+      return { avant: avant, casse: casse.length, nom: casse[0] && casse[0].collection + ' ' + casse[0].code, projetes: n, apres: S.paritesTarifs().length, prixApres: a.prix };
     });
-    verifier('CONSTAT 9 (pièce émise) MESURÉ : changer le prix d’un acte après émission ne touche pas la facture déjà émise (lignes copiées, total identique)',
-      piece.avant.total > 0 && JSON.stringify(piece.avant) === JSON.stringify(piece.apres), JSON.stringify(piece));
-    const sourceRh = fs.readFileSync(path.join(ROOT, 'assets/js/modules/m10-rh.js'), 'utf8');
-    verifier('CONSTAT 9 MESURÉ (assurance du personnel) : la valeur d’une analyse est le montant PORTÉ par la demande, jamais le prix courant du catalogue ; D.ANALYSES ne sert plus qu’à nommer l’examen (le constat du PRD était déjà soldé par la vague 109, lot L7)',
-      /valeur: montantAssurance\(a\.montant != null && a\.montant !== '' \? a\.montant : a\.prix\)/.test(sourceRh) && !/montantAssurance\(analyse\.prix\)/.test(sourceRh), 'ligne de m10-rh.js modifiée ?');
-    /* --- (d) marge de quota ----------------------------------------------------------------------------------------------------------------------------- */
+    verifier('GARDE DE PARITÉ : zéro écart au repos ; un prix de lecture faussé (MG01 + 7) est détecté en nommant la collection et le code, puis ramené par la projection (le référentiel fait foi)',
+      parite.avant.ecarts === 0 && parite.casse === 1 && parite.nom === 'actes MG01' && parite.projetes >= 1 && parite.apres === 0 && parite.prixApres === parite.avant.prix, JSON.stringify(parite));
+    /* --- Une version de prix est IMMUABLE ------------------------------------------------------------------------------------------------------------------ */
+    const immuable = await page.evaluate(() => {
+      const S = window.SIGH.store, col = S.collection('versionsTarif');
+      const id = 'MG01@origine@1';
+      const avant = col.get(id).prixNonAssure;
+      const maj = col.update(id, { prixNonAssure: 1 });
+      const etat = col.update(id, { statut: 'retire' });
+      const arch = col.archive(id, 'essai');
+      const doublon = col.insert({ id: id, code: 'MG01', version: 1, prixNonAssure: 1, etatNonAssure: 'montant', etatAssure: 'unique', origine: 'ecran', statut: 'valide' });
+      const v2 = S.raw().versionsTarif.filter((v) => v.origine === 'semence-grille')[0];
+      const dater = col.update(v2.id, { prixNonAssure: 1 });
+      return { avant: avant, apres: col.get(id).prixNonAssure, statut: col.get(id).statut, maj: maj, etat: etat, arch: arch, doublon: doublon, dater: dater, v2: col.get(v2.id).statut };
+    });
+    verifier('UNE VERSION DE PRIX EST IMMUABLE : le prix d’une version ne se réécrit pas, une version valide ne se retire pas par une modification, aucune version ne s’archive, un identifiant de version ne se réutilise pas, une proposition ne change pas de prix',
+      immuable.maj === null && immuable.etat === null && immuable.arch === null && immuable.doublon === null && immuable.dater === null && immuable.apres === immuable.avant && immuable.statut === 'valide' && immuable.v2 === 'propose', JSON.stringify(immuable));
+    /* --- Quota : les kilo-octets des deux collections, la marge restante ---------------------------------------------------------------------------------- */
     const quota = await page.evaluate(() => {
       const S = window.SIGH.store, raw = S.raw();
       const sansNuls = function (k, v) { return v === null && this && !Array.isArray(this) ? undefined : v; };
       const charge = JSON.stringify(raw, sansNuls).length;
       const cle = '__quota113__'; let lo = 0, hi = 12000000;
       const essai = (n) => { try { localStorage.setItem(cle, 'x'.repeat(n)); localStorage.removeItem(cle); return true; } catch (e) { return false; } };
-      while (hi - lo > 1000) { const m = (lo + hi) >> 1; if (essai(m)) lo = m; else hi = m; }
+      while (hi - lo > 1000) { const mid = (lo + hi) >> 1; if (essai(mid)) lo = mid; else hi = mid; }
       const t = (k) => JSON.stringify(raw[k] || [], sansNuls).length;
-      return { charge: charge, capacite: lo, marge: lo - charge, actes: t('actes'), analyses: t('analyses'), catalogueTarifs: t('catalogueTarifs') };
+      return { charge: charge, capacite: lo, marge: lo - charge, tarifs: t('tarifs'), versionsTarif: t('versionsTarif'), actes: t('actes'), analyses: t('analyses'), catalogueTarifs: t('catalogueTarifs') };
     });
-    console.log('\n  T0 (d) quota : charge ' + quota.charge + ' car., capacité ' + quota.capacite + ' car., marge ' + quota.marge + ' car. (' + Math.round(quota.marge / 1000) + ' Ko) ; actes ' + quota.actes + ', analyses ' + quota.analyses + ', catalogueTarifs ' + quota.catalogueTarifs + '.');
-    verifier('Marge de quota MESURÉE avant de semer T1 : la charge tient sous la capacité du navigateur (le chiffre est écrit dans la sortie du banc)', quota.marge > 0, JSON.stringify(quota));
-    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+    console.log('\n  T1 quota : tarifs ' + quota.tarifs + ' car., versionsTarif ' + quota.versionsTarif + ' car. (' + Math.round((quota.tarifs + quota.versionsTarif) / 1000) + ' Ko), charge ' + quota.charge + ', capacité ' + quota.capacite + ', marge restante ' + quota.marge + ' car. (' + Math.round(quota.marge / 1000) + ' Ko).');
+    verifier('QUOTA : le jeu tient sous la capacité du navigateur (marge positive ; les kilo-octets des deux collections et la marge restante sont dans la sortie du banc)', quota.marge > 0, JSON.stringify(quota));
+    verifier('Aucune erreur JavaScript (la garde de parité s’énoncerait comme une erreur de console)', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
   await browser.close();

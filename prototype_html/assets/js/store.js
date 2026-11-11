@@ -3392,6 +3392,8 @@
         nonCouvert: s.nc, assurable: p.assurable, prixAValider: s.na == null, source: p.source || null };
     });
     if (n) save();
+    var ecarts = paritesTarifs();
+    if (ecarts.length) { try { console.error('PARITÉ DES TARIFS : ' + ecarts.length + ' fiche(s) de lecture ne disent pas ce que le référentiel dit (' + ecarts.slice(0, 3).map(function (e) { return e.collection + ' ' + e.code; }).join(', ') + ').'); } catch (e) { /* console absente */ } }
     return n;
   }
 
@@ -4595,4 +4597,31 @@
     corbeille: corbeille, libelleCollection: libelleCollection,
     raw: function () { return load(); },
   };
+
+  /* LE RÉFÉRENTIEL DE PRIX : le moteur pur lit les collections du magasin, et une VERSION est immuable (PRD-TARIFS, 4.1). */
+  D.TARIFS.brancher(function () { return db ? { tarifs: db.tarifs, versions: db.versionsTarif } : null; });
+  on('tarifs', D.TARIFS.invalider);
+  on('versionsTarif', D.TARIFS.invalider);
+  var VERSION_IMMUABLE = ['code', 'version', 'prixNonAssure', 'etatNonAssure', 'prixAssure', 'etatAssure', 'origine', 'proposePar', 'proposeLe', 'lot'];
+  garder('versionsTarif', function (op, rec) {
+    if (op === 'archiver') return 'Une version de prix ne s’archive pas : elle se REFUSE ou se RETIRE, et reste lisible (RG-14 : le prix d’une pièce émise doit pouvoir se relire).';
+    var existantes = (db && db.versionsTarif) || [];
+    if (op === 'inserer') {
+      return existantes.some(function (x) { return x.id === rec.id; }) ? 'La version « ' + rec.id + ' » existe déjà : une version ne se réécrit pas.' : null;
+    }
+    if (op !== 'modifier') return null;
+    var avant = existantes.filter(function (x) { return x.id === rec.id; })[0];
+    if (!avant) return null;
+    for (var i = 0; i < VERSION_IMMUABLE.length; i++) {
+      var k = VERSION_IMMUABLE[i];
+      if (!(avant[k] == null && rec[k] == null) && avant[k] !== rec[k]) return 'Une version de prix est IMMUABLE (champ « ' + k + ' ») : une correction AJOUTE une version, elle ne réécrit pas l’ancienne.';
+    }
+    if (avant.statut !== rec.statut && !(avant.statut === 'propose' && ['valide', 'refuse', 'retire'].indexOf(rec.statut) >= 0)) {
+      return 'Une version « ' + avant.statut + ' » ne devient pas « ' + rec.statut + ' » : seule une proposition se décide ; une version validée se remplace par une nouvelle version.';
+    }
+    if (!(avant.dateEffet == null && rec.dateEffet == null) && avant.dateEffet !== rec.dateEffet && !(avant.aDater && rec.statut === 'valide')) {
+      return 'La date d’effet d’une version est immuable (seule la décision d’une proposition « à dater » la fixe).';
+    }
+    return null;
+  });
 })(window);

@@ -388,7 +388,7 @@
     .concat(batir(CERTIFICATS_TARIFS, 'CERTIFICAT', SRC.cert));
 
   /* ==========================================================================
-   * LE RÉFÉRENTIEL DE PRIX UNIQUE — MOTEUR PUR (PRD-TARIFS, lot T1)
+   * LE RÉFÉRENTIEL DE PRIX UNIQUE : MOTEUR PUR (PRD-TARIFS, lot T1)
    * --------------------------------------------------------------------------
    * Deux collections au magasin : `tarifs` (l'identité d'une prestation tarifée : code, libellé de facturation, libellé de grille, famille,
    * alias de code) et `versionsTarif` (une ligne par version de prix, IMMUABLE pour ce qui est du prix : une correction ajoute une version).
@@ -463,6 +463,7 @@
       return best;
     }
 
+    /* Les deux motifs ci-dessous sont repris MOT POUR MOT de l'ancien `prix()` : ils s'impriment sur la ligne de facture, la parité les compare. */
     var MOTIF_NC = 'Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré.';
     var MOTIF_SOS = 'Les certificats ne sont couverts que par SOS — vérifier la compagnie.';
 
@@ -486,7 +487,7 @@
       if (!v) return null;
       var na = v.etatNonAssure === 'manquant' ? null : v.prixNonAssure;
       var pa = v.etatAssure === 'montant' ? v.prixAssure : (v.etatAssure === 'unique' ? na : null);
-      return { na: na, pa: pa, etatNonAssure: v.etatNonAssure, etatAssure: v.etatAssure, nc: v.etatAssure === 'nc', version: v.version, dateEffet: v.dateEffet || null, provisoire: v.provisoire === true, vrs: v };
+      return { na: na, pa: pa, etatNonAssure: v.etatNonAssure || 'montant', etatAssure: v.etatAssure, nc: v.etatAssure === 'nc', version: v.version, dateEffet: v.dateEffet || null, provisoire: v.provisoire === true, vrs: v };
     }
 
     /** La forme de l'ancienne entrée de grille : la SEMENCE (libellés, arbitrages, colonnes imprimées) superposée au prix en vigueur. */
@@ -548,8 +549,10 @@
     }
     function creerVersion(code, n, e, o) {
       var v = { id: code + '@' + (o.dateEffet || (o.aDater ? 'a-dater' : 'origine')) + '@' + n, code: code, version: n,
-        prixNonAssure: e.na, etatNonAssure: e.etatNA, prixAssure: e.pa, etatAssure: e.etatA,
+        prixNonAssure: e.na, prixAssure: e.pa, etatAssure: e.etatA,
         origine: o.origine, statut: o.statut || 'valide' };
+      /* « montant » est l'état usuel de la colonne non assuré : il ne s'écrit que s'il est autre (quota du magasin). */
+      if (e.etatNA !== 'montant') v.etatNonAssure = e.etatNA;
       if (o.dateEffet) v.dateEffet = o.dateEffet;
       if (o.aDater) v.aDater = true;
       if (o.motif) v.motif = o.motif;
@@ -575,7 +578,6 @@
         if (a.secteur) p.secteur = a.secteur;
         if (g) { p.codeGrille = g.code; p.codesAlias = [g.code]; if (g.libelle !== a.libelle) p.libelleGrille = g.libelle; grilleUtilisee[g.code] = true; }
         if (a.assurable !== undefined) p.assurable = a.assurable;
-        if (a.source) p.source = a.source;
         if (a.variantesGrille && a.variantesGrille.length) p.variantesGrille = a.variantesGrille.map(function (x) { return x.code || x; });
         tarifs.push(p);
         versions.push(creerVersion(a.code, 1, e, { origine: 'migration', provisoire: a.tarifProvisoire === true, arreteLe: a.tarifArreteLe, motif: a.motifPrix }));
@@ -596,7 +598,6 @@
         var e = { na: prix, etatNA: prix == null ? 'manquant' : 'montant', pa: prix, etatA: prix == null ? 'manquant' : 'unique' };
         var p = { id: a.code, code: a.code, codeAnalyse: a.code, libelle: a.designation, famille: 'LABO', statut: 'actif' };
         if (g) { p.codeGrille = g.code; p.codesAlias = [g.code]; p.libelleGrille = g.libelle; p.assurable = g.assurable; grilleUtilisee[g.code] = true; }
-        p.source = 'Tarifs des analyses de laboratoire NASSIERA TOO';
         tarifs.push(p);
         versions.push(creerVersion(a.code, 1, e, { origine: 'migration', provisoire: a.tarifProvisoire === true }));
         if (g) {
@@ -616,7 +617,6 @@
         var e = etatsGrille(g);
         var p = { id: g.code, code: g.code, codeGrille: g.code, libelle: g.libelle, famille: g.famille, statut: 'actif' };
         if (g.assurable !== undefined) p.assurable = g.assurable;
-        if (g.source) p.source = g.source;
         tarifs.push(p);
         versions.push(creerVersion(g.code, 1, e, { origine: 'migration', provisoire: g.tarifProvisoire === true, motif: g.motifPrix }));
         if (g.famille === 'LABO') ecarts.push({ type: 'grille-sans-analyse', code: g.code, detail: 'Ligne LABO de la grille sans analyse de même libellé : prestation propre, au prix de la grille.' });

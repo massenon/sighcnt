@@ -109,6 +109,11 @@ const PORT = Number(process.env.SIGH_PORT_TEST) || 8096;
       catalogueTarifs: S.collection('catalogueTarifs').all().map((a) => [a.id, a.code, a.libelle, a.famille].concat(pick(a, ['prixNonAssure', 'prixAssure', 'nonCouvert', 'assurable', 'prixAValider', 'statut']))),
       typesChambre: D.TYPES_CHAMBRE.map((t) => [t.id, t.label, t.tarif]),
     };
+    /* Les codes de GRILLE dont le prix lu change PAR CONSTRUCTION à la migration (PRD-TARIFS, décision T2) : la ligne LABO de la grille est fusionnée avec
+       l'analyse de même libellé, dont le prix FACTURÉ aujourd'hui est la version 1 ; le prix de la grille devient la version 2 PROPOSÉE. Aucune voie de
+       l'application n'adresse une ligne LABO par son code de grille (les soins sont des actes AMI, l'imagerie des examens IMG) ; la capture les relève quand même. */
+    const brut = S.raw();
+    R.attendus = (brut.versionsTarif || []).filter((v) => v.origine === 'semence-grille').map((v) => (brut.tarifs.filter((p) => p.code === v.code)[0] || {}).codeGrille).filter(Boolean).sort();
     return R;
   });
 
@@ -130,7 +135,7 @@ const PORT = Number(process.env.SIGH_PORT_TEST) || 8096;
   const ligne = (o, ind) => '{\n' + Object.keys(o).map((k) => ind + JSON.stringify(k) + ':' + JSON.stringify(o[k])).join(',\n') + '\n' + ind.slice(1) + '}';
   const voies = '{\n' + Object.keys(m.voies).map((v) => ' ' + JSON.stringify(v) + ':' + (m.voies[v] && typeof m.voies[v] === 'object' && !Array.isArray(m.voies[v]) ? ligne(m.voies[v], '  ') : JSON.stringify(m.voies[v]))).join(',\n') + '\n}';
   const cols = ligne(m.collections, ' ');
-  fs.writeFileSync(sortie, '{\n"patients":' + JSON.stringify(m.patients) + ',\n"espaces":' + JSON.stringify(m.espaces) + ',\n"codes":' + m.codes + ',\n"voies":' + voies + ',\n"collections":' + cols + '\n}\n');
+  fs.writeFileSync(sortie, '{\n"patients":' + JSON.stringify(m.patients) + ',\n"attendus":' + JSON.stringify(m.attendus || []) + ',\n"espaces":' + JSON.stringify(m.espaces) + ',\n"codes":' + m.codes + ',\n"voies":' + voies + ',\n"collections":' + cols + '\n}\n');
   console.log('Capture écrite : ' + sortie + ' (' + mesure.codes + ' codes, ' + Object.keys(mesure.voies).length + ' voies ; erreurs JS : ' + erreurs.length + ')');
   await br.close(); srv.close(); try { php.php.kill(); } catch (e) { /* mort */ }
   process.exit(0);

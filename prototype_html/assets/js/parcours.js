@@ -94,6 +94,43 @@
   }
 
   /* ==========================================================================
+   * LE PRIX D'UNE PRESTATION À UNE DATE (PRD-TARIFS, lot T1)
+   * --------------------------------------------------------------------------
+   * UN SEUL accesseur pour toutes les voies de tarification : le prix est celui de la version EN VIGUEUR à la date de la PIÈCE (jamais l'horloge au moment
+   * du calcul : une pièce saisie après coup avec une date passée prend le prix de sa date), sur la colonne que décide la validité de la carte à cette même
+   * date (RG-09). Une prestation sans version valide à la date rend « absent » avec son motif : la ligne ne se facture pas, jamais un zéro.
+   * La date se compare au JOUR (écart E4).
+   * ======================================================================== */
+  function colTarifs() { return S.collection('tarifs', { module: 'CFG', entite: 'prestation tarifée', prefix: 'TRF' }); }
+  function colVersionsTarif() { return S.collection('versionsTarif', { module: 'CFG', entite: 'version de prix', prefix: 'VTR' }); }
+  function tarifALaDate(code, date, assure) {
+    var TA = D.TARIFS, h = TA && TA.lire();
+    if (!h) return { absent: true, montant: null, code: code, motif: 'Le référentiel de prix n’est pas chargé.' };
+    var p = h.parCode[code];
+    if (!p) return { absent: true, montant: null, code: code, motif: 'Prestation absente du référentiel de prix : « ' + code + ' ».' };
+    var r = TA.resoudre(h, p, date, !!assure);
+    r.libelle = p.libelle; r.famille = p.famille; r.espaces = { acte: p.codeActe || null, grille: p.codeGrille || null, analyse: p.codeAnalyse || null };
+    return r;
+  }
+  /** Le prix d'un ACTE (espace des codes d'acte) selon la règle historique de la prescription : la colonne assurée ne s'applique que si l'acte est
+      assurable ET porte un montant assuré ; sinon le prix non assuré. `undefined` : l'acte n'est pas au référentiel (repli sur la collection). */
+  function prixActeALaDate(code, date, assure) {
+    var TA = D.TARIFS, h = TA && TA.lire(), p = h && h.parActe[code];
+    if (!p) return undefined;
+    var s = TA.instantane(h, p, date);
+    if (!s) return null;
+    return (assure && p.assurable === true && s.etatAssure === 'montant') ? s.pa : s.na;
+  }
+  /** Le prix d'une ANALYSE (espace des codes d'analyse) : la colonne assurée vaut le prix unique tant qu'aucune version ne porte un montant assuré. */
+  function prixAnalyseALaDate(code, date, assure) {
+    var TA = D.TARIFS, h = TA && TA.lire(), p = h && h.parAnalyse[code];
+    if (!p) return undefined;
+    var s = TA.instantane(h, p, date);
+    if (!s) return null;
+    return (assure && s.etatAssure === 'montant') ? s.pa : s.na;
+  }
+
+  /* ==========================================================================
    * 1. LE MÉDECIN PRESCRIT
    * --------------------------------------------------------------------------
    * Un seul geste engendre l'ordonnance, les demandes d'analyses, la facture et
@@ -135,10 +172,13 @@
       };
     }).filter(function (l) { return l.quantite > 0; });
 
+    /* RG-09 : la colonne se décide à la date de la pièce, comme pour les actes. Le prix est celui de la version en vigueur à CETTE date (PRD-TARIFS). */
+    var assureAnalyses = !!(p.assureur && carteValide(p, date));
     var analyses = (v.analyses || []).map(function (code) {
       var a = analyseParCode(code) || {};
+      var pr = prixAnalyseALaDate(code, date, assureAnalyses);
       return { code: code, designation: a.designation || code, categorie: a.categorie || '',
-        echantillon: a.echantillon || '', delai: a.delai || '', prix: a.prix || 0 };
+        echantillon: a.echantillon || '', delai: a.delai || '', prix: (pr === undefined ? a.prix : pr) || 0 };
     });
 
     /* C3 (corrigé le 31/10/2026) : le tarif ASSURÉ d'un acte (pansement : 6 000 contre 9 000, colonnes inversées, décision du
@@ -153,6 +193,9 @@
          administrable (cfg-tarifs) reste la référence. */
       var tarifAssure = assureActes && a.assurable === true && !a.nonCouvert && a.prixAssure != null;
       var prixActe = tarifAssure ? a.prixAssure : a.prix;
+      /* PRD-TARIFS (T1) : le prix vient du référentiel, à la date de la prescription ; la collection `actes` n'est plus qu'une projection de lecture. */
+      var prixRef = a.code ? prixActeALaDate(code, date, assureActes) : undefined;
+      if (prixRef !== undefined) prixActe = prixRef;
       return { code: code, libelle: a.libelle || code, secteur: a.secteur || '', prix: prixActe || 0,
         tarifValide: prixActe != null };
     });
@@ -729,11 +772,13 @@
     var p = dossierExterne(v, date);
 
     /* Les examens, pris au catalogue. */
+    var assureExterne = !!(p.assureur && carteValide(p, date));
     var analyses = (v.analyses || []).map(function (code) {
       var a = analyseParCode(code) || {};
+      var pr = prixAnalyseALaDate(code, date, assureExterne);
       return {
         code: code, designation: a.designation || code, categorie: a.categorie || '',
-        echantillon: a.echantillon || '', delai: a.delai || '', prix: a.prix || 0,
+        echantillon: a.echantillon || '', delai: a.delai || '', prix: (pr === undefined ? a.prix : pr) || 0,
       };
     });
     var montant = C.sum(analyses, 'prix');
@@ -867,7 +912,7 @@
     var demandes = codes.map(function (code) {
       var ex = examenImagerieParCode(code);
       /* RG-09 : la validité de la carte À LA DATE décide du tarif. */
-      var pr = D.tarifPrix ? D.tarifPrix((ex && ex.tarifCode) || code, assure) : { montant: null };
+      var pr = D.tarifPrix ? D.tarifPrix((ex && ex.tarifCode) || code, assure, date) : { montant: null };
       return col_.insert({
         /* Lue sur les demandes EXISTANTES (écart E100) : le compteur de page de nextRef repartait à 1 à chaque chargement. */
         reference: C.referenceSuivante('IME-', 5, col_.all()),
@@ -2456,7 +2501,7 @@
     var lignes = (v.actes || []).map(function (a) {
       var code = typeof a === 'string' ? a : a.code;
       var t = D.tarif ? D.tarif(code) : null;
-      var pr = D.tarifPrix ? D.tarifPrix(code, assure) : { montant: null, motif: null };
+      var pr = D.tarifPrix ? D.tarifPrix(code, assure, date) : { montant: null, motif: null };
       return {
         acteCode: code,
         libelle: t ? t.libelle : code,
@@ -3014,6 +3059,8 @@
     peutExecuterSoin: peutExecuterSoin, filtrerResultats: filtrerResultats,
     repartir: repartir, garantiesDe: garantiesDe, souscripteurDe: souscripteurDe,
     carteValide: carteValide, categoriser: categoriser, libelleUnite: libelleUnite,
+    colTarifs: colTarifs, colVersionsTarif: colVersionsTarif,
+    tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate,
     couvertureALaDate: couvertureALaDate, historiqueCouverture: historiqueCouverture,
     changerCouverture: changerCouverture,
     TACHES: TACHES,
