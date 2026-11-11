@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -44,7 +45,22 @@ void main() {
       .keys
       .toSet();
 
+  // Écrans de la maquette ENTRÉS AU MANIFESTE avant d'être portés (lots A5 et SMS, régénération du 11/11/2026, ECARTS E2380) : le poste n'a pas encore leur widget. Liste
+  // NOMMÉE et fermée, jamais « tout écran non porté » : tout autre écran manquant fait échouer l'inventaire. Chaque entrée doit être déclarée « non commencé » à
+  // `parite-statuts.json` et rester absente de `ecransPortes` : dès qu'un écran est porté, il sort de cette liste (le test l'y oblige).
+  const nonPortesNommes = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms'};
+
   test('l\'inventaire des rôles n\'est pas vide', () => expect(roles.length, greaterThan(10)));
+
+  test('la liste des écrans non portés est nommée, déclarée « non commencé » et réellement absente de ecransPortes', () {
+    final statuts = (jsonDecode(File('../../docs/architecture/parite-statuts.json').readAsStringSync()) as Map).cast<String, Object?>();
+    final p = portes(ModePoste.mere);
+    for (final id in nonPortesNommes) {
+      expect(donnees.manifeste.ecran(id), isNotNull, reason: '$id n\'est plus au manifeste : le retirer de la liste');
+      expect(p.contains(id), isFalse, reason: '$id est porté : le retirer de la liste des écrans non portés');
+      expect(statuts[id], 'non commencé', reason: '$id doit être déclaré « non commencé » à parite-statuts.json');
+    }
+  });
 
   for (final mode in [ModePoste.fileul, ModePoste.mere]) {
     test('INVENTAIRE ${mode.name} : tout écran ouvert à un rôle autorisé est porté (aucun gabarit de chantier possible)', () {
@@ -61,7 +77,7 @@ void main() {
         final accueil = donnees.matrice.accueil(role);
         if (accueil != null && donnees.matrice.peutVoir(role, accueil)) ouverts.add(accueil);
         for (final id in ouverts) {
-          if (!p.contains(id)) manques.add('$id ($role, ${mode.name})');
+          if (!p.contains(id) && !nonPortesNommes.contains(id)) manques.add('$id ($role, ${mode.name})');
         }
       }
       expect(manques, isEmpty, reason: 'écrans ouverts à un rôle autorisé mais sans widget (gabarit de chantier) :\n${manques.join('\n')}');
@@ -70,7 +86,7 @@ void main() {
 
   test('le manifeste entier est porté en mode mère (aucun écran ne reste hors de ecransPortes)', () {
     final p = portes(ModePoste.mere);
-    final manques = [for (final e in donnees.manifeste.tousLesEcrans) if (!p.contains(e.id)) e.id]..sort();
+    final manques = [for (final e in donnees.manifeste.tousLesEcrans) if (!p.contains(e.id) && !nonPortesNommes.contains(e.id)) e.id]..sort();
     expect(manques, isEmpty, reason: 'écrans du manifeste sans widget : $manques');
   });
 

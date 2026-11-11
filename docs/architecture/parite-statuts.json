@@ -359,5 +359,9 @@
  "imp-souscripteurs": "porté",
  "imp-plan-comptable": "porté",
  "imp-soldes-ouverture": "porté",
- "m6-import-grand-stock": "porté"
+ "m6-import-grand-stock": "porté",
+ "m12-calendrier-fiscal": "non commencé",
+ "m13-sms-journal": "non commencé",
+ "cfg-bareme-aib": "non commencé",
+ "cfg-sms": "non commencé"
 }
