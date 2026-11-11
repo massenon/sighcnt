@@ -1044,7 +1044,7 @@
       ];
     },
     render: K.crud({
-      collection: 'patients', entite: 'patient', entiteP: 'patients', module: 'M1',
+      collection: 'patients', entite: 'patient', entiteP: 'patients', module: 'M1', importer: 'patients',
       /* LA CRÉATION A QUITTÉ LA MODALE (22/09/2026). Un dossier patient
          porte l'identité, les coordonnées, l'âge déclaré et la couverture :
          c'est le premier acte du parcours, et il se fait au guichet, devant

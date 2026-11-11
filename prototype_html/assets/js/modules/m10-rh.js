@@ -366,7 +366,7 @@
     title: 'Personnel',
     description: 'Dossiers des agents : identité, fonction, catégorie, ancienneté, numéro CNSS et rémunération de base.',
     render: K.crud({
-      collection: 'personnel', entite: 'agent', entiteP: 'agents', module: 'M10',
+      collection: 'personnel', entite: 'agent', entiteP: 'agents', module: 'M10', importer: 'personnel',
       defaultSort: 'matricule', pageSize: 15, drawerWidth: 'max-w-3xl',
       source: 'Organigramme de la Clinique NASSIERA TOO.',
       columns: [

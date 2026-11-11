@@ -550,6 +550,7 @@
           tr.appendChild(el('td.text-right.whitespace-nowrap', null, [
             K.iconBtn('sliders-horizontal', 'Modifier les droits de ce rôle', function () { editerRole(r); }),
             K.iconBtn('list-tree', 'Régler écran par écran', function () { editerEcrans(r); }),
+            K.iconBtn('file-up', 'Régler les importations de ce rôle', function () { editerImports(r); }),
             K.iconBtn('pencil', 'Renommer ce rôle', function () { renommerRole(r); }),
             K.iconBtn('archive', 'Archiver ce rôle', function () { archiverRole(r); }, 'ghost'),
           ]));
@@ -1048,6 +1049,84 @@
       }
 
       /* --------------------------------------------------------------------
+       * IMPORTATION : UN DROIT PAR JEU (lot IMP-A, 11/11/2026)
+       * --------------------------------------------------------------------
+       * Trois cases par jeu d'import (voir, importer, annuler), à côté des trois cases par module et par écran, SANS les modifier. Ce droit n'est pas celui d'éditer l'écran
+       * qui héberge le bouton : le gestionnaire qui édite « Référentiel produits » n'importe pas pour autant un jeu qu'il ne détient pas. La Direction a demandé qu'on puisse
+       * ouvrir l'import à l'assistant comptable PLUS TARD, sans code : c'est cette fenêtre. Les jeux refusés (clinique, paie nominative, pièces émises, sécurité) n'existent
+       * pas ici : il n'y a rien à leur accorder. Une case cochée l'emporte sur le défaut du manifeste, dans les deux sens.
+       * ------------------------------------------------------------------ */
+      function editerImports(roleId) {
+        var f = ficheRole(roleId);
+        var etat = {};
+        var corps = el('div.space-y-3');
+        corps.appendChild(K.note('Le droit d’importer est <strong>propre à chaque jeu</strong> : <strong>voir</strong> (le modèle, l’historique de ses lots, la rangée « Importation de données » du ruban), '
+          + '<strong>importer</strong> (vérifier un fichier et confirmer) et <strong>annuler</strong> (défaire un lot). Il n’est <strong>ni déduit ni emporté</strong> par le droit d’éditer un écran. '
+          + 'Une case cochée ici l’emporte sur le défaut du manifeste ; un rôle créé part de zéro. Les importations cliniques, de paie nominative, de pièces émises et de sécurité n’existent pas : aucun jeu à accorder.',
+          { tone: 'info', icon: 'file-up' }));
+        var zone = el('div.max-h-\[22rem\].overflow-auto.rounded-lg.border.border-slate-200');
+        var t = el('table.tbl');
+        t.appendChild(el('thead', null, el('tr', null, [
+          el('th', { text: 'Jeu d’import' }), el('th.text-center', { text: 'Voir' }), el('th.text-center', { text: 'Importer' }),
+          el('th.text-center', { text: 'Annuler' }), el('th.text-right', { text: 'Origine' }),
+        ])));
+        var tb = el('tbody');
+        N.IMPORTS.forEach(function (j) {
+          var courant = N.droitImport(roleId, j.id);
+          var regle = !!(f && f.droitsImport && f.droitsImport[j.id]);
+          var tr = el('tr', { 'data-jeu': j.id });
+          tr.appendChild(el('td', null, el('div.min-w-0', null, [
+            el('p.truncate.text-sm.text-slate-800', { text: j.libelle }),
+            el('p.text-xs.text-slate-400', { text: j.id + ' · ' + (j.sensibilite === 'restreinte' ? 'restreint (valeurs jamais recopiées)' : 'courant') + ' · doublon : ' + j.doublon }),
+          ])));
+          var cases = {};
+          ['voir', 'importer', 'annuler'].forEach(function (k) {
+            var cb = el('input.checkbox', { type: 'checkbox', 'data-droit': k });
+            cb.checked = !!courant[k];
+            cases[k] = cb;
+            cb.addEventListener('change', function () {
+              if (k !== 'voir' && cb.checked) cases.voir.checked = true;
+              if (!cases.voir.checked) { cases.importer.checked = false; cases.annuler.checked = false; }
+              etat[j.id] = { voir: cases.voir.checked, importer: cases.importer.checked, annuler: cases.annuler.checked };
+            });
+            tr.appendChild(el('td.text-center', null, cb));
+          });
+          tr.appendChild(el('td.text-right', null, regle ? U.badge('Réglé', 'navy') : el('span.text-xs.text-slate-400', { text: 'défaut du manifeste' })));
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        zone.appendChild(t);
+        corps.appendChild(zone);
+        var m = U.modal({
+          title: 'Importations du rôle « ' + N.ROLES[roleId].label + ' »',
+          subtitle: 'Un droit par jeu d’import', size: 'xl', body: corps,
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Retirer les réglages d’importation', {
+              icon: 'rotate-ccw',
+              onclick: function () {
+                enregistrer(roleId, { droitsImport: {} }, 'Retrait des réglages d’importation');
+                m.close();
+                U.toast('Réglages d’importation retirés.', { type: 'success', detail: 'Chaque jeu suit de nouveau le défaut du manifeste.' });
+              },
+            }),
+            K.btn('Enregistrer', {
+              variant: 'primary', icon: 'save',
+              onclick: function () {
+                var existants = (f && f.droitsImport) ? Object.assign({}, f.droitsImport) : {};
+                Object.keys(etat).forEach(function (id) { existants[id] = etat[id]; });
+                enregistrer(roleId, { droitsImport: existants, statut: 'actif' }, 'Réglage des droits d’importation');
+                m.close();
+                var ouverts = Object.keys(existants).filter(function (id) { return existants[id].importer; });
+                U.toast('Droits d’importation enregistrés.', { type: 'success', detail: C.num(Object.keys(existants).length) + ' jeu(x) réglé(s), dont ' + C.num(ouverts.length) + ' à importer.' });
+              },
+            }),
+          ],
+        });
+        U.icons(corps);
+      }
+
+      /* --------------------------------------------------------------------
        * CRÉATION D'UN RÔLE
        * --------------------------------------------------------------------
        * Un rôle créé part de ZÉRO : il n'apparaît dans aucune liste du
@@ -1117,6 +1196,9 @@
                 /* Un écran UNIVERSEL ne cède que devant une surcharge d'ÉCRAN (nav.js, 29/10/2026) : fermer les
                    modules ne suffit plus à garder un rôle neuf à zéro écran. On les ferme donc nommément — l'administrateur
                    rouvre ensuite, un par un, ce qu'il veut. */
+                /* Et AUCUN jeu d'import : un rôle neuf part de zéro, nommément (lot IMP-A). */
+                var fermesImport = {};
+                N.IMPORTS.forEach(function (j) { fermesImport[j.id] = { voir: false, importer: false, annuler: false }; });
                 var fermesEcrans = {};
                 N.ids().forEach(function (idEcran) {
                   var e = N.get(idEcran);
@@ -1131,7 +1213,7 @@
                     nouveau: true, statut: 'actif', libelle: v.libelle,
                     libelleCourt: v.libelleCourt || v.libelle, libelleOrigine: v.libelle,
                     couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                    droits: ferme, droitsEcrans: fermesEcrans,
+                    droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport,
                   });
                   N.invaliderRbac();
                   m.close(); afficher();
@@ -1143,7 +1225,7 @@
                   libelle: v.libelle, libelleCourt: v.libelleCourt || v.libelle,
                   libelleOrigine: v.libelle,
                   couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                  droits: ferme, droitsEcrans: fermesEcrans,
+                  droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport,
                   definiLe: C.iso(AUJ), definiPar: S.currentUser(),
                 });
                 N.invaliderRbac();

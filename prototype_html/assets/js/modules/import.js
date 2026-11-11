@@ -12,6 +12,10 @@
  * SOURCES : aucun jeu n'invente une donnée. Le modèle ne contient que des colonnes lues dans les collections existantes ; les
  * référentiels de contrôle viennent du magasin (assureurs, fournisseurs, plan comptable) ou des référentiels de la maquette.
  * Un jeu marqué « proposition à valider » écrit une donnée incomplète et le dit.
+ *
+ * LE DROIT D'IMPORT EST DISTINCT, PAR JEU, ET TENU PAR LE MOTEUR (lot IMP-A, 11/11/2026). Voir, importer et annuler se lisent de `N.droitImport(rôle, jeu)` (manifeste `N.IMPORTS`,
+ * fiche RBAC `droitsImport`), jamais du droit d'éditer l'écran : `analyserOctets`, `appliquer` et `annulerLot` REFUSENT en nommant, car masquer un bouton ne protège rien.
+ * Un jeu RESTREINT (patients, personnel, soldes d'ouverture) ne recopie jamais une valeur de cellule dans l'historique ni dans le rapport : le constat porte colonne, code et geste.
  * ========================================================================== */
 (function (global) {
   'use strict';
@@ -20,6 +24,67 @@
   var el = C.el;
 
   var NOMS_FEUILLES = { donnees: 'Données', instructions: 'Instructions', listes: 'Listes' };
+
+  /* --- Le droit d'import, la sensibilité et le mode de doublon : TOUS lus de la déclaration du manifeste ---------------- */
+  function roleCourant() { var s = S.session() || {}; return s.role || ''; }
+  function decl(j) { return (N.jeuImport && N.jeuImport(j.id)) || {}; }
+  function droitDe(j) { return N.droitImport(roleCourant(), j.id); }
+  function restreint(j) { return decl(j).sensibilite === 'restreinte'; }
+  function modeDoublon(j) { return decl(j).doublon || 'refuser'; }
+  function libelleRole(r) { return (N.ROLES[r] && N.ROLES[r].label) || r || 'inconnu'; }
+  /** Un refus de droit se NOMME : le profil, le jeu, le geste. */
+  function refusDroit(j, geste) {
+    var d = droitDe(j);
+    if (d[geste]) return null;
+    var verbe = { voir: 'voir', importer: 'importer', annuler: 'annuler un lot de' }[geste] || geste;
+    return { ok: false, code: 'DROIT_IMPORT_REFUSE',
+      motif: 'le profil « ' + libelleRole(roleCourant()) + ' » ne détient pas le droit de ' + verbe + ' le jeu « ' + j.libelle + ' »',
+      geste: 'Demander ce droit à l’administrateur : il se règle par jeu dans « Rôles & permissions », section Importation.' };
+  }
+
+  /* --- La taille maximale d'un fichier : UN RÉGLAGE EN BASE PAR JEU, avec un défaut (règle de paramétrage du 09/11) ------ *
+   * Mesurée AVANT d'être posée (I12) : voir ECARTS-MAQUETTE.md. Jamais une constante du code : la valeur lue est celle du réglage `importBornes`, le défaut ci-dessous ne
+   * sert que tant que la clinique n'a rien réglé. Le refus se nomme et dit où relever la borne. */
+  var BORNE_DEFAUT_GENERALE = 5000;
+  var BORNES_DEFAUT = { patients: 25000 };
+  var BORNE_MAXIMALE = 100000;
+  function bornesImport() { return Object.assign({}, BORNES_DEFAUT, S.reglage('importBornes', null) || {}); }
+  function borneDe(j) {
+    var v = bornesImport()[typeof j === 'string' ? j : j.id];
+    return typeof v === 'number' && isFinite(v) && v > 0 ? Math.floor(v) : BORNE_DEFAUT_GENERALE;
+  }
+  function definirBorne(jeuId, lignes, motif) {
+    var j = jeu(jeuId);
+    if (!j) return { ok: false, code: 'JEU_INCONNU', motif: 'aucun jeu d’import « ' + jeuId + ' »', geste: 'Choisir un jeu de la liste.' };
+    if (!N.superviseImport(roleCourant())) return { ok: false, code: 'REGLAGE_RESERVE', motif: 'la taille maximale d’un fichier se règle par un profil qui supervise les importations (droit d’annuler sur tous les jeux)', geste: 'Demander le réglage à la Directrice Administrative ou à l’administrateur.' };
+    var n = Number(lignes);
+    if (lignes === '' || lignes === null || lignes === undefined || !isFinite(n) || n !== Math.floor(n) || n < 1 || n > BORNE_MAXIMALE) {
+      return { ok: false, code: 'BORNE_INVALIDE', motif: 'la taille maximale est un nombre entier de lignes, de 1 à ' + BORNE_MAXIMALE, geste: 'Saisir un nombre entier de lignes.' };
+    }
+    if (!String(motif || '').trim()) return { ok: false, code: 'MOTIF_REQUIS', motif: 'un réglage de taille se motive', geste: 'Saisir le motif du réglage.' };
+    var avant = borneDe(j), tous = Object.assign({}, S.reglage('importBornes', null) || {});
+    tous[j.id] = n;
+    S.log('Taille maximale d’un fichier d’import', 'IMP', 'reglage', j.id, { lignes: avant }, { lignes: n, motif: String(motif).slice(0, 60) });
+    S.setReglage('importBornes', tous);
+    return { ok: true, jeu: j.id, avant: avant, lignes: n };
+  }
+
+  /* --- Un jeu RESTREINT ne recopie jamais une valeur de cellule (RG-13, I11) ------------------------------------------- *
+   * Le constat garde la ligne, la colonne, le code et le geste. Le MOTIF n'est pas recopié non plus : il cite la valeur (« « X » n'est pas une valeur permise »), le nom d'un
+   * agent déjà tenu, les totaux d'une pièce. Il est remplacé par une phrase fixe, propre au code. */
+  var MOTIFS_FIXES = {
+    CHAMP_OBLIGATOIRE: 'valeur obligatoire absente', TYPE_INVALIDE: 'valeur d’un autre type que celui attendu', FORMAT_INVALIDE: 'format non conforme',
+    TROP_LONG: 'texte plus long que le maximum', HORS_BORNES: 'valeur hors des bornes', VALEUR_HORS_LISTE: 'valeur hors de la liste permise',
+    DOUBLON_FICHIER: 'ligne en double dans le fichier', DOUBLON_MAGASIN: 'une fiche équivalente est déjà tenue', DATE_FUTURE: 'date dans le futur',
+    SALAIRE_ABSENT: 'salaire de base non renseigné', TELEPHONE_ABSENT: 'aucun téléphone', POLICE_ABSENTE: 'assuré sans numéro de police',
+    COMPTE_INCONNU: 'compte absent du plan comptable', CLASSE_NON_REPORTABLE: 'compte de gestion : il ne se reporte pas', DEUX_SENS: 'débit et crédit renseignés ensemble',
+    LIGNE_NULLE: 'ligne sans montant', DATES_MULTIPLES: 'plusieurs dates dans le fichier', RG10_DESEQUILIBRE: 'écriture non équilibrée (RG-10)',
+    A_NOUVEAU_EXISTANT: 'l’exercice porte déjà un à-nouveau', COLONNE_RESERVEE: 'colonne réservée à un autre profil', COLONNE_RETIREE: 'colonne retirée du modèle',
+  };
+  function masquer(j, p) {
+    if (!restreint(j)) return p;
+    return { n: p.n, colonne: p.colonne, valeur: '', code: p.code, niveau: p.niveau, motif: MOTIFS_FIXES[p.code] || 'constat de contrôle (le détail n’est pas recopié)', geste: p.geste };
+  }
 
   /* --- Petits outils ---------------------------------------------------------------------------------------------- */
   function aujourdhuiIso() { return C.iso(C.aujourdhui()); }
@@ -123,7 +188,6 @@
   var PERISSABLES = ['medicament', 'reactif'];
   JEUX.push({
     id: 'grand-stock', ecran: 'm6-import-grand-stock', libelle: 'Importation Grand Stock', module: 'M6', statut: 'supporte',
-    roles: ['stock', 'da', 'admin', 'direction'],
     description: 'Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire SAGE « Grand Stock »).',
     source: 'Inventaire SAGE 100 « Grand Stock » du 15/07/2026 (docs/) : 184 articles, 12 080 unités, 3 976 459 FCFA.',
     cibles: ['produits', 'lots', 'mouvements'],
@@ -244,7 +308,6 @@
   /* --- 2. PERSONNEL -------------------------------------------------------------------------------------------------- */
   JEUX.push({
     id: 'personnel', ecran: 'imp-personnel', libelle: 'Importation du personnel', module: 'IMP', statut: 'supporte',
-    roles: ['da', 'admin'],
     description: 'Fiches des agents : matricule, identité, fonction, service, embauche. Aucune donnée de paie hors salaire de base.',
     source: 'Organigramme et liste du personnel de la clinique (docs/) : 44 agents.',
     cibles: ['personnel'],
@@ -262,7 +325,7 @@
       col('telephone', 'Téléphone', 'texte', { longueurMax: 20, exemple: '0197000000' }),
       col('cnss', 'N° CNSS', 'texte', { motif: /^\d{9}$/, motifTexte: '9 chiffres', exemple: '294011540' }),
       col('situation', 'Situation familiale', 'liste', { liste: ['Célibataire', 'Marié(e)', 'Veuf(ve)'], exemple: 'Marié(e)' }),
-      col('salaireBase', 'Salaire de base', 'entier', { min: 0, exemple: 150000, aide: 'Francs CFA bruts mensuels. Réservé à la DAF et à l’administrateur.' }),
+      col('salaireBase', 'Salaire de base', 'entier', { min: 0, capacite: 'paie', exemple: 150000, aide: 'Francs CFA bruts mensuels. Réservé aux profils qui détiennent la capacité paie (écriture dans le module Paie) : absente du modèle des autres, et un fichier qui la porte est refusé.' }),
     ],
     contexte: function () {
       var m = {}, ident = {}, serv = {};
@@ -283,7 +346,7 @@
     regles: function (v, ctx) {
       var pb = [];
       if (v.dateEmbauche && v.dateEmbauche > ctx.jour) pb.push({ colonne: 'Date d’embauche', valeur: v.dateEmbauche, code: 'DATE_FUTURE', niveau: 'refus', motif: 'la date d’embauche est dans le futur', geste: 'Saisissez la date réelle d’entrée en fonction.' });
-      if (v.salaireBase == null) pb.push({ colonne: 'Salaire de base', valeur: '', code: 'SALAIRE_ABSENT', niveau: 'avertissement', motif: 'salaire de base non renseigné', geste: 'Le bulletin de paie ne pourra pas se calculer avant sa saisie.' });
+      if (v.salaireBase == null && colonnesDe(jeu('personnel')).some(function (c) { return c.cle === 'salaireBase'; })) pb.push({ colonne: 'Salaire de base', valeur: '', code: 'SALAIRE_ABSENT', niveau: 'avertissement', motif: 'salaire de base non renseigné', geste: 'Le bulletin de paie ne pourra pas se calculer avant sa saisie.' });
       return pb;
     },
     ecrire: function (lignes, ecrireFiche) {
@@ -292,7 +355,7 @@
         ecrireFiche('personnel', {
           matricule: v.matricule, nom: v.nom, prenom: v.prenom, nomComplet: v.nom + ' ' + v.prenom, sexe: v.sexe, fonction: v.fonction,
           poste: v.poste, service: v.service, categorie: v.categorie || null, dateEmbauche: v.dateEmbauche || null,
-          telephone: v.telephone || null, cnss: v.cnss || null, situation: v.situation || null, salaireBase: v.salaireBase,
+          telephone: v.telephone || null, cnss: v.cnss || null, situation: v.situation || null, salaireBase: v.salaireBase == null ? null : v.salaireBase,
         });
       });
     },
@@ -308,10 +371,12 @@
   var RE_CODE_PATIENT = /^CNT\/?\d+\/\d{2}$/;
   JEUX.push({
     id: 'patients', ecran: 'imp-patients', libelle: 'Importation du répertoire patients', module: 'IMP', statut: 'supporte',
-    roles: ['reception', 'agentadmin', 'da', 'admin'],
     description: 'Reprise du répertoire papier : identité, coordonnées, couverture. Jamais de dossier médical.',
     source: 'Registre papier des dossiers (environ 18 000) : seule l’identité administrative se reprend (CDCT 4.3).',
     cibles: ['patients'],
+    /* I9 (Direction, 11/11/2026) : le groupe sanguin est une donnée de santé, il se saisit à la première consultation par un soignant. La colonne est RETIRÉE du modèle ; un fichier qui la
+       porte est refusé en la nommant. Champs sensibles que ce jeu ÉCRIT encore : identité (nom, prénom, sexe, naissance ou âge), téléphone, quartier, adresse, personne à prévenir, assureur et n° de police. */
+    colonnesRetirees: [{ label: 'Groupe sanguin', motif: 'le groupe sanguin est une donnée de santé : il ne se reprend pas à l’accueil, il se saisit à la première consultation par un soignant' }],
     fichierModele: 'modele-import-patients',
     colonnes: [
       col('code', 'Code dossier', 'texte', { motif: RE_CODE_PATIENT, motifTexte: 'code de la forme CNT/n/AA', exemple: '', aide: 'RG-01 : un code existant du registre papier est conservé tel quel et ne se modifie jamais. Vide : le prochain code est attribué automatiquement.' }),
@@ -324,7 +389,6 @@
       col('quartier', 'Quartier', 'texte', { longueurMax: 60, exemple: 'Boukoumbé' }),
       col('adresse', 'Adresse', 'texte', { longueurMax: 120, exemple: 'Tchirimina, Natitingou' }),
       col('personneAPrevenir', 'Personne à prévenir', 'texte', { longueurMax: 100, exemple: 'ADJOVI Paul' }),
-      col('groupeSanguin', 'Groupe sanguin', 'liste', { liste: function () { return D.GROUPES_SANGUINS; }, exemple: 'O+' }),
       col('assureur', 'Code assureur', 'liste', { liste: function (ctx) { return ctx.assureurs; }, exemple: '' }),
       col('numeroPolice', 'N° de police', 'texte', { longueurMax: 40, exemple: '' }),
       col('dateCreation', 'Date d’ouverture du dossier', 'date', { exemple: '2024-05-02', aide: 'Vide : date du jour.' }),
@@ -383,7 +447,7 @@
         var fiche = {
           code: code, nom: v.nom, prenom: v.prenom, sexe: v.sexe, dateNaissance: v.dateNaissance || null,
           telephone: v.telephone || null, quartier: v.quartier || null, adresse: v.adresse || null,
-          personneAPrevenir: v.personneAPrevenir || null, groupeSanguin: v.groupeSanguin || null,
+          personneAPrevenir: v.personneAPrevenir || null,
           assureur: v.assureur || null, numeroPolice: v.numeroPolice || null, dateCreation: creation,
           externe: false, origineDossier: 'Reprise du répertoire papier',
         };
@@ -412,8 +476,7 @@
 
   /* --- 4. ACTES ET TARIFS ----------------------------------------------------------------------------------------------- */
   JEUX.push({
-    id: 'actes', ecran: 'imp-actes', libelle: 'Importation du catalogue des actes', module: 'IMP', statut: 'supporte',
-    roles: ['da', 'admin', 'direction'],
+    id: 'tarifs', ecran: 'imp-actes', libelle: 'Importation des tarifs et prix', module: 'IMP', statut: 'supporte',
     description: 'Actes et tarifs à deux prix (non assuré, assuré) avec les trois états de la colonne assurée : montant, NC (non couvert), tiret (valeur manquante).',
     source: 'Six grilles tarifaires imprimées et « Répartition des activités » (docs/) ; les prix du fichier font foi, aucun n’est complété par le logiciel.',
     cibles: ['actes'],
@@ -467,8 +530,7 @@
 
   /* --- 5. ANALYSES (proposition à valider) ------------------------------------------------------------------------------- */
   JEUX.push({
-    id: 'analyses', ecran: 'imp-analyses', libelle: 'Importation du catalogue des analyses', module: 'IMP', statut: 'proposition',
-    roles: ['laborantin', 'da', 'admin'],
+    id: 'analyses-modele', ecran: 'imp-analyses', libelle: 'Importation du modèle des analyses', module: 'IMP', statut: 'proposition',
     description: 'Entrées du catalogue des examens (code, désignation, section). Les variables, unités et bornes ne se reprennent pas : le biologiste les valide.',
     source: 'Bulletin d’analyses bio-médicales et fiche de résultats du 21/08/2026 (docs/) : 48 analyses au catalogue.',
     limite: 'PROPOSITION À VALIDER : seule l’entrée du catalogue est créée. Sans variables ni bornes, un examen importé ne peut pas recevoir de résultat avant que le biologiste les ait saisies et validées.',
@@ -506,7 +568,6 @@
   /* --- 6. FOURNISSEURS ------------------------------------------------------------------------------------------------------ */
   JEUX.push({
     id: 'fournisseurs', ecran: 'imp-fournisseurs', libelle: 'Importation des fournisseurs', module: 'IMP', statut: 'supporte',
-    roles: ['stock', 'da', 'comptable', 'admin'],
     description: 'Fournisseurs de la clinique : identité fiscale, coordonnées, délai, banque.',
     source: 'Factures de vente et bons de livraison collectés (docs/), dont la facture SoBAPS.',
     cibles: ['fournisseurs'],
@@ -548,7 +609,6 @@
   /* --- 7. ASSUREURS ------------------------------------------------------------------------------------------------------------ */
   JEUX.push({
     id: 'assureurs', ecran: 'imp-assureurs', libelle: 'Importation des compagnies d’assurance', module: 'IMP', statut: 'supporte',
-    roles: ['da', 'comptable', 'admin'],
     description: 'Compagnies d’assurance : code, raison sociale, contacts, état de la convention.',
     source: 'Treize assureurs relevés dans les documents de cadrage (docs/).',
     cibles: ['assureurs'],
@@ -583,7 +643,6 @@
   /* --- 8. SOUSCRIPTEURS ------------------------------------------------------------------------------------------------------------ */
   JEUX.push({
     id: 'souscripteurs', ecran: 'imp-souscripteurs', libelle: 'Importation des souscripteurs', module: 'IMP', statut: 'supporte',
-    roles: ['da', 'comptable', 'admin'],
     description: 'Souscripteurs rattachés à une compagnie : n° de police, catégorie, effectif, période.',
     source: 'Relevés de prestations et factures mensuelles par souscripteur (docs/).',
     limite: 'La grille de garanties du souscripteur (taux par catégorie, plafonds, exclusions) ne s’importe pas : elle se saisit à l’écran Souscripteurs. Sans elle, la facture reste intégralement au patient.',
@@ -630,7 +689,6 @@
   /* --- 9. PLAN COMPTABLE ------------------------------------------------------------------------------------------------------------- */
   JEUX.push({
     id: 'plan-comptable', ecran: 'imp-plan-comptable', libelle: 'Importation du plan comptable', module: 'IMP', statut: 'supporte',
-    roles: ['comptable', 'da', 'admin'],
     description: 'Comptes SYSCOHADA : numéro, libellé, journal par défaut. La classe se déduit du premier chiffre.',
     source: 'Plan comptable de la clinique, classeur SYSCOHADA 2025 (docs/) : 93 comptes.',
     cibles: ['comptes'],
@@ -659,7 +717,6 @@
   /* --- 10. SOLDES D'OUVERTURE ------------------------------------------------------------------------------------------------------------- */
   JEUX.push({
     id: 'soldes-ouverture', ecran: 'imp-soldes-ouverture', libelle: 'Importation des soldes d’ouverture', module: 'IMP', statut: 'supporte',
-    roles: ['comptable', 'da', 'admin'],
     description: 'À-nouveaux d’un exercice : une pièce du journal AN, en brouillon, équilibrée (RG-10). Seules les classes 1 à 5 se reportent.',
     source: 'Bilan de clôture de l’exercice précédent : liasse déposée le 15/05/2026 (docs/).',
     cibles: ['ecritures'],
@@ -714,27 +771,65 @@
 
   function jeu(id) { return JEUX.filter(function (j) { return j.id === id; })[0] || null; }
 
+  /* --- Les colonnes d'un jeu selon le PROFIL (I9, I10) ---------------------------------------------------------------- *
+   * Une colonne qui porte `capacite: 'paie'` n'est dans le modèle, et acceptée au fichier, que pour un profil qui détient cette capacité (lue de la matrice : écrire dans M11),
+   * jamais d'un nom de rôle. Une colonne RETIRÉE du modèle (`colonnesRetirees` : le groupe sanguin du répertoire) n'existe pour personne. Un fichier qui porte l'une de ces
+   * colonnes est REFUSÉ en la nommant : l'ignorer en silence ferait croire qu'elle a été reprise. */
+  function capaciteDe(nom, r) { return nom === 'paie' ? N.capacitePaie(r) : false; }
+  function colonnesDe(j) {
+    var r = roleCourant();
+    return j.colonnes.filter(function (c) { return !c.capacite || capaciteDe(c.capacite, r); });
+  }
+  function colonnesInterdites(j) {
+    var r = roleCourant(), out = [];
+    j.colonnes.forEach(function (c) {
+      if (c.capacite && !capaciteDe(c.capacite, r)) out.push({ label: c.label, code: 'COLONNE_RESERVEE',
+        motif: 'la colonne « ' + c.label + ' » est réservée aux profils qui détiennent la capacité « ' + c.capacite + ' » : elle n’est pas dans votre modèle',
+        geste: 'Retirez la colonne « ' + c.label + ' » du fichier ; elle se renseigne à l’écran par un profil habilité.' });
+    });
+    (j.colonnesRetirees || []).forEach(function (c) {
+      out.push({ label: c.label, code: 'COLONNE_RETIREE', motif: c.motif, geste: 'Retirez la colonne « ' + c.label + ' » du fichier.' });
+    });
+    return out;
+  }
+
   /* ==========================================================================
    * ANALYSE : le fichier lu, contrôlé, jamais écrit.
    * ======================================================================== */
   function clefEntete(s) { return C.norm(String(s == null ? '' : s).replace(/\*/g, '')).replace(/\s+/g, ' ').trim(); }
 
   function ligneExemple(j) {
-    return j.colonnes.map(function (c) { return c.exemple === undefined ? '' : c.exemple; });
+    return colonnesDe(j).map(function (c) { return c.exemple === undefined ? '' : c.exemple; });
   }
 
   function analyserLignes(j, lignes, fichier) {
-    var res = { jeu: j.id, fichier: fichier || '', nbLignes: 0, lignes: [], globaux: [], accepte: false,
-      compte: { valides: 0, avertissements: 0, refus: 0 }, lignesBrutes: lignes };
+    var res = { jeu: j.id, fichier: fichier || '', nbLignes: 0, lignes: [], globaux: [], accepte: false, aEcrire: 0,
+      compte: { valides: 0, avertissements: 0, refus: 0, ignores: 0, inchanges: 0, non: 0 }, lignesBrutes: lignes };
     function global_(code, colonne, motif, geste, niveau, valeur) {
       res.globaux.push({ n: 0, colonne: colonne || '', valeur: valeur === undefined ? '' : valeur, code: code, motif: motif, geste: geste, niveau: niveau || 'refus' });
     }
+    /* LE MOTEUR REFUSE AUSSI : pas de droit d'importer ce jeu, pas d'analyse (le refus ne se consigne pas : rien n'a été tenté par un détenteur). */
+    var rd = refusDroit(j, 'importer');
+    if (rd) { global_(rd.code, '', rd.motif, rd.geste); res.droitRefuse = true; return res; }
     if (!lignes || !lignes.length) {
       global_('FICHIER_VIDE', '', 'le fichier ne contient aucune ligne', 'Téléchargez le modèle, remplissez l’onglet Données et téléversez-le de nouveau.');
       return res;
     }
+    /* LA TAILLE MAXIMALE, avant tout travail : un refus nommé, jamais une constante muette. */
+    var borne = borneDe(j);
+    if (lignes.length - 1 > borne) {
+      global_('FICHIER_TROP_GROS', '', 'le fichier porte ' + (lignes.length - 1) + ' lignes ; le maximum réglé pour ce jeu est ' + borne,
+        'Découpez le fichier en plusieurs fichiers de ' + borne + ' lignes au plus, ou faites relever la taille maximale du jeu par un profil qui supervise les importations (onglet « Tailles maximales » de l’accueil du module).');
+      return res;
+    }
+    var cols = colonnesDe(j);
     var entete = lignes[0].map(clefEntete), idx = {}, manquantes = [];
-    j.colonnes.forEach(function (c) {
+    var interdites = colonnesInterdites(j).filter(function (c) { return entete.indexOf(clefEntete(c.label)) >= 0; });
+    if (interdites.length) {
+      interdites.forEach(function (c) { global_(c.code, c.label, c.motif, c.geste); });
+      return res;
+    }
+    cols.forEach(function (c) {
       var i = entete.indexOf(clefEntete(c.label));
       if (i < 0) {
         if (c.obligatoire) manquantes.push(c);
@@ -749,21 +844,22 @@
       return res;
     }
     var connus = {};
-    j.colonnes.forEach(function (c) { connus[clefEntete(c.label)] = true; });
+    cols.forEach(function (c) { connus[clefEntete(c.label)] = true; });
     lignes[0].forEach(function (h, i) {
       if (!vide(h) && !connus[clefEntete(h)]) global_('COLONNE_IGNOREE', String(h), 'colonne « ' + h + ' » inconnue : elle est ignorée', 'Retirez-la du fichier si elle est inutile.', 'avertissement');
     });
-    var ctx = j.contexte ? j.contexte() : {}, sc = { articles: {} };
+    var ctx = j.contexte ? j.contexte() : {}, sc = { articles: {}, extras: {}, ligne: null };
+    var mode = modeDoublon(j);
     var exemple = ligneExemple(j).map(function (x) { return String(x).trim(); });
     var vus = {};
     for (var r = 1; r < lignes.length; r++) {
       var brute = lignes[r];
       if (brute.every(vide)) continue;
-      var lecture = j.colonnes.map(function (c) { return String(nettoyer(brute[idx[c.cle]] == null ? '' : brute[idx[c.cle]])).trim(); });
+      var lecture = cols.map(function (c) { return String(nettoyer(brute[idx[c.cle]] == null ? '' : brute[idx[c.cle]])).trim(); });
       if (r === 1 && lecture.join('|') === exemple.join('|')) continue; /* la ligne d'exemple du modèle, restée telle quelle */
-      var n = r + 1, ligne = { n: n, v: {}, brut: lecture, problemes: [], etat: 'valide' };
+      var n = r + 1, ligne = { n: n, v: {}, brut: lecture, problemes: [], etat: 'valide', sansEcriture: null };
       var ok = true;
-      j.colonnes.forEach(function (c) {
+      cols.forEach(function (c) {
         var b = brute[idx[c.cle]];
         var lc = lireCellule(c, b, ctx);
         if (lc.erreur) {
@@ -782,15 +878,25 @@
         var cles = j.cle(ligne.v), doublon = null;
         cles.forEach(function (k) { if (!doublon && vus[k]) doublon = vus[k]; });
         if (doublon) {
-          ligne.problemes.push({ n: n, colonne: j.colonnes[0].label, valeur: lecture[0], code: 'DOUBLON_FICHIER', niveau: 'refus',
+          ligne.problemes.push({ n: n, colonne: cols[0].label, valeur: lecture[0], code: 'DOUBLON_FICHIER', niveau: 'refus',
             motif: 'identique à la ligne ' + doublon + ' du même fichier', geste: 'Retirez l’une des deux lignes.' });
         } else cles.forEach(function (k) { vus[k] = n; });
         var existe = j.existe ? j.existe(ligne.v, ctx) : null;
-        if (existe) ligne.problemes.push({ n: n, colonne: j.colonnes[0].label, valeur: lecture[0], code: 'DOUBLON_MAGASIN', niveau: 'refus', motif: existe, geste: j.gesteExiste || 'Retirez la ligne.' });
-        (j.regles ? j.regles(ligne.v, ctx, sc, n) : []).forEach(function (p) { ligne.problemes.push(Object.assign({ n: n }, p)); });
+        if (existe && mode === 'ignorer' && !doublon) {
+          /* IGNORER LES EXISTANTS (I8, jeux de la liste fermée seulement) : la ligne n'écrit rien, elle est COMPTÉE et NOMMÉE au rapport, jamais perdue en silence. */
+          ligne.problemes.push({ n: n, colonne: cols[0].label, valeur: lecture[0], code: 'IGNORE_EXISTANT', niveau: 'ignore', motif: existe,
+            geste: 'Ligne ignorée : la fiche existe déjà et un import ne modifie jamais une fiche tenue.' });
+          ligne.sansEcriture = 'ignore';
+        } else {
+          if (existe) ligne.problemes.push({ n: n, colonne: cols[0].label, valeur: lecture[0], code: 'DOUBLON_MAGASIN', niveau: 'refus', motif: existe, geste: j.gesteExiste || 'Retirez la ligne.' });
+          sc.ligne = ligne;
+          (j.regles ? j.regles(ligne.v, ctx, sc, n) : []).forEach(function (p) { ligne.problemes.push(Object.assign({ n: n }, p)); });
+        }
       }
-      ligne.etat = ligne.problemes.some(function (p) { return p.niveau === 'refus'; }) ? 'refus'
-        : (ligne.problemes.length ? 'avertissement' : 'valide');
+      var refus = ligne.problemes.some(function (p) { return p.niveau === 'refus'; });
+      ligne.etat = refus ? 'refus' : (ligne.sansEcriture || (ligne.problemes.some(function (p) { return p.niveau === 'avertissement'; }) ? 'avertissement' : 'valide'));
+      if (refus) ligne.sansEcriture = null;
+      if (sc.extras[n]) ligne.extra = sc.extras[n];
       res.lignes.push(ligne);
     }
     res.nbLignes = res.lignes.length;
@@ -802,21 +908,37 @@
       j.reglesLot(res.lignes, ctx).forEach(function (p) { res.globaux.push(p); });
     }
     res.lignes.forEach(function (l) {
-      if (l.etat === 'refus') res.compte.refus++; else if (l.etat === 'avertissement') res.compte.avertissements++; else res.compte.valides++;
+      if (l.etat === 'refus') res.compte.refus++;
+      else if (l.etat === 'ignore') res.compte.ignores++;
+      else if (l.etat === 'inchange') res.compte.inchanges++;
+      else if (l.etat === 'non') res.compte.non++;
+      else if (l.etat === 'avertissement') res.compte.avertissements++;
+      else res.compte.valides++;
     });
+    res.aEcrire = res.lignes.filter(function (l) { return !l.sansEcriture && l.etat !== 'refus'; }).length;
     res.accepte = !res.globaux.some(function (p) { return p.niveau === 'refus'; }) && res.compte.refus === 0 && res.nbLignes > 0;
     return res;
   }
 
   /** Tous les problèmes à plat (globaux, puis par ligne), pour le rapport et pour la consignation. */
-  function problemes(analyse) {
+  function problemes(analyse, j) {
     var out = analyse.globaux.slice();
     analyse.lignes.forEach(function (l) { l.problemes.forEach(function (p) { out.push(p); }); });
-    return out;
+    return j ? out.map(function (p) { return masquer(j, p); }) : out;
+  }
+  /** Ce qui entre dans l'HISTORIQUE : masqué pour un jeu restreint, intégral sinon. */
+  function problemesConsignes(j, analyse) { return problemes(analyse, j); }
+  /** Les lignes ignorées (mode « ignorer »), pour le lot : le nombre ET la liste (borne de 500 noms, le total reste exact). */
+  function ignoresDe(analyse) {
+    var l = analyse.lignes.filter(function (x) { return x.etat === 'ignore'; });
+    return { ignoresTotal: l.length, ignores: l.slice(0, 500).map(function (x) { return { n: x.n, cle: x.brut[0] }; }) };
   }
 
   function analyserOctets(jeuId, octets, fichier) {
     var j = jeu(jeuId), lignes;
+    var rd = refusDroit(j, 'importer');
+    if (rd) return { jeu: jeuId, fichier: fichier, nbLignes: 0, lignes: [], accepte: false, aEcrire: 0, droitRefuse: true, compte: { valides: 0, avertissements: 0, refus: 0, ignores: 0, inchanges: 0, non: 0 }, lignesBrutes: [],
+      globaux: [{ n: 0, colonne: '', valeur: '', code: rd.code, niveau: 'refus', motif: rd.motif, geste: rd.geste }] };
     try {
       if (/\.csv$/i.test(fichier || '') || /\.txt$/i.test(fichier || '')) lignes = X.lireCsv(new TextDecoder('utf-8').decode(octets));
       else {
@@ -826,7 +948,7 @@
         lignes = feuille.lignes;
       }
     } catch (e) {
-      var res = { jeu: jeuId, fichier: fichier, nbLignes: 0, lignes: [], accepte: false, compte: { valides: 0, avertissements: 0, refus: 0 }, lignesBrutes: [],
+      var res = { jeu: jeuId, fichier: fichier, nbLignes: 0, lignes: [], accepte: false, aEcrire: 0, compte: { valides: 0, avertissements: 0, refus: 0, ignores: 0, inchanges: 0, non: 0 }, lignesBrutes: [],
         globaux: [{ n: 0, colonne: '', valeur: fichier || '', code: 'FORMAT_FICHIER', niveau: 'refus', motif: 'fichier illisible : ' + (e && e.message ? e.message : e),
           geste: 'Déposez un classeur .xlsx (modèle téléchargé) ou un fichier .csv encodé en UTF-8.' }] };
       res.empreinte = X.crc32(octets).toString(16);
@@ -853,7 +975,8 @@
   }
 
   function consigner(j, analyse) {
-    var ps = problemes(analyse);
+    if (analyse.droitRefuse) return null; /* rien n'a été tenté par un détenteur : un refus de droit ne s'écrit pas à l'historique du jeu */
+    var ps = problemesConsignes(j, analyse);
     var r = colLots().insert({
       reference: referenceLot(), jeu: j.id, jeuLibelle: j.libelle, fichier: analyse.fichier, empreinte: analyse.empreinte || null,
       date: aujourdhuiIso(), par: S.currentUser(), etat: 'refuse', nbLignes: analyse.nbLignes,
@@ -866,6 +989,9 @@
 
   function appliquer(jeuId, analyse) {
     var j = jeu(jeuId);
+    /* LE MOTEUR REFUSE AUSSI : un bouton masqué ne protège rien. Le droit d'importer ce jeu se relit ICI, au moment d'écrire, pas à l'ouverture de la fenêtre. */
+    var rd = j && refusDroit(j, 'importer');
+    if (rd) return rd;
     if (!analyse || !analyse.accepte) return { ok: false, code: 'ANALYSE_REFUSEE', motif: 'le fichier n’a pas passé l’analyse', geste: 'Corrigez les refus listés, puis téléversez de nouveau.' };
     /* L'état du magasin a pu bouger entre l'analyse et la confirmation (un autre poste a pu créer le même article) :
        on rejoue l'analyse sur les lignes d'origine et l'on n'écrit que si elle tient toujours. */
@@ -874,8 +1000,10 @@
       var c = consigner(j, Object.assign(rejeu, { empreinte: analyse.empreinte }));
       return { ok: false, code: 'MAGASIN_CHANGE', motif: 'le magasin a changé depuis l’analyse ; le fichier est refusé et consigné (' + c.reference + ')', geste: 'Relisez le rapport du lot ' + c.reference + ' et téléversez de nouveau.', lot: c, analyse: rejeu };
     }
+    if (!rejeu.aEcrire) return { ok: false, code: 'RIEN_A_ECRIRE', motif: 'aucune ligne ne s’écrirait : toutes sont ignorées, inchangées ou refusées par leur auteur (Non)', geste: 'Rien à confirmer : aucun lot n’est consigné.' };
     var ctx = j.contexte ? j.contexte() : {};
     var lot = { reference: referenceLot() }, ecrits = [], par = S.currentUser(), jour = aujourdhuiIso();
+    function declarer(nom, id) { ecrits.push({ collection: nom, id: id }); }
     function ecrireFiche(nom, fiche) {
       var meta = { module: j.module === 'IMP' ? 'IMP' : j.module, entite: nom };
       var res = S.collection(nom, meta).insert(Object.assign({
@@ -886,7 +1014,7 @@
       return res.record;
     }
     try {
-      j.ecrire(rejeu.lignes, ecrireFiche, lot, ctx);
+      j.ecrire(rejeu.lignes.filter(function (l) { return !l.sansEcriture && l.etat !== 'refus'; }), ecrireFiche, lot, ctx, declarer);
     } catch (e) {
       /* Atomicité : on retire ce qui vient d'être posé dans CE geste. Ces fiches n'ont jamais été vues d'un autre écran. */
       ecrits.slice().reverse().forEach(function (x) { S.collection(x.collection)._remove(x.id); });
@@ -894,11 +1022,13 @@
       var consigne = consigner(j, Object.assign(rejeu, { globaux: rejeu.globaux.concat([{ n: 0, colonne: '', valeur: '', code: 'ECRITURE_REFUSEE', niveau: 'refus', motif: motif, geste: 'Rien n’a été écrit. Corrigez la cause puis téléversez de nouveau.' }]), empreinte: analyse.empreinte }));
       return { ok: false, code: 'ECRITURE_REFUSEE', motif: motif, geste: 'Rien n’a été écrit ; le fichier est consigné (' + consigne.reference + ').', lot: consigne };
     }
-    var rec = colLots().insert({
+    var rec = colLots().insert(Object.assign({
       reference: lot.reference, jeu: j.id, jeuLibelle: j.libelle, fichier: analyse.fichier, empreinte: analyse.empreinte || null,
       date: jour, par: par, validePar: par, etat: 'applique', nbLignes: rejeu.nbLignes, nbAvertissements: rejeu.compte.avertissements, nbRefus: 0,
-      ecrits: ecrits, erreurs: problemes(rejeu).slice(0, 100), erreursTotal: problemes(rejeu).length,
-    }).record;
+      nbIgnores: rejeu.compte.ignores, nbInchanges: rejeu.compte.inchanges, nbNon: rejeu.compte.non,
+      ecrits: ecrits, erreurs: problemesConsignes(j, rejeu).slice(0, 100), erreursTotal: problemes(rejeu).length,
+    }, ignoresDe(rejeu)));
+    rec = rec.record;
     S.log('Import', 'IMP', 'LotImport', rec.reference, null, { jeu: j.id, fichier: analyse.fichier, lignes: rejeu.nbLignes, fiches: ecrits.length });
     return { ok: true, lot: rec, ecrits: ecrits.length };
   }
@@ -908,6 +1038,12 @@
     if (!lot) return { ok: false, code: 'LOT_INCONNU', motif: 'lot introuvable', geste: 'Actualisez l’historique.' };
     if (lot.etat !== 'applique') return { ok: false, code: 'LOT_NON_APPLIQUE', motif: 'seul un lot appliqué s’annule (état actuel : ' + lot.etat + ')', geste: 'Aucune action : ce lot n’a rien écrit ou est déjà annulé.' };
     var j = jeu(lot.jeu);
+    var rd = j && refusDroit(j, 'annuler');
+    if (rd) return rd;
+    /* Un lot se défait par son AUTEUR ; celui d'un autre relève de la SUPERVISION (droit d'annuler sur chaque jeu). */
+    if (lot.par !== S.currentUser() && !N.superviseImport(roleCourant())) {
+      return { ok: false, code: 'LOT_D_UN_AUTRE', motif: 'le lot ' + lot.reference + ' a été écrit par un autre agent', geste: 'Seul son auteur, ou un profil qui supervise les importations, peut l’annuler.' };
+    }
     var dep = j && j.dependances ? j.dependances(lot) : null;
     if (dep) return { ok: false, code: dep.code, motif: dep.motif, geste: dep.geste };
     var faits = [], echec = null;
@@ -942,8 +1078,8 @@
   }
 
   function modele(jeuId) {
-    var j = jeu(jeuId), ctx = j.contexte ? j.contexte() : {};
-    var entetes = j.colonnes.map(function (c) { return c.label; });
+    var j = jeu(jeuId), ctx = j.contexte ? j.contexte() : {}, cols = colonnesDe(j);
+    var entetes = cols.map(function (c) { return c.label; });
     var donnees = [entetes, ligneExemple(j)];
     var instructions = [
       ['Modèle d’importation : ' + j.libelle],
@@ -956,13 +1092,16 @@
       ['3. Téléversez le fichier : l’analyse complète s’exécute avant toute écriture, ligne par ligne. Un refus nomme la ligne, la colonne, la valeur, le motif et le geste de correction.'],
       ['4. Si une seule ligne est refusée, le fichier entier est refusé et rien n’est écrit. Corrigez et téléversez de nouveau.'],
       ['5. Un lot confirmé s’annule (les fiches sont archivées, jamais supprimées) tant qu’aucun acte ne s’appuie dessus.'],
+      [{ refuser: '6. Doublon : une ligne dont la fiche existe déjà REFUSE le fichier entier ; un import ne modifie jamais une fiche tenue.',
+         ignorer: '6. Doublon : une ligne dont la fiche existe déjà est IGNORÉE (ni écrite, ni modifiée) ; leur nombre et leur liste figurent au rapport du lot.',
+         versionner: '6. Doublon : une ligne dont le prix diffère crée une NOUVELLE VERSION datée (jamais d’écrasement) ; une ligne identique est comptée « inchangée ».' }[modeDoublon(j)]],
       [''],
       ['Colonne', 'Obligatoire', 'Type', 'Valeurs permises', 'Exemple', 'Explication'],
-    ].concat(j.colonnes.map(function (c) {
+    ].concat(cols.map(function (c) {
       return [c.label, c.obligatoire ? 'oui' : 'non', typeLisible(c), valeursPermises(c, ctx), c.exemple === undefined ? '' : c.exemple, c.aide || ''];
     }));
     var listes = [], listesCols = [], validations = [];
-    j.colonnes.forEach(function (c) {
+    cols.forEach(function (c) {
       if (c.type !== 'liste') return;
       var vals = valeursListe(c, ctx);
       listesCols.push({ titre: c.label, valeurs: vals.map(function (x) { return x.label; }) });
@@ -971,16 +1110,16 @@
     listes.push(listesCols.map(function (l) { return l.titre; }));
     for (var i = 0; i < hauteur; i++) listes.push(listesCols.map(function (l) { return l.valeurs[i] === undefined ? '' : l.valeurs[i]; }));
     var k = 0;
-    j.colonnes.forEach(function (c, ci) {
+    cols.forEach(function (c, ci) {
       if (c.type !== 'liste') return;
       var lettre = String.fromCharCode(65 + k);
       validations.push({ colonne: ci, formule: 'Listes!$' + lettre + '$2:$' + lettre + '$' + Math.max(2, listesCols[k].valeurs.length + 1) });
       k++;
     });
     var texteCols = [];
-    j.colonnes.forEach(function (c, ci) { if (c.type === 'texte') texteCols.push(ci); });
+    cols.forEach(function (c, ci) { if (c.type === 'texte') texteCols.push(ci); });
     return X.ecrire({ feuilles: [
-      { nom: NOMS_FEUILLES.donnees, lignes: donnees, largeurs: j.colonnes.map(function (c) { return Math.max(14, c.label.length + 4); }), listes: validations, texteColonnes: texteCols },
+      { nom: NOMS_FEUILLES.donnees, lignes: donnees, largeurs: cols.map(function (c) { return Math.max(14, c.label.length + 4); }), listes: validations, texteColonnes: texteCols },
       { nom: NOMS_FEUILLES.instructions, lignes: instructions, largeurs: [28, 12, 28, 46, 22, 70], entete: false },
       { nom: NOMS_FEUILLES.listes, lignes: listesCols.length ? listes : [['Aucune liste pour ce jeu']], largeurs: listesCols.map(function () { return 30; }) },
     ] });
@@ -989,18 +1128,28 @@
   function modeleCsv(jeuId) {
     var j = jeu(jeuId);
     function ligne(a) { return a.map(function (x) { return '"' + String(x).replace(/"/g, '""') + '"'; }).join(';'); }
-    return '\uFEFF' + [ligne(j.colonnes.map(function (c) { return c.label; })), ligne(ligneExemple(j))].join('\r\n') + '\r\n';
+    return '\uFEFF' + [ligne(colonnesDe(j).map(function (c) { return c.label; })), ligne(ligneExemple(j))].join('\r\n') + '\r\n';
   }
 
   function rapport(lotOuAnalyse, j) {
-    var ps = lotOuAnalyse.erreurs || problemes(lotOuAnalyse);
-    var entete = ['Ligne', 'Colonne', 'Valeur', 'Niveau', 'Code', 'Motif', 'Geste de correction'];
-    var lignes = [entete].concat(ps.map(function (p) { return [p.n || '', p.colonne || '', p.valeur === undefined ? '' : String(p.valeur), p.niveau, p.code, p.motif, p.geste]; }));
+    /* Pour un jeu RESTREINT : ni valeur de cellule, ni motif qui la cite (une lecture d'un lot déjà masqué reste masquée : `masquer` est idempotent). */
+    var ps = (lotOuAnalyse.erreurs || problemes(lotOuAnalyse)).map(function (p) { return j ? masquer(j, p) : p; });
+    var sans = !!(j && restreint(j));
+    var LIB = { refus: 'refus', avertissement: 'avertissement', ignore: 'ignorée' };
+    var entete = sans ? ['Ligne', 'Colonne', 'Niveau', 'Code', 'Motif', 'Geste de correction'] : ['Ligne', 'Colonne', 'Valeur', 'Niveau', 'Code', 'Motif', 'Geste de correction'];
+    var lignes = [entete].concat(ps.map(function (p) {
+      var base = [p.n || '', p.colonne || ''];
+      if (!sans) base.push(p.valeur === undefined ? '' : String(p.valeur));
+      return base.concat([LIB[p.niveau] || p.niveau, p.code, p.motif, p.geste]);
+    }));
+    var ign = lotOuAnalyse.ignoresTotal != null ? lotOuAnalyse.ignoresTotal : (lotOuAnalyse.compte ? lotOuAnalyse.compte.ignores : 0);
     var resume = [['Rapport d’importation'], ['Jeu', j ? j.libelle : lotOuAnalyse.jeuLibelle || ''], ['Fichier', lotOuAnalyse.fichier || ''],
-      ['Lot', lotOuAnalyse.reference || 'non consigné'], ['Lignes lues', lotOuAnalyse.nbLignes], ['Problèmes', ps.length]];
+      ['Lot', lotOuAnalyse.reference || 'non consigné'], ['Lignes lues', lotOuAnalyse.nbLignes], ['Problèmes', ps.length],
+      ['Lignes ignorées (fiche déjà tenue)', ign || 0]];
+    if (sans) resume.push(['Valeurs de cellule', 'non recopiées (jeu restreint, RG-13)']);
     return X.ecrire({ feuilles: [
-      { nom: 'Erreurs', lignes: lignes, largeurs: [8, 26, 24, 14, 24, 70, 70] },
-      { nom: 'Résumé', lignes: resume, entete: false, largeurs: [24, 50] },
+      { nom: 'Erreurs', lignes: lignes, largeurs: sans ? [8, 26, 14, 24, 70, 70] : [8, 26, 24, 14, 24, 70, 70] },
+      { nom: 'Résumé', lignes: resume, entete: false, largeurs: [34, 50] },
     ] });
   }
 
@@ -1018,12 +1167,25 @@
    * ÉCRANS
    * ======================================================================== */
   var TONS_ETAT = { applique: ['Appliqué', 'success'], refuse: ['Refusé, rien écrit', 'danger'], annule: ['Annulé', 'neutral'] };
-  var TONS_LIGNE = { valide: ['Valide', 'success'], avertissement: ['Avertissement', 'warning'], refus: ['Refus', 'danger'] };
+  var TONS_LIGNE = { valide: ['Valide', 'success'], avertissement: ['Avertissement', 'warning'], refus: ['Refus', 'danger'],
+    ignore: ['Ignorée', 'neutral'], inchange: ['Inchangée', 'neutral'], non: ['Non (non appliquée)', 'neutral'] };
+  /* Les anciennes fiches de lot (RG-14 : elles restent lisibles) portent l'identifiant des deux jeux qui ont changé de nom avec le référentiel de prix unique (lot IMP-A). */
+  var ANCIENS_JEUX = { actes: 'tarifs', analyses: 'analyses-modele' };
+  function jeuDeLot(l) { return jeu(l.jeu) || jeu(ANCIENS_JEUX[l.jeu]); }
 
-  function peutOuvrir(j) {
-    var s = S.session() || {};
-    var e = N.get(j.ecran);
-    return !!e && N.can(s.role, { id: e.id, roles: e.roles || N.ALL, module: e.module });
+  /** Les jeux que ce profil VOIT : calculé du droit de la matrice, jamais d'une liste de rôles. */
+  function jeuxVisibles() { return JEUX.filter(function (j) { return droitDe(j).voir; }); }
+
+  /** Un lot se lit de son AUTEUR et des profils qui SUPERVISENT (droit d'annuler sur chaque jeu : liste tirée du droit, pas d'un nom de rôle), pour un jeu que le profil voit. */
+  function lotVisible(l) {
+    var j = jeuDeLot(l);
+    if (!j || !droitDe(j).voir) return false;
+    return N.superviseImport(roleCourant()) || l.par === S.currentUser();
+  }
+  function lotsDuProfil(j) { return colLots().all().filter(function (l) { return (!j || jeuDeLot(l) === j) && lotVisible(l); }); }
+  function peutAnnuler(l) {
+    var j = jeuDeLot(l);
+    return !!j && droitDe(j).annuler && (l.par === S.currentUser() || N.superviseImport(roleCourant()));
   }
 
   function tableLots(lots, rafraichir) {
@@ -1044,10 +1206,11 @@
       rowActions: function (l) {
         var out = [];
         if (l.erreurs && l.erreurs.length) {
-          out.push(K.iconBtn('file-down', 'Rapport d’erreurs (.xlsx)', function () { telecharger('rapport-' + l.reference + '.xlsx', rapport(l, jeu(l.jeu)), MIME_XLSX); }));
+          out.push(K.iconBtn('file-down', 'Rapport d’erreurs (.xlsx)', function () { telecharger('rapport-' + l.reference + '.xlsx', rapport(l, jeuDeLot(l)), MIME_XLSX); }));
         }
-        if (l.etat === 'applique') {
-          out.push(K.commandeIcone('undo-2', 'Annuler le lot', function () {
+        /* L'annulation est une commande de CE JEU : son droit est celui du jeu et de l'auteur du lot, jamais celui de l'écran. Le moteur refuse aussi (annulerLot). */
+        if (l.etat === 'applique' && peutAnnuler(l)) {
+          out.push(K.iconBtn('undo-2', 'Annuler le lot', function () {
             U.confirm({
               title: 'Annuler le lot ' + l.reference + ' ?',
               message: 'Les ' + l.ecrits.length + ' fiches écrites par ce lot seront <strong>archivées</strong> (RG-14), jamais supprimées. '
@@ -1060,7 +1223,7 @@
               else U.toast('Annulation refusée.', { type: 'error', detail: r.motif + '. ' + r.geste });
               rafraichir();
             });
-          }, { droit: 'annuler', variant: 'danger' }));
+          }, 'danger'));
         }
         return out;
       },
@@ -1078,20 +1241,31 @@
     return jeuValide(j) ? K.badgeValidation('jeux_import', j.ecran) : U.badge('Proposition à valider', 'warning');
   }
 
-  function ecranJeu(j) {
-    return function (root) {
-      var host = el('div.space-y-4'), zone = el('div.space-y-4'), histo = el('div'), etat = { analyse: null };
-      root.appendChild(host);
+  /* ==========================================================================
+   * LA FENÊTRE EN TROIS TEMPS : UN SEUL CONTENU, DEUX PORTES
+   * --------------------------------------------------------------------------
+   * 1. le MODÈLE (engendré de la déclaration du jeu) ; 2. la VÉRIFICATION (analyse complète, rien d'écrit) ; 3. l'IMPORT (confirmé, atomique, annulable).
+   * Le bouton « Importer les données » des écrans métier (`K.importer`) l'ouvre en modale ; la page `imp-<jeu>` la porte en pleine page avec l'historique. Une seule construction :
+   * deux copies divergeraient au premier champ ajouté.
+   * ======================================================================== */
+  function contenuJeu(j, o) {
+    o = o || {};
+    var host = el('div.space-y-4'), zone = el('div.space-y-4'), histo = el('div'), etat = { analyse: null };
+    var d = droitDe(j);
+    if (!d.voir) {
+      host.appendChild(K.note('Votre profil ne détient pas ce jeu d’import : ni son modèle, ni son historique ne vous sont ouverts.', { tone: 'warning', icon: 'lock' }));
+      return host;
+    }
 
-      function dessinerHistorique() {
-        C.clear(histo);
-        var lots = colLots().all().filter(function (l) { return l.jeu === j.id; });
-        histo.appendChild(U.card('Historique des lots de ce jeu', tableLots(lots, dessinerHistorique)));
-        U.icons(histo);
-      }
+    function dessinerHistorique() {
+      C.clear(histo);
+      histo.appendChild(U.card('Historique des lots de ce jeu', tableLots(lotsDuProfil(j), dessinerHistorique)));
+      U.icons(histo);
+    }
 
+    if (!o.modale) {
       host.appendChild(U.kpiGrid((function () {
-        var lots = colLots().all().filter(function (l) { return l.jeu === j.id; });
+        var lots = lotsDuProfil(j);
         var appl = lots.filter(function (l) { return l.etat === 'applique'; });
         return [
           { label: 'Lots appliqués', value: String(appl.length), icon: 'package-check', tone: 'navy' },
@@ -1100,159 +1274,243 @@
           { label: 'Statut du jeu', value: j.statut === 'supporte' ? 'Supporté' : (jeuValide(j) ? 'Validé' : 'À valider'), icon: 'badge-check', tone: j.statut === 'supporte' || jeuValide(j) ? 'success' : 'warning' },
         ];
       })()));
+    }
 
-      if (j.statut === 'proposition' && !jeuValide(j)) {
-        host.appendChild(K.note('<strong>Proposition à valider.</strong> ' + j.limite, { tone: 'warning', icon: 'help-circle' }));
+    if (j.statut === 'proposition' && !jeuValide(j)) {
+      host.appendChild(K.note('<strong>Proposition à valider.</strong> ' + j.limite, { tone: 'warning', icon: 'help-circle' }));
+      if (!o.modale) {
         var bv = K.boutonValider('jeux_import', j.ecran, { apres: function () { global.SIGH.app.go(j.ecran); } });
         if (bv) host.appendChild(el('div.flex.justify-end', null, bv));
-      } else if (j.statut === 'proposition') {
-        host.appendChild(K.note('<strong>Jeu validé.</strong> ' + String(j.limite || '').replace(/^PROPOSITION À VALIDER\s*:\s*/, ''), { tone: 'info', icon: 'check-circle-2' }));
-        host.appendChild(el('div.flex.justify-end', null, K.badgeValidation('jeux_import', j.ecran)));
-      } else if (j.limite) host.appendChild(K.note(j.limite, { tone: 'info', icon: 'info' }));
+      }
+    } else if (j.statut === 'proposition') {
+      host.appendChild(K.note('<strong>Jeu validé.</strong> ' + String(j.limite || '').replace(/^PROPOSITION À VALIDER\s*:\s*/, ''), { tone: 'info', icon: 'check-circle-2' }));
+      if (!o.modale) host.appendChild(el('div.flex.justify-end', null, K.badgeValidation('jeux_import', j.ecran)));
+    } else if (j.limite) host.appendChild(K.note(j.limite, { tone: 'info', icon: 'info' }));
 
-      /* 1. Le modèle */
-      var colTable = K.miniTable(['Colonne', 'Obligatoire', 'Type', 'Valeurs permises', 'Exemple'], j.colonnes.map(function (c) {
-        return [c.label, c.obligatoire ? U.badge('oui', 'danger') : 'non', typeLisible(c), valeursPermises(c, j.contexte ? j.contexte() : {}), c.exemple === undefined ? '' : String(c.exemple)];
-      }));
-      host.appendChild(U.card('1. Télécharger le modèle', el('div.space-y-3', null, [
-        el('p.text-sm.text-slate-600', { text: 'Le modèle est un classeur .xlsx de trois feuilles : « Données » (en-têtes exacts et une ligne d’exemple), « Instructions » (colonnes, formats, valeurs permises) et « Listes » (les référentiels de contrôle).' }),
-        el('div.flex.flex-wrap.gap-2', null, [
-          K.btn('Télécharger le modèle (.xlsx)', { variant: 'primary', icon: 'file-down', onclick: function () { telecharger(j.fichierModele + '.xlsx', modele(j.id), MIME_XLSX); } }),
-          K.btn('Modèle CSV', { icon: 'file-text', onclick: function () { telecharger(j.fichierModele + '.csv', new TextEncoder().encode(modeleCsv(j.id)), 'text/csv;charset=utf-8'); } }),
-        ]),
-        colTable,
-      ])));
+    if (restreint(j)) {
+      host.appendChild(K.note('<strong>Jeu restreint (RG-13).</strong> Le fichier est lu et contrôlé ici, mais <strong>aucune valeur de cellule</strong> n’est recopiée dans l’historique ni dans le rapport : '
+        + 'chaque constat porte la ligne, la colonne, le code et le geste de correction. Les lots ne sont visibles que de leur auteur et des profils qui supervisent les importations.',
+        { tone: 'info', icon: 'shield-check' }));
+    }
+    var mode = modeDoublon(j);
+    if (mode === 'ignorer') {
+      host.appendChild(K.note('<strong>Fiches déjà tenues : ignorées.</strong> Une ligne dont la fiche existe déjà n’écrit rien et ne modifie rien ; elle est comptée et nommée au rapport. '
+        + 'Un fichier peut donc être rejoué sans refus (mode arrêté par la Direction pour ce jeu seulement).', { tone: 'info', icon: 'copy-minus' }));
+    }
 
-      /* 2. Le téléversement */
-      var entree = el('input', { type: 'file', accept: '.xlsx,.csv', class: 'hidden', 'data-import-fichier': j.id, 'aria-label': 'Fichier à importer' });
-      entree.addEventListener('change', function () {
-        var f = entree.files && entree.files[0];
-        if (!f) return;
-        var lecteur = new FileReader();
-        lecteur.onload = function () { analyser(new Uint8Array(lecteur.result), f.name); entree.value = ''; };
-        lecteur.readAsArrayBuffer(f);
-      });
-      var barreTele = el('div.flex.flex-wrap.items-center.gap-2', null, [
-        K.commande('Téléverser un fichier (.xlsx ou .csv)', { variant: 'primary', icon: 'upload', onclick: function () { entree.click(); } }),
-        entree,
-      ]);
-      host.appendChild(U.card('2. Téléverser et analyser', el('div.space-y-3', null, [
-        el('p.text-sm.text-slate-600', { text: 'L’analyse est complète et ne modifie rien : chaque ligne est contrôlée, un refus est nommé, et c’est vous qui confirmez l’écriture.' }),
-        barreTele,
-      ])));
-      host.appendChild(zone);
+    var cols = colonnesDe(j);
+    /* 1. Le modèle */
+    var colTable = K.miniTable(['Colonne', 'Obligatoire', 'Type', 'Valeurs permises', 'Exemple'], cols.map(function (c) {
+      return [c.label, c.obligatoire ? U.badge('oui', 'danger') : 'non', typeLisible(c), valeursPermises(c, j.contexte ? j.contexte() : {}), c.exemple === undefined ? '' : String(c.exemple)];
+    }));
+    host.appendChild(U.card('1. Télécharger le modèle', el('div.space-y-3', null, [
+      el('p.text-sm.text-slate-600', { text: 'Le modèle est un classeur .xlsx de trois feuilles : « Données » (en-têtes exacts et une ligne d’exemple), « Instructions » (colonnes, formats, valeurs permises) et « Listes » (les référentiels de contrôle).' }),
+      el('div.flex.flex-wrap.gap-2', null, [
+        K.btn('Télécharger le modèle (.xlsx)', { variant: 'primary', icon: 'file-down', onclick: function () { telecharger(j.fichierModele + '.xlsx', modele(j.id), MIME_XLSX); } }),
+        K.btn('Modèle CSV', { icon: 'file-text', onclick: function () { telecharger(j.fichierModele + '.csv', new TextEncoder().encode(modeleCsv(j.id)), 'text/csv;charset=utf-8'); } }),
+      ]),
+      colTable,
+    ])));
+
+    /* 2. Le téléversement : la commande n'existe que pour qui détient le droit D'IMPORTER CE JEU (pas celui d'éditer l'écran). */
+    var entree = el('input', { type: 'file', accept: '.xlsx,.csv', class: 'hidden', 'data-import-fichier': j.id, 'aria-label': 'Fichier à importer' });
+    entree.addEventListener('change', function () {
+      var f = entree.files && entree.files[0];
+      if (!f) return;
+      var lecteur = new FileReader();
+      lecteur.onload = function () { analyser(new Uint8Array(lecteur.result), f.name); entree.value = ''; };
+      lecteur.readAsArrayBuffer(f);
+    });
+    var barreTele = el('div.flex.flex-wrap.items-center.gap-2');
+    if (d.importer) {
+      barreTele.appendChild(K.btn('Téléverser un fichier (.xlsx ou .csv)', { variant: 'primary', icon: 'upload', onclick: function () { entree.click(); } }));
+      barreTele.appendChild(entree);
+    } else {
+      barreTele.appendChild(el('p.text-sm.text-slate-500', { text: 'Votre profil voit ce jeu sans pouvoir y importer : le téléversement n’est pas proposé.' }));
+    }
+    host.appendChild(U.card('2. Téléverser et analyser', el('div.space-y-3', null, [
+      el('p.text-sm.text-slate-600', { text: 'L’analyse est complète et ne modifie rien : chaque ligne est contrôlée, un refus est nommé, et c’est vous qui confirmez l’écriture. Taille maximale de ce jeu : ' + C.num(borneDe(j)) + ' lignes.' }),
+      barreTele,
+    ])));
+    host.appendChild(zone);
+    if (!o.modale) {
       host.appendChild(histo);
       dessinerHistorique();
+    }
 
-      /* LE GRAND STOCK A DEUX FACES SUR LE MÊME ÉCRAN (E2158, corrigé le 06/11/2026) : l'IMPORT l'écrit (ci-dessus), la REPRISE le
-         suit et le valorise (ci-dessous : lot de migration, articles repris, points à traiter, rapprochement au catalogue). Les deux
-         lots du 01/11 avaient enregistré le même identifiant d'écran, le dernier chargé effaçant l'autre : la valorisation des
-         références sans prix (vague 33, 34 fiches arrêtées par la Direction en vague 49) n'était plus atteignable. */
-      if (j.id === 'grand-stock' && typeof global.SIGH.rendreRepriseGrandStock === 'function') {
-        host.appendChild(el('h2.text-base.font-semibold.text-navy-900', { text: 'Stock repris : traçabilité et valorisation' }));
-        host.appendChild(K.note('Le stock initial n’a pas été saisi manuellement : il provient de l’import de l’inventaire « Grand Stock ». '
-          + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises des '
-          + 'mouvements opérationnels ultérieurs. Les références que le document ne tarife pas se valorisent ici, à part, datées et signées.',
-          { tone: 'info', icon: 'history' }));
-        var reprise = el('div.space-y-4');
-        host.appendChild(reprise);
-        global.SIGH.rendreRepriseGrandStock(reprise);
-      }
+    /* LE GRAND STOCK A DEUX FACES SUR LE MÊME ÉCRAN (E2158, corrigé le 06/11/2026) : l'IMPORT l'écrit (ci-dessus), la REPRISE le
+       suit et le valorise (ci-dessous : lot de migration, articles repris, points à traiter, rapprochement au catalogue). Les deux
+       lots du 01/11 avaient enregistré le même identifiant d'écran, le dernier chargé effaçant l'autre : la valorisation des
+       références sans prix (vague 33, 34 fiches arrêtées par la Direction en vague 49) n'était plus atteignable. */
+    if (!o.modale && j.id === 'grand-stock' && typeof global.SIGH.rendreRepriseGrandStock === 'function') {
+      host.appendChild(el('h2.text-base.font-semibold.text-navy-900', { text: 'Stock repris : traçabilité et valorisation' }));
+      host.appendChild(K.note('Le stock initial n’a pas été saisi manuellement : il provient de l’import de l’inventaire « Grand Stock ». '
+        + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises des '
+        + 'mouvements opérationnels ultérieurs. Les références que le document ne tarife pas se valorisent ici, à part, datées et signées.',
+        { tone: 'info', icon: 'history' }));
+      var reprise = el('div.space-y-4');
+      host.appendChild(reprise);
+      global.SIGH.rendreRepriseGrandStock(reprise);
+    }
 
-      function analyser(octets, nom) {
-        var a = analyserOctets(j.id, octets, nom);
-        etat.analyse = a;
-        C.clear(zone);
-        var lot = null;
-        if (!a.accepte) lot = consigner(j, a);
-        zone.appendChild(apercu(a, lot));
-        U.icons(zone);
-        dessinerHistorique();
-      }
+    function analyser(octets, nom) {
+      var a = analyserOctets(j.id, octets, nom);
+      etat.analyse = a;
+      C.clear(zone);
+      var lot = null;
+      if (!a.accepte) lot = consigner(j, a);
+      zone.appendChild(apercu(a, lot));
+      U.icons(zone);
+      if (!o.modale) dessinerHistorique();
+    }
 
-      function apercu(a, lot) {
-        var ps = problemes(a);
-        var cartes = el('div.space-y-3');
-        var resume = el('div.flex.flex-wrap.gap-2', null, [
-          U.badge(a.nbLignes + ' ligne(s) lue(s)', 'navy'), U.badge(a.compte.valides + ' valide(s)', 'success'),
-          U.badge(a.compte.avertissements + ' avertissement(s)', 'warning'), U.badge(a.compte.refus + ' refus', a.compte.refus ? 'danger' : 'neutral'),
-        ]);
-        cartes.appendChild(resume);
-        if (a.accepte) {
-          cartes.appendChild(K.note('<strong>Analyse conforme.</strong> ' + a.nbLignes + ' ligne(s) peuvent être écrites' + (a.compte.avertissements ? ', dont ' + a.compte.avertissements + ' avec avertissement' : '') + '. Rien n’est encore écrit.', { tone: 'success', icon: 'check-circle' }));
-        } else {
-          cartes.appendChild(K.note('<strong>Fichier refusé.</strong> Rien n’a été écrit. Le fichier est consigné au lot <span class="font-mono">' + lot.reference + '</span> ; corrigez les points ci-dessous puis téléversez de nouveau.', { tone: 'danger', icon: 'octagon-alert' }));
-        }
-        if (a.globaux.length) {
-          cartes.appendChild(U.card('Points concernant le fichier entier', K.miniTable(['Niveau', 'Colonne', 'Motif', 'Geste de correction'], a.globaux.map(function (p) {
-            return [U.badge(p.niveau === 'refus' ? 'Refus' : 'Avertissement', p.niveau === 'refus' ? 'danger' : 'warning'), p.colonne || '', p.motif, p.geste];
-          }))));
-        }
-        if (a.lignes.length) {
-          cartes.appendChild(U.card('Aperçu ligne par ligne', U.dataTable({
-            rows: a.lignes.map(function (l) {
-              return { n: l.n, etat: l.etat, resume: l.brut.slice(0, 3).filter(Boolean).join(' · '), problemes: l.problemes };
-            }),
-            pageSize: 10, defaultSort: 'n', exportName: 'apercu-importation',
-            filters: [{ name: 'etat', label: 'État', options: [{ value: 'valide', label: 'Valide' }, { value: 'avertissement', label: 'Avertissement' }, { value: 'refus', label: 'Refus' }] }],
-            columns: [
-              { key: 'n', label: 'Ligne', align: 'right' },
-              { key: 'etat', label: 'État', text: function (r) { return TONS_LIGNE[r.etat][0]; }, render: function (r) { return U.badge(TONS_LIGNE[r.etat][0], TONS_LIGNE[r.etat][1]); } },
-              { key: 'resume', label: 'Contenu' },
-              { key: 'problemes', label: 'Constats', sortable: false,
-                text: function (r) { return r.problemes.map(function (p) { return p.colonne + ' : ' + p.motif; }).join(' | '); },
-                render: function (r) {
-                  return el('div.space-y-1', null, r.problemes.map(function (p) {
-                    return el('p.text-xs', { class: p.niveau === 'refus' ? 'text-danger-700' : 'text-warning-700' }, [
-                      el('strong', { text: p.colonne + ' ' }), (p.valeur !== '' && p.valeur !== undefined ? '« ' + p.valeur + ' » : ' : ': ') + p.motif + '. ', el('em', { text: p.geste }),
-                    ]);
-                  }));
-                } },
-            ],
-          })));
-        }
-        var actions = el('div.flex.flex-wrap.gap-2');
-        if (a.accepte) {
-          actions.appendChild(K.commande('Confirmer l’importation (' + a.nbLignes + ' ligne' + (a.nbLignes > 1 ? 's' : '') + ')', {
-            variant: 'primary', icon: 'package-check',
-            onclick: function () {
-              U.confirm({
-                title: 'Écrire ce lot ?',
-                message: a.nbLignes + ' ligne(s) du fichier « ' + a.fichier + ' » vont s’écrire en un seul geste, au nom de ' + S.currentUser() + ' (validé par). Le lot pourra être annulé tant qu’aucun acte ne s’appuie dessus.',
-                confirmLabel: 'Écrire le lot',
-              }).then(function (ok) {
-                if (!ok) return;
-                var r = appliquer(j.id, a);
-                C.clear(zone);
-                if (r.ok) {
-                  U.toast('Lot ' + r.lot.reference + ' appliqué.', { type: 'success', detail: r.ecrits + ' fiche(s) écrite(s).' });
-                  zone.appendChild(K.note('<strong>Lot ' + r.lot.reference + ' appliqué.</strong> ' + r.ecrits + ' fiche(s) écrite(s), journalisées (RG-12).', { tone: 'success', icon: 'check-circle' }));
-                } else {
-                  U.toast('Importation refusée.', { type: 'error', detail: r.motif });
-                  zone.appendChild(K.note('<strong>Importation refusée.</strong> ' + r.motif + '. ' + r.geste, { tone: 'danger', icon: 'octagon-alert' }));
-                }
-                U.icons(zone);
-                dessinerHistorique();
-              });
-            },
-          }));
-        }
-        if (ps.length) actions.appendChild(K.btn('Rapport d’erreurs (.xlsx)', { icon: 'file-down', onclick: function () { telecharger('rapport-' + (lot ? lot.reference : 'analyse') + '.xlsx', rapport(lot || a, j), MIME_XLSX); } }));
-        actions.appendChild(K.btn('Abandonner', { onclick: function () { C.clear(zone); } }));
-        cartes.appendChild(actions);
-        return U.card('Résultat de l’analyse du fichier « ' + a.fichier + ' »', cartes);
+    function apercu(a, lot) {
+      var ps = problemes(a);
+      var cartes = el('div.space-y-3');
+      var resume = el('div.flex.flex-wrap.gap-2', null, [
+        U.badge(a.nbLignes + ' ligne(s) lue(s)', 'navy'), U.badge(a.compte.valides + ' valide(s)', 'success'),
+        U.badge(a.compte.avertissements + ' avertissement(s)', 'warning'), U.badge(a.compte.refus + ' refus', a.compte.refus ? 'danger' : 'neutral'),
+      ]);
+      if (a.compte.ignores) resume.appendChild(U.badge(a.compte.ignores + ' ignorée(s) (fiche déjà tenue)', 'neutral'));
+      if (a.compte.inchanges) resume.appendChild(U.badge(a.compte.inchanges + ' inchangée(s)', 'neutral'));
+      if (a.compte.non) resume.appendChild(U.badge(a.compte.non + ' « Non » (non appliquée(s))', 'neutral'));
+      cartes.appendChild(resume);
+      if (a.accepte && a.aEcrire > 0) {
+        cartes.appendChild(K.note('<strong>Analyse conforme.</strong> ' + a.aEcrire + ' ligne(s) peuvent être écrites' + (a.compte.avertissements ? ', dont ' + a.compte.avertissements + ' avec avertissement' : '') + '. Rien n’est encore écrit.', { tone: 'success', icon: 'check-circle' }));
+      } else if (a.accepte) {
+        cartes.appendChild(K.note('<strong>Rien à écrire.</strong> Toutes les lignes sont ignorées, inchangées ou refusées par leur auteur (Non) : aucune erreur, aucun lot consigné.', { tone: 'info', icon: 'info' }));
+      } else if (a.droitRefuse) {
+        cartes.appendChild(K.note('<strong>Importation refusée.</strong> ' + a.globaux[0].motif + '. ' + a.globaux[0].geste, { tone: 'danger', icon: 'octagon-alert' }));
+      } else {
+        cartes.appendChild(K.note('<strong>Fichier refusé.</strong> Rien n’a été écrit. Le fichier est consigné au lot <span class="font-mono">' + (lot ? lot.reference : '') + '</span> ; corrigez les points ci-dessous puis téléversez de nouveau.', { tone: 'danger', icon: 'octagon-alert' }));
       }
+      if (a.globaux.length) {
+        cartes.appendChild(U.card('Points concernant le fichier entier', K.miniTable(['Niveau', 'Colonne', 'Motif', 'Geste de correction'], a.globaux.map(function (p) {
+          return [U.badge(p.niveau === 'refus' ? 'Refus' : 'Avertissement', p.niveau === 'refus' ? 'danger' : 'warning'), p.colonne || '', p.motif, p.geste];
+        }))));
+      }
+      if (a.lignes.length) {
+        var avecExtra = a.lignes.some(function (l) { return l.extra; });
+        var colonnes = [
+          { key: 'n', label: 'Ligne', align: 'right' },
+          { key: 'etat', label: 'État', text: function (r) { return TONS_LIGNE[r.etat][0]; }, render: function (r) { return U.badge(TONS_LIGNE[r.etat][0], TONS_LIGNE[r.etat][1]); } },
+          { key: 'resume', label: 'Contenu' },
+        ];
+        if (avecExtra) {
+          /* Pour un jeu de PRIX : l'agent voit ce qu'il importe AVANT de l'importer, ligne qui change par ligne qui change (ancien prix, nouveau, variation, décision). */
+          colonnes.push({ key: 'ancien', label: 'Ancien prix', align: 'right', nowrap: true });
+          colonnes.push({ key: 'nouveau', label: 'Nouveau prix', align: 'right', nowrap: true });
+          colonnes.push({ key: 'variation', label: 'Variation', align: 'right', nowrap: true });
+          colonnes.push({ key: 'decision', label: 'Décision' });
+        }
+        colonnes.push({ key: 'problemes', label: 'Constats', sortable: false,
+          text: function (r) { return r.problemes.map(function (p) { return p.colonne + ' : ' + p.motif; }).join(' | '); },
+          render: function (r) {
+            return el('div.space-y-1', null, r.problemes.map(function (p) {
+              return el('p.text-xs', { class: p.niveau === 'refus' ? 'text-danger-700' : (p.niveau === 'ignore' ? 'text-slate-500' : 'text-warning-700') }, [
+                el('strong', { text: p.colonne + ' ' }), (p.valeur !== '' && p.valeur !== undefined ? '« ' + p.valeur + ' » : ' : ': ') + p.motif + '. ', el('em', { text: p.geste }),
+              ]);
+            }));
+          } });
+        cartes.appendChild(U.card('Aperçu ligne par ligne', U.dataTable({
+          rows: a.lignes.map(function (l) {
+            var x = l.extra || {};
+            return { n: l.n, etat: l.etat, resume: l.brut.slice(0, 3).filter(Boolean).join(' · '), problemes: l.problemes,
+              ancien: x.ancien == null ? '' : x.ancien, nouveau: x.nouveau == null ? '' : x.nouveau, variation: x.variation == null ? '' : x.variation, decision: x.decision || '' };
+          }),
+          pageSize: 10, defaultSort: 'n', exportName: 'apercu-importation',
+          filters: [{ name: 'etat', label: 'État', options: Object.keys(TONS_LIGNE).map(function (k) { return { value: k, label: TONS_LIGNE[k][0] }; }) }],
+          columns: colonnes,
+        })));
+      }
+      var actions = el('div.flex.flex-wrap.gap-2');
+      if (a.accepte && a.aEcrire > 0 && d.importer) {
+        actions.appendChild(K.btn('Confirmer l’importation (' + a.aEcrire + ' ligne' + (a.aEcrire > 1 ? 's' : '') + ')', {
+          variant: 'primary', icon: 'package-check',
+          onclick: function () {
+            U.confirm({
+              title: 'Écrire ce lot ?',
+              message: a.aEcrire + ' ligne(s) du fichier « ' + a.fichier + ' » vont s’écrire en un seul geste, au nom de ' + S.currentUser() + ' (validé par). Le lot pourra être annulé tant qu’aucun acte ne s’appuie dessus.',
+              confirmLabel: 'Écrire le lot',
+            }).then(function (ok) {
+              if (!ok) return;
+              var r = appliquer(j.id, a);
+              C.clear(zone);
+              if (r.ok) {
+                U.toast('Lot ' + r.lot.reference + ' appliqué.', { type: 'success', detail: r.ecrits + ' fiche(s) écrite(s).' });
+                zone.appendChild(K.note('<strong>Lot ' + r.lot.reference + ' appliqué.</strong> ' + r.ecrits + ' fiche(s) écrite(s), journalisées (RG-12).', { tone: 'success', icon: 'check-circle' }));
+                if (o.apres) o.apres(r);
+              } else {
+                U.toast('Importation refusée.', { type: 'error', detail: r.motif });
+                zone.appendChild(K.note('<strong>Importation refusée.</strong> ' + r.motif + '. ' + r.geste, { tone: 'danger', icon: 'octagon-alert' }));
+              }
+              U.icons(zone);
+              if (!o.modale) dessinerHistorique();
+            });
+          },
+        }));
+      }
+      if (ps.length && !a.droitRefuse) actions.appendChild(K.btn('Rapport d’erreurs (.xlsx)', { icon: 'file-down', onclick: function () { telecharger('rapport-' + (lot ? lot.reference : 'analyse') + '.xlsx', rapport(lot || a, j), MIME_XLSX); } }));
+      actions.appendChild(K.btn('Abandonner', { onclick: function () { C.clear(zone); } }));
+      cartes.appendChild(actions);
+      return U.card('Résultat de l’analyse du fichier « ' + a.fichier + ' »', cartes);
+    }
+    return host;
+  }
+
+  function ecranJeu(j) {
+    return function (root) {
+      root.appendChild(contenuJeu(j, {}));
       return null;
     };
+  }
+
+  /** La fenêtre du bouton « Importer les données » (fabrique unique `K.importer`) : un jeu, ou le choix parmi ceux que le profil peut importer. */
+  function ouvrirFenetre(ids, opts) {
+    opts = opts || {};
+    var jeux = [].concat(ids || []).map(jeu).filter(Boolean).filter(function (j) { return droitDe(j).importer; });
+    if (!jeux.length) { U.toast('Aucun jeu d’import n’est ouvert à votre profil.', { type: 'error' }); return null; }
+    var ecrit = { oui: false }, corps = el('div.space-y-4'), m = null;
+    function ouvrirJeu(j) {
+      C.clear(corps);
+      if (jeux.length > 1) corps.appendChild(K.btn('Changer de jeu', { icon: 'arrow-left', size: 'sm', onclick: choisir }));
+      corps.appendChild(contenuJeu(j, { modale: true, apres: function () { ecrit.oui = true; } }));
+      U.icons(corps);
+    }
+    function choisir() {
+      C.clear(corps);
+      corps.appendChild(el('p.text-sm.text-slate-600', { text: 'Cet écran reçoit plusieurs jeux d’import : choisissez celui qui correspond à votre fichier.' }));
+      var grille = el('div.grid.gap-3', { class: 'sm:grid-cols-2' });
+      jeux.forEach(function (j) {
+        grille.appendChild(el('div.card', null, el('div.card-body.space-y-2', null, [
+          el('h3.font-semibold.text-navy-900', { text: j.libelle }), el('p.text-sm.text-slate-600', { text: j.description }),
+          K.btn('Choisir ce jeu', { variant: 'primary', icon: 'arrow-right', onclick: function () { ouvrirJeu(j); } }),
+        ])));
+      });
+      corps.appendChild(grille);
+      U.icons(corps);
+    }
+    m = U.modal({
+      title: 'Importer les données', subtitle: jeux.length === 1 ? jeux[0].libelle : 'Choix du jeu', size: 'xl', body: corps,
+      footer: [K.btn('Fermer', { onclick: function () { m.close(); } })],
+      onClose: function () { if (ecrit.oui && opts.apres) opts.apres(); },
+    });
+    if (jeux.length === 1) ouvrirJeu(jeux[0]); else choisir();
+    return m;
   }
 
   /* --- Accueil du module -------------------------------------------------------------------------------------------- */
   function ecranAccueil(root) {
     var host = el('div.space-y-4');
     root.appendChild(host);
-    var tous = colLots().all();
+    var visibles = jeuxVisibles();
+    var tous = lotsDuProfil(null);
+    var superviseur = N.superviseImport(roleCourant());
+    host.appendChild(K.note(superviseur
+      ? '<strong>Supervision.</strong> Votre profil détient le droit d’annuler sur chaque jeu : vous lisez les lots de tous les agents. Chacun des autres ne lit que les siens.'
+      : 'Vous lisez les <strong>lots que vous avez vous-même écrits</strong>, pour les jeux que votre profil détient. Les profils qui supervisent les importations lisent tous les lots.', { tone: 'info', icon: 'eye' }));
     host.appendChild(U.kpiGrid([
-      { label: 'Jeux d’import', value: String(JEUX.length), icon: 'files', tone: 'navy' },
+      { label: 'Jeux d’import', value: String(visibles.length), icon: 'files', tone: 'navy' },
       { label: 'Lots appliqués', value: String(tous.filter(function (l) { return l.etat === 'applique'; }).length), icon: 'package-check', tone: 'success' },
       { label: 'Fichiers refusés', value: String(tous.filter(function (l) { return l.etat === 'refuse'; }).length), icon: 'file-x', tone: 'warning' },
       { label: 'Lots annulés', value: String(tous.filter(function (l) { return l.etat === 'annule'; }).length), icon: 'undo-2', tone: 'neutral' },
@@ -1260,8 +1518,8 @@
     host.appendChild(U.tabs([
       { id: 'jeux', label: 'Jeux d’import', render: function () {
         var grille = el('div.grid.gap-3', { class: 'sm:grid-cols-2 lg:grid-cols-3' });
-        JEUX.filter(peutOuvrir).forEach(function (j) {
-          var dernier = colLots().all().filter(function (l) { return l.jeu === j.id; })[0];
+        visibles.forEach(function (j) {
+          var dernier = lotsDuProfil(j)[0];
           grille.appendChild(el('div.card', null, el('div.card-body.space-y-2', null, [
             el('div.flex.items-start.justify-between.gap-2', null, [el('h3.font-semibold.text-navy-900', { text: j.libelle }), badgeStatut(j)]),
             el('p.text-sm.text-slate-600', { text: j.description }),
@@ -1275,9 +1533,46 @@
       { id: 'historique', label: 'Historique des lots', badge: tous.length, render: function (panel) {
         function dessiner() {
           C.clear(panel);
-          var visibles = {};
-          JEUX.filter(peutOuvrir).forEach(function (j) { visibles[j.id] = true; });
-          panel.appendChild(tableLots(colLots().all().filter(function (l) { return visibles[l.jeu]; }), dessiner));
+          panel.appendChild(tableLots(lotsDuProfil(null), dessiner));
+          U.icons(panel);
+        }
+        dessiner();
+        return null;
+      } },
+      { id: 'tailles', label: 'Tailles maximales', render: function (panel) {
+        function dessiner() {
+          C.clear(panel);
+          panel.appendChild(K.note('La taille maximale d’un fichier est un <strong>réglage en base</strong>, par jeu, avec un défaut. Un fichier plus long est refusé en le nommant, avant tout travail. '
+            + (superviseur ? 'Votre profil la règle.' : 'Elle se règle par un profil qui supervise les importations.'), { tone: 'info', icon: 'gauge' }));
+          var lignes = visibles.map(function (j) {
+            return { id: j.id, jeu: j.libelle, borne: borneDe(j), defaut: BORNES_DEFAUT[j.id] || BORNE_DEFAUT_GENERALE };
+          });
+          panel.appendChild(U.dataTable({
+            rows: lignes, pageSize: 12, defaultSort: 'jeu', exportName: 'tailles-importation',
+            columns: [
+              { key: 'jeu', label: 'Jeu d’import' },
+              { key: 'borne', label: 'Maximum (lignes)', align: 'right', render: function (r) { return C.num(r.borne); }, text: function (r) { return String(r.borne); } },
+              { key: 'defaut', label: 'Défaut (lignes)', align: 'right', render: function (r) { return C.num(r.defaut); }, text: function (r) { return String(r.defaut); } },
+            ],
+            rowActions: function (r) {
+              if (!superviseur) return [];
+              return [K.iconBtn('pencil', 'Régler la taille maximale', function () {
+                var f = U.form([
+                  { name: 'lignes', label: 'Taille maximale (lignes)', type: 'number', required: true, col: 'full', hint: 'Entier de 1 à ' + BORNE_MAXIMALE + '.' },
+                  { name: 'motif', label: 'Motif du réglage', type: 'text', required: true, col: 'full' },
+                ], { lignes: r.borne });
+                var m = U.modal({ title: 'Taille maximale : ' + r.jeu, size: 'md', body: f, footer: [
+                  K.btn('Annuler', { onclick: function () { m.close(); } }),
+                  K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+                    var v = f.collect(); if (!v) return;
+                    var res = definirBorne(r.id, v.lignes, v.motif);
+                    if (res.ok) { m.close(); U.toast('Taille maximale réglée.', { type: 'success', detail: C.num(res.lignes) + ' lignes (avant : ' + C.num(res.avant) + ').' }); dessiner(); }
+                    else U.toast('Réglage refusé.', { type: 'error', detail: res.motif + '. ' + res.geste });
+                  } }),
+                ] });
+              })];
+            },
+          }));
           U.icons(panel);
         }
         dessiner();
@@ -1291,7 +1586,8 @@
   global.SIGH.screen('imp-accueil', {
     title: 'Importation de données',
     description: 'Les jeux d’import de la clinique en démarrage : modèle .xlsx à télécharger, fichier à téléverser, analyse complète avant écriture, historique et annulation des lots.',
-    regle: 'Un import <strong>n’invente rien</strong> : il écrit ce que le fichier porte, après une analyse ligne par ligne. Un refus se nomme (ligne, colonne, valeur, motif, geste). Un fichier refusé est consigné et n’écrit rien. Un lot s’annule en archivant ses fiches (RG-14).',
+    regle: 'Un import <strong>n’invente rien</strong> : il écrit ce que le fichier porte, après une analyse ligne par ligne. Un refus se nomme (ligne, colonne, valeur, motif, geste). Un fichier refusé est consigné et n’écrit rien. Un lot s’annule en archivant ses fiches (RG-14). '
+      + 'Le droit d’importer est <strong>propre à chaque jeu</strong> (voir, importer, annuler) ; chacun lit ses lots, les profils qui supervisent lisent tous les lots.',
     render: ecranAccueil,
   });
   JEUX.forEach(function (j) {
@@ -1307,5 +1603,7 @@
     JEUX: JEUX, jeu: jeu, lireCellule: lireCellule, analyserLignes: analyserLignes, analyserOctets: analyserOctets, problemes: problemes,
     consigner: consigner, appliquer: appliquer, annulerLot: annulerLot, modele: modele, modeleCsv: modeleCsv, rapport: rapport,
     lots: colLots, dernierTelechargement: null,
+    ouvrirFenetre: ouvrirFenetre, contenuJeu: contenuJeu, colonnesDe: colonnesDe, masquer: masquer, borneDe: borneDe, definirBorne: definirBorne,
+    BORNES_DEFAUT: BORNES_DEFAUT, BORNE_DEFAUT_GENERALE: BORNE_DEFAUT_GENERALE, lotsVisibles: lotsDuProfil, jeuxVisibles: jeuxVisibles, mode: modeDoublon,
   };
 })(window);

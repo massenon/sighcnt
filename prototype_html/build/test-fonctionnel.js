@@ -327,6 +327,29 @@ async function viderMessages(page) {
     return m ? Number(m[1].replace(/[\s  ]/g, '')) : -1;
   }
 
+  /* --- Outils du lot IMP-A (Vagues 121 à 123) : profil du banc, bouton d'import, classeur .xlsx écrit et téléversé par le sélecteur réel --------------------- */
+  const roleImp = (r, n) => ({ role: r, nom: (n || 'SONDE12X') + ' ' + r, nomComplet: (n || 'SONDE12X') + ' ' + r, fonction: r, identifiant: 's12x.' + r, secteur: 'DIR' });
+  const boutonsImport = () => page.evaluate(() => [...document.querySelectorAll('[data-importer]')].filter((x) => x.offsetParent !== null).map((x) => x.getAttribute('data-importer')));
+  const dossierImp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sigh-impa-'));
+  const classeurBanc = async (nom, table) => {
+    const octets = await page.evaluate((t) => Array.from(window.SIGH.xlsx.ecrire({ feuilles: [{ nom: 'Données', lignes: t }] })), table);
+    const f = path.join(dossierImp, nom);
+    fs.writeFileSync(f, Buffer.from(octets));
+    return f;
+  };
+  const televerserBanc = async (fichier) => {
+    const input = await page.$('input[data-import-fichier]');
+    await input.uploadFile(fichier);
+    const fin = Date.now() + 25000;
+    while (Date.now() < fin) {
+      if (/Résultat de l’analyse du fichier/.test(await page.evaluate(() => document.body.innerText))) break;
+      await pause(250);
+    }
+    await pause(300);
+  };
+  const texteCorps = () => page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
+
+
   console.log('\nExécution des parcours fonctionnels…\n');
 
   /* =========================================================================
@@ -20177,6 +20200,331 @@ async function viderMessages(page) {
     await page.evaluate((ids) => { const S = window.SIGH.store, PR = window.SIGH.parcours; PR.definirValiditeProforma({ jours: 30, motif: 'Sonde 120 : restitution' }); ids.forEach((i) => S.collection('factures').archive(i)); }, T5.ids);
     const erreurs120 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
     verifier('Aucune erreur JavaScript', erreurs120.length === 0, erreurs120.join(' | '));
+  });
+
+  /* ==========================================================================
+   * Vagues 121 à 123 : LOT IMP-A (11/11/2026), le droit d'import distinct par jeu, le bouton « Importer les données » sur chaque hôte, la rangée IMP du ruban,
+   * la matrice administrable, le masquage des valeurs d'un jeu restreint, le salaire et le groupe sanguin, la taille maximale, « ignorer les existants », la supervision.
+   * Tout se mesure AU GESTE : le bouton est cherché dans la page ouverte sous le profil, le fichier est téléversé par le sélecteur réel, la matrice se règle par sa fenêtre.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 121 : IMP-A le droit d’import est DISTINCT, par jeu : le bouton « Importer les données » est présent pour qui détient le jeu et ABSENT pour qui ne le détient pas, sur chaque hôte ; il n’est ni déduit ni emporté par le droit d’éditer l’écran ; le moteur refuse aussi');
+    erreursJS = [];
+    await ouvrir('imp-accueil.html');
+    /* 1. La matrice d'origine, lue de la fonction même qu'appelle le bouton (N.droitImport) : une ligne par décision de la Direction. */
+    const M = await page.evaluate(() => {
+      const N = window.SIGH.nav, g = (r, j) => { const d = N.droitImport(r, j); return (d.voir ? 'V' : '') + (d.importer ? 'I' : '') + (d.annuler ? 'A' : ''); };
+      return { stockTarifs: g('stock', 'tarifs'), stockFour: g('stock', 'fournisseurs'), stockGros: g('stock', 'grand-stock'), stockPat: g('stock', 'patients'), stockPers: g('stock', 'personnel'),
+        recPat: g('reception', 'patients'), recFour: g('reception', 'fournisseurs'), compPlan: g('comptable', 'plan-comptable'), compPat: g('comptable', 'patients'), compTarifs: g('comptable', 'tarifs'),
+        aideFour: g('aide_comptable', 'fournisseurs'), aidePlan: g('aide_comptable', 'plan-comptable'), dirTarifs: g('direction', 'tarifs'), dirPat: g('direction', 'patients'), labo: g('laborantin', 'analyses-modele'),
+        medecin: N.importsVisibles('medecin').length, caissier: N.importsVisibles('caissier').length, neuf: N.importsVisibles('role-inexistant-neuf').length,
+        daAll: N.IMPORTS.every((j) => g('da', j.id) === 'VIA'), adminAll: N.IMPORTS.every((j) => g('admin', j.id) === 'VIA'),
+        superviseurs: ['admin', 'da', 'direction', 'stock', 'comptable', 'reception', 'aide_comptable'].filter((r) => N.superviseImport(r)).join(',') };
+    });
+    verifier('Matrice d’origine : le gestionnaire de stock importe grand-stock, fournisseurs ET tarifs (I4), pas les patients ni le personnel',
+      M.stockTarifs === 'VIA' && M.stockFour === 'VIA' && M.stockGros === 'VIA' && M.stockPat === '' && M.stockPers === '', JSON.stringify(M));
+    verifier('L’accueil importe le répertoire des patients seulement ; le comptable ses jeux comptables, pas les patients ni les tarifs ; le biologiste le modèle des analyses',
+      M.recPat === 'VIA' && M.recFour === '' && M.compPlan === 'VIA' && M.compPat === '' && M.compTarifs === '' && M.labo === 'VIA', JSON.stringify(M));
+    verifier('I7 : l’assistant comptable est en LECTURE SEULE à l’import (voir, jamais importer) ; la Direction voit tout et importe les tarifs seulement',
+      M.aideFour === 'V' && M.aidePlan === 'V' && M.dirTarifs === 'VIA' && M.dirPat === 'V', JSON.stringify(M));
+    verifier('Aucun import pour le médecin ni le caissier ; un rôle jamais déclaré part de zéro ; la DAF et l’administrateur détiennent tout',
+      M.medecin === 0 && M.caissier === 0 && M.neuf === 0 && M.daAll && M.adminAll, JSON.stringify(M));
+    verifier('La supervision (lire tous les lots) est TIRÉE DU DROIT d’annuler sur chaque jeu : la DAF et l’administrateur la détiennent, aucun autre profil',
+      M.superviseurs === 'admin,da', M.superviseurs);
+
+    /* 2. Le bouton sur chaque hôte : un détenteur le voit, un profil qui ouvre l'écran sans détenir le jeu ne le voit pas. */
+    const HOTES = await page.evaluate(() => window.SIGH.nav.IMPORTS.filter((j) => j.hotes.length).map((j) => ({ jeu: j.id, hotes: j.hotes })));
+    const roles = await page.evaluate(() => Object.keys(window.SIGH.nav.ROLES).filter((r) => !window.SIGH.nav.roleArchive(r)));
+    const bilan = [];
+    for (const h of HOTES) {
+      for (const hote of h.hotes) {
+        const cand = await page.evaluate((jeu, ecran, rs) => {
+          const N = window.SIGH.nav, e = N.get(ecran);
+          const ouvre = rs.filter((r) => N.can(r, { id: ecran, roles: e.roles, module: e.module }));
+          return { detenteurs: ouvre.filter((r) => N.droitImport(r, jeu).importer), autres: ouvre.filter((r) => !N.droitImport(r, jeu).importer) };
+        }, h.jeu, hote, roles);
+        const choisis = [['detenteur', cand.detenteurs[0]], ['autre', cand.autres[0]]].filter((x) => x[1]);
+        for (const [genre, r] of choisis) {
+          await poserSessionServeur(roleImp(r));
+          await ouvrir(hote + '.html');
+          const b = await boutonsImport();
+          bilan.push({ hote, jeu: h.jeu, role: r, genre, present: b.some((x) => x.split(',').indexOf(h.jeu) >= 0) });
+        }
+        if (!cand.detenteurs.length) bilan.push({ hote, jeu: h.jeu, role: null, genre: 'aucun détenteur qui ouvre l’écran' });
+      }
+    }
+    const faux = bilan.filter((x) => x.genre === 'detenteur' ? !x.present : (x.genre === 'autre' ? x.present : true));
+    verifier('Sur chacun des ' + HOTES.reduce((n, h) => n + h.hotes.length, 0) + ' hôtes, le bouton est présent pour un détenteur du jeu et ABSENT pour un profil qui ouvre l’écran sans le détenir',
+      bilan.length >= 12 && faux.length === 0, JSON.stringify(faux.concat([{ lignes: bilan.length }])));
+    verifier('Hôtes éprouvés : stock gros, fournisseurs, compagnies, plan comptable, soldes d’ouverture, patients, personnel, tarifs',
+      ['m6-stock-gros', 'm7-fournisseurs', 'm9-compagnies', 'm12-plan-comptable', 'm12-ouverture', 'm1-patients', 'm10-personnel', 'cfg-tarifs'].every((x) => bilan.some((b) => b.hote === x && b.genre === 'detenteur' && b.present)),
+      JSON.stringify(bilan.map((b) => b.hote + ':' + b.genre)));
+
+    /* 3. Importer n'est PAS éditer : l'assistant comptable ÉDITE les fournisseurs (« Nouveau » présent) sans pouvoir les importer ; la Direction LIT le stock gros sans l'éditer. */
+    await poserSessionServeur(roleImp('aide_comptable'));
+    await ouvrir('m7-fournisseurs.html');
+    const aide = await page.evaluate(() => ({ nouveau: [...document.querySelectorAll('#page-content button')].some((b) => /^Nouveau/.test(b.textContent.trim())),
+      edite: window.SIGH.nav.droitsEcran('aide_comptable', 'm7-fournisseurs', 'M7').editer, bouton: [...document.querySelectorAll('[data-importer]')].length }));
+    verifier('Un profil qui ÉDITE l’écran sans détenir le jeu n’a pas le bouton : l’assistant comptable voit « Nouveau » (éditer) et PAS « Importer les données »',
+      aide.edite === true && aide.nouveau === true && aide.bouton === 0, JSON.stringify(aide));
+
+    /* 4. La fenêtre en trois temps s'ouvre depuis l'hôte : le moteur ne se charge qu'au CLIC (chargeur paresseux). */
+    await poserSessionServeur(roleImp('da'));
+    await ouvrir('m7-fournisseurs.html');
+    const avant = await page.evaluate(() => typeof window.SIGH.importer);
+    await cliquer('Importer les données', 'button');
+    await page.waitForFunction(() => !!document.querySelector('[role="dialog"] input[data-import-fichier]'), { timeout: 20000 }).catch(() => null);
+    const modale = await page.evaluate(() => ({ moteur: typeof window.SIGH.importer, dialogue: !!document.querySelector('[role="dialog"]'),
+      texte: (document.querySelector('[role="dialog"]') || { innerText: '' }).innerText.replace(/\s+/g, ' ') }));
+    verifier('Le moteur n’est PAS chargé avant le clic (chargeur paresseux) et la fenêtre en trois temps s’ouvre : modèle, vérification, import',
+      avant === 'undefined' && modale.moteur === 'object' && modale.dialogue && /1\. Télécharger le modèle/.test(modale.texte) && /2\. Téléverser et analyser/.test(modale.texte) && /Téléverser un fichier/.test(modale.texte), JSON.stringify({ avant: avant, apres: modale.moteur, t: modale.texte.slice(0, 200) }));
+    const ENT_F = ['Code fournisseur', 'Raison sociale', 'Type', 'Ville', 'Adresse', 'Téléphone', 'IFU', 'Délai de livraison (jours)', 'Banque', 'N° de compte'];
+    await televerserBanc(await classeurBanc('f121.xlsx', [ENT_F, ['ZZ121', 'Fournisseur de sonde 121', 'Grossiste', 'Parakou', '', '', '3202112446712', 5, '', '']]));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1200);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Fermer'); if (b) b.click(); });
+    await pause(1800);
+    const ecrit = await page.evaluate(() => ({ fiche: window.SIGH.store.collection('fournisseurs').all().filter((f) => f.code === 'ZZ121').map((f) => [f.nom, !!f.lotImport, f.validePar ? 1 : 0]),
+      ligne: /Fournisseur de sonde 121/.test(document.querySelector('#page-content').innerText) }));
+    verifier('Confirmé depuis l’hôte : la fiche est écrite, signée du lot, et la liste de l’écran se rafraîchit à la fermeture de la fenêtre',
+      ecrit.fiche.length === 1 && ecrit.fiche[0][1] && ecrit.fiche[0][2] === 1, JSON.stringify(ecrit));
+
+    /* 5. LE MOTEUR REFUSE AUSSI : masquer le bouton ne protège rien. */
+    await poserSessionServeur(roleImp('stock'));
+    await ouvrir('imp-accueil.html');
+    const M2 = await page.evaluate(() => {
+      const I = window.SIGH.importer, lots = I.lots().all().length;
+      const lignes = [['Code dossier', 'Nom', 'Prénom', 'Sexe', 'Date de naissance', 'Âge déclaré'], ['', 'ZZSTOCK', 'Sonde', 'F', '1990-01-01', '']];
+      const a = I.analyserLignes(I.jeu('patients'), lignes, 'moteur-refuse.csv');
+      const faux = { accepte: true, aEcrire: 1, lignesBrutes: lignes, fichier: 'x.csv', lignes: [], nbLignes: 1, compte: {}, globaux: [] };
+      const ap = I.appliquer('patients', faux);
+      const lotF = I.lots().all().filter((l) => l.jeu === 'fournisseurs')[0];
+      const an = lotF ? I.annulerLot(lotF.id, 'sonde') : { code: 'aucun lot' };
+      return { analyse: a.droitRefuse === true && a.accepte === false && a.globaux[0].code === 'DROIT_IMPORT_REFUSE', applique: ap.code, annule: an.code, lotsApres: I.lots().all().length - lots,
+        patients: window.SIGH.store.collection('patients').all().filter((p) => p.nom === 'ZZSTOCK').length };
+    });
+    verifier('Le MOTEUR refuse sans le droit : l’analyse, l’application et l’annulation d’un jeu non détenu rendent DROIT_IMPORT_REFUSE, rien n’est consigné ni écrit',
+      M2.analyse && M2.applique === 'DROIT_IMPORT_REFUSE' && (M2.annule === 'LOT_D_UN_AUTRE' || M2.annule === 'DROIT_IMPORT_REFUSE' || M2.annule === 'aucun lot') && M2.lotsApres === 0 && M2.patients === 0, JSON.stringify(M2));
+    const e121 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e121.length === 0, e121.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 122 : IMP-A la rangée « Importation de données » SEULE est visible des autres postes (onglet Système réduit à elle, ses seuls jeux) ; matrice administrable : ouvrir l’import à l’assistant comptable depuis « Rôles & permissions » sans code, puis le fermer');
+    erreursJS = [];
+    await poserSessionServeur(roleImp('stock'));
+    await ouvrir('m6-stock-gros.html');
+    const rub = await page.evaluate(() => {
+      const N = window.SIGH.nav, r = N.treeRuban('stock'), sys = r.filter((d) => d.domain === 'Système')[0];
+      return { sysModules: sys ? sys.modules.map((m) => m.code) : null, items: sys ? sys.modules[0].items.map((i) => i.id) : [], attendus: N.importsVisibles('stock'),
+        medecin: N.treeRuban('medecin').some((d) => d.domain === 'Système'), admin: N.treeRuban('admin').filter((d) => d.domain === 'Système')[0].modules.map((m) => m.code),
+        da: N.treeRuban('da').filter((d) => d.domain === 'Système')[0].modules.length, reception: (N.treeRuban('reception').filter((d) => d.domain === 'Système')[0] || { modules: [] }).modules.map((m) => m.code),
+        recItems: (N.treeRuban('reception').filter((d) => d.domain === 'Système')[0] || { modules: [{ items: [] }] }).modules[0].items.map((i) => i.id) };
+    });
+    verifier('Le gestionnaire de stock voit un onglet « Système » réduit à UNE rangée (Importation de données), qui ne montre que ses jeux ; ni paramètres, ni modules, ni sécurité',
+      JSON.stringify(rub.sysModules) === '["IMP"]' && rub.items.indexOf('imp-accueil') >= 0 && rub.items.indexOf('imp-fournisseurs') >= 0 && rub.items.indexOf('imp-actes') >= 0 && rub.items.indexOf('imp-patients') < 0 && rub.items.indexOf('imp-personnel') < 0, JSON.stringify(rub));
+    verifier('La rangée est CALCULÉE de la matrice : l’accueil n’y voit que le répertoire des patients, le médecin n’a aucun onglet Système, la DAF et l’administrateur gardent tout l’onglet',
+      JSON.stringify(rub.reception) === '["IMP"]' && rub.recItems.join(',') === 'imp-accueil,imp-patients' && rub.medecin === false && rub.da > 1 && rub.admin.length > 1, JSON.stringify(rub));
+    const domRub = await page.evaluate(() => [...document.querySelectorAll('#app-menubar button.ribbon-tab')].some((x) => /Système/.test(x.textContent)));
+    verifier('Au rendu : l’onglet « Système » figure au ruban du gestionnaire de stock', domRub, '');
+    await ouvrir('imp-accueil.html');
+    const accueil = await page.evaluate(() => ({ cartes: [...document.querySelectorAll('#page-content h3')].map((h) => h.textContent.trim()), hub: window.SIGH.nav.can('stock', { id: 'hub-imp' }) }));
+    verifier('La page de supervision ne montre que les jeux du profil (fournisseurs, tarifs), jamais les patients ni le personnel ; le hub du module s’ouvre',
+      accueil.cartes.some((c) => /fournisseurs/.test(c)) && accueil.cartes.some((c) => /tarifs/.test(c)) && !accueil.cartes.some((c) => /patients|personnel/.test(c)) && accueil.hub === true, JSON.stringify(accueil));
+    await ouvrir('imp-patients.html');
+    const ferme = await page.evaluate(() => /error-403/.test(location.pathname));
+    verifier('Une page de jeu non détenu est FERMÉE (403) : sa visibilité vient du droit voir du jeu', ferme, '');
+
+    /* La matrice : l'administrateur ouvre l'import des plans comptables à l'assistant comptable, au geste. */
+    await poserSessionServeur(roleImp('admin'));
+    await ouvrir('m14-roles.html');
+    const ouvert = await page.evaluate(() => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(window.SIGH.nav.ROLES.aide_comptable.label) >= 0);
+      const b = tr && tr.querySelector('button[title="Régler les importations de ce rôle"]');
+      if (b) b.click();
+      return !!b;
+    });
+    await pause(600);
+    const fen = await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); return d ? { lignes: d.querySelectorAll('tr[data-jeu]').length, texte: d.innerText.replace(/\s+/g, ' ').slice(0, 300),
+      voirPlan: (d.querySelector('tr[data-jeu="plan-comptable"] input[data-droit="voir"]') || {}).checked, impPlan: (d.querySelector('tr[data-jeu="plan-comptable"] input[data-droit="importer"]') || {}).checked } : null; });
+    verifier('« Rôles & permissions » : une section Importation (une ligne par jeu, trois cases), l’assistant comptable voit mais n’importe pas',
+      ouvert && fen && fen.lignes === 10 && fen.voirPlan === true && fen.impPlan === false && /Importations du rôle/.test(fen.texte), JSON.stringify(fen));
+    await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); d.querySelector('tr[data-jeu="plan-comptable"] input[data-droit="importer"]').click(); });
+    await cliquer('Enregistrer', '[role="dialog"] button');
+    await pause(900);
+    const apres = await page.evaluate(() => { const N = window.SIGH.nav; N.invaliderRbac(); const d = N.droitImport('aide_comptable', 'plan-comptable');
+      return { importer: d.importer, voir: d.voir, annuler: d.annuler, autre: N.droitImport('aide_comptable', 'fournisseurs').importer, fiche: !!(window.SIGH.store.collection('rbac').all().filter((f) => f.role === 'aide_comptable')[0] || {}).droitsImport }; });
+    verifier('Sans code : la case cochée et enregistrée OUVRE l’import du plan comptable à l’assistant comptable, pas ses autres jeux (une surcharge accorde)',
+      apres.importer === true && apres.voir === true && apres.annuler === false && apres.autre === false && apres.fiche === true, JSON.stringify(apres));
+    await poserSessionServeur(roleImp('aide_comptable'));
+    await ouvrir('m12-plan-comptable.html');
+    const bAide = await boutonsImport();
+    verifier('Sous ce profil, le bouton « Importer les données » apparaît sur le plan comptable (et le droit d’éditer l’écran n’a pas bougé)', bAide.indexOf('plan-comptable') >= 0, JSON.stringify(bAide));
+    /* … puis on le FERME, par la même fenêtre. */
+    await poserSessionServeur(roleImp('admin'));
+    await ouvrir('m14-roles.html');
+    await page.evaluate(() => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(window.SIGH.nav.ROLES.aide_comptable.label) >= 0);
+      tr.querySelector('button[title="Régler les importations de ce rôle"]').click();
+    });
+    await pause(600);
+    await page.evaluate(() => { document.querySelector('[role="dialog"] tr[data-jeu="plan-comptable"] input[data-droit="importer"]').click(); });
+    await cliquer('Enregistrer', '[role="dialog"] button');
+    await pause(900);
+    const ferme2 = await page.evaluate(() => { const N = window.SIGH.nav; N.invaliderRbac(); return N.droitImport('aide_comptable', 'plan-comptable').importer; });
+    await poserSessionServeur(roleImp('aide_comptable'));
+    await ouvrir('m12-plan-comptable.html');
+    const bAide2 = await boutonsImport();
+    verifier('Refermé par la même fenêtre : le droit et le bouton disparaissent', ferme2 === false && bAide2.length === 0, JSON.stringify({ ferme2, bAide2 }));
+    /* Restitution : la fiche de l'assistant comptable retrouve le défaut du manifeste. */
+    await poserSessionServeur(roleImp('admin'));
+    await page.evaluate(() => { const S = window.SIGH.store, f = S.collection('rbac').all().filter((x) => x.role === 'aide_comptable')[0]; if (f) S.collection('rbac').update(f.id, { droitsImport: {} }); window.SIGH.nav.invaliderRbac(); });
+    await attendreEcritures();
+    const e122 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e122.length === 0, e122.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 123 : IMP-A un jeu RESTREINT ne recopie aucune valeur de cellule (historique et rapport), le salaire exige la capacité paie, le groupe sanguin est refusé en le nommant, la taille maximale est un réglage en base, « ignorer les existants » liste ses lignes, chacun lit ses lots');
+    erreursJS = [];
+    /* (1) Masquage : un lot de patients refusé ne laisse aucune valeur dans lotsImportation ni dans le rapport .xlsx. */
+    await poserSessionServeur(roleImp('reception'));
+    await ouvrir('imp-patients.html');
+    const existant = await page.evaluate(() => { const p = window.SIGH.store.collection('patients').all().filter((x) => x.nom && x.prenom && x.dateNaissance)[0]; return { nom: p.nom, prenom: p.prenom, dn: p.dateNaissance, code: p.code }; });
+    const ENT_P = ['Code dossier', 'Nom', 'Prénom', 'Sexe', 'Date de naissance', 'Âge déclaré', 'Téléphone', 'Quartier', 'Adresse', 'Personne à prévenir', 'Code assureur', 'N° de police', 'Date d’ouverture du dossier'];
+    await televerserBanc(await classeurBanc('p123-fuite.xlsx', [ENT_P,
+      ['', 'ZZSENTINELLENOM', 'ZZSENTINELLEPRENOM', 'QSENTINELSEXE', '1990-05-05', '', '0100ZZ777', 'QUARTIERZZ', '', '', '', '', ''],
+      ['', 'ZZSENTINELLENOM3', 'ZZSENTINELLEPRENOM3', 'F', '2999-01-01', '', '', '', '', '', '', '', ''],
+      ['', existant.nom, existant.prenom, 'F', existant.dn, '', '', '', '', '', '', '', '']]));
+    const refus = await texteCorps();
+    verifier('Le fichier refusé s’affiche à son AUTEUR avec le détail (il tient le fichier) et il est consigné', /Fichier refusé/.test(refus) && /ZZSENTINELLE|QSENTINELSEXE|2999-01-01/.test(refus), refus.slice(0, 300));
+    const lot = await page.evaluate(() => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 'p123-fuite.xlsx')[0]; return l ? { json: JSON.stringify(l), n: (l.erreurs || []).length, etat: l.etat, codes: (l.erreurs || []).map((e) => e.code) } : null; });
+    const interdits = ['ZZSENTINELLENOM', 'ZZSENTINELLEPRENOM', 'QSENTINELSEXE', '2999-01-01', '1990-05-05', '0100ZZ777', 'QUARTIERZZ', existant.nom, existant.prenom];
+    const fuites = lot ? interdits.filter((x) => lot.json.indexOf(x) >= 0) : ['aucun lot'];
+    verifier('MASQUAGE (I11) : le lot refusé d’un jeu restreint porte colonne, code et geste, et AUCUNE valeur de cellule : ni le nom saisi, ni la date, ni le nom du dossier déjà tenu',
+      lot && lot.etat === 'refuse' && lot.n >= 3 && fuites.length === 0 && lot.codes.indexOf('VALEUR_HORS_LISTE') >= 0 && lot.codes.indexOf('DATE_FUTURE') >= 0, JSON.stringify({ fuites: fuites, n: lot && lot.n, codes: lot && lot.codes }));
+    await cliquer('Rapport d’erreurs (.xlsx)', 'button');
+    await pause(500);
+    const rap = await page.evaluate(() => { const t = window.SIGH.importer.dernierTelechargement; if (!t) return null; const c = window.SIGH.xlsx.lire(new Uint8Array(t.octets)); const cellules = [];
+      c.feuilles.forEach((f) => f.lignes.forEach((l) => l.forEach((x) => cellules.push(String(x)))));
+      return { nom: t.nom, texte: cellules.join('|'), entete: c.feuilles[0].lignes[0] }; });
+    const fuitesRap = rap ? interdits.filter((x) => rap.texte.indexOf(x) >= 0) : ['aucun rapport'];
+    verifier('Le rapport .xlsx d’un jeu restreint ne porte aucune valeur de cellule non plus (et plus de colonne « Valeur »)',
+      rap && fuitesRap.length === 0 && rap.entete.indexOf('Valeur') < 0 && /VALEUR_HORS_LISTE/.test(rap.texte), JSON.stringify({ fuitesRap: fuitesRap, entete: rap && rap.entete }));
+    /* … alors qu'un jeu COURANT garde ses valeurs : le masquage est propre au jeu restreint, pas une panne. */
+    await poserSessionServeur(roleImp('da'));
+    await ouvrir('imp-fournisseurs.html');
+    const ENT_F = ['Code fournisseur', 'Raison sociale', 'Type', 'Ville', 'Adresse', 'Téléphone', 'IFU', 'Délai de livraison (jours)', 'Banque', 'N° de compte'];
+    await televerserBanc(await classeurBanc('f123-courant.xlsx', [ENT_F, ['ZZ123', 'Fournisseur 123', '', '', '', '', 'IFUZZVALEUR', '', '', '']]));
+    const lotF = await page.evaluate(() => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 'f123-courant.xlsx')[0]; return l ? JSON.stringify(l) : ''; });
+    verifier('Contraste : le jeu courant des fournisseurs garde la valeur fautive dans son constat (le masquage tient à la sensibilité du jeu)', /IFUZZVALEUR/.test(lotF), lotF.slice(0, 200));
+
+    /* (2) Le groupe sanguin est retiré du modèle, et un fichier qui le porte est refusé en le nommant (I9). */
+    await poserSessionServeur(roleImp('reception'));
+    await ouvrir('imp-patients.html');
+    const modelePat = await page.evaluate(() => { const c = window.SIGH.xlsx.lire(window.SIGH.importer.modele('patients')); return c.feuilles[0].lignes[0]; });
+    await televerserBanc(await classeurBanc('p123-gs.xlsx', [ENT_P.slice(0, 10).concat(['Groupe sanguin'], ENT_P.slice(10)),
+      ['', 'Sansgs', 'Rose', 'F', '1990-01-01', '', '', '', '', '', 'O+', '', '', '']]));
+    const gs = await texteCorps();
+    const lotGs = await page.evaluate(() => window.SIGH.importer.lots().all().filter((x) => x.fichier === 'p123-gs.xlsx').map((l) => ({ etat: l.etat, codes: (l.erreurs || []).map((e) => e.code), col: (l.erreurs || []).map((e) => e.colonne) })));
+    verifier('I9 : le modèle des patients n’a plus de colonne « Groupe sanguin » et un fichier qui la porte est REFUSÉ en la nommant (code COLONNE_RETIREE), rien n’est écrit',
+      modelePat.indexOf('Groupe sanguin') < 0 && /Groupe sanguin/.test(gs) && lotGs.length === 1 && lotGs[0].etat === 'refuse' && lotGs[0].codes.indexOf('COLONNE_RETIREE') >= 0 && lotGs[0].col.indexOf('Groupe sanguin') >= 0, JSON.stringify({ modelePat: modelePat, lotGs: lotGs }));
+
+    /* (3) Le salaire de base : seul un profil qui détient la capacité paie le voit au modèle et le fait accepter (I10), lue de la matrice. */
+    await poserSessionServeur(roleImp('admin'));
+    await page.evaluate(() => { const S = window.SIGH.store, N = window.SIGH.nav, c = S.collection('rbac', { module: 'M14', entite: 'rôle', prefix: 'RBAC' }), f = c.all().filter((x) => x.role === 'direction')[0];
+      const droits = { personnel: { voir: true, importer: true, annuler: false } };
+      if (f) c.update(f.id, { droitsImport: Object.assign({}, f.droitsImport || {}, droits) }); else c.insert({ role: 'direction', droitsImport: droits, statut: 'actif' });
+      N.invaliderRbac(); });
+    await attendreEcritures();
+    const paie = await page.evaluate(() => { const N = window.SIGH.nav; return { da: N.capacitePaie('da'), admin: N.capacitePaie('admin'), direction: N.capacitePaie('direction'), stock: N.capacitePaie('stock') }; });
+    await poserSessionServeur(roleImp('direction'));
+    await ouvrir('imp-personnel.html');
+    const ENT_PE = ['Matricule', 'Nom', 'Prénom', 'Sexe', 'Fonction', 'Poste', 'Service', 'Catégorie', 'Date d’embauche', 'Téléphone', 'N° CNSS', 'Situation familiale'];
+    const modeleDir = await page.evaluate(() => window.SIGH.xlsx.lire(window.SIGH.importer.modele('personnel')).feuilles[0].lignes[0]);
+    await televerserBanc(await classeurBanc('pe123-salaire.xlsx', [ENT_PE.concat(['Salaire de base']), ['9123', 'ZZPERS', 'Test', 'F', 'infirmier', 'Infirmière', 'Soins infirmiers', '', '', '', '', '', 150000]]));
+    const lotPe = await page.evaluate(() => window.SIGH.importer.lots().all().filter((x) => x.fichier === 'pe123-salaire.xlsx').map((l) => ({ etat: l.etat, codes: (l.erreurs || []).map((e) => e.code), json: JSON.stringify(l) })));
+    verifier('I10 : sans la capacité paie (lue de la matrice, ici la Direction), la colonne « Salaire de base » est absente du modèle et un fichier qui la porte est refusé en la nommant ; le salaire n’est jamais recopié',
+      paie.da && paie.admin && !paie.direction && !paie.stock && modeleDir.indexOf('Salaire de base') < 0 && lotPe.length === 1 && lotPe[0].etat === 'refuse' && lotPe[0].codes.indexOf('COLONNE_RESERVEE') >= 0 && lotPe[0].json.indexOf('150000') < 0, JSON.stringify({ paie: paie, modeleDir: modeleDir, lotPe: lotPe.map((l) => [l.etat, l.codes]) }));
+    await poserSessionServeur(roleImp('da'));
+    await ouvrir('imp-personnel.html');
+    const modeleDa = await page.evaluate(() => window.SIGH.xlsx.lire(window.SIGH.importer.modele('personnel')).feuilles[0].lignes[0]);
+    await televerserBanc(await classeurBanc('pe123-ok.xlsx', [ENT_PE.concat(['Salaire de base']), ['9124', 'ZZPERS2', 'Test', 'F', 'infirmier', 'Infirmière', 'Soins infirmiers', '', '', '', '', '', 150000]]));
+    const accepte = await texteCorps();
+    verifier('Avec la capacité paie (la DAF), la colonne est au modèle et le fichier est accepté', modeleDa.indexOf('Salaire de base') >= 0 && /Analyse conforme/.test(accepte), accepte.slice(0, 200));
+    await poserSessionServeur(roleImp('admin'));
+    await page.evaluate(() => { const S = window.SIGH.store, c = S.collection('rbac'), f = c.all().filter((x) => x.role === 'direction')[0]; if (f) c.update(f.id, { droitsImport: {} }); window.SIGH.nav.invaliderRbac(); });
+    await attendreEcritures();
+
+    /* (4) La taille maximale : un réglage en base par jeu, un refus nommé, réglé par la supervision seule. */
+    await poserSessionServeur(roleImp('da'));
+    await ouvrir('imp-accueil.html');
+    await cliquer('Tailles maximales', '[role="tab"], button');
+    await pause(500);
+    const tab = await page.evaluate(() => ({ crayons: [...document.querySelectorAll('#page-content button[title="Régler la taille maximale"]')].length, texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' ') }));
+    verifier('L’onglet « Tailles maximales » propose le réglage à la supervision (un crayon par jeu), avec un défaut', tab.crayons >= 8 && /25\s?000/.test(tab.texte), JSON.stringify({ c: tab.crayons, t: tab.texte.slice(0, 200) }));
+    const reglage = await page.evaluate(() => { const I = window.SIGH.importer; const r = I.definirBorne('fournisseurs', 2, 'Sonde 123 : borne de test'); return { r: r.ok, borne: I.borneDe('fournisseurs'), enBase: window.SIGH.store.reglage('importBornes', null) }; });
+    await ouvrir('imp-fournisseurs.html');
+    await televerserBanc(await classeurBanc('f123-gros.xlsx', [ENT_F, ['TG1', 'Un', '', '', '', '', '', '', '', ''], ['TG2', 'Deux', '', '', '', '', '', '', '', ''], ['TG3', 'Trois', '', '', '', '', '', '', '', '']]));
+    const gros = await texteCorps();
+    const lotGros = await page.evaluate(() => window.SIGH.importer.lots().all().filter((x) => x.fichier === 'f123-gros.xlsx').map((l) => ({ etat: l.etat, codes: (l.erreurs || []).map((e) => e.code) })));
+    verifier('La taille maximale est un RÉGLAGE EN BASE (importBornes) : au-delà, refus nommé FICHIER_TROP_GROS qui dit le nombre de lignes, le maximum et où le relever',
+      reglage.r && reglage.borne === 2 && reglage.enBase.fournisseurs === 2 && /FICHIER_TROP_GROS|porte 3 lignes/.test(gros) && /maximum réglé pour ce jeu est 2/.test(gros) && lotGros[0].etat === 'refuse', JSON.stringify({ reglage: reglage, lotGros: lotGros }));
+    await poserSessionServeur(roleImp('comptable'));
+    await ouvrir('imp-accueil.html');
+    const refusReglage = await page.evaluate(() => { const r = window.SIGH.importer.definirBorne('fournisseurs', 9999, 'sonde'); return { code: r.code, borne: window.SIGH.importer.borneDe('fournisseurs') }; });
+    await cliquer('Tailles maximales', '[role="tab"], button');
+    await pause(400);
+    const crayonsComptable = await page.evaluate(() => [...document.querySelectorAll('#page-content button[title="Régler la taille maximale"]')].length);
+    verifier('Seule la supervision règle la taille : le comptable (qui importe des fournisseurs sans superviser) est refusé en le nommant et n’a pas le crayon',
+      refusReglage.code === 'REGLAGE_RESERVE' && refusReglage.borne === 2 && crayonsComptable === 0, JSON.stringify({ refusReglage: refusReglage, crayonsComptable: crayonsComptable }));
+    await poserSessionServeur(roleImp('da'));
+    await page.evaluate(() => window.SIGH.importer.definirBorne('fournisseurs', 5000, 'Sonde 123 : restitution'));
+    await attendreEcritures();
+
+    /* (5) « Ignorer les existants » (I8) : fournisseurs seulement ; les lignes ignorées sont comptées et nommées ; patients : toujours refusé. */
+    await ouvrir('imp-fournisseurs.html');
+    const exist = await page.evaluate(() => window.SIGH.store.collection('fournisseurs').all().filter((f) => f.statut !== 'archive' && f.code !== 'ZZ121' && f.code !== 'ZZ123')[0].code);
+    await televerserBanc(await classeurBanc('f123-ign.xlsx', [ENT_F, [exist, 'Existant rejoué', '', '', '', '', '', '', '', ''], ['ZZ123B', 'Nouveau 123B', '', '', '', '', '3202112446712', 3, '', '']]));
+    const ign = await texteCorps();
+    verifier('Fournisseurs : une fiche déjà tenue est IGNORÉE (comptée « ignorée », jamais un refus) et le fichier reste acceptable', /1 ignorée\(s\)/.test(ign) && /Analyse conforme/.test(ign) && !/Fichier refusé/.test(ign), ign.slice(0, 260));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1200);
+    const lotIgn = await page.evaluate((c) => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 'f123-ign.xlsx')[0]; return l ? { etat: l.etat, ignoresTotal: l.ignoresTotal, liste: (l.ignores || []).map((x) => x.cle), ecrits: l.ecrits.length, nbIgnores: l.nbIgnores } : null; }, exist);
+    verifier('Le lot porte le NOMBRE et la LISTE des lignes ignorées ; seule la ligne nouvelle est écrite',
+      lotIgn && lotIgn.etat === 'applique' && lotIgn.ignoresTotal === 1 && lotIgn.liste[0] === exist && lotIgn.ecrits === 1, JSON.stringify(lotIgn));
+    const rapIgn = await page.evaluate(() => { const I = window.SIGH.importer, l = I.lots().all().filter((x) => x.fichier === 'f123-ign.xlsx')[0]; const c = window.SIGH.xlsx.lire(I.rapport(l, I.jeu('fournisseurs')));
+      return c.feuilles.map((f) => f.lignes.map((x) => x.join(' ')).join(' | ')).join(' // '); });
+    verifier('Le rapport .xlsx dit les lignes ignorées (colonne niveau « ignorée » et ligne de résumé)', /ignorée/.test(rapIgn) && /Lignes ignorées \(fiche déjà tenue\) 1/.test(rapIgn), rapIgn.slice(0, 300));
+    const modes = await page.evaluate(() => window.SIGH.nav.IMPORTS.map((j) => j.id + ':' + j.doublon).join(','));
+    verifier('Le mode de doublon est DÉCLARÉ par jeu au manifeste : « ignorer » sur les fournisseurs seulement, « versionner » sur les prix, « refuser » partout ailleurs (aucun « mettre à jour en place »)',
+      /fournisseurs:ignorer/.test(modes) && /tarifs:versionner/.test(modes) && /patients:refuser/.test(modes) && modes.split(',').filter((x) => /ignorer/.test(x)).length === 1 && !/mettre/.test(modes), modes);
+
+    /* (6) Chacun lit SES lots ; la supervision les lit tous ; un lot se défait par son auteur ou la supervision. */
+    await poserSessionServeur(roleImp('stock', 'STOCKEUR'));
+    await ouvrir('imp-fournisseurs.html');
+    await televerserBanc(await classeurBanc('f123-stock.xlsx', [ENT_F, ['ZZ123S', 'Fournisseur du stock', '', '', '', '', '3202112446712', 3, '', '']]));
+    await cliquer('Confirmer l’importation', 'button');
+    await cliquer('Écrire le lot', 'button');
+    await pause(1200);
+    const lecture = {};
+    for (const r of ['stock', 'comptable', 'da', 'aide_comptable']) {
+      await poserSessionServeur(roleImp(r, r === 'stock' ? 'STOCKEUR' : 'SONDE12X'));
+      await ouvrir('imp-accueil.html');
+      lecture[r] = await page.evaluate(() => window.SIGH.importer.lotsVisibles(null).map((l) => l.fichier).filter((f) => /^f123-|^p123-|^pe123-/.test(f)));
+    }
+    verifier('Historique : le gestionnaire de stock lit SON lot, le comptable (qui n’a pas importé ce fichier) ne le lit pas, la DAF lit tous les lots, l’assistant comptable (lecture seule) n’en lit aucun',
+      lecture.stock.indexOf('f123-stock.xlsx') >= 0 && lecture.comptable.indexOf('f123-stock.xlsx') < 0 && lecture.da.indexOf('f123-stock.xlsx') >= 0 && lecture.da.indexOf('p123-fuite.xlsx') >= 0 && lecture.aide_comptable.length === 0, JSON.stringify(lecture));
+    await poserSessionServeur(roleImp('comptable'));
+    const annule = await page.evaluate(() => { const I = window.SIGH.importer, l = I.lots().all().filter((x) => x.fichier === 'f123-stock.xlsx')[0]; return I.annulerLot(l.id, 'sonde').code; });
+    await poserSessionServeur(roleImp('da'));
+    const annuleDa = await page.evaluate(() => { const I = window.SIGH.importer, l = I.lots().all().filter((x) => x.fichier === 'f123-stock.xlsx')[0]; const r = I.annulerLot(l.id, 'sonde 123 : supervision'); return { ok: r.ok, code: r.code }; });
+    verifier('Un lot se défait par son AUTEUR ou par la supervision : le comptable est refusé en nommant (LOT_D_UN_AUTRE), la DAF l’annule',
+      annule === 'LOT_D_UN_AUTRE' && annuleDa.ok === true, JSON.stringify({ annule: annule, annuleDa: annuleDa }));
+    const e123 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e123.length === 0, e123.join(' | '));
   });
 
   await browser.close();

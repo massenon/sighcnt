@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Importation de données — Système Intégré de Gestion Hospitalière de la Clinique NASSIERA TOO SARL.">
-  <title>Importation du catalogue des actes — SIGH Clinique NASSIERA TOO</title>
+  <title>Importation des tarifs et prix — SIGH Clinique NASSIERA TOO</title>
   <link rel="icon" href="../assets/img/logo.jpeg">
   <link rel="stylesheet" href="../assets/css/tailwind.css">
 </head>

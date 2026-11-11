@@ -143,7 +143,7 @@
     title: 'Compagnies d’assurance partenaires',
     description: 'Référentiel des compagnies conventionnées avec la clinique : coordonnées, convention, assurés et créances.',
     render: K.crud({
-      collection: 'assureurs', entite: 'compagnie', entiteP: 'compagnies', module: 'M9',
+      collection: 'assureurs', entite: 'compagnie', entiteP: 'compagnies', module: 'M9', importer: 'assureurs',
       defaultSort: 'n', pageSize: 15, drawerWidth: 'max-w-3xl',
       source: 'Liste et contacts des assurances partenaires de la Clinique NASSIERA TOO.',
       columns: [

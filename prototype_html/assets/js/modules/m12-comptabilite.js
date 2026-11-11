@@ -263,7 +263,7 @@
     description: 'Référentiel des comptes du plan SYSCOHADA utilisés par la clinique, par classe.',
     regle: 'Les comptes marqués « document » proviennent du classeur comptable SYSCOHADA transmis lors du cadrage ; les autres complètent le plan pour permettre le bouclage des schémas d’écriture.',
     render: avecAssainissement(K.crud({
-      collection: 'comptes', entite: 'compte', entiteP: 'comptes', module: 'M12',
+      collection: 'comptes', entite: 'compte', entiteP: 'comptes', module: 'M12', importer: 'plan-comptable',
       defaultSort: 'num', pageSize: 20,
       source: 'Classeur comptable SYSCOHADA — journal des comptes par mois.',
       columns: [
@@ -2701,6 +2701,8 @@
         variant: 'primary', icon: 'file-plus', onclick: function () { ecrire(); },
       }),
       K.btn('Imprimer le bilan d’ouverture', { icon: 'printer', onclick: function () { imprimer(); } }),
+      /* « Importer les données » : le jeu des soldes d'ouverture (une pièce AN en brouillon, RG-10), selon le droit d'IMPORTER de ce jeu, non celui d'écrire les à-nouveaux. */
+      K.importer('soldes-ouverture'),
     ].filter(Boolean))));
     host.appendChild(vue);
     afficher();

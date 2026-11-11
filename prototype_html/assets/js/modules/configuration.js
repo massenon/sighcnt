@@ -1168,6 +1168,8 @@
     actions: function () {
       var a = [
         K.commande('Nouvelle prestation', { variant: 'primary', icon: 'plus', onclick: function () { modaleProposition(null, rafraichirEcran); } }),
+        /* « Importer les données » : le jeu `tarifs`, selon le droit d'IMPORTER de ce jeu (lot IMP-A) ; chaque ligne passe par la MÊME proposition que la saisie à l'écran. */
+        K.importer('tarifs'),
         K.btn('Imprimer la grille', { icon: 'printer', onclick: function () { imprimerGrille(lignesTarifs(function () { return true; }).filter(function (r) { return r.etat !== 'Sans prix en vigueur'; }), 'Grille tarifaire'); } }),
       ];
       return a.filter(Boolean);

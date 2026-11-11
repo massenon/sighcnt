@@ -88,6 +88,31 @@ Object.keys(NAV.INDEX).forEach((id) => {
   if (s && !NAV.INDEX[s]) throw new Error('Manifeste : « ' + id + ' » déclare servant « ' + s + ' », qui n\'existe pas.');
 });
 
+/* GARDE DES JEUX D'IMPORT (lot IMP-A, 11/11/2026). Le droit d'importer se décide au MANIFESTE (`N.IMPORTS`), sans charger le moteur : un jeu du moteur (`modules/import.js`) sans
+   déclaration serait un jeu sans droit, donc ouvert à tout détenteur de l'écran ; une déclaration vers un écran qui n'existe pas serait un bouton qu'aucune page ne porte.
+   Le build échoue (1) si un jeu du moteur n'est pas déclaré, ou l'inverse ; (2) si l'écran du jeu ou l'un de ses hôtes n'existe pas au manifeste ; (3) si un rôle des défauts
+   n'existe pas ; (4) si le mode de doublon sort de la liste arrêtée, ou si « ignorer » est déclaré hors de la liste fermée de la Direction (jamais sur patients, comptes, pièces). */
+(function () {
+  const jeux = NAV.IMPORTS || [];
+  if (!jeux.length) throw new Error('Manifeste : N.IMPORTS est vide ou absent.');
+  const src = fs.readFileSync(path.join(ROOT, 'assets/js/modules/import.js'), 'utf8');
+  const moteur = Array.from(src.matchAll(/^\s*id: '([a-z0-9-]+)', ecran: '/gm)).map((m) => m[1]);
+  const declares = jeux.map((j) => j.id);
+  moteur.forEach((id) => { if (declares.indexOf(id) < 0) throw new Error('Manifeste : le jeu d\'import « ' + id + ' » du moteur n\'a pas de déclaration dans N.IMPORTS (droit d\'import, hôtes, sensibilité).'); });
+  declares.forEach((id) => { if (moteur.indexOf(id) < 0) throw new Error('Manifeste : N.IMPORTS déclare « ' + id + ' », que le moteur d\'import ne porte pas.'); });
+  jeux.forEach((j) => {
+    [j.ecran].concat(j.hotes || []).forEach((e) => { if (!NAV.INDEX[e]) throw new Error('Manifeste : le jeu « ' + j.id + ' » désigne l\'écran « ' + e + ' », qui n\'existe pas.'); });
+    Object.keys(j.rolesDefaut || {}).forEach((r) => { if (!NAV.ROLES[r]) throw new Error('Manifeste : le jeu « ' + j.id + ' » donne un droit au rôle « ' + r + ' », qui n\'existe pas.'); });
+    if (['refuser', 'ignorer', 'versionner'].indexOf(j.doublon) < 0) throw new Error('Manifeste : le jeu « ' + j.id + ' » déclare le mode de doublon « ' + j.doublon + ' » (refuser, ignorer ou versionner).');
+    if (j.doublon === 'ignorer' && NAV.IMPORTS_IGNORER_PERMIS.indexOf(j.id) < 0) throw new Error('Manifeste : « ignorer les existants » n\'est pas permis au jeu « ' + j.id + ' » (liste fermée de la Direction : ' + NAV.IMPORTS_IGNORER_PERMIS.join(', ') + ').');
+    if (['courante', 'restreinte'].indexOf(j.sensibilite) < 0) throw new Error('Manifeste : le jeu « ' + j.id + ' » déclare la sensibilité « ' + j.sensibilite + ' » (courante ou restreinte).');
+  });
+  Object.keys(NAV.INDEX).forEach((id) => {
+    const e = NAV.INDEX[id];
+    if (e.jeuImport && e.jeuImport !== '*' && declares.indexOf(e.jeuImport) < 0) throw new Error('Manifeste : « ' + id + ' » dépend du jeu d\'import « ' + e.jeuImport + ' », qui n\'est pas déclaré.');
+  });
+})();
+
 /* GARDE : un écran RETIRÉ ne doit plus exister nulle part. « Reprise SAGE 100 » (01/11/2026) est remplacé par
    « Importation Grand Stock » : l'ancien identifiant est assemblé ici pour ne pas figurer en clair dans les sources qu'on balaie.
    Le build échoue si le manifeste ou un script de l'interface le cite encore, et retire la page orpheline. */

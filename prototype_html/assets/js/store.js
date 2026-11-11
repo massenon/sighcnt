@@ -119,8 +119,11 @@
      et `versionsTarif` (une version de prix par ligne, immuable, datée) : la caisse, la prescription, les soins, l'imagerie, les certificats et la
      caisse manuelle lisent le prix EN VIGUEUR à la date de la pièce. `actes`, `analyses` et `catalogueTarifs` deviennent des PROJECTIONS de lecture.
      Aucun prix facturé aujourd'hui ne change ; la grille imprimée des analyses arrive en version 2 PROPOSÉE. Une reprise (`migrerTarifsDepuis`) garde
-     les prix des actes que la clinique a corrigés. Sans incrément, un poste n'aurait ni les collections ni les versions. */
-  var VERSION = 79;
+     les prix des actes que la clinique a corrigés. Sans incrément, un poste n'aurait ni les collections ni les versions.
+     80 (11/11/2026) : le DROIT D'IMPORT par jeu (lot IMP-A). Les fiches RBAC sont SEMÉES, et la matrice d'origine de chaque jeu d'import (`N.IMPORTS` : voir,
+     importer, annuler) change ce qu'un poste voit et peut faire (la rangée « Importation de données » s'ouvre aux postes qui détiennent un jeu). Les défauts
+     vivent au manifeste et se lisent sans fiche : l'incrément est une GARDE (consigne du lot), pas une condition de fonctionnement. */
+  var VERSION = 80;
   var db = null;
   var listeners = {};
 

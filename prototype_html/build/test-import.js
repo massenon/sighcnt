@@ -283,20 +283,20 @@ function verifier(libelle, condition, detail) {
    * 4. Patients (RG-01) et soldes d'ouverture (RG-10)
    * ======================================================================== */
   scenario('Vague 71 : Importation des patients (RG-01) et des soldes d’ouverture (RG-10)');
-  const ENT_PA = ['Code dossier', 'Nom', 'Prénom', 'Sexe', 'Date de naissance', 'Âge déclaré', 'Téléphone', 'Quartier', 'Adresse', 'Personne à prévenir', 'Groupe sanguin', 'Code assureur', 'N° de police', 'Date d’ouverture du dossier'];
+  const ENT_PA = ['Code dossier', 'Nom', 'Prénom', 'Sexe', 'Date de naissance', 'Âge déclaré', 'Téléphone', 'Quartier', 'Adresse', 'Personne à prévenir', 'Code assureur', 'N° de police', 'Date d’ouverture du dossier'];
   await role('reception');
   await ouvrir('imp-patients');
   const existant = await ev(() => SIGH.store.collection('patients').all()[0]);
   await televerser(await ecrireClasseur('pa-refus.xlsx', [ENT_PA,
-    [existant.code, 'AUTRE', 'PERSONNE', 'F', '', 30, '0197000099', '', '', '', '', '', '', ''],
-    ['', existant.nom, existant.prenom, existant.sexe, existant.dateNaissance, '', '', '', '', '', '', '', '', ''],
-    ['', 'SANSAGE', 'Rose', 'F', '', '', '', '', '', '', '', '', '', '']]));
+    [existant.code, 'AUTRE', 'PERSONNE', 'F', '', 30, '0197000099', '', '', '', '', '', ''],
+    ['', existant.nom, existant.prenom, existant.sexe, existant.dateNaissance, '', '', '', '', '', '', '', ''],
+    ['', 'SANSAGE', 'Rose', 'F', '', '', '', '', '', '', '', '', '']]));
   t = await texte();
   verifier('RG-01 : un code patient déjà attribué est refusé en nommant le dossier, un doublon d’identité aussi, et l’absence d’âge aussi',
     /RG-01 : le code .* est déjà attribué/.test(t) && /doublon probable du dossier/.test(t) && /ni date de naissance ni âge déclaré/.test(t), t.slice(0, 700));
   await televerser(await ecrireClasseur('pa-bon.xlsx', [ENT_PA,
-    ['CNT/9001/20', 'KPADE', 'Honorine', 'F', '1992-03-14', '', '0197111111', 'Natitingou', '', '', 'O+', '', '', '2020-02-10'],
-    ['', 'DJIDJOHO', 'Rodrigue', 'M', '', 41, '0197222222', '', '', '', '', '', '', '']]));
+    ['CNT/9001/20', 'KPADE', 'Honorine', 'F', '1992-03-14', '', '0197111111', 'Natitingou', '', '', '', '', '2020-02-10'],
+    ['', 'DJIDJOHO', 'Rodrigue', 'M', '', 41, '0197222222', '', '', '', '', '', '']]));
   await cliquer('Confirmer l’importation (2 lignes)');
   await cliquer('Écrire le lot', 'button');
   await pause(900);

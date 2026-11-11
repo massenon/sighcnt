@@ -80,6 +80,68 @@
 
   var ALL = '*';
 
+  /* ==========================================================================
+   * LES JEUX D'IMPORT : DÉCLARÉS ICI, CALCULÉS AILLEURS (lot IMP-A, 11/11/2026)
+   * --------------------------------------------------------------------------
+   * Le manifeste décide des ÉCRANS ; il ne disait rien de qui peut IMPORTER. Le droit d'importer était, par défaut, le droit d'éditer l'écran `imp-*` : un droit
+   * déduit, et déduit du mauvais objet. Il devient un axe propre, PAR JEU, à côté du triplet [voir, éditer, annuler] des écrans et sans le modifier :
+   *   voir     voit le jeu : son modèle, l'historique de SES lots, la rangée « Importation de données » du ruban ;
+   *   importer vérifie un fichier et confirme l'écriture ;
+   *   annuler  annule un lot (le sien ; ceux des autres relèvent de la supervision).
+   * Cette table ne porte que ce qu'il faut pour DÉCIDER sans charger le moteur (`modules/import.js`, 120 Ko) : identité, hôtes du bouton, sensibilité, mode de doublon,
+   * défauts de la matrice. Les colonnes, contrôles et écritures vivent au moteur ; `gen-pages` refuse un jeu du moteur sans déclaration ici, et une déclaration sans hôte.
+   *
+   *   ecran        la page du jeu (modèle, vérification, import, historique) : page de supervision, jamais le seul chemin ;
+   *   module       le module propriétaire des données écrites : fermé, le jeu l'est aussi ;
+   *   hotes        les écrans qui portent le bouton « Importer les données » (fabrique unique `K.importer`) ;
+   *   sensibilite  `courante` ou `restreinte` : un jeu restreint ne recopie JAMAIS une valeur de cellule dans l'historique ni le rapport (RG-13) ;
+   *   doublon      `refuser` (défaut), `ignorer` (liste fermée par la Direction : produits, fournisseurs, emplacements, courriers) ou `versionner` (prix) : déclaré par jeu,
+   *                jamais choisi par l'agent ; `mettre à jour en place` n'existe pas ;
+   *   rolesDefaut  la matrice D'ORIGINE (V voir, I importer, A annuler) : une surcharge de la fiche RBAC accorde autant qu'elle restreint, un rôle créé en exploitation
+   *                n'y figure pas et part de zéro. Ce sont des DÉFAUTS de matrice (comme `roles` des écrans), jamais un masque d'interface : l'interface lit `droitImport`.
+   * ======================================================================== */
+  var IMPORTS = [
+    { id: 'grand-stock', libelle: 'Importation Grand Stock', ecran: 'm6-import-grand-stock', module: 'M6', hotes: ['m6-stock-gros'],
+      sensibilite: 'courante', collections: ['produits', 'lots', 'mouvements'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA', direction: 'V', comptable: 'V', aide_comptable: 'V' } },
+    { id: 'personnel', libelle: 'Importation du personnel', ecran: 'imp-personnel', module: 'M10', hotes: ['m10-personnel'],
+      sensibilite: 'restreinte', collections: ['personnel'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', direction: 'V' } },
+    { id: 'patients', libelle: 'Importation du répertoire patients', ecran: 'imp-patients', module: 'M1', hotes: ['m1-patients'],
+      sensibilite: 'restreinte', collections: ['patients'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', reception: 'VIA', agentadmin: 'VIA', direction: 'V' } },
+    { id: 'tarifs', libelle: 'Importation des tarifs et prix', ecran: 'imp-actes', module: 'CFG', hotes: ['cfg-tarifs'],
+      sensibilite: 'courante', collections: ['tarifs', 'versionsTarif'], doublon: 'versionner',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', direction: 'VIA', stock: 'VIA' } },
+    { id: 'analyses-modele', libelle: 'Importation du modèle des analyses', ecran: 'imp-analyses', module: 'M5', hotes: [],
+      sensibilite: 'courante', collections: ['examensLabo'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', laborantin: 'VIA', direction: 'V' } },
+    { id: 'fournisseurs', libelle: 'Importation des fournisseurs', ecran: 'imp-fournisseurs', module: 'M7', hotes: ['m7-fournisseurs'],
+      sensibilite: 'courante', collections: ['fournisseurs'], doublon: 'ignorer',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'assureurs', libelle: 'Importation des compagnies d’assurance', ecran: 'imp-assureurs', module: 'M9', hotes: ['m9-compagnies'],
+      sensibilite: 'courante', collections: ['assureurs'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'souscripteurs', libelle: 'Importation des souscripteurs', ecran: 'imp-souscripteurs', module: 'M9', hotes: [],
+      sensibilite: 'courante', collections: ['souscripteurs'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'plan-comptable', libelle: 'Importation du plan comptable', ecran: 'imp-plan-comptable', module: 'M12', hotes: ['m12-plan-comptable'],
+      sensibilite: 'courante', collections: ['comptes'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    { id: 'soldes-ouverture', libelle: 'Importation des soldes d’ouverture', ecran: 'imp-soldes-ouverture', module: 'M12', hotes: ['m12-ouverture'],
+      sensibilite: 'restreinte', collections: ['ecritures'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+  ];
+  var IMPORTS_INDEX = {};
+  /* Le module « Importation de données » s'ouvre à l'UNION des rôles qui détiennent un jeu par défaut : liste DÉRIVÉE de la déclaration, jamais recopiée. */
+  var ROLES_IMP = [];
+  IMPORTS.forEach(function (j) {
+    IMPORTS_INDEX[j.id] = j;
+    Object.keys(j.rolesDefaut).forEach(function (r) { if (ROLES_IMP.indexOf(r) < 0) ROLES_IMP.push(r); });
+  });
+  /* Les seuls jeux qui admettent « ignorer les existants » (Direction, I8) : la garde de génération refuse tout autre. */
+  var IMPORTS_IGNORER_PERMIS = ['produits-referentiel', 'fournisseurs', 'emplacements', 'courriers'];
+
   /* --- Arborescence des écrans -------------------------------------------- */
   var NAV = [
     /* ====================================================================
@@ -689,23 +751,24 @@
             { id: 'cfg-sms', label: 'Passerelle SMS', icon: 'message-square', roles: ['admin', 'da', 'direction'] },
           ],
         },
-        /* IMPORTATION DE DONNÉES (01/11/2026) : un moteur, dix jeux. Chaque jeu a son écran et ses rôles ;
-           le module s'ouvre à l'union de ces rôles et chaque écran se referme sur les siens (commande absente
-           sinon). Le Grand Stock vit dans la rangée M6 (m6-import-grand-stock) et partage ce moteur. */
+        /* IMPORTATION DE DONNÉES (01/11/2026, lot IMP-A le 11/11/2026) : un moteur, des jeux déclarés plus haut (`IMPORTS`). Un jeu a sa page, qui est la PAGE DE SUPERVISION :
+           modèle, vérification, import et historique de ses lots. Sa visibilité vient du DROIT D'IMPORT du jeu (`jeuImport`, `droitImport`), jamais d'une liste de rôles
+           écrite ici : les `roles` du module sont DÉRIVÉS de la déclaration et ne servent qu'à la matrice par module. La rangée seule est visible des autres postes (Direction,
+           10/11/2026) ; le reste de l'onglet « Système » reste réservé. Le Grand Stock vit dans la rangée M6 (m6-import-grand-stock) et partage ce moteur. */
         {
           code: 'IMP', label: 'Importation de données', icon: 'file-up',
-          roles: ['admin', 'da', 'direction', 'stock', 'reception', 'agentadmin', 'comptable', 'laborantin'],
+          roles: ROLES_IMP,
           items: [
-            { id: 'imp-accueil', label: 'Jeux d’import et historique des lots', icon: 'files' },
-            { id: 'imp-patients', label: 'Importation du répertoire patients', icon: 'users', roles: ['reception', 'agentadmin', 'da', 'admin'] },
-            { id: 'imp-personnel', label: 'Importation du personnel', icon: 'id-card', roles: ['da', 'admin'] },
-            { id: 'imp-actes', label: 'Importation du catalogue des actes', icon: 'list-ordered', roles: ['da', 'admin', 'direction'] },
-            { id: 'imp-analyses', label: 'Importation du catalogue des analyses', icon: 'flask-conical', roles: ['laborantin', 'da', 'admin'] },
-            { id: 'imp-fournisseurs', label: 'Importation des fournisseurs', icon: 'truck', roles: ['stock', 'da', 'comptable', 'admin'] },
-            { id: 'imp-assureurs', label: 'Importation des compagnies d’assurance', icon: 'shield', roles: ['da', 'comptable', 'admin'] },
-            { id: 'imp-souscripteurs', label: 'Importation des souscripteurs', icon: 'building', roles: ['da', 'comptable', 'admin'] },
-            { id: 'imp-plan-comptable', label: 'Importation du plan comptable', icon: 'book-open', roles: ['comptable', 'da', 'admin'] },
-            { id: 'imp-soldes-ouverture', label: 'Importation des soldes d’ouverture', icon: 'scale', roles: ['comptable', 'da', 'admin'] },
+            { id: 'imp-accueil', label: 'Jeux d’import et historique des lots', icon: 'files', jeuImport: '*' },
+            { id: 'imp-patients', label: 'Importation du répertoire patients', icon: 'users', jeuImport: 'patients' },
+            { id: 'imp-personnel', label: 'Importation du personnel', icon: 'id-card', jeuImport: 'personnel' },
+            { id: 'imp-actes', label: 'Importation des tarifs et prix', icon: 'list-ordered', jeuImport: 'tarifs' },
+            { id: 'imp-analyses', label: 'Importation du modèle des analyses', icon: 'flask-conical', jeuImport: 'analyses-modele' },
+            { id: 'imp-fournisseurs', label: 'Importation des fournisseurs', icon: 'truck', jeuImport: 'fournisseurs' },
+            { id: 'imp-assureurs', label: 'Importation des compagnies d’assurance', icon: 'shield', jeuImport: 'assureurs' },
+            { id: 'imp-souscripteurs', label: 'Importation des souscripteurs', icon: 'building', jeuImport: 'souscripteurs' },
+            { id: 'imp-plan-comptable', label: 'Importation du plan comptable', icon: 'book-open', jeuImport: 'plan-comptable' },
+            { id: 'imp-soldes-ouverture', label: 'Importation des soldes d’ouverture', icon: 'scale', jeuImport: 'soldes-ouverture' },
           ],
         },
       ],
@@ -1098,6 +1161,8 @@
       scripts: item.scripts || null,
       /* Un écran du ruban qui N'EST QU'UNE AUTRE VUE d'un registre porte ses droits (vue mensuelle du calendrier fiscal). */
       servant: item.servant || null,
+      /* Un écran de PAGE DE JEU d'import : sa visibilité vient du droit `voir` du jeu (`'*'` : de l'un au moins des jeux), jamais d'une liste de rôles. */
+      jeuImport: item.jeuImport || null,
     };
   }
 
@@ -1124,6 +1189,8 @@
         domainIcon: domain.icon,
         roles: mod.roles || ALL,
         hub: true,
+        /* Le hub du module d'import suit la même règle que ses pages : il s'ouvre à qui détient un droit `voir` sur un jeu au moins. */
+        jeuImport: mod.code === 'IMP' ? '*' : null,
       };
       mod.items.forEach(function (item) { indexerEcran(domain, mod, item); });
     });
@@ -1195,7 +1262,7 @@
         var fusion = Object.assign({}, deja);
         Object.keys(f).forEach(function (k) {
           if (f[k] === undefined || f[k] === null) return;
-          if (k === 'droits' || k === 'droitsEcrans') {
+          if (k === 'droits' || k === 'droitsEcrans' || k === 'droitsImport') {
             fusion[k] = Object.assign({}, deja[k] || {}, f[k] || {});
             return;
           }
@@ -1383,6 +1450,47 @@
     return !!(e && e.universel);
   }
 
+  /* ==========================================================================
+   * LE DROIT D'IMPORT, PAR JEU (lot IMP-A)
+   * --------------------------------------------------------------------------
+   * Résolution : rôle archivé, FERMÉ ; module propriétaire des données (ou module d'import) désactivé, FERMÉ pour tous les rôles, administrateur compris ; puis la fiche RBAC
+   * (`droitsImport[jeu]`, champ par champ : UNE SURCHARGE ACCORDE AUTANT QU'ELLE RESTREINT) ; à défaut, la matrice d'origine du jeu. `importer` et `annuler` supposent `voir`.
+   * Un rôle créé en exploitation n'est dans aucune `rolesDefaut` : il part de zéro. Le droit d'ÉDITER l'écran hôte n'est ni nécessaire ni suffisant (le gestionnaire qui édite
+   * `m6-produits` n'importe pas pour autant un jeu qu'il ne détient pas) : cette fonction ne lit JAMAIS `droitsEcran`.
+   * ======================================================================== */
+  function droitImport(roleId, jeuId) {
+    var ferme = { voir: false, importer: false, annuler: false, jeu: jeuId };
+    var j = IMPORTS_INDEX[jeuId];
+    if (!j || !roleId || roleArchive(roleId)) return ferme;
+    if (!ecranActif(j.ecran, j.module) || !moduleActif('IMP')) return ferme;
+    var def = String(j.rolesDefaut[roleId] || '');
+    var f = surcharges()[roleId];
+    var o = f && f.droitsImport && f.droitsImport[jeuId];
+    var d = {
+      voir: o && o.voir != null ? !!o.voir : def.indexOf('V') >= 0,
+      importer: o && o.importer != null ? !!o.importer : def.indexOf('I') >= 0,
+      annuler: o && o.annuler != null ? !!o.annuler : def.indexOf('A') >= 0,
+      jeu: jeuId, origine: !o, surchargeJeu: !!o,
+    };
+    if (!d.voir) { d.importer = false; d.annuler = false; }
+    return d;
+  }
+  /** Les jeux que ce rôle voit : la matière de la rangée « Importation de données » (calculée de la matrice, jamais d'une liste de rôles). */
+  function importsVisibles(roleId) {
+    return IMPORTS.filter(function (j) { return droitImport(roleId, j.id).voir; }).map(function (j) { return j.id; });
+  }
+  /** Les jeux qu'un écran héberge sous le bouton « Importer les données » ET que ce rôle peut importer. */
+  function importsDeLHote(ecranId, roleId) {
+    return IMPORTS.filter(function (j) { return j.hotes.indexOf(ecranId) >= 0 && droitImport(roleId, j.id).importer; });
+  }
+  /** SUPERVISER les lots : détenir le droit d'ANNULER sur CHAQUE jeu déclaré. La liste des superviseurs est TIRÉE DU DROIT (aucun nom de rôle) : un profil qui peut défaire
+      un lot de n'importe quel jeu peut les lire tous. */
+  function superviseImport(roleId) {
+    return IMPORTS.length > 0 && IMPORTS.every(function (j) { return droitImport(roleId, j.id).annuler; });
+  }
+  /** La capacité PAIE, lue de la matrice : écrire dans le module de la paie (M11). Elle décide de la colonne « Salaire de base » du jeu du personnel. */
+  function capacitePaie(roleId) { return !!roleId && !!droits(roleId, 'M11').editer; }
+
   function droitsEcran(roleId, ecranId, code) {
     var base = droits(roleId, code);
     if (!ecranId) return base;
@@ -1502,6 +1610,12 @@
      * les cinq appelants sans qu'aucun soit retouché.
      * ==================================================================== */
     var canonique = entry.id ? INDEX[entry.id] : null;
+    /* UNE PAGE DE JEU D'IMPORT se règle sur le DROIT D'IMPORT de son jeu (voir), après l'activité du module ; une surcharge d'écran qui la ferme nommément garde la main. */
+    if (canonique && canonique.jeuImport) {
+      if (!ecranActif(entry.id, canonique.module)) return false;
+      if (surchargeEcranExplicite(roleId, entry.id) === false) return false;
+      return canonique.jeuImport === '*' ? importsVisibles(roleId).length > 0 : droitImport(roleId, canonique.jeuImport).voir;
+    }
     if (canonique && (canonique.universel || canonique.servant)) {
       entry = {
         id: entry.id,
@@ -1591,12 +1705,20 @@
        d'un écran restent ceux de la matrice. */
   var RUBAN_HORS = ['Relais en ligne'];
   var RUBAN_SYSTEME_ROLES = ['admin', 'da'];
+  /* LA RANGÉE « IMPORTATION DE DONNÉES » SEULE est visible des autres postes (Direction, 10/11/2026, réponse Q1 : la rangée seule, le reste de l'onglet reste réservé). Elle
+     l'est à qui détient un droit `voir` sur un jeu : CALCULÉ de la matrice par `tree()` (une rangée vide n'y paraît jamais), jamais d'une liste de rôles. Un profil hors
+     liste voit donc un onglet « Système » réduit à cette rangée, qui ne montre que ses jeux. */
+  var RUBAN_SYSTEME_MODULES_OUVERTS = ['IMP'];
   function treeRuban(roleId) {
-    return tree(roleId).filter(function (d) {
-      if (RUBAN_HORS.indexOf(d.domain) >= 0) return false;
-      if (d.domain === 'Système') return RUBAN_SYSTEME_ROLES.indexOf(roleId) >= 0;
-      return true;
-    });
+    var complet = RUBAN_SYSTEME_ROLES.indexOf(roleId) >= 0;
+    return tree(roleId).map(function (d) {
+      if (RUBAN_HORS.indexOf(d.domain) >= 0) return null;
+      if (d.domain === 'Système' && !complet) {
+        var mods = d.modules.filter(function (m) { return RUBAN_SYSTEME_MODULES_OUVERTS.indexOf(m.code) >= 0; });
+        return mods.length ? Object.assign({}, d, { modules: mods }) : null;
+      }
+      return d;
+    }).filter(Boolean);
   }
   /** Les domaines nommés, déjà filtrés par les droits du rôle : la matière des cartes de « Paramètres système ». */
   function treeParametres(roleId, domaines) {
@@ -1779,6 +1901,9 @@
     treeRuban: treeRuban, treeParametres: treeParametres, RUBAN_HORS: RUBAN_HORS, RUBAN_SYSTEME_ROLES: RUBAN_SYSTEME_ROLES,
     droits: droits,
     droitsEcran: droitsEcran,
+    IMPORTS: IMPORTS, IMPORTS_IGNORER_PERMIS: IMPORTS_IGNORER_PERMIS, RUBAN_SYSTEME_MODULES_OUVERTS: RUBAN_SYSTEME_MODULES_OUVERTS,
+    jeuImport: function (id) { return IMPORTS_INDEX[id] || null; },
+    droitImport: droitImport, importsVisibles: importsVisibles, importsDeLHote: importsDeLHote, superviseImport: superviseImport, capacitePaie: capacitePaie,
     droitsOrigine: droitsOrigine,
     DROITS: DROITS,
     roleArchive: roleArchive,

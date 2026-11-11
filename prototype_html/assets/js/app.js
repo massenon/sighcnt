@@ -1566,6 +1566,8 @@
     delaiVerrou: delaiVerrou,
     replierRuban: replierApresNavigation,
     ecoute: ecoute, enDernier: enDernier, sansRecharger: naviguerSansRecharger,
+    /* Le chargeur PARESSEUX de scripts, exposé (lot IMP-A) : le moteur d'import ne se charge qu'au clic du bouton « Importer les données ». */
+    chargerScript: chargerScript,
     surDonneesDistantes: surDonneesDistantes, rafraichir: rafraichirEcran,
   };
 })(window);

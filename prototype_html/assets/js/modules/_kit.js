@@ -182,6 +182,42 @@
     return accorde ? btn(label, o) : null;
   }
 
+  /* ==========================================================================
+   * « IMPORTER LES DONNÉES » : UNE FABRIQUE, UN DROIT PAR JEU (lot IMP-A)
+   * --------------------------------------------------------------------------
+   * `K.importer(jeux, opts)` rend le bouton, ou `null`. Il est ABSENT sans le droit d'IMPORTER du jeu (`N.droitImport`, lu au moment du rendu), jamais grisé, et ce droit n'est
+   * ni celui d'éditer l'écran hôte ni déduit de lui : un hôte peut être en lecture seule et offrir l'import, ou l'inverse. Plusieurs jeux sur un même écran : UN bouton, dont la
+   * première étape propose ceux que le profil détient. Le moteur (`modules/import.js`, ~120 Ko avec le lecteur .xlsx) ne se charge qu'au CLIC, par le chargeur paresseux de
+   * l'application : aucun hôte ne suppose le moteur déjà là. Le moteur REFUSE aussi (analyse, application, annulation) : masquer un bouton ne protège rien.
+   * `K.crud` le branche par la clé de configuration `importer: 'jeu'` (ou une liste) ; un écran construit à la main l'appelle et pose le résultat dans sa barre d'actions.
+   * ======================================================================== */
+  function moteurImportCharge() { return !!(global.SIGH.importer && global.SIGH.importer.ouvrirFenetre); }
+  function chargerMoteurImport() {
+    if (moteurImportCharge()) return Promise.resolve();
+    var app = A();
+    if (!app || typeof app.chargerScript !== 'function') return Promise.reject(new Error('chargeur indisponible'));
+    return app.chargerScript('assets/js/vendor/xlsx-mini.js').then(function () { return app.chargerScript('assets/js/modules/import.js'); });
+  }
+  function importer(jeux, opts) {
+    var o = opts || {}, N_ = global.SIGH.nav, s = S.session && S.session(), role = s && s.role;
+    if (!N_ || !N_.droitImport) return null;
+    var ids = [].concat(jeux || []).filter(function (id) { return N_.droitImport(role, id).importer; });
+    if (!ids.length) return null;
+    var b = btn(o.label || 'Importer les données', {
+      variant: o.variant || 'secondary', size: o.size || 'sm', icon: 'file-up', title: o.title || 'Modèle à télécharger, vérification sans écriture, puis import',
+      onclick: function () {
+        chargerMoteurImport().then(function () {
+          global.SIGH.importer.ouvrirFenetre(ids, { apres: o.apres || function () {
+            var app = A();
+            if (!(app && app.rafraichir && app.rafraichir())) global.location.reload();
+          } });
+        }, function (e) { U.toast('Le module d’import n’a pas pu être chargé.', { type: 'error', detail: String((e && e.message) || e) }); });
+      },
+    });
+    b.setAttribute('data-importer', ids.join(','));
+    return b;
+  }
+
   /** Même règle pour une commande rendue par une icône seule. */
   function commandeIcone(icone, titre, onclick, opts) {
     var o = typeof opts === 'string' ? { variant: opts } : (opts || {});
@@ -533,6 +569,19 @@
 
       if (cfg.intro) host.appendChild(cfg.intro());
 
+      /* La barre du tableau : « Nouveau » selon le droit d'ÉDITER l'écran, « Importer les données » selon le droit d'IMPORTER du jeu (`importer: 'jeu'` ou une liste). Deux droits
+         distincts : l'un n'emporte pas l'autre. */
+      function barreActions() {
+        var acts = [];
+        if (peutEditer) {
+          acts.push(cfg.creerVers
+            ? btn('Nouveau', { variant: 'primary', size: 'sm', icon: 'plus', onclick: function () { A().go(cfg.creerVers); } })
+            : btn('Nouveau', { variant: 'primary', size: 'sm', icon: 'plus', onclick: function () { openForm(null); } }));
+        }
+        if (cfg.importer) { var bi = importer(cfg.importer); if (bi) acts.push(bi); }
+        return acts.length ? acts : null;
+      }
+
       /* --- Tableau ----------------------------------------------------------*/
       function makeTable(rowsFn, archived) {
         var columns = (typeof cfg.columns === 'function' ? cfg.columns() : cfg.columns).slice();
@@ -552,14 +601,7 @@
              générique — une facture se compose de lignes, de remises et d'une
              répartition. Le bouton conduit alors à l'écran de saisie complet
              plutôt que d'ouvrir une modale qui perdrait l'essentiel. */
-          actions: archived ? null : (!peutEditer ? null : [
-            cfg.creerVers
-              ? btn('Nouveau', {
-                variant: 'primary', size: 'sm', icon: 'plus',
-                onclick: function () { A().go(cfg.creerVers); },
-              })
-              : btn('Nouveau', { variant: 'primary', size: 'sm', icon: 'plus', onclick: function () { openForm(null); } }),
-          ]),
+          actions: archived ? null : barreActions(),
           bulkActions: archived ? null : function (getSelected, clear) {
             return [
               btn('Imprimer la sélection', {
@@ -1775,7 +1817,7 @@
 
   global.SIGH.kit = {
     btn: btn, iconBtn: iconBtn, lien: lien,
-    commande: commande, commandeIcone: commandeIcone,
+    commande: commande, commandeIcone: commandeIcone, importer: importer, chargerMoteurImport: chargerMoteurImport,
     boutonValider: boutonValider, badgeValidation: badgeValidation, peutValider: peutValider, remettreAValider: remettreAValider,
     ecrireValidable: ecrireValidable, refusEcriture: refusEcriture, boutonValiderModale: boutonValiderModale,
     gardeValidation: gardeValidation, suivreValidation: suivreValidation,

@@ -108,7 +108,7 @@ async function extraireRbac() {
       const ecrans = N.ids().map((id) => {
         const e = N.get(id);
         return { id, label: e.label, icone: e.icon || null, module: e.module, moduleLabel: e.moduleLabel, domaine: e.domain, hub: !!e.hub, standalone: !!e.standalone,
-          universel: !!e.universel, servant: e.servant || null, sousReglage: e.sousReglage || undefined, roles: propre(e.roles) };
+          universel: !!e.universel, servant: e.servant || null, sousReglage: e.sousReglage || undefined, jeuImport: e.jeuImport || undefined, roles: propre(e.roles) };
       });
       /* Droits EFFECTIFS : ce que chaque rôle voit réellement, écran par écran (même appel que le ruban). */
       const matrice = {}; const parRole = {};
@@ -128,14 +128,27 @@ async function extraireRbac() {
           parRole[ro.id][e.id] = [d.voir ? 1 : 0, d.editer ? 1 : 0, d.annuler ? 1 : 0];
         });
       });
-      return { roles, domaines, raccourcis: propre(N.RACCOURCIS), modules, ecrans, matrice, parRole, version: SIGH.store.VERSION || null };
+      /* LE DROIT D'IMPORT PAR JEU (lot IMP-A) : la déclaration du manifeste, puis ce que chaque rôle détient réellement (même appel que le bouton, `N.droitImport`), puis les deux
+         faits dérivés de la matrice dont le poste aura besoin : qui SUPERVISE les lots (droit d'annuler sur chaque jeu) et qui détient la CAPACITÉ PAIE (colonne « Salaire de base »). */
+      const importJeux = propre(N.IMPORTS).map((j) => ({ id: j.id, libelle: j.libelle, ecran: j.ecran, module: j.module, hotes: j.hotes, sensibilite: j.sensibilite,
+        collections: j.collections, doublon: j.doublon }));
+      const importParRole = {};
+      roles.forEach((ro) => {
+        importParRole[ro.id] = {};
+        N.IMPORTS.forEach((j) => { const d = N.droitImport(ro.id, j.id); importParRole[ro.id][j.id] = [d.voir ? 1 : 0, d.importer ? 1 : 0, d.annuler ? 1 : 0]; });
+      });
+      const importSupervision = roles.filter((ro) => N.superviseImport(ro.id)).map((ro) => ro.id);
+      const importPaie = roles.filter((ro) => N.capacitePaie(ro.id)).map((ro) => ro.id);
+      return { roles, domaines, raccourcis: propre(N.RACCOURCIS), modules, ecrans, matrice, parRole, version: SIGH.store.VERSION || null,
+        importation: { jeux: importJeux, parRole: importParRole, superviseurs: importSupervision, capacitePaie: importPaie } };
     });
     const total = Object.values(r.parRole).reduce((a, o) => a + Object.keys(o).length, 0);
     console.log(`  ${r.roles.length} rôles · ${r.modules.length} rangées · ${r.ecrans.length} entrées d'index · ${total} droits écran×rôle`);
     if (m.erreurs.length) console.log('  (avertissements de chargement : ' + m.erreurs.length + ')');
     ecrire('packages/rbac/data/rbac.json', {
       _doc: 'ENGENDRÉ par prototype_html/build/extraire.js — ne pas éditer. Source unique des droits : lue par le service de la mère, le poste, le mobile et le panneau. parRole[rôle][écran] = [voir, éditer, annuler].',
-      roles: r.roles, matriceModules: r.matrice, parRole: r.parRole });
+      roles: r.roles, matriceModules: r.matrice, parRole: r.parRole,
+      import: Object.assign({ _doc: 'Droit d\'import par jeu : parRole[rôle][jeu] = [voir, importer, annuler]. superviseurs : droit d\'annuler sur CHAQUE jeu (lisent tous les lots). capacitePaie : écriture dans M11 (colonne Salaire de base).' }, r.importation) });
     ecrire('packages/referentiels/data/manifeste.json', {
       _doc: 'ENGENDRÉ par prototype_html/build/extraire.js — manifeste de navigation de la maquette (domaines, rangées, écrans).',
       domaines: r.domaines, raccourcis: r.raccourcis, modules: r.modules, ecrans: r.ecrans });

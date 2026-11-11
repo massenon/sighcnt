@@ -1369,7 +1369,7 @@
     title: 'Fournisseurs',
     description: 'Référentiel des fournisseurs, habilitation pour les retours de produits périmés et historique des commandes.',
     render: K.crud({
-      collection: 'fournisseurs', entite: 'fournisseur', entiteP: 'fournisseurs', module: 'M7',
+      collection: 'fournisseurs', entite: 'fournisseur', entiteP: 'fournisseurs', module: 'M7', importer: 'fournisseurs',
       defaultSort: 'nom',
       source: 'Facture fournisseur SoBAPS et retours CAME identifiés au cadrage.',
       columns: [

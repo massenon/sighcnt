@@ -494,7 +494,7 @@
   /* ==========================================================================
    * STOCK GROS / STOCK DÉTAIL
    * ======================================================================== */
-  function ecranStock(id, titre, description, champStock, note) {
+  function ecranStock(id, titre, description, champStock, note, jeuxImport) {
     global.SIGH.screen(id, {
       title: titre,
       description: description,
@@ -530,7 +530,8 @@
             colEtat,
           ],
           onRowClick: function (p) { U.drawer({ title: p.designation, subtitle: p.code, body: detailProduit(p), width: 'max-w-3xl' }); },
-          actions: [K.btn('Éditer l’état', {
+          /* « Importer les données » : le jeu de la situation initiale du magasin central, selon le droit d'IMPORTER du jeu (absent sans lui). */
+          actions: [jeuxImport ? K.importer(jeuxImport) : null, K.btn('Éditer l’état', {
             size: 'sm', icon: 'printer',
             onclick: function () {
               P.etat({
@@ -610,7 +611,8 @@
   ecranStock('m6-stock-gros', 'Stock gros (magasin central)',
     'Situation du magasin central : réceptions fournisseurs et approvisionnement de la pharmacie de détail.',
     'stockGros',
-    'Le magasin central reçoit les livraisons fournisseurs. Les sorties s’effectuent par <strong>transfert vers le stock de détail</strong>, chaque transfert étant tracé (RG-03).');
+    'Le magasin central reçoit les livraisons fournisseurs. Les sorties s’effectuent par <strong>transfert vers le stock de détail</strong>, chaque transfert étant tracé (RG-03).',
+    'grand-stock');
 
   ecranStock('m6-stock-detail', 'Stock détail (pharmacie d’urgence)',
     'Situation de la pharmacie d’urgence : dispensation aux patients et aux services de soins.',
