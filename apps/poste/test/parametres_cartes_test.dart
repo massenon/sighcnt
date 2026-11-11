@@ -44,9 +44,13 @@ void main() {
     expect(find.byWidgetPredicate((w) => w.key is ValueKey && '${(w.key as ValueKey).value}'.startsWith('hub-carte:rls-')), findsNWidgets(attendu));
   });
 
-  casM14('direction : pas d\'onglet Système au ruban ; le profil ouvre la page de cartes, sans aucun écran interdit', (t) async {
+  casM14('direction : Système au ruban réduit à la rangée Importation (droit de lecture des jeux) ; le profil ouvre la page de cartes, sans aucun écran interdit', (t) async {
     await monter(t, 'm14-utilisateurs', role: 'direction');
-    expect(find.byKey(const Key('domaine-Système')), findsNothing);
+    // Décision du 10/11/2026 (Q1) : la rangée IMP seule s'ouvre aux profils qui détiennent un droit sur un jeu ; le reste de l'onglet reste réservé.
+    final systeme = donneesNav.manifeste.ruban(donneesNav.matrice, 'direction', estMere: true).where((d) => d.nom == 'Système').toList();
+    expect(systeme, hasLength(1));
+    expect(systeme.single.rangees.map((r) => r.code).toList(), ['IMP']);
+    expect(find.byKey(const Key('domaine-Système')), findsOneWidget);
     expect(find.byKey(const Key('domaine-Relais en ligne')), findsNothing);
     await toucherM14(t, find.byKey(const Key('barre-profil')));
     expect(find.byKey(const Key('profil-lien:parametres-hub')), findsOneWidget);
