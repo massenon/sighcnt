@@ -153,7 +153,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         (appel.entreTemps || []).forEach((g) => {
           if (g.fn === 'reaffecter') ORG.reaffecter(g.posteId, g.parentId);
           else if (g.fn === 'archiver') ORG.archiver(g.posteId, 'entre temps');
-          else if (g.fn === 'restaurer') S.collection('postes').restore(g.posteId);
+          else if (g.fn === 'restaurer') S.collection('postes', { module: 'CFG', entite: 'poste', prefix: 'PST' }).restore(g.posteId);
         });
         if (appel.roleAnnulation) seConnecter(appel.roleAnnulation);
         const u = r.ok ? r.undo() : null;

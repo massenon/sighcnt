@@ -1,6 +1,6 @@
 // L'organigramme (lot ORG2, Direction, 11/11/2026, O1 à O5) et le verrou d'un poste de secours (P3) : rejoue les vecteurs engendrés par les moteurs de la maquette
 // (prototype_html/build/vecteurs-organigramme.js) sur les MÊMES entrées : semence de la photo, arbre et titre de l'agent, réaffecter, renommer le titulaire, poser le titre,
-// créer, archiver (refus nommés : cycle, parent archivé, poste qui porte des postes, agent introuvable, poste vacant, titre trop long, droit), reprise qui épargne ce que la
+// créer, archiver (réaffecte les postes portés, refus nommés : cycle, parent archivé, cible requise, cible en boucle ou archivée, agent introuvable, poste vacant, titre trop long, droit), reprise qui épargne ce que la
 // clinique a modifié, mise en page de l'impression paysage, délai de verrou d'un poste de secours.
 import 'dart:convert';
 
@@ -17,8 +17,9 @@ M copie(M x) => (jsonDecode(jsonEncode(x)) as Map).cast<String, Object?>();
 const rolesConnus = {'admin', 'da', 'direction', 'dm', 'medecin', 'caissier', 'infirmier', 'agentadmin', 'comptable', 'stock', 'pharmacien', 'laborantin', 'reception', 'ambulancier', 'aide_soignant'};
 
 /// Les droits de l'écran « Organisation & organigramme » par rôle, tels que la matrice les donne (admin et DA : tout ; Direction : écrire sans annuler ; les autres : rien).
-({bool editer, bool annuler}) droits(String role, {bool sansRole = false}) {
+({bool editer, bool annuler}) droits(String role, {bool sansRole = false, M? special}) {
   if (sansRole) return (editer: false, annuler: false);
+  if (special != null) return (editer: special['editer'] == true, annuler: special['annuler'] == true);
   return switch (role) {
     'admin' || 'da' => (editer: true, annuler: true),
     'direction' => (editer: true, annuler: false),
@@ -106,7 +107,8 @@ void main() {
     final postes = postesMonde(), personnel = personnelMonde();
     final role = '${cas['role']}';
     final a = m(cas['appel']);
-    final d = droits(role, sansRole: a['sansRole'] == true);
+    postes.addAll([for (final x in liste(a['ajout'] ?? <Object?>[])) copie(x)]);
+    final d = droits(role, sansRole: a['sansRole'] == true, special: a['droits'] == null ? null : m(a['droits']));
     final avant = [for (final p in postes) jsonEncode(p)];
     final journal = <M>[];
     void ligne(String action, String module, String entite, Object? av, Object? ap, {bool detail = true}) =>
@@ -124,10 +126,18 @@ void main() {
         ligne('Création', 'CFG', 'poste', null, null, detail: false);
       }
     } else if (fn == 'archiver') {
-      refus = orgControlerArchivage('${a['posteId']}', droitAnnulation: d.annuler, postes: postes);
-      if (refus == null) {
+      final plan = orgPlanifierArchivage('${a['posteId']}',
+          cibleId: a['cibleId'] as String?, motif: a['motif'] as String?, droitAnnulation: d.annuler, droitEcriture: d.editer, postes: postes);
+      refus = plan.refus;
+      if (plan.ok) {
+        for (var i = 0; i < plan.reaffectes.length; i++) {
+          postes.firstWhere((p) => p['id'] == plan.reaffectes[i].id)['parentId'] = plan.cible!.id;
+          final jr = plan.journalReaffectations[i];
+          ligne(jr.action, jr.module, jr.entite, jr.avant, jr.apres);
+        }
         postes.firstWhere((p) => p['id'] == a['posteId'])['statut'] = 'archive';
-        ligne('Archivage', 'CFG', 'poste', {'statut': 'actif'}, {'statut': 'archive'});
+        final ja = plan.journalArchivage!;
+        ligne(ja.action, ja.module, ja.entite, ja.avant, ja.apres);
       }
     } else {
       final champs = switch (fn) {
@@ -205,6 +215,102 @@ void main() {
         expect(r['titres'], a['titres'], reason: 'titres du personnel');
         expect(r['journal'], a['journal'], reason: 'journal');
         expect(r['nbPostes'], a['nbPostes']);
+      });
+    }
+  });
+
+  group('annuler un archivage qui a réaffecté : le poste revient, chaque poste porté retrouve sa place, sauf celui déplacé depuis (laissé et dit)', () {
+    M champsPoste(M p) => {
+          'id': p['id'],
+          'statut': p['statut'],
+          'parentId': p.containsKey('parentId') ? p['parentId'] : null,
+          'poste': p['poste'],
+          'effectif': p['effectif'],
+          'titulaire': p.containsKey('titulaire') ? p['titulaire'] : null,
+          'chef': p['chef'] == true,
+          'role': p['role']
+        };
+    for (final c in liste(j['annulations'])) {
+      test(c['nom'] as String, () {
+        final postes = postesMonde(), personnel = personnelMonde();
+        final a = m(c['appel']);
+        postes.addAll([for (final x in liste(a['ajout'] ?? <Object?>[])) copie(x)]);
+        final journal = <M>[];
+        void ligne(String action, String entite, String ref, Object? av, Object? ap) =>
+            journal.add({'action': action, 'entite': entite, 'reference': ref, 'ancienne': tronque(av), 'nouvelle': tronque(ap)});
+        final admin = droits('admin');
+        ({RefusRh? refus, OrgPlanArchivage plan}) archiver(String id, String? motif, String? cibleId) {
+          final plan = orgPlanifierArchivage(id, cibleId: cibleId, motif: motif, droitAnnulation: admin.annuler, droitEcriture: admin.editer, postes: postes);
+          if (plan.ok) {
+            for (var i = 0; i < plan.reaffectes.length; i++) {
+              postes.firstWhere((p) => p['id'] == plan.reaffectes[i].id)['parentId'] = plan.cible!.id;
+              final jr = plan.journalReaffectations[i];
+              ligne(jr.action, jr.entite, plan.reaffectes[i].id, jr.avant, jr.apres);
+            }
+            postes.firstWhere((p) => p['id'] == id)['statut'] = 'archive';
+            final ja = plan.journalArchivage!;
+            ligne(ja.action, ja.entite, id, ja.avant, ja.apres);
+          }
+          return (refus: plan.refus, plan: plan);
+        }
+
+        final motif = a.containsKey('motif') ? a['motif'] as String? : 'Vecteur';
+        final r = archiver('${a['posteId']}', motif, a['cibleId'] as String?);
+        final sortie = <String, Object?>{
+          'archivage': r.refus == null
+              ? {'ok': true, 'reaffectes': [for (final x in r.plan.reaffectes) x.id], 'cible': r.plan.cible?.id}
+              : {'ok': false, 'code': r.refus!.code, 'motif': r.refus!.motif, 'geste': r.refus!.geste}
+        };
+        for (final g in liste(a['entreTemps'] ?? <Object?>[])) {
+          final id = '${g['posteId']}';
+          switch (g['fn']) {
+            case 'reaffecter':
+              final plan = orgPlanifierModification(id, {'parentId': g['parentId']},
+                  droitEcriture: admin.editer, postes: postes, personnelActif: actifs(personnel), rolesConnus: rolesConnus);
+              if (plan.ok && !plan.inchange && plan.journalPoste != null) {
+                final p = postes.firstWhere((x) => x['id'] == id);
+                plan.patch.forEach((k, v) => p[k] = v);
+                final jp = plan.journalPoste!;
+                ligne(jp.action, jp.entite, id, jp.avant, jp.apres);
+              }
+            case 'archiver':
+              archiver(id, 'entre temps', null);
+            case 'restaurer':
+              postes.firstWhere((x) => x['id'] == id)['statut'] = 'actif';
+              ligne('Restauration', 'poste', id, {'statut': 'archive'}, {'statut': 'actif'});
+          }
+        }
+        final dAnn = droits('${a['roleAnnulation'] ?? 'admin'}');
+        if (r.refus == null) {
+          final u = orgPlanifierAnnulationArchivage('${a['posteId']}',
+              cible: r.plan.cible, reaffectes: r.plan.reaffectes, droitAnnulation: dAnn.annuler, droitEcriture: dAnn.editer, postes: postes);
+          if (u.refus != null) {
+            sortie['annulation'] = {'ok': false, 'code': u.refus!.code, 'motif': u.refus!.motif, 'geste': u.refus!.geste};
+          } else {
+            postes.firstWhere((p) => p['id'] == a['posteId'])['statut'] = 'actif';
+            final jq = u.journalRestauration!;
+            ligne(jq.action, jq.entite, '${a['posteId']}', jq.avant, jq.apres);
+            for (var i = 0; i < u.restaures.length; i++) {
+              postes.firstWhere((p) => p['id'] == u.restaures[i].id)['parentId'] = a['posteId'];
+              final jr = u.journalReaffectations[i];
+              ligne(jr.action, jr.entite, u.restaures[i].id, jr.avant, jr.apres);
+            }
+            sortie['annulation'] = {
+              'ok': true,
+              'restaures': [for (final x in u.restaures) x.id],
+              'laisses': [for (final x in u.laisses) {'id': x.id, 'motif': x.motif}]
+            };
+          }
+        } else {
+          sortie['annulation'] = null;
+        }
+        sortie['postes'] = [for (final p in postes) champsPoste(p)];
+        sortie['journal'] = journal;
+        final att = m(c['attendu']);
+        expect(sortie['archivage'], att['archivage'], reason: 'archivage');
+        expect(sortie['annulation'], att['annulation'], reason: 'annulation');
+        expect(sortie['postes'], att['postes'], reason: 'postes');
+        expect(sortie['journal'], att['journal'], reason: 'journal');
       });
     }
   });

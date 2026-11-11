@@ -396,23 +396,211 @@ OrgPlan orgPlanifierReaffectation(String posteId, String? parentId,
   );
 }
 
-/// L'archivage d'un poste : `null` si permis, sinon le refus nommé. Un poste qui porte encore des postes actifs ne s'archive pas : les rattachés deviendraient des sommets sans
-/// que personne l'ait décidé. [droitAnnulation] : le profil annule-t-il à l'écran (RG-14) ?
-RefusRh? orgControlerArchivage(String posteId, {required bool droitAnnulation, required Iterable<FichePoste> postes}) {
-  if (!droitAnnulation) return orgRefusDroit(archivage: true);
+/// Un poste nommé par un plan d'archivage : son identifiant et son intitulé.
+class OrgPosteNomme {
+  const OrgPosteNomme(this.id, this.poste);
+  final String id, poste;
+}
+
+/// L'aperçu d'un archivage (`planArchivage` de la maquette) : les postes actifs que le poste porte directement, la cible où ils iraient et les postes qui pourraient les recevoir.
+/// Ne décide d'aucun droit et n'écrit rien : il sert la modale de confirmation autant que le plan.
+class OrgApercuArchivage {
+  const OrgApercuArchivage({this.refus, this.poste, this.portes = const [], this.cible, this.parDefaut = false, this.candidats = const []});
+  final RefusRh? refus;
+  final OrgPosteNomme? poste;
+  final List<OrgPosteNomme> portes;
+  final OrgPosteNomme? cible;
+
+  /// Vrai si la cible est le rattachement du poste archivé (aucune cible demandée).
+  final bool parDefaut;
+
+  /// Les postes qui peuvent accueillir les postes portés : ni le poste, ni l'un de ses descendants, tous actifs.
+  final List<OrgPosteNomme> candidats;
+  bool get ok => refus == null;
+}
+
+/// Archiver un poste qui porte des postes les RÉAFFECTE (lot ORG3, décision de la Direction du 11/11/2026) : cible par défaut le PARENT du poste archivé, au choix un autre poste ;
+/// un sommet qui porte des postes exige une cible (CIBLE_REQUISE). La cible n'est ni le poste, ni l'un de ses descendants, ni un poste archivé. [postes] : TOUTES les fiches.
+OrgApercuArchivage orgApercuArchivage(String posteId, String? cibleId, Iterable<FichePoste> postes) {
   final poste = _poste(posteId, postes);
-  if (poste == null) return _refus('POSTE_INTROUVABLE', 'Ce poste n’existe pas.', 'Rouvrir l’écran puis choisir un poste de la liste.');
-  if (_archive(poste)) return _refus('POSTE_ARCHIVE', 'Le poste « ${poste['poste']} » est déjà archivé.', 'Le restaurer depuis la corbeille si besoin.');
-  final portes = [for (final p in postes) if (!_archive(p) && p['parentId'] == posteId) p];
-  if (portes.isNotEmpty) {
-    final n = portes.length;
-    return _refus(
-        'POSTE_PORTE_DES_POSTES',
-        'Le poste « ${poste['poste']} » porte encore $n poste${n > 1 ? 's' : ''} (${portes.map((p) => p['poste']).join(', ')}) : l’archiver les ferait remonter au sommet sans que personne l’ait décidé.',
-        'Réaffecter d’abord ces postes, puis archiver celui-ci.',
-        {'portes': [for (final p in portes) p['id']]});
+  if (poste == null) return OrgApercuArchivage(refus: _refus('POSTE_INTROUVABLE', 'Ce poste n’existe pas.', 'Rouvrir l’écran puis choisir un poste de la liste.'));
+  if (_archive(poste)) return OrgApercuArchivage(refus: _refus('POSTE_ARCHIVE', 'Le poste « ${poste['poste']} » est déjà archivé.', 'Le restaurer depuis la corbeille si besoin.'));
+  final actifs = [for (final p in postes) if (!_archive(p)) p];
+  OrgPosteNomme nomme(FichePoste p) => OrgPosteNomme('${p['id']}', '${p['poste']}');
+  final portes = [for (final p in actifs) if (p['parentId'] == posteId) nomme(p)];
+  final interdits = [...orgDescendants(posteId, actifs), posteId];
+  final candidats = [for (final p in actifs) if (!interdits.contains('${p['id']}')) nomme(p)];
+  final moi = OrgPosteNomme('${poste['id']}', '${poste['poste']}');
+  if (portes.isEmpty) return OrgApercuArchivage(poste: moi, candidats: candidats);
+  final liste = portes.map((p) => p.poste).join(', ');
+  final n = portes.length;
+  final parent = _poste(_nom(poste['parentId']), postes);
+  final parentActif = parent != null && !_archive(parent) ? parent : null;
+  final visee = _vrai(cibleId) ? cibleId : (parentActif == null ? null : '${parentActif['id']}');
+  if (visee == null) {
+    return OrgApercuArchivage(
+        refus: _refus(
+            'CIBLE_REQUISE',
+            'Le poste « ${poste['poste']} » est au sommet de l’organigramme et porte $n poste${n > 1 ? 's' : ''} ($liste) : il n’y a pas de poste au-dessus vers lequel les faire remonter.',
+            candidats.isNotEmpty
+                ? 'Désigner le poste d’accueil de ces postes (celui qui prend leur suite), puis archiver.'
+                : 'Créer d’abord le poste d’accueil de ces postes (aucun autre poste actif ne peut les recevoir), puis archiver.',
+            {
+              'portes': [for (final p in portes) p.id],
+              'candidats': [for (final p in candidats) p.id]
+            }),
+        poste: moi,
+        portes: portes,
+        candidats: candidats);
   }
-  return null;
+  final cible = _poste(visee, postes);
+  if (cible == null) {
+    return OrgApercuArchivage(
+        refus: _refus('CIBLE_INTROUVABLE', 'Le poste d’accueil demandé n’existe pas.', 'Choisir un poste de la liste.', {'cibleId': visee}), poste: moi, portes: portes, candidats: candidats);
+  }
+  if (_archive(cible)) {
+    return OrgApercuArchivage(
+        refus: _refus('CIBLE_ARCHIVEE', 'Le poste « ${cible['poste']} » est archivé : on ne rattache rien à un poste archivé (RG-14).',
+            'Restaurer ce poste depuis la corbeille, ou choisir un poste actif.', {'cibleId': visee}),
+        poste: moi,
+        portes: portes,
+        candidats: candidats);
+  }
+  if (interdits.contains(visee)) {
+    return OrgApercuArchivage(
+        refus: _refus(
+            'CIBLE_CYCLE',
+            visee == posteId
+                ? 'Les postes portés par « ${poste['poste']} » ne peuvent pas être réaffectés à ce poste lui-même : il est archivé.'
+                : 'Réaffecter les postes portés par « ${poste['poste']} » sous « ${cible['poste']} » ferait de lui son propre supérieur : « ${cible['poste']} » dépend déjà de « ${poste['poste']} ».',
+            'Choisir un poste qui ne dépende pas de celui-ci.',
+            {'cibleId': visee}),
+        poste: moi,
+        portes: portes,
+        candidats: candidats);
+  }
+  return OrgApercuArchivage(poste: moi, portes: portes, cible: nomme(cible), parDefaut: !_vrai(cibleId), candidats: candidats);
+}
+
+/// Ce qu'il faut écrire pour archiver un poste : les réaffectations (une ligne de journal chacune), puis l'archivage (une ligne), ou le refus nommé.
+class OrgPlanArchivage {
+  const OrgPlanArchivage({this.refus, this.poste, this.cible, this.reaffectes = const [], this.motif, this.journalReaffectations = const [], this.journalArchivage});
+  final RefusRh? refus;
+  final OrgPosteNomme? poste;
+  final OrgPosteNomme? cible;
+
+  /// Les postes réaffectés sous [cible], dans l'ordre où ils s'écrivent.
+  final List<OrgPosteNomme> reaffectes;
+
+  /// Le motif saisi, rogné ; `null` s'il est vide.
+  final String? motif;
+  final List<OrgJournal> journalReaffectations;
+  final OrgJournal? journalArchivage;
+  bool get ok => refus == null;
+}
+
+/// Planifie l'archivage d'un poste (`archiverPosteOrg`). [droitAnnulation] : le profil annule-t-il à l'écran (RG-14) ? [droitEcriture] : écrit-il ? (réaffecter est une modification :
+/// un poste qui porte des postes exige les DEUX). Tout est contrôlé AVANT la première écriture : un rattachement refusé fait refuser l'archivage entier.
+OrgPlanArchivage orgPlanifierArchivage(String posteId,
+    {String? cibleId, String? motif, required bool droitAnnulation, required bool droitEcriture, required Iterable<FichePoste> postes}) {
+  if (!droitAnnulation) return OrgPlanArchivage(refus: orgRefusDroit(archivage: true));
+  final ap = orgApercuArchivage(posteId, _vrai(cibleId) ? cibleId : null, postes);
+  if (!ap.ok) return OrgPlanArchivage(refus: ap.refus);
+  final poste = _poste(posteId, postes)!;
+  final n = ap.portes.length;
+  if (n > 0 && !droitEcriture) {
+    return OrgPlanArchivage(
+        refus: _refus(
+            'ORGANIGRAMME_RESERVE',
+            'Archiver « ${poste['poste']} » réaffecte les $n poste${n > 1 ? 's' : ''} qu’il porte : une modification de l’organigramme, réservée aux profils qui écrivent à l’écran « Organisation & organigramme ».',
+            'Demander à l’administrateur ou à la Directrice Administrative.'));
+  }
+  for (final p in ap.portes) {
+    final ctl = orgControlerRattachement(p.id, ap.cible!.id, postes);
+    if (ctl != null) {
+      return OrgPlanArchivage(
+          refus: _refus('REAFFECTATION_REFUSEE', 'Le poste « ${p.poste} » ne peut pas être réaffecté sous « ${ap.cible!.poste} » : ${ctl.motif}', ctl.geste, {'causes': ctl.code, 'posteId': p.id}));
+    }
+  }
+  final t = motif == null || motif.isEmpty ? null : (motif.trim().isEmpty ? null : motif.trim());
+  final jr = [
+    for (final p in ap.portes)
+      OrgJournal('Réaffectation d’un poste', 'CFG', 'Poste', {'poste': p.poste, 'parentId': '${poste['poste']}'}, {'parentId': ap.cible!.poste, 'motif': t, 'archivage': '${poste['poste']}'})
+  ];
+  final ja = OrgJournal(
+      'Archivage',
+      'CFG',
+      'poste',
+      {'statut': 'actif', 'poste': '${poste['poste']}', 'sousPostes': n},
+      n > 0 ? {'statut': 'archive', 'cible': ap.cible!.poste, 'motif': t} : {'statut': 'archive', 'motif': t});
+  return OrgPlanArchivage(poste: ap.poste, cible: ap.cible, reaffectes: ap.portes, motif: t, journalReaffectations: jr, journalArchivage: ja);
+}
+
+/// Un poste que l'annulation laisse où il est, avec la raison.
+class OrgLaisse {
+  const OrgLaisse(this.id, this.poste, this.motif);
+  final String id, poste, motif;
+}
+
+/// Ce que l'annulation d'un archivage écrit : la restauration du poste, puis chaque poste réaffecté remis sous son ancien parent (sauf ceux qu'elle laisse), ou le refus nommé.
+class OrgPlanAnnulation {
+  const OrgPlanAnnulation({this.refus, this.journalRestauration, this.restaures = const [], this.laisses = const [], this.journalReaffectations = const []});
+  final RefusRh? refus;
+  final OrgJournal? journalRestauration;
+
+  /// Les postes remis sous le poste restauré, dans l'ordre.
+  final List<OrgPosteNomme> restaures;
+  final List<OrgLaisse> laisses;
+
+  /// Une ligne par poste remis, dans le même ordre que [restaures].
+  final List<OrgJournal> journalReaffectations;
+  bool get ok => refus == null;
+}
+
+/// Planifie l'annulation d'un archivage qui a réaffecté (`undo` de `archiverPosteOrg`). [postes] : l'état ACTUEL (le poste doit encore être archivé). [reaffectes] : les postes que
+/// l'archivage avait déplacés, [cible] : où il les avait mis (rien si aucun). Un poste déplacé ou archivé depuis, ou dont le retour ferait une boucle, est LAISSÉ et le plan le dit.
+OrgPlanAnnulation orgPlanifierAnnulationArchivage(String posteId,
+    {required OrgPosteNomme? cible, required List<OrgPosteNomme> reaffectes, required bool droitAnnulation, required bool droitEcriture, required Iterable<FichePoste> postes}) {
+  if (!droitAnnulation) return OrgPlanAnnulation(refus: orgRefusDroit(archivage: true));
+  final cur = _poste(posteId, postes);
+  if (cur == null || !_archive(cur)) {
+    final nom = cur == null ? 'ce poste' : '${cur['poste']}';
+    return OrgPlanAnnulation(
+        refus: _refus('ANNULATION_IMPOSSIBLE', 'Le poste « $nom » n’est plus archivé (il a déjà été restauré) : il n’y a plus d’archivage à annuler.',
+            'Contrôler la liste des postes ; remettre à la main les postes réaffectés si besoin (le journal donne leur ancien rattachement).'));
+  }
+  if (reaffectes.isNotEmpty && !droitEcriture) return OrgPlanAnnulation(refus: orgRefusDroit());
+  // L'état évolue au fil des remises : chaque contrôle voit les postes déjà remis.
+  final etat = [for (final p in postes) {...p}];
+  etat.firstWhere((p) => p['id'] == posteId)['statut'] = 'actif';
+  final restaures = <OrgPosteNomme>[];
+  final laisses = <OrgLaisse>[];
+  final journal = <OrgJournal>[];
+  for (final x in reaffectes) {
+    final s = _poste(x.id, etat);
+    if (s == null || _archive(s)) {
+      laisses.add(OrgLaisse(x.id, x.poste, 'il est archivé depuis'));
+      continue;
+    }
+    if (s['parentId'] != cible?.id) {
+      laisses.add(OrgLaisse(x.id, x.poste, 'il a été déplacé depuis sous « ${_nom(_poste(_nom(s['parentId']), etat)?['poste']) ?? 'le sommet'} »'));
+      continue;
+    }
+    final ctl = orgControlerRattachement(x.id, posteId, etat);
+    if (ctl != null) {
+      laisses.add(OrgLaisse(x.id, x.poste, ctl.motif));
+      continue;
+    }
+    s['parentId'] = posteId;
+    restaures.add(x);
+    journal.add(OrgJournal('Réaffectation d’un poste', 'CFG', 'Poste', {'poste': x.poste, 'parentId': cible?.poste},
+        {'parentId': '${cur['poste']}', 'motif': 'Archivage de « ${cur['poste']} » annulé'}));
+  }
+  return OrgPlanAnnulation(
+      journalRestauration: const OrgJournal('Restauration', 'CFG', 'poste', {'statut': 'archive'}, {'statut': 'actif'}),
+      restaures: restaures,
+      laisses: laisses,
+      journalReaffectations: journal);
 }
 
 // =============================================================================================================================================

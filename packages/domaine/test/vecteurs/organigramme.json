@@ -1771,15 +1771,15 @@
       "action": "Archivage",
       "module": "CFG",
       "entite": "poste",
-      "ancienne": "{\"statut\":\"actif\"}",
-      "nouvelle": "{\"statut\":\"archive\"}"
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Sages-Femmes\",\"sousPostes\":0}",
+      "nouvelle": "{\"statut\":\"archive\",\"motif\":\"Vecteur\"}"
      }
     ],
     "nbPostes": 17
    }
   },
   {
-   "nom": "archiver un poste qui porte encore des postes",
+   "nom": "archiver un poste qui porte des postes : ils remontent sous son parent",
    "role": "admin",
    "appel": {
     "fn": "archiver",
@@ -1787,10 +1787,235 @@
     "motif": "Vecteur"
    },
    "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST014",
+     "PST015",
+     "PST016"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Archivage",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Infirmiers\",\"sousPostes\":2}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Directeur Médical\",\"motif\":\"Vecteur\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "archiver un poste qui porte des postes sous une autre cible",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST014",
+    "motif": "Vecteur",
+    "cibleId": "PST012"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST014",
+     "PST015",
+     "PST016"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Echographiste\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Echographiste\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Archivage",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Infirmiers\",\"sousPostes\":2}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Echographiste\",\"motif\":\"Vecteur\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "archiver sans motif : le journal porte un motif vide",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST014",
+    "motif": null
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST014",
+     "PST015",
+     "PST016"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":null,\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":null,\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Archivage",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Infirmiers\",\"sousPostes\":2}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Directeur Médical\",\"motif\":null}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "archiver la DA : trois postes remontent sous le Directeur Médical",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST002",
+    "motif": "Vecteur"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST002",
+     "PST003",
+     "PST007",
+     "PST008"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Comptable\",\"parentId\":\"Directrice Administrative (DA)\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Directrice Administrative (DA)\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Dispensatrices\",\"parentId\":\"Directrice Administrative (DA)\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Directrice Administrative (DA)\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Agents de Sécurités\",\"parentId\":\"Directrice Administrative (DA)\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Directrice Administrative (DA)\"}"
+     },
+     {
+      "action": "Archivage",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Directrice Administrative (DA)\",\"sousPostes\":3}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Directeur Médical\",\"motif\":\"Vecteur\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "sommet qui porte des postes sans cible et sans poste d’accueil : refusé",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST001",
+    "motif": "Vecteur"
+   },
+   "attendu": {
     "ok": false,
-    "code": "POSTE_PORTE_DES_POSTES",
-    "motif": "Le poste « Infirmiers » porte encore 2 postes (Sages-Femmes, Aide-Soignante) : l’archiver les ferait remonter au sommet sans que personne l’ait décidé.",
-    "geste": "Réaffecter d’abord ces postes, puis archiver celui-ci.",
+    "code": "CIBLE_REQUISE",
+    "motif": "Le poste « Directeur Médical » est au sommet de l’organigramme et porte 7 postes (Directrice Administrative (DA), Infirmiers, Laborantins, Echographiste, Médecins Généralistes, Secrétaires Médicaux, Agents d’Entretiens) : il n’y a pas de poste au-dessus vers lequel les faire remonter.",
+    "geste": "Créer d’abord le poste d’accueil de ces postes (aucun autre poste actif ne peut les recevoir), puis archiver.",
     "postesChanges": [],
     "nouveaux": [],
     "titres": [
@@ -1805,6 +2030,404 @@
     ],
     "journal": [],
     "nbPostes": 17
+   }
+  },
+  {
+   "nom": "sommet qui porte des postes sans cible alors qu’un poste d’accueil existe : refusé",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST001",
+    "motif": "Vecteur",
+    "ajout": [
+     {
+      "id": "PSTS",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Direction générale",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "direction"
+     }
+    ]
+   },
+   "attendu": {
+    "ok": false,
+    "code": "CIBLE_REQUISE",
+    "motif": "Le poste « Directeur Médical » est au sommet de l’organigramme et porte 7 postes (Directrice Administrative (DA), Infirmiers, Laborantins, Echographiste, Médecins Généralistes, Secrétaires Médicaux, Agents d’Entretiens) : il n’y a pas de poste au-dessus vers lequel les faire remonter.",
+    "geste": "Désigner le poste d’accueil de ces postes (celui qui prend leur suite), puis archiver.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 18
+   }
+  },
+  {
+   "nom": "sommet qui porte des postes, cible choisie : ses sept postes passent sous elle",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST001",
+    "motif": "Vecteur",
+    "cibleId": "PSTS",
+    "ajout": [
+     {
+      "id": "PSTS",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Direction générale",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "direction"
+     }
+    ]
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST001",
+     "PST002",
+     "PST014",
+     "PST013",
+     "PST012",
+     "PST011",
+     "PST006",
+     "PST009"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Directrice Administrative (DA)\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Infirmiers\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Laborantins\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Echographiste\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Médecins Généralistes\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Secrétaires Médicaux\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "module": "CFG",
+      "entite": "Poste",
+      "ancienne": "{\"poste\":\"Agents d’Entretiens\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Archivage",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Directeur Médical\",\"sousPostes\":7}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Direction générale\",\"motif\":\"Vecteur\"}"
+     }
+    ],
+    "nbPostes": 18
+   }
+  },
+  {
+   "nom": "cible : le poste lui-même",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST002",
+    "motif": "Vecteur",
+    "cibleId": "PST002"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "CIBLE_CYCLE",
+    "motif": "Les postes portés par « Directrice Administrative (DA) » ne peuvent pas être réaffectés à ce poste lui-même : il est archivé.",
+    "geste": "Choisir un poste qui ne dépende pas de celui-ci.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "cible : un descendant (cycle)",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST002",
+    "motif": "Vecteur",
+    "cibleId": "PST004"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "CIBLE_CYCLE",
+    "motif": "Réaffecter les postes portés par « Directrice Administrative (DA) » sous « Assistant comptable » ferait de lui son propre supérieur : « Assistant comptable » dépend déjà de « Directrice Administrative (DA) ».",
+    "geste": "Choisir un poste qui ne dépende pas de celui-ci.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "cible : un poste porté (cycle)",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST014",
+    "motif": "Vecteur",
+    "cibleId": "PST015"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "CIBLE_CYCLE",
+    "motif": "Réaffecter les postes portés par « Infirmiers » sous « Sages-Femmes » ferait de lui son propre supérieur : « Sages-Femmes » dépend déjà de « Infirmiers ».",
+    "geste": "Choisir un poste qui ne dépende pas de celui-ci.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "cible : un poste archivé",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST014",
+    "motif": "Vecteur",
+    "cibleId": "PSTA"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "CIBLE_ARCHIVEE",
+    "motif": "Le poste « Ancien service » est archivé : on ne rattache rien à un poste archivé (RG-14).",
+    "geste": "Restaurer ce poste depuis la corbeille, ou choisir un poste actif.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "cible : un poste inconnu",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST014",
+    "motif": "Vecteur",
+    "cibleId": "PSTxxx"
+   },
+   "attendu": {
+    "ok": false,
+    "code": "CIBLE_INTROUVABLE",
+    "motif": "Le poste d’accueil demandé n’existe pas.",
+    "geste": "Choisir un poste de la liste.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "une feuille s’archive sans cible, la cible demandée est sans objet",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST015",
+    "motif": "Vecteur",
+    "cibleId": "PST012"
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST015"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Archivage",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Sages-Femmes\",\"sousPostes\":0}",
+      "nouvelle": "{\"statut\":\"archive\",\"motif\":\"Vecteur\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "un sommet dont le parent est archivé : la cible est exigée",
+   "role": "admin",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PSTQ",
+    "motif": "Vecteur",
+    "ajout": [
+     {
+      "id": "PSTP",
+      "statut": "archive",
+      "parentId": null,
+      "poste": "Parent archivé",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTQ",
+      "statut": "actif",
+      "parentId": "PSTP",
+      "poste": "Poste sous archivé",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTT",
+      "statut": "actif",
+      "parentId": "PSTQ",
+      "poste": "Poste porté par lui",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     }
+    ]
+   },
+   "attendu": {
+    "ok": false,
+    "code": "CIBLE_REQUISE",
+    "motif": "Le poste « Poste sous archivé » est au sommet de l’organigramme et porte 1 poste (Poste porté par lui) : il n’y a pas de poste au-dessus vers lequel les faire remonter.",
+    "geste": "Désigner le poste d’accueil de ces postes (celui qui prend leur suite), puis archiver.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 20
    }
   },
   {
@@ -1849,6 +2472,81 @@
     "code": "POSTE_INTROUVABLE",
     "motif": "Ce poste n’existe pas.",
     "geste": "Rouvrir l’écran puis choisir un poste de la liste.",
+    "postesChanges": [],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : annuler sans écrire archive une feuille",
+   "role": "direction",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST015",
+    "motif": "Vecteur",
+    "droits": {
+     "editer": false,
+     "annuler": true
+    }
+   },
+   "attendu": {
+    "ok": true,
+    "inchange": false,
+    "titre": null,
+    "postesChanges": [
+     "PST015"
+    ],
+    "nouveaux": [],
+    "titres": [
+     [
+      "E1",
+      "SG"
+     ],
+     [
+      "E6",
+      "XX"
+     ]
+    ],
+    "journal": [
+     {
+      "action": "Archivage",
+      "module": "CFG",
+      "entite": "poste",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Sages-Femmes\",\"sousPostes\":0}",
+      "nouvelle": "{\"statut\":\"archive\",\"motif\":\"Vecteur\"}"
+     }
+    ],
+    "nbPostes": 17
+   }
+  },
+  {
+   "nom": "droit : annuler sans écrire n’archive pas un poste qui porte des postes",
+   "role": "direction",
+   "appel": {
+    "fn": "archiver",
+    "posteId": "PST014",
+    "motif": "Vecteur",
+    "droits": {
+     "editer": false,
+     "annuler": true
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ORGANIGRAMME_RESERVE",
+    "motif": "Archiver « Infirmiers » réaffecte les 2 postes qu’il porte : une modification de l’organigramme, réservée aux profils qui écrivent à l’écran « Organisation & organigramme ».",
+    "geste": "Demander à l’administrateur ou à la Directrice Administrative.",
     "postesChanges": [],
     "nouveaux": [],
     "titres": [
@@ -2050,8 +2748,8 @@
       "action": "Archivage",
       "module": "CFG",
       "entite": "poste",
-      "ancienne": "{\"statut\":\"actif\"}",
-      "nouvelle": "{\"statut\":\"archive\"}"
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Sages-Femmes\",\"sousPostes\":0}",
+      "nouvelle": "{\"statut\":\"archive\",\"motif\":\"Vecteur\"}"
      }
     ],
     "nbPostes": 17
@@ -2225,6 +2923,2020 @@
     "effectif": 2
    },
    "attendu": null
+  }
+ ],
+ "annulations": [
+  {
+   "nom": "annuler : le poste revient et chaque poste porté retrouve son ancien parent",
+   "appel": {
+    "posteId": "PST014"
+   },
+   "attendu": {
+    "archivage": {
+     "ok": true,
+     "reaffectes": [
+      "PST015",
+      "PST016"
+     ],
+     "cible": "PST001"
+    },
+    "annulation": {
+     "ok": true,
+     "restaures": [
+      "PST015",
+      "PST016"
+     ],
+     "laisses": []
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm"
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da"
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock"
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien"
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST015",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "titulaire": null,
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant"
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin"
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception"
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier"
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTA",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Ancien service",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     }
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST015",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Archivage",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Infirmiers\",\"sousPostes\":2}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Directeur Médical\",\"motif\":\"Vecteur\"}"
+     },
+     {
+      "action": "Restauration",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"archive\"}",
+      "nouvelle": "{\"statut\":\"actif\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST015",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Infirmiers\",\"motif\":\"Archivage de « Infirmiers » annulé\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Infirmiers\",\"motif\":\"Archivage de « Infirmiers » annulé\"}"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "annuler : un poste déplacé depuis est laissé où il est, et dit",
+   "appel": {
+    "posteId": "PST014",
+    "entreTemps": [
+     {
+      "fn": "reaffecter",
+      "posteId": "PST016",
+      "parentId": "PST012"
+     }
+    ]
+   },
+   "attendu": {
+    "archivage": {
+     "ok": true,
+     "reaffectes": [
+      "PST015",
+      "PST016"
+     ],
+     "cible": "PST001"
+    },
+    "annulation": {
+     "ok": true,
+     "restaures": [
+      "PST015"
+     ],
+     "laisses": [
+      {
+       "id": "PST016",
+       "motif": "il a été déplacé depuis sous « Echographiste »"
+      }
+     ]
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm"
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da"
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock"
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien"
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST015",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "titulaire": null,
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "parentId": "PST012",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant"
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin"
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception"
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier"
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTA",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Ancien service",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     }
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST015",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Archivage",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Infirmiers\",\"sousPostes\":2}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Directeur Médical\",\"motif\":\"Vecteur\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Echographiste\"}"
+     },
+     {
+      "action": "Restauration",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"archive\"}",
+      "nouvelle": "{\"statut\":\"actif\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST015",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Infirmiers\",\"motif\":\"Archivage de « Infirmiers » annulé\"}"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "annuler : un poste archivé depuis est laissé, et dit",
+   "appel": {
+    "posteId": "PST014",
+    "entreTemps": [
+     {
+      "fn": "archiver",
+      "posteId": "PST015"
+     }
+    ]
+   },
+   "attendu": {
+    "archivage": {
+     "ok": true,
+     "reaffectes": [
+      "PST015",
+      "PST016"
+     ],
+     "cible": "PST001"
+    },
+    "annulation": {
+     "ok": true,
+     "restaures": [
+      "PST016"
+     ],
+     "laisses": [
+      {
+       "id": "PST015",
+       "motif": "il est archivé depuis"
+      }
+     ]
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm"
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da"
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock"
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien"
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST015",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "titulaire": null,
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant"
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin"
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception"
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier"
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTA",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Ancien service",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     }
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST015",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Archivage",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Infirmiers\",\"sousPostes\":2}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Directeur Médical\",\"motif\":\"Vecteur\"}"
+     },
+     {
+      "action": "Archivage",
+      "entite": "poste",
+      "reference": "PST015",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Sages-Femmes\",\"sousPostes\":0}",
+      "nouvelle": "{\"statut\":\"archive\",\"motif\":\"entre temps\"}"
+     },
+     {
+      "action": "Restauration",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"archive\"}",
+      "nouvelle": "{\"statut\":\"actif\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Infirmiers\",\"motif\":\"Archivage de « Infirmiers » annulé\"}"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "annuler : le poste est déjà restauré, annulation refusée en le nommant",
+   "appel": {
+    "posteId": "PST014",
+    "entreTemps": [
+     {
+      "fn": "restaurer",
+      "posteId": "PST014"
+     }
+    ]
+   },
+   "attendu": {
+    "archivage": {
+     "ok": true,
+     "reaffectes": [
+      "PST015",
+      "PST016"
+     ],
+     "cible": "PST001"
+    },
+    "annulation": {
+     "ok": false,
+     "code": "ANNULATION_IMPOSSIBLE",
+     "motif": "Le poste « Infirmiers » n’est plus archivé (il a déjà été restauré) : il n’y a plus d’archivage à annuler.",
+     "geste": "Contrôler la liste des postes ; remettre à la main les postes réaffectés si besoin (le journal donne leur ancien rattachement)."
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm"
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da"
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock"
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien"
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST015",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "titulaire": null,
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant"
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin"
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception"
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier"
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTA",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Ancien service",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     }
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST015",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Archivage",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Infirmiers\",\"sousPostes\":2}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Directeur Médical\",\"motif\":\"Vecteur\"}"
+     },
+     {
+      "action": "Restauration",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"archive\"}",
+      "nouvelle": "{\"statut\":\"actif\"}"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "annuler : sans le droit au moment d’annuler, refusé en le nommant",
+   "appel": {
+    "posteId": "PST014",
+    "roleAnnulation": "caissier"
+   },
+   "attendu": {
+    "archivage": {
+     "ok": true,
+     "reaffectes": [
+      "PST015",
+      "PST016"
+     ],
+     "cible": "PST001"
+    },
+    "annulation": {
+     "ok": false,
+     "code": "ORGANIGRAMME_RESERVE",
+     "motif": "L’archivage d’un poste est réservé aux profils qui annulent à l’écran « Organisation & organigramme » (RG-14).",
+     "geste": "Demander à l’administrateur ou à la Directrice Administrative."
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm"
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da"
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock"
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien"
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PST014",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST015",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "titulaire": null,
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant"
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin"
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception"
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier"
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTA",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Ancien service",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     }
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST015",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Archivage",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Infirmiers\",\"sousPostes\":2}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Directeur Médical\",\"motif\":\"Vecteur\"}"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "annuler : remettre un poste sous l’ancien parent ferait une boucle, il est laissé et dit",
+   "appel": {
+    "posteId": "PST014",
+    "cibleId": "PSTS",
+    "ajout": [
+     {
+      "id": "PSTS",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Direction générale",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "direction"
+     }
+    ],
+    "entreTemps": [
+     {
+      "fn": "reaffecter",
+      "posteId": "PST001",
+      "parentId": "PST015"
+     }
+    ]
+   },
+   "attendu": {
+    "archivage": {
+     "ok": true,
+     "reaffectes": [
+      "PST015",
+      "PST016"
+     ],
+     "cible": "PSTS"
+    },
+    "annulation": {
+     "ok": true,
+     "restaures": [
+      "PST016"
+     ],
+     "laisses": [
+      {
+       "id": "PST015",
+       "motif": "Rattacher « Sages-Femmes » à « Infirmiers » ferait de lui son propre supérieur : « Infirmiers » dépend déjà de « Sages-Femmes »."
+      }
+     ]
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "parentId": "PST015",
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm"
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da"
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock"
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien"
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST015",
+      "statut": "actif",
+      "parentId": "PSTS",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "titulaire": null,
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant"
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin"
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception"
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier"
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTA",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Ancien service",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTS",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Direction générale",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "direction"
+     }
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST015",
+      "ancienne": "{\"poste\":\"Sages-Femmes\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Infirmiers\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Infirmiers\"}"
+     },
+     {
+      "action": "Archivage",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Infirmiers\",\"sousPostes\":2}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Direction générale\",\"motif\":\"Vecteur\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST001",
+      "ancienne": "{\"poste\":\"Directeur Médical\",\"parentId\":null}",
+      "nouvelle": "{\"parentId\":\"Sages-Femmes\"}"
+     },
+     {
+      "action": "Restauration",
+      "entite": "poste",
+      "reference": "PST014",
+      "ancienne": "{\"statut\":\"archive\"}",
+      "nouvelle": "{\"statut\":\"actif\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST016",
+      "ancienne": "{\"poste\":\"Aide-Soignante\",\"parentId\":\"Direction générale\"}",
+      "nouvelle": "{\"parentId\":\"Infirmiers\",\"motif\":\"Archivage de « Infirmiers » annulé\"}"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "annuler : un poste sans poste porté revient seul",
+   "appel": {
+    "posteId": "PST015"
+   },
+   "attendu": {
+    "archivage": {
+     "ok": true,
+     "reaffectes": [],
+     "cible": null
+    },
+    "annulation": {
+     "ok": true,
+     "restaures": [],
+     "laisses": []
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm"
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da"
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock"
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien"
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST015",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "titulaire": null,
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant"
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin"
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception"
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier"
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTA",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Ancien service",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     }
+    ],
+    "journal": [
+     {
+      "action": "Archivage",
+      "entite": "poste",
+      "reference": "PST015",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Sages-Femmes\",\"sousPostes\":0}",
+      "nouvelle": "{\"statut\":\"archive\",\"motif\":\"Vecteur\"}"
+     },
+     {
+      "action": "Restauration",
+      "entite": "poste",
+      "reference": "PST015",
+      "ancienne": "{\"statut\":\"archive\"}",
+      "nouvelle": "{\"statut\":\"actif\"}"
+     }
+    ]
+   }
+  },
+  {
+   "nom": "annuler : un sommet archivé vers un poste d’accueil, ses sept postes reviennent",
+   "appel": {
+    "posteId": "PST001",
+    "cibleId": "PSTS",
+    "ajout": [
+     {
+      "id": "PSTS",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Direction générale",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "direction"
+     }
+    ]
+   },
+   "attendu": {
+    "archivage": {
+     "ok": true,
+     "reaffectes": [
+      "PST002",
+      "PST014",
+      "PST013",
+      "PST012",
+      "PST011",
+      "PST006",
+      "PST009"
+     ],
+     "cible": "PSTS"
+    },
+    "annulation": {
+     "ok": true,
+     "restaures": [
+      "PST002",
+      "PST014",
+      "PST013",
+      "PST012",
+      "PST011",
+      "PST006",
+      "PST009"
+     ],
+     "laisses": []
+    },
+    "postes": [
+     {
+      "id": "PST001",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Directeur Médical",
+      "effectif": 1,
+      "titulaire": "BASSONGUI Chabi Séko",
+      "chef": false,
+      "role": "dm"
+     },
+     {
+      "id": "PST002",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Directrice Administrative (DA)",
+      "effectif": 1,
+      "titulaire": "TAKI Alimatou épse BASSONGUI",
+      "chef": false,
+      "role": "da"
+     },
+     {
+      "id": "PST003",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Comptable",
+      "effectif": 1,
+      "titulaire": "KASSA Augustin",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST004",
+      "statut": "actif",
+      "parentId": "PST003",
+      "poste": "Assistant comptable",
+      "effectif": 1,
+      "titulaire": "GBEDJI Hervé",
+      "chef": false,
+      "role": "comptable"
+     },
+     {
+      "id": "PST005",
+      "statut": "actif",
+      "parentId": "PST004",
+      "poste": "Gestionnaire de Stock",
+      "effectif": 1,
+      "titulaire": "MAMAN Zoukanéri",
+      "chef": false,
+      "role": "stock"
+     },
+     {
+      "id": "PST007",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Dispensatrices",
+      "effectif": 4,
+      "titulaire": "DIEYABIDI Aïssatou",
+      "chef": true,
+      "role": "pharmacien"
+     },
+     {
+      "id": "PST008",
+      "statut": "actif",
+      "parentId": "PST002",
+      "poste": "Agents de Sécurités",
+      "effectif": 3,
+      "titulaire": "OURTCHA TEREYAMA",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PST014",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Infirmiers",
+      "effectif": 8,
+      "titulaire": "GARBA Yahouza",
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST015",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Sages-Femmes",
+      "effectif": 3,
+      "titulaire": null,
+      "chef": false,
+      "role": "infirmier"
+     },
+     {
+      "id": "PST016",
+      "statut": "actif",
+      "parentId": "PST014",
+      "poste": "Aide-Soignante",
+      "effectif": 8,
+      "titulaire": "TEPA Séraphine",
+      "chef": true,
+      "role": "aide_soignant"
+     },
+     {
+      "id": "PST013",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Laborantins",
+      "effectif": 2,
+      "titulaire": "KINNOU Addoul Ganiou",
+      "chef": true,
+      "role": "laborantin"
+     },
+     {
+      "id": "PST012",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Echographiste",
+      "effectif": 1,
+      "titulaire": "AHOHOU Rodrigue",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST011",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Médecins Généralistes",
+      "effectif": 2,
+      "titulaire": "YENI M’PO Florent",
+      "chef": false,
+      "role": "medecin"
+     },
+     {
+      "id": "PST006",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Secrétaires Médicaux",
+      "effectif": 4,
+      "titulaire": "OROU YO Edmond",
+      "chef": true,
+      "role": "reception"
+     },
+     {
+      "id": "PST010",
+      "statut": "actif",
+      "parentId": "PST006",
+      "poste": "Chauffeur Coursier",
+      "effectif": 1,
+      "titulaire": "TCHANE Nourou",
+      "chef": false,
+      "role": "ambulancier"
+     },
+     {
+      "id": "PST009",
+      "statut": "actif",
+      "parentId": "PST001",
+      "poste": "Agents d’Entretiens",
+      "effectif": 3,
+      "titulaire": "ISSA Rabiatou",
+      "chef": true,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTA",
+      "statut": "archive",
+      "parentId": "PST001",
+      "poste": "Ancien service",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "agentadmin"
+     },
+     {
+      "id": "PSTS",
+      "statut": "actif",
+      "parentId": null,
+      "poste": "Direction générale",
+      "effectif": 1,
+      "titulaire": null,
+      "chef": false,
+      "role": "direction"
+     }
+    ],
+    "journal": [
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST002",
+      "ancienne": "{\"poste\":\"Directrice Administrative (DA)\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST014",
+      "ancienne": "{\"poste\":\"Infirmiers\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST013",
+      "ancienne": "{\"poste\":\"Laborantins\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST012",
+      "ancienne": "{\"poste\":\"Echographiste\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST011",
+      "ancienne": "{\"poste\":\"Médecins Généralistes\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST006",
+      "ancienne": "{\"poste\":\"Secrétaires Médicaux\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST009",
+      "ancienne": "{\"poste\":\"Agents d’Entretiens\",\"parentId\":\"Directeur Médical\"}",
+      "nouvelle": "{\"parentId\":\"Direction générale\",\"motif\":\"Vecteur\",\"archivage\":\"Directeur Médical\"}"
+     },
+     {
+      "action": "Archivage",
+      "entite": "poste",
+      "reference": "PST001",
+      "ancienne": "{\"statut\":\"actif\",\"poste\":\"Directeur Médical\",\"sousPostes\":7}",
+      "nouvelle": "{\"statut\":\"archive\",\"cible\":\"Direction générale\",\"motif\":\"Vecteur\"}"
+     },
+     {
+      "action": "Restauration",
+      "entite": "poste",
+      "reference": "PST001",
+      "ancienne": "{\"statut\":\"archive\"}",
+      "nouvelle": "{\"statut\":\"actif\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST002",
+      "ancienne": "{\"poste\":\"Directrice Administrative (DA)\",\"parentId\":\"Direction générale\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Archivage de « Directeur Médical » annulé\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST014",
+      "ancienne": "{\"poste\":\"Infirmiers\",\"parentId\":\"Direction générale\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Archivage de « Directeur Médical » annulé\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST013",
+      "ancienne": "{\"poste\":\"Laborantins\",\"parentId\":\"Direction générale\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Archivage de « Directeur Médical » annulé\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST012",
+      "ancienne": "{\"poste\":\"Echographiste\",\"parentId\":\"Direction générale\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Archivage de « Directeur Médical » annulé\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST011",
+      "ancienne": "{\"poste\":\"Médecins Généralistes\",\"parentId\":\"Direction générale\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Archivage de « Directeur Médical » annulé\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST006",
+      "ancienne": "{\"poste\":\"Secrétaires Médicaux\",\"parentId\":\"Direction générale\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Archivage de « Directeur Médical » annulé\"}"
+     },
+     {
+      "action": "Réaffectation d’un poste",
+      "entite": "Poste",
+      "reference": "PST009",
+      "ancienne": "{\"poste\":\"Agents d’Entretiens\",\"parentId\":\"Direction générale\"}",
+      "nouvelle": "{\"parentId\":\"Directeur Médical\",\"motif\":\"Archivage de « Directeur Médical » annulé\"}"
+     }
+    ]
+   }
   }
  ],
  "reprises": [
@@ -4026,7 +6738,7 @@
        "source": "Organigramme de la Clinique NASSIERA TOO",
        "semence": 2,
        "_modifiePar": "Vecteur admin",
-       "_modifieLe": "2026-10-30T12:00:00.361Z",
+       "_modifieLe": "2026-10-30T12:00:00.364Z",
        "enfants": [],
        "titreAgent": null
       },
