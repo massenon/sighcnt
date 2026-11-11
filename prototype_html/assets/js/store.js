@@ -114,8 +114,13 @@
      `m10-missions` en lecture pour qu'il tranche (signer n'est pas saisir) ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice.
      78 (11/11/2026) : l'organigramme suit la photo du papier (lot ORG2). La semence de la collection `postes` change (intitulés, rattachements, identifiants
      stables) et le personnel porte `titreOrganigramme` (le surveillant général est un infirmier : « SG » est porté par l'agent). Une reprise
-     (`migrerOrganigramme`) réécrit les postes que la clinique n'a pas touchés et JAMAIS les autres. */
-  var VERSION = 78;
+     (`migrerOrganigramme`) réécrit les postes que la clinique n'a pas touchés et JAMAIS les autres.
+     79 (11/11/2026) : le RÉFÉRENTIEL DE PRIX UNIQUE (PRD-TARIFS, lot T1). Deux collections semées au socle, `tarifs` (l'identité d'une prestation tarifée)
+     et `versionsTarif` (une version de prix par ligne, immuable, datée) : la caisse, la prescription, les soins, l'imagerie, les certificats et la
+     caisse manuelle lisent le prix EN VIGUEUR à la date de la pièce. `actes`, `analyses` et `catalogueTarifs` deviennent des PROJECTIONS de lecture.
+     Aucun prix facturé aujourd'hui ne change ; la grille imprimée des analyses arrive en version 2 PROPOSÉE. Une reprise (`migrerTarifsDepuis`) garde
+     les prix des actes que la clinique a corrigés. Sans incrément, un poste n'aurait ni les collections ni les versions. */
+  var VERSION = 79;
   var db = null;
   var listeners = {};
 
@@ -1577,7 +1582,7 @@
   var VALIDATION_ECRITE_0109 = { valideLe: '2026-09-01', validePar: 'validation écrite du 01/09/2026', valideRole: 'Direction' };
   /* L'exercice du JEU de démonstration (daté, comme le reste du jeu) : le seul endroit où une année est écrite ; le suivant s'en déduit. */
   var ANNEE_JEU = 2026;
-  function seed() {
+  function seedBrut() {
     var rnd = C.seeded(20260716);
     var personnel = genPersonnel(rnd);
     var patients = genPatients(rnd, 180);
@@ -3319,6 +3324,95 @@
     return JSON.parse(raw);
   }
 
+  /* LA SEMENCE BÂTIT LE RÉFÉRENTIEL DE PRIX À PARTIR DES VALEURS D'ORIGINE (PRD-TARIFS, T1). Pendant la semence, les lecteurs de la grille et les
+     propriétés calculées des constantes rendent la valeur d'ORIGINE : lire le référentiel d'un magasin précédent, au moment d'en semer un neuf, ferait
+     porter à la semence les prix qu'un poste avait corrigés. */
+  function seed() {
+    var TA = D.TARIFS;
+    TA.modeSemence(true);
+    try {
+      var o = seedBrut();
+      var m = TA.migrer({ actes: o.actes, grille: TA.semence.grille, analyses: TA.semence.analyses });
+      o.tarifs = m.tarifs;
+      o.versionsTarif = m.versions;
+      return o;
+    } finally { TA.modeSemence(false); }
+  }
+
+  /* REPRISE D'UN MAGASIN D'AVANT LE RÉFÉRENTIEL : le prix FACTURÉ aujourd'hui est celui de la collection `actes` (la caisse la lit), celui de la constante
+     pour les analyses et pour la grille. Les éditions faites aux collections que personne ne lisait (`analyses`, `catalogueTarifs`) sont LISTÉES, jamais
+     appliquées. Rend { tarifs, versions, ecarts } ; ne touche pas au magasin. */
+  function migrerTarifsDepuis(ancien) {
+    var TA = D.TARIFS;
+    var ecarts = [];
+    var m = TA.migrer({ actes: ancien.actes || [], grille: TA.semence.grille, analyses: TA.semence.analyses, catalogue: ancien.catalogueTarifs || [] });
+    (ancien.analyses || []).forEach(function (a) {
+      var s = TA.semence.analyses.filter(function (x) { return x.code === a.code; })[0];
+      if (s && a.prix !== s.prix) ecarts.push({ type: 'analyses-collection', code: a.code, collection: a.prix, facture: s.prix, detail: 'Prix édité dans la collection analyses sans effet sur la facturation : non repris.' });
+    });
+    m.ecarts = m.ecarts.concat(ecarts);
+    return m;
+  }
+
+  /* LA PROJECTION DE LECTURE : `actes`, `analyses` et `catalogueTarifs` portent, pour chaque prestation, le prix EN VIGUEUR AUJOURD'HUI. Ce n'est pas un geste
+     (aucune ligne de journal, rien n'est « modifié » au sens métier) : c'est l'état dérivé du référentiel, reconstruit à l'hydratation, à chaque décision et
+     au changement de jour. Seuls les champs de PRIX sont touchés : un marquage « tarif d'attente », un libellé ou un secteur restent ce qu'ils sont. */
+  function projeterTarifs() {
+    if (!db || !Array.isArray(db.tarifs) || !db.tarifs.length) return 0;
+    var TA = D.TARIFS, h = TA.lire();
+    if (!h) return 0;
+    var n = 0;
+    function projeter(nom, index, correctif, creer) {
+      if (!Array.isArray(db[nom])) db[nom] = [];
+      var vus = {};
+      db[nom].forEach(function (doc) {
+        vus[doc.code] = true;
+        var p = index[doc.code]; if (!p) return;
+        var s = TA.instantane(h, p, null); if (!s) return;
+        var c = correctif(doc, p, s);
+        if (c) { Object.assign(doc, c); n++; }
+      });
+      Object.keys(index).forEach(function (code) {
+        if (vus[code]) return;
+        var p = index[code], s = TA.instantane(h, p, null);
+        if (!s) return;
+        db[nom].push(creer(p, s)); n++;
+      });
+    }
+    projeter('actes', h.parActe, TA.correctifActe, function (p, s) {
+      var d = { id: 'ACT-' + p.code, statut: 'actif', code: p.code, libelle: p.libelle, secteur: p.secteur || '', prix: s.na, source: p.source || null };
+      if (p.codeGrille) { d.codeTarif = p.codeGrille; d.prixNonAssure = s.na; d.prixAssure = s.nc ? null : s.pa; d.nonCouvert = s.nc; d.assurable = p.assurable; }
+      return d;
+    });
+    projeter('analyses', h.parAnalyse, TA.correctifAnalyse, function (p, s) {
+      return { id: 'ANA-' + p.code, n: db.analyses.length + 1, code: p.code, designation: p.libelle, categorie: '', prix: s.na, echantillon: '', delai: '', statut: 'Actif' };
+    });
+    projeter('catalogueTarifs', h.parGrille, TA.correctifGrille, function (p, s) {
+      return { id: 'TAR-' + p.codeGrille, statut: 'actif', code: p.codeGrille, libelle: p.libelleGrille || p.libelle, famille: p.famille, prixNonAssure: s.na, prixAssure: s.nc ? null : s.pa,
+        nonCouvert: s.nc, assurable: p.assurable, prixAValider: s.na == null, source: p.source || null };
+    });
+    if (n) save();
+    return n;
+  }
+
+  /* GARDE DE PARITÉ : chaque fiche des trois collections de lecture doit dire ce que le référentiel dit aujourd'hui. Un écart est une ERREUR nommée,
+     jamais un affichage différent. Rend la liste des écarts (vide quand tout concorde). */
+  function paritesTarifs() {
+    var out = [];
+    if (!db || !Array.isArray(db.tarifs) || !db.tarifs.length) return out;
+    var TA = D.TARIFS, h = TA.lire();
+    if (!h) return out;
+    [['actes', h.parActe, TA.correctifActe], ['analyses', h.parAnalyse, TA.correctifAnalyse], ['catalogueTarifs', h.parGrille, TA.correctifGrille]].forEach(function (x) {
+      (db[x[0]] || []).forEach(function (doc) {
+        var p = x[1][doc.code]; if (!p) return;
+        var s = TA.instantane(h, p, null); if (!s) return;
+        var c = x[2](doc, p, s);
+        if (c) out.push({ collection: x[0], code: doc.code, ecart: c });
+      });
+    });
+    return out;
+  }
+
   function load() {
     if (db && !_provisoire) return db;
     /* Coquille provisoire posée, hydratation toujours en vol : on la garde. */
@@ -3578,9 +3672,21 @@
           /* LES POSTES DE L'ORGANIGRAMME SURVIVENT AU RÉ-AMORÇAGE (lot ORG2) : c'est un référentiel que la clinique administre ; la reprise remplace ceux
              qu'elle n'a pas touchés par la semence de la photo, et garde les autres tels quels. */
           var anciensPostes = Array.isArray(o.postes) && o.postes.length ? o.postes : null;
+          /* LES PRIX DES ACTES SURVIVENT AU RÉ-AMORÇAGE (PRD-TARIFS, T1) : la valeur facturée aujourd'hui devient la version 1 du référentiel. */
+          var anciensTarifs = (!Array.isArray(o.tarifs) || !o.tarifs.length) && Array.isArray(o.actes) && o.actes.length
+            ? { actes: o.actes, analyses: o.analyses, catalogueTarifs: o.catalogueTarifs } : null;
           db = null;
           load();
           if (anciensPostes && db) { db.postes = anciensPostes; reprendreOrganigramme(db); save(); }
+          if (anciensTarifs && db) {
+            var repris = migrerTarifsDepuis(anciensTarifs);
+            db.tarifs = repris.tarifs; db.versionsTarif = repris.versions;
+            var reels = repris.ecarts.filter(function (e) { return e.type === 'acte-grille' || e.type === 'catalogue-grille' || e.type === 'catalogue-inconnu' || e.type === 'analyses-collection'; });
+            if (reels.length) db._ecartsTarifs = reels;
+            D.TARIFS.invalider();
+            projeterTarifs();
+            save();
+          }
           SRV.envoye = {}; SRV.meta = {};   /* tout est à pousser */
           invaliderManifeste();
           return true;
@@ -3589,6 +3695,8 @@
         /* Ce qui vient d'être lu est, par construction, ce que le serveur a
            déjà : on ne le lui renverra pas au premier geste. */
         marquerEnvoye(db);
+        D.TARIFS.invalider();
+        projeterTarifs();
         /* APRÈS l'affectation, jamais avant : posée plus haut, l'invalidation
            était suivie d'une reconstruction immédiate du cache sur l'ANCIEN
            magasin — mesuré, la surcharge d'écran restait ignorée. */
@@ -3940,7 +4048,7 @@
     'actes', 'analyses', 'produits', 'assureurs', 'fournisseurs', 'comptes', 'banques',
     'naturesFacture', 'centresCouts', 'secteurs', 'postes', 'personnel', 'soignants',
     'ressources', 'souscripteurs', 'garanties', 'certificats', 'typesPiece',
-    'catalogueTarifs', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel', 'comptesResultat',
+    'catalogueTarifs', 'tarifs', 'versionsTarif', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel', 'comptesResultat',
     /* Comptes, droits et activation des modules */
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
@@ -4330,7 +4438,7 @@
     cpa: 'M3|Consultations pré-anesthésiques',
     crAnesthesie: 'M3|Comptes rendus d’anesthésie',
     crMaternite: 'M4|Comptes rendus de maternité',
-    catalogueTarifs: 'CFG|Catalogue tarifaire',
+    catalogueTarifs: 'CFG|Catalogue tarifaire', tarifs: 'CFG|Prestations tarifées', versionsTarif: 'CFG|Versions de prix',
     typesPiece: 'CFG|Types de pièces certifiantes',
     pieces: 'M1|Pièces certifiantes délivrées',
     utilisateurs: 'M14|Utilisateurs', audit: 'M14|Journal d’audit',
@@ -4476,6 +4584,7 @@
     etatSync: etatSync, sonderEvenements: sonderEvenements,
     etatServeur: function () { return { actif: SRV.actif, teste: SRV.teste, repondu: SRV.repondu, jeton: !!SRV.jeton, magasinCharge: !!db, sansMagasin: SRV.sansMagasin }; },
     log: log, on: on, emit: emit,
+    projeterTarifs: projeterTarifs, paritesTarifs: paritesTarifs, migrerTarifsDepuis: migrerTarifsDepuis,
     session: session, setSession: setSession, currentUser: currentUser, garder: garder,
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,
     reglage: reglage, setReglage: setReglage,

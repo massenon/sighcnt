@@ -388,6 +388,262 @@
     .concat(batir(CERTIFICATS_TARIFS, 'CERTIFICAT', SRC.cert));
 
   /* ==========================================================================
+   * LE RÉFÉRENTIEL DE PRIX UNIQUE — MOTEUR PUR (PRD-TARIFS, lot T1)
+   * --------------------------------------------------------------------------
+   * Deux collections au magasin : `tarifs` (l'identité d'une prestation tarifée : code, libellé de facturation, libellé de grille, famille,
+   * alias de code) et `versionsTarif` (une ligne par version de prix, IMMUABLE pour ce qui est du prix : une correction ajoute une version).
+   * Ce moteur est PUR : il lit des tableaux, jamais le magasin, jamais l'horloge sans qu'on la lui donne. Le magasin lui prête ses collections
+   * par `brancher()` ; sans magasin (semence en cours, page sans socle), les lecteurs retombent sur les constantes, comme avant.
+   *
+   * TROIS ESPACES DE CODES, UNE PRESTATION. Le code d'ACTE (`SO02`), le code de GRILLE (`SIV`) et le code d'ANALYSE (`L01`) désignaient trois fois la
+   * même prestation, avec deux libellés et jusqu'à deux prix. Le code canonique est celui de l'acte, sinon celui de l'analyse, sinon celui de la
+   * grille ; les autres sont des ALIAS. Chaque lecteur historique garde son espace (`parActe`, `parGrille`, `parAnalyse`) : il reçoit exactement ce qu'il
+   * recevait. L'accesseur nouveau (`PR.tarifALaDate`) résout les trois.
+   *
+   * « EN VIGUEUR » N'EST JAMAIS STOCKÉ : c'est la version `valide` de plus grande (date d'effet, version) dont la date d'effet est antérieure ou égale
+   * au JOUR de la pièce. Un poste hors ligne n'a pas de tâche de minuit : une bascule stockée serait fausse dès que l'horloge passe la date.
+   * Une version `propose`, `refuse` ou `retire` n'est JAMAIS lue.
+   * ======================================================================== */
+  var TARIFS = (function () {
+    var C = global.SIGH.core;
+    var hote = null, cache = null, generation = 0, enSemence = false;
+
+    function jourDe(d) {
+      if (!d) return C.iso(C.aujourdhui());
+      if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+      return C.iso(new Date(d));
+    }
+    function egal(a, b) { return (a == null && b == null) || a === b; }
+
+    function indexer(tarifs, versions) {
+      var h = { tarifs: tarifs, versions: versions, parCode: {}, parActe: {}, parGrille: {}, parAnalyse: {}, vers: {} };
+      tarifs.forEach(function (p) {
+        if (p.statut === 'archive') return;
+        h.parCode[p.code] = p;
+        if (p.codeActe) h.parActe[p.codeActe] = p;
+        if (p.codeGrille) h.parGrille[p.codeGrille] = p;
+        if (p.codeAnalyse) h.parAnalyse[p.codeAnalyse] = p;
+      });
+      tarifs.forEach(function (p) {
+        if (p.statut === 'archive') return;
+        (p.codesAlias || []).forEach(function (c) { if (!h.parCode[c]) h.parCode[c] = p; });
+      });
+      versions.forEach(function (v) { (h.vers[v.code] = h.vers[v.code] || []).push(v); });
+      return h;
+    }
+
+    /** Le magasin prête ses collections : `fournisseur()` rend { tarifs, versions } ou null. */
+    function brancher(fournisseur) { hote = fournisseur; cache = null; generation++; }
+    function invalider() { generation++; }
+    function modeSemence(oui) { enSemence = !!oui; }
+    function lire() {
+      if (enSemence || !hote) return null;
+      var s = hote();
+      if (!s || !Array.isArray(s.tarifs) || !Array.isArray(s.versions) || !s.tarifs.length) return null;
+      var n = s.tarifs.length + '/' + s.versions.length;
+      if (cache && cache.t === s.tarifs && cache.v === s.versions && cache.n === n && cache.g === generation) return cache.h;
+      var h = indexer(s.tarifs, s.versions);
+      cache = { t: s.tarifs, v: s.versions, n: n, g: generation, h: h };
+      return h;
+    }
+
+    function plusRecente(a, b) {
+      var da = a.dateEffet || '', db = b.dateEffet || '';
+      if (da !== db) return da > db;
+      return (a.version || 0) > (b.version || 0);
+    }
+    /** La version en vigueur de ce code à ce jour (AAAA-MM-JJ), ou null. */
+    function enVigueur(h, code, jour) {
+      var best = null;
+      (h.vers[code] || []).forEach(function (v) {
+        if (v.statut !== 'valide') return;
+        if (v.dateEffet && v.dateEffet > jour) return;
+        if (!best || plusRecente(v, best)) best = v;
+      });
+      return best;
+    }
+
+    var MOTIF_NC = 'Acte NON COUVERT par les assurances — facturé au patient au tarif non assuré.';
+    var MOTIF_SOS = 'Les certificats ne sont couverts que par SOS — vérifier la compagnie.';
+
+    /** Le prix d'une prestation à une date, selon que la carte est valide ou non (RG-09). La forme est celle de l'ancien `D.tarifPrix`, enrichie. */
+    function resoudre(h, p, date, assure) {
+      var jour = jourDe(date);
+      var v = enVigueur(h, p.code, jour);
+      if (!v) return { absent: true, montant: null, motif: 'Aucune version de prix valide à la date du ' + jour + ' pour « ' + (p.libelle || p.code) + ' ».', code: p.code };
+      var na = v.etatNonAssure === 'manquant' ? null : v.prixNonAssure;
+      var base = { code: p.code, version: v.version, dateEffet: v.dateEffet || null, provisoire: v.provisoire === true };
+      if (!assure) return Object.assign(base, { montant: na, tarif: 'non assuré', motif: null });
+      if (v.etatAssure === 'nc' || p.assurable === false) return Object.assign(base, { montant: na, tarif: 'non assuré', motif: MOTIF_NC });
+      if (p.assurable === 'sos') return Object.assign(base, { montant: na, tarif: 'non assuré', motif: MOTIF_SOS, reserveSos: true });
+      if (v.etatAssure === 'unique') return Object.assign(base, { montant: na, tarif: 'assuré', motif: null });
+      return Object.assign(base, { montant: v.etatAssure === 'montant' ? v.prixAssure : null, tarif: 'assuré', motif: null });
+    }
+
+    /** Les deux colonnes et leurs états, en vigueur à ce jour : ce que lisent l'écran et la projection. */
+    function instantane(h, p, jour) {
+      var v = enVigueur(h, p.code, jourDe(jour));
+      if (!v) return null;
+      var na = v.etatNonAssure === 'manquant' ? null : v.prixNonAssure;
+      var pa = v.etatAssure === 'montant' ? v.prixAssure : (v.etatAssure === 'unique' ? na : null);
+      return { na: na, pa: pa, etatNonAssure: v.etatNonAssure, etatAssure: v.etatAssure, nc: v.etatAssure === 'nc', version: v.version, dateEffet: v.dateEffet || null, provisoire: v.provisoire === true, vrs: v };
+    }
+
+    /** La forme de l'ancienne entrée de grille : la SEMENCE (libellés, arbitrages, colonnes imprimées) superposée au prix en vigueur. */
+    function entreeGrille(h, p, semence) {
+      var s = instantane(h, p, null);
+      var e = Object.assign({}, semence || { code: p.codeGrille, libelle: p.libelleGrille || p.libelle, famille: p.famille, source: p.source || null, statut: 'actif', motifPrix: null }, { assurable: p.assurable });
+      if (semence) e.libelle = p.libelleGrille || semence.libelle;
+      if (!s) { e.prixNonAssure = null; e.prixAssure = null; e.nonCouvert = false; e.prixAValider = true; return e; }
+      e.prixNonAssure = s.na;
+      e.nonCouvert = s.nc;
+      e.prixAssure = s.nc ? null : s.pa;
+      e.prixAValider = s.na == null || (s.pa == null && !s.nc && p.assurable !== false);
+      e.version = s.version;
+      return e;
+    }
+
+    /** Ce que chaque collection historique doit porter aujourd'hui. Renvoie le correctif des seuls champs de PRIX qui diffèrent (null si aucun). */
+    function correctifActe(doc, p, s) {
+      var c = {}; var poser = function (k, val) { if (!egal(doc[k], val)) c[k] = val; };
+      poser('prix', s.na);
+      if (doc.prixNonAssure !== undefined) poser('prixNonAssure', s.na);
+      if (doc.prixAssure !== undefined || s.etatAssure === 'montant') poser('prixAssure', s.etatAssure === 'montant' ? s.pa : null);
+      if (doc.nonCouvert !== undefined || s.nc) poser('nonCouvert', s.nc);
+      if (p.assurable !== undefined && s.etatAssure === 'montant') poser('assurable', p.assurable);
+      return Object.keys(c).length ? c : null;
+    }
+    function correctifAnalyse(doc, p, s) {
+      return egal(doc.prix, s.na) ? null : { prix: s.na };
+    }
+    function correctifGrille(doc, p, s) {
+      var c = {}; var poser = function (k, val) { if (!egal(doc[k], val)) c[k] = val; };
+      poser('prixNonAssure', s.na); poser('nonCouvert', s.nc); poser('prixAssure', s.nc ? null : s.pa);
+      poser('prixAValider', s.na == null || (s.pa == null && !s.nc && p.assurable !== false));
+      return Object.keys(c).length ? c : null;
+    }
+
+    /* ---- Migration : les trois listes d'avant deviennent UN référentiel, sans changer un prix facturé aujourd'hui ----------------------------------- */
+    function normLib(x) {
+      return String(x || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/’/g, "'")
+        .replace(/\([^)]*\)/g, ' ').replace(/[^a-z0-9]+/g, ' ').trim();
+    }
+    var MOTIF_GRILLE_ANALYSES = 'Prix de la grille imprimée « Tarifs des analyses de laboratoire » : proposé à la Direction (décision T2 du 11/11/2026), '
+      + 'Oui ou Non analyse par analyse. Il ne change rien tant qu’il n’est pas validé.';
+    var DATE_SEMENCE = '2026-11-11';
+
+    function etatsActe(a) {
+      var na = a.prixNonAssure != null ? a.prixNonAssure : (a.prix != null ? a.prix : null);
+      var pa = a.prixAssure != null ? a.prixAssure : null, etatA;
+      if (a.nonCouvert) { etatA = 'nc'; pa = null; }
+      else if (pa != null) etatA = 'montant';
+      else if (a.codeTarif || a.assurable === true) etatA = 'manquant';
+      else etatA = 'unique';
+      return { na: na, etatNA: na == null ? 'manquant' : 'montant', pa: pa, etatA: etatA };
+    }
+    function etatsGrille(g) {
+      var etatA;
+      if (g.nonCouvert) etatA = 'nc'; else if (g.prixAssure != null) etatA = 'montant'; else etatA = 'manquant';
+      return { na: g.prixNonAssure != null ? g.prixNonAssure : null, etatNA: g.prixNonAssure == null ? 'manquant' : 'montant', pa: g.nonCouvert ? null : (g.prixAssure != null ? g.prixAssure : null), etatA: etatA };
+    }
+    function creerVersion(code, n, e, o) {
+      var v = { id: code + '@' + (o.dateEffet || (o.aDater ? 'a-dater' : 'origine')) + '@' + n, code: code, version: n,
+        prixNonAssure: e.na, etatNonAssure: e.etatNA, prixAssure: e.pa, etatAssure: e.etatA,
+        origine: o.origine, statut: o.statut || 'valide' };
+      if (o.dateEffet) v.dateEffet = o.dateEffet;
+      if (o.aDater) v.aDater = true;
+      if (o.motif) v.motif = o.motif;
+      if (o.provisoire) v.provisoire = true;
+      if (o.arreteLe) v.arreteLe = o.arreteLe;
+      if (o.proposePar) { v.proposePar = o.proposePar; v.proposeLe = o.proposeLe || DATE_SEMENCE; }
+      return v;
+    }
+
+    /** src = { actes: [fiches de la collection actes], grille: [entrées de la grille], analyses: [analyses], catalogue: [fiches catalogueTarifs] (facultatif) }.
+        Rend { tarifs, versions, ecarts } : `ecarts` liste ce qui diverge entre les sources (aucun prix n'est corrigé en silence). */
+    function migrer(src) {
+      var actes = src.actes || [], grille = src.grille || [], analyses = src.analyses || [];
+      var tarifs = [], versions = [], ecarts = [];
+      var gParCode = {}, gLabo = {}, grilleUtilisee = {};
+      grille.forEach(function (g) { gParCode[g.code] = g; if (g.famille === 'LABO') gLabo[normLib(g.libelle)] = g; });
+
+      /* 1. Les actes : le code d'acte est canonique, la ligne de grille rapprochée devient un alias. */
+      actes.forEach(function (a) {
+        var g = a.codeTarif ? gParCode[a.codeTarif] : null;
+        var e = etatsActe(a);
+        var p = { id: a.code, code: a.code, codeActe: a.code, libelle: a.libelle, famille: g ? g.famille : (/^HO\d/.test(a.code) ? 'HOSPITALISATION' : 'ACTE'), statut: 'actif' };
+        if (a.secteur) p.secteur = a.secteur;
+        if (g) { p.codeGrille = g.code; p.codesAlias = [g.code]; if (g.libelle !== a.libelle) p.libelleGrille = g.libelle; grilleUtilisee[g.code] = true; }
+        if (a.assurable !== undefined) p.assurable = a.assurable;
+        if (a.source) p.source = a.source;
+        if (a.variantesGrille && a.variantesGrille.length) p.variantesGrille = a.variantesGrille.map(function (x) { return x.code || x; });
+        tarifs.push(p);
+        versions.push(creerVersion(a.code, 1, e, { origine: 'migration', provisoire: a.tarifProvisoire === true, arreteLe: a.tarifArreteLe, motif: a.motifPrix }));
+        if (g) {
+          var eg = etatsGrille(g);
+          if (eg.na !== e.na || eg.pa !== e.pa || eg.etatA !== e.etatA) {
+            ecarts.push({ type: 'acte-grille', code: a.code, grille: g.code, acte: { na: e.na, pa: e.pa, etat: e.etatA }, ligneDeGrille: { na: eg.na, pa: eg.pa, etat: eg.etatA }, detail: 'Le prix de l’acte diffère de la ligne de grille : le prix de l’acte (celui de la caisse) est retenu.' });
+          }
+        }
+      });
+
+      /* 2. Les analyses : le code d'analyse est canonique ; la ligne LABO de même libellé NORMALISÉ (aucun rapprochement approximatif) devient un alias,
+         et son prix arrive en version 2 PROPOSÉE quand il diffère de ce que la caisse facture. */
+      analyses.forEach(function (a) {
+        var g = gLabo[normLib(a.designation)];
+        if (g && grilleUtilisee[g.code]) g = null;
+        var prix = a.prix != null && a.prix > 0 ? a.prix : null;
+        var e = { na: prix, etatNA: prix == null ? 'manquant' : 'montant', pa: prix, etatA: prix == null ? 'manquant' : 'unique' };
+        var p = { id: a.code, code: a.code, codeAnalyse: a.code, libelle: a.designation, famille: 'LABO', statut: 'actif' };
+        if (g) { p.codeGrille = g.code; p.codesAlias = [g.code]; p.libelleGrille = g.libelle; p.assurable = g.assurable; grilleUtilisee[g.code] = true; }
+        p.source = 'Tarifs des analyses de laboratoire NASSIERA TOO';
+        tarifs.push(p);
+        versions.push(creerVersion(a.code, 1, e, { origine: 'migration', provisoire: a.tarifProvisoire === true }));
+        if (g) {
+          var eg = etatsGrille(g);
+          if (eg.na !== e.na || eg.pa !== e.pa || eg.etatA !== e.etatA) {
+            versions.push(creerVersion(a.code, 2, eg, { origine: 'semence-grille', statut: 'propose', aDater: true, proposePar: 'Semence du socle', motif: MOTIF_GRILLE_ANALYSES }));
+            ecarts.push({ type: 'analyse-grille', code: a.code, grille: g.code, facture: { na: e.na }, ligneDeGrille: { na: eg.na, pa: eg.pa, etat: eg.etatA }, detail: 'Version 2 proposée (le prix facturé aujourd’hui reste la version 1).' });
+          }
+        } else {
+          ecarts.push({ type: 'analyse-sans-grille', code: a.code, detail: 'Aucune ligne de la grille imprimée ne porte ce libellé : un seul prix, celui de la caisse.' });
+        }
+      });
+
+      /* 3. Les lignes de grille restantes : une prestation chacune, au prix que la grille donne (celui que lisaient les soins, l'imagerie, les certificats). */
+      grille.forEach(function (g) {
+        if (grilleUtilisee[g.code]) return;
+        var e = etatsGrille(g);
+        var p = { id: g.code, code: g.code, codeGrille: g.code, libelle: g.libelle, famille: g.famille, statut: 'actif' };
+        if (g.assurable !== undefined) p.assurable = g.assurable;
+        if (g.source) p.source = g.source;
+        tarifs.push(p);
+        versions.push(creerVersion(g.code, 1, e, { origine: 'migration', provisoire: g.tarifProvisoire === true, motif: g.motifPrix }));
+        if (g.famille === 'LABO') ecarts.push({ type: 'grille-sans-analyse', code: g.code, detail: 'Ligne LABO de la grille sans analyse de même libellé : prestation propre, au prix de la grille.' });
+      });
+
+      /* 4. Les éditions faites au catalogue tarifaire (collection que personne ne lisait) : listées, jamais appliquées. */
+      (src.catalogue || []).forEach(function (c) {
+        var g = gParCode[c.code];
+        if (!g) { ecarts.push({ type: 'catalogue-inconnu', code: c.code, detail: 'Fiche du catalogue tarifaire sans ligne de grille : non reprise.' }); return; }
+        ['prixNonAssure', 'prixAssure', 'nonCouvert', 'assurable'].forEach(function (k) {
+          if (!egal(c[k], g[k]) && !(k === 'nonCouvert' && !c[k] && !g[k])) {
+            ecarts.push({ type: 'catalogue-grille', code: c.code, champ: k, catalogue: c[k], grille: g[k], detail: 'Édité au catalogue tarifaire sans effet sur la facturation : non repris.' });
+          }
+        });
+      });
+      return { tarifs: tarifs, versions: versions, ecarts: ecarts };
+    }
+
+    return {
+      brancher: brancher, invalider: invalider, modeSemence: modeSemence, lire: lire, indexer: indexer, enVigueur: enVigueur, resoudre: resoudre,
+      instantane: instantane, entreeGrille: entreeGrille, jourDe: jourDe, migrer: migrer, normLibelle: normLib,
+      correctifActe: correctifActe, correctifAnalyse: correctifAnalyse, correctifGrille: correctifGrille,
+      semence: null, DATE_SEMENCE: DATE_SEMENCE, MOTIF_GRILLE_ANALYSES: MOTIF_GRILLE_ANALYSES, MOTIF_NC: MOTIF_NC,
+    };
+  })();
+
+  /* ==========================================================================
    * INTERROGATION
    * ======================================================================== */
 
@@ -395,9 +651,20 @@
      est-elle valide à la date de facturation ? Elle ne dépend PAS du fait que
      le patient possède une carte — une carte expirée facture au tarif non
      assuré, et le dit. */
-  function prix(code, assure) {
+  function prix(code, assure, date) {
     var e = parEntree(code);
     if (!e) return { montant: null, motif: 'Acte absent du catalogue tarifaire.' };
+    /* LE PRIX EST CELUI DE LA VERSION EN VIGUEUR À LA DATE DE LA PIÈCE (PRD-TARIFS, T1). Sans date, c'est celui d'aujourd'hui. */
+    var h = TARIFS.lire();
+    if (h) {
+      var p = h.parGrille[code];
+      if (p) {
+        var r = TARIFS.resoudre(h, p, date || null, assure);
+        if (r.absent) return { montant: null, motif: r.motif };
+        delete r.absent;
+        return r;
+      }
+    }
     if (!assure) {
       return { montant: e.prixNonAssure, tarif: 'non assuré', motif: null };
     }
@@ -427,23 +694,40 @@
     return true;
   }
 
+  /* L'entrée de la grille est celle de la SEMENCE (libellés, arbitrages, colonnes imprimées) SUPERPOSÉE au prix en vigueur du
+     référentiel : le lecteur historique reçoit la forme qu'il recevait, avec le prix que la caisse applique. */
   var INDEX = null;
-  function parEntree(code) {
+  function semenceParCode(code) {
     if (!INDEX) {
       INDEX = {};
       CATALOGUE.forEach(function (e) { INDEX[e.code] = e; });
     }
     return INDEX[code] || null;
   }
+  function parEntree(code) {
+    var s = semenceParCode(code);
+    var h = TARIFS.lire();
+    if (!h) return s;
+    var p = h.parGrille[code];
+    if (!p) return s;
+    return TARIFS.entreeGrille(h, p, s);
+  }
 
   function parFamille(famille) {
-    return CATALOGUE.filter(function (e) { return e.famille === famille; });
+    var h = TARIFS.lire();
+    if (!h) return CATALOGUE.filter(function (e) { return e.famille === famille; });
+    var vus = {}, out = [];
+    CATALOGUE.forEach(function (e) { if (e.famille === famille) { vus[e.code] = true; var x = parEntree(e.code); if (x) out.push(x); } });
+    h.tarifs.forEach(function (p) {
+      if (p.famille === famille && p.codeGrille && !vus[p.codeGrille] && p.statut !== 'archive') { var x = parEntree(p.codeGrille); if (x) out.push(x); }
+    });
+    return out;
   }
 
   /* Les trois lignes dont le document ne donne pas le prix. L'écran les compte
      et les nomme : une facture ne peut pas être émise sur une valeur absente. */
   function sansPrix() {
-    return CATALOGUE.filter(function (e) { return e.prixAValider; });
+    return CATALOGUE.map(function (e) { return parEntree(e.code); }).filter(function (e) { return e && e.prixAValider; });
   }
 
   /* ==========================================================================
@@ -454,8 +738,8 @@
    * soit une exception délibérée — dans les deux cas elle doit se voir.
    * ======================================================================== */
   function incoherences() {
-    return CATALOGUE.filter(function (e) {
-      if (e.nonCouvert || e.prixAssure == null || e.prixNonAssure == null) return false;
+    return CATALOGUE.map(function (e) { return parEntree(e.code); }).filter(function (e) {
+      if (!e || e.nonCouvert || e.prixAssure == null || e.prixNonAssure == null) return false;
       return e.prixAssure > e.prixNonAssure;
     });
   }
@@ -578,6 +862,36 @@
   D.actesDeclines = function () {
     return (D.ACTES || []).filter(function (a) { return a.variantesGrille && a.variantesGrille.length; });
   };
+
+  /* ==========================================================================
+   * LA SEMENCE ET LES LECTEURS HISTORIQUES DES CONSTANTES (PRD-TARIFS, T1)
+   * --------------------------------------------------------------------------
+   * `D.ANALYSES[i].prix` et `D.TYPES_CHAMBRE[i].tarif` étaient lus par une trentaine d'écrans (listes, estimations, caisse manuelle). Ils lisent
+   * désormais le prix EN VIGUEUR du référentiel, par une propriété calculée posée sur la constante : un lecteur de plus ou de moins ne change rien, et
+   * aucun ne peut plus facturer un prix que l'écran « Tarifs et prix » ne porte pas. La SEMENCE (valeur d'origine) est conservée à côté : elle seule
+   * sert à bâtir le référentiel et à semer, jamais ce qu'on lit. Le lot T7 retirera ces propriétés quand les lecteurs passeront à l'accesseur daté.
+   * ======================================================================== */
+  var SEMENCE_ANALYSES = (D.ANALYSES || []).map(function (a) { return Object.assign({}, a); });
+  var SEMENCE_CHAMBRES = (D.TYPES_CHAMBRE || []).map(function (c) { return Object.assign({}, c); });
+  function prixCourant(h, p) { var s = TARIFS.instantane(h, p, null); return s ? s.na : null; }
+  (D.ANALYSES || []).forEach(function (a) {
+    var valeur = a.prix;
+    Object.defineProperty(a, 'prix', {
+      enumerable: true, configurable: true,
+      get: function () { var h = TARIFS.lire(); var p = h && h.parAnalyse[a.code]; return p ? prixCourant(h, p) : valeur; },
+      set: function (v) { valeur = v; },
+    });
+  });
+  (D.TYPES_CHAMBRE || []).forEach(function (c, i) {
+    var valeur = c.tarif, code = 'HO' + (i < 9 ? '0' : '') + (i + 1);
+    Object.defineProperty(c, 'tarif', {
+      enumerable: true, configurable: true,
+      get: function () { var h = TARIFS.lire(); var p = h && h.parActe[code]; return p ? prixCourant(h, p) : valeur; },
+      set: function (v) { valeur = v; },
+    });
+  });
+  TARIFS.semence = { analyses: SEMENCE_ANALYSES, chambres: SEMENCE_CHAMBRES, grille: CATALOGUE, actes: function () { return D.ACTES || []; } };
+  D.TARIFS = TARIFS;
 
   D.tarifsIncoherents = incoherences;
   D.TARIFS_COLONNES_INVERSEES = COLONNES_INVERSEES;
