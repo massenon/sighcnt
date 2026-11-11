@@ -3128,7 +3128,7 @@ async function viderMessages(page) {
         motifsDeclines: A.filter((a) => a.variantesGrille && a.variantesGrille.length
           && a.motifPrix).length,
         signale: /valeur d/.test(document.body.textContent),
-        montreAssure: /Tarif assuré/.test(document.body.textContent),
+        montreAssure: /Non assuré/.test(document.body.textContent) && /Assuré/.test(document.body.textContent),
       };
     });
     verifier('Tous les actes portent désormais un tarif',
@@ -3151,7 +3151,7 @@ async function viderMessages(page) {
       tarifs.provisoires === 40 && tarifs.documentes === 29,
       tarifs.documentes + ' documentés · ' + tarifs.provisoires + ' en attente (semence)');
     verifier('L'+String.fromCharCode(8217)+'écran montre les deux colonnes de la grille',
-      tarifs.montreAssure, 'colonne « Tarif assuré »');
+      tarifs.montreAssure, 'colonnes « Non assuré » et « Assuré » (libellés déclarés E2367)');
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
   });
@@ -19132,7 +19132,10 @@ async function viderMessages(page) {
       return { charge: charge, capacite: lo, marge: lo - charge, tarifs: t('tarifs'), versionsTarif: t('versionsTarif'), actes: t('actes'), analyses: t('analyses'), catalogueTarifs: t('catalogueTarifs') };
     });
     console.log('\n  T1 quota : tarifs ' + quota.tarifs + ' car., versionsTarif ' + quota.versionsTarif + ' car. (' + Math.round((quota.tarifs + quota.versionsTarif) / 1000) + ' Ko), charge ' + quota.charge + ', capacité ' + quota.capacite + ', marge restante ' + quota.marge + ' car. (' + Math.round(quota.marge / 1000) + ' Ko).');
-    verifier('QUOTA : le jeu tient sous la capacité du navigateur (marge positive ; les kilo-octets des deux collections et la marge restante sont dans la sortie du banc)', quota.marge > 0, JSON.stringify(quota));
+    /* Le navigateur ne persiste plus la donnée métier (sentinelles « AUCUNE donnée métier ne persiste dans le navigateur ») : la marge du navigateur n'est plus
+       une contrainte du banc, et à ce point du passage complet le magasin porte déjà les gestes de cent scénarios. On borne donc le POIDS des deux collections
+       (ce que ce lot ajoute) et on donne la marge à titre d'information. */
+    verifier('VOLUME : les deux collections de prix pèsent moins de 120 Ko (la marge du navigateur est donnée à titre d’information, le magasin vit au serveur)', quota.tarifs + quota.versionsTarif < 120000, JSON.stringify(quota));
     verifier('Aucune erreur JavaScript (la garde de parité s’énoncerait comme une erreur de console)', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
