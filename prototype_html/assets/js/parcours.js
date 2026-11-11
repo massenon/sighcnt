@@ -6276,8 +6276,11 @@
     { n: 17, id: 'rendez_vous', libelle: 'Mes rendez-vous et visites', ecran: 'm2-rendezvous', source: 'consultations', lien: 'patientDeLAgent' },
   ];
   var CLE_MES = 'sigh-cnt:mes-';
-  /* La garde est celle de 24 h (régime de repos du planning) ; la garde soins de 08h à 18h30 reste lue à la rubrique « Mes planning et gardes ». */
-  var TRAVAIL_MES = { garde: ['garde', 'garde_hospi'], permanence: ['permanence'] };
+  /* LA GARDE SOINS COMPTE COMME GARDE (Direction, 11/11/2026, P4). « Mes statistiques de garde » comptait la garde de 24 h (`garde`, `garde_hospi`) et laissait
+     la garde soins de 08h à 18h30 (`garde_soins`) à la seule rubrique du planning : un agent du régime « garde soins » (les aides-soignantes, par exemple)
+     y lisait zéro garde. L'écran de gestion `m10-stats-gardes` la comptait déjà comme garde (tout type qui commence par « garde ») : les deux disent
+     désormais la même chose. */
+  var TRAVAIL_MES = { garde: ['garde', 'garde_hospi', 'garde_soins'], permanence: ['permanence'] };
 
   function rubriqueMes(id) { return RUBRIQUES_MES.filter(function (r) { return r.id === id; })[0] || null; }
   function copiePaieTelephoneActive() { return S.reglage('paieCopieTelephone', true) !== false; }
@@ -6606,5 +6609,57 @@
     TITRE_MAX: TITRE_ORG_MAX, arbre: arbreOrganigramme, descendants: descendantsOrganigramme, agentDe: agentDuPosteOrg, titreDe: titreDuPosteOrg,
     controlerRattachement: controlerRattachementOrg, controler: controlerPosteOrg, modifier: modifierPosteOrg, reaffecter: reaffecterPosteOrg,
     renommerTitulaire: renommerTitulaireOrg, poserTitre: poserTitreOrg, creer: creerPosteOrg, archiver: archiverPosteOrg,
+  };
+  /* ==========================================================================
+   * LE VERROU D'UN POSTE DE SECOURS (11/11/2026, lot ORG2, décision P3 de la Direction)
+   * --------------------------------------------------------------------------
+   * Sur un poste partagé de secours (un agent sans téléphone y ouvre sa propre session, planning Q6), l'écran se verrouille plus vite que sur un poste
+   * ordinaire : 5 minutes par défaut, contre 15 (CDCT 12.2, politique de sécurité). Le délai est un RÉGLAGE EN BASE (`verrouDelaiSecoursMinutes`), jamais
+   * une constante : valeur d'attente de l'équipe, MARQUÉE « à valider » (aucun document ne la fixe), réglable par l'administrateur ou la Directrice
+   * Administrative seuls, journalisé avec l'ancienne et la nouvelle valeur (RG-12).
+   * Quel poste est « de secours » ? Une propriété du POSTE lui-même (de ce navigateur, comme le nom du poste), pas de la session ni de l'agent : on la
+   * pose à ce poste, elle ne voyage pas. Ce n'est pas un droit : désigner un poste ne change aucun accès.
+   * ======================================================================== */
+  var SECOURS_DEFAUT_MIN = 5, SECOURS_BORNES = [1, 120], CLE_POSTE_SECOURS = 'sigh-cnt:poste-secours';
+  function delaiSecoursMinutes() {
+    var v = Number(S.reglage('verrouDelaiSecoursMinutes', SECOURS_DEFAUT_MIN));
+    return isFinite(v) && v === Math.floor(v) && v >= SECOURS_BORNES[0] && v <= SECOURS_BORNES[1] ? v : SECOURS_DEFAUT_MIN;
+  }
+  /** Le délai du poste ORDINAIRE : la politique de sécurité quand elle est écrite, sinon quinze minutes (CDCT 12.2). */
+  function delaiOrdinaireMinutes() {
+    try {
+      var pol = (S.raw().politiqueSecurite || []).filter(function (f) { return f.statut !== 'archive'; })[0];
+      if (pol && Number(pol.inactiviteMin) > 0) return Number(pol.inactiviteMin);
+    } catch (e) { /* le délai de référence s'applique */ }
+    return 15;
+  }
+  function posteDeSecours() { try { return S.storage.get(CLE_POSTE_SECOURS) === '1'; } catch (e) { return false; } }
+  /** Le délai de verrou EN FORCE sur ce poste, en minutes : celui du secours si le poste est désigné tel, sinon l'ordinaire. */
+  function delaiVerrouPosteMinutes() { return posteDeSecours() ? delaiSecoursMinutes() : delaiOrdinaireMinutes(); }
+  function reglerVerrouSecoursOk() { return ['admin', 'da'].indexOf(roleCourant()) >= 0; }
+  function refusSecours(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
+  function definirDelaiSecours(o) {
+    o = o || {};
+    if (!reglerVerrouSecoursOk()) return refusSecours('REGLAGE_RESERVE', 'Ce réglage se fait par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.');
+    var m = Number(o.minutes);
+    if (o.minutes === '' || o.minutes === null || o.minutes === undefined || !isFinite(m) || m !== Math.floor(m) || m < SECOURS_BORNES[0] || m > SECOURS_BORNES[1]) {
+      return refusSecours('DELAI_INVALIDE', 'Le délai de verrou d’un poste de secours est un nombre entier de minutes, de ' + SECOURS_BORNES[0] + ' à ' + SECOURS_BORNES[1] + '.', 'Saisir un nombre entier de minutes.');
+    }
+    var avant = delaiSecoursMinutes();
+    S.setReglage('verrouDelaiSecoursMinutes', m);
+    S.log('Délai de verrou d’un poste de secours', 'M14', 'reglage', 'verrouDelaiSecoursMinutes', { minutes: avant }, { minutes: m, motif: o.motif || null });
+    return { ok: true, minutes: m, avant: avant };
+  }
+  /** Désigne (ou retire la désignation de) CE poste comme poste de secours. */
+  function definirPosteDeSecours(oui, motif) {
+    if (!reglerVerrouSecoursOk()) return refusSecours('REGLAGE_RESERVE', 'Cette désignation se fait par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.');
+    var avant = posteDeSecours();
+    try { S.storage.set(CLE_POSTE_SECOURS, oui === true ? '1' : '0'); } catch (e) { return refusSecours('POSTE_NON_ECRIT', 'Le navigateur de ce poste refuse d’écrire la désignation.', 'Autoriser le stockage du site, puis recommencer.'); }
+    S.log('Poste de secours', 'M14', 'reglage', 'posteDeSecours', { secours: avant }, { secours: oui === true, delaiMinutes: delaiVerrouPosteMinutes(), motif: motif || null });
+    return { ok: true, secours: oui === true, avant: avant, delaiMinutes: delaiVerrouPosteMinutes() };
+  }
+  global.SIGH.verrouSecours = {
+    DEFAUT_MIN: SECOURS_DEFAUT_MIN, BORNES: SECOURS_BORNES, delaiSecours: delaiSecoursMinutes, delaiOrdinaire: delaiOrdinaireMinutes, posteDeSecours: posteDeSecours,
+    delaiPoste: delaiVerrouPosteMinutes, peutRegler: reglerVerrouSecoursOk, definirDelai: definirDelaiSecours, definirPoste: definirPosteDeSecours,
   };
 })(window);

@@ -18831,6 +18831,109 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
+  /* ==========================================================================
+   * Vague 112 : DEUX DÉCISIONS DE PAIE ET D'ESPACE « MES » (lot ORG2, Direction, 11/11/2026, P3 et P4)
+   * -------------------------------------------------------------------------
+   * P3 : le verrou d'un poste de SECOURS (poste partagé où un agent sans téléphone ouvre sa session) est un réglage en base, 5 minutes par défaut, MARQUÉ « à valider »,
+   * réglable par l'administrateur et la Directrice Administrative seuls ; le délai ordinaire de 15 minutes (CDCT 12.2) ne change pas. P4 : la garde soins (08h à 18h30)
+   * compte comme garde dans « Mes statistiques de garde » (elle n'y était pas : un agent du régime « garde soins » y lisait zéro garde).
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 112 : verrou d’un poste de secours (5 minutes à valider, réglage en base, admin et DAF seuls, poste désigné) et garde soins comptée dans « Mes statistiques de garde »');
+    erreursJS = [];
+    const enTant = async (role, nom, ecran) => {
+      await page.evaluate((a) => window.SIGH.store.setSession({ role: a[0], nom: a[1], nomComplet: a[1], fonction: a[0], identifiant: 's112.' + a[0], secteur: 'DIR' }), [role, nom]);
+      if (ecran) await ouvrir(ecran);
+    };
+    await ouvrir('m14-sessions.html');
+    await enTant('admin', 'SONDE112 admin', 'm14-sessions.html');
+    const avant = await page.evaluate(() => {
+      const S = window.SIGH.store, VS = window.SIGH.verrouSecours;
+      const ov = localStorage.getItem('sigh-cnt:verrou-delai'); localStorage.removeItem('sigh-cnt:verrou-delai');
+      return { override: ov, reglage: S.reglage('verrouDelaiSecoursMinutes', undefined), poste: localStorage.getItem('sigh-cnt:poste-secours'),
+        defaut: VS.delaiSecours(), ordinaire: VS.delaiOrdinaire(), secours: VS.posteDeSecours(), verrouMs: window.SIGH.app.delaiVerrou() };
+    });
+    const texte = () => page.evaluate(() => (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' '));
+    const t1 = await texte();
+    verifier('Par défaut : 5 minutes pour un poste de secours (réglage absent de la base, défaut du moteur), 15 pour l’ordinaire, ce poste n’est pas de secours (verrou 15 min) ; la carte l’affiche avec « À valider »',
+      avant.defaut === 5 && avant.ordinaire === 15 && avant.secours === false && avant.verrouMs === 15 * 60000 && /Verrou d’un poste de secours/.test(t1) && /5 min/.test(t1) && /À valider/.test(t1) && /Poste ordinaire : verrou à 15 min/.test(t1) && /à valider par la Direction/.test(t1), JSON.stringify([avant, t1.slice(0, 200)]));
+    /* Réglage AU GESTE : la modale, le refus d'une valeur hors bornes, puis 3 minutes. */
+    const cliquerBouton = (lib) => page.evaluate((l) => { const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === l); if (!b) return false; b.click(); return true; }, lib);
+    const poserChamp = (id, v) => page.evaluate((i, x) => { const e = document.querySelector('.modal-root #f_' + i + ', [role=dialog] #f_' + i); if (!e) return false; e.value = x; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); return true; }, id, v);
+    const modale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === l).pop(); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+    const toasts = () => page.evaluate(() => [...document.querySelectorAll('#toast-host *')].map((n) => n.textContent).join(' | '));
+    const ouvert = await cliquerBouton('Régler le délai de secours');
+    await pause(400);
+    await poserChamp('minutes', '0'); await modale('Enregistrer'); await pause(400);
+    const refus0 = await toasts();
+    const reglageApresRefus = await page.evaluate(() => window.SIGH.store.reglage('verrouDelaiSecoursMinutes', 'absent'));
+    await poserChamp('minutes', '3'); await poserChamp('motif', 'Sonde 112'); await modale('Enregistrer'); await pause(700);
+    const apres = await page.evaluate(() => {
+      const S = window.SIGH.store, j = S.raw().audit.filter((x) => x.action === 'Délai de verrou d’un poste de secours')[0];
+      return { reglage: S.reglage('verrouDelaiSecoursMinutes', 'absent'), journal: j ? { ancienne: j.ancienneValeur, nouvelle: j.nouvelleValeur, utilisateur: j.utilisateur } : null, secours: window.SIGH.verrouSecours.delaiSecours(),
+        ordinaire: window.SIGH.verrouSecours.delaiOrdinaire(), verrouMs: window.SIGH.app.delaiVerrou() };
+    });
+    verifier('Réglage AU GESTE : 0 minute est refusé en nommant les bornes (rien d’écrit), puis 3 minutes s’enregistrent EN BASE (réglage du magasin), journal avec l’ancienne (5) et la nouvelle valeur (3) ; le poste ordinaire n’a pas bougé (15 min, verrou 15 min)',
+      ouvert && /entier de minutes, de 1 à 120/.test(refus0) && reglageApresRefus === 'absent' && apres.reglage === 3 && apres.secours === 3 && apres.journal && /"minutes":5/.test(apres.journal.ancienne) && /"minutes":3/.test(apres.journal.nouvelle)
+      && apres.ordinaire === 15 && apres.verrouMs === 15 * 60000, JSON.stringify([ouvert, refus0.slice(0, 200), reglageApresRefus, apres]));
+    /* Désigner CE poste de secours AU GESTE : le verrou en force devient 3 minutes ; le retirer rend 15. */
+    await cliquerBouton('Désigner ce poste comme poste de secours'); await pause(700);
+    const secours = await page.evaluate(() => { const S = window.SIGH.store, j = S.raw().audit.filter((x) => x.action === 'Poste de secours')[0]; return { drapeau: localStorage.getItem('sigh-cnt:poste-secours'), secours: window.SIGH.verrouSecours.posteDeSecours(),
+      verrouMs: window.SIGH.app.delaiVerrou(), delaiPoste: window.SIGH.verrouSecours.delaiPoste(), journal: j ? j.nouvelleValeur : null }; });
+    const t2 = await texte();
+    verifier('Désigner CE poste comme poste de secours AU GESTE : le verrou en force passe à 3 minutes (le moteur de verrou lit le réglage de base), la carte le dit, et le journal porte la désignation',
+      secours.drapeau === '1' && secours.secours && secours.verrouMs === 3 * 60000 && secours.delaiPoste === 3 && /Poste de secours : verrou à 3 min/.test(t2) && /"secours":true/.test(secours.journal || ''), JSON.stringify([secours, t2.slice(0, 160)]));
+    await cliquerBouton('Retirer la désignation de ce poste'); await pause(700);
+    const ordinaire = await page.evaluate(() => ({ drapeau: localStorage.getItem('sigh-cnt:poste-secours'), verrouMs: window.SIGH.app.delaiVerrou() }));
+    verifier('Retirer la désignation rend le délai ordinaire de 15 minutes à ce poste (CDCT 12.2 inchangé)', ordinaire.drapeau === '0' && ordinaire.verrouMs === 15 * 60000, JSON.stringify(ordinaire));
+    /* Droits : seuls l'administrateur et la DAF règlent ; la commande est ABSENTE pour la Direction, et le moteur refuse en nommant. */
+    await enTant('direction', 'SONDE112 direction', 'm14-sessions.html');
+    const direction = await page.evaluate(() => ({ boutons: [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()).filter((t) => /délai de secours|poste de secours|Retirer la désignation/.test(t)),
+      reglage: window.SIGH.verrouSecours.definirDelai({ minutes: 9 }), poste: window.SIGH.verrouSecours.definirPoste(true), carte: /Verrou d’un poste de secours/.test(document.getElementById('page-content').textContent), apres: window.SIGH.store.reglage('verrouDelaiSecoursMinutes', 'absent') }));
+    verifier('Pour la Direction (qui lit l’écran sans régler) : la carte se lit, les deux commandes sont ABSENTES, le moteur refuse en nommant (REGLAGE_RESERVE) et rien n’est écrit (délai resté à 3)',
+      direction.carte && direction.boutons.length === 0 && direction.reglage.code === 'REGLAGE_RESERVE' && direction.poste.code === 'REGLAGE_RESERVE' && direction.apres === 3, JSON.stringify(direction));
+    await enTant('da', 'SONDE112 da', 'm14-sessions.html');
+    const da = await page.evaluate(() => { const VS = window.SIGH.verrouSecours; const out = { boutons: [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()).filter((t) => /délai de secours|poste de secours/.test(t)) };
+      out.invalide = ['', '2.5', '121', '-1', 'abc'].map((m) => VS.definirDelai({ minutes: m }).code); out.ok = VS.definirDelai({ minutes: 7, motif: 'Sonde 112 DAF' }); out.delai = VS.delaiSecours(); return out; });
+    verifier('La Directrice Administrative règle (commandes présentes, 7 minutes écrites) ; une valeur vide, fractionnaire, hors bornes ou non numérique est refusée en nommant (DELAI_INVALIDE)',
+      da.boutons.length === 2 && da.ok.ok === true && da.delai === 7 && da.invalide.every((c) => c === 'DELAI_INVALIDE'), JSON.stringify(da));
+
+    /* --- P4 : la garde soins compte comme garde ---------------------------------------------------------------------------------------------------------------- */
+    await enTant('admin', 'SONDE112 admin', 'm10-mes.html');
+    const monde = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const agent = S.collection('personnel').active().filter((e) => e.fonction === 'aide_soignant')[1];
+      const plan = S.collection('planning', { module: 'M10', entite: 'Planning' });
+      const ins = (type, extra) => plan.insert(Object.assign({ employeId: agent.id, employe: agent.nomComplet, fonction: agent.fonction, date: '2026-08-10', type: type, sonde112: true }, extra || {})).record.id;
+      const ids = [ins('garde'), ins('garde_hospi'), ins('garde_soins'), ins('garde_soins', { validationEtat: 'a_valider' }), ins('permanence')];
+      return { agent: agent.id, nom: agent.nomComplet, ids: ids };
+    });
+    await enTant('aide_soignant', monde.nom, 'm10-mes.html');
+    const lu = await page.evaluate((m) => { const E = window.SIGH.espaceMes; const g = E.lire('stats_garde'); const pl = E.RUBRIQUES.filter((r) => r.calcule === 'permanence')[0]; const perm = pl ? E.lire(pl.id) : null;
+      return { garde: g, ids: m.ids, perm: perm }; }, monde);
+    const ids = monde.ids;
+    verifier('Le moteur compte la garde soins : sur ses vacations de sonde (garde, garde hospitalisation, garde soins validée, garde soins non validée, permanence), « Mes statistiques de garde » en retient TROIS (la garde soins non validée ne compte pas, RG-11 ; la permanence a sa propre rubrique)',
+      lu.garde.ok && lu.garde.ids.filter((i) => ids.indexOf(i) >= 0).sort().join() === [ids[0], ids[1], ids[2]].sort().join() && lu.garde.ids.indexOf(ids[3]) < 0 && lu.garde.ids.indexOf(ids[4]) < 0
+      && lu.perm && lu.perm.ids.indexOf(ids[4]) >= 0, JSON.stringify(lu));
+    await page.evaluate(async () => { const b = [...document.querySelectorAll('#page-content button')].find((x) => /Mes statistiques de garde/.test(x.textContent)); b.click(); await new Promise((r) => setTimeout(r, 400)); });
+    const ecran = await page.evaluate(() => { const c = document.getElementById('page-content'); const k = [...c.querySelectorAll('.kpi')].find((x) => /Gardes effectuées/.test(x.textContent)); return { kpi: k ? k.querySelector('.kpi-value').textContent.trim() : null }; });
+    const attendu = await page.evaluate((m) => { const E = window.SIGH.espaceMes; return E.lire('stats_garde').total; }, monde);
+    verifier('À l’écran « Mon espace », la rubrique « Mes statistiques de garde » affiche ce total (garde soins comprise : le KPI « Gardes effectuées » le dit)',
+      ecran.kpi !== null && Number(ecran.kpi.replace(/\s/g, '')) === attendu && attendu >= 3, JSON.stringify([ecran, attendu]));
+
+    /* --- restitution ---------------------------------------------------------------------------------------------------------------------------------------- */
+    await enTant('admin', 'SONDE112 admin');
+    await page.evaluate((m, av) => {
+      const S = window.SIGH.store;
+      S.raw().planning.forEach((x) => { if (x.sonde112) x.statut = 'archive'; });
+      S.setReglage('verrouDelaiSecoursMinutes', 5);
+      try { S.storage.remove('sigh-cnt:poste-secours'); } catch (e) { /* sans effet */ }
+      if (av.override) S.storage.set('sigh-cnt:verrou-delai', av.override);
+      S.save();
+    }, monde, avant);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

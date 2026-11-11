@@ -1378,6 +1378,50 @@
         });
       }
 
+      /* LE VERROU D'UN POSTE DE SECOURS (P3, 11/11/2026) : délai en base (5 minutes, À VALIDER), poste désigné au poste lui-même. La commande est ABSENTE
+         pour qui ne règle pas (administrateur et Directrice Administrative seuls) ; le moteur refait le contrôle. */
+      function carteSecours() {
+        var VS = global.SIGH.verrouSecours;
+        var secours = VS.posteDeSecours();
+        var corps = el('div.space-y-3');
+        corps.appendChild(K.note('Un poste partagé de secours, où un agent sans téléphone ouvre sa propre session, se verrouille plus vite qu’un poste ordinaire. '
+          + 'Le délai de secours est une <strong>valeur d’attente proposée par l’équipe, à valider par la Direction</strong> : aucun document ne la fixe. '
+          + 'Le délai ordinaire (CDCT 12.2) ne change pas.', { tone: 'info', icon: 'timer' }));
+        corps.appendChild(el('dl', { class: 'grid gap-2 text-sm sm:grid-cols-3' }, [
+          el('div', null, [el('dt.text-xs.text-slate-500', { text: 'Poste ordinaire' }), el('dd.font-semibold.text-slate-800', { text: VS.delaiOrdinaire() + ' min', 'data-secours': 'ordinaire' })]),
+          el('div', null, [el('dt.text-xs.text-slate-500', { text: 'Poste de secours' }), el('dd.flex.items-center.gap-2.font-semibold.text-slate-800', null, [
+            el('span', { text: VS.delaiSecours() + ' min', 'data-secours': 'secours' }), U.badge('À valider', 'warning')])]),
+          el('div', null, [el('dt.text-xs.text-slate-500', { text: 'Ce poste' }), el('dd.font-semibold.text-slate-800', { 'data-secours': 'ce-poste',
+            text: (secours ? 'Poste de secours' : 'Poste ordinaire') + ' : verrou à ' + VS.delaiPoste() + ' min' })]),
+        ]));
+        var actions = [];
+        if (VS.peutRegler()) {
+          actions.push(K.btn('Régler le délai de secours', { size: 'sm', icon: 'sliders-horizontal', onclick: function () {
+            var f = U.form([
+              { name: 'minutes', label: 'Délai de verrou d’un poste de secours (minutes)', type: 'number', required: true, min: VS.BORNES[0], max: VS.BORNES[1], col: 'full',
+                help: 'Entier de ' + VS.BORNES[0] + ' à ' + VS.BORNES[1] + '. Valeur d’attente de ' + VS.DEFAUT_MIN + ' minutes, à valider par la Direction.' },
+              { name: 'motif', label: 'Motif (facultatif)', col: 'full' },
+            ], { minutes: VS.delaiSecours() });
+            var m = U.modal({ title: 'Délai de verrou d’un poste de secours', size: 'md', body: f, footer: [
+              K.btn('Annuler', { onclick: function () { m.close(); } }),
+              K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+                var v = f.collect(); if (!v) return;
+                var r = VS.definirDelai({ minutes: v.minutes, motif: v.motif });
+                if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+                m.close(); U.toast('Délai de secours réglé à ' + r.minutes + ' min.', { type: 'success' }); afficher();
+              } }),
+            ] });
+          } }));
+          actions.push(K.btn(secours ? 'Retirer la désignation de ce poste' : 'Désigner ce poste comme poste de secours', { size: 'sm', icon: 'monitor', onclick: function () {
+            var r = VS.definirPoste(!secours);
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            U.toast(r.secours ? 'Ce poste est un poste de secours : verrou à ' + r.delaiMinutes + ' min.' : 'Ce poste est un poste ordinaire : verrou à ' + r.delaiMinutes + ' min.', { type: 'success' });
+            afficher();
+          } }));
+        }
+        return U.card('Verrou d’un poste de secours', corps, actions);
+      }
+
       function afficher() {
         C.clear(host);
         var rows = lignes();
@@ -1392,6 +1436,7 @@
 
         host.appendChild(K.note('Sur les postes partagés (accueil et caisse), un délai d’inactivité de 15 minutes entraîne le <strong>verrouillage automatique de l’écran</strong>. '
           + 'Clôturer une session va plus loin : elle est <strong>fermée</strong>, et l’agent doit se reconnecter.', { tone: 'info', icon: 'lock' }));
+        host.appendChild(carteSecours());
 
         var libEtat = function (e) { return M.ETATS[e] || e; };
         host.appendChild(U.dataTable({

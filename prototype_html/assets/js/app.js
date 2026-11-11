@@ -274,6 +274,8 @@
   function delaiVerrou() {
     var v = Number(S.storage.get(VERROU_DELAI));
     if (v > 0) return v;
+    /* UN POSTE DE SECOURS SE VERROUILLE PLUS VITE (P3, 11/11/2026) : 5 minutes par défaut, réglage en base, à valider. Le poste ordinaire garde sa politique. */
+    try { if (global.SIGH.verrouSecours && global.SIGH.verrouSecours.posteDeSecours()) return global.SIGH.verrouSecours.delaiSecours() * 60000; } catch (e) { /* le délai ordinaire s'applique */ }
     /* La politique de sécurité (écran « Sécurité des utilisateurs ») fixe le délai quand elle est écrite. */
     try {
       var pol = (S.raw().politiqueSecurite || []).filter(function (f) { return f.statut !== 'archive'; })[0];
