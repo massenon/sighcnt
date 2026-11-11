@@ -11,7 +11,7 @@ import '../../shell/contexte_ecran.dart';
 import '../../sync/config_smtp.dart';
 import '../../sync/file_courriels.dart';
 import '../../sync/service_smtp.dart';
-import 'acc_ecrans.dart' show PageErreur;
+import 'acc_ecrans.dart' show page404;
 import 'acc_gabarit.dart';
 
 /// Écrans de support (module SUP, hors ruban : atteints par le menu profil et la recherche globale) — `support.js` — et `plan-du-site` (autonome).
@@ -577,8 +577,8 @@ String initialesPoste(String nom) => nom.trim().split(RegExp(r'\s+')).take(2).ma
 // plan-du-site — autonome
 // ------------------------------------------------------------------------------------------------------------------------------------------------
 
-/// Le plan du site : désactivé par défaut (réglage en base `affichage.planDuSite`, lot U du 11/11/2026). Désactivé, l'écran se comporte comme un écran fermé : le 403 NOMMÉ prend sa
-/// place (le réglage et qui le modifie sont dits), jamais une page vide, et la tentative est journalisée (RG-12) quand quelqu'un est connecté.
+/// Le plan du site : désactivé par défaut (réglage en base `affichage.planDuSite`, lot U du 11/11/2026). Désactivé, son adresse mène à la page 404 (Direction, 11/11/2026) : la 404 prend sa
+/// place, jamais une page vide, et la tentative est journalisée (RG-12) quand quelqu'un est connecté.
 class EcranPlanDuSite extends StatelessWidget with EcranAutonome {
   const EcranPlanDuSite({super.key});
 
@@ -604,16 +604,14 @@ class _EtatPlanDuSiteFerme extends State<_PlanDuSiteFerme> {
       if (!mounted) return;
       final x = ContexteAutonome.maybeOf(context);
       if (x != null && x.session != null) {
-        x.magasin.journaliser('Accès refusé : plan du site désactivé', 'M14', 'acces', 'plan-du-site', null, {'motif': 'réglage planDuSiteAffiche = non'});
+        x.magasin.journaliser('Accès au plan du site désactivé', 'M14', 'acces', 'plan-du-site', null, {'motif': 'réglage planDuSiteAffiche = non'});
       }
     });
   }
 
   @override
-  Widget build(BuildContext context) => const PageErreur(code: '403', titre: 'Accès refusé', messageDe: _messagePlanFerme, motif: motifPlanDuSiteDesactive);
+  Widget build(BuildContext context) => page404;
 }
-
-String _messagePlanFerme(String? motif, bool planAffiche) => accMessage403(motif: motif);
 
 class _PlanDuSiteOuvert extends StatelessWidget {
   const _PlanDuSiteOuvert();

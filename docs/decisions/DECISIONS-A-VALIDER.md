@@ -132,5 +132,6 @@ Sur `docs/prd/PRD-M12-cloture-annuelle-ecarts-et-droits-parametres.md` :
 
 ## J. Demandes de la Direction du 11/11/2026 (écrans d'accès)
 
-- **Icône des écrans « Session verrouillée » et « 403 »** : retirée (le médaillon qui surmonte le titre). Aucun autre écran d'accès ne change. `ECARTS-MAQUETTE.md` E2371.
-- **Plan du site réglable, désactivé par défaut** : réglage « Afficher le plan du site » (Paramètres système, onglet « Affichage »), en base, réservé à l'administrateur et à la Directrice Administrative, tracé au journal ; désactivé, le lien disparaît et l'adresse directe ouvre un 403 nommé. Maquette et poste. E2372, E2373.
+- **Pastille du haut** : retirée de « Session verrouillée » et des pages 403 et 404 (même gabarit) ; « Mot de passe oublié » et « Réinitialisation » gardent la leur. `ECARTS-MAQUETTE.md` E2371.
+- **Plan du site réglable** : case « Afficher le plan du site » à « Paramètres », onglet « Installation et données », carte « Affichage », décochée par défaut, en base, journalisée à chaque changement ; décochée, les boutons du plan (403, 404, Paramètres) disparaissent et son adresse mène à la page 404. Maquette et poste. E2372.
+- **Repli** : un profil sans écran dans son ruban tombe sur la page 404, plus sur le plan du site. E2373.

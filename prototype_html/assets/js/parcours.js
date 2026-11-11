@@ -6874,7 +6874,7 @@
       return { ok: false, code: 'REGLAGE_RESERVE', motif: 'Ce réglage se fait par l’administrateur ou la Directrice Administrative.', geste: 'Demander à la Directrice Administrative.' };
     }
     if (oui !== true && oui !== false) {
-      return { ok: false, code: 'VALEUR_INVALIDE', motif: 'Le plan du site est affiché ou masqué : oui ou non.', geste: 'Choisir Afficher ou Masquer.' };
+      return { ok: false, code: 'VALEUR_INVALIDE', motif: 'Le plan du site est affiché ou masqué : oui ou non.', geste: 'Cocher ou décocher la case.' };
     }
     var avant = planDuSiteAffiche();
     S.setReglage(PLAN_CLE, oui);

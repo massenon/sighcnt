@@ -18,6 +18,7 @@
   "Configuration Clinique"
  ],
  "regle": [
+  "Le plan du site liste tous les écrans du logiciel. Tant que la case reste décochée, ses boutons n’apparaissent ni dans les paramètres ni sur les pages 403 et 404, et son adresse mène à la page 404. Le réglage est enregistré en base et chaque changement est écrit au journal.",
   "Ce prototype fonctionne intégralement hors ligne : la feuille de style, les polices, la bibliothèque de graphiques et les icônes sont hébergées dans le dossier du projet. Aucune requête réseau n’est émise."
  ],
  "onglets": [
@@ -25,8 +26,7 @@
   "Corbeille",
   "Barème NS",
   "Jeux de test",
-  "Relais en ligne",
-  "Affichage"
+  "Relais en ligne"
  ],
  "kpis": [
   "Collections de données",
@@ -36,6 +36,7 @@
  ],
  "cartes": [
   "Contenu du jeu de données",
+  "Affichage",
   "Maintenance du prototype"
  ],
  "tableaux": [
@@ -52,7 +53,6 @@
   "Barème NS 131",
   "Jeux de test",
   "Relais en ligne",
-  "Affichage",
   "Colonnes",
   "Exporter",
   "1",
@@ -63,7 +63,9 @@
   "Exporter les données",
   "Sauvegardes"
  ],
- "champs": [],
+ "champs": [
+  "Afficher le plan du site"
+ ],
  "nbTableaux": 1,
  "nbKpis": 4
 }

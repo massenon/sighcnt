@@ -2741,13 +2741,6 @@
     ],
     "liens403": [
      "Retour à l’accueil"
-    ],
-    "textes403Motif": [
-     "403",
-     "Accès refusé",
-     "Le plan du site est désactivé : il s’affiche par un réglage de « Paramètres système », onglet « Affichage », que seuls l’administrateur et la Directrice Administrative modifient. La tentative d’accès est journalisée.",
-     "Retour à l’accueil",
-     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
     ]
    },
    "active": {
@@ -2774,23 +2767,15 @@
     "liens403": [
      "Retour à l’accueil",
      "Plan du site"
-    ],
-    "textes403Motif": [
-     "403",
-     "Accès refusé",
-     "Le plan du site est désactivé : il s’affiche par un réglage de « Paramètres système », onglet « Affichage », que seuls l’administrateur et la Directrice Administrative modifient. La tentative d’accès est journalisée.",
-     "Retour à l’accueil",
-     "Plan du site",
-     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
     ]
    }
   },
   "adresseDirecte": {
    "textes": [
-    "Accès refusé : le plan du site est désactivé."
+    "Page introuvable."
    ],
    "navigation": [
-    "pages/error-403.php?motif=plan-du-site"
+    "pages/error-404.php"
    ]
   },
   "definir": [
@@ -2820,7 +2805,7 @@
     "ok": false,
     "code": "VALEUR_INVALIDE",
     "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Choisir Afficher ou Masquer.",
+    "geste": "Cocher ou décocher la case.",
     "apres": false,
     "avant": null
    },
@@ -2830,7 +2815,7 @@
     "ok": false,
     "code": "VALEUR_INVALIDE",
     "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Choisir Afficher ou Masquer.",
+    "geste": "Cocher ou décocher la case.",
     "apres": false,
     "avant": null
    },
@@ -2840,7 +2825,7 @@
     "ok": false,
     "code": "VALEUR_INVALIDE",
     "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Choisir Afficher ou Masquer.",
+    "geste": "Cocher ou décocher la case.",
     "apres": false,
     "avant": null
    },
@@ -2870,7 +2855,7 @@
     "ok": false,
     "code": "VALEUR_INVALIDE",
     "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Choisir Afficher ou Masquer.",
+    "geste": "Cocher ou décocher la case.",
     "apres": false,
     "avant": null
    },
@@ -2880,7 +2865,7 @@
     "ok": false,
     "code": "VALEUR_INVALIDE",
     "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Choisir Afficher ou Masquer.",
+    "geste": "Cocher ou décocher la case.",
     "apres": false,
     "avant": null
    },
@@ -2890,7 +2875,7 @@
     "ok": false,
     "code": "VALEUR_INVALIDE",
     "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Choisir Afficher ou Masquer.",
+    "geste": "Cocher ou décocher la case.",
     "apres": false,
     "avant": null
    },

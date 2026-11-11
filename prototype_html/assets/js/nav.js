@@ -1423,7 +1423,7 @@
       if (!f.nouveau || ROLES[r]) return;
       ROLES[r] = {
         id: r, label: f.libelle || r, short: f.libelleCourt || f.libelle || r,
-        color: f.couleur || 'neutral', home: f.accueil || 'plan-du-site',
+        color: f.couleur || 'neutral', home: f.accueil || 'error-404',
         cree: true, creeLe: f.definiLe || null,
       };
     });

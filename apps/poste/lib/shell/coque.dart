@@ -465,10 +465,10 @@ class _CoquePosteState extends State<CoquePoste> {
     return _nav.matrice.fermetures?.fermeturePour(id, e.module);
   }
 
-  /// L'accueil du profil courant : sa page d'accueil si le rôle la voit, sinon le premier écran de son ruban, sinon le plan du site.
+  /// L'accueil du profil courant : sa page d'accueil si le rôle la voit, sinon le premier écran de son ruban, sinon la page 404 (Direction, 11/11/2026 : le plan du site n'est plus un secours).
   String _accueilDuRole() {
     final ruban = _ruban;
-    return (ruban.isEmpty ? null : _accueil(ruban)) ?? 'plan-du-site';
+    return (ruban.isEmpty ? null : _accueil(ruban)) ?? 'error-404';
   }
 
   /// La navigation d'un écran autonome : personne n'est connecté → la connexion ; écran inconnu → 404 ; écran fermé au profil → 403 (la tentative est
@@ -515,8 +515,7 @@ class _CoquePosteState extends State<CoquePoste> {
                 session: publique ? null : _session,
                 horloge: widget.horloge ?? _session?.horloge,
                 publique: publique,
-                // Les paramètres de l'adresse ne vont qu'aux pages publiques et à la page 403 (son motif : `plan-du-site`, qui nomme le réglage fermant l'écran).
-                parametres: publique || id == 'error-403' ? widget.parametres : const {},
+                parametres: publique ? widget.parametres : const {},
                 aller: publique ? (_) {} : _allerDepuisAutonome,
                 accueil: () => (_session?.exigeConnexion ?? false) && _session!.etat == EtatSession.deconnectee ? 'index' : _accueilDuRole(),
                 child: Builder(

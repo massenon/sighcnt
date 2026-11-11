@@ -12,6 +12,7 @@ import 'package:sigh_poste/core/service_parametres.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
+import 'package:sigh_poste/modules/auth/acc_ecrans.dart' show PageErreur;
 import 'package:sigh_poste/modules/auth/acc_session.dart';
 import 'package:sigh_poste/shell/barre_superieure.dart';
 import 'package:sigh_poste/shell/contexte_autonome.dart';
@@ -661,24 +662,24 @@ void main() {
       });
     }
 
-    cas('403 : AUCUN médaillon au-dessus du code (Direction, 11/11/2026) ; la 404 garde le sien', (t) async {
-      await monter(t, poste(), ecran: 'error-403', role: 'reception');
-      expect(find.byIcon(LucideIcons.shieldX), findsNothing);
-      expect(find.byIcon(LucideIcons.shieldAlert), findsNothing);
-      final haut = t.getTopLeft(find.text('403')).dy;
-      expect(haut, lessThan(t.getTopLeft(find.text('Accès refusé')).dy));
-      await fin(t);
-      await monter(t, poste(), ecran: 'error-404', role: 'reception');
-      expect(find.byIcon(LucideIcons.fileQuestionMark), findsOneWidget);
-      await fin(t);
+    cas('403 et 404 : AUCUNE pastille au-dessus du code (Direction, 11/11/2026)', (t) async {
+      for (final (id, code, texte) in [('error-403', '403', 'Accès refusé'), ('error-404', '404', 'Page introuvable')]) {
+        await monter(t, poste(), ecran: id, role: 'reception');
+        expect(find.byIcon(LucideIcons.shieldX), findsNothing);
+        expect(find.byIcon(LucideIcons.shieldAlert), findsNothing);
+        expect(find.byIcon(LucideIcons.fileQuestionMark), findsNothing);
+        expect(t.getTopLeft(find.text(code)).dy, lessThan(t.getTopLeft(find.text(texte)).dy));
+        // Le seul pictogramme de la page est celui du bouton « Retour à l'accueil ».
+        expect(find.descendant(of: find.byType(PageErreur), matching: find.byType(Icon)), findsOneWidget, reason: id);
+        await fin(t);
+      }
     });
 
-    cas('l’adresse du 403 porte le motif du plan du site : le texte nomme le réglage (les mêmes mots que la maquette)', (t) async {
-      await monter(t, poste(), ecran: 'error-403', role: 'reception', parametres: {'motif': 'plan-du-site'});
-      final e = obj(obj(obj(v['planDuSite'])['pages'])['desactive']);
-      for (final texte in (e['textes403Motif'] as List).cast<String>()) {
-        expect(ex.textesVisibles(t).any((x) => x.contains(ex.normaliser(texte))), isTrue, reason: texte);
-      }
+    cas('l’écran de verrouillage n’a plus de médaillon au-dessus du titre', (t) async {
+      final s = SessionPoste.ouverte('reception', nom: 'EZIN Orou', horloge: () => auj);
+      await monter(t, poste(), ecran: 'auth-lock', session: s);
+      expect(find.byIcon(LucideIcons.lock), findsNothing);
+      expect(find.text('Session verrouillée'), findsOneWidget);
       await fin(t);
     });
 
@@ -734,19 +735,15 @@ void main() {
       await fin(t);
     });
 
-    cas('DÉSACTIVÉ par défaut : l’adresse directe ouvre le 403 NOMMÉ (le réglage et qui le modifie), jamais une page vide, et la tentative est journalisée', (t) async {
+    cas('DÉSACTIVÉ par défaut : l’adresse du plan mène à la page 404, jamais à une page vide, et la tentative est journalisée', (t) async {
       final m = poste();
       final s = SessionPoste.ouverte('reception', nom: 'EZIN Orou', horloge: () => auj);
       await monter(t, m, ecran: 'plan-du-site', session: s, role: 'reception');
-      expect(find.text('403'), findsOneWidget);
-      expect(find.text('Accès refusé'), findsOneWidget);
-      final e = obj(obj(obj(v['planDuSite'])['pages'])['desactive']);
-      for (final texte in (e['textes403Motif'] as List).cast<String>()) {
-        expect(ex.textesVisibles(t).any((x) => x.contains(ex.normaliser(texte))), isTrue, reason: texte);
-      }
+      expect(find.text('404'), findsOneWidget);
+      expect(find.text('Page introuvable'), findsOneWidget);
       expect(find.text('Inventaire de tous les écrans du prototype, organisés par domaine et par module.'), findsNothing);
       expect(find.widgetWithText(BoutonSigh, 'Plan du site'), findsNothing);
-      expect(audit(m, 'Accès refusé : plan du site désactivé'), hasLength(1));
+      expect(audit(m, 'Accès au plan du site désactivé'), hasLength(1));
       await fin(t);
     });
 

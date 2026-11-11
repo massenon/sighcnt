@@ -208,12 +208,11 @@ class _EtatSysteme extends State<EcranSysteme> {
     return ListenableBuilder(
         listenable: Listenable.merge([for (final n in noms) c.magasin.collection(n), c.magasin.collection('reglages'), c.magasin.collection(parCollectionParametres)]),
         builder: (ctx, _) => OngletsSigh(onglets: [
-              OngletDef(id: 'installation', libelle: 'Installation et données', construire: (_) => _Installation(c: c, rafraichir: () => setState(() {}))),
+              OngletDef(id: 'installation', libelle: 'Installation et données', construire: (_) => _Installation(c: c, estMere: widget.estMere, rafraichir: () => setState(() {}))),
               OngletDef(id: 'corbeille', libelle: 'Corbeille', compte: cfbCorbeille(c.magasin).length, construire: (_) => _Corbeille(c: c)),
               OngletDef(id: 'bareme', libelle: 'Barème NS 131', construire: (_) => _Bareme(c: c)),
               OngletDef(id: 'reinitialisation', libelle: 'Jeux de test', construire: (_) => _JeuxDeTest(c: c, rafraichir: () => setState(() {}))),
               OngletDef(id: 'relais', libelle: 'Relais en ligne', construire: (_) => _Relais(c: c, estMere: widget.estMere)),
-              OngletDef(id: 'affichage', libelle: 'Affichage', construire: (_) => _Affichage(c: c, estMere: widget.estMere)),
               OngletDef(id: 'parametres', libelle: 'Paramètres', construire: (_) => PanneauParametres(c: c, estMere: widget.estMere)),
             ]));
   }
@@ -224,8 +223,9 @@ class _EtatSysteme extends State<EcranSysteme> {
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 
 class _Installation extends StatelessWidget {
-  const _Installation({required this.c, required this.rafraichir});
+  const _Installation({required this.c, required this.estMere, required this.rafraichir});
   final ContexteEcran c;
+  final bool estMere;
   final VoidCallback rafraichir;
 
   Future<void> _reinitialiser(BuildContext ctx) async {
@@ -338,6 +338,7 @@ class _Installation extends StatelessWidget {
                   rendu: (_, r) => (r['archives'] as int) > 0 ? Text('${r['archives']}', style: const TextStyle(fontSize: 14, color: JetonsShell.warning600)) : const Text('—')),
             ],
           )),
+      _CarteAffichage(c: c, estMere: estMere),
       CarteSigh(
           titre: 'Maintenance du prototype',
           child: Wrap(spacing: 8, runSpacing: 8, children: [
@@ -448,11 +449,11 @@ class _Corbeille extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
-// Onglet « Affichage » — le plan du site est un réglage en base, désactivé par défaut (lot U, Direction, 11/11/2026)
+// Carte « Affichage » de l'onglet « Installation et données » : la case « Afficher le plan du site », un réglage en base (lot U, Direction, 11/11/2026)
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 
-class _Affichage extends StatelessWidget {
-  const _Affichage({required this.c, required this.estMere});
+class _CarteAffichage extends StatelessWidget {
+  const _CarteAffichage({required this.c, required this.estMere});
   final ContexteEcran c;
   final bool estMere;
 
@@ -463,33 +464,40 @@ class _Affichage extends StatelessWidget {
         listenable: c.magasin.collection(parCollectionParametres),
         builder: (ctx, _) {
           final affiche = plan.affiche();
+          // La case est ABSENTE pour qui ne règle pas : le rôle (administrateur, Directrice Administrative) et le droit de l'écran ; le domaine refuse de toute façon en nommant.
+          // Une configuration se règle sur la mère : un fileul la reçoit et ne l'écrit pas.
+          final peutRegler = plan.peutRegler && c.droit.editer && estMere;
           return CarteSigh(
-              titre: 'Plan du site',
-              actions: [
-                // La commande est ABSENTE pour qui ne règle pas : le rôle (administrateur, Directrice Administrative) et le droit de l'écran ; le domaine refuse de toute façon en nommant.
-                // Une configuration se règle sur la mère : un fileul la reçoit et ne l'écrit pas.
-                if (plan.peutRegler && c.droit.editer && estMere)
-                  BoutonSigh(
-                      libelle: affiche ? 'Masquer le plan du site' : 'Afficher le plan du site',
-                      icone: affiche ? LucideIcons.eyeOff : LucideIcons.eye,
-                      variante: VarianteBouton.secondaire,
-                      taille: TailleBouton.sm,
-                      onPressed: () {
-                        final r = plan.definir(!affiche);
-                        if (r['ok'] != true) {
-                          ToastsSigh.afficher(ctx, '${r['motif']}', type: TypeToast.erreur, detail: '${r['geste']}');
-                          return;
-                        }
-                        ToastsSigh.afficher(ctx, r['affiche'] == true ? 'Le plan du site est affiché.' : 'Le plan du site est masqué.', type: TypeToast.succes);
-                      }),
-              ],
+              titre: 'Affichage',
               child: cfaPile([
                 if (!estMere) NoteSigh(ApplicateurConfiguration.motifGarde, ton: TonSigh.info, icone: LucideIcons.lock),
                 cfbNote(
-                    'Le plan du site liste tous les écrans du logiciel. Il est désactivé par défaut : tant que ce réglage reste sur « non », son lien disparaît du ruban, des paramètres, des pages d’erreur et de la recherche, et son adresse directe ouvre un accès refusé. Le réglage est enregistré en base, journalisé, et propre à la clinique : il se règle ici par l’administrateur ou la Directrice Administrative.',
+                    'Le plan du site liste tous les écrans du logiciel. Tant que la case reste décochée, ses boutons n’apparaissent ni dans les paramètres ni sur les pages 403 et 404, et son adresse mène à la page 404. Le réglage est enregistré en base et chaque changement est écrit au journal.',
                     ton: 'info',
                     icone: LucideIcons.map),
-                DescListeSigh([('Afficher le plan du site', cfaGras(affiche ? 'Oui' : 'Non'))]),
+                if (peutRegler)
+                  Row(children: [
+                    SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Checkbox(
+                            key: const Key('cfg:plan-du-site'),
+                            value: affiche,
+                            visualDensity: VisualDensity.compact,
+                            activeColor: JetonsShell.navy900,
+                            onChanged: (v) {
+                              final r = plan.definir(v ?? false);
+                              if (r['ok'] != true) {
+                                ToastsSigh.afficher(ctx, '${r['motif']}', type: TypeToast.erreur, detail: '${r['geste']}');
+                                return;
+                              }
+                              ToastsSigh.afficher(ctx, r['affiche'] == true ? 'Le plan du site est affiché.' : 'Le plan du site est masqué.', type: TypeToast.succes);
+                            })),
+                    const SizedBox(width: 8),
+                    const Text('Afficher le plan du site', style: TextStyle(fontSize: 14, height: 20 / 14, color: JetonsShell.slate800)),
+                  ])
+                else
+                  Text('Afficher le plan du site : ${affiche ? 'oui' : 'non'}', style: const TextStyle(fontSize: 14, height: 20 / 14, color: JetonsShell.slate700)),
               ], espace: 12));
         });
   }

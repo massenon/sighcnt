@@ -264,19 +264,18 @@ void main() {
         }
       }
     });
-    test('les textes des pages 404 et 403 suivent le réglage, mot pour mot', () {
+    test('les textes des pages 404 et 403 suivent le réglage, mot pour mot ; le 403 ne change pas', () {
       final pages = obj(p['pages']);
       for (final etat in ['desactive', 'active']) {
         final e = obj(pages[etat]);
         expect(sp((e['textes404'] as List)[2]), accMessage404(planAffiche: etat == 'active'), reason: '404 $etat');
-        expect(sp((e['textes403'] as List)[2]), accMessage403(), reason: '403 $etat');
-        expect(sp((e['textes403Motif'] as List)[2]), accMessage403(motif: motifPlanDuSiteDesactive), reason: '403 motif $etat');
+        expect(sp((e['textes403'] as List)[2]), accMessage403, reason: '403 $etat');
         expect((e['liens403'] as List).contains('Plan du site'), etat == 'active');
         expect((e['liens404'] as List).contains('Plan du site'), etat == 'active');
       }
     });
-    test('l’adresse directe du plan désactivé renvoie au 403 nommé', () {
-      expect(fl([obj(p['adresseDirecte'])]).first['navigation'], ['pages/error-403.php?motif=$motifPlanDuSiteDesactive']);
+    test('l’adresse directe du plan désactivé mène à la page 404', () {
+      expect(obj(p['adresseDirecte'])['navigation'], ['pages/error-404.php']);
     });
     test('le journal du réglage porte l’ancienne et la nouvelle valeur', () {
       final j = obj(p['journal']);

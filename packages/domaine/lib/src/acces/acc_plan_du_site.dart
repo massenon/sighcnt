@@ -4,8 +4,8 @@
 /// (`modules/auth.js`) ; vecteurs `test/vecteurs/acces.json` (section `planDuSite`), engendrés par `prototype_html/build/vecteurs-acces.js`. Fonctions PURES.
 ///
 /// Le réglage est un PARAMÈTRE EN BASE (`affichage.planDuSite`, voir `parametres/definitions.dart`), jamais une constante ni un masquage écrit à côté d'un écran : l'écran
-/// reste au manifeste, et tout ce qui offre son lien (commande des paramètres, pages 403 et 404, accueil de repli) lit ce réglage. Désactivé, son adresse directe se comporte
-/// comme un écran fermé : un 403 NOMMÉ (le réglage et qui le modifie sont dits), jamais une page vide. Réglable par l'administrateur et la Directrice Administrative seuls,
+/// reste au manifeste, et tout ce qui offre son lien (commande des paramètres, pages 403 et 404) lit ce réglage. Désactivé, son adresse directe se comporte
+/// comme une adresse inconnue : la page 404 (Direction, 11/11/2026), jamais une page vide. La case se règle à « Installation et données », carte « Affichage ». Réglable par l'administrateur et la Directrice Administrative seuls,
 /// journalisé avec l'ancienne et la nouvelle valeur (RG-12). Réglage de branche : il voyage aux fileuls par le journal de configuration, jamais aux mobiles.
 library;
 
@@ -20,9 +20,6 @@ const bool planDuSiteDefaut = false;
 /// Les rôles qui règlent l'affichage du plan du site.
 const List<String> rolesPlanDuSite = ['admin', 'da'];
 
-/// Le motif porté par l'adresse du 403 quand c'est ce réglage qui ferme le plan du site.
-const String motifPlanDuSiteDesactive = 'plan-du-site';
-
 /// Le plan du site est-il affiché ? Seule la valeur booléenne vraie l'affiche : absent, faux, texte, nombre ou nul ne l'affichent pas.
 bool planDuSiteAffiche(Object? reglage) => reglage == true;
 
@@ -32,7 +29,7 @@ RefusRh? controlerReglagePlanDuSite({required String role, required Object? vale
     return const RefusRh('REGLAGE_RESERVE', 'Ce réglage se fait par l’administrateur ou la Directrice Administrative.', 'Demander à la Directrice Administrative.');
   }
   if (valeur is! bool) {
-    return const RefusRh('VALEUR_INVALIDE', 'Le plan du site est affiché ou masqué : oui ou non.', 'Choisir Afficher ou Masquer.');
+    return const RefusRh('VALEUR_INVALIDE', 'Le plan du site est affiché ou masqué : oui ou non.', 'Cocher ou décocher la case.');
   }
   return null;
 }
@@ -41,7 +38,6 @@ RefusRh? controlerReglagePlanDuSite({required String role, required Object? vale
 String accMessage404({required bool planAffiche}) =>
     'L’écran demandé n’existe pas ou a été déplacé.${planAffiche ? ' Utiliser le plan du site pour retrouver le module recherché.' : ''}';
 
-/// Le texte de la page 403 ; `motif` vaut [motifPlanDuSiteDesactive] quand l'adresse visée est le plan du site désactivé.
-String accMessage403({String? motif}) => motif == motifPlanDuSiteDesactive
-    ? 'Le plan du site est désactivé : il s’affiche par un réglage de « Paramètres système », onglet « Affichage », que seuls l’administrateur et la Directrice Administrative modifient. La tentative d’accès est journalisée.'
-    : 'Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.';
+/// Le texte de la page 403 (le même plan du site affiché ou non : désactivé, son adresse mène à la page 404, jamais à un refus nommé).
+const String accMessage403 =
+    'Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.';

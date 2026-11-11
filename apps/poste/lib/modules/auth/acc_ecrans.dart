@@ -100,7 +100,7 @@ void ouvrirSessionAcces(ContexteAutonome x, AccCompte c) {
     if (pol != null) s.verrou.delai = Duration(minutes: secPolitique(pol)['inactiviteMin']!);
     if (secours.posteDeSecours()) s.verrou.delai = Duration(minutes: secours.delaiSecours());
   } else {
-    x.aller(x.donnees?.matrice.accueil(c.role) ?? 'plan-du-site');
+    x.aller(x.donnees?.matrice.accueil(c.role) ?? 'error-404');
   }
 }
 
@@ -768,36 +768,25 @@ class _EtatVerrou extends State<EcranVerrou> {
 // ------------------------------------------------------------------------------------------------------------------------------------------------
 
 class PageErreur extends StatelessWidget with EcranAutonome {
-  /// `icone` absent : pas de médaillon au-dessus du code (la page 403, Direction, 11/11/2026). `messageDe` : le texte dépend du réglage du plan du site et de l'adresse (le motif), lus à
-  /// l'affichage ; `motif` impose le motif quand l'écran est servi à la place d'un autre (le plan du site désactivé).
-  const PageErreur({super.key, required this.code, required this.titre, this.message, this.messageDe, this.icone, this.motif});
+  /// Aucun médaillon au-dessus du code (pages 403 et 404, Direction, 11/11/2026 : elles partagent ce gabarit). `messageDe` : le texte dépend du réglage du plan du site, lu à l'affichage.
+  const PageErreur({super.key, required this.code, required this.titre, this.message, this.messageDe});
   final String code;
   final String titre;
   final String? message;
-  final String Function(String? motif, bool planAffiche)? messageDe;
-  final IconData? icone;
-  final String? motif;
+  final String Function(bool planAffiche)? messageDe;
 
   @override
   Widget build(BuildContext context) {
     final x = ContexteAutonome.of(context);
     // Le lien du plan du site suit le réglage en base (désactivé par défaut) : jamais un lien vers une page fermée.
     final plan = planDuSitePosteAffiche(x.magasin, horloge: x.horloge);
-    final texte = messageDe != null ? messageDe!(motif ?? x.parametres['motif'], plan) : (message ?? '');
+    final texte = messageDe != null ? messageDe!(plan) : (message ?? '');
     return Scaffold(
         backgroundColor: Colors.white,
         body: Center(
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  if (icone != null) ...[
-                    Container(
-                        width: 64,
-                        height: 64,
-                        decoration: BoxDecoration(color: JetonsShell.navy50, borderRadius: BorderRadius.circular(16)),
-                        child: Icon(icone, size: 32, color: JetonsShell.navy800)),
-                    const SizedBox(height: 24),
-                  ],
                   Text(code,
                       style: const TextStyle(color: JetonsShell.navy950, fontSize: 48, height: 1, fontWeight: FontWeight.w700, letterSpacing: -1.2)),
                   const SizedBox(height: 8),
@@ -826,10 +815,7 @@ class PageErreur extends StatelessWidget with EcranAutonome {
   }
 }
 
-const PageErreur page404 = PageErreur(
-    code: '404', titre: 'Page introuvable', messageDe: _message404, icone: LucideIcons.fileQuestionMark);
-// 403 : sans médaillon. Une adresse fermée par un RÉGLAGE (motif `plan-du-site`) est NOMMÉE : on dit quel réglage la ferme et qui le règle.
-const PageErreur page403 = PageErreur(code: '403', titre: 'Accès refusé', messageDe: _message403);
+const PageErreur page404 = PageErreur(code: '404', titre: 'Page introuvable', messageDe: _message404);
+const PageErreur page403 = PageErreur(code: '403', titre: 'Accès refusé', message: accMessage403);
 
-String _message404(String? motif, bool planAffiche) => accMessage404(planAffiche: planAffiche);
-String _message403(String? motif, bool planAffiche) => accMessage403(motif: motif);
+String _message404(bool planAffiche) => accMessage404(planAffiche: planAffiche);

@@ -23,7 +23,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       class Faux extends Vrai { constructor(...a) { if (a.length === 0) super(FIXE); else super(...a); } static now() { return FIXE; } }
       window.Date = Faux;
       window.__nav = [];
-      navigation.addEventListener('navigate', (e) => { if (window.__laisser) return; if (e.cancelable) { e.preventDefault(); window.__nav.push(e.destination.url.replace(location.origin + '/', '')); } });
+      navigation.addEventListener('navigate', (e) => { if (e.cancelable) { e.preventDefault(); window.__nav.push(e.destination.url.replace(location.origin + '/', '')); } });
     });
     for (const f of ['auth.js', 'support.js']) await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules', f) });
 
@@ -170,7 +170,6 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         const PS = SIGH.planDuSite;
         const reglageOrigine = S.reglage(PS.CLE, undefined);
         const posteRole = (r) => S.setSession({ jeton: sessionOrigine.jeton, role: r, nom: 'Agent ' + r, poste: r, identifiant: 'x.' + r });
-        const avecMotif = async (id, motif) => { window.__laisser = true; history.replaceState(null, '', location.pathname + (motif ? '?motif=' + motif : '')); window.__laisser = false; const r = await monter(id); window.__laisser = true; history.replaceState(null, '', location.pathname); window.__laisser = false; navs(); return r; };
         const cas = { cle: PS.CLE, defaut: PS.DEFAUT };
         // 1) la lecture : seul `true` affiche (absent, faux, texte, nombre, nul : non)
         cas.lecture = [];
@@ -184,8 +183,8 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         const pagesPlan = {};
         for (const etat of ['desactive', 'active']) {
           if (etat === 'active') S.setReglage(PS.CLE, true);
-          const r404 = await monter('error-404'); const r403 = await monter('error-403'); const r403m = await avecMotif('error-403', 'plan-du-site');
-          pagesPlan[etat] = { textes404: textes(r404), liens404: [...r404.querySelectorAll('a')].map((a) => norm(a.textContent)), textes403: textes(r403), liens403: [...r403.querySelectorAll('a')].map((a) => norm(a.textContent)), textes403Motif: textes(r403m) };
+          const r404 = await monter('error-404'); const r403 = await monter('error-403');
+          pagesPlan[etat] = { textes404: textes(r404), liens404: [...r404.querySelectorAll('a')].map((a) => norm(a.textContent)), textes403: textes(r403), liens403: [...r403.querySelectorAll('a')].map((a) => norm(a.textContent)) };
         }
         cas.pages = propre(pagesPlan);
         { const d = S.raw()._reglages || {}; delete d[PS.CLE]; }

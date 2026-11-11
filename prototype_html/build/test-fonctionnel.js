@@ -19484,135 +19484,130 @@ async function viderMessages(page) {
   });
 
   /* ==========================================================================
-   * Vague 116 : DEUX ÉCRANS D'ACCÈS ÉPURÉS ET LE PLAN DU SITE RÉGLABLE (Direction, 11/11/2026, lot U)
+   * Vague 116 : ÉCRANS D'ACCÈS ÉPURÉS ET PLAN DU SITE RÉGLABLE (Direction, 11/11/2026, lot U, précisions du jour)
    * --------------------------------------------------------------------------
-   * (1) Le médaillon qui surmonte le titre des écrans « Session verrouillée » (auth-lock) et « 403 » (error-403) est retiré ; aucun autre écran d'accès ne change
-   * (mot de passe oublié, réinitialisation, double facteur et 404 gardent le leur). (2) Le plan du site est un RÉGLAGE EN BASE, désactivé par défaut, réglable par
-   * l'administrateur et la DAF seuls, journalisé : désactivé, son lien disparaît partout où il paraissait et son adresse directe ouvre un 403 NOMMÉ. L'écran ne
-   * quitte jamais le manifeste.
+   * (1) La pastille (médaillon) qui surmonte le titre de « Session verrouillée » et le code des pages 403 et 404 est retirée ; « Mot de passe oublié » et
+   * « Réinitialisation » gardent la leur. (2) Le plan du site est un RÉGLAGE EN BASE (case « Afficher le plan du site », carte « Affichage » de « Installation et
+   * données »), décochée par défaut, réservée à l'administrateur et à la DAF, journalisée : décochée, les boutons disparaissent (403, 404, Paramètres) et l'adresse
+   * du plan mène à la page 404. L'écran ne quitte jamais le manifeste. (3) Un rôle sans écran d'accueil retombe sur la page 404, jamais sur le plan.
    * ======================================================================= */
   await etape(async () => {
-    scenario('Vague 116 : écrans verrouillage et 403 sans médaillon ; plan du site réglable (désactivé par défaut, activé puis retiré par l’administrateur au geste, 403 nommé en adresse directe, journal, droits, vidage des jeux de test sans effet)');
+    scenario('Vague 116 : pages 403, 404 et verrou sans pastille ; plan du site réglable (case décochée par défaut, cochée puis décochée par l’administrateur au geste, adresse du plan menant à la 404, journal, droits, vidage sans effet, repli sur la 404)');
     erreursJS = [];
     const enTant = async (role, nom) => {
       await page.evaluate((a) => window.SIGH.store.setSession({ role: a[0], nom: a[1], nomComplet: a[1], fonction: a[0], identifiant: 's116.' + a[0], secteur: 'DIR' }), [role, nom]);
     };
-    /* Une page AUTONOME n'a pas de #page-content : on attend son texte (ou l'adresse du 403), pas la peinture de la coquille. */
+    /* Une page AUTONOME n'a pas de #page-content : on attend son texte (ou l'adresse de la 404), pas la peinture de la coquille. */
     const ouvrirAutonome = async (id) => {
       await attendreEcritures();
       await page.goto(`http://127.0.0.1:${PORT}/pages/${pageDuBanc(id)}`, { waitUntil: 'domcontentloaded' }).catch(() => null);
-      await page.waitForFunction(() => (window.SIGH && window.SIGH.store && document.body && document.body.innerText.length > 40 && !/Plan du site/.test(location.pathname)) || /error-403/.test(location.pathname), { timeout: 40000 }).catch(() => null);
+      await page.waitForFunction(() => (window.SIGH && window.SIGH.store && document.body && document.body.innerText.length > 40 && !/plan-du-site/.test(location.pathname)) || /error-40[34]/.test(location.pathname), { timeout: 40000 }).catch(() => null);
       await pause(900);
     };
     const lireAutonome = () => page.evaluate(() => ({ chemin: location.pathname.split('/').pop() + location.search, texte: document.body.innerText.replace(/\s+/g, ' ') }));
-    const sansMedaillon403 = () => page.evaluate(() => {
-      const code = [...document.querySelectorAll('p')].find((p) => p.textContent.trim() === '403');
-      const racine = code ? code.parentElement : null;
+    const sansPastilleErreur = (code) => page.evaluate((c) => {
+      const p = [...document.querySelectorAll('p')].find((x) => x.textContent.trim() === c);
+      const racine = p ? p.parentElement : null;
       /* Les icônes d'un BOUTON (« Retour à l'accueil ») restent : on ne compte que ce qui précède le code. */
-      const avantCode = racine ? [...racine.children].slice(0, [...racine.children].indexOf(code)) : [];
-      return { code: !!code, premier: racine ? racine.firstElementChild === code : null, svg: avantCode.reduce((n, x) => n + x.querySelectorAll('svg, i[data-lucide]').length + (x.matches('svg, i[data-lucide]') ? 1 : 0), 0),
-        medaillon: racine ? !!racine.querySelector('span.grid.h-16') : null };
-    });
-    const medaillonCarte = () => page.evaluate(() => {
+      const avant = racine ? [...racine.children].slice(0, [...racine.children].indexOf(p)) : [];
+      return { code: !!p, premier: racine ? racine.firstElementChild === p : null, avant: avant.length, pastille: racine ? !!racine.querySelector('span.grid.h-16') : null };
+    }, code);
+    const pastilleCarte = () => page.evaluate(() => {
       const h2 = document.querySelector('h2');
       const carte = h2 ? h2.parentElement : null;
-      return { titre: h2 ? h2.textContent.trim() : null, medaillon: carte ? !!carte.querySelector('span.mb-4.grid.h-12') : null };
+      return { titre: h2 ? h2.textContent.trim() : null, pastille: carte ? !!carte.querySelector('span.mb-4.grid.h-12') : null };
     });
-    const etatPlan = () => page.evaluate(() => ({ reglage: window.SIGH.store.reglage('planDuSiteAffiche', 'absent'), affiche: window.SIGH.planDuSite.affiche(), ouvert: window.SIGH.nav.ouvertParReglage('plan-du-site') }));
     const liensPlan = () => page.evaluate(() => [...document.querySelectorAll('a[href]')].filter((a) => /plan-du-site/.test(a.getAttribute('href'))).length);
-    const avant = await (async () => { await ouvrir('m1-patients.html'); return page.evaluate(() => ({ reglage: window.SIGH.store.reglage('planDuSiteAffiche', 'absent'), audit: window.SIGH.store.raw().audit.filter((x) => x.action === 'Plan du site').length })); })();
+    const avant = await (async () => { await ouvrir('m1-patients.html'); return page.evaluate(() => ({ reglage: window.SIGH.store.reglage('planDuSiteAffiche', 'absent') })); })();
 
-    /* --- 1. Les deux écrans d'accès, sans médaillon ----------------------------------------------------------------------------------------------------------- */
+    /* --- 1. Les écrans d'accès sans pastille ------------------------------------------------------------------------------------------------------------------ */
     await ouvrirAutonome('auth-lock.html');
-    const verrou = await medaillonCarte();
+    const verrou = await pastilleCarte();
     await ouvrirAutonome('error-403.html');
-    const e403 = await sansMedaillon403();
+    const e403 = await sansPastilleErreur('403');
     const t403 = (await lireAutonome()).texte;
-    await ouvrirAutonome('auth-forgot.html');
-    const oublie = await medaillonCarte();
-    await ouvrirAutonome('auth-2fa.html');
-    const deuxFacteurs = await medaillonCarte();
     await ouvrirAutonome('error-404.html');
-    const e404 = await page.evaluate(() => ({ medaillon: !!document.querySelector('span.grid.h-16'), texte: document.body.innerText.replace(/\s+/g, ' ') }));
-    verifier('« Session verrouillée » n’a plus de médaillon au-dessus de son titre', verrou.titre === 'Session verrouillée' && verrou.medaillon === false, JSON.stringify(verrou));
-    verifier('« 403 » n’a plus de médaillon : le code est le premier élément de la page, aucune icône, et le texte et les boutons sont conservés',
-      e403.code && e403.premier === true && e403.svg === 0 && e403.medaillon === false && /Accès refusé/.test(t403) && /Retour à l’accueil/.test(t403), JSON.stringify([e403, t403.slice(0, 200)]));
-    verifier('Aucun autre écran d’accès ne change : mot de passe oublié et double facteur gardent leur médaillon, la 404 garde le sien',
-      oublie.medaillon === true && deuxFacteurs.medaillon === true && e404.medaillon === true, JSON.stringify([oublie, deuxFacteurs, e404.medaillon]));
+    const e404 = await sansPastilleErreur('404');
+    await ouvrirAutonome('auth-forgot.html');
+    const oublie = await pastilleCarte();
+    await ouvrirAutonome('auth-reset.html');
+    const reinit = await pastilleCarte();
+    verrou.ok = verrou.titre === 'Session verrouillée' && verrou.pastille === false;
+    verifier('« Session verrouillée » n’a plus de pastille au-dessus de son titre', verrou.ok, JSON.stringify(verrou));
+    verifier('Les pages « 403 » et « 404 » n’ont plus de pastille : le code est le premier élément de la page ; textes et boutons conservés',
+      e403.code && e403.premier === true && e403.pastille === false && e404.code && e404.premier === true && e404.pastille === false && /Accès refusé/.test(t403) && /Retour à l’accueil/.test(t403), JSON.stringify([e403, e404, t403.slice(0, 160)]));
+    verifier('« Mot de passe oublié » et « Réinitialisation du mot de passe » GARDENT leur pastille', oublie.pastille === true && reinit.pastille === true, JSON.stringify([oublie, reinit]));
 
-    /* --- 2. Désactivé par défaut : absent de partout, adresse directe en 403 nommé ---------------------------------------------------------------------------- */
-    verifier('Par défaut le réglage n’est pas posé en base (le défaut du moteur est NON) et le plan du site n’est pas offert', avant.reglage === 'absent', JSON.stringify(avant));
-    await ouvrir('m1-patients.html');
+    /* --- 2. Décochée par défaut : aucun bouton, l'adresse du plan mène à la 404 -------------------------------------------------------------------------------- */
+    verifier('Par défaut le réglage n’est pas posé en base (le défaut du moteur est NON)', avant.reglage === 'absent', JSON.stringify(avant));
     await enTant('admin', 'SONDE116 admin');
     await ouvrir('cfg-systeme.html');
     const defaut = await page.evaluate(() => {
-      const N = window.SIGH.nav, S = window.SIGH.store;
-      const sess = S.session();
-      const rech = N.rechercher ? N.rechercher('plan du site', sess.role) : null;
+      const N = window.SIGH.nav, S = window.SIGH.store, sess = S.session();
+      const c = document.querySelector('[data-plan-site="case"]');
       return {
         etat: { affiche: window.SIGH.planDuSite.affiche(), ouvert: N.ouvertParReglage('plan-du-site') },
         auManifeste: !!N.get('plan-du-site') && N.STANDALONE.some((x) => x.id === 'plan-du-site'),
         peut: N.can(sess.role, N.get('plan-du-site')),
         rubanLien: [...document.querySelectorAll('a[href]')].filter((a) => /plan-du-site/.test(a.getAttribute('href'))).length,
-        rech: rech ? rech.length : 'sans fonction',
+        carte: [...document.querySelectorAll('#page-content .card-title, #page-content h3')].some((x) => x.textContent.trim() === 'Affichage'),
+        caseTrouvee: !!c, caseCochee: c ? c.checked : null,
+        boutonParametres: [...document.querySelectorAll('#page-content a, #page-content button')].filter((x) => /plan du site/i.test(x.textContent) && !/Afficher/.test(x.textContent)).length,
       };
     });
-    const onglets = await page.evaluate(async () => { const t = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((x) => /Installation/.test(x.textContent)); if (t) t.click(); await new Promise((r) => setTimeout(r, 400)); return [...document.querySelectorAll('#page-content a')].filter((a) => /plan du site/i.test(a.textContent)).length; });
-    verifier('Plan du site DÉSACTIVÉ par défaut : le réglage lit NON, l’écran reste au manifeste (jamais retiré), `can()` le ferme, le ruban n’en porte aucun lien, l’onglet « Installation et données » non plus',
-      defaut.etat.affiche === false && defaut.etat.ouvert === false && defaut.auManifeste === true && defaut.peut === false && defaut.rubanLien === 0 && onglets === 0, JSON.stringify([defaut, onglets]));
+    verifier('DÉCOCHÉ par défaut : la carte « Affichage » de « Installation et données » porte la case, décochée ; le réglage lit NON ; l’écran reste au manifeste (jamais retiré) ; `can()` le ferme ; aucun lien au ruban ni dans les paramètres',
+      defaut.etat.affiche === false && defaut.etat.ouvert === false && defaut.auManifeste && defaut.peut === false && defaut.rubanLien === 0 && defaut.carte && defaut.caseTrouvee && defaut.caseCochee === false && defaut.boutonParametres === 0, JSON.stringify(defaut));
     /* Menu profil, hub des paramètres, aide, recherche : aucune carte ni lien du plan du site. */
     const surfaces = {};
     await page.evaluate(() => { window.SIGH.app.openProfile(); });
     await pause(400);
     surfaces.profil = await page.evaluate(() => { const m = document.querySelector('.modal-root, [role=dialog]'); return m ? { ouvert: true, plan: /plan du site/i.test(m.textContent) } : { ouvert: false, plan: false }; });
-    await page.evaluate(() => { const m = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((x) => /Fermer|Annuler|×/.test(x.textContent + (x.getAttribute('aria-label') || ''))); if (m) m.click(); });
     await ouvrir('parametres-hub.html');
     surfaces.hub = await page.evaluate(() => /plan du site/i.test(document.getElementById('page-content').textContent));
     await ouvrir('aide-apropos.html');
     surfaces.aide = await page.evaluate(() => /plan du site/i.test(document.getElementById('page-content').textContent));
     surfaces.recherche = await page.evaluate(() => {
       const N = window.SIGH.nav, S = window.SIGH.store;
-      const index = Object.keys(N.INDEX || {}).filter((id) => /plan du site/i.test(N.INDEX[id].label) && N.can(S.session().role, N.INDEX[id]));
-      return index;
+      return Object.keys(N.INDEX || {}).filter((id) => /plan du site/i.test(N.INDEX[id].label) && N.can(S.session().role, N.INDEX[id]));
     });
-    verifier('Désactivé : le menu profil, le hub des paramètres, l’aide et la recherche ne portent aucun lien ni carte du plan du site', surfaces.profil.plan === false && surfaces.hub === false && surfaces.aide === false && surfaces.recherche.length === 0, JSON.stringify(surfaces));
+    verifier('Décoché : le menu profil, le hub des paramètres, l’aide et la recherche ne portent aucun lien ni carte du plan du site', surfaces.profil.plan === false && surfaces.hub === false && surfaces.aide === false && surfaces.recherche.length === 0, JSON.stringify(surfaces));
     await ouvrirAutonome('error-403.html');
     const t403d = (await lireAutonome()).texte;
     await ouvrirAutonome('error-404.html');
     const t404d = (await lireAutonome()).texte;
-    verifier('Désactivé : les pages 403 et 404 ne proposent plus le bouton « Plan du site » et la 404 ne renvoie plus vers lui', !/Plan du site/.test(t403d) && !/Plan du site/.test(t404d) && !/plan du site/i.test(t404d) && /Page introuvable/.test(t404d), JSON.stringify([t403d.slice(0, 160), t404d.slice(0, 200)]));
+    verifier('Décoché : les pages 403 et 404 n’ont plus le bouton « Plan du site » et la 404 ne renvoie plus vers lui', !/Plan du site/.test(t403d) && !/plan du site/i.test(t404d) && /Page introuvable/.test(t404d), JSON.stringify([t403d.slice(0, 160), t404d.slice(0, 200)]));
     await ouvrirAutonome('plan-du-site.html');
     const direct = await lireAutonome();
-    verifier('Désactivé : l’adresse directe du plan du site mène au 403 NOMMÉ (le réglage et qui le modifie sont dits), jamais à une page vide',
-      /error-403/.test(direct.chemin) && /motif=plan-du-site/.test(direct.chemin) && /Le plan du site est désactivé/.test(direct.texte) && /Paramètres système/.test(direct.texte) && /administrateur/.test(direct.texte), JSON.stringify(direct));
-    const refusJournal = await page.evaluate(() => window.SIGH.store.raw().audit.filter((x) => /Accès refusé : plan du site/.test(x.action)).length);
-    verifier('Le refus d’accès du plan du site désactivé est journalisé (RG-12)', refusJournal >= 1, String(refusJournal));
+    verifier('Décoché : l’adresse du plan du site MÈNE À LA PAGE 404 (jamais une page vide ni un 403)', /error-404/.test(direct.chemin) && /Page introuvable/.test(direct.texte) && !/Accès refusé/.test(direct.texte), JSON.stringify(direct));
+    const refusJournal = await page.evaluate(() => window.SIGH.store.raw().audit.filter((x) => /Accès au plan du site désactivé/.test(x.action)).length);
+    verifier('Le renvoi vers la 404 est journalisé (RG-12)', refusJournal >= 1, String(refusJournal));
 
-    /* --- 3. L'administrateur l'ACTIVE au geste ---------------------------------------------------------------------------------------------------------------- */
+    /* --- 3. L'administrateur COCHE la case au geste ----------------------------------------------------------------------------------------------------------- */
     await ouvrir('cfg-systeme.html');
-    const bascule = (lib) => page.evaluate(async (l) => {
-      const t = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((x) => /Affichage/.test(x.textContent)); if (t) t.click();
-      await new Promise((r) => setTimeout(r, 400));
-      const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === l);
-      if (!b) return { trouve: false, boutons: [...document.querySelectorAll('#page-content button')].map((x) => x.textContent.trim()).filter(Boolean).slice(0, 12) };
-      b.click(); await new Promise((r) => setTimeout(r, 700));
-      return { trouve: true, etat: (document.querySelector('[data-plan-site="etat"]') || {}).textContent || null };
-    }, lib);
-    const act = await bascule('Afficher le plan du site');
+    const basculer = (cocher) => page.evaluate(async (v) => {
+      const c = document.querySelector('[data-plan-site="case"]');
+      if (!c) return { trouve: false };
+      c.checked = v; c.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 800));
+      const c2 = document.querySelector('[data-plan-site="case"]');
+      return { trouve: true, cocheeApres: c2 ? c2.checked : null, boutons: [...document.querySelectorAll('#page-content a')].filter((a) => /^Plan du site$/.test(a.textContent.trim())).length };
+    }, cocher);
+    const act = await basculer(true);
     await attendreEcritures();
-    const apresAct = await page.evaluate(() => { const a = window.SIGH.store.raw().audit.filter((x) => x.action === 'Plan du site')[0]; return { journal: a ? { ancienne: a.ancienneValeur, nouvelle: a.nouvelleValeur, utilisateur: a.utilisateur, module: a.module } : null, reglage: window.SIGH.store.reglage('planDuSiteAffiche', 'absent') }; });
-    verifier('L’administrateur ACTIVE le plan du site au geste (onglet « Affichage » de Paramètres système) : le réglage passe à oui EN BASE, l’écran le dit, le journal garde l’ancienne (non) et la nouvelle valeur (oui)',
-      act.trouve && act.etat === 'Oui' && apresAct.reglage === true && apresAct.journal && /"affiche":false/.test(apresAct.journal.ancienne) && /"affiche":true/.test(apresAct.journal.nouvelle) && apresAct.journal.module === 'M14', JSON.stringify([act, apresAct]));
+    const apresAct = await page.evaluate(() => { const a = window.SIGH.store.raw().audit.filter((x) => x.action === 'Plan du site')[0]; return { journal: a ? { ancienne: a.ancienneValeur, nouvelle: a.nouvelleValeur, module: a.module } : null, reglage: window.SIGH.store.reglage('planDuSiteAffiche', 'absent') }; });
+    verifier('L’administrateur COCHE la case au geste : le réglage passe à oui EN BASE, la case reste cochée, le bouton « Plan du site » paraît aux paramètres, le journal garde l’ancienne (non) et la nouvelle valeur (oui)',
+      act.trouve && act.cocheeApres === true && act.boutons === 1 && apresAct.reglage === true && apresAct.journal && /"affiche":false/.test(apresAct.journal.ancienne) && /"affiche":true/.test(apresAct.journal.nouvelle) && apresAct.journal.module === 'M14', JSON.stringify([act, apresAct]));
     await ouvrir('cfg-systeme.html');
     const lienRuban = await liensPlan();
-    const onglet2 = await page.evaluate(async () => { const t = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((x) => /Installation/.test(x.textContent)); if (t) t.click(); await new Promise((r) => setTimeout(r, 400)); return [...document.querySelectorAll('#page-content a')].filter((a) => /plan du site/i.test(a.textContent)).length; });
     await ouvrirAutonome('error-403.html');
     const t403a = (await lireAutonome()).texte;
+    await ouvrirAutonome('error-404.html');
+    const t404a = (await lireAutonome()).texte;
     await ouvrirAutonome('plan-du-site.html');
     const plan = await lireAutonome();
     const peintPlan = await page.evaluate(() => ({ titre: (document.querySelector('h1') || {}).textContent, liens: document.querySelectorAll('a[href]').length }));
-    verifier('Activé : le lien réapparaît au ruban et à « Installation et données », la page 403 reprend son bouton, et l’adresse directe ouvre le plan du site (titre et liens)',
-      lienRuban >= 1 && onglet2 === 1 && /Plan du site/.test(t403a) && /plan-du-site/.test(plan.chemin) && peintPlan.titre === 'Plan du site' && peintPlan.liens > 100, JSON.stringify([lienRuban, onglet2, t403a.slice(0, 160), plan.chemin, peintPlan]));
+    verifier('Coché : le lien réapparaît au ruban, les pages 403 et 404 reprennent leur bouton (et la 404 son renvoi), et l’adresse du plan ouvre le plan du site (titre et liens)',
+      lienRuban >= 1 && /Plan du site/.test(t403a) && /Plan du site/.test(t404a) && /plan du site/i.test(t404a) && /plan-du-site/.test(plan.chemin) && peintPlan.titre === 'Plan du site' && peintPlan.liens > 100, JSON.stringify([lienRuban, t403a.slice(0, 120), t404a.slice(0, 200), plan.chemin, peintPlan]));
 
     /* --- 4. Droits : administrateur et DAF seuls, le moteur refuse en nommant ----------------------------------------------------------------------------------- */
     await ouvrir('m1-patients.html');
@@ -19624,28 +19619,38 @@ async function viderMessages(page) {
       refus.r.ok === false && refus.r.code === 'REGLAGE_RESERVE' && refus.peut === false && refus.apres === true && refusMed.code === 'REGLAGE_RESERVE' && refusMed.apres === true, JSON.stringify([refus, refusMed]));
     await enTant('da', 'SONDE116 da');
     await ouvrir('cfg-systeme.html');
-    const daVoit = await page.evaluate(async () => { const t = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((x) => /Affichage/.test(x.textContent)); if (t) t.click(); await new Promise((r) => setTimeout(r, 400)); return [...document.querySelectorAll('#page-content button')].some((x) => x.textContent.trim() === 'Masquer le plan du site'); });
+    const daVoit = await page.evaluate(() => !!document.querySelector('[data-plan-site="case"]'));
     const invalide = await page.evaluate(() => ['oui', 1, null, undefined].map((v) => window.SIGH.planDuSite.definir(v).code));
-    verifier('La Directrice Administrative voit la commande « Masquer le plan du site » ; une valeur autre que vrai ou faux est refusée en nommant (VALEUR_INVALIDE)', daVoit === true && invalide.every((c) => c === 'VALEUR_INVALIDE'), JSON.stringify([daVoit, invalide]));
+    verifier('La Directrice Administrative voit la case ; une valeur autre que vrai ou faux est refusée en nommant (VALEUR_INVALIDE)', daVoit === true && invalide.every((c) => c === 'VALEUR_INVALIDE'), JSON.stringify([daVoit, invalide]));
 
     /* --- 5. Le vidage des jeux de test ne touche pas le réglage ------------------------------------------------------------------------------------------------ */
-    const vid = await page.evaluate(() => { const S = window.SIGH.store; const avant = S.reglage('planDuSiteAffiche', 'absent'); S.viderActivite('scénario 116'); return { avant: avant, apres: S.reglage('planDuSiteAffiche', 'absent'), ouvert: window.SIGH.nav.ouvertParReglage('plan-du-site') }; });
+    const vid = await page.evaluate(() => { const S = window.SIGH.store; const a = S.reglage('planDuSiteAffiche', 'absent'); S.viderActivite('scénario 116'); return { avant: a, apres: S.reglage('planDuSiteAffiche', 'absent'), ouvert: window.SIGH.nav.ouvertParReglage('plan-du-site') }; });
     await attendreEcritures();
     verifier('Vider les jeux de test laisse le réglage tel quel (oui reste oui)', vid.avant === true && vid.apres === true && vid.ouvert === true, JSON.stringify(vid));
 
-    /* --- 6. L'administrateur le RETIRE au geste ---------------------------------------------------------------------------------------------------------------- */
+    /* --- 6. L'administrateur DÉCOCHE la case au geste ---------------------------------------------------------------------------------------------------------- */
     await ouvrir('m1-patients.html');
     await enTant('admin', 'SONDE116 admin');
     await ouvrir('cfg-systeme.html');
-    const desact = await bascule('Masquer le plan du site');
+    const desact = await basculer(false);
     await attendreEcritures();
     await ouvrir('cfg-systeme.html');
     const apresDes = await page.evaluate(() => ({ reglage: window.SIGH.store.reglage('planDuSiteAffiche', 'absent'), liens: [...document.querySelectorAll('a[href]')].filter((a) => /plan-du-site/.test(a.getAttribute('href'))).length,
-      journal: window.SIGH.store.raw().audit.filter((x) => x.action === 'Plan du site').slice(0, 2).map((x) => x.ancienneValeur + '>' + x.nouvelleValeur) }));
+      journal: window.SIGH.store.raw().audit.filter((x) => x.action === 'Plan du site').slice(0, 1).map((x) => x.ancienneValeur + '>' + x.nouvelleValeur) }));
     await ouvrirAutonome('plan-du-site.html');
     const direct2 = await lireAutonome();
-    verifier('L’administrateur le RETIRE au geste : le réglage repasse à non, le lien disparaît, le journal porte le geste (oui vers non ; le vidage des jeux de test avait remis le journal à neuf), et l’adresse directe ouvre de nouveau le 403 nommé',
-      desact.trouve && desact.etat === 'Non' && apresDes.reglage === false && apresDes.liens === 0 && apresDes.journal.length >= 1 && /"affiche":true/.test(apresDes.journal[0].split('>')[0]) && /"affiche":false/.test(apresDes.journal[0].split('>')[1]) && /error-403/.test(direct2.chemin) && /Le plan du site est désactivé/.test(direct2.texte), JSON.stringify([desact, apresDes, direct2.chemin]));
+    verifier('L’administrateur DÉCOCHE au geste : le réglage repasse à non, plus aucun lien, le journal porte le geste (oui vers non), et l’adresse du plan mène de nouveau à la 404',
+      desact.trouve && desact.cocheeApres === false && desact.boutons === 0 && apresDes.reglage === false && apresDes.liens === 0 && apresDes.journal.length === 1 && /"affiche":true/.test(apresDes.journal[0].split('>')[0]) && /"affiche":false/.test(apresDes.journal[0].split('>')[1]) && /error-404/.test(direct2.chemin), JSON.stringify([desact, apresDes, direct2.chemin]));
+
+    /* --- 7. Un rôle sans écran d'accueil retombe sur la 404, jamais sur le plan -------------------------------------------------------------------------------- */
+    const repli = await page.evaluate(() => {
+      const N = window.SIGH.nav, S = window.SIGH.store;
+      const col = S.collection('rbac');
+      col.insert({ role: 'sonde116', nouveau: true, statut: 'actif', libelle: 'Sonde 116', libelleCourt: 'S116', couleur: 'neutral', droits: {}, droitsEcrans: {}, definiLe: '2026-08-16' });
+      N.invaliderRbac();
+      return { home: N.ROLES.sonde116 ? N.ROLES.sonde116.home : 'absent' };
+    });
+    verifier('Un rôle créé sans écran d’accueil retombe sur la page 404 (et non sur le plan du site)', repli.home === 'error-404', JSON.stringify(repli));
 
     /* --- restitution -------------------------------------------------------------------------------------------------------------------------------------------- */
     const erreurs116 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));

@@ -584,14 +584,13 @@
   /* ==========================================================================
    * PAGES D'ERREUR
    * ======================================================================== */
-  /* `icon` absent : pas de médaillon au-dessus du code (la page 403, Direction, 11/11/2026). `message` peut être une fonction (le texte dépend d'un réglage lu à l'affichage). */
-  function pageErreur(id, code, titre, message, icon) {
+  /* Pas de médaillon au-dessus du code (pages 403 et 404, Direction, 11/11/2026 : elles partagent ce gabarit). `message` peut être une fonction (le texte dépend d'un réglage lu à l'affichage). */
+  function pageErreur(id, code, titre, message) {
     global.SIGH.screen(id, {
       standalone: true,
       render: function (root) {
         var wrap = el('div.flex.min-h-screen.flex-col.items-center.justify-center.p-6.text-center');
-        if (icon) wrap.appendChild(el('span.grid.h-16.w-16.place-items-center.rounded-2xl.bg-navy-50.text-navy-800', null, C.icon(icon, 'h-8 w-8')));
-        wrap.appendChild(el('p.mt-6.text-5xl.font-bold.tracking-tight.text-navy-950', { text: code }));
+        wrap.appendChild(el('p.text-5xl.font-bold.tracking-tight.text-navy-950', { text: code }));
         wrap.appendChild(el('h1.mt-2.text-xl.font-semibold.text-slate-900', { text: titre }));
         wrap.appendChild(el('p.mt-2.max-w-md.text-sm.text-slate-500', { text: typeof message === 'function' ? message() : message, 'data-erreur': 'message' }));
         var actions = el('div.mt-6.flex.flex-wrap.justify-center.gap-2');
@@ -609,16 +608,9 @@
 
   pageErreur('error-404', '404', 'Page introuvable', function () {
     return 'L’écran demandé n’existe pas ou a été déplacé.' + (N.ouvertParReglage('plan-du-site') ? ' Utiliser le plan du site pour retrouver le module recherché.' : '');
-  }, 'file-question');
-  /* 403 : sans médaillon. Une adresse fermée par un RÉGLAGE (`?motif=plan-du-site`) est NOMMÉE : on dit quel réglage la ferme et qui le règle. */
-  pageErreur('error-403', '403', 'Accès refusé', function () {
-    var motif = '';
-    try { motif = new URLSearchParams(global.location.search).get('motif') || ''; } catch (e) { motif = ''; }
-    if (motif === 'plan-du-site') {
-      return 'Le plan du site est désactivé : il s’affiche par un réglage de « Paramètres système », onglet « Affichage », que seuls l’administrateur et la Directrice Administrative modifient. La tentative d’accès est journalisée.';
-    }
-    return 'Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.';
-  }, null);
+  });
+  pageErreur('error-403', '403', 'Accès refusé',
+    'Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.');
 
   /* ==========================================================================
    * PLAN DU SITE — inventaire complet des écrans
@@ -626,12 +618,12 @@
   global.SIGH.screen('plan-du-site', {
     standalone: true,
     render: function (root) {
-      /* Écran fermé par le réglage : l'adresse directe mène au 403 NOMMÉ (jamais une page vide) et la tentative est journalisée (RG-12). */
+      /* Écran fermé par le réglage : l'adresse directe mène à la page 404 (Direction, 11/11/2026), jamais à une page vide ; la tentative est journalisée (RG-12). */
       if (!N.ouvertParReglage('plan-du-site')) {
-        try { if (S.session()) { S.log('Accès refusé : plan du site désactivé', 'M14', 'acces', 'plan-du-site', null, { motif: 'réglage planDuSiteAffiche = non' }); S.save(); } } catch (e) { /* le journal ne bloque pas le refus */ }
-        root.appendChild(el('p.p-6.text-sm.text-slate-600', { text: 'Accès refusé : le plan du site est désactivé.' }));
+        try { if (S.session()) { S.log('Accès au plan du site désactivé', 'M14', 'acces', 'plan-du-site', null, { motif: 'réglage planDuSiteAffiche = non' }); S.save(); } } catch (e) { /* le journal ne bloque pas le renvoi */ }
+        root.appendChild(el('p.p-6.text-sm.text-slate-600', { text: 'Page introuvable.' }));
         /* La redirection attend que le serveur ait reçu la ligne de journal : partir tout de suite couperait l'envoi. */
-        var vers = function () { global.location.replace(url('error-403') + '?motif=plan-du-site'); };
+        var vers = function () { global.location.replace(url('error-404')); };
         if (S.rechargerQuandEnvoye) S.rechargerQuandEnvoye(vers); else vers();
         return null;
       }

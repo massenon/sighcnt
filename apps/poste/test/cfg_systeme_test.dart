@@ -66,38 +66,34 @@ void main() {
     }
   }
 
-  casM14('« Affichage » : le plan du site est désactivé par défaut ; l’administrateur l’affiche au geste (version du paramètre en base, journal), le lien paraît, puis il le masque', (t) async {
+  casM14('carte « Affichage » : la case « Afficher le plan du site » est décochée par défaut ; l’administrateur la coche au geste (version du paramètre en base, journal), le bouton paraît, puis il la décoche', (t) async {
     final m = magasinM14();
     await ouvrirMere(t, m, 'admin');
-    await onglet(t, 'affichage');
-    expect(find.text('Plan du site'), findsWidgets);
-    expect(find.text('Afficher le plan du site'), findsWidgets);
-    expect(find.text('Non'), findsOneWidget);
-    await toucherM14(t, find.widgetWithText(BoutonSigh, 'Afficher le plan du site'));
+    expect(find.text('Affichage'), findsWidgets);
+    expect(find.text('Afficher le plan du site'), findsOneWidget);
+    expect(t.widget<Checkbox>(find.byKey(const Key('cfg:plan-du-site'))).value, isFalse);
+    expect(find.widgetWithText(BoutonSigh, 'Plan du site'), findsNothing);
+    await toucherM14(t, find.byKey(const Key('cfg:plan-du-site')));
     expect(find.text('Le plan du site est affiché.'), findsOneWidget);
-    expect(find.text('Oui'), findsOneWidget);
+    expect(t.widget<Checkbox>(find.byKey(const Key('cfg:plan-du-site'))).value, isTrue);
     final versions = m.collection('parametres').toutes.where((f) => f['cle'] == 'affichage.planDuSite').toList();
     expect(versions.map((f) => f['valeur']), contains(true));
     final j = m.collection('audit').toutes.firstWhere((a) => a['action'] == 'Plan du site');
     expect([j['module'], j['entite'], j['reference']], ['M14', 'reglage', 'planDuSiteAffiche']);
-    expect('${j['ancienneValeur'] ?? j['avant']}', contains('false'));
-    await onglet(t, 'installation');
     expect(find.widgetWithText(BoutonSigh, 'Plan du site'), findsOneWidget);
-    await onglet(t, 'affichage');
-    await toucherM14(t, find.widgetWithText(BoutonSigh, 'Masquer le plan du site'));
+    await toucherM14(t, find.byKey(const Key('cfg:plan-du-site')));
     expect(find.text('Le plan du site est masqué.'), findsOneWidget);
-    await onglet(t, 'installation');
     expect(find.widgetWithText(BoutonSigh, 'Plan du site'), findsNothing);
+    expect(m.collection('audit').toutes.where((a) => a['action'] == 'Plan du site').length, 2, reason: 'chaque changement écrit au journal');
   });
 
-  casM14('« Affichage » : la commande est ABSENTE pour un profil qui ne règle pas, et sur un poste fileul (la configuration se règle sur la mère)', (t) async {
+  casM14('carte « Affichage » : la case est ABSENTE pour un profil qui ne règle pas, et sur un poste fileul (la configuration se règle sur la mère)', (t) async {
     final m = magasinM14();
     await ouvrirMere(t, m, 'direction');
-    await onglet(t, 'affichage');
-    expect(find.widgetWithText(BoutonSigh, 'Afficher le plan du site'), findsNothing);
+    expect(find.byKey(const Key('cfg:plan-du-site')), findsNothing);
+    expect(find.text('Afficher le plan du site : non'), findsOneWidget);
     await ouvrirM14(t, m, 'cfg-systeme');
-    await onglet(t, 'affichage');
-    expect(find.widgetWithText(BoutonSigh, 'Afficher le plan du site'), findsNothing, reason: 'fileul : réglé sur la mère');
+    expect(find.byKey(const Key('cfg:plan-du-site')), findsNothing, reason: 'fileul : réglé sur la mère');
   });
 
   casM14('la corbeille balaie TOUS les modules : une fiche archivée à un endroit se retrouve ici, restaurée d’un geste et journalisée', (t) async {

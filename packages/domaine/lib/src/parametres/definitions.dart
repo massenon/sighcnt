@@ -153,7 +153,7 @@ const List<DefinitionParametre> definitionsParametres = [
     type: TypeParametre.booleen,
     defaut: false,
     libelle: 'Afficher le plan du site',
-    aide: 'Non par défaut : le plan du site (liste de tous les écrans) n\'est ni proposé dans les paramètres, ni sur les pages d\'erreur, et son adresse directe ouvre un accès refusé qui nomme ce réglage. Seuls l\'administrateur et la Directrice Administrative le règlent. Réglage de la clinique : il voyage aux postes par le journal de configuration, jamais aux téléphones.',
+    aide: 'Non par défaut (case décochée, « Installation et données », carte « Affichage ») : le plan du site (liste de tous les écrans) n\'est ni proposé dans les paramètres, ni sur les pages 403 et 404, et son adresse directe mène à la page 404. Seuls l\'administrateur et la Directrice Administrative le règlent. Réglage de la clinique : il voyage aux postes par le journal de configuration, jamais aux téléphones.',
     source: 'Demande de la Direction du 11/11/2026 (DECISIONS-A-VALIDER, section J) : désactivé par défaut',
     branche: true,
     appliquePar: 'Lot U (plan du site réglable)',

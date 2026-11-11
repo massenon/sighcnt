@@ -2614,46 +2614,10 @@
         { id: 'bareme', label: 'Barème NS 131', render: ongletBaremeNS131 },
         { id: 'reinitialisation', label: 'Jeux de test', render: ongletReinitialisation },
         { id: 'relais', label: 'Relais en ligne', render: ongletRelais },
-        { id: 'affichage', label: 'Affichage', render: ongletAffichage },
       ]));
       return null;
     },
   });
-
-  /* --- Onglet « Affichage » : le plan du site est un réglage en base, désactivé par défaut (Direction, 11/11/2026) ------------------------------ */
-  function ongletAffichage() {
-    var PS = global.SIGH.planDuSite;
-    var hote = el('div.space-y-3');
-    dessiner();
-    return hote;
-
-    function dessiner() {
-      C.clear(hote);
-      var oui = PS.affiche();
-      var actions = [];
-      /* La commande est ABSENTE pour qui ne règle pas : le rôle décide au moteur, le droit de l'écran ici ; le moteur refuse de toute façon en nommant. */
-      if (PS.peutRegler() && K.droits().editer) {
-        actions.push(K.btn(oui ? 'Masquer le plan du site' : 'Afficher le plan du site', {
-          size: 'sm', icon: oui ? 'eye-off' : 'eye',
-          onclick: function () {
-            var r = PS.definir(!oui);
-            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
-            U.toast(r.affiche ? 'Le plan du site est affiché.' : 'Le plan du site est masqué.', { type: 'success' });
-            dessiner();
-          },
-        }));
-      }
-      var corps = el('div.space-y-3');
-      corps.appendChild(K.note('Le plan du site liste tous les écrans du logiciel. Il est <strong>désactivé par défaut</strong> : tant que ce réglage reste sur « non », '
-        + 'son lien disparaît du ruban, des paramètres, des pages d’erreur et de la recherche, et son adresse directe ouvre un accès refusé. '
-        + 'Le réglage est enregistré en base, journalisé, et propre à la clinique : il se règle ici par l’administrateur ou la Directrice Administrative.', { tone: 'info', icon: 'map' }));
-      corps.appendChild(el('dl', { class: 'text-sm' }, [
-        el('dt.text-xs.text-slate-500', { text: 'Afficher le plan du site' }),
-        el('dd.font-semibold.text-slate-800', { 'data-plan-site': 'etat', text: oui ? 'Oui' : 'Non' }),
-      ]));
-      hote.appendChild(U.card('Plan du site', corps, actions));
-    }
-  }
 
   /* --- Onglet « Relais en ligne » : les écrans du relais, en cartes de hub (ils ont quitté le ruban, arbitrage du 05/11/2026) --------------- */
   function ongletRelais() {
@@ -2779,6 +2743,29 @@
           },
         ],
       })));
+
+      /* La carte « Affichage » (Direction, 11/11/2026) : la case « Afficher le plan du site », décochée par défaut, est un RÉGLAGE EN BASE ; chaque changement est journalisé.
+         La case est ABSENTE pour qui ne règle pas (administrateur et Directrice Administrative, avec le droit de l'écran) : le moteur refuse de toute façon en nommant. */
+      (function () {
+        var PS = global.SIGH.planDuSite, oui = PS.affiche();
+        var corps = el('div.space-y-3');
+        corps.appendChild(K.note('Le plan du site liste tous les écrans du logiciel. Tant que la case reste <strong>décochée</strong>, ses boutons n’apparaissent ni dans les paramètres ni sur les pages 403 et 404, et son adresse mène à la page 404. '
+          + 'Le réglage est enregistré en base et chaque changement est écrit au journal.', { tone: 'info', icon: 'map' }));
+        if (PS.peutRegler() && K.droits().editer) {
+          var case1 = el('input', { type: 'checkbox', id: 'plan-du-site-affiche', class: 'h-4 w-4 rounded border-slate-300', 'data-plan-site': 'case' });
+          case1.checked = oui;
+          case1.addEventListener('change', function () {
+            var r = PS.definir(case1.checked);
+            if (!r.ok) { case1.checked = oui; U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            U.toast(r.affiche ? 'Le plan du site est affiché.' : 'Le plan du site est masqué.', { type: 'success' });
+            C.clear(panel); ongletInstallation(panel);
+          });
+          corps.appendChild(el('label.flex.items-center.gap-2.text-sm.text-slate-800', { for: 'plan-du-site-affiche' }, [case1, 'Afficher le plan du site']));
+        } else {
+          corps.appendChild(el('p.text-sm.text-slate-700', { 'data-plan-site': 'etat', text: 'Afficher le plan du site : ' + (oui ? 'oui' : 'non') }));
+        }
+        host.appendChild(U.card('Affichage', corps));
+      })();
 
       host.appendChild(U.card('Maintenance du prototype', el('div.flex.flex-wrap.gap-2', null, [
         K.btn('Réinitialiser le jeu de données', {
