@@ -91,8 +91,8 @@ class FeuilleA4 extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         key: const Key('impression:a4'),
-        width: mm(210),
-        constraints: BoxConstraints(minHeight: mm(297)),
+        width: mm(piece.paysage ? 297 : 210),
+        constraints: BoxConstraints(minHeight: mm(piece.paysage ? 210 : 297)),
         padding: EdgeInsets.all(mm(12)),
         color: Colors.white,
         child: DefaultTextStyle.merge(
@@ -275,7 +275,40 @@ class FeuilleA4 extends StatelessWidget {
                 fontWeight: b.gras ? FontWeight.w600 : FontWeight.w400,
                 fontStyle: b.italique ? FontStyle.italic : FontStyle.normal,
                 color: JetonsShell.slate800)),
+        BlocOrganigramme() => _organigramme(b.miseEnPage),
       };
+
+  /// L'organigramme : les boîtes aux mesures du domaine, les connecteurs tracés dessous (aucune couleur en dur : celles du design system).
+  Widget _organigramme(OrgMiseEnPage m) => Center(
+        child: SizedBox(
+            key: const Key('impression:organigramme'),
+            width: mm(m.largeur),
+            height: mm(m.hauteur),
+            child: Stack(clipBehavior: Clip.none, children: [
+              Positioned.fill(child: CustomPaint(painter: _PeintreOrganigramme(m))),
+              for (final b in m.boites)
+                Positioned(
+                    left: mm(b.gauche),
+                    top: mm(b.haut),
+                    width: mm(b.largeur),
+                    height: mm(b.hauteur),
+                    child: Container(
+                        key: Key('organigramme:${b.poste}'),
+                        clipBehavior: Clip.hardEdge,
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                            color: b.racine ? JetonsShell.navy50 : Colors.white,
+                            border: Border.all(color: b.racine ? JetonsShell.navy900 : JetonsShell.slate500, width: 0.75),
+                            borderRadius: BorderRadius.circular(2)),
+                        alignment: Alignment.center,
+                        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                          for (var i = 0; i < b.lignes.length; i++)
+                            Text(b.lignes[i],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: i == 0 ? 9 : 8.5, height: 1.2, fontWeight: i == 0 ? FontWeight.w700 : FontWeight.w400, color: JetonsShell.slate900)),
+                        ]))),
+            ])),
+      );
 
   Widget _tableau(TableauEtat t) {
     final pied = t.pied;
@@ -381,4 +414,34 @@ class FeuilleA4 extends StatelessWidget {
               ]),
         ),
       ));
+}
+
+/// Les connecteurs de l'organigramme : un tronc depuis le parent, une barre à mi-écart, une descente vers chaque enfant et sa flèche (mesures en millimètres).
+class _PeintreOrganigramme extends CustomPainter {
+  _PeintreOrganigramme(this.m);
+  final OrgMiseEnPage m;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final trait = Paint()
+      ..color = JetonsShell.slate500
+      ..strokeWidth = mm(0.35)
+      ..strokeCap = StrokeCap.square;
+    for (final t in m.traits) {
+      canvas.drawLine(Offset(mm(t.x1), mm(t.y1)), Offset(mm(t.x2), mm(t.y2)), trait);
+    }
+    final pointe = Paint()
+      ..color = JetonsShell.slate500
+      ..style = PaintingStyle.fill;
+    for (final f in m.fleches) {
+      final p = Path()..moveTo(mm(f.points[0].$1), mm(f.points[0].$2));
+      for (final q in f.points.skip(1)) {
+        p.lineTo(mm(q.$1), mm(q.$2));
+      }
+      canvas.drawPath(p..close(), pointe);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_PeintreOrganigramme old) => old.m != m;
 }

@@ -8,6 +8,7 @@ import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
 
 
+import 'donnees/organigramme_poste.dart';
 import 'donnees/magasin.dart';
 import 'donnees/persistance.dart';
 import 'modules/cfg/cfb_systeme.dart' show CfbPersistance;
@@ -169,6 +170,9 @@ Future<void> main() async {
   // Un jeu d'origine qui change (nouvelle version) n'écrase rien : ses fiches de référentiel manquantes sont ajoutées au magasin enregistré.
   await magasin.brancherPersistance(persistance, fusionnables: {...cfbEssentielles, valCollectionValidations}.difference({'utilisateurs', 'identifiants'}));
   CfbPersistance.disponible = () => true;
+  // LA REPRISE DE L'ORGANIGRAMME (lot ORG2, VERSION 78 de la maquette) : un poste enregistré avant la photo est remplacé par la semence de la photo s'il est INTACT
+  // (aucune trace d'écran, identique à l'ancienne semence) ; un poste que la clinique a modifié n'est jamais réécrit. Journalisée une fois, idempotente.
+  OrganigrammePoste.reprendre(magasin);
   for (final probleme in persistance.problemes) {
     debugPrint(probleme);
   }

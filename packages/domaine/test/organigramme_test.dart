@@ -115,7 +115,7 @@ void main() {
     var inchange = false;
     Object? titre;
     final fn = a['fn'];
-    final actifsP = actifs(postes), actifsA = actifs(personnel);
+    final actifsA = actifs(personnel);
     if (fn == 'creer') {
       final r = orgPlanifierCreation(m(a['champs']), droitEcriture: d.editer, postes: postes, personnelActif: actifsA, rolesConnus: rolesConnus);
       refus = r.refus;

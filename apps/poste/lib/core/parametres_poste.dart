@@ -18,7 +18,8 @@ class ParametresPoste {
       this.activeDepuis,
       this.installation = EtatInstallation.vide,
       this.adresseMere = '',
-      this.rejoint = false});
+      this.rejoint = false,
+      this.posteSecours = false});
   final String uuidPoste;
   final ModePoste mode;
   final String nomPoste;
@@ -32,6 +33,10 @@ class ParametresPoste {
   final String adresseMere;
   final bool rejoint;
 
+  /// Ce poste est-il un POSTE DE SECOURS (poste partagé où un agent sans téléphone ouvre sa propre session) ? Donnée locale de CE poste, jamais synchronisée : le
+  /// verrou de la session y suit le délai de secours (5 minutes par défaut, à valider) au lieu du délai ordinaire (lot ORG2, P3).
+  final bool posteSecours;
+
   ParametresPoste avec(
           {ModePoste? mode,
           String? nomPoste,
@@ -40,6 +45,7 @@ class ParametresPoste {
           EtatInstallation? installation,
           String? adresseMere,
           bool? rejoint,
+          bool? posteSecours,
           bool effacerActivation = false}) =>
       ParametresPoste(
         uuidPoste: uuidPoste,
@@ -51,6 +57,7 @@ class ParametresPoste {
         installation: installation ?? this.installation,
         adresseMere: adresseMere ?? this.adresseMere,
         rejoint: rejoint ?? this.rejoint,
+        posteSecours: posteSecours ?? this.posteSecours,
       );
 
   Map<String, Object?> toJson() => {
@@ -62,6 +69,7 @@ class ParametresPoste {
         'installation': installation.toJson(),
         'adresse_mere': adresseMere,
         'rejoint': rejoint,
+        'poste_secours': posteSecours,
       };
 
   factory ParametresPoste.depuisJson(Map<String, Object?> j) => ParametresPoste(
@@ -75,6 +83,7 @@ class ParametresPoste {
         installation: EtatInstallation.depuisJson(j['installation']),
         adresseMere: '${j['adresse_mere'] ?? ''}',
         rejoint: j['rejoint'] == true,
+        posteSecours: j['poste_secours'] == true,
       );
 }
 

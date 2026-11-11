@@ -221,6 +221,7 @@ class CfaTableau extends StatelessWidget {
     this.nomExport = 'export',
     this.messageVide = 'Aucun enregistrement.',
     this.archivable = true,
+    this.modifiable = true,
     this.taille = TailleModale.lg,
     this.creer = true,
     this.apres,
@@ -258,6 +259,9 @@ class CfaTableau extends StatelessWidget {
   final String nomExport;
   final String messageVide;
   final bool archivable;
+
+  /// `false` : la commande « Modifier » générique est absente (l'appelant fournit la sienne par [actionsLigneSup] : les postes de l'organigramme passent par le moteur du domaine).
+  final bool modifiable;
   final TailleModale taille;
   final bool creer;
   final void Function(Fiche)? apres;
@@ -317,7 +321,7 @@ class CfaTableau extends StatelessWidget {
                         corps: detail!(ctx2, f))),
               if (validation != null) ...ValidationPoste(c).boutonsDeLigne(ctx2, validation!, f),
               ...?actionsLigneSup?.call(ctx2, f),
-              if (c.droit.editer)
+              if (modifiable && c.droit.editer)
                 BoutonIcone(
                     icone: LucideIcons.pencil,
                     libelle: 'Modifier',

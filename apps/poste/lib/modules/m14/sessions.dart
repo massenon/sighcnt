@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../donnees/verrou_secours_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../auth/acc_registre_sessions.dart';
@@ -68,6 +69,100 @@ class _EtatSessions extends State<EcranSessions> {
     if (res.patch['cloturePropre'] == true) reg.surCloturePropre?.call();
   }
 
+  /// LE VERROU D'UN POSTE DE SECOURS (lot ORG2, P3, 11/11/2026) : délai en base (5 minutes, À VALIDER), poste désigné à ce poste même. Les deux commandes sont ABSENTES pour qui
+  /// ne règle pas (administrateur et Directrice Administrative seuls) ; le domaine refait le contrôle.
+  Widget _carteSecours(BuildContext ctx, ContexteEcran c) {
+    final vs = VerrouSecoursPoste(c.magasin, auteur: () => acteur(c).nom, role: c.role, horloge: () => c.aujourdhui);
+    final secours = vs.posteDeSecours();
+    Widget valeur(String libelle, Widget v) => Expanded(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(libelle, style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate500)),
+      v,
+    ]));
+    const gras = TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, color: JetonsShell.slate800);
+    return CarteSigh(
+        titre: 'Verrou d’un poste de secours',
+        actions: [
+          if (vs.peutRegler && c.droit.editer) ...[
+            BoutonSigh(
+                libelle: 'Régler le délai de secours',
+                icone: LucideIcons.slidersHorizontal,
+                variante: VarianteBouton.secondaire,
+                taille: TailleBouton.sm,
+                onPressed: () => _reglerDelai(ctx, c, vs)),
+            BoutonSigh(
+                libelle: secours ? 'Retirer la désignation de ce poste' : 'Désigner ce poste comme poste de secours',
+                icone: LucideIcons.monitor,
+                variante: VarianteBouton.secondaire,
+                taille: TailleBouton.sm,
+                onPressed: () async {
+                  final r = await vs.definirPoste(!secours);
+                  if (!ctx.mounted) return;
+                  if (r['ok'] != true) {
+                    ToastsSigh.afficher(ctx, '${r['motif']}', type: TypeToast.erreur, detail: '${r['geste']}');
+                    return;
+                  }
+                  _appliquerAuVerrou(c, vs);
+                  ToastsSigh.afficher(ctx, r['secours'] == true ? 'Ce poste est un poste de secours : verrou à ${r['delaiMinutes']} min.' : 'Ce poste est un poste ordinaire : verrou à ${r['delaiMinutes']} min.',
+                      type: TypeToast.succes);
+                  setState(() {});
+                }),
+          ],
+        ],
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const NoteSigh(
+              'Un poste partagé de secours, où un agent sans téléphone ouvre sa propre session, se verrouille plus vite qu’un poste ordinaire. Le délai de secours est une valeur d’attente proposée par l’équipe, à valider par la Direction : aucun document ne la fixe. Le délai ordinaire (CDCT 12.2) ne change pas.',
+              ton: TonSigh.info,
+              icone: LucideIcons.timer),
+          const SizedBox(height: 12),
+          Row(children: [
+            valeur('Poste ordinaire', Text('${vs.delaiOrdinaire()} min', style: gras)),
+            valeur('Poste de secours', Row(children: [Text('${vs.delaiSecours()} min', style: gras), const SizedBox(width: 8), const BadgeSigh('À valider', ton: TonSigh.attention)])),
+            valeur('Ce poste', Text('${secours ? 'Poste de secours' : 'Poste ordinaire'} : verrou à ${vs.delaiPoste()} min', style: gras)),
+          ]),
+        ]));
+  }
+
+  /// Le verrou de la session ouverte suit aussitôt le réglage ou la désignation.
+  void _appliquerAuVerrou(ContexteEcran c, VerrouSecoursPoste vs) =>
+      RegistreSessions.de(c.magasin).appliquerDelaiVerrou?.call(Duration(minutes: vs.delaiOrdinaire()));
+
+  void _reglerDelai(BuildContext ctx, ContexteEcran c, VerrouSecoursPoste vs) {
+    final ctl = ControleurFormulaire([
+      ChampDef(
+          nom: 'minutes',
+          libelle: 'Délai de verrou d’un poste de secours (minutes)',
+          type: TypeChamp.nombre,
+          requis: true,
+          col: ColChamp.plein,
+          aide: 'Entier de $delaiVerrouSecoursMin à $delaiVerrouSecoursMax. Valeur d’attente de $delaiVerrouSecoursDefautMin minutes, à valider par la Direction.'),
+      const ChampDef(nom: 'motif', libelle: 'Motif (facultatif)', col: ColChamp.plein),
+    ], {'minutes': '${vs.delaiSecours()}'});
+    afficherModale<void>(ctx,
+        titre: 'Délai de verrou d’un poste de secours',
+        taille: TailleModale.md,
+        corps: FormulaireSigh(controleur: ctl),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Enregistrer',
+                  icone: LucideIcons.save,
+                  onPressed: () {
+                    final v = ctl.valider();
+                    if (v == null) return;
+                    final r = vs.definirDelai(v['minutes'], motif: '${v['motif'] ?? ''}'.isEmpty ? null : '${v['motif']}');
+                    if (r['ok'] != true) {
+                      ToastsSigh.afficher(ctx, '${r['motif']}', type: TypeToast.erreur, detail: '${r['geste']}');
+                      return;
+                    }
+                    fermer();
+                    _appliquerAuVerrou(c, vs);
+                    ToastsSigh.afficher(ctx, 'Délai de secours réglé à ${r['minutes']} min.', type: TypeToast.succes);
+                    setState(() {});
+                  }),
+            ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
@@ -100,6 +195,8 @@ class _EtatSessions extends State<EcranSessions> {
                 'Sur les postes partagés (accueil et caisse), un délai d’inactivité de 15 minutes entraîne le verrouillage automatique de l’écran. Clôturer une session va plus loin : elle est fermée, et l’agent doit se reconnecter.',
                 ton: TonSigh.info,
                 icone: LucideIcons.lock),
+            const SizedBox(height: 16),
+            _carteSecours(context, c),
             const SizedBox(height: 16),
             TableauSigh(
               titre: 'Sessions',

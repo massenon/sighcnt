@@ -300,6 +300,25 @@ class ServiceInstallation extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _posteSecoursMemoire = false;
+
+  /// Ce poste est-il désigné POSTE DE SECOURS (lot ORG2, P3) ? Rangé dans les paramètres persistants du poste ; sans stockage attaché (tests, `SIGH_ASSISTANT=non`),
+  /// la désignation vit en mémoire le temps de la session du poste.
+  bool get posteDeSecours => _parametres?.posteSecours ?? _posteSecoursMemoire;
+
+  /// Désigne (ou retire la désignation de) CE poste comme poste de secours. Relit d'abord le fichier : l'activation de la mère y écrit aussi, on ne l'écrase pas.
+  Future<void> designerPosteDeSecours(bool oui) async {
+    final st = _stockage;
+    if (st == null || _parametres == null) {
+      _posteSecoursMemoire = oui;
+    } else {
+      final courant = (await st.lire()) ?? _parametres!;
+      _parametres = courant.avec(posteSecours: oui);
+      await st.ecrire(_parametres!);
+    }
+    notifyListeners();
+  }
+
   /// Relit les paramètres (après une activation de la mère qui a écrit le fichier) pour que le service voie le mode et le relais réels.
   Future<void> relire() async {
     final st = _stockage;

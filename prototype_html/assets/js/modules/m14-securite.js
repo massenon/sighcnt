@@ -1395,7 +1395,7 @@
             text: (secours ? 'Poste de secours' : 'Poste ordinaire') + ' : verrou à ' + VS.delaiPoste() + ' min' })]),
         ]));
         var actions = [];
-        if (VS.peutRegler()) {
+        if (VS.peutRegler() && K.droits('M14').editer) {
           actions.push(K.btn('Régler le délai de secours', { size: 'sm', icon: 'sliders-horizontal', onclick: function () {
             var f = U.form([
               { name: 'minutes', label: 'Délai de verrou d’un poste de secours (minutes)', type: 'number', required: true, min: VS.BORNES[0], max: VS.BORNES[1], col: 'full',

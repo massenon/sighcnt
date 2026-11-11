@@ -9,6 +9,7 @@ import 'dart:io' show Platform;
 
 import '../../core/identifiants.dart';
 import '../../core/jetons_shell.dart';
+import '../../donnees/verrou_secours_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
 import 'acc_gabarit.dart';
@@ -89,10 +90,14 @@ void ouvrirSessionAcces(ContexteAutonome x, AccCompte c) {
     s.estCloturee = reg.estCloturee;
     s.surEtat = (i, e) => reg.changerEtat(i, e, x.maintenant);
     reg.surCloturePropre = s.fermerParCloture;
-    reg.appliquerDelaiVerrou = (d) => s.verrou.delai = d;
+    // UN POSTE DE SECOURS SE VERROUILLE PLUS VITE (lot ORG2, P3) : le délai de secours (5 minutes par défaut, réglage en base, à valider) l'emporte sur la politique de
+    // sécurité quand CE poste est désigné de secours ; le poste ordinaire garde la politique.
+    final secours = VerrouSecoursPoste(m, auteur: () => c.nom, role: c.role);
+    reg.appliquerDelaiVerrou = (d) => s.verrou.delai = secours.posteDeSecours() ? Duration(minutes: secours.delaiSecours()) : d;
     // Le délai d'inactivité de la politique de sécurité, quand l'administrateur l'a réglée.
     final pol = m.collection('politiqueSecurite').actives.firstOrNull;
     if (pol != null) s.verrou.delai = Duration(minutes: secPolitique(pol)['inactiviteMin']!);
+    if (secours.posteDeSecours()) s.verrou.delai = Duration(minutes: secours.delaiSecours());
   } else {
     x.aller(x.donnees?.matrice.accueil(c.role) ?? 'plan-du-site');
   }

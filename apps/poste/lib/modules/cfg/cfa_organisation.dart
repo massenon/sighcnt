@@ -5,6 +5,8 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/donnees_navigation.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/organigramme_poste.dart';
+import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -164,7 +166,7 @@ class _OngletSecteurs extends StatelessWidget {
 class _OngletOrganigramme extends StatelessWidget {
   const _OngletOrganigramme();
 
-  Widget _noeud(Magasin m, CfaNoeud n, int niveau) {
+  Widget _noeud(Magasin m, OrgNoeud n, int niveau) {
     final carte = Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -181,11 +183,11 @@ class _OngletOrganigramme extends StatelessWidget {
         const SizedBox(width: 8),
         Flexible(child: Text(n.poste, style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, color: JetonsShell.slate800))),
         const SizedBox(width: 8),
-        BadgeSigh('(${n.effectif.toString().padLeft(2, '0')})'),
+        BadgeSigh('(${(cfaNombre(n.fiche['effectif']) ?? 0).toString().padLeft(2, '0')})'),
         if (cfaVrai(n.fiche['titulaire'])) ...[
           const SizedBox(width: 8),
           Flexible(
-              child: Text('${n.fiche['titulaire']}${cfaVrai(n.fiche['chef']) ? ' — chef de service' : ''}',
+              child: Text('${n.fiche['titulaire']}${_titre(n.titreAgent)}${cfaVrai(n.fiche['chef']) ? ' — chef de service' : ''}',
                   style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate500))),
         ],
         if (cfaVrai(n.fiche['role'])) ...[const Spacer(), _badgeRole(m, n.fiche['role'])],
@@ -198,36 +200,134 @@ class _OngletOrganigramme extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [carte, for (final e in n.enfants) _noeud(m, e, niveau + 1)]));
   }
 
+  static String _titre(String? t) => t == null || t.isEmpty ? '' : ' ($t)';
+
+  /// Les champs d'un poste. À la modification, le rattachement ne propose ni le poste lui-même ni ses rattachés (cycle), et le titre de l'agent s'ajoute.
+  static List<ChampDef> champsPoste(Magasin m, Fiche? e) {
+    final plats = m.collection('postes').actives;
+    final interdits = e == null ? <String>[] : orgDescendants('${e['id']}', plats);
+    final autres = trierPar([for (final p in plats) if (e == null || (p['id'] != e['id'] && !interdits.contains('${p['id']}'))) p], (p) => p['poste']);
+    return [
+      const ChampDef(nom: 'poste', libelle: 'Intitulé du poste', requis: true, col: ColChamp.plein),
+      ChampDef(
+          nom: 'parentId',
+          libelle: 'Rattaché à',
+          type: TypeChamp.select,
+          options: [const OptionChamp('', '— Sommet de l’organigramme —'), for (final p in autres) OptionChamp('${p['id']}', '${p['poste']}')],
+          aide: 'Déplacer un poste ici le réaffecte, lui et les postes qu’il porte. Un poste ne se rattache ni à lui-même ni à l’un de ses rattachés.'),
+      const ChampDef(nom: 'effectif', libelle: 'Effectif', type: TypeChamp.nombre, requis: true),
+      const ChampDef(
+          nom: 'titulaire',
+          libelle: 'Titulaire / chef de service',
+          col: ColChamp.plein,
+          aide: 'Une autre personne est affectée au poste : renommer le titulaire ici, la feuille imprimée suit.'),
+      ChampDef(nom: 'role', libelle: 'Rôle RBAC', type: TypeChamp.select, requis: true, options: _optionsRoles(m)),
+      const ChampDef(nom: 'chef', libelle: 'Chef de service (C/S)', type: TypeChamp.case_),
+      if (e != null)
+        const ChampDef(
+            nom: 'titreAgent',
+            libelle: 'Titre du titulaire dans l’organigramme',
+            col: ColChamp.plein,
+            aide: 'Porté par l’AGENT, pas par le poste (par exemple « SG » pour le surveillant général, qui est un infirmier). Il ne change aucun droit. Vide : aucun titre.'),
+    ];
+  }
+
+  /// Un refus du domaine se DIT : motif et geste de correction, jamais un échec muet.
+  static void _dire(BuildContext ctx, RefusRh r) => ToastsSigh.afficher(ctx, r.motif, type: TypeToast.erreur, detail: r.geste);
+
+  static void _modifier(BuildContext ctx, OrganigrammePoste org, Fiche p) {
+    final m = org.m;
+    final ctl = ControleurFormulaire(champsPoste(m, p), {
+      for (final e in p.entries) e.key: e.value is num ? '${e.value}' : e.value,
+      'titreAgent': org.titreDe(p) ?? '',
+    });
+    afficherModale<void>(ctx,
+        titre: 'Modifier le poste',
+        sousTitre: '${p['poste']}',
+        taille: TailleModale.lg,
+        corps: FormulaireSigh(controleur: ctl),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Enregistrer',
+                  icone: LucideIcons.save,
+                  onPressed: () {
+                    final saisie = ctl.valider();
+                    if (saisie == null) {
+                      ToastsSigh.afficher(ctx, 'Le formulaire comporte des erreurs.', type: TypeToast.erreur);
+                      return;
+                    }
+                    final r = org.modifier('${p['id']}', saisie);
+                    if (r.refus != null) {
+                      _dire(ctx, r.refus!);
+                      return;
+                    }
+                    fermer();
+                    if (r.inchange) {
+                      ToastsSigh.afficher(ctx, 'Aucune modification.', type: TypeToast.info);
+                    } else {
+                      ToastsSigh.afficher(ctx, 'Modifications enregistrées.', type: TypeToast.succes, annuler: r.annuler);
+                    }
+                  }),
+            ]);
+  }
+
+  static void _archiver(BuildContext ctx, OrganigrammePoste org, Fiche p) async {
+    final motif = await confirmerAvecMotif(ctx,
+        titre: 'Archiver ce poste ?',
+        message: 'Archivage logique (RG-14) : le poste reste consultable à la corbeille et l’opération est annulable.',
+        libelleOk: 'Archiver',
+        dangereux: true);
+    if (motif == null || !ctx.mounted) return;
+    final r = org.archiver('${p['id']}');
+    if (r.refus != null) {
+      _dire(ctx, r.refus!);
+      return;
+    }
+    ToastsSigh.afficher(ctx, 'Poste archivé.', type: TypeToast.succes, annuler: r.annuler, messageAnnulation: 'Archivage annulé.');
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     final col = c.magasin.collection('postes');
+    final pers = c.magasin.collection('personnel');
+    final org = OrganigrammePoste(c.magasin,
+        droitEditer: c.droit.editer,
+        droitAnnuler: c.droit.annuler,
+        rolesConnus: {for (final r in rolesDe(c.magasin)) r.id},
+        maintenant: () => c.aujourdhui,
+        auteur: () => acteur(c).nom);
     return ListenableBuilder(
-        listenable: col,
+        listenable: Listenable.merge([col, pers]),
         builder: (ctx, _) {
           final plats = col.actives;
-          final racines = cfaArbre(plats);
+          final racines = org.arbre();
           String nomDe(Object? id) => plats.where((p) => p['id'] == id).map((p) => '${p['poste']}').firstOrNull ?? '—';
-          void imprimer() => cfaImprimer(context,
-              titre: 'Organigramme de la Clinique NASSIERA TOO',
-              sousTitre: 'Structure organisationnelle et correspondance des rôles',
-              cartouche: [
-                ('Effectif total', '${nombre(cfaEffectifTotal(racines))} agents'),
-                ('Postes distincts', nombre(plats.length)),
-                ('Rôles définis', nombre(rolesDe(c.magasin).length)),
-                ('Date d’édition', dateFR(c.aujourdhui)),
-              ],
-              blocs: [
-                BlocTableau(TableauEtat(colonnes: [
-                  ColonneEtat(libelle: 'Poste', valeur: (l) => l['poste']),
-                  ColonneEtat(libelle: 'Rattaché à', valeur: (l) => nomDe(l['parentId'])),
-                  ColonneEtat(libelle: 'Effectif', droite: true, valeur: (l) => l['effectif']),
-                  ColonneEtat(libelle: 'Titulaire / chef de service', valeur: (l) => cfaOuTiret(l['titulaire'])),
-                  ColonneEtat(libelle: 'Rôle dans le système', valeur: (l) => libelleRole(c.magasin, l['role'])),
-                ], lignes: plats)),
-              ],
-              signatures: const [Signature('La Directrice Administrative', nom: 'TAKI Alimatou'), cfaSignDm]);
+          String titulaireTexte(Fiche p) => '${p['titulaire']}${_titre(org.titreDe(p))}${cfaVrai(p['chef']) ? ' — chef de service' : ''}';
+          // L'IMPRESSION REPRODUIT LA MISE EN PAGE DE L'ORGANIGRAMME PAPIER (A4 paysage, boîtes et connecteurs) : le contenu vient de la collection des postes, jamais d'un texte
+          // en dur ; ce qui s'y corrige (intitulé, effectif, titulaire, titre de l'agent, rattachement) se retrouve sur la feuille. Aucune étoile (O5).
+          void imprimer() {
+            final mise = orgMiseEnPage(racines);
+            afficherApercu(
+                ctx,
+                PieceA4(
+                    titre: 'ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO',
+                    paysage: true,
+                    lieuDate: false,
+                    blocs: [
+                      mise == null ? const BlocTexte(orgTexteAucunPoste, italique: true) : BlocOrganigramme(mise),
+                      const BlocTexte('Effectif entre parenthèses. C/S : chef de service.'),
+                    ],
+                    reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
+                    utilisateur: acteur(c).nom,
+                    edite: c.aujourdhui));
+          }
+
           return cfaPile([
+            const NoteSigh(
+                'L’organigramme imprimé suit la collection des postes de cet écran : un intitulé, un effectif, un titulaire, un titre ou un rattachement corrigé ici se retrouve sur la feuille. Il part de l’organigramme papier de la clinique mais n’est pas figé : réaffecter un poste, renommer son titulaire quand une autre personne est affectée, poser le titre d’un agent (« SG » pour le surveillant général, qui est un infirmier : le titre est porté par l’agent, pas par le poste) ou archiver un poste se fait ici, et chaque geste est journalisé. Aucune étoile n’est tracée.',
+                icone: LucideIcons.printer),
             CarteSigh(
                 titre: 'Organigramme de la Clinique NASSIERA TOO',
                 actions: [BoutonSigh(libelle: 'Imprimer l’organigramme', icone: LucideIcons.printer, variante: VarianteBouton.secondaire, taille: TailleBouton.sm, onPressed: imprimer)],
@@ -240,6 +340,8 @@ class _OngletOrganigramme extends StatelessWidget {
               prefixeId: 'PST',
               taillePage: 20,
               nomExport: 'postes',
+              archivable: false,
+              modifiable: false,
               colonnes: [
                 ColonneTableau(cle: 'poste', libelle: 'Poste', texte: (p) => '${p['poste'] ?? ''}', rendu: (_, p) => cfaGras('${p['poste'] ?? ''}')),
                 ColonneTableau(
@@ -253,30 +355,30 @@ class _OngletOrganigramme extends StatelessWidget {
                 ColonneTableau(
                     cle: 'titulaire',
                     libelle: 'Titulaire',
-                    texte: (p) => cfaVrai(p['titulaire']) ? '${p['titulaire']}${cfaVrai(p['chef']) ? ' — chef de service' : ''}' : 'vacant',
+                    texte: (p) => cfaVrai(p['titulaire']) ? titulaireTexte(p) : 'vacant',
                     rendu: (_, p) => cfaVrai(p['titulaire'])
-                        ? Text('${p['titulaire']}${cfaVrai(p['chef']) ? ' — chef de service' : ''}', style: const TextStyle(fontSize: 14, height: 20 / 14, color: JetonsShell.slate700))
+                        ? Text(titulaireTexte(p), style: const TextStyle(fontSize: 14, height: 20 / 14, color: JetonsShell.slate700))
                         : const Text('vacant', style: TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate300))),
                 ColonneTableau(cle: 'role', libelle: 'Rôle RBAC', texte: (p) => libelleRole(c.magasin, p['role']), rendu: (_, p) => _badgeRole(c.magasin, p['role'])),
               ],
-              champs: (e) {
-                final autres = trierPar([for (final p in plats) if (e == null || p['id'] != e['id']) p], (p) => p['poste']);
-                return [
-                  const ChampDef(nom: 'poste', libelle: 'Intitulé du poste', requis: true, col: ColChamp.plein),
-                  ChampDef(
-                      nom: 'parentId',
-                      libelle: 'Rattaché à',
-                      type: TypeChamp.select,
-                      options: [const OptionChamp('', '— Sommet de l’organigramme —'), for (final p in autres) OptionChamp('${p['id']}', '${p['poste']}')],
-                      aide: 'Déplacer un poste ici le réaffecte, lui et les postes qu’il porte.'),
-                  const ChampDef(nom: 'effectif', libelle: 'Effectif', type: TypeChamp.nombre, requis: true),
-                  const ChampDef(nom: 'titulaire', libelle: 'Titulaire / chef de service', col: ColChamp.plein),
-                  ChampDef(nom: 'role', libelle: 'Rôle RBAC', type: TypeChamp.select, requis: true, options: _optionsRoles(c.magasin)),
-                  const ChampDef(nom: 'chef', libelle: 'Chef de service', type: TypeChamp.case_),
-                ];
-              },
+              champs: (e) => champsPoste(c.magasin, e),
               valeursInitiales: () => {'effectif': '1', 'role': 'agentadmin'},
+              // Le moteur refuse en nommant (rattachement à un poste archivé, effectif non entier…) : rien n'est écrit.
+              avant: (ctx2, saisie, existante) {
+                final r = org.controler(null, saisie);
+                if (r != null) {
+                  _dire(ctx2, r);
+                  return false;
+                }
+                return true;
+              },
               fiche: (s, e) => cfaFichePoste(s),
+              // LES GESTES SUR UN POSTE PASSENT PAR LE MOTEUR : réaffecter, renommer le titulaire, poser le titre de l'agent et archiver sont contrôlés (cycle, parent archivé,
+              // agent introuvable, poste qui porte encore des postes), refusés en le nommant, et journalisés. Une commande dont le droit manque est ABSENTE.
+              actionsLigneSup: (ctx2, f) => [
+                if (c.droit.editer) BoutonIcone(icone: LucideIcons.pencil, libelle: 'Modifier', onPressed: () => _modifier(ctx2, org, f)),
+                if (c.droit.annuler) BoutonIcone(icone: LucideIcons.archive, libelle: 'Archiver', onPressed: () => _archiver(ctx2, org, f)),
+              ],
             ),
             cfaSource('Organigramme de la Clinique NASSIERA TOO — document de cadrage, désormais administrable.'),
           ], espace: 12);

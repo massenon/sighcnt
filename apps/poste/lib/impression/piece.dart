@@ -23,6 +23,13 @@ class BlocTableau extends BlocPiece {
   final bool alerte;
 }
 
+/// L'organigramme de la clinique (lot ORG2) : un diagramme de boîtes et de connecteurs, mis en page par le domaine (`orgMiseEnPage`, les mêmes mesures que
+/// `P.organigramme` de la maquette). Sert l'aperçu ET le PDF, en A4 paysage.
+class BlocOrganigramme extends BlocPiece {
+  const BlocOrganigramme(this.miseEnPage);
+  final OrgMiseEnPage miseEnPage;
+}
+
 class BlocTexte extends BlocPiece {
   const BlocTexte(this.texte, {this.gras = false, this.italique = false});
   final String texte;
@@ -45,6 +52,7 @@ class PieceA4 {
     this.lieuDate = true,
     this.filigrane,
     this.identite,
+    this.paysage = false,
   }) : blocs = [...blocs, for (final t in tableaux) BlocTableau(t)];
 
   /// L'IDENTITÉ LÉGALE que la pièce imprime (en-tête et pied) : la version en force À LA DATE DE LA PIÈCE (`P.etat({date})`, Direction 06/11/2026). Une
@@ -64,7 +72,8 @@ class PieceA4 {
       signatures: signatures,
       lieuDate: lieuDate,
       filigrane: filigrane,
-      identite: i);
+      identite: i,
+      paysage: paysage);
 
   /// L'identité effectivement imprimée : celle fixée, sinon la semence.
   IdentiteImprimee get identiteImprimee => identite ?? IdentiteImprimee.semence;
@@ -80,6 +89,9 @@ class PieceA4 {
   final List<(String, String)> filtres;
   final List<Signature> signatures;
   final bool lieuDate;
+
+  /// A4 en PAYSAGE (297 × 210 mm) : l'organigramme. Portrait par défaut, aucun état existant ne change.
+  final bool paysage;
   final String? filigrane;
   final String reference;
   final String utilisateur;

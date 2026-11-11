@@ -478,7 +478,10 @@ OrgBilanReprise orgMigrer(List<FichePoste> postes) {
 
 /// Une boîte dessinée : le poste, sa position et ses dimensions en millimètres dans le cadre, et ses lignes de texte.
 class OrgBoite {
-  const OrgBoite(this.poste, this.gauche, this.haut, this.largeur, this.hauteur, this.lignes);
+  const OrgBoite(this.poste, this.gauche, this.haut, this.largeur, this.hauteur, this.lignes, {this.racine = false});
+
+  /// Un sommet de l'organigramme (aucun parent) : la boîte porte le ton du design system réservé aux sommets.
+  final bool racine;
   final String poste;
   final double gauche, haut, largeur, hauteur;
   final List<String> lignes;
@@ -607,7 +610,7 @@ OrgMiseEnPage? orgMiseEnPage(List<OrgNoeud> racines, {OrgOptions o = const OrgOp
       if (_vrai(n.fiche['titulaire'])) {
         lignes.add('${n.fiche['titulaire']}${_vrai(n.titreAgent) ? ' (${n.titreAgent})' : ''}${_vrai(n.fiche['chef']) ? ' C/S' : ''}');
       }
-      boites.add(OrgBoite(n.poste, f.x - f.w / 2, haut(r), f.w, bh, lignes));
+      boites.add(OrgBoite(n.poste, f.x - f.w / 2, haut(r), f.w, bh, lignes, racine: f.parent == null));
     }
   }
   return OrgMiseEnPage(largeur: w, hauteur: hTotal, niveaux: nb, boites: boites, traits: traits, fleches: fleches);

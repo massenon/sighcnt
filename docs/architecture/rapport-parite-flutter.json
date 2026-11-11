@@ -1414,8 +1414,8 @@
   {
    "id": "m14-sessions",
    "mesure": true,
-   "attendus": 21,
-   "presents": 21,
+   "attendus": 24,
+   "presents": 24,
    "taux": 1.0,
    "manquants": []
   },

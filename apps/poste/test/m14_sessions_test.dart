@@ -27,7 +27,7 @@ void main() {
     }
     expect(kpi('Sessions ouvertes', '${k.ouvertes}'), findsOneWidget);
     expect(kpi('Clôturées', '0'), findsOneWidget);
-    expect(find.text('15 min'), findsOneWidget);
+    expect(find.text('15 min'), findsNWidgets(2), reason: 'l’indicateur et la carte du poste de secours (poste ordinaire)');
     for (final e in ['IDENTIFIANT', 'UTILISATEUR', 'RÔLE', 'POSTE', 'ADRESSE RÉSEAU', 'OUVERTURE', 'INACTIVITÉ', 'ÉTAT', 'CLÔTURE']) {
       expect(find.text(e), findsOneWidget, reason: e);
     }

@@ -167,8 +167,60 @@ Future<Uint8List> pdfA4(PieceA4 x, PolicesPdf p,
     );
   }
 
+  /// L'organigramme en PDF : les boîtes aux mesures du domaine (millimètres), les connecteurs tracés dessous. L'axe vertical d'un PDF monte : la hauteur se retourne.
+  pw.Widget organigramme(OrgMiseEnPage m) {
+    final gris = PdfColor.fromInt(0xFF64748B);
+    return pw.Center(
+        child: pw.SizedBox(
+            width: m.largeur * _mm,
+            height: m.hauteur * _mm,
+            child: pw.Stack(children: [
+              pw.Positioned.fill(
+                  child: pw.CustomPaint(painter: (canvas, taille) {
+                double y(double v) => taille.y - v * _mm;
+                canvas
+                  ..setStrokeColor(gris)
+                  ..setLineWidth(0.35 * _mm)
+                  ..setLineCap(PdfLineCap.square);
+                for (final t in m.traits) {
+                  canvas
+                    ..moveTo(t.x1 * _mm, y(t.y1))
+                    ..lineTo(t.x2 * _mm, y(t.y2))
+                    ..strokePath();
+                }
+                canvas.setFillColor(gris);
+                for (final f in m.fleches) {
+                  canvas.moveTo(f.points[0].$1 * _mm, y(f.points[0].$2));
+                  for (final q in f.points.skip(1)) {
+                    canvas.lineTo(q.$1 * _mm, y(q.$2));
+                  }
+                  canvas
+                    ..closePath()
+                    ..fillPath();
+                }
+              })),
+              for (final b in m.boites)
+                pw.Positioned(
+                    left: b.gauche * _mm,
+                    top: b.haut * _mm,
+                    child: pw.Container(
+                        width: b.largeur * _mm,
+                        height: b.hauteur * _mm,
+                        padding: const pw.EdgeInsets.symmetric(horizontal: 3),
+                        alignment: pw.Alignment.center,
+                        decoration: pw.BoxDecoration(
+                            color: b.racine ? PdfColor.fromInt(0xFFEEF2F8) : PdfColors.white,
+                            border: pw.Border.all(color: b.racine ? bleu : gris, width: 0.6),
+                            borderRadius: pw.BorderRadius.circular(1.5)),
+                        child: pw.Column(mainAxisAlignment: pw.MainAxisAlignment.center, children: [
+                          for (var i = 0; i < b.lignes.length; i++)
+                            pw.Text(b.lignes[i], textAlign: pw.TextAlign.center, style: s(i == 0 ? 6.8 : 6.4, f: i == 0 ? p.gras : null)),
+                        ]))),
+            ])));
+  }
+
   doc.addPage(pw.MultiPage(
-    pageFormat: PdfPageFormat.a4.copyWith(
+    pageFormat: (x.paysage ? PdfPageFormat.a4.landscape : PdfPageFormat.a4).copyWith(
         marginLeft: 12 * _mm,
         marginRight: 12 * _mm,
         marginTop: 12 * _mm,
@@ -228,6 +280,7 @@ Future<Uint8List> pdfA4(PieceA4 x, PolicesPdf p,
           BlocTexte() => pw.Text(b.texte,
               style:
                   s(8, f: b.gras ? p.gras : (b.italique ? p.italique : null))),
+          BlocOrganigramme() => organigramme(b.miseEnPage),
         },
         pw.SizedBox(height: 10),
       ],
