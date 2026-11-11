@@ -131,6 +131,24 @@
     { id: 'soldes-ouverture', libelle: 'Importation des soldes d’ouverture', ecran: 'imp-soldes-ouverture', module: 'M12', hotes: ['m12-ouverture'],
       sensibilite: 'restreinte', collections: ['ecritures'], doublon: 'refuser',
       rolesDefaut: { admin: 'VIA', da: 'VIA', comptable: 'VIA', direction: 'V', aide_comptable: 'V' } },
+    /* LOT IMP-B1 (11/11/2026) : les cinq jeux du STOCK que détient le gestionnaire (PRD-IMP 7.2, décisions I6, I8, I13). Aucun autre profil que lui, la DAF et l'administrateur : la matrice
+       d'origine ne donne ni lecture à la Direction ni droit au comptable (qui ne lit que le Grand Stock). Un jeu qui écrit des mouvements ou des stocks est RESTREINT : ses constats ne
+       recopient aucune valeur. `ignorer` n'est admis que pour le référentiel produits et les emplacements (liste fermée de la Direction). */
+    { id: 'produits-referentiel', libelle: 'Importation du référentiel produits', ecran: 'imp-produits-referentiel', module: 'M6', hotes: ['m6-produits'],
+      sensibilite: 'courante', collections: ['produits'], doublon: 'ignorer',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
+    { id: 'emplacements', libelle: 'Importation des emplacements de rangement', ecran: 'imp-emplacements', module: 'M6', hotes: ['m6-etiquetage'],
+      sensibilite: 'courante', collections: ['emplacements'], doublon: 'ignorer',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
+    { id: 'stock-detail-initial', libelle: 'Importation du stock détail initial', ecran: 'imp-stock-detail-initial', module: 'M6', hotes: ['m6-stock-detail'],
+      sensibilite: 'restreinte', collections: ['produits', 'lots', 'mouvements'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
+    { id: 'transfert-lignes', libelle: 'Importation d’un bon de transfert', ecran: 'imp-transfert-lignes', module: 'M6', hotes: ['m6-transferts'],
+      sensibilite: 'restreinte', collections: ['transferts', 'mouvements', 'produits'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
+    { id: 'inventaire-comptage', libelle: 'Importation d’un comptage d’inventaire', ecran: 'imp-inventaire-comptage', module: 'M6', hotes: ['m6-inventaire'],
+      sensibilite: 'restreinte', collections: ['inventaires'], doublon: 'refuser',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA' } },
   ];
   var IMPORTS_INDEX = {};
   /* Le module « Importation de données » s'ouvre à l'UNION des rôles qui détiennent un jeu par défaut : liste DÉRIVÉE de la déclaration, jamais recopiée. */
@@ -769,6 +787,11 @@
             { id: 'imp-souscripteurs', label: 'Importation des souscripteurs', icon: 'building', jeuImport: 'souscripteurs' },
             { id: 'imp-plan-comptable', label: 'Importation du plan comptable', icon: 'book-open', jeuImport: 'plan-comptable' },
             { id: 'imp-soldes-ouverture', label: 'Importation des soldes d’ouverture', icon: 'scale', jeuImport: 'soldes-ouverture' },
+            { id: 'imp-produits-referentiel', label: 'Importation du référentiel produits', icon: 'package-plus', jeuImport: 'produits-referentiel' },
+            { id: 'imp-emplacements', label: 'Importation des emplacements de rangement', icon: 'grid-3x3', jeuImport: 'emplacements' },
+            { id: 'imp-stock-detail-initial', label: 'Importation du stock détail initial', icon: 'pill', jeuImport: 'stock-detail-initial' },
+            { id: 'imp-transfert-lignes', label: 'Importation d’un bon de transfert', icon: 'arrow-left-right', jeuImport: 'transfert-lignes' },
+            { id: 'imp-inventaire-comptage', label: 'Importation d’un comptage d’inventaire', icon: 'clipboard-list', jeuImport: 'inventaire-comptage' },
           ],
         },
       ],

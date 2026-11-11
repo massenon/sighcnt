@@ -7231,4 +7231,151 @@
     return { ok: true, affiche: oui, avant: avant };
   }
   global.SIGH.planDuSite = { CLE: PLAN_CLE, DEFAUT: false, affiche: planDuSiteAffiche, peutRegler: reglerPlanDuSiteOk, definir: definirPlanDuSite };
+
+  /* ==========================================================================
+   * STOCK : UNE FABRIQUE POUR LE TRANSFERT GROS VERS DÉTAIL, UNE POUR LA RÉGULARISATION D'UN INVENTAIRE (lot IMP-B1, 11/11/2026)
+   * --------------------------------------------------------------------------
+   * Le geste de l'écran (« Nouveau transfert », « Valider l'inventaire ») et l'import en masse passent par la MÊME fabrique : un transfert importé ne peut donc rien
+   * faire que le geste ne ferait pas (un bon numéroté, deux mouvements symétriques par ligne, stocks gros et détail), et surtout ne peut JAMAIS contourner RG-03. La règle ne vit
+   * qu'ici : une règle écrite en deux exemplaires diverge au premier correctif (le code patient l'a payé deux fois).
+   *
+   *  - `controlerTransfert(lignes)` : RG-03 LIGNE PAR LIGNE en nommant l'article, le disponible tenant compte de ce qui est DÉJÀ posé sur le bon. N'écrit rien.
+   *  - `emettreTransfert(entete, lignes, opts)` : contrôle d'abord (rien n'est écrit si une ligne est refusée), numérote le bon APRÈS la vérification, écrit stocks, mouvements
+   *    et bon, rend un jeton d'ANNULATION qui restitue toutes les lignes (dans l'ordre inverse : le même article peut figurer sur deux lignes de lots différents).
+   *  - `regulariserInventaire(inv, opts)` : un mouvement par écart sur le magasin COMPTÉ. `opts.strict` (import) refuse si le stock a bougé depuis le comptage.
+   * ======================================================================== */
+  var DESTINATIONS_TRANSFERT = ['Pharmacie d’urgence', 'Pharmacie externe', 'Laboratoire', 'Hospitalisation', 'Maternité', 'Bloc opératoire', 'Salle de soins'];
+
+  function refusStock(code, motif, geste, extra) { return Object.assign({ ok: false, code: code, motif: motif, geste: geste || null }, extra || {}); }
+
+  /** Le lot à sortir en premier (FEFO, RG-05) : péremption la plus proche, ni périmé ni épuisé, et tenu au magasin CENTRAL (un lot posé au détail par un stock initial ne part pas du gros). */
+  function lotFefo(produitId) {
+    return S.collection('lots').active().filter(function (x) {
+      return x.produitId === produitId && x.statut !== 'perime' && (x.quantiteRestante || 0) > 0 && x.magasin !== 'detail';
+    }).sort(function (a, b) { return String(a.datePeremption).localeCompare(String(b.datePeremption)); })[0] || null;
+  }
+
+  /** RG-03 pour UNE ligne : `deja` est ce qui est déjà posé sur le bon pour cet article. Rend un refus nommé, ou `null`. Importée ligne à ligne par le jeu d'import (une seule règle). */
+  function refusLigneTransfert(pr, q, deja, i) {
+    q = Number(q);
+    if (!(q > 0) || Math.floor(q) !== q) return refusStock('QUANTITE_INVALIDE', '« ' + pr.designation + ' » : la quantité doit être un entier supérieur à zéro', 'Indiquer une quantité entière d’au moins 1.', { ligne: i, produit: pr.designation });
+    var dispo = (pr.stockGros || 0) - (deja || 0);
+    /* RG-03, ligne par ligne, en NOMMANT l'article ; le disponible tient compte de ce qui est déjà posé sur le bon. */
+    if (q > dispo) {
+      return refusStock('RG03_STOCK_INSUFFISANT',
+        'RG-03 : « ' + pr.designation + ' » : ' + C.num(Math.max(0, dispo)) + ' ' + (pr.unite || '') + ' encore disponible(s) au magasin' + (deja ? ' (déjà ' + C.num(deja) + ' sur ce bon)' : '') + ', ' + C.num(q) + ' demandé(s)',
+        'Réduire la quantité, ou attendre une réception fournisseur : le stock du magasin ne peut jamais devenir négatif.', { ligne: i, produit: pr.designation, disponible: Math.max(0, dispo) });
+    }
+    return null;
+  }
+
+  function controlerTransfert(lignes) {
+    var pose = {};
+    for (var i = 0; i < (lignes || []).length; i++) {
+      var l = lignes[i], pr = produitParId(l.produitId);
+      if (!pr) return refusStock('PRODUIT_INCONNU', 'la ligne ' + (i + 1) + ' désigne un article inconnu', 'Choisir un article du référentiel.', { ligne: i });
+      var r = refusLigneTransfert(pr, l.quantite, pose[pr.id] || 0, i);
+      if (r) return r;
+      pose[pr.id] = (pose[pr.id] || 0) + Number(l.quantite);
+    }
+    return { ok: true, pose: pose };
+  }
+
+  function emettreTransfert(entete, lignes, opts) {
+    entete = entete || {}; opts = opts || {};
+    if (!lignes || !lignes.length) return refusStock('BON_VIDE', 'un bon de transfert porte au moins un article', 'Ajouter au moins un article au bon.');
+    if (!entete.demandeur) return refusStock('DESTINATION_ABSENTE', 'le bon n’a pas de service destinataire', 'Choisir le service demandeur.');
+    var c = controlerTransfert(lignes);
+    if (!c.ok) return c;
+    var date = entete.date || C.iso(C.aujourdhui()), marque = opts.marque || {};
+    /* LE NUMÉRO SUIT LE REGISTRE, pas un compteur de page, et il est pris APRÈS la vérification : un refus ne consomme aucun numéro. */
+    var colBons = S.collection('transferts', { module: 'M6', entite: 'Transfert' });
+    var dernier = colBons.all().reduce(function (mx, x) { var mm = /^TR-(\d+)$/.exec(x.reference || ''); return mm ? Math.max(mx, Number(mm[1])) : mx; }, 0);
+    var reference = 'TR-' + C.pad(dernier + 1, 5);
+    var colMvt = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' });
+    var etats = [], mvts = [], pleines = [], res = null;
+    function annuler() {
+      etats.slice().reverse().forEach(function (e) { S.collection('produits').update(e.id, { stockGros: e.gros, stockDetail: e.detail }); });
+      mvts.forEach(function (x) { x.undo(); });
+      if (res) res.undo();
+    }
+    try {
+      lignes.forEach(function (l) {
+        var pr = produitParId(l.produitId);
+        var lotF = l.lot === undefined ? lotFefo(pr.id) : (l.lot ? S.collection('lots').active().filter(function (x) { return x.produitId === pr.id && x.numeroLot === l.lot; })[0] : null);
+        var pleine = { produitId: pr.id, code: pr.code, produit: pr.designation, categorie: pr.categorie, unite: pr.unite, cump: pr.cump, quantite: Number(l.quantite),
+          lot: l.lot === undefined ? (lotF ? lotF.numeroLot : null) : (l.lot || null), peremption: l.peremption !== undefined ? l.peremption : (lotF ? lotF.datePeremption : null) };
+        pleines.push(pleine);
+        etats.push({ id: pr.id, gros: pr.stockGros, detail: pr.stockDetail });
+        if (!S.collection('produits').update(pr.id, { stockGros: pr.stockGros - pleine.quantite, stockDetail: (pr.stockDetail || 0) + pleine.quantite })) throw new Error('le stock de « ' + pr.designation + ' » n’a pas pu être mis à jour');
+        /* DEUX MOUVEMENTS SYMÉTRIQUES (RG-03) : le magasin débité, la pharmacie créditée. */
+        [['Transfert — sortie magasin', 'gros'], ['Transfert — entrée pharmacie', 'detail']].forEach(function (t) {
+          var m = colMvt.insert(Object.assign({
+            reference: reference, date: date, produitId: pr.id, produit: pr.designation,
+            type: 'transfert', typeLabel: t[0], quantite: pleine.quantite,
+            stockType: t[1], justificatif: 'Bon de transfert ' + reference,
+            utilisateur: S.currentUser(),
+          }, marque));
+          if (!m) throw new Error('un mouvement de stock a été refusé par le moteur');
+          mvts.push(m);
+        });
+      });
+      var total = pleines.reduce(function (n, l) { return n + l.quantite; }, 0);
+      res = colBons.insert(Object.assign({}, { date: date, demandeur: entete.demandeur, motif: entete.motif || '' }, marque, {
+        reference: reference, lignes: pleines.slice(), nbLignes: pleines.length, quantiteTotale: total,
+        valeur: pleines.reduce(function (n, l) { return n + l.quantite * (l.cump || 0); }, 0),
+        operateur: S.currentUser(), etat: 'receptionne', dateReception: date,
+        /* Compatibilité avec les bons antérieurs, qui ne portaient qu'un produit : le tableau du registre lit ces champs. */
+        produit: pleines.length === 1 ? pleines[0].produit : pleines.length + ' articles', unite: pleines.length === 1 ? pleines[0].unite : '', quantite: total,
+      }));
+      if (!res) throw new Error('le bon de transfert a été refusé par le moteur');
+    } catch (e) {
+      annuler();
+      return refusStock('ECRITURE_REFUSEE', e && e.message ? e.message : String(e), 'Rien n’a été écrit : les stocks sont restitués.');
+    }
+    return { ok: true, bon: res.record, reference: reference, mouvements: mvts.map(function (m) { return m.record; }), lignes: pleines, annuler: annuler };
+  }
+
+  /** Régularise un inventaire : un mouvement par écart sur le magasin COMPTÉ, le total qui en découle. `opts.strict` : refuser si le stock du magasin a bougé depuis le comptage
+      (un écart calculé sur un théorique périmé régulariserait un chiffre faux). Sans `strict`, c'est le geste de la feuille de saisie, qui régularise à l'instant du comptage. */
+  function regulariserInventaire(inv, opts) {
+    opts = opts || {};
+    var magasin = inv.magasin === 'detail' ? 'detail' : 'gros', champ = magasin === 'detail' ? 'stockDetail' : 'stockGros';
+    var ecarts = (inv.lignes || []).filter(function (l) { return l.ecart !== 0 && l.ecart != null; });
+    if (opts.strict) {
+      for (var i = 0; i < ecarts.length; i++) {
+        var pr0 = produitParId(ecarts[i].produitId);
+        if (!pr0) return refusStock('PRODUIT_INCONNU', 'l’article « ' + ecarts[i].designation + ' » n’existe plus', 'Retirer l’article de la feuille ou le restaurer.', { ligne: i });
+        if ((pr0[champ] || 0) !== ecarts[i].theorique) {
+          return refusStock('REGULARISATION_PERIMEE', 'le stock ' + (magasin === 'detail' ? 'détail' : 'gros') + ' de « ' + pr0.designation + ' » a bougé depuis le comptage (théorique ' + ecarts[i].theorique + ', aujourd’hui ' + (pr0[champ] || 0) + ')',
+            'Recompter cet article et importer une nouvelle feuille : un écart calculé sur un théorique périmé ne se régularise pas.', { article: pr0.designation });
+        }
+        if ((pr0[champ] || 0) + ecarts[i].ecart < 0) return refusStock('RG03_STOCK_NEGATIF', 'RG-03 : la régularisation de « ' + pr0.designation + ' » rendrait le stock négatif', 'Corriger le comptage.', { article: pr0.designation });
+      }
+    }
+    var annulations = [], mouvs = [];
+    ecarts.forEach(function (x) {
+      var pr = produitParId(x.produitId);
+      if (!pr) return;
+      var avant = { stockGros: pr.stockGros, stockDetail: pr.stockDetail, stock: pr.stock };
+      var maj = { stock: Math.max(0, (pr.stock || 0) + x.ecart) };
+      maj[champ] = Math.max(0, (pr[champ] || 0) + x.ecart);
+      S.collection('produits').update(pr.id, maj);
+      var mv = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({
+        reference: C.referenceSuivante('M', 6, S.collection('mouvements').all()), date: opts.date || inv.date, /* (E17) */
+        produitId: pr.id, produit: pr.designation, type: 'inventaire', typeLabel: 'Régularisation inventaire',
+        quantite: Math.abs(x.ecart), stockType: magasin, justificatif: 'Inventaire ' + inv.reference, utilisateur: opts.operateur || inv.operateur,
+      });
+      mouvs.push(mv.record);
+      annulations.push(function () { S.collection('produits').update(pr.id, avant); mv.undo(); });
+    });
+    return { ok: true, nb: ecarts.length, mouvements: mouvs, annuler: function () { annulations.slice().reverse().forEach(function (u) { u(); }); } };
+  }
+
+  global.SIGH.parcours.DESTINATIONS_TRANSFERT = DESTINATIONS_TRANSFERT;
+  global.SIGH.parcours.lotFefo = lotFefo;
+  global.SIGH.parcours.controlerTransfert = controlerTransfert;
+  global.SIGH.parcours.refusLigneTransfert = refusLigneTransfert;
+  global.SIGH.parcours.emettreTransfert = emettreTransfert;
+  global.SIGH.parcours.regulariserInventaire = regulariserInventaire;
 })(window);

@@ -80,6 +80,12 @@
     COMPTE_INCONNU: 'compte absent du plan comptable', CLASSE_NON_REPORTABLE: 'compte de gestion : il ne se reporte pas', DEUX_SENS: 'débit et crédit renseignés ensemble',
     LIGNE_NULLE: 'ligne sans montant', DATES_MULTIPLES: 'plusieurs dates dans le fichier', RG10_DESEQUILIBRE: 'écriture non équilibrée (RG-10)',
     A_NOUVEAU_EXISTANT: 'l’exercice porte déjà un à-nouveau', COLONNE_RESERVEE: 'colonne réservée à un autre profil', COLONNE_RETIREE: 'colonne retirée du modèle',
+    /* Jeux du stock (lot IMP-B1) : jamais le nom d'un article, d'un lot ni une quantité. */
+    ARTICLE_INCONNU: 'article absent du référentiel produits', RG03_STOCK_INSUFFISANT: 'stock du magasin insuffisant (RG-03)', RG03_STOCK_NEGATIF: 'quantité négative (RG-03)',
+    LOT_OBLIGATOIRE: 'lot et péremption obligatoires (RG-05)', LOT_INCOMPLET: 'lot et péremption vont ensemble', LOT_INCONNU: 'lot absent pour cet article', LOT_PERIME: 'lot périmé',
+    LOT_NON_FEFO: 'lot qui ne part pas en premier (FEFO, RG-05)', PEREMPTION_PASSEE: 'lot déjà périmé', QUANTITE_NULLE: 'quantité nulle',
+    DETAIL_DEJA_MOUVEMENTE: 'article déjà mouvementé : le stock détail initial ne se pose qu’une fois', DETAIL_DEJA_EN_STOCK: 'stock détail déjà présent', STOCK_INCOHERENT: 'stocks gros et détail incohérents avec le stock total',
+    DESTINATION_ABSENTE: 'aucun service destinataire', DESTINATIONS_MULTIPLES: 'plusieurs services destinataires : une feuille est un seul bon', BON_UNIQUE: 'plusieurs valeurs pour un bon unique', FEUILLE_UNIQUE: 'plusieurs valeurs pour une feuille unique',
   };
   function masquer(j, p) {
     if (!restreint(j)) return p;
@@ -867,6 +873,434 @@
     dependances: function () { return null; },
   });
 
+  /* ==========================================================================
+   * LOT IMP-B1 (11/11/2026) : LES CINQ JEUX DU STOCK, détenus par le gestionnaire de stock (PRD-IMP 4 et 7.2 ; décisions I6, I8, I13).
+   * --------------------------------------------------------------------------
+   * Ils s'écrivent par les MÊMES règles que les gestes de l'écran, jamais à côté : le bon de transfert et la régularisation d'inventaire passent par les fabriques UNIQUES du
+   * socle (`PR.emettreTransfert`, `PR.regulariserInventaire`, RG-03 ligne par ligne) ; le stock initial s'écrit comme le Grand Stock (un mouvement `entree` justifié par le lot
+   * d'import). Un import n'invente rien et ne modifie JAMAIS une fiche tenue : le référentiel crée des fiches NEUVES, le stock détail ne se pose qu'une fois.
+   * ======================================================================== */
+  var PR = global.SIGH.parcours;
+  /** Ce que le magasin sait déjà des articles : actifs par code, premier mouvement actif de chacun, lots par article. Lu UNE fois par analyse. */
+  function contexteStock() {
+    var p = {}, mv = {}, lotsDe = {};
+    actives('produits').forEach(function (x) { p[C.norm(x.code)] = x; });
+    actives('mouvements').forEach(function (m) { if (m.produitId && !mv[m.produitId]) mv[m.produitId] = m; });
+    actives('lots').forEach(function (l) { (lotsDe[l.produitId] = lotsDe[l.produitId] || []).push(l); });
+    return { produits: p, mouvements: mv, lots: lotsDe, jour: aujourdhuiIso() };
+  }
+  function articleInconnu(v) {
+    return { colonne: 'Code article', valeur: v.code, code: 'ARTICLE_INCONNU', niveau: 'refus', motif: 'aucun article « ' + v.code + ' » au référentiel produits',
+      geste: 'Créez l’article d’abord (jeu « Importation du référentiel produits » ou écran Référentiel produits), ou corrigez le code.' };
+  }
+  function statutLot(peremption, jour) { var j = joursEntre(jour, peremption); return j < 0 ? 'perime' : (j < 90 ? 'alerte' : 'actif'); }
+  function distincts(lignes, cle) { var vus = {}, out = []; lignes.forEach(function (l) { var x = l.v[cle]; if (x != null && x !== '' && !vus[x]) { vus[x] = true; out.push(x); } }); return out; }
+  /** L'article a-t-il servi à un acte (mouvement, lot, stock, pièce de caisse ou ordonnance) ? Un lot de référentiel ne s'annule que tant qu'aucun acte ne s'appuie dessus. */
+  function acteSurProduit(produitId) {
+    var p = S.collection('produits').get(produitId);
+    var m = S.collection('mouvements').active().filter(function (x) { return x.produitId === produitId; })[0];
+    if (m) return { code: 'MOUVEMENT_POSTERIEUR', motif: 'l’article « ' + (p ? p.designation : produitId) + ' » a déjà un mouvement de stock (' + m.reference + ', ' + m.typeLabel + ')', geste: 'Un article qui a servi ne s’annule plus avec son lot : archivez-le à l’écran Référentiel produits (RG-14).' };
+    if (p && ((p.stock || 0) > 0 || (p.stockGros || 0) > 0 || (p.stockDetail || 0) > 0)) return { code: 'STOCK_PRESENT', motif: 'l’article « ' + p.designation + ' » porte du stock', geste: 'Régularisez le stock par un inventaire, puis archivez l’article.' };
+    if (S.collection('lots').active().some(function (l) { return l.produitId === produitId; })) return { code: 'LOT_RATTACHE', motif: 'l’article « ' + (p ? p.designation : produitId) + ' » porte des lots', geste: 'Archivez l’article à l’écran Référentiel produits.' };
+    var f = S.collection('factures').active().filter(function (x) { return (x.lignes || []).some(function (l) { return l.produitId === produitId; }); })[0];
+    if (f) return { code: 'PRODUIT_FACTURE', motif: 'l’article « ' + (p ? p.designation : produitId) + ' » figure sur la facture ' + f.numero, geste: 'Une pièce émise ne se réécrit jamais : archivez l’article, il garde son prix sur la pièce.' };
+    var o = S.collection('ordonnances').active().filter(function (x) { return (x.medicaments || []).some(function (l) { return l.produitId === produitId; }); })[0];
+    if (o) return { code: 'PRODUIT_PRESCRIT', motif: 'l’article « ' + (p ? p.designation : produitId) + ' » figure sur l’ordonnance ' + (o.numero || o.reference), geste: 'Archivez l’article à l’écran Référentiel produits.' };
+    return null;
+  }
+
+  /* --- 11. RÉFÉRENTIEL PRODUITS (sans quantités ni lots) -------------------------------------------------------------- */
+  JEUX.push({
+    id: 'produits-referentiel', ecran: 'imp-produits-referentiel', libelle: 'Importation du référentiel produits', module: 'M6', statut: 'supporte',
+    description: 'Articles de la clinique : code, désignation, catégorie, unité, prix d’achat, seuil d’alerte. Jamais de quantité ni de lot.',
+    source: 'Fiche du référentiel produits (écran « Référentiel produits ») et inventaire SAGE « Grand Stock » (docs/).',
+    limite: 'Ce jeu crée des fiches NEUVES, sans stock : les quantités et les lots se reprennent par « Importation Grand Stock », et un fichier qui porte une colonne de quantité ou de lot est refusé. '
+      + 'Il ne modifie jamais un article déjà tenu (RG-02 : le prix de vente d’un médicament est son prix d’achat). Un article sans seuil est signalé « sans seuil », jamais compté à zéro.',
+    cibles: ['produits'], fichierModele: 'modele-import-referentiel-produits',
+    colonnesRetirees: [
+      { label: 'Quantité', motif: 'un référentiel ne porte jamais de quantité : le stock se reprend par le jeu « Importation Grand Stock »' },
+      { label: 'N° de lot', motif: 'un référentiel ne porte jamais de lot : les lots se reprennent par le jeu « Importation Grand Stock »' },
+      { label: 'Date de péremption', motif: 'un référentiel ne porte jamais de péremption : elle se reprend avec le lot, par le jeu « Importation Grand Stock »' },
+      { label: 'Stock gros', motif: 'un référentiel ne porte jamais de stock : il se reprend par le jeu « Importation Grand Stock »' },
+      { label: 'Stock détail', motif: 'un référentiel ne porte jamais de stock : le détail se pose par le jeu « Importation du stock détail initial »' },
+    ],
+    colonnes: [
+      oblig('code', 'Code article', 'texte', { longueurMax: 24, exemple: 'PARA500', aide: 'Référence unique de l’article.' }),
+      oblig('designation', 'Désignation', 'texte', { longueurMax: 160, exemple: 'PARACETAMOL 500 MG CP B/100' }),
+      oblig('categorie', 'Catégorie', 'liste', { liste: function () { return D.CATEGORIES_PRODUIT.map(function (c) { return { valeur: c.id, label: c.label }; }); }, exemple: 'Médicaments' }),
+      oblig('unite', 'Unité', 'texte', { longueurMax: 30, exemple: 'Boîte' }),
+      col('prixAchat', 'Prix d’achat', 'entier', { min: 0, exemple: 350, aide: 'Francs CFA. Vide : l’article est créé « à valoriser » et le dit (aucun prix n’est inventé). Un médicament se facture à ce prix, sans marge (RG-02).' }),
+      col('prixVente', 'Prix de vente', 'entier', { min: 0, aide: 'Hors médicament seulement. Vide : égal au prix d’achat. Un médicament n’a pas de prix de vente libre : renseigner un prix différent du prix d’achat est refusé.' }),
+      col('seuil', 'Seuil d’alerte', 'entier', { min: 0, exemple: 20, aide: 'Vide : l’article est signalé « sans seuil », jamais compté à zéro (aucune alerte n’est possible sans seuil).' }),
+      col('emplacement', 'Emplacement', 'texte', { longueurMax: 60, exemple: 'Rayon A, Casier 3' }),
+      col('fournisseur', 'Code fournisseur', 'texte', { longueurMax: 24, exemple: 'SOBAPS', aide: 'Code d’un fournisseur connu. Un code inconnu est signalé, jamais refusé.' }),
+    ],
+    contexte: function () {
+      var p = {}, f = {}, e = {}, ne = 0;
+      toutes('produits').forEach(function (x) { p[C.norm(x.code)] = x; });
+      actives('fournisseurs').forEach(function (x) { f[C.norm(x.code)] = true; });
+      actives('emplacements').forEach(function (x) { e[C.norm(x.code)] = true; ne++; });
+      return { produits: p, fournisseurs: f, emplacements: e, nbEmplacements: ne };
+    },
+    cle: function (v) { return [C.norm(v.code)]; },
+    existe: function (v, ctx) {
+      var p = ctx.produits[C.norm(v.code)];
+      return p ? 'l’article « ' + p.code + ' » existe déjà (' + p.designation + ')' : null;
+    },
+    gesteExiste: 'Retirez la ligne : un import ne modifie jamais un article tenu. Corrigez-le à l’écran Référentiel produits.',
+    regles: function (v, ctx) {
+      var pb = [], med = v.categorie === 'medicament';
+      if (med && v.prixVente != null && v.prixVente !== v.prixAchat) {
+        pb.push({ colonne: 'Prix de vente', valeur: v.prixVente, code: 'RG02_PRIX_DE_VENTE', niveau: 'refus',
+          motif: 'RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente ne peut pas être libre',
+          geste: 'Laissez la colonne « Prix de vente » vide : le prix de vente d’un médicament est son prix d’achat. Une exception se valide par la Direction, à l’écran.' });
+      }
+      if (v.prixAchat == null) {
+        pb.push({ colonne: 'Prix d’achat', valeur: '', code: 'A_VALORISER', niveau: 'avertissement', motif: 'prix d’achat absent : l’article sera créé « à valoriser »', geste: 'Renseignez le prix d’achat à l’écran Référentiel produits, avec sa source.' });
+      }
+      if (v.seuil == null) {
+        pb.push({ colonne: 'Seuil d’alerte', valeur: '', code: 'SANS_SEUIL', niveau: 'avertissement', motif: 'seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera', geste: 'Fixez le seuil à l’écran Référentiel produits.' });
+      }
+      if (v.fournisseur && !ctx.fournisseurs[C.norm(v.fournisseur)]) {
+        pb.push({ colonne: 'Code fournisseur', valeur: v.fournisseur, code: 'FOURNISSEUR_INCONNU', niveau: 'avertissement', motif: 'aucun fournisseur « ' + v.fournisseur + ' » au référentiel', geste: 'Créez le fournisseur (jeu Fournisseurs) ou corrigez le code.' });
+      }
+      if (v.emplacement && ctx.nbEmplacements && !ctx.emplacements[C.norm(v.emplacement)]) {
+        pb.push({ colonne: 'Emplacement', valeur: v.emplacement, code: 'EMPLACEMENT_INCONNU', niveau: 'avertissement', motif: 'aucun emplacement « ' + v.emplacement + ' » au référentiel des emplacements', geste: 'Créez l’emplacement (jeu Emplacements) pour que le plan des rayons ne compte pas deux casiers pour un.' });
+      }
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche, lot) {
+      lignes.forEach(function (l) {
+        var v = l.v, med = v.categorie === 'medicament', prix = v.prixAchat == null ? 0 : v.prixAchat;
+        ecrireFiche('produits', Object.assign({
+          code: v.code, designation: v.designation, unite: v.unite, categorie: v.categorie,
+          prixAchat: prix, prixVente: (med || v.prixVente == null) ? prix : v.prixVente, cump: prix,
+          seuilAlerte: v.seuil == null ? null : v.seuil,
+          stockGros: 0, stockDetail: 0, stock: 0, emplacement: v.emplacement || '', fournisseur: v.fournisseur || '',
+        }, v.prixAchat == null ? { valorisationProvisoire: true, sourceValorisation: 'Prix d’achat absent du fichier d’import ' + lot.reference + ' : à valoriser' } : {}));
+      });
+    },
+    dependances: function (lot) {
+      var d = null;
+      lot.ecrits.forEach(function (e) { if (!d && e.collection === 'produits') d = acteSurProduit(e.id); });
+      return d;
+    },
+  });
+
+  /* --- 12. EMPLACEMENTS DE RANGEMENT ---------------------------------------------------------------------------------- */
+  var ZONES_EMPLACEMENT = ['Rayonnage sec', 'Chaîne du froid', 'Armoire sécurisée', 'Réserve', 'Salle de soins'];
+  var TEMPERATURES_EMPLACEMENT = ['Ambiante', '2 à 8 °C', '− 20 °C', 'Sous clé, ambiante'];
+  JEUX.push({
+    id: 'emplacements', ecran: 'imp-emplacements', libelle: 'Importation des emplacements de rangement', module: 'M6', statut: 'supporte',
+    description: 'Casiers et rayons du magasin : code (celui de l’étiquette), intitulé, zone, conservation, capacité.',
+    source: 'Fiche du référentiel des emplacements (écran « Étiquetage & emplacements ») : même zones, mêmes conservations.',
+    limite: 'Une zone ou une conservation vide reste vide (« à préciser ») : aucune valeur par défaut n’est inventée. Le code est celui qui figure sur l’étiquette : deux écritures du même casier (« Rayon A2 », « rayon a-2 ») se refusent comme un doublon.',
+    cibles: ['emplacements'], fichierModele: 'modele-import-emplacements',
+    colonnes: [
+      oblig('code', 'Code du casier', 'texte', { longueurMax: 30, exemple: 'A2', aide: 'Court et stable : c’est lui qui figure sur l’étiquette.' }),
+      oblig('libelle', 'Intitulé', 'texte', { longueurMax: 120, exemple: 'Rayon A, casier 2' }),
+      col('zone', 'Zone', 'liste', { liste: ZONES_EMPLACEMENT, exemple: 'Rayonnage sec' }),
+      col('temperature', 'Température de conservation', 'liste', { liste: TEMPERATURES_EMPLACEMENT, exemple: 'Ambiante' }),
+      col('capacite', 'Capacité (références)', 'entier', { min: 0, exemple: 40 }),
+      col('observation', 'Observation', 'texte', { longueurMax: 200 }),
+    ],
+    contexte: function () { var c = {}; toutes('emplacements').forEach(function (e) { c[C.norm(e.code)] = e; }); return { e: c }; },
+    cle: function (v) { return [C.norm(v.code)]; },
+    existe: function (v, ctx) { var e = ctx.e[C.norm(v.code)]; return e ? 'le casier « ' + e.code + ' » existe déjà (' + e.libelle + ')' : null; },
+    gesteExiste: 'Retirez la ligne : modifiez le casier à l’écran Étiquetage & emplacements.',
+    regles: function (v) {
+      var pb = [];
+      if (!v.zone) pb.push({ colonne: 'Zone', valeur: '', code: 'ZONE_ABSENTE', niveau: 'avertissement', motif: 'zone non renseignée : le casier est créé « à préciser »', geste: 'Précisez la zone à l’écran Étiquetage & emplacements.' });
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche) {
+      lignes.forEach(function (l) {
+        var v = l.v;
+        ecrireFiche('emplacements', { code: v.code, libelle: v.libelle, zone: v.zone || null, temperature: v.temperature || null, capacite: v.capacite == null ? null : v.capacite, observation: v.observation || null });
+      });
+    },
+    dependances: function (lot) {
+      var codes = {};
+      lot.ecrits.forEach(function (e) { var a = S.collection('emplacements').get(e.id); if (a) codes[a.code] = true; });
+      var p = S.collection('produits').active().filter(function (x) { return codes[x.emplacement]; })[0];
+      return p ? { code: 'EMPLACEMENT_UTILISE', motif: 'l’article « ' + p.designation + ' » est rangé dans ce casier', geste: 'Changez l’emplacement de l’article, puis archivez le casier à l’écran Étiquetage & emplacements.' } : null;
+    },
+  });
+
+  /* --- 13. STOCK DÉTAIL INITIAL (UNE SEULE FOIS, tant qu'aucun mouvement n'existe : I6) --------------------------------- */
+  JEUX.push({
+    id: 'stock-detail-initial', ecran: 'imp-stock-detail-initial', libelle: 'Importation du stock détail initial', module: 'M6', statut: 'supporte',
+    description: 'Situation initiale de la pharmacie d’urgence : quantité de chaque article, avec son lot et sa péremption pour un médicament ou un réactif.',
+    source: 'Comptage de la pharmacie d’urgence à la mise en service (décision de la Direction du 11/11/2026 : un stock détail initial est légitime, UNE SEULE FOIS).',
+    limite: 'Un stock détail initial ne se pose qu’UNE FOIS par article, tant qu’aucun mouvement n’existe pour lui (comme le Grand Stock) : ensuite le détail naît d’un transfert du magasin central. '
+      + 'Il est refusé si l’article porte déjà du stock détail ou si ses stocks gros et détail ne s’additionnent pas déjà au stock total.',
+    cibles: ['produits', 'lots', 'mouvements'], fichierModele: 'modele-import-stock-detail-initial',
+    colonnes: [
+      oblig('code', 'Code article', 'texte', { longueurMax: 24, exemple: 'PARA500', aide: 'Un article déjà connu du référentiel produits. Une ligne par lot : le même code peut figurer plusieurs fois avec des lots différents.' }),
+      col('lot', 'N° de lot', 'texte', { longueurMax: 40, exemple: 'L2026-014', aide: 'Obligatoire pour les médicaments et réactifs (rangement FEFO, RG-05).' }),
+      col('peremption', 'Date de péremption', 'date', { exemple: '2028-06-30' }),
+      oblig('quantite', 'Quantité', 'entier', { min: 0, exemple: 40, aide: 'Quantité de CE lot, au détail. Jamais négative (RG-03).',
+        sousMin: { code: 'RG03_STOCK_NEGATIF', motif: 'quantité négative : le stock ne peut jamais être négatif (RG-03)', geste: 'Saisissez la quantité réellement comptée, zéro ou plus.' } }),
+    ],
+    contexte: contexteStock,
+    cle: function (v) { return [C.norm(v.code) + '|' + C.norm(v.lot || '')]; },
+    existe: function () { return null; },
+    regles: function (v, ctx) {
+      var p = ctx.produits[C.norm(v.code)];
+      if (!p) return [articleInconnu(v)];
+      var pb = [], mv = ctx.mouvements[p.id];
+      if (mv) {
+        pb.push({ colonne: 'Code article', valeur: v.code, code: 'DETAIL_DEJA_MOUVEMENTE', niveau: 'refus',
+          motif: 'l’article « ' + p.designation + ' » a déjà un mouvement de stock (' + mv.reference + ', ' + mv.typeLabel + ') : un stock détail initial ne se pose qu’une fois, tant qu’aucun mouvement n’existe',
+          geste: 'Constituez le détail par un transfert du magasin central, ou corrigez-le par un inventaire du stock détail.' });
+      } else if ((p.stockDetail || 0) > 0) {
+        pb.push({ colonne: 'Code article', valeur: v.code, code: 'DETAIL_DEJA_EN_STOCK', niveau: 'refus',
+          motif: 'l’article « ' + p.designation + ' » porte déjà ' + C.num(p.stockDetail) + ' ' + (p.unite || '') + ' au détail : le stock initial ne se pose pas sur un stock existant',
+          geste: 'Corrigez le stock détail par un inventaire, pas par un second stock initial.' });
+      }
+      if ((p.stock || 0) !== (p.stockGros || 0) + (p.stockDetail || 0)) {
+        pb.push({ colonne: 'Code article', valeur: v.code, code: 'STOCK_INCOHERENT', niveau: 'refus',
+          motif: 'les stocks gros (' + C.num(p.stockGros || 0) + ') et détail (' + C.num(p.stockDetail || 0) + ') de « ' + p.designation + ' » ne s’additionnent pas au stock total (' + C.num(p.stock || 0) + ') : un stock détail ne se pose pas sur une fiche incohérente',
+          geste: 'Corrigez la fiche de l’article par un inventaire du magasin central, puis recommencez.' });
+      }
+      var perissable = PERISSABLES.indexOf(p.categorie) >= 0;
+      if (perissable && (!v.lot || !v.peremption)) {
+        pb.push({ colonne: !v.lot ? 'N° de lot' : 'Date de péremption', valeur: '', code: 'LOT_OBLIGATOIRE', niveau: 'refus',
+          motif: 'un ' + (p.categorie === 'reactif' ? 'réactif' : 'médicament') + ' sans lot ni péremption ne peut pas se ranger en FEFO (RG-05)', geste: 'Renseignez le numéro de lot ET la date de péremption relevés sur la boîte.' });
+      } else if ((v.lot && !v.peremption) || (!v.lot && v.peremption)) {
+        pb.push({ colonne: !v.lot ? 'N° de lot' : 'Date de péremption', valeur: '', code: 'LOT_INCOMPLET', niveau: 'refus', motif: 'le lot et sa péremption vont ensemble : l’un est renseigné, l’autre non', geste: 'Renseignez les deux colonnes, ou laissez-les vides toutes les deux.' });
+      }
+      if (v.peremption && v.peremption < ctx.jour && v.quantite > 0) {
+        pb.push({ colonne: 'Date de péremption', valeur: v.peremption, code: 'PEREMPTION_PASSEE', niveau: 'avertissement', motif: 'le lot est déjà périmé au ' + v.peremption, geste: 'Le lot sera créé « périmé » pour être retiré du stock ; vérifiez la date saisie.' });
+      }
+      if (v.quantite === 0) pb.push({ colonne: 'Quantité', valeur: 0, code: 'QUANTITE_NULLE', niveau: 'avertissement', motif: 'quantité nulle : la ligne n’écrit rien', geste: 'Retirez-la du fichier si ce n’est pas voulu.' });
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche, lot, ctx) {
+      var jour = aujourdhuiIso(), mouvs = toutes('mouvements').slice(), totaux = {}, ordre = [], faits = [];
+      lignes.forEach(function (l) {
+        var v = l.v, p = ctx.produits[C.norm(v.code)];
+        if (!v.quantite) return;
+        if (v.lot) ecrireFiche('lots', { produitId: p.id, produit: p.designation, numeroLot: v.lot, datePeremption: v.peremption, quantiteRestante: v.quantite, emplacement: p.emplacement || '', magasin: 'detail', statut: statutLot(v.peremption, jour) });
+        var ref = C.referenceSuivante('M', 6, mouvs);
+        mouvs.push({ reference: ref });
+        ecrireFiche('mouvements', { reference: ref, date: jour, produitId: p.id, produit: p.designation, type: 'entree', typeLabel: 'Entrée', quantite: v.quantite, stockType: 'detail',
+          justificatif: 'Import ' + lot.reference + ' (stock détail initial' + (v.lot ? ', lot ' + v.lot : '') + ')', utilisateur: S.currentUser() });
+        if (!totaux[p.id]) { totaux[p.id] = 0; ordre.push(p); }
+        totaux[p.id] += v.quantite;
+      });
+      /* Les compteurs en DERNIER : une fiche mise à jour ne se retire pas avec le reste de l'atomicité du moteur, elle se restitue ici. */
+      try {
+        ordre.forEach(function (p) {
+          var avant = { stockDetail: p.stockDetail || 0, stock: p.stock || 0 };
+          if (!S.collection('produits').update(p.id, { stockDetail: avant.stockDetail + totaux[p.id], stock: avant.stock + totaux[p.id] })) throw new Error('le stock de « ' + p.designation + ' » n’a pas pu être mis à jour');
+          faits.push({ id: p.id, avant: avant });
+        });
+      } catch (e) {
+        faits.reverse().forEach(function (f) { S.collection('produits').update(f.id, f.avant); });
+        throw e;
+      }
+    },
+    dependances: function (lot) {
+      var ids = {}, propres = {};
+      lot.ecrits.forEach(function (e) { if (e.collection === 'mouvements') { propres[e.id] = true; var m = S.collection('mouvements').get(e.id); if (m) ids[m.produitId] = true; } });
+      var autre = S.collection('mouvements').active().filter(function (m) { return ids[m.produitId] && !propres[m.id]; })[0];
+      return autre ? { code: 'MOUVEMENT_POSTERIEUR', motif: 'l’article « ' + autre.produit + ' » a déjà un mouvement de stock postérieur (' + autre.reference + ', ' + autre.typeLabel + ')',
+        geste: 'Annulez d’abord ce mouvement, ou régularisez le stock détail par un inventaire : le lot ne peut pas être retiré sous un stock vivant (RG-03).' } : null;
+    },
+    /* L'ANNULATION ARCHIVE les lots et les mouvements du lot (RG-14) et RESTITUE les compteurs ; le détail ne peut jamais redescendre sous zéro (RG-03). */
+    annuler: function (lot, motif) {
+      var qte = {}, aArchiver = [];
+      lot.ecrits.forEach(function (e) {
+        var f = S.collection(e.collection).get(e.id);
+        if (!f || f.statut === 'archive') return;
+        aArchiver.push(e);
+        if (e.collection === 'mouvements') qte[f.produitId] = (qte[f.produitId] || 0) + (f.quantite || 0);
+      });
+      for (var id in qte) {
+        var p = S.collection('produits').get(id);
+        if (!p || (p.stockDetail || 0) < qte[id]) return { ok: false, code: 'DETAIL_DEJA_DISPENSE', motif: 'l’article « ' + (p ? p.designation : id) + ' » n’a plus assez de stock détail pour retirer le stock initial (RG-03)', geste: 'Régularisez le stock détail par un inventaire.' };
+      }
+      var faits = [];
+      for (var i = 0; i < aArchiver.length; i++) {
+        var a = S.collection(aArchiver[i].collection).archive(aArchiver[i].id, 'Annulation du lot ' + lot.reference + (motif ? ' : ' + motif : ''));
+        if (!a) {
+          faits.forEach(function (x) { S.collection(x.collection).restore(x.id); });
+          return { ok: false, code: 'ARCHIVAGE_REFUSE', motif: 'le moteur a refusé d’archiver une fiche de « ' + aArchiver[i].collection + ' »', geste: 'Rien n’a été annulé.' };
+        }
+        faits.push(aArchiver[i]);
+      }
+      for (var k in qte) {
+        var pr = S.collection('produits').get(k);
+        S.collection('produits').update(k, { stockDetail: (pr.stockDetail || 0) - qte[k], stock: Math.max(0, (pr.stock || 0) - qte[k]) });
+      }
+      return { ok: true, archives: faits.length };
+    },
+  });
+
+  /* --- 14. BON DE TRANSFERT : UNE FEUILLE = UN BON NEUF, par la fabrique du geste ---------------------------------------- */
+  JEUX.push({
+    id: 'transfert-lignes', ecran: 'imp-transfert-lignes', libelle: 'Importation d’un bon de transfert', module: 'M6', statut: 'supporte',
+    description: 'Un bon de transfert du magasin central vers la pharmacie de détail : une ligne par article (et par lot), un service destinataire pour tout le fichier.',
+    source: 'Bon de transfert de l’écran « Transferts gros → détail » : même numérotation, mêmes mouvements, mêmes stocks.',
+    limite: 'Une feuille crée UN bon neuf, par la MÊME fabrique que le geste de l’écran : un bon numéroté APRÈS la vérification, deux mouvements symétriques par ligne, stocks gros et détail. '
+      + 'RG-03 se contrôle ligne par ligne en nommant l’article, en tenant compte des lignes déjà posées sur le bon ; le lot est celui qui part en premier (FEFO, RG-05) : un lot précisé qui n’est pas le premier est refusé. '
+      + 'Le service, la date et le motif sont uniques pour tout le fichier.',
+    cibles: ['transferts', 'mouvements', 'produits'], fichierModele: 'modele-import-transfert-lignes',
+    colonnes: [
+      oblig('code', 'Code article', 'texte', { longueurMax: 24, exemple: 'PARA500', aide: 'Un article connu du référentiel, déjà en stock au magasin central.' }),
+      col('lot', 'N° de lot', 'texte', { longueurMax: 40, exemple: 'L2026-014', aide: 'Vide : le lot qui part en premier (FEFO) est retenu. Précisé : il doit être celui-là.' }),
+      oblig('quantite', 'Quantité', 'entier', { min: 0, exemple: 20, aide: 'Quantité transférée au détail, au plus ce que le magasin central détient (RG-03).',
+        sousMin: { code: 'RG03_STOCK_NEGATIF', motif: 'quantité négative : un transfert ne peut pas retirer du stock au détail (RG-03)', geste: 'Saisissez une quantité entière supérieure à zéro.' } }),
+      col('destination', 'Service destinataire', 'liste', { liste: function () { return PR.DESTINATIONS_TRANSFERT; }, exemple: 'Pharmacie d’urgence', aide: 'Le même pour toutes les lignes du fichier : une feuille est un seul bon.' }),
+      col('date', 'Date du transfert', 'date', { aide: 'Vide : aujourd’hui. La même pour toutes les lignes.' }),
+      col('motif', 'Motif', 'texte', { longueurMax: 160, aide: 'Le même pour toutes les lignes.' }),
+    ],
+    contexte: contexteStock,
+    cle: function (v) { return [C.norm(v.code) + '|' + C.norm(v.lot || '')]; },
+    existe: function () { return null; },
+    regles: function (v, ctx, sc, n) {
+      var p = ctx.produits[C.norm(v.code)];
+      if (!p) return [articleInconnu(v)];
+      var pb = [];
+      if (v.date && v.date > ctx.jour) pb.push({ colonne: 'Date du transfert', valeur: v.date, code: 'DATE_FUTURE', niveau: 'refus', motif: 'la date du transfert est dans le futur', geste: 'Saisissez la date du jour ou une date passée.' });
+      if (v.quantite === 0) pb.push({ colonne: 'Quantité', valeur: 0, code: 'QUANTITE_NULLE', niveau: 'refus', motif: 'un transfert de zéro n’est pas un transfert', geste: 'Retirez la ligne ou saisissez une quantité d’au moins 1.' });
+      else {
+        /* RG-03 LIGNE PAR LIGNE : la règle est celle de la fabrique du geste (PR.refusLigneTransfert), le disponible tient compte de ce que les lignes précédentes ont déjà posé. */
+        sc.pose = sc.pose || {};
+        var r = PR.refusLigneTransfert(p, v.quantite, sc.pose[p.id] || 0, n);
+        if (r) pb.push({ colonne: 'Quantité', valeur: v.quantite, code: r.code, niveau: 'refus', motif: r.motif, geste: r.geste });
+        sc.pose[p.id] = (sc.pose[p.id] || 0) + v.quantite;
+      }
+      var lotRetenu = null, fefo = PR.lotFefo(p.id);
+      if (v.lot) {
+        var l = (ctx.lots[p.id] || []).filter(function (x) { return C.norm(x.numeroLot) === C.norm(v.lot); })[0];
+        if (!l) pb.push({ colonne: 'N° de lot', valeur: v.lot, code: 'LOT_INCONNU', niveau: 'refus', motif: 'aucun lot « ' + v.lot + ' » pour l’article « ' + p.designation + ' »', geste: 'Corrigez le numéro de lot, ou laissez la colonne vide pour retenir le lot FEFO.' });
+        else if (l.statut === 'perime') pb.push({ colonne: 'N° de lot', valeur: v.lot, code: 'LOT_PERIME', niveau: 'refus', motif: 'le lot « ' + v.lot + ' » est périmé : il ne se transfère pas', geste: 'Retirez-le du stock par une perte déclarée, puis transférez un lot valide.' });
+        else if (fefo && fefo.numeroLot !== l.numeroLot) pb.push({ colonne: 'N° de lot', valeur: v.lot, code: 'LOT_NON_FEFO', niveau: 'refus', motif: 'le lot « ' + v.lot + ' » n’est pas le premier à sortir : le lot « ' + fefo.numeroLot + ' » (péremption ' + fefo.datePeremption + ') part avant lui (FEFO, RG-05)', geste: 'Laissez la colonne « N° de lot » vide pour retenir le lot FEFO, ou précisez-le.' });
+        else lotRetenu = l;
+      } else lotRetenu = fefo;
+      sc.extras[n] = { detail: 'Disponible au magasin avant la ligne : ' + C.num(Math.max(0, (p.stockGros || 0) - ((sc.pose[p.id] || 0) - (v.quantite || 0)))) + ' ' + (p.unite || '')
+        + (lotRetenu ? ' · lot retenu : ' + lotRetenu.numeroLot + ' (péremption ' + lotRetenu.datePeremption + ')' : ' · aucun lot recensé') };
+      return pb;
+    },
+    reglesLot: function (lignes) {
+      var pb = [], dest = distincts(lignes, 'destination'), dates = distincts(lignes, 'date'), motifs = distincts(lignes, 'motif');
+      if (!dest.length) pb.push({ n: 0, colonne: 'Service destinataire', valeur: '', code: 'DESTINATION_ABSENTE', niveau: 'refus', motif: 'aucune ligne ne nomme le service destinataire : un bon a une destination', geste: 'Renseignez la colonne « Service destinataire » sur au moins une ligne.' });
+      if (dest.length > 1) pb.push({ n: 0, colonne: 'Service destinataire', valeur: dest.join(', '), code: 'DESTINATIONS_MULTIPLES', niveau: 'refus', motif: 'le fichier porte ' + dest.length + ' services destinataires : une feuille est UN bon, pour UN service', geste: 'Faites un fichier par service destinataire.' });
+      if (dates.length > 1) pb.push({ n: 0, colonne: 'Date du transfert', valeur: dates.join(', '), code: 'BON_UNIQUE', niveau: 'refus', motif: 'le fichier porte ' + dates.length + ' dates : une feuille est UN bon, à une seule date', geste: 'Alignez toutes les lignes sur la même date, ou laissez la colonne vide.' });
+      if (motifs.length > 1) pb.push({ n: 0, colonne: 'Motif', valeur: motifs.join(', '), code: 'BON_UNIQUE', niveau: 'refus', motif: 'le fichier porte ' + motifs.length + ' motifs : une feuille est UN bon, avec un seul motif', geste: 'Alignez les lignes sur le même motif, ou laissez la colonne vide.' });
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche, lot, ctx, declarer) {
+      var premiere = lignes[0].v;
+      var dest = distincts(lignes, 'destination')[0], dates = distincts(lignes, 'date'), motifs = distincts(lignes, 'motif');
+      /* La MÊME fabrique que le geste : contrôle RG-03 d'abord (rien n'est écrit si une ligne est refusée), numéro du bon APRÈS la vérification, stocks, mouvements, bon. */
+      var r = PR.emettreTransfert({ date: dates[0] || aujourdhuiIso(), demandeur: dest, motif: motifs[0] || '' },
+        lignes.map(function (l) { var p = ctx.produits[C.norm(l.v.code)]; return { produitId: p.id, quantite: l.v.quantite, lot: l.v.lot || undefined }; }),
+        { marque: { source: 'Import Importation d’un bon de transfert', lotImport: lot.reference, validePar: S.currentUser(), dateImport: aujourdhuiIso() } });
+      if (!r.ok) throw new Error(r.motif);
+      declarer('transferts', r.bon.id);
+      r.mouvements.forEach(function (m) { declarer('mouvements', m.id); });
+      void premiere;
+    },
+    dependances: function () { return null; },
+    /* L'ANNULATION RESTITUE LES STOCKS : le gros retrouve ce qui est parti, le détail rend ce qu'il a reçu — et ne peut pas descendre sous zéro (RG-03) : s'il a déjà dispensé, le refus le dit. */
+    annuler: function (lot, motif) {
+      var bon = null, mouvs = [];
+      lot.ecrits.forEach(function (e) {
+        var f = S.collection(e.collection).get(e.id);
+        if (!f || f.statut === 'archive') return;
+        if (e.collection === 'transferts') bon = f; else if (e.collection === 'mouvements') mouvs.push(f);
+      });
+      if (!bon) return { ok: false, code: 'LOT_SANS_BON', motif: 'le bon de transfert de ce lot est déjà archivé', geste: 'Aucune action.' };
+      var rendre = {};
+      (bon.lignes || []).forEach(function (l) { rendre[l.produitId] = (rendre[l.produitId] || 0) + l.quantite; });
+      for (var id in rendre) {
+        var p = S.collection('produits').get(id);
+        if (!p || (p.stockDetail || 0) < rendre[id]) return { ok: false, code: 'TRANSFERT_DEJA_DISPENSE', motif: 'l’article « ' + (p ? p.designation : id) + ' » n’a plus assez de stock détail pour rendre ce transfert (' + C.num(rendre[id]) + ' à rendre, ' + C.num(p ? p.stockDetail || 0 : 0) + ' au détail) : une partie a déjà été dispensée (RG-03)', geste: 'Régularisez le stock détail par un inventaire, ou annulez d’abord les dispensations.' };
+      }
+      var cibles = [{ collection: 'transferts', id: bon.id }].concat(mouvs.map(function (m) { return { collection: 'mouvements', id: m.id }; })), faits = [];
+      for (var i = 0; i < cibles.length; i++) {
+        if (!S.collection(cibles[i].collection).archive(cibles[i].id, 'Annulation du lot ' + lot.reference + (motif ? ' : ' + motif : ''))) {
+          faits.forEach(function (x) { S.collection(x.collection).restore(x.id); });
+          return { ok: false, code: 'ARCHIVAGE_REFUSE', motif: 'le moteur a refusé d’archiver une fiche de « ' + cibles[i].collection + ' »', geste: 'Rien n’a été annulé.' };
+        }
+        faits.push(cibles[i]);
+      }
+      for (var k in rendre) {
+        var pr = S.collection('produits').get(k);
+        S.collection('produits').update(k, { stockGros: (pr.stockGros || 0) + rendre[k], stockDetail: (pr.stockDetail || 0) - rendre[k] });
+      }
+      return { ok: true, archives: faits.length };
+    },
+  });
+
+  /* --- 15. COMPTAGE D'INVENTAIRE : crée la feuille, ne régularise JAMAIS (I13) ------------------------------------------- */
+  var MAGASINS_INVENTAIRE = [{ valeur: 'gros', label: 'Stock gros' }, { valeur: 'detail', label: 'Stock détail' }];
+  var TYPES_INVENTAIRE = ['Hebdomadaire', 'Mensuel', 'Annuel', 'Tournant', 'Ponctuel'];
+  function libelleMagasin(m) { return m === 'detail' ? 'Stock détail (pharmacie d’urgence)' : 'Stock gros (magasin central)'; }
+  JEUX.push({
+    id: 'inventaire-comptage', ecran: 'imp-inventaire-comptage', libelle: 'Importation d’un comptage d’inventaire', module: 'M6', statut: 'supporte',
+    description: 'Un comptage physique déjà fait : une ligne par article et par magasin nommé (gros ou détail), avec la quantité comptée.',
+    source: 'Feuille d’inventaire de l’écran « Inventaires » : même magasin nommé, même écart calculé du stock théorique de CE magasin.',
+    limite: 'L’import crée une feuille d’inventaire « comptage importé » et NE TOUCHE À AUCUN STOCK : la régularisation reste un geste humain, au registre des inventaires (un mouvement par écart, RG-03). '
+      + 'Les deux magasins se comptent séparément : une feuille par magasin nommé. Si le stock a bougé entre le comptage et la régularisation, celle-ci est refusée.',
+    cibles: ['inventaires'], fichierModele: 'modele-import-inventaire-comptage',
+    colonnes: [
+      oblig('magasin', 'Magasin', 'liste', { liste: MAGASINS_INVENTAIRE, exemple: 'Stock gros', aide: 'Gros ou détail seulement : un article ne porte pas d’autre stock.' }),
+      oblig('code', 'Code article', 'texte', { longueurMax: 24, exemple: 'PARA500' }),
+      oblig('compte', 'Quantité comptée', 'entier', { min: 0, exemple: 118, aide: 'Le stock physique compté dans CE magasin. Jamais négative (RG-03).',
+        sousMin: { code: 'RG03_STOCK_NEGATIF', motif: 'quantité comptée négative : un stock physique ne peut pas être négatif (RG-03)', geste: 'Saisissez la quantité réellement comptée, zéro ou plus.' } }),
+      col('type', 'Type d’inventaire', 'liste', { liste: TYPES_INVENTAIRE, exemple: 'Ponctuel', aide: 'Vide : Ponctuel. Le même pour toutes les lignes d’un magasin.' }),
+      col('date', 'Date du comptage', 'date', { aide: 'Vide : aujourd’hui. La même pour toutes les lignes d’un magasin.' }),
+    ],
+    contexte: contexteStock,
+    cle: function (v) { return [v.magasin + '|' + C.norm(v.code)]; },
+    existe: function () { return null; },
+    regles: function (v, ctx, sc, n) {
+      var p = ctx.produits[C.norm(v.code)];
+      if (!p) return [articleInconnu(v)];
+      var pb = [], theo = (v.magasin === 'detail' ? p.stockDetail : p.stockGros) || 0, ecart = v.compte - theo;
+      if (v.date && v.date > ctx.jour) pb.push({ colonne: 'Date du comptage', valeur: v.date, code: 'DATE_FUTURE', niveau: 'refus', motif: 'la date du comptage est dans le futur', geste: 'Saisissez la date du comptage réel.' });
+      sc.extras[n] = { detail: libelleMagasin(v.magasin) + ' : théorique ' + C.num(theo) + ', compté ' + C.num(v.compte) + ', écart ' + (ecart > 0 ? '+' : '') + C.num(ecart) };
+      return pb;
+    },
+    reglesLot: function (lignes) {
+      var pb = [];
+      ['gros', 'detail'].forEach(function (m) {
+        var ls = lignes.filter(function (l) { return l.v.magasin === m; });
+        if (!ls.length) return;
+        var types = distincts(ls, 'type'), dates = distincts(ls, 'date');
+        if (types.length > 1) pb.push({ n: 0, colonne: 'Type d’inventaire', valeur: types.join(', '), code: 'FEUILLE_UNIQUE', niveau: 'refus', motif: 'les lignes du ' + libelleMagasin(m).toLowerCase() + ' portent ' + types.length + ' types d’inventaire : une feuille a un seul type', geste: 'Alignez les lignes de ce magasin sur le même type, ou laissez la colonne vide.' });
+        if (dates.length > 1) pb.push({ n: 0, colonne: 'Date du comptage', valeur: dates.join(', '), code: 'FEUILLE_UNIQUE', niveau: 'refus', motif: 'les lignes du ' + libelleMagasin(m).toLowerCase() + ' portent ' + dates.length + ' dates : une feuille est un seul comptage', geste: 'Alignez les lignes de ce magasin sur la même date, ou laissez la colonne vide.' });
+      });
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche, lot, ctx) {
+      ['gros', 'detail'].forEach(function (m) {
+        var ls = lignes.filter(function (l) { return l.v.magasin === m; });
+        if (!ls.length) return;
+        var type = distincts(ls, 'type')[0] || 'Ponctuel', date = distincts(ls, 'date')[0] || aujourdhuiIso();
+        var corps = ls.map(function (l) {
+          var p = ctx.produits[C.norm(l.v.code)], theo = (m === 'detail' ? p.stockDetail : p.stockGros) || 0, e = l.v.compte - theo;
+          return { produitId: p.id, code: p.code, designation: p.designation, unite: p.unite, theorique: theo, physique: l.v.compte, ecart: e, cump: p.cump, valeur: e * (p.cump || 0) };
+        });
+        var ecarts = corps.filter(function (x) { return x.ecart !== 0; });
+        ecrireFiche('inventaires', {
+          reference: C.referenceSuivante('INV-', 4, S.collection('inventaires').all()), date: date, type: type, perimetre: 'Comptage importé (' + corps.length + ' article' + (corps.length > 1 ? 's' : '') + ')',
+          magasin: m, magasinLabel: libelleMagasin(m), operateur: S.currentUser(), statutInv: 'importe',
+          nbArticles: corps.length, nbEcarts: ecarts.length, valeurEcart: ecarts.reduce(function (t, x) { return t + x.valeur; }, 0), lignes: corps,
+        });
+      });
+    },
+    dependances: function (lot) {
+      var regularisee = null;
+      lot.ecrits.forEach(function (e) { var f = S.collection('inventaires').get(e.id); if (f && f.statutInv === 'valide' && !regularisee) regularisee = f; });
+      return regularisee ? { code: 'INVENTAIRE_REGULARISE', motif: 'la feuille ' + regularisee.reference + ' a été régularisée : des mouvements de stock s’appuient sur elle', geste: 'Annulez d’abord la régularisation par un inventaire inverse : un lot ne peut pas être retiré sous un stock régularisé (RG-03).' } : null;
+    },
+  });
+
   function jeu(id) { return JEUX.filter(function (j) { return j.id === id; })[0] || null; }
 
   /* --- Les colonnes d'un jeu selon le PROFIL (I9, I10) ---------------------------------------------------------------- *
@@ -1507,7 +1941,7 @@
         }))));
       }
       if (a.lignes.length) {
-        var avecExtra = a.lignes.some(function (l) { return l.extra; });
+        var avecExtra = a.lignes.some(function (l) { return l.extra && l.extra.decision !== undefined; }), avecDetail = a.lignes.some(function (l) { return l.extra && l.extra.detail; });
         var colonnes = [
           { key: 'n', label: 'Ligne', align: 'right' },
           { key: 'etat', label: 'État', text: function (r) { return TONS_LIGNE[r.etat][0]; }, render: function (r) { return U.badge(TONS_LIGNE[r.etat][0], TONS_LIGNE[r.etat][1]); } },
@@ -1520,6 +1954,7 @@
           colonnes.push({ key: 'variation', label: 'Variation', align: 'right', nowrap: true });
           colonnes.push({ key: 'decision', label: 'Décision' });
         }
+        if (avecDetail) colonnes.push({ key: 'detail', label: 'Détail de la ligne' });
         colonnes.push({ key: 'problemes', label: 'Constats', sortable: false,
           text: function (r) { return r.problemes.map(function (p) { return p.colonne + ' : ' + p.motif; }).join(' | '); },
           render: function (r) {
@@ -1533,7 +1968,7 @@
           rows: a.lignes.map(function (l) {
             var x = l.extra || {};
             return { n: l.n, etat: l.etat, resume: l.brut.slice(0, 3).filter(Boolean).join(' · '), problemes: l.problemes,
-              ancien: x.ancien == null ? '' : x.ancien, nouveau: x.nouveau == null ? '' : x.nouveau, variation: x.variation == null ? '' : x.variation, decision: x.decision || '' };
+              detail: x.detail || '', ancien: x.ancien == null ? '' : x.ancien, nouveau: x.nouveau == null ? '' : x.nouveau, variation: x.variation == null ? '' : x.variation, decision: x.decision || '' };
           }),
           pageSize: 10, defaultSort: 'n', exportName: 'apercu-importation',
           filters: [{ name: 'etat', label: 'État', options: Object.keys(TONS_LIGNE).map(function (k) { return { value: k, label: TONS_LIGNE[k][0] }; }) }],

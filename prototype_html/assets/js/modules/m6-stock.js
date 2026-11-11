@@ -370,6 +370,8 @@
     render: K.crud({
       collection: 'produits', entite: 'produit', entiteP: 'produits', module: 'M6',
       defaultSort: 'designation', pageSize: 15, drawerWidth: 'max-w-3xl',
+      /* « Importer les données » : le référentiel des articles SANS quantités ni lots (le stock se reprend par « Importation Grand Stock »). Droit d'IMPORTER du jeu, absent sans lui. */
+      importer: 'produits-referentiel',
       /* La valorisation d'une référence SAGE (surcouche `valorisationsSage`) se valide ICI, au produit qu'elle concerne ; modifier le prix d'achat la remet à valider. */
       validation: {
         famille: 'valorisation_sage',
@@ -617,7 +619,8 @@
   ecranStock('m6-stock-detail', 'Stock détail (pharmacie d’urgence)',
     'Situation de la pharmacie d’urgence : dispensation aux patients et aux services de soins.',
     'stockDetail',
-    'La pharmacie de détail dispense aux patients et aux services. Toute sortie est rattachée à une facture ou à un bon de service (RG-03).');
+    'La pharmacie de détail dispense aux patients et aux services. Toute sortie est rattachée à une facture ou à un bon de service (RG-03).',
+    'stock-detail-initial');
 
   /* ==========================================================================
    * TRANSFERTS GROS → DÉTAIL
@@ -699,7 +702,9 @@
           K.btn('Imprimer le registre détaillé', { size: 'sm', icon: 'printer',
             onclick: function () { etatRegistre(table.lignesFiltrees()); } }),
           K.commande('Nouveau transfert', { variant: 'primary', size: 'sm', icon: 'plus', onclick: function () { ouvrir(); } }),
-        ],
+          /* Une feuille importée = UN bon neuf, par la même fabrique que le geste (RG-03 ligne par ligne). */
+          K.importer('transfert-lignes'),
+        ].filter(Boolean),
         onRowClick: function (t) { detail(t); },
         columns: [
           { key: 'reference', label: 'N° bon', nowrap: true, render: function (t) { return el('span.font-mono.text-xs.font-semibold', { text: t.reference }); } },
@@ -822,8 +827,7 @@
         var entete = U.form([
           { name: 'date', label: 'Date du transfert', type: 'date', required: true, value: C.iso(AUJ) },
           { name: 'demandeur', label: 'Service demandeur', type: 'select', required: true,
-            options: ['Pharmacie d’urgence', 'Pharmacie externe', 'Laboratoire',
-              'Hospitalisation', 'Maternité', 'Bloc opératoire', 'Salle de soins'] },
+            options: PR.DESTINATIONS_TRANSFERT },
           { name: 'motif', label: 'Motif du transfert', col: 'full' },
         ], {});
 
@@ -882,9 +886,7 @@
             /* Lot FEFO (RG-05) et famille voyagent avec la ligne : le bon
                imprimé et la vue par article les lisent sans refaire la
                recherche, et un lot épuisé plus tard ne réécrit pas le bon. */
-            var lotF = lots().filter(function (x) {
-              return x.produitId === pid && x.statut !== 'perime' && (x.quantiteRestante || 0) > 0;
-            }).sort(function (a, b) { return String(a.datePeremption).localeCompare(String(b.datePeremption)); })[0];
+            var lotF = PR.lotFefo(pid);
             lignes.push({
               produitId: pid, code: pr.code, produit: pr.designation, categorie: pr.categorie,
               unite: pr.unite, cump: pr.cump, quantite: qte,
@@ -1012,82 +1014,22 @@
                   U.toast('Ajouter au moins un article au bon.', { type: 'error' });
                   return;
                 }
-                /* Dernier contrôle RG-03 avant écriture : le stock a pu bouger
-                   pendant la saisie. Le refus nomme la ligne fautive. */
-                var faute = null;
-                lignes.forEach(function (l) {
-                  var pr = produitDe(l.produitId);
-                  if (!pr || l.quantite > pr.stockGros) faute = l;
-                });
-                if (faute) {
-                  U.toast('RG-03 — « ' + faute.produit + ' » : le stock du magasin ne couvre plus '
-                    + C.num(faute.quantite) + ' ' + faute.unite + '.', { type: 'error' });
+                /* Dernier contrôle RG-03 avant écriture : le stock a pu bouger pendant la saisie. La fabrique UNIQUE (PR.emettreTransfert, la même que celle de
+                   l'import en masse) refuse en nommant la ligne fautive, numérote le bon APRÈS la vérification et écrit stocks, mouvements et bon. */
+                var emis = PR.emettreTransfert(v, lignes.map(function (l) {
+                  return { produitId: l.produitId, quantite: l.quantite, lot: l.lot, peremption: l.peremption };
+                }));
+                if (!emis.ok) {
+                  U.toast(emis.motif + '.', { type: 'error' });
                   return;
                 }
-
-                /* LE NUMÉRO SUIT LE REGISTRE, pas un compteur de page :
-                   `C.nextRef` repart de 1 à chaque chargement et aurait
-                   réémis TR-00001 par-dessus un bon existant. */
-                var dernier = col.all().reduce(function (mx, x) {
-                  var mm = /^TR-(\d+)$/.exec(x.reference || '');
-                  return mm ? Math.max(mx, Number(mm[1])) : mx;
-                }, 0);
-                var reference = 'TR-' + C.pad(dernier + 1, 5);
-                var etats = [], mvts = [];
-                var colMvt = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' });
-                lignes.forEach(function (l) {
-                  var pr = produitDe(l.produitId);
-                  etats.push({ id: pr.id, gros: pr.stockGros, detail: pr.stockDetail });
-                  S.collection('produits').update(pr.id, {
-                    stockGros: pr.stockGros - l.quantite,
-                    stockDetail: pr.stockDetail + l.quantite,
-                  });
-                  /* DEUX MOUVEMENTS SYMÉTRIQUES (RG-03) : le magasin débité,
-                     la pharmacie créditée. Un seul mouvement « détail »
-                     laissait la sortie du magasin invisible au point des
-                     stocks, qui la cherche du côté gros. */
-                  mvts.push(colMvt.insert({
-                    reference: reference, date: v.date, produitId: pr.id, produit: pr.designation,
-                    type: 'transfert', typeLabel: 'Transfert — sortie magasin', quantite: l.quantite,
-                    stockType: 'gros', justificatif: 'Bon de transfert ' + reference,
-                    utilisateur: S.currentUser(),
-                  }));
-                  mvts.push(colMvt.insert({
-                    reference: reference, date: v.date, produitId: pr.id, produit: pr.designation,
-                    type: 'transfert', typeLabel: 'Transfert — entrée pharmacie', quantite: l.quantite,
-                    stockType: 'detail', justificatif: 'Bon de transfert ' + reference,
-                    utilisateur: S.currentUser(),
-                  }));
-                });
-
-                var res = col.insert(Object.assign({}, v, {
-                  reference: reference,
-                  lignes: lignes.slice(),
-                  nbLignes: lignes.length,
-                  quantiteTotale: lignes.reduce(function (n, l) { return n + l.quantite; }, 0),
-                  valeur: lignes.reduce(function (n, l) { return n + l.quantite * (l.cump || 0); }, 0),
-                  operateur: S.currentUser(),
-                  etat: 'receptionne', dateReception: v.date,
-                  /* Compatibilité avec les bons antérieurs, qui ne portaient
-                     qu'un produit : le tableau du registre lit ces champs. */
-                  produit: lignes.length === 1 ? lignes[0].produit
-                    : lignes.length + ' articles',
-                  unite: lignes.length === 1 ? lignes[0].unite : '',
-                  quantite: lignes.reduce(function (n, l) { return n + l.quantite; }, 0),
-                }));
+                var reference = emis.reference;
 
                 m.close(); rafraichir();
                 U.toast('Transfert de ' + C.num(lignes.length) + ' article(s) enregistré.', {
                   type: 'success', detail: reference + ' — ' + v.demandeur,
-                  /* L'annulation restitue TOUTES les lignes : un transfert
-                     partiellement annulé laisserait le stock faux. */
-                  undo: function () {
-                    etats.forEach(function (e) {
-                      S.collection('produits').update(e.id, { stockGros: e.gros, stockDetail: e.detail });
-                    });
-                    mvts.forEach(function (x) { x.undo(); });
-                    res.undo(); rafraichir();
-                  },
+                  /* L'annulation restitue TOUTES les lignes : un transfert partiellement annulé laisserait le stock faux. */
+                  undo: function () { emis.annuler(); rafraichir(); },
                   undoMessage: 'Transfert annulé — les ' + C.num(lignes.length) + ' lignes sont restituées.',
                 });
               },
@@ -1689,7 +1631,8 @@
         defaultSort: 'date', defaultDir: 'desc',
         emptyMessage: 'Aucun inventaire enregistré.',
         emptyHint: 'Lancer un inventaire pour comparer le stock physique au stock théorique.',
-        actions: [K.commande('Lancer un inventaire', { variant: 'primary', size: 'sm', icon: 'play', onclick: function () { lancer(); } })].filter(Boolean),
+        /* « Importer les données » : un comptage déjà fait sur papier crée une feuille, stocks inchangés ; la régularisation reste un geste humain (action de ligne). */
+        actions: [K.commande('Lancer un inventaire', { variant: 'primary', size: 'sm', icon: 'play', onclick: function () { lancer(); } }), K.importer('inventaire-comptage')].filter(Boolean),
         columns: [
           { key: 'reference', label: 'N°', nowrap: true, render: function (i) { return el('span.font-mono.text-xs', { text: i.reference }); } },
           { key: 'date', label: 'Date', nowrap: true, text: function (i) { return C.dateFR(i.date); }, render: function (i) { return C.dateFR(i.date); } },
@@ -1706,13 +1649,15 @@
             },
           },
           { key: 'operateur', label: 'Réalisé par' },
-          { key: 'statutInv', label: 'Statut', render: function (i) { return U.statut(i.statutInv === 'valide' ? 'valide' : 'brouillon'); } },
+          { key: 'statutInv', label: 'Statut', text: function (i) { return i.statutInv === 'importe' ? 'Comptage importé, à régulariser' : (i.statutInv === 'valide' ? 'Valide' : 'Brouillon'); },
+            render: function (i) { return i.statutInv === 'importe' ? U.badge('Comptage importé, à régulariser', 'warning') : U.statut(i.statutInv === 'valide' ? 'valide' : 'brouillon'); } },
         ],
         onRowClick: function (i) { consulter(i); },
         rowActions: function (i) {
           return [
             K.iconBtn('eye', 'Consulter', function () { consulter(i); }),
             K.iconBtn('printer', 'Imprimer l’état', function () { etat(i); }),
+            i.statutInv === 'importe' ? K.commandeIcone('check-check', 'Régulariser le comptage', function () { regulariser(i); }) : null,
           ];
         },
       });
@@ -1781,6 +1726,26 @@
          la portait a été retirée plutôt que laissée en place — une modale
          que plus personne n’ouvre est une seconde voie de saisie qui
          divergera au premier correctif. */
+
+      /* LA RÉGULARISATION D'UNE FEUILLE IMPORTÉE EST UN GESTE HUMAIN : l'import crée la feuille et ne touche à aucun stock. Ici, la même fabrique que la feuille de saisie
+         (un mouvement par écart sur le magasin compté, RG-03), en mode STRICT : si le stock a bougé depuis le comptage, la régularisation est refusée en nommant l'article. */
+      function regulariser(i) {
+        U.confirm({
+          title: 'Régulariser ce comptage ?',
+          message: 'L’inventaire ' + i.reference + ' (' + (i.magasinLabel || i.magasin) + ') régularise ' + C.num(i.nbEcarts || 0) + ' écart(s) : un mouvement de stock par écart, justificatif = ' + i.reference + '. Les stocks changent.',
+          confirmLabel: 'Régulariser',
+        }).then(function (ok) {
+          if (!ok) return;
+          var r = PR.regulariserInventaire(i, { strict: true, operateur: S.currentUser() });
+          if (!r.ok) { U.toast('Régularisation refusée.', { type: 'error', detail: r.motif + '. ' + (r.geste || '') }); return; }
+          var res = col.update(i.id, { statutInv: 'valide', regulariseLe: C.iso(AUJ), regularisePar: S.currentUser() });
+          table.refresh();
+          U.toast('Inventaire ' + i.reference + ' régularisé.', {
+            type: 'success', detail: C.num(r.nb) + ' mouvement(s) de régularisation écrit(s).',
+            undo: function () { r.annuler(); if (res) res.undo(); table.refresh(); },
+          });
+        });
+      }
 
       function consulter(i) {
         U.drawer({
@@ -2012,7 +1977,7 @@
           valeurEcart: C.sum(ecarts, 'valeur'),
           lignes: vals.map(function (x) {
             return {
-              code: x.produit.code, designation: x.produit.designation, unite: x.produit.unite,
+              produitId: x.produit.id, code: x.produit.code, designation: x.produit.designation, unite: x.produit.unite,
               theorique: x.theorique, physique: x.physique, ecart: x.ecart,
               cump: x.produit.cump, valeur: x.valeur,
             };
@@ -2020,28 +1985,10 @@
         };
         var res = col.insert(enr);
 
-        /* La régularisation : le magasin compté, et le total qui en découle. */
-        var annulations = [];
-        ecarts.forEach(function (x) {
-          var pr = x.produit;
-          var avant = { stockGros: pr.stockGros, stockDetail: pr.stockDetail, stock: pr.stock };
-          var maj = { stock: Math.max(0, (pr.stock || 0) + x.ecart) };
-          if (entete.magasin === 'detail') maj.stockDetail = Math.max(0, (pr.stockDetail || 0) + x.ecart);
-          else maj.stockGros = Math.max(0, (pr.stockGros || 0) + x.ecart);
-          S.collection('produits').update(pr.id, maj);
-          var mv = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({
-            reference: C.referenceSuivante('M', 6, S.collection('mouvements').all()), date: entete.date, /* (E17) */
-            produitId: pr.id, produit: pr.designation,
-            type: 'inventaire', typeLabel: 'Régularisation inventaire',
-            quantite: Math.abs(x.ecart), stockType: entete.magasin,
-            justificatif: 'Inventaire ' + enr.reference,
-            utilisateur: entete.operateur,
-          });
-          annulations.push(function () {
-            S.collection('produits').update(pr.id, avant);
-            mv.undo();
-          });
-        });
+        /* La régularisation : le magasin compté, et le total qui en découle. La fabrique est UNIQUE (PR.regulariserInventaire) : la feuille importée, régularisée
+           plus tard par un geste humain, passe par la même. */
+        var regul = PR.regulariserInventaire(enr, { operateur: entete.operateur });
+        var annulations = [function () { regul.annuler(); }];
 
         /* ON NE QUITTE PAS LA PAGE ICI, et c'est délibéré : l'annulation est
            une FONCTION — elle restitue les stocks et retire les mouvements —
@@ -2652,7 +2599,7 @@
               return v;
             },
             apres: function () { rendreReferentiel(); dessinerPlan(); },
-          })].filter(Boolean),
+          }), K.importer('emplacements')].filter(Boolean),
           rowActions: K.actionsLigne(colEmplacements(), champsEmplacement(), {
             module: 'M6',
             refresh: function () { rendreReferentiel(); dessinerPlan(); },
@@ -2664,7 +2611,7 @@
           columns: [
             { key: 'code', label: 'Casier', nowrap: true, render: function (e) { return el('span.font-mono.text-sm.font-semibold.text-navy-800', { text: e.code }); } },
             { key: 'libelle', label: 'Intitulé' },
-            { key: 'zone', label: 'Zone', render: function (e) { return U.badge(e.zone, e.zone === 'Chaîne du froid' ? 'info' : 'navy'); } },
+            { key: 'zone', label: 'Zone', render: function (e) { return e.zone ? U.badge(e.zone, e.zone === 'Chaîne du froid' ? 'info' : 'navy') : el('span.text-xs.text-slate-400', { text: 'à préciser' }); } },
             { key: 'temperature', label: 'Conservation' },
             {
               key: 'articles', label: 'Articles rangés', align: 'right',
