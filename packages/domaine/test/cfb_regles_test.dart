@@ -12,7 +12,12 @@ M obj(Object? o) => (o as Map).cast<String, Object?>();
 List<M> liste(Object? o) => [for (final x in (o as List)) obj(x)];
 M lire(String nom) => obj(jsonDecode(File('test/vecteurs/$nom.json').readAsStringSync()));
 const jeuDir = '../../apps/poste/assets/donnees/jeu';
-List<M> jeu(String nom) => liste(jsonDecode(File('$jeuDir/$nom.json').readAsStringSync()));
+/// Le jeu du poste tel que la MAQUETTE le porte : les vecteurs ont été tirés d'elle. Les fermetures propres au poste (`proprePoste`, quatre écrans non portés,
+/// ECARTS E2422) n'y sont pas : la maquette ne ferme que la banque de sang. Leur effet sur les droits est éprouvé à `droits_a_chaud_test.dart`.
+List<M> jeu(String nom) => [
+      for (final f in liste(jsonDecode(File('$jeuDir/$nom.json').readAsStringSync())))
+        if (!(nom == 'modulesActifs' && f['proprePoste'] == true)) f
+    ];
 List<M> actives(String nom) => [for (final f in jeu(nom)) if (f['statut'] != 'archive') f];
 
 /// Les rangées du manifeste de navigation, depuis `packages/referentiels/data/manifeste.json` (ENGENDRÉ par `prototype_html/build/extraire.js`),

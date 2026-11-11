@@ -14,7 +14,11 @@ void main() {
   final base = MatriceDroits.depuisJson(brut);
   final manifeste = Manifeste.depuisJson((jsonDecode(File('../referentiels/data/manifeste.json').readAsStringSync()) as Map).cast<String, Object?>());
   final jeuRbac = _lire('../../apps/poste/assets/donnees/jeu/rbac.json');
-  final jeuModules = _lire('../../apps/poste/assets/donnees/jeu/modulesActifs.json');
+  // Le jeu livré porte aussi les fermetures PROPRES AU POSTE (`proprePoste`, ECARTS E2422) : la maquette ne les connaît pas, `rbac.json` non plus. `jeuModules` est donc l'état
+  // de la MAQUETTE (la référence de la superposition, comme `DonneesNavigation`) ; `fermeturesPoste` s'y ajoute au poste.
+  final fichierModules = _lire('../../apps/poste/assets/donnees/jeu/modulesActifs.json');
+  final jeuModules = [for (final f in fichierModules) if (f['proprePoste'] != true) f];
+  final fermeturesPoste = [for (final f in fichierModules) if (f['proprePoste'] == true) f];
 
   MatriceDroits calc({List<Fiche>? rbac, List<Fiche>? modules}) =>
       superposerDroits(base, manifeste, rbac: rbac ?? jeuRbac, modulesActifs: modules ?? jeuModules);
@@ -422,6 +426,70 @@ void main() {
       expect(m.libelle('auditeur'), 'Auditeur');
       expect(d(m, 'auditeur', 'm12-journaux'), '100');
       expect(m.peutVoir('auditeur', 'm8-caisse'), isFalse);
+    });
+  });
+  group('FERMETURES PROPRES AU POSTE : quatre écrans non portés, fermés pour tous les rôles par le jeu du poste (ECARTS E2422)', () {
+    const quatre = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms'};
+    MatriceDroits chaud({List<Fiche>? modules, List<Fiche>? reference}) => superposerDroits(base, manifeste,
+        rbac: jeuRbac, modulesActifs: modules ?? [...jeuModules, ...fermeturesPoste], referenceRbac: jeuRbac, referenceModules: reference ?? jeuModules);
+    String cases(MatriceDroits m, String role) {
+      final l = [for (final e in manifeste.tousLesEcrans.where((e) => !e.hub && !quatre.contains(e.id))) '${e.id}=${m.peutVoir(role, e.id) ? d(m, role, e.id) : '-'}']..sort();
+      return l.join(',');
+    }
+
+    final roles = [for (final r in base.rolesBruts) '${r['id']}'];
+
+    test('le jeu porte une fiche fermée par écran de la liste, rien d\'autre n\'est marqué proprePoste', () {
+      expect([for (final f in fermeturesPoste) ...(f['ecrans'] as List)].toSet(), quatre);
+      expect(fermeturesPoste.every((f) => f['actif'] == false && f['statut'] != 'archive'), isTrue);
+    });
+
+    test('hors fermeture, la matrice engendrée ouvre au moins un rôle sur chacun des quatre (sinon la fermeture ne prouverait rien)', () {
+      for (final id in quatre) {
+        expect(roles.any((r) => base.peutVoir(r, id)), isTrue, reason: id);
+      }
+    });
+
+    test('superposées à la référence de la maquette, les fermetures retirent les quatre écrans à TOUS les rôles, administrateur compris', () {
+      final m = chaud();
+      for (final role in roles) {
+        for (final id in quatre) {
+          expect(m.peutVoir(role, id), isFalse, reason: '$role / $id');
+        }
+      }
+      for (final id in quatre) {
+        expect(m.fermetures!.fermeturePour(id, manifeste.ecran(id)!.module)?['motif'], contains('Non porté au poste'), reason: id);
+      }
+    });
+
+    test('rien d\'autre ne change : toutes les autres cases sont celles de la matrice engendrée, pour les 22 rôles', () {
+      final m = chaud();
+      for (final role in roles) {
+        expect(cases(m, role), cases(base, role), reason: role);
+      }
+    });
+
+    test('une page de saisie (servant) est fermée par SA fermeture, son registre reste ouvert : m12-calendrier-fiscal fermé, m12-echeances ouvert', () {
+      final m = chaud();
+      expect(base.peutVoir('comptable', 'm12-calendrier-fiscal'), isTrue);
+      expect(m.peutVoir('comptable', 'm12-calendrier-fiscal'), isFalse);
+      expect(m.peutVoir('comptable', 'm12-echeances'), isTrue, reason: 'le registre qu\'elle prolonge n\'est pas fermé');
+      expect(m.peutVoir('admin', 'm12-echeances'), isTrue);
+    });
+
+    test('réouverture (fiche archivée, RG-14) : l\'écran revient, case pour case, comme avant la fermeture', () {
+      final rouvertes = [for (final f in fermeturesPoste) {...f, 'statut': 'archive'}];
+      final m = chaud(modules: [...jeuModules, ...rouvertes]);
+      for (final role in roles) {
+        for (final id in quatre) {
+          expect(m.droit(role, id), base.droit(role, id), reason: '$role / $id');
+        }
+      }
+    });
+
+    test('PIÈGE nommé : si les fermetures du poste étaient dans la RÉFÉRENCE, elles seraient crues déjà cuites dans la matrice engendrée et ne fermeraient rien', () {
+      final m = chaud(reference: [...jeuModules, ...fermeturesPoste]);
+      expect(quatre.where((id) => m.peutVoir('admin', id)), isNotEmpty);
     });
   });
 }

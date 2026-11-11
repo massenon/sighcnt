@@ -41,9 +41,16 @@ Future<void> domaine(WidgetTester t, String nom) async {
   }
 }
 
-/// Les deux fiches de fermeture du jeu (banque de sang et transfusion), archivées : l'activité est rouverte.
+/// Les fiches de fermeture de la banque de sang et de la transfusion (module M5 ; le jeu du poste porte aussi les quatre fermetures `proprePoste`, voir
+/// `fermetures_poste_test.dart`).
+List<Fiche> fichesBanque(Magasin m) => [
+      for (final f in m.collection('modulesActifs').actives)
+        if (f['module'] == 'M5') f
+    ];
+
+/// Les deux fiches de fermeture de la banque de sang et de la transfusion, archivées : l'activité est rouverte.
 void rouvrir(Magasin m) {
-  for (final f in m.collection('modulesActifs').actives.toList()) {
+  for (final f in fichesBanque(m)) {
     m.collection('modulesActifs').archiver(f['id']);
   }
 }
@@ -53,7 +60,7 @@ void main() {
 
   testWidgets('ACTIVITÉ FERMÉE : la banque de sang est absente du ruban de l\'administrateur, ses adresses disent « Activité fermée » avec le motif de la fiche', (t) async {
     final m = jeu();
-    expect(m.collection('modulesActifs').actives, hasLength(2), reason: 'le jeu ferme la banque de sang et la transfusion');
+    expect(fichesBanque(m), hasLength(2), reason: 'le jeu ferme la banque de sang et la transfusion');
     await monter(t, m, ecran: 'm5-banque-sang');
     expect(find.byKey(const Key('activite-fermee')), findsOneWidget);
     expect(find.text('Activité fermée'), findsWidgets);
@@ -84,9 +91,7 @@ void main() {
     await monter(t, m, ecran: 'm5-banque-sang');
     expect(find.byKey(const Key('activite-fermee')), findsOneWidget);
     // Rouverte : la page courante se sert d'elle-même.
-    for (final f in m.collection('modulesActifs').actives.toList()) {
-      m.collection('modulesActifs').archiver(f['id']);
-    }
+    rouvrir(m);
     await t.pump();
     await t.pump(const Duration(milliseconds: 200));
     expect(find.byKey(const Key('activite-fermee')), findsNothing);

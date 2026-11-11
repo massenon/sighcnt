@@ -43,6 +43,9 @@ void main() {
       ];
 
   final magasin = Magasin.depuisDossier(Magasin.collectionsDuJeu);
+  // Les droits EN FORCE au poste : la matrice engendrée superposée aux fiches du jeu (les quatre écrans non portés sont fermés, ECARTS E2422). Une carte qui n'a pas
+  // d'écran ouvert au profil est absente, comme l'écran lui-même.
+  final chaud = donnees.aChaud(magasin);
 
   Future<void> monter(WidgetTester t, String hub, String role) async {
     t.view.physicalSize = const Size(1440, 900);
@@ -74,11 +77,11 @@ void main() {
         final textes = textesVisibles(t);
         final attendus = [
           for (final id in ecransDuModule(entree.module))
-            if (donnees.manifeste.ecran(id) != null && donnees.matrice.peutVoir(role, id)) id
+            if (donnees.manifeste.ecran(id) != null && chaud.matrice.peutVoir(role, id)) id
         ];
         final masques = [
           for (final id in ecransDuModule(entree.module))
-            if (donnees.manifeste.ecran(id) != null && !donnees.matrice.peutVoir(role, id)) id
+            if (donnees.manifeste.ecran(id) != null && !chaud.matrice.peutVoir(role, id)) id
         ];
         if (role == 'admin') expect(attendus, isNotEmpty, reason: '$hub : l’administrateur doit voir au moins une carte');
         if (attendus.isEmpty) {

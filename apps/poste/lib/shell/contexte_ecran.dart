@@ -19,6 +19,7 @@ class ContexteEcran extends InheritedWidget {
     this.horloge,
     this.ouvre,
     this.donnees,
+    this.ecranPorte,
     required super.child,
   });
 
@@ -35,6 +36,10 @@ class ContexteEcran extends InheritedWidget {
 
   /// Manifeste, droits et parité (écrans qui décrivent le logiciel lui-même : aide, plan du site). `null` = non branché.
   final DonneesNavigation? donnees;
+
+  /// `ecransPortes` de la coque : l'écran a-t-il un widget à ce poste ? Sert à ne jamais RÉOUVRIR (activités, `cfg-modules`) un écran que le poste ne porte pas encore :
+  /// rouvert, il afficherait le gabarit « écran indisponible ». `null` = non branché : tout écran est réputé porté.
+  final bool Function(String id)? ecranPorte;
 
   /// Nom affiché de l'agent connecté (RG-12 : aucune action anonyme).
   final String utilisateur;

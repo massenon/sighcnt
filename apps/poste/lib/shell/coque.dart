@@ -718,6 +718,7 @@ class _CoquePosteState extends State<CoquePoste> {
         horloge: widget.horloge,
         ouvre: (cible) => _nav.matrice.peutVoir(_role, cible),
         donnees: _nav,
+        ecranPorte: widget.ecrans.containsKey,
         aller: (cible) {
           if (_nav.matrice.peutVoir(_role, cible))
             _ouvrir(cible);

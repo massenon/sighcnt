@@ -16,6 +16,10 @@ import 'cfb_commun.dart';
 ///
 /// Ce que la fermeture retire AU POSTE : voir `cfbFermetures` — la coque lit `rbac.json` (engendré) et ne relit pas la collection `modulesActifs` ;
 /// c'est une proposition du rapport, pas encore câblée (E203, E886).
+///
+/// UN ÉCRAN QUE LE POSTE NE PORTE PAS ENCORE ne se rouvre pas d'ici (Direction, 11/11/2026, E2424) : la fermeture est la façon de le masquer, et le rouvrir
+/// montrerait à un agent le gabarit « écran indisponible ». La commande de réouverture est ABSENTE de la ligne (c'est la seule porte de cet écran) et la page dit
+/// lesquels sont dans ce cas et pourquoi. Dès que l'écran a un widget (`ContexteEcran.ecranPorte`), la réouverture est proposée.
 class EcranModules extends StatelessWidget with EcranMaquette {
   const EcranModules({super.key});
   @override
@@ -70,6 +74,17 @@ class _Corps extends StatelessWidget {
   List<Fiche> get _rangees => c.magasin.collection('modulesManifeste').toutes;
 
   // --- les gestes -------------------------------------------------------------------------------------------------------------------------
+
+  /// Les écrans de la fiche que le poste ne porte pas encore (aucun widget). Vide si la coque ne le dit pas (`ecranPorte` non branché) : tout est réputé porté.
+  List<String> _sansWidget(Fiche f) {
+    final porte = c.ecranPorte;
+    final ids = f['ecrans'];
+    if (porte == null || ids is! List) return const [];
+    return [
+      for (final id in ids)
+        if (!porte('$id')) '$id'
+    ];
+  }
 
   Future<void> _basculer(BuildContext ctx, Fiche f) async {
     final fermer = f['actif'] != false;
@@ -207,12 +222,22 @@ class _Corps extends StatelessWidget {
     final lignes = [
       for (final f in fiches) {...f, 'portee': cfbPortee(f)}
     ];
+    // Les écrans fermés que le poste ne porte pas encore, par leur intitulé du manifeste engendré (la collection `modulesManifeste` du jeu peut dater d'avant leur entrée).
+    final nonPortes = [
+      for (final f in fermees)
+        for (final id in _sansWidget(f)) '« ${c.donnees?.manifeste.ecran(id)?.label ?? ecrans.where((e) => e.id == id).map((e) => e.label).firstOrNull ?? id} »'
+    ];
     return cfaPile([
       cfaLectureSeule(c),
       cfaKpis(cfbKpisModules(ecrans: ecrans.length, fermees: fermees.length, retires: retires.length)),
       cfbNote(
           'Une activité fermée n’est pas supprimée. Ses écrans, ses données de démonstration et son paramétrage restent en place : rouvrir l’activité les rend en l’état. C’est ce qui distingue cette page d’une suppression, et ce qui permet de fermer sans crainte.',
           icone: LucideIcons.archiveRestore),
+      if (nonPortes.isNotEmpty)
+        cfbNote(
+            'Écrans de la maquette que ce poste ne porte pas encore : ${nonPortes.join(', ')}. Ils sont fermés pour tous les rôles, administrateur compris, et leur réouverture n’est pas proposée ici : '
+            'rouverts, ils n’afficheraient rien d’utilisable. La fermeture tombera quand chacun sera porté, puis cette page proposera la réouverture.',
+            icone: LucideIcons.eyeOff),
       TableauSigh(
         titre: 'Activités pilotées',
         lignes: lignes,
@@ -254,7 +279,8 @@ class _Corps extends StatelessWidget {
             BoutonSigh(libelle: 'Piloter une activité', icone: LucideIcons.plus, taille: TailleBouton.sm, onPressed: () => _declarer(context, ecrans, modules)),
         ],
         actionsLigne: (ctx, f) => [
-          if (c.droit.editer)
+          // La réouverture d'un écran sans widget est ABSENTE (elle n'est pas grisée : la note de la page dit pourquoi).
+          if (c.droit.editer && !(f['actif'] == false && _sansWidget(f).isNotEmpty))
             BoutonIcone(
                 icone: f['actif'] == false ? LucideIcons.toggleRight : LucideIcons.toggleLeft,
                 libelle: f['actif'] == false ? 'Rouvrir cette activité' : 'Fermer cette activité',

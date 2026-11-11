@@ -131,6 +131,10 @@ _Calcul _calculer(MatriceDroits base, Manifeste manifeste, Iterable<Map<String, 
 
   bool can(String role, EcranNav e) {
     if (archive(role)) return false;
+    // UNE ACTIVITÉ FERMÉE PAR ÉCRAN VAUT POUR CET ÉCRAN, même s'il est une page de saisie (`servant`) : la fermeture de son propre identifiant est lue AVANT de résoudre
+    // les droits sur le registre qu'il alimente. La maquette (`N.can`) lit le servant d'abord et ignore alors une fermeture par écran (ECARTS E2423) ; le poste en a
+    // besoin pour masquer `m12-calendrier-fiscal` (servant `m12-echeances`, qui, lui, reste ouvert).
+    if (!ferm.ecranActif(e.id, e.module)) return false;
     final s = e.servant;
     if (s != null && s != e.id) {
       final cible = manifeste.ecran(s);

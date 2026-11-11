@@ -82,6 +82,9 @@ class DonneesNavigation {
       json == null ? null : [for (final f in (jsonDecode(json) as List)) (f as Map).cast<String, Object?>()];
 
   /// `fichesRbac` / `fichesModules` : le jeu livré (`jeu/rbac.json`, `jeu/modulesActifs.json`), RÉFÉRENCE de la superposition à chaud.
+  /// Les fermetures PROPRES AU POSTE (`proprePoste`, quatre écrans de la maquette que le poste ne porte pas encore) sont dans le jeu livré mais PAS dans la
+  /// référence : `rbac.json` est extrait de la maquette, qui ne les ferme pas. Dans la référence, la superposition les croirait déjà cuites dans la matrice
+  /// engendrée et ne retirerait rien ; hors référence, elle ferme les écrans pour tous les rôles et une réouverture à l'écran les rend.
   static DonneesNavigation depuisJson(
       {required String manifeste,
       required String rbac,
@@ -102,7 +105,7 @@ class DonneesNavigation {
       modulesVoir: _modulesVoirDe(rbac),
       parite: p,
       referenceRbac: _fiches(fichesRbac),
-      referenceModules: _fiches(fichesModules),
+      referenceModules: _fiches(fichesModules)?.where((f) => f['proprePoste'] != true).toList(),
       barre: rubriques == null ? const ReferentielBarre() : ReferentielBarre.depuisJson(rubriques),
       descriptions: descriptions == null
           ? const {}
