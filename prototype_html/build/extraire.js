@@ -108,7 +108,7 @@ async function extraireRbac() {
       const ecrans = N.ids().map((id) => {
         const e = N.get(id);
         return { id, label: e.label, icone: e.icon || null, module: e.module, moduleLabel: e.moduleLabel, domaine: e.domain, hub: !!e.hub, standalone: !!e.standalone,
-          universel: !!e.universel, servant: e.servant || null, roles: propre(e.roles) };
+          universel: !!e.universel, servant: e.servant || null, sousReglage: e.sousReglage || undefined, roles: propre(e.roles) };
       });
       /* Droits EFFECTIFS : ce que chaque rôle voit réellement, écran par écran (même appel que le ruban). */
       const matrice = {}; const parRole = {};

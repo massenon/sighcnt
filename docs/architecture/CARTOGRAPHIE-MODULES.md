@@ -10,7 +10,7 @@
 | RDV, Visites & Consultations | M2 | canonique | 9 | reception, medecin, infirmier, dm, admin, direction |
 | Patients & constantes | M1 | alias | 3 | tous |
 | Courriers & orientation | M13 | alias | 2 | tous |
-| Tarification & information patient | CFG | alias | 3 | tous |
+| Tarification & information patient | CFG | alias | 2 | tous |
 
 ## Soins
 
@@ -37,7 +37,7 @@
 | Facturation & Caisse | M8 | canonique | 11 | caissier, comptable, da, stock, dm, admin, direction |
 | Assurances & Créances | M9 | canonique | 10 | caissier, comptable, da, admin, direction |
 | MECeF — Facture normalisée | MECEF | canonique | 6 | caissier, comptable, da, admin, direction |
-| Comptabilité SYSCOHADA | M12 | canonique | 19 | comptable, da, admin, direction |
+| Comptabilité SYSCOHADA | M12 | canonique | 20 | comptable, da, admin, direction |
 
 ## RH
 
@@ -50,7 +50,7 @@
 
 | Rangée | Module | Type | Écrans | Rôles d'origine |
 |---|---|---|---|---|
-| Administration & Ambulance | M13 | canonique | 11 | agentadmin, da, admin, direction, ambulancier, assistant_comptable |
+| Administration & Ambulance | M13 | canonique | 12 | agentadmin, da, admin, direction, ambulancier, assistant_comptable |
 | Gestion documentaire | GED | canonique | 3 | agentadmin, da, admin, direction, comptable, assistant_comptable |
 | Rapports & Impression | RAP | canonique | 4 | * |
 
@@ -59,7 +59,7 @@
 | Rangée | Module | Type | Écrans | Rôles d'origine |
 |---|---|---|---|---|
 | Sécurité & Utilisateurs | M14 | canonique | 8 | admin, direction, da |
-| Configuration Clinique | CFG | canonique | 21 | admin, da, direction |
+| Configuration Clinique | CFG | canonique | 22 | admin, da, direction |
 | Importation de données | IMP | canonique | 10 | admin, da, direction, stock, reception, agentadmin, comptable, laborantin |
 
 ## Poste mère

@@ -1,13 +1,13 @@
 # Diagramme entité-relation
 
 > **ENGENDRÉ** par `prototype_html/build/gen-erd.js` depuis `packages/schema/postgres/` — ne pas éditer. Dictionnaire des colonnes : [`DICTIONNAIRE-DONNEES.md`](DICTIONNAIRE-DONNEES.md).
-> Ne figurent que les relations **déclarées** au schéma (71 clés étrangères sur 144 tables, 18 schémas). Les liens que le jeu courant ne respecte pas à 100 % ne sont pas déclarés (ils bloqueraient l'écriture) : la cible, avec un seul chemin d'écriture ordonné, les appliquera.
+> Ne figurent que les relations **déclarées** au schéma (87 clés étrangères sur 186 tables, 19 schémas). Les liens que le jeu courant ne respecte pas à 100 % ne sont pas déclarés (ils bloqueraient l'écriture) : la cible, avec un seul chemin d'écriture ordonné, les appliquera.
 
 | Mesure | Valeur |
 |---|---|
-| Tables | 144 |
-| Schémas (un par module) | 18 |
-| Clés étrangères déclarées | 71 (dont 16 tables filles, 55 entre collections) |
+| Tables | 186 |
+| Schémas (un par module) | 19 |
+| Clés étrangères déclarées | 87 (dont 28 tables filles, 59 entre collections) |
 
 ## Transversal — liens entre modules
 
@@ -20,6 +20,8 @@ erDiagram
   m2_prescriptions ||--o{ m3_administrations : "prescription_id"
   m1_patients ||--o{ m3_admissions : "patient_id"
   m1_patients ||--o{ m13_ambulance : "patient_id"
+  m1_patients ||--o{ m13_file_sms : "patient_id"
+  m1_patients ||--o{ m13_messages_sms : "patient_id"
   m1_patients ||--o{ m3_checklists_bloc : "patient_id"
   m1_patients ||--o{ m2_consultations : "patient_id"
   m1_patients ||--o{ m4_cpon : "patient_id"
@@ -62,7 +64,7 @@ erDiagram
   m1_patients ||--o{ socle_taches : "patient_id"
 ```
 
-Tables : `m1.patients` (40 col.) · `m10.personnel` (17 col.) · `m13.ambulance` (18 col.) · `m14.notifications` (18 col.) · `m14.soignants` (13 col.) · `m2.consultations` (31 col.) · `m2.demandes_imagerie` (31 col.) · `m2.dossiers_consultation` (52 col.) · `m2.file_attente` (18 col.) · `m2.ordonnances` (31 col.) · `m2.prescriptions` (25 col.) · `m2.resultats_imagerie` (30 col.) · `m2.soins` (18 col.) · `m3.administrations` (22 col.) · `m3.admissions` (19 col.) · `m3.checklists_bloc` (14 col.) · `m3.cr_operatoires` (21 col.) · `m3.rapports_medicaux` (28 col.) · `m3.scores_glasgow` (14 col.) · `m3.surveillances_transfusion` (21 col.) · `m4.accouchements` (26 col.) · `m4.cpon` (18 col.) · `m4.cr_maternite` (42 col.) · `m4.deces` (12 col.) · `m4.dossiers_obstetricaux` (44 col.) · `m4.grossesses` (19 col.) · `m4.partogrammes` (16 col.) · `m4.planification_familiale` (16 col.) · `m4.ptme` (22 col.) · `m4.registre_sonu` (19 col.) · `m4.soins_curatifs_maternite` (18 col.) · `m4.suivi_maternite` (17 col.) · `m5.demandes_analyses` (57 col.) · `m8.factures` (40 col.) · `m9.souscripteurs` (17 col.) · `socle.taches` (29 col.)
+Tables : `m1.patients` (43 col.) · `m10.personnel` (18 col.) · `m13.ambulance` (18 col.) · `m13.file_sms` (17 col.) · `m13.messages_sms` (21 col.) · `m14.notifications` (18 col.) · `m14.soignants` (13 col.) · `m2.consultations` (31 col.) · `m2.demandes_imagerie` (34 col.) · `m2.dossiers_consultation` (52 col.) · `m2.file_attente` (18 col.) · `m2.ordonnances` (31 col.) · `m2.prescriptions` (25 col.) · `m2.resultats_imagerie` (30 col.) · `m2.soins` (18 col.) · `m3.administrations` (22 col.) · `m3.admissions` (19 col.) · `m3.checklists_bloc` (14 col.) · `m3.cr_operatoires` (21 col.) · `m3.rapports_medicaux` (28 col.) · `m3.scores_glasgow` (14 col.) · `m3.surveillances_transfusion` (21 col.) · `m4.accouchements` (26 col.) · `m4.cpon` (18 col.) · `m4.cr_maternite` (42 col.) · `m4.deces` (12 col.) · `m4.dossiers_obstetricaux` (44 col.) · `m4.grossesses` (19 col.) · `m4.partogrammes` (16 col.) · `m4.planification_familiale` (16 col.) · `m4.ptme` (22 col.) · `m4.registre_sonu` (19 col.) · `m4.soins_curatifs_maternite` (18 col.) · `m4.suivi_maternite` (17 col.) · `m5.demandes_analyses` (58 col.) · `m8.factures` (56 col.) · `m9.souscripteurs` (17 col.) · `socle.taches` (29 col.)
 
 ## Par module
 
@@ -71,14 +73,26 @@ Tables : `m1.patients` (40 col.) · `m10.personnel` (17 col.) · `m13.ambulance`
 ```mermaid
 erDiagram
   cfg_actes ||--o{ cfg_actes_variantes_grille : "parent_id"
+  cfg_historique_obligations ||--o{ cfg_historique_obligations_redevances : "parent_id"
+  cfg_obligations_fiscales ||--o{ cfg_obligations_fiscales_redevances : "parent_id"
   cfg_variables_imagerie ||--o{ cfg_variables_imagerie_conditionnels : "parent_id"
 ```
 
-Tables : `cfg.actes` (17 col.) · `cfg.actes_variantes_grille` (19 col.) · `cfg.variables_imagerie` (14 col.) · `cfg.variables_imagerie_conditionnels` (6 col.)
+Tables : `cfg.actes` (17 col.) · `cfg.actes_variantes_grille` (19 col.) · `cfg.historique_obligations` (35 col.) · `cfg.historique_obligations_redevances` (13 col.) · `cfg.obligations_fiscales` (25 col.) · `cfg.obligations_fiscales_redevances` (13 col.) · `cfg.variables_imagerie` (14 col.) · `cfg.variables_imagerie_conditionnels` (6 col.)
 
 ### ged — GED
 
 Aucune relation déclarée.
+
+### imp — Importation de données (IMP)
+
+```mermaid
+erDiagram
+  imp_lots_importation ||--o{ imp_lots_importation_ecrits : "parent_id"
+  imp_lots_importation ||--o{ imp_lots_importation_erreurs : "parent_id"
+```
+
+Tables : `imp.lots_importation` (18 col.) · `imp.lots_importation_ecrits` (5 col.) · `imp.lots_importation_erreurs` (10 col.)
 
 ### m1 — M1 Patients & DMI
 
@@ -90,30 +104,32 @@ erDiagram
   m1_patients ||--o{ m1_pieces : "patient_id"
 ```
 
-Tables : `m1.constantes` (24 col.) · `m1.contre_references` (26 col.) · `m1.fiches_reference` (36 col.) · `m1.patients` (40 col.) · `m1.pieces` (21 col.)
+Tables : `m1.constantes` (24 col.) · `m1.contre_references` (26 col.) · `m1.fiches_reference` (36 col.) · `m1.patients` (43 col.) · `m1.pieces` (21 col.)
 
 ### m2 — M2 RDV, visites, consultations, imagerie
 
 ```mermaid
 erDiagram
+  m2_ordonnances ||--o{ m2_ordonnances_actes : "parent_id"
   m2_ordonnances ||--o{ m2_ordonnances_analyses : "parent_id"
   m2_ordonnances ||--o{ m2_ordonnances_medicaments : "parent_id"
   m2_prescriptions ||--o{ m2_prescriptions_lignes : "parent_id"
   m2_ordonnances ||--o{ m2_prescriptions : "ordonnance_id"
 ```
 
-Tables : `m2.ordonnances` (31 col.) · `m2.ordonnances_analyses` (9 col.) · `m2.ordonnances_medicaments` (11 col.) · `m2.prescriptions` (25 col.) · `m2.prescriptions_lignes` (16 col.)
+Tables : `m2.ordonnances` (31 col.) · `m2.ordonnances_actes` (8 col.) · `m2.ordonnances_analyses` (9 col.) · `m2.ordonnances_medicaments` (11 col.) · `m2.prescriptions` (25 col.) · `m2.prescriptions_lignes` (16 col.)
 
 ### m3 — M3 Hospitalisation & bloc
 
 ```mermaid
 erDiagram
   m3_checklists_bloc ||--o{ m3_checklists_bloc_items : "parent_id"
+  m3_observations ||--o{ m3_observations_constantes : "parent_id"
   m3_scores_glasgow ||--o{ m3_scores_glasgow_axes : "parent_id"
   m3_admissions ||--o{ m3_releves : "admission_id"
 ```
 
-Tables : `m3.admissions` (19 col.) · `m3.checklists_bloc` (14 col.) · `m3.checklists_bloc_items` (5 col.) · `m3.releves` (16 col.) · `m3.scores_glasgow` (14 col.) · `m3.scores_glasgow_axes` (6 col.)
+Tables : `m3.admissions` (19 col.) · `m3.checklists_bloc` (14 col.) · `m3.checklists_bloc_items` (5 col.) · `m3.observations` (19 col.) · `m3.observations_constantes` (10 col.) · `m3.releves` (16 col.) · `m3.scores_glasgow` (14 col.) · `m3.scores_glasgow_axes` (6 col.)
 
 ### m4 — M4 Maternité, naissances, décès
 
@@ -147,11 +163,13 @@ Tables : `m6.lots` (9 col.) · `m6.mouvements` (15 col.) · `m6.produits` (25 co
 
 ```mermaid
 erDiagram
+  m7_besoins ||--o{ m7_besoins_lignes : "parent_id"
   m7_commandes ||--o{ m7_commandes_lignes : "parent_id"
   m7_livraisons ||--o{ m7_livraisons_lignes : "parent_id"
+  m7_pv_receptions ||--o{ m7_pv_receptions_lignes : "parent_id"
 ```
 
-Tables : `m7.commandes` (12 col.) · `m7.commandes_lignes` (9 col.) · `m7.livraisons` (11 col.) · `m7.livraisons_lignes` (11 col.)
+Tables : `m7.besoins` (11 col.) · `m7.besoins_lignes` (10 col.) · `m7.commandes` (12 col.) · `m7.commandes_lignes` (9 col.) · `m7.livraisons` (11 col.) · `m7.livraisons_lignes` (11 col.) · `m7.pv_receptions` (14 col.) · `m7.pv_receptions_lignes` (8 col.)
 
 ### m8 — M8 Facturation & caisse
 
@@ -160,25 +178,27 @@ erDiagram
   m8_factures ||--o{ m8_factures_lignes : "parent_id"
 ```
 
-Tables : `m8.factures` (40 col.) · `m8.factures_lignes` (25 col.)
+Tables : `m8.factures` (56 col.) · `m8.factures_lignes` (25 col.)
 
 ### m9 — M9 Assurances & créances
 
 ```mermaid
 erDiagram
   m9_factures_mere ||--o{ m9_factures_mere_souscripteurs : "parent_id"
+  m9_souscripteurs ||--o{ m9_garanties : "souscripteur_id"
 ```
 
-Tables : `m9.factures_mere` (24 col.) · `m9.factures_mere_souscripteurs` (8 col.)
+Tables : `m9.factures_mere` (24 col.) · `m9.factures_mere_souscripteurs` (8 col.) · `m9.garanties` (13 col.) · `m9.souscripteurs` (17 col.)
 
 ### m10 — M10 Ressources humaines
 
 ```mermaid
 erDiagram
+  m10_fiches_poste ||--o{ m10_fiches_poste_missions : "parent_id"
   m10_evenements ||--o{ m10_participations : "evenement_id"
 ```
 
-Tables : `m10.evenements` (15 col.) · `m10.participations` (16 col.)
+Tables : `m10.evenements` (15 col.) · `m10.fiches_poste` (23 col.) · `m10.fiches_poste_missions` (6 col.) · `m10.participations` (24 col.)
 
 ### m11 — M11 Paie & primes
 
@@ -186,15 +206,31 @@ Aucune relation déclarée.
 
 ### m12 — M12 Comptabilité SYSCOHADA
 
-Aucune relation déclarée.
+```mermaid
+erDiagram
+  m12_archives_exercice ||--o{ m12_archives_exercice_fichiers : "parent_id"
+  m12_depenses ||--o{ m12_depenses_lignes : "parent_id"
+```
+
+Tables : `m12.archives_exercice` (13 col.) · `m12.archives_exercice_fichiers` (8 col.) · `m12.depenses` (14 col.) · `m12.depenses_lignes` (6 col.)
 
 ### m13 — M13 Administration & ambulance
 
-Aucune relation déclarée.
+```mermaid
+erDiagram
+  m13_enquetes ||--o{ m13_enquetes_questions : "parent_id"
+```
+
+Tables : `m13.enquetes` (11 col.) · `m13.enquetes_questions` (7 col.)
 
 ### m14 — M14 Sécurité & audit
 
-Aucune relation déclarée.
+```mermaid
+erDiagram
+  m14_utilisateurs ||--o{ m14_sessions_utilisateur : "utilisateur_id"
+```
+
+Tables : `m14.sessions_utilisateur` (23 col.) · `m14.utilisateurs` (27 col.)
 
 ### socle — Socle commun (référentiels lus par plusieurs modules)
 
@@ -206,28 +242,38 @@ Aucune relation déclarée.
 
 ## Tables sans aucune relation déclarée
 
-75 tables sur 144 : ce sont des registres autonomes (référentiels, journaux, pièces émises) ou des collections dont les liens ne sont pas encore garantis.
+90 tables sur 186 : ce sont des registres autonomes (référentiels, journaux, pièces émises) ou des collections dont les liens ne sont pas encore garantis.
 
 <details><summary>Liste</summary>
 
+- `cfg.bareme_aib`
 - `cfg.catalogue_tarifs`
 - `cfg.certificats`
 - `cfg.examens_imagerie`
+- `cfg.identite_legale`
 - `cfg.modeles_message`
 - `cfg.modules_actifs`
 - `cfg.natures_facture`
+- `cfg.parametres_fiscaux`
 - `cfg.postes`
 - `cfg.rappels`
+- `cfg.reglages_aib`
+- `cfg.ressources`
 - `cfg.secteurs`
+- `cfg.situations_aib`
+- `cfg.tarifs`
 - `cfg.types_piece`
+- `cfg.validations_referentiels`
+- `cfg.versions_tarif`
 - `ged.documents`
 - `m1.documents_patient`
 - `m10.assurances_personnel`
 - `m10.badges`
 - `m10.bareme_ns131`
 - `m10.beneficiaires_primes`
+- `m10.conges`
+- `m10.contrats`
 - `m10.evaluations`
-- `m10.fiches_poste`
 - `m10.grille_primes`
 - `m10.historique_bareme`
 - `m10.historique_primes`
@@ -235,36 +281,42 @@ Aucune relation déclarée.
 - `m10.modeles_badge`
 - `m10.planning`
 - `m10.presences`
+- `m10.prestataires`
+- `m10.propositions_planning`
+- `m10.regimes_individuels`
 - `m10.regimes_travail`
 - `m11.avances`
+- `m11.bulletins`
 - `m11.heures_sup`
 - `m11.prets_etudes`
 - `m12.banques`
+- `m12.budgets`
 - `m12.centres_couts`
-- `m12.depenses`
+- `m12.clotures`
+- `m12.comptes_resultat`
 - `m12.echeances_fiscales`
 - `m12.ecritures`
 - `m12.exercices`
 - `m12.immobilisations`
 - `m12.objectifs_pilotage`
+- `m12.rapprochements`
 - `m13.ambulances`
 - `m13.courriers`
-- `m13.enquetes`
 - `m13.evenements_etablissement`
 - `m13.jetons_enquete`
 - `m13.materiel`
+- `m13.plan_annuel`
 - `m13.reponses_enquetes`
 - `m13.reunions`
 - `m14.audit`
 - `m14.comptes`
 - `m14.fichiers_sauvegarde`
+- `m14.politique_securite`
 - `m14.rbac`
 - `m14.tentatives_connexion`
-- `m14.utilisateurs`
 - `m2.cliches_imagerie`
 - `m2.pathologies`
 - `m3.cpa`
-- `m3.observations`
 - `m5.analyses`
 - `m5.donneurs`
 - `m5.examens_labo`
@@ -276,14 +328,13 @@ Aucune relation déclarée.
 - `m6.emplacements`
 - `m6.inventaires`
 - `m6.valorisations_sage`
-- `m7.besoins`
 - `m7.factures_fournisseurs`
 - `m7.fournisseurs`
-- `m7.pv_receptions`
 - `m8.avoirs`
 - `m9.assureurs`
 - `m9.couvertures_assurance`
-- `m9.garanties`
+- `socle.appels`
+- `socle.visites_hospi`
 - `sup.support`
 
 </details>

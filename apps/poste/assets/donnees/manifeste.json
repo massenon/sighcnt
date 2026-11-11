@@ -125,12 +125,9 @@
    "roles": "ALL",
    "ecrans": [
     "cfg-tarifs",
-    "cfg-catalogue",
     "cfg-certificats"
    ],
    "libellesEcrans": {
-    "cfg-tarifs": "Référentiel tarifaire public",
-    "cfg-catalogue": "Catalogue des prestations",
     "cfg-certificats": "Tarifs des certificats & attestations"
    }
   },
@@ -479,6 +476,7 @@
     "m12-etats-financiers",
     "m12-baseline-2025",
     "m12-echeances",
+    "m12-calendrier-fiscal",
     "m12-cloture",
     "m12-ouverture"
    ]
@@ -574,6 +572,7 @@
     "m13-notes-service",
     "m13-ambulance",
     "m13-repertoire-ambulances",
+    "m13-sms-journal",
     "m13-maintenance",
     "adm-validations",
     "adm-enquetes",
@@ -655,7 +654,6 @@
     "cfg-organisation",
     "cfg-branding",
     "cfg-tarifs",
-    "cfg-catalogue",
     "cfg-imagerie-catalogue",
     "cfg-entetes",
     "cfg-types-piece",
@@ -666,13 +664,15 @@
     "cfg-regles",
     "cfg-fiscalite",
     "cfg-comptabilite",
+    "cfg-bareme-aib",
     "cfg-notifications",
     "cfg-compte",
     "cfg-modules",
     "cfg-systeme",
     "cfg-poste",
     "cfg-pair",
-    "cfg-smtp"
+    "cfg-smtp",
+    "cfg-sms"
    ]
   },
   {
@@ -4038,6 +4038,24 @@
    ]
   },
   {
+   "id": "m12-calendrier-fiscal",
+   "label": "Calendrier fiscal mensuel",
+   "icone": "calendar-days",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": "m12-echeances",
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
    "id": "m12-cloture",
    "label": "Exercices & clôtures",
    "icone": "lock",
@@ -4914,6 +4932,23 @@
    ]
   },
   {
+   "id": "m13-sms-journal",
+   "label": "Journal des envois SMS",
+   "icone": "messages-square",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
    "id": "m13-maintenance",
    "label": "Parc technique & maintenance",
    "icone": "wrench",
@@ -5363,25 +5398,8 @@
   },
   {
    "id": "cfg-tarifs",
-   "label": "Référentiel tarifaire",
+   "label": "Tarifs et prix",
    "icone": "tag",
-   "module": "CFG",
-   "moduleLabel": "Configuration Clinique",
-   "domaine": "Système",
-   "hub": false,
-   "standalone": false,
-   "universel": false,
-   "servant": null,
-   "roles": [
-    "admin",
-    "da",
-    "direction"
-   ]
-  },
-  {
-   "id": "cfg-catalogue",
-   "label": "Catalogue tarifaire (deux prix)",
-   "icone": "list-ordered",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -5566,6 +5584,23 @@
    ]
   },
   {
+   "id": "cfg-bareme-aib",
+   "label": "Barème de l’AIB",
+   "icone": "percent",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
    "id": "cfg-notifications",
    "label": "Notifications",
    "icone": "bell",
@@ -5679,6 +5714,23 @@
    "roles": [
     "admin",
     "da"
+   ]
+  },
+  {
+   "id": "cfg-sms",
+   "label": "Passerelle SMS",
+   "icone": "message-square",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
    ]
   },
   {
@@ -7201,6 +7253,7 @@
    "standalone": true,
    "universel": false,
    "servant": null,
+   "sousReglage": "planDuSiteAffiche",
    "roles": "*"
   },
   {
@@ -7353,6 +7406,19 @@
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "cfg-catalogue",
+   "label": "Catalogue tarifaire (deux prix)",
+   "icone": "list-ordered",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
    "hub": false,
    "standalone": true,
    "universel": false,
