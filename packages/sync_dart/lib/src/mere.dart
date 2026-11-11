@@ -55,8 +55,12 @@ const familleDeBase = <String, String>{
   'factures': 'C', 'prescriptions': 'C',
   'stock': 'D',
   'tarifs': 'R', 'chambres': 'R', 'produits': 'R', 'transcriptions': 'B',
+  // Lot T6 (PRD-TARIFS) : le référentiel de prix unique. `tarifs` (l'identité d'une prestation) est déjà R ; `versionsTarif` (une fiche immuable par version) l'est aussi : la
+  // mère seule écrit, un fileul reçoit. Les DEMANDES de prix d'un fileul (proposition, décision, retrait) sont des fiches descriptives que le fileul dépose et que la mère
+  // complète du verdict : famille A, champ à champ, dans les deux sens.
+  'versionsTarif': 'R', 'propositionsTarif': 'A',
 };
-const essentielles = {'tarifs', 'chambres'};
+const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
 /// Les collections de CONFIGURATION que la mère diffuse aux POSTES : les essentielles du paramétrage plus les comptes. Les noms viennent du domaine (la même
 /// liste que le vidage des jeux de test conserve), jamais recopiés ici. Le poste en choisit l'usage ; la mère ne fait que les accepter et les journaliser.
@@ -68,6 +72,10 @@ final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisat
 /// droits, modules, comptes sans secret : Direction, 03/11/2026) mais il ne vérifie pas les mots de passe du poste, il a son code PIN ; un téléphone perdu ne
 /// doit pas emporter les empreintes de tous les comptes (RG-13). La rémunération du personnel n'est publiée à personne.
 final Set<String> collectionsPosteSeulement = {'identifiants'};
+
+/// Le PRIX ne part JAMAIS vers un téléphone (lot T6, RG-13) : ni le référentiel (`tarifs`, `versionsTarif`), ni les demandes d'un fileul (`propositionsTarif`) avec leurs
+/// refus et leurs motifs. Aucun lecteur de prix n'existe à `apps/mobile` ; l'exclusion est posée ici, au chemin de lecture du mobile, comme celle des hachés.
+const Set<String> collectionsPrixJamaisMobile = {'tarifs', 'versionsTarif', 'propositionsTarif'};
 const _clinique = 'NASSIERA TOO';
 const _deriveMaxMs = 2 * 60 * 1000;
 const autorise = <String, Set<String>>{
@@ -573,7 +581,7 @@ class Mere {
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
         // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
-        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, parCollectionParametres] : const <String>[];
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})

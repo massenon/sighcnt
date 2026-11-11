@@ -166,7 +166,7 @@ Duration? mrbFenetreRestante({required DateTime? ouverteLe, required DateTime ma
 }
 
 /// Ce qui est conservé par le MOTEUR de synchronisation de la mère (`essentielles` dans `mere.dart`) : les référentiels que la mère seule écrit.
-const List<String> mrbEssentielsMoteur = ['tarifs', 'chambres'];
+const List<String> mrbEssentielsMoteur = ['tarifs', 'versionsTarif', 'chambres'];
 
 /// Ce qui est conservé côté poste, selon la spec §10 (liste `COLLECTIONS_ESSENTIELLES` de la maquette, une donnée du dictionnaire et non du code).
 const List<String> mrbEssentielsSpec = [

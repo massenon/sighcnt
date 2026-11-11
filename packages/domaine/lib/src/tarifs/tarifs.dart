@@ -327,25 +327,33 @@ Map<String, Object?>? tarCorrectifGrille(FicheTarif doc, FicheTarif p, Instantan
   return c.isEmpty ? null : c;
 }
 
-/// Un correctif de la projection : la fiche de lecture [id] de [collection] doit recevoir [patch] (prix seulement, sans ligne de journal).
+/// Un correctif de la projection : la fiche de lecture [id] de [collection] doit recevoir [patch] (prix seulement, sans ligne de journal) ; ou, quand [creation] est posée,
+/// la prestation n'a pas encore de fiche dans cette collection et celle-ci doit être AJOUTÉE (sans journal : ce n'est pas le geste d'un agent).
 class CorrectifProjection {
-  const CorrectifProjection(this.collection, this.id, this.patch);
+  const CorrectifProjection(this.collection, this.id, this.patch, {this.creation});
   final String collection;
   final Object? id;
   final Map<String, Object?> patch;
+  final Map<String, Object?>? creation;
 }
 
-/// Les trois collections de lecture et l'index de chaque : (collection, index des prestations par code de la collection, correctif).
+/// La projection de lecture : `actes`, `analyses` et `catalogueTarifs` portent, pour chaque prestation, le prix EN VIGUEUR à [jour]. Ce n'est pas un geste : c'est l'état
+/// dérivé du référentiel. Seuls les champs de PRIX sont touchés ; un marquage « tarif d'attente », un libellé ou un secteur restent ce qu'ils sont. Rend les correctifs ;
+/// l'appelant les applique (sans journal) et `parites` (liste sans les créations) sert la garde de parité.
 List<CorrectifProjection> tarProjection(
   ReferentielTarifs h,
   String jour, {
   required Iterable<FicheTarif> actes,
   required Iterable<FicheTarif> analyses,
   required Iterable<FicheTarif> catalogue,
+  bool avecCreations = false,
 }) {
   final out = <CorrectifProjection>[];
-  void passe(String nom, Iterable<FicheTarif> docs, Map<String, FicheTarif> index, Map<String, Object?>? Function(FicheTarif, FicheTarif, InstantaneTarif) correctif) {
+  void passe(String nom, List<FicheTarif> docs, Map<String, FicheTarif> index, Map<String, Object?>? Function(FicheTarif, FicheTarif, InstantaneTarif) correctif,
+      FicheTarif Function(FicheTarif, InstantaneTarif, int) creer) {
+    final vus = <String>{};
     for (final doc in docs) {
+      vus.add('${doc['code']}');
       final p = index['${doc['code']}'];
       if (p == null) continue;
       final s = h.instantane(p, jour);
@@ -353,11 +361,56 @@ List<CorrectifProjection> tarProjection(
       final c = correctif(doc, p, s);
       if (c != null) out.add(CorrectifProjection(nom, doc['id'], c));
     }
+    if (!avecCreations) return;
+    var n = docs.length;
+    for (final e in index.entries) {
+      if (vus.contains(e.key)) continue;
+      final s = h.instantane(e.value, jour);
+      if (s == null) continue;
+      final fiche = creer(e.value, s, ++n);
+      out.add(CorrectifProjection(nom, fiche['id'], const {}, creation: fiche));
+    }
   }
 
-  passe('actes', actes, h.parActe, tarCorrectifActe);
-  passe('analyses', analyses, h.parAnalyse, tarCorrectifAnalyse);
-  passe('catalogueTarifs', catalogue, h.parGrille, tarCorrectifGrille);
+  passe('actes', [...actes], h.parActe, tarCorrectifActe, (p, s, n) {
+    final d = <String, Object?>{'id': 'ACT-${p['code']}', 'statut': 'actif', 'code': p['code'], 'libelle': p['libelle'], 'secteur': p['secteur'] ?? '', 'prix': s.na};
+    if (p['source'] != null) d['source'] = p['source'];
+    if (p['codeGrille'] != null) {
+      d['codeTarif'] = p['codeGrille'];
+      d['prixNonAssure'] = s.na;
+      d['prixAssure'] = s.nc ? null : s.pa;
+      d['nonCouvert'] = s.nc;
+      if (p.containsKey('assurable')) d['assurable'] = p['assurable'];
+    }
+    return d;
+  });
+  passe('analyses', [...analyses], h.parAnalyse, tarCorrectifAnalyse, (p, s, n) => {
+        'id': 'ANA-${p['code']}',
+        'n': n,
+        'code': p['code'],
+        'designation': p['libelle'],
+        'categorie': '',
+        'prix': s.na,
+        'echantillon': '',
+        'delai': '',
+        'statut': 'Actif',
+      });
+  passe('catalogueTarifs', [...catalogue], h.parGrille, tarCorrectifGrille, (p, s, n) {
+    final d = <String, Object?>{
+      'id': 'TAR-${p['codeGrille']}',
+      'statut': 'actif',
+      'code': p['codeGrille'],
+      'libelle': p['libelleGrille'] ?? p['libelle'],
+      'famille': p['famille'],
+      'prixNonAssure': s.na,
+      'prixAssure': s.nc ? null : s.pa,
+      'nonCouvert': s.nc,
+      'prixAValider': s.na == null,
+    };
+    if (p.containsKey('assurable')) d['assurable'] = p['assurable'];
+    if (p['source'] != null) d['source'] = p['source'];
+    return d;
+  });
   return out;
 }
 
@@ -408,8 +461,9 @@ FicheTarif _creerVersion(String code, int n, _Etats e,
     'id': '$code@${dateEffet ?? (aDater ? 'a-dater' : 'origine')}@$n',
     'code': code,
     'version': n,
-    'prixNonAssure': e.na,
-    'prixAssure': e.pa,
+    // Les champs nuls ne s'écrivent pas (quota du magasin, comme `sansNuls` de la maquette) : un prix absent est une CLÉ absente, jamais un zéro.
+    if (e.na != null) 'prixNonAssure': e.na,
+    if (e.pa != null) 'prixAssure': e.pa,
     'etatAssure': e.etatA,
     'origine': origine,
     'statut': statut,
@@ -849,7 +903,7 @@ ResultatTarif<PropositionTarif> tarProposer(ContexteTarif cx, DemandeProposition
     'version': rang,
     'dateEffet': dateEffet,
     'prixNonAssure': na,
-    'prixAssure': etatA == 'montant' ? _nombre(o.prixAssure).toInt() : null,
+    if (etatA == 'montant') 'prixAssure': _nombre(o.prixAssure).toInt(),
     'etatAssure': etatA,
     'motif': o.motif!.trim(),
     'origine': 'ecran',
@@ -1178,4 +1232,55 @@ ResultatTarif<Map<String, Object?>> tarEcartProforma(
     'lignes': lignes,
     'ecartTotal': ecartTotal,
   });
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// Les gardes du magasin : une version est IMMUABLE, les listes de lecture ne s'éditent plus pour un prix
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+/// Les champs qu'une version ne change jamais (une correction AJOUTE une version).
+const List<String> tarChampsImmuables = ['code', 'version', 'prixNonAssure', 'etatNonAssure', 'prixAssure', 'etatAssure', 'origine', 'proposePar', 'proposeLe', 'lot'];
+
+/// Les champs de PRIX des trois collections de lecture (`actes`, `analyses`, `catalogueTarifs`), projections du référentiel : le moteur les reconstruit, l'agent ne les écrit pas.
+const Map<String, List<String>> tarChampsPrixLecture = {
+  'actes': ['prix', 'prixNonAssure', 'prixAssure', 'nonCouvert'],
+  'analyses': ['prix'],
+  'catalogueTarifs': ['prixNonAssure', 'prixAssure', 'nonCouvert', 'prixAValider'],
+};
+
+bool _memeValeur(Object? a, Object? b) => (a == null && b == null) || a == b;
+
+/// Le motif du refus d'une écriture sur `versionsTarif` (RG-14 : le prix d'une pièce émise doit pouvoir se relire), ou `null`. [apres] est la fiche telle qu'elle serait
+/// après l'écriture, [avant] celle qui existe (ou `null`). Seules passent : l'insertion d'une version neuve, la décision d'une proposition (statut, décideur, motif, date
+/// d'effet d'une proposition « à dater »), et l'arrêt du marquage « tarif d'attente » d'une version.
+String? tarGardeVersion(String operation, FicheTarif apres, FicheTarif? avant) {
+  if (operation == 'archiver') {
+    return 'Une version de prix ne s’archive pas : elle se REFUSE ou se RETIRE, et reste lisible (RG-14 : le prix d’une pièce émise doit pouvoir se relire).';
+  }
+  if (operation == 'inserer') {
+    return avant != null ? 'La version « ${apres['id']} » existe déjà : une version ne se réécrit pas.' : null;
+  }
+  if (operation != 'modifier' || avant == null) return null;
+  for (final k in tarChampsImmuables) {
+    if (!_memeValeur(avant[k], apres[k])) return 'Une version de prix est IMMUABLE (champ « $k ») : une correction AJOUTE une version, elle ne réécrit pas l’ancienne.';
+  }
+  if (avant['statut'] != apres['statut'] && !(avant['statut'] == 'propose' && const ['valide', 'refuse', 'retire'].contains(apres['statut']))) {
+    return 'Une version « ${avant['statut']} » ne devient pas « ${apres['statut']} » : seule une proposition se décide ; une version validée se remplace par une nouvelle version.';
+  }
+  if (!_memeValeur(avant['dateEffet'], apres['dateEffet']) && !(avant['aDater'] == true && apres['statut'] == 'valide')) {
+    return 'La date d’effet d’une version est immuable (seule la décision d’une proposition « à dater » la fixe).';
+  }
+  return null;
+}
+
+/// Le motif du refus d'un PRIX écrit dans une liste de lecture (`actes`, `analyses`, `catalogueTarifs`), ou `null`. Le libellé, l'échantillon, le délai et les marquages
+/// restent libres. Sans référentiel chargé, aucune garde (la liste reste la seule source).
+String? tarGardeLecture(String collection, String operation, FicheTarif apres, FicheTarif? avant, {required bool referentielPresent}) {
+  if (operation != 'modifier' || !referentielPresent || avant == null) return null;
+  for (final k in tarChampsPrixLecture[collection] ?? const <String>[]) {
+    if (!_memeValeur(avant[k], apres[k])) {
+      return 'Le prix (« $k ») ne se modifie plus dans cette liste : elle reflète le référentiel de prix. Le proposer à l’écran « Tarifs et prix » (Oui ou Non, date d’effet).';
+    }
+  }
+  return null;
 }

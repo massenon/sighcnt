@@ -506,6 +506,30 @@ void main() {
   });
 
   group('la migration des listes d\'avant', () {
+    test('MIGRATION RÉELLE : les listes d\'avant du jeu du poste redonnent EXACTEMENT les 201 prestations et 240 versions que la maquette sème', () {
+      List<F> jeu(String n) => liste(jsonDecode(File('../../apps/poste/assets/donnees/jeu/$n.json').readAsStringSync()));
+      final ref = (jsonDecode(File('../../apps/poste/assets/donnees/jeu/referentiels.json').readAsStringSync()) as Map).cast<String, Object?>();
+      final mg = tarMigrer(actes: jeu('actes'), grille: jeu('catalogueTarifs'), analyses: liste(ref['analyses']));
+      final t = jeu('tarifs'), vs = jeu('versionsTarif');
+      expect([mg.tarifs.length, mg.versions.length], [201, 240]);
+      expect([for (final x in mg.tarifs) jsonEncode(x)], [for (final x in t) jsonEncode(x)]);
+      expect([for (final x in mg.versions) jsonEncode(x)], [for (final x in vs) jsonEncode(x)]);
+      // Les chiffres que les vecteurs relèvent de l\'écran : 201 versions 1, 39 propositions de la grille des analyses (à dater), 0 écart de parité de projection.
+      final mig = (v['migration'] as Map).cast<String, Object?>();
+      expect(mg.versions.where((x) => x['version'] == 1).length, mig['versions1']);
+      expect(mg.versions.where((x) => x['origine'] == 'semence-grille').length, mig['propositionsGrille']);
+      expect({for (final x in mg.tarifs) '${x['famille']}': mg.tarifs.where((y) => y['famille'] == x['famille']).length}, mig['parFamille']);
+      final h = ReferentielTarifs(mg.tarifs, mg.versions);
+      final projection = tarProjection(h, '2026-10-30', actes: jeu('actes'), analyses: jeu('analyses'), catalogue: jeu('catalogueTarifs'));
+      // Les 73 actes et les 48 analyses portent déjà le prix en vigueur ; seules les 39 lignes LABO de la grille imprimée, fusionnées avec leur analyse, portent encore le prix
+      // IMPRIMÉ (la maquette ne les projette qu'à l'ouverture d'un écran) : le poste les projette au démarrage, sans ligne de journal.
+      expect({for (final c in projection) c.collection}, {'catalogueTarifs'});
+      expect(projection.length, 39);
+      final ecarts = (v['ecarts'] as Map).cast<String, Object?>();
+      expect([for (final e in mg.ecarts.where((e) => e['type'] == 'analyse-sans-grille')) e['code']]..sort(), ecarts['analysesSansGrille']);
+      expect([for (final e in mg.ecarts.where((e) => e['type'] == 'grille-sans-analyse')) e['code']], ecarts['grilleSansAnalyse']);
+    });
+
     test('le prix facturé aujourd\'hui est la version 1 ; la grille imprimée des analyses arrive en version 2 PROPOSÉE', () {
       final actes = [
         {'id': 'ACT1', 'code': 'SO02', 'libelle': 'Soins intraveineux (SIV)', 'secteur': 'Soins', 'prix': 1200, 'prixNonAssure': 1200, 'prixAssure': 800, 'assurable': true, 'codeTarif': 'SIV'},

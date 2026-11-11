@@ -2,13 +2,14 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles, droitsDepuisMatrice, valCollectionValidations;
+import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles, droitsDepuisMatrice, tarCollectionsReferentiel, valCollectionValidations;
 import 'core/service_parametres.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
 
 
 import 'donnees/organigramme_poste.dart';
+import 'donnees/tarifs_poste.dart';
 import 'donnees/magasin.dart';
 import 'donnees/persistance.dart';
 import 'modules/cfg/cfb_systeme.dart' show CfbPersistance;
@@ -168,11 +169,14 @@ Future<void> main() async {
   final persistance = PersistanceFichiers('$dossierDonnees/magasin', cle: cle);
   if (repartirAZero == 'oui') await persistance.mettreDeCote();
   // Un jeu d'origine qui change (nouvelle version) n'écrase rien : ses fiches de référentiel manquantes sont ajoutées au magasin enregistré.
-  await magasin.brancherPersistance(persistance, fusionnables: {...cfbEssentielles, valCollectionValidations}.difference({'utilisateurs', 'identifiants'}));
+  await magasin.brancherPersistance(persistance, fusionnables: {...cfbEssentielles, valCollectionValidations, ...tarCollectionsReferentiel}.difference({'utilisateurs', 'identifiants'}));
   CfbPersistance.disponible = () => true;
   // LA REPRISE DE L'ORGANIGRAMME (lot ORG2, VERSION 78 de la maquette) : un poste enregistré avant la photo est remplacé par la semence de la photo s'il est INTACT
   // (aucune trace d'écran, identique à l'ancienne semence) ; un poste que la clinique a modifié n'est jamais réécrit. Journalisée une fois, idempotente.
   OrganigrammePoste.reprendre(magasin);
+  // LA REPRISE DES PRIX (lot T6) : un poste qui avait enregistré ses actes avant le référentiel de prix le garde, le prix facturé hier devient la version 1. Seule la MÈRE
+  // (ou un poste autonome) reconstruit les collections de lecture ; un fileul les reçoit avec la configuration.
+  TarifsPoste.reprendre(magasin, fileul: params.rejoint && params.mode != ModePoste.mere);
   for (final probleme in persistance.problemes) {
     debugPrint(probleme);
   }

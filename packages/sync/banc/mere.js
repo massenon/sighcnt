@@ -38,8 +38,10 @@ const FAMILLES = {
   tarifs: 'R', chambres: 'R', produits: 'R', transcriptions: 'B',
   /* L0 : les paramètres versionnés par date (R : la mère seule écrit, une fiche = une version immuable) et leurs usages par les pièces (B : ajout seul). */
   parametres: 'R', usagesParametres: 'B',
+  /* Lot T6 : le référentiel de prix unique (versions immuables, R) et les demandes de prix d'un fileul (A : le fileul dépose, la mère complète du verdict). */
+  versionsTarif: 'R', propositionsTarif: 'A',
 };
-const ESSENTIELLES = new Set(['tarifs', 'chambres']);
+const ESSENTIELLES = new Set(['tarifs', 'versionsTarif', 'chambres']);
 
 const PARAMETRES = require('./parametres');
 const db = new DatabaseSync(DB);

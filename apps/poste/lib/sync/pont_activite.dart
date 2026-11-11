@@ -35,6 +35,9 @@ const Set<String> collectionsActivite = {
   // Lot L0 : les USAGES des paramètres par les pièces (une ligne par pièce et par clé, ajout seul). Un fileul note ici qu'une pièce a utilisé une valeur ; la mère,
   // qui seule écrit les versions, refuse ensuite de réécrire ce que cette pièce a utilisé.
   'usagesParametres',
+  // Lot T6 : les DEMANDES de prix d'un fileul (proposition, décision, retrait), une fiche par demande. Le fileul la dépose ; la MÈRE l'applique après avoir refait les mêmes
+  // contrôles sous le rôle de son auteur, puis écrit le verdict (`etat`, `resultatCode`, `resultatMotif`) sur la même fiche, qui revient au fileul par le même chemin.
+  'propositionsTarif',
   // Les pièces et les compteurs, avec leurs règles de fusion propres (`fusion_activite.dart`).
   'factures',
   'avoirs',

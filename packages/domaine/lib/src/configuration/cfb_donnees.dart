@@ -375,6 +375,7 @@ const cfbLibellesCollections = <String, (String, String)>{
   'tachesPlanifiees': ('—', 'tachesPlanifiees'),
   'tentativesConnexion': ('M14', 'Tentatives de connexion refusées'),
   'transferts': ('M6', 'Transferts'),
+  'tarifs': ('CFG', 'Prestations tarifées'),
   'typesPiece': ('CFG', 'Types de pièces certifiantes'),
   'unitesLabo': ('M5', 'Unités de mesure'),
   'utilisateurs': ('M14', 'Utilisateurs'),
@@ -382,6 +383,7 @@ const cfbLibellesCollections = <String, (String, String)>{
   'variablesImagerie': ('CFG', 'Variables des comptes rendus d’imagerie'),
   'variablesLabo': ('M5', 'Variables et valeurs de référence'),
   'visites': ('—', 'visites'),
+  'versionsTarif': ('CFG', 'Versions de prix'),
   'visitesHospi': ('—', 'visitesHospi'),
 };
 

@@ -4,7 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:sigh_domaine/sigh_domaine.dart' show Agent, cpaDoublonsDuPlan, cpcGardeArchives, cpcGardeClotures, cpcGardeEcritures, gardePresenceValideeRh, gardeRegimeIndividuelRh;
+import 'package:sigh_domaine/sigh_domaine.dart'
+    show Agent, cpaDoublonsDuPlan, cpcGardeArchives, cpcGardeClotures, cpcGardeEcritures, gardePresenceValideeRh, gardeRegimeIndividuelRh, tarChampsPrixLecture, tarGardeLecture, tarGardeVersion;
 
 import 'persistance.dart';
 
@@ -278,6 +279,7 @@ class Magasin {
     for (final e in ecrit.entries) {
       _jeux[e.key] = fusionnees[e.key] ?? e.value;
     }
+    collectionsLuesDuDisque = {...ecrit.keys};
     for (final e in fusionnees.entries) {
       await p.ecrire(e.key, e.value);
     }
@@ -285,6 +287,13 @@ class Magasin {
     jeuxFusionnes = fusionnees.map((k, v) => MapEntry(k, v.length - (ecrit[k]?.length ?? 0)));
     _persistance = p;
   }
+
+  /// Les collections que ce démarrage a relues DU DISQUE (celles que le poste avait déjà écrites) : c'est ce qui distingue un magasin d'AVANT une nouvelle collection du
+  /// jeu livré (reprise des prix : un poste qui avait des actes enregistrés mais pas de référentiel de prix).
+  Set<String> collectionsLuesDuDisque = const {};
+
+  /// Le jeu d'origine tel que livré avec le poste, pour une collection (jamais modifié).
+  List<Fiche> jeuDOrigine(String nom) => [for (final f in (_origine[nom] ?? const <Fiche>[])) {...f}];
 
   /// Les collections dont des fiches nouvelles du jeu d'origine ont été ajoutées au démarrage, et combien (vide si le jeu n'a pas changé).
   Map<String, int> jeuxFusionnes = const {};
@@ -374,6 +383,10 @@ class Magasin {
     'livraisons': 'M7',
     'pvReceptions': 'M7',
     'catalogueTarifs': 'M8',
+    // Lot T6 : le référentiel de prix unique (famille R : la mère seule écrit) et les demandes d'un fileul (famille B : ajout seul, la mère applique).
+    'tarifs': 'CFG',
+    'versionsTarif': 'CFG',
+    'propositionsTarif': 'CFG',
     'visitesHospi': 'M3',
     'appels': 'M2',
     'reunions': 'M13',
@@ -554,6 +567,12 @@ class Magasin {
         if (nom == 'parametres' || nom == 'usagesParametres') {
           c.garder((op, f) => op == 'inserer' ? null : 'Une version de paramètre ne se réécrit jamais : ajouter une version avec sa date d’effet (rien n’est supprimé, RG-14).');
         }
+        // Lot T6 (PRD-TARIFS) : une version de prix est IMMUABLE (une correction AJOUTE une version) et `actes`, `analyses`, `catalogueTarifs` ne s'éditent plus pour un prix :
+        // elles reflètent le référentiel (la projection les réécrit par `appliquerDistante`, qui ne passe pas par les gardes). Tenu AU MOTEUR : masquer un bouton ne protège rien.
+        if (nom == 'versionsTarif') c.garder((op, f) => tarGardeVersion(op, f, c.parId(f['id'])));
+        if (tarChampsPrixLecture.containsKey(nom)) {
+          c.garder((op, f) => tarGardeLecture(nom, op, f, c.parId(f['id']), referentielPresent: collection('versionsTarif').toutes.isNotEmpty));
+        }
         return c;
       });
 
@@ -641,6 +660,8 @@ class Magasin {
     'livraisons',
     'pvReceptions',
     'catalogueTarifs',
+    'tarifs',
+    'versionsTarif',
     'examensLabo',
     'unitesLabo',
     'variablesLabo',
