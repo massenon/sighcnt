@@ -173,3 +173,32 @@ Le canal mère, relais et téléphone de la copie de paie, le profil « agent »
 ### Suite complète du poste (lot Z, 10/11/2026)
 
 Les huit échecs que le lot Y disait préexistants étaient des tests périmés par les lots L1 et la vague 49 (cause de chacun : `ECARTS-MAQUETTE.md` E2343), remis sur ce que la maquette fait aujourd'hui ; huit autres vecteurs ont suivi les lots L7 et L8 (E2351). Exécution complète finale, sortie lue : `flutter test` dans `apps/poste` : **2 404 verts, 1 ignoré (préexistant), 0 échec**, 16 min 22 s ; `dart test` dans `packages/domaine` : 3 343 verts.
+
+## ORG2 : organigramme modifiable aligné sur la photo, verrou d'un poste de secours, garde soins (réalisé le 11/11/2026)
+
+Décisions de la Direction du 11/11/2026 (`DECISIONS-A-VALIDER.md`, section G : O1 à O5, P3, P4). Même méthode que les lots précédents : la maquette d'abord, un scénario qui échoue sur l'arbre d'avant, les vecteurs tirés de la maquette, le domaine Dart, puis le poste.
+
+### Ce qui est livré
+
+| Pièce | Où | Vérification |
+|---|---|---|
+| Semence de la collection `postes` alignée sur la photo (six intitulés, hiérarchie, identifiants stables), titre « SG » porté par le personnel, `VERSION` 78 | `prototype_html/assets/js/data.js`, `store.js` | « Vague 111 » (20 vérifications ; échoue sur l'arbre d'avant), « Vague 104 » alignée |
+| Moteur `SIGH.organigramme` : réaffecter, renommer le titulaire, poser le titre de l'agent, créer, archiver ; refus nommés ; journal ; droits (écrire, annuler pour archiver) | `parcours.js`, `modules/configuration.js` | « Vague 111 » (gestes par la modale, refus à l'écran, droits, reprise) |
+| Reprise qui n'écrase jamais une modification de la clinique (trace d'écran et comparaison à l'ancienne semence) | `store.js` (`migrerOrganigramme`), `organigramme_poste.dart` (`reprendre`) | « Vague 111 », `organigramme_test.dart`, `org2_poste_test.dart` |
+| Impression A4 paysage : arbre ordonné en fentes, titre de l'agent, aucune étoile | `print.js` (`P.organigramme`), `piece.dart`, `feuilles.dart`, `pdf.dart` | PDF mesuré 842 x 595 pt, une page, pdftotext (maquette et poste) |
+| P3 : délai de verrou d'un poste de secours (5 minutes, à valider, en base, administrateur et DAF) | `parcours.js` (`SIGH.verrouSecours`), `app.js`, `m14-securite.js` ; `verrou_secours.dart`, paramètre `securite.delaiVerrouPosteSecours` ; `verrou_secours_poste.dart`, `sessions.dart`, `acc_ecrans.dart` | « Vague 112 » ; 33 tests du domaine ; `org2_poste_test.dart` (carte, droits, verrou à la connexion) |
+| P4 : la garde soins compte dans « Mes statistiques de garde » | `parcours.js` (`TRAVAIL_MES`), `espace_mes.dart` | « Vague 112 » ; `mes_pointage.json` régénéré (une lecture change) |
+| Vecteurs | `prototype_html/build/vecteurs-organigramme.js` → `packages/domaine/test/vecteurs/organigramme.json` (42 cas, 6 contrôles, 5 reprises, 6 mises en page, 16 réglages, 6 désignations, 9 délais) | régénérable |
+| Domaine Dart | `packages/domaine/lib/src/configuration/organigramme.dart`, `securite/verrou_secours.dart` | `dart test` : 3 441 verts (98 tests de ce lot) |
+| Poste | `apps/poste/lib/donnees/organigramme_poste.dart`, `verrou_secours_poste.dart`, `modules/cfg/cfa_organisation.dart`, `modules/m14/sessions.dart`, `impression/*`, `core/parametres_poste.dart`, `service_installation.dart` | parité N1 : m14-sessions 24 sur 24 ; `org2_poste_test.dart` |
+
+### Décisions de conception
+
+- **Le titre vit sur l'agent, pas sur le poste.** Un poste se renomme, se réaffecte, se vide ; le titre d'un agent ne doit pas changer parce que son poste change de main. Le rattachement se fait par le nom du titulaire, comme pour l'espace « Mes ».
+- **L'organigramme est une collection administrable, la photo est sa semence.** La hiérarchie de la photo est la valeur de départ ; rien ne la fige. Ce que la photo ne tranche pas est écrit en hypothèse (E2352) et se corrige au CRUD sans code.
+- **Un refus se nomme et n'écrit rien.** Tout est contrôlé avant la première écriture ; archiver demande le droit d'annuler (RG-14).
+- **Une valeur d'attente se dit.** Le délai de 5 minutes est marqué « à valider » à l'écran et au registre ; ce qu'est un « poste de secours » est une hypothèse écrite.
+
+### Limites
+
+Voir `ECARTS-MAQUETTE.md` E2360 : lectures de hiérarchie que la photo ne tranche pas, définition d'un poste de secours, refus d'archiver un poste qui porte des postes, titre qui ne suit pas le poste, apostrophe de « Agents d'Entretiens ». Le mobile n'est concerné par aucun de ces changements (le paramètre de secours est de la famille `securite`, réservée).
