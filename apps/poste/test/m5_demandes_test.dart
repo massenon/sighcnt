@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show tarMigrer;
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
@@ -33,12 +34,21 @@ Fiche dem(String ref, String etat, {Map<String, Object?> plus = const {}}) => {
       ...plus,
     };
 
+/// Le catalogue du jeu d'essai ; le PRIX en est lu au référentiel de prix (lot T6), repris SANS changer un prix.
+final _analyses = [
+  {'code': 'L01', 'designation': 'AKOP', 'categorie': 'Parasitologie', 'prix': 2000, 'echantillon': 'Selles', 'delai': '24 h'},
+  {'code': 'L02', 'designation': 'ASLO', 'categorie': 'Sérologie', 'prix': 4000, 'echantillon': 'Sang', 'delai': '24 h'},
+];
+final _migration = tarMigrer(actes: const [], grille: const [], analyses: _analyses);
+
 Magasin magasin({
   List<Fiche> demandes = const [],
   List<Fiche> taches = const [],
   List<Fiche> patients = const [],
 }) =>
     Magasin({
+      'tarifs': _migration.tarifs,
+      'versionsTarif': _migration.versions,
       'demandesAnalyses': demandes,
       'taches': taches,
       'patients': patients.isEmpty
@@ -60,12 +70,7 @@ Magasin magasin({
       ],
       'examensLabo': const [],
       'audit': const [],
-    }, 'POSTE', {
-      'analyses': [
-        {'code': 'L01', 'designation': 'AKOP', 'categorie': 'Parasitologie', 'prix': 2000, 'echantillon': 'Selles', 'delai': '24 h'},
-        {'code': 'L02', 'designation': 'ASLO', 'categorie': 'Sérologie', 'prix': 4000, 'echantillon': 'Sang', 'delai': '24 h'},
-      ],
-    });
+    }, 'POSTE', {'analyses': _analyses});
 
 Future<void> ouvrir(WidgetTester t, Magasin m, String ecran,
     {String role = 'admin'}) async {

@@ -66,8 +66,8 @@
   {
    "id": "cfg-catalogue",
    "mesure": true,
-   "attendus": 22,
-   "presents": 22,
+   "attendus": 3,
+   "presents": 3,
    "taux": 1.0,
    "manquants": []
   },
@@ -210,8 +210,8 @@
   {
    "id": "cfg-tarifs",
    "mesure": true,
-   "attendus": 22,
-   "presents": 22,
+   "attendus": 25,
+   "presents": 25,
    "taux": 1.0,
    "manquants": []
   },

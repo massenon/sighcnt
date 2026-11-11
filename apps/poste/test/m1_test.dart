@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show tarMigrer;
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
@@ -38,6 +39,9 @@ const ecransM1 = [
 
 Map<String, Object?> vecteurs(String nom) =>
     (jsonDecode(File('../../packages/domaine/test/vecteurs/$nom.json').readAsStringSync()) as Map).cast<String, Object?>();
+
+List<Map<String, Object?>> jsonListe(String nom) =>
+    (jsonDecode(File('assets/donnees/jeu/$nom.json').readAsStringSync()) as List).map((e) => (e as Map).cast<String, Object?>()).toList();
 
 Magasin jeuComplet() => Magasin.depuisDossier(Magasin.collectionsDuJeu);
 
@@ -386,6 +390,9 @@ void main() {
           {'id': 'F2', 'statut': 'actif', 'numero': 'FC-2026-00002', 'lignes': [{'statutPaiement': 'du'}], 'reliquat': 7000, 'partPatient': 7000},
         ],
         'catalogueTarifs': cat,
+        // Le prix d'une pièce se lit au RÉFÉRENTIEL de prix (lot T6) : le jeu livré le porte.
+        'tarifs': jsonListe('tarifs'),
+        'versionsTarif': jsonListe('versionsTarif'),
         'personnel': [
           {'id': 'MED', 'statut': 'actif', 'nomComplet': 'BASSONGUI Chabi Séko', 'fonction': 'medecin', 'poste': 'Directeur médical'}
         ],
@@ -469,6 +476,8 @@ void main() {
 
     cas('transcrire deux analyses : dossier externe, facture à lignes payables, caisse saisie, prélèvement bloqué', (t) async {
       final cat = (d['analysesCatalogue'] as List).cast<Map>().map((e) => e.cast<String, Object?>()).toList();
+      // Le prix de l'analyse vient du référentiel de prix (lot T6) : le catalogue du vecteur, repris sans changer un prix.
+      final migration = tarMigrer(actes: const [], grille: const [], analyses: cat);
       final m = Magasin({
         'patients': [for (var i = 0; i < 3; i++) p('x$i', 'CNT/${i + 1}/26')],
         'demandesAnalyses': [],
@@ -476,6 +485,8 @@ void main() {
         'taches': [],
         'audit': [],
         'analyses': cat,
+        'tarifs': migration.tarifs,
+        'versionsTarif': migration.versions,
       }, 'POSTE', {'analyses': cat});
       await ouvrir(t, m, 'm1-externe');
       await toucher(t, find.text('Nouvelle demande externe').last);

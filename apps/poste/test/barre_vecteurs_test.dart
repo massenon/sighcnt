@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show tarMigrer;
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/shell/centre_notifications.dart';
@@ -19,7 +20,14 @@ final horloge = DateTime.parse(v['horloge'] as String);
 Magasin magasinDeLaSonde() {
   final jeu = m_(v['jeu']);
   final ref = m_(jsonDecode(File('assets/donnees/jeu/referentiels.json').readAsStringSync()));
-  return Magasin({for (final e in jeu.entries) e.key: l_(e.value)}, 'POSTE', ref);
+  // Le prix se lit au RÉFÉRENTIEL (lot T6) : la sonde de la maquette porte ses actes et les propositions de prix de la grille ; le référentiel de ses prix EN VIGUEUR est la
+  // migration de ces actes et des analyses du jeu livré, sans changer un prix (c'est sa règle), puis les propositions de la sonde.
+  final migration = tarMigrer(actes: l_(jeu['actes']), grille: const [], analyses: l_(ref['analyses']));
+  return Magasin({
+    for (final e in jeu.entries) e.key: l_(e.value),
+    'tarifs': migration.tarifs,
+    'versionsTarif': [...migration.versions, ...l_(jeu['versionsTarif'])],
+  }, 'POSTE', ref);
 }
 
 void main() {

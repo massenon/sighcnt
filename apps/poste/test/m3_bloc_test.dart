@@ -57,6 +57,9 @@ Magasin magasin(Map<String, List<Fiche>> plus) => Magasin({
       'patients': patients(),
       'soignants': jeuJson('soignants'),
       'catalogueTarifs': jeuJson('catalogueTarifs'),
+      // Le prix se lit au référentiel de prix (lot T6) : le jeu livré le porte.
+      'tarifs': jeuJson('tarifs'),
+      'versionsTarif': jeuJson('versionsTarif'),
       'audit': const <Fiche>[],
       for (final e in plus.entries) e.key: [for (final f in e.value) {...f}],
     }, 'POSTE', {...(jsonDecode(File('assets/donnees/jeu/referentiels.json').readAsStringSync()) as Map).cast<String, Object?>()});

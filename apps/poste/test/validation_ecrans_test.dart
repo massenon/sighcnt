@@ -96,8 +96,9 @@ void main() {
     (famille: 'pathologies', ecran: 'm2-pathologies', col: 'pathologies', onglet: 'referentiel', posee: {'aValider': true}),
     (famille: 'imagerie', ecran: 'cfg-imagerie-catalogue', col: 'examensImagerie', onglet: null, posee: {'aValider': true}),
     (famille: 'imagerie', ecran: 'cfg-imagerie-catalogue', col: 'variablesImagerie', onglet: 'variables', posee: {'aValider': true}),
-    (famille: 'actes', ecran: 'cfg-tarifs', col: 'actes', onglet: 'actes', posee: {'tarifProvisoire': true, 'prix': 1000}),
-    (famille: 'analyses', ecran: 'cfg-tarifs', col: 'analyses', onglet: 'analyses', posee: {'tarifProvisoire': true, 'prix': 1000}),
+    // « Tarifs et prix » (lot T6) : le PRIX ne s'écrit plus dans la liste de lecture (garde du magasin), seul le marquage « tarif d'attente » se pose.
+    (famille: 'actes', ecran: 'cfg-tarifs', col: 'actes', onglet: 'prestations', posee: {'tarifProvisoire': true}),
+    (famille: 'analyses', ecran: 'cfg-tarifs', col: 'analyses', onglet: 'analyses', posee: {'tarifProvisoire': true}),
     (famille: 'objectifs_pilotage', ecran: 'm12-tableau-decisionnel', col: 'objectifsPilotage', onglet: 'objectifs', posee: {'aValider': true}),
     (famille: 'modeles_badge', ecran: 'm10-badges-modeles', col: 'modelesBadge', onglet: null, posee: {'aValider': true}),
     (famille: 'modeles_messages', ecran: 'cfg-rappels', col: 'modelesMessage', onglet: 'modeles', posee: {'aValider': true}),
@@ -114,9 +115,15 @@ void main() {
           col.mettreAJour(f['id'], {...e.posee, 'valideLe': null, 'validePar': null, 'valideRole': null}, journaliser: false);
         }
         Future<void> ouvrirOnglet() async {
-          if (e.onglet == null) return;
-          final onglet = find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('kit:onglet:${e.onglet}'));
-          await toucherM14(t, onglet.first);
+          if (e.onglet != null) {
+            final onglet = find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key as ValueKey<String>).value.startsWith('kit:onglet:${e.onglet}'));
+            await toucherM14(t, onglet.first);
+          }
+          // « Tarifs et prix » (lot T6) range les actes parmi 128 prestations (lignes de grille comprises) : le tableau se restreint aux consultations, qui portent leur fiche d'acte.
+          if (e.famille == 'actes') {
+            await t.enterText(find.byType(TextField).first, 'MG0');
+            await t.pump(const Duration(milliseconds: 400));
+          }
         }
 
         // Un rôle HORS famille qui ouvre pourtant l'écran : aucun bouton Valider, ni grisé.

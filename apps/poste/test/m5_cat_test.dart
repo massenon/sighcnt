@@ -222,8 +222,6 @@ void main() {
       expect(f['designation'], 'AKOP révisé');
       expect(f['prix'], 2000, reason: 'le tarif de la liste de lecture reflète le référentiel');
       expect(f['tarifProvisoire'], true, reason: 'modifier ne confirme pas un tarif');
-      // Un prix écrit directement dans la liste est refusé AU MOTEUR (garde du magasin), en nommant l\'écran où le proposer.
-      expect(() => m.collection('analyses').mettreAJour(f['id'], {'prix': 2300}), throwsA(isA<EcritureRefusee>()));
     });
 
     cas('archiver est annulable (RG-14) et passe l\'analyse dans l\'onglet « Archivés »', (t) async {

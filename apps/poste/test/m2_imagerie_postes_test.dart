@@ -237,9 +237,9 @@ void main() {
     cas('« Nouvelle demande » sans tarif au catalogue : refusé en nommant l\'examen, rien n\'est facturé', (t) async {
       // Sans catalogue tarifaire (archivé ci-dessous) et sans acte rapproché, le scanner n'a aucun tarif : un tiret n'est pas un zéro.
       final m = magasin();
-      // Le jeu livré porte désormais le catalogue tarifaire : on l'archive pour poser le cas « aucun tarif ».
-      for (final x in m.collection('catalogueTarifs').actives.toList()) {
-        m.collection('catalogueTarifs').archiver(x['id']);
+      // Le jeu livré porte le RÉFÉRENTIEL de prix (lot T6) : on archive la prestation du scanner (RG-14) pour poser le cas « aucun tarif » ; un code sans prestation est ABSENT.
+      for (final x in m.collection('tarifs').actives.where((p) => p['codeGrille'] == 'IMG-TDM-CER').toList()) {
+        m.collection('tarifs').archiver(x['id']);
       }
       final avantFactures = m.collection('factures').toutes.length;
       final avantArchivees = m.collection('demandesImagerie').archivees.length;
@@ -255,9 +255,8 @@ void main() {
 
     cas('« Nouvelle demande » : demande bloquée, facture à la caisse, tâches, notification — le prescripteur extérieur est nommé', (t) async {
       final m = magasin();
-      // Le tarif vient du catalogue tarifaire : l'entrée de la maquette pour le scanner cérébral (aucun prix inventé).
+      // Le tarif vient du référentiel de prix : la ligne de la grille pour le scanner cérébral, telle que la maquette la porte (aucun prix inventé).
       final entree = liste(vecteurs['tarifPrix']).firstWhere((x) => (x['entree'] as Map?)?['code'] == 'IMG-TDM-CER')['entree']! as Map;
-      m.collection('catalogueTarifs').inserer({...entree.cast<String, Object?>(), 'id': 'TAR1'});
       final patient = m.collection('patients').actives.first;
       final avantFactures = m.collection('factures').toutes.length;
       await remplir(t, m, 'Scanner cérébral');
