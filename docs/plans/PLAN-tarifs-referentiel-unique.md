@@ -23,8 +23,10 @@ Source : `docs/prd/PRD-TARIFS-referentiel-unique-et-changement-de-prix.md` (déc
 - Ce qui reste : l'import (T4 du PRD), les produits (T5), le poste Flutter (T6, DAF = la mère, Direction = fileul, T11), le retrait des anciennes listes (T7).
 ### Lot T4 : l'importation [À FAIRE] (dépend de T3 et du lot d'import `K.importer`)
 ### Lot T5 : les produits [À FAIRE] (prix d'achat versionné, RG-02 à l'écriture, corrige E846)
-### Lot T6 : le poste Flutter [À FAIRE]
-- Domaine `packages/domaine/lib/src/tarifs/`, vecteurs (`build/vecteurs-tarifs.js`), écran, huit groupes de lecteurs, synchronisation (famille R : la mère seule écrit, DAF = la mère, Direction = fileul), parité N1 des trois écrans, `flutter analyze`, `flutter test`, banc de synchronisation à deux postes.
+### Lot T6 : le poste Flutter [FAIT 11/11/2026]
+- Fichiers : domaine `packages/domaine/lib/src/tarifs/tarifs.dart` (moteur pur, vecteurs `tarifs.json` rejoués), `apps/poste/lib/donnees/tarifs_poste.dart` et `magasin.dart` (collections, gardes, projection de lecture, parité, reprise d'un magasin ancien), écran `modules/cfg/cft_tarifs.dart` (« Tarifs et prix », page de renvoi `cfg-catalogue`), `modules/m5/cat_catalogue.dart` (prix en lecture), huit groupes de lecteurs convertis à l'accesseur daté, `sync/configuration_sync.dart`, `sync/pont_activite.dart`, `packages/sync_dart/lib/src/mere.dart` (famille R de `versionsTarif` et `validationsReferentiels`, famille A de `propositionsTarif`, exclusion du mobile), jeu régénéré (`gen-poste-jeu.js` : 201 prestations, 240 versions).
+- Preuve : relevé exhaustif avant et après sur les 268 codes et les mêmes voies que `capture-prix.js` : 0 écart inattendu, 39 lignes LABO attendues sur trois voies (E2388) ; parité N1 `cfg-tarifs` 25 sur 25, `cfg-catalogue` 3 sur 3, `m5-catalogue` 20 sur 20, statuts « porté » ; synchronisation de bout en bout contre la vraie mère (`tarifs_sync_test.dart`) ; mutations (f), (g), (b) rougies puis restaurées (E2391). Écarts E2387 à E2392.
+- Ce qui reste : l'importation et les produits (T4, T5), le retrait des anciennes listes (T7), l'impression de la grille comparée en pixels, un essai en application réelle (non fait ici).
 ### Lot T7 : retrait des anciennes listes [À FAIRE]
 - Retirer les projections, les propriétés calculées de `D.ANALYSES` et `D.TYPES_CHAMBRE`, `D.CATALOGUE` comme source ; garde de génération contre toute lecture directe. Rend aussi une partie de la marge de quota (le catalogue tarifaire pèse 50 Ko).
 
