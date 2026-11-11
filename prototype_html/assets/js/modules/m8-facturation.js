@@ -1547,9 +1547,13 @@
     title: 'Factures pro-forma',
     description: 'Estimations remises au patient ou à l’assureur avant réalisation des prestations.',
     regle: 'La facture pro-forma n’a <strong>aucune valeur fiscale</strong> : elle ne peut ni servir de justificatif comptable ni être transmise au dispositif MECeF.',
-    render: function (root) {
+    render: function render(root) {
       var rows = factures().filter(function (f) { return f.proforma || String(f.numero).indexOf('PRO-') === 0; });
       var host = el('div.space-y-4');
+      var PRC = global.SIGH.parcours;
+      host.appendChild(K.note('<strong>Convertie en vente, une pro-forma se facture au prix du jour</strong>, l’écart avec son prix étant affiché (bouton « Prix à la conversion »), '
+        + 'sauf pendant <strong>' + PRC.validiteProformaJours() + ' jours</strong> : dans ce délai le prix de la pro-forma est tenu. Cette durée est un réglage en base, <strong>à valider</strong> par la Direction (proposition : '
+        + PRC.VALIDITE_PROFORMA_DEFAUT + ' jours).', { tone: 'info', icon: 'scale' }));
 
       host.appendChild(U.kpiGrid([
         { label: 'Pro-forma établies', value: C.num(rows.length), icon: 'file-text', tone: 'navy' },
@@ -1568,11 +1572,52 @@
           colMontant,
         ],
         onRowClick: function (f) { U.drawer({ title: f.numero, subtitle: f.patient, body: detailFacture(f), footer: [K.btn('Imprimer', { variant: 'primary', icon: 'printer', onclick: function () { etatFacture(f, { proforma: true }); } })] }); },
-        rowActions: function (f) { return [K.iconBtn('printer', 'Imprimer', function () { etatFacture(f, { proforma: true }); })]; },
-        actions: [K.droits().editer ? K.lien('m8-facturation', 'Nouvelle pro-forma', { size: 'sm', variant: 'primary', icon: 'plus' }) : null],
+        rowActions: function (f) {
+          return [K.iconBtn('printer', 'Imprimer', function () { etatFacture(f, { proforma: true }); }),
+            K.iconBtn('scale', 'Prix à la conversion', function () { ecartConversion(f); })];
+        },
+        actions: [K.droits().editer ? K.lien('m8-facturation', 'Nouvelle pro-forma', { size: 'sm', variant: 'primary', icon: 'plus' }) : null,
+          global.SIGH.parcours.peutDeciderTarif() ? K.btn('Durée de validité', { size: 'sm', icon: 'timer', onclick: function () { reglerValidite(rafraichir); } }) : null],
       }));
+      function rafraichir() { C.clear(root); render(root); U.icons(root); }
       root.appendChild(host);
       return null;
+
+      /* L'écart de prix d'une pro-forma à sa conversion, ligne par ligne, et la règle qui s'applique (durée de validité). */
+      function ecartConversion(f) {
+        var r = PRC.ecartProforma(f.id);
+        if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+        var table = K.miniTable(['Ligne', 'Prix de la pro-forma', 'Prix du jour', 'Écart', 'Prix retenu'], r.lignes.map(function (l) {
+          return [l.designation + (l.sansTarif ? ' (' + l.sansTarif + ')' : ''), C.money(l.ancien, false), l.nouveau == null ? '—' : C.money(l.nouveau, false), l.nouveau == null ? '—' : (l.ecart > 0 ? '+' : '') + C.money(l.ecart, false), C.money(l.retenu, false)];
+        }));
+        var mo = U.modal({
+          title: 'Prix à la conversion : ' + r.numero, size: 'lg',
+          body: el('div.space-y-3', { 'data-ecart-proforma': r.regle }, [
+            K.note('Pro-forma du ' + C.dateFR(r.jourProforma) + ', conversion le ' + C.dateFR(r.jourConversion) + ' (' + r.ageJours + ' jour(s)). '
+              + (r.regle === 'prix_de_la_proforma' ? 'Dans la durée de validité (' + r.validiteJours + ' jours) : le <strong>prix de la pro-forma est tenu</strong>, l’écart est affiché pour information.'
+                : 'Au-delà de la durée de validité (' + r.validiteJours + ' jours) : la vente se facture au <strong>prix du jour</strong>, l’écart est affiché.'), { tone: r.regle === 'prix_de_la_proforma' ? 'info' : 'warning', icon: 'scale' }),
+            table,
+            el('p.text-sm.font-semibold.text-slate-800', { text: 'Écart total : ' + (r.ecartTotal > 0 ? '+' : '') + C.money(r.ecartTotal, false) }),
+          ]),
+          footer: [K.btn('Fermer', { onclick: function () { mo.close(); } })],
+        });
+        U.icons(document.body);
+      }
+      function reglerValidite(apres) {
+        var fm = U.form([
+          { name: 'jours', label: 'Durée de validité d’une pro-forma (jours)', type: 'number', required: true, min: 0, max: 365, col: 'full', help: 'Entier de 0 à 365. Valeur d’attente de ' + PRC.VALIDITE_PROFORMA_DEFAUT + ' jours : aucun document ne la fixe, à valider par la Direction.' },
+          { name: 'motif', label: 'Motif (facultatif)', col: 'full' },
+        ], { jours: PRC.validiteProformaJours() });
+        var mo = U.modal({ title: 'Durée de validité d’une pro-forma', size: 'md', body: fm, footer: [
+          K.btn('Annuler', { onclick: function () { mo.close(); } }),
+          K.btn('Enregistrer', { variant: 'primary', icon: 'save', onclick: function () {
+            var v = fm.collect(); if (!v) return;
+            var r = PRC.definirValiditeProforma({ jours: v.jours, motif: v.motif });
+            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+            mo.close(); U.toast('Durée de validité réglée à ' + r.jours + ' jour(s).', { type: 'success' }); apres();
+          } }),
+        ] });
+      }
     },
   });
 

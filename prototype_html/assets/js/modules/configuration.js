@@ -927,6 +927,35 @@
     });
   }
 
+  /** La commande « Valider » des familles « Tarifs des actes » et « Tarifs des analyses » (E2366, levée au lot T3) : l'élément de la fiche de lecture qui porte
+      encore son marquage « tarif d'attente ». Rend `{ famille, id }` ou null. */
+  function marquageDeLaLigne(code) {
+    var h = D.TARIFS.lire(), p = h && h.parCode[code], V = global.SIGH.validations;
+    if (!p || !V) return null;
+    var cands = [['actes', p.codeActe], ['analyses', p.codeAnalyse]];
+    for (var i = 0; i < cands.length; i++) {
+      if (!cands[i][1]) continue;
+      var fiche = S.collection(cands[i][0]).all().filter(function (f) { return f.code === cands[i][1] && f.statut !== 'archive'; })[0];
+      var e = fiche && V.etatValidation(cands[i][0], fiche.id);
+      if (e && e.enAttente) return { famille: cands[i][0], id: fiche.id };
+    }
+    return null;
+  }
+
+  /** La comparaison LIGNE À LIGNE des propositions : ancien et nouveau prix, variation, colonne assurée, date d'effet, pièces des 30 derniers jours. */
+  function lignesComparaison(versions) {
+    var h = D.TARIFS.lire();
+    return versions.map(function (v) {
+      var p = h.parCode[v.code] || {};
+      var s = D.TARIFS.instantane(h, p, v.dateEffet || jourPrix());
+      var pct = PRC().variationPropositionPct(v);
+      return { v: v, code: v.code, libelle: p.libelle || v.code, actuelNA: s ? s.na : null, propose: v.etatNonAssure === 'manquant' ? null : v.prixNonAssure, pct: pct,
+        actuelA: s ? (s.etatAssure === 'nc' ? 'NON COUVERT' : s.etatAssure === 'unique' ? 'prix unique' : s.etatAssure === 'montant' ? C.money(s.pa, false) : 'à valider') : 'Sans prix',
+        proposeA: v.etatAssure === 'nc' ? 'NON COUVERT' : v.etatAssure === 'unique' ? 'prix unique' : v.etatAssure === 'montant' ? C.money(v.prixAssure, false) : 'à valider',
+        pieces: p.code ? PRC().piecesRecentesTarif(p, 30) : 0 };
+    });
+  }
+
   function badgeEtatPrix(r) {
     var ton = { 'En vigueur': 'success', 'Proposition en attente': 'warning', 'Changement à venir': 'info', 'Provisoire': 'warning', 'Sans prix en vigueur': 'danger' }[r.etat] || 'neutral';
     return U.badge(r.etat, ton);
@@ -1014,32 +1043,48 @@
     champs.push({ name: 'etatAssure', label: 'Colonne assurée', type: 'select', required: true, value: s ? s.etatAssure : 'montant',
       options: [{ value: 'montant', label: 'Un montant' }, { value: 'nc', label: 'NON COUVERT par les assurances' }, { value: 'manquant', label: 'Non renseignée (ligne non facturable à l’assuré)' }, { value: 'unique', label: 'Prix unique (aucune colonne assurée)' }] });
     champs.push({ name: 'prixAssure', label: 'Prix assuré (FCFA)', type: 'money', value: s && s.etatAssure === 'montant' ? s.pa : null, hint: 'Renseigné seulement quand la colonne assurée est un montant.' });
-    champs.push({ name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, value: jourPrix(), hint: 'Au plus tôt aujourd’hui : une date passée n’est pas acceptée. Le prix en vigueur ne change qu’à cette date, et seulement après un Oui.' });
+    var peutPassee = PRC().peutDatePasseeTarif(), peutValider = PRC().peutDeciderTarif();
+    champs.push({ name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, value: jourPrix(), hint: peutPassee
+      ? 'Aujourd’hui ou plus tard ; une date antérieure se coche ci-dessous et se motive. Le prix en vigueur ne change qu’à cette date, et seulement après un Oui.'
+      : 'Au plus tôt aujourd’hui. Le prix en vigueur ne change qu’à cette date, et seulement après un Oui.' });
+    if (peutPassee) champs.push({ name: 'datePassee', label: 'Date antérieure à aujourd’hui (refusée si une pièce porte déjà cette prestation depuis cette date)', type: 'checkbox', col: 'full' });
     champs.push({ name: 'motif', label: 'Motif du changement', type: 'textarea', required: true, col: 'full' });
     var f = U.form(champs, {});
+    /* L'INFO-BULLE (T6, Direction, 11/11/2026) : l'utilisateur qui modifie un prix apprend que la date passée est une autorité de la DAF et de la Direction. Les profils sont
+       lus du moteur, jamais écrits ici. */
+    var msgInfo = peutPassee
+      ? 'Vous détenez l’autorité de la date d’effet antérieure : cochez la case et motivez. Elle est refusée si une pièce porte déjà cette prestation depuis cette date.'
+      : 'Une date d’effet antérieure à aujourd’hui est une autorité de ' + PRC().profilsDatePassee() + ' : demandez-la à l’un de ces profils.';
+    var champDate = f.querySelector('#f_dateEffet'), lblDate = f.querySelector('label[for="f_dateEffet"]');
+    if (champDate) champDate.title = msgInfo;
+    if (lblDate) lblDate.appendChild(el('span.ml-1.inline-flex.align-middle.text-slate-400', { title: msgInfo, tabindex: '0', 'aria-label': msgInfo, 'data-info-date-passee': '' }, C.icon('info', 'h-3.5 w-3.5')));
     var info = ligne
       ? K.note('Prix en vigueur aujourd’hui : <strong>' + argent(s ? s.na : null) + '</strong> non assuré. Une proposition <strong>ne change rien</strong> tant que la Direction, la Directrice Administrative ou l’administrateur n’a pas répondu Oui ; les pièces déjà émises gardent leur prix.', { tone: 'info' })
       : K.note('La prestation est créée sans prix en vigueur : elle ne se facture qu’après le Oui qui valide sa première version.', { tone: 'info' });
+    var etats = K.note('<strong>Deux états, visibles :</strong> « Enregistrer » dépose une <strong>proposition</strong> (à valider : rien ne change) ; '
+      + (peutValider ? '« Valider » la met <strong>en vigueur</strong> à sa date d’effet, en un geste tracé avec votre rôle.' : '« Valider » est réservé à la Direction, à la Directrice Administrative et à l’administrateur : leur décision suit votre proposition.'), { tone: 'info', icon: 'git-compare' });
+    function envoyer(valider) {
+      var v = f.collect(); if (!v) return;
+      var o = { code: ligne ? ligne.code : v.code, prixNonAssure: v.prixNonAssure, etatAssure: v.etatAssure, prixAssure: v.prixAssure, dateEffet: v.dateEffet, motif: v.motif, datePassee: v.datePassee === true, valider: valider };
+      if (!ligne) o.creation = { libelle: v.libelle, famille: v.famille, secteur: v.secteur || null, source: 'Saisi à l’écran « Tarifs et prix »' };
+      var r = PRC().proposerTarif(o);
+      if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+      m.close();
+      if (r.valideeEnUnGeste) U.toast('Changement de prix validé : il prend effet le ' + C.dateFR(r.version.dateEffet) + '.', { type: 'success', detail: 'Validé en un geste par votre rôle ; les pièces déjà émises gardent leur prix.' });
+      else U.toast('Proposition enregistrée : elle attend la décision (Oui ou Non).', { type: 'success', detail: 'Le prix en vigueur ne change pas avant le Oui.' });
+      if (apres) apres(r.valideeEnUnGeste ? null : 'alertes');
+    }
     var m = U.modal({
       title: ligne ? 'Proposer un changement de prix' : 'Nouvelle prestation', subtitle: ligne ? ligne.code + ' : ' + ligne.libelle : null, size: 'md',
-      body: el('div.space-y-3', null, [info, f]),
+      body: el('div.space-y-3', null, [info, etats, f]),
       footer: [
         K.btn('Annuler', { onclick: function () { m.close(); } }),
-        K.btn('Proposer', {
-          variant: 'primary', icon: 'send',
-          onclick: function () {
-            var v = f.collect(); if (!v) return;
-            var o = { code: ligne ? ligne.code : v.code, prixNonAssure: v.prixNonAssure, etatAssure: v.etatAssure, prixAssure: v.prixAssure, dateEffet: v.dateEffet, motif: v.motif };
-            if (!ligne) o.creation = { libelle: v.libelle, famille: v.famille, secteur: v.secteur || null, source: 'Saisi à l’écran « Tarifs et prix »' };
-            var r = PRC().proposerTarif(o);
-            if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
-            m.close();
-            U.toast('Proposition enregistrée : elle attend la décision (Oui ou Non).', { type: 'success', detail: 'Le prix en vigueur ne change pas avant le Oui.' });
-            if (apres) apres('alertes');
-          },
-        }),
-      ],
+        K.btn('Enregistrer', { icon: 'send', title: 'Enregistrer comme proposition : à valider', onclick: function () { envoyer(false); } }),
+        /* La commande « Valider » est ABSENTE hors de la liste de rôles de la famille ; le moteur refuse de toute façon (VALIDATION_RESERVEE). */
+        peutValider ? K.btn('Valider', { variant: 'primary', icon: 'shield-check', title: 'Mettre en vigueur à la date d’effet, en un geste', onclick: function () { envoyer(true); } }) : null,
+      ].filter(Boolean),
     });
+    U.icons(document.body);
   }
 
   function decider(v, decision, apres) {
@@ -1067,6 +1112,37 @@
         if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
         U.toast('Changement de prix refusé.', { type: 'success' }); apres('alertes');
       });
+  }
+
+  /** « Oui à tout », ENCADRÉ : jamais sans la comparaison ligne à ligne sous les yeux. Chaque ligne passe par la décision ordinaire ; celles qui ne passent pas sont nommées. */
+  function ouiATout(versions, apres) {
+    var lignes = lignesComparaison(versions);
+    var seuil = PRC().seuilVariationAlerte();
+    var aDater = versions.some(function (v) { return !v.dateEffet; });
+    var champDate = aDater ? el('input.input', { type: 'date', value: jourPrix(), min: jourPrix(), 'aria-label': 'Date d’effet des propositions à dater' }) : null;
+    var table = K.miniTable(['Code', 'Prestation', 'Non assuré en vigueur', 'Non assuré proposé', 'Variation', 'Assuré en vigueur', 'Assuré proposé', 'Date d’effet', 'Pièces (30 jours)'],
+      lignes.map(function (r) {
+        return [r.code, r.libelle, argent(r.actuelNA), argent(r.propose), r.pct == null ? 'non comparable' : (r.pct > 0 ? '+' : '') + r.pct.toLocaleString('fr-FR') + ' %', r.actuelA, r.proposeA,
+          r.v.dateEffet ? C.dateFR(r.v.dateEffet) : 'à fixer', C.num(r.pieces)];
+      }));
+    var corps = el('div.space-y-3', { 'data-comparaison-oui-a-tout': '' }, [
+      K.note('<strong>' + lignes.length + ' changement(s) de prix</strong> vont être acceptés après lecture de cette comparaison. Chaque ligne passe par le contrôle d’usage : celles qu’une pièce déjà émise empêche sont refusées en nommant la pièce, les autres prennent effet. Les pièces déjà émises gardent leur prix.'
+        + (seuil != null ? ' Une variation au-delà de ' + seuil + ' % n’est jamais acceptée en bloc : elle se décide seule.' : ''), { tone: 'warning', icon: 'triangle-alert' }),
+      champDate ? el('div', null, [el('label.label', { text: 'Date d’effet des propositions à dater' }), champDate]) : null,
+      el('div.max-h-96.overflow-auto', null, table),
+    ].filter(Boolean));
+    var mo = U.modal({
+      title: 'Oui à tout : comparaison ligne à ligne', size: 'xl', body: corps,
+      footer: [K.btn('Annuler', { onclick: function () { mo.close(); } }), K.btn('Oui à tout (' + lignes.length + ')', { variant: 'primary', icon: 'check-check', onclick: function () {
+        var r = PRC().deciderTousTarifs({ comparaisonAffichee: true, ids: versions.map(function (v) { return v.id; }), dateEffet: champDate ? champDate.value : null });
+        if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+        mo.close();
+        U.toast(r.acceptees.length + ' changement(s) accepté(s)' + (r.refusees.length ? ', ' + r.refusees.length + ' refusé(s) par le moteur' : '') + (r.exclues.length ? ', ' + r.exclues.length + ' à décider seul(s)' : '') + '.',
+          { type: r.refusees.length || r.exclues.length ? 'warning' : 'success', detail: r.refusees.slice(0, 3).map(function (x) { return x.code + ' : ' + x.refus; }).join(' ; ') || null });
+        if (apres) apres('alertes');
+      } })],
+    });
+    U.icons(document.body);
   }
 
   function imprimerGrille(lignes, titre) {
@@ -1148,6 +1224,7 @@
                   });
                 }),
                 K.commandeIcone('pencil', 'Proposer un changement', function () { modaleProposition(r, rafraichirEcran); }),
+                (function () { var mq = marquageDeLaLigne(r.code); return mq ? K.boutonValider(mq.famille, mq.id, { size: 'sm', apres: function () { rafraichirEcran(); } }) : null; })(),
               ].filter(Boolean);
             },
           });
@@ -1214,12 +1291,21 @@
                 var delta = s && s.na != null && v.prixNonAssure != null && s.na ? Math.round((v.prixNonAssure - s.na) / s.na * 1000) / 10 : null;
                 return { id: v.id, v: v, code: v.code, libelle: p.libelle || v.code, actuelNA: s ? s.na : null, actuelPA: s ? s.pa : null, actuelEtat: s ? s.etatAssure : null,
                   propose: v.prixNonAssure, proposeA: v.etatAssure === 'montant' ? v.prixAssure : null, etatA: v.etatAssure, delta: delta, lot: LIBELLE_ORIGINE[v.origine] || v.origine,
-                  dateEffet: v.dateEffet || '', par: v.proposePar || '', motif: v.motif || '' };
+                  dateEffet: v.dateEffet || '', par: v.proposePar || '', motif: v.motif || '', pieces: p.code ? PRC().piecesRecentesTarif(p, 30) : 0 };
               });
+              var tableauAlertes = null;
               return el('div.space-y-3', null, [
+                (peutDecider && enAttente.length) ? el('div.flex.flex-wrap.items-center.gap-2', null, [
+                  K.btn('Oui à tout', { icon: 'check-check', title: 'Accepter les propositions affichées (filtres compris), après lecture de la comparaison ligne à ligne', onclick: function () {
+                    var choisies = tableauAlertes ? tableauAlertes.lignesFiltrees().map(function (r) { return r.v; }) : enAttente;
+                    if (!choisies.length) { U.toast('Aucune proposition affichée.', { type: 'warning' }); return; }
+                    ouiATout(choisies, rafraichirEcran);
+                  } }),
+                  el('span.text-xs.text-slate-500', { text: 'Porte sur les lignes affichées (filtres et recherche compris) ; la comparaison ligne à ligne s’affiche avant toute acceptation en bloc.' }),
+                ]) : null,
                 K.note('Chaque ligne est un <strong>changement de prix en attente</strong> : l’ancien prix reste en vigueur, le nouveau ne s’applique qu’après le <strong>Oui</strong>, à sa date d’effet. Un <strong>Non</strong> exige son motif. '
                   + (peutDecider ? 'Vous pouvez décider.' : 'Décider revient à la Direction, à la Directrice Administrative et à l’administrateur : vous lisez les propositions sans les trancher.'), { tone: 'warning', icon: 'hourglass' }),
-                U.dataTable({
+                (tableauAlertes = U.dataTable({
                   rows: lignes, pageSize: 15, exportName: 'prix-en-attente', emptyMessage: 'Aucun changement de prix en attente.',
                   filters: [{ name: 'lot', label: 'Origine', options: Object.keys(LIBELLE_ORIGINE).map(function (k) { return LIBELLE_ORIGINE[k]; }) }],
                   columns: [
@@ -1230,6 +1316,7 @@
                     { key: 'delta', label: 'Variation', align: 'right', render: function (r) { return r.delta == null ? 'non comparable' : (r.delta > 0 ? '+' : '') + r.delta.toLocaleString('fr-FR') + ' %'; }, text: function (r) { return r.delta == null ? '' : String(r.delta); } },
                     { key: 'proposeA', label: 'Assuré proposé', align: 'right', render: function (r) { return r.etatA === 'nc' ? 'NON COUVERT' : r.etatA === 'montant' ? C.money(r.proposeA, false) : r.etatA === 'unique' ? 'prix unique' : 'à valider'; }, text: function (r) { return r.etatA === 'montant' ? C.money(r.proposeA, false) : r.etatA; } },
                     { key: 'dateEffet', label: 'Date d’effet', nowrap: true, render: function (r) { return r.dateEffet ? C.dateFR(r.dateEffet) : el('span.text-xs.italic.text-slate-500', { text: 'à fixer au Oui' }); } },
+                    { key: 'pieces', label: 'Pièces (30 jours)', align: 'right', render: function (r) { return el('span', { title: 'Pièces de vente portant cette prestation sur les trente derniers jours : ce que le changement touchera', text: C.num(r.pieces) }); } },
                     { key: 'lot', label: 'Origine' },
                     { key: 'par', label: 'Proposée par' },
                     { key: 'motif', label: 'Motif', render: function (r) { return el('span.text-xs.text-slate-600', { text: r.motif.length > 90 ? r.motif.slice(0, 90) + '…' : r.motif }); } },
@@ -1241,7 +1328,7 @@
                       K.btn('Non', { size: 'sm', icon: 'x', onclick: function () { decider(r.v, 'non', rafraichirEcran); } }),
                     ];
                   },
-                }),
+                })),
               ]);
             } },
           { id: 'historique', label: 'Historique',

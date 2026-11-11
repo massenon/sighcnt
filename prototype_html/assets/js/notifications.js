@@ -121,6 +121,7 @@
     resultat_disponible: 'm5-resultats',
     resultat_rectifie: 'm5-resultats',
     cloture: 'm12-cloture',
+    prix_decide: 'cfg-tarifs',
   };
 
   var SOURCES = [
@@ -315,6 +316,35 @@
       },
     },
     {
+      code: 'prix_a_valider', categorie: 'metier', domaine: 'À valider',
+      /* Les changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3) : UNE alerte par LOT (les propositions d'un même lot, par exemple la grille imprimée des
+         analyses, ne sont qu'une alerte portant son compte ; une saisie à l'écran est un lot d'une ligne). La source LIT l'état des versions et ne décide d'aucun
+         seuil ; elle cesse de produire l'alerte quand la dernière proposition du lot est décidée. Les destinataires sont les profils de la famille de décision
+         (`PR.ROLES_VALIDATION_TARIFS`), jamais une liste écrite ici. */
+      lire: function () {
+        var PR = global.SIGH.parcours;
+        var lots = {}, ordre = [];
+        S.collection('versionsTarif').all().filter(function (v) { return v.statut === 'propose'; }).forEach(function (v) {
+          var cle = v.lot || (v.origine === 'semence-grille' ? 'grille' : v.id);
+          if (!lots[cle]) { lots[cle] = []; ordre.push(cle); }
+          lots[cle].push(v);
+        });
+        return ordre.map(function (cle) {
+          var g = lots[cle];
+          return {
+            cle: 'prix:' + cle,
+            priorite: 'important',
+            titre: g.length > 1 ? C.num(g.length) + ' changements de prix à valider' : 'Changement de prix à valider : ' + g[0].code,
+            detail: g.length > 1
+              ? 'Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.'
+              : (g[0].proposePar ? 'Proposé par ' + g[0].proposePar + '. ' : '') + 'Le prix en vigueur ne change pas avant le Oui.',
+            lien: 'cfg-tarifs', onglet: 'alertes',
+            postes: PR && PR.ROLES_VALIDATION_TARIFS ? PR.ROLES_VALIDATION_TARIFS.slice() : null,
+          };
+        });
+      },
+    },
+    {
       code: 'a_valider_ecritures', categorie: 'metier', domaine: 'À valider',
       /* Une PIÈCE comptable en brouillon (deux lignes de même numéro) compte
          pour une : le comptable valide des pièces, pas des lignes (RG-10). */
@@ -361,6 +391,7 @@
               titre: n.titre || n.libelle || n.message || 'Notification',
               detail: n.detail || n.message || '',
               lien: n.ecran || LIENS_NOTIF[n.type] || null,
+              onglet: n.type === 'prix_decide' ? 'historique' : null,
               postes: rolesDuPoste(n.poste),
               enregistree: n.id,
             };
@@ -479,6 +510,7 @@
     creance_agee: ['créance(s) assureur en souffrance',
       'Relancer chaque compagnie : ces créances pèsent sur le besoin en fonds de roulement.'],
     a_valider_besoins: ['bon(s) de besoins à valider', 'Arbitrer chaque bon : validé, complément demandé ou rejeté avec son motif.'],
+    prix_a_valider: ['lot(s) de changements de prix à valider', 'Décider chaque changement (Oui ou Non) à « Tarifs et prix », onglet Alertes.'],
     a_valider_ecritures: ['pièce(s) comptable(s) en brouillon', 'Contrôler l’équilibre (RG-10) puis valider.'],
     poste: ['notification(s) de poste', 'À consulter dans les écrans concernés.'],
   };
@@ -517,7 +549,7 @@
         priorite: g[0].priorite,
         titre: C.num(g.length) + ' ' + lib[0],
         detail: lib[1],
-        lien: g[0].lien,
+        lien: g[0].lien, onglet: g[0].onglet || null,
         postes: g[0].postes,
         acquitteeLe: acquitteeLe,
       });

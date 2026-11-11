@@ -144,9 +144,13 @@
    * Un refus se nomme : code, motif, geste.
    * ======================================================================== */
   var ROLES_VALIDATION_TARIFS = ['admin', 'da', 'direction'];
+  /* T6 (Direction, 11/11/2026) : la date d'effet PASSÉE est une autorité de la Directrice Administrative et de la Direction, avec un motif. */
+  var ROLES_DATE_PASSEE = ['da', 'direction'];
   function refusTarif(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
   function roleDeLaSession() { var s = S.session(); return s && s.role; }
   function peutDeciderTarif() { return ROLES_VALIDATION_TARIFS.indexOf(roleDeLaSession()) >= 0; }
+  function peutDatePasseeTarif() { return ROLES_DATE_PASSEE.indexOf(roleDeLaSession()) >= 0; }
+  function profilsDatePassee() { return ROLES_DATE_PASSEE.map(function (r) { return libelleRole(r); }).join(' et '); }
   function peutProposerTarif() {
     var N = global.SIGH.nav, r = roleDeLaSession();
     if (!N || !N.droitsEcran) return ROLES_VALIDATION_TARIFS.indexOf(r) >= 0;
@@ -160,6 +164,72 @@
   }
   function jourTarif(d) { return D.TARIFS.jourDe(d); }
   function entierPositif(x) { return typeof x === 'number' && isFinite(x) && x > 0 && Math.floor(x) === x; }
+
+  /* --- Le contrôle d'usage `tarif_deja_utilise` (PRD-TARIFS 4.4 et 5.6) -------------------------------------------------------------------------------- */
+  /** Les pièces de VENTE non archivées qui portent déjà une ligne de cette prestation à la date d'effet ou après : un prix qui prendrait effet à cette date changerait
+      après coup la réponse à « quel prix s'appliquait », alors que la ligne dit autre chose. Le contrôle se lit SUR LES LIGNES (acte, demande d'analyse, demande
+      d'imagerie), sans collection d'usages. Une pro-forma n'est pas une pièce émise : elle se tient par sa durée de validité (T5). */
+  function usagesTarif(p, dateEffet) {
+    var codes = {};
+    [p.code, p.codeActe, p.codeGrille, p.codeAnalyse].concat(p.codesAlias || []).forEach(function (c) { if (c) codes[c] = true; });
+    var analyses = {}, imageries = {};
+    S.collection('demandesAnalyses').all().forEach(function (d) { if (d.analyseCode) analyses[d.id] = d.analyseCode; });
+    S.collection('demandesImagerie').all().forEach(function (d) { if (d.examenCode) imageries[d.id] = d.examenCode; });
+    var out = [];
+    S.collection('factures').all().forEach(function (f) {
+      if (!f || f.statut === 'archive' || f.proforma) return;
+      var jour = f.date ? D.TARIFS.jourDe(f.date) : null;
+      if (!jour || jour < dateEffet) return;
+      var porte = (f.lignes || []).some(function (l) {
+        return (l.acteCode && codes[l.acteCode]) || (l.demandeId && codes[analyses[l.demandeId]]) || (l.demandeImagerieId && codes[imageries[l.demandeImagerieId]]);
+      });
+      if (porte) out.push({ id: f.id, numero: f.numero, date: jour });
+    });
+    return out.sort(function (a, b) { return a.date < b.date ? -1 : (a.date > b.date ? 1 : String(a.numero).localeCompare(String(b.numero))); });
+  }
+  function refusUsage(code, dateEffet, usages, decision) {
+    var u = usages[0];
+    var r = refusTarif('TARIF_DEJA_UTILISE',
+      'La facture ' + u.numero + ' du ' + C.dateFR(u.date) + ' porte déjà « ' + code + ' »' + (usages.length > 1 ? ' (et ' + (usages.length - 1) + ' autre(s) pièce(s) depuis cette date)' : '')
+        + ' : un prix qui prendrait effet le ' + C.dateFR(dateEffet) + ' changerait après coup ce que la pièce dit.',
+      decision
+        ? 'Refuser cette proposition (Non), puis la reproposer avec une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce.'
+        : 'Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce.');
+    r.usages = usages.slice(0, 5); r.nbPieces = usages.length;
+    return r;
+  }
+  /** Les pièces de vente portant la prestation sur les N derniers jours : l'information utile de l'alerte (ce que le changement touchera). */
+  function piecesRecentesTarif(p, jours) {
+    var fin = jourTarif(null), debut = C.iso(new Date(new Date(fin + 'T12:00:00').getTime() - jours * 86400000));
+    return usagesTarif(p, debut).filter(function (u) { return u.date <= fin; }).length;
+  }
+  /** Une ligne de journal PAR TRANSITION (RG-12) : le journal est plafonné, l'historique d'un prix vit dans `versionsTarif`. Écrite AVANT l'écriture qui sauvegarde. */
+  function journalPrix(action, v, extra) {
+    var e = Object.assign({}, extra || {});
+    if (e.motif) e.motif = String(e.motif).slice(0, 36);
+    S.log('Changement de prix : ' + action, 'CFG', 'prix', v.code, null, Object.assign(e, { v: v.version, na: v.prixNonAssure, pa: v.prixAssure, du: v.dateEffet || null }));
+  }
+  /** La décision d'une version LÈVE le marquage « tarif d'attente » (E2366) : sur la fiche de lecture de l'acte ou de l'analyse (famille du centre des validations) et sur
+      les versions marquées provisoires de la prestation. */
+  function leverProvisoireDe(code) {
+    var maj = 0, qui = auteurDeLaSession(), jour = C.iso(C.aujourdhui());
+    versionsDe(code).forEach(function (x) {
+      if (x.provisoire === true && x.statut === 'valide') { colVersionsTarif().update(x.id, { provisoire: false, arreteLe: jour, arretePar: qui }); maj++; }
+    });
+    return maj;
+  }
+  function leverMarquageTarif(code) {
+    var h = D.TARIFS.lire(), p = h && h.parCode[code];
+    if (!p) return;
+    var V = global.SIGH.validations;
+    [['actes', p.codeActe], ['analyses', p.codeAnalyse]].forEach(function (x) {
+      if (!x[1]) return;
+      var fiche = S.collection(x[0]).all().filter(function (f) { return f.code === x[1] && f.statut !== 'archive'; })[0];
+      var e = fiche && V && V.etatValidation(x[0], fiche.id);
+      if (e && e.enAttente) V.validerReferentiel(x[0], fiche.id);
+    });
+    leverProvisoireDe(code);
+  }
 
   /** Valide les champs d'une version proposée. Rend un refus nommé, ou null. */
   function controleProposition(o) {
@@ -185,6 +255,9 @@
   function proposerTarif(o) {
     o = o || {};
     if (!peutProposerTarif()) return refusTarif('PROPOSITION_RESERVEE', 'Proposer un prix se fait depuis « Tarifs et prix », par un profil qui peut modifier cet écran.', 'Demander la modification à la Directrice Administrative ou à la Direction.');
+    /* VALIDER EN UN GESTE (PRD 5.4, Q3) : la liste de rôles de la famille décide, jamais le simple droit d'éditer ; le moteur refuse en nommant, il ne dégrade pas
+       silencieusement une demande de validation en proposition. */
+    if (o.valider === true && !peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Enregistrer le changement comme proposition : la décision revient à l’un de ces profils.');
     var h = D.TARIFS.lire();
     if (!h) return refusTarif('REFERENTIEL_ABSENT', 'Le référentiel de prix n’est pas chargé.', 'Recharger la page.');
     var p = h.parCode[o.code];
@@ -198,7 +271,13 @@
     if (refus) return refus;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(o.dateEffet || ''))) return refusTarif('DATE_EFFET_REQUISE', 'Un changement de prix prend effet à une date : sans date d’effet, on ne sait pas à partir de quand il s’applique.', 'Saisir la date d’effet.');
     var aujourdhui = jourTarif(null);
-    if (o.dateEffet < aujourdhui) return refusTarif('DATE_PASSEE', 'La date d’effet (' + o.dateEffet + ') est antérieure à aujourd’hui (' + aujourdhui + ') : un prix ne se change pas dans le passé.', 'Choisir aujourd’hui ou une date future.');
+    var passee = o.dateEffet < aujourdhui;
+    if (passee) {
+      /* T6 : la date passée est PERMISE à la DAF et à la Direction, avec une case explicite (jamais silencieuse) et le motif déjà exigé ; refusée aux autres. */
+      if (o.datePassee !== true) return refusTarif('DATE_PASSEE', 'La date d’effet (' + o.dateEffet + ') est antérieure à aujourd’hui (' + aujourdhui + ') : un prix ne se change pas dans le passé sans une décision expresse.',
+        peutDatePasseeTarif() ? 'Cocher « Date antérieure à aujourd’hui » et motiver, ou choisir aujourd’hui ou une date future.' : 'Choisir aujourd’hui ou une date future : une date antérieure est une autorité de ' + profilsDatePassee() + '.');
+      if (!peutDatePasseeTarif()) return refusTarif('DATE_PASSEE_RESERVEE', 'Une date d’effet antérieure à aujourd’hui est une autorité de ' + profilsDatePassee() + '.', 'Choisir aujourd’hui ou une date future, ou demander cette date à l’un de ces profils.');
+    }
     var code = o.creation ? String(o.code).trim() : p.code;
     var existantes = versionsDe(code);
     var enAttente = existantes.filter(function (v) { return v.statut === 'propose'; })[0];
@@ -209,6 +288,8 @@
       if (s && s.na === Number(o.prixNonAssure) && s.etatAssure === etatA && (etatA !== 'montant' || s.pa === Number(o.prixAssure))) {
         return refusTarif('PRIX_INCHANGE', 'Ce prix est déjà celui en vigueur à cette date : rien à proposer.', 'Modifier au moins un des prix, ou ne rien changer.');
       }
+      var us = usagesTarif(p, o.dateEffet);
+      if (us.length) return refusUsage(code, o.dateEffet, us, false);
     }
     var rang = existantes.reduce(function (m, v) { return Math.max(m, v.version || 0); }, 0) + 1;
     if (o.creation) {
@@ -226,12 +307,20 @@
       id: code + '@' + o.dateEffet + '@' + rang, code: code, version: rang, dateEffet: o.dateEffet,
       prixNonAssure: Number(o.prixNonAssure), prixAssure: etatA === 'montant' ? Number(o.prixAssure) : null, etatAssure: etatA,
       motif: String(o.motif).trim(), origine: 'ecran', statut: 'propose',
-      proposePar: auteurDeLaSession(), proposeLe: C.iso(C.aujourdhui()),
+      proposePar: auteurDeLaSession(), proposeLe: C.iso(C.aujourdhui()), proposeRole: roleDeLaSession(),
     };
+    if (passee) v.datePassee = true;
+    var enUnGeste = o.valider === true;
+    if (enUnGeste) {
+      /* Née VALIDE en un geste, avec le rôle de l'auteur tracé : la correction de la DAF n'attend pas la Direction. */
+      v.statut = 'valide'; v.decidePar = v.proposePar; v.decideLe = v.proposeLe; v.roleDecision = v.proposeRole; v.motifDecision = 'Validée en un geste à la saisie';
+    }
+    journalPrix(enUnGeste ? 'validation en un geste' : 'proposition', v, { motif: v.motif, role: v.proposeRole });
     var rec = colVersionsTarif().insert(v);
     if (!rec) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Réessayer ; le refus est au journal.');
     D.TARIFS.invalider();
-    return { ok: true, version: rec.record, creation: !!o.creation };
+    if (enUnGeste) { leverMarquageTarif(code); S.projeterTarifs(); }
+    return { ok: true, version: rec.record, creation: !!o.creation, valideeEnUnGeste: enUnGeste };
   }
 
   /** Décide une proposition : Oui (elle devient la version en vigueur à sa date d'effet) ou Non (refusée, motif obligatoire). */
@@ -252,14 +341,30 @@
       if (v.prixNonAssure === null || v.prixNonAssure === undefined || v.etatNonAssure === 'manquant') return refusTarif('TARIF_ABSENT', 'Cette version ne porte pas de prix non assuré : elle ne se valide pas.', 'La refuser, puis proposer une version chiffrée.');
       var date = v.dateEffet || o.dateEffet;
       if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date || ''))) return refusTarif('DATE_EFFET_REQUISE', 'Cette proposition n’a pas de date d’effet : la décision la fixe.', 'Saisir la date d’effet avec le Oui.');
-      if (date < jourTarif(null)) return refusTarif('DATE_PASSEE', 'La date d’effet (' + date + ') est antérieure à aujourd’hui : un prix ne se change pas dans le passé.', 'Choisir aujourd’hui ou une date future.');
+      if (date < jourTarif(null)) {
+        /* La date a été dépassée PENDANT l'attente, ou la proposition était datée du passé : aucun décalage automatique (PRD 5.6). Une date passée proposée
+           expressément par la DAF ou la Direction se décide par elles seules. */
+        if (!v.datePassee) return refusTarif('DATE_PASSEE', 'La date d’effet (' + date + ') est antérieure à aujourd’hui : la proposition a attendu au-delà de sa date, et un prix ne se change pas dans le passé.', 'Refuser cette proposition (Non), puis la reproposer avec une date d’effet d’aujourd’hui.');
+        if (!peutDatePasseeTarif()) return refusTarif('DATE_PASSEE_RESERVEE', 'Une date d’effet antérieure à aujourd’hui se décide par ' + profilsDatePassee() + '.', 'Demander la décision à l’un de ces profils.');
+      }
+      /* Le contrôle d'usage est REJOUÉ au Oui : une pièce a pu être émise pendant l'attente. */
+      var hh = D.TARIFS.lire(), pp = hh && hh.parCode[v.code];
+      if (pp) { var us = usagesTarif(pp, date); if (us.length) return refusUsage(v.code, date, us, true); }
       patch.statut = 'valide';
       if (!v.dateEffet) patch.dateEffet = date;
     }
+    journalPrix(decision === 'oui' ? 'validation' : 'refus', v, { motif: motif || null, role: roleDeLaSession() });
     var maj = col.update(versionId, patch);
     if (!maj) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé la décision.', 'Réessayer ; le refus est au journal.');
     D.TARIFS.invalider();
-    if (decision === 'oui') S.projeterTarifs();
+    if (decision === 'oui') { leverMarquageTarif(v.code); S.projeterTarifs(); }
+    /* LE RETOUR À L'AUTEUR : « votre changement de prix a été accepté ou refusé, motif ». Une alerte dérivée ne peut pas porter un retour, la notification de poste le fait. */
+    if (v.proposeRole && v.proposePar && v.proposePar !== auteurDeLaSession()) {
+      notifier({ type: 'prix_decide', poste: v.proposeRole, destinataire: v.proposePar, reference: v.code, ecran: 'cfg-tarifs',
+        priorite: decision === 'non' ? 'haute' : 'normale',
+        libelle: 'Votre changement de prix ' + v.code + ' a été ' + (decision === 'oui' ? 'accepté' : 'refusé'),
+        detail: (decision === 'oui' ? 'Il prend effet le ' + C.dateFR(patch.dateEffet || v.dateEffet) + '.' : 'Motif : ' + motif + '.') + ' Décidé par ' + auteurDeLaSession() + '.' });
+    }
     return { ok: true, decision: decision, version: maj.record };
   }
   function retirerProposition(versionId, motif) {
@@ -267,9 +372,95 @@
     if (!v) return refusTarif('VERSION_INTROUVABLE', 'Aucune version ne porte l’identifiant « ' + versionId + ' ».', 'Actualiser la liste.');
     if (v.statut !== 'propose') return refusTarif('DEJA_DECIDEE', 'Seule une proposition en attente se retire.', 'Une version décidée se remplace par une nouvelle version.');
     if (v.proposePar !== auteurDeLaSession() && !peutDeciderTarif()) return refusTarif('RETRAIT_RESERVE', 'Une proposition se retire par son auteur, ou par un profil qui décide.', 'Demander le retrait à son auteur.');
+    journalPrix('retrait', v, { motif: motif || null, role: roleDeLaSession() });
     var maj = col.update(versionId, { statut: 'retire', decidePar: auteurDeLaSession(), decideLe: C.iso(C.aujourdhui()), roleDecision: roleDeLaSession(), motifDecision: String(motif || 'Retirée par son auteur') });
     D.TARIFS.invalider();
     return maj ? { ok: true, version: maj.record } : refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé le retrait.', 'Réessayer.');
+  }
+
+  /* --- « Oui à tout », ENCADRÉ (PRD 5.3, Q8) -------------------------------------------------------------------------------------------------------------- */
+  /** Le seuil de variation que la Direction décide de SIGNALER : AUCUNE valeur proposée (aucun document ne la fixe), vide par défaut. Au-delà, la ligne n'est jamais
+      acceptée en bloc : elle se décide seule. */
+  function seuilVariationAlerte() {
+    var x = S.reglage('tarifsVariationAlertePct', null);
+    return typeof x === 'number' && isFinite(x) && x > 0 ? x : null;
+  }
+  function variationPropositionPct(v) {
+    var h = D.TARIFS.lire(), p = h && h.parCode[v.code];
+    var s = p ? D.TARIFS.instantane(h, p, v.dateEffet || jourTarif(null)) : null;
+    return s && s.na && v.prixNonAssure != null && v.etatNonAssure !== 'manquant' ? Math.round((v.prixNonAssure - s.na) / s.na * 1000) / 10 : null;
+  }
+  /** Décide Oui chaque proposition de la liste (toutes celles en attente par défaut), JAMAIS sans que la comparaison ligne à ligne ait été affichée (`comparaisonAffichee`).
+      Chaque ligne passe par la décision ordinaire (contrôle d'usage, date, droit) : celles qui ne passent pas sont NOMMÉES avec leur refus, les autres sont acceptées. */
+  function deciderTousTarifs(o) {
+    o = o || {};
+    if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Demander la décision à l’un de ces profils.');
+    if (o.comparaisonAffichee !== true) return refusTarif('COMPARAISON_REQUISE', 'Un « Oui à tout » ne se donne qu’après l’affichage de la comparaison ligne à ligne (ancien prix, nouveau prix, variation).', 'Ouvrir la comparaison, la lire, puis confirmer.');
+    var enAttente = colVersionsTarif().all().filter(function (v) { return v.statut === 'propose'; });
+    var ids = o.ids || enAttente.map(function (v) { return v.id; });
+    var seuil = seuilVariationAlerte();
+    var acceptees = [], refusees = [], exclues = [];
+    ids.forEach(function (id) {
+      var v = colVersionsTarif().get(id);
+      if (!v || v.statut !== 'propose') { refusees.push({ id: id, code: v ? v.code : null, refus: 'DEJA_DECIDEE', motif: 'Cette version n’est plus en attente.' }); return; }
+      var pct = variationPropositionPct(v);
+      if (seuil != null && pct != null && Math.abs(pct) > seuil) { exclues.push({ id: id, code: v.code, variation: pct, motif: 'Variation de ' + pct + ' % au-delà du seuil signalé (' + seuil + ' %) : à décider seule.' }); return; }
+      var r = deciderTarif(id, 'oui', { dateEffet: o.dateEffet || null });
+      if (r.ok) acceptees.push({ id: id, code: v.code }); else refusees.push({ id: id, code: v.code, refus: r.code, motif: r.motif, geste: r.geste });
+    });
+    S.log('Changement de prix : Oui à tout', 'CFG', 'prix', 'lot', null, { oui: acceptees.length, refus: refusees.length, exclus: exclues.length, role: roleDeLaSession() });
+    S.save();
+    return { ok: true, acceptees: acceptees, refusees: refusees, exclues: exclues };
+  }
+
+  /* ==========================================================================
+   * LA PRO-FORMA À LA CONVERSION (T5, Direction, 11/11/2026)
+   * --------------------------------------------------------------------------
+   * Une pro-forma est une estimation non fiscale. Convertie en vente, elle se facture AU PRIX DU JOUR, avec l'ÉCART affiché, sauf pendant une durée réglable
+   * (30 jours proposés, « à valider », réglage en base) : dans ce délai, le prix de la pro-forma est tenu. Ce moteur dit, ligne par ligne, quel prix s'applique et de
+   * combien il s'écarte ; il n'écrit aucune pièce. La maquette n'a pas de geste « convertir » : émettre la vente passe par l'écran d'émission, qui prend le prix du jour.
+   * ======================================================================== */
+  var VALIDITE_PROFORMA_DEFAUT = 30, VALIDITE_PROFORMA_BORNES = [0, 365];
+  function validiteProformaJours() {
+    var x = Number(S.reglage('tarifsValiditeProformaJours', VALIDITE_PROFORMA_DEFAUT));
+    return isFinite(x) && x === Math.floor(x) && x >= VALIDITE_PROFORMA_BORNES[0] && x <= VALIDITE_PROFORMA_BORNES[1] ? x : VALIDITE_PROFORMA_DEFAUT;
+  }
+  function definirValiditeProforma(o) {
+    o = o || {};
+    if (!peutDeciderTarif()) return refusTarif('REGLAGE_RESERVE', 'La durée de validité d’une pro-forma se règle par la Direction, la Directrice Administrative ou l’administrateur.', 'Demander le réglage à l’un de ces profils.');
+    var j = Number(o.jours);
+    if (o.jours === '' || o.jours === null || o.jours === undefined || !isFinite(j) || j !== Math.floor(j) || j < VALIDITE_PROFORMA_BORNES[0] || j > VALIDITE_PROFORMA_BORNES[1]) {
+      return refusTarif('DUREE_INVALIDE', 'La durée de validité est un nombre entier de jours, de ' + VALIDITE_PROFORMA_BORNES[0] + ' à ' + VALIDITE_PROFORMA_BORNES[1] + '.', 'Saisir un nombre entier de jours.');
+    }
+    var avant = validiteProformaJours();
+    S.log('Validité d’une pro-forma', 'CFG', 'reglage', 'tarifsValiditeProformaJours', { jours: avant }, { jours: j, motif: o.motif || null });
+    S.setReglage('tarifsValiditeProformaJours', j);
+    return { ok: true, jours: j, avant: avant };
+  }
+  function ecartProforma(factureId, dateConversion) {
+    var f = S.collection('factures').all().filter(function (x) { return x.id === factureId; })[0];
+    if (!f) return refusTarif('FACTURE_INTROUVABLE', 'Aucune facture ne porte l’identifiant « ' + factureId + ' ».', 'Choisir une pro-forma de la liste.');
+    if (!f.proforma) return refusTarif('PAS_UNE_PROFORMA', 'La pièce ' + f.numero + ' est une vente : elle garde son prix (une pièce émise ne se réécrit pas).', 'Choisir une pro-forma.');
+    var conv = dateConversion ? D.TARIFS.jourDe(dateConversion) : jourTarif(null);
+    var jourPro = D.TARIFS.jourDe(f.date), age = C.daysBetween(jourPro, conv), validite = validiteProformaJours();
+    var regle = age <= validite ? 'prix_de_la_proforma' : 'prix_du_jour';
+    var patient = patientParCode(f.patientCode), assure = patient ? carteValide(patient, conv) : false;
+    var analyses = {}, imageries = {};
+    S.collection('demandesAnalyses').all().forEach(function (d) { if (d.analyseCode) analyses[d.id] = d.analyseCode; });
+    S.collection('demandesImagerie').all().forEach(function (d) { if (d.examenCode) imageries[d.id] = d.examenCode; });
+    var ecartTotal = 0;
+    var lignes = (f.lignes || []).map(function (l) {
+      var code = l.acteCode || (l.demandeId && analyses[l.demandeId]) || (l.demandeImagerieId && imageries[l.demandeImagerieId]) || null;
+      var ancien = l.prixUnitaire, q = l.quantite != null ? l.quantite : 1;
+      var t = code ? tarifALaDate(code, conv, assure) : null;
+      var nouveau = t && !t.absent && t.montant != null ? t.montant : null;
+      var retenu = regle === 'prix_du_jour' && nouveau != null ? nouveau : ancien;
+      var ecart = nouveau != null ? (nouveau - ancien) * q : 0;
+      ecartTotal += ecart;
+      return { id: l.id, designation: l.designation, code: code, quantite: q, ancien: ancien, nouveau: nouveau, retenu: retenu, ecart: ecart,
+        sansTarif: nouveau == null ? (code ? 'prix du jour absent du référentiel' : 'ligne sans prestation tarifée (médicament au prix d’achat, RG-02)') : null };
+    });
+    return { ok: true, factureId: f.id, numero: f.numero, jourProforma: jourPro, jourConversion: conv, ageJours: age, validiteJours: validite, regle: regle, assure: assure, lignes: lignes, ecartTotal: ecartTotal };
   }
 
   /* ==========================================================================
@@ -3204,6 +3395,9 @@
     colTarifs: colTarifs, colVersionsTarif: colVersionsTarif,
     colActes: colActes, colAnalyses: colAnalyses, colCatalogueTarifs: colCatalogueTarifs,
     ROLES_VALIDATION_TARIFS: ROLES_VALIDATION_TARIFS, peutDeciderTarif: peutDeciderTarif, peutProposerTarif: peutProposerTarif,
+    ROLES_DATE_PASSEE: ROLES_DATE_PASSEE, peutDatePasseeTarif: peutDatePasseeTarif, profilsDatePassee: profilsDatePassee, usagesTarif: usagesTarif, piecesRecentesTarif: piecesRecentesTarif,
+    deciderTousTarifs: deciderTousTarifs, variationPropositionPct: variationPropositionPct, seuilVariationAlerte: seuilVariationAlerte,
+    ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
     proposerTarif: proposerTarif, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
     tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate,
     couvertureALaDate: couvertureALaDate, historiqueCouverture: historiqueCouverture,
@@ -4509,6 +4703,10 @@
       roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs', champsChiffres: ['prix'] },
     { id: 'analyses', libelle: 'Tarifs des analyses', module: 'CFG', collections: ['analyses'], champs: ['tarifProvisoire', 'aValider'],
       roles: ['direction', 'da', 'admin'], ecran: 'cfg-tarifs', champsChiffres: ['prix'] },
+    /* Les changements de prix en attente de Oui ou Non (PRD-TARIFS 5.3) : un compte LU sur `versionsTarif`, jamais écrit ; la décision se prend à « Tarifs et prix »,
+       onglet Alertes, avec la comparaison. Mêmes profils que les familles des actes et des analyses. */
+    { id: 'prix', libelle: 'Changements de prix en attente (Oui ou Non)', module: 'CFG', mode: 'prix', collections: ['versionsTarif'], champs: ['statut'],
+      roles: ROLES_VALIDATION_TARIFS.slice(), ecran: 'cfg-tarifs' },
     { id: 'valorisation_sage', libelle: 'Valorisation des références SAGE', module: 'M6', collections: ['valorisationsSage'], champs: ['aValider'],
       roles: ['direction', 'da', 'admin'], ecran: 'm6-produits', champsChiffres: ['prixRevient'] },
     { id: 'objectifs_pilotage', libelle: 'Objectifs de pilotage', module: 'M12', collections: ['objectifsPilotage'], champs: ['aValider'],
@@ -4550,6 +4748,12 @@
         return { id: c.id, libelle: c.libelle, enAttente: !(fiche && fiche.valideLe), valideLe: fiche ? fiche.valideLe : null, rec: fiche, col: null };
       });
     }
+    if (f.mode === 'prix') {
+      return (brut.versionsTarif || []).filter(function (v) { return v && v.statut === 'propose'; }).map(function (v) {
+        return { id: v.id, col: 'versionsTarif', rec: v, valideLe: null, enAttente: true,
+          libelle: v.code + ' : ' + (v.etatNonAssure === 'manquant' || v.prixNonAssure == null ? 'prix à valider' : C.money(v.prixNonAssure, false)) };
+      });
+    }
     var out = [];
     f.collections.forEach(function (nom) {
       (brut[nom] || []).forEach(function (rec) {
@@ -4588,6 +4792,7 @@
     opts = opts || {};
     var f = familleAValider(familleId);
     if (!f) return refusValidation('INTROUVABLE', 'Famille de référentiel inconnue : ' + familleId + '.', 'Choisir une famille du registre des validations.');
+    if (f.mode === 'prix') return refusValidation('GESTE_A_SON_POSTE', 'Un changement de prix se décide à « Tarifs et prix », onglet Alertes : Oui ou Non, la comparaison sous les yeux.', 'Ouvrir l’écran « Tarifs et prix ».');
     var role = opts.role || roleCourant();
     var gardeMere = refusFileulValidation(f);
     if (gardeMere) return gardeMere;
@@ -4630,6 +4835,11 @@
       var epure = epurerMentions(rec);
       Object.keys(epure).forEach(function (k) { rec[k] = epure[k]; });
       if (opts.motif) rec.motifCorrection = String(opts.motif).trim();
+      /* Valider un tarif d'attente ARRÊTE aussi la version du référentiel de prix qui le portait (E2366) : le marquage « provisoire » ne reste pas d'un côté. */
+      if (f.id === 'actes' || f.id === 'analyses') {
+        var hv = D.TARIFS.lire(), pv = hv && (f.id === 'actes' ? hv.parActe[rec.code] : hv.parAnalyse[rec.code]);
+        if (pv) leverProvisoireDe(pv.code);
+      }
       S.save(); S.emit(cible.col);
     }
     S.log('Validation', f.module, f.libelle, id, avant, { valideLe: quand, validePar: qui, valideRole: libRole });
@@ -6877,8 +7087,9 @@
       return { ok: false, code: 'VALEUR_INVALIDE', motif: 'Le plan du site est affiché ou masqué : oui ou non.', geste: 'Cocher ou décocher la case.' };
     }
     var avant = planDuSiteAffiche();
-    S.setReglage(PLAN_CLE, oui);
+    /* Le journal d'abord : `setReglage` sauvegarde, et c'est cette sauvegarde qui emporte la ligne du journal. */
     S.log('Plan du site', 'M14', 'reglage', PLAN_CLE, { affiche: avant }, { affiche: oui, motif: motif || null });
+    S.setReglage(PLAN_CLE, oui);
     return { ok: true, affiche: oui, avant: avant };
   }
   global.SIGH.planDuSite = { CLE: PLAN_CLE, DEFAUT: false, affiche: planDuSiteAffiche, peutRegler: reglerPlanDuSiteOk, definir: definirPlanDuSite };

@@ -8561,7 +8561,7 @@ async function viderMessages(page) {
            validation en masse. */
         /* Vague 91 : le centre lit les familles de référentiels au magasin (plus de bloc « Validées » en littéral). */
         troisFamilles: /À SON POSTE/.test(t) && /Référentiels en attente de validation/.test(t)
-          && document.querySelectorAll('[data-famille]').length === 15 && !/Validées/.test(t),
+          && document.querySelectorAll('[data-famille]').length === window.SIGH.validations.FAMILLES_A_VALIDER.length && !/Validées/.test(t),
         nonAmorceDit: /non amorcée/.test(t),
         pasDeMasse: ![...document.querySelectorAll('button')]
           .some((b) => /Tout valider|Valider tout/i.test(b.textContent)),
@@ -14329,8 +14329,8 @@ async function viderMessages(page) {
         exposeSIGH: !!(window.SIGH.validations && window.SIGH.validations.validerReferentiel),
         registre: PR.FAMILLES_A_VALIDER.map((f) => f.id) };
     });
-    verifier('Registre : les 14 familles de l’audit et le barème de l’AIB (15) sont déclarées et le moteur est exposé (SIGH.validations)',
-      a.exposeSIGH && a.registre.length === 15 && ['enquetes', 'labo_variables', 'pathologies', 'imagerie', 'checklists_bloc', 'actes', 'analyses',
+    verifier('Registre : les 14 familles de l’audit, le barème de l’AIB et les changements de prix en attente (16) sont déclarés et le moteur est exposé (SIGH.validations)',
+      a.exposeSIGH && a.registre.length === 16 && ['prix', 'enquetes', 'labo_variables', 'pathologies', 'imagerie', 'checklists_bloc', 'actes', 'analyses',
         'valorisation_sage', 'objectifs_pilotage', 'repartition_charges', 'modeles_badge', 'jeux_import', 'modeles_messages', 'bareme_its', 'bareme_aib'].every((x) => a.registre.indexOf(x) >= 0),
       a.registre.join(','));
     verifier('(a) Une pathologie marquée « à valider » insérée à la main : le compte du moteur augmente de 1 ET égale le recompte du magasin',
@@ -14428,7 +14428,9 @@ async function viderMessages(page) {
       const lignes = [...document.querySelectorAll('#page-content [data-famille]')].map((n) => {
         const fam = n.getAttribute('data-famille'), lu = n.getAttribute('data-en-attente');
         let attendu;
-        if (SPEC[fam]) {
+        /* Les changements de prix : un compte LU sur les versions « propose » (T3), pas un marquage de fiche. */
+        if (fam === 'prix') attendu = String((brut.versionsTarif || []).filter((r) => r.statut === 'propose').length);
+        else if (SPEC[fam]) {
           const [cols, champs] = SPEC[fam];
           const tout = cols.reduce((m, c) => m.concat((brut[c] || []).filter((r) => r.statut !== 'archive')), []);
           attendu = tout.length ? String(tout.filter((r) => champs.some((c) => r[c] === true)).length) : '';
@@ -14443,8 +14445,8 @@ async function viderMessages(page) {
     });
     await ouvrir('adm-validations.html');
     const d1 = await lireCentre();
-    verifier('(d) Le centre porte une ligne par famille (15) et le compte affiché égale le recompte du magasin AVANT le geste',
-      d1.lignes.length === 15 && d1.lignes.every((l) => l.lu === l.attendu), JSON.stringify(d1.lignes.filter((l) => l.lu !== l.attendu)));
+    verifier('(d) Le centre porte une ligne par famille (16) et le compte affiché égale le recompte du magasin AVANT le geste',
+      d1.lignes.length === 16 && d1.lignes.every((l) => l.lu === l.attendu), JSON.stringify(d1.lignes.filter((l) => l.lu !== l.attendu)));
     verifier('(d) Aucune commande d’écriture sur le centre (seuls « Y aller » et « Ouvrir »), aucun littéral « Validées »',
       d1.ecritures.length === 0 && !/Validées|validées/.test(d1.texte), JSON.stringify(d1.ecritures) + ' · ' + (d1.texte.match(/.{20}[Vv]alidées.{20}/) || [''])[0]);
     /* Le geste (validation de la fiche remise à valider), puis le centre rouvert : le compte suit le magasin. */
@@ -14456,7 +14458,7 @@ async function viderMessages(page) {
     const d2 = await lireCentre();
     const dm = (x) => (x.lignes.filter((l) => l.fam === 'pathologies')[0] || {}).lu;
     verifier('(d) APRÈS le geste, le compte affiché égale toujours le recompte du magasin, et la famille a baissé de 1',
-      d2.lignes.length === 15 && d2.lignes.every((l) => l.lu === l.attendu) && Number(dm(d2)) === Number(dm(d1)) - 1, JSON.stringify([dm(d1), dm(d2)]));
+      d2.lignes.length === 16 && d2.lignes.every((l) => l.lu === l.attendu) && Number(dm(d2)) === Number(dm(d1)) - 1, JSON.stringify([dm(d1), dm(d2)]));
 
     /* --- (e) chacun ne voit que les familles de son rôle ; l'accueil, la caisse et le stock ne l'ouvrent pas -------- */
     const accessibles = await page.evaluate(() => {
@@ -19160,7 +19162,17 @@ async function viderMessages(page) {
     const texte = () => page.evaluate(() => (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' '));
     const ligne = (code) => `[...document.querySelectorAll('#page-content tbody tr')].find((r) => r.querySelector('.font-mono') && r.querySelector('.font-mono').textContent.trim() === ${JSON.stringify(code)})`;
     /* PROPOSER AU GESTE : l'onglet, la ligne, « Proposer un changement », les champs, « Proposer ». */
+    /* LE CONTRÔLE D'USAGE (T3) refuse une date d'effet qu'une pièce non archivée de ce code précède ou égale : les sondes de ce scénario émettent des pièces AUJOURD'HUI,
+       et proposent un prix effectif aujourd'hui. Avant chaque proposition et chaque Oui, on ARCHIVE (RG-14) les pièces d'aujourd'hui qui portent le code. */
+    const liberer = (code) => page.evaluate((c) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, h = window.SIGH.data.TARIFS.lire(), p = h && h.parCode[c];
+      if (!p) return 0;
+      const us = PR.usagesTarif(p, window.SIGH.core.iso(window.SIGH.core.aujourdhui()));
+      us.forEach((u) => S.collection('factures').archive(u.id));
+      return us.length;
+    }, code);
     const proposerAuGeste = async (ong, code, na, etat, pa) => {
+      await liberer(code);
       await onglet(ong); await chercher(code);
       const ouvert = await page.evaluate(`(async () => { const tr = ${ligne(code)}; if (!tr) return 'ligne absente'; const b = tr.querySelector('button[title="Proposer un changement"]'); if (!b) return 'commande absente'; b.click(); await new Promise((r) => setTimeout(r, 500)); return true; })()`);
       if (ouvert !== true) return ouvert;
@@ -19168,10 +19180,11 @@ async function viderMessages(page) {
       if (etat) await poserChamp('etatAssure', etat);
       if (pa != null) await poserChamp('prixAssure', String(pa)); else await poserChamp('prixAssure', '');
       await poserChamp('motif', 'Sonde 114');
-      await modale('Proposer'); await pause(800);
+      await modale('Enregistrer'); await pause(800);
       return true;
     };
     const deciderAuGeste = async (code, oui, motif) => {
+      if (oui) await liberer(code);
       await onglet('alertes'); await chercher(code);
       const clic = await page.evaluate(`(async () => { const tr = ${ligne(code)}; if (!tr) return 'ligne absente'; const b = [...tr.querySelectorAll('button')].find((x) => x.textContent.trim() === ${JSON.stringify(oui ? 'Oui' : 'Non')}); if (!b) return 'commande absente'; b.click(); await new Promise((r) => setTimeout(r, 500)); return true; })()`);
       if (clic !== true) return clic;
@@ -19422,6 +19435,8 @@ async function viderMessages(page) {
       const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core;
       const jour = C.iso(C.aujourdhui());
       const ptNon = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      /* T3 : une pièce d'aujourd'hui qui porte SO11 (émise par un scénario voisin) interdirait un prix effectif aujourd'hui : on l'ARCHIVE d'abord (RG-14). */
+      PR.usagesTarif(window.SIGH.data.TARIFS.lire().parCode['SO11'], jour).forEach((u) => S.collection('factures').archive(u.id));
       const avant = PR.tarifALaDate('SO11', null, false).montant;
       const p = PR.proposerTarif({ code: 'SO11', prixNonAssure: avant + 300, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 115 : résolution à la date' });
       const d = p.ok ? PR.deciderTarif(p.version.id, 'oui') : p;
@@ -19657,6 +19672,495 @@ async function viderMessages(page) {
     await page.evaluate(() => { window.SIGH.store.reset(); });
     await attendreEcritures();
     verifier('Aucune erreur JavaScript', erreurs116.length === 0, erreurs116.join(' | '));
+  });
+
+  /* ==========================================================================
+   * VAGUE 117, LOT T3 : LE CONTRÔLE D'USAGE, LES CAS LIMITES DE 5.6, LES DROITS DE VALIDER ET DE LA DATE PASSÉE (PRD-TARIFS 5.6, décisions T6 et T7 du 11/11/2026)
+   * --------------------------------------------------------------------------
+   * Un changement de prix ne peut pas prendre effet à une date que précède ou égale une pièce non archivée portant la prestation (`tarif_deja_utilise`, rejoué au Oui) ;
+   * une date d'effet passée est une autorité de la DAF et de la Direction, avec la case et le motif ; « Valider » met en vigueur en un geste, pour la liste de rôles de la
+   * famille seulement ; un Non exige son motif ; chaque transition est écrite au journal. Les sondes émettent de vraies pièces (`PR.prescrire`) et décalent l'horloge du banc.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 117 : T3 contrôle d’usage tarif_deja_utilise (proposition et Oui rejoué), cas limites (deux changements le même jour, date passée déjà utilisée, prix zéro, tiret, ligne identique, proposition vide), date passée réservée à la DAF et à la Direction, Valider en un geste, journal');
+    erreursJS = [];
+    const enTant = async (role) => {
+      await page.evaluate((r) => window.SIGH.store.setSession({ role: r, nom: 'SONDE117 ' + r, nomComplet: 'SONDE117 ' + r, fonction: r, identifiant: 's117.' + r, secteur: 'DIR' }), role);
+    };
+    await ouvrir('cfg-tarifs.html');
+    await enTant('da');
+    const A = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core;
+      const jour = C.iso(C.aujourdhui()), plus = (n) => C.iso(new Date(C.aujourdhui().getTime() + n * 86400000));
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const na = (code, d) => PR.tarifALaDate(code, d || null, false).montant;
+      const prop = (o) => PR.proposerTarif(Object.assign({ etatAssure: 'unique', motif: 'Sonde 117' }, o));
+      const piece = (code, date) => PR.prescrire({ patientCode: pt.code, medecin: 'S117', diagnostic: 's', actes: [code], date: date }).facture;
+      const nbV = (code) => S.raw().versionsTarif.filter((v) => v.code === code).length;
+      const sortie = { jour: jour };
+      /* a. tarif_deja_utilise à la proposition : une pièce d'AUJOURD'HUI porte MG01 */
+      const f1 = piece('MG01');
+      sortie.a1 = prop({ code: 'MG01', prixNonAssure: na('MG01') + 100, dateEffet: jour });
+      sortie.a1num = f1.numero; sortie.a1versions = nbV('MG01');
+      sortie.a2 = prop({ code: 'MG01', prixNonAssure: na('MG01') + 100, dateEffet: plus(1) });
+      /* a'. rejoué AU OUI : une pièce datée de demain est émise pendant l'attente */
+      const f2 = piece('MG01', plus(1) + 'T10:00:00');
+      sortie.a3 = PR.deciderTarif(sortie.a2.version.id, 'oui');
+      sortie.a3statut = S.raw().versionsTarif.filter((v) => v.id === sortie.a2.version.id)[0].statut;
+      sortie.a4 = PR.deciderTarif(sortie.a2.version.id, 'non', { motif: 'Une pièce de demain porte déjà MG01' });
+      sortie.a4versions = nbV('MG01');
+      /* b. deux changements le même jour */
+      const b0 = na('MG02');
+      const b1 = prop({ code: 'MG02', prixNonAssure: b0 + 100, dateEffet: plus(2) });
+      sortie.b2 = prop({ code: 'MG02', prixNonAssure: b0 + 150, dateEffet: plus(2) });
+      PR.deciderTarif(b1.version.id, 'oui');
+      const b3 = prop({ code: 'MG02', prixNonAssure: b0 + 200, dateEffet: plus(2) });
+      sortie.b3ok = b3.ok === true;
+      PR.deciderTarif(b3.version.id, 'oui');
+      sortie.bVigueur = na('MG02', plus(2)); sortie.bAttendu = b0 + 200;
+      sortie.bVersions = S.raw().versionsTarif.filter((v) => v.code === 'MG02').map((v) => v.version + ':' + v.statut + ':' + (v.dateEffet || 'o'));
+      piece('MG02', plus(2) + 'T10:00:00');
+      sortie.b4 = prop({ code: 'MG02', prixNonAssure: b0 + 300, dateEffet: plus(2) });
+      /* c. date passée déjà utilisée */
+      sortie.c1num = piece('MG03', plus(-3) + 'T10:00:00').numero;
+      sortie.c1 = prop({ code: 'MG03', prixNonAssure: na('MG03') + 100, dateEffet: plus(-5), datePassee: true });
+      /* d. zéro, tiret, ligne identique, proposition vide */
+      sortie.d0 = prop({ code: 'CH02', prixNonAssure: 0, dateEffet: plus(1) });
+      sortie.d1 = prop({ code: 'CH02', prixNonAssure: '', dateEffet: plus(1) });
+      sortie.d2 = PR.proposerTarif({ code: 'CH02' });
+      sortie.d3 = prop({ code: 'CH02', prixNonAssure: na('CH02'), dateEffet: plus(1) });
+      sortie.d4 = PR.proposerTarif({ code: 'CH02', prixNonAssure: na('CH02') + 10, etatAssure: 'manquant', dateEffet: plus(1), motif: 'Sonde 117 : colonne assurée en tiret' });
+      sortie.d4v = sortie.d4.ok ? S.raw().versionsTarif.filter((v) => v.id === sortie.d4.version.id)[0] : null;
+      sortie.d5 = sortie.d4.ok ? PR.deciderTarif(sortie.d4.version.id, 'non', { motif: 'Sonde 117 : tiret refusé pour libérer la ligne' }) : null;
+      sortie.d6 = PR.proposerTarif({ code: 'CH02', prixNonAssure: na('CH02') + 20, etatAssure: 'unique', dateEffet: plus(1), motif: '' });
+      return sortie;
+    });
+    const jr = (x) => (x && x.ok === false) ? [x.code, !!x.motif, !!x.geste] : x;
+    verifier('TARIF_DEJA_UTILISE à la PROPOSITION : une pièce d’aujourd’hui porte MG01, un prix effectif aujourd’hui est refusé en NOMMANT la pièce (numéro) et le geste de correction (date postérieure ou avoir), aucune version écrite ; le même changement à effet de demain est accepté',
+      A.a1.code === 'TARIF_DEJA_UTILISE' && A.a1.motif.indexOf(A.a1num) >= 0 && /postérieure/.test(A.a1.geste) && /avoir/.test(A.a1.geste) && A.a1.nbPieces >= 1 && A.a1versions === 1 && A.a2.ok === true, JSON.stringify([jr(A.a1), A.a1num, A.a1versions, jr(A.a2)]));
+    verifier('…et REJOUÉ AU OUI : une pièce datée de demain émise pendant l’attente fait refuser le Oui (TARIF_DEJA_UTILISE, geste « refuser puis reproposer »), la proposition reste en attente ; le Non avec son motif la clôt SANS créer de version',
+      A.a3.code === 'TARIF_DEJA_UTILISE' && /reproposer/.test(A.a3.geste) && A.a3statut === 'propose' && A.a4.ok === true && A.a4versions === 2, JSON.stringify([jr(A.a3), A.a3statut, jr(A.a4), A.a4versions]));
+    verifier('DEUX CHANGEMENTS LE MÊME JOUR : une seule proposition en attente par prestation (CHANGEMENT_EN_ATTENTE) ; deux versions valides à la même date d’effet : la plus grande version l’emporte, les deux restent lisibles ; la pièce émise ce jour-là ferme la date (TARIF_DEJA_UTILISE)',
+      A.b2.code === 'CHANGEMENT_EN_ATTENTE' && A.b3ok && A.bVigueur === A.bAttendu && A.bVersions.filter((v) => /:valide:/.test(v)).length === 3 && A.b4.code === 'TARIF_DEJA_UTILISE', JSON.stringify([jr(A.b2), A.b3ok, A.bVigueur, A.bAttendu, A.bVersions, jr(A.b4)]));
+    verifier('DATE PASSÉE DÉJÀ UTILISÉE : une pièce datée d’il y a trois jours interdit une date d’effet d’il y a cinq jours, même cochée et motivée par la DAF (TARIF_DEJA_UTILISE, la pièce nommée)',
+      A.c1.code === 'TARIF_DEJA_UTILISE' && A.c1.motif.indexOf(A.c1num) >= 0, JSON.stringify([jr(A.c1), A.c1num, A.c1.motif]));
+    verifier('PRIX ZÉRO refusé (PRIX_ZERO), prix vide refusé (PRIX_ABSENT), PROPOSITION VIDE refusée (PRIX_ABSENT), LIGNE IDENTIQUE refusée (PRIX_INCHANGE), MOTIF vide refusé (MOTIF_REQUIS) : chacun nommé avec son geste ; le TIRET de la colonne assurée est une proposition recevable (« à valider », elle ne se facture pas à l’assuré) que le Non écarte',
+      A.d0.code === 'PRIX_ZERO' && A.d1.code === 'PRIX_ABSENT' && A.d2.code === 'PRIX_ABSENT' && A.d3.code === 'PRIX_INCHANGE' && A.d6.code === 'MOTIF_REQUIS' && [A.d0, A.d1, A.d2, A.d3, A.d6].every((x) => x.geste)
+        && A.d4.ok === true && A.d4v.etatAssure === 'manquant' && A.d5.ok === true, JSON.stringify([jr(A.d0), jr(A.d1), jr(A.d2), jr(A.d3), jr(A.d6), jr(A.d4), A.d4v && A.d4v.etatAssure, jr(A.d5)]));
+
+    /* --- date passée : DAF et Direction seulement, avec la case ; l'horloge dépasse la date pendant l'attente ---------------------------------------------------------- */
+    const P = await page.evaluate(async () => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core;
+      const jour = C.iso(C.aujourdhui()), plus = (n) => C.iso(new Date(C.aujourdhui().getTime() + n * 86400000));
+      const na = (code, d) => PR.tarifALaDate(code, d || null, false).montant;
+      const en = (role) => S.setSession({ role: role, nom: 'SONDE117 ' + role, nomComplet: 'SONDE117 ' + role, fonction: role, identifiant: 's117.' + role, secteur: 'DIR' });
+      const prop = (o) => PR.proposerTarif(Object.assign({ etatAssure: 'unique', motif: 'Sonde 117' }, o));
+      const s = { roles: PR.ROLES_DATE_PASSEE };
+      en('da');
+      s.sansCase = prop({ code: 'MG04', prixNonAssure: na('MG04') + 100, dateEffet: plus(-1) });
+      const avecCase = prop({ code: 'MG04', prixNonAssure: na('MG04') + 100, dateEffet: plus(-1), datePassee: true });
+      s.daAvecCase = avecCase.ok === true && avecCase.version.datePassee === true;
+      en('admin');
+      s.adminSansCase = prop({ code: 'CH01', prixNonAssure: na('CH01') + 100, dateEffet: plus(-1) });
+      s.adminAvecCase = prop({ code: 'CH01', prixNonAssure: na('CH01') + 100, dateEffet: plus(-1), datePassee: true });
+      s.adminDecide = PR.deciderTarif(avecCase.version.id, 'oui');
+      en('direction');
+      s.directionDecide = PR.deciderTarif(avecCase.version.id, 'oui');
+      s.prixDuJourMoins1 = na('MG04', plus(-1)); s.attendu = null;
+      s.prixAvant = na('MG04', plus(-2));
+      /* l'horloge dépasse la date d'effet pendant l'attente : une proposition d'une date de demain, décidée le surlendemain (sans case, jamais passée à l'origine) */
+      en('da');
+      const att = prop({ code: 'CH03', prixNonAssure: na('CH03') + 100, dateEffet: plus(1) });
+      window.__SIGH_HORLOGE.decaler(2 * 86400000);
+      try { s.depasse = PR.deciderTarif(att.version.id, 'oui'); } finally { window.__SIGH_HORLOGE.decaler(-2 * 86400000); }
+      s.depasseStatut = S.raw().versionsTarif.filter((v) => v.id === att.version.id)[0].statut;
+      PR.deciderTarif(att.version.id, 'non', { motif: 'Sonde 117 : date dépassée, reproposer' });
+      return s;
+    });
+    verifier('DATE PASSÉE (T6) : sans la case, refus nommé DATE_PASSEE dont le geste dit de cocher et motiver ; la DAF avec la case est ACCEPTÉE (version marquée datePassee) ; l’administrateur, même avec la case, est refusé (DATE_PASSEE_RESERVEE) et sans case on lui dit à qui revient cette autorité',
+      P.sansCase.code === 'DATE_PASSEE' && /Cocher/.test(P.sansCase.geste) && P.daAvecCase && P.adminSansCase.code === 'DATE_PASSEE' && /DAF/.test(P.adminSansCase.geste) && /Direction/.test(P.adminSansCase.geste) && P.adminAvecCase.code === 'DATE_PASSEE_RESERVEE', JSON.stringify([P.roles, P.sansCase.geste, P.daAvecCase, P.adminSansCase.geste, jr(P.adminAvecCase)]));
+    verifier('…la décision d’une date passée revient aux mêmes profils : l’administrateur est refusé (DATE_PASSEE_RESERVEE), la Direction accepte, et le prix d’hier est celui de la nouvelle version tandis que celui d’avant-hier reste l’ancien',
+      P.adminDecide.code === 'DATE_PASSEE_RESERVEE' && P.directionDecide.ok === true && P.prixDuJourMoins1 !== P.prixAvant && P.prixDuJourMoins1 === P.prixAvant + 100, JSON.stringify([jr(P.adminDecide), jr(P.directionDecide), P.prixDuJourMoins1, P.prixAvant]));
+    verifier('DATE DÉPASSÉE PENDANT L’ATTENTE : le Oui est refusé (DATE_PASSEE, geste « refuser puis reproposer »), aucun décalage automatique, la proposition reste en attente',
+      P.depasse.code === 'DATE_PASSEE' && /reproposer/.test(P.depasse.geste) && P.depasseStatut === 'propose', JSON.stringify([jr(P.depasse), P.depasseStatut]));
+
+    /* --- Valider en un geste : la liste de rôles décide, jamais `editer` ; chaque transition est écrite au journal ---------------------------------------------------- */
+    const V = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core, N = window.SIGH.nav;
+      const jour = C.iso(C.aujourdhui());
+      const na = (code, d) => PR.tarifALaDate(code, d || null, false).montant;
+      const en = (role) => S.setSession({ role: role, nom: 'SONDE117 ' + role, nomComplet: 'SONDE117 ' + role, fonction: role, identifiant: 's117.' + role, secteur: 'DIR' });
+      const prop = (o) => PR.proposerTarif(Object.assign({ etatAssure: 'unique', motif: 'Sonde 117 : valider' }, o));
+      const out = {};
+      en('da');
+      const avant = na('CH03');
+      const r = prop({ code: 'CH03', prixNonAssure: avant + 250, dateEffet: jour, valider: true });
+      out.enUnGeste = r.ok === true && r.valideeEnUnGeste === true && r.version.statut === 'valide' && r.version.roleDecision === 'da' && r.version.proposeRole === 'da';
+      out.prixApres = na('CH03'); out.prixAttendu = avant + 250;
+      const j = S.raw().audit.filter((x) => x.action === 'Changement de prix : validation en un geste')[0];
+      out.journal = j ? { ref: j.reference, nouvelle: j.nouvelleValeur } : null;
+      /* un profil qui édite l'écran SANS décider : le droit d'éditer est accordé (surcharge de la sonde), pas celui de valider */
+      const o = N.droitsEcran;
+      N.droitsEcran = function (role, id, code) { return id === 'cfg-tarifs' && role === 'comptable' ? { voir: true, editer: true, annuler: false } : o.apply(N, arguments); };
+      try {
+        en('comptable');
+        out.editeurValide = prop({ code: 'CH04', prixNonAssure: na('CH04') + 100, dateEffet: jour, valider: true });
+        const p = prop({ code: 'CH04', prixNonAssure: na('CH04') + 100, dateEffet: jour });
+        out.editeurPropose = p.ok === true && p.version.statut === 'propose' && p.version.proposeRole === 'comptable';
+        out.editeurNonSurPropre = PR.deciderTarif(p.version.id, 'oui');
+        out.versionId = p.ok ? p.version.id : null;
+      } finally { N.droitsEcran = o; }
+      en('da');
+      /* le Non exige son motif et ne crée aucune version nouvelle ; le Oui journalise */
+      const nbAvant = S.raw().versionsTarif.filter((v) => v.code === 'CH04').length;
+      out.nonSansMotif = PR.deciderTarif(out.versionId, 'non', {});
+      out.nonAvecMotif = PR.deciderTarif(out.versionId, 'non', { motif: 'Prix hors grille de la clinique' });
+      out.nbVersions = [nbAvant, S.raw().versionsTarif.filter((v) => v.code === 'CH04').length];
+      out.statut = S.raw().versionsTarif.filter((v) => v.id === out.versionId)[0].statut;
+      const jr0 = S.raw().audit.filter((x) => x.action === 'Changement de prix : refus' && x.reference === 'CH04')[0];
+      out.journalRefus = jr0 ? jr0.nouvelleValeur : null;
+      out.actions = ['proposition', 'validation en un geste', 'refus', 'validation'].map((a) => [a, S.raw().audit.some((x) => x.action === 'Changement de prix : ' + a)]);
+      return out;
+    });
+    verifier('VALIDER EN UN GESTE : la DAF dépose « valider » et la version naît VALIDE avec son rôle tracé (auteur, rôle, motif), le prix en vigueur change, le journal écrit « validation en un geste »',
+      V.enUnGeste && V.prixApres === V.prixAttendu && V.journal && V.journal.ref === 'CH03' && /"role":"da"/.test(V.journal.nouvelle || ''), JSON.stringify([V.enUnGeste, V.prixApres, V.prixAttendu, V.journal]));
+    verifier('LA LISTE DE RÔLES DÉCIDE, JAMAIS `editer` : un profil qui édite l’écran sans décider voit « valider » refusé par le moteur (VALIDATION_RESERVEE) mais dépose une proposition, et ne décide pas la sienne',
+      V.editeurValide.code === 'VALIDATION_RESERVEE' && V.editeurPropose === true && V.editeurNonSurPropre.code === 'VALIDATION_RESERVEE', JSON.stringify([jr(V.editeurValide), V.editeurPropose, jr(V.editeurNonSurPropre)]));
+    verifier('UN NON EXIGE SON MOTIF (MOTIF_REQUIS, rien décidé) et ne crée AUCUNE version nouvelle : la version refusée reste lisible à l’historique ; chaque transition est écrite au journal (proposition, validation en un geste, refus, validation) avec le motif',
+      V.nonSansMotif.code === 'MOTIF_REQUIS' && V.nonAvecMotif.ok === true && V.nbVersions[0] === V.nbVersions[1] && V.statut === 'refuse' && /Prix hors grille/.test(V.journalRefus || '') && V.actions.every((x) => x[1]), JSON.stringify([jr(V.nonSansMotif), V.nbVersions, V.statut, V.journalRefus, V.actions]));
+    const erreurs117 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', erreurs117.length === 0, erreurs117.join(' | '));
+  });
+
+  /* ==========================================================================
+   * VAGUE 118, LOT T3 : LA MODALE DE SAISIE (ENREGISTRER OU VALIDER), L'INFO-BULLE DE LA DATE PASSÉE, « OUI À TOUT » ENCADRÉ
+   * --------------------------------------------------------------------------
+   * Deux états visibles au pied de la modale : « Enregistrer » dépose une proposition, « Valider » met en vigueur en un geste (commande ABSENTE hors de la liste de rôles de
+   * la famille). L'utilisateur qui édite apprend que la date passée est une autorité de la DAF et de la Direction. « Oui à tout » ne s'accorde qu'après l'affichage de la
+   * comparaison ligne à ligne, sur les lignes affichées, et nomme celles que le contrôle d'usage empêche.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 118 : T3 modale de saisie (Enregistrer ou Valider, deux états visibles), info-bulle de la date passée, case réservée à la DAF et à la Direction, « Oui à tout » encadré (comparaison ligne à ligne d’abord, lignes affichées, refus nommés)');
+    erreursJS = [];
+    const enTant = async (role, ecran) => {
+      await page.evaluate((r) => window.SIGH.store.setSession({ role: r, nom: 'SONDE118 ' + r, nomComplet: 'SONDE118 ' + r, fonction: r, identifiant: 's118.' + r, secteur: 'DIR' }), role);
+      if (ecran) await ouvrir(ecran);
+    };
+    const onglet = (id) => page.evaluate(async (i) => { const t = [...document.querySelectorAll('#page-content [data-tab]')].find((x) => x.getAttribute('data-tab') === i || x.textContent.trim().toLowerCase().indexOf(i) === 0); if (t) t.click(); await new Promise((r) => setTimeout(r, 400)); return !!t; }, id);
+    const chercher = (txt) => page.evaluate(async (t) => { const c = [...document.querySelectorAll('#page-content input')].find((i) => /search|text/.test(i.type) && /cherch/i.test((i.placeholder || '') + (i.getAttribute('aria-label') || ''))); if (!c) return false; c.value = t; c.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 500)); return true; }, txt);
+    const poserChamp = (id, v) => page.evaluate((i, x) => { const e = document.querySelector('.modal-root #f_' + i + ', [role=dialog] #f_' + i); if (!e) return false; if (e.type === 'checkbox') e.checked = !!x; else e.value = x; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); return true; }, id, v);
+    const modale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === l).pop(); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+    const piedModale = () => page.evaluate(() => [...document.querySelectorAll('.modal-root button, [role=dialog] button')].map((b) => b.textContent.trim()).filter(Boolean));
+    const ouvrirProposer = (code) => page.evaluate(async (c) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(c) >= 0);
+      const b = tr && tr.querySelector('button[title="Proposer un changement"]');
+      if (!b) return false; b.click(); await new Promise((r) => setTimeout(r, 500)); return true;
+    }, code);
+    const toasts = () => page.evaluate(() => [...document.querySelectorAll('#toast-host *')].map((n) => n.textContent).join(' | '));
+    const etatVersions = (code) => page.evaluate((c) => window.SIGH.store.raw().versionsTarif.filter((v) => v.code === c).sort((a, b) => a.version - b.version).map((v) => ({ v: v.version, statut: v.statut, role: v.roleDecision || null, propose: v.proposeRole || null, passee: v.datePassee === true, du: v.dateEffet, na: v.prixNonAssure })), code);
+    const prix = (code, d) => page.evaluate((c, dd) => window.SIGH.parcours.tarifALaDate(c, dd, false).montant, code, d || null);
+    const jours = (n) => page.evaluate((k) => { const C = window.SIGH.core; return C.iso(new Date(C.aujourdhui().getTime() + k * 86400000)); }, n);
+
+    /* --- la DAF : deux états visibles, la case de la date passée, l'info-bulle ----------------------------------------------------------------------------------- */
+    await enTant('da', 'cfg-tarifs.html');
+    await onglet('prestations'); await chercher('CH05');
+    const ouvert = await ouvrirProposer('CH05');
+    const pied = await piedModale();
+    const daInfo = await page.evaluate(() => ({ case: !!document.querySelector('[role=dialog] #f_datePassee, .modal-root #f_datePassee'), bulle: (document.querySelector('[data-info-date-passee]') || {}).title || null,
+      etats: /Deux états/.test((document.querySelector('[role=dialog], .modal-root') || {}).textContent || '') }));
+    verifier('MODALE DE SAISIE (la DAF) : « Enregistrer » et « Valider » sont visibles au pied avec l’explication des deux états, la case « Date antérieure à aujourd’hui » est offerte, et l’info-bulle dit qu’elle détient cette autorité',
+      ouvert && pied.indexOf('Enregistrer') >= 0 && pied.indexOf('Valider') >= 0 && pied.indexOf('Annuler') >= 0 && daInfo.etats && daInfo.case && /autorité/.test(daInfo.bulle || ''), JSON.stringify([pied, daInfo]));
+    const avant05 = await prix('CH05');
+    await poserChamp('prixNonAssure', String(avant05 + 100)); await poserChamp('etatAssure', 'unique'); await poserChamp('motif', 'Sonde 118 enregistrer');
+    await modale('Enregistrer'); await pause(700);
+    const v05 = await etatVersions('CH05');
+    const t05 = await toasts();
+    verifier('« Enregistrer » dépose une PROPOSITION : version « propose », le prix en vigueur ne bouge pas, le toast le dit',
+      v05.length === 2 && v05[1].statut === 'propose' && v05[1].propose === 'da' && (await prix('CH05')) === avant05 && /Proposition enregistrée/.test(t05), JSON.stringify([v05, t05.slice(0, 120)]));
+
+    /* --- l'administrateur : « Valider » en un geste ; pas de case de date passée, l'info-bulle nomme la DAF et la Direction ------------------------------------------ */
+    await enTant('admin', 'cfg-tarifs.html');
+    await onglet('prestations'); await chercher('CH06');
+    await ouvrirProposer('CH06');
+    const admInfo = await page.evaluate(() => ({ case: !!document.querySelector('[role=dialog] #f_datePassee, .modal-root #f_datePassee'), bulle: (document.querySelector('[data-info-date-passee]') || {}).title || null, titreChamp: (document.querySelector('#f_dateEffet') || {}).title || null }));
+    const avant06 = await prix('CH06');
+    await poserChamp('prixNonAssure', String(avant06 + 100)); await poserChamp('etatAssure', 'unique'); await poserChamp('motif', 'Sonde 118 valider');
+    await modale('Valider'); await pause(900);
+    const v06 = await etatVersions('CH06');
+    verifier('L’ADMINISTRATEUR valide en un geste (« Valider ») : version née VALIDE avec son rôle, prix en vigueur changé ; il n’a PAS la case de la date passée et l’info-bulle (sur le champ aussi) dit que cette autorité est celle de la DAF et de la Direction',
+      v06.length === 2 && v06[1].statut === 'valide' && v06[1].role === 'admin' && (await prix('CH06')) === avant06 + 100 && !admInfo.case && /DAF/.test(admInfo.bulle || '') && /Direction/.test(admInfo.bulle || '') && /DAF/.test(admInfo.titreChamp || ''), JSON.stringify([v06, admInfo]));
+
+    /* --- la Direction : date passée au geste (case, motif), validée en un geste ------------------------------------------------------------------------------- */
+    await enTant('direction', 'cfg-tarifs.html');
+    await onglet('prestations'); await chercher('CH07');
+    await ouvrirProposer('CH07');
+    const hier = await jours(-1);
+    const avant07 = await prix('CH07');
+    await poserChamp('prixNonAssure', String(avant07 + 100)); await poserChamp('etatAssure', 'unique'); await poserChamp('dateEffet', hier); await poserChamp('motif', 'Sonde 118 date passée');
+    await modale('Valider'); await pause(700);
+    const sansCase = await toasts();
+    const encore = await piedModale();
+    await poserChamp('datePassee', true);
+    await modale('Valider'); await pause(900);
+    const v07 = await etatVersions('CH07');
+    verifier('LA DIRECTION, date passée AU GESTE : sans la case le geste est refusé en nommant (le formulaire reste ouvert), avec la case et le motif la version naît valide, marquée « date passée », et le prix d’hier est le nouveau',
+      /antérieure/.test(sansCase) && encore.indexOf('Valider') >= 0 && v07.length === 2 && v07[1].statut === 'valide' && v07[1].passee === true && v07[1].du === hier && (await prix('CH07', hier)) === avant07 + 100 && (await prix('CH07', await jours(-2))) === avant07, JSON.stringify([sansCase.slice(0, 160), v07]));
+
+    /* --- « Oui à tout » : la comparaison d'abord, sur les lignes affichées ----------------------------------------------------------------------------------- */
+    await enTant('da');
+    await page.evaluate(() => {
+      const PR = window.SIGH.parcours, C = window.SIGH.core, demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
+      const na = (c) => PR.tarifALaDate(c, null, false).montant;
+      ['CH08', 'CH09'].forEach((c) => PR.proposerTarif({ code: c, prixNonAssure: na(c) + 100, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 118 en bloc' }));
+    });
+    const refusSansComparaison = await page.evaluate(() => window.SIGH.parcours.deciderTousTarifs({ ids: [] }).code);
+    const refusNonDecideur = await page.evaluate(() => { const S = window.SIGH.store; S.setSession({ role: 'caissier', nom: 'SONDE118 caissier', nomComplet: 'SONDE118 caissier', fonction: 'caissier', identifiant: 's118.c', secteur: 'DIR' }); const r = window.SIGH.parcours.deciderTousTarifs({ comparaisonAffichee: true, ids: [] }); S.setSession({ role: 'da', nom: 'SONDE118 da', nomComplet: 'SONDE118 da', fonction: 'da', identifiant: 's118.da', secteur: 'DIR' }); return r.code; });
+    await ouvrir('cfg-tarifs.html');
+    await onglet('alertes'); await chercher('Sonde 118 en bloc');
+    const ligneUsage = await page.evaluate(() => { const PR = window.SIGH.parcours, S = window.SIGH.store, C = window.SIGH.core; const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0]; const demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
+      return PR.prescrire({ patientCode: pt.code, medecin: 'S118', diagnostic: 's', actes: ['CH09'], date: demain + 'T11:00:00' }).facture.numero; });
+    const ouiAvant = await page.evaluate(async () => { const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === 'Oui à tout'); if (!b) return { bouton: false }; b.click(); await new Promise((r) => setTimeout(r, 600));
+      const c = document.querySelector('[data-comparaison-oui-a-tout]'); return { bouton: true, comparaison: !!c, lignes: c ? c.querySelectorAll('tbody tr').length : 0, entetes: c ? [...c.querySelectorAll('thead th')].map((t) => t.textContent.trim()) : [], texte: c ? c.textContent.replace(/\s+/g, ' ').slice(0, 200) : '' }; });
+    const rien = await page.evaluate(() => ['CH08', 'CH09'].map((c) => window.SIGH.store.raw().versionsTarif.filter((v) => v.code === c && v.statut === 'propose').length));
+    verifier('« OUI À TOUT » ENCADRÉ : le moteur le refuse sans comparaison affichée (COMPARAISON_REQUISE) et à un profil qui ne décide pas (VALIDATION_RESERVEE) ; au geste, il OUVRE d’abord la comparaison ligne à ligne (code, prestation, ancien et nouveau prix, variation, assuré, date d’effet, pièces) sur les seules lignes affichées, et RIEN n’est décidé tant qu’on n’a pas confirmé',
+      refusSansComparaison === 'COMPARAISON_REQUISE' && refusNonDecideur === 'VALIDATION_RESERVEE' && ouiAvant.bouton && ouiAvant.comparaison && ouiAvant.lignes === 2 && ouiAvant.entetes.indexOf('Variation') >= 0 && ouiAvant.entetes.indexOf('Non assuré proposé') >= 0 && rien.join() === '1,1', JSON.stringify([refusSansComparaison, refusNonDecideur, ouiAvant, rien]));
+    await modale('Oui à tout (2)'); await pause(1000);
+    const apresOui = await page.evaluate(() => ({ ch08: window.SIGH.store.raw().versionsTarif.filter((v) => v.code === 'CH08').sort((a, b) => a.version - b.version).map((v) => v.statut), ch09: window.SIGH.store.raw().versionsTarif.filter((v) => v.code === 'CH09').sort((a, b) => a.version - b.version).map((v) => v.statut),
+      journal: (window.SIGH.store.raw().audit.filter((x) => x.action === 'Changement de prix : Oui à tout')[0] || {}).nouvelleValeur || null }));
+    const tOui = await toasts();
+    verifier('…à la confirmation, chaque ligne passe par la décision ordinaire : CH08 est acceptée, CH09 est REFUSÉE par le contrôle d’usage (une pièce de demain la porte, nommée dans le moteur) et reste en attente ; le toast dit les deux ; un seul geste « Oui à tout » est journalisé',
+      apresOui.ch08.join() === 'valide,valide' && apresOui.ch09.join() === 'valide,propose' && /1 changement\(s\) accepté\(s\), 1 refusé\(s\)/.test(tOui) && /TARIF_DEJA_UTILISE/.test(tOui) && /"oui":1/.test(apresOui.journal || '') && /"refus":1/.test(apresOui.journal || ''), JSON.stringify([apresOui, tOui.slice(0, 200), ligneUsage]));
+    await page.evaluate(() => { const PR = window.SIGH.parcours; const v = window.SIGH.store.raw().versionsTarif.filter((x) => x.code === 'CH09' && x.statut === 'propose')[0]; if (v) PR.deciderTarif(v.id, 'non', { motif: 'Sonde 118 : libérer la ligne' }); });
+    const erreurs118 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', erreurs118.length === 0, erreurs118.join(' | '));
+  });
+
+  /* ==========================================================================
+   * VAGUE 119, LOT T3 : L'ALERTE OUI/NON, LE RETOUR À L'AUTEUR, LE CENTRE DES VALIDATIONS, LA COMMANDE VALIDER DES ACTES ET DES ANALYSES (E2366)
+   * --------------------------------------------------------------------------
+   * Une proposition fait naître une alerte routée vers les profils de la famille de décision (cloche, badge, UNE alerte par lot) ; elle disparaît avec sa cause. La décision
+   * renvoie à l'AUTEUR « accepté » ou « refusé, motif ». Le centre des validations compte les propositions (lu, jamais écrit). Les familles « tarifs des actes » et « tarifs
+   * des analyses » retrouvent leur commande Valider à l'écran unique : la décision d'une version lève le marquage « tarif d'attente ».
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 119 : T3 alerte Oui/Non (cloche, badge, une alerte par lot, routage), retour à l’auteur du Oui et du Non, famille du centre des validations, commande Valider des actes et des analyses (E2366), marquage levé');
+    erreursJS = [];
+    const enTant = async (role, ecran) => {
+      await page.evaluate((r) => window.SIGH.store.setSession({ role: r, nom: 'SONDE119 ' + r, nomComplet: 'SONDE119 ' + r, fonction: r, identifiant: 's119.' + r, secteur: 'DIR' }), role);
+      if (ecran) await ouvrir(ecran);
+    };
+    await ouvrir('cfg-tarifs.html');
+    await enTant('admin');
+    const ids = await page.evaluate(() => {
+      const PR = window.SIGH.parcours, C = window.SIGH.core, demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
+      const na = (c) => PR.tarifALaDate(c, null, false).montant;
+      const a = PR.proposerTarif({ code: 'CH10', prixNonAssure: na('CH10') + 100, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 119 alerte oui' });
+      const b = PR.proposerTarif({ code: 'CH11', prixNonAssure: na('CH11') + 100, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 119 alerte non' });
+      return { oui: a.version.id, non: b.version.id };
+    });
+    const lire = (poste, detaille) => page.evaluate((p, d) => window.SIGH.notifications.collecter({ poste: p, detaille: d }).filter((n) => n.source === 'prix_a_valider' || (n.source === 'poste' && /changement de prix/i.test(n.titre))).map((n) => ({ cle: n.cle, titre: n.titre, detail: n.detail, priorite: n.priorite, lien: n.lien, onglet: n.onglet || null, groupe: !!n.groupe, nombre: n.nombre || 1, source: n.source })), poste, !!detaille);
+    const grille = await page.evaluate(() => window.SIGH.store.raw().versionsTarif.filter((v) => v.statut === 'propose' && v.origine === 'semence-grille').length);
+    const lotsDa = await lire('da', true);
+    const lotsCaissier = await lire('caissier', true);
+    const groupe = await lire('da', false);
+    verifier('L’ALERTE OUI/NON est routée vers les profils de la famille de décision, UNE alerte PAR LOT : la grille imprimée des analyses (' + grille + ' propositions) n’est qu’une alerte portant son compte, chaque saisie à l’écran est un lot d’une ligne ; le caissier n’en voit aucune ; la cloche regroupe au-delà de trois (une ligne portant le compte des lots)',
+      lotsDa.filter((n) => n.cle === 'prix:grille').length === 1 && new RegExp('^' + grille + ' changements de prix à valider').test(lotsDa.filter((n) => n.cle === 'prix:grille')[0].titre) && lotsDa.some((n) => n.cle === 'prix:' + ids.oui && /CH10/.test(n.titre))
+        && lotsDa.some((n) => n.cle === 'prix:' + ids.non) && lotsDa.every((n) => n.lien === 'cfg-tarifs' && n.onglet === 'alertes') && lotsCaissier.length === 0 && groupe.length === 1 && groupe[0].groupe && groupe[0].nombre === lotsDa.length, JSON.stringify([grille, lotsDa.map((n) => n.cle + ' ' + n.titre), lotsCaissier.length, groupe]));
+    await enTant('da', 'cfg-tarifs.html');
+    await pause(1500);
+    const cloche = await page.evaluate(() => { const b = document.querySelector('button[aria-label="Notifications"]'); return { titre: b ? b.getAttribute('title') : null, badge: b && b.querySelector('span') ? b.querySelector('span').textContent : null }; });
+    verifier('LA CLOCHE ET LE BADGE le montrent à la DAF (le badge porte un compte, le titre dit « alerte(s) en attente »)', /alerte\(s\) en attente/.test(cloche.titre || '') && Number(cloche.badge) >= 1, JSON.stringify(cloche));
+
+    /* --- la décision : disparition de l'alerte, retour à l'auteur ------------------------------------------------------------------------------------------------------ */
+    const dec = await page.evaluate((i) => {
+      const PR = window.SIGH.parcours;
+      const o = PR.deciderTarif(i.oui, 'oui');
+      const n = PR.deciderTarif(i.non, 'non', { motif: 'Prix à reprendre avec le surveillant général' });
+      return { o: o.ok === true, n: n.ok === true };
+    }, ids);
+    const lotsApres = await lire('da', true);
+    const retourAdmin = await lire('admin', true);
+    const retourCaissier = await lire('caissier', true);
+    verifier('Après la décision, l’alerte DISPARAÎT avec sa cause (CH10 et CH11 ne sont plus produites, la grille reste) ; l’AUTEUR reçoit le retour : « accepté » (avec la date d’effet) pour le Oui, « refusé » avec le MOTIF pour le Non (priorité critique), vers l’écran « Tarifs et prix », historique ; le caissier n’en reçoit rien',
+      dec.o && dec.n && lotsApres.every((n) => n.cle === 'prix:grille') && retourAdmin.some((n) => /CH10 a été accepté/.test(n.titre) && /prend effet/.test(n.detail) && n.lien === 'cfg-tarifs' && n.onglet === 'historique')
+        && retourAdmin.some((n) => /CH11 a été refusé/.test(n.titre) && /surveillant général/.test(n.detail) && n.priorite === 'critique') && retourCaissier.length === 0, JSON.stringify([dec, lotsApres.map((n) => n.cle), retourAdmin.map((n) => n.titre + ' | ' + n.detail), retourCaissier.length]));
+    const soi = await page.evaluate(() => {
+      const PR = window.SIGH.parcours, S = window.SIGH.store, C = window.SIGH.core, demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
+      const avant = S.collection('notifications').all().filter((n) => n.type === 'prix_decide').length;
+      const r = PR.proposerTarif({ code: 'CH12', prixNonAssure: PR.tarifALaDate('CH12', null, false).montant + 100, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 119 soi-même', valider: true });
+      return { ok: r.ok === true, avant: avant, apres: S.collection('notifications').all().filter((n) => n.type === 'prix_decide').length };
+    });
+    verifier('Celui qui valide son propre changement en un geste ne reçoit pas de retour de lui-même', soi.ok && soi.avant === soi.apres, JSON.stringify(soi));
+
+    /* --- le centre des validations : la famille, un compte lu, jamais écrit ----------------------------------------------------------------------------------------- */
+    await ouvrir('adm-validations.html');
+    const centre = await page.evaluate(() => {
+      const f = window.SIGH.validations.referentielsAValider().filter((x) => x.famille === 'prix')[0];
+      const reelles = window.SIGH.store.raw().versionsTarif.filter((v) => v.statut === 'propose').length;
+      const ligne = document.querySelector('[data-famille="prix"]');
+      const id = (window.SIGH.store.raw().versionsTarif.filter((v) => v.statut === 'propose')[0] || {}).id;
+      const v = window.SIGH.validations.validerReferentiel('prix', id);
+      return { famille: f && { enAttente: f.enAttente, profil: f.profil, ecran: f.ecran }, reelles: reelles, ligne: ligne ? { attente: ligne.getAttribute('data-en-attente'), texte: ligne.textContent.replace(/\s+/g, ' ').slice(0, 120) } : null,
+        refus: v.code, intact: window.SIGH.store.raw().versionsTarif.filter((x) => x.id === id)[0].statut };
+    });
+    verifier('LE CENTRE DES VALIDATIONS porte la famille « Changements de prix en attente » avec son compte LU sur les versions (' + 'même nombre que les propositions réelles), le profil de la famille et le lien vers « Tarifs et prix » ; la valider d’ici est refusé (GESTE_A_SON_POSTE) et ne change rien',
+      centre.famille && centre.famille.enAttente === centre.reelles && centre.reelles >= 1 && centre.ligne && Number(centre.ligne.attente) === centre.reelles && /Changements de prix en attente/.test(centre.ligne.texte) && centre.famille.ecran === 'cfg-tarifs' && centre.refus === 'GESTE_A_SON_POSTE' && centre.intact === 'propose', JSON.stringify(centre));
+
+    /* --- E2366 : les familles « actes » et « analyses » retrouvent leur commande Valider ------------------------------------------------------------------------------ */
+    await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const f = S.collection('actes').all().filter((a) => a.code === 'SO13')[0];
+      S.collection('actes').update(f.id, { tarifProvisoire: true });
+      const v = S.raw().versionsTarif.filter((x) => x.code === 'SO13' && x.statut === 'valide');
+      v.forEach((x) => S.collection('versionsTarif').update(x.id, { provisoire: true }));
+    });
+    const onglet = (id) => page.evaluate(async (i) => { const t = [...document.querySelectorAll('#page-content [data-tab]')].find((x) => x.getAttribute('data-tab') === i || x.textContent.trim().toLowerCase().indexOf(i) === 0); if (t) t.click(); await new Promise((r) => setTimeout(r, 400)); return !!t; }, id);
+    const chercher = (txt) => page.evaluate(async (t) => { const c = [...document.querySelectorAll('#page-content input')].find((i) => /search|text/.test(i.type) && /cherch/i.test((i.placeholder || '') + (i.getAttribute('aria-label') || ''))); if (!c) return false; c.value = t; c.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 500)); return true; }, txt);
+    const modale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === l).pop(); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+    const boutonValider = (code) => page.evaluate(async (c) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td') && x.querySelector('td').textContent.trim() === c);
+      if (!tr) return 'ligne absente'; const b = [...tr.querySelectorAll('button')].find((x) => /^Valider « /.test(x.getAttribute('title') || '') || x.textContent.trim() === 'Valider'); if (!b) return { etat: tr.textContent.replace(/\s+/g, ' ').slice(-60) }; b.click(); await new Promise((r) => setTimeout(r, 500)); return true; }, code);
+    const etatMarquage = (code, coll, fam) => page.evaluate((c, k, f) => {
+      const S = window.SIGH.store, V = window.SIGH.validations, h = window.SIGH.data.TARIFS.lire(), p = h.parCode[c];
+      const fiche = S.collection(k).all().filter((x) => x.code === (k === 'actes' ? p.codeActe : p.codeAnalyse))[0];
+      return { fiche: V.etatValidation(f, fiche.id).enAttente, provisoires: S.raw().versionsTarif.filter((v) => v.code === c && v.provisoire === true).length, compte: V.referentielsAValider().filter((x) => x.famille === f)[0].enAttente };
+    }, code, coll, fam);
+    await ouvrir('cfg-tarifs.html');
+    await chercher('SO13'); await onglet('prestations'); await chercher('SO13');
+    const a0 = await etatMarquage('SO13', 'actes', 'actes');
+    const ba = await boutonValider('SO13');
+    await modale('Valider'); await pause(900);
+    const a1 = await etatMarquage('SO13', 'actes', 'actes');
+    await onglet('analyses'); await chercher('L10');
+    const l0 = await etatMarquage('L10', 'analyses', 'analyses');
+    const bl = await boutonValider('L10');
+    await modale('Valider'); await pause(900);
+    const l1 = await etatMarquage('L10', 'analyses', 'analyses');
+    verifier('E2366 LEVÉ : les lignes « Provisoire » des actes et des analyses portent la commande Valider À L’ÉCRAN UNIQUE ; la valider lève le marquage de la fiche de la famille ET de la version du référentiel de prix (le compte de la famille baisse de un), sans modifier un prix',
+      a0.fiche === true && a0.provisoires >= 1 && ba === true && a1.fiche === false && a1.provisoires === 0 && a1.compte === a0.compte - 1 && l0.fiche === true && l0.provisoires >= 1 && bl === true && l1.fiche === false && l1.provisoires === 0 && l1.compte === l0.compte - 1, JSON.stringify([a0, ba, a1, l0, bl, l1]));
+    /* le Oui d'une version LÈVE aussi le marquage (la décision d'une version arrête le tarif d'attente) */
+    const oui = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, V = window.SIGH.validations, C = window.SIGH.core, demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
+      const h = window.SIGH.data.TARIFS.lire(), p = h.parCode.L27;
+      const fiche = S.collection('analyses').all().filter((x) => x.code === 'L27')[0];
+      const avant = { fiche: V.etatValidation('analyses', fiche.id).enAttente, prov: S.raw().versionsTarif.filter((v) => v.code === 'L27' && v.provisoire === true).length };
+      const r = PR.proposerTarif({ code: 'L27', prixNonAssure: PR.tarifALaDate('L27', null, false).montant + 100, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 119 lever le marquage', valider: true });
+      return { avant: avant, ok: r.ok === true, apres: { fiche: V.etatValidation('analyses', fiche.id).enAttente, prov: S.raw().versionsTarif.filter((v) => v.code === 'L27' && v.provisoire === true).length } };
+    });
+    verifier('LE OUI (ici « valider » en un geste) d’une nouvelle version d’une analyse en attente ARRÊTE le tarif : la fiche de la famille n’est plus « à valider » et plus aucune version n’est marquée provisoire',
+      oui.avant.fiche === true && oui.avant.prov >= 1 && oui.ok && oui.apres.fiche === false && oui.apres.prov === 0, JSON.stringify(oui));
+    const fileul = await page.evaluate(() => {
+      const S = window.SIGH.store, V = window.SIGH.validations;
+      const fiche = S.collection('analyses').all().filter((x) => x.code === 'L13')[0];
+      S.setReglage('posteFileul', true);
+      try { return { peut: window.SIGH.kit.peutValider('analyses'), valider: V.validerReferentiel('analyses', fiche.id).code, enAttente: V.etatValidation('analyses', fiche.id).enAttente }; }
+      finally { S.setReglage('posteFileul', false); }
+    });
+    verifier('SUR UN FILEUL, la commande Valider des analyses est absente et le geste direct est refusé (CONFIGURATION_DE_LA_MERE), l’élément reste en attente', fileul.peut === false && fileul.valider === 'CONFIGURATION_DE_LA_MERE' && fileul.enAttente === true, JSON.stringify(fileul));
+    const erreurs119 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', erreurs119.length === 0, erreurs119.join(' | '));
+  });
+
+  /* ==========================================================================
+   * VAGUE 120, LOT T3 : LE PRIX D'UNE LIGNE IMPAYÉE EST FIGÉ À LA PRESCRIPTION (T4) ET LA PRO-FORMA À LA CONVERSION (T5), décisions de la Direction du 11/11/2026
+   * --------------------------------------------------------------------------
+   * T4 : le patient a été informé du prix à la prescription ; un changement ultérieur ne touche aucune ligne existante, payée ou non, et l'encaissement tardif règle la ligne à
+   * SON prix. T5 : une pro-forma convertie se facture au prix du jour avec l'écart affiché, sauf pendant une durée réglable (30 jours proposés, à valider, en base).
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 120 : T4 le prix d’une ligne impayée est figé à la prescription (changement validé, horloge avancée, encaissement tardif) ; T5 pro-forma convertie au prix du jour avec l’écart affiché, durée de validité réglable en base (30 jours, à valider)');
+    erreursJS = [];
+    const enTant = async (role, ecran) => {
+      await page.evaluate((r) => window.SIGH.store.setSession({ role: r, nom: 'SONDE120 ' + r, nomComplet: 'SONDE120 ' + r, fonction: r, identifiant: 's120.' + r, secteur: 'DIR' }), role);
+      if (ecran) await ouvrir(ecran);
+    };
+    await ouvrir('cfg-tarifs.html');
+    await enTant('da');
+    const T4 = await page.evaluate(async () => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core;
+      const demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const na = (c) => PR.tarifALaDate(c, null, false).montant;
+      const ligneDe = (id) => S.collection('factures').get(id).lignes.filter((l) => l.acteCode === 'SO16')[0];
+      const P = na('SO16');
+      const f = PR.prescrire({ patientCode: pt.code, medecin: 'S120', diagnostic: 's', actes: ['SO16'] }).facture;
+      const sortie = { P: P, statut: S.collection('factures').get(f.id).statutPaiement, avant: ligneDe(f.id).prixUnitaire };
+      /* effectif AUJOURD'HUI : la pièce impayée du jour compte, le contrôle d'usage refuse en la nommant */
+      sortie.aujourdhui = PR.proposerTarif({ code: 'SO16', prixNonAssure: P + 500, etatAssure: 'unique', dateEffet: C.iso(C.aujourdhui()), motif: 'Sonde 120', valider: true });
+      sortie.refusNomme = sortie.aujourdhui.code === 'TARIF_DEJA_UTILISE' && sortie.aujourdhui.motif.indexOf(f.numero) >= 0;
+      const r = PR.proposerTarif({ code: 'SO16', prixNonAssure: P + 500, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 120 figé', valider: true });
+      sortie.change = r.ok === true && r.valideeEnUnGeste === true;
+      window.__SIGH_HORLOGE.decaler(86400000);
+      try {
+        sortie.prixDuJour = na('SO16');
+        sortie.ligneApres = ligneDe(f.id).prixUnitaire; sortie.montantApres = ligneDe(f.id).montant;
+        const enc = PR.encaisser(f.id, { montant: ligneDe(f.id).partPatient });
+        sortie.encaisse = enc && enc.erreur ? enc.erreur : (enc && enc.ok !== false);
+        const l = ligneDe(f.id);
+        sortie.regle = { prixUnitaire: l.prixUnitaire, montantRegle: l.montantRegle, statutPaiement: l.statutPaiement };
+        sortie.nouvellePrescription = PR.prescrire({ patientCode: pt.code, medecin: 'S120', diagnostic: 's', actes: ['SO16'] }).facture.lignes.filter((x) => x.acteCode === 'SO16')[0].prixUnitaire;
+      } finally { window.__SIGH_HORLOGE.decaler(-86400000); }
+      return sortie;
+    });
+    verifier('T4 : une ligne IMPAYÉE garde le prix de la prescription : le prix du jour a changé (changement validé, horloge avancée d’un jour) mais la ligne, son montant et l’encaissement tardif restent à l’ancien prix, tandis qu’une NOUVELLE prescription prend le nouveau ; un prix effectif aujourd’hui est refusé en nommant la pièce impayée du jour',
+      T4.statut === 'impayee' && T4.refusNomme && T4.change && T4.prixDuJour === T4.P + 500 && T4.ligneApres === T4.P && T4.montantApres === T4.P && T4.regle.prixUnitaire === T4.P && T4.regle.montantRegle === T4.P && T4.nouvellePrescription === T4.P + 500, JSON.stringify(T4));
+
+    /* --- T5 : la pro-forma ----------------------------------------------------------------------------------------------------------------------------------------- */
+    const T5 = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core;
+      const jour = C.iso(C.aujourdhui()), plus = (n) => C.iso(new Date(C.aujourdhui().getTime() + n * 86400000));
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const na = (c) => PR.tarifALaDate(c, null, false).montant;
+      const P = na('SO17');
+      const defaut = { reglage: S.reglage('tarifsValiditeProformaJours', 'absent'), jours: PR.validiteProformaJours(), propose: PR.VALIDITE_PROFORMA_DEFAUT };
+      const mk = (n, num) => S.collection('factures').insert({ numero: 'PRO-2026-9' + num, date: plus(-n) + 'T09:00:00', patientCode: pt.code, patient: pt.nom + ' ' + pt.prenom, proforma: true, statut: 'actif', type: 'Consultation', montantTTC: P,
+        lignes: [{ id: 'L001', categorie: 'acte', designation: 'Sonde 120 : estimation', quantite: 1, prixUnitaire: P, montant: P, acteCode: 'SO17' }] }).record;
+      const A = mk(10, '0001'), B = mk(40, '0002');
+      const vente = S.collection('factures').all().filter((f) => !f.proforma)[0];
+      const r = PR.proposerTarif({ code: 'SO17', prixNonAssure: P + 300, etatAssure: 'unique', dateEffet: jour, motif: 'Sonde 120 pro-forma', valider: true });
+      const eA = PR.ecartProforma(A.id), eB = PR.ecartProforma(B.id);
+      const sortie = { P: P, defaut: defaut, change: r.ok === true, A: { regle: eA.regle, age: eA.ageJours, validite: eA.validiteJours, ligne: eA.lignes[0], ecart: eA.ecartTotal }, B: { regle: eB.regle, age: eB.ageJours, ligne: eB.lignes[0], ecart: eB.ecartTotal },
+        vente: PR.ecartProforma(vente.id).code, inconnue: PR.ecartProforma('FAC-NEXISTE-PAS').code };
+      /* la durée se règle en base : 5 jours, la pro-forma de dix jours passe au prix du jour */
+      sortie.court = PR.definirValiditeProforma({ jours: 5, motif: 'Sonde 120' });
+      sortie.A5 = PR.ecartProforma(A.id).regle;
+      sortie.invalides = ['abc', '', '2.5', '-1', '400'].map((j) => PR.definirValiditeProforma({ jours: j }).code);
+      sortie.enBase = S.reglage('tarifsValiditeProformaJours', 'absent');
+      const j = S.raw().audit.filter((x) => x.action === 'Validité d’une pro-forma')[0];
+      sortie.journal = j ? [j.ancienneValeur, j.nouvelleValeur] : null;
+      S.setSession({ role: 'caissier', nom: 'SONDE120 caissier', nomComplet: 'SONDE120 caissier', fonction: 'caissier', identifiant: 's120.c', secteur: 'DIR' });
+      sortie.reserve = PR.definirValiditeProforma({ jours: 99 }).code; sortie.apresReserve = S.reglage('tarifsValiditeProformaJours', 'absent');
+      S.setSession({ role: 'da', nom: 'SONDE120 da', nomComplet: 'SONDE120 da', fonction: 'da', identifiant: 's120.da', secteur: 'DIR' });
+      sortie.ids = [A.id, B.id];
+      return sortie;
+    });
+    verifier('T5 : la durée de validité vaut 30 jours quand rien n’est réglé (aucune valeur en base, défaut du moteur) ; à 10 jours de la pro-forma, le PRIX DE LA PRO-FORMA est tenu (retenu = ancien) et l’écart est affiché (+300) ; à 40 jours, la vente se fait au PRIX DU JOUR (retenu = nouveau) avec le même écart ; une vente n’est pas une pro-forma (PAS_UNE_PROFORMA)',
+      T5.defaut.reglage === 'absent' && T5.defaut.jours === 30 && T5.defaut.propose === 30 && T5.change && T5.A.regle === 'prix_de_la_proforma' && T5.A.age === 10 && T5.A.validite === 30 && T5.A.ligne.ancien === T5.P && T5.A.ligne.nouveau === T5.P + 300 && T5.A.ligne.retenu === T5.P && T5.A.ecart === 300
+        && T5.B.regle === 'prix_du_jour' && T5.B.age === 40 && T5.B.ligne.retenu === T5.P + 300 && T5.B.ecart === 300 && T5.vente === 'PAS_UNE_PROFORMA' && T5.inconnue === 'FACTURE_INTROUVABLE', JSON.stringify(T5));
+    verifier('…la durée est un RÉGLAGE EN BASE : réglée à 5 jours (journal avec l’ancienne et la nouvelle valeur), la pro-forma de dix jours passe au prix du jour ; une durée non entière, vide, négative ou hors bornes est refusée (DUREE_INVALIDE) ; un profil qui ne décide pas est refusé (REGLAGE_RESERVE) et rien n’est écrit',
+      T5.court.ok === true && T5.A5 === 'prix_du_jour' && T5.invalides.every((c) => c === 'DUREE_INVALIDE') && T5.enBase === 5 && T5.journal && /"jours":30/.test(T5.journal[0]) && /"jours":5/.test(T5.journal[1]) && T5.reserve === 'REGLAGE_RESERVE' && T5.apresReserve === 5, JSON.stringify([T5.court, T5.A5, T5.invalides, T5.enBase, T5.journal, T5.reserve, T5.apresReserve]));
+    await ouvrir('m8-proforma.html');
+    const ecran = await page.evaluate(async (ids) => {
+      const note = [...document.querySelectorAll('#page-content *')].find((e) => /Convertie en vente, une pro-forma se facture au prix du jour/.test(e.textContent) && e.children.length < 6);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('PRO-2026-90001') >= 0 || x.textContent.indexOf('PRO-2026-9') >= 0);
+      const btn = tr && tr.querySelector('button[title="Prix à la conversion"]');
+      let modale = null;
+      if (btn) { btn.click(); await new Promise((r) => setTimeout(r, 500)); const m = document.querySelector('[data-ecart-proforma]'); modale = m ? { regle: m.getAttribute('data-ecart-proforma'), texte: m.textContent.replace(/\s+/g, ' ').slice(0, 600) } : null; }
+      return { note: note ? note.textContent.replace(/\s+/g, ' ').slice(0, 480) : null, bouton: !!btn, dureeBtn: [...document.querySelectorAll('#page-content button')].some((b) => b.textContent.trim() === 'Durée de validité'), modale: modale };
+    }, T5.ids);
+    verifier('À l’ÉCRAN des pro-forma : la note dit la règle (prix du jour, écart affiché, durée en jours, « à valider », proposition de 30), la ligne offre « Prix à la conversion » dont la modale montre la règle retenue et l’écart, la DAF voit « Durée de validité »',
+      ecran.note && /5 jours/.test(ecran.note) && /à valider/.test(ecran.note) && /30 jours/.test(ecran.note) && ecran.bouton && ecran.modale && ecran.modale.regle === 'prix_du_jour' && /Écart total/.test(ecran.modale.texte) && /\+/.test(ecran.modale.texte) && ecran.dureeBtn, JSON.stringify(ecran));
+    await page.keyboard.press('Escape'); await pause(300);
+    const cais = await page.evaluate(async () => {
+      window.SIGH.store.setSession({ role: 'caissier', nom: 'SONDE120 caissier', nomComplet: 'SONDE120 caissier', fonction: 'caissier', identifiant: 's120.c', secteur: 'DIR' });
+      return true;
+    });
+    await ouvrir('m8-proforma.html');
+    const caissier = await page.evaluate(() => ({ duree: [...document.querySelectorAll('#page-content button')].some((b) => b.textContent.trim() === 'Durée de validité'), ecartBouton: !!document.querySelector('#page-content tbody button[title="Prix à la conversion"]') }));
+    verifier('Le caissier lit l’écart (« Prix à la conversion ») mais ne règle pas la durée : la commande « Durée de validité » est ABSENTE', caissier.ecartBouton && !caissier.duree, JSON.stringify(caissier));
+    await enTant('da');
+    await page.evaluate((ids) => { const S = window.SIGH.store, PR = window.SIGH.parcours; PR.definirValiditeProforma({ jours: 30, motif: 'Sonde 120 : restitution' }); ids.forEach((i) => S.collection('factures').archive(i)); }, T5.ids);
+    const erreurs120 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', erreurs120.length === 0, erreurs120.join(' | '));
   });
 
   await browser.close();

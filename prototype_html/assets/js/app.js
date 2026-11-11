@@ -942,7 +942,7 @@
 
           var actes = el('div.flex.shrink-0.flex-col.gap-1');
           if (n.lien) {
-            actes.appendChild(el('a.btn.btn-secondary.btn-sm', { href: href(n.lien) }, 'Voir'));
+            actes.appendChild(el('a.btn.btn-secondary.btn-sm', { href: href(n.lien, n.onglet ? { onglet: n.onglet } : undefined) }, 'Voir'));
           }
           /* ENTENDRE N'EST PAS TRAITER. L'acquittement fait taire l'alerte et
              la sort du badge ; il ne la résout pas. Elle disparaîtra quand sa

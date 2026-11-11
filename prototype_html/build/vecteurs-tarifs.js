@@ -1,5 +1,5 @@
 /* =============================================================================
- * VECTEURS DU RÉFÉRENTIEL DE PRIX UNIQUE (PRD-TARIFS, lots T1 et T2)
+ * VECTEURS DU RÉFÉRENTIEL DE PRIX UNIQUE (PRD-TARIFS, lots T1, T2 et T3)
  * -----------------------------------------------------------------------------
  *   node build/vecteurs-tarifs.js [sortie.json]      (défaut : packages/domaine/test/vecteurs/tarifs.json)
  *
@@ -116,7 +116,109 @@ const PORT = Number(process.env.SIGH_PORT_TEST) || 8096;
     R.projection = { actes: S.raw().actes.filter((a) => a.code === 'SO02').map((a) => [a.code, a.prix, a.prixNonAssure, a.prixAssure]), catalogue: S.raw().catalogueTarifs.filter((a) => a.code === 'SIV').map((a) => [a.code, a.prixNonAssure, a.prixAssure]), parite: S.paritesTarifs().length };
     return R;
   });
-  const m = Object.assign({}, naissance, { moteur: moteur });
+  /* --- 3. Le circuit complet (lot T3) : contrôle d'usage, date passée, Valider en un geste, alerte, retour à l'auteur, famille du centre, pro-forma ------------------ */
+  const circuit = await page.evaluate(() => {
+    const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core, N = window.SIGH.nav, NT = window.SIGH.notifications, V = window.SIGH.validations;
+    const jour = C.iso(C.aujourdhui()), plus = (n) => C.iso(new Date(C.aujourdhui().getTime() + n * 86400000));
+    const en = (role, nom) => S.setSession({ role: role, nom: nom || 'V ' + role, nomComplet: nom || 'V ' + role, fonction: role, identifiant: 'v.' + role, secteur: 'DIR' });
+    const na = (code, d) => PR.tarifALaDate(code, d || null, false).montant;
+    const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+    const piece = (code, date) => PR.prescrire({ patientCode: pt.code, medecin: 'VEC', diagnostic: 's', actes: [code], date: date }).facture;
+    const prop = (o) => PR.proposerTarif(Object.assign({ etatAssure: 'unique', motif: 'Vecteur T3' }, o));
+    const R = { aujourdhui: jour, cas: [], _doc: 'Circuit Oui/Non des prix (lot T3) : contrôle d’usage tarif_deja_utilise (proposition et Oui rejoué), cas limites de 5.6, date passée réservée à la DAF et à la Direction, Valider en un geste, alerte et retour à l’auteur, famille du centre des validations, pro-forma à la conversion.' };
+    const cas = (nom, r, extra) => R.cas.push(Object.assign({ nom: nom, ok: r.ok === true, code: r.code || null, motif: r.motif || null, geste: r.geste || null }, extra || {}));
+    en('da', 'Vecteur DAF');
+    /* contrôle d'usage */
+    const f1 = piece('MG01');
+    const a1 = prop({ code: 'MG01', prixNonAssure: na('MG01') + 100, dateEffet: jour });
+    cas('usage : une pièce du jour porte la prestation', a1, { pieceNommee: a1.motif && a1.motif.indexOf(f1.numero) >= 0, nbPieces: a1.nbPieces });
+    const a2 = prop({ code: 'MG01', prixNonAssure: na('MG01') + 100, dateEffet: plus(1) });
+    cas('usage : le même changement à effet de demain', a2);
+    piece('MG01', plus(1) + 'T10:00:00');
+    const a3 = PR.deciderTarif(a2.version.id, 'oui');
+    cas('usage : rejoué au Oui (pièce émise pendant l’attente)', a3, { statutApres: S.raw().versionsTarif.filter((v) => v.id === a2.version.id)[0].statut });
+    cas('Non avec motif (aucune version nouvelle)', PR.deciderTarif(a2.version.id, 'non', { motif: 'Vecteur : une pièce de demain' }), { versions: S.raw().versionsTarif.filter((v) => v.code === 'MG01').length });
+    /* deux changements le même jour */
+    const b0 = na('MG02');
+    const b1 = prop({ code: 'MG02', prixNonAssure: b0 + 100, dateEffet: plus(2) });
+    cas('deux changements : un seul en attente', prop({ code: 'MG02', prixNonAssure: b0 + 150, dateEffet: plus(2) }));
+    PR.deciderTarif(b1.version.id, 'oui');
+    const b3 = prop({ code: 'MG02', prixNonAssure: b0 + 200, dateEffet: plus(2) });
+    PR.deciderTarif(b3.version.id, 'oui');
+    R.memeJour = { vigueur: na('MG02', plus(2)), attendu: b0 + 200, versions: S.raw().versionsTarif.filter((v) => v.code === 'MG02').sort((a, b) => a.version - b.version).map((v) => v.version + ':' + v.statut) };
+    piece('MG02', plus(2) + 'T10:00:00');
+    cas('deux changements : la pièce du jour ferme la date', prop({ code: 'MG02', prixNonAssure: b0 + 300, dateEffet: plus(2) }));
+    /* date passée */
+    piece('MG03', plus(-3) + 'T10:00:00');
+    cas('date passée déjà utilisée (DAF, case cochée)', prop({ code: 'MG03', prixNonAssure: na('MG03') + 100, dateEffet: plus(-5), datePassee: true }));
+    cas('date passée sans la case (DAF)', prop({ code: 'MG04', prixNonAssure: na('MG04') + 100, dateEffet: plus(-1) }));
+    const pa = prop({ code: 'MG04', prixNonAssure: na('MG04') + 100, dateEffet: plus(-1), datePassee: true });
+    cas('date passée avec la case (DAF)', pa, { marquee: pa.ok && pa.version.datePassee === true });
+    en('admin', 'Vecteur admin');
+    cas('date passée sans la case (administrateur)', prop({ code: 'CH01', prixNonAssure: na('CH01') + 100, dateEffet: plus(-1) }));
+    cas('date passée avec la case (administrateur)', prop({ code: 'CH01', prixNonAssure: na('CH01') + 100, dateEffet: plus(-1), datePassee: true }));
+    cas('décision d’une date passée par l’administrateur', PR.deciderTarif(pa.version.id, 'oui'));
+    en('direction', 'Vecteur Direction');
+    cas('décision d’une date passée par la Direction', PR.deciderTarif(pa.version.id, 'oui'), { prixHier: na('MG04', plus(-1)), prixAvantHier: na('MG04', plus(-2)) });
+    /* cas limites */
+    en('da', 'Vecteur DAF');
+    cas('prix zéro', prop({ code: 'CH02', prixNonAssure: 0, dateEffet: plus(1) }));
+    cas('prix vide', prop({ code: 'CH02', prixNonAssure: '', dateEffet: plus(1) }));
+    cas('proposition vide', PR.proposerTarif({ code: 'CH02' }));
+    cas('ligne identique', prop({ code: 'CH02', prixNonAssure: na('CH02'), dateEffet: plus(1) }));
+    const d4 = PR.proposerTarif({ code: 'CH02', prixNonAssure: na('CH02') + 10, etatAssure: 'manquant', dateEffet: plus(1), motif: 'Vecteur : tiret assuré' });
+    cas('tiret de la colonne assurée', d4, { etatAssure: d4.ok ? d4.version.etatAssure : null });
+    if (d4.ok) PR.deciderTarif(d4.version.id, 'non', { motif: 'Vecteur : libère la ligne' });
+    /* Valider en un geste */
+    const v0 = na('CH03');
+    const vg = prop({ code: 'CH03', prixNonAssure: v0 + 250, dateEffet: jour, valider: true });
+    cas('valider en un geste (DAF)', vg, { statut: vg.ok ? vg.version.statut : null, roleDecision: vg.ok ? vg.version.roleDecision : null, prixApres: na('CH03'), prixAttendu: v0 + 250 });
+    const o = N.droitsEcran;
+    N.droitsEcran = function (role, id, code) { return id === 'cfg-tarifs' && role === 'comptable' ? { voir: true, editer: true, annuler: false } : o.apply(N, arguments); };
+    try {
+      en('comptable', 'Vecteur comptable');
+      cas('valider par un profil qui édite sans décider', prop({ code: 'CH04', prixNonAssure: na('CH04') + 100, dateEffet: jour, valider: true }));
+      const pe = prop({ code: 'CH04', prixNonAssure: na('CH04') + 100, dateEffet: jour });
+      cas('proposer par un profil qui édite sans décider', pe, { proposeRole: pe.ok ? pe.version.proposeRole : null });
+      R.idEditeur = pe.ok ? pe.version.id : null;
+    } finally { N.droitsEcran = o; }
+    /* alerte, retour à l'auteur, famille du centre */
+    en('da', 'Vecteur DAF');
+    const lots = (poste, detaille) => NT.collecter({ poste: poste, detaille: !!detaille }).filter((n) => n.source === 'prix_a_valider' || (n.source === 'poste' && /changement de prix/i.test(n.titre))).map((n) => ({ cle: n.cle, titre: n.titre, detail: n.detail, priorite: n.priorite, lien: n.lien, onglet: n.onglet || null }));
+    R.alerte = { da: lots('da', true), caissier: lots('caissier', true), grille: S.raw().versionsTarif.filter((v) => v.statut === 'propose' && v.origine === 'semence-grille').length };
+    const non = PR.deciderTarif(R.idEditeur, 'non', { motif: 'Prix hors grille de la clinique' });
+    cas('décision Non avec motif', non);
+    R.retour = { comptable: lots('comptable', true).map((n) => ({ titre: n.titre, detail: n.detail, priorite: n.priorite, onglet: n.onglet })), apresDa: lots('da', true).map((n) => n.cle).filter((c) => c !== 'prix:grille') };
+    const centre = V.referentielsAValider().filter((x) => x.famille === 'prix')[0];
+    R.centre = { famille: centre && { libelle: centre.libelle, profil: centre.profil, ecran: centre.ecran, enAttente: centre.enAttente }, reelles: S.raw().versionsTarif.filter((v) => v.statut === 'propose').length,
+      depuisCentre: V.validerReferentiel('prix', (S.raw().versionsTarif.filter((v) => v.statut === 'propose')[0] || {}).id).code };
+    /* Oui à tout : encadré */
+    R.ouiATout = { sansComparaison: PR.deciderTousTarifs({ ids: [] }).code };
+    en('caissier', 'Vecteur caissier');
+    R.ouiATout.sansDroit = PR.deciderTousTarifs({ comparaisonAffichee: true, ids: [] }).code;
+    en('da', 'Vecteur DAF');
+    const t1 = prop({ code: 'CH05', prixNonAssure: na('CH05') + 100, dateEffet: plus(1) });
+    const t2 = prop({ code: 'CH06', prixNonAssure: na('CH06') + 100, dateEffet: plus(1) });
+    piece('CH06', plus(1) + 'T10:00:00');
+    const tout = PR.deciderTousTarifs({ comparaisonAffichee: true, ids: [t1.version.id, t2.version.id] });
+    R.ouiATout.resultat = { acceptees: tout.acceptees.map((x) => x.code), refusees: tout.refusees.map((x) => x.code + ':' + x.refus), exclues: tout.exclues.length };
+    /* pro-forma */
+    R.proforma = { defaut: PR.validiteProformaJours(), propose: PR.VALIDITE_PROFORMA_DEFAUT };
+    const P = na('SO17');
+    const mk = (n, num) => S.collection('factures').insert({ numero: 'PRO-2026-8' + num, date: plus(-n) + 'T09:00:00', patientCode: pt.code, patient: pt.nom, proforma: true, statut: 'actif', type: 'Consultation', montantTTC: P,
+      lignes: [{ id: 'L001', categorie: 'acte', designation: 'Vecteur : estimation', quantite: 1, prixUnitaire: P, montant: P, acteCode: 'SO17' }] }).record;
+    const PA = mk(10, '0001'), PB = mk(40, '0002');
+    prop({ code: 'SO17', prixNonAssure: P + 300, dateEffet: jour, valider: true });
+    const ec = (f) => { const e = PR.ecartProforma(f.id); return { regle: e.regle, age: e.ageJours, validite: e.validiteJours, ancien: e.lignes[0].ancien, nouveau: e.lignes[0].nouveau, retenu: e.lignes[0].retenu, ecart: e.ecartTotal }; };
+    R.proforma.dixJours = ec(PA); R.proforma.quaranteJours = ec(PB);
+    R.proforma.regle = PR.definirValiditeProforma({ jours: 5, motif: 'Vecteur' }); R.proforma.dixJoursApres = ec(PA);
+    R.proforma.invalides = ['abc', '', '2.5', '-1', '400'].map((j) => PR.definirValiditeProforma({ jours: j }).code);
+    en('caissier', 'Vecteur caissier');
+    R.proforma.reserve = PR.definirValiditeProforma({ jours: 99 }).code;
+    R.proforma.venteNonProforma = PR.ecartProforma(S.raw().factures.filter((f) => !f.proforma)[0].id).code;
+    return R;
+  });
+  const m = Object.assign({}, naissance, { moteur: moteur, circuit: circuit });
   fs.writeFileSync(sortie, JSON.stringify(m, null, 1) + '\n');
   console.log('Vecteurs écrits : ' + sortie + ' (erreurs JS : ' + erreurs.length + ')');
   await br.close(); srv.close(); try { php.php.kill(); } catch (e) { /* mort */ }
