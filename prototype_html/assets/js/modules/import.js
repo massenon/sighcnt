@@ -994,7 +994,7 @@
     id: 'emplacements', ecran: 'imp-emplacements', libelle: 'Importation des emplacements de rangement', module: 'M6', statut: 'supporte',
     description: 'Casiers et rayons du magasin : code (celui de l’étiquette), intitulé, zone, conservation, capacité.',
     source: 'Fiche du référentiel des emplacements (écran « Étiquetage & emplacements ») : même zones, mêmes conservations.',
-    limite: 'Une zone ou une conservation vide reste vide (« à préciser ») : aucune valeur par défaut n’est inventée. Le code est celui qui figure sur l’étiquette : deux écritures du même casier (« Rayon A2 », « rayon a-2 ») se refusent comme un doublon.',
+    limite: 'Une zone ou une conservation vide reste vide (« à préciser ») : aucune valeur par défaut n’est inventée. Le code est celui qui figure sur l’étiquette : deux écritures qui ne diffèrent que par la casse ou les accents (« A2 », « a2 ») sont un seul casier. Les écritures qui diffèrent aussi par un tiret (« A2 », « A-2 ») restent deux casiers : la comparaison ne les rapproche pas.',
     cibles: ['emplacements'], fichierModele: 'modele-import-emplacements',
     colonnes: [
       oblig('code', 'Code du casier', 'texte', { longueurMax: 30, exemple: 'A2', aide: 'Court et stable : c’est lui qui figure sur l’étiquette.' }),
@@ -1163,11 +1163,11 @@
       var p = ctx.produits[C.norm(v.code)];
       if (!p) return [articleInconnu(v)];
       var pb = [];
+      sc.pose = sc.pose || {};
       if (v.date && v.date > ctx.jour) pb.push({ colonne: 'Date du transfert', valeur: v.date, code: 'DATE_FUTURE', niveau: 'refus', motif: 'la date du transfert est dans le futur', geste: 'Saisissez la date du jour ou une date passée.' });
       if (v.quantite === 0) pb.push({ colonne: 'Quantité', valeur: 0, code: 'QUANTITE_NULLE', niveau: 'refus', motif: 'un transfert de zéro n’est pas un transfert', geste: 'Retirez la ligne ou saisissez une quantité d’au moins 1.' });
       else {
         /* RG-03 LIGNE PAR LIGNE : la règle est celle de la fabrique du geste (PR.refusLigneTransfert), le disponible tient compte de ce que les lignes précédentes ont déjà posé. */
-        sc.pose = sc.pose || {};
         var r = PR.refusLigneTransfert(p, v.quantite, sc.pose[p.id] || 0, n);
         if (r) pb.push({ colonne: 'Quantité', valeur: v.quantite, code: r.code, niveau: 'refus', motif: r.motif, geste: r.geste });
         sc.pose[p.id] = (sc.pose[p.id] || 0) + v.quantite;
