@@ -15,7 +15,25 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
   /* lot T6 : le référentiel de prix unique (PRD-TARIFS) ; `actes`, `analyses` et `catalogueTarifs` n'en sont que les PROJECTIONS de lecture (prix en vigueur) */
   'tarifs', 'versionsTarif', 'analyses',
   /* configuration fiscale validée et datée (06/11/2026) : identité par versions, obligations et paramètres ORTB, historique */
-  'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'rbac', 'appels', 'reunions', 'contreReferences', 'documentsPatient', 'fichesReference', 'pieces', 'fileAttente', 'soins', 'administrations', 'admissions', 'checklistsBloc', 'cpa', 'crOperatoires', 'observations', 'rapportsMedicaux', 'releves', 'scoresGlasgow', 'surveillancesTransfusion', 'accouchements', 'cpon', 'crMaternite', 'deces', 'dossiersObstetricaux', 'grossesses', 'naissances', 'partogrammes', 'planificationFamiliale', 'ptme', 'registreSONU', 'soinsCuratifsMaternite', 'suiviMaternite', 'chambres', 'lits', 'rendezvous', 'visites', 'antecedents', 'documents', 'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications'];
+  'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'rbac', 'appels', 'reunions', 'contreReferences', 'documentsPatient', 'fichesReference', 'pieces', 'fileAttente', 'soins', 'administrations', 'admissions', 'checklistsBloc', 'cpa', 'crOperatoires', 'observations', 'rapportsMedicaux', 'releves', 'scoresGlasgow', 'surveillancesTransfusion', 'accouchements', 'cpon', 'crMaternite', 'deces', 'dossiersObstetricaux', 'grossesses', 'naissances', 'partogrammes', 'planificationFamiliale', 'ptme', 'registreSONU', 'soinsCuratifsMaternite', 'suiviMaternite', 'chambres', 'lits', 'rendezvous', 'visites', 'antecedents', 'documents', 'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications',
+  /* activités fermées : les fiches de la maquette (la banque de sang), puis les fermetures PROPRES AU POSTE ci-dessous */
+  'modulesActifs'];
+/* FERMETURES PROPRES AU POSTE (Direction, 11/11/2026) : quatre écrans que la maquette porte et que le poste ne porte pas encore. Ils sont fermés par la collection
+   `modulesActifs` (activité fermée par écran, pour tous les rôles, administrateur compris), jamais par un nom de rôle. La maquette NE LES FERME PAS : ces fiches
+   n'existent que dans le jeu du poste (`proprePoste`), ce qui les écarte de la RÉFÉRENCE de la matrice des droits (`rbac.json` ne les connaît pas). Porter un écran,
+   c'est retirer son entrée ici et régénérer ; un poste déjà installé garde la fiche fermée tant qu'on ne la rouvre pas depuis la gestion des activités, qui ne le
+   propose que si l'écran a un widget. Le jeu sobre (fixture des vecteurs) n'en porte aucune : il reproduit la maquette. */
+const FERMETURES_PROPRES_AU_POSTE = [
+  { id: 'MODP01', module: 'M12', ecran: 'm12-calendrier-fiscal', libelle: 'Calendrier fiscal mensuel' },
+  { id: 'MODP02', module: 'M13', ecran: 'm13-sms-journal', libelle: 'Journal des envois SMS' },
+  { id: 'MODP03', module: 'CFG', ecran: 'cfg-bareme-aib', libelle: 'Barème de l’AIB' },
+  { id: 'MODP04', module: 'CFG', ecran: 'cfg-sms', libelle: 'Passerelle SMS' },
+].map((f) => ({
+  /* `code` suit la règle d'une activité déclarée à l'écran (`cfbCodeActivite` : module, tiret, libellé en majuscules hors A-Z0-9, huit caractères) */
+  id: f.id, code: f.module + '-' + f.libelle.toUpperCase().replace(/[^A-Z0-9]+/g, '').slice(0, 8), libelle: f.libelle, module: f.module, ecrans: [f.ecran], actif: false,
+  motif: 'Non porté au poste, à porter (décision de la Direction du 11/11/2026). L’écran existe à la maquette.',
+  fermeLe: '2026-11-11', fermePar: 'Direction', proprePoste: true,
+}));
 /* SIGH_JEU=sobre : jeu SANS le peuplement des parcours, sur lequel les vecteurs des tranches 1-2 ont été tirés (fixture de test). */
 const SOBRE = process.env.SIGH_JEU === 'sobre';
 /* SIGH_COLLECTIONS=a,b : n'exporte que ces collections (les autres fichiers du jeu restent tels quels). */
@@ -50,6 +68,7 @@ const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'tes
     await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m3-visites-patients'].render(r); r.remove(); } catch (e) { console.error(e); } });
     for (const nom of COLLECTIONS.filter((n) => !FILTRE.length || FILTRE.includes(n))) {
       const lignes = await m.page.evaluate((n) => JSON.parse(JSON.stringify(SIGH.store.collection(n).all().concat(SIGH.store.collection(n).archived()), (k, v) => (v === null ? undefined : v))), nom);
+      if (nom === 'modulesActifs' && !SOBRE) lignes.push(...FERMETURES_PROPRES_AU_POSTE);
       fs.writeFileSync(path.join(SORTIE, nom + '.json'), JSON.stringify(lignes));
       console.log(`  ${nom} : ${lignes.length} fiches, ${(fs.statSync(path.join(SORTIE, nom + '.json')).size / 1024).toFixed(0)} Ko`);
     }
