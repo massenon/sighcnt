@@ -164,7 +164,7 @@ function serve() {
 
   L.push('## Importations par rôle');
   L.push('');
-  L.push('Le droit d\'import est **distinct, par jeu** (`N.droitImport`), jamais déduit du droit d\'éditer l\'écran qui porte le bouton. **V** voir (modèle, historique de ses lots, rangée du ruban), **I** importer, **A** annuler un lot. Un jeu **restreint** (patients, personnel, soldes d\'ouverture) ne recopie aucune valeur de cellule dans l\'historique ni dans le rapport.');
+  L.push('Le droit d\'import est **distinct, par jeu** (`N.droitImport`), jamais déduit du droit d\'éditer l\'écran qui porte le bouton. **V** voir (modèle, historique de ses lots, rangée du ruban), **I** importer, **A** annuler un lot. Un jeu **restreint** (marqué (r) : patients, personnel, soldes d\'ouverture et les trois jeux du stock qui écrivent des mouvements) ne recopie aucune valeur de cellule dans l\'historique ni dans le rapport.');
   L.push('');
   L.push('| Rôle | ' + data.jeuxImport.map((j) => '`' + j.id + '`' + (j.sensibilite === 'restreinte' ? ' (r)' : '')).join(' | ') + ' | Supervise les lots | Capacité paie | Onglet « Système » du ruban |');
   L.push('|---|' + data.jeuxImport.map(() => ':-:').join('|') + '|:-:|:-:|---|');
