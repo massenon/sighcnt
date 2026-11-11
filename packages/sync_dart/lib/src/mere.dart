@@ -19,7 +19,8 @@ import 'package:sigh_domaine/sigh_domaine.dart'
         mobRefusAffectation,
         mobRefusFonctionPiece,
         parCollectionParametres,
-        parCollectionUsages;
+        parCollectionUsages,
+        valCollectionValidations;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -36,6 +37,10 @@ final familles = <String, String>{
   // L0 : les paramètres versionnés par date (une fiche = une version immuable, la mère seule écrit) et leurs usages par les pièces (ajout seul, écrits par les postes).
   parCollectionParametres: 'R',
   parCollectionUsages: 'B',
+  // Les validations écrites des artefacts du code (lot V) : le publicateur du poste mère les pousse avec la configuration, donc la mère DOIT les connaître. Sans cette
+  // ligne, la première fiche refusée (`collection_inconnue`) arrêtait la publication (`pousser` s'interrompt à la première erreur) et rien de ce qui suit, prix compris,
+  // n'atteignait les fileuls (lot T6).
+  valCollectionValidations: 'R',
 };
 const familleDeBase = <String, String>{
   'patients': 'A', 'rendezvous': 'A',
