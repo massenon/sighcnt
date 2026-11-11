@@ -19,34 +19,90 @@
    * 1. ORGANIGRAMME — source : docs/organigramme_nassiera_too.jpeg
    * Pilote la structure organisationnelle ET le RBAC (draf1 §4).
    * ======================================================================== */
+  /* LA SEMENCE DE L'ORGANIGRAMME SUIT LA PHOTO DE L'ORGANIGRAMME PAPIER (11/11/2026, décisions O1 à O5 de la Direction).
+     Intitulés alignés sur la photo (« Directrice Administrative (DA) », « Echographiste », « Aide-Soignante », « Agents de Sécurités »,
+     « Agents d’Entretiens », « Assistant comptable »), titulaire de la Directrice Administrative gardé tel quel (« épse BASSONGUI »), et le
+     surveillant général est un INFIRMIER : le titre « SG » est porté par l'AGENT (champ `titreOrganigramme` du personnel), plus par le poste
+     (`chef` ne vaut donc plus pour les Infirmiers). Aucune étoile : la photo en trace une sur cinq boîtes, la Direction a tranché qu'elle ne veut
+     rien dire (O5), aucun champ `etoile` n'existe.
+     Chaque poste porte un IDENTIFIANT STABLE (`id`) : c'est ce qui permet à une reprise de reconnaître la fiche qu'elle doit réécrire sans toucher à
+     celles que la clinique a modifiées (voir `ORGANIGRAMME_PRECEDENT`).
+     HIÉRARCHIE : lue sur les connecteurs de la photo (feuille tournée de 90 degrés, traits qui se croisent), voir ECARTS-MAQUETTE.md E2352.
+     Lisible : le Directeur Médical porte la Directrice Administrative, les Laborantins, l'Echographiste, les Médecins, les Secrétaires Médicaux,
+     les Infirmiers et les Agents d'Entretiens ; la Directrice Administrative porte le Comptable ; le Comptable porte l'Assistant comptable, qui porte le
+     Gestionnaire de Stock ; les Infirmiers portent les Sages-Femmes et l'Aide-Soignante ; les Secrétaires Médicaux portent le Chauffeur Coursier.
+     Non lisible : les Dispensatrices et les Agents de Sécurités n'ont aucun connecteur sur la photo : ils restent sous la Directrice Administrative,
+     comme dans la collection d'avant. L'organigramme n'est pas figé : le CRUD de « Organisation & organigramme » réaffecte, renomme, archive. */
   var ORGANIGRAMME = {
     source: 'DOC — Organigramme de la Clinique NASSIERA TOO',
     effectifTotal: 44,
     racine: {
-      poste: 'Directeur Médical', effectif: 1, titulaire: 'BASSONGUI Chabi Séko', role: 'dm',
+      id: 'PST001', poste: 'Directeur Médical', effectif: 1, titulaire: 'BASSONGUI Chabi Séko', role: 'dm',
       enfants: [
         {
-          poste: 'Directrice Administrative', effectif: 1, titulaire: 'TAKI Alimatou épse BASSONGUI', role: 'da',
+          id: 'PST002', poste: 'Directrice Administrative (DA)', effectif: 1, titulaire: 'TAKI Alimatou épse BASSONGUI', role: 'da',
           enfants: [
-            { poste: 'Comptable', effectif: 1, titulaire: 'KASSA Augustin', role: 'comptable',
-              enfants: [{ poste: 'Assistant Comptable', effectif: 1, titulaire: 'GBEDJI Hervé', role: 'comptable' }] },
-            { poste: 'Gestionnaire de Stock', effectif: 1, titulaire: 'MAMAN Zoukanéri', role: 'stock' },
-            { poste: 'Secrétaires Médicaux', effectif: 4, titulaire: 'OROU YO Edmond', chef: true, role: 'reception' },
-            { poste: 'Dispensatrices', effectif: 4, titulaire: 'DIEYABIDI Aïssatou', chef: true, role: 'pharmacien' },
-            { poste: 'Agents de Sécurité', effectif: 3, titulaire: 'OURTCHA TEREYAMA', chef: true, role: 'agentadmin' },
-            { poste: 'Agents d’Entretien', effectif: 3, titulaire: 'ISSA Rabiatou', chef: true, role: 'agentadmin' },
-            { poste: 'Chauffeur Coursier', effectif: 1, titulaire: 'TCHANE Nourou', role: 'ambulancier' },
+            { id: 'PST003', poste: 'Comptable', effectif: 1, titulaire: 'KASSA Augustin', role: 'comptable',
+              enfants: [{ id: 'PST004', poste: 'Assistant comptable', effectif: 1, titulaire: 'GBEDJI Hervé', role: 'comptable',
+                enfants: [{ id: 'PST005', poste: 'Gestionnaire de Stock', effectif: 1, titulaire: 'MAMAN Zoukanéri', role: 'stock' }] }] },
+            { id: 'PST007', poste: 'Dispensatrices', effectif: 4, titulaire: 'DIEYABIDI Aïssatou', chef: true, role: 'pharmacien' },
+            { id: 'PST008', poste: 'Agents de Sécurités', effectif: 3, titulaire: 'OURTCHA TEREYAMA', chef: true, role: 'agentadmin' },
           ],
         },
-        { poste: 'Médecins Généralistes', effectif: 2, titulaire: 'YENI M’PO Florent', role: 'medecin' },
-        { poste: 'Échographiste', effectif: 1, titulaire: 'AHOHOU Rodrigue', role: 'medecin' },
-        { poste: 'Laborantins', effectif: 2, titulaire: 'KINNOU Addoul Ganiou', chef: true, role: 'laborantin' },
-        { poste: 'Infirmiers', effectif: 8, titulaire: 'GARBA Yahouza', chef: true, role: 'infirmier' },
-        { poste: 'Sages-Femmes', effectif: 3, role: 'infirmier' },
-        { poste: 'Aide-Soignantes', effectif: 8, titulaire: 'TEPA Séraphine', chef: true, role: 'aide_soignant' },
+        {
+          id: 'PST014', poste: 'Infirmiers', effectif: 8, titulaire: 'GARBA Yahouza', role: 'infirmier',
+          enfants: [
+            { id: 'PST015', poste: 'Sages-Femmes', effectif: 3, role: 'infirmier' },
+            { id: 'PST016', poste: 'Aide-Soignante', effectif: 8, titulaire: 'TEPA Séraphine', chef: true, role: 'aide_soignant' },
+          ],
+        },
+        { id: 'PST013', poste: 'Laborantins', effectif: 2, titulaire: 'KINNOU Addoul Ganiou', chef: true, role: 'laborantin' },
+        { id: 'PST012', poste: 'Echographiste', effectif: 1, titulaire: 'AHOHOU Rodrigue', role: 'medecin' },
+        { id: 'PST011', poste: 'Médecins Généralistes', effectif: 2, titulaire: 'YENI M’PO Florent', role: 'medecin' },
+        { id: 'PST006', poste: 'Secrétaires Médicaux', effectif: 4, titulaire: 'OROU YO Edmond', chef: true, role: 'reception',
+          enfants: [{ id: 'PST010', poste: 'Chauffeur Coursier', effectif: 1, titulaire: 'TCHANE Nourou', role: 'ambulancier' }] },
+        { id: 'PST009', poste: 'Agents d’Entretiens', effectif: 3, titulaire: 'ISSA Rabiatou', chef: true, role: 'agentadmin' },
       ],
     },
   };
+
+  /* La semence D'AVANT le 11/11/2026 : l'organigramme à trois niveaux tiré de la collection. Elle ne sert qu'à RECONNAÎTRE une fiche que la clinique n'a
+     pas touchée : la reprise (`S.migrerOrganigramme`) ne réécrit un poste que s'il est encore identique à cette ligne ET ne porte aucune trace de
+     modification (`_modifieLe`, `_archiveLe`). Un poste qui diffère d'un seul champ, ou qui a été modifié par l'écran, n'est jamais réécrit. */
+  var ORGANIGRAMME_PRECEDENT = [
+    ['PST001', null, 'Directeur Médical', 1, 'BASSONGUI Chabi Séko', false, 'dm'],
+    ['PST002', 'PST001', 'Directrice Administrative', 1, 'TAKI Alimatou épse BASSONGUI', false, 'da'],
+    ['PST003', 'PST002', 'Comptable', 1, 'KASSA Augustin', false, 'comptable'],
+    ['PST004', 'PST003', 'Assistant Comptable', 1, 'GBEDJI Hervé', false, 'comptable'],
+    ['PST005', 'PST002', 'Gestionnaire de Stock', 1, 'MAMAN Zoukanéri', false, 'stock'],
+    ['PST006', 'PST002', 'Secrétaires Médicaux', 4, 'OROU YO Edmond', true, 'reception'],
+    ['PST007', 'PST002', 'Dispensatrices', 4, 'DIEYABIDI Aïssatou', true, 'pharmacien'],
+    ['PST008', 'PST002', 'Agents de Sécurité', 3, 'OURTCHA TEREYAMA', true, 'agentadmin'],
+    ['PST009', 'PST002', 'Agents d’Entretien', 3, 'ISSA Rabiatou', true, 'agentadmin'],
+    ['PST010', 'PST002', 'Chauffeur Coursier', 1, 'TCHANE Nourou', false, 'ambulancier'],
+    ['PST011', 'PST001', 'Médecins Généralistes', 2, 'YENI M’PO Florent', false, 'medecin'],
+    ['PST012', 'PST001', 'Échographiste', 1, 'AHOHOU Rodrigue', false, 'medecin'],
+    ['PST013', 'PST001', 'Laborantins', 2, 'KINNOU Addoul Ganiou', true, 'laborantin'],
+    ['PST014', 'PST001', 'Infirmiers', 8, 'GARBA Yahouza', true, 'infirmier'],
+    ['PST015', 'PST001', 'Sages-Femmes', 3, null, false, 'infirmier'],
+    ['PST016', 'PST001', 'Aide-Soignantes', 8, 'TEPA Séraphine', true, 'aide_soignant'],
+  ].map(function (l) { return { id: l[0], parentId: l[1], poste: l[2], effectif: l[3], titulaire: l[4], chef: l[5], role: l[6] }; });
+
+  /** L'arbre de la semence aplati en fiches de la collection `postes` (ordre du parcours en profondeur, identifiants portés par les nœuds). */
+  function postesDeLaSemence() {
+    var out = [];
+    (function aplatir(noeud, parentId) {
+      var fiche = {
+        id: noeud.id, statut: 'actif', parentId: parentId,
+        poste: noeud.poste, effectif: noeud.effectif || 0,
+        titulaire: noeud.titulaire || null, chef: !!noeud.chef, role: noeud.role,
+        source: 'Organigramme de la Clinique NASSIERA TOO', semence: 2,
+      };
+      out.push(fiche);
+      (noeud.enfants || []).forEach(function (e) { aplatir(e, noeud.id); });
+    })(ORGANIGRAMME.racine, null);
+    return out;
+  }
 
   /* Fonctions = colonnes de la grille des primes NS 132 */
   var FONCTIONS = [
@@ -2284,7 +2340,7 @@
   ];
 
   global.SIGH.data = {
-    ORGANIGRAMME: ORGANIGRAMME, FONCTIONS: FONCTIONS,
+    ORGANIGRAMME: ORGANIGRAMME, ORGANIGRAMME_PRECEDENT: ORGANIGRAMME_PRECEDENT, postesDeLaSemence: postesDeLaSemence, FONCTIONS: FONCTIONS,
     PARAM_EVENEMENTS: PARAM_EVENEMENTS,
     OBJECTIFS_PILOTAGE: OBJECTIFS_PILOTAGE, AXES_PILOTAGE: AXES_PILOTAGE,
     PATHOLOGIES: PATHOLOGIES, CHAPITRES_PATHOLOGIE: CHAPITRES_PATHOLOGIE,

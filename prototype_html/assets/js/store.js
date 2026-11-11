@@ -111,8 +111,11 @@
      d'acompte et de contrepartie : une fiche par version datée) est semée au socle avec les défauts de la Direction ; la famille de validation
      `bareme_aib` la compte aussi. Sans incrément un poste n'aurait ni les défauts ni la collection.
      77 (10/11/2026) : le circuit de validation des présences, congés et ordres de mission (lot L5). La fiche RBAC09 (surveillant) OUVRE `m10-conges` et
-     `m10-missions` en lecture pour qu'il tranche (signer n'est pas saisir) ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice. */
-  var VERSION = 77;
+     `m10-missions` en lecture pour qu'il tranche (signer n'est pas saisir) ; les fiches étant semées, sans incrément un poste garderait l'ancienne matrice.
+     78 (11/11/2026) : l'organigramme suit la photo du papier (lot ORG2). La semence de la collection `postes` change (intitulés, rattachements, identifiants
+     stables) et le personnel porte `titreOrganigramme` (le surveillant général est un infirmier : « SG » est porté par l'agent). Une reprise
+     (`migrerOrganigramme`) réécrit les postes que la clinique n'a pas touchés et JAMAIS les autres. */
+  var VERSION = 78;
   var db = null;
   var listeners = {};
 
@@ -274,6 +277,56 @@
         if (e.centreCout === 'administration') e.centreCout = 'direction';
       });
     });
+  }
+
+  /* ==========================================================================
+   * REPRISE DE L'ORGANIGRAMME (11/11/2026, lot ORG2)
+   * --------------------------------------------------------------------------
+   * La semence de la collection `postes` suit désormais la photo du papier (intitulés, rattachements). Les magasins déjà amorcés portent l'ancienne :
+   * la reprise la remplace, MAIS ne réécrit jamais ce que la clinique a modifié.
+   *
+   * COMMENT UN POSTE « MODIFIÉ À LA MAIN » SE RECONNAÎT. Deux preuves, et il suffit d'une pour le laisser tel quel :
+   *   1. il porte une trace d'écran : `_modifieLe` / `_modifiePar` (posées par tout `update`), `_archiveLe`, ou il est archivé ;
+   *   2. un seul de ses six champs (intitulé, rattachement, effectif, titulaire, chef de service, rôle) diffère de la ligne correspondante de
+   *      l'ancienne semence (`D.ORGANIGRAMME_PRECEDENT`, retrouvée par l'identifiant).
+   * Seul un poste qui n'a aucune trace ET qui est identique à l'ancienne semence est réécrit ; il reçoit alors `semence: 2` et la reprise ne le
+   * retouche plus jamais (un geste ultérieur de la clinique l'emporte toujours). Le champ `etoile`, qui n'a aucun sens (O5), est retiré de toute fiche.
+   * Idempotente. Rend le bilan, que l'appelant journalise (RG-12).
+   * ======================================================================== */
+  function posteIntact(f, ref) {
+    if (!f || !ref) return false;
+    if (f.statut === 'archive' || f._modifieLe || f._modifiePar || f._archiveLe) return false;
+    return f.poste === ref.poste && (f.parentId || null) === (ref.parentId || null) && Number(f.effectif) === ref.effectif
+      && (f.titulaire || null) === (ref.titulaire || null) && !!f.chef === ref.chef && f.role === ref.role;
+  }
+  function migrerOrganigramme(base) {
+    var bilan = { reecrits: [], gardes: [], etoiles: 0 };
+    if (!base || !Array.isArray(base.postes) || !base.postes.length) return bilan;
+    var precedents = {}, neufs = {};
+    D.ORGANIGRAMME_PRECEDENT.forEach(function (l) { precedents[l.id] = l; });
+    D.postesDeLaSemence().forEach(function (l) { neufs[l.id] = l; });
+    base.postes.forEach(function (f) {
+      if (f.etoile !== undefined) { delete f.etoile; bilan.etoiles++; }
+      if (Number(f.semence) >= 2) return;
+      var ref = precedents[f.id], neuf = neufs[f.id];
+      if (!ref || !neuf) return;
+      if (posteIntact(f, ref)) {
+        ['poste', 'parentId', 'effectif', 'titulaire', 'chef', 'role', 'semence'].forEach(function (k) {
+          if (neuf[k] === null || neuf[k] === undefined) delete f[k]; else f[k] = neuf[k];
+        });
+        bilan.reecrits.push(f.id);
+      } else bilan.gardes.push(f.id);
+    });
+    return bilan;
+  }
+  /** La reprise, journalisée une fois quand elle a touché quelque chose. */
+  function reprendreOrganigramme(base) {
+    var b = migrerOrganigramme(base);
+    if (b.reecrits.length || b.etoiles) {
+      log('Reprise de l’organigramme', 'CFG', 'Poste', 'ORG-REPRISE', { gardes: b.gardes.length },
+        { reecrits: b.reecrits.length, gardes: b.gardes.length, etoiles: b.etoiles });
+    }
+    return b;
   }
 
   /**
@@ -614,6 +667,9 @@
     add('KINNOU|A. Ganiou', 'tsl', 'Laboratoire', 150000, 'M', 'Biologiste médical — Chef de service');
     add(null, 'tsl', 'Laboratoire', 130000, 'M', 'Biologiste médical');
     add('GARBA|Yahouza', 'infirmier', 'Soins infirmiers', 130000, 'M', 'Surveillant');
+    /* LE SURVEILLANT GÉNÉRAL EST UN INFIRMIER (Direction, 11/11/2026, O3) : le titre « SG » que l'organigramme papier écrit à côté de son nom est
+       porté par l'AGENT, pas par le poste « Infirmiers ». Il ne change aucun droit : le rôle reste celui de la fonction. */
+    out[out.length - 1].titreOrganigramme = 'SG';
     /* Trois infirmiers nommés par la Direction le 25/08/2026 ; les quatre
        autres restent à nommer — l'effectif soignant (7) est confirmé, la liste
        des comptes n'en couvre que trois. */
@@ -3519,8 +3575,12 @@
            pousse le neuf — sinon la base garderait indéfiniment un jeu que
            plus aucun écran ne sait lire. */
         if (!o._version || o._version !== VERSION) {
+          /* LES POSTES DE L'ORGANIGRAMME SURVIVENT AU RÉ-AMORÇAGE (lot ORG2) : c'est un référentiel que la clinique administre ; la reprise remplace ceux
+             qu'elle n'a pas touchés par la semence de la photo, et garde les autres tels quels. */
+          var anciensPostes = Array.isArray(o.postes) && o.postes.length ? o.postes : null;
           db = null;
           load();
+          if (anciensPostes && db) { db.postes = anciensPostes; reprendreOrganigramme(db); save(); }
           SRV.envoye = {}; SRV.meta = {};   /* tout est à pousser */
           invaliderManifeste();
           return true;
@@ -3535,6 +3595,7 @@
         invaliderManifeste();
         fusionnerServiceDirection(db);
         normaliserEtatsResultat(db);
+        reprendreOrganigramme(db);
         appliquerIdentite();
         return true;
       })
@@ -4363,7 +4424,7 @@
     journaliserAcces: journaliserAcces,
     load: load, save: save, reset: reset, collection: collection,
     COLLECTIONS_ESSENTIELLES: COLLECTIONS_ESSENTIELLES, CHAMPS_DE_TEST_CONSERVES: CHAMPS_DE_TEST_CONSERVES, viderActivite: viderActivite,
-    jeuVide: jeuVide, amorcable: amorcable,
+    jeuVide: jeuVide, amorcable: amorcable, migrerOrganigramme: migrerOrganigramme,
     hydraterServeur: hydraterServeur,
     surServeur: function () { return SRV.actif; },
     /** LE MAGASIN EN MAIN FAIT-IL AUTORITÉ ? Tant que l'hydratation est en

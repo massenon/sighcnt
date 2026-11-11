@@ -161,34 +161,13 @@
   function amorcerPostes() {
     var db = S.raw();
     if (db.postes && db.postes.length) return;
-    var out = [], n = 0;
-    (function aplatir(noeud, parentId) {
-      n++;
-      var id = 'PST' + C.pad(n, 3);
-      out.push({
-        id: id, statut: 'actif', parentId: parentId,
-        poste: noeud.poste, effectif: noeud.effectif || 0,
-        titulaire: noeud.titulaire || null, chef: !!noeud.chef, role: noeud.role,
-        source: 'Organigramme de la Clinique NASSIERA TOO',
-      });
-      (noeud.enfants || []).forEach(function (e) { aplatir(e, id); });
-    })(D.ORGANIGRAMME.racine, null);
-    db.postes = out;
+    /* La semence suit la photo de l'organigramme papier (D.postesDeLaSemence, identifiants stables). */
+    db.postes = D.postesDeLaSemence();
     S.save();
   }
 
-  function arbreDepuisCollection() {
-    var plats = colPostes().active();
-    var parId = {};
-    plats.forEach(function (p) { parId[p.id] = Object.assign({}, p, { enfants: [] }); });
-    var racines = [];
-    plats.forEach(function (p) {
-      var n = parId[p.id];
-      if (p.parentId && parId[p.parentId]) parId[p.parentId].enfants.push(n);
-      else racines.push(n);
-    });
-    return racines;
-  }
+  /* L'arbre vient du moteur (SIGH.organigramme) : chaque nœud porte le titre de son titulaire (`titreAgent`, porté par l'agent). */
+  function arbreDepuisCollection() { return global.SIGH.organigramme.arbre(); }
 
   function effectifTotal(noeuds) {
     return noeuds.reduce(function (s, n) { return s + (n.effectif || 0) + effectifTotal(n.enfants || []); }, 0);
@@ -332,22 +311,36 @@
   /* --- Onglet « Organigramme » --------------------------------------------- */
   function champsPoste(record) {
     var autres = colPostes().active().filter(function (p) { return !record || p.id !== record.id; });
-    return [
+    /* Un poste ne peut pas être rattaché à ce qu'il porte lui-même (cycle) : on ne propose que les postes hors de sa descendance ; le moteur
+       refuse de toute façon, en nommant la raison. */
+    var interdits = record ? global.SIGH.organigramme.descendants(record.id) : [];
+    var champs = [
       { name: 'poste', label: 'Intitulé du poste', required: true, col: 'full' },
       {
         name: 'parentId', label: 'Rattaché à', type: 'select',
         options: [{ value: '', label: '— Sommet de l’organigramme —' }].concat(
-          C.sortBy(autres, 'poste').map(function (p) { return { value: p.id, label: p.poste }; })),
-        help: 'Déplacer un poste ici le réaffecte, lui et les postes qu’il porte.',
+          C.sortBy(autres.filter(function (p) { return interdits.indexOf(p.id) < 0; }), 'poste').map(function (p) { return { value: p.id, label: p.poste }; })),
+        help: 'Déplacer un poste ici le réaffecte, lui et les postes qu’il porte. Un poste ne se rattache ni à lui-même ni à l’un de ses rattachés.',
       },
       { name: 'effectif', label: 'Effectif', type: 'number', min: 0, required: true },
-      { name: 'titulaire', label: 'Titulaire / chef de service', col: 'full' },
+      { name: 'titulaire', label: 'Titulaire / chef de service', col: 'full', help: 'Une autre personne est affectée au poste : renommer le titulaire ici, la feuille imprimée suit.' },
       {
         name: 'role', label: 'Rôle RBAC', type: 'select', required: true,
         options: Object.keys(N.ROLES).map(function (r) { return { value: r, label: N.ROLES[r].label }; }),
       },
-      { name: 'chef', label: 'Chef de service', type: 'checkbox' },
+      { name: 'chef', label: 'Chef de service (C/S)', type: 'checkbox' },
     ];
+    if (record) {
+      champs.push({ name: 'titreAgent', label: 'Titre du titulaire dans l’organigramme', col: 'full',
+        help: 'Porté par l’AGENT, pas par le poste (par exemple « SG » pour le surveillant général, qui est un infirmier). Il ne change aucun droit. Vide : aucun titre.' });
+    }
+    return champs;
+  }
+
+  /* Un refus du moteur se DIT : motif et geste de correction, jamais un échec muet. */
+  function direRefusOrg(r) {
+    U.toast(r.motif, { type: 'error', detail: r.geste });
+    return false;
   }
 
   function ongletOrganigramme(panneau) {
@@ -360,7 +353,7 @@
       var plats = colPostes().active();
       var host = el('div.space-y-3');
 
-      host.appendChild(K.note('L’organigramme imprimé suit la <strong>collection des postes</strong> de cet écran : un intitulé, un effectif, un titulaire ou un rattachement corrigé ici se retrouve sur la feuille. Il peut donc différer de l’organigramme papier de la clinique tant que les postes n’ont pas été mis à jour. Le marqueur étoile du papier n’est tracé que pour un poste qui le porte : aucune donnée ne le porte aujourd’hui.', { tone: 'info', icon: 'printer' }));
+      host.appendChild(K.note('L’organigramme imprimé suit la <strong>collection des postes</strong> de cet écran : un intitulé, un effectif, un titulaire, un titre ou un rattachement corrigé ici se retrouve sur la feuille. Il part de l’organigramme papier de la clinique mais n’est <strong>pas figé</strong> : réaffecter un poste, renommer son titulaire quand une autre personne est affectée, poser le titre d’un agent (« SG » pour le surveillant général, qui est un infirmier : le titre est porté par l’agent, pas par le poste) ou archiver un poste se fait ici, et chaque geste est journalisé. Aucune étoile n’est tracée.', { tone: 'info', icon: 'printer' }));
 
       var carte = el('div');
       racines.forEach(function (r) { carte.appendChild(arbre(r, 0)); });
@@ -385,9 +378,10 @@
           { key: 'effectif', label: 'Effectif', align: 'right' },
           {
             key: 'titulaire', label: 'Titulaire',
+            text: function (p) { return p.titulaire ? p.titulaire + titreEntreParentheses(p) + (p.chef ? ' — chef de service' : '') : 'vacant'; },
             render: function (p) {
               return p.titulaire
-                ? el('span.text-sm.text-slate-700', { text: p.titulaire + (p.chef ? ' — chef de service' : '') })
+                ? el('span.text-sm.text-slate-700', { text: p.titulaire + titreEntreParentheses(p) + (p.chef ? ' — chef de service' : '') })
                 : el('span.text-xs.text-slate-300', { text: 'vacant' });
             },
           },
@@ -397,10 +391,12 @@
             render: function (p) { return U.badge(N.ROLES[p.role] ? N.ROLES[p.role].label : p.role, 'navy'); },
           },
         ],
-        rowActions: K.actionsLigne(colPostes(), champsPoste, { entite: 'poste' }),
+        rowActions: actionsPoste,
         actions: [K.creer(colPostes(), champsPoste, {
           titre: 'Nouveau poste ou département', entite: 'Poste',
           defauts: function () { return { effectif: 1, role: 'agentadmin' }; },
+          /* Le moteur refuse en nommant (rattachement à un poste archivé, effectif non entier…) : rien n'est écrit. */
+          avant: function (v) { var r = global.SIGH.organigramme.controler(null, v); return r ? direRefusOrg(r) : true; },
           transform: function (v) { if (!v.parentId) v.parentId = null; return v; },
           apres: dessiner,
         })],
@@ -415,6 +411,55 @@
         return p ? p.poste : '—';
       }
 
+      function titreEntreParentheses(p) {
+        var t = global.SIGH.organigramme.titreDe(p);
+        return t ? ' (' + t + ')' : '';
+      }
+
+      /* LES GESTES SUR UN POSTE PASSENT PAR LE MOTEUR : réaffecter, renommer le titulaire, poser le titre de l'agent et archiver sont contrôlés
+         (cycle, parent archivé, agent introuvable, poste qui porte encore des postes), refusés en le nommant, et journalisés. */
+      function actionsPoste(p) {
+        var actes = [];
+        var dr = K.droits('CFG');
+        if (dr.editer) actes.push(K.iconBtn('pencil', 'Modifier', function () { modifierUnPoste(p); }));
+        if (dr.annuler) actes.push(K.iconBtn('archive', 'Archiver', function () {
+          U.confirm({
+            title: 'Archiver ce poste ?',
+            message: 'Archivage logique (RG-14) : le poste reste consultable à la corbeille et l’opération est annulable.',
+            confirmLabel: 'Archiver', danger: true, requireMotif: true,
+          }).then(function (rep) {
+            if (!rep) return;
+            var r = global.SIGH.organigramme.archiver(p.id, rep.motif);
+            if (!r.ok) { direRefusOrg(r); return; }
+            dessiner();
+            U.toast('Poste archivé.', { type: 'success', undo: function () { r.undo(); dessiner(); }, undoMessage: 'Archivage annulé.' });
+          });
+        }, 'ghost'));
+        return actes;
+      }
+
+      function modifierUnPoste(p) {
+        var f = U.form(champsPoste(p), Object.assign({}, p, { titreAgent: global.SIGH.organigramme.titreDe(p) || '' }));
+        var m = U.modal({
+          title: 'Modifier le poste', subtitle: p.poste, size: 'lg', body: f,
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer', {
+              variant: 'primary', icon: 'save',
+              onclick: function () {
+                var v = f.collect();
+                if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+                var r = global.SIGH.organigramme.modifier(p.id, v);
+                if (!r.ok) { direRefusOrg(r); return; }
+                m.close();
+                dessiner();
+                U.toast(r.inchange ? 'Aucune modification.' : 'Modifications enregistrées.', r.inchange ? { type: 'info' } : { type: 'success', undo: function () { r.undo(); dessiner(); } });
+              },
+            }),
+          ],
+        });
+      }
+
       function arbre(noeud, niveau) {
         var wrap = el('div', { class: niveau ? 'ml-6 border-l border-slate-200 pl-4' : '' });
         var carteN = el('div.mb-2.flex.flex-wrap.items-center.gap-2.rounded-lg.border.px-3.py-2', {
@@ -426,7 +471,7 @@
         carteN.appendChild(el('span.text-sm.font-semibold.text-slate-800', { text: noeud.poste }));
         carteN.appendChild(U.badge('(' + C.pad(noeud.effectif, 2) + ')', 'neutral'));
         if (noeud.titulaire) {
-          carteN.appendChild(el('span.text-xs.text-slate-500', { text: noeud.titulaire + (noeud.chef ? ' — chef de service' : '') }));
+          carteN.appendChild(el('span.text-xs.text-slate-500', { text: noeud.titulaire + (noeud.titreAgent ? ' (' + noeud.titreAgent + ')' : '') + (noeud.chef ? ' — chef de service' : '') }));
         }
         if (noeud.role && N.ROLES[noeud.role]) {
           carteN.appendChild(el('span.ml-auto', null, U.badge(N.ROLES[noeud.role].label, 'navy')));

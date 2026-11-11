@@ -17297,7 +17297,7 @@ async function viderMessages(page) {
     const txt = pt.status === 0 ? pt.stdout : null;
     verifier('PDF mesuré : page A4 en PAYSAGE (largeur > hauteur, 842 x 595 pt) et UNE seule page',
       boxes.length > 0 && boxes.every((b) => b[0] > b[1] && Math.abs(b[0] - 841.9) < 3 && Math.abs(b[1] - 595.3) < 3) && pages === 1, JSON.stringify({ boxes, pages }));
-    const attendus = ['ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO', 'Directeur Médical (01)', 'BASSONGUI Chabi Séko', 'Laborantins (02)', 'Infirmiers (08)', 'Agents de Sécurité (03)', 'Chauffeur Coursier (01)', 'Assistant Comptable (01)'];
+    const attendus = ['ORGANIGRAMME DE LA CLINIQUE NASSIERA TOO', 'Directeur Médical (01)', 'BASSONGUI Chabi Séko', 'Laborantins (02)', 'Infirmiers (08)', 'Agents de Sécurités (03)', 'Chauffeur Coursier (01)', 'Assistant comptable (01)'];
     verifier('Le texte du PDF (pdftotext) porte le titre et les boîtes de la collection, et aucun numéro manuscrit de la photo',
       txt === null ? true : (attendus.every((a) => txt.replace(/\s+/g, ' ').indexOf(a) >= 0) && !/97 ?90 ?06|66 ?47|97 ?32 ?26|95 ?92 ?\d\d|Anath/.test(txt)),
       txt === null ? 'pdftotext absent : contrôle réduit au DOM' : JSON.stringify(attendus.filter((a) => txt.replace(/\s+/g, ' ').indexOf(a) < 0)));
@@ -17329,8 +17329,8 @@ async function viderMessages(page) {
       window.print = window.__printOrig;
       return out;
     });
-    verifier('Un poste ajouté à la collection apparaît sur la feuille (effectif, titulaire, C/S) ; l’étoile ne se trace que pour le poste qui la porte',
-      suivi.boite && /Service Sonde 104 \(03\)/.test(suivi.texte) && /SONDE Quatre C\/S/.test(suivi.texte) && suivi.etoile && suivi.n === 17, JSON.stringify(suivi));
+    verifier('Un poste ajouté à la collection apparaît sur la feuille (effectif, titulaire, C/S) ; AUCUNE étoile, même pour une fiche qui porterait un champ `etoile` (O5 : elle ne veut rien dire)',
+      suivi.boite && /Service Sonde 104 \(03\)/.test(suivi.texte) && /SONDE Quatre C\/S/.test(suivi.texte) && !suivi.etoile && suivi.n === 17, JSON.stringify(suivi));
 
     /* Les états existants restent en portrait : l'impression de la répartition des secteurs (même écran) ne change pas. */
     const portrait = await page.evaluate(async () => {
@@ -18591,6 +18591,245 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
+
+  /* ==========================================================================
+   * Vague 111 : L'ORGANIGRAMME SUIT LA PHOTO DU PAPIER MAIS N'EST PAS FIGÉ (lot ORG2, Direction, 11/11/2026, O1 à O5)
+   * -------------------------------------------------------------------------
+   * Les six intitulés de la photo, la hiérarchie lue sur ses connecteurs, le titre « SG » porté par l'AGENT (le surveillant général est un infirmier), le CRUD qui
+   * réaffecte, renomme le titulaire, pose le titre de l'agent et archive (refus nommés : cycle, parent archivé, poste qui porte des postes, agent introuvable,
+   * poste vacant, titre trop long, droit), le PDF paysage qui SUIT ces modifications, aucune étoile, et la reprise qui ne réécrit jamais ce que la clinique a modifié.
+   * Le scénario repart de la semence (collection vidée puis ré-amorcée) et restitue postes et personnel à la sortie.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 111 : organigramme du papier mais non figé (six intitulés de la photo, hiérarchie, titre de l’agent SG, réaffectation et renommage au geste, refus nommés, PDF qui suit, aucune étoile, reprise qui épargne ce que la clinique a modifié)');
+    erreursJS = [];
+    const O = outils100;
+    const os = require('os');
+    const { spawnSync } = require('child_process');
+    await O.sessionDe('admin');
+    await ouvrir('cfg-organisation.html');
+    const sauve = await page.evaluate(() => {
+      const S = window.SIGH.store, b = S.raw();
+      S.collection('postes').all(); b.postes = b.postes || [];
+      const copie = { postes: JSON.parse(JSON.stringify(b.postes)), personnel: JSON.parse(JSON.stringify(b.personnel)) };
+      b.postes.length = 0; S.save();
+      return copie;
+    });
+    const restituer = () => page.evaluate((c) => {
+      const S = window.SIGH.store, b = S.raw();
+      b.postes.length = 0; c.postes.forEach((x) => b.postes.push(x));
+      b.personnel.length = 0; c.personnel.forEach((x) => b.personnel.push(x));
+      S.save();
+    }, sauve);
+    await ouvrir('cfg-organisation.html');
+
+    /* --- 1. la semence : intitulés de la photo, hiérarchie lue sur la photo, titre porté par l'agent, aucune étoile ---------------------------------------------- */
+    const sem = await page.evaluate(() => {
+      const S = window.SIGH.store, postes = S.collection('postes').active();
+      const nom = (id) => (postes.filter((p) => p.id === id)[0] || {}).poste || null;
+      const parent = {}; postes.forEach((p) => { parent[p.poste] = nom(p.parentId); });
+      const garba = S.collection('personnel').active().filter((a) => a.nomComplet === 'GARBA Yahouza')[0];
+      const inf = postes.filter((p) => p.poste === 'Infirmiers')[0];
+      const da = postes.filter((p) => /^Directrice/.test(p.poste))[0];
+      return { nb: postes.length, noms: postes.map((p) => p.poste), parent: parent, etoile: postes.some((p) => p.etoile !== undefined), chefInfirmiers: inf && inf.chef,
+        titreGarba: garba ? garba.titreOrganigramme : null, titreAutres: S.collection('personnel').active().filter((a) => a.titreOrganigramme && a.nomComplet !== 'GARBA Yahouza').length,
+        da: da && da.titulaire, versionOk: postes.every((p) => p.semence === 2), role: inf && inf.role };
+    });
+    const six = ['Directrice Administrative (DA)', 'Echographiste', 'Aide-Soignante', 'Agents de Sécurités', 'Agents d’Entretiens', 'Assistant comptable'];
+    const anciens = ['Directrice Administrative', 'Échographiste', 'Aide-Soignantes', 'Agents de Sécurité', 'Agents d’Entretien', 'Assistant Comptable'];
+    verifier('Les SIX intitulés sont ceux de la photo (« Directrice Administrative (DA) », « Echographiste », « Aide-Soignante », « Agents de Sécurités », « Agents d’Entretiens », « Assistant comptable »), les anciens ont disparu, et il reste 16 postes',
+      sem.nb === 16 && six.every((x) => sem.noms.indexOf(x) >= 0) && anciens.every((x) => sem.noms.indexOf(x) < 0), JSON.stringify(sem.noms));
+    const h = sem.parent;
+    verifier('La hiérarchie lue sur la photo : le Directeur Médical porte la DA, les Laborantins, l’Echographiste, les Médecins, les Secrétaires, les Infirmiers et les Agents d’Entretiens ; la DA porte le Comptable ; le Comptable l’Assistant comptable, qui porte le Gestionnaire de Stock ; les Infirmiers les Sages-Femmes et l’Aide-Soignante ; les Secrétaires le Chauffeur',
+      h['Directeur Médical'] === null && ['Directrice Administrative (DA)', 'Laborantins', 'Echographiste', 'Médecins Généralistes', 'Secrétaires Médicaux', 'Infirmiers', 'Agents d’Entretiens'].every((x) => h[x] === 'Directeur Médical')
+      && h['Comptable'] === 'Directrice Administrative (DA)' && h['Assistant comptable'] === 'Comptable' && h['Gestionnaire de Stock'] === 'Assistant comptable'
+      && h['Sages-Femmes'] === 'Infirmiers' && h['Aide-Soignante'] === 'Infirmiers' && h['Chauffeur Coursier'] === 'Secrétaires Médicaux', JSON.stringify(h));
+    verifier('Sans connecteur sur la photo, les Dispensatrices et les Agents de Sécurités restent sous la DA (hypothèse écrite à ECARTS-MAQUETTE) ; le titulaire de la DA garde « épse BASSONGUI » (O2)',
+      h['Dispensatrices'] === 'Directrice Administrative (DA)' && h['Agents de Sécurités'] === 'Directrice Administrative (DA)' && sem.da === 'TAKI Alimatou épse BASSONGUI', JSON.stringify([h['Dispensatrices'], h['Agents de Sécurités'], sem.da]));
+    verifier('Le surveillant général est un infirmier : « SG » est porté par l’AGENT (GARBA Yahouza), pas par le poste (`chef` faux), aucun autre agent n’a de titre, le rôle RBAC du poste est inchangé, et aucun champ `etoile` n’existe',
+      sem.titreGarba === 'SG' && sem.titreAutres === 0 && sem.chefInfirmiers === false && sem.role === 'infirmier' && !sem.etoile && sem.versionOk, JSON.stringify(sem));
+
+    /* --- 2. la feuille : « GARBA Yahouza (SG) », des boîtes par niveau, aucune étoile ---------------------------------------------------------------------- */
+    const lireFeuille = () => page.evaluate(async () => {
+      window.__printOrig = window.__printOrig || window.print; window.print = () => {};
+      [...document.querySelectorAll('.tab')].find((t) => /Organigramme/.test(t.textContent)).click();
+      await new Promise((r) => setTimeout(r, 400));
+      [...document.querySelectorAll('#page-content button')].find((b) => /Imprimer l’organigramme/.test(b.textContent)).click();
+      await new Promise((r) => setTimeout(r, 300));
+      const feuille = document.querySelector('.print-chrome .print-sheet');
+      if (!feuille) return { feuille: false };
+      const boites = [...feuille.querySelectorAll('.org-boite')].map((b) => ({ poste: b.getAttribute('data-poste'), texte: b.textContent, haut: Math.round(b.getBoundingClientRect().top), bas: Math.round(b.getBoundingClientRect().bottom), gauche: Math.round(b.getBoundingClientRect().left), droite: Math.round(b.getBoundingClientRect().right) }));
+      return { feuille: true, boites: boites, etoiles: feuille.querySelectorAll('.org-etoile').length, texte: feuille.textContent, fleches: feuille.querySelectorAll('.org-diagramme svg path').length,
+        chevauche: boites.some((a, i) => boites.some((b, j) => i < j && a.haut < b.bas && b.haut < a.bas && a.gauche < b.droite && b.gauche < a.droite)) };
+    });
+    const fermerFeuille = () => page.evaluate(() => {
+      document.querySelectorAll('.print-chrome').forEach((o) => o.remove());
+      document.getElementById('print-orientation')?.remove();
+      document.body.classList.remove('printing'); document.body.style.overflow = '';
+      const r = document.getElementById('print-root'); if (r) r.innerHTML = '';
+      if (window.__printOrig) window.print = window.__printOrig;
+    });
+    const f1 = await lireFeuille();
+    const boite = (f, nom) => f.boites.filter((b) => b.poste === nom)[0] || null;
+    verifier('La feuille imprime « GARBA Yahouza (SG) » dans la boîte des Infirmiers (sans « C/S »), « TEPA Séraphine C/S » ailleurs, 16 boîtes, 15 connecteurs fléchés, AUCUNE étoile et aucune boîte qui en chevauche une autre',
+      f1.feuille && f1.boites.length === 16 && /GARBA Yahouza \(SG\)/.test(boite(f1, 'Infirmiers').texte) && !/C\/S/.test(boite(f1, 'Infirmiers').texte) && /TEPA Séraphine C\/S/.test(boite(f1, 'Aide-Soignante').texte)
+      && f1.fleches === 15 && f1.etoiles === 0 && !/★/.test(f1.texte) && !f1.chevauche, JSON.stringify([f1.boites && f1.boites.length, f1.fleches, f1.etoiles, f1.chevauche]));
+    verifier('Chaque poste rattaché est dessiné SOUS son parent (la photo : les Sages-Femmes et l’Aide-Soignante sous les Infirmiers, le Gestionnaire de Stock en bout de chaîne sous l’Assistant comptable)',
+      boite(f1, 'Sages-Femmes').haut > boite(f1, 'Infirmiers').bas && boite(f1, 'Aide-Soignante').haut > boite(f1, 'Infirmiers').bas && boite(f1, 'Gestionnaire de Stock').haut > boite(f1, 'Assistant comptable').bas
+      && boite(f1, 'Assistant comptable').haut > boite(f1, 'Comptable').bas && boite(f1, 'Comptable').haut > boite(f1, 'Directrice Administrative (DA)').bas, JSON.stringify(f1.boites.map((b) => [b.poste, b.haut, b.bas])));
+    await fermerFeuille();
+
+    /* --- 3. au geste : réaffecter, renommer le titulaire, poser le titre de l'agent ----------------------------------------------------------------------------- */
+    const poser = (id, v) => page.evaluate((i, x) => {
+      const e = document.querySelector('.modal-root #f_' + i + ', [role=dialog] #f_' + i); if (!e) return false;
+      e.value = x; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); return true;
+    }, id, v);
+    const modifierLigne = async (poste, champs) => {
+      const ok = await page.evaluate((p) => {
+        const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td') && x.querySelector('td').textContent.trim() === p);
+        if (!tr) return 'ligne absente';
+        const b = [...tr.querySelectorAll('button')].find((x) => (x.getAttribute('title') || '') === 'Modifier');
+        if (!b) return 'bouton absent'; b.click(); return 'ok';
+      }, poste);
+      if (ok !== 'ok') return ok;
+      await pause(300);
+      for (const k of Object.keys(champs)) { if (!(await poser(k, champs[k]))) return 'champ absent ' + k; }
+      await O.cliquerModale('Enregistrer');
+      await pause(500);
+      return 'ok';
+    };
+    const etatPostes = () => page.evaluate(() => JSON.stringify(window.SIGH.store.collection('postes').all()));
+    const dernierJournal = () => page.evaluate(() => { const a = window.SIGH.store.raw().audit[0]; return a ? { action: a.action, ancienne: a.ancienneValeur, nouvelle: a.nouvelleValeur } : null; });
+    await page.evaluate(async () => { [...document.querySelectorAll('.tab')].find((t) => /Organigramme/.test(t.textContent)).click(); await new Promise((r) => setTimeout(r, 400)); });
+    const rSF = await modifierLigne('Sages-Femmes', { parentId: 'PST001' });
+    const jSF = await dernierJournal();
+    const aSF = await page.evaluate(() => window.SIGH.store.collection('postes').get('PST015'));
+    verifier('Réaffectation AU GESTE (modale « Modifier », « Rattaché à ») : les Sages-Femmes passent sous le Directeur Médical, et le journal porte « Réaffectation d’un poste » avec les deux rattachements nommés (RG-12)',
+      rSF === 'ok' && aSF.parentId === 'PST001' && jSF && jSF.action === 'Réaffectation d’un poste' && /Infirmiers/.test(jSF.ancienne) && /Directeur Médical/.test(jSF.nouvelle), JSON.stringify([rSF, aSF && aSF.parentId, jSF]));
+    const rLabo = await modifierLigne('Laborantins', { titulaire: 'NOUVEAU Titulaire' });
+    const jLabo = await dernierJournal();
+    const labo = await page.evaluate(() => window.SIGH.store.collection('postes').get('PST013'));
+    verifier('Renommer le titulaire AU GESTE (une autre personne est affectée) : « NOUVEAU Titulaire », journal « Changement de titulaire d’un poste » avec l’ancien et le nouveau nom',
+      rLabo === 'ok' && labo.titulaire === 'NOUVEAU Titulaire' && jLabo && jLabo.action === 'Changement de titulaire d’un poste' && /KINNOU/.test(jLabo.ancienne) && /NOUVEAU Titulaire/.test(jLabo.nouvelle), JSON.stringify([rLabo, labo && labo.titulaire, jLabo]));
+    const rEcho = await modifierLigne('Echographiste', { titreAgent: 'ECH' });
+    const jEcho = await dernierJournal();
+    const ahohou = await page.evaluate(() => window.SIGH.store.collection('personnel').active().filter((a) => a.nomComplet === 'AHOHOU Rodrigue')[0]);
+    const posteEcho = await page.evaluate(() => window.SIGH.store.collection('postes').get('PST012'));
+    verifier('Poser le titre de l’agent AU GESTE : « ECH » est écrit sur la fiche du PERSONNEL (AHOHOU Rodrigue), pas sur le poste, et journalisé « Titre d’un agent dans l’organigramme » ; aucun droit et aucun rôle ne bouge',
+      rEcho === 'ok' && ahohou.titreOrganigramme === 'ECH' && posteEcho.titreAgent === undefined && posteEcho.role === 'medecin' && jEcho && jEcho.action === 'Titre d’un agent dans l’organigramme' && /ECH/.test(jEcho.nouvelle), JSON.stringify([rEcho, ahohou && ahohou.titreOrganigramme, jEcho]));
+
+    /* --- 4. le PDF paysage SUIT ces modifications ------------------------------------------------------------------------------------------------------------ */
+    const f2 = await lireFeuille();
+    verifier('La feuille suit : « NOUVEAU Titulaire » remplace KINNOU, « AHOHOU Rodrigue (ECH) » porte son titre, « GARBA Yahouza (SG) » le sien, et les Sages-Femmes sont dessinées au niveau de leur nouveau parent (sous le Directeur Médical, plus sous les Infirmiers)',
+      /NOUVEAU Titulaire/.test(boite(f2, 'Laborantins').texte) && !/KINNOU/.test(f2.texte) && /AHOHOU Rodrigue \(ECH\)/.test(boite(f2, 'Echographiste').texte) && /GARBA Yahouza \(SG\)/.test(boite(f2, 'Infirmiers').texte)
+      && Math.abs(boite(f2, 'Sages-Femmes').haut - boite(f2, 'Infirmiers').haut) <= 2 && boite(f2, 'Sages-Femmes').haut > boite(f2, 'Directeur Médical').bas && f2.etoiles === 0, JSON.stringify(f2.boites.map((b) => [b.poste, b.haut])));
+    await page.evaluate(() => { window.__st = window.setTimeout; window.setTimeout = () => 0; [...document.querySelectorAll('.print-chrome button')].find((x) => /Imprimer \/ Enregistrer/.test(x.textContent)).click(); window.setTimeout = window.__st; });
+    await page.emulateMediaType('print');
+    const pdfBuf = Buffer.from(await page.pdf({ preferCSSPageSize: true, printBackground: true }));
+    await page.emulateMediaType('screen');
+    const pdfTxt = pdfBuf.toString('latin1');
+    const boxes = [...pdfTxt.matchAll(/\/MediaBox\s*\[\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\]/g)].map((m) => [Number(m[3]) - Number(m[1]), Number(m[4]) - Number(m[2])]);
+    const pages = (pdfTxt.match(/\/Type\s*\/Page[^s]/g) || []).length;
+    const fichierPdf = path.join(os.tmpdir(), 'sigh-org111-' + process.pid + '.pdf');
+    fs.writeFileSync(fichierPdf, pdfBuf);
+    const pt = spawnSync('pdftotext', ['-raw', fichierPdf, '-'], { encoding: 'utf8' });
+    try { fs.unlinkSync(fichierPdf); } catch (e) { /* déjà retiré */ }
+    const txt = pt.status === 0 ? pt.stdout.replace(/\s+/g, ' ') : null;
+    verifier('PDF mesuré : A4 PAYSAGE (842 x 595 pt), UNE page ; pdftotext porte « NOUVEAU Titulaire », « AHOHOU Rodrigue (ECH) », « GARBA Yahouza (SG) », les intitulés de la photo, et ni KINNOU, ni étoile, ni numéro manuscrit',
+      boxes.length > 0 && boxes.every((b) => b[0] > b[1] && Math.abs(b[0] - 841.9) < 3 && Math.abs(b[1] - 595.3) < 3) && pages === 1
+      && (txt === null ? true : (['NOUVEAU Titulaire', 'AHOHOU Rodrigue (ECH)', 'GARBA Yahouza (SG)', 'Directrice Administrative (DA) (01)', 'Aide-Soignante (08)', 'Agents d’Entretiens (03)'].every((a) => txt.indexOf(a) >= 0)
+        && !/KINNOU/.test(txt) && !/★|✯|☆/.test(txt) && !/97 ?90 ?06|66 ?47|97 ?32 ?26|95 ?92 ?\d\d|Anath/.test(txt))), JSON.stringify({ boxes, pages, extrait: txt && txt.slice(0, 600) }));
+    await fermerFeuille();
+
+    /* --- 5. refus nommés, et rien n'est écrit ------------------------------------------------------------------------------------------------------------------ */
+    const avantRefus = await etatPostes();
+    const refus = await page.evaluate(() => {
+      const ORG = window.SIGH.organigramme, out = {};
+      out.cycleSoi = ORG.reaffecter('PST002', 'PST002');
+      out.cycleDescendant = ORG.reaffecter('PST002', 'PST004');
+      out.cycleProfond = ORG.reaffecter('PST001', 'PST005');
+      out.parentInconnu = ORG.reaffecter('PST013', 'PSTxxx');
+      const cree = ORG.creer({ poste: 'Poste sonde 111', parentId: 'PST001', effectif: 1, role: 'agentadmin' });
+      out.creation = cree.ok;
+      const arch = ORG.archiver(cree.record.id, 'sonde 111');
+      out.archive = arch.ok;
+      out.parentArchive = ORG.reaffecter('PST013', cree.record.id);
+      out.creationSousArchive = ORG.creer({ poste: 'Sous un poste archivé', parentId: cree.record.id, effectif: 1, role: 'agentadmin' });
+      out.porteDesPostes = ORG.archiver('PST014', 'sonde 111');
+      out.agentIntrouvable = ORG.poserTitre('PST013', 'XX');
+      out.titreLong = ORG.poserTitre('PST012', 'TITRE BEAUCOUP TROP LONG');
+      out.vacant = ORG.poserTitre('PST015', 'SF');
+      out.intituleVide = ORG.modifier('PST012', { poste: '   ' });
+      out.effectifFractionnaire = ORG.modifier('PST012', { effectif: 1.5 });
+      out.inchange = ORG.modifier('PST012', { poste: 'Echographiste' });
+      out.posteIntrouvable = ORG.reaffecter('PSTxxx', 'PST001');
+      out.posteArchive = ORG.modifier(cree.record.id, { effectif: 3 });
+      return JSON.parse(JSON.stringify(out));
+    });
+    const apresRefus = await etatPostes();
+    const code = (r) => r && r.ok === false ? r.code : (r && r.ok ? 'OK' : String(r));
+    verifier('Cycle refusé en nommant (RATTACHEMENT_CYCLE) : un poste sous lui-même, sous un de ses rattachés (la DA sous l’Assistant comptable) ou tout en haut sous le bout de la chaîne ; parent inconnu refusé (PARENT_INTROUVABLE) ; chaque refus porte motif et geste',
+      code(refus.cycleSoi) === 'RATTACHEMENT_CYCLE' && code(refus.cycleDescendant) === 'RATTACHEMENT_CYCLE' && code(refus.cycleProfond) === 'RATTACHEMENT_CYCLE' && code(refus.parentInconnu) === 'PARENT_INTROUVABLE'
+      && /Assistant comptable/.test(refus.cycleDescendant.motif) && refus.cycleDescendant.geste.length > 10, JSON.stringify([refus.cycleSoi, refus.cycleDescendant, refus.cycleProfond, refus.parentInconnu]));
+    verifier('Parent archivé refusé (PARENT_ARCHIVE) en réaffectation comme en création ; un poste archivé ne se modifie pas (POSTE_ARCHIVE) ; archiver un poste qui porte encore des postes est refusé (POSTE_PORTE_DES_POSTES, il nomme l’Aide-Soignante)',
+      refus.archive === true && code(refus.parentArchive) === 'PARENT_ARCHIVE' && code(refus.creationSousArchive) === 'PARENT_ARCHIVE' && code(refus.posteArchive) === 'POSTE_ARCHIVE'
+      && code(refus.porteDesPostes) === 'POSTE_PORTE_DES_POSTES' && /Aide-Soignante/.test(refus.porteDesPostes.motif), JSON.stringify([refus.parentArchive, refus.porteDesPostes]));
+    verifier('Le titre exige un agent : titulaire absent du personnel (AGENT_INTROUVABLE), poste vacant (POSTE_VACANT), titre de plus de 12 caractères (TITRE_TROP_LONG) ; intitulé vide, effectif fractionnaire et poste inconnu refusés ; une saisie identique ne change rien (inchangé)',
+      code(refus.agentIntrouvable) === 'AGENT_INTROUVABLE' && code(refus.vacant) === 'POSTE_VACANT' && code(refus.titreLong) === 'TITRE_TROP_LONG' && code(refus.intituleVide) === 'INTITULE_VIDE'
+      && code(refus.effectifFractionnaire) === 'EFFECTIF_INVALIDE' && code(refus.posteIntrouvable) === 'POSTE_INTROUVABLE' && refus.inchange.ok === true && refus.inchange.inchange === true, JSON.stringify(refus));
+    const posteSonde = JSON.parse(apresRefus).filter((p) => p.poste === 'Poste sonde 111');
+    const sansSonde = (j) => JSON.parse(j).filter((p) => p.poste !== 'Poste sonde 111');
+    verifier('Aucun refus n’a écrit quoi que ce soit : seule la création volontaire du poste de sonde (archivé ensuite) distingue les deux états, et aucun poste n’a changé de rattachement',
+      JSON.stringify(sansSonde(apresRefus)) === JSON.stringify(sansSonde(avantRefus)) && posteSonde.length === 1 && posteSonde[0].statut === 'archive', JSON.stringify(posteSonde));
+
+    /* --- 6. au geste : refus à l'écran (archiver un poste qui porte des postes), et droits ----------------------------------------------------------------------- */
+    await ouvrir('cfg-organisation.html');
+    await page.evaluate(async () => { [...document.querySelectorAll('.tab')].find((t) => /Organigramme/.test(t.textContent)).click(); await new Promise((r) => setTimeout(r, 400)); });
+    await O.cliquerLigne('Archiver', 'Directrice Administrative (DA)');
+    await pause(300);
+    await O.motifModale('Sonde 111');
+    await O.cliquerModale('Archiver');
+    await pause(500);
+    const toast = await page.evaluate(() => [...document.querySelectorAll('#toast-host *')].map((n) => n.textContent).join(' | '));
+    const daApres = await page.evaluate(() => window.SIGH.store.collection('postes').get('PST002').statut);
+    verifier('À l’écran, archiver la DA (qui porte le Comptable, les Dispensatrices et les Agents de Sécurités) est refusé en le disant (« porte encore 3 postes »), le poste reste actif',
+      /porte encore 3 postes/.test(toast) && daApres === 'actif', JSON.stringify([toast.slice(0, 300), daApres]));
+    const droit = await page.evaluate(() => { const S = window.SIGH.store, s = S.session(); const out = {}; S.setSession(Object.assign({}, s, { role: 'caissier', nom: 'SONDE111 caissier', nomComplet: 'SONDE111 caissier' })); out.caissier = window.SIGH.organigramme.reaffecter('PST013', 'PST001'); S.setSession(s); return JSON.parse(JSON.stringify(out)); });
+    verifier('Sans le droit d’écrire à l’écran, le moteur refuse en le nommant (ORGANIGRAMME_RESERVE : caissier) et rien n’est écrit',
+      code(droit.caissier) === 'ORGANIGRAMME_RESERVE' && (await page.evaluate(() => window.SIGH.store.collection('postes').get('PST013').parentId)) === 'PST001', JSON.stringify(droit));
+    await O.sessionDe('admin');
+
+    /* --- 7. aucune étoile : un champ `etoile` n'est jamais tracé, la reprise le retire ---------------------------------------------------------------------------- */
+    await ouvrir('cfg-organisation.html');
+    const etoile = await page.evaluate(async () => {
+      const col = window.SIGH.store.collection('postes');
+      const p = col.get('PST012'); p.etoile = true; p.sonde111 = true;
+      return true;
+    });
+    const f3 = await lireFeuille();
+    await fermerFeuille();
+    const reprise = await page.evaluate(() => {
+      const S = window.SIGH.store, anc = window.SIGH.data.ORGANIGRAMME_PRECEDENT;
+      const fiche = (i, extra) => Object.assign({ id: anc[i].id, statut: 'actif', source: 'Organigramme de la Clinique NASSIERA TOO' }, anc[i], extra || {});
+      /* Magasin d'avant : PST002 intacte, PST003 modifiée par l'écran (trace _modifieLe), PST004 dont l'effectif a été changé, PST005 archivée, PST006 intacte avec une étoile. */
+      const base = { postes: [fiche(1), fiche(2, { _modifieLe: '2026-11-01T08:00:00.000Z', poste: 'Comptable' }), fiche(3, { effectif: 2 }), fiche(4, { statut: 'archive', _archiveLe: '2026-11-02T08:00:00.000Z' }), fiche(5, { etoile: true })] };
+      base.postes.forEach((f) => { Object.keys(f).forEach((k) => { if (f[k] === null) delete f[k]; }); });
+      const bilan = S.migrerOrganigramme(base);
+      const par = {}; base.postes.forEach((f) => { par[f.id] = f; });
+      const second = S.migrerOrganigramme(base);
+      return JSON.parse(JSON.stringify({ bilan: bilan, second: second, da: par.PST002, comptable: par.PST003, assistant: par.PST004, gestionnaire: par.PST005, secretaires: par.PST006 }));
+    });
+    verifier('Un champ `etoile` n’est jamais tracé (aucune étoile sur la feuille, aucun ★) ; la reprise le retire de toute fiche, réécrit les postes INTACTS (la DA reçoit « Directrice Administrative (DA) » et la semence 2)',
+      f3.feuille && f3.etoiles === 0 && !/★/.test(f3.texte) && etoile && reprise.bilan.etoiles === 1 && reprise.secretaires.etoile === undefined && reprise.da.poste === 'Directrice Administrative (DA)' && reprise.da.parentId === 'PST001' && reprise.da.semence === 2, JSON.stringify([f3.etoiles, reprise.bilan, reprise.da]));
+    verifier('La reprise n’écrase JAMAIS ce que la clinique a modifié : un poste portant `_modifieLe`, un poste dont l’effectif diffère, un poste archivé gardent leur intitulé d’avant ; elle est idempotente (seconde passe : rien de réécrit)',
+      reprise.comptable.poste === 'Comptable' && reprise.comptable.semence === undefined && reprise.assistant.poste === 'Assistant Comptable' && reprise.assistant.effectif === 2 && reprise.gestionnaire.statut === 'archive' && reprise.gestionnaire.semence === undefined
+      && reprise.bilan.reecrits.join() === 'PST002,PST006' && reprise.bilan.gardes.join() === 'PST003,PST004,PST005' && reprise.second.reecrits.length === 0, JSON.stringify(reprise));
+    await page.evaluate(() => { const p = window.SIGH.store.collection('postes').get('PST012'); delete p.etoile; delete p.sonde111; });
+
+    /* --- 8. restitution ---------------------------------------------------------------------------------------------------------------------------------------------- */
+    await restituer();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
 
   await browser.close();
   server.close();

@@ -6408,4 +6408,203 @@
     proposer: proposerPlanningRh, annulerProposition: annulerPropositionRh, trancherProposition: trancherPropositionRh, propositionsVisibles: propositionsVisiblesRh, controlerProposition: controlerPropositionRh,
     employeDeSession: employeDeSession,
   };
+  /* ==========================================================================
+   * L'ORGANIGRAMME, SES POSTES ET LE TITRE DE L'AGENT (11/11/2026, lot ORG2)
+   * --------------------------------------------------------------------------
+   * Décisions de la Direction : l'organigramme suit la photo du papier MAIS n'est pas figé (O4) ; le titulaire d'un poste se renomme quand une autre
+   * personne est affectée (O2) ; le surveillant général est un infirmier, donc le titre affiché (« SG ») est porté par l'AGENT et non par le poste
+   * (O3) ; aucune étoile (O5). Ce moteur est le SEUL chemin d'écriture des postes depuis l'écran « Organisation & organigramme » : réaffecter,
+   * renommer le titulaire, poser le titre de l'agent, créer, archiver, tout est contrôlé, refusé en le nommant, et journalisé (RG-12).
+   *
+   * Le titre vit sur la fiche du PERSONNEL (`titreOrganigramme`), rattachée au poste par le NOM du titulaire, comme partout (l'espace « Mes », le
+   * personnel). Un titulaire qui ne correspond à aucun agent n'a pas de titre à poser : refus nommé. Ni le titre ni le rattachement ne touchent aux
+   * droits : le rôle RBAC du poste est un champ à part, et le titre d'un agent ne change aucun accès.
+   * ======================================================================== */
+  var TITRE_ORG_MAX = 12;
+  var CHAMPS_POSTE_ORG = ['poste', 'parentId', 'effectif', 'titulaire', 'chef', 'role'];
+  function refusOrg(code, motif, geste, extra) { return Object.assign({ ok: false, code: code, motif: motif, geste: geste }, extra || {}); }
+  function colPostesOrg() { return S.collection('postes', { module: 'CFG', entite: 'poste', prefix: 'PST' }); }
+  function colPersonnelOrg() { return S.collection('personnel'); }
+  /** Un nom comparable : sans la mention d'épouse, sans accents ni majuscules, espaces réduits. */
+  function cleNomOrg(n) {
+    return String(n || '').replace(/\s+[ée]pse\s+.*$/i, '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+  /** L'agent du personnel qui porte le nom du titulaire du poste, ou `null` (poste vacant, ou titulaire qui n'est pas au personnel). */
+  function agentDuPosteOrg(p) {
+    if (!p || !p.titulaire) return null;
+    var cle = cleNomOrg(p.titulaire);
+    return colPersonnelOrg().active().filter(function (a) { return cleNomOrg(a.nomComplet) === cle; })[0] || null;
+  }
+  function titreDuPosteOrg(p) { var a = agentDuPosteOrg(p); return a && a.titreOrganigramme ? String(a.titreOrganigramme) : null; }
+  function droitEcritureOrg() {
+    var N = global.SIGH.nav, role = roleCourant();
+    if (!role) return false;
+    try { return !!N.droitsEcran(role, 'cfg-organisation', 'CFG').editer; } catch (e) { return false; }
+  }
+  function refusDroitOrg() {
+    return refusOrg('ORGANIGRAMME_RESERVE', 'La modification de l’organigramme est réservée aux profils qui écrivent à l’écran « Organisation & organigramme ».',
+      'Demander à l’administrateur ou à la Directrice Administrative.');
+  }
+  function nomPosteOrg(id) { var p = id ? colPostesOrg().get(id) : null; return p ? p.poste : null; }
+
+  /** L'arbre des postes ACTIFS, chaque nœud portant le titre de son titulaire (`titreAgent`). Un poste dont le parent est archivé ou absent est un sommet. */
+  function arbreOrganigramme() {
+    var plats = colPostesOrg().active(), parId = {}, racines = [];
+    plats.forEach(function (p) { parId[p.id] = Object.assign({}, p, { enfants: [], titreAgent: titreDuPosteOrg(p) }); });
+    plats.forEach(function (p) {
+      var n = parId[p.id];
+      if (p.parentId && parId[p.parentId]) parId[p.parentId].enfants.push(n); else racines.push(n);
+    });
+    return racines;
+  }
+  /** Les identifiants des postes ACTIFS sous [id], à tous les niveaux. */
+  function descendantsOrganigramme(id) {
+    var actifs = colPostesOrg().active(), vus = {}, pile = [id], out = [];
+    while (pile.length) {
+      var x = pile.pop();
+      actifs.forEach(function (p) { if (p.parentId === x && !vus[p.id]) { vus[p.id] = true; out.push(p.id); pile.push(p.id); } });
+    }
+    return out;
+  }
+  /** Le rattachement demandé est-il permis ? `null` si oui, sinon le refus nommé. */
+  function controlerRattachementOrg(posteId, parentId) {
+    if (!parentId) return null;
+    var parent = colPostesOrg().get(parentId);
+    if (!parent) return refusOrg('PARENT_INTROUVABLE', 'Le poste de rattachement demandé n’existe pas.', 'Choisir un poste de la liste.');
+    if (parent.statut === 'archive') {
+      return refusOrg('PARENT_ARCHIVE', 'Le poste « ' + parent.poste + ' » est archivé : on ne rattache rien à un poste archivé (RG-14).',
+        'Restaurer ce poste depuis la corbeille, ou choisir un poste actif.');
+    }
+    if (posteId && (parentId === posteId || descendantsOrganigramme(posteId).indexOf(parentId) >= 0)) {
+      var moi = nomPosteOrg(posteId) || 'ce poste';
+      return refusOrg('RATTACHEMENT_CYCLE', 'Rattacher « ' + moi + ' » à « ' + parent.poste + ' » ferait de lui son propre supérieur : '
+        + (parentId === posteId ? 'un poste ne se rattache pas à lui-même.' : '« ' + parent.poste + ' » dépend déjà de « ' + moi + ' ».'),
+      'Choisir un poste qui ne dépende pas de celui-ci, ou réaffecter d’abord ses rattachés.', { parentId: parentId });
+    }
+    return null;
+  }
+  /**
+   * Contrôle d'une saisie de poste SANS rien écrire. `posteId` nul : création. `champs` : les champs saisis (ceux d'une modification partielle suffisent).
+   * `titreAgent` suppose un titulaire qui est un agent du personnel.
+   */
+  function controlerPosteOrg(posteId, champs) {
+    champs = champs || {};
+    var poste = posteId ? colPostesOrg().get(posteId) : null;
+    if (posteId && !poste) return refusOrg('POSTE_INTROUVABLE', 'Ce poste n’existe pas.', 'Rouvrir l’écran puis choisir un poste de la liste.');
+    if (poste && poste.statut === 'archive') return refusOrg('POSTE_ARCHIVE', 'Le poste « ' + poste.poste + ' » est archivé : il ne se modifie pas.', 'Le restaurer depuis la corbeille d’abord.');
+    if (champs.poste !== undefined && !String(champs.poste).trim()) return refusOrg('INTITULE_VIDE', 'L’intitulé du poste est obligatoire.', 'Saisir l’intitulé du poste.');
+    if (champs.effectif !== undefined && champs.effectif !== '' && champs.effectif !== null) {
+      var n = Number(champs.effectif);
+      if (!isFinite(n) || n < 0 || n !== Math.floor(n)) return refusOrg('EFFECTIF_INVALIDE', 'L’effectif d’un poste est un nombre entier, zéro ou plus.', 'Saisir un nombre entier.');
+    }
+    if (champs.role !== undefined && champs.role !== '' && !global.SIGH.nav.ROLES[champs.role]) {
+      return refusOrg('ROLE_INCONNU', 'Le rôle « ' + champs.role + ' » n’existe pas.', 'Choisir un rôle de la liste.');
+    }
+    if (champs.parentId !== undefined) {
+      var r = controlerRattachementOrg(posteId, champs.parentId || null);
+      if (r) return r;
+    }
+    if (champs.titreAgent !== undefined) {
+      var titre = String(champs.titreAgent || '').trim();
+      var vise = poste ? Object.assign({}, poste, champs.titulaire !== undefined ? { titulaire: champs.titulaire } : {}) : { titulaire: champs.titulaire };
+      if (titre.length > TITRE_ORG_MAX) return refusOrg('TITRE_TROP_LONG', 'Le titre dans l’organigramme tient en ' + TITRE_ORG_MAX + ' caractères au plus (« SG », « C/S »).', 'Abréger le titre.');
+      var agent = agentDuPosteOrg(vise);
+      if (titre && !vise.titulaire) return refusOrg('POSTE_VACANT', 'Le poste n’a pas de titulaire : le titre est porté par un agent, il n’y en a pas à qui le poser.', 'Saisir d’abord le titulaire du poste.');
+      if (titre && !agent) {
+        return refusOrg('AGENT_INTROUVABLE', 'Aucun agent du personnel ne porte le nom « ' + vise.titulaire + ' » : le titre est porté par l’agent, pas par le poste.',
+          'Corriger le nom du titulaire pour qu’il corresponde à une fiche du personnel, ou enregistrer l’agent au personnel.');
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Modifie un poste : n'importe quel sous-ensemble de { poste, parentId, effectif, titulaire, chef, role, titreAgent }. Tout est contrôlé AVANT
+   * la première écriture (rien n'est écrit à moitié) ; le poste est journalisé, le titre de l'agent l'est aussi, sur sa propre ligne.
+   * Rend { ok, record, inchange, undo } ou le refus nommé.
+   */
+  function modifierPosteOrg(posteId, champs) {
+    champs = champs || {};
+    if (!droitEcritureOrg()) return refusDroitOrg();
+    var refus = controlerPosteOrg(posteId, champs);
+    if (refus) return refus;
+    var col = colPostesOrg(), poste = col.get(posteId);
+    var patch = {};
+    CHAMPS_POSTE_ORG.forEach(function (k) {
+      if (champs[k] === undefined) return;
+      var v = champs[k];
+      if (k === 'poste') v = String(v).trim();
+      else if (k === 'parentId') v = v || null;
+      else if (k === 'effectif') v = v === '' || v === null ? poste.effectif : Number(v);
+      else if (k === 'titulaire') v = String(v || '').trim() || null;
+      else if (k === 'chef') v = v === true || v === 'true';
+      if ((poste[k] === undefined ? null : poste[k]) !== v) patch[k] = v;
+    });
+    var cles = Object.keys(patch);
+    var titreAvant = titreDuPosteOrg(poste);
+    var titrePose = champs.titreAgent === undefined ? undefined : (String(champs.titreAgent || '').trim() || null);
+    var vise = Object.assign({}, poste, patch);
+    var agent = agentDuPosteOrg(vise);
+    var changeTitre = titrePose !== undefined && agent && (agent.titreOrganigramme || null) !== titrePose;
+    if (!cles.length && !changeTitre) return { ok: true, record: poste, inchange: true, undo: function () {} };
+    var undos = [];
+    if (cles.length) {
+      var avant = {}, apres = {};
+      cles.forEach(function (k) {
+        avant[k] = k === 'parentId' ? nomPosteOrg(poste.parentId) : poste[k];
+        apres[k] = k === 'parentId' ? nomPosteOrg(patch.parentId) : patch[k];
+      });
+      var action = cles.length === 1 && cles[0] === 'parentId' ? 'Réaffectation d’un poste'
+        : cles.length === 1 && cles[0] === 'titulaire' ? 'Changement de titulaire d’un poste' : 'Modification d’un poste';
+      var r1 = col.update(posteId, patch, { journal: { action: action, module: 'CFG', entite: 'Poste', avant: Object.assign({ poste: poste.poste }, avant), apres: apres } });
+      if (!r1) return refusOrg('ECRITURE_REFUSEE', 'L’écriture du poste a été refusée par le magasin.', 'Réessayer, ou voir le journal.');
+      undos.push(r1.undo);
+    }
+    if (changeTitre) {
+      var r2 = colPersonnelOrg().update(agent.id, { titreOrganigramme: titrePose }, { journal: { action: 'Titre d’un agent dans l’organigramme', module: 'CFG', entite: 'Agent',
+        avant: { agent: agent.nomComplet, titre: agent.titreOrganigramme || null }, apres: { titre: titrePose, poste: vise.poste } } });
+      if (r2) undos.push(r2.undo);
+    }
+    return { ok: true, record: col.get(posteId), inchange: false, titre: titrePose === undefined ? titreAvant : titrePose, undo: function () { undos.slice().reverse().forEach(function (u) { u(); }); } };
+  }
+  /** Réaffecte un poste (et les postes qu'il porte) sous un autre, ou au sommet (`parentId` nul). */
+  function reaffecterPosteOrg(posteId, parentId) { return modifierPosteOrg(posteId, { parentId: parentId || null }); }
+  /** Renomme le titulaire d'un poste (une autre personne est affectée) ; vide : le poste devient vacant. */
+  function renommerTitulaireOrg(posteId, nom) { return modifierPosteOrg(posteId, { titulaire: nom }); }
+  /** Pose (ou retire, titre vide) le titre de l'agent qui tient le poste. */
+  function poserTitreOrg(posteId, titre) { return modifierPosteOrg(posteId, { titreAgent: titre }); }
+  /** Crée un poste (sans rattachement : un sommet). */
+  function creerPosteOrg(champs) {
+    champs = champs || {};
+    if (!droitEcritureOrg()) return refusDroitOrg();
+    var refus = controlerPosteOrg(null, champs);
+    if (refus) return refus;
+    if (champs.poste === undefined) return refusOrg('INTITULE_VIDE', 'L’intitulé du poste est obligatoire.', 'Saisir l’intitulé du poste.');
+    var fiche = {
+      poste: String(champs.poste).trim(), parentId: champs.parentId || null, effectif: champs.effectif === undefined || champs.effectif === '' ? 1 : Number(champs.effectif),
+      titulaire: String(champs.titulaire || '').trim() || null, chef: champs.chef === true || champs.chef === 'true', role: champs.role || 'agentadmin',
+    };
+    var r = colPostesOrg().insert(fiche);
+    return { ok: true, record: r.record, undo: r.undo };
+  }
+  /** Archive un poste (RG-14). Un poste qui porte encore des postes actifs ne s'archive pas : les rattachés deviendraient des sommets sans que personne l'ait décidé. */
+  function archiverPosteOrg(posteId, motif) {
+    if (!droitEcritureOrg()) return refusDroitOrg();
+    var col = colPostesOrg(), poste = col.get(posteId);
+    if (!poste) return refusOrg('POSTE_INTROUVABLE', 'Ce poste n’existe pas.', 'Rouvrir l’écran puis choisir un poste de la liste.');
+    if (poste.statut === 'archive') return refusOrg('POSTE_ARCHIVE', 'Le poste « ' + poste.poste + ' » est déjà archivé.', 'Le restaurer depuis la corbeille si besoin.');
+    var portes = colPostesOrg().active().filter(function (p) { return p.parentId === posteId; });
+    if (portes.length) {
+      return refusOrg('POSTE_PORTE_DES_POSTES', 'Le poste « ' + poste.poste + ' » porte encore ' + portes.length + ' poste' + (portes.length > 1 ? 's' : '') + ' (' + portes.map(function (p) { return p.poste; }).join(', ') + ') : l’archiver les ferait remonter au sommet sans que personne l’ait décidé.',
+        'Réaffecter d’abord ces postes, puis archiver celui-ci.', { portes: portes.map(function (p) { return p.id; }) });
+    }
+    var r = col.archive(posteId, motif || null);
+    return { ok: true, record: r.record, undo: r.undo };
+  }
+
+  global.SIGH.organigramme = {
+    TITRE_MAX: TITRE_ORG_MAX, arbre: arbreOrganigramme, descendants: descendantsOrganigramme, agentDe: agentDuPosteOrg, titreDe: titreDuPosteOrg,
+    controlerRattachement: controlerRattachementOrg, controler: controlerPosteOrg, modifier: modifierPosteOrg, reaffecter: reaffecterPosteOrg,
+    renommerTitulaire: renommerTitulaireOrg, poserTitre: poserTitreOrg, creer: creerPosteOrg, archiver: archiverPosteOrg,
+  };
 })(window);

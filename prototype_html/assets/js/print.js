@@ -770,65 +770,72 @@
    * montrent le rattachement. Il dessine ce que la COLLECTION des postes
    * contient : rien n'est écrit en dur ici.
    *
-   * `noeuds` : racines `{ poste, effectif, titulaire, chef, etoile, enfants }`.
-   * Le marqueur étoile cerclé n'est tracé QUE si le poste porte `etoile`
-   * (aucun document ne dit ce qu'il signifie : la donnée seule le décide).
+   * `noeuds` : racines `{ poste, effectif, titulaire, titreAgent, chef, enfants }`. Sous le nom du titulaire : son titre dans l'organigramme entre
+   * parenthèses (`titreAgent`, porté par l'AGENT : « GARBA Yahouza (SG) ») puis « C/S » si le poste porte un chef de service.
+   * AUCUNE ÉTOILE (Direction, 11/11/2026, O5) : la photo en trace une à côté de cinq boîtes, elle ne veut rien dire ; ni cette fabrique ni la
+   * collection ne portent plus de marqueur.
    * Aucune couleur en dur : les classes viennent du design system.
    * Les mesures sont en millimètres, la feuille A4 paysage offre 273 mm de
    * large (12 mm de marge de chaque côté).
    * ======================================================================== */
   function organigramme(noeuds, options) {
-    var o = Object.assign({ largeur: 273, hauteurMax: 112, hauteurBoite: 17, ecartMin: 6 }, options);
+    var o = Object.assign({ largeur: 273, hauteurMax: 120, hauteurBoite: 19, ecartMin: 6, boiteMin: 24, boiteMax: 52, gouttiere: 2.5 }, options);
     var racines = (noeuds || []).filter(Boolean);
-    /* Niveaux, dans l'ordre de l'arbre : un nœud connaît son rang dans sa rangée et son parent. */
+    /* Rangées : une par niveau de l'arbre. Un nœud connaît son parent, ses enfants, sa rangée et la largeur de son sous-arbre en « fentes » (une
+       feuille occupe une fente, un parent occupe celles de ses enfants). */
     var rangees = [];
-    (function parcourir(liste, niveau, parent) {
-      liste.forEach(function (n) {
-        var f = { n: n, parent: parent, enfants: [], x: 0, niveau: niveau };
-        if (parent) parent.enfants.push(f);
-        (rangees[niveau] = rangees[niveau] || []).push(f);
-        parcourir(n.enfants || [], niveau + 1, f);
-      });
-    })(racines, 0, null);
+    function fiche(n, niveau, parent) {
+      var f = { n: n, parent: parent, enfants: [], x: 0, niveau: niveau, fentes: 1 };
+      if (parent) parent.enfants.push(f);
+      (rangees[niveau] = rangees[niveau] || []).push(f);
+      (n.enfants || []).forEach(function (e) { fiche(e, niveau + 1, f); });
+      if (f.enfants.length) f.fentes = f.enfants.reduce(function (s, c) { return s + c.fentes; }, 0);
+      return f;
+    }
+    var forets = racines.map(function (r) { return fiche(r, 0, null); });
     if (!rangees.length) return el('p.text-center.text-\\[10px\\].italic.text-slate-500', { text: 'Aucun poste actif à représenter.' });
 
-    var plus = rangees.reduce(function (m, r) { return Math.max(m, r.length); }, 1);
+    /* Abscisses en fentes, ARBRE ORDONNÉ : les feuilles se rangent de gauche à droite, un parent se CENTRE au-dessus de ses enfants (un enfant unique
+       tombe pile dessous). Deux sous-arbres voisins occupent des intervalles disjoints : aucune boîte ne chevauche sa voisine, aucun connecteur ne
+       traverse le sous-arbre d'un autre. */
+    var total = forets.reduce(function (s, f) { return s + f.fentes; }, 0);
+    (function placer(liste, debut) {
+      liste.forEach(function (f) {
+        if (f.enfants.length) {
+          placer(f.enfants, debut);
+          f.cx = (f.enfants[0].cx + f.enfants[f.enfants.length - 1].cx) / 2;
+        } else f.cx = debut + 0.5;
+        debut += f.fentes;
+      });
+    })(forets, 0);
     var W = o.largeur;
-    var fente = W / plus;
-    var bw = Math.max(24, fente - 4);
+    var fente = W / total;
+    var bw = Math.min(o.boiteMax, Math.max(o.boiteMin, fente - o.gouttiere));
     var bh = o.hauteurBoite;
     var nb = rangees.length;
     var ecart = nb > 1 ? Math.max(o.ecartMin, Math.min(14, (o.hauteurMax - nb * bh) / (nb - 1))) : 0;
     var H = nb * bh + (nb - 1) * ecart;
     function haut(r) { return r * (bh + ecart); }
-
-    /* Abscisses : chaque rangée se place sous ses parents (un enfant unique pile dessous, plusieurs enfants
-       centrés), puis les chevauchements se résolvent de gauche à droite et la rangée se recale dans la feuille. */
-    rangees.forEach(function (rg, r) {
-      var prevu = [];
+    rangees.forEach(function (rg) { rg.forEach(function (f) { f.x = f.cx * fente; }); });
+    /* LARGEUR DE CHAQUE BOÎTE : au moins la fente, et plus quand la rangée a de la place (un titre long s'y lit mieux). Une boîte ne dépasse jamais la
+       moitié de la distance qui la sépare de sa voisine de rangée, moins la gouttière : deux boîtes voisines ne se chevauchent donc jamais. */
+    rangees.forEach(function (rg) {
       rg.forEach(function (f, i) {
-        if (!f.parent) { prevu.push(W / 2 + (i - (rg.length - 1) / 2) * fente); return; }
-        var k = f.parent.enfants.length, j = f.parent.enfants.indexOf(f);
-        prevu.push(f.parent.x + (j - (k - 1) / 2) * fente);
+        var dispo = Math.min(2 * f.x, 2 * (W - f.x));
+        if (i > 0) dispo = Math.min(dispo, f.x - rg[i - 1].x - o.gouttiere);
+        if (i < rg.length - 1) dispo = Math.min(dispo, rg[i + 1].x - f.x - o.gouttiere);
+        f.w = Math.min(o.boiteMax, Math.max(bw, dispo));
       });
-      var min = fente / 2;
-      rg.forEach(function (f, i) {
-        f.x = Math.max(prevu[i], i ? rg[i - 1].x + fente : min);
-      });
-      var depasse = rg[rg.length - 1].x - (W - fente / 2);
-      if (depasse > 0) rg.forEach(function (f) { f.x = Math.max(fente / 2, f.x - depasse); });
     });
 
-    /* Connecteurs : tronc depuis le parent, barre horizontale à mi-écart, descente vers chaque enfant. Plusieurs
-       parents d'une même rangée se partagent l'écart à des hauteurs différentes. */
+    /* Connecteurs : tronc depuis le parent, barre horizontale à mi-écart, descente vers chaque enfant. */
     var traits = [];
     function trait(x1, y1, x2, y2) { traits.push('<line x1="' + x1.toFixed(2) + '" y1="' + y1.toFixed(2) + '" x2="' + x2.toFixed(2) + '" y2="' + y2.toFixed(2) + '"/>'); }
     var fleches = [];
     rangees.forEach(function (rg, r) {
-      var parents = rg.filter(function (f) { return f.enfants.length; });
-      parents.forEach(function (p, j) {
+      rg.filter(function (f) { return f.enfants.length; }).forEach(function (p) {
         var yb = haut(r) + bh, yh = haut(r + 1);
-        var ym = yb + (yh - yb) * (j + 1) / (parents.length + 1);
+        var ym = yb + (yh - yb) / 2;
         var xs = p.enfants.map(function (c) { return c.x; }).concat([p.x]);
         trait(p.x, yb, p.x, ym);
         trait(Math.min.apply(null, xs), ym, Math.max.apply(null, xs), ym);
@@ -853,16 +860,11 @@
         var racine = !f.parent;
         var boite = el('div.org-boite.absolute.flex.flex-col.items-center.justify-center.overflow-hidden.rounded-sm.border.px-1.text-center.leading-tight', {
           class: racine ? 'border-navy-900 bg-navy-50 text-navy-950' : 'border-slate-500 bg-white text-slate-900',
-          style: 'left:' + (f.x - bw / 2).toFixed(2) + 'mm;top:' + haut(r).toFixed(2) + 'mm;width:' + bw.toFixed(2) + 'mm;height:' + bh + 'mm;box-sizing:border-box;',
+          style: 'left:' + (f.x - f.w / 2).toFixed(2) + 'mm;top:' + haut(r).toFixed(2) + 'mm;width:' + f.w.toFixed(2) + 'mm;height:' + bh + 'mm;box-sizing:border-box;',
           'data-poste': n.poste,
         });
         boite.appendChild(el('span.text-\\[9px\\].font-bold', { text: n.poste + ' (' + C.pad(n.effectif || 0, 2) + ')' }));
-        if (n.titulaire) boite.appendChild(el('span.text-\\[8.5px\\]', { text: n.titulaire + (n.chef ? ' C/S' : '') }));
-        if (n.etoile) {
-          boite.appendChild(el('span.org-etoile.absolute.grid.place-items-center.rounded-full.border.border-slate-600.bg-white.text-\\[7px\\].leading-none', {
-            style: 'right:0.8mm;bottom:0.8mm;width:3.2mm;height:3.2mm;', text: '★', title: 'Marqueur porté par le poste',
-          }));
-        }
+        if (n.titulaire) boite.appendChild(el('span.text-\\[8.5px\\]', { text: n.titulaire + (n.titreAgent ? ' (' + n.titreAgent + ')' : '') + (n.chef ? ' C/S' : '') }));
         cadre.appendChild(boite);
       });
     });
