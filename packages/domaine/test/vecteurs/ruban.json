@@ -457,7 +457,12 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-produits-referentiel",
+        "imp-emplacements",
+        "imp-stock-detail-initial",
+        "imp-transfert-lignes",
+        "imp-inventaire-comptage"
        ]
       }
      ]
@@ -648,7 +653,12 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-produits-referentiel",
+        "imp-emplacements",
+        "imp-stock-detail-initial",
+        "imp-transfert-lignes",
+        "imp-inventaire-comptage"
        ]
       }
      ]
@@ -1910,7 +1920,12 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-produits-referentiel",
+        "imp-emplacements",
+        "imp-stock-detail-initial",
+        "imp-transfert-lignes",
+        "imp-inventaire-comptage"
        ]
       }
      ]
@@ -2086,7 +2101,12 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-produits-referentiel",
+        "imp-emplacements",
+        "imp-stock-detail-initial",
+        "imp-transfert-lignes",
+        "imp-inventaire-comptage"
        ]
       }
      ]
@@ -2890,7 +2910,12 @@
        "ecrans": [
         "imp-accueil",
         "imp-actes",
-        "imp-fournisseurs"
+        "imp-fournisseurs",
+        "imp-produits-referentiel",
+        "imp-emplacements",
+        "imp-stock-detail-initial",
+        "imp-transfert-lignes",
+        "imp-inventaire-comptage"
        ]
       }
      ]
@@ -2921,7 +2946,12 @@
        "ecrans": [
         "imp-accueil",
         "imp-actes",
-        "imp-fournisseurs"
+        "imp-fournisseurs",
+        "imp-produits-referentiel",
+        "imp-emplacements",
+        "imp-stock-detail-initial",
+        "imp-transfert-lignes",
+        "imp-inventaire-comptage"
        ]
       }
      ]

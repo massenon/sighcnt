@@ -703,7 +703,12 @@
     "imp-assureurs",
     "imp-souscripteurs",
     "imp-plan-comptable",
-    "imp-soldes-ouverture"
+    "imp-soldes-ouverture",
+    "imp-produits-referentiel",
+    "imp-emplacements",
+    "imp-stock-detail-initial",
+    "imp-transfert-lignes",
+    "imp-inventaire-comptage"
    ]
   },
   {
@@ -5957,6 +5962,96 @@
     "da",
     "comptable",
     "aide_comptable"
+   ]
+  },
+  {
+   "id": "imp-produits-referentiel",
+   "label": "Importation du référentiel produits",
+   "icone": "package-plus",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "produits-referentiel",
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ]
+  },
+  {
+   "id": "imp-emplacements",
+   "label": "Importation des emplacements de rangement",
+   "icone": "grid-3x3",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "emplacements",
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ]
+  },
+  {
+   "id": "imp-stock-detail-initial",
+   "label": "Importation du stock détail initial",
+   "icone": "pill",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "stock-detail-initial",
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ]
+  },
+  {
+   "id": "imp-transfert-lignes",
+   "label": "Importation d’un bon de transfert",
+   "icone": "arrow-left-right",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "transfert-lignes",
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ]
+  },
+  {
+   "id": "imp-inventaire-comptage",
+   "label": "Importation d’un comptage d’inventaire",
+   "icone": "clipboard-list",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "inventaire-comptage",
+   "roles": [
+    "admin",
+    "da",
+    "stock"
    ]
   },
   {

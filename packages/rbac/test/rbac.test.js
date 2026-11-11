@@ -78,9 +78,11 @@ test('accueil et agent administratif : le répertoire des patients seulement ; l
   assert.deepEqual(di('laborantin', 'analyses-modele'), [1, 1, 1]);
   assert.deepEqual(di('laborantin', 'tarifs'), [0, 0, 0]);
 });
-test('la Direction arrête les prix (voir, importer, annuler sur tarifs) et lit le reste sans l\'importer ; la DAF et l\'administrateur détiennent tout', () => {
+const jeuxStock = ['produits-referentiel', 'emplacements', 'stock-detail-initial', 'transfert-lignes', 'inventaire-comptage'];
+test('la Direction arrête les prix (voir, importer, annuler sur tarifs) et lit le reste sans l\'importer, SAUF les cinq jeux du stock (lot IMP-B1 : aucun autre profil que le gestionnaire, la DAF et l\'administrateur) ; la DAF et l\'administrateur détiennent tout', () => {
   assert.deepEqual(di('direction', 'tarifs'), [1, 1, 1]);
-  for (const j of jeuxImp.filter((x) => x !== 'tarifs')) assert.deepEqual(di('direction', j), [1, 0, 0], j);
+  for (const j of jeuxImp.filter((x) => x !== 'tarifs' && jeuxStock.indexOf(x) < 0)) assert.deepEqual(di('direction', j), [1, 0, 0], j);
+  for (const j of jeuxStock) assert.deepEqual(di('direction', j), [0, 0, 0], j);
   for (const r of ['da', 'admin']) for (const j of jeuxImp) assert.deepEqual(di(r, j), [1, 1, 1], r + ' ' + j);
 });
 test('aucun import pour le médecin, le caissier, l\'infirmier, l\'ambulancier, l\'échographiste ni les rôles archivés', () => {
@@ -91,11 +93,19 @@ test('I11 : superviser (lire tous les lots) est TIRÉ DU DROIT d\'annuler sur ch
   assert.ok(imp.capacitePaie.includes('da') && imp.capacitePaie.includes('admin'));
   for (const r of ['direction', 'stock', 'reception', 'laborantin', 'aide_comptable']) assert.ok(!imp.capacitePaie.includes(r), r);
 });
-test('I8 et RG-13 : « ignorer les existants » sur les fournisseurs seulement, les prix se versionnent, patients, personnel et soldes d\'ouverture sont des jeux restreints', () => {
+test('I8 et RG-13 : « ignorer les existants » sur les fournisseurs, le référentiel produits et les emplacements SEULEMENT (liste fermée), les prix se versionnent, patients, personnel, soldes d\'ouverture et les trois jeux du stock qui écrivent des mouvements sont des jeux restreints', () => {
   const doublon = (id) => imp.jeux.find((j) => j.id === id).doublon;
   assert.equal(doublon('fournisseurs'), 'ignorer'); assert.equal(doublon('tarifs'), 'versionner'); assert.equal(doublon('patients'), 'refuser');
-  assert.deepEqual(imp.jeux.filter((j) => j.doublon === 'ignorer').map((j) => j.id), ['fournisseurs']);
-  assert.deepEqual(imp.jeux.filter((j) => j.sensibilite === 'restreinte').map((j) => j.id).sort(), ['patients', 'personnel', 'soldes-ouverture']);
+  assert.deepEqual(imp.jeux.filter((j) => j.doublon === 'ignorer').map((j) => j.id).sort(), ['emplacements', 'fournisseurs', 'produits-referentiel']);
+  assert.deepEqual(imp.jeux.filter((j) => j.sensibilite === 'restreinte').map((j) => j.id).sort(), ['inventaire-comptage', 'patients', 'personnel', 'soldes-ouverture', 'stock-detail-initial', 'transfert-lignes']);
+});
+test('IMP-B1 (I6, I8, I13) : le gestionnaire de stock importe les cinq jeux du stock (référentiel produits, emplacements, stock détail initial, bon de transfert, comptage d\'inventaire), la DAF et l\'administrateur aussi ; le comptable ne lit que le Grand Stock ; aucun autre profil', () => {
+  for (const r of ['stock', 'da', 'admin']) for (const j of jeuxStock) assert.deepEqual(di(r, j), [1, 1, 1], r + ' ' + j);
+  assert.deepEqual(di('comptable', 'grand-stock'), [1, 0, 0]);
+  for (const r of rbac.roles.map((x) => x.id).filter((x) => ['stock', 'da', 'admin'].indexOf(x) < 0)) for (const j of jeuxStock) assert.deepEqual(di(r, j), [0, 0, 0], r + ' ' + j);
+  const hote = (id) => imp.jeux.find((j) => j.id === id).hotes;
+  assert.deepEqual(hote('produits-referentiel'), ['m6-produits']); assert.deepEqual(hote('emplacements'), ['m6-etiquetage']); assert.deepEqual(hote('stock-detail-initial'), ['m6-stock-detail']);
+  assert.deepEqual(hote('transfert-lignes'), ['m6-transferts']); assert.deepEqual(hote('inventaire-comptage'), ['m6-inventaire']);
 });
 test('une page de jeu `imp-*` est visible de qui détient le droit VOIR du jeu (une seule vérité), et la page d\'accueil de qui détient un jeu au moins', () => {
   for (const r of rbac.roles) {

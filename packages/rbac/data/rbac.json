@@ -4167,6 +4167,31 @@
     1,
     1
    ],
+   "imp-produits-referentiel": [
+    1,
+    1,
+    1
+   ],
+   "imp-emplacements": [
+    1,
+    1,
+    1
+   ],
+   "imp-stock-detail-initial": [
+    1,
+    1,
+    1
+   ],
+   "imp-transfert-lignes": [
+    1,
+    1,
+    1
+   ],
+   "imp-inventaire-comptage": [
+    1,
+    1,
+    1
+   ],
    "mere-supervision": [
     1,
     1,
@@ -7633,6 +7658,31 @@
     1,
     1
    ],
+   "imp-produits-referentiel": [
+    1,
+    1,
+    1
+   ],
+   "imp-emplacements": [
+    1,
+    1,
+    1
+   ],
+   "imp-stock-detail-initial": [
+    1,
+    1,
+    1
+   ],
+   "imp-transfert-lignes": [
+    1,
+    1,
+    1
+   ],
+   "imp-inventaire-comptage": [
+    1,
+    1,
+    1
+   ],
    "mere-supervision": [
     1,
     1,
@@ -9448,6 +9498,31 @@
     1
    ],
    "imp-fournisseurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-produits-referentiel": [
+    1,
+    1,
+    1
+   ],
+   "imp-emplacements": [
+    1,
+    1,
+    1
+   ],
+   "imp-stock-detail-initial": [
+    1,
+    1,
+    1
+   ],
+   "imp-transfert-lignes": [
+    1,
+    1,
+    1
+   ],
+   "imp-inventaire-comptage": [
     1,
     1,
     1
@@ -13080,6 +13155,80 @@
      "ecritures"
     ],
     "doublon": "refuser"
+   },
+   {
+    "id": "produits-referentiel",
+    "libelle": "Importation du référentiel produits",
+    "ecran": "imp-produits-referentiel",
+    "module": "M6",
+    "hotes": [
+     "m6-produits"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "produits"
+    ],
+    "doublon": "ignorer"
+   },
+   {
+    "id": "emplacements",
+    "libelle": "Importation des emplacements de rangement",
+    "ecran": "imp-emplacements",
+    "module": "M6",
+    "hotes": [
+     "m6-etiquetage"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "emplacements"
+    ],
+    "doublon": "ignorer"
+   },
+   {
+    "id": "stock-detail-initial",
+    "libelle": "Importation du stock détail initial",
+    "ecran": "imp-stock-detail-initial",
+    "module": "M6",
+    "hotes": [
+     "m6-stock-detail"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "produits",
+     "lots",
+     "mouvements"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "transfert-lignes",
+    "libelle": "Importation d’un bon de transfert",
+    "ecran": "imp-transfert-lignes",
+    "module": "M6",
+    "hotes": [
+     "m6-transferts"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "transferts",
+     "mouvements",
+     "produits"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "inventaire-comptage",
+    "libelle": "Importation d’un comptage d’inventaire",
+    "ecran": "imp-inventaire-comptage",
+    "module": "M6",
+    "hotes": [
+     "m6-inventaire"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "inventaires"
+    ],
+    "doublon": "refuser"
    }
   ],
   "parRole": {
@@ -13130,6 +13279,31 @@
      1
     ],
     "soldes-ouverture": [
+     1,
+     1,
+     1
+    ],
+    "produits-referentiel": [
+     1,
+     1,
+     1
+    ],
+    "emplacements": [
+     1,
+     1,
+     1
+    ],
+    "stock-detail-initial": [
+     1,
+     1,
+     1
+    ],
+    "transfert-lignes": [
+     1,
+     1,
+     1
+    ],
+    "inventaire-comptage": [
      1,
      1,
      1
@@ -13185,6 +13359,31 @@
      1,
      0,
      0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
+     0,
+     0
     ]
    },
    "dm": {
@@ -13234,6 +13433,31 @@
      0
     ],
     "soldes-ouverture": [
+     0,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
      0,
      0,
      0
@@ -13289,6 +13513,31 @@
      1,
      1,
      1
+    ],
+    "produits-referentiel": [
+     1,
+     1,
+     1
+    ],
+    "emplacements": [
+     1,
+     1,
+     1
+    ],
+    "stock-detail-initial": [
+     1,
+     1,
+     1
+    ],
+    "transfert-lignes": [
+     1,
+     1,
+     1
+    ],
+    "inventaire-comptage": [
+     1,
+     1,
+     1
     ]
    },
    "medecin": {
@@ -13338,6 +13587,31 @@
      0
     ],
     "soldes-ouverture": [
+     0,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
      0,
      0,
      0
@@ -13393,6 +13667,31 @@
      0,
      0,
      0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
+     0,
+     0
     ]
    },
    "pharmacien": {
@@ -13442,6 +13741,31 @@
      0
     ],
     "soldes-ouverture": [
+     0,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
      0,
      0,
      0
@@ -13497,6 +13821,31 @@
      0,
      0,
      0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
+     0,
+     0
     ]
    },
    "stock": {
@@ -13549,6 +13898,31 @@
      0,
      0,
      0
+    ],
+    "produits-referentiel": [
+     1,
+     1,
+     1
+    ],
+    "emplacements": [
+     1,
+     1,
+     1
+    ],
+    "stock-detail-initial": [
+     1,
+     1,
+     1
+    ],
+    "transfert-lignes": [
+     1,
+     1,
+     1
+    ],
+    "inventaire-comptage": [
+     1,
+     1,
+     1
     ]
    },
    "caissier": {
@@ -13598,6 +13972,31 @@
      0
     ],
     "soldes-ouverture": [
+     0,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
      0,
      0,
      0
@@ -13653,6 +14052,31 @@
      1,
      1,
      1
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
+     0,
+     0
     ]
    },
    "rh": {
@@ -13702,6 +14126,31 @@
      0
     ],
     "soldes-ouverture": [
+     0,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
      0,
      0,
      0
@@ -13757,6 +14206,31 @@
      0,
      0,
      0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
+     0,
+     0
     ]
    },
    "agentadmin": {
@@ -13806,6 +14280,31 @@
      0
     ],
     "soldes-ouverture": [
+     0,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
      0,
      0,
      0
@@ -13861,6 +14360,31 @@
      0,
      0,
      0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
+     0,
+     0
     ]
    },
    "aide_soignant": {
@@ -13910,6 +14434,31 @@
      0
     ],
     "soldes-ouverture": [
+     0,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
      0,
      0,
      0
@@ -13965,6 +14514,31 @@
      0,
      0,
      0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
+     0,
+     0
     ]
    },
    "surveillant": {
@@ -14014,6 +14588,31 @@
      0
     ],
     "soldes-ouverture": [
+     0,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
      0,
      0,
      0
@@ -14069,6 +14668,31 @@
      0,
      0,
      0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
+     0,
+     0
     ]
    },
    "chirurgien": {
@@ -14118,6 +14742,31 @@
      0
     ],
     "soldes-ouverture": [
+     0,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
      0,
      0,
      0
@@ -14173,6 +14822,31 @@
      0,
      0,
      0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
+     0,
+     0
     ]
    },
    "aide_comptable": {
@@ -14223,6 +14897,31 @@
     ],
     "soldes-ouverture": [
      1,
+     0,
+     0
+    ],
+    "produits-referentiel": [
+     0,
+     0,
+     0
+    ],
+    "emplacements": [
+     0,
+     0,
+     0
+    ],
+    "stock-detail-initial": [
+     0,
+     0,
+     0
+    ],
+    "transfert-lignes": [
+     0,
+     0,
+     0
+    ],
+    "inventaire-comptage": [
+     0,
      0,
      0
     ]
