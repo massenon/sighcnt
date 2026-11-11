@@ -104,3 +104,14 @@ Les 18 questions ont reçu une réponse. Règle générale posée par la Directi
 **Paie et espace « Mes ».** P1 oui (la copie de la fiche de paie voyage hors de la liste blanche des paramètres). P2 : aucune durée de conservation. P3 (délai de verrou d'un poste de secours) : recommandation de l'équipe, 5 minutes, réglable en base, marquée « à valider » (le délai ordinaire est de 15 minutes, CDCT 12.2). P4 oui (la garde soins compte comme garde dans « Mes statistiques de garde »).
 
 **Mise en œuvre de la section G (lot ORG2, 11/11/2026).** O1 à O5 : `ECARTS-MAQUETTE.md` E2352 à E2356 (intitulés de la photo, hiérarchie lue avec ses trois hypothèses, CRUD de l'organigramme, titre « SG » porté par l'agent, reprise qui épargne ce que la clinique a modifié, impression paysage sans étoile). P3 : E2357 (délai de 5 minutes en base, « à valider », réglable par l'administrateur et la DAF ; un « poste de secours » est un poste désigné à ce poste même, hypothèse à confirmer). P4 : E2358. Reste à confirmer par la Direction : E2360.
+
+## H. Réponses de la Direction du 11/11/2026 (documents numérisés, courriers, antériorité des résultats)
+
+Sur `docs/prd/PRD-DOCS-numerisation-courriers-dossier-et-antecedents.md` : Q1 à Q10, **recommandations acceptées**, avec ces précisions :
+
+- **Q6 conservation des scans : ILLIMITÉE.** Aucune purge, jamais (cohérent avec RG-14). Le logiciel ne porte pas de durée de conservation pour les courriers ni les documents patient.
+- **Q7 OCR : OUI en phase 2**, local, après un essai sur trois vrais scans de la clinique.
+- **Q8 recherche par le sens : NON.** On implémente la **recherche avancée** (plein texte sur les métadonnées, filtres, plages de dates, texte des PDF qui portent une couche texte).
+- **Q9 seuils de variation brutale : VIDES par défaut.** Le Biologiste médical les saisit. La liste des variables du laboratoire et de l'hospitalisation est établie dans `docs/prd/ANNEXE-DOCS-variables-delta-check-laboratoire-hospitalisation.md` (72 variables numériques du laboratoire ; constantes d'hospitalisation sans alerte).
+- **Q10 antériorités affichées : trois, réglable.**
+- Q1 (10 Mo, réglable), Q2 (lecteur natif du navigateur), Q3 (visionneuse écrite pour le projet), Q4 (session plus règle par famille), Q5 (nom normalisé `AAAA-MM-JJ_ARR_NNNN.ext`) : acceptées telles que proposées.
