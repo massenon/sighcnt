@@ -339,16 +339,20 @@ function verifier(libelle, condition, detail) {
   scenario('Vague 71 : Importation : CSV, trois états du tarif (montant, NC, tiret), droits par jeu');
   await role('admin');
   await ouvrir('imp-actes');
-  const ENT_AC = ['Code acte', 'Libellé', 'Secteur', 'Prix non assuré', 'Prix assuré', 'Code tarif'];
-  await televerser(await ecrireClasseur('ac-bon.xlsx', [ENT_AC, ['TST-X1', 'Acte test A', 'Médecine générale', 5000, 3000, ''], ['TST-X2', 'Acte test B', 'Chirurgie', 8000, 'NC', ''], ['TST-X3', 'Acte test C', 'Maternité', '-', '-', '']]));
+  /* Le jeu `actes` est devenu le jeu `tarifs` (lot IMP-A) : mêmes trois états de la colonne assurée, écrits par PR.proposerTarif (une proposition, jamais une écriture directe). */
+  const ENT_AC = ['Code', 'Désignation', 'Famille', 'Secteur', 'Prix non assuré', 'Prix assuré', 'Couverture', 'Date d’effet', 'Valider (Oui/Non)', 'Motif', 'Source'];
+  await televerser(await ecrireClasseur('ac-bon.xlsx', [ENT_AC,
+    ['TST-X1', 'Acte test A', 'Actes', 'Médecine générale', 5000, 3000, '', '2027-06-01', '', 'Essai du banc', ''],
+    ['TST-X2', 'Acte test B', 'Actes', 'Chirurgie', 8000, 'NC', '', '2027-06-01', '', 'Essai du banc', ''],
+    ['TST-X3', 'Acte test C', 'Actes', 'Maternité', 6000, '-', '', '2027-06-01', '', 'Essai du banc', '']]));
   t = await texte();
-  verifier('Les trois états de la colonne assurée sont reconnus ; un tiret avertit (valeur manquante) sans jamais valoir zéro', /Analyse conforme/.test(t) && /ne se facturera pas/.test(t), t.slice(0, 500));
+  verifier('Les trois états de la colonne assurée sont reconnus (montant, NC, tiret) ; un tiret avertit sans jamais valoir zéro', /Analyse conforme/.test(t) && /ne se facturera pas aux assurés/.test(t), t.slice(0, 500));
   await cliquer('Confirmer l’importation (3 lignes)');
   await cliquer('Écrire le lot', 'button');
   await pause(900);
-  const actes = await ev(() => SIGH.store.collection('actes').all().filter((a) => /^TST-X/.test(a.code)).map((a) => [a.code, a.prixNonAssure, a.prixAssure, a.nonCouvert, a.assurable]).sort());
-  verifier('Montant, NC (non couvert, l’assuré paie le prix de guichet) et tiret (null, ni zéro ni exclusion) sont écrits comme tels',
-    JSON.stringify(actes) === JSON.stringify([['TST-X1', 5000, 3000, false, true], ['TST-X2', 8000, null, true, false], ['TST-X3', null, null, false, true]]), JSON.stringify(actes));
+  const actes = await ev(() => SIGH.store.collection('versionsTarif').all().filter((v) => /^TST-X/.test(v.code)).map((v) => [v.code, v.prixNonAssure, v.prixAssure, v.etatAssure, v.statut]).sort());
+  verifier('Montant, NC (non couvert) et tiret (non renseigné : null, ni zéro ni exclusion) sont écrits comme tels, en PROPOSITIONS',
+    JSON.stringify(actes) === JSON.stringify([['TST-X1', 5000, 3000, 'montant', 'propose'], ['TST-X2', 8000, null, 'nc', 'propose'], ['TST-X3', 6000, null, 'manquant', 'propose']]), JSON.stringify(actes));
   await ouvrir('imp-fournisseurs');
   const csv = 'Code fournisseur;Raison sociale;Type;Ville;Adresse;Téléphone;IFU;Délai de livraison (jours);Banque;N° de compte\r\nTST-F1;"Fournisseur ""test"" SARL";Grossiste;Parakou;;0191000000;3202112446701;4;;\r\n';
   const fcsv = path.join(TMP, 'fournisseurs.csv'); fs.writeFileSync(fcsv, '\uFEFF' + csv);

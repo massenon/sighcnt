@@ -1899,11 +1899,11 @@
         "href": "pages/imp-personnel.php"
        },
        {
-        "label": "Importation du catalogue des actes",
+        "label": "Importation des tarifs et prix",
         "href": "pages/imp-actes.php"
        },
        {
-        "label": "Importation du catalogue des analyses",
+        "label": "Importation du modèle des analyses",
         "href": "pages/imp-analyses.php"
        },
        {

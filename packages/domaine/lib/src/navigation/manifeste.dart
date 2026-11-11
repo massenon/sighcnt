@@ -102,6 +102,12 @@ const domainesMere = {'Poste mère', 'Relais en ligne'};
 const domainesHorsRuban = {'Relais en ligne'};
 const rolesRubanSysteme = {'admin', 'da'};
 
+/// LA RANGÉE « IMPORTATION DE DONNÉES » SEULE est visible des autres postes (Direction, 10/11/2026), miroir de `RUBAN_SYSTEME_MODULES_OUVERTS` de la maquette (lot IMP-A) :
+/// un profil hors `rolesRubanSysteme` garde l'onglet « Système » s'il lui reste cette rangée, et n'y voit qu'elle. Une rangée vide n'y paraît jamais (les droits décident).
+/// Limite : le poste lit encore la visibilité d'une page de jeu dans `roles` (le manifeste exporte les rôles qui détiennent le jeu) ; le droit d'import par jeu et sa fiche
+/// `droitsImport` se portent au lot IMP-C.
+const rangeesRubanSystemeOuvertes = {'IMP'};
+
 /// Raccourci permanent du ruban (`N.RACCOURCIS`) : ouvre la page d'accueil d'un module, si le rôle en voit au moins un écran.
 class RaccourciRuban {
   const RaccourciRuban(
@@ -188,22 +194,22 @@ class Manifeste {
   /// les droits restent ceux de la matrice.
   List<DomaineRuban> ruban(MatriceDroits matrice, String role, {required bool estMere}) => _domainesVisibles(matrice, role, estMere, (d) {
         if (domainesHorsRuban.contains(d)) return false;
-        if (d == 'Système') return rolesRubanSysteme.contains(role);
         return true;
-      });
+      }, rangeeRetenue: (d, code) => d != 'Système' || rolesRubanSysteme.contains(role) || rangeesRubanSystemeOuvertes.contains(code));
 
   /// Les cartes de « Paramètres système » : les domaines nommés, déjà filtrés par les droits (jamais une carte vers un écran interdit, RG-13) et par le mode
   /// (un poste fileul n'a ni le poste mère ni le relais).
   List<DomaineRuban> cartesParametres(MatriceDroits matrice, String role, {required bool estMere, required Set<String> domaines}) =>
       _domainesVisibles(matrice, role, estMere, domaines.contains);
 
-  List<DomaineRuban> _domainesVisibles(MatriceDroits matrice, String role, bool estMere, bool Function(String) retient) {
+  List<DomaineRuban> _domainesVisibles(MatriceDroits matrice, String role, bool estMere, bool Function(String) retient, {bool Function(String, String)? rangeeRetenue}) {
     final out = <DomaineRuban>[];
     for (final d in domaines) {
       if (!estMere && domainesMere.contains(d.nom)) continue;
       if (!retient(d.nom)) continue;
       final rangees = <RangeeRuban>[];
       for (final r in this.rangees.where((r) => r.domaine == d.nom)) {
+        if (rangeeRetenue != null && !rangeeRetenue(d.nom, r.code)) continue;
         final visibles = [
           for (final id in r.ecrans)
             if (_ecrans[id] != null && matrice.peutVoir(role, id)) _ecrans[id]!,

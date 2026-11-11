@@ -685,11 +685,12 @@
    "roles": [
     "admin",
     "da",
-    "direction",
     "stock",
+    "direction",
+    "comptable",
+    "aide_comptable",
     "reception",
     "agentadmin",
-    "comptable",
     "laborantin"
    ],
    "ecrans": [
@@ -5744,15 +5745,17 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "*",
    "roles": [
     "admin",
-    "da",
     "direction",
+    "da",
+    "laborantin",
     "stock",
+    "comptable",
     "reception",
     "agentadmin",
-    "comptable",
-    "laborantin"
+    "aide_comptable"
    ]
   },
   {
@@ -5766,15 +5769,17 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "*",
    "roles": [
     "admin",
-    "da",
     "direction",
+    "da",
+    "laborantin",
     "stock",
+    "comptable",
     "reception",
     "agentadmin",
-    "comptable",
-    "laborantin"
+    "aide_comptable"
    ]
   },
   {
@@ -5788,11 +5793,13 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "patients",
    "roles": [
-    "reception",
-    "agentadmin",
+    "admin",
+    "direction",
     "da",
-    "admin"
+    "reception",
+    "agentadmin"
    ]
   },
   {
@@ -5806,14 +5813,16 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "personnel",
    "roles": [
-    "da",
-    "admin"
+    "admin",
+    "direction",
+    "da"
    ]
   },
   {
    "id": "imp-actes",
-   "label": "Importation du catalogue des actes",
+   "label": "Importation des tarifs et prix",
    "icone": "list-ordered",
    "module": "IMP",
    "moduleLabel": "Importation de données",
@@ -5822,15 +5831,17 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "tarifs",
    "roles": [
-    "da",
     "admin",
-    "direction"
+    "direction",
+    "da",
+    "stock"
    ]
   },
   {
    "id": "imp-analyses",
-   "label": "Importation du catalogue des analyses",
+   "label": "Importation du modèle des analyses",
    "icone": "flask-conical",
    "module": "IMP",
    "moduleLabel": "Importation de données",
@@ -5839,10 +5850,12 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "analyses-modele",
    "roles": [
-    "laborantin",
+    "admin",
+    "direction",
     "da",
-    "admin"
+    "laborantin"
    ]
   },
   {
@@ -5856,11 +5869,14 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "fournisseurs",
    "roles": [
-    "stock",
+    "admin",
+    "direction",
     "da",
+    "stock",
     "comptable",
-    "admin"
+    "aide_comptable"
    ]
   },
   {
@@ -5874,10 +5890,13 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "assureurs",
    "roles": [
+    "admin",
+    "direction",
     "da",
     "comptable",
-    "admin"
+    "aide_comptable"
    ]
   },
   {
@@ -5891,10 +5910,13 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "souscripteurs",
    "roles": [
+    "admin",
+    "direction",
     "da",
     "comptable",
-    "admin"
+    "aide_comptable"
    ]
   },
   {
@@ -5908,10 +5930,13 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "plan-comptable",
    "roles": [
-    "comptable",
+    "admin",
+    "direction",
     "da",
-    "admin"
+    "comptable",
+    "aide_comptable"
    ]
   },
   {
@@ -5925,10 +5950,13 @@
    "standalone": false,
    "universel": false,
    "servant": null,
+   "jeuImport": "soldes-ouverture",
    "roles": [
-    "comptable",
+    "admin",
+    "direction",
     "da",
-    "admin"
+    "comptable",
+    "aide_comptable"
    ]
   },
   {

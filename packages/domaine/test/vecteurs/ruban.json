@@ -1137,6 +1137,28 @@
      ]
     },
     {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-patients",
+        "imp-personnel",
+        "imp-actes",
+        "imp-analyses",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -1232,7 +1254,15 @@
        "hub": "hub-imp",
        "ecrans": [
         "imp-accueil",
-        "imp-actes"
+        "imp-patients",
+        "imp-personnel",
+        "imp-actes",
+        "imp-analyses",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
        ]
       }
      ]
@@ -2701,6 +2731,20 @@
      ]
     },
     {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-analyses"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -2837,6 +2881,21 @@
      ]
     },
     {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-actes",
+        "imp-fournisseurs"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -2861,6 +2920,7 @@
        "hub": "hub-imp",
        "ecrans": [
         "imp-accueil",
+        "imp-actes",
         "imp-fournisseurs"
        ]
       }
@@ -3246,6 +3306,24 @@
      ]
     },
     {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -3477,6 +3555,20 @@
      ]
     },
     {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-patients"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -3619,6 +3711,20 @@
        "hub": "hub-rap",
        "ecrans": [
         "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-patients"
        ]
       }
      ]
@@ -4731,6 +4837,24 @@
      ]
     },
     {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -4753,7 +4877,26 @@
      ]
     }
    ],
-   "cartes": []
+   "cartes": [
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
+       ]
+      }
+     ]
+    }
+   ]
   }
  ]
 }

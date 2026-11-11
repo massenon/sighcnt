@@ -260,6 +260,49 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
     process.stdout.write('  ' + role + ' : ' + accessibles.length + ' écran(s)\n');
   }
 
+  /* ==========================================================================
+   * SONDE DU DROIT D'IMPORT (PRD-IMP 7.6, lot IMP-A) : « Importer les données » est présent SI ET SEULEMENT SI le profil détient `droitImport(jeu).importer`.
+   * Les deux fautes, comme pour les écritures : PROMETTRE un bouton sans le droit (il mène à un refus du moteur), CACHER un bouton accordé (l'agent ressaisit
+   * ailleurs). Elle ouvre chaque écran hôte du bouton (`[data-importer]`) et chaque page de jeu (`input[data-import-fichier]`, qui n'existe que pour qui importe),
+   * sous chaque profil qui peut ouvrir l'écran, y compris l'administrateur système (que la liste des profils de l'audit ne contient pas).
+   * ======================================================================== */
+  const promessesImport = [], cacheesImport = [];
+  let sondesImport = 0;
+  const jeuxImport = await page.evaluate(() => window.SIGH.nav.IMPORTS.map((j) => ({ jeu: j.id, hotes: j.hotes, ecran: j.ecran })));
+  for (const [role, fonction] of PROFILS.concat([['admin', 'direction']])) {
+    if (SEULS.length && SEULS.indexOf(role) < 0) continue;
+    await page.evaluate((r, f) => localStorage.setItem('sigh-cnt:session', JSON.stringify({
+      role: r, nom: 'Audit ' + r, nomComplet: 'Audit ' + r, identifiant: 'audit', fonction: f,
+    })), role, fonction);
+    await page.goto('http://127.0.0.1:' + PORT + '/pages/error-403.php', { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => !!(window.SIGH && window.SIGH.store && window.SIGH.nav && window.SIGH.store.faitAutorite()), { timeout: 120000 }).catch(() => null);
+    for (const j of jeuxImport) {
+      const cibles = j.hotes.map((h) => ({ id: h, genre: 'hote' })).concat([{ id: j.ecran, genre: 'page' }]);
+      for (const c of cibles) {
+        if (PAGES.length && PAGES.indexOf(c.id) < 0) continue;
+        const ouvre = await page.evaluate((r, id) => { const N = window.SIGH.nav, e = N.get(id); return !!e && N.can(r, { id: id, roles: e.roles, module: e.module }); }, role, c.id).catch(() => false);
+        if (!ouvre) continue;
+        await page.goto('http://127.0.0.1:' + PORT + '/pages/' + c.id + '.php', { waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(() => {
+          const x = document.getElementById('page-content');
+          return !!(window.SIGH && window.SIGH.store && window.SIGH.store.faitAutorite && window.SIGH.store.faitAutorite() && x && x.children.length > 0);
+        }, { timeout: 180000 }).catch(() => null);
+        await new Promise((r) => setTimeout(r, 150));
+        sondesImport++;
+        const v = await page.evaluate((jeu, genre, r) => {
+          const droit = window.SIGH.nav.droitImport(r, jeu).importer;
+          const present = genre === 'hote'
+            ? [...document.querySelectorAll('[data-importer]')].filter((x) => x.offsetParent !== null).some((x) => x.getAttribute('data-importer').split(',').indexOf(jeu) >= 0)
+            : !!document.querySelector('input[data-import-fichier="' + jeu + '"]');
+          return { droit: droit, present: present };
+        }, j.jeu, c.genre, role);
+        if (v.present && !v.droit) promessesImport.push({ role, ecran: c.id, jeu: j.jeu });
+        if (!v.present && v.droit) cacheesImport.push({ role, ecran: c.id, jeu: j.jeu });
+      }
+    }
+    process.stdout.write('  import ' + role + ' : sondé\n');
+  }
+
   console.log('\n' + '─'.repeat(72));
   console.log('AUDIT DES ACTIONS PAR PROFIL');
   console.log('─'.repeat(72));
@@ -279,6 +322,11 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
   Object.keys(parEcran).sort((a, b) => parEcran[b].length - parEcran[a].length).slice(0, 25)
     .forEach((k) => console.log('  · ' + k.padEnd(30) + parEcran[k].join(', ')));
 
+  console.log('\nSONDE DU DROIT D\'IMPORT (7.6) : ' + sondesImport + ' sondage(s) (écran hôte ou page de jeu × profil)');
+  console.log('  PROMETTRE : « Importer les données » présent sans le droit d\'importer : ' + promessesImport.length);
+  promessesImport.slice(0, 20).forEach((p) => console.log('    ✗ ' + p.role.padEnd(20) + p.ecran.padEnd(26) + p.jeu));
+  console.log('  CACHER : droit d\'importer accordé, aucun bouton : ' + cacheesImport.length);
+  cacheesImport.slice(0, 20).forEach((p) => console.log('    ✗ ' + p.role.padEnd(20) + p.ecran.padEnd(26) + p.jeu));
   console.log('\nErreurs JS : ' + erreurs.length);
   erreurs.slice(0, 5).forEach((e) => console.log('   ' + e));
   console.log('─'.repeat(72));

@@ -2898,9 +2898,9 @@
     "annuler": false
    },
    "IMP": {
-    "voir": false,
-    "editer": false,
-    "annuler": false
+    "voir": true,
+    "editer": true,
+    "annuler": true
    },
    "MERE": {
     "voir": false,
@@ -5794,7 +5794,47 @@
     1,
     1
    ],
+   "imp-patients": [
+    1,
+    1,
+    1
+   ],
+   "imp-personnel": [
+    1,
+    1,
+    1
+   ],
    "imp-actes": [
+    1,
+    1,
+    1
+   ],
+   "imp-analyses": [
+    1,
+    1,
+    1
+   ],
+   "imp-fournisseurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-assureurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-souscripteurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-plan-comptable": [
+    1,
+    1,
+    1
+   ],
+   "imp-soldes-ouverture": [
     1,
     1,
     1
@@ -9402,6 +9442,11 @@
     1,
     1
    ],
+   "imp-actes": [
+    1,
+    1,
+    1
+   ],
    "imp-fournisseurs": [
     1,
     1,
@@ -12797,6 +12842,36 @@
     0,
     0
    ],
+   "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-fournisseurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-assureurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-souscripteurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-plan-comptable": [
+    1,
+    1,
+    1
+   ],
+   "imp-soldes-ouverture": [
+    1,
+    1,
+    1
+   ],
    "m12-bfr": [
     1,
     1,
@@ -12863,5 +12938,1304 @@
     1
    ]
   }
+ },
+ "import": {
+  "_doc": "Droit d'import par jeu : parRole[rôle][jeu] = [voir, importer, annuler]. superviseurs : droit d'annuler sur CHAQUE jeu (lisent tous les lots). capacitePaie : écriture dans M11 (colonne Salaire de base).",
+  "jeux": [
+   {
+    "id": "grand-stock",
+    "libelle": "Importation Grand Stock",
+    "ecran": "m6-import-grand-stock",
+    "module": "M6",
+    "hotes": [
+     "m6-stock-gros"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "produits",
+     "lots",
+     "mouvements"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "personnel",
+    "libelle": "Importation du personnel",
+    "ecran": "imp-personnel",
+    "module": "M10",
+    "hotes": [
+     "m10-personnel"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "personnel"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "patients",
+    "libelle": "Importation du répertoire patients",
+    "ecran": "imp-patients",
+    "module": "M1",
+    "hotes": [
+     "m1-patients"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "patients"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "tarifs",
+    "libelle": "Importation des tarifs et prix",
+    "ecran": "imp-actes",
+    "module": "CFG",
+    "hotes": [
+     "cfg-tarifs"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "tarifs",
+     "versionsTarif"
+    ],
+    "doublon": "versionner"
+   },
+   {
+    "id": "analyses-modele",
+    "libelle": "Importation du modèle des analyses",
+    "ecran": "imp-analyses",
+    "module": "M5",
+    "hotes": [],
+    "sensibilite": "courante",
+    "collections": [
+     "examensLabo"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "fournisseurs",
+    "libelle": "Importation des fournisseurs",
+    "ecran": "imp-fournisseurs",
+    "module": "M7",
+    "hotes": [
+     "m7-fournisseurs"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "fournisseurs"
+    ],
+    "doublon": "ignorer"
+   },
+   {
+    "id": "assureurs",
+    "libelle": "Importation des compagnies d’assurance",
+    "ecran": "imp-assureurs",
+    "module": "M9",
+    "hotes": [
+     "m9-compagnies"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "assureurs"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "souscripteurs",
+    "libelle": "Importation des souscripteurs",
+    "ecran": "imp-souscripteurs",
+    "module": "M9",
+    "hotes": [],
+    "sensibilite": "courante",
+    "collections": [
+     "souscripteurs"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "plan-comptable",
+    "libelle": "Importation du plan comptable",
+    "ecran": "imp-plan-comptable",
+    "module": "M12",
+    "hotes": [
+     "m12-plan-comptable"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "comptes"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "soldes-ouverture",
+    "libelle": "Importation des soldes d’ouverture",
+    "ecran": "imp-soldes-ouverture",
+    "module": "M12",
+    "hotes": [
+     "m12-ouverture"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "ecritures"
+    ],
+    "doublon": "refuser"
+   }
+  ],
+  "parRole": {
+   "admin": {
+    "grand-stock": [
+     1,
+     1,
+     1
+    ],
+    "personnel": [
+     1,
+     1,
+     1
+    ],
+    "patients": [
+     1,
+     1,
+     1
+    ],
+    "tarifs": [
+     1,
+     1,
+     1
+    ],
+    "analyses-modele": [
+     1,
+     1,
+     1
+    ],
+    "fournisseurs": [
+     1,
+     1,
+     1
+    ],
+    "assureurs": [
+     1,
+     1,
+     1
+    ],
+    "souscripteurs": [
+     1,
+     1,
+     1
+    ],
+    "plan-comptable": [
+     1,
+     1,
+     1
+    ],
+    "soldes-ouverture": [
+     1,
+     1,
+     1
+    ]
+   },
+   "direction": {
+    "grand-stock": [
+     1,
+     0,
+     0
+    ],
+    "personnel": [
+     1,
+     0,
+     0
+    ],
+    "patients": [
+     1,
+     0,
+     0
+    ],
+    "tarifs": [
+     1,
+     1,
+     1
+    ],
+    "analyses-modele": [
+     1,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     1,
+     0,
+     0
+    ],
+    "assureurs": [
+     1,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     1,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     1,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     1,
+     0,
+     0
+    ]
+   },
+   "dm": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "da": {
+    "grand-stock": [
+     1,
+     1,
+     1
+    ],
+    "personnel": [
+     1,
+     1,
+     1
+    ],
+    "patients": [
+     1,
+     1,
+     1
+    ],
+    "tarifs": [
+     1,
+     1,
+     1
+    ],
+    "analyses-modele": [
+     1,
+     1,
+     1
+    ],
+    "fournisseurs": [
+     1,
+     1,
+     1
+    ],
+    "assureurs": [
+     1,
+     1,
+     1
+    ],
+    "souscripteurs": [
+     1,
+     1,
+     1
+    ],
+    "plan-comptable": [
+     1,
+     1,
+     1
+    ],
+    "soldes-ouverture": [
+     1,
+     1,
+     1
+    ]
+   },
+   "medecin": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "infirmier": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "pharmacien": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "laborantin": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     1,
+     1,
+     1
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "stock": {
+    "grand-stock": [
+     1,
+     1,
+     1
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     1,
+     1,
+     1
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     1,
+     1,
+     1
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "caissier": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "comptable": {
+    "grand-stock": [
+     1,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     1,
+     1,
+     1
+    ],
+    "assureurs": [
+     1,
+     1,
+     1
+    ],
+    "souscripteurs": [
+     1,
+     1,
+     1
+    ],
+    "plan-comptable": [
+     1,
+     1,
+     1
+    ],
+    "soldes-ouverture": [
+     1,
+     1,
+     1
+    ]
+   },
+   "rh": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "reception": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     1,
+     1,
+     1
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "agentadmin": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     1,
+     1,
+     1
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "ambulancier": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "aide_soignant": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "echographiste": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "surveillant": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "assistant_comptable": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "chirurgien": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "anesthesiste": {
+    "grand-stock": [
+     0,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     0,
+     0,
+     0
+    ],
+    "assureurs": [
+     0,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     0,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     0,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     0,
+     0,
+     0
+    ]
+   },
+   "aide_comptable": {
+    "grand-stock": [
+     1,
+     0,
+     0
+    ],
+    "personnel": [
+     0,
+     0,
+     0
+    ],
+    "patients": [
+     0,
+     0,
+     0
+    ],
+    "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "analyses-modele": [
+     0,
+     0,
+     0
+    ],
+    "fournisseurs": [
+     1,
+     0,
+     0
+    ],
+    "assureurs": [
+     1,
+     0,
+     0
+    ],
+    "souscripteurs": [
+     1,
+     0,
+     0
+    ],
+    "plan-comptable": [
+     1,
+     0,
+     0
+    ],
+    "soldes-ouverture": [
+     1,
+     0,
+     0
+    ]
+   }
+  },
+  "superviseurs": [
+   "admin",
+   "da"
+  ],
+  "capacitePaie": [
+   "admin",
+   "da",
+   "comptable"
+  ]
  }
 }
