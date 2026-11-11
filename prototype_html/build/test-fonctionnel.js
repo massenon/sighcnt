@@ -18937,6 +18937,147 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
+  /* ==========================================================================
+   * VAGUE 113 — LOT T0 : CARACTÉRISATION DES TARIFS (état AVANT le référentiel unique)
+   * --------------------------------------------------------------------------
+   * Ce scénario ne corrige rien : il MESURE ce que le code fait aujourd'hui, pour que les constats 1, 2 et 9 du PRD-TARIFS passent
+   * de « lus » à « mesurés ». Il porte l'état d'AVANT T1 ; au lot T1 ses assertions deviennent les scénarios de non régression
+   * (une seule liste, cinq voies) et le présent bloc est REMPLACÉ, pas conservé.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 113 : T0 tarifs, caractérisation de l’état actuel (la caisse ne lit pas catalogueTarifs ni analyses, le constat 9 est déjà soldé, marge de quota mesurée)');
+    erreursJS = [];
+    await page.evaluate(() => {
+      sessionStorage.clear();
+      window.SIGH.store.setSession({ role: 'admin', nom: 'SONDE113', nomComplet: 'SONDE113', fonction: 'direction', identifiant: 's113', secteur: 'DIR' });
+    });
+    const sonde = {};
+    /* --- (a) cfg-catalogue : un prix modifié AU GESTE change-t-il l'imagerie et les soins ? ------------------------------------------------------------- */
+    await ouvrir('cfg-catalogue.html');
+    sonde.avantImg = await page.evaluate(() => {
+      const D = window.SIGH.data;
+      return { grille: D.tarifPrix('IMG-ECHO-PEL', false).montant, col: window.SIGH.store.collection('catalogueTarifs').all().filter((c) => c.code === 'IMG-ECHO-PEL')[0].prixNonAssure };
+    });
+    const geste = await page.evaluate(async () => {
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+      const tab = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((t) => /Imagerie/i.test(t.textContent));
+      if (!tab) return { erreur: 'onglet' };
+      tab.click(); await pause(500);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((r) => /IMG-ECHO-PEL/.test(r.textContent));
+      if (!tr) return { erreur: 'ligne' };
+      tr.querySelector('button[title="Modifier"]').click(); await pause(500);
+      const champ = document.querySelector('[role=dialog] #f_prixNonAssure, .modal-root #f_prixNonAssure');
+      if (!champ) return { erreur: 'champ' };
+      champ.value = '9100'; champ.dispatchEvent(new Event('input', { bubbles: true })); champ.dispatchEvent(new Event('change', { bubbles: true }));
+      const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === 'Enregistrer').pop();
+      b.click(); await pause(800);
+      return { ok: true };
+    });
+    sonde.geste = geste;
+    sonde.apresImg = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, D = window.SIGH.data;
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const res = PR.ouvrirDemandeImagerie({ patientId: pt.id, examens: ['IMG-ECHO-PEL'], prescripteur: 'SONDE113', indication: 'sonde' });
+      const col = S.collection('catalogueTarifs').all().filter((c) => c.code === 'IMG-ECHO-PEL')[0];
+      const lignePel = (res.facture.lignes || []).filter((l) => l.categorie === 'imagerie')[0];
+      const r = { colonne: col.prixNonAssure, grille: D.tarifPrix('IMG-ECHO-PEL', false).montant, demande: res.demandes[0].prix, ligne: lignePel ? lignePel.prixUnitaire : null };
+      /* Soins AMI : même épreuve sur SIV (soin intraveineux), en écrivant la collection comme le fait l'écran. */
+      const siv = S.collection('catalogueTarifs').all().filter((c) => c.code === 'SIV')[0];
+      const avantSiv = D.tarifPrix('SIV', false).montant;
+      S.collection('catalogueTarifs').update(siv.id, { prixNonAssure: avantSiv + 100 });
+      const soins = PR.prescrireSoins({ patientCode: pt.code, prescripteurId: null, actes: ['SIV'], secteur: 'salle_soins' });
+      const lSiv = (soins.lignes || []).filter((l) => l.acteCode === 'SIV')[0] || null;
+      r.siv = { avant: avantSiv, colonne: S.collection('catalogueTarifs').all().filter((c) => c.code === 'SIV')[0].prixNonAssure, grille: D.tarifPrix('SIV', false).montant, ligne: lSiv ? (lSiv.prix != null ? lSiv.prix : lSiv.prixUnitaire) : null };
+      /* Restitution : les deux prix de la collection reviennent. */
+      S.collection('catalogueTarifs').update(siv.id, { prixNonAssure: avantSiv });
+      S.collection('catalogueTarifs').update(col.id, { prixNonAssure: 9000 });
+      return r;
+    });
+    verifier('CONSTAT 1 MESURÉ : un prix d’imagerie modifié AU GESTE à cfg-catalogue entre dans la collection (9 100) mais la demande d’imagerie reste à 9 000 (la grille lue est la constante)',
+      geste.ok === true && sonde.avantImg.grille === 9000 && sonde.apresImg.colonne === 9100 && sonde.apresImg.grille === 9000 && sonde.apresImg.demande === 9000 && sonde.apresImg.ligne === 9000, JSON.stringify([geste, sonde.avantImg, sonde.apresImg]));
+    verifier('CONSTAT 1 MESURÉ (soins) : le prix du soin SIV écrit dans catalogueTarifs n’atteint ni D.tarifPrix ni la ligne de la prescription de soins',
+      sonde.apresImg.siv.colonne === sonde.apresImg.siv.avant + 100 && sonde.apresImg.siv.grille === sonde.apresImg.siv.avant && sonde.apresImg.siv.ligne === sonde.apresImg.siv.avant, JSON.stringify(sonde.apresImg.siv));
+    /* --- (a bis) aucun lecteur de la collection catalogueTarifs hors store et configuration (lecture statique des sources) -------------------------------- */
+    const lecteurs = (() => {
+      const dir = path.join(ROOT, 'assets/js'); const trouves = {};
+      const parcourir = (d) => fs.readdirSync(d, { withFileTypes: true }).forEach((e) => {
+        const p = path.join(d, e.name);
+        if (e.isDirectory()) { if (e.name !== 'vendor') parcourir(p); return; }
+        if (!/\.js$/.test(e.name)) return;
+        const t = fs.readFileSync(p, 'utf8');
+        if (/collection\(\s*'catalogueTarifs'/.test(t)) trouves[path.relative(dir, p).replace(/\\/g, '/')] = true;
+      });
+      parcourir(dir); return Object.keys(trouves).sort();
+    })();
+    verifier('CONSTAT 1 MESURÉ (lecteurs) : la collection catalogueTarifs n’est ouverte (`collection(…)`) que par configuration.js (son propre écran) : store.js ne fait que la semer et la nommer à la corbeille',
+      lecteurs.join() === 'modules/configuration.js', JSON.stringify(lecteurs));
+    /* --- (b) analyses : un prix modifié dans la collection `analyses` est-il facturé ? ----------------------------------------------------------------- */
+    const analyses = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, D = window.SIGH.data;
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const a = S.collection('analyses').all().filter((x) => x.code === 'L01')[0];
+      const avant = a.prix;
+      S.collection('analyses').update(a.id, { prix: avant + 100 });
+      const res = PR.prescrire({ patientCode: pt.code, medecin: 'SONDE113', diagnostic: 'sonde', analyses: ['L01'] });
+      const ligne = (res.facture.lignes || []).filter((l) => /AKOP/.test(l.designation || l.libelle || ''))[0];
+      const r = { avant: avant, colonne: S.collection('analyses').all().filter((x) => x.code === 'L01')[0].prix, constante: D.ANALYSES.filter((x) => x.code === 'L01')[0].prix,
+        ordonnance: (res.ordonnance.analyses || []).filter((x) => x.code === 'L01')[0].prix, ligne: ligne ? ligne.prixUnitaire : null };
+      S.collection('analyses').update(a.id, { prix: avant });
+      return r;
+    });
+    verifier('CONSTAT 2 MESURÉ (prescription) : un prix d’analyse modifié dans la collection `analyses` (cfg-tarifs, m5-catalogue) n’est PAS facturé par PR.prescrire (la ligne reste au prix de la constante)',
+      analyses.colonne === analyses.avant + 100 && analyses.constante === analyses.avant && analyses.ordonnance === analyses.avant && analyses.ligne === analyses.avant, JSON.stringify(analyses));
+    /* --- (b bis) caisse manuelle : lit la constante pour les analyses, la collection `actes` pour les actes, la constante TYPES_CHAMBRE pour les journées -- */
+    const caisse = await (async () => {
+      await page.evaluate(() => { const S = window.SIGH.store; const a = S.collection('analyses').all().filter((x) => x.code === 'L01')[0]; S.collection('analyses').update(a.id, { prix: a.prix + 100 }); const ac = S.collection('actes').all().filter((x) => x.code === 'MG01')[0]; S.collection('actes').update(ac.id, { prix: ac.prix + 100 }); });
+      await ouvrir('m8-facturation.html');
+      const lire = (nature) => page.evaluate(async (n) => {
+        const sel = [...document.querySelectorAll('#page-content select')].find((s) => [...s.options].some((o) => o.value === 'analyse'));
+        sel.value = n; sel.dispatchEvent(new Event('change', { bubbles: true })); await new Promise((r) => setTimeout(r, 300));
+        const h = [...document.querySelectorAll('#page-content *')].find((e) => e._liste);
+        return h ? h._liste.map((x) => ({ label: x.label, prix: x.prix, code: x.code || null })) : null;
+      }, nature);
+      const an = await lire('analyse'), ac = await lire('acte'), ho = await lire('hospitalisation');
+      await page.evaluate(() => { const S = window.SIGH.store; const a = S.collection('analyses').all().filter((x) => x.code === 'L01')[0]; S.collection('analyses').update(a.id, { prix: a.prix - 100 }); const c = S.collection('actes').all().filter((x) => x.code === 'MG01')[0]; S.collection('actes').update(c.id, { prix: c.prix - 100 }); });
+      return { akop: (an || []).filter((x) => x.label === 'AKOP')[0], mg01: (ac || []).filter((x) => x.code === 'MG01')[0], nbActes: (ac || []).length, nbAnalyses: (an || []).length, nbJournees: (ho || []).length };
+    })();
+    verifier('CONSTAT 2 MESURÉ (caisse manuelle) : la liste des analyses de la caisse ignore la collection modifiée (AKOP reste à 2 000), celle des actes la suit (MG01 à 5 100) ; 73 actes, 48 analyses, 3 journées',
+      caisse.akop && caisse.akop.prix === 2000 && caisse.mg01 && caisse.mg01.prix === 5100 && caisse.nbActes === 73 && caisse.nbAnalyses === 48 && caisse.nbJournees === 3, JSON.stringify(caisse));
+    /* --- (c) pièce émise : aucun lecteur ne relit le catalogue (lignes copiées), avoir et assurance du personnel compris ----------------------------------- */
+    const piece = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const pt = S.collection('patients').active().filter((p) => !p.externe && !p.assureur)[0];
+      const res = PR.prescrire({ patientCode: pt.code, medecin: 'SONDE113', diagnostic: 'sonde', actes: ['MG01'] });
+      const f0 = S.collection('factures').get(res.facture.id);
+      const avant = { total: f0.montantTTC, lignes: f0.lignes.map((l) => [l.designation || l.libelle, l.prixUnitaire, l.montant]) };
+      const ac = S.collection('actes').all().filter((x) => x.code === 'MG01')[0];
+      S.collection('actes').update(ac.id, { prix: ac.prix + 900, prixNonAssure: ac.prix + 900 });
+      const f1 = S.collection('factures').get(res.facture.id);
+      const apres = { total: f1.montantTTC, lignes: f1.lignes.map((l) => [l.designation || l.libelle, l.prixUnitaire, l.montant]) };
+      S.collection('actes').update(ac.id, { prix: ac.prix - 900, prixNonAssure: ac.prix - 900 });
+      return { avant: avant, apres: apres };
+    });
+    verifier('CONSTAT 9 (pièce émise) MESURÉ : changer le prix d’un acte après émission ne touche pas la facture déjà émise (lignes copiées, total identique)',
+      piece.avant.total > 0 && JSON.stringify(piece.avant) === JSON.stringify(piece.apres), JSON.stringify(piece));
+    const sourceRh = fs.readFileSync(path.join(ROOT, 'assets/js/modules/m10-rh.js'), 'utf8');
+    verifier('CONSTAT 9 MESURÉ (assurance du personnel) : la valeur d’une analyse est le montant PORTÉ par la demande, jamais le prix courant du catalogue ; D.ANALYSES ne sert plus qu’à nommer l’examen (le constat du PRD était déjà soldé par la vague 109, lot L7)',
+      /valeur: montantAssurance\(a\.montant != null && a\.montant !== '' \? a\.montant : a\.prix\)/.test(sourceRh) && !/montantAssurance\(analyse\.prix\)/.test(sourceRh), 'ligne de m10-rh.js modifiée ?');
+    /* --- (d) marge de quota ----------------------------------------------------------------------------------------------------------------------------- */
+    const quota = await page.evaluate(() => {
+      const S = window.SIGH.store, raw = S.raw();
+      const sansNuls = function (k, v) { return v === null && this && !Array.isArray(this) ? undefined : v; };
+      const charge = JSON.stringify(raw, sansNuls).length;
+      const cle = '__quota113__'; let lo = 0, hi = 12000000;
+      const essai = (n) => { try { localStorage.setItem(cle, 'x'.repeat(n)); localStorage.removeItem(cle); return true; } catch (e) { return false; } };
+      while (hi - lo > 1000) { const m = (lo + hi) >> 1; if (essai(m)) lo = m; else hi = m; }
+      const t = (k) => JSON.stringify(raw[k] || [], sansNuls).length;
+      return { charge: charge, capacite: lo, marge: lo - charge, actes: t('actes'), analyses: t('analyses'), catalogueTarifs: t('catalogueTarifs') };
+    });
+    console.log('\n  T0 (d) quota : charge ' + quota.charge + ' car., capacité ' + quota.capacite + ' car., marge ' + quota.marge + ' car. (' + Math.round(quota.marge / 1000) + ' Ko) ; actes ' + quota.actes + ', analyses ' + quota.analyses + ', catalogueTarifs ' + quota.catalogueTarifs + '.');
+    verifier('Marge de quota MESURÉE avant de semer T1 : la charge tient sous la capacité du navigateur (le chiffre est écrit dans la sortie du banc)', quota.marge > 0, JSON.stringify(quota));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }
