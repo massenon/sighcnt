@@ -29,6 +29,14 @@ void main() {
     final ecarts = <String>[];
     var n = 0;
     final parRole = (brut['parRole'] as Map).cast<String, Object?>();
+    // Un écran qui dépend d'un RÉGLAGE en base (`sousReglage` au manifeste : le plan du site, `planDuSiteAffiche`, défaut non) est FERMÉ à tout rôle dans la matrice
+    // que la maquette extrait tant que le réglage n'est pas posé (`N.can` consulte `ouvertParReglage`). Le domaine ne lit pas ce réglage dans la matrice : le poste le
+    // tient à l'écran même (`planDuSitePosteAffiche`, la 404 prend sa place). On vérifie donc que la maquette le dit fermé, et on ne compare pas le calcul du domaine.
+    final sousReglage = {
+      for (final e in (jsonDecode(File('../referentiels/data/manifeste.json').readAsStringSync()) as Map)['ecrans'] as List)
+        if ((e as Map)['sousReglage'] != null) '${e['id']}'
+    };
+    expect(sousReglage, contains('plan-du-site'));
     for (final role in parRole.keys) {
       final attendu = (parRole[role] as Map).cast<String, Object?>();
       for (final e in manifeste.tousLesEcrans.where((e) => !e.hub)) {
@@ -36,6 +44,10 @@ void main() {
         final cible = e.servant ?? e.id;
         final a = attendu[cible] as List?;
         final att = a == null ? 'absent' : '${a[0]}${a[1]}${a[2]}';
+        if (sousReglage.contains(e.id)) {
+          expect(att, 'absent', reason: '$role/${e.id} : fermé par le réglage dans la matrice de la maquette');
+          continue;
+        }
         final cal = m.peutVoir(role, e.id) ? d(m, role, e.id) : 'absent';
         n++;
         if (att != cal) ecarts.add('$role/${e.id}: attendu $att, calculé $cal');

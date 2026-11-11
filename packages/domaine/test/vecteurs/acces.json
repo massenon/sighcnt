@@ -354,6 +354,366 @@
   "delaiDefautMinutes": 15,
   "cleRetour": "sigh-cnt:verrou-retour"
  },
+ "planDuSite": {
+  "cle": "planDuSiteAffiche",
+  "defaut": false,
+  "lecture": [
+   {
+    "reglage": "absent",
+    "affiche": false,
+    "ouvertParManifeste": false,
+    "canAdmin": false
+   },
+   {
+    "reglage": true,
+    "affiche": true,
+    "ouvertParManifeste": true,
+    "canAdmin": true
+   },
+   {
+    "reglage": false,
+    "affiche": false,
+    "ouvertParManifeste": false,
+    "canAdmin": false
+   },
+   {
+    "reglage": "oui",
+    "affiche": false,
+    "ouvertParManifeste": false,
+    "canAdmin": false
+   },
+   {
+    "reglage": 1,
+    "affiche": false,
+    "ouvertParManifeste": false,
+    "canAdmin": false
+   },
+   {
+    "reglage": null,
+    "affiche": false,
+    "ouvertParManifeste": false,
+    "canAdmin": false
+   }
+  ],
+  "pages": {
+   "desactive": {
+    "textes404": [
+     "404",
+     "Page introuvable",
+     "L’écran demandé n’existe pas ou a été déplacé.",
+     "Retour à l’accueil",
+     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
+    ],
+    "liens404": [
+     "Retour à l’accueil"
+    ],
+    "textes403": [
+     "403",
+     "Accès refusé",
+     "Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.",
+     "Retour à l’accueil",
+     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
+    ],
+    "liens403": [
+     "Retour à l’accueil"
+    ]
+   },
+   "active": {
+    "textes404": [
+     "404",
+     "Page introuvable",
+     "L’écran demandé n’existe pas ou a été déplacé. Utiliser le plan du site pour retrouver le module recherché.",
+     "Retour à l’accueil",
+     "Plan du site",
+     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
+    ],
+    "liens404": [
+     "Retour à l’accueil",
+     "Plan du site"
+    ],
+    "textes403": [
+     "403",
+     "Accès refusé",
+     "Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.",
+     "Retour à l’accueil",
+     "Plan du site",
+     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
+    ],
+    "liens403": [
+     "Retour à l’accueil",
+     "Plan du site"
+    ]
+   }
+  },
+  "adresseDirecte": {
+   "textes": [
+    "Page introuvable."
+   ],
+   "navigation": [
+    "pages/error-404.php"
+   ]
+  },
+  "definir": [
+   {
+    "role": "admin",
+    "valeur": true,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "apres": true,
+    "avant": false
+   },
+   {
+    "role": "admin",
+    "valeur": false,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "apres": false,
+    "avant": false
+   },
+   {
+    "role": "admin",
+    "valeur": "oui",
+    "ok": false,
+    "code": "VALEUR_INVALIDE",
+    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
+    "geste": "Cocher ou décocher la case.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "admin",
+    "valeur": 1,
+    "ok": false,
+    "code": "VALEUR_INVALIDE",
+    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
+    "geste": "Cocher ou décocher la case.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "admin",
+    "valeur": null,
+    "ok": false,
+    "code": "VALEUR_INVALIDE",
+    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
+    "geste": "Cocher ou décocher la case.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "da",
+    "valeur": true,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "apres": true,
+    "avant": false
+   },
+   {
+    "role": "da",
+    "valeur": false,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "apres": false,
+    "avant": false
+   },
+   {
+    "role": "da",
+    "valeur": "oui",
+    "ok": false,
+    "code": "VALEUR_INVALIDE",
+    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
+    "geste": "Cocher ou décocher la case.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "da",
+    "valeur": 1,
+    "ok": false,
+    "code": "VALEUR_INVALIDE",
+    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
+    "geste": "Cocher ou décocher la case.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "da",
+    "valeur": null,
+    "ok": false,
+    "code": "VALEUR_INVALIDE",
+    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
+    "geste": "Cocher ou décocher la case.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "direction",
+    "valeur": true,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "direction",
+    "valeur": false,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "direction",
+    "valeur": "oui",
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "direction",
+    "valeur": 1,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "direction",
+    "valeur": null,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "medecin",
+    "valeur": true,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "medecin",
+    "valeur": false,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "medecin",
+    "valeur": "oui",
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "medecin",
+    "valeur": 1,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "medecin",
+    "valeur": null,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "caissier",
+    "valeur": true,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "caissier",
+    "valeur": false,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "caissier",
+    "valeur": "oui",
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "caissier",
+    "valeur": 1,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   },
+   {
+    "role": "caissier",
+    "valeur": null,
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
+    "geste": "Demander à la Directrice Administrative.",
+    "apres": false,
+    "avant": null
+   }
+  ],
+  "journal": {
+   "action": "Plan du site",
+   "module": "M14",
+   "entite": "reglage",
+   "reference": "planDuSiteAffiche",
+   "ancienne": "{\"affiche\":false}",
+   "nouvelle": "{\"affiche\":true,\"motif\":\"Journal du vecteur\"}"
+  }
+ },
  "plan": {
   "entete": [
    "Plan du site",
@@ -443,12 +803,8 @@
       "code": "CFG",
       "ecrans": [
        {
-        "label": "Référentiel tarifaire public",
+        "label": "Tarifs et prix",
         "href": "pages/cfg-tarifs.php"
-       },
-       {
-        "label": "Catalogue des prestations",
-        "href": "pages/cfg-catalogue.php"
        },
        {
         "label": "Tarifs des certificats & attestations",
@@ -1117,6 +1473,10 @@
         "href": "pages/m12-echeances.php"
        },
        {
+        "label": "Calendrier fiscal mensuel",
+        "href": "pages/m12-calendrier-fiscal.php"
+       },
+       {
         "label": "Exercices & clôtures",
         "href": "pages/m12-cloture.php"
        },
@@ -1323,6 +1683,10 @@
         "href": "pages/m13-repertoire-ambulances.php"
        },
        {
+        "label": "Journal des envois SMS",
+        "href": "pages/m13-sms-journal.php"
+       },
+       {
         "label": "Parc technique & maintenance",
         "href": "pages/m13-maintenance.php"
        },
@@ -1437,12 +1801,8 @@
         "href": "pages/cfg-branding.php"
        },
        {
-        "label": "Référentiel tarifaire",
+        "label": "Tarifs et prix",
         "href": "pages/cfg-tarifs.php"
-       },
-       {
-        "label": "Catalogue tarifaire (deux prix)",
-        "href": "pages/cfg-catalogue.php"
        },
        {
         "label": "Catalogue de l’imagerie",
@@ -1485,6 +1845,10 @@
         "href": "pages/cfg-comptabilite.php"
        },
        {
+        "label": "Barème de l’AIB",
+        "href": "pages/cfg-bareme-aib.php"
+       },
+       {
         "label": "Notifications",
         "href": "pages/cfg-notifications.php"
        },
@@ -1511,6 +1875,10 @@
        {
         "label": "Messagerie (SMTP)",
         "href": "pages/cfg-smtp.php"
+       },
+       {
+        "label": "Passerelle SMS",
+        "href": "pages/cfg-sms.php"
        }
       ]
      },
@@ -1996,6 +2364,10 @@
       "href": "pages/m2-visites.php"
      },
      {
+      "label": "Catalogue tarifaire (deux prix)",
+      "href": "pages/cfg-catalogue.php"
+     },
+     {
       "label": "Certificats — patients externes",
       "href": "pages/m1-certificats-externes.php"
      },
@@ -2006,7 +2378,7 @@
     ]
    }
   ],
-  "pied": "323 écrans métier recensés au manifeste, plus 22 pages d’accès et système.",
+  "pied": "325 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },
@@ -2018,7 +2390,7 @@
    },
    {
     "label": "Écrans disponibles",
-    "valeur": "323"
+    "valeur": "325"
    },
    {
     "label": "Règles de gestion appliquées",
@@ -2339,7 +2711,7 @@
    "Modules fonctionnels",
    "33",
    "Écrans disponibles",
-   "323",
+   "325",
    "Règles de gestion appliquées",
    "14",
    "Profils d’utilisateur",
@@ -2678,365 +3050,5 @@
    "Étapes pour reproduire"
   ],
   "note": "Les demandes envoyées depuis cet écran sont enregistrées et journalisées comme toute autre opération : elles restent consultables sous les formulaires. Un courriel n’est envoyé que si la messagerie du poste est configurée."
- },
- "planDuSite": {
-  "cle": "planDuSiteAffiche",
-  "defaut": false,
-  "lecture": [
-   {
-    "reglage": "absent",
-    "affiche": false,
-    "ouvertParManifeste": false,
-    "canAdmin": false
-   },
-   {
-    "reglage": true,
-    "affiche": true,
-    "ouvertParManifeste": true,
-    "canAdmin": true
-   },
-   {
-    "reglage": false,
-    "affiche": false,
-    "ouvertParManifeste": false,
-    "canAdmin": false
-   },
-   {
-    "reglage": "oui",
-    "affiche": false,
-    "ouvertParManifeste": false,
-    "canAdmin": false
-   },
-   {
-    "reglage": 1,
-    "affiche": false,
-    "ouvertParManifeste": false,
-    "canAdmin": false
-   },
-   {
-    "reglage": null,
-    "affiche": false,
-    "ouvertParManifeste": false,
-    "canAdmin": false
-   }
-  ],
-  "pages": {
-   "desactive": {
-    "textes404": [
-     "404",
-     "Page introuvable",
-     "L’écran demandé n’existe pas ou a été déplacé.",
-     "Retour à l’accueil",
-     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
-    ],
-    "liens404": [
-     "Retour à l’accueil"
-    ],
-    "textes403": [
-     "403",
-     "Accès refusé",
-     "Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.",
-     "Retour à l’accueil",
-     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
-    ],
-    "liens403": [
-     "Retour à l’accueil"
-    ]
-   },
-   "active": {
-    "textes404": [
-     "404",
-     "Page introuvable",
-     "L’écran demandé n’existe pas ou a été déplacé. Utiliser le plan du site pour retrouver le module recherché.",
-     "Retour à l’accueil",
-     "Plan du site",
-     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
-    ],
-    "liens404": [
-     "Retour à l’accueil",
-     "Plan du site"
-    ],
-    "textes403": [
-     "403",
-     "Accès refusé",
-     "Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.",
-     "Retour à l’accueil",
-     "Plan du site",
-     "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
-    ],
-    "liens403": [
-     "Retour à l’accueil",
-     "Plan du site"
-    ]
-   }
-  },
-  "adresseDirecte": {
-   "textes": [
-    "Page introuvable."
-   ],
-   "navigation": [
-    "pages/error-404.php"
-   ]
-  },
-  "definir": [
-   {
-    "role": "admin",
-    "valeur": true,
-    "ok": true,
-    "code": null,
-    "motif": null,
-    "geste": null,
-    "apres": true,
-    "avant": false
-   },
-   {
-    "role": "admin",
-    "valeur": false,
-    "ok": true,
-    "code": null,
-    "motif": null,
-    "geste": null,
-    "apres": false,
-    "avant": false
-   },
-   {
-    "role": "admin",
-    "valeur": "oui",
-    "ok": false,
-    "code": "VALEUR_INVALIDE",
-    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Cocher ou décocher la case.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "admin",
-    "valeur": 1,
-    "ok": false,
-    "code": "VALEUR_INVALIDE",
-    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Cocher ou décocher la case.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "admin",
-    "valeur": null,
-    "ok": false,
-    "code": "VALEUR_INVALIDE",
-    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Cocher ou décocher la case.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "da",
-    "valeur": true,
-    "ok": true,
-    "code": null,
-    "motif": null,
-    "geste": null,
-    "apres": true,
-    "avant": false
-   },
-   {
-    "role": "da",
-    "valeur": false,
-    "ok": true,
-    "code": null,
-    "motif": null,
-    "geste": null,
-    "apres": false,
-    "avant": false
-   },
-   {
-    "role": "da",
-    "valeur": "oui",
-    "ok": false,
-    "code": "VALEUR_INVALIDE",
-    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Cocher ou décocher la case.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "da",
-    "valeur": 1,
-    "ok": false,
-    "code": "VALEUR_INVALIDE",
-    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Cocher ou décocher la case.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "da",
-    "valeur": null,
-    "ok": false,
-    "code": "VALEUR_INVALIDE",
-    "motif": "Le plan du site est affiché ou masqué : oui ou non.",
-    "geste": "Cocher ou décocher la case.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "direction",
-    "valeur": true,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "direction",
-    "valeur": false,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "direction",
-    "valeur": "oui",
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "direction",
-    "valeur": 1,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "direction",
-    "valeur": null,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "medecin",
-    "valeur": true,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "medecin",
-    "valeur": false,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "medecin",
-    "valeur": "oui",
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "medecin",
-    "valeur": 1,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "medecin",
-    "valeur": null,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "caissier",
-    "valeur": true,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "caissier",
-    "valeur": false,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "caissier",
-    "valeur": "oui",
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "caissier",
-    "valeur": 1,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   },
-   {
-    "role": "caissier",
-    "valeur": null,
-    "ok": false,
-    "code": "REGLAGE_RESERVE",
-    "motif": "Ce réglage se fait par l’administrateur ou la Directrice Administrative.",
-    "geste": "Demander à la Directrice Administrative.",
-    "apres": false,
-    "avant": null
-   }
-  ],
-  "journal": {
-   "action": "Plan du site",
-   "module": "M14",
-   "entite": "reglage",
-   "reference": "planDuSiteAffiche",
-   "ancienne": "{\"affiche\":false}",
-   "nouvelle": "{\"affiche\":true,\"motif\":\"Journal du vecteur\"}"
-  }
  }
 }

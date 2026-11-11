@@ -49,7 +49,6 @@
        "hub": "hub-cfg",
        "ecrans": [
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-certificats"
        ]
       }
@@ -291,6 +290,7 @@
         "m12-etats-financiers",
         "m12-baseline-2025",
         "m12-echeances",
+        "m12-calendrier-fiscal",
         "m12-cloture",
         "m12-ouverture"
        ]
@@ -366,6 +366,7 @@
         "m13-notes-service",
         "m13-ambulance",
         "m13-repertoire-ambulances",
+        "m13-sms-journal",
         "m13-maintenance",
         "adm-validations",
         "adm-enquetes",
@@ -421,7 +422,6 @@
         "cfg-organisation",
         "cfg-branding",
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-imagerie-catalogue",
         "cfg-entetes",
         "cfg-types-piece",
@@ -432,13 +432,15 @@
         "cfg-regles",
         "cfg-fiscalite",
         "cfg-comptabilite",
+        "cfg-bareme-aib",
         "cfg-notifications",
         "cfg-compte",
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste",
         "cfg-pair",
-        "cfg-smtp"
+        "cfg-smtp",
+        "cfg-sms"
        ]
       },
       {
@@ -611,7 +613,6 @@
         "cfg-organisation",
         "cfg-branding",
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-imagerie-catalogue",
         "cfg-entetes",
         "cfg-types-piece",
@@ -622,13 +623,15 @@
         "cfg-regles",
         "cfg-fiscalite",
         "cfg-comptabilite",
+        "cfg-bareme-aib",
         "cfg-notifications",
         "cfg-compte",
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste",
         "cfg-pair",
-        "cfg-smtp"
+        "cfg-smtp",
+        "cfg-sms"
        ]
       },
       {
@@ -786,7 +789,6 @@
        "hub": "hub-cfg",
        "ecrans": [
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-certificats"
        ]
       }
@@ -1028,6 +1030,7 @@
         "m12-etats-financiers",
         "m12-baseline-2025",
         "m12-echeances",
+        "m12-calendrier-fiscal",
         "m12-cloture",
         "m12-ouverture"
        ]
@@ -1103,6 +1106,7 @@
         "m13-notes-service",
         "m13-ambulance",
         "m13-repertoire-ambulances",
+        "m13-sms-journal",
         "m13-maintenance",
         "adm-validations",
         "adm-enquetes",
@@ -1204,7 +1208,6 @@
         "cfg-organisation",
         "cfg-branding",
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-imagerie-catalogue",
         "cfg-entetes",
         "cfg-types-piece",
@@ -1215,10 +1218,12 @@
         "cfg-regles",
         "cfg-fiscalite",
         "cfg-comptabilite",
+        "cfg-bareme-aib",
         "cfg-notifications",
         "cfg-compte",
         "cfg-modules",
-        "cfg-systeme"
+        "cfg-systeme",
+        "cfg-sms"
        ]
       },
       {
@@ -1564,7 +1569,6 @@
        "hub": "hub-cfg",
        "ecrans": [
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-certificats"
        ]
       }
@@ -1710,6 +1714,7 @@
         "m12-etats-financiers",
         "m12-baseline-2025",
         "m12-echeances",
+        "m12-calendrier-fiscal",
         "m12-cloture",
         "m12-ouverture"
        ]
@@ -1785,6 +1790,7 @@
         "m13-notes-service",
         "m13-ambulance",
         "m13-repertoire-ambulances",
+        "m13-sms-journal",
         "m13-maintenance",
         "adm-validations",
         "adm-enquetes",
@@ -1839,7 +1845,6 @@
         "cfg-organisation",
         "cfg-branding",
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-imagerie-catalogue",
         "cfg-entetes",
         "cfg-types-piece",
@@ -1850,13 +1855,15 @@
         "cfg-regles",
         "cfg-fiscalite",
         "cfg-comptabilite",
+        "cfg-bareme-aib",
         "cfg-notifications",
         "cfg-compte",
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste",
         "cfg-pair",
-        "cfg-smtp"
+        "cfg-smtp",
+        "cfg-sms"
        ]
       },
       {
@@ -2014,7 +2021,6 @@
         "cfg-organisation",
         "cfg-branding",
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-imagerie-catalogue",
         "cfg-entetes",
         "cfg-types-piece",
@@ -2025,13 +2031,15 @@
         "cfg-regles",
         "cfg-fiscalite",
         "cfg-comptabilite",
+        "cfg-bareme-aib",
         "cfg-notifications",
         "cfg-compte",
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste",
         "cfg-pair",
-        "cfg-smtp"
+        "cfg-smtp",
+        "cfg-sms"
        ]
       },
       {
@@ -3167,6 +3175,7 @@
         "m12-etats-financiers",
         "m12-baseline-2025",
         "m12-echeances",
+        "m12-calendrier-fiscal",
         "m12-cloture",
         "m12-ouverture"
        ]
@@ -3276,6 +3285,14 @@
      "domaine": "Système",
      "rangees": [
       {
+       "code": "CFG",
+       "label": "Configuration Clinique",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-bareme-aib"
+       ]
+      },
+      {
        "code": "IMP",
        "label": "Importation de données",
        "hub": "hub-imp",
@@ -3346,7 +3363,6 @@
        "hub": "hub-cfg",
        "ecrans": [
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-certificats"
        ]
       }
@@ -3485,7 +3501,6 @@
        "hub": "hub-cfg",
        "ecrans": [
         "cfg-tarifs",
-        "cfg-catalogue",
         "cfg-certificats"
        ]
       },
@@ -4174,6 +4189,7 @@
         "m13-notes-service",
         "m13-ambulance",
         "m13-repertoire-ambulances",
+        "m13-sms-journal",
         "adm-validations"
        ]
       },
@@ -4678,6 +4694,7 @@
         "m12-etats-financiers",
         "m12-baseline-2025",
         "m12-echeances",
+        "m12-calendrier-fiscal",
         "m12-ouverture"
        ]
       }

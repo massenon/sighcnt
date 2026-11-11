@@ -55,7 +55,10 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         clic(mdp.parentElement.querySelector('button'));
         // identifiants refusés par le serveur (même message que l'identifiant soit inconnu ou le mot de passe faux)
         form.querySelector('#identifiant').value = 'inconnu.xyz'; mdp.value = 'faux';
-        soumettre(form); await dormir(900);
+        soumettre(form);
+        /* Attente de la RÉPONSE du serveur (jusqu'à 10 s) et non d'un délai fixe : à 900 ms le refus n'était pas toujours arrivé et le vecteur gardait le texte statique masqué. */
+        for (let t = 0; t < 100 && !erreur().visible; t++) await dormir(100);
+        await dormir(100);
         const refus = erreur();
         sortieG.connexion = propre({
           textes: textes(root), essaisVides: essais, refusServeur: refus,

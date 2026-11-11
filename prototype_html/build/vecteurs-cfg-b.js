@@ -129,7 +129,10 @@ const NOMS_JEU = fs.readdirSync(JEU).filter((f) => f.endsWith('.json') && f !== 
     }, jeu);
 
     const sortie = { _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-cfg-b.js — ne pas éditer. Horloge : 30/10/2026 10 h. Jeu : apps/poste/assets/donnees/jeu.' };
-    const essayer = async (nom, f) => { try { sortie[nom] = await f(); } catch (e) { sortie[nom] = { erreur: String(e && e.stack || e) }; console.log('  ERREUR ' + nom + ' : ' + String(e && e.message || e)); } };
+    /* SIGH_SECTIONS=modules,poste : ne rejoue QUE ces sections et les FOND dans le fichier existant (les autres restent telles quelles). Sert à rattraper une
+       section qui suit le manifeste (modules) sans toucher aux autres, que le domaine porte sur une version antérieure de la maquette. */
+    const SECTIONS = (process.env.SIGH_SECTIONS || '').split(',').map((x) => x.trim()).filter(Boolean);
+    const essayer = async (nom, f) => { if (SECTIONS.length && !SECTIONS.includes(nom)) return; try { sortie[nom] = await f(); } catch (e) { sortie[nom] = { erreur: String(e && e.stack || e) }; console.log('  ERREUR ' + nom + ' : ' + String(e && e.message || e)); } };
 
     /* ---------------------------------------------------------------- constantes (D.*, C.BRAND, NT.*, store) */
     await essayer('constantes', () => m.page.evaluate(() => {
@@ -491,6 +494,12 @@ const NOMS_JEU = fs.readdirSync(JEU).filter((f) => f.endsWith('.json') && f !== 
     }));
 
     sortie.erreurs = await m.page.evaluate(() => window.__erreurs);
+    if (SECTIONS.length) {
+      const fichier = path.resolve(ROOT, '..', 'packages', 'domaine', 'test', 'vecteurs', 'cfb.json');
+      const existant = JSON.parse(fs.readFileSync(fichier, 'utf8'));
+      for (const k of SECTIONS) existant[k] = sortie[k];
+      ecrire('packages/domaine/test/vecteurs/cfb.json', existant);
+    } else
     ecrire('packages/domaine/test/vecteurs/cfb.json', sortie);
     console.log('  erreurs de page : ' + sortie.erreurs.length);
     for (const k of Object.keys(sortie)) if (sortie[k] && sortie[k].erreur) console.log('  ÉCHEC ' + k + ' : ' + String(sortie[k].erreur).split('\n')[0]);
