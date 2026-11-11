@@ -137,3 +137,10 @@ Sur `docs/prd/PRD-M12-cloture-annuelle-ecarts-et-droits-parametres.md` :
 - **Repli** : un profil sans écran dans son ruban tombe sur la page 404, plus sur le plan du site. E2373.
 
 **Mise en œuvre de la section G (lot T3 des tarifs, 11/11/2026).** T4 mesuré (ligne impayée figée), T5 : moteur et écran de l'écart, durée réglable en base (30 jours, à valider), pas de geste de conversion à la maquette ; T6 : date passée pour la DAF et la Direction, case, motif, info-bulle ; T7 : lecture à confirmer (E2375) ; T11 : décisions à la mère. `ECARTS-MAQUETTE.md` E2374 à E2379.
+
+## K. Validations de la Direction du 11/11/2026 (tarifs au poste, lancement du lot import)
+
+- **Pro forma** : validité de 30 jours par défaut, réglable (réglage en base). Validé.
+- **« Oui à tout »** : seuil de variation vide par défaut. Validé.
+- **Grille imprimée des analyses** : les 39 prix restent des PROPOSITIONS tant que la Direction n'a pas tranché Oui ou Non (dont le VIH à 3500 / 2500, jamais facturé). Validé tel quel, modifiable à tout moment par le circuit.
+- **Lot import lancé** : `docs/prd/PRD-IMP-bouton-importer-par-ecran.md` avec les réponses de la section G (I4 à I13) et les remplacements de `docs/prd/PRD-TARIFS-referentiel-unique-et-changement-de-prix.md` section 7 (jeu unique `tarifs`, lots T4 et T5). Ordre : maquette (socle et jeux existants, puis stock et autres référentiels), puis poste Flutter, puis demande d'import fileul vers mère.
