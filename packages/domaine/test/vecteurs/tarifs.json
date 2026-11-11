@@ -400,7 +400,7 @@
      "Actions"
     ],
     "lignes": 15,
-    "premiere": "L01AKOPAnalysesNon renseigné2 000prix uniqueToutes compagniesL’originev1Proposition en attente"
+    "premiere": "L01AKOPAnalysesNon renseigné2 000prix uniqueToutes compagniesL’originev1Proposition en attenteValider"
    },
    "imagerie": {
     "entetes": [
@@ -440,13 +440,14 @@
      "Variation",
      "Assuré proposé",
      "Date d’effet",
+     "Pièces (30 jours)",
      "Origine",
      "Proposée par",
      "Motif",
      "Actions"
     ],
     "lignes": 15,
-    "premiere": "L01AKOP2 0002 500+25 %2 000à fixer au OuiGrille imprimée des analysesSemence du soclePrix de la grille imprimée « Tarifs des analyses de laboratoire » : proposé à la Direction…OuiNon"
+    "premiere": "L01AKOP2 0002 500+25 %2 000à fixer au Oui2Grille imprimée des analysesSemence du soclePrix de la grille imprimée « Tarifs des analyses de laboratoire » : proposé à la Direction…OuiNon"
    }
   }
  },
@@ -525,8 +526,8 @@
     "nom": "date passée",
     "ok": false,
     "code": "DATE_PASSEE",
-    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui (2026-08-16) : un prix ne se change pas dans le passé.",
-    "geste": "Choisir aujourd’hui ou une date future."
+    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui (2026-08-16) : un prix ne se change pas dans le passé sans une décision expresse.",
+    "geste": "Choisir aujourd’hui ou une date future : une date antérieure est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance."
    },
    {
     "nom": "prix inchangé",
@@ -581,8 +582,8 @@
     "nom": "Oui avec une date passée",
     "ok": false,
     "code": "DATE_PASSEE",
-    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui : un prix ne se change pas dans le passé.",
-    "geste": "Choisir aujourd’hui ou une date future."
+    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui : la proposition a attendu au-delà de sa date, et un prix ne se change pas dans le passé.",
+    "geste": "Refuser cette proposition (Non), puis la reproposer avec une date d’effet d’aujourd’hui."
    }
   ],
   "futur": {
@@ -890,6 +891,294 @@
     ]
    ],
    "parite": 0
+  }
+ },
+ "circuit": {
+  "aujourdhui": "2026-08-16",
+  "cas": [
+   {
+    "nom": "usage : une pièce du jour porte la prestation",
+    "ok": false,
+    "code": "TARIF_DEJA_UTILISE",
+    "motif": "La facture FP-2026-00123 du 16/08/2026 porte déjà « MG01 » : un prix qui prendrait effet le 16/08/2026 changerait après coup ce que la pièce dit.",
+    "geste": "Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce.",
+    "pieceNommee": true,
+    "nbPieces": 1
+   },
+   {
+    "nom": "usage : le même changement à effet de demain",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "nom": "usage : rejoué au Oui (pièce émise pendant l’attente)",
+    "ok": false,
+    "code": "TARIF_DEJA_UTILISE",
+    "motif": "La facture FP-2026-00124 du 17/08/2026 porte déjà « MG01 » : un prix qui prendrait effet le 17/08/2026 changerait après coup ce que la pièce dit.",
+    "geste": "Refuser cette proposition (Non), puis la reproposer avec une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce.",
+    "statutApres": "propose"
+   },
+   {
+    "nom": "Non avec motif (aucune version nouvelle)",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "versions": 2
+   },
+   {
+    "nom": "deux changements : un seul en attente",
+    "ok": false,
+    "code": "CHANGEMENT_EN_ATTENTE",
+    "motif": "Une proposition est déjà en attente de décision pour « MG02 » (version 2).",
+    "geste": "La décider (Oui ou Non) ou la retirer avant d’en proposer une autre."
+   },
+   {
+    "nom": "deux changements : la pièce du jour ferme la date",
+    "ok": false,
+    "code": "TARIF_DEJA_UTILISE",
+    "motif": "La facture FP-2026-00125 du 18/08/2026 porte déjà « MG02 » : un prix qui prendrait effet le 18/08/2026 changerait après coup ce que la pièce dit.",
+    "geste": "Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce."
+   },
+   {
+    "nom": "date passée déjà utilisée (DAF, case cochée)",
+    "ok": false,
+    "code": "TARIF_DEJA_UTILISE",
+    "motif": "La facture FP-2026-00126 du 13/08/2026 porte déjà « MG03 » (et 2 autre(s) pièce(s) depuis cette date) : un prix qui prendrait effet le 11/08/2026 changerait après coup ce que la pièce dit.",
+    "geste": "Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce."
+   },
+   {
+    "nom": "date passée sans la case (DAF)",
+    "ok": false,
+    "code": "DATE_PASSEE",
+    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui (2026-08-16) : un prix ne se change pas dans le passé sans une décision expresse.",
+    "geste": "Cocher « Date antérieure à aujourd’hui » et motiver, ou choisir aujourd’hui ou une date future."
+   },
+   {
+    "nom": "date passée avec la case (DAF)",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "marquee": true
+   },
+   {
+    "nom": "date passée sans la case (administrateur)",
+    "ok": false,
+    "code": "DATE_PASSEE",
+    "motif": "La date d’effet (2026-08-15) est antérieure à aujourd’hui (2026-08-16) : un prix ne se change pas dans le passé sans une décision expresse.",
+    "geste": "Choisir aujourd’hui ou une date future : une date antérieure est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance."
+   },
+   {
+    "nom": "date passée avec la case (administrateur)",
+    "ok": false,
+    "code": "DATE_PASSEE_RESERVEE",
+    "motif": "Une date d’effet antérieure à aujourd’hui est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance.",
+    "geste": "Choisir aujourd’hui ou une date future, ou demander cette date à l’un de ces profils."
+   },
+   {
+    "nom": "décision d’une date passée par l’administrateur",
+    "ok": false,
+    "code": "DATE_PASSEE_RESERVEE",
+    "motif": "Une date d’effet antérieure à aujourd’hui se décide par Directrice de l’Administration et des Finances (DAF) et Direction / Gérance.",
+    "geste": "Demander la décision à l’un de ces profils."
+   },
+   {
+    "nom": "décision d’une date passée par la Direction",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "prixHier": 30100,
+    "prixAvantHier": 30000
+   },
+   {
+    "nom": "prix zéro",
+    "ok": false,
+    "code": "PRIX_ZERO",
+    "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul »).",
+    "geste": "Saisir un prix strictement positif ; la gratuité passe par la remise motivée ou la prise en charge du personnel."
+   },
+   {
+    "nom": "prix vide",
+    "ok": false,
+    "code": "PRIX_ABSENT",
+    "motif": "Le prix non assuré est absent : un prix vide n’est pas un tarif, la ligne ne se facturerait pas.",
+    "geste": "Saisir le prix non assuré."
+   },
+   {
+    "nom": "proposition vide",
+    "ok": false,
+    "code": "PRIX_ABSENT",
+    "motif": "Le prix non assuré est absent : un prix vide n’est pas un tarif, la ligne ne se facturerait pas.",
+    "geste": "Saisir le prix non assuré."
+   },
+   {
+    "nom": "ligne identique",
+    "ok": false,
+    "code": "PRIX_INCHANGE",
+    "motif": "Ce prix est déjà celui en vigueur à cette date : rien à proposer.",
+    "geste": "Modifier au moins un des prix, ou ne rien changer."
+   },
+   {
+    "nom": "tiret de la colonne assurée",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "etatAssure": "manquant"
+   },
+   {
+    "nom": "valider en un geste (DAF)",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "statut": "valide",
+    "roleDecision": "da",
+    "prixApres": 150250,
+    "prixAttendu": 150250
+   },
+   {
+    "nom": "valider par un profil qui édite sans décider",
+    "ok": false,
+    "code": "VALIDATION_RESERVEE",
+    "motif": "Valider un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.",
+    "geste": "Enregistrer le changement comme proposition : la décision revient à l’un de ces profils."
+   },
+   {
+    "nom": "proposer par un profil qui édite sans décider",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "proposeRole": "comptable"
+   },
+   {
+    "nom": "décision Non avec motif",
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   }
+  ],
+  "_doc": "Circuit Oui/Non des prix (lot T3) : contrôle d’usage tarif_deja_utilise (proposition et Oui rejoué), cas limites de 5.6, date passée réservée à la DAF et à la Direction, Valider en un geste, alerte et retour à l’auteur, famille du centre des validations, pro-forma à la conversion.",
+  "memeJour": {
+   "vigueur": 8200,
+   "attendu": 8200,
+   "versions": [
+    "1:valide",
+    "2:valide",
+    "3:valide"
+   ]
+  },
+  "idEditeur": "CH04@2026-08-16@2",
+  "alerte": {
+   "da": [
+    {
+     "cle": "prix:grille",
+     "titre": "38 changements de prix à valider",
+     "detail": "Chaque ligne se décide (Oui ou Non) avec la comparaison de l’ancien et du nouveau prix : le prix en vigueur ne change pas avant le Oui.",
+     "priorite": "important",
+     "lien": "cfg-tarifs",
+     "onglet": "alertes"
+    },
+    {
+     "cle": "prix:CH04@2026-08-16@2",
+     "titre": "Changement de prix à valider : CH04",
+     "detail": "Proposé par Vecteur comptable. Le prix en vigueur ne change pas avant le Oui.",
+     "priorite": "important",
+     "lien": "cfg-tarifs",
+     "onglet": "alertes"
+    },
+    {
+     "cle": "notif:NOTxmsvr66ow8iovv",
+     "titre": "Votre changement de prix MG04 a été accepté",
+     "detail": "Il prend effet le 15/08/2026. Décidé par Vecteur Direction.",
+     "priorite": "information",
+     "lien": "cfg-tarifs",
+     "onglet": "historique"
+    }
+   ],
+   "caissier": [],
+   "grille": 38
+  },
+  "retour": {
+   "comptable": [],
+   "apresDa": [
+    "notif:NOTxmsvr66p5la73j",
+    "notif:NOTxmsvr66ow8iovv"
+   ]
+  },
+  "centre": {
+   "famille": {
+    "libelle": "Changements de prix en attente (Oui ou Non)",
+    "profil": "Administrateur système, Directrice de l’Administration et des Finances (DAF), Direction / Gérance",
+    "ecran": "cfg-tarifs",
+    "enAttente": 38
+   },
+   "reelles": 38,
+   "depuisCentre": "GESTE_A_SON_POSTE"
+  },
+  "ouiATout": {
+   "sansComparaison": "COMPARAISON_REQUISE",
+   "sansDroit": "VALIDATION_RESERVEE",
+   "resultat": {
+    "acceptees": [
+     "CH05"
+    ],
+    "refusees": [
+     "CH06:TARIF_DEJA_UTILISE"
+    ],
+    "exclues": 0
+   }
+  },
+  "proforma": {
+   "defaut": 30,
+   "propose": 30,
+   "dixJours": {
+    "regle": "prix_de_la_proforma",
+    "age": 10,
+    "validite": 30,
+    "ancien": 7000,
+    "nouveau": 7300,
+    "retenu": 7000,
+    "ecart": 300
+   },
+   "quaranteJours": {
+    "regle": "prix_du_jour",
+    "age": 40,
+    "validite": 30,
+    "ancien": 7000,
+    "nouveau": 7300,
+    "retenu": 7300,
+    "ecart": 300
+   },
+   "regle": {
+    "ok": true,
+    "jours": 5,
+    "avant": 30
+   },
+   "dixJoursApres": {
+    "regle": "prix_du_jour",
+    "age": 10,
+    "validite": 5,
+    "ancien": 7000,
+    "nouveau": 7300,
+    "retenu": 7300,
+    "ecart": 300
+   },
+   "invalides": [
+    "DUREE_INVALIDE",
+    "DUREE_INVALIDE",
+    "DUREE_INVALIDE",
+    "DUREE_INVALIDE",
+    "DUREE_INVALIDE"
+   ],
+   "reserve": "REGLAGE_RESERVE",
+   "venteNonProforma": "PAS_UNE_PROFORMA"
   }
  }
 }

@@ -258,6 +258,7 @@
     /* VALIDER EN UN GESTE (PRD 5.4, Q3) : la liste de rôles de la famille décide, jamais le simple droit d'éditer ; le moteur refuse en nommant, il ne dégrade pas
        silencieusement une demande de validation en proposition. */
     if (o.valider === true && !peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Valider un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Enregistrer le changement comme proposition : la décision revient à l’un de ces profils.');
+    if (o.valider === true) { var gm = refusFileulValidation(familleAValider('prix')); if (gm) return gm; }
     var h = D.TARIFS.lire();
     if (!h) return refusTarif('REFERENTIEL_ABSENT', 'Le référentiel de prix n’est pas chargé.', 'Recharger la page.');
     var p = h.parCode[o.code];
@@ -327,6 +328,10 @@
   function deciderTarif(versionId, decision, o) {
     o = o || {};
     if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Demander la décision à l’un de ces profils.');
+    /* DAF = la mère (T11, 11/11/2026) : la décision est une écriture de configuration, tenue par la mère. Un fileul la refuse en nommant (même code que les validations de
+       référentiels) ; la décision d'un fileul comme pièce de famille B appliquée par la mère est du lot du poste. */
+    var gardeMere = refusFileulValidation(familleAValider('prix'));
+    if (gardeMere) return gardeMere;
     if (decision !== 'oui' && decision !== 'non') return refusTarif('DECISION_INCONNUE', 'La décision est Oui ou Non.', 'Choisir Oui ou Non.');
     var col = colVersionsTarif(), v = col.get(versionId);
     if (!v) return refusTarif('VERSION_INTROUVABLE', 'Aucune version ne porte l’identifiant « ' + versionId + ' ».', 'Actualiser la liste des alertes.');
@@ -395,6 +400,8 @@
   function deciderTousTarifs(o) {
     o = o || {};
     if (!peutDeciderTarif()) return refusTarif('VALIDATION_RESERVEE', 'Décider d’un changement de prix revient à la Direction, à la Directrice Administrative et à l’administrateur : valider n’est pas modifier la fiche.', 'Demander la décision à l’un de ces profils.');
+    var gardeMereT = refusFileulValidation(familleAValider('prix'));
+    if (gardeMereT) return gardeMereT;
     if (o.comparaisonAffichee !== true) return refusTarif('COMPARAISON_REQUISE', 'Un « Oui à tout » ne se donne qu’après l’affichage de la comparaison ligne à ligne (ancien prix, nouveau prix, variation).', 'Ouvrir la comparaison, la lire, puis confirmer.');
     var enAttente = colVersionsTarif().all().filter(function (v) { return v.statut === 'propose'; });
     var ids = o.ids || enAttente.map(function (v) { return v.id; });

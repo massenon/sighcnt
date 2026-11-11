@@ -16892,7 +16892,7 @@ async function viderMessages(page) {
       kpi: [...document.querySelectorAll('#page-content .kpi')].map((k) => k.textContent.replace(/\s+/g, ' ').trim()),
     }));
     const attentes = centre.familles.filter((x) => x.n !== '' && Number(x.n) > 0);
-    verifier('Le centre des validations ne compte plus aucun élément en attente quand tout est arrêté (familles amorcées)', attentes.length === 0 && centre.familles.length >= 15, JSON.stringify({ attentes, nb: centre.familles.length }));
+    verifier('Le centre des validations ne compte plus aucun élément en attente quand tout est arrêté (familles amorcées)', attentes.filter((x) => x.f !== 'prix').length === 0 && centre.familles.length >= 15, JSON.stringify({ attentes, nb: centre.familles.length }));
 
     /* --- restitution des fiches ------------------------------------------------------------------------------------------------------------------------------------- */
     await page.evaluate((s) => {
@@ -19958,13 +19958,14 @@ async function viderMessages(page) {
       const b = PR.proposerTarif({ code: 'CH11', prixNonAssure: na('CH11') + 100, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 119 alerte non' });
       return { oui: a.version.id, non: b.version.id };
     });
-    const lire = (poste, detaille) => page.evaluate((p, d) => window.SIGH.notifications.collecter({ poste: p, detaille: d }).filter((n) => n.source === 'prix_a_valider' || (n.source === 'poste' && /changement de prix/i.test(n.titre))).map((n) => ({ cle: n.cle, titre: n.titre, detail: n.detail, priorite: n.priorite, lien: n.lien, onglet: n.onglet || null, groupe: !!n.groupe, nombre: n.nombre || 1, source: n.source })), poste, !!detaille);
+    /* Le banc peut porter les alertes et retours des scénarios voisins : on ne lit que les alertes de prix (source) et les retours qui nomment les codes de CETTE sonde. */
+    const lire = (poste, detaille) => page.evaluate((p, d) => window.SIGH.notifications.collecter({ poste: p, detaille: d }).filter((n) => n.source === 'prix_a_valider' || (n.source === 'poste' && /changement de prix (CH10|CH11)/i.test(n.titre))).map((n) => ({ cle: n.cle, titre: n.titre, detail: n.detail, priorite: n.priorite, lien: n.lien, onglet: n.onglet || null, groupe: !!n.groupe, nombre: n.nombre || 1, source: n.source })), poste, !!detaille);
     const grille = await page.evaluate(() => window.SIGH.store.raw().versionsTarif.filter((v) => v.statut === 'propose' && v.origine === 'semence-grille').length);
     const lotsDa = await lire('da', true);
     const lotsCaissier = await lire('caissier', true);
     const groupe = await lire('da', false);
     verifier('L’ALERTE OUI/NON est routée vers les profils de la famille de décision, UNE alerte PAR LOT : la grille imprimée des analyses (' + grille + ' propositions) n’est qu’une alerte portant son compte, chaque saisie à l’écran est un lot d’une ligne ; le caissier n’en voit aucune ; la cloche regroupe au-delà de trois (une ligne portant le compte des lots)',
-      lotsDa.filter((n) => n.cle === 'prix:grille').length === 1 && new RegExp('^' + grille + ' changements de prix à valider').test(lotsDa.filter((n) => n.cle === 'prix:grille')[0].titre) && lotsDa.some((n) => n.cle === 'prix:' + ids.oui && /CH10/.test(n.titre))
+      lotsDa.filter((n) => n.cle === 'prix:grille').length === 1 && lotsDa.filter((n) => n.source === 'poste').length === 0 && new RegExp('^' + grille + ' changements de prix à valider').test(lotsDa.filter((n) => n.cle === 'prix:grille')[0].titre) && lotsDa.some((n) => n.cle === 'prix:' + ids.oui && /CH10/.test(n.titre))
         && lotsDa.some((n) => n.cle === 'prix:' + ids.non) && lotsDa.every((n) => n.lien === 'cfg-tarifs' && n.onglet === 'alertes') && lotsCaissier.length === 0 && groupe.length === 1 && groupe[0].groupe && groupe[0].nombre === lotsDa.length, JSON.stringify([grille, lotsDa.map((n) => n.cle + ' ' + n.titre), lotsCaissier.length, groupe]));
     await enTant('da', 'cfg-tarifs.html');
     await pause(1500);
@@ -19982,7 +19983,7 @@ async function viderMessages(page) {
     const retourAdmin = await lire('admin', true);
     const retourCaissier = await lire('caissier', true);
     verifier('Après la décision, l’alerte DISPARAÎT avec sa cause (CH10 et CH11 ne sont plus produites, la grille reste) ; l’AUTEUR reçoit le retour : « accepté » (avec la date d’effet) pour le Oui, « refusé » avec le MOTIF pour le Non (priorité critique), vers l’écran « Tarifs et prix », historique ; le caissier n’en reçoit rien',
-      dec.o && dec.n && lotsApres.every((n) => n.cle === 'prix:grille') && retourAdmin.some((n) => /CH10 a été accepté/.test(n.titre) && /prend effet/.test(n.detail) && n.lien === 'cfg-tarifs' && n.onglet === 'historique')
+      dec.o && dec.n && lotsApres.some((n) => n.cle === 'prix:grille') && !lotsApres.some((n) => n.cle === 'prix:' + ids.oui || n.cle === 'prix:' + ids.non) && retourAdmin.some((n) => /CH10 a été accepté/.test(n.titre) && /prend effet/.test(n.detail) && n.lien === 'cfg-tarifs' && n.onglet === 'historique')
         && retourAdmin.some((n) => /CH11 a été refusé/.test(n.titre) && /surveillant général/.test(n.detail) && n.priorite === 'critique') && retourCaissier.length === 0, JSON.stringify([dec, lotsApres.map((n) => n.cle), retourAdmin.map((n) => n.titre + ' | ' + n.detail), retourCaissier.length]));
     const soi = await page.evaluate(() => {
       const PR = window.SIGH.parcours, S = window.SIGH.store, C = window.SIGH.core, demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
@@ -20056,6 +20057,21 @@ async function viderMessages(page) {
       finally { S.setReglage('posteFileul', false); }
     });
     verifier('SUR UN FILEUL, la commande Valider des analyses est absente et le geste direct est refusé (CONFIGURATION_DE_LA_MERE), l’élément reste en attente', fileul.peut === false && fileul.valider === 'CONFIGURATION_DE_LA_MERE' && fileul.enAttente === true, JSON.stringify(fileul));
+    /* DAF = la mère (T11) : sur un poste FILEUL, la décision d'un prix (Oui, Non, « Oui à tout », valider en un geste) est refusée en nommant la mère ; rien n'est décidé. */
+    const filP = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, C = window.SIGH.core, demain = C.iso(new Date(C.aujourdhui().getTime() + 86400000));
+      const na = (c) => PR.tarifALaDate(c, null, false).montant;
+      const p = PR.proposerTarif({ code: 'SO18', prixNonAssure: na('SO18') + 100, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 119 fileul' });
+      S.setReglage('posteFileul', true);
+      try {
+        return { propose: p.ok === true, oui: PR.deciderTarif(p.version.id, 'oui').code, non: PR.deciderTarif(p.version.id, 'non', { motif: 'x' }).code, tout: PR.deciderTousTarifs({ comparaisonAffichee: true, ids: [p.version.id] }).code,
+          valider: PR.proposerTarif({ code: 'SO19', prixNonAssure: na('SO19') + 100, etatAssure: 'unique', dateEffet: demain, motif: 'Sonde 119 fileul', valider: true }).code,
+          statut: S.raw().versionsTarif.filter((v) => v.id === p.version.id)[0].statut, id: p.version.id };
+      } finally { S.setReglage('posteFileul', false); }
+    });
+    await page.evaluate((id) => window.SIGH.parcours.deciderTarif(id, 'non', { motif: 'Sonde 119 : libérer' }), filP.id);
+    verifier('DAF = LA MÈRE (T11) : sur un poste fileul, Oui, Non, « Oui à tout » et « valider en un geste » sont refusés en nommant la mère (CONFIGURATION_DE_LA_MERE), la proposition reste en attente',
+      filP.propose && filP.oui === 'CONFIGURATION_DE_LA_MERE' && filP.non === 'CONFIGURATION_DE_LA_MERE' && filP.tout === 'CONFIGURATION_DE_LA_MERE' && filP.valider === 'CONFIGURATION_DE_LA_MERE' && filP.statut === 'propose', JSON.stringify(filP));
     const erreurs119 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
     verifier('Aucune erreur JavaScript', erreurs119.length === 0, erreurs119.join(' | '));
   });

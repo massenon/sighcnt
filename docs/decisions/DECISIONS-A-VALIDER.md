@@ -135,3 +135,5 @@ Sur `docs/prd/PRD-M12-cloture-annuelle-ecarts-et-droits-parametres.md` :
 - **Pastille du haut** : retirée de « Session verrouillée » et des pages 403 et 404 (même gabarit) ; « Mot de passe oublié » et « Réinitialisation » gardent la leur. `ECARTS-MAQUETTE.md` E2371.
 - **Plan du site réglable** : case « Afficher le plan du site » à « Paramètres », onglet « Installation et données », carte « Affichage », décochée par défaut, en base, journalisée à chaque changement ; décochée, les boutons du plan (403, 404, Paramètres) disparaissent et son adresse mène à la page 404. Maquette et poste. E2372.
 - **Repli** : un profil sans écran dans son ruban tombe sur la page 404, plus sur le plan du site. E2373.
+
+**Mise en œuvre de la section G (lot T3 des tarifs, 11/11/2026).** T4 mesuré (ligne impayée figée), T5 : moteur et écran de l'écart, durée réglable en base (30 jours, à valider), pas de geste de conversion à la maquette ; T6 : date passée pour la DAF et la Direction, case, motif, info-bulle ; T7 : lecture à confirmer (E2375) ; T11 : décisions à la mère. `ECARTS-MAQUETTE.md` E2374 à E2379.
