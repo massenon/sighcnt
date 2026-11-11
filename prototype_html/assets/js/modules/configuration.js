@@ -441,7 +441,7 @@
           corps.appendChild(el('p.text-sm.text-slate-700', { 'data-archivage-liste': '1', text: portes.length + ' poste' + (portes.length > 1 ? 's' : '') + ' réaffecté' + (portes.length > 1 ? 's' : '') + ' : ' + portes.map(function (x) { return x.poste; }).join(', ') + '.' }));
           corps.appendChild(el('label.label', { text: 'Poste d’accueil de ces postes' }));
           choix = el('select.select', { 'data-archivage-cible': '1' });
-          if (!plan.ok) choix.appendChild(el('option', { value: '', text: '— Choisir le poste d’accueil —' }));
+          if (!plan.ok) choix.appendChild(el('option', { value: '', text: 'Choisir le poste d’accueil' }));
           C.sortBy(candidats, 'poste').forEach(function (c) { choix.appendChild(el('option', { value: c.id, text: c.poste + (plan.ok && plan.parDefaut && plan.cible.id === c.id ? ' (son rattachement)' : '') })); });
           if (plan.ok) choix.value = plan.cible.id;
           corps.appendChild(choix);

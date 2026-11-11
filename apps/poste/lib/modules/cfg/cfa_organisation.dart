@@ -303,7 +303,7 @@ class _OngletOrganigramme extends StatelessWidget {
                 valeur: v,
                 surChange: (x) => cible.value = x,
                 options: [
-                  if (!ap.ok) const OptionChamp('', '— Choisir le poste d’accueil —'),
+                  if (!ap.ok) const OptionChamp('', 'Choisir le poste d’accueil'),
                   for (final x in candidats) OptionChamp(x.id, x.poste + (ap.ok && ap.parDefaut && ap.cible!.id == x.id ? ' (son rattachement)' : '')),
                 ])),
         const SizedBox(height: 6),
