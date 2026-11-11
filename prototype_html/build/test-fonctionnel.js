@@ -60,6 +60,8 @@ let courant = null;
 function scenario(nom) {
   courant = { nom, etapes: [], ok: true };
   resultats.push(courant);
+  /* Le nom du scénario qui démarre s'écrit au journal : un banc figé se localise au dernier nom écrit, au lieu d'une ligne de points muette. */
+  process.stdout.write('\n[' + resultats.length + '] ' + String(nom).slice(0, 90) + ' ');
   return courant;
 }
 function verifier(libelle, condition, detail) {
