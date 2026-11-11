@@ -515,7 +515,8 @@ class _CoquePosteState extends State<CoquePoste> {
                 session: publique ? null : _session,
                 horloge: widget.horloge ?? _session?.horloge,
                 publique: publique,
-                parametres: publique ? widget.parametres : const {},
+                // Les paramètres de l'adresse ne vont qu'aux pages publiques et à la page 403 (son motif : `plan-du-site`, qui nomme le réglage fermant l'écran).
+                parametres: publique || id == 'error-403' ? widget.parametres : const {},
                 aller: publique ? (_) {} : _allerDepuisAutonome,
                 accueil: () => (_session?.exigeConnexion ?? false) && _session!.etat == EtatSession.deconnectee ? 'index' : _accueilDuRole(),
                 child: Builder(

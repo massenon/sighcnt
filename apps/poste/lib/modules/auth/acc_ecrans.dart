@@ -9,6 +9,7 @@ import 'dart:io' show Platform;
 
 import '../../core/identifiants.dart';
 import '../../core/jetons_shell.dart';
+import '../../donnees/plan_du_site_poste.dart';
 import '../../donnees/verrou_secours_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
@@ -698,8 +699,8 @@ class _EtatVerrou extends State<EcranVerrou> {
     final retour = x.session?.retour;
     final cible = retour == null ? null : x.donnees?.manifeste.ecran(retour.ecran);
     final message = accMessageRetour(cible?.label);
+    // Pas de médaillon au-dessus du titre (Direction, 11/11/2026) : la maquette n'en porte plus.
     return SceneAcces(
-      icone: LucideIcons.lock,
       titre: 'Session verrouillée',
       sousTitre: accSousTitreVerrou(x.session?.verrou.delai ?? accDelaiVerrou),
       corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -767,27 +768,36 @@ class _EtatVerrou extends State<EcranVerrou> {
 // ------------------------------------------------------------------------------------------------------------------------------------------------
 
 class PageErreur extends StatelessWidget with EcranAutonome {
-  const PageErreur({super.key, required this.code, required this.titre, required this.message, required this.icone});
+  /// `icone` absent : pas de médaillon au-dessus du code (la page 403, Direction, 11/11/2026). `messageDe` : le texte dépend du réglage du plan du site et de l'adresse (le motif), lus à
+  /// l'affichage ; `motif` impose le motif quand l'écran est servi à la place d'un autre (le plan du site désactivé).
+  const PageErreur({super.key, required this.code, required this.titre, this.message, this.messageDe, this.icone, this.motif});
   final String code;
   final String titre;
-  final String message;
-  final IconData icone;
+  final String? message;
+  final String Function(String? motif, bool planAffiche)? messageDe;
+  final IconData? icone;
+  final String? motif;
 
   @override
   Widget build(BuildContext context) {
     final x = ContexteAutonome.of(context);
+    // Le lien du plan du site suit le réglage en base (désactivé par défaut) : jamais un lien vers une page fermée.
+    final plan = planDuSitePosteAffiche(x.magasin, horloge: x.horloge);
+    final texte = messageDe != null ? messageDe!(motif ?? x.parametres['motif'], plan) : (message ?? '');
     return Scaffold(
         backgroundColor: Colors.white,
         body: Center(
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(color: JetonsShell.navy50, borderRadius: BorderRadius.circular(16)),
-                      child: Icon(icone, size: 32, color: JetonsShell.navy800)),
-                  const SizedBox(height: 24),
+                  if (icone != null) ...[
+                    Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(color: JetonsShell.navy50, borderRadius: BorderRadius.circular(16)),
+                        child: Icon(icone, size: 32, color: JetonsShell.navy800)),
+                    const SizedBox(height: 24),
+                  ],
                   Text(code,
                       style: const TextStyle(color: JetonsShell.navy950, fontSize: 48, height: 1, fontWeight: FontWeight.w700, letterSpacing: -1.2)),
                   const SizedBox(height: 8),
@@ -798,16 +808,17 @@ class PageErreur extends StatelessWidget with EcranAutonome {
                   const SizedBox(height: 8),
                   ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 448),
-                      child: Text(message,
+                      child: Text(texte,
                           textAlign: TextAlign.center, style: const TextStyle(color: JetonsShell.slate500, fontSize: 14, height: 20 / 14))),
                   const SizedBox(height: 24),
                   Wrap(alignment: WrapAlignment.center, spacing: 8, runSpacing: 8, children: [
                     BoutonSigh(libelle: 'Retour à l’accueil', icone: LucideIcons.house, onPressed: () => x.aller(x.accueil())),
-                    BoutonSigh(
-                        libelle: 'Plan du site',
-                        variante: VarianteBouton.secondaire,
-                        icone: LucideIcons.map,
-                        onPressed: () => x.aller('plan-du-site')),
+                    if (plan)
+                      BoutonSigh(
+                          libelle: 'Plan du site',
+                          variante: VarianteBouton.secondaire,
+                          icone: LucideIcons.map,
+                          onPressed: () => x.aller('plan-du-site')),
                   ]),
                   const SizedBox(height: 40),
                   const Text('${IdentiteClinique.nom} — SIGH-CNT', style: TextStyle(color: JetonsShell.slate400, fontSize: 12, height: 16 / 12)),
@@ -816,13 +827,9 @@ class PageErreur extends StatelessWidget with EcranAutonome {
 }
 
 const PageErreur page404 = PageErreur(
-    code: '404',
-    titre: 'Page introuvable',
-    message: 'L’écran demandé n’existe pas ou a été déplacé. Utiliser le plan du site pour retrouver le module recherché.',
-    icone: LucideIcons.fileQuestionMark);
-const PageErreur page403 = PageErreur(
-    code: '403',
-    titre: 'Accès refusé',
-    message:
-        'Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.',
-    icone: LucideIcons.shieldX);
+    code: '404', titre: 'Page introuvable', messageDe: _message404, icone: LucideIcons.fileQuestionMark);
+// 403 : sans médaillon. Une adresse fermée par un RÉGLAGE (motif `plan-du-site`) est NOMMÉE : on dit quel réglage la ferme et qui le règle.
+const PageErreur page403 = PageErreur(code: '403', titre: 'Accès refusé', messageDe: _message403);
+
+String _message404(String? motif, bool planAffiche) => accMessage404(planAffiche: planAffiche);
+String _message403(String? motif, bool planAffiche) => accMessage403(motif: motif);

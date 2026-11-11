@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show cleAffichagePlanDuSite;
+import 'package:sigh_poste/core/service_parametres.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
@@ -108,7 +110,10 @@ Future<void> ouvrir(WidgetTester t, String id, M f) async {
     case 'auth-lock':
     case 'auth-2fa':
     case 'plan-du-site':
-      await monter(t, poste(),
+      // Le plan du site est désactivé par défaut (lot U) : sa fiche est relevée avec le réglage posé, comme le fait l'extracteur de la maquette.
+      final m = poste();
+      if (id == 'plan-du-site') serviceParametres(m, auteur: () => 'test', horloge: () => auj).regler(cleAffichagePlanDuSite, true, '2026-10-30');
+      await monter(t, m,
           ecran: id, session: SessionPoste.ouverte('admin', nom: 'BASSONGUI Chabi Séko', horloge: () => auj), taille: const Size(1440, 40000));
     case 'enquete-publique':
       final fx = obj(f['fixtureEnquete']);

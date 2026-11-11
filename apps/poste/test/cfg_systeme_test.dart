@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_domaine/sigh_domaine.dart' show cfbChampsDeTestConserves, cfbEssentielles, cfbPlanVidage;
+import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
+import 'package:sigh_poste/main.dart';
 import 'package:sigh_poste/modules/cfg/cfb_systeme.dart';
 
 import 'aide_polices.dart';
@@ -40,9 +42,62 @@ void main() {
     expect(find.text('Architecture cible — proposition'), findsNothing);
     expect(find.textContaining('Cette architecture est une proposition technique'), findsNothing);
     expect(find.textContaining('base locale chiffrée du poste n’est pas encore branchée'), findsNothing);
-    for (final b in ['Réinitialiser le jeu de données', 'Exporter les données', 'Plan du site', 'Sauvegardes']) {
+    for (final b in ['Réinitialiser le jeu de données', 'Exporter les données', 'Sauvegardes']) {
       expect(find.widgetWithText(BoutonSigh, b), findsOneWidget, reason: b);
     }
+    // Le plan du site est désactivé par défaut (lot U) : sa commande n'est pas offerte, et l'onglet « Affichage » existe.
+    expect(find.widgetWithText(BoutonSigh, 'Plan du site'), findsNothing);
+    expect(find.text('Affichage'), findsWidgets);
+  });
+
+  Future<void> ouvrirMere(WidgetTester t, Magasin m, String role) async {
+    t.view.physicalSize = const Size(1600, 1200);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.resetPhysicalSize);
+    await t.pumpWidget(SighPoste(
+        key: UniqueKey(),
+        donnees: donneesNav,
+        config: ConfigPoste(mode: ModePoste.mere, role: role),
+        ecranInitial: 'cfg-systeme',
+        magasin: m,
+        horloge: () => aujourdhui));
+    for (var i = 0; i < 4; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+  }
+
+  casM14('« Affichage » : le plan du site est désactivé par défaut ; l’administrateur l’affiche au geste (version du paramètre en base, journal), le lien paraît, puis il le masque', (t) async {
+    final m = magasinM14();
+    await ouvrirMere(t, m, 'admin');
+    await onglet(t, 'affichage');
+    expect(find.text('Plan du site'), findsWidgets);
+    expect(find.text('Afficher le plan du site'), findsWidgets);
+    expect(find.text('Non'), findsOneWidget);
+    await toucherM14(t, find.widgetWithText(BoutonSigh, 'Afficher le plan du site'));
+    expect(find.text('Le plan du site est affiché.'), findsOneWidget);
+    expect(find.text('Oui'), findsOneWidget);
+    final versions = m.collection('parametres').toutes.where((f) => f['cle'] == 'affichage.planDuSite').toList();
+    expect(versions.map((f) => f['valeur']), contains(true));
+    final j = m.collection('audit').toutes.firstWhere((a) => a['action'] == 'Plan du site');
+    expect([j['module'], j['entite'], j['reference']], ['M14', 'reglage', 'planDuSiteAffiche']);
+    expect('${j['ancienneValeur'] ?? j['avant']}', contains('false'));
+    await onglet(t, 'installation');
+    expect(find.widgetWithText(BoutonSigh, 'Plan du site'), findsOneWidget);
+    await onglet(t, 'affichage');
+    await toucherM14(t, find.widgetWithText(BoutonSigh, 'Masquer le plan du site'));
+    expect(find.text('Le plan du site est masqué.'), findsOneWidget);
+    await onglet(t, 'installation');
+    expect(find.widgetWithText(BoutonSigh, 'Plan du site'), findsNothing);
+  });
+
+  casM14('« Affichage » : la commande est ABSENTE pour un profil qui ne règle pas, et sur un poste fileul (la configuration se règle sur la mère)', (t) async {
+    final m = magasinM14();
+    await ouvrirMere(t, m, 'direction');
+    await onglet(t, 'affichage');
+    expect(find.widgetWithText(BoutonSigh, 'Afficher le plan du site'), findsNothing);
+    await ouvrirM14(t, m, 'cfg-systeme');
+    await onglet(t, 'affichage');
+    expect(find.widgetWithText(BoutonSigh, 'Afficher le plan du site'), findsNothing, reason: 'fileul : réglé sur la mère');
   });
 
   casM14('la corbeille balaie TOUS les modules : une fiche archivée à un endroit se retrouve ici, restaurée d’un geste et journalisée', (t) async {

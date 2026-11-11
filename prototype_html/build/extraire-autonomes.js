@@ -34,7 +34,8 @@ const ECRANS = [
   { id: 'auth-lock', url: '/pages/auth-lock.php', session: true },
   { id: 'error-404', url: '/pages/error-404.php', session: false },
   { id: 'error-403', url: '/pages/error-403.php', session: false },
-  { id: 'plan-du-site', url: '/pages/plan-du-site.php', session: true },
+  /* Le plan du site est désactivé par défaut (lot U) : sa fiche se relève avec le réglage posé, restitué ensuite. */
+  { id: 'plan-du-site', url: '/pages/plan-du-site.php', session: true, reglagePlan: true },
   { id: 'enquete-publique', url: '/pages/enquete-publique.php?jeton=@JETON', session: false },
 ];
 
@@ -133,7 +134,14 @@ async function jetonValide(page) {
       }
       const url = `http://127.0.0.1:${BANC.PORT_PHP}` + e.url.replace('@JETON', jeton || 'inconnu');
       let fiche;
+      const poserPlan = async (oui) => {
+        await page.goto(`http://127.0.0.1:${BANC.PORT_PHP}/pages/error-404.php`, { waitUntil: 'load' });
+        await page.waitForFunction(() => window.SIGH && window.SIGH.store && window.SIGH.store.faitAutorite && window.SIGH.store.faitAutorite(), null, { timeout: 20000 });
+        await page.evaluate((v) => { window.SIGH.store.setReglage('planDuSiteAffiche', v); window.SIGH.store.pousserMaintenant(); }, oui);
+        await page.waitForFunction(() => window.SIGH.store.fileEnAttente() === 0, null, { timeout: 20000 });
+      };
       try {
+        if (e.reglagePlan) await poserPlan(true);
         await page.goto(url, { waitUntil: 'load' });
         await page.waitForFunction(() => document.body && document.body.innerText.replace(/\s+/g, ' ').trim().length > 15, null, { timeout: 15000 });
         await page.waitForTimeout(1200);
@@ -145,6 +153,7 @@ async function jetonValide(page) {
         if (e.id === 'enquete-publique') fiche.fixtureEnquete = fixtureEnquete;
         if (new URL(urlFinale).pathname !== new URL(url).pathname) fiche.redirigeVers = new URL(urlFinale).pathname;
       } catch (err) { fiche = { id: e.id, acces: 'erreur', erreur: String(err.message || err).slice(0, 160) }; }
+      if (e.reglagePlan) { try { await poserPlan(false); } catch (err) { console.log('  réglage du plan du site non restitué : ' + err.message); } }
       await ctx.close();
       resume.push(fiche);
       console.log(`  ${e.id} : ${fiche.acces}${fiche.redirigeVers ? ' → ' + fiche.redirigeVers : ''}`);

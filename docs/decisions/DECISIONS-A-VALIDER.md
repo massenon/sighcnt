@@ -129,3 +129,8 @@ Sur `docs/prd/PRD-M12-cloture-annuelle-ecarts-et-droits-parametres.md` :
 - **Q1 oui** : aucun masquage d'interface par un rôle écrit en dur ; ce qu'un profil voit ou fait vient de la matrice des droits ou d'un réglage en base.
 - **Q2** : la clôture définitive est prononcée par **la Directrice Administrative, la Direction, l'administrateur ou le comptable** (défaut du circuit réglable). Hypothèse conservée et signalée : la personne qui a démarré la clôture ne la prononce pas elle-même.
 - **Q3** : **pas de format DGI.** Format proposé et nommé SIGH-ARC version 1 (`docs/specs/SPEC-archive-cloture-exercice.md`), archive actuelle conservée : CSV des écritures, balance, états à imprimer en PDF, manifeste SHA-256. Conservation illimitée.
+
+## J. Demandes de la Direction du 11/11/2026 (écrans d'accès)
+
+- **Icône des écrans « Session verrouillée » et « 403 »** : retirée (le médaillon qui surmonte le titre). Aucun autre écran d'accès ne change. `ECARTS-MAQUETTE.md` E2371.
+- **Plan du site réglable, désactivé par défaut** : réglage « Afficher le plan du site » (Paramètres système, onglet « Affichage »), en base, réservé à l'administrateur et à la Directrice Administrative, tracé au journal ; désactivé, le lien disparaît et l'adresse directe ouvre un 403 nommé. Maquette et poste. E2372, E2373.

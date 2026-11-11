@@ -118,6 +118,7 @@ export 'src/acces/acc_connexion.dart';
 export 'src/acces/acc_identifiants.dart';
 export 'src/acces/acc_secours.dart';
 export 'src/acces/acc_verrou.dart';
+export 'src/acces/acc_plan_du_site.dart';
 export 'src/acces/acc_support.dart';
 export 'src/mere/mra_regles.dart';
 export 'src/mere/mrb_regles.dart';

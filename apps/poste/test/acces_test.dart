@@ -8,6 +8,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/core/identifiants.dart';
+import 'package:sigh_poste/core/service_parametres.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
@@ -104,6 +105,12 @@ bool sansChrome(WidgetTester t) =>
     find.byType(Ruban).evaluate().isEmpty &&
     find.byType(PageStandard).evaluate().isEmpty &&
     find.byType(ContexteEcran).evaluate().isEmpty;
+
+/// Pose le réglage « Afficher le plan du site » (désactivé par défaut, lot U) : une version du paramètre en base, comme le fait l'écran « Affichage » de la mère.
+Magasin avecPlan(Magasin m, {bool affiche = true}) {
+  serviceParametres(m, auteur: () => 'test', horloge: () => auj).regler(cleAffichagePlanDuSite, affiche, '2026-10-30');
+  return m;
+}
 
 List<M> audit(Magasin m, String action) => [for (final e in m.collection('audit').toutes) if (e['action'] == action) e];
 
@@ -629,7 +636,7 @@ void main() {
   // ============================================================================================================================ ERREURS
   group('pages d’erreur', () {
     for (final (id, code) in [('error-404', '404'), ('error-403', '403')]) {
-      cas('$id : les textes de la maquette, retour à l’accueil du rôle, plan du site', (t) async {
+      cas('$id : les textes de la maquette, retour à l’accueil du rôle ; le plan du site n’est PAS proposé tant qu’il est désactivé', (t) async {
         final m = poste();
         await monter(t, m, ecran: id, role: 'reception');
         final e = obj(obj(v['erreurs'])[id]);
@@ -637,11 +644,43 @@ void main() {
           expect(ex.textesVisibles(t).any((x) => x.contains(ex.normaliser(texte))), isTrue, reason: texte);
         }
         expect(find.text(code), findsOneWidget);
+        expect(find.widgetWithText(BoutonSigh, 'Retour à l’accueil'), findsOneWidget);
+        expect(find.widgetWithText(BoutonSigh, 'Plan du site'), findsNothing);
+        await fin(t);
+      });
+      cas('$id : plan du site activé, le texte et le bouton reviennent, le bouton ouvre le plan', (t) async {
+        final m = avecPlan(poste());
+        await monter(t, m, ecran: id, role: 'reception', taille: const Size(1600, 30000));
+        final e = obj(obj(obj(v['planDuSite'])['pages'])['active']);
+        for (final texte in (e[code == '404' ? 'textes404' : 'textes403'] as List).cast<String>()) {
+          expect(ex.textesVisibles(t).any((x) => x.contains(ex.normaliser(texte))), isTrue, reason: texte);
+        }
         await bouton(t, 'Plan du site');
         expect(find.text('Inventaire de tous les écrans du prototype, organisés par domaine et par module.'), findsOneWidget);
         await fin(t);
       });
     }
+
+    cas('403 : AUCUN médaillon au-dessus du code (Direction, 11/11/2026) ; la 404 garde le sien', (t) async {
+      await monter(t, poste(), ecran: 'error-403', role: 'reception');
+      expect(find.byIcon(LucideIcons.shieldX), findsNothing);
+      expect(find.byIcon(LucideIcons.shieldAlert), findsNothing);
+      final haut = t.getTopLeft(find.text('403')).dy;
+      expect(haut, lessThan(t.getTopLeft(find.text('Accès refusé')).dy));
+      await fin(t);
+      await monter(t, poste(), ecran: 'error-404', role: 'reception');
+      expect(find.byIcon(LucideIcons.fileQuestionMark), findsOneWidget);
+      await fin(t);
+    });
+
+    cas('l’adresse du 403 porte le motif du plan du site : le texte nomme le réglage (les mêmes mots que la maquette)', (t) async {
+      await monter(t, poste(), ecran: 'error-403', role: 'reception', parametres: {'motif': 'plan-du-site'});
+      final e = obj(obj(obj(v['planDuSite'])['pages'])['desactive']);
+      for (final texte in (e['textes403Motif'] as List).cast<String>()) {
+        expect(ex.textesVisibles(t).any((x) => x.contains(ex.normaliser(texte))), isTrue, reason: texte);
+      }
+      await fin(t);
+    });
 
     cas('« Retour à l’accueil » ouvre l’accueil du profil (réception) ; sans session exigée, la coque suit', (t) async {
       await monter(t, poste(), ecran: 'error-404', role: 'reception');
@@ -664,7 +703,7 @@ void main() {
   // ============================================================================================================================ PLAN DU SITE
   group('plan-du-site', () {
     cas('l’inventaire COMPLET du manifeste, dans l’ordre des domaines, avec le pied de la maquette', (t) async {
-      await monter(t, poste(), ecran: 'plan-du-site', taille: const Size(1600, 30000));
+      await monter(t, avecPlan(poste()), ecran: 'plan-du-site', taille: const Size(1600, 30000));
       final p = obj(v['plan']);
       expect(sansChrome(t), isTrue);
       for (final s in fl(p['sections']).where((s) => (s['modules'] as List).isNotEmpty)) {
@@ -682,7 +721,7 @@ void main() {
     });
 
     cas('un écran permis s’ouvre dans la coque ; un écran fermé au profil mène à la 403 et la tentative est journalisée (RG-13)', (t) async {
-      final m = poste();
+      final m = avecPlan(poste());
       await monter(t, m, ecran: 'plan-du-site', role: 'reception', taille: const Size(1600, 30000));
       // m14-audit est fermé à la réception.
       expect(donnees.matrice.peutVoir('reception', 'm14-audit'), isFalse);
@@ -695,8 +734,24 @@ void main() {
       await fin(t);
     });
 
+    cas('DÉSACTIVÉ par défaut : l’adresse directe ouvre le 403 NOMMÉ (le réglage et qui le modifie), jamais une page vide, et la tentative est journalisée', (t) async {
+      final m = poste();
+      final s = SessionPoste.ouverte('reception', nom: 'EZIN Orou', horloge: () => auj);
+      await monter(t, m, ecran: 'plan-du-site', session: s, role: 'reception');
+      expect(find.text('403'), findsOneWidget);
+      expect(find.text('Accès refusé'), findsOneWidget);
+      final e = obj(obj(obj(v['planDuSite'])['pages'])['desactive']);
+      for (final texte in (e['textes403Motif'] as List).cast<String>()) {
+        expect(ex.textesVisibles(t).any((x) => x.contains(ex.normaliser(texte))), isTrue, reason: texte);
+      }
+      expect(find.text('Inventaire de tous les écrans du prototype, organisés par domaine et par module.'), findsNothing);
+      expect(find.widgetWithText(BoutonSigh, 'Plan du site'), findsNothing);
+      expect(audit(m, 'Accès refusé : plan du site désactivé'), hasLength(1));
+      await fin(t);
+    });
+
     cas('« Retour à l’application » ouvre l’accueil du profil', (t) async {
-      await monter(t, poste(), ecran: 'plan-du-site', role: 'reception', taille: const Size(1600, 30000));
+      await monter(t, avecPlan(poste()), ecran: 'plan-du-site', role: 'reception', taille: const Size(1600, 30000));
       await bouton(t, 'Retour à l’application', ms: 600);
       expect(find.byType(BarreSuperieure), findsOneWidget);
       await fin(t);

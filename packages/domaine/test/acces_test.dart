@@ -241,4 +241,53 @@ void main() {
       expect(plan.systeme.map((e) => e.label), fl(sections.last['liensSysteme']).map((e) => e['label']));
     });
   });
+
+  // LE PLAN DU SITE EST UN RÉGLAGE, DÉSACTIVÉ PAR DÉFAUT (lot U, 11/11/2026) : la lecture, les refus nommés, les textes des pages d'erreur, le journal.
+  group('plan du site réglable', () {
+    final p = obj(v['planDuSite']);
+    test('le défaut est NON et seule la valeur vraie affiche (absent, faux, texte, nombre, nul : non)', () {
+      expect(p['defaut'], planDuSiteDefaut);
+      expect(planDuSiteDefaut, isFalse);
+      for (final x in fl(p['lecture'])) {
+        final r = x['reglage'] == 'absent' ? null : x['reglage'];
+        expect(planDuSiteAffiche(r), x['affiche'], reason: 'réglage ${x['reglage']}');
+      }
+    });
+    test('qui règle et quelles valeurs : les refus nommés de la maquette', () {
+      for (final x in fl(p['definir'])) {
+        final refus = controlerReglagePlanDuSite(role: '${x['role']}', valeur: x['valeur']);
+        expect(refus == null, x['ok'], reason: '${x['role']} / ${x['valeur']}');
+        if (refus != null) {
+          expect(refus.code, x['code']);
+          expect(refus.motif, x['motif']);
+          expect(refus.geste, x['geste']);
+        }
+      }
+    });
+    test('les textes des pages 404 et 403 suivent le réglage, mot pour mot', () {
+      final pages = obj(p['pages']);
+      for (final etat in ['desactive', 'active']) {
+        final e = obj(pages[etat]);
+        expect(sp((e['textes404'] as List)[2]), accMessage404(planAffiche: etat == 'active'), reason: '404 $etat');
+        expect(sp((e['textes403'] as List)[2]), accMessage403(), reason: '403 $etat');
+        expect(sp((e['textes403Motif'] as List)[2]), accMessage403(motif: motifPlanDuSiteDesactive), reason: '403 motif $etat');
+        expect((e['liens403'] as List).contains('Plan du site'), etat == 'active');
+        expect((e['liens404'] as List).contains('Plan du site'), etat == 'active');
+      }
+    });
+    test('l’adresse directe du plan désactivé renvoie au 403 nommé', () {
+      expect(fl([obj(p['adresseDirecte'])]).first['navigation'], ['pages/error-403.php?motif=$motifPlanDuSiteDesactive']);
+    });
+    test('le journal du réglage porte l’ancienne et la nouvelle valeur', () {
+      final j = obj(p['journal']);
+      expect([j['module'], j['entite'], j['reference']], ['M14', 'reglage', 'planDuSiteAffiche']);
+      expect(j['ancienne'], '{"affiche":false}');
+      expect('${j['nouvelle']}'.startsWith('{"affiche":true'), isTrue);
+    });
+    test('le paramètre est déclaré au registre : booléen, défaut non, famille « Affichage », jamais au téléphone', () {
+      final d = definitionDeParametre(cleAffichagePlanDuSite)!;
+      expect([d.type, d.defaut, d.famille, d.mobile, d.branche], [TypeParametre.booleen, false, 'affichage', false, true]);
+      expect(libellesFamillesParametres['affichage'], 'Affichage');
+    });
+  });
 }

@@ -9,8 +9,10 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../donnees/persistance.dart' show CleLocale;
+import '../../donnees/plan_du_site_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../sync/configuration_sync.dart' show ApplicateurConfiguration;
 import '../../shell/ecran_hub.dart';
 import 'cfa_commun.dart';
 import 'cfb_commun.dart';
@@ -204,13 +206,14 @@ class _EtatSysteme extends State<EcranSysteme> {
     final noms = cfbNomsCollections();
     // Toute écriture d'une collection (archivage, restauration, vidage) recompose l'écran : le compteur de la corbeille doit suivre.
     return ListenableBuilder(
-        listenable: Listenable.merge([for (final n in noms) c.magasin.collection(n), c.magasin.collection('reglages')]),
+        listenable: Listenable.merge([for (final n in noms) c.magasin.collection(n), c.magasin.collection('reglages'), c.magasin.collection(parCollectionParametres)]),
         builder: (ctx, _) => OngletsSigh(onglets: [
               OngletDef(id: 'installation', libelle: 'Installation et données', construire: (_) => _Installation(c: c, rafraichir: () => setState(() {}))),
               OngletDef(id: 'corbeille', libelle: 'Corbeille', compte: cfbCorbeille(c.magasin).length, construire: (_) => _Corbeille(c: c)),
               OngletDef(id: 'bareme', libelle: 'Barème NS 131', construire: (_) => _Bareme(c: c)),
               OngletDef(id: 'reinitialisation', libelle: 'Jeux de test', construire: (_) => _JeuxDeTest(c: c, rafraichir: () => setState(() {}))),
               OngletDef(id: 'relais', libelle: 'Relais en ligne', construire: (_) => _Relais(c: c, estMere: widget.estMere)),
+              OngletDef(id: 'affichage', libelle: 'Affichage', construire: (_) => _Affichage(c: c, estMere: widget.estMere)),
               OngletDef(id: 'parametres', libelle: 'Paramètres', construire: (_) => PanneauParametres(c: c, estMere: widget.estMere)),
             ]));
   }
@@ -347,7 +350,9 @@ class _Installation extends StatelessWidget {
                   icone: LucideIcons.keyRound,
                   variante: VarianteBouton.secondaire,
                   onPressed: () => _sauvegarderCle(context)),
-            BoutonSigh(libelle: 'Plan du site', icone: LucideIcons.map, variante: VarianteBouton.secondaire, onPressed: () => c.aller('plan-du-site')),
+            // Le plan du site n'est offert que si le réglage en base l'affiche (désactivé par défaut, lot U).
+            if (planDuSitePosteAffiche(c.magasin, horloge: () => c.aujourdhui))
+              BoutonSigh(libelle: 'Plan du site', icone: LucideIcons.map, variante: VarianteBouton.secondaire, onPressed: () => c.aller('plan-du-site')),
             BoutonSigh(libelle: 'Sauvegardes', icone: LucideIcons.databaseBackup, variante: VarianteBouton.secondaire, onPressed: () => c.aller('m14-sauvegardes')),
           ])),
       cfbNote(
@@ -439,6 +444,54 @@ class _Corbeille extends StatelessWidget {
               ],
             )),
     ]);
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// Onglet « Affichage » — le plan du site est un réglage en base, désactivé par défaut (lot U, Direction, 11/11/2026)
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+class _Affichage extends StatelessWidget {
+  const _Affichage({required this.c, required this.estMere});
+  final ContexteEcran c;
+  final bool estMere;
+
+  @override
+  Widget build(BuildContext context) {
+    final plan = PlanDuSitePoste(c.magasin, auteur: () => acteurNom(c), role: c.role, horloge: () => c.aujourdhui);
+    return ListenableBuilder(
+        listenable: c.magasin.collection(parCollectionParametres),
+        builder: (ctx, _) {
+          final affiche = plan.affiche();
+          return CarteSigh(
+              titre: 'Plan du site',
+              actions: [
+                // La commande est ABSENTE pour qui ne règle pas : le rôle (administrateur, Directrice Administrative) et le droit de l'écran ; le domaine refuse de toute façon en nommant.
+                // Une configuration se règle sur la mère : un fileul la reçoit et ne l'écrit pas.
+                if (plan.peutRegler && c.droit.editer && estMere)
+                  BoutonSigh(
+                      libelle: affiche ? 'Masquer le plan du site' : 'Afficher le plan du site',
+                      icone: affiche ? LucideIcons.eyeOff : LucideIcons.eye,
+                      variante: VarianteBouton.secondaire,
+                      taille: TailleBouton.sm,
+                      onPressed: () {
+                        final r = plan.definir(!affiche);
+                        if (r['ok'] != true) {
+                          ToastsSigh.afficher(ctx, '${r['motif']}', type: TypeToast.erreur, detail: '${r['geste']}');
+                          return;
+                        }
+                        ToastsSigh.afficher(ctx, r['affiche'] == true ? 'Le plan du site est affiché.' : 'Le plan du site est masqué.', type: TypeToast.succes);
+                      }),
+              ],
+              child: cfaPile([
+                if (!estMere) NoteSigh(ApplicateurConfiguration.motifGarde, ton: TonSigh.info, icone: LucideIcons.lock),
+                cfbNote(
+                    'Le plan du site liste tous les écrans du logiciel. Il est désactivé par défaut : tant que ce réglage reste sur « non », son lien disparaît du ruban, des paramètres, des pages d’erreur et de la recherche, et son adresse directe ouvre un accès refusé. Le réglage est enregistré en base, journalisé, et propre à la clinique : il se règle ici par l’administrateur ou la Directrice Administrative.',
+                    ton: 'info',
+                    icone: LucideIcons.map),
+                DescListeSigh([('Afficher le plan du site', cfaGras(affiche ? 'Oui' : 'Non'))]),
+              ], espace: 12));
+        });
   }
 }
 

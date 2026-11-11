@@ -24,7 +24,9 @@
   "Installation et données",
   "Corbeille",
   "Barème NS",
-  "Jeux de test"
+  "Jeux de test",
+  "Relais en ligne",
+  "Affichage"
  ],
  "kpis": [
   "Collections de données",
@@ -49,6 +51,8 @@
   "Corbeille2",
   "Barème NS 131",
   "Jeux de test",
+  "Relais en ligne",
+  "Affichage",
   "Colonnes",
   "Exporter",
   "1",
@@ -57,7 +61,6 @@
   "4",
   "Réinitialiser le jeu de données",
   "Exporter les données",
-  "Plan du site",
   "Sauvegardes"
  ],
  "champs": [],

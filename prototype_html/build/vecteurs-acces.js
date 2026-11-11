@@ -23,7 +23,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       class Faux extends Vrai { constructor(...a) { if (a.length === 0) super(FIXE); else super(...a); } static now() { return FIXE; } }
       window.Date = Faux;
       window.__nav = [];
-      navigation.addEventListener('navigate', (e) => { if (e.cancelable) { e.preventDefault(); window.__nav.push(e.destination.url.replace(location.origin + '/', '')); } });
+      navigation.addEventListener('navigate', (e) => { if (window.__laisser) return; if (e.cancelable) { e.preventDefault(); window.__nav.push(e.destination.url.replace(location.origin + '/', '')); } });
     });
     for (const f of ['auth.js', 'support.js']) await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules', f) });
 
@@ -163,7 +163,56 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         S.setSession({ jeton: sessionOrigine.jeton, role: 'admin', nom: 'Admin', poste: 'Administrateur', identifiant: 'admin.systeme' });
       }
 
-      /* ========================================================================== PLAN DU SITE */
+      /* ========================================================================== PLAN DU SITE (réglage, lot U du 11/11/2026) */
+      /* Le plan du site est désactivé par défaut : on relève d'abord les pages d'erreur et l'adresse directe dans cet état, puis les règles du réglage, puis
+         l'écran lui-même avec le réglage posé (il se restitue à la fin). */
+      {
+        const PS = SIGH.planDuSite;
+        const reglageOrigine = S.reglage(PS.CLE, undefined);
+        const posteRole = (r) => S.setSession({ jeton: sessionOrigine.jeton, role: r, nom: 'Agent ' + r, poste: r, identifiant: 'x.' + r });
+        const avecMotif = async (id, motif) => { window.__laisser = true; history.replaceState(null, '', location.pathname + (motif ? '?motif=' + motif : '')); window.__laisser = false; const r = await monter(id); window.__laisser = true; history.replaceState(null, '', location.pathname); window.__laisser = false; navs(); return r; };
+        const cas = { cle: PS.CLE, defaut: PS.DEFAUT };
+        // 1) la lecture : seul `true` affiche (absent, faux, texte, nombre, nul : non)
+        cas.lecture = [];
+        for (const v of ['__absent__', true, false, 'oui', 1, null]) {
+          if (v === '__absent__') { const d = S.raw()._reglages || {}; delete d[PS.CLE]; } else S.setReglage(PS.CLE, v);
+          cas.lecture.push({ reglage: v === '__absent__' ? 'absent' : v, affiche: PS.affiche(), ouvertParManifeste: N.ouvertParReglage('plan-du-site'), canAdmin: N.can('admin', N.get('plan-du-site')) });
+        }
+        { const d = S.raw()._reglages || {}; delete d[PS.CLE]; }
+        // 2) les pages d'erreur et l'adresse directe, plan désactivé puis activé
+        posteRole('reception');
+        const pagesPlan = {};
+        for (const etat of ['desactive', 'active']) {
+          if (etat === 'active') S.setReglage(PS.CLE, true);
+          const r404 = await monter('error-404'); const r403 = await monter('error-403'); const r403m = await avecMotif('error-403', 'plan-du-site');
+          pagesPlan[etat] = { textes404: textes(r404), liens404: [...r404.querySelectorAll('a')].map((a) => norm(a.textContent)), textes403: textes(r403), liens403: [...r403.querySelectorAll('a')].map((a) => norm(a.textContent)), textes403Motif: textes(r403m) };
+        }
+        cas.pages = propre(pagesPlan);
+        { const d = S.raw()._reglages || {}; delete d[PS.CLE]; }
+        navs();
+        const rd = await monter('plan-du-site');
+        await dormir(3500);
+        cas.adresseDirecte = propre({ textes: textes(rd), navigation: navs() });
+        // 3) qui règle, quelles valeurs : le refus se nomme
+        cas.definir = [];
+        for (const role of ['admin', 'da', 'direction', 'medecin', 'caissier']) {
+          for (const v of [true, false, 'oui', 1, null]) {
+            posteRole(role); S.setReglage(PS.CLE, false);
+            const r = PS.definir(v, 'vecteur');
+            cas.definir.push({ role, valeur: v, ok: r.ok === true, code: r.code || null, motif: r.motif || null, geste: r.geste || null, apres: S.reglage(PS.CLE, 'absent'), avant: r.avant === undefined ? null : r.avant });
+          }
+        }
+        // 4) le journal d'un réglage
+        posteRole('admin'); S.setReglage(PS.CLE, false);
+        PS.definir(true, 'Journal du vecteur');
+        const j = S.raw().audit.filter((x) => x.action === 'Plan du site')[0];
+        cas.journal = { action: j.action, module: j.module, entite: j.entite, reference: j.reference, ancienne: j.ancienneValeur, nouvelle: j.nouvelleValeur };
+        sortieG.planDuSite = propre(cas);
+        // l'écran du plan, réglage posé
+        posteRole('admin');
+        S.setReglage(PS.CLE, true);
+        sortieG.__restitution = reglageOrigine;
+      }
       {
         const root = await monter('plan-du-site');
         const sections = [...root.querySelectorAll('section')].map((s) => ({
@@ -178,6 +227,11 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
           entete: textes(root).slice(0, 3), sections, pied: norm(root.querySelector('p.text-xs.text-slate-400').textContent),
           retour: norm([...root.querySelectorAll('a.btn-primary')][0].textContent), homeAdmin: N.ROLES.admin.home,
         });
+      }
+      {
+        const PS = SIGH.planDuSite; const o = sortieG.__restitution; delete sortieG.__restitution;
+        if (o === undefined) { const d = S.raw()._reglages || {}; delete d[PS.CLE]; } else S.setReglage(PS.CLE, o);
+        S.setSession({ jeton: sessionOrigine.jeton, role: 'admin', nom: 'Admin', poste: 'Administrateur', identifiant: 'admin.systeme' });
       }
 
       /* ========================================================================== AIDE & À PROPOS */

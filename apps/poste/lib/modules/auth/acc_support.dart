@@ -4,12 +4,14 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/icones.dart';
 import '../../core/jetons_shell.dart';
+import '../../donnees/plan_du_site_poste.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
 import '../../shell/contexte_ecran.dart';
 import '../../sync/config_smtp.dart';
 import '../../sync/file_courriels.dart';
 import '../../sync/service_smtp.dart';
+import 'acc_ecrans.dart' show PageErreur;
 import 'acc_gabarit.dart';
 
 /// Écrans de support (module SUP, hors ruban : atteints par le menu profil et la recherche globale) — `support.js` — et `plan-du-site` (autonome).
@@ -575,8 +577,46 @@ String initialesPoste(String nom) => nom.trim().split(RegExp(r'\s+')).take(2).ma
 // plan-du-site — autonome
 // ------------------------------------------------------------------------------------------------------------------------------------------------
 
+/// Le plan du site : désactivé par défaut (réglage en base `affichage.planDuSite`, lot U du 11/11/2026). Désactivé, l'écran se comporte comme un écran fermé : le 403 NOMMÉ prend sa
+/// place (le réglage et qui le modifie sont dits), jamais une page vide, et la tentative est journalisée (RG-12) quand quelqu'un est connecté.
 class EcranPlanDuSite extends StatelessWidget with EcranAutonome {
   const EcranPlanDuSite({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final x = ContexteAutonome.of(context);
+    if (planDuSitePosteAffiche(x.magasin, horloge: x.horloge)) return const _PlanDuSiteOuvert();
+    return const _PlanDuSiteFerme();
+  }
+}
+
+class _PlanDuSiteFerme extends StatefulWidget {
+  const _PlanDuSiteFerme();
+  @override
+  State<_PlanDuSiteFerme> createState() => _EtatPlanDuSiteFerme();
+}
+
+class _EtatPlanDuSiteFerme extends State<_PlanDuSiteFerme> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final x = ContexteAutonome.maybeOf(context);
+      if (x != null && x.session != null) {
+        x.magasin.journaliser('Accès refusé : plan du site désactivé', 'M14', 'acces', 'plan-du-site', null, {'motif': 'réglage planDuSiteAffiche = non'});
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const PageErreur(code: '403', titre: 'Accès refusé', messageDe: _messagePlanFerme, motif: motifPlanDuSiteDesactive);
+}
+
+String _messagePlanFerme(String? motif, bool planAffiche) => accMessage403(motif: motif);
+
+class _PlanDuSiteOuvert extends StatelessWidget {
+  const _PlanDuSiteOuvert();
 
   @override
   Widget build(BuildContext context) {

@@ -10,6 +10,7 @@
 // `planning.agentModifieDirectement` (lus par le moteur du planning RH, `src/rh/planning_rh.dart`, et par la maquette). Les lots L7 et L8 ont branché
 // `paie.copieFichePaieTelephone` (`src/rh/espace_mes.dart`), `planning.badgeSertDePointage` et `planning.delaiEntrePointagesBadge` (`src/rh/pointage_badge.dart`).
 // Le lot ORG2 a branché `securite.delaiVerrouPosteSecours` (`src/securite/verrou_secours.dart`, lu par le verrou de session d'un poste désigné de secours).
+// Le lot U a branché `affichage.planDuSite` (`src/acces/acc_plan_du_site.dart`, lu par les pages d'erreur, la commande des paramètres et l'adresse du plan du site).
 // Aucune de ces définitions n'est envoyée au téléphone (`mobile: false`) : la liste blanche est vide tant qu'un lot ne démontre pas le besoin (RG-13).
 
 import 'parametres.dart';
@@ -146,6 +147,17 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot ORG2 (verrou d\'un poste de secours)',
   ),
+  DefinitionParametre(
+    cle: 'affichage.planDuSite',
+    famille: 'affichage',
+    type: TypeParametre.booleen,
+    defaut: false,
+    libelle: 'Afficher le plan du site',
+    aide: 'Non par défaut : le plan du site (liste de tous les écrans) n\'est ni proposé dans les paramètres, ni sur les pages d\'erreur, et son adresse directe ouvre un accès refusé qui nomme ce réglage. Seuls l\'administrateur et la Directrice Administrative le règlent. Réglage de la clinique : il voyage aux postes par le journal de configuration, jamais aux téléphones.',
+    source: 'Demande de la Direction du 11/11/2026 (DECISIONS-A-VALIDER, section J) : désactivé par défaut',
+    branche: true,
+    appliquePar: 'Lot U (plan du site réglable)',
+  ),
 ];
 
 /// Le libellé d'une famille de paramètres, pour les onglets de l'écran des paramètres. Une famille absente de la table s'affiche sous son identifiant.
@@ -155,6 +167,7 @@ const Map<String, String> libellesFamillesParametres = {
   'planning': 'Planning et présences',
   'paie': 'Paie',
   'securite': 'Sécurité',
+  'affichage': 'Affichage',
 };
 
 /// La définition d'une clé, ou `null`.
