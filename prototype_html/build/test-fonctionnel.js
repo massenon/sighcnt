@@ -3128,7 +3128,7 @@ async function viderMessages(page) {
         motifsDeclines: A.filter((a) => a.variantesGrille && a.variantesGrille.length
           && a.motifPrix).length,
         signale: /valeur d/.test(document.body.textContent),
-        montreAssure: /Non assuré/.test(document.body.textContent) && /Assuré/.test(document.body.textContent),
+        montreAssure: /Prix non assuré/.test(document.body.textContent) && /Prix assuré/.test(document.body.textContent),
       };
     });
     verifier('Tous les actes portent désormais un tarif',
@@ -3151,7 +3151,7 @@ async function viderMessages(page) {
       tarifs.provisoires === 40 && tarifs.documentes === 29,
       tarifs.documentes + ' documentés · ' + tarifs.provisoires + ' en attente (semence)');
     verifier('L'+String.fromCharCode(8217)+'écran montre les deux colonnes de la grille',
-      tarifs.montreAssure, 'colonnes « Non assuré » et « Assuré » (libellés déclarés E2367)');
+      tarifs.montreAssure, 'colonnes « Prix non assuré » et « Prix assuré » (libellés déclarés E2367)');
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
   });
