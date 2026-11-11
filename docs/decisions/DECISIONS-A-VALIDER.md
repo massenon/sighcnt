@@ -121,3 +121,11 @@ Sur `docs/prd/PRD-DOCS-numerisation-courriers-dossier-et-antecedents.md` : Q1 à
 - **Chemin local des scans** : la conservation reste illimitée, **et la fiche indique le chemin local du fichier** (celui de ce poste ; « pas encore reçu sur ce poste » quand la copie n'est pas arrivée). PRD documents, EF-DOC-3b.
 - **Seuils de variation : bouton Valider.** Chaque seuil passe de **Enregistré** à **Validé** par le bouton Valider ; seul un seuil Validé alerte. Lecture retenue de « Valider qui transforme en Enregistrer ou Validée » : deux états, Enregistré (sans effet) et Validé (en vigueur). À corriger si vous entendiez autre chose. PRD documents, EF-ANT-3b.
 - **Droits modifiés, menus à jour automatiquement** : quand l'administrateur modifie les rôles (matrice, modules actifs), le ruban, le méga-menu, les cartes de hub et les accès rapides des sessions ouvertes se mettent à jour d'eux-mêmes (Afficher/Masquer), au pire à la reconnexion. Lot à mesurer puis à faire après le lot des prix : mesurer d'abord ce que fait l'existant (le ruban est construit une fois au chargement de l'écran, `app.js` `buildMenubar`), puis corriger la maquette, puis le poste.
+
+## I. Réponses de la Direction du 11/11/2026 (clôture annuelle)
+
+Sur `docs/prd/PRD-M12-cloture-annuelle-ecarts-et-droits-parametres.md` :
+
+- **Q1 oui** : aucun masquage d'interface par un rôle écrit en dur ; ce qu'un profil voit ou fait vient de la matrice des droits ou d'un réglage en base.
+- **Q2** : la clôture définitive est prononcée par **la Directrice Administrative, la Direction, l'administrateur ou le comptable** (défaut du circuit réglable). Hypothèse conservée et signalée : la personne qui a démarré la clôture ne la prononce pas elle-même.
+- **Q3** : **pas de format DGI.** Format proposé et nommé SIGH-ARC version 1 (`docs/specs/SPEC-archive-cloture-exercice.md`), archive actuelle conservée : CSV des écritures, balance, états à imprimer en PDF, manifeste SHA-256. Conservation illimitée.

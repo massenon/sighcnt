@@ -84,22 +84,22 @@ Le circuit de clôture est un paramètre de **branche** : il se règle à la mè
 | Lot | Contenu | Preuve exigée |
 |---|---|---|
 | **C0 mesure** | rejouer au banc les lignes « à sonder » du tableau (E2, E3, E4, E6, E8 à E10, E17, E18) ; corriger ce document avec le constat | une assertion par ligne, qui échoue si le comportement manque |
-| **C1 circuit réglable** | EF-DRO-1 à 3 pour les trois transitions de clôture ; garde de génération avec liste blanche | scénario : changer le circuit change qui peut clôturer, sans toucher au code ; mutation : remettre une liste en dur, la garde rougit |
+| **C1 circuit réglable** | EF-DRO-1 à 3 pour les trois transitions de clôture (clôture définitive : DA, Direction, administrateur, comptable par défaut) ; garde de génération avec liste blanche | scénario : changer le circuit change qui peut clôturer, sans toucher au code ; mutation : remettre une liste en dur, la garde rougit |
 | **C2 navigation et bandeau** | EF-CLO-2, 3, 7 | scénario au geste sur N-1, N, N+1 |
 | **C3 grand livre** | EF-CLO-4 | ouverture « inconnue » dite, comptes de gestion à zéro |
 | **C4 ouverture automatique** | EF-CLO-1 et E2 | décaler l'horloge du banc en décembre puis en janvier |
 | **C5 postes appairés** | EF-CLO-5 et E3 | banc de synchronisation à deux postes |
 | **C6 migration à la pièce** des autres listes de rôles en dur | par risque, un lot par module | l'audit RBAC reste à 0 promesse |
 
-## 6. Questions ouvertes (avec recommandation)
+## 6. Questions : réponses de la Direction du 11/11/2026
 
-| N° | Question | Recommandation |
+| N° | Question | Réponse |
 |---|---|---|
-| Q1 | « Pas de masquage d'interface en dur » : est-ce la lecture de la section 1 (aucun nom de rôle dans le code, tout vient de la matrice et des réglages) ? | oui ; sinon, dites ce que vous visiez |
-| Q2 | Qui prononce la clôture définitive ? Le texte fourni ne le dit pas | garder DA, Direction, administrateur, jamais la personne qui a démarré, réglable au circuit |
-| Q3 | Format d'archive « DGI Bénin » : quel document le décrit ? | fournir la section du texte sur l'archive, ou le modèle de la DGI ; sans cela, on garde l'archive actuelle (CSV SYSCOHADA révisé, balance, PDF, SHA-256) et on le dit |
-| Q4 | Notes annexes 2 et 3 : à produire ? | seulement si la liasse déposée les porte ; sinon, rien |
-| Q5 | Migrer les autres listes de rôles en dur (paie, RH, achats) tout de suite ? | non : clôture d'abord (C1), le reste à la pièce après l'audit |
+| Q1 | Lecture de « pas de masquage d'interface en dur » (section 1) | **Oui** : aucun nom de rôle dans le code, tout vient de la matrice et des réglages |
+| Q2 | Qui prononce la clôture définitive | **La Directrice Administrative, la Direction, l'administrateur ou le comptable.** Défaut du circuit réglable : ces quatre rôles. La séparation « jamais la personne qui a démarré la clôture » est **conservée** (elle n'a pas été levée) : à confirmer si la Direction veut qu'un comptable puisse démarrer ET clôturer seul |
+| Q3 | Format d'archive « DGI Bénin » | **Pas de format DGI.** Un format est proposé et nommé (SIGH-ARC version 1) dans `docs/specs/SPEC-archive-cloture-exercice.md` ; l'archive actuelle est conservée (CSV des écritures, balance, états à imprimer en PDF, manifeste SHA-256) |
+| Q4 | Notes annexes 2 et 3 | pas de réponse : reste en recommandation (seulement si la liasse déposée les porte) |
+| Q5 | Migrer les autres listes de rôles en dur | pas de réponse : reste en recommandation (clôture d'abord, le reste à la pièce) |
 
 ## 7. Indicateurs
 
