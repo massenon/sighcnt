@@ -4287,7 +4287,8 @@
       },
 
       /** RG-14 — archivage logique, jamais de suppression physique. */
-      archive: function (id, motif) {
+      /* `opts.journal` : { action?, avant, apres } : la ligne de journal que l'appelant DÉCRIT (une seule) remplace la ligne par défaut (lot ORG3 : l'archivage d'un poste y porte son motif et sa cible). */
+      archive: function (id, motif, opts) {
         var rec = api.get(id); if (!rec) return null;
         if (refuse(name, 'archiver', rec)) return null;
         var avant = rec.statut;
@@ -4295,7 +4296,8 @@
         rec._archivePar = currentUser();
         rec._archiveLe = new Date().toISOString();
         rec._motifArchivage = motif || null;
-        log('Archivage', M.module || '—', M.entite || name, id, { statut: avant }, { statut: 'archive' });
+        if (opts && opts.journal) log(opts.journal.action || 'Archivage', opts.journal.module || M.module || '—', opts.journal.entite || M.entite || name, id, opts.journal.avant || null, opts.journal.apres || null);
+        else log('Archivage', M.module || '—', M.entite || name, id, { statut: avant }, { statut: 'archive' });
         transmettre('archiver', name, { id: id, motif: motif || null });
         save(); emit(name);
         return {

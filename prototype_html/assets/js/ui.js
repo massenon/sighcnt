@@ -60,9 +60,10 @@
       actions.appendChild(el('button.btn.btn-sm.btn-secondary', {
         type: 'button',
         onclick: function () {
-          opts.undo();
+          var retour = opts.undo();
           close();
-          toast(opts.undoMessage || 'Action annulée.', { type: 'info' });
+          /* Une annulation qui rend `false` s'est REFUSÉE et l'a dit elle-même : ne pas annoncer qu'elle a réussi. */
+          if (retour !== false) toast(opts.undoMessage || 'Action annulée.', { type: 'info' });
         },
       }, 'Annuler'));
     }
@@ -175,6 +176,8 @@
       /* Le message est rendu en TEXTE ENRICHI : les balises de mise en forme
          que le gabarit écrit s'appliquent, tout le reste est échappé. */
       body.appendChild(paragrapheEnrichi(o.message, 'p.text-sm.text-slate-600'));
+      /* `corps` : un nœud posé sous le message (une liste, un choix) ; `lire` : ce qu'on en retient à la confirmation, rendu dans `choix`. */
+      if (o.corps) body.appendChild(o.corps);
       var motif = null;
       if (o.requireMotif) {
         var wrap = el('div');
@@ -196,12 +199,12 @@
       }
 
       var m = modal({
-        title: o.title, size: 'sm', body: body,
+        title: o.title, size: o.size || 'sm', body: body,
         footer: [
           el('button.btn.btn-secondary', { type: 'button', onclick: function () { repondre(null); m.close(); } }, o.cancelLabel),
           el('button.btn', {
             type: 'button', class: o.danger ? 'btn-danger' : 'btn-primary',
-            onclick: function () { repondre({ motif: motif ? motif.value : null }); m.close(); },
+            onclick: function () { repondre({ motif: motif ? motif.value : null, choix: o.lire ? o.lire() : undefined }); m.close(); },
           }, o.confirmLabel),
         ],
         onClose: function () { repondre(null); },

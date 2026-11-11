@@ -7027,25 +7027,131 @@
     var r = colPostesOrg().insert(fiche);
     return { ok: true, record: r.record, undo: r.undo };
   }
-  /** Archive un poste (RG-14). Un poste qui porte encore des postes actifs ne s'archive pas : les rattachés deviendraient des sommets sans que personne l'ait décidé. */
-  function archiverPosteOrg(posteId, motif) {
-    if (!droitOrg('annuler')) return refusDroitOrg(true);
+  /**
+   * LES POSTES ACTIFS QU'UN POSTE PORTE DIRECTEMENT, ET OÙ ILS ATTERRIRAIENT SI ON L'ARCHIVAIT (lot ORG3, décision de la Direction du 11/11/2026).
+   * Archiver un poste qui porte des sous-postes ne se REFUSE plus : on les RÉAFFECTE. Cible par défaut : le PARENT du poste archivé (les sous-postes
+   * remontent d'un cran, la hiérarchie ne se creuse pas). Un sommet qui porte des sous-postes n'a pas de parent : la cible est alors OBLIGATOIRE, et
+   * sans cible valide le refus se nomme (CIBLE_REQUISE) et dit quoi faire. La cible n'est ni le poste, ni l'un de ses descendants (cycle), ni un poste
+   * archivé. Ne rien écrire : sert l'écran (la modale de confirmation) autant que le moteur.
+   * Rend { ok, poste, portes: [{ id, poste }], cible: { id, poste } | null, parDefaut, candidats: [{ id, poste }] } ou le refus nommé.
+   */
+  function planArchivageOrg(posteId, cibleId) {
     var col = colPostesOrg(), poste = col.get(posteId);
     if (!poste) return refusOrg('POSTE_INTROUVABLE', 'Ce poste n’existe pas.', 'Rouvrir l’écran puis choisir un poste de la liste.');
     if (poste.statut === 'archive') return refusOrg('POSTE_ARCHIVE', 'Le poste « ' + poste.poste + ' » est déjà archivé.', 'Le restaurer depuis la corbeille si besoin.');
-    var portes = colPostesOrg().active().filter(function (p) { return p.parentId === posteId; });
-    if (portes.length) {
-      return refusOrg('POSTE_PORTE_DES_POSTES', 'Le poste « ' + poste.poste + ' » porte encore ' + portes.length + ' poste' + (portes.length > 1 ? 's' : '') + ' (' + portes.map(function (p) { return p.poste; }).join(', ') + ') : l’archiver les ferait remonter au sommet sans que personne l’ait décidé.',
-        'Réaffecter d’abord ces postes, puis archiver celui-ci.', { portes: portes.map(function (p) { return p.id; }) });
+    var portes = col.active().filter(function (p) { return p.parentId === posteId; }).map(function (p) { return { id: p.id, poste: p.poste }; });
+    var interdits = descendantsOrganigramme(posteId); interdits.push(posteId);
+    var candidats = col.active().filter(function (p) { return interdits.indexOf(p.id) < 0; }).map(function (p) { return { id: p.id, poste: p.poste }; });
+    if (!portes.length) return { ok: true, poste: { id: poste.id, poste: poste.poste }, portes: [], cible: null, parDefaut: false, candidats: candidats };
+    var liste = portes.map(function (p) { return p.poste; }).join(', ');
+    var parent = poste.parentId ? col.get(poste.parentId) : null;
+    var parentActif = parent && parent.statut !== 'archive' ? parent : null;
+    var visee = cibleId || (parentActif ? parentActif.id : null);
+    if (!visee) {
+      return refusOrg('CIBLE_REQUISE', 'Le poste « ' + poste.poste + ' » est au sommet de l’organigramme et porte ' + portes.length + ' poste' + (portes.length > 1 ? 's' : '') + ' (' + liste + ') : '
+        + 'il n’y a pas de poste au-dessus vers lequel les faire remonter.',
+      candidats.length
+        ? 'Désigner le poste d’accueil de ces postes (celui qui prend leur suite), puis archiver.'
+        : 'Créer d’abord le poste d’accueil de ces postes (aucun autre poste actif ne peut les recevoir), puis archiver.', { portes: portes.map(function (p) { return p.id; }), candidats: candidats.map(function (p) { return p.id; }) });
     }
-    var r = col.archive(posteId, motif || null);
-    return { ok: true, record: r.record, undo: r.undo };
+    var cible = col.get(visee);
+    if (!cible) return refusOrg('CIBLE_INTROUVABLE', 'Le poste d’accueil demandé n’existe pas.', 'Choisir un poste de la liste.', { cibleId: visee });
+    if (cible.statut === 'archive') {
+      return refusOrg('CIBLE_ARCHIVEE', 'Le poste « ' + cible.poste + ' » est archivé : on ne rattache rien à un poste archivé (RG-14).', 'Restaurer ce poste depuis la corbeille, ou choisir un poste actif.', { cibleId: visee });
+    }
+    if (interdits.indexOf(visee) >= 0) {
+      return refusOrg('CIBLE_CYCLE', visee === posteId
+        ? 'Les postes portés par « ' + poste.poste + ' » ne peuvent pas être réaffectés à ce poste lui-même : il est archivé.'
+        : 'Réaffecter les postes portés par « ' + poste.poste + ' » sous « ' + cible.poste + ' » ferait de lui son propre supérieur : « ' + cible.poste + ' » dépend déjà de « ' + poste.poste + ' ».',
+      'Choisir un poste qui ne dépende pas de celui-ci.', { cibleId: visee });
+    }
+    return { ok: true, poste: { id: poste.id, poste: poste.poste }, portes: portes, cible: { id: cible.id, poste: cible.poste }, parDefaut: !cibleId, candidats: candidats };
+  }
+  /**
+   * Archive un poste (RG-14). S'il porte des postes actifs, ils sont RÉAFFECTÉS à `opts.cibleId` (par défaut son parent), tout ou rien : chaque rattachement
+   * est contrôlé avant la première écriture, et une écriture refusée en cours de route défait les précédentes (rien n'est écrit à moitié). Une ligne de
+   * journal pour l'archivage, une par poste réaffecté (ancien et nouveau parent, motif) ; l'auteur et la date sont ceux du journal.
+   * Rend { ok, record, cible, reaffectes: [{ id, poste, de, vers }], undo } ou le refus nommé. `undo()` restaure le poste ET remet chaque poste réaffecté
+   * sous son ancien parent, sauf celui que quelqu'un a déplacé depuis (laissé, et dit) : il rend { ok, restaures, laisses } ou le refus nommé.
+   */
+  function archiverPosteOrg(posteId, motif, opts) {
+    opts = opts || {};
+    if (!droitOrg('annuler')) return refusDroitOrg(true);
+    var plan = planArchivageOrg(posteId, opts.cibleId || null);
+    if (!plan.ok) return plan;
+    var col = colPostesOrg(), poste = col.get(posteId);
+    if (plan.portes.length && !droitEcritureOrg()) {
+      return refusOrg('ORGANIGRAMME_RESERVE', 'Archiver « ' + poste.poste + ' » réaffecte les ' + plan.portes.length + ' poste' + (plan.portes.length > 1 ? 's' : '') + ' qu’il porte : une modification de l’organigramme, réservée aux profils qui écrivent à l’écran « Organisation & organigramme ».',
+        'Demander à l’administrateur ou à la Directrice Administrative.');
+    }
+    /* Tout est contrôlé AVANT la première écriture : un rattachement qui ne passe pas fait refuser l'archivage entier. */
+    for (var i = 0; i < plan.portes.length; i++) {
+      var ctl = controlerRattachementOrg(plan.portes[i].id, plan.cible.id);
+      if (ctl) return refusOrg('REAFFECTATION_REFUSEE', 'Le poste « ' + plan.portes[i].poste + ' » ne peut pas être réaffecté sous « ' + plan.cible.poste + ' » : ' + ctl.motif, ctl.geste, { causes: ctl.code, posteId: plan.portes[i].id });
+    }
+    var motifTxt = motif ? String(motif).trim() || null : null;
+    var undos = [], reaffectes = [], instantanes = {};
+    /* Le retour arrière remet les postes tels qu'ils étaient, marques d'écran comprises (une fiche « modifiée » par une tentative défaite ne serait plus
+       reconnue intacte par la reprise), et l'abandon s'écrit au journal : sans cette ligne, les réaffectations déjà journalisées resteraient sans suite. */
+    function defaire(raison) {
+      undos.slice().reverse().forEach(function (u) { u(); });
+      reaffectes.forEach(function (x) {
+        var f = col.get(x.id), snap = instantanes[x.id];
+        if (!f || !snap) return;
+        ['_modifiePar', '_modifieLe'].forEach(function (k) { if (snap[k] === undefined) delete f[k]; else f[k] = snap[k]; });
+      });
+      S.log('Archivage abandonné', 'CFG', 'Poste', posteId, { poste: poste.poste, sousPostes: plan.portes.length }, { raison: raison, remisEnPlace: reaffectes.length });
+    }
+    for (var j = 0; j < plan.portes.length; j++) {
+      var s = col.get(plan.portes[j].id);
+      instantanes[s.id] = Object.assign({}, s);
+      var r1 = col.update(s.id, { parentId: plan.cible.id }, { journal: { action: 'Réaffectation d’un poste', module: 'CFG', entite: 'Poste',
+        avant: { poste: s.poste, parentId: poste.poste }, apres: { parentId: plan.cible.poste, motif: motifTxt, archivage: poste.poste } } });
+      if (!r1) {
+        defaire('écriture refusée pour « ' + s.poste + ' »');
+        return refusOrg('REAFFECTATION_REFUSEE', 'L’écriture du poste « ' + s.poste + ' » a été refusée par le magasin : l’archivage de « ' + poste.poste + ' » est abandonné, aucun poste n’a changé de place.', 'Voir le journal, puis réessayer.', { posteId: s.id });
+      }
+      undos.push(r1.undo);
+      reaffectes.push({ id: s.id, poste: s.poste, de: posteId, vers: plan.cible.id });
+    }
+    var r = col.archive(posteId, motifTxt, { journal: { action: 'Archivage', avant: { statut: 'actif', poste: poste.poste, sousPostes: reaffectes.length },
+      apres: plan.portes.length ? { statut: 'archive', cible: plan.cible.poste, motif: motifTxt } : { statut: 'archive', motif: motifTxt } } });
+    if (!r) {
+      defaire('archivage refusé par le magasin');
+      return refusOrg('ECRITURE_REFUSEE', 'L’archivage du poste « ' + poste.poste + ' » a été refusé par le magasin : aucun poste n’a changé de place.', 'Voir le journal, puis réessayer.');
+    }
+    var cibleNom = plan.cible ? plan.cible.poste : null, cibleId = plan.cible ? plan.cible.id : null;
+    return {
+      ok: true, record: r.record, cible: plan.cible, reaffectes: reaffectes,
+      undo: function () {
+        if (!droitOrg('annuler')) return refusDroitOrg(true);
+        var cur = col.get(posteId);
+        if (!cur || cur.statut !== 'archive') {
+          return refusOrg('ANNULATION_IMPOSSIBLE', 'Le poste « ' + poste.poste + ' » n’est plus archivé (il a déjà été restauré) : il n’y a plus d’archivage à annuler.',
+            'Contrôler la liste des postes ; remettre à la main les postes réaffectés si besoin (le journal donne leur ancien rattachement).');
+        }
+        if (reaffectes.length && !droitEcritureOrg()) return refusDroitOrg(false);
+        r.undo();
+        var restaures = [], laisses = [];
+        reaffectes.forEach(function (x) {
+          var s = col.get(x.id);
+          if (!s || s.statut === 'archive') { laisses.push({ id: x.id, poste: x.poste, motif: 'il est archivé depuis' }); return; }
+          if (s.parentId !== cibleId) { laisses.push({ id: x.id, poste: x.poste, motif: 'il a été déplacé depuis sous « ' + (nomPosteOrg(s.parentId) || 'le sommet') + ' »' }); return; }
+          var ctl = controlerRattachementOrg(x.id, posteId);
+          if (ctl) { laisses.push({ id: x.id, poste: x.poste, motif: ctl.motif }); return; }
+          var r2 = col.update(x.id, { parentId: posteId }, { journal: { action: 'Réaffectation d’un poste', module: 'CFG', entite: 'Poste',
+            avant: { poste: x.poste, parentId: cibleNom }, apres: { parentId: poste.poste, motif: 'Archivage de « ' + poste.poste + ' » annulé' } } });
+          if (r2) restaures.push({ id: x.id, poste: x.poste }); else laisses.push({ id: x.id, poste: x.poste, motif: 'l’écriture a été refusée par le magasin' });
+        });
+        return { ok: true, restaures: restaures, laisses: laisses };
+      },
+    };
   }
 
   global.SIGH.organigramme = {
     TITRE_MAX: TITRE_ORG_MAX, arbre: arbreOrganigramme, descendants: descendantsOrganigramme, agentDe: agentDuPosteOrg, titreDe: titreDuPosteOrg,
     controlerRattachement: controlerRattachementOrg, controler: controlerPosteOrg, modifier: modifierPosteOrg, reaffecter: reaffecterPosteOrg,
-    renommerTitulaire: renommerTitulaireOrg, poserTitre: poserTitreOrg, creer: creerPosteOrg, archiver: archiverPosteOrg,
+    renommerTitulaire: renommerTitulaireOrg, poserTitre: poserTitreOrg, creer: creerPosteOrg, archiver: archiverPosteOrg, planArchivage: planArchivageOrg,
   };
   /* ==========================================================================
    * LE VERROU D'UN POSTE DE SECOURS (11/11/2026, lot ORG2, décision P3 de la Direction)

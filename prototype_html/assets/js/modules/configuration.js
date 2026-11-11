@@ -417,25 +417,59 @@
       }
 
       /* LES GESTES SUR UN POSTE PASSENT PAR LE MOTEUR : réaffecter, renommer le titulaire, poser le titre de l'agent et archiver sont contrôlés
-         (cycle, parent archivé, agent introuvable, poste qui porte encore des postes), refusés en le nommant, et journalisés. */
+         (cycle, parent archivé, agent introuvable, sommet qui porte des postes sans poste d'accueil), refusés en le nommant, et journalisés. */
       function actionsPoste(p) {
         var actes = [];
         var dr = K.droits('CFG');
         if (dr.editer) actes.push(K.iconBtn('pencil', 'Modifier', function () { modifierUnPoste(p); }));
-        if (dr.annuler) actes.push(K.iconBtn('archive', 'Archiver', function () {
-          U.confirm({
-            title: 'Archiver ce poste ?',
-            message: 'Archivage logique (RG-14) : le poste reste consultable à la corbeille et l’opération est annulable.',
-            confirmLabel: 'Archiver', danger: true, requireMotif: true,
-          }).then(function (rep) {
-            if (!rep) return;
-            var r = global.SIGH.organigramme.archiver(p.id, rep.motif);
-            if (!r.ok) { direRefusOrg(r); return; }
-            dessiner();
-            U.toast('Poste archivé.', { type: 'success', undo: function () { r.undo(); dessiner(); }, undoMessage: 'Archivage annulé.' });
-          });
-        }, 'ghost'));
+        if (dr.annuler) actes.push(K.iconBtn('archive', 'Archiver', function () { archiverUnPoste(p); }, 'ghost'));
         return actes;
+      }
+
+      /* ARCHIVER UN POSTE QUI PORTE DES POSTES LES RÉAFFECTE (lot ORG3, décision de la Direction du 11/11/2026). La modale NOMME les postes concernés et le poste
+         d'accueil (par défaut le rattachement du poste archivé, au choix un autre), exige un motif, et jamais d'action silencieuse ; un sommet qui porte des
+         postes n'a pas de rattachement : l'accueil est à choisir, sans quoi le moteur refuse en le disant. L'annulation remet chaque poste à sa place. */
+      function archiverUnPoste(p) {
+        var ORG = global.SIGH.organigramme;
+        var plan = ORG.planArchivage(p.id);
+        if (!plan.ok && plan.code !== 'CIBLE_REQUISE') { direRefusOrg(plan); return; }
+        var portes = plan.ok ? plan.portes : plan.portes.map(function (id) { return { id: id, poste: nomDe(id) }; });
+        var candidats = plan.ok ? plan.candidats : plan.candidats.map(function (id) { return { id: id, poste: nomDe(id) }; });
+        var corps = null, choix = null;
+        if (portes.length) {
+          corps = el('div.space-y-2', { 'data-archivage-postes': '1' });
+          corps.appendChild(el('p.text-sm.text-slate-700', { 'data-archivage-liste': '1', text: portes.length + ' poste' + (portes.length > 1 ? 's' : '') + ' réaffecté' + (portes.length > 1 ? 's' : '') + ' : ' + portes.map(function (x) { return x.poste; }).join(', ') + '.' }));
+          corps.appendChild(el('label.label', { text: 'Poste d’accueil de ces postes' }));
+          choix = el('select.select', { 'data-archivage-cible': '1' });
+          if (!plan.ok) choix.appendChild(el('option', { value: '', text: '— Choisir le poste d’accueil —' }));
+          C.sortBy(candidats, 'poste').forEach(function (c) { choix.appendChild(el('option', { value: c.id, text: c.poste + (plan.ok && plan.parDefaut && plan.cible.id === c.id ? ' (son rattachement)' : '') })); });
+          if (plan.ok) choix.value = plan.cible.id;
+          corps.appendChild(choix);
+          corps.appendChild(el('p.text-xs.text-slate-500', { text: plan.ok
+            ? 'Par défaut ces postes remontent d’un cran, sous le rattachement du poste archivé : la hiérarchie ne se creuse pas.'
+            : 'Ce poste est au sommet de l’organigramme : il n’a pas de rattachement vers lequel faire remonter ces postes, le poste d’accueil est à choisir.' }));
+        }
+        U.confirm({
+          title: 'Archiver ce poste ?', size: portes.length ? 'md' : 'sm',
+          message: 'Archivage logique (RG-14) : le poste « ' + p.poste + ' » reste consultable à la corbeille et l’opération est annulable' + (portes.length ? ' (les postes réaffectés retrouvent leur place).' : '.'),
+          corps: corps, lire: choix ? function () { return choix.value || null; } : null,
+          confirmLabel: portes.length ? 'Archiver et réaffecter' : 'Archiver', danger: true, requireMotif: true,
+        }).then(function (rep) {
+          if (!rep) return;
+          var r = ORG.archiver(p.id, rep.motif, { cibleId: rep.choix || undefined });
+          if (!r.ok) { direRefusOrg(r); return; }
+          dessiner();
+          var n = r.reaffectes.length;
+          U.toast('Poste archivé' + (n ? ' ; ' + n + ' poste' + (n > 1 ? 's' : '') + ' réaffecté' + (n > 1 ? 's' : '') + ' sous « ' + r.cible.poste + ' ».' : '.'), { type: 'success', undo: function () {
+            var b = r.undo();
+            dessiner();
+            if (!b.ok) { direRefusOrg(b); return false; }
+            if (b.laisses.length) {
+              U.toast('Archivage annulé, mais ' + b.laisses.length + ' poste' + (b.laisses.length > 1 ? 's' : '') + ' laissé' + (b.laisses.length > 1 ? 's' : '') + ' où ' + (b.laisses.length > 1 ? 'ils sont' : 'il est') + '.',
+                { type: 'warning', detail: b.laisses.map(function (l) { return '« ' + l.poste + ' » : ' + l.motif; }).join(' ; ') });
+            }
+          }, undoMessage: 'Archivage annulé.' });
+        });
       }
 
       function modifierUnPoste(p) {

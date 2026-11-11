@@ -65,6 +65,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       const cas = [];
       const jouer = (nom, role, appel, f) => {
         poserMonde();
+        if (appel.ajout) appel.ajout.forEach((x) => raw.postes.push(propre(x)));
         seConnecter(role);
         const avant = resume();
         const r = f();
@@ -104,9 +105,33 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       jouer('créer sous un poste archivé', A, { fn: 'creer', champs: { poste: 'Sous archivé', parentId: 'PSTA', effectif: 1, role: 'agentadmin' } }, () => ORG.creer({ poste: 'Sous archivé', parentId: 'PSTA', effectif: 1, role: 'agentadmin' }));
       jouer('créer sans intitulé', A, { fn: 'creer', champs: { effectif: 1, role: 'agentadmin' } }, () => ORG.creer({ effectif: 1, role: 'agentadmin' }));
       jouer('archiver une feuille', A, { fn: 'archiver', posteId: 'PST015', motif: 'Vecteur' }, () => ORG.archiver('PST015', 'Vecteur'));
-      jouer('archiver un poste qui porte encore des postes', A, { fn: 'archiver', posteId: 'PST014', motif: 'Vecteur' }, () => ORG.archiver('PST014', 'Vecteur'));
+      /* ORG3 (11/11/2026) : archiver un poste qui porte des postes les RÉAFFECTE (au parent par défaut, au choix à un autre poste), tout ou rien, journal 1 + N. */
+      const accueil = { id: 'PSTS', statut: 'actif', parentId: null, poste: 'Direction générale', effectif: 1, titulaire: null, chef: false, role: 'direction' };
+      jouer('archiver un poste qui porte des postes : ils remontent sous son parent', A, { fn: 'archiver', posteId: 'PST014', motif: 'Vecteur' }, () => ORG.archiver('PST014', 'Vecteur'));
+      jouer('archiver un poste qui porte des postes sous une autre cible', A, { fn: 'archiver', posteId: 'PST014', motif: 'Vecteur', cibleId: 'PST012' }, () => ORG.archiver('PST014', 'Vecteur', { cibleId: 'PST012' }));
+      jouer('archiver sans motif : le journal porte un motif vide', A, { fn: 'archiver', posteId: 'PST014', motif: null }, () => ORG.archiver('PST014', null));
+      jouer('archiver la DA : trois postes remontent sous le Directeur Médical', A, { fn: 'archiver', posteId: 'PST002', motif: 'Vecteur' }, () => ORG.archiver('PST002', 'Vecteur'));
+      jouer('sommet qui porte des postes sans cible et sans poste d’accueil : refusé', A, { fn: 'archiver', posteId: 'PST001', motif: 'Vecteur' }, () => ORG.archiver('PST001', 'Vecteur'));
+      jouer('sommet qui porte des postes sans cible alors qu’un poste d’accueil existe : refusé', A, { fn: 'archiver', posteId: 'PST001', motif: 'Vecteur', ajout: [accueil] }, () => ORG.archiver('PST001', 'Vecteur'));
+      jouer('sommet qui porte des postes, cible choisie : ses sept postes passent sous elle', A, { fn: 'archiver', posteId: 'PST001', motif: 'Vecteur', cibleId: 'PSTS', ajout: [accueil] }, () => ORG.archiver('PST001', 'Vecteur', { cibleId: 'PSTS' }));
+      jouer('cible : le poste lui-même', A, { fn: 'archiver', posteId: 'PST002', motif: 'Vecteur', cibleId: 'PST002' }, () => ORG.archiver('PST002', 'Vecteur', { cibleId: 'PST002' }));
+      jouer('cible : un descendant (cycle)', A, { fn: 'archiver', posteId: 'PST002', motif: 'Vecteur', cibleId: 'PST004' }, () => ORG.archiver('PST002', 'Vecteur', { cibleId: 'PST004' }));
+      jouer('cible : un poste porté (cycle)', A, { fn: 'archiver', posteId: 'PST014', motif: 'Vecteur', cibleId: 'PST015' }, () => ORG.archiver('PST014', 'Vecteur', { cibleId: 'PST015' }));
+      jouer('cible : un poste archivé', A, { fn: 'archiver', posteId: 'PST014', motif: 'Vecteur', cibleId: 'PSTA' }, () => ORG.archiver('PST014', 'Vecteur', { cibleId: 'PSTA' }));
+      jouer('cible : un poste inconnu', A, { fn: 'archiver', posteId: 'PST014', motif: 'Vecteur', cibleId: 'PSTxxx' }, () => ORG.archiver('PST014', 'Vecteur', { cibleId: 'PSTxxx' }));
+      jouer('une feuille s’archive sans cible, la cible demandée est sans objet', A, { fn: 'archiver', posteId: 'PST015', motif: 'Vecteur', cibleId: 'PST012' }, () => ORG.archiver('PST015', 'Vecteur', { cibleId: 'PST012' }));
+      jouer('un sommet dont le parent est archivé : la cible est exigée', A, { fn: 'archiver', posteId: 'PSTQ', motif: 'Vecteur', ajout: [{ id: 'PSTP', statut: 'archive', parentId: null, poste: 'Parent archivé', effectif: 1, titulaire: null, chef: false, role: 'agentadmin' }, { id: 'PSTQ', statut: 'actif', parentId: 'PSTP', poste: 'Poste sous archivé', effectif: 1, titulaire: null, chef: false, role: 'agentadmin' }, { id: 'PSTT', statut: 'actif', parentId: 'PSTQ', poste: 'Poste porté par lui', effectif: 1, titulaire: null, chef: false, role: 'agentadmin' }] }, () => ORG.archiver('PSTQ', 'Vecteur'));
       jouer('archiver un poste déjà archivé', A, { fn: 'archiver', posteId: 'PSTA', motif: 'Vecteur' }, () => ORG.archiver('PSTA', 'Vecteur'));
       jouer('archiver un poste inconnu', A, { fn: 'archiver', posteId: 'PSTxxx', motif: 'Vecteur' }, () => ORG.archiver('PSTxxx', 'Vecteur'));
+      /* annuler SANS écrire (matrice modifiée) : un poste sans poste porté s'archive, un poste qui en porte exige AUSSI d'écrire (réaffecter est une modification) */
+      const sansEcrire = (f) => () => {
+        const fiche = S.collection('rbac').all().filter((x) => x.role === 'direction')[0], copie = JSON.stringify(fiche.droitsEcrans || null);
+        fiche.droitsEcrans = Object.assign({}, fiche.droitsEcrans || {}, { 'cfg-organisation': { voir: true, editer: false, annuler: true } });
+        SIGH.nav.invaliderRbac();
+        try { return f(); } finally { if (copie === 'null') delete fiche.droitsEcrans; else fiche.droitsEcrans = JSON.parse(copie); SIGH.nav.invaliderRbac(); }
+      };
+      jouer('droit : annuler sans écrire archive une feuille', 'direction', { fn: 'archiver', posteId: 'PST015', motif: 'Vecteur', droits: { editer: false, annuler: true } }, sansEcrire(() => ORG.archiver('PST015', 'Vecteur')));
+      jouer('droit : annuler sans écrire n’archive pas un poste qui porte des postes', 'direction', { fn: 'archiver', posteId: 'PST014', motif: 'Vecteur', droits: { editer: false, annuler: true } }, sansEcrire(() => ORG.archiver('PST014', 'Vecteur')));
       ['caissier', 'medecin', 'da', 'direction'].forEach((role) => {
         jouer('droit : ' + role + ' réaffecte', role, { fn: 'reaffecter', posteId: 'PST015', parentId: 'PST001' }, () => ORG.reaffecter('PST015', 'PST001'));
         jouer('droit : ' + role + ' archive', role, { fn: 'archiver', posteId: 'PST015', motif: 'Vecteur' }, () => ORG.archiver('PST015', 'Vecteur'));
@@ -115,6 +140,37 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         const s = S.session(); S.setSession(Object.assign({}, s, { role: '' }));
         return ORG.reaffecter('PST015', 'PST001');
       });
+      /* L'ANNULATION d'un archivage qui a réaffecté : l'archivage, puis ce qui s'est passé entre-temps (un poste déplacé, archivé, ou le poste déjà restauré), puis l'annulation. */
+      const annulations = [];
+      const journalBrut = () => raw.audit.slice().reverse().map((l) => ({ action: l.action, entite: l.entite, reference: l.reference, ancienne: l.ancienneValeur, nouvelle: l.nouvelleValeur }));
+      const annuler = (nom, appel) => {
+        poserMonde();
+        (appel.ajout || []).forEach((x) => raw.postes.push(propre(x)));
+        seConnecter('admin');
+        raw.audit.length = 0;
+        const r = ORG.archiver(appel.posteId, appel.motif === undefined ? 'Vecteur' : appel.motif, appel.cibleId ? { cibleId: appel.cibleId } : undefined);
+        const out = { archivage: r.ok ? { ok: true, reaffectes: r.reaffectes.map((x) => x.id), cible: r.cible ? r.cible.id : null } : refus(r) };
+        (appel.entreTemps || []).forEach((g) => {
+          if (g.fn === 'reaffecter') ORG.reaffecter(g.posteId, g.parentId);
+          else if (g.fn === 'archiver') ORG.archiver(g.posteId, 'entre temps');
+          else if (g.fn === 'restaurer') S.collection('postes').restore(g.posteId);
+        });
+        if (appel.roleAnnulation) seConnecter(appel.roleAnnulation);
+        const u = r.ok ? r.undo() : null;
+        out.annulation = u ? (u.ok ? { ok: true, restaures: u.restaures.map((x) => x.id), laisses: u.laisses.map((x) => ({ id: x.id, motif: x.motif })) } : refus(u)) : null;
+        out.postes = raw.postes.map(champsPoste);
+        out.journal = journalBrut();
+        annulations.push({ nom: nom, appel: appel, attendu: propre(out) });
+      };
+      annuler('annuler : le poste revient et chaque poste porté retrouve son ancien parent', { posteId: 'PST014' });
+      annuler('annuler : un poste déplacé depuis est laissé où il est, et dit', { posteId: 'PST014', entreTemps: [{ fn: 'reaffecter', posteId: 'PST016', parentId: 'PST012' }] });
+      annuler('annuler : un poste archivé depuis est laissé, et dit', { posteId: 'PST014', entreTemps: [{ fn: 'archiver', posteId: 'PST015' }] });
+      annuler('annuler : le poste est déjà restauré, annulation refusée en le nommant', { posteId: 'PST014', entreTemps: [{ fn: 'restaurer', posteId: 'PST014' }] });
+      annuler('annuler : sans le droit au moment d’annuler, refusé en le nommant', { posteId: 'PST014', roleAnnulation: 'caissier' });
+      annuler('annuler : remettre un poste sous l’ancien parent ferait une boucle, il est laissé et dit', { posteId: 'PST014', cibleId: 'PSTS', ajout: [accueil], entreTemps: [{ fn: 'reaffecter', posteId: 'PST001', parentId: 'PST015' }] });
+      annuler('annuler : un poste sans poste porté revient seul', { posteId: 'PST015' });
+      annuler('annuler : un sommet archivé vers un poste d’accueil, ses sept postes reviennent', { posteId: 'PST001', cibleId: 'PSTS', ajout: [accueil] });
+
       /* contrôle sans écriture : la saisie d'un formulaire, avant le bouton « Enregistrer » */
       const controles = [
         ['création : sous archivé', null, { parentId: 'PSTA' }], ['création : intitulé vide', null, { poste: ' ' }], ['création : tout va bien', null, { poste: 'X', parentId: 'PST001', effectif: 2 }],
@@ -194,10 +250,10 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       reinit();
       S.setSession(sess0);
       return { _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-organigramme.js : organigramme (lot ORG2) et verrou d’un poste de secours (P3), tirés des moteurs de la maquette. Ne pas éditer à la main.',
-        semence: semence, precedent: precedent, monde: { postes: propre(postesMonde()), personnel: propre(personnelMonde()) }, arbre: arbre, cas: cas, controles: controles, reprises: reprises, mises: mises, miseVide: miseVide, secours: secours };
+        semence: semence, precedent: precedent, monde: { postes: propre(postesMonde()), personnel: propre(personnelMonde()) }, arbre: arbre, cas: cas, controles: controles, annulations: annulations, reprises: reprises, mises: mises, miseVide: miseVide, secours: secours };
     });
     ecrire('packages/domaine/test/vecteurs/organigramme.json', sortie);
-    console.log('  semence : ' + sortie.semence.length + ' postes ; cas : ' + sortie.cas.length + ' ; contrôles : ' + sortie.controles.length + ' ; reprises : ' + sortie.reprises.length + ' ; mises en page : ' + sortie.mises.length
+    console.log('  semence : ' + sortie.semence.length + ' postes ; cas : ' + sortie.cas.length + ' ; annulations : ' + sortie.annulations.length + ' ; contrôles : ' + sortie.controles.length + ' ; reprises : ' + sortie.reprises.length + ' ; mises en page : ' + sortie.mises.length
       + ' ; secours : ' + sortie.secours.cas.length + ' cas, ' + sortie.secours.delais.length + ' délais');
   } finally { await m.fermer(); }
 })().catch((e) => { console.error(e); process.exit(1); });

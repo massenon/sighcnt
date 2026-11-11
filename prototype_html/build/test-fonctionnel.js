@@ -18807,7 +18807,7 @@ async function viderMessages(page) {
       out.archive = arch.ok;
       out.parentArchive = ORG.reaffecter('PST013', cree.record.id);
       out.creationSousArchive = ORG.creer({ poste: 'Sous un poste archivé', parentId: cree.record.id, effectif: 1, role: 'agentadmin' });
-      out.porteDesPostes = ORG.archiver('PST014', 'sonde 111');
+      out.sommetSansAccueil = ORG.archiver('PST001', 'sonde 111');
       out.agentIntrouvable = ORG.poserTitre('PST013', 'XX');
       out.titreLong = ORG.poserTitre('PST012', 'TITRE BEAUCOUP TROP LONG');
       out.vacant = ORG.poserTitre('PST015', 'SF');
@@ -18823,9 +18823,9 @@ async function viderMessages(page) {
     verifier('Cycle refusé en nommant (RATTACHEMENT_CYCLE) : un poste sous lui-même, sous un de ses rattachés (la DA sous l’Assistant comptable) ou tout en haut sous le bout de la chaîne ; parent inconnu refusé (PARENT_INTROUVABLE) ; chaque refus porte motif et geste',
       code(refus.cycleSoi) === 'RATTACHEMENT_CYCLE' && code(refus.cycleDescendant) === 'RATTACHEMENT_CYCLE' && code(refus.cycleProfond) === 'RATTACHEMENT_CYCLE' && code(refus.parentInconnu) === 'PARENT_INTROUVABLE'
       && /Assistant comptable/.test(refus.cycleDescendant.motif) && refus.cycleDescendant.geste.length > 10, JSON.stringify([refus.cycleSoi, refus.cycleDescendant, refus.cycleProfond, refus.parentInconnu]));
-    verifier('Parent archivé refusé (PARENT_ARCHIVE) en réaffectation comme en création ; un poste archivé ne se modifie pas (POSTE_ARCHIVE) ; archiver un poste qui porte encore des postes est refusé (POSTE_PORTE_DES_POSTES, il nomme l’Aide-Soignante)',
+    verifier('Parent archivé refusé (PARENT_ARCHIVE) en réaffectation comme en création ; un poste archivé ne se modifie pas (POSTE_ARCHIVE) ; archiver un sommet qui porte des postes sans poste d’accueil est refusé (CIBLE_REQUISE, il nomme les postes portés : l’ancien refus POSTE_PORTE_DES_POSTES est remplacé par la réaffectation, vague 126)',
       refus.archive === true && code(refus.parentArchive) === 'PARENT_ARCHIVE' && code(refus.creationSousArchive) === 'PARENT_ARCHIVE' && code(refus.posteArchive) === 'POSTE_ARCHIVE'
-      && code(refus.porteDesPostes) === 'POSTE_PORTE_DES_POSTES' && /Aide-Soignante/.test(refus.porteDesPostes.motif), JSON.stringify([refus.parentArchive, refus.porteDesPostes]));
+      && code(refus.sommetSansAccueil) === 'CIBLE_REQUISE' && /Infirmiers/.test(refus.sommetSansAccueil.motif), JSON.stringify([refus.parentArchive, refus.sommetSansAccueil]));
     verifier('Le titre exige un agent : titulaire absent du personnel (AGENT_INTROUVABLE), poste vacant (POSTE_VACANT), titre de plus de 12 caractères (TITRE_TROP_LONG) ; intitulé vide, effectif fractionnaire et poste inconnu refusés ; une saisie identique ne change rien (inchangé)',
       code(refus.agentIntrouvable) === 'AGENT_INTROUVABLE' && code(refus.vacant) === 'POSTE_VACANT' && code(refus.titreLong) === 'TITRE_TROP_LONG' && code(refus.intituleVide) === 'INTITULE_VIDE'
       && code(refus.effectifFractionnaire) === 'EFFECTIF_INVALIDE' && code(refus.posteIntrouvable) === 'POSTE_INTROUVABLE' && refus.inchange.ok === true && refus.inchange.inchange === true, JSON.stringify(refus));
@@ -18840,12 +18840,16 @@ async function viderMessages(page) {
     await O.cliquerLigne('Archiver', 'Directrice Administrative (DA)');
     await pause(300);
     await O.motifModale('Sonde 111');
-    await O.cliquerModale('Archiver');
+    await O.cliquerModale('Archiver et réaffecter');
     await pause(500);
     const toast = await page.evaluate(() => [...document.querySelectorAll('#toast-host *')].map((n) => n.textContent).join(' | '));
-    const daApres = await page.evaluate(() => window.SIGH.store.collection('postes').get('PST002').statut);
-    verifier('À l’écran, archiver la DA (qui porte le Comptable, les Dispensatrices et les Agents de Sécurités) est refusé en le disant (« porte encore 3 postes »), le poste reste actif',
-      /porte encore 3 postes/.test(toast) && daApres === 'actif', JSON.stringify([toast.slice(0, 300), daApres]));
+    const daApres = await page.evaluate(() => { const c = window.SIGH.store.collection('postes'); return [c.get('PST002').statut, c.get('PST003').parentId, c.get('PST007').parentId, c.get('PST008').parentId].join(); });
+    verifier('À l’écran, archiver la DA (qui porte le Comptable, les Dispensatrices et les Agents de Sécurités) RÉAFFECTE ces trois postes sous le Directeur Médical et le dit (vague 126 : le refus « porte encore 3 postes » est remplacé), le poste est archivé',
+      /3 postes réaffectés sous « Directeur Médical »/.test(toast) && daApres === 'archive,PST001,PST001,PST001', JSON.stringify([toast.slice(0, 300), daApres]));
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#toast-host button')].find((x) => x.textContent.trim() === 'Annuler'); if (b) b.click(); });
+    await pause(400);
+    const daRestauree = await page.evaluate(() => { const c = window.SIGH.store.collection('postes'); return [c.get('PST002').statut, c.get('PST003').parentId, c.get('PST007').parentId, c.get('PST008').parentId].join(); });
+    verifier('Annuler remet la DA et ses trois postes comme avant', daRestauree === 'actif,PST002,PST002,PST002', daRestauree);
     const droit = await page.evaluate(() => { const S = window.SIGH.store, s = S.session(); const out = {}; S.setSession(Object.assign({}, s, { role: 'caissier', nom: 'SONDE111 caissier', nomComplet: 'SONDE111 caissier' })); out.caissier = window.SIGH.organigramme.reaffecter('PST013', 'PST001');
       S.setSession(Object.assign({}, s, { role: 'direction', nom: 'SONDE111 direction', nomComplet: 'SONDE111 direction' })); out.directionArchive = window.SIGH.organigramme.archiver('PST016', 'sonde 111'); out.directionModifie = window.SIGH.organigramme.modifier('PST016', { effectif: 8 }).ok; S.setSession(s);
       out.statutAideSoignante = S.collection('postes').get('PST016').statut; return JSON.parse(JSON.stringify(out)); });
@@ -20699,6 +20703,325 @@ async function viderMessages(page) {
     await attendreEcritures();
     const e125 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
     verifier('Aucune erreur JavaScript', e125.length === 0, e125.join(' | '));
+  });
+
+  /* ==========================================================================
+   * Vague 126 : ARCHIVER UN POSTE QUI PORTE DES POSTES LES RÉAFFECTE (lot ORG3, Direction, 11/11/2026)
+   * -------------------------------------------------------------------------
+   * Le refus `POSTE_PORTE_DES_POSTES` est remplacé : les postes portés sont RÉAFFECTÉS (par défaut au parent du poste archivé, au choix à un autre poste), avec une modale qui les
+   * nomme, une ligne de journal par poste déplacé et une pour l'archivage, une annulation qui remet chacun à sa place (sauf un poste déplacé depuis, laissé et dit), tout ou rien,
+   * un sommet qui porte des postes exigeant un poste d'accueil (refus nommé sinon), jamais un cycle ni un orphelin. Le droit reste celui de la matrice : la commande est absente sans lui.
+   * Le scénario repart de la semence, restitue postes, personnel, journal et matrice à la sortie, et ne lit aucune ligne par son rang.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 126 : ORG3 archiver un poste qui porte des postes les RÉAFFECTE (parent par défaut, autre cible au choix, modale qui les nomme, journal 1 + N, annulation qui remet chacun en place, sommet sans accueil refusé en le nommant, cycle et cible archivée refusés, tout ou rien, droit de la matrice)');
+    erreursJS = [];
+    const O = outils100;
+    await poserSessionServeur(roleImp('admin', 'SONDE126'));
+    await ouvrir('cfg-organisation.html');
+    const sauve = await page.evaluate(() => {
+      const S = window.SIGH.store, b = S.raw(), copie = (x) => JSON.parse(JSON.stringify(x));
+      S.collection('postes').all(); S.collection('rbac').all();
+      return { postes: copie(b.postes), personnel: copie(b.personnel), audit: copie(b.audit), rbac: copie(b.rbac) };
+    });
+    const restituer = () => page.evaluate((c) => {
+      const S = window.SIGH.store, b = S.raw(), copie = (x) => JSON.parse(JSON.stringify(x));
+      S.garder('postes', null);
+      [['postes', c.postes], ['personnel', c.personnel], ['audit', c.audit], ['rbac', c.rbac]].forEach((p) => { b[p[0]].length = 0; copie(p[1]).forEach((x) => b[p[0]].push(x)); });
+      window.SIGH.nav.invaliderRbac();
+      S.save();
+    }, sauve);
+    const monde = async () => {
+      await page.evaluate(() => {
+        const S = window.SIGH.store, b = S.raw(), D = window.SIGH.data, copie = (x) => JSON.parse(JSON.stringify(x));
+        S.garder('postes', null);
+        b.postes.length = 0; copie(D.postesDeLaSemence()).forEach((p) => b.postes.push(p));
+        b.audit.length = 0;
+        S.save();
+      });
+      await pause(700);
+    };
+    const ouvrirOrg = async () => {
+      await ouvrir('cfg-organisation.html');
+      await page.evaluate(async () => { [...document.querySelectorAll('.tab')].find((t) => /Organigramme/.test(t.textContent)).click(); await new Promise((r) => setTimeout(r, 400)); });
+    };
+    const boutonLigne = (poste, titre) => page.evaluate((p, t) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td') && x.querySelector('td').textContent.trim() === p);
+      if (!tr) return 'ligne absente';
+      const b = [...tr.querySelectorAll('button')].find((x) => (x.getAttribute('title') || '') === t);
+      if (!b) return 'bouton absent';
+      b.click(); return 'ok';
+    }, poste, titre);
+    const titresLigne = (poste) => page.evaluate((p) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.querySelector('td') && x.querySelector('td').textContent.trim() === p);
+      return tr ? [...tr.querySelectorAll('button')].map((x) => x.getAttribute('title') || '') : null;
+    }, poste);
+    const lireModale = () => page.evaluate(() => {
+      const m = [...document.querySelectorAll('.modal-root, [role=dialog]')].pop();
+      if (!m) return null;
+      const sel = m.querySelector('[data-archivage-cible]');
+      return { texte: m.textContent.replace(/\s+/g, ' '), liste: (m.querySelector('[data-archivage-liste]') || {}).textContent || null,
+        select: sel ? { valeur: sel.value, options: [...sel.options].map((o) => [o.value, o.textContent]) } : null, boutons: [...m.querySelectorAll('button')].map((b) => b.textContent.trim()).filter(Boolean) };
+    });
+    const choisirCible = (v) => page.evaluate((x) => { const s = document.querySelector('[data-archivage-cible]'); if (!s) return false; s.value = x; s.dispatchEvent(new Event('change', { bubbles: true })); return true; }, v);
+    const viderToasts = () => page.evaluate(() => { const h = document.getElementById('toast-host'); if (h) h.replaceChildren(); });
+    const toasts = () => page.evaluate(() => [...document.querySelectorAll('#toast-host > div')].map((n) => n.textContent.replace(/\s+/g, ' ').trim()));
+    const annulerToast = () => page.evaluate(() => { const b = [...document.querySelectorAll('#toast-host button')].find((x) => x.textContent.trim() === 'Annuler'); if (!b) return false; b.click(); return true; });
+    const etatBrut = () => page.evaluate(() => JSON.stringify(window.SIGH.store.raw().postes));
+    const lire = (ids) => page.evaluate((l) => { const col = window.SIGH.store.collection('postes'); const o = {}; l.forEach((i) => { const p = col.get(i); o[i] = p ? [p.statut, p.parentId || null] : null; }); return o; }, ids);
+    const journal = () => page.evaluate(() => window.SIGH.store.raw().audit.map((a) => ({ action: a.action, ref: a.reference, ancienne: a.ancienneValeur, nouvelle: a.nouvelleValeur, par: a.utilisateur, le: a.dateHeure })));
+    /* L'organigramme est bien formé : aucun poste actif sans parent actif sauf un sommet voulu, aucune boucle. */
+    const forme = () => page.evaluate(() => {
+      const actifs = window.SIGH.store.collection('postes').active(), par = {}; actifs.forEach((p) => { par[p.id] = p; });
+      const orphelins = actifs.filter((p) => p.parentId && !par[p.parentId]).map((p) => p.id);
+      const boucles = actifs.filter((p) => { let x = p, n = 0; while (x && x.parentId && n < 100) { x = par[x.parentId]; n++; } return n >= 100; }).map((p) => p.id);
+      return { actifs: actifs.length, orphelins: orphelins, boucles: boucles, sommets: actifs.filter((p) => !p.parentId).map((p) => p.id) };
+    });
+    const SOUS_DE_PST014 = ['PST015', 'PST016'];
+    const SOUS_DE_PST001 = ['PST002', 'PST006', 'PST009', 'PST011', 'PST012', 'PST013', 'PST014'];
+
+    /* --- 1. au geste : archiver les Infirmiers (deux postes portés) les remonte sous le Directeur Médical ------------------------------------------------------ */
+    await monde();
+    await ouvrirOrg();
+    const f0 = await forme();
+    const avant1 = await lire(['PST014'].concat(SOUS_DE_PST014));
+    await viderToasts();
+    const clic1 = await boutonLigne('Infirmiers', 'Archiver');
+    await pause(300);
+    const m1 = await lireModale();
+    verifier('La modale d’archivage NOMME les deux postes portés (Sages-Femmes, Aide-Soignante), annonce « 2 postes réaffectés », propose par défaut le rattachement du poste archivé (le Directeur Médical) parmi les seuls postes qui ne dépendent pas des Infirmiers, et porte « Archiver et réaffecter »',
+      clic1 === 'ok' && m1 && /2 postes réaffectés/.test(m1.liste) && /Sages-Femmes/.test(m1.liste) && /Aide-Soignante/.test(m1.liste) && m1.select.valeur === 'PST001'
+      && m1.select.options.length === f0.actifs - 3 && m1.select.options.every((o) => ['PST014', 'PST015', 'PST016'].indexOf(o[0]) < 0) && m1.boutons.indexOf('Archiver et réaffecter') >= 0, JSON.stringify([clic1, m1]));
+    await O.motifModale('Sonde 126');
+    await O.cliquerModale('Archiver et réaffecter');
+    await pause(600);
+    const apres1 = await lire(['PST014'].concat(SOUS_DE_PST014));
+    const t1 = await toasts();
+    const f1 = await forme();
+    const j1 = await journal();
+    const reaff1 = j1.filter((x) => x.action === 'Réaffectation d’un poste');
+    const arch1 = j1.filter((x) => x.action === 'Archivage');
+    verifier('Après confirmation : les Infirmiers sont archivés, les Sages-Femmes et l’Aide-Soignante sont REMONTÉS sous le Directeur Médical (rien n’est resté sous un poste archivé), l’organigramme reste bien formé (ni orphelin ni boucle, un seul sommet) et le message nomme la cible',
+      avant1.PST014[0] === 'actif' && apres1.PST014[0] === 'archive' && apres1.PST015[1] === 'PST001' && apres1.PST016[1] === 'PST001' && apres1.PST015[0] === 'actif' && apres1.PST016[0] === 'actif'
+      && f1.orphelins.length === 0 && f1.boucles.length === 0 && f1.sommets.join() === 'PST001' && f1.actifs === f0.actifs - 1 && t1.some((x) => /Poste archivé ; 2 postes réaffectés sous « Directeur Médical »/.test(x)), JSON.stringify([apres1, f1, t1]));
+    verifier('Journal RG-12 : TROIS lignes exactement, une « Archivage » (motif et cible) et une « Réaffectation d’un poste » PAR poste déplacé (ancien rattachement « Infirmiers », nouveau « Directeur Médical », motif), chacune avec son auteur et sa date',
+      j1.length === 3 && arch1.length === 1 && reaff1.length === 2 && /Sonde 126/.test(arch1[0].nouvelle) && /Directeur Médical/.test(arch1[0].nouvelle) && arch1[0].ref === 'PST014'
+      && reaff1.every((x) => /Infirmiers/.test(x.ancienne) && /Directeur Médical/.test(x.nouvelle) && /Sonde 126/.test(x.nouvelle) && x.par && /^\d{4}-\d\d-\d\dT/.test(x.le)) && reaff1.map((x) => x.ref).sort().join() === 'PST015,PST016', JSON.stringify(j1));
+
+    /* --- 2. l'annulation remet chacun en place ------------------------------------------------------------------------------------------------------------------------- */
+    const annule = await annulerToast();
+    await pause(500);
+    const retour = await lire(['PST014'].concat(SOUS_DE_PST014));
+    const jr = await journal();
+    const fr = await forme();
+    verifier('Annuler l’archivage RESTAURE le poste ET remet chaque poste porté sous son ancien rattachement (état identique à celui d’avant) ; le journal ajoute la restauration et une réaffectation par poste, et la forme reste saine',
+      annule && JSON.stringify(retour) === JSON.stringify(avant1) && jr.length === 3 + 3 && jr.filter((x) => x.action === 'Restauration' && x.ref === 'PST014').length === 1
+      && jr.filter((x) => x.action === 'Réaffectation d’un poste' && /Archivage de « Infirmiers » annulé/.test(x.nouvelle)).length === 2 && fr.orphelins.length === 0 && fr.boucles.length === 0 && fr.actifs === f0.actifs, JSON.stringify([retour, jr.length, fr]));
+
+    /* --- 3. un poste déplacé depuis est LAISSÉ où il est, et l'annulation le dit ------------------------------------------------------------------------------------ */
+    await viderToasts();
+    await boutonLigne('Infirmiers', 'Archiver');
+    await pause(300);
+    await O.motifModale('Sonde 126 b');
+    await O.cliquerModale('Archiver et réaffecter');
+    await pause(600);
+    await page.evaluate(() => { window.__r126 = window.SIGH.organigramme.reaffecter('PST016', 'PST012').ok; });
+    const annule3 = await annulerToast();
+    await pause(500);
+    const ap3 = await lire(['PST014'].concat(SOUS_DE_PST014));
+    const t3 = await toasts();
+    verifier('Si quelqu’un a déplacé un poste depuis (l’Aide-Soignante sous l’Echographiste), l’annulation remet les Sages-Femmes sous les Infirmiers, LAISSE l’Aide-Soignante où elle est et le DIT en nommant le poste et sa nouvelle place',
+      annule3 && ap3.PST014[0] === 'actif' && ap3.PST015[1] === 'PST014' && ap3.PST016[1] === 'PST012' && t3.some((x) => /laissé/.test(x) && /Aide-Soignante/.test(x) && /Echographiste/.test(x)), JSON.stringify([ap3, t3]));
+
+    /* --- 4. une autre cible, au choix ----------------------------------------------------------------------------------------------------------------------------------- */
+    await monde();
+    await ouvrirOrg();
+    await boutonLigne('Infirmiers', 'Archiver');
+    await pause(300);
+    const choix = await choisirCible('PST012');
+    await O.motifModale('Sonde 126 c');
+    await O.cliquerModale('Archiver et réaffecter');
+    await pause(600);
+    const ap4 = await lire(['PST014'].concat(SOUS_DE_PST014));
+    const j4 = await journal();
+    verifier('Au choix, une autre cible : les deux postes passent sous l’Echographiste (et non sous le parent), le journal nomme « Echographiste » comme nouveau rattachement',
+      choix && ap4.PST014[0] === 'archive' && ap4.PST015[1] === 'PST012' && ap4.PST016[1] === 'PST012' && j4.filter((x) => x.action === 'Réaffectation d’un poste').every((x) => /Echographiste/.test(x.nouvelle)) && j4.length === 3, JSON.stringify([ap4, j4]));
+
+    /* --- 5. un sommet qui porte des postes : la cible est OBLIGATOIRE, refus nommé sans accueil ------------------------------------------------------------------ */
+    await monde();
+    await ouvrirOrg();
+    const brut5 = await etatBrut();
+    await viderToasts();
+    await boutonLigne('Directeur Médical', 'Archiver');
+    await pause(300);
+    const m5 = await lireModale();
+    await O.motifModale('Sonde 126 d');
+    await O.cliquerModale('Archiver et réaffecter');
+    await pause(500);
+    const t5 = await toasts();
+    const brut5b = await etatBrut();
+    const j5 = await journal();
+    verifier('Archiver le Directeur Médical (sommet, il porte sept postes, tous ses descendants) : la modale n’a AUCUN poste à proposer (liste vide, choix à faire), la confirmation est REFUSÉE en le nommant (« au sommet de l’organigramme », « Créer d’abord le poste d’accueil »), rien n’est écrit, le journal reste vide',
+      m5 && /7 postes réaffectés/.test(m5.liste) && m5.select.valeur === '' && m5.select.options.length === 1 && t5.some((x) => /au sommet de l’organigramme/.test(x) && /Créer d’abord le poste d’accueil/.test(x)) && brut5 === brut5b && j5.length === 0, JSON.stringify([m5, t5, j5.length]));
+    const accueil = await page.evaluate(() => { const r = window.SIGH.organigramme.creer({ poste: 'Direction générale', effectif: 1, role: 'direction' }); return r.ok ? r.record.id : null; });
+    await pause(700);
+    await ouvrirOrg();
+    await boutonLigne('Directeur Médical', 'Archiver');
+    await pause(300);
+    const m5b = await lireModale();
+    await O.motifModale('Sonde 126 e');
+    await O.cliquerModale('Archiver et réaffecter');
+    await pause(500);
+    const t5b = await toasts();
+    const j5b = await journal();
+    verifier('Avec un poste d’accueil créé, la liste le propose (lui seul), mais SANS le choisir la confirmation est encore refusée en le nommant (« le poste d’accueil est à choisir ») et rien n’est écrit',
+      accueil && m5b.select.options.length === 2 && m5b.select.options[1][0] === accueil && t5b.some((x) => /au sommet de l’organigramme/.test(x)) && (await lire(['PST001'])).PST001[0] === 'actif' && j5b.filter((x) => x.action === 'Archivage').length === 0, JSON.stringify([m5b, t5b]));
+    await boutonLigne('Directeur Médical', 'Archiver');
+    await pause(300);
+    await choisirCible(accueil);
+    await O.motifModale('Sonde 126 f');
+    await O.cliquerModale('Archiver et réaffecter');
+    await pause(600);
+    const ap5 = await lire(['PST001'].concat(SOUS_DE_PST001));
+    const f5 = await forme();
+    const j5c = await journal();
+    verifier('En choisissant « Direction générale », le sommet est archivé et ses sept postes passent sous elle : un seul sommet, ni orphelin ni boucle, huit lignes de journal (sept réaffectations et l’archivage)',
+      ap5.PST001[0] === 'archive' && SOUS_DE_PST001.every((i) => ap5[i][1] === accueil && ap5[i][0] === 'actif') && f5.sommets.join() === accueil && f5.orphelins.length === 0 && f5.boucles.length === 0
+      && j5c.filter((x) => x.action === 'Réaffectation d’un poste').length === 7 && j5c.filter((x) => x.action === 'Archivage').length === 1, JSON.stringify([ap5, f5, j5c.length]));
+
+    /* --- 6. le moteur : cible par défaut, cycle, cible archivée ou inconnue, rien d'écrit ------------------------------------------------------------------------ */
+    await monde();
+    const ml = await page.evaluate(() => {
+      const ORG = window.SIGH.organigramme, S = window.SIGH.store, out = {}, brut = () => JSON.stringify(S.raw().postes);
+      const plan = ORG.planArchivage('PST014');
+      out.plan = { ok: plan.ok, portes: plan.portes.map((p) => p.id), cible: plan.cible && plan.cible.id, parDefaut: plan.parDefaut, candidats: plan.candidats.length };
+      const b0 = brut();
+      ORG.planArchivage('PST014'); ORG.planArchivage('PST001');
+      out.planNeEcritRien = brut() === b0 && S.raw().audit.length === 0;
+      const refus = (r) => (r.ok ? 'OK' : r.code);
+      out.cycleSoi = ORG.archiver('PST002', 'sonde', { cibleId: 'PST002' });
+      out.cycleDescendant = ORG.archiver('PST002', 'sonde', { cibleId: 'PST004' });
+      out.cycleFeuille = ORG.archiver('PST014', 'sonde', { cibleId: 'PST015' });
+      out.inconnue = ORG.archiver('PST014', 'sonde', { cibleId: 'PSTxxx' });
+      const cree = ORG.creer({ poste: 'Poste sonde 126', parentId: 'PST001', effectif: 1, role: 'agentadmin' });
+      const archive = ORG.archiver(cree.record.id, 'sonde');
+      out.feuilleSansCible = { ok: archive.ok, reaffectes: archive.reaffectes && archive.reaffectes.length, cible: archive.cible };
+      const aEcarter = brut();
+      out.archivee = ORG.archiver('PST014', 'sonde', { cibleId: cree.record.id });
+      out.dejaArchive = ORG.archiver(cree.record.id, 'sonde');
+      out.introuvable = ORG.archiver('PSTxxx', 'sonde');
+      out.refusNeEcritRien = brut() === aEcarter;
+      out.codes = { cycleSoi: refus(out.cycleSoi), cycleDescendant: refus(out.cycleDescendant), cycleFeuille: refus(out.cycleFeuille), inconnue: refus(out.inconnue), archivee: refus(out.archivee), dejaArchive: refus(out.dejaArchive), introuvable: refus(out.introuvable) };
+      out.motifs = { cycleDescendant: out.cycleDescendant.motif, archivee: out.archivee.motif, cycleSoi: out.cycleSoi.motif };
+      out.gestes = [out.cycleDescendant.geste, out.archivee.geste, out.inconnue.geste];
+      const actifs = S.collection('postes').active(), par = {}; actifs.forEach((p) => { par[p.id] = p; });
+      out.boucles = actifs.filter((p) => { let x = p, n = 0; while (x && x.parentId && n < 100) { x = par[x.parentId]; n++; } return n >= 100; }).length;
+      out.orphelins = actifs.filter((p) => p.parentId && !par[p.parentId]).length;
+      return JSON.parse(JSON.stringify(out));
+    });
+    verifier('Le plan d’archivage ne ÉCRIT RIEN et dit où iraient les postes : cible par défaut le rattachement (PST001), deux postes portés, les candidats excluent le poste et ses descendants',
+      ml.plan.ok && ml.plan.portes.join() === 'PST015,PST016' && ml.plan.cible === 'PST001' && ml.plan.parDefaut === true && ml.plan.candidats === 13 && ml.planNeEcritRien, JSON.stringify(ml.plan));
+    verifier('Cible refusée en le nommant : le poste lui-même et un de ses descendants (CIBLE_CYCLE, le motif cite « Assistant comptable »), un poste porté (CIBLE_CYCLE), un poste inconnu (CIBLE_INTROUVABLE), un poste ARCHIVÉ (CIBLE_ARCHIVEE) ; poste déjà archivé et poste inconnu aussi ; chaque refus porte un geste',
+      ml.codes.cycleSoi === 'CIBLE_CYCLE' && ml.codes.cycleDescendant === 'CIBLE_CYCLE' && /Assistant comptable/.test(ml.motifs.cycleDescendant) && ml.codes.cycleFeuille === 'CIBLE_CYCLE' && ml.codes.inconnue === 'CIBLE_INTROUVABLE' && ml.codes.archivee === 'CIBLE_ARCHIVEE'
+      && /Poste sonde 126/.test(ml.motifs.archivee) && ml.codes.dejaArchive === 'POSTE_ARCHIVE' && ml.codes.introuvable === 'POSTE_INTROUVABLE' && ml.gestes.every((g) => g && g.length > 10), JSON.stringify(ml.codes));
+    verifier('Aucun de ces refus n’a écrit quoi que ce soit, aucune boucle ni aucun orphelin n’existe ensuite ; un poste SANS poste porté s’archive sans cible (rien de réaffecté, comme avant)',
+      ml.refusNeEcritRien && ml.boucles === 0 && ml.orphelins === 0 && ml.feuilleSansCible.ok === true && ml.feuilleSansCible.reaffectes === 0 && ml.feuilleSansCible.cible === null, JSON.stringify([ml.refusNeEcritRien, ml.boucles, ml.orphelins, ml.feuilleSansCible]));
+
+    /* --- 7. tout ou rien : une réaffectation refusée en cours de route défait les précédentes ----------------------------------------------------------------- */
+    await monde();
+    const at = await page.evaluate(() => {
+      const ORG = window.SIGH.organigramme, S = window.SIGH.store, brut = () => JSON.stringify(S.raw().postes), out = {};
+      const avant = brut();
+      S.garder('postes', (op, rec) => (op === 'modifier' && rec.id === 'PST016' ? 'Sonde 126 : écriture refusée' : null));
+      const r = ORG.archiver('PST014', 'sonde atomique');
+      S.garder('postes', null);
+      out.code = r.ok ? 'OK' : r.code; out.motif = r.motif || null; out.geste = r.geste || null;
+      out.identique = brut() === avant;
+      out.statuts = ['PST014', 'PST015', 'PST016'].map((i) => { const p = S.collection('postes').get(i); return [p.statut, p.parentId]; });
+      out.abandon = S.raw().audit.filter((a) => a.action === 'Archivage abandonné').length;
+      out.archivages = S.raw().audit.filter((a) => a.action === 'Archivage').length;
+      /* sans la garde, le même geste réussit : c'est bien la garde qui a tout défait */
+      const encore = ORG.archiver('PST014', 'sonde atomique 2');
+      out.reussiSansGarde = encore.ok === true && encore.reaffectes.length === 2;
+      return JSON.parse(JSON.stringify(out));
+    });
+    verifier('Tout ou rien : l’écriture du SECOND poste porté (l’Aide-Soignante) refusée par le magasin fait refuser l’archivage entier (REAFFECTATION_REFUSEE, il nomme l’Aide-Soignante), le premier poste réaffecté est REMIS en place, les trois postes sont octet pour octet comme avant, et l’abandon est écrit au journal',
+      at.code === 'REAFFECTATION_REFUSEE' && /Aide-Soignante/.test(at.motif) && at.identique && at.statuts.join('|') === 'actif,PST001|actif,PST014|actif,PST014' && at.abandon === 1 && at.archivages === 0 && at.reussiSansGarde, JSON.stringify(at));
+
+    /* --- 8. l'annulation refusée se nomme -------------------------------------------------------------------------------------------------------------------------------- */
+    await monde();
+    const an = await page.evaluate(() => {
+      const ORG = window.SIGH.organigramme, S = window.SIGH.store, col = S.collection('postes'), out = {}, brut = () => JSON.stringify(S.raw().postes);
+      const r1 = ORG.archiver('PST014', 'sonde annulation');
+      col.restore('PST014');
+      ORG.reaffecter('PST015', 'PST014'); ORG.reaffecter('PST016', 'PST014');
+      const avant1 = brut();
+      const u1 = r1.undo();
+      out.dejaRestaure = { code: u1.ok ? 'OK' : u1.code, motif: u1.motif || null, geste: u1.geste || null, inchange: brut() === avant1 };
+      /* sans droit au moment d'annuler */
+      const r2 = ORG.archiver('PST014', 'sonde annulation 2');
+      const s = S.session();
+      const avant2 = brut();
+      S.setSession(Object.assign({}, s, { role: 'caissier', nom: 'SONDE126 caissier', nomComplet: 'SONDE126 caissier' }));
+      const u2 = r2.undo();
+      out.sansDroit = { code: u2.ok ? 'OK' : u2.code, inchange: brut() === avant2 };
+      S.setSession(s);
+      const u3 = r2.undo();
+      out.avecDroit = { ok: u3.ok, restaures: u3.restaures && u3.restaures.map((x) => x.id).sort().join(), laisses: u3.laisses && u3.laisses.length, statuts: ['PST014', 'PST015', 'PST016'].map((i) => col.get(i).statut + ':' + col.get(i).parentId).join() };
+      return JSON.parse(JSON.stringify(out));
+    });
+    verifier('Une annulation refusée se NOMME et n’écrit rien : poste déjà restauré (ANNULATION_IMPOSSIBLE, avec son geste), profil sans le droit au moment d’annuler (ORGANIGRAMME_RESERVE) ; avec le droit elle remet les deux postes sous les Infirmiers',
+      an.dejaRestaure.code === 'ANNULATION_IMPOSSIBLE' && /déjà été restauré/.test(an.dejaRestaure.motif) && an.dejaRestaure.geste.length > 10 && an.dejaRestaure.inchange && an.sansDroit.code === 'ORGANIGRAMME_RESERVE' && an.sansDroit.inchange
+      && an.avecDroit.ok && an.avecDroit.restaures === 'PST015,PST016' && an.avecDroit.laisses === 0 && an.avecDroit.statuts === 'actif:PST001,actif:PST014,actif:PST014', JSON.stringify(an));
+
+    /* --- 9. le droit vient de la matrice : commande absente, moteur qui refuse aussi ----------------------------------------------------------------------------------- */
+    await monde();
+    await poserSessionServeur(roleImp('direction', 'SONDE126'));
+    await ouvrirOrg();
+    const titresDir = await titresLigne('Infirmiers');
+    const brut9 = await etatBrut();
+    const dr = await page.evaluate(() => {
+      const ORG = window.SIGH.organigramme, S = window.SIGH.store, N = window.SIGH.nav, out = {}, brut = () => JSON.stringify(S.raw().postes);
+      const b0 = brut();
+      out.droitsDirection = ['voir', 'editer', 'annuler'].map((k) => N.droitsEcran('direction', 'cfg-organisation', 'CFG')[k]).join();
+      const r = ORG.archiver('PST014', 'sonde droit');
+      out.direction = { code: r.ok ? 'OK' : r.code, inchange: brut() === b0 };
+      const plan = ORG.planArchivage('PST014');
+      out.planDirection = plan.ok;
+      return JSON.parse(JSON.stringify(out));
+    });
+    verifier('Sans le droit d’annuler à l’écran (la Direction écrit mais n’annule pas), la commande « Archiver » est ABSENTE de la ligne (« Modifier » reste), et le moteur refuse aussi (ORGANIGRAMME_RESERVE) sans rien écrire',
+      dr.droitsDirection === 'true,true,false' && titresDir && titresDir.indexOf('Modifier') >= 0 && titresDir.indexOf('Archiver') < 0 && dr.direction.code === 'ORGANIGRAMME_RESERVE' && dr.direction.inchange && (await etatBrut()) === brut9, JSON.stringify([dr, titresDir]));
+    await poserSessionServeur(roleImp('admin', 'SONDE126'));
+    await ouvrirOrg();
+    const titresAdm = await titresLigne('Infirmiers');
+    verifier('L’administrateur, qui détient le droit, voit la commande « Archiver » sur la même ligne',
+      titresAdm && titresAdm.indexOf('Archiver') >= 0 && titresAdm.indexOf('Modifier') >= 0, JSON.stringify(titresAdm));
+    /* Annuler SANS écrire (profil modifié dans la matrice) : archiver réaffecte, donc exige AUSSI d'écrire. La fiche de la Direction est mutée puis restituée. */
+    const pm = await page.evaluate(() => {
+      const ORG = window.SIGH.organigramme, S = window.SIGH.store, N = window.SIGH.nav, out = {}, brut = () => JSON.stringify(S.raw().postes);
+      const s = S.session(), fiche = S.collection('rbac').all().filter((f) => f.role === 'direction')[0], copie = JSON.stringify(fiche.droitsEcrans || null);
+      fiche.droitsEcrans = Object.assign({}, fiche.droitsEcrans || {}, { 'cfg-organisation': { voir: true, editer: false, annuler: true } });
+      N.invaliderRbac();
+      S.setSession(Object.assign({}, s, { role: 'direction', nom: 'SONDE126 direction', nomComplet: 'SONDE126 direction' }));
+      out.droits = ['voir', 'editer', 'annuler'].map((k) => N.droitsEcran('direction', 'cfg-organisation', 'CFG')[k]).join();
+      const b0 = brut();
+      const r = ORG.archiver('PST014', 'sonde droit 2');
+      out.avecPortes = { code: r.ok ? 'OK' : r.code, motif: r.motif || null, inchange: brut() === b0 };
+      const f = ORG.archiver('PST015', 'sonde droit 3');
+      out.feuille = { ok: f.ok === true, statut: S.collection('postes').get('PST015').statut };
+      S.setSession(s);
+      fiche.droitsEcrans = JSON.parse(copie); if (copie === 'null') delete fiche.droitsEcrans;
+      N.invaliderRbac();
+      return JSON.parse(JSON.stringify(out));
+    });
+    verifier('Un profil qui annule SANS écrire (matrice modifiée pour la Direction) peut archiver un poste SANS poste porté, mais pas un poste qui en porte : réaffecter est une modification (ORGANIGRAMME_RESERVE, le motif dit « réaffecte »), rien n’est écrit',
+      pm.droits === 'true,false,true' && pm.avecPortes.code === 'ORGANIGRAMME_RESERVE' && /réaffecte/.test(pm.avecPortes.motif) && pm.avecPortes.inchange && pm.feuille.ok && pm.feuille.statut === 'archive', JSON.stringify(pm));
+
+    /* --- 10. restitution ---------------------------------------------------------------------------------------------------------------------------------------------------- */
+    await restituer();
+    await pause(500);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
   });
 
   await browser.close();
