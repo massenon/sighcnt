@@ -21999,6 +21999,11 @@ async function viderMessages(page) {
     /* --- 9. RG-02 au moteur, et la valorisation du stock n'a pas bougé ------------------------------------------------------------------------------------------------ */
     const marge = await page.evaluate((c, d) => { const PR = window.SIGH.parcours; const r = PR.proposerTarif({ code: c, prixNonAssure: 400, prixVente: 480, dateEffet: d.dans10, motif: 'Sonde 134 : marge' }); return { ok: r.ok, code: r.code, motif: r.motif, geste: r.geste }; }, code, D2);
     verifier('RG-02 au MOTEUR : proposer un prix de vente différent du prix d’achat pour un médicament est refusé en le nommant (RG02_MARGE), avec son geste', marge.ok === false && marge.code === 'RG02_MARGE' && /RG-02/.test(marge.motif) && !!marge.geste, JSON.stringify(marge));
+    const pose = await page.evaluate((sfx) => { const S = window.SIGH.store, col = S.collection('produits', { module: 'M6', entite: 'Produit' });
+      const avec = col.insert({ code: 'ZZT5X' + sfx, designation: 'Médicament posé avec une marge', unite: 'Boîte', categorie: 'medicament', prixAchat: 100, prixVente: 130, cump: 100, seuilAlerte: 1, stockGros: 0, stockDetail: 0, stock: 0 });
+      const sans = col.insert({ code: 'ZZT5Y' + sfx, designation: 'Consommable avec sa propre marge', unite: 'Boîte', categorie: 'conso_medical', prixAchat: 100, prixVente: 130, cump: 100, seuilAlerte: 1, stockGros: 0, stockDetail: 0, stock: 0 });
+      return { medicament: avec === null, consommable: sans !== null }; }, sfx);
+    verifier('RG-02 à l’ÉCRITURE, d’où qu’elle vienne : un médicament posé avec une marge (achat 100, vente 130) est refusé par le moteur de la collection ; un consommable garde sa propre marge (RG-02 ne vise que les médicaments)', pose.medicament && pose.consommable, JSON.stringify(pose));
     const val1 = await T.valorisation();
     verifier('La valorisation du stock des 184 références du jeu est INCHANGÉE par tout ce scénario (somme au CUMP, au prix de vente, valeurs unitaires)', val0.n === val1.n && val0.cump === val1.cump && val0.vente === val1.vente && val0.unitaires === val1.unitaires, JSON.stringify({ val0, val1 }));
     const e134 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));

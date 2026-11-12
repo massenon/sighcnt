@@ -466,10 +466,11 @@ CREATE INDEX IF NOT EXISTS "ix_situations_aib_statut" ON "cfg"."situations_aib" 
 CREATE TABLE IF NOT EXISTS "cfg"."tarifs" (
   "id" text PRIMARY KEY,
   "code" text,
-  "source" text,
   "statut" text,
+  "cree_le" timestamptz,
   "famille" text,
   "libelle" text,
+  "cree_par" text,
   "secteur" text,
   "code_acte" text,
   "assurable" jsonb,
@@ -478,6 +479,7 @@ CREATE TABLE IF NOT EXISTS "cfg"."tarifs" (
   "variantes_grille" jsonb,
   "libelle_grille" text,
   "code_analyse" text,
+  "source" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "cfg"."tarifs" IS 'Collection « tarifs » — Configuration';
@@ -542,20 +544,33 @@ CREATE TABLE IF NOT EXISTS "cfg"."variables_imagerie_conditionnels" (
 COMMENT ON TABLE "cfg"."variables_imagerie_conditionnels" IS 'Lignes « conditionnels » de « variablesImagerie »';
 CREATE TABLE IF NOT EXISTS "cfg"."versions_tarif" (
   "id" text PRIMARY KEY,
+  "lot" text,
   "code" text,
+  "motif" text,
   "statut" text,
+  "cree_le" timestamptz,
   "origine" text,
   "version" integer,
+  "cree_par" text,
+  "decide_le" date,
+  "date_effet" date,
+  "decide_par" text,
+  "propose_le" date,
   "etat_assure" text,
   "prix_assure" integer,
-  "etat_non_assure" text,
+  "propose_par" text,
+  "propose_role" text,
+  "role_decision" text,
+  "motif_decision" text,
   "prix_non_assure" integer,
+  "prix_vente" integer,
+  "source" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
   "arrete_le" date,
-  "motif" text,
   "provisoire" boolean,
   "a_dater" boolean,
-  "propose_le" date,
-  "propose_par" text,
+  "etat_non_assure" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "cfg"."versions_tarif" IS 'Collection « versionsTarif » — Configuration';

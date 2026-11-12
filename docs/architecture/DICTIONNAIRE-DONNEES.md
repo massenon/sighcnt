@@ -4,7 +4,7 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 
 | Schéma (module) | Tables | Tables filles | Colonnes typées | Fiches observées |
 |---|---:|---:|---:|---:|
-| `cfg` — Configuration | 23 | 4 | 312 | 1043 |
+| `cfg` — Configuration | 23 | 4 | 327 | 1411 |
 | `ged` — GED | 1 | 0 | 26 | 220 |
 | `imp` — Importation de données (IMP) | 1 | 2 | 17 | 0 |
 | `m1` — M1 Patients & DMI | 6 | 0 | 159 | 427 |
@@ -376,15 +376,17 @@ Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code t
 | `declencheur` | declencheur | text |  |
 | `description` | description | text |  |
 
-### `cfg.tarifs` (collection « tarifs », 201 fiches)
+### `cfg.tarifs` (collection « tarifs », 385 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
 | `code` | code | text |  |
 | `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
 | `famille` | famille | text |  |
 | `libelle` | libelle | text |  |
+| `cree_par` | _creePar | text |  |
 | `secteur` | secteur | text |  |
 | `code_acte` | codeActe | text |  |
 | `assurable` | assurable | jsonb |  |
@@ -441,24 +443,37 @@ Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code t
 
 Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, quand jsonb, libelle text
 
-### `cfg.versions_tarif` (collection « versionsTarif », 240 fiches)
+### `cfg.versions_tarif` (collection « versionsTarif », 424 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
+| `lot` | lot | text |  |
 | `code` | code | text |  |
+| `motif` | motif | text |  |
 | `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
 | `origine` | origine | text |  |
 | `version` | version | integer |  |
+| `cree_par` | _creePar | text |  |
+| `decide_le` | decideLe | date |  |
+| `date_effet` | dateEffet | date |  |
+| `decide_par` | decidePar | text |  |
+| `propose_le` | proposeLe | date |  |
 | `etat_assure` | etatAssure | text |  |
 | `prix_assure` | prixAssure | integer |  |
+| `propose_par` | proposePar | text |  |
+| `propose_role` | proposeRole | text |  |
+| `role_decision` | roleDecision | text |  |
+| `motif_decision` | motifDecision | text |  |
 | `prix_non_assure` | prixNonAssure | integer |  |
+| `prix_vente` | prixVente | integer |  |
+| `source` | source | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
 | `arrete_le` | arreteLe | date |  |
-| `motif` | motif | text |  |
 | `provisoire` | provisoire | boolean |  |
 | `a_dater` | aDater | boolean |  |
-| `propose_le` | proposeLe | date |  |
-| `propose_par` | proposePar | text |  |
 | `etat_non_assure` | etatNonAssure | text |  |
 
 ### `ged.documents` (collection « documents », 220 fiches)

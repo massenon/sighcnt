@@ -761,10 +761,11 @@ CREATE INDEX IF NOT EXISTS "ix_situations_aib_statut" ON "cfg"."situations_aib" 
 CREATE TABLE IF NOT EXISTS "cfg"."tarifs" (
   "id" text PRIMARY KEY,
   "code" text,
-  "source" text,
   "statut" text,
+  "cree_le" timestamptz,
   "famille" text,
   "libelle" text,
+  "cree_par" text,
   "secteur" text,
   "code_acte" text,
   "assurable" jsonb,
@@ -773,13 +774,15 @@ CREATE TABLE IF NOT EXISTS "cfg"."tarifs" (
   "variantes_grille" jsonb,
   "libelle_grille" text,
   "code_analyse" text,
+  "source" text,
   "extra" jsonb
 );
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
-ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "famille" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "secteur" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "code_acte" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "assurable" jsonb; -- @montee
@@ -788,6 +791,7 @@ ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "codes_alias" jsonb; -- @mon
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "variantes_grille" jsonb; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "libelle_grille" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "code_analyse" text; -- @montee
+ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."tarifs" IS 'Collection « tarifs » — Configuration';
 CREATE INDEX IF NOT EXISTS "ix_tarifs_code" ON "cfg"."tarifs" ("code");
@@ -884,36 +888,62 @@ ALTER TABLE "cfg"."variables_imagerie_conditionnels" ADD COLUMN IF NOT EXISTS "e
 COMMENT ON TABLE "cfg"."variables_imagerie_conditionnels" IS 'Lignes « conditionnels » de « variablesImagerie »';
 CREATE TABLE IF NOT EXISTS "cfg"."versions_tarif" (
   "id" text PRIMARY KEY,
+  "lot" text,
   "code" text,
+  "motif" text,
   "statut" text,
+  "cree_le" timestamptz,
   "origine" text,
   "version" integer,
+  "cree_par" text,
+  "decide_le" date,
+  "date_effet" date,
+  "decide_par" text,
+  "propose_le" date,
   "etat_assure" text,
   "prix_assure" integer,
-  "etat_non_assure" text,
+  "propose_par" text,
+  "propose_role" text,
+  "role_decision" text,
+  "motif_decision" text,
   "prix_non_assure" integer,
+  "prix_vente" integer,
+  "source" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
   "arrete_le" date,
-  "motif" text,
   "provisoire" boolean,
   "a_dater" boolean,
-  "propose_le" date,
-  "propose_par" text,
+  "etat_non_assure" text,
   "extra" jsonb
 );
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "lot" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "origine" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "version" integer; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "decide_le" date; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "decide_par" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_le" date; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "etat_assure" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "prix_assure" integer; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "etat_non_assure" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_par" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_role" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "role_decision" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "motif_decision" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "prix_non_assure" integer; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "prix_vente" integer; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "arrete_le" date; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "provisoire" boolean; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "a_dater" boolean; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_le" date; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_par" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "etat_non_assure" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."versions_tarif" IS 'Collection « versionsTarif » — Configuration';
 CREATE INDEX IF NOT EXISTS "ix_versions_tarif_code" ON "cfg"."versions_tarif" ("code");

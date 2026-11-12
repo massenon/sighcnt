@@ -33,7 +33,7 @@ Index détaillé : [`architecture/README.md`](architecture/README.md).
 | [`PRD-M12-cloture-exercice`](prd/PRD-M12-cloture-exercice.md) | Clôture d'exercice, à-nouveaux, lecture seule des exercices clos | livré (vague 69) |
 | [`PRD-M6-suivi-ventes-secteurs`](prd/PRD-M6-suivi-ventes-secteurs.md) | Ventes par patient et par secteur | livré (vague 69) |
 | [`PRD-SOCLE-application-sans-rechargement`](prd/PRD-SOCLE-application-sans-rechargement.md) | Document unique, notifications, planificateur | P0/P1 livrés (vagues 69-70) ; flux poussé et deltas par séquence restent |
-| [`PRD-TARIFS-referentiel-unique-et-changement-de-prix`](prd/PRD-TARIFS-referentiel-unique-et-changement-de-prix.md) | Une liste de prix, un écran « Tarifs et prix », un changement de prix validé (Oui/Non) et jamais rétroactif | T0 à T3 livrés en maquette et T6 au poste Flutter (11/11/2026) ; T4, T5 et T7 à faire |
+| [`PRD-TARIFS-referentiel-unique-et-changement-de-prix`](prd/PRD-TARIFS-referentiel-unique-et-changement-de-prix.md) | Une liste de prix, un écran « Tarifs et prix », un changement de prix validé (Oui/Non) et jamais rétroactif | T0 à T5 livrés en maquette et T6 au poste Flutter (T4 et T5 : maquette seule) ; T7 à faire |
 | [`PRD-SOCLE-synchronisation-bidirectionnelle`](prd/PRD-SOCLE-synchronisation-bidirectionnelle.md) | Synchronisation dans les deux sens : poste, hub, client web, mobile | brouillon 26/10/2026 |
 
 Index : [`prd/README.md`](prd/README.md).
