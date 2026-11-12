@@ -24179,6 +24179,102 @@ async function viderMessages(page) {
     const e156 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
     verifier('Aucune erreur JavaScript', e156.length === 0, e156.join(' | '));
   });
+  await etape(async () => {
+    scenario('Vague 157 : DOCS-1 D4 recherche avancée : un PDF à couche texte se retrouve par un mot de son corps (courriers et dossier patient), un scan image est dit « texte non indexé » et jamais « aucun résultat » seul, plage de dates, la zone 2 reste hors de portée de l’accueil');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), sfx = O.sfx();
+    const mot = 'zebraquartz' + sfx;
+    const pdfTexte = await Fx.pdfTexte(1571, 'Rapport de la visite : le dosage de la ' + mot + ' est conforme, sans hyperglycémie.');
+    const pdfScan = await Fx.pdfScan(1572), png = await Fx.image('png', 1573), pdf2p = await Fx.pdfPages(sfx, 2);
+    const lignes = () => page.evaluate(() => [...document.querySelectorAll('#page-content tbody tr')].map((tr) => tr.textContent));
+    const vide = () => page.evaluate(() => { const c = document.querySelector('#page-content'); const m = [...c.querySelectorAll('p')].find((p) => /Aucun résultat pour cette recherche/.test(p.textContent)); return m ? m.parentElement.textContent : null; });
+
+    /* EXTRACTEUR : plusieurs pages, scan sans couche texte */
+    const jt = await O.jeton('admin');
+    const dp = await O.deposer(jt, 'courrier', pdf2p);
+    const ds = await O.deposer(jt, 'courrier', pdfScan);
+    verifier('Extracteur local : un PDF de deux pages indexe le mot de CHAQUE page (pages = 2) ; un PDF qui ne contient qu’une image est « non indexé » avec sa raison (jamais une liste vide présentée comme un contenu vide)',
+      dp.json.pages === 2 && dp.json.mots.indexOf('page1mot' + sfx) >= 0 && dp.json.mots.indexOf('page2mot' + sfx) >= 0 && ds.json.texteIndexe === false && ds.json.mots.length === 0 && /scan image/.test(ds.json.raison), JSON.stringify([dp.json.pages, dp.json.mots.slice(0, 4), ds.json.raison]));
+
+    /* COURRIERS */
+    await poserSessionServeur(roleImp('agentadmin', 'AGENT157'));
+    await ouvrir('m13-courriers.html');
+    const A = await O.creerCourrier(sfx + 'a', '2026-07-01'), B = await O.creerCourrier(sfx + 'b', '2026-07-15'), Cc = await O.creerCourrier(sfx + 'c', '2026-07-16');
+    const poser = async (ref, f) => { await O.ouvrirLigne(ref); await O.attendre(() => !!document.querySelector('[data-zone-import="courrier"]')); await O.deposerUI(f); await O.attendre(() => !!document.querySelector('[data-piece-nom]')); await O.fermerTout(); await pause(300); };
+    await poser(A, pdfTexte); await poser(B, pdfScan); await poser(Cc, png);
+
+    await O.chercher(mot);
+    let l = await lignes();
+    verifier('Chercher un mot du CORPS d’un PDF à couche texte (« ' + mot + ') retrouve le courrier qui le porte, et lui seul', l.length === 1 && l[0].indexOf(A) >= 0, JSON.stringify(l.map((x) => x.slice(0, 40))));
+    await O.chercher('HYPERGLYCEMIE ' + sfx.slice(0, 0));
+    l = await lignes();
+    verifier('La recherche ignore la casse et les accents (« HYPERGLYCEMIE » trouve « hyperglycémie »)', l.some((x) => x.indexOf(A) >= 0), String(l.length));
+    await O.chercher('texte-1571');
+    l = await lignes();
+    verifier('Le nom du fichier d’origine se cherche aussi', l.some((x) => x.indexOf(A) >= 0));
+    await O.chercher(sfx + 'a');
+    l = await lignes();
+    verifier('Les données de la fiche (ici l’objet) se cherchent comme avant', l.length === 1 && l[0].indexOf(A) >= 0);
+
+    /* UN SCAN IMAGE EST DIT, JAMAIS « AUCUN RÉSULTAT » SEUL */
+    await O.chercher('motintrouvable' + sfx);
+    const v = await vide();
+    verifier('Une recherche sans résultat dit ce qu’elle ne lit pas : « Aucun résultat » ET le nombre de pièces sans texte indexé (images sans couche texte), jamais un vide muet', v && /Aucun résultat pour cette recherche/.test(v) && /sans texte indexé|pas de texte indexé/.test(v) && /image sans couche texte/.test(v), String(v));
+    await O.chercher(B);
+    l = await lignes();
+    verifier('La fiche du scan PDF image est « Oui » (numérisé) et porte la mention « texte non indexé » à la ligne', l.length === 1 && /Oui/.test(l[0]) && /texte non indexé/.test(l[0]), JSON.stringify(l));
+    await O.chercher('');
+    await page.evaluate(() => { const s = [...document.querySelectorAll('#page-content select')].find((x) => [...x.options].some((o) => /Texte non indexé/.test(o.textContent))); s.value = 'sansTexte'; s.dispatchEvent(new Event('change', { bubbles: true })); });
+    await pause(600);
+    l = await lignes();
+    verifier('Le filtre « Texte non indexé » liste les pièces dont le contenu n’est pas cherché (les deux scans) et pas le PDF à couche texte', l.some((x) => x.indexOf(B) >= 0) && l.some((x) => x.indexOf(Cc) >= 0) && !l.some((x) => x.indexOf(A) >= 0), String(l.length));
+    await page.evaluate(() => { const s = [...document.querySelectorAll('#page-content select')].find((x) => [...x.options].some((o) => /Texte non indexé/.test(o.textContent))); s.value = ''; s.dispatchEvent(new Event('change', { bubbles: true })); });
+    await pause(400);
+
+    /* PLAGE DE DATES */
+    await page.evaluate(() => { const [du, au] = document.querySelectorAll('#page-content input[type=date]'); du.value = '2026-07-10'; du.dispatchEvent(new Event('change', { bubbles: true })); au.value = '2026-07-20'; au.dispatchEvent(new Event('change', { bubbles: true })); });
+    await pause(800);
+    await O.chercher('Objet docs ' + sfx);
+    l = await lignes();
+    verifier('La plage du 10 au 20 juillet est un FILTRE : les courriers du 15 et du 16 y sont, celui du 1er juillet n’y est pas (recherche de leur objet commun)', l.some((x) => x.indexOf(B) >= 0) && l.some((x) => x.indexOf(Cc) >= 0) && !l.some((x) => x.indexOf(A) >= 0), JSON.stringify(l.map((x) => x.slice(0, 30))));
+    await page.evaluate(() => { const [du, au] = document.querySelectorAll('#page-content input[type=date]'); du.value = ''; du.dispatchEvent(new Event('change', { bubbles: true })); au.value = ''; au.dispatchEvent(new Event('change', { bubbles: true })); });
+    await pause(500);
+
+    /* DOSSIER PATIENT */
+    const p = await page.evaluate(() => { const q = window.SIGH.store.collection('patients').active()[3]; return { id: q.id, code: q.code }; });
+    const motP = 'zebrapatient' + sfx;
+    const crPdf = await Fx.pdfTexte(1574, 'Le compte rendu cite le ' + motP + ' et une allergie.');
+    await poserSessionServeur(roleImp('medecin', 'MEDECIN157'));
+    await ouvrir('m1-documents.html');
+    await page.evaluate(() => { window.__rempl = (c, x) => { const e = document.querySelector('[role=dialog] #f_' + c); e.value = x; e.dispatchEvent(new Event('change', { bubbles: true })); }; });
+    await cliquer('Ajouter un document', 'button'); await pause(700);
+    await page.evaluate((id) => { window.__rempl('patientId', id); window.__rempl('type', 'Compte rendu médical'); window.__rempl('date', '2026-07-12'); }, p.id);
+    const h = await page.$('[role=dialog] [data-zone-fichier]'); await h.uploadFile(crPdf); await pause(500);
+    await cliquer('Rattacher au dossier', '[role=dialog] button'); await pause(1800);
+    await O.chercher(motP);
+    l = await lignes();
+    verifier('Dossier patient : un mot du corps du compte rendu PDF retrouve le document', l.length === 1 && /Compte rendu médical/.test(l[0]), JSON.stringify(l.map((x) => x.slice(0, 60))));
+    await page.evaluate(() => { const [du, au] = document.querySelectorAll('#page-content [data-plage-dates] input[type=date]'); du.value = '2026-07-12'; du.dispatchEvent(new Event('change', { bubbles: true })); au.value = '2026-07-12'; au.dispatchEvent(new Event('change', { bubbles: true })); });
+    await pause(900);
+    await O.chercher(motP);
+    l = await lignes();
+    const horsPlage = await page.evaluate(() => { const [du, au] = document.querySelectorAll('#page-content [data-plage-dates] input[type=date]'); du.value = '2026-08-01'; du.dispatchEvent(new Event('change', { bubbles: true })); au.value = '2026-08-31'; au.dispatchEvent(new Event('change', { bubbles: true })); });
+    void horsPlage;
+    await pause(900);
+    await O.chercher(motP);
+    const l2 = await lignes();
+    verifier('La plage de dates filtre les documents du dossier patient : le jour du document (12 juillet) le garde, un autre mois le retire', l.length === 1 && l2.length === 0, JSON.stringify([l.length, l2.length]));
+
+    /* L'ACCUEIL NE TROUVE PAS UN MOT D'UN COMPTE RENDU */
+    await poserSessionServeur(roleImp('reception', 'ACCUEIL157'));
+    await ouvrir('m1-documents.html');
+    await O.chercher(motP);
+    const la = await lignes();
+    verifier('L’accueil cherchant le mot d’un compte rendu (zone 2) ne trouve RIEN : la recherche ne lit que les pièces qu’il a le droit de voir', la.length === 0 || la.every((x) => x.indexOf('Compte rendu') < 0), JSON.stringify(la.map((x) => x.slice(0, 60))));
+
+    const e157 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e157.length === 0, e157.join(' | '));
+  });
   /* DOCS-1 FIN */
 
   await browser.close();
