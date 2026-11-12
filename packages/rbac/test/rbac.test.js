@@ -71,7 +71,10 @@ test('I7 : l\'assistant comptable est en LECTURE SEULE à l\'import (voir, jamai
   assert.deepEqual(di('aide_comptable', 'patients'), [0, 0, 0]);
 });
 test('accueil et agent administratif : le répertoire des patients seulement ; le comptable : ses jeux comptables, jamais les patients ni les prix ; le biologiste : le modèle des analyses, plus le prix (Q10)', () => {
-  for (const r of ['reception', 'agentadmin']) { assert.deepEqual(di(r, 'patients'), [1, 1, 1], r); for (const j of jeuxImp.filter((x) => x !== 'patients')) assert.equal(di(r, j)[0], 0, r + ' ' + j); }
+  /* L'accueil : le répertoire seulement. L'agent administratif : le répertoire ET le registre du courrier (lot IMP-B2). */
+  for (const j of jeuxImp.filter((x) => x !== 'patients')) assert.equal(di('reception', j)[0], 0, 'reception ' + j);
+  assert.deepEqual(di('reception', 'patients'), [1, 1, 1]); assert.deepEqual(di('agentadmin', 'patients'), [1, 1, 1]);
+  for (const j of jeuxImp.filter((x) => x !== 'patients' && x !== 'courriers')) assert.equal(di('agentadmin', j)[0], 0, 'agentadmin ' + j);
   for (const j of ['plan-comptable', 'soldes-ouverture', 'fournisseurs', 'assureurs', 'souscripteurs']) assert.deepEqual(di('comptable', j), [1, 1, 1], j);
   assert.deepEqual(di('comptable', 'grand-stock'), [1, 0, 0]);
   for (const j of ['patients', 'personnel', 'tarifs']) assert.deepEqual(di('comptable', j), [0, 0, 0], j);
@@ -95,11 +98,12 @@ test('I11 : superviser (lire tous les lots) est TIRÉ DU DROIT d\'annuler sur ch
   assert.ok(imp.capacitePaie.includes('da') && imp.capacitePaie.includes('admin'));
   for (const r of ['direction', 'stock', 'reception', 'laborantin', 'aide_comptable']) assert.ok(!imp.capacitePaie.includes(r), r);
 });
-test('I8 et RG-13 : « ignorer les existants » sur les fournisseurs, le référentiel produits et les emplacements SEULEMENT (liste fermée), les prix se versionnent, patients, personnel, soldes d\'ouverture et les trois jeux du stock qui écrivent des mouvements sont des jeux restreints', () => {
+test('I8 et RG-13 : « ignorer les existants » sur les fournisseurs, le référentiel produits, les emplacements et les courriers SEULEMENT (liste fermée), les prix et les garanties se versionnent, patients, personnel, soldes d\'ouverture, les trois jeux du stock qui écrivent des mouvements et les quatre jeux du lot IMP-B2 (couvertures, immobilisations, budgets, courriers) sont des jeux restreints', () => {
   const doublon = (id) => imp.jeux.find((j) => j.id === id).doublon;
   assert.equal(doublon('fournisseurs'), 'ignorer'); assert.equal(doublon('tarifs'), 'versionner'); assert.equal(doublon('patients'), 'refuser');
-  assert.deepEqual(imp.jeux.filter((j) => j.doublon === 'ignorer').map((j) => j.id).sort(), ['emplacements', 'fournisseurs', 'produits-referentiel']);
-  assert.deepEqual(imp.jeux.filter((j) => j.sensibilite === 'restreinte').map((j) => j.id).sort(), ['inventaire-comptage', 'patients', 'personnel', 'soldes-ouverture', 'stock-detail-initial', 'transfert-lignes']);
+  assert.deepEqual(imp.jeux.filter((j) => j.doublon === 'ignorer').map((j) => j.id).sort(), ['courriers', 'emplacements', 'fournisseurs', 'produits-referentiel']);
+  assert.deepEqual(imp.jeux.filter((j) => j.doublon === 'versionner').map((j) => j.id).sort(), ['garanties', 'tarifs', 'tarifs-produits']);
+  assert.deepEqual(imp.jeux.filter((j) => j.sensibilite === 'restreinte').map((j) => j.id).sort(), ['budgets', 'courriers', 'couvertures-assurance', 'immobilisations', 'inventaire-comptage', 'patients', 'personnel', 'soldes-ouverture', 'stock-detail-initial', 'transfert-lignes']);
 });
 test('IMP-B1 (I6, I8, I13) : le gestionnaire de stock importe les cinq jeux du stock (référentiel produits, emplacements, stock détail initial, bon de transfert, comptage d\'inventaire), la DAF et l\'administrateur aussi ; le comptable ne lit que le Grand Stock ; aucun autre profil', () => {
   for (const r of ['stock', 'da', 'admin']) for (const j of jeuxStock) assert.deepEqual(di(r, j), [1, 1, 1], r + ' ' + j);
@@ -115,6 +119,48 @@ test('T5 : le jeu des prix d\'achat (tarifs-produits) : le gestionnaire de stock
   for (const r of rbac.roles.map((x) => x.id).filter((x) => ['stock', 'da', 'admin', 'comptable'].indexOf(x) < 0)) assert.deepEqual(di(r, 'tarifs-produits'), [0, 0, 0], r);
   assert.deepEqual(imp.jeux.find((j) => j.id === 'tarifs-produits').hotes, ['cfg-tarifs', 'm6-produits']);
   assert.equal(imp.jeux.find((j) => j.id === 'tarifs-produits').doublon, 'versionner');
+});
+/* ---- Lot IMP-B2 (12/11/2026) : les dix autres référentiels, une ligne par décision --------------------------------------------------------------------------------------------- */
+const jeuxB2 = ['natures-facture', 'centres-couts', 'catalogue-imagerie', 'unites-labo', 'prestataires', 'garanties', 'couvertures-assurance', 'immobilisations', 'budgets', 'courriers'];
+const jeuxComptable = ['centres-couts', 'garanties', 'couvertures-assurance', 'immobilisations', 'budgets'];
+test('IMP-B2 : les dix jeux sont déclarés avec leur page et leur hôte, un hôte par jeu', () => {
+  assert.deepEqual(jeuxB2.filter((j) => jeuxImp.indexOf(j) < 0), []);
+  const hote = (id) => imp.jeux.find((j) => j.id === id).hotes;
+  assert.deepEqual(hote('natures-facture'), ['cfg-natures-facture']); assert.deepEqual(hote('centres-couts'), ['cfg-centres-couts']); assert.deepEqual(hote('catalogue-imagerie'), ['cfg-imagerie-catalogue']);
+  assert.deepEqual(hote('unites-labo'), ['m5-unites']); assert.deepEqual(hote('prestataires'), ['m10-prestataires']); assert.deepEqual(hote('garanties'), ['m9-conventions']);
+  assert.deepEqual(hote('couvertures-assurance'), ['m9-assures']); assert.deepEqual(hote('immobilisations'), ['m12-immobilisations']); assert.deepEqual(hote('budgets'), ['m12-budgets']); assert.deepEqual(hote('courriers'), ['m13-courriers']);
+});
+test('IMP-B2 : l\'administrateur et la DAF importent et annulent les dix jeux (VIA) ; la Direction les VOIT seulement (V) : elle voit le modèle et ses propres lots, jamais elle n\'importe', () => {
+  for (const r of ['admin', 'da']) for (const j of jeuxB2) assert.deepEqual(di(r, j), [1, 1, 1], r + ' ' + j);
+  for (const j of jeuxB2) assert.deepEqual(di('direction', j), [1, 0, 0], 'direction ' + j);
+});
+test('IMP-B2 : le comptable détient VIA sur centres de coûts, garanties, couvertures, immobilisations et budgets, et rien sur les cinq autres', () => {
+  for (const j of jeuxComptable) assert.deepEqual(di('comptable', j), [1, 1, 1], j);
+  for (const j of jeuxB2.filter((x) => jeuxComptable.indexOf(x) < 0)) assert.deepEqual(di('comptable', j), [0, 0, 0], j);
+});
+test('IMP-B2 (I7) : l\'assistant comptable VOIT les jeux du comptable et n\'importe aucun des dix, la matrice pouvant le lui ouvrir plus tard sans code', () => {
+  for (const j of jeuxComptable) assert.deepEqual(di('aide_comptable', j), [1, 0, 0], j);
+  for (const j of jeuxB2.filter((x) => jeuxComptable.indexOf(x) < 0)) assert.deepEqual(di('aide_comptable', j), [0, 0, 0], j);
+});
+test('IMP-B2 : le biologiste détient les unités de mesure (VIA) et rien d\'autre ; l\'agent administratif détient les courriers (VIA) et le répertoire ; l\'échographiste n\'écrit pas le catalogue de l\'imagerie', () => {
+  assert.deepEqual(di('laborantin', 'unites-labo'), [1, 1, 1]);
+  for (const j of jeuxB2.filter((x) => x !== 'unites-labo')) assert.deepEqual(di('laborantin', j), [0, 0, 0], 'laborantin ' + j);
+  assert.deepEqual(di('agentadmin', 'courriers'), [1, 1, 1]);
+  for (const j of jeuxB2.filter((x) => x !== 'courriers')) assert.deepEqual(di('agentadmin', j), [0, 0, 0], 'agentadmin ' + j);
+  assert.deepEqual(di('echographiste', 'catalogue-imagerie'), [0, 0, 0]);
+});
+test('IMP-B2 : natures de facture, catalogue de l\'imagerie et prestataires : la DAF et l\'administrateur seulement (la Direction lit) ; aucun autre profil des dix ne reçoit un droit sur eux', () => {
+  for (const j of ['natures-facture', 'catalogue-imagerie', 'prestataires']) for (const r of rbac.roles.map((x) => x.id).filter((x) => ['da', 'admin', 'direction'].indexOf(x) < 0)) assert.deepEqual(di(r, j), [0, 0, 0], r + ' ' + j);
+});
+test('IMP-B2 : aucun autre profil (gestionnaire de stock, accueil, caissier, médecin, assistant de direction, rôles archivés) ne détient un des dix jeux', () => {
+  for (const r of ['stock', 'reception', 'caissier', 'medecin', 'infirmier', 'assistant_comptable', 'ambulancier', 'surveillant', 'chirurgien', 'anesthesiste', 'dm', 'pharmacien', 'rh']) for (const j of jeuxB2) assert.deepEqual(di(r, j), [0, 0, 0], r + ' ' + j);
+});
+test('IMP-B2 : les modes de doublon et les sensibilités : garanties versionnent, courriers ignorent, les quatre jeux restreints (couvertures, immobilisations, budgets, courriers) ne recopient aucune valeur', () => {
+  const j = (id) => imp.jeux.find((x) => x.id === id);
+  assert.equal(j('garanties').doublon, 'versionner'); assert.equal(j('courriers').doublon, 'ignorer');
+  for (const id of ['natures-facture', 'centres-couts', 'catalogue-imagerie', 'unites-labo', 'prestataires', 'couvertures-assurance', 'immobilisations', 'budgets']) assert.equal(j(id).doublon, 'refuser', id);
+  for (const id of ['couvertures-assurance', 'immobilisations', 'budgets', 'courriers']) assert.equal(j(id).sensibilite, 'restreinte', id);
+  for (const id of ['natures-facture', 'centres-couts', 'catalogue-imagerie', 'unites-labo', 'prestataires', 'garanties']) assert.equal(j(id).sensibilite, 'courante', id);
 });
 test('une page de jeu `imp-*` est visible de qui détient le droit VOIR du jeu (une seule vérité), et la page d\'accueil de qui détient un jeu au moins', () => {
   for (const r of rbac.roles) {

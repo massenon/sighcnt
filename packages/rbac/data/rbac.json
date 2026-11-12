@@ -4197,6 +4197,56 @@
     1,
     1
    ],
+   "imp-natures-facture": [
+    1,
+    1,
+    1
+   ],
+   "imp-centres-couts": [
+    1,
+    1,
+    1
+   ],
+   "imp-catalogue-imagerie": [
+    1,
+    1,
+    1
+   ],
+   "imp-unites-labo": [
+    1,
+    1,
+    1
+   ],
+   "imp-prestataires": [
+    1,
+    1,
+    1
+   ],
+   "imp-garanties": [
+    1,
+    1,
+    1
+   ],
+   "imp-couvertures-assurance": [
+    1,
+    1,
+    1
+   ],
+   "imp-immobilisations": [
+    1,
+    1,
+    1
+   ],
+   "imp-budgets": [
+    1,
+    1,
+    1
+   ],
+   "imp-courriers": [
+    1,
+    1,
+    1
+   ],
    "mere-supervision": [
     1,
     1,
@@ -5865,6 +5915,56 @@
     1
    ],
    "imp-soldes-ouverture": [
+    1,
+    1,
+    1
+   ],
+   "imp-natures-facture": [
+    1,
+    1,
+    1
+   ],
+   "imp-centres-couts": [
+    1,
+    1,
+    1
+   ],
+   "imp-catalogue-imagerie": [
+    1,
+    1,
+    1
+   ],
+   "imp-unites-labo": [
+    1,
+    1,
+    1
+   ],
+   "imp-prestataires": [
+    1,
+    1,
+    1
+   ],
+   "imp-garanties": [
+    1,
+    1,
+    1
+   ],
+   "imp-couvertures-assurance": [
+    1,
+    1,
+    1
+   ],
+   "imp-immobilisations": [
+    1,
+    1,
+    1
+   ],
+   "imp-budgets": [
+    1,
+    1,
+    1
+   ],
+   "imp-courriers": [
     1,
     1,
     1
@@ -7693,6 +7793,56 @@
     1,
     1
    ],
+   "imp-natures-facture": [
+    1,
+    1,
+    1
+   ],
+   "imp-centres-couts": [
+    1,
+    1,
+    1
+   ],
+   "imp-catalogue-imagerie": [
+    1,
+    1,
+    1
+   ],
+   "imp-unites-labo": [
+    1,
+    1,
+    1
+   ],
+   "imp-prestataires": [
+    1,
+    1,
+    1
+   ],
+   "imp-garanties": [
+    1,
+    1,
+    1
+   ],
+   "imp-couvertures-assurance": [
+    1,
+    1,
+    1
+   ],
+   "imp-immobilisations": [
+    1,
+    1,
+    1
+   ],
+   "imp-budgets": [
+    1,
+    1,
+    1
+   ],
+   "imp-courriers": [
+    1,
+    1,
+    1
+   ],
    "mere-supervision": [
     1,
     1,
@@ -9230,6 +9380,11 @@
     1,
     1
    ],
+   "imp-unites-labo": [
+    1,
+    1,
+    1
+   ],
    "m5-stats-examens": [
     1,
     1,
@@ -10406,6 +10561,31 @@
     1,
     1
    ],
+   "imp-centres-couts": [
+    1,
+    1,
+    1
+   ],
+   "imp-garanties": [
+    1,
+    1,
+    1
+   ],
+   "imp-couvertures-assurance": [
+    1,
+    1,
+    1
+   ],
+   "imp-immobilisations": [
+    1,
+    1,
+    1
+   ],
+   "imp-budgets": [
+    1,
+    1,
+    1
+   ],
    "dash-da": [
     1,
     1,
@@ -10967,6 +11147,11 @@
     1
    ],
    "imp-patients": [
+    1,
+    1,
+    1
+   ],
+   "imp-courriers": [
     1,
     1,
     1
@@ -12967,6 +13152,31 @@
     1,
     1
    ],
+   "imp-centres-couts": [
+    1,
+    1,
+    1
+   ],
+   "imp-garanties": [
+    1,
+    1,
+    1
+   ],
+   "imp-couvertures-assurance": [
+    1,
+    1,
+    1
+   ],
+   "imp-immobilisations": [
+    1,
+    1,
+    1
+   ],
+   "imp-budgets": [
+    1,
+    1,
+    1
+   ],
    "m12-bfr": [
     1,
     1,
@@ -13265,6 +13475,146 @@
      "inventaires"
     ],
     "doublon": "refuser"
+   },
+   {
+    "id": "natures-facture",
+    "libelle": "Importation des natures de facture",
+    "ecran": "imp-natures-facture",
+    "module": "CFG",
+    "hotes": [
+     "cfg-natures-facture"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "naturesFacture"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "centres-couts",
+    "libelle": "Importation des centres de coûts",
+    "ecran": "imp-centres-couts",
+    "module": "M12",
+    "hotes": [
+     "cfg-centres-couts"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "centresCouts"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "catalogue-imagerie",
+    "libelle": "Importation du catalogue de l’imagerie",
+    "ecran": "imp-catalogue-imagerie",
+    "module": "CFG",
+    "hotes": [
+     "cfg-imagerie-catalogue"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "examensImagerie"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "unites-labo",
+    "libelle": "Importation des unités de mesure",
+    "ecran": "imp-unites-labo",
+    "module": "M5",
+    "hotes": [
+     "m5-unites"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "unitesLabo"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "prestataires",
+    "libelle": "Importation des prestataires externes",
+    "ecran": "imp-prestataires",
+    "module": "M10",
+    "hotes": [
+     "m10-prestataires"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "prestataires"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "garanties",
+    "libelle": "Importation des garanties des souscripteurs",
+    "ecran": "imp-garanties",
+    "module": "M9",
+    "hotes": [
+     "m9-conventions"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "garanties"
+    ],
+    "doublon": "versionner"
+   },
+   {
+    "id": "couvertures-assurance",
+    "libelle": "Importation des couvertures d’assurance",
+    "ecran": "imp-couvertures-assurance",
+    "module": "M9",
+    "hotes": [
+     "m9-assures"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "couverturesAssurance"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "immobilisations",
+    "libelle": "Importation des immobilisations",
+    "ecran": "imp-immobilisations",
+    "module": "M12",
+    "hotes": [
+     "m12-immobilisations"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "immobilisations"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "budgets",
+    "libelle": "Importation des budgets",
+    "ecran": "imp-budgets",
+    "module": "M12",
+    "hotes": [
+     "m12-budgets"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "budgets"
+    ],
+    "doublon": "refuser"
+   },
+   {
+    "id": "courriers",
+    "libelle": "Importation des courriers",
+    "ecran": "imp-courriers",
+    "module": "M13",
+    "hotes": [
+     "m13-courriers"
+    ],
+    "sensibilite": "restreinte",
+    "collections": [
+     "courriers"
+    ],
+    "doublon": "ignorer"
    }
   ],
   "parRole": {
@@ -13345,6 +13695,56 @@
      1
     ],
     "inventaire-comptage": [
+     1,
+     1,
+     1
+    ],
+    "natures-facture": [
+     1,
+     1,
+     1
+    ],
+    "centres-couts": [
+     1,
+     1,
+     1
+    ],
+    "catalogue-imagerie": [
+     1,
+     1,
+     1
+    ],
+    "unites-labo": [
+     1,
+     1,
+     1
+    ],
+    "prestataires": [
+     1,
+     1,
+     1
+    ],
+    "garanties": [
+     1,
+     1,
+     1
+    ],
+    "couvertures-assurance": [
+     1,
+     1,
+     1
+    ],
+    "immobilisations": [
+     1,
+     1,
+     1
+    ],
+    "budgets": [
+     1,
+     1,
+     1
+    ],
+    "courriers": [
      1,
      1,
      1
@@ -13430,6 +13830,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     1,
+     0,
+     0
+    ],
+    "centres-couts": [
+     1,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     1,
+     0,
+     0
+    ],
+    "unites-labo": [
+     1,
+     0,
+     0
+    ],
+    "prestataires": [
+     1,
+     0,
+     0
+    ],
+    "garanties": [
+     1,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     1,
+     0,
+     0
+    ],
+    "immobilisations": [
+     1,
+     0,
+     0
+    ],
+    "budgets": [
+     1,
+     0,
+     0
+    ],
+    "courriers": [
+     1,
+     0,
+     0
     ]
    },
    "dm": {
@@ -13509,6 +13959,56 @@
      0
     ],
     "inventaire-comptage": [
+     0,
+     0,
+     0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
      0,
      0,
      0
@@ -13594,6 +14094,56 @@
      1,
      1,
      1
+    ],
+    "natures-facture": [
+     1,
+     1,
+     1
+    ],
+    "centres-couts": [
+     1,
+     1,
+     1
+    ],
+    "catalogue-imagerie": [
+     1,
+     1,
+     1
+    ],
+    "unites-labo": [
+     1,
+     1,
+     1
+    ],
+    "prestataires": [
+     1,
+     1,
+     1
+    ],
+    "garanties": [
+     1,
+     1,
+     1
+    ],
+    "couvertures-assurance": [
+     1,
+     1,
+     1
+    ],
+    "immobilisations": [
+     1,
+     1,
+     1
+    ],
+    "budgets": [
+     1,
+     1,
+     1
+    ],
+    "courriers": [
+     1,
+     1,
+     1
     ]
    },
    "medecin": {
@@ -13673,6 +14223,56 @@
      0
     ],
     "inventaire-comptage": [
+     0,
+     0,
+     0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
      0,
      0,
      0
@@ -13758,6 +14358,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
+     0,
+     0,
+     0
     ]
    },
    "pharmacien": {
@@ -13837,6 +14487,56 @@
      0
     ],
     "inventaire-comptage": [
+     0,
+     0,
+     0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
      0,
      0,
      0
@@ -13922,6 +14622,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     1,
+     1,
+     1
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
+     0,
+     0,
+     0
     ]
    },
    "stock": {
@@ -14004,6 +14754,56 @@
      1,
      1,
      1
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
+     0,
+     0,
+     0
     ]
    },
    "caissier": {
@@ -14083,6 +14883,56 @@
      0
     ],
     "inventaire-comptage": [
+     0,
+     0,
+     0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
      0,
      0,
      0
@@ -14168,6 +15018,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     1,
+     1,
+     1
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     1,
+     1,
+     1
+    ],
+    "couvertures-assurance": [
+     1,
+     1,
+     1
+    ],
+    "immobilisations": [
+     1,
+     1,
+     1
+    ],
+    "budgets": [
+     1,
+     1,
+     1
+    ],
+    "courriers": [
+     0,
+     0,
+     0
     ]
    },
    "rh": {
@@ -14247,6 +15147,56 @@
      0
     ],
     "inventaire-comptage": [
+     0,
+     0,
+     0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
      0,
      0,
      0
@@ -14332,6 +15282,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
+     0,
+     0,
+     0
     ]
    },
    "agentadmin": {
@@ -14414,6 +15414,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
+     1,
+     1,
+     1
     ]
    },
    "ambulancier": {
@@ -14493,6 +15543,56 @@
      0
     ],
     "inventaire-comptage": [
+     0,
+     0,
+     0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
      0,
      0,
      0
@@ -14578,6 +15678,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
+     0,
+     0,
+     0
     ]
    },
    "echographiste": {
@@ -14657,6 +15807,56 @@
      0
     ],
     "inventaire-comptage": [
+     0,
+     0,
+     0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
      0,
      0,
      0
@@ -14742,6 +15942,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
+     0,
+     0,
+     0
     ]
    },
    "assistant_comptable": {
@@ -14821,6 +16071,56 @@
      0
     ],
     "inventaire-comptage": [
+     0,
+     0,
+     0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
      0,
      0,
      0
@@ -14906,6 +16206,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
+     0,
+     0,
+     0
     ]
    },
    "anesthesiste": {
@@ -14988,6 +16338,56 @@
      0,
      0,
      0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     0,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     0,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     0,
+     0,
+     0
+    ],
+    "immobilisations": [
+     0,
+     0,
+     0
+    ],
+    "budgets": [
+     0,
+     0,
+     0
+    ],
+    "courriers": [
+     0,
+     0,
+     0
     ]
    },
    "aide_comptable": {
@@ -15067,6 +16467,56 @@
      0
     ],
     "inventaire-comptage": [
+     0,
+     0,
+     0
+    ],
+    "natures-facture": [
+     0,
+     0,
+     0
+    ],
+    "centres-couts": [
+     1,
+     0,
+     0
+    ],
+    "catalogue-imagerie": [
+     0,
+     0,
+     0
+    ],
+    "unites-labo": [
+     0,
+     0,
+     0
+    ],
+    "prestataires": [
+     0,
+     0,
+     0
+    ],
+    "garanties": [
+     1,
+     0,
+     0
+    ],
+    "couvertures-assurance": [
+     1,
+     0,
+     0
+    ],
+    "immobilisations": [
+     1,
+     0,
+     0
+    ],
+    "budgets": [
+     1,
+     0,
+     0
+    ],
+    "courriers": [
      0,
      0,
      0

@@ -463,7 +463,17 @@
         "imp-emplacements",
         "imp-stock-detail-initial",
         "imp-transfert-lignes",
-        "imp-inventaire-comptage"
+        "imp-inventaire-comptage",
+        "imp-natures-facture",
+        "imp-centres-couts",
+        "imp-catalogue-imagerie",
+        "imp-unites-labo",
+        "imp-prestataires",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets",
+        "imp-courriers"
        ]
       }
      ]
@@ -660,7 +670,17 @@
         "imp-emplacements",
         "imp-stock-detail-initial",
         "imp-transfert-lignes",
-        "imp-inventaire-comptage"
+        "imp-inventaire-comptage",
+        "imp-natures-facture",
+        "imp-centres-couts",
+        "imp-catalogue-imagerie",
+        "imp-unites-labo",
+        "imp-prestataires",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets",
+        "imp-courriers"
        ]
       }
      ]
@@ -1165,7 +1185,17 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-natures-facture",
+        "imp-centres-couts",
+        "imp-catalogue-imagerie",
+        "imp-unites-labo",
+        "imp-prestataires",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets",
+        "imp-courriers"
        ]
       }
      ]
@@ -1274,7 +1304,17 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-natures-facture",
+        "imp-centres-couts",
+        "imp-catalogue-imagerie",
+        "imp-unites-labo",
+        "imp-prestataires",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets",
+        "imp-courriers"
        ]
       }
      ]
@@ -1928,7 +1968,17 @@
         "imp-emplacements",
         "imp-stock-detail-initial",
         "imp-transfert-lignes",
-        "imp-inventaire-comptage"
+        "imp-inventaire-comptage",
+        "imp-natures-facture",
+        "imp-centres-couts",
+        "imp-catalogue-imagerie",
+        "imp-unites-labo",
+        "imp-prestataires",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets",
+        "imp-courriers"
        ]
       }
      ]
@@ -2110,7 +2160,17 @@
         "imp-emplacements",
         "imp-stock-detail-initial",
         "imp-transfert-lignes",
-        "imp-inventaire-comptage"
+        "imp-inventaire-comptage",
+        "imp-natures-facture",
+        "imp-centres-couts",
+        "imp-catalogue-imagerie",
+        "imp-unites-labo",
+        "imp-prestataires",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets",
+        "imp-courriers"
        ]
       }
      ]
@@ -2763,7 +2823,8 @@
        "hub": "hub-imp",
        "ecrans": [
         "imp-accueil",
-        "imp-analyses"
+        "imp-analyses",
+        "imp-unites-labo"
        ]
       }
      ]
@@ -2800,7 +2861,8 @@
        "hub": "hub-imp",
        "ecrans": [
         "imp-accueil",
-        "imp-analyses"
+        "imp-analyses",
+        "imp-unites-labo"
        ]
       }
      ]
@@ -3355,7 +3417,12 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-centres-couts",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets"
        ]
       }
      ]
@@ -3418,7 +3485,12 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-centres-couts",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets"
        ]
       }
      ]
@@ -3762,7 +3834,8 @@
        "hub": "hub-imp",
        "ecrans": [
         "imp-accueil",
-        "imp-patients"
+        "imp-patients",
+        "imp-courriers"
        ]
       }
      ]
@@ -3791,7 +3864,8 @@
        "hub": "hub-imp",
        "ecrans": [
         "imp-accueil",
-        "imp-patients"
+        "imp-patients",
+        "imp-courriers"
        ]
       }
      ]
@@ -4887,7 +4961,12 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-centres-couts",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets"
        ]
       }
      ]
@@ -4929,7 +5008,12 @@
         "imp-assureurs",
         "imp-souscripteurs",
         "imp-plan-comptable",
-        "imp-soldes-ouverture"
+        "imp-soldes-ouverture",
+        "imp-centres-couts",
+        "imp-garanties",
+        "imp-couvertures-assurance",
+        "imp-immobilisations",
+        "imp-budgets"
        ]
       }
      ]

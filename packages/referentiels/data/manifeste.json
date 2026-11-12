@@ -709,7 +709,17 @@
     "imp-emplacements",
     "imp-stock-detail-initial",
     "imp-transfert-lignes",
-    "imp-inventaire-comptage"
+    "imp-inventaire-comptage",
+    "imp-natures-facture",
+    "imp-centres-couts",
+    "imp-catalogue-imagerie",
+    "imp-unites-labo",
+    "imp-prestataires",
+    "imp-garanties",
+    "imp-couvertures-assurance",
+    "imp-immobilisations",
+    "imp-budgets",
+    "imp-courriers"
    ]
   },
   {
@@ -6072,6 +6082,198 @@
     "admin",
     "da",
     "stock"
+   ]
+  },
+  {
+   "id": "imp-natures-facture",
+   "label": "Importation des natures de facture",
+   "icone": "receipt-text",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "natures-facture",
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "imp-centres-couts",
+   "label": "Importation des centres de coûts",
+   "icone": "target",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "centres-couts",
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ]
+  },
+  {
+   "id": "imp-catalogue-imagerie",
+   "label": "Importation du catalogue de l’imagerie",
+   "icone": "scan-line",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "catalogue-imagerie",
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "imp-unites-labo",
+   "label": "Importation des unités de mesure",
+   "icone": "ruler",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "unites-labo",
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "laborantin"
+   ]
+  },
+  {
+   "id": "imp-prestataires",
+   "label": "Importation des prestataires externes",
+   "icone": "handshake",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "prestataires",
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "imp-garanties",
+   "label": "Importation des garanties des souscripteurs",
+   "icone": "percent",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "garanties",
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ]
+  },
+  {
+   "id": "imp-couvertures-assurance",
+   "label": "Importation des couvertures d’assurance",
+   "icone": "id-card",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "couvertures-assurance",
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ]
+  },
+  {
+   "id": "imp-immobilisations",
+   "label": "Importation des immobilisations",
+   "icone": "building",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "immobilisations",
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ]
+  },
+  {
+   "id": "imp-budgets",
+   "label": "Importation des budgets",
+   "icone": "wallet",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "budgets",
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ]
+  },
+  {
+   "id": "imp-courriers",
+   "label": "Importation des courriers",
+   "icone": "mail",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "courriers",
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "agentadmin"
    ]
   },
   {

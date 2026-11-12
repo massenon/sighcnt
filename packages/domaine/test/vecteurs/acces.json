@@ -1949,6 +1949,46 @@
        {
         "label": "Importation d’un comptage d’inventaire",
         "href": "pages/imp-inventaire-comptage.php"
+       },
+       {
+        "label": "Importation des natures de facture",
+        "href": "pages/imp-natures-facture.php"
+       },
+       {
+        "label": "Importation des centres de coûts",
+        "href": "pages/imp-centres-couts.php"
+       },
+       {
+        "label": "Importation du catalogue de l’imagerie",
+        "href": "pages/imp-catalogue-imagerie.php"
+       },
+       {
+        "label": "Importation des unités de mesure",
+        "href": "pages/imp-unites-labo.php"
+       },
+       {
+        "label": "Importation des prestataires externes",
+        "href": "pages/imp-prestataires.php"
+       },
+       {
+        "label": "Importation des garanties des souscripteurs",
+        "href": "pages/imp-garanties.php"
+       },
+       {
+        "label": "Importation des couvertures d’assurance",
+        "href": "pages/imp-couvertures-assurance.php"
+       },
+       {
+        "label": "Importation des immobilisations",
+        "href": "pages/imp-immobilisations.php"
+       },
+       {
+        "label": "Importation des budgets",
+        "href": "pages/imp-budgets.php"
+       },
+       {
+        "label": "Importation des courriers",
+        "href": "pages/imp-courriers.php"
        }
       ]
      }
@@ -2402,7 +2442,7 @@
     ]
    }
   ],
-  "pied": "331 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
+  "pied": "341 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },
@@ -2414,7 +2454,7 @@
    },
    {
     "label": "Écrans disponibles",
-    "valeur": "331"
+    "valeur": "341"
    },
    {
     "label": "Règles de gestion appliquées",
@@ -2735,7 +2775,7 @@
    "Modules fonctionnels",
    "33",
    "Écrans disponibles",
-   "331",
+   "341",
    "Règles de gestion appliquées",
    "14",
    "Profils d’utilisateur",
