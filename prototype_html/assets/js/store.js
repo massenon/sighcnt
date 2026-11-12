@@ -122,8 +122,12 @@
      les prix des actes que la clinique a corrigés. Sans incrément, un poste n'aurait ni les collections ni les versions.
      80 (11/11/2026) : le DROIT D'IMPORT par jeu (lot IMP-A). Les fiches RBAC sont SEMÉES, et la matrice d'origine de chaque jeu d'import (`N.IMPORTS` : voir,
      importer, annuler) change ce qu'un poste voit et peut faire (la rangée « Importation de données » s'ouvre aux postes qui détiennent un jeu). Les défauts
-     vivent au manifeste et se lisent sans fiche : l'incrément est une GARDE (consigne du lot), pas une condition de fonctionnement. */
-  var VERSION = 80;
+     vivent au manifeste et se lisent sans fiche : l'incrément est une GARDE (consigne du lot), pas une condition de fonctionnement.
+     81 (12/11/2026) : le PRIX D'ACHAT des produits se versionne par le MÊME moteur que les prestations (PRD-TARIFS, lot T5). `tarifs` et `versionsTarif` portent aussi la famille
+     `PRODUIT` (une prestation par référence, sa version 1 = le prix d'achat tenu aujourd'hui) ; `produits` devient, pour ses champs de PRIX, une projection de lecture ; le jeu d'import
+     `tarifs-produits` s'ajoute à `N.IMPORTS` (fiches RBAC semées). Une reprise garde les prix déjà versionnés et les prix d'achat que la clinique avait corrigés. Sans incrément,
+     un poste n'aurait ni les prestations de produits ni leur version 1. */
+  var VERSION = 81;
   var db = null;
   var listeners = {};
 
@@ -3339,8 +3343,10 @@
     try {
       var o = seedBrut();
       var m = TA.migrer({ actes: o.actes, grille: TA.semence.grille, analyses: TA.semence.analyses });
-      o.tarifs = m.tarifs;
-      o.versionsTarif = m.versions;
+      /* Les PRODUITS : une prestation par référence, version 1 = le prix d'achat de la fiche semée (PRD-TARIFS, lot T5). */
+      var mp = TA.migrerProduits(o.produits);
+      o.tarifs = m.tarifs.concat(mp.tarifs);
+      o.versionsTarif = m.versions.concat(mp.versions);
       return o;
     } finally { TA.modeSemence(false); }
   }
@@ -3357,7 +3363,47 @@
       if (s && a.prix !== s.prix) ecarts.push({ type: 'analyses-collection', code: a.code, collection: a.prix, facture: s.prix, detail: 'Prix édité dans la collection analyses sans effet sur la facturation : non repris.' });
     });
     m.ecarts = m.ecarts.concat(ecarts);
+    /* Les produits d'un magasin d'AVANT le versionnement du prix d'achat : le prix d'achat tenu aujourd'hui est la version 1 (lot T5). */
+    var mp = TA.migrerProduits(ancien.produits || [], { origine: 'reprise' });
+    m.tarifs = m.tarifs.concat(mp.tarifs);
+    m.versions = m.versions.concat(mp.versions);
     return m;
+  }
+
+  /* LA REPRISE D'UN MAGASIN DÉJÀ VERSIONNÉ (lot T5) : les prestations et versions tenues sont gardées TELLES QUELLES (une décision de la Direction ne se ré-amorce pas) ; on y ajoute les
+     prestations que la nouvelle semence porte et que l'ancien magasin n'avait pas, et les PRODUITS : la version 1 d'un produit est le prix d'achat qu'il TENAIT (la fiche de l'ancien
+     magasin), à défaut celui de la semence. Rien n'est inventé : un prix absent reste `manquant`. */
+  function reprendreTarifs(g) {
+    var TA = D.TARIFS, vus = {}, ajoutT = [], ajoutV = [], anciens = {};
+    g.tarifs.forEach(function (t) { vus[t.code] = true; });
+    (g.produits || []).forEach(function (p) { if (p && p.code) anciens[p.code] = p; });
+    var mp = TA.migrerProduits((db.produits || []).map(function (p) {
+      var a = anciens[p.code];
+      return a ? Object.assign({}, p, { prixAchat: a.prixAchat, prixVente: a.prixVente }) : p;
+    }), { origine: 'reprise' });
+    var codesPrestations = {};
+    (db.tarifs || []).forEach(function (t) { if (t.famille !== 'PRODUIT' && !vus[t.code]) { ajoutT.push(t); codesPrestations[t.code] = true; } });
+    (db.versionsTarif || []).forEach(function (v) { if (codesPrestations[v.code]) ajoutV.push(v); });
+    mp.tarifs.forEach(function (t) { if (!vus[t.code]) ajoutT.push(t); });
+    mp.versions.forEach(function (v) { if (!vus[v.code]) ajoutV.push(v); });
+    db.tarifs = g.tarifs.concat(ajoutT);
+    db.versionsTarif = g.versions.concat(ajoutV);
+  }
+
+  /* UN PRODUIT SANS PRESTATION DE PRIX (fiche écrite par un chemin qui n'a pas posé sa version 1 : reprise d'un magasin ancien, fiche posée par un outil) reçoit la sienne, ORIGINE
+     « reprise » : le prix d'achat qu'elle tient aujourd'hui, jamais un zéro (un prix absent est `manquant`). Ce n'est pas la voie de la CRÉATION (`PR.creerPrixProduit`, qui
+     passe par `proposerTarif`) : c'est la réparation d'une donnée existante. Rend vrai si quelque chose a été posé. */
+  function assurerTarifProduit(produit) {
+    if (!db || !produit || !produit.code || produit.statut === 'archive') return false;
+    if (!Array.isArray(db.tarifs)) db.tarifs = [];
+    if (!Array.isArray(db.versionsTarif)) db.versionsTarif = [];
+    var h = D.TARIFS.lire();
+    if (h ? h.parCode[produit.code] : db.tarifs.some(function (t) { return t.code === produit.code && t.statut !== 'archive'; })) return false;
+    var m = D.TARIFS.migrerProduits([produit], { origine: 'reprise' });
+    if (!m.tarifs.length) return false;
+    db.tarifs.push(m.tarifs[0]); db.versionsTarif.push(m.versions[0]);
+    D.TARIFS.invalider();
+    return true;
   }
 
   /* LA PROJECTION DE LECTURE : `actes`, `analyses` et `catalogueTarifs` portent, pour chaque prestation, le prix EN VIGUEUR AUJOURD'HUI. Ce n'est pas un geste
@@ -3365,6 +3411,8 @@
      au changement de jour. Seuls les champs de PRIX sont touchés : un marquage « tarif d'attente », un libellé ou un secteur restent ce qu'ils sont. */
   function projeterTarifs() {
     if (!db || !Array.isArray(db.tarifs) || !db.tarifs.length) return 0;
+    /* Les produits sans prestation de prix reçoivent la leur AVANT la projection (lot T5). */
+    (db.produits || []).forEach(function (p) { assurerTarifProduit(p); });
     var TA = D.TARIFS, h = TA.lire();
     if (!h) return 0;
     var n = 0;
@@ -3379,7 +3427,7 @@
         if (c) { Object.assign(doc, c); n++; }
       });
       Object.keys(index).forEach(function (code) {
-        if (vus[code]) return;
+        if (vus[code] || !creer) return;
         var p = index[code], s = TA.instantane(h, p, null);
         if (!s) return;
         db[nom].push(creer(p, s)); n++;
@@ -3393,6 +3441,8 @@
     projeter('analyses', h.parAnalyse, TA.correctifAnalyse, function (p, s) {
       return { id: 'ANA-' + p.code, n: db.analyses.length + 1, code: p.code, designation: p.libelle, categorie: '', prix: s.na, echantillon: '', delai: '', statut: 'Actif' };
     });
+    /* Les PRODUITS : `produits` ne porte plus, pour ses champs de prix, que le prix d'achat et le prix de vente DÉRIVÉ en vigueur aujourd'hui (RG-02) ; jamais de fiche créée d'ici. */
+    projeter('produits', h.parProduit, TA.correctifProduit, null);
     projeter('catalogueTarifs', h.parGrille, TA.correctifGrille, function (p, s) {
       return { id: 'TAR-' + p.codeGrille, statut: 'actif', code: p.codeGrille, libelle: p.libelleGrille || p.libelle, famille: p.famille, prixNonAssure: s.na, prixAssure: s.nc ? null : s.pa,
         nonCouvert: s.nc, assurable: p.assurable, prixAValider: s.na == null, source: p.source || null };
@@ -3410,7 +3460,7 @@
     if (!db || !Array.isArray(db.tarifs) || !db.tarifs.length) return out;
     var TA = D.TARIFS, h = TA.lire();
     if (!h) return out;
-    [['actes', h.parActe, TA.correctifActe], ['analyses', h.parAnalyse, TA.correctifAnalyse], ['catalogueTarifs', h.parGrille, TA.correctifGrille]].forEach(function (x) {
+    [['actes', h.parActe, TA.correctifActe], ['analyses', h.parAnalyse, TA.correctifAnalyse], ['catalogueTarifs', h.parGrille, TA.correctifGrille], ['produits', h.parProduit, TA.correctifProduit]].forEach(function (x) {
       (db[x[0]] || []).forEach(function (doc) {
         var p = x[1][doc.code]; if (!p) return;
         var s = TA.instantane(h, p, null); if (!s) return;
@@ -3682,10 +3732,15 @@
           var anciensPostes = Array.isArray(o.postes) && o.postes.length ? o.postes : null;
           /* LES PRIX DES ACTES SURVIVENT AU RÉ-AMORÇAGE (PRD-TARIFS, T1) : la valeur facturée aujourd'hui devient la version 1 du référentiel. */
           var anciensTarifs = (!Array.isArray(o.tarifs) || !o.tarifs.length) && Array.isArray(o.actes) && o.actes.length
-            ? { actes: o.actes, analyses: o.analyses, catalogueTarifs: o.catalogueTarifs } : null;
+            ? { actes: o.actes, analyses: o.analyses, catalogueTarifs: o.catalogueTarifs, produits: o.produits } : null;
+          /* LE RÉFÉRENTIEL DE PRIX DÉJÀ VERSIONNÉ SURVIT AU RÉ-AMORÇAGE (lot T5) : une version décidée est une preuve, on ne la ré-amorce pas. Les prestations nouvelles de la semence et les
+             produits y sont AJOUTÉS (le prix d'achat tenu aujourd'hui devient la version 1). */
+          var gardeTarifs = Array.isArray(o.tarifs) && o.tarifs.length && Array.isArray(o.versionsTarif) && o.versionsTarif.length
+            ? { tarifs: o.tarifs, versions: o.versionsTarif, produits: o.produits } : null;
           db = null;
           load();
           if (anciensPostes && db) { db.postes = anciensPostes; reprendreOrganigramme(db); save(); }
+          if (gardeTarifs && db) { reprendreTarifs(gardeTarifs); D.TARIFS.invalider(); projeterTarifs(); save(); }
           if (anciensTarifs && db) {
             var repris = migrerTarifsDepuis(anciensTarifs);
             db.tarifs = repris.tarifs; db.versionsTarif = repris.versions;
@@ -4594,7 +4649,7 @@
     etatSync: etatSync, sonderEvenements: sonderEvenements,
     etatServeur: function () { return { actif: SRV.actif, teste: SRV.teste, repondu: SRV.repondu, jeton: !!SRV.jeton, magasinCharge: !!db, sansMagasin: SRV.sansMagasin }; },
     log: log, on: on, emit: emit,
-    projeterTarifs: projeterTarifs, paritesTarifs: paritesTarifs, migrerTarifsDepuis: migrerTarifsDepuis,
+    projeterTarifs: projeterTarifs, paritesTarifs: paritesTarifs, migrerTarifsDepuis: migrerTarifsDepuis, assurerTarifProduit: assurerTarifProduit,
     session: session, setSession: setSession, currentUser: currentUser, garder: garder,
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,
     reglage: reglage, setReglage: setReglage,
@@ -4626,7 +4681,54 @@
       return null;
     });
   });
-  var VERSION_IMMUABLE = ['code', 'version', 'prixNonAssure', 'etatNonAssure', 'prixAssure', 'etatAssure', 'origine', 'proposePar', 'proposeLe', 'lot'];
+  /* LES PRODUITS (lot T5). Le prix d'achat et le prix de vente DÉRIVÉ d'un produit sont, comme les trois listes de lecture, une projection du référentiel de prix : une fiche ne les
+     modifie plus (le prix d'achat se PROPOSE : « Changer le prix d'achat », date d'effet, Oui ou Non). RG-02 se tient À L'ÉCRITURE, d'où qu'elle vienne : un médicament ne naît
+     jamais avec une marge (corrige E846 : la modification depuis l'ancien écran des tarifs ne contrôlait pas RG-02). */
+  var MESSAGE_RG02 = 'RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente ne peut pas être libre. Le prix de vente d’un médicament EST son prix d’achat ; une exception se valide par la Direction.';
+  garder('produits', function (op, rec) {
+    if (!rec || !db) return null;
+    var med = rec.categorie === D.TARIFS.CATEGORIE_SANS_MARGE;
+    if (op === 'inserer') {
+      if (med && rec.prixAchat != null && rec.prixVente != null && rec.prixVente !== rec.prixAchat) return MESSAGE_RG02 + ' (' + rec.code + ' : achat ' + rec.prixAchat + ', vente ' + rec.prixVente + ')';
+      /* Le code d'un article est aussi celui de sa prestation de prix : il ne peut pas reprendre le code d'une autre prestation tarifée. */
+      var hp = D.TARIFS.lire(), pris = hp && rec.code ? hp.parCode[rec.code] : null;
+      if (pris && pris.famille !== 'PRODUIT') return 'Le code « ' + rec.code + ' » est déjà celui d’une prestation tarifée (' + (pris.libelle || pris.code) + ') : un article ne peut pas reprendre le code d’une prestation.';
+      return null;
+    }
+    if (op !== 'modifier' || !D.TARIFS.lire()) return null;
+    var avant = (db.produits || []).filter(function (x) { return x.id === rec.id; })[0];
+    if (!avant) return null;
+    var h = D.TARIFS.lire();
+    if (!h.parProduit[avant.code]) return null;   /* sans prestation de prix, la fiche reste modifiable : sa version 1 naît de ce qu'elle tient */
+    var champs = ['prixAchat', 'prixVente'];
+    for (var i = 0; i < champs.length; i++) {
+      var k = champs[i];
+      if ((avant[k] == null && rec[k] == null) || avant[k] === rec[k]) continue;
+      /* l'ALIGNEMENT d'un médicament sur son prix d'achat n'est pas un changement de prix : c'est RG-02 qui s'applique */
+      if (k === 'prixVente' && med && rec.prixVente === rec.prixAchat && avant.prixAchat === rec.prixAchat) continue;
+      if (med && k === 'prixVente') return MESSAGE_RG02 + ' (' + rec.code + ')';
+      return 'Le prix (« ' + k + ' ») ne se modifie plus sur la fiche du produit : il se PROPOSE (« Changer le prix d’achat » au Référentiel produits : date d’effet, motif, Oui ou Non), '
+        + 'ou s’importe par le jeu « Importation des prix d’achat ». Une fiche garde son ancien prix pour les pièces déjà émises.';
+    }
+    return null;
+  });
+  /* La fiche suit le référentiel : un changement de catégorie ou une décision réaligne le prix de vente dérivé (écriture directe, hors garde, sans ligne de journal). */
+  function projeterProduits() {
+    if (!db || !Array.isArray(db.produits)) return 0;
+    var TA = D.TARIFS, h = TA.lire();
+    if (!h) return 0;
+    var n = 0;
+    db.produits.forEach(function (doc) {
+      var p = h.parProduit[doc.code]; if (!p) return;
+      var s = TA.instantane(h, p, null); if (!s) return;
+      var c = TA.correctifProduit(doc, p, s);
+      if (c) { Object.assign(doc, c); n++; }
+    });
+    if (n) save();
+    return n;
+  }
+  on('produits', projeterProduits);
+  var VERSION_IMMUABLE = ['code', 'version', 'prixNonAssure', 'etatNonAssure', 'prixAssure', 'etatAssure', 'prixVente', 'origine', 'proposePar', 'proposeLe', 'lot'];
   garder('versionsTarif', function (op, rec) {
     if (op === 'archiver') return 'Une version de prix ne s’archive pas : elle se REFUSE ou se RETIRE, et reste lisible (RG-14 : le prix d’une pièce émise doit pouvoir se relire).';
     var existantes = (db && db.versionsTarif) || [];

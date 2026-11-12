@@ -628,25 +628,26 @@
         } else if (nature === 'analyse') {
           liste = D.ANALYSES.map(function (a) { return { label: a.designation, prix: a.prix }; });
         } else if (nature === 'medicament') {
+          /* Le prix de vente DÉRIVÉ (RG-02) de la version EN VIGUEUR (PRD-TARIFS, lot T5) ; un prix d'achat absent ne se vend jamais à zéro : `prix: null`, la ligne se refuse. */
           liste = produits().filter(function (p) { return p.stockDetail > 0; })
-            .map(function (p) { return { label: p.designation + ' (' + p.stockDetail + ' ' + p.unite + ')', prix: p.prixVente, produitId: p.id }; });
+            .map(function (p) { var px = PR.prixProduitALaDate(p, new Date().toISOString()); return { label: p.designation + ' (' + p.stockDetail + ' ' + p.unite + ')', prix: px.absent ? null : px.vente, produitId: p.id, motifPrix: px.absent ? px.motif : null }; });
         } else if (nature === 'hospitalisation') {
           liste = D.TYPES_CHAMBRE.map(function (t) { return { label: 'Journée — chambre ' + t.label, prix: t.tarif }; });
         }
         selArticle.setOptions(liste.map(function (x, i) {
-          return { value: String(i), label: x.label, detail: C.money(x.prix, false) };
+          return { value: String(i), label: x.label, detail: x.prix == null ? 'prix à valider' : C.money(x.prix, false) };
         }));
         if (liste.length) selArticle.value = '0';
         selArticle._liste = liste;
         var visible = nature !== 'libre';
         if (wrapArticle) wrapArticle.hidden = !visible;
         if (wrapLibre) wrapLibre.hidden = visible;
-        if (visible && liste.length) pu.value = liste[0].prix;
+        if (visible && liste.length) pu.value = liste[0].prix == null ? '' : liste[0].prix;
       }
       selNature.addEventListener('change', remplirArticles);
       selArticle.addEventListener('change', function () {
         var x = (selArticle._liste || [])[Number(selArticle.value)];
-        if (x) pu.value = x.prix;
+        if (x) pu.value = x.prix == null ? '' : x.prix;
       });
 
       wrapArticle = el('div.min-w-\\[16rem\\].flex-1', null, [el('label.label', { text: 'Prestation' }), selArticle]);
@@ -676,6 +677,7 @@
               var x = (selArticle._liste || [])[Number(selArticle.value)];
               if (!x) { U.toast('Sélectionner une prestation.', { type: 'error' }); return; }
               designation = x.label; produitId = x.produitId || null;
+              if (produitId && x.prix == null) { U.toast(x.motifPrix || 'Prix d’achat absent.', { type: 'error', detail: 'Renseigner le prix d’achat au Référentiel produits (« Changer le prix d’achat ») : un article ne se vend jamais à zéro.' }); return; }
             }
             var q = Number(qte.value) || 0, prix = Number(pu.value) || 0;
             if (q <= 0) { U.toast('La quantité doit être positive.', { type: 'error' }); return; }

@@ -113,6 +113,12 @@
     { id: 'tarifs', libelle: 'Importation des tarifs et prix', ecran: 'imp-actes', module: 'CFG', hotes: ['cfg-tarifs'],
       sensibilite: 'courante', collections: ['tarifs', 'versionsTarif'], doublon: 'versionner',
       rolesDefaut: { admin: 'VIA', da: 'VIA', direction: 'VIA', stock: 'VIA' } },
+    /* LOT T5 (11/11/2026) : les PRIX D'ACHAT des produits, versionnés par date d'effet, écrits par le MÊME chemin que les prix de prestations (`PR.proposerTarif`, famille PRODUIT : alerte Oui/Non,
+       jamais d'écrasement). Le gestionnaire de stock importe (c'est son prix d'achat), la DAF et l'administrateur aussi ; le comptable lit. Le Oui d'un importateur qui ne détient pas le droit de
+       décider vaut proposition. Hôtes : « Tarifs et prix » et « Référentiel produits ». */
+    { id: 'tarifs-produits', libelle: 'Importation des prix d’achat', ecran: 'imp-tarifs-produits', module: 'M6', hotes: ['cfg-tarifs', 'm6-produits'],
+      sensibilite: 'courante', collections: ['tarifs', 'versionsTarif'], doublon: 'versionner',
+      rolesDefaut: { admin: 'VIA', da: 'VIA', stock: 'VIA', comptable: 'V' } },
     { id: 'analyses-modele', libelle: 'Importation du modèle des analyses', ecran: 'imp-analyses', module: 'M5', hotes: [],
       sensibilite: 'courante', collections: ['examensLabo'], doublon: 'refuser',
       rolesDefaut: { admin: 'VIA', da: 'VIA', laborantin: 'VIA', direction: 'V' } },
@@ -781,6 +787,7 @@
             { id: 'imp-patients', label: 'Importation du répertoire patients', icon: 'users', jeuImport: 'patients' },
             { id: 'imp-personnel', label: 'Importation du personnel', icon: 'id-card', jeuImport: 'personnel' },
             { id: 'imp-actes', label: 'Importation des tarifs et prix', icon: 'list-ordered', jeuImport: 'tarifs' },
+            { id: 'imp-tarifs-produits', label: 'Importation des prix d’achat', icon: 'banknote', jeuImport: 'tarifs-produits' },
             { id: 'imp-analyses', label: 'Importation du modèle des analyses', icon: 'flask-conical', jeuImport: 'analyses-modele' },
             { id: 'imp-fournisseurs', label: 'Importation des fournisseurs', icon: 'truck', jeuImport: 'fournisseurs' },
             { id: 'imp-assureurs', label: 'Importation des compagnies d’assurance', icon: 'shield', jeuImport: 'assureurs' },

@@ -37,13 +37,18 @@
    * et les catégories d'hospitalisation. Ces listes viennent des référentiels
    * administrables — rien n'est écrit ici.
    * ---------------------------------------------------------------------- */
+  /** Le prix d'achat EN VIGUEUR (PRD-TARIFS, lot T5) : celui que la prescription facturera ; un prix absent se dit, il ne s'affiche pas « 0 ». */
+  function detailPrixAchat(p) {
+    var px = PR.prixProduitALaDate(p, new Date().toISOString());
+    return px.absent ? 'prix d’achat à valider' : C.money(px.achat, false);
+  }
   function optionsMedicaments() {
     return S.collection('produits').active()
       .filter(function (p) { return p.categorie === 'medicament' || p.categorie === 'conso_medical'; })
       .map(function (p) {
         return {
           value: p.id, label: p.designation,
-          detail: C.money(p.prixAchat, false) + ' · stock ' + (p.stockDetail != null ? p.stockDetail : p.stock),
+          detail: detailPrixAchat(p) + ' · stock ' + (p.stockDetail != null ? p.stockDetail : p.stock),
         };
       });
   }
@@ -2293,7 +2298,7 @@
         var assure = p && PR.carteValide ? PR.carteValide(p, new Date().toISOString()) : false;
         var mMed = C.sum(editeur.collect(), function (l) {
           var pr = S.collection('produits').get(l.produitId);
-          return (pr ? pr.prixAchat : 0) * l.quantite;
+          return (pr ? (PR.prixAchatALaDate(pr, new Date().toISOString()) || 0) : 0) * l.quantite;
         });
         var ctrl = fExamens.controls;
         var mAna = C.sum(ctrl.analyses.value || [], function (code) {
@@ -3141,7 +3146,7 @@
       var med = collecterMedicaments();
       var mMed = C.sum(med, function (l) {
         var p = S.collection('produits').get(l.produitId);
-        return (p ? p.prixAchat : 0) * l.quantite;
+        return (p ? (PR.prixAchatALaDate(p, new Date().toISOString()) || 0) : 0) * l.quantite;
       });
       var ctrl = complements.controls;
       var mAna = C.sum(ctrl.analyses.value || [], function (code) {
@@ -3198,7 +3203,7 @@
       .map(function (p) {
         return {
           value: p.id, label: p.designation,
-          detail: C.money(p.prixAchat, false) + ' · stock ' + (p.stockDetail != null ? p.stockDetail : p.stock) + ' ' + (p.unite || ''),
+          detail: detailPrixAchat(p) + ' · stock ' + (p.stockDetail != null ? p.stockDetail : p.stock) + ' ' + (p.unite || ''),
         };
       });
   }

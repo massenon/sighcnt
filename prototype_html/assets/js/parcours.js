@@ -135,6 +135,34 @@
     return (assure && s.etatAssure === 'montant') ? s.pa : s.na;
   }
 
+  /* --------------------------------------------------------------------------
+   * LE PRIX D'UN PRODUIT À UNE DATE (PRD-TARIFS, lot T5) : le MÊME moteur de version que les prestations, famille `PRODUIT`.
+   * Le prix d'achat est celui de la version EN VIGUEUR à la date de la PIÈCE (jamais la fiche, jamais l'horloge au moment du calcul) ; le prix de vente se DÉRIVE de la
+   * catégorie (RG-02 : un médicament se vend à son prix d'achat) et de la version. Un prix d'achat absent est un `manquant` : l'accesseur rend « absent » avec son motif, et
+   * l'article ne se facture JAMAIS à zéro. Un produit que personne n'a encore doté de sa prestation de prix (fiche posée par un outil) reçoit sa version 1 « reprise » ici.
+   * -------------------------------------------------------------------------- */
+  function produitDeCode(code) {
+    return S.collection('produits').all().filter(function (p) { return p.code === code && p.statut !== 'archive'; })[0] || null;
+  }
+  function prixProduitALaDate(produit, date) {
+    var TA = D.TARIFS, h = TA && TA.lire();
+    if (!produit || !produit.code) return { absent: true, achat: null, vente: null, motif: 'Produit inconnu.' };
+    if (!h) return { absent: true, achat: null, vente: null, motif: 'Le référentiel de prix n’est pas chargé.' };
+    var p = h.parProduit[produit.code];
+    if (!p && S.assurerTarifProduit && S.assurerTarifProduit(produit)) { h = TA.lire(); p = h && h.parProduit[produit.code]; }
+    if (!p) return { absent: true, achat: null, vente: null, motif: 'Produit absent du référentiel de prix : « ' + produit.code + ' ».' };
+    var jour = TA.jourDe(date), v = TA.enVigueur(h, p.code, jour);
+    if (!v) return { absent: true, achat: null, vente: null, motif: 'Aucune version de prix d’achat valide à la date du ' + jour + ' pour « ' + (produit.designation || produit.code) + ' ».' };
+    var achat = TA.prixAchatDe(v);
+    if (achat == null) return { absent: true, achat: null, vente: null, version: v.version, dateEffet: v.dateEffet || null,
+      motif: 'Le prix d’achat de « ' + (produit.designation || produit.code) + ' » n’est pas renseigné (à valider) : l’article ne se facture jamais à zéro.' };
+    return { absent: false, achat: achat, vente: TA.prixVenteProduit(produit.categorie, v), version: v.version, dateEffet: v.dateEffet || null, code: produit.code };
+  }
+  /** Le prix d'achat (RG-02) d'un produit à la date de la pièce : un nombre, ou `null` quand il est absent. */
+  function prixAchatALaDate(produit, date) { var r = prixProduitALaDate(produit, date); return r.absent ? null : r.achat; }
+  /** Le prix de vente DÉRIVÉ d'un produit à la date de la pièce : un nombre, ou `null`. */
+  function prixVenteALaDate(produit, date) { var r = prixProduitALaDate(produit, date); return r.absent ? null : r.vente; }
+
   /* ==========================================================================
    * PROPOSER UN PRIX, DÉCIDER OUI OU NON (PRD-TARIFS, lot T2 : le noyau ; le lot T3 y ajoute le contrôle d'usage, l'alerte, la notification et l'import)
    * --------------------------------------------------------------------------
@@ -163,6 +191,15 @@
     var N = global.SIGH.nav;
     return !!(N && N.droitImport && N.droitImport(roleDeLaSession(), 'tarifs').importer);
   }
+  /** PROPOSER LE PRIX D'ACHAT D'UN PRODUIT (lot T5) : le droit est celui de MODIFIER « Référentiel produits » (M6), ou celui d'IMPORTER le jeu `tarifs-produits` : jamais celui d'éditer
+      « Tarifs et prix », que le gestionnaire de stock n'a pas. La CRÉATION d'une fiche produit (sa version 1) n'a pas d'autorité propre : l'acte est l'insertion de la fiche, que son écran
+      ou son import a déjà contrôlée. Ce que la proposition peut devenir (proposition, ou version validée par un profil qui décide) reste réglé par les MÊMES fonctions. */
+  function peutProposerProduit(o) {
+    var N = global.SIGH.nav, r = roleDeLaSession();
+    if (o && o.import && o.import.jeu) return !!(N && N.droitImport && N.droitImport(r, o.import.jeu).importer);
+    var d = N && N.droitsEcran ? N.droitsEcran(r, 'm6-produits', 'M6') : null;
+    return !!(d && d.editer);
+  }
   function auteurDeLaSession() { var s = S.session(); return (s && (s.nomComplet || s.nom)) || '(inconnu)'; }
   function versionsDe(code) {
     return colVersionsTarif().all().filter(function (v) { return v.code === code; })
@@ -178,16 +215,18 @@
   function usagesTarif(p, dateEffet) {
     var codes = {};
     [p.code, p.codeActe, p.codeGrille, p.codeAnalyse].concat(p.codesAlias || []).forEach(function (c) { if (c) codes[c] = true; });
-    var analyses = {}, imageries = {};
+    var analyses = {}, imageries = {}, produits = {};
     S.collection('demandesAnalyses').all().forEach(function (d) { if (d.analyseCode) analyses[d.id] = d.analyseCode; });
     S.collection('demandesImagerie').all().forEach(function (d) { if (d.examenCode) imageries[d.id] = d.examenCode; });
+    /* Une ligne de PRODUIT porte `produitId` : le contrôle d'usage d'un prix d'achat lit les mêmes lignes (lot T5). */
+    if (p.famille === 'PRODUIT') S.collection('produits').all().forEach(function (x) { if (x.code === p.code) produits[x.id] = true; });
     var out = [];
     S.collection('factures').all().forEach(function (f) {
       if (!f || f.statut === 'archive' || f.proforma) return;
       var jour = f.date ? D.TARIFS.jourDe(f.date) : null;
       if (!jour || jour < dateEffet) return;
       var porte = (f.lignes || []).some(function (l) {
-        return (l.acteCode && codes[l.acteCode]) || (l.demandeId && codes[analyses[l.demandeId]]) || (l.demandeImagerieId && codes[imageries[l.demandeImagerieId]]);
+        return (l.acteCode && codes[l.acteCode]) || (l.demandeId && codes[analyses[l.demandeId]]) || (l.demandeImagerieId && codes[imageries[l.demandeImagerieId]]) || (l.produitId && produits[l.produitId]);
       });
       if (porte) out.push({ id: f.id, numero: f.numero, date: jour });
     });
@@ -257,12 +296,77 @@
     return null;
   }
 
+  /** La date d'effet d'une proposition : obligatoire ; antérieure à aujourd'hui seulement avec la case, par un profil qui en a l'autorité (T6). Rend `{ refus }` ou `{ passee }`. */
+  function controleDateEffetTarif(o) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(o.dateEffet || ''))) return { refus: refusTarif('DATE_EFFET_REQUISE', 'Un changement de prix prend effet à une date : sans date d’effet, on ne sait pas à partir de quand il s’applique.', 'Saisir la date d’effet.') };
+    var aujourdhui = jourTarif(null);
+    var passee = o.dateEffet < aujourdhui;
+    if (passee) {
+      /* T6 : la date passée est PERMISE à la DAF et à la Direction, avec une case explicite (jamais silencieuse) et le motif déjà exigé ; refusée aux autres. */
+      if (o.datePassee !== true) return { refus: refusTarif('DATE_PASSEE', 'La date d’effet (' + o.dateEffet + ') est antérieure à aujourd’hui (' + aujourdhui + ') : un prix ne se change pas dans le passé sans une décision expresse.',
+        peutDatePasseeTarif() ? 'Cocher « Date antérieure à aujourd’hui » et motiver, ou choisir aujourd’hui ou une date future.' : 'Choisir aujourd’hui ou une date future : une date antérieure est une autorité de ' + profilsDatePassee() + '.') };
+      if (!peutDatePasseeTarif()) return { refus: refusTarif('DATE_PASSEE_RESERVEE', 'Une date d’effet antérieure à aujourd’hui est une autorité de ' + profilsDatePassee() + '.', 'Choisir aujourd’hui ou une date future, ou demander cette date à l’un de ces profils.') };
+    }
+    return { passee: passee };
+  }
+
+  /** LES CONTRÔLES D'UNE PROPOSITION DE PRIX D'ACHAT (lot T5), sans rien écrire : le même gabarit que celui d'une prestation, avec ses règles propres. Le prix d'achat est la colonne
+      « non assuré » de la version ; un produit n'a pas de colonne assurée (`unique`) ; RG-02 interdit au MÉDICAMENT un prix de vente libre ; un prix d'achat absent est refusé en changement
+      (« un tiret n'est pas un zéro ») et accepté en CRÉATION de la fiche, où il se dit `manquant` : l'article ne se facture pas tant que personne ne l'a renseigné. */
+  function evaluerPropositionProduit(o, h, p, viaImport) {
+    var creation = !!o.creation, code = creation ? String(o.code || '').trim() : o.code;
+    if (creation) {
+      if (!code) return refusTarif('IDENTITE_INCOMPLETE', 'Un produit porte un code.', 'Renseigner le code de l’article.');
+      if (p && p.famille !== 'PRODUIT') return refusTarif('CODE_EXISTANT', 'Le code « ' + code + ' » est déjà celui d’une prestation tarifée (' + (p.libelle || p.code) + ') : un article ne peut pas reprendre le code d’une prestation.', 'Choisir un autre code d’article.');
+      if (p) return refusTarif('PRIX_DEJA_VERSIONNE', 'Le code « ' + code + ' » porte déjà un prix d’achat versionné : la création de la fiche ne pose pas une seconde version 1.', 'Changer le prix d’achat par « Changer le prix d’achat » (date d’effet, motif, Oui ou Non).');
+    } else if (!p) return refusTarif('PRESTATION_INTROUVABLE', 'Aucun produit ne porte le code « ' + o.code + ' » au référentiel de prix.', 'Choisir un produit de la liste.');
+    var pr = produitDeCode(code);
+    if (!pr) return refusTarif('PRODUIT_INTROUVABLE', 'Aucun produit actif ne porte le code « ' + code + ' ».', 'Choisir un produit du Référentiel produits.');
+    var brut = o.prixNonAssure, absent = brut === null || brut === undefined || brut === '', achat = absent ? null : Number(brut);
+    if (absent && !creation) return refusTarif('PRIX_ABSENT', 'Le prix d’achat est absent : un prix vide n’est pas un tarif, l’article ne se facturerait pas.', 'Saisir le prix d’achat.');
+    if (!absent && achat === 0) return refusTarif('PRIX_ZERO', 'Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul ») : un article ne se facture jamais à zéro.', 'Saisir un prix d’achat strictement positif, ou laisser l’article « à valoriser » (sans prix).');
+    if (!absent && !entierPositif(achat)) return refusTarif('PRIX_INVALIDE', 'Le prix d’achat doit être un nombre entier de francs, strictement positif (le boîtier fiscal n’accepte que des montants entiers).', 'Corriger le prix d’achat.');
+    var venteBrute = o.prixVente, vente = (venteBrute === null || venteBrute === undefined || venteBrute === '') ? null : Number(venteBrute);
+    if (vente != null && !entierPositif(vente)) return refusTarif('PRIX_INVALIDE', 'Le prix de vente doit être un nombre entier de francs, strictement positif.', 'Corriger le prix de vente, ou le laisser vide (il vaut alors le prix d’achat).');
+    var med = pr.categorie === D.TARIFS.CATEGORIE_SANS_MARGE;
+    var sActuel = !creation && p ? D.TARIFS.instantane(h, p, o.dateEffet) : null;
+    if (med && vente != null && (absent || vente !== achat)) return refusTarif('RG02_MARGE', 'RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente (' + C.num(vente) + ') ne peut pas différer de son prix d’achat' + (absent ? ' (absent)' : ' (' + C.num(achat) + ')') + '.',
+      'Laisser le prix de vente vide : le prix de vente d’un médicament est son prix d’achat, il se dérive. Une exception se valide par la Direction.');
+    if (!creation && !String(o.motif || '').trim()) return refusTarif('MOTIF_REQUIS', 'Un changement de prix se motive : sans motif, la Direction ne peut pas décider.', 'Saisir le motif du changement.');
+    /* La CRÉATION n'a pas de date d'effet : la version 1 vaut « depuis l'origine » (aucun prix antérieur à protéger ; une pièce saisie après coup, ou une reprise de stock, se tarife à partir d'elle). */
+    var cd = creation ? { passee: false } : controleDateEffetTarif(o);
+    if (cd.refus) return cd.refus;
+    var existantes = versionsDe(code);
+    if (!creation) {
+      var enAttente = existantes.filter(function (v) { return v.statut === 'propose'; })[0];
+      if (enAttente) return refusTarif('CHANGEMENT_EN_ATTENTE', 'Une proposition est déjà en attente de décision pour « ' + code + ' » (version ' + enAttente.version + ').', 'La décider (Oui ou Non) ou la retirer avant d’en proposer une autre.');
+      var s = sActuel;
+      /* Hors médicament, un prix de vente NON renseigné est CONSERVÉ (le prix d'achat change, la décision commerciale du prix de vente n'est pas prise ici) ; pour l'égaler au prix d'achat, on le saisit. */
+      if (!med && vente == null && s && s.vrs && s.vrs.prixVente != null) vente = s.vrs.prixVente;
+      var venteNouvelle = med ? achat : (vente != null ? vente : achat), venteActuelle = s ? D.TARIFS.prixVenteProduit(pr.categorie, s.vrs) : null;
+      if (s && s.na === achat && venteActuelle === venteNouvelle) return refusTarif('PRIX_INCHANGE', 'Ce prix d’achat est déjà celui en vigueur à cette date : rien à proposer.', 'Modifier le prix d’achat, ou ne rien changer.');
+      var us = usagesTarif(p, o.dateEffet);
+      if (us.length) return refusUsage(code, o.dateEffet, us, false);
+    }
+    var rang = existantes.reduce(function (m, v) { return Math.max(m, v.version || 0); }, 0) + 1;
+    return { ok: true, plan: { code: code, p: p, h: h, rang: rang, etatA: 'unique', passee: cd.passee, viaImport: viaImport, enUnGeste: o.valider === true, produit: pr, achat: achat, absent: absent,
+      venteLibre: (!med && vente != null && vente !== achat) ? vente : null } };
+  }
+
   /** TOUS LES CONTRÔLES d'une proposition, SANS RIEN ÉCRIRE : la saisie à l'écran, l'import (vérification d'une ligne) et l'écriture passent par ELLE, jamais par un second chemin.
       Rend un refus nommé, ou `{ ok: true, plan }`. `o.import = { jeu: 'tarifs', lot }` change l'autorité de proposer (droit d'importer au lieu du droit d'éditer l'écran). */
   function evaluerProposition(o) {
     o = o || {};
-    var viaImport = !!(o.import && o.import.jeu === 'tarifs');
-    if (viaImport ? !peutProposerParImport() : !peutProposerTarif()) {
+    var viaImport = !!(o.import && (o.import.jeu === 'tarifs' || o.import.jeu === 'tarifs-produits'));
+    /* LA FAMILLE `PRODUIT` (lot T5) suit le MÊME chemin, avec sa propre autorité et ses propres contrôles (prix d'achat, RG-02). */
+    var h0 = D.TARIFS.lire(), p0 = h0 && h0.parCode[o.code];
+    var estProduit = !!((p0 && p0.famille === 'PRODUIT') || (o.creation && o.creation.famille === 'PRODUIT'));
+    if (estProduit && !o.creation && !peutProposerProduit(o)) {
+      return viaImport
+        ? refusTarif('PROPOSITION_RESERVEE', 'Proposer un prix d’achat par un fichier revient aux profils qui détiennent le droit d’importer le jeu « Importation des prix d’achat ».', 'Demander ce droit à l’administrateur (« Rôles & permissions », section Importation).')
+        : refusTarif('PROPOSITION_RESERVEE', 'Changer le prix d’achat d’un produit se fait au « Référentiel produits », par un profil qui peut modifier cet écran.', 'Demander le changement au gestionnaire de stock, à la Directrice Administrative ou à l’administrateur.');
+    }
+    if (!estProduit && (viaImport ? !peutProposerParImport() : !peutProposerTarif())) {
       return viaImport
         ? refusTarif('PROPOSITION_RESERVEE', 'Proposer un prix par un fichier revient aux profils qui détiennent le droit d’importer le jeu « Importation des tarifs et prix ».', 'Demander ce droit à l’administrateur (« Rôles & permissions », section Importation).')
         : refusTarif('PROPOSITION_RESERVEE', 'Proposer un prix se fait depuis « Tarifs et prix », par un profil qui peut modifier cet écran.', 'Demander la modification à la Directrice Administrative ou à la Direction.');
@@ -274,6 +378,7 @@
     var h = D.TARIFS.lire();
     if (!h) return refusTarif('REFERENTIEL_ABSENT', 'Le référentiel de prix n’est pas chargé.', 'Recharger la page.');
     var p = h.parCode[o.code];
+    if (estProduit) return evaluerPropositionProduit(o, h, p, viaImport);
     if (o.creation) {
       if (p) return refusTarif('CODE_EXISTANT', 'Le code « ' + o.code + ' » existe déjà au référentiel (code ou alias) : un code ne se réutilise pas.', 'Choisir un autre code, ou proposer un changement de prix à la prestation existante.');
       if (!String(o.code || '').trim() || !String(o.creation.libelle || '').trim()) return refusTarif('IDENTITE_INCOMPLETE', 'Une prestation porte un code et un libellé.', 'Renseigner le code et le libellé.');
@@ -282,15 +387,9 @@
     }
     var refus = controleProposition(o);
     if (refus) return refus;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(o.dateEffet || ''))) return refusTarif('DATE_EFFET_REQUISE', 'Un changement de prix prend effet à une date : sans date d’effet, on ne sait pas à partir de quand il s’applique.', 'Saisir la date d’effet.');
-    var aujourdhui = jourTarif(null);
-    var passee = o.dateEffet < aujourdhui;
-    if (passee) {
-      /* T6 : la date passée est PERMISE à la DAF et à la Direction, avec une case explicite (jamais silencieuse) et le motif déjà exigé ; refusée aux autres. */
-      if (o.datePassee !== true) return refusTarif('DATE_PASSEE', 'La date d’effet (' + o.dateEffet + ') est antérieure à aujourd’hui (' + aujourdhui + ') : un prix ne se change pas dans le passé sans une décision expresse.',
-        peutDatePasseeTarif() ? 'Cocher « Date antérieure à aujourd’hui » et motiver, ou choisir aujourd’hui ou une date future.' : 'Choisir aujourd’hui ou une date future : une date antérieure est une autorité de ' + profilsDatePassee() + '.');
-      if (!peutDatePasseeTarif()) return refusTarif('DATE_PASSEE_RESERVEE', 'Une date d’effet antérieure à aujourd’hui est une autorité de ' + profilsDatePassee() + '.', 'Choisir aujourd’hui ou une date future, ou demander cette date à l’un de ces profils.');
-    }
+    var cd = controleDateEffetTarif(o);
+    if (cd.refus) return cd.refus;
+    var passee = cd.passee;
     var code = o.creation ? String(o.code).trim() : p.code;
     var existantes = versionsDe(code);
     var enAttente = existantes.filter(function (v) { return v.statut === 'propose'; })[0];
@@ -308,12 +407,70 @@
     return { ok: true, plan: { code: code, p: p, h: h, rang: rang, etatA: etatA, passee: passee, viaImport: viaImport, enUnGeste: o.valider === true } };
   }
 
+  /** L'ÉCRITURE d'une proposition de prix d'achat (lot T5), après `evaluerPropositionProduit`. Une version est une fiche IMMUABLE : le prix d'achat est la colonne « non assuré », la colonne
+      assurée vaut `unique`. La CRÉATION de la fiche produit pose la version 1 VALIDE d'emblée (aucun prix antérieur à changer : ce n'est pas un changement de prix), tracée avec le rôle de
+      l'auteur ; tout CHANGEMENT d'un produit existant naît `propose` (alerte Oui ou Non), ou `valide` en un geste pour un profil qui décide (Q3). */
+  function ecrireVersionProduit(o, plan) {
+    var code = plan.code, pr = plan.produit, creation = !!o.creation, identite = null;
+    if (creation) {
+      identite = colTarifs().insert({ id: code, code: code, libelle: String(o.creation.libelle || pr.designation || code).trim(), famille: 'PRODUIT', statut: 'actif' });
+      if (!identite) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la prestation de prix du produit.', 'Réessayer ; le refus est au journal.');
+    }
+    var v = {
+      id: code + '@' + (creation ? 'origine' : o.dateEffet) + '@' + plan.rang, code: code, version: plan.rang,
+      prixNonAssure: plan.absent ? null : plan.achat, prixAssure: null, etatAssure: 'unique',
+      motif: String(o.motif || '').trim(), origine: (plan.viaImport || o.import) ? 'import' : (creation ? 'creation' : 'ecran'), statut: 'propose',
+      proposePar: auteurDeLaSession(), proposeLe: C.iso(C.aujourdhui()), proposeRole: roleDeLaSession(),
+    };
+    if (!creation) v.dateEffet = o.dateEffet;
+    if (plan.absent) v.etatNonAssure = 'manquant';
+    if (plan.venteLibre != null) v.prixVente = plan.venteLibre;
+    if (plan.viaImport && o.import.lot) v.lot = o.import.lot;
+    if (o.import && !plan.viaImport && o.import.lot) v.lot = o.import.lot;
+    if (o.source) v.source = String(o.source).trim();
+    if (plan.passee) v.datePassee = true;
+    var valide = creation || o.valider === true;
+    if (valide) {
+      v.statut = 'valide'; v.decidePar = v.proposePar; v.decideLe = v.proposeLe; v.roleDecision = v.proposeRole;
+      v.motifDecision = creation ? 'Première version du prix d’achat, posée à la création de l’article' + (o.import && o.import.lot ? ' (import ' + o.import.lot + ')' : '') : (plan.viaImport ? 'Validée à l’import ' + (o.import.lot || '') : 'Validée en un geste à la saisie');
+    }
+    journalPrix(creation ? 'création du prix d’achat' : (plan.viaImport ? (valide ? 'validation à l’import' : 'proposition à l’import') : (valide ? 'validation en un geste' : 'proposition')), v, { motif: v.motif, role: v.proposeRole, produit: code });
+    var rec = colVersionsTarif().insert(v);
+    if (!rec) return refusTarif('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Réessayer ; le refus est au journal.');
+    D.TARIFS.invalider();
+    /* Une création n'a rien à projeter (la fiche porte déjà ce prix) ; une validation en un geste met la fiche au pas. */
+    if (!creation && valide) { leverMarquageTarif(code); S.projeterTarifs(); }
+    return { ok: true, version: rec.record, identite: identite ? identite.record : null, creation: creation, valideeEnUnGeste: !creation && valide };
+  }
+
+  /** LA CRÉATION D'UNE FICHE PRODUIT pose la version 1 de son prix d'achat par la MÊME voie que tout changement de prix (`proposerTarif`, mode `creation`), jamais « à plat sur la
+      fiche » : les écrans de création (Référentiel produits, nouvel article des achats) et les jeux d'import l'appellent juste après l'insertion de la fiche. Un prix d'achat absent ou nul
+      pose un `manquant` : l'article se crée « à valoriser » et ne se facture pas tant que personne n'a renseigné son prix. `ctx` : { import: { jeu, lot }, source, motif }.
+      Si la prestation de prix existe déjà (fiche recréée après une annulation, reprise), aucune seconde version 1 n'est posée : l'écart éventuel avec la fiche est rendu. */
+  function creerPrixProduit(produit, ctx) {
+    ctx = ctx || {};
+    if (!produit || !produit.code) return refusTarif('PRODUIT_INTROUVABLE', 'Aucune fiche produit à doter d’un prix d’achat.', 'Créer la fiche produit d’abord.');
+    var h = D.TARIFS.lire(), existant = h && h.parProduit[produit.code];
+    if (existant) {
+      var s = D.TARIFS.instantane(h, existant, null);
+      var achatFiche = typeof produit.prixAchat === 'number' && produit.prixAchat > 0 ? produit.prixAchat : null;
+      return { ok: true, reutilise: true, ecart: (s && s.na != null && achatFiche != null && s.na !== achatFiche) ? { fiche: achatFiche, enVigueur: s.na } : null };
+    }
+    var achat = typeof produit.prixAchat === 'number' && produit.prixAchat > 0 ? produit.prixAchat : null;
+    var o = { code: produit.code, prixNonAssure: achat, creation: { famille: 'PRODUIT', libelle: produit.designation },
+      motif: ctx.motif || (achat == null ? 'Article créé sans prix d’achat : à valoriser' : 'Création de l’article'), source: ctx.source || null };
+    if (ctx.import) o.import = ctx.import;
+    if (achat != null && produit.categorie !== D.TARIFS.CATEGORIE_SANS_MARGE && typeof produit.prixVente === 'number' && produit.prixVente > 0 && produit.prixVente !== achat) o.prixVente = produit.prixVente;
+    return proposerTarif(o);
+  }
+
   /** Propose une version de prix pour une prestation existante (ou, avec `creation`, crée la prestation et sa première version). `o.essai` : tous les contrôles, aucune écriture. */
   function proposerTarif(o) {
     o = o || {};
     var ev = evaluerProposition(o);
     if (!ev.ok) return ev;
     if (o.essai === true) return { ok: true, essai: true, creation: !!o.creation, valideeEnUnGeste: o.valider === true, rang: ev.plan.rang };
+    if (ev.plan.produit) return ecrireVersionProduit(o, ev.plan);
     var code = ev.plan.code, rang = ev.plan.rang, etatA = ev.plan.etatA, passee = ev.plan.passee, viaImport = ev.plan.viaImport, identite = null;
     if (o.creation) {
       var c = o.creation, famille = c.famille;
@@ -524,11 +681,15 @@
     var numero = 'ORD-' + String(new Date(date).getFullYear()) + '-' + C.pad(col('ordonnances').all().length + 1, 5);
 
     /* --- Lignes ----------------------------------------------------------- */
+    var sansPrixAchat = [];
     var medicaments = (v.medicaments || []).map(function (l) {
       var prod = produitParId(l.produitId) || {};
-      /* RG-02 — prix d'achat, sans marge. */
-      var pu = prod.prixAchat != null ? prod.prixAchat : 0;
+      /* RG-02 — prix d'achat, sans marge : celui de la version EN VIGUEUR à la date de la PIÈCE (lot T5), jamais la fiche, jamais un zéro. Un prix d'achat absent refuse la prescription
+         en nommant l'article, avant toute écriture. */
+      var px = prod.code ? prixProduitALaDate(prod, date) : { absent: true };
+      var pu = px.absent ? 0 : px.achat;
       var q = Number(l.quantite) || 0;
+      if (px.absent && q > 0) sansPrixAchat.push(prod.designation || l.produit || l.produitId);
       return {
         produitId: l.produitId, produit: prod.designation || l.produit || '—',
         unite: prod.unite || '', quantite: q,
@@ -537,6 +698,9 @@
       };
     }).filter(function (l) { return l.quantite > 0; });
 
+    if (sansPrixAchat.length) {
+      throw new Error('Prix d’achat absent pour : ' + sansPrixAchat.join(', ') + '. Un article sans prix d’achat ne se facture jamais à zéro : renseigner son prix d’achat au Référentiel produits (« Changer le prix d’achat ») avant de prescrire.');
+    }
     /* RG-09 : la colonne se décide à la date de la pièce, comme pour les actes. Le prix est celui de la version en vigueur à CETTE date (PRD-TARIFS). */
     var assureAnalyses = !!(p.assureur && carteValide(p, date));
     var analyses = (v.analyses || []).map(function (code) {
@@ -3432,6 +3596,7 @@
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
     proposerTarif: proposerTarif, evaluerProposition: evaluerProposition, peutProposerParImport: peutProposerParImport, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
     tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate,
+    prixProduitALaDate: prixProduitALaDate, prixAchatALaDate: prixAchatALaDate, prixVenteALaDate: prixVenteALaDate, produitDeCode: produitDeCode, peutProposerProduit: peutProposerProduit, creerPrixProduit: creerPrixProduit,
     couvertureALaDate: couvertureALaDate, historiqueCouverture: historiqueCouverture,
     changerCouverture: changerCouverture,
     TACHES: TACHES,

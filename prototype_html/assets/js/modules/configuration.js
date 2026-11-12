@@ -938,7 +938,7 @@
     ['AMI', 'Actes médico-infirmiers'], ['GYNECO', 'Gynéco-obstétrique et kits'], ['CERTIFICAT', 'Certificats et attestations'],
   ];
   var ETATS_PRIX = ['En vigueur', 'Proposition en attente', 'Changement à venir', 'Provisoire', 'Sans prix en vigueur'];
-  var LIBELLE_ORIGINE = { migration: 'Migration des listes d’avant', 'semence-grille': 'Grille imprimée des analyses', ecran: 'Saisie à l’écran', import: 'Importation' };
+  var LIBELLE_ORIGINE = { migration: 'Migration des listes d’avant', reprise: 'Reprise de la fiche', creation: 'Création de l’article', 'semence-grille': 'Grille imprimée des analyses', ecran: 'Saisie à l’écran', import: 'Importation' };
 
   function PRC() { return global.SIGH.parcours; }
   function jourPrix() { return C.iso(C.aujourdhui()); }
@@ -948,7 +948,8 @@
   function lignesTarifs(filtre) {
     var h = D.TARIFS.lire(), jour = jourPrix();
     if (!h) return [];
-    return h.tarifs.filter(function (p) { return p.statut !== 'archive' && filtre(p); }).map(function (p) {
+    /* Les PRODUITS (famille `PRODUIT`, lot T5) ne sont pas des prestations : ils ont leur onglet, en lecture seule. */
+    return h.tarifs.filter(function (p) { return p.statut !== 'archive' && p.famille !== 'PRODUIT' && filtre(p); }).map(function (p) {
       var s = D.TARIFS.instantane(h, p, jour);
       var vs = h.vers[p.code] || [];
       var attente = vs.filter(function (v) { return v.statut === 'propose'; }).length;
@@ -983,7 +984,7 @@
       var p = h.parCode[v.code] || {};
       var s = D.TARIFS.instantane(h, p, v.dateEffet || jourPrix());
       var pct = PRC().variationPropositionPct(v);
-      return { v: v, code: v.code, libelle: p.libelle || v.code, actuelNA: s ? s.na : null, propose: v.etatNonAssure === 'manquant' ? null : v.prixNonAssure, pct: pct,
+      return { v: v, code: v.code, libelle: (p.libelle || v.code) + (p.famille === 'PRODUIT' ? ' (prix d’achat)' : ''), actuelNA: s ? s.na : null, propose: v.etatNonAssure === 'manquant' ? null : v.prixNonAssure, pct: pct,
         actuelA: s ? (s.etatAssure === 'nc' ? 'NON COUVERT' : s.etatAssure === 'unique' ? 'prix unique' : s.etatAssure === 'montant' ? C.money(s.pa, false) : 'à valider') : 'Sans prix',
         proposeA: v.etatAssure === 'nc' ? 'NON COUVERT' : v.etatAssure === 'unique' ? 'prix unique' : v.etatAssure === 'montant' ? C.money(v.prixAssure, false) : 'à valider',
         pieces: p.code ? PRC().piecesRecentesTarif(p, 30) : 0 };
@@ -1194,7 +1195,7 @@
 
   global.SIGH.screen('cfg-tarifs', {
     title: 'Tarifs et prix',
-    description: 'Le référentiel de prix unique : prestations, analyses et imagerie, l’historique de chaque prix et les changements en attente de décision.',
+    description: 'Le référentiel de prix unique : prestations, analyses, imagerie et produits (prix d’achat), l’historique de chaque prix et les changements en attente de décision.',
     regle: 'Une <strong>seule liste de prix</strong> est lue par la caisse, la prescription, les soins, l’imagerie et les certificats. Le prix d’une pièce est celui '
       + 'qui était en vigueur à la <strong>date de la pièce</strong> : un changement <strong>ne touche jamais une pièce déjà émise</strong>, il se versionne par date d’effet. '
       + '<strong>Proposer</strong> un changement et le <strong>valider</strong> (Oui ou Non) sont deux droits distincts ; une proposition ne change rien avant le Oui. '
@@ -1203,7 +1204,7 @@
       var a = [
         K.commande('Nouvelle prestation', { variant: 'primary', icon: 'plus', onclick: function () { modaleProposition(null, rafraichirEcran); } }),
         /* « Importer les données » : le jeu `tarifs`, selon le droit d'IMPORTER de ce jeu (lot IMP-A) ; chaque ligne passe par la MÊME proposition que la saisie à l'écran. */
-        K.importer('tarifs'),
+        K.importer(['tarifs', 'tarifs-produits']),
         K.btn('Imprimer la grille', { icon: 'printer', onclick: function () { imprimerGrille(lignesTarifs(function () { return true; }).filter(function (r) { return r.etat !== 'Sans prix en vigueur'; }), 'Grille tarifaire'); } }),
       ];
       return a.filter(Boolean);
@@ -1300,22 +1301,47 @@
             } },
           { id: 'produits', label: 'Produits', badge: S.collection('produits').active().length,
             render: function () {
-              var produits = S.collection('produits').active();
-              return el('div.space-y-3', null, [
-                K.note('<strong>Lecture seule.</strong> RG-02 : un médicament se facture au <strong>prix d’achat, sans marge</strong>. Son prix se modifie au référentiel des produits, avec le prix d’achat qui le fonde.', { tone: 'info', icon: 'pill' }),
-                global.SIGH.nav.can(S.session().role, global.SIGH.nav.get('m6-produits'))
-                  ? K.btn('Ouvrir le référentiel des produits', { icon: 'pill', onclick: function () { global.SIGH.app.go('m6-produits'); } }) : null,
+              /* LECTURE SEULE (option B, Direction, 11/11/2026) : le prix d'achat est VERSIONNÉ par le même moteur que les prestations (famille PRODUIT) mais il se change au
+                 « Référentiel produits » (« Changer le prix d'achat ») ou par l'import des prix d'achat ; ici, aucune commande d'écriture. Le prix de vente est DÉRIVÉ (RG-02). */
+              var jour = jourPrix(), hh = D.TARIFS.lire();
+              var lignes = S.collection('produits').active().map(function (pr) {
+                var p = hh && hh.parProduit[pr.code], s = p ? D.TARIFS.instantane(hh, p, jour) : null;
+                var vs = p ? (hh.vers[p.code] || []) : [];
+                var attente = vs.filter(function (v) { return v.statut === 'propose'; }).length;
+                var avenir = vs.filter(function (v) { return v.statut === 'valide' && v.dateEffet && v.dateEffet > jour; }).length;
+                var etat = !s ? 'Sans prix en vigueur' : s.na == null ? 'Prix d’achat à valider' : attente ? 'Proposition en attente' : avenir ? 'Changement à venir' : 'En vigueur';
+                return { id: pr.id, produit: pr, code: pr.code, designation: pr.designation, categorie: pr.categorie, achat: s ? s.na : null,
+                  vente: s && s.na != null ? D.TARIFS.prixVenteProduit(pr.categorie, s.vrs) : null, depuis: s ? s.dateEffet : null, version: s ? s.version : null, etat: etat };
+              });
+              var ETATS_PRODUIT = ['En vigueur', 'Proposition en attente', 'Changement à venir', 'Prix d’achat à valider', 'Sans prix en vigueur'];
+              var peutOuvrir = global.SIGH.nav.can(S.session().role, global.SIGH.nav.get('m6-produits'));
+              return el('div.space-y-3', { 'data-onglet-produits': '' }, [
+                K.note('<strong>Lecture seule.</strong> RG-02 : un médicament se facture au <strong>prix d’achat, sans marge</strong> ; son prix de vente est <strong>dérivé</strong> du prix d’achat en vigueur. '
+                  + 'Le prix d’achat se versionne par date d’effet comme un prix de prestation (une pièce déjà émise garde le prix de sa date) et se change <strong>au Référentiel produits</strong> '
+                  + '(« Changer le prix d’achat », décision Oui ou Non) ou par l’importation des prix d’achat. Le bouton « Historique de prix » de chaque ligne ouvre toutes ses versions.', { tone: 'info', icon: 'pill' }),
+                peutOuvrir
+                  ? K.btn('Modifier dans Référentiel produits', { icon: 'pill', onclick: function () { global.SIGH.app.go('m6-produits'); } })
+                  : el('p.text-xs.text-slate-500', { text: 'Modifier dans Référentiel produits : écran que votre profil n’ouvre pas ; le prix d’achat se change par le gestionnaire de stock ou la Directrice Administrative.' }),
                 U.dataTable({
-                  rows: produits, pageSize: 15, exportName: 'produits-lecture', defaultSort: 'designation',
-                  filters: [{ name: 'categorie', label: 'Catégorie', options: D.CATEGORIES_PRODUIT.map(function (c) { return { value: c.id, label: c.label }; }) }],
-                  columns: [
-                    { key: 'code', label: 'Code', nowrap: true, render: function (p) { return el('span.font-mono.text-xs', { text: p.code }); } },
-                    { key: 'designation', label: 'Désignation' },
-                    { key: 'categorie', label: 'Catégorie', text: function (p) { var c = D.CATEGORIES_PRODUIT.filter(function (x) { return x.id === p.categorie; })[0]; return c ? c.label : p.categorie; } },
-                    { key: 'prixAchat', label: 'Prix d’achat', align: 'right', text: function (p) { return argent(p.prixAchat); }, render: function (p) { return argent(p.prixAchat); } },
-                    { key: 'prixVente', label: 'Prix de vente', align: 'right', text: function (p) { return argent(p.prixVente); }, render: function (p) { return el('span.font-semibold', { text: argent(p.prixVente) }); } },
-                    { key: 'marge', label: 'Marge', align: 'right', value: function (p) { return p.prixVente - p.prixAchat; }, render: function (p) { var m = p.prixVente - p.prixAchat; return m === 0 ? U.badge('Sans marge', 'success') : el('span.font-semibold.text-warning-600', { text: C.money(m, false) }); } },
+                  rows: lignes, pageSize: 15, exportName: 'produits-prix-en-vigueur', defaultSort: 'designation', emptyMessage: 'Aucun produit.',
+                  filters: [
+                    { name: 'categorie', label: 'Catégorie', options: D.CATEGORIES_PRODUIT.map(function (c) { return { value: c.id, label: c.label }; }) },
+                    { name: 'etat', label: 'État du prix', options: ETATS_PRODUIT },
                   ],
+                  columns: [
+                    { key: 'code', label: 'Code', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold.text-navy-800', { text: r.code }); } },
+                    { key: 'designation', label: 'Désignation' },
+                    { key: 'categorie', label: 'Catégorie', text: function (r) { var c = D.CATEGORIES_PRODUIT.filter(function (x) { return x.id === r.categorie; })[0]; return c ? c.label : r.categorie; } },
+                    { key: 'achat', label: 'Prix d’achat en vigueur', align: 'right', render: function (r) { return r.achat == null ? el('span.text-xs.italic.text-rose-600', { text: 'à valider' }) : el('span.font-semibold', { text: C.money(r.achat, false) }); }, text: function (r) { return r.achat == null ? 'à valider' : C.money(r.achat, false); } },
+                    { key: 'vente', label: 'Prix de vente (dérivé)', align: 'right', render: function (r) { return r.vente == null ? el('span.text-xs.italic.text-rose-600', { text: 'à valider' }) : C.money(r.vente, false); }, text: function (r) { return r.vente == null ? 'à valider' : C.money(r.vente, false); } },
+                    { key: 'marge', label: 'Marge', align: 'right', value: function (r) { return r.vente == null || r.achat == null ? null : r.vente - r.achat; },
+                      render: function (r) { if (r.vente == null || r.achat == null) return ''; var m = r.vente - r.achat; return m === 0 ? U.badge('Sans marge', 'success') : el('span.font-semibold.text-warning-600', { text: C.money(m, false) }); } },
+                    { key: 'depuis', label: 'En vigueur depuis', nowrap: true, render: function (r) { return r.version == null ? '' : (r.depuis ? C.dateFR(r.depuis) : 'L’origine'); }, text: function (r) { return r.depuis || ''; } },
+                    { key: 'version', label: 'Version', align: 'right', render: function (r) { return r.version == null ? '' : 'v' + r.version; }, text: function (r) { return r.version == null ? '' : 'v' + r.version; } },
+                    { key: 'etat', label: 'État', render: function (r) { return U.badge(r.etat, { 'En vigueur': 'success', 'Proposition en attente': 'warning', 'Changement à venir': 'info', 'Prix d’achat à valider': 'danger', 'Sans prix en vigueur': 'danger' }[r.etat] || 'neutral'); }, text: function (r) { return r.etat; } },
+                  ],
+                  /* Une LECTURE par ligne : « Historique de prix », offerte à tout profil qui voit la ligne. Aucune commande d'écriture. */
+                  rowActions: function (r) { return [K.boutonHistoriquePrix(r.produit, {})]; },
                 }),
               ].filter(Boolean));
             } },
@@ -1325,7 +1351,7 @@
                 var p = h.parCode[v.code] || {};
                 var s = D.TARIFS.instantane(h, p, v.dateEffet || jourPrix());
                 var delta = s && s.na != null && v.prixNonAssure != null && s.na ? Math.round((v.prixNonAssure - s.na) / s.na * 1000) / 10 : null;
-                return { id: v.id, v: v, code: v.code, libelle: p.libelle || v.code, actuelNA: s ? s.na : null, actuelPA: s ? s.pa : null, actuelEtat: s ? s.etatAssure : null,
+                return { id: v.id, v: v, code: v.code, libelle: (p.libelle || v.code) + (p.famille === 'PRODUIT' ? ' (prix d’achat, prix de vente dérivé)' : ''), actuelNA: s ? s.na : null, actuelPA: s ? s.pa : null, actuelEtat: s ? s.etatAssure : null,
                   propose: v.prixNonAssure, proposeA: v.etatAssure === 'montant' ? v.prixAssure : null, etatA: v.etatAssure, delta: delta, lot: LIBELLE_ORIGINE[v.origine] || v.origine,
                   dateEffet: v.dateEffet || '', par: v.proposePar || '', motif: v.motif || '', pieces: p.code ? PRC().piecesRecentesTarif(p, 30) : 0 };
               });
@@ -1370,7 +1396,7 @@
           { id: 'historique', label: 'Historique',
             render: function (panneau) {
               var cadre = el('div.space-y-3');
-              var sel = U.combo(C.sortBy(h.tarifs.filter(function (p) { return p.statut !== 'archive'; }), 'code').map(function (p) { return { value: p.code, label: p.code + ' : ' + p.libelle }; }), { placeholder: 'Choisir une prestation', searchPlaceholder: 'Code ou libellé…' });
+              var sel = U.combo(C.sortBy(h.tarifs.filter(function (p) { return p.statut !== 'archive' && p.famille !== 'PRODUIT'; }), 'code').map(function (p) { return { value: p.code, label: p.code + ' : ' + p.libelle }; }), { placeholder: 'Choisir une prestation', searchPlaceholder: 'Code ou libellé…' });
               sel.addEventListener('change', function () { C.clear(cadre); if (sel.value) cadre.appendChild(blocHistorique(sel.value)); U.icons(cadre); });
               return el('div.space-y-3', null, [K.note('Toutes les versions d’un prix, y compris les propositions refusées ou retirées : l’historique ne vit pas au journal d’audit, qui est plafonné.', { tone: 'info', icon: 'history' }), el('div.max-w-xl', null, sel), cadre]);
             } },

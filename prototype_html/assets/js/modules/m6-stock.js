@@ -111,6 +111,56 @@
     });
   }
 
+  /* ==========================================================================
+   * CHANGER LE PRIX D'ACHAT D'UN PRODUIT (PRD-TARIFS, lot T5)
+   * --------------------------------------------------------------------------
+   * Le prix d'achat ne s'écrase plus sur la fiche : il se PROPOSE par le MÊME moteur que les prix des prestations (`PR.proposerTarif`, famille `PRODUIT`) : date d'effet, motif,
+   * alerte Oui ou Non de la Directrice Administrative ou de la Direction, ou Valider en un geste pour un profil qui décide. Une proposition ne change RIEN avant le Oui ; une pièce déjà
+   * émise garde le prix de sa date ; RG-02 : le prix de vente d'un médicament est son prix d'achat, il se DÉRIVE (aucune marge ne se saisit).
+   * ======================================================================== */
+  function modaleChangerPrixAchat(produit, apres) {
+    var jour = C.iso(C.aujourdhui());
+    var px = PR.prixProduitALaDate(produit, jour);
+    var med = produit.categorie === 'medicament';
+    var peutPassee = PR.peutDatePasseeTarif(), peutValider = PR.peutDeciderTarif();
+    var champs = [
+      { name: 'prixNonAssure', label: 'Nouveau prix d’achat (FCFA)', type: 'money', required: true, min: 1, hint: 'Un montant entier, strictement positif.' },
+    ];
+    if (!med) champs.push({ name: 'prixVente', label: 'Prix de vente (FCFA)', type: 'money', min: 1, hint: 'Vide : le prix de vente actuel est conservé.' });
+    champs.push({ name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, value: jour, hint: peutPassee
+      ? 'Aujourd’hui ou plus tard ; une date antérieure se coche ci-dessous et se motive. Le prix en vigueur ne change qu’à cette date, et seulement après un Oui.'
+      : 'Au plus tôt aujourd’hui. Le prix en vigueur ne change qu’à cette date, et seulement après un Oui. Une pièce déjà émise ce jour ou après porte déjà l’article : choisir une date postérieure.' });
+    if (peutPassee) champs.push({ name: 'datePassee', label: 'Date antérieure à aujourd’hui (refusée si une pièce porte déjà cet article depuis cette date)', type: 'checkbox', col: 'full' });
+    champs.push({ name: 'motif', label: 'Motif du changement', type: 'textarea', required: true, col: 'full' });
+    var f = U.form(champs, {});
+    var info = K.note('Prix d’achat en vigueur aujourd’hui : <strong>' + (px.absent ? 'non renseigné (à valoriser)' : C.money(px.achat, false)) + '</strong>'
+      + (px.absent ? '' : ' (version ' + px.version + ')') + '. ' + (med ? 'RG-02 : le prix de vente d’un médicament est son prix d’achat, il suit sans marge. ' : '')
+      + 'Une proposition <strong>ne change rien</strong> tant que la Direction, la Directrice Administrative ou l’administrateur n’a pas répondu Oui ; les pièces déjà émises gardent leur prix.', { tone: 'info' });
+    var etats = K.note('<strong>Deux états, visibles :</strong> « Enregistrer » dépose une <strong>proposition</strong> (à valider : rien ne change) ; '
+      + (peutValider ? '« Valider » la met <strong>en vigueur</strong> à sa date d’effet, en un geste tracé avec votre rôle.' : '« Valider » est réservé à la Direction, à la Directrice Administrative et à l’administrateur : leur décision suit votre proposition.'), { tone: 'info', icon: 'git-compare' });
+    function envoyer(valider) {
+      var v = f.collect(); if (!v) return;
+      var r = PR.proposerTarif({ code: produit.code, prixNonAssure: v.prixNonAssure, prixVente: med ? null : v.prixVente, dateEffet: v.dateEffet, motif: v.motif, datePassee: v.datePassee === true, valider: valider,
+        source: 'Saisi à l’écran « Référentiel produits »' });
+      if (!r.ok) { U.toast(r.motif, { type: 'error', detail: r.geste }); return; }
+      m.close();
+      if (r.valideeEnUnGeste) U.toast('Prix d’achat validé : il prend effet le ' + C.dateFR(r.version.dateEffet) + '.', { type: 'success', detail: 'Validé en un geste par votre rôle ; les pièces déjà émises gardent leur prix.' });
+      else U.toast('Proposition enregistrée : elle attend la décision (Oui ou Non).', { type: 'success', detail: 'Le prix en vigueur ne change pas avant le Oui.' });
+      if (apres) apres();
+    }
+    var m = U.modal({
+      title: 'Changer le prix d’achat', subtitle: produit.code + ' : ' + produit.designation, size: 'md',
+      body: el('div.space-y-3', null, [info, etats, f]),
+      footer: [
+        K.btn('Annuler', { onclick: function () { m.close(); } }),
+        K.btn('Enregistrer', { icon: 'send', title: 'Enregistrer comme proposition : à valider', onclick: function () { envoyer(false); } }),
+        /* « Valider » est ABSENT hors de la liste de rôles de la famille ; le moteur refuse de toute façon (VALIDATION_RESERVEE). */
+        peutValider ? K.btn('Valider', { variant: 'primary', icon: 'shield-check', title: 'Mettre en vigueur à la date d’effet, en un geste', onclick: function () { envoyer(true); } }) : null,
+      ].filter(Boolean),
+    });
+    U.icons(document.body);
+  }
+
   function produits() { return S.collection('produits').active(); }
   function lots() { return S.collection('lots').active(); }
   function mouvements() { return S.collection('mouvements').active(); }
@@ -371,7 +421,7 @@
       collection: 'produits', entite: 'produit', entiteP: 'produits', module: 'M6',
       defaultSort: 'designation', pageSize: 15, drawerWidth: 'max-w-3xl',
       /* « Importer les données » : le référentiel des articles SANS quantités ni lots (le stock se reprend par « Importation Grand Stock »). Droit d'IMPORTER du jeu, absent sans lui. */
-      importer: 'produits-referentiel',
+      importer: ['produits-referentiel', 'tarifs-produits'],
       /* La valorisation d'une référence SAGE (surcouche `valorisationsSage`) se valide ICI, au produit qu'elle concerne ; modifier le prix d'achat la remet à valider. */
       validation: {
         famille: 'valorisation_sage',
@@ -403,18 +453,22 @@
           },
         },
       ],
-      fields: [
+      fields: function (record) {
+        var edition = !!record;
+        return [
         { type: 'section', label: 'Identification' },
         { name: 'code', label: 'Code article', required: true },
         { name: 'designation', label: 'Désignation', required: true, col: 'full' },
         { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: optionsCategories() },
         { name: 'unite', label: 'Unité', required: true, placeholder: 'Comprimé, Flacon, Boîte…' },
         { type: 'section', label: 'Tarification' },
-        {
-          name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'money', required: true, min: 0,
-          help: 'RG-02 — sert également de prix de vente pour les médicaments.',
-        },
-        { name: 'prixVente', label: 'Prix de vente (FCFA)', type: 'money', min: 0 },
+        /* Lot T5 : le prix d'achat est VERSIONNÉ (version 1 à la création, puis « Changer le prix d'achat » : date d'effet, motif, Oui ou Non). À la modification il se LIT ici, il ne s'écrase plus. */
+        edition
+          ? { name: 'prixAchat', label: 'Prix d’achat en vigueur (FCFA)', type: 'money', readonly: true, help: 'Se change par « Changer le prix d’achat » (date d’effet, motif, Oui ou Non) : les pièces déjà émises gardent leur prix.' }
+          : { name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'money', required: true, min: 0, help: 'RG-02 — sert également de prix de vente pour les médicaments. Zéro : l’article est créé « à valoriser » et ne se facture pas (un prix absent n’est jamais un zéro facturé).' },
+        edition
+          ? { name: 'prixVente', label: 'Prix de vente en vigueur (FCFA)', type: 'money', readonly: true, help: 'Dérivé : égal au prix d’achat pour un médicament (RG-02).' }
+          : { name: 'prixVente', label: 'Prix de vente (FCFA)', type: 'money', min: 0, help: 'Hors médicament seulement. Vide : égal au prix d’achat.' },
         { name: 'cump', label: 'CUMP (FCFA)', type: 'money', min: 0, help: 'Calculé automatiquement à chaque entrée en stock.' },
         { type: 'section', label: 'Stock et rangement' },
         { name: 'stockGros', label: 'Stock gros', type: 'number', min: 0 },
@@ -425,22 +479,47 @@
           name: 'fournisseur', label: 'Fournisseur habituel', type: 'select',
           options: D.FOURNISSEURS.map(function (f) { return { value: f.code, label: f.nom }; }),
         },
-      ],
+        ];
+      },
       onCreate: function () {
         return { categorie: 'medicament', stockGros: 0, stockDetail: 0, stock: 0, seuilAlerte: 10, unite: 'Unité' };
       },
-      transform: function (v) {
+      transform: function (v, record) {
         v.stockGros = Number(v.stockGros) || 0;
         v.stockDetail = Number(v.stockDetail) || 0;
         v.stock = v.stockGros + v.stockDetail;
-        /* RG-02 : sans marge sur les médicaments. */
+        if (record) {
+          /* À la MODIFICATION le prix ne s'écrit pas : il se propose (lot T5). Les champs en lecture seule ne reviennent pas dans le correctif. */
+          delete v.prixAchat; delete v.prixVente;
+          return v;
+        }
+        /* RG-02 : sans marge sur les médicaments. La fiche naît avec le prix saisi ; sa version 1 est posée juste après (`apresCreation`). */
+        if (v.prixAchat == null) v.prixAchat = 0;
         if (v.categorie === 'medicament' || !v.prixVente) v.prixVente = v.prixAchat;
         if (!v.cump) v.cump = v.prixAchat;
         return v;
       },
-      beforeSave: function (v) {
+      beforeSave: function (v, record) {
         if (Number(v.stockGros) < 0 || Number(v.stockDetail) < 0) return 'RG-03 — le stock ne peut pas devenir négatif.';
+        /* RG-02 À L'ÉCRITURE (corrige E846) : un prix de vente libre pour un médicament est REFUSÉ en le nommant, plus aligné en silence. */
+        if (!record && v.categorie === 'medicament' && v.prixVente != null && v.prixAchat != null && Number(v.prixVente) !== Number(v.prixAchat)) {
+          return 'RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente (' + C.num(Number(v.prixVente)) + ') ne peut pas différer de son prix d’achat (' + C.num(Number(v.prixAchat)) + '). Laisser le prix de vente vide.';
+        }
         return null;
+      },
+      /* La version 1 du prix d'achat naît AVEC la fiche, par la MÊME voie que tout changement de prix (PRD-TARIFS, lot T5). */
+      apresCreation: function (fiche) {
+        var r = PR.creerPrixProduit(fiche, { source: 'Saisi à l’écran « Référentiel produits »' });
+        if (!r.ok) return 'attention, le prix d’achat n’a pas pu être versionné (' + r.motif + ')';
+        if (r.ecart) return 'ce code avait déjà un prix d’achat versionné (' + C.money(r.ecart.enVigueur, false) + ') : il est conservé, le changer par « Changer le prix d’achat »';
+        return fiche.prixAchat > 0 ? null : 'à valoriser : sans prix d’achat, l’article ne se facture pas';
+      },
+      /* Deux gestes de ligne : l'HISTORIQUE (une lecture, offerte à tout profil qui voit la ligne) et le CHANGEMENT du prix d'achat (une écriture, absente sans le droit de modifier l'écran). */
+      actionsSup: function (p, refresh) {
+        return [
+          K.boutonHistoriquePrix(p, {}),
+          K.commandeIcone('banknote', 'Changer le prix d’achat', function () { modaleChangerPrixAchat(p, refresh); }),
+        ];
       },
       filters: [
         { name: 'categorie', label: 'Catégorie', options: optionsCategories() },
@@ -2396,9 +2475,11 @@
         var ligneWrap = el('div.flex.flex-wrap.items-end.gap-2.rounded-lg.border.border-slate-200.bg-slate-50.p-3');
         var listeDispo = C.sortBy(dispo, 'designation');
         var selProduit = U.combo(listeDispo.map(function (p) {
+          /* Le prix de vente est celui de la version EN VIGUEUR (lot T5) ; un prix d'achat absent ne se vend jamais à zéro. */
+          var px = PR.prixProduitALaDate(p, new Date().toISOString());
           return {
             value: p.id, label: p.designation, icon: 'pill',
-            detail: p.stockDetail + ' ' + p.unite + ' en rayon — ' + C.money(p.prixVente, false),
+            detail: p.stockDetail + ' ' + p.unite + ' en rayon — ' + (px.absent ? 'prix à valider (non vendable)' : C.money(px.vente, false)),
           };
         }), {
           value: listeDispo.length ? listeDispo[0].id : '',
@@ -2419,7 +2500,9 @@
               U.toast('RG-03 — stock insuffisant en pharmacie (' + p.stockDetail + ' ' + p.unite + ' disponibles).', { type: 'error' });
               return;
             }
-            panier.push({ produitId: p.id, produit: p.designation, unite: p.unite, quantite: q, prix: p.prixVente });
+            var pxVente = PR.prixProduitALaDate(p, new Date().toISOString());
+            if (pxVente.absent) { U.toast(pxVente.motif, { type: 'error', detail: 'Renseigner le prix d’achat (« Changer le prix d’achat ») avant de vendre : un article ne se vend jamais à zéro.' }); return; }
+            panier.push({ produitId: p.id, produit: p.designation, unite: p.unite, quantite: q, prix: pxVente.vente });
             qte.value = 1;
             majPanier();
           },

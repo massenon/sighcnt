@@ -424,6 +424,58 @@ async function viderMessages(page) {
     return out;
   });
 
+  /* --- Outils du lot T5 (Vagues 133 à 137) : le prix d'achat des produits, versionné. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
+  const outilsT5 = (() => {
+    const ENT = ['Code article', 'Prix d’achat', 'Date d’effet', 'Valider (Oui/Non)', 'Motif', 'Source'];
+    const suffixe = () => String(Date.now()).slice(-6) + Math.floor(Math.random() * 90 + 10);
+    /** Les dates relatives à « aujourd'hui » (horloge du banc). */
+    const dates = () => page.evaluate(() => { const C = window.SIGH.core, d = (n) => C.iso(new Date(C.aujourdhui().getTime() + n * 86400000)); return { aujourdhui: d(0), demain: d(1), apres: d(2), dans10: d(10), hier: d(-1), passe10: d(-10) }; });
+    /** Un produit de sonde NEUF (jamais un produit du jeu : une version ne se retire pas du serveur) doté de sa version 1 par la voie de la CRÉATION (`PR.creerPrixProduit`). */
+    const produit = (o) => page.evaluate((x) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const r = S.collection('produits', { module: 'M6', entite: 'Produit' }).insert(Object.assign({ unite: 'Boîte', categorie: 'medicament', cump: x.prixAchat, seuilAlerte: 5, stockGros: 0, stockDetail: x.stockDetail || 0, stock: x.stockDetail || 0, emplacement: '', fournisseur: '', sondeT5: true },
+        x, { prixVente: x.prixVente != null ? x.prixVente : x.prixAchat }));
+      if (!r) return { refus: true };
+      const c = PR.creerPrixProduit(r.record, {});
+      return { id: r.record.id, code: r.record.code, creation: c.ok === true, origine: c.version ? c.version.origine : null };
+    }, o);
+    const versions = (code) => page.evaluate((c) => window.SIGH.store.collection('versionsTarif').all().filter((v) => v.code === c).sort((a, b) => a.version - b.version)
+      .map((v) => ({ id: v.id, version: v.version, statut: v.statut, origine: v.origine, dateEffet: v.dateEffet || null, achat: v.etatNonAssure === 'manquant' ? null : v.prixNonAssure, vente: v.prixVente == null ? null : v.prixVente, lot: v.lot || null,
+        motifDecision: v.motifDecision || null, proposePar: v.proposePar || null, roleDecision: v.roleDecision || null })), code);
+    const fiche = (code) => page.evaluate((c) => { const p = window.SIGH.store.collection('produits').all().filter((x) => x.code === c)[0]; return p ? { id: p.id, statut: p.statut, prixAchat: p.prixAchat, prixVente: p.prixVente, cump: p.cump, stock: p.stock, stockDetail: p.stockDetail, categorie: p.categorie } : null; }, code);
+    /** Le prix d'achat et de vente que le moteur donne pour une date (accesseur daté). */
+    const prixAu = (code, date) => page.evaluate((c, d) => { const PR = window.SIGH.parcours, p = window.SIGH.store.collection('produits').all().filter((x) => x.code === c)[0]; const r = PR.prixProduitALaDate(p, d); return { absent: r.absent, achat: r.achat, vente: r.vente, version: r.version || null, motif: r.motif || null }; }, code, date);
+    /** Une prescription d'un article (date au choix) : la ligne de facture et la ligne d'ordonnance, ou le refus nommé. */
+    const prescrire = (code, quantite, date, assure) => page.evaluate((c, q, d, a) => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours;
+      const pr = S.collection('produits').all().filter((x) => x.code === c)[0];
+      const pt = S.collection('patients').active().filter((p) => !p.externe && (a ? (p.assureur && PR.carteValide(p, d || new Date().toISOString()) && Number(p.tauxPriseEnCharge) > 0) : !p.assureur))[0];
+      try {
+        const res = PR.prescrire({ patientCode: pt.code, medecin: 'SONDE T5', diagnostic: 'sonde', date: d || undefined, medicaments: [{ produitId: pr.id, quantite: q || 1 }] });
+        const l = (res.facture.lignes || []).filter((x) => x.produitId === pr.id)[0];
+        return { ok: true, factureId: res.facture.id, numero: res.facture.numero, pu: l.prixUnitaire, montant: l.montant, total: res.facture.montantTTC, ordonnance: (res.ordonnance.medicaments[0] || {}).prix };
+      } catch (e) { return { ok: false, erreur: String(e.message || e) }; }
+    }, code, quantite, date || null, !!assure);
+    const factureDe = (id) => page.evaluate((i) => { const f = window.SIGH.store.collection('factures').get(i); const l = (f.lignes || [])[0] || {}; return { total: f.montantTTC, pu: l.prixUnitaire, montant: l.montant, date: f.date, statut: f.statut }; }, id);
+    /** Pose un champ d'une modale (par son nom) et prévient le formulaire. */
+    const remplir = (nom, valeur) => page.evaluate((n, v) => {
+      const c = document.querySelector('.modal-root [name="' + n + '"], [role=dialog] [name="' + n + '"]'); if (!c) return false;
+      if (c.type === 'checkbox') c.checked = !!v; else c.value = String(v);
+      c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); return true;
+    }, nom, valeur);
+    const cliquerDansModale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((x) => x.textContent.trim() === l && x.offsetParent !== null); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+    const fermerModales = () => page.evaluate(() => { [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.textContent.trim() === 'Fermer' || x.textContent.trim() === 'Annuler').forEach((b) => b.click()); });
+    /** Cherche dans le tableau de la page (champ de recherche du tableau), par le CODE : jamais par le rang. */
+    const chercher = async (texte) => { await page.evaluate((t) => { const i = document.querySelector('#page-content input[type=search]'); if (!i) return false; i.value = t; i.dispatchEvent(new Event('input', { bubbles: true })); return true; }, texte); await pause(500); };
+    const toast = () => page.evaluate(() => (document.querySelector('#toast-host') || { innerText: '' }).innerText.replace(/\s+/g, ' '));
+    /** Les commandes d'un panneau, par titre et libellé. */
+    const commandes = (sel) => page.evaluate((s) => [...document.querySelectorAll(s + ' button')].filter((b) => b.offsetParent !== null).map((b) => (b.getAttribute('title') || '') + '|' + b.textContent.trim()), sel);
+    /** Les comptes de la valorisation du stock (les 184 références du jeu) : la somme au CUMP et au prix de vente. Doivent rester identiques. */
+    const valorisation = () => page.evaluate(() => { const S = window.SIGH.store; const ps = S.collection('produits').all().filter((p) => !p.sondeT5 && !/^ZZ/.test(p.code));
+      return { n: ps.length, cump: ps.reduce((n, p) => n + (p.stock || 0) * (p.cump || 0), 0), vente: ps.reduce((n, p) => n + (p.stock || 0) * (p.prixVente || 0), 0), unitaires: ps.reduce((n, p) => n + S.valeurUnitaire(p), 0) }; });
+    return { ENT, suffixe, dates, produit, versions, fiche, prixAu, prescrire, factureDe, remplir, cliquerDansModale, fermerModales, chercher, toast, commandes, valorisation };
+  })();
+
   console.log('\nExécution des parcours fonctionnels…\n');
 
   /* =========================================================================
@@ -21709,6 +21761,244 @@ async function viderMessages(page) {
     await B.restituer();
     const e132 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
     verifier('Aucune erreur JavaScript', e132.length === 0, e132.join(' | '));
+  });
+
+  /* ==========================================================================
+   * Vagues 133 à 137 : LOT T5 (PRD-TARIFS, option B, Direction du 11/11/2026). Les produits dans « Tarifs et prix » : le prix d'achat est VERSIONNÉ par le même moteur que les prix de
+   * prestations (famille PRODUIT), l'onglet Produits est en LECTURE SEULE, chaque ligne porte « Historique de prix », le changement passe par « Référentiel produits » (proposition, Oui/Non,
+   * date d'effet) et par l'import `tarifs-produits` ; RG-02 se tient à l'écriture ; un prix d'achat absent ne se facture jamais à zéro ; une pièce émise garde son prix.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 133 : T5 l’onglet « Produits » de « Tarifs et prix » est en LECTURE SEULE (aucune commande d’écriture, renvoi à « Référentiel produits », prix d’achat en vigueur, prix de vente dérivé, date d’effet, version) et CHAQUE ligne de produit porte « Historique de prix », sur cet onglet comme à « Référentiel produits », pour tout profil qui voit la ligne ; la modale du BON produit liste ses versions dans l’ordre');
+    erreursJS = [];
+    const T = outilsT5, sfx = T.suffixe();
+    await poserSessionServeur(roleImp('da', 'DAF133'));
+    await ouvrir('cfg-tarifs.html');
+    const D = await T.dates();
+    const code = 'ZZT5H' + sfx, autre = 'ZZT5A' + sfx;
+    const p1 = await T.produit({ code: code, designation: 'Médicament à historique sonde T5 ' + sfx, categorie: 'medicament', prixAchat: 500, stockDetail: 4 });
+    const p2 = await T.produit({ code: autre, designation: 'Autre médicament sonde T5 ' + sfx, categorie: 'medicament', prixAchat: 9999, stockDetail: 1 });
+    verifier('Banc : deux produits NEUFS, chacun doté de sa version 1 par la voie de la CRÉATION (origine « creation », pas « reprise »)', p1.creation === true && p2.creation === true && p1.origine === 'creation', JSON.stringify([p1, p2]));
+    /* Un historique à trois versions : v1 en vigueur, v2 validée en un geste pour DEMAIN (à venir), v3 proposée puis REFUSÉE (motif). */
+    const hist = await page.evaluate((c, d) => {
+      const PR = window.SIGH.parcours;
+      const v2 = PR.proposerTarif({ code: c, prixNonAssure: 560, dateEffet: d.demain, motif: 'Sonde 133 : nouveau tarif du fournisseur', valider: true });
+      const v3 = PR.proposerTarif({ code: c, prixNonAssure: 700, dateEffet: d.dans10, motif: 'Sonde 133 : hausse demandée' });
+      const statutV3 = v3.ok ? v3.version.statut : v3.code;   /* l'objet est la fiche VIVANTE : on lit son statut avant la décision */
+      const non = v3.ok ? PR.deciderTarif(v3.version.id, 'non', { motif: 'Trop élevé (sonde 133)' }) : v3;
+      return { v2: v2.ok ? v2.version.statut : v2.code, v3: statutV3, non: non.ok ? non.version.statut : non.code };
+    }, code, D);
+    verifier('Banc : v2 validée en un geste (date de demain), v3 proposée puis refusée avec son motif', hist.v2 === 'valide' && hist.v3 === 'propose' && hist.non === 'refuse', JSON.stringify(hist));
+
+    /* --- 1. L'onglet Produits : lecture seule, renvoi, colonnes ---------------------------------------------------------------------------------------------------- */
+    await cliquer('Produits', '[role="tab"], .tab');
+    await pause(500);
+    const onglet = await page.evaluate(() => {
+      const p = document.querySelector('[data-onglet-produits]'); if (!p) return null;
+      return { entetes: [...p.querySelectorAll('thead th')].map((x) => x.textContent.trim()), renvoi: [...p.querySelectorAll('button')].map((b) => b.textContent.trim()).filter((t) => /Référentiel produits/.test(t)),
+        note: /Lecture seule/.test(p.textContent) };
+    });
+    const cmds = await T.commandes('[data-onglet-produits]');
+    const ecriture = cmds.filter((c) => /Proposer|Changer le prix|Nouveau|Nouvelle|Valider|Archiver|Enregistrer|Supprimer|Oui\b/.test(c) || /^Modifier\|$/.test(c) || /^Modifier\|Modifier$/.test(c));
+    verifier('L’onglet « Produits » est en LECTURE SEULE : aucune commande d’écriture (ni « Proposer », ni « Changer le prix d’achat », ni « Nouveau », ni « Valider », ni crayon de modification) ; seul le renvoi « Modifier dans Référentiel produits » est offert',
+      onglet && onglet.note && ecriture.length === 0 && onglet.renvoi.length === 1 && onglet.renvoi[0] === 'Modifier dans Référentiel produits', JSON.stringify({ onglet, ecriture, cmds: cmds.slice(0, 6) }));
+    verifier('Les colonnes disent le prix d’achat EN VIGUEUR, le prix de vente DÉRIVÉ (RG-02), la date d’effet (« En vigueur depuis »), la version et l’état',
+      ['Prix d’achat en vigueur', 'Prix de vente (dérivé)', 'En vigueur depuis', 'Version', 'État'].every((c) => onglet.entetes.indexOf(c) >= 0), JSON.stringify(onglet.entetes));
+
+    /* --- 2. Le même nombre de lignes et de boutons « Historique de prix » ---------------------------------------------------------------------------------------- */
+    const compte = async () => page.evaluate(() => { const p = document.querySelector('[data-onglet-produits]') || document.querySelector('#page-content');
+      return { lignes: p.querySelectorAll('tbody tr').length, boutons: p.querySelectorAll('tbody [data-historique-prix]').length, titres: [...p.querySelectorAll('tbody [data-historique-prix]')].every((b) => b.getAttribute('title') === 'Historique de prix') }; });
+    const c1 = await compte();
+    verifier('CHAQUE ligne affichée porte son bouton « Historique de prix » : autant de boutons que de lignes sur la page (quinze), tous au même titre', c1.lignes === 15 && c1.boutons === c1.lignes && c1.titres, JSON.stringify(c1));
+    await T.chercher('ZZT5');
+    const c2 = await compte();
+    const codesCherches = await page.evaluate(() => [...document.querySelectorAll('[data-onglet-produits] tbody [data-historique-prix]')].map((b) => b.getAttribute('data-historique-prix')).sort());
+    verifier('Recherché par le code : exactement les deux produits de sonde, chacun avec SON bouton (le bouton de la ligne porte le code de son produit)', c2.lignes === 2 && c2.boutons === 2 && codesCherches.join() === [autre, code].sort().join(), JSON.stringify({ c2, codesCherches }));
+    await T.chercher(code);
+    const ligne = await page.evaluate(() => { const tr = document.querySelector('[data-onglet-produits] tbody tr'); return tr ? tr.innerText.replace(/\s+/g, ' ') : null; });
+    verifier('La ligne du produit dit son prix d’achat (500), son prix de vente dérivé (500, « Sans marge »), sa version (v1) et l’état « Changement à venir » (v2 validée pour demain)', /500/.test(ligne) && /Sans marge/.test(ligne) && /v1/.test(ligne) && /Changement à venir/.test(ligne), ligne);
+
+    /* --- 3. La modale du BON produit : versions dans l'ordre, la version en vigueur désignée -------------------------------------------------------------------- */
+    const ouvrirHist = async (c) => { await page.evaluate((x) => { const b = document.querySelector('[data-historique-prix="' + x + '"]'); if (b) b.click(); }, c); await pause(600); };
+    const lireModale = () => page.evaluate(() => {
+      const m = document.querySelector('[data-historique-produit]'); if (!m) return null;
+      const lignes = [...m.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map((td) => td.innerText.replace(/\s+/g, ' ').trim()));
+      const dlg = m.closest('[role=dialog], .modal-root') || document.body;
+      return { produit: m.getAttribute('data-historique-produit'), titre: (dlg.querySelector('h2, h3, [data-modal-title]') || dlg).innerText.slice(0, 80), entetes: [...m.querySelectorAll('thead th')].map((x) => x.textContent.trim()), lignes: lignes, texte: m.innerText.replace(/\s+/g, ' ') };
+    });
+    await ouvrirHist(code);
+    const m1 = await lireModale();
+    const ordre = m1 ? m1.lignes.map((l) => l[0]).join() : '';
+    verifier('La modale « Historique de prix » du BON produit s’ouvre (le code est celui de la ligne cliquée, jamais celui d’un autre) et liste TOUTES ses versions, de la plus récente à la plus ancienne : v3, v2, v1',
+      m1 && m1.produit === code && /Historique de prix/.test(m1.titre) && ordre === 'v3,v2,v1' && !/9\s?999/.test(m1.texte), JSON.stringify(m1));
+    verifier('Chaque version dit son prix d’achat et son prix de vente dérivé (560/560, 700/700, 500/500), son statut (Refusée, À venir, En vigueur : la version en vigueur est v1), son auteur, sa décision et son motif',
+      m1 && m1.lignes[2].some((c) => /En vigueur/.test(c)) && m1.lignes[1].some((c) => /À venir/.test(c)) && m1.lignes[0].some((c) => /Refusée/.test(c))
+      && /560/.test(m1.lignes[1].join(' ')) && /700/.test(m1.lignes[0].join(' ')) && /500/.test(m1.lignes[2].join(' ')) && /Trop élevé \(sonde 133\)/.test(m1.lignes[0].join(' ')) && /DAF133/.test(m1.lignes[1].join(' ')) && /Création de l’article/.test(m1.lignes[2].join(' ')),
+      JSON.stringify(m1 && m1.lignes));
+    verifier('Les colonnes de la modale : version, date d’effet, prix d’achat, prix de vente (dérivé), statut, proposée par, décision, motif, origine, lot d’import',
+      ['Version', 'Date d’effet', 'Prix d’achat', 'Prix de vente (dérivé)', 'Statut', 'Proposée par', 'Décision', 'Motif', 'Origine', 'Lot d’import'].every((c) => m1.entetes.indexOf(c) >= 0), JSON.stringify(m1.entetes));
+    await T.fermerModales(); await pause(300);
+    await T.chercher(autre);
+    await ouvrirHist(autre);
+    const m2 = await lireModale();
+    verifier('Le bouton de l’AUTRE produit ouvre SON historique (une seule version, 9 999), pas celui du premier : on cherche par le code, jamais par le rang', m2 && m2.produit === autre && m2.lignes.length === 1 && /9\s?999/.test(m2.texte) && !/Trop élevé/.test(m2.texte), JSON.stringify(m2));
+    await T.fermerModales(); await pause(300);
+
+    /* --- 4. Le renvoi mène à « Référentiel produits » ; même nombre de lignes et de boutons là-bas, et la modale y est la même ------------------------------------- */
+    await T.chercher('');
+    await cliquer('Modifier dans Référentiel produits', 'button');
+    await pause(1500);
+    verifier('Le renvoi « Modifier dans Référentiel produits » ouvre l’écran des produits', /m6-produits/.test(await page.evaluate(() => location.pathname)), await page.evaluate(() => location.pathname));
+    await ouvrir('m6-produits.html');
+    const c3 = await compte();
+    verifier('À « Référentiel produits » aussi : autant de boutons « Historique de prix » que de lignes affichées', c3.lignes >= 10 && c3.boutons === c3.lignes && c3.titres, JSON.stringify(c3));
+    await T.chercher(code);
+    const c4 = await compte();
+    await ouvrirHist(code);
+    const m3 = await lireModale();
+    verifier('À « Référentiel produits », le bouton du produit cherché par son code ouvre la MÊME modale : v3, v2, v1, la version v1 en vigueur', c4.lignes === 1 && c4.boutons === 1 && m3 && m3.produit === code && m3.lignes.map((l) => l[0]).join() === 'v3,v2,v1' && m3.lignes[2].some((c) => /En vigueur/.test(c)), JSON.stringify({ c4, m3: m3 && m3.lignes }));
+    await T.fermerModales(); await pause(300);
+
+    /* --- 5. Le bouton est une LECTURE : offert à tout profil qui voit la ligne, jamais conditionné à un nom de rôle ------------------------------------------------ */
+    for (const role of ['comptable', 'direction', 'medecin']) {
+      await poserSessionServeur(roleImp(role, 'LECT133'));
+      await ouvrir('m6-produits.html');
+      await T.chercher(code);
+      const r = await compte();
+      const cm = await T.commandes('#page-content tbody');
+      verifier('Profil « ' + role + ' » (M6 en lecture) : la ligne porte son bouton « Historique de prix », aucune commande d’écriture (ni « Changer le prix d’achat », ni crayon)',
+        r.lignes === 1 && r.boutons === 1 && !cm.some((c) => /Changer le prix|Modifier|Archiver/.test(c)), JSON.stringify({ r, cm }));
+    }
+    const e133 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e133.length === 0, e133.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 134 : T5 le changement du prix d’achat d’un MÉDICAMENT se fait à « Référentiel produits » : création avec sa version 1 (RG-02 refusé en le nommant), proposition du gestionnaire de stock, alerte, Oui de la DAF, prix de vente DÉRIVÉ qui suit, ancien prix intact pour la pièce émise avant, date d’effet à la date de la PIÈCE, Non avec motif ; la fiche ne s’écrase plus ; CUMP et valorisation inchangés');
+    erreursJS = [];
+    const T = outilsT5, sfx = T.suffixe();
+    const code = 'ZZT5M' + sfx;
+    await poserSessionServeur(roleImp('stock', 'STOCK134'));
+    await ouvrir('m6-produits.html');
+    const D = await T.dates();
+    const val0 = await T.valorisation();
+
+    /* --- 1. La CRÉATION à l'écran : RG-02 refusé en nommant, puis la fiche naît avec sa version 1 (même voie que tout changement de prix) ----------------------------------- */
+    const ouvrirCreation = async () => { await cliquer('Nouveau', 'button'); await pause(700); };
+    await ouvrirCreation();
+    await T.remplir('code', code); await T.remplir('designation', 'Médicament de sonde 134 ' + sfx); await T.remplir('unite', 'Boîte');
+    await T.remplir('prixAchat', 200); await T.remplir('prixVente', 260); await T.remplir('seuilAlerte', 5);
+    await T.cliquerDansModale('Créer');
+    await pause(500);
+    const refusRg02 = await T.toast();
+    const apresRefus = await T.fiche(code);
+    verifier('RG-02 À L’ÉCRITURE (corrige E846) : un médicament posé avec un prix de vente libre (200 / 260) est REFUSÉ en le nommant, et aucune fiche n’est écrite', /RG-02/.test(refusRg02) && apresRefus === null, refusRg02.slice(0, 200));
+    await T.remplir('prixVente', ''); 
+    await T.cliquerDansModale('Créer');
+    await pause(900);
+    const f1 = await T.fiche(code), v1 = await T.versions(code);
+    verifier('Sans prix de vente, la fiche naît ET sa version 1 avec elle : origine « creation », validée d’emblée (aucun prix antérieur à changer), prix d’achat 200, « depuis l’origine » (sans date d’effet : une pièce saisie après coup se tarife à partir d’elle) ; la fiche porte 200 / 200 (le prix de vente d’un médicament EST son prix d’achat)',
+      f1 && f1.prixAchat === 200 && f1.prixVente === 200 && v1.length === 1 && v1[0].statut === 'valide' && v1[0].origine === 'creation' && v1[0].achat === 200 && v1[0].dateEffet === null && /Première version/.test(v1[0].motifDecision || ''), JSON.stringify({ f1, v1 }));
+    await page.evaluate((c) => { const S = window.SIGH.store; const p = S.collection('produits').all().filter((x) => x.code === c)[0]; S.collection('produits').update(p.id, { stockDetail: 30, stock: 30 }); }, code);
+
+    /* --- 2. Une pièce ÉMISE avant le changement ------------------------------------------------------------------------------------------------------------------- */
+    const avant = await T.prescrire(code, 2, null, false);
+    verifier('La pièce émise avant le changement : prix d’achat 200, total 400', avant.ok && avant.pu === 200 && avant.montant === 400 && avant.ordonnance === 200, JSON.stringify(avant));
+
+    /* --- 3. La fiche ne s'écrase plus : l'édition lit le prix, le moteur refuse l'écriture directe -------------------------------------------------------------------- */
+    const direct = await page.evaluate((c) => { const S = window.SIGH.store; const p = S.collection('produits').all().filter((x) => x.code === c)[0];
+      const a = S.collection('produits').update(p.id, { prixAchat: 999 }), b = S.collection('produits').update(p.id, { prixVente: 999 }), cc = S.collection('produits').update(p.id, { seuilAlerte: 7 });
+      return { achat: a === null, vente: b === null, seuilOk: !!cc, fiche: { achat: p.prixAchat, vente: p.prixVente } }; }, code);
+    verifier('Le moteur refuse l’écriture DIRECTE du prix sur la fiche (achat 999, vente 999) mais laisse les autres champs (seuil) : le prix ne s’écrase plus', direct.achat && direct.vente && direct.seuilOk && direct.fiche.achat === 200 && direct.fiche.vente === 200, JSON.stringify(direct));
+    await T.chercher(code);
+    await page.evaluate((c) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(c) >= 0); const b = tr && [...tr.querySelectorAll('button')].find((x) => x.getAttribute('title') === 'Modifier'); if (b) b.click(); }, code);
+    await pause(800);
+    const edition = await page.evaluate(() => { const g = (n) => document.querySelector('.modal-root [name="' + n + '"], [role=dialog] [name="' + n + '"]'); const a = g('prixAchat'), v = g('prixVente');
+      return { achat: a ? { ro: a.hasAttribute('readonly'), val: a.value } : null, vente: v ? { ro: v.hasAttribute('readonly'), val: v.value } : null }; });
+    verifier('À la MODIFICATION de la fiche, le prix d’achat et le prix de vente sont en LECTURE SEULE (200 / 200) : « Changer le prix d’achat » est le seul geste', edition.achat && edition.achat.ro && edition.achat.val === '200' && edition.vente && edition.vente.ro, JSON.stringify(edition));
+    await T.fermerModales(); await pause(300);
+
+    /* --- 4. La PROPOSITION du gestionnaire de stock (date d'effet de demain : une pièce porte déjà l'article aujourd'hui) -------------------------------------------- */
+    await T.chercher(code);
+    const cmdLigne = await T.commandes('#page-content tbody');
+    verifier('Le gestionnaire de stock voit « Changer le prix d’achat » ET « Historique de prix » sur la ligne, mais PAS « Valider » (il ne décide pas)', cmdLigne.some((c) => /Changer le prix d’achat/.test(c)) && cmdLigne.some((c) => /Historique de prix/.test(c)), JSON.stringify(cmdLigne));
+    await page.evaluate((c) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(c) >= 0); const b = tr && [...tr.querySelectorAll('button')].find((x) => x.getAttribute('title') === 'Changer le prix d’achat'); if (b) b.click(); }, code);
+    await pause(800);
+    const boutonsModale = await page.evaluate(() => [...document.querySelectorAll('.modal-root button, [role=dialog] button')].map((b) => b.textContent.trim()).filter(Boolean));
+    verifier('La modale « Changer le prix d’achat » offre « Enregistrer » (proposition) et PAS « Valider » au gestionnaire de stock', boutonsModale.indexOf('Enregistrer') >= 0 && boutonsModale.indexOf('Valider') < 0, JSON.stringify(boutonsModale));
+    await T.remplir('prixNonAssure', 260); await T.remplir('dateEffet', D.demain); await T.remplir('motif', 'Sonde 134 : nouveau tarif du fournisseur');
+    await T.cliquerDansModale('Enregistrer');
+    await pause(900);
+    const v2 = await T.versions(code), f2 = await T.fiche(code);
+    verifier('Sa proposition est une version « propose » (260, effective demain), la fiche reste à 200 / 200 : une proposition ne change RIEN',
+      v2.length === 2 && v2[1].statut === 'propose' && v2[1].achat === 260 && v2[1].dateEffet === D.demain && f2.prixAchat === 200 && f2.prixVente === 200, JSON.stringify({ v2, f2 }));
+    const alerte = await page.evaluate(() => window.SIGH.notifications.collecter({ poste: 'da', detaille: true }).filter((n) => n.source === 'prix_a_valider').length);
+    const deuxieme = await page.evaluate((c, d) => window.SIGH.parcours.proposerTarif({ code: c, prixNonAssure: 270, dateEffet: d.apres, motif: 'Sonde 134 : seconde proposition' }), code, D);
+    verifier('L’alerte Oui/Non part à la DAF (famille PRODUIT : le même moteur d’alerte que les prestations) ; une seconde proposition est refusée en nommant (CHANGEMENT_EN_ATTENTE)', alerte >= 1 && deuxieme.code === 'CHANGEMENT_EN_ATTENTE', JSON.stringify({ alerte, deuxieme: deuxieme.code }));
+    const refusStock = await page.evaluate((id) => window.SIGH.parcours.deciderTarif(id, 'oui'), v2[1].id);
+    verifier('Le gestionnaire de stock ne peut pas décider : le moteur refuse (VALIDATION_RESERVEE)', refusStock.ok === false && refusStock.code === 'VALIDATION_RESERVEE', JSON.stringify(refusStock));
+
+    /* --- 5. Le OUI de la DAF, à l'écran des alertes ----------------------------------------------------------------------------------------------------------------------- */
+    await poserSessionServeur(roleImp('da', 'DAF134'));
+    await ouvrir('cfg-tarifs.html');
+    await cliquer('Alertes', '[role="tab"], .tab');
+    await pause(500);
+    await T.chercher(code);
+    const ligneAlerte = await page.evaluate((c) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(c) >= 0); return tr ? tr.innerText.replace(/\s+/g, ' ') : null; }, code);
+    verifier('L’onglet Alertes montre la proposition du produit : ancien prix 200, nouveau 260, variation +30 %, date d’effet de demain, libellé « prix d’achat »', ligneAlerte && /200/.test(ligneAlerte) && /260/.test(ligneAlerte) && /30(,0)? %/.test(ligneAlerte) && /prix d’achat/.test(ligneAlerte), ligneAlerte);
+    await page.evaluate((c) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(c) >= 0); const b = tr && [...tr.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Oui'); if (b) b.click(); }, code);
+    await pause(600);
+    await T.cliquerDansModale('Oui, valider');
+    await pause(900);
+    const v3 = await T.versions(code), f3 = await T.fiche(code);
+    verifier('Le Oui de la DAF valide la version : 260, décidée par la DAF (rôle tracé) ; la fiche porte encore 200 / 200 tant que la date d’effet n’est pas venue', v3[1].statut === 'valide' && v3[1].roleDecision === 'da' && f3.prixAchat === 200 && f3.prixVente === 200, JSON.stringify({ v3, f3 }));
+    const D2 = await T.dates();
+    const aujourdhui = await T.prixAu(code, D2.aujourdhui + 'T10:00:00'), demain = await T.prixAu(code, D2.demain + 'T10:00:00'), hier = await T.prixAu(code, D2.hier + 'T10:00:00');
+    verifier('RÉSOLUTION À LA DATE : 200 aujourd’hui et hier, 260 demain ; le prix de VENTE est DÉRIVÉ du prix d’achat à chacune de ces dates (200, 200, 260 : jamais de marge)',
+      aujourdhui.achat === 200 && aujourdhui.vente === 200 && hier.achat === 200 && demain.achat === 260 && demain.vente === 260 && demain.version === 2, JSON.stringify({ aujourdhui, hier, demain }));
+
+    /* --- 6. Une pièce se tarife à la date de la PIÈCE ; la pièce d'avant ne bouge pas ------------------------------------------------------------------------------ */
+    const pieceDemain = await T.prescrire(code, 1, D2.demain + 'T10:00:00', false);
+    const pieceAujourdhui = await T.prescrire(code, 1, null, false);
+    const pieceHier = await T.prescrire(code, 1, D2.hier + 'T10:00:00', false);
+    verifier('Une pièce DATÉE de demain est facturée 260 (version 2), une pièce d’aujourd’hui 200, une pièce saisie après coup datée d’hier 200 (la date de la PIÈCE décide, jamais l’horloge ni la fiche)',
+      pieceDemain.ok && pieceDemain.pu === 260 && pieceAujourdhui.ok && pieceAujourdhui.pu === 200 && pieceHier.ok && pieceHier.pu === 200, JSON.stringify({ pieceDemain, pieceAujourdhui, pieceHier }));
+    const apres = await T.factureDe(avant.factureId);
+    verifier('La pièce émise AVANT le changement est INTACTE au franc près (prix 200, montant 400, total 400) : un changement de prix ne touche jamais une pièce déjà émise', apres.pu === 200 && apres.montant === 400 && apres.total === 400, JSON.stringify(apres));
+    /* le contrôle d'usage : une date d'effet qu'une pièce a déjà dépassée est refusée en nommant la pièce */
+    const usage = await page.evaluate((c, d) => window.SIGH.parcours.proposerTarif({ code: c, prixNonAssure: 300, dateEffet: d.demain, motif: 'Sonde 134 : date déjà utilisée' }), code, D2);
+    verifier('Une date d’effet que la facturation a déjà dépassée est refusée en nommant la pièce (TARIF_DEJA_UTILISE) : la pièce de demain porte déjà l’article', usage.ok === false && usage.code === 'TARIF_DEJA_UTILISE' && /porte déjà/.test(usage.motif), JSON.stringify(usage));
+
+    /* --- 7. L'horloge passe la date d'effet : la fiche suit (projection du jour), le CUMP n'a pas bougé --------------------------------------------------------------- */
+    const bascule = await page.evaluate(async (c) => {
+      const S = window.SIGH.store, fiche = () => S.collection('produits').all().filter((x) => x.code === c)[0];
+      const av = { achat: fiche().prixAchat, vente: fiche().prixVente, cump: fiche().cump };
+      window.__SIGH_HORLOGE.decaler(86400000);
+      let ap;
+      try { S.projeterTarifs(); ap = { achat: fiche().prixAchat, vente: fiche().prixVente, cump: fiche().cump, valeurSortie: window.SIGH.parcours.valoriserSortie(fiche(), 2), parite: S.paritesTarifs().length }; }
+      finally { window.__SIGH_HORLOGE.decaler(-86400000); }
+      S.projeterTarifs();
+      return { av: av, ap: ap, retour: { achat: fiche().prixAchat, vente: fiche().prixVente } };
+    }, code);
+    verifier('Le jour dit, la fiche suit sans rechargement (200 / 200 puis 260 / 260), le CUMP n’a PAS bougé (200) et la valeur d’une sortie le dit (prix de vente 260, CUMP 200) ; l’horloge revenue, tout revient',
+      bascule.av.achat === 200 && bascule.ap.achat === 260 && bascule.ap.vente === 260 && bascule.ap.cump === 200 && bascule.ap.valeurSortie.valeurPrixVente === 520 && bascule.ap.valeurSortie.valeurCump === 400 && bascule.ap.parite === 0 && bascule.retour.achat === 200, JSON.stringify(bascule));
+
+    /* --- 8. Le NON de la DAF : motif obligatoire, aucun changement ----------------------------------------------------------------------------------------------------- */
+    const non = await page.evaluate((c, d) => { const PR = window.SIGH.parcours;
+      const p = PR.proposerTarif({ code: c, prixNonAssure: 330, dateEffet: d.dans10, motif: 'Sonde 134 : hausse demandée' });
+      const sansMotif = p.ok ? PR.deciderTarif(p.version.id, 'non', {}) : p;
+      const avecMotif = p.ok ? PR.deciderTarif(p.version.id, 'non', { motif: 'Non : trop élevé (sonde 134)' }) : p;
+      return { propose: p.ok, sansMotif: sansMotif.code, avecMotif: avecMotif.ok ? avecMotif.version.statut : avecMotif.code }; }, code, D2);
+    const f4 = await T.fiche(code), v4 = await T.versions(code);
+    verifier('Un Non sans motif est refusé (MOTIF_REQUIS) ; avec son motif la version est « refuse », lisible à l’historique, et le prix en vigueur n’a pas changé', non.sansMotif === 'MOTIF_REQUIS' && non.avecMotif === 'refuse' && v4.length === 3 && v4[2].statut === 'refuse' && f4.prixAchat === 200, JSON.stringify({ non, v4, f4 }));
+
+    /* --- 9. RG-02 au moteur, et la valorisation du stock n'a pas bougé ------------------------------------------------------------------------------------------------ */
+    const marge = await page.evaluate((c, d) => { const PR = window.SIGH.parcours; const r = PR.proposerTarif({ code: c, prixNonAssure: 400, prixVente: 480, dateEffet: d.dans10, motif: 'Sonde 134 : marge' }); return { ok: r.ok, code: r.code, motif: r.motif, geste: r.geste }; }, code, D2);
+    verifier('RG-02 au MOTEUR : proposer un prix de vente différent du prix d’achat pour un médicament est refusé en le nommant (RG02_MARGE), avec son geste', marge.ok === false && marge.code === 'RG02_MARGE' && /RG-02/.test(marge.motif) && !!marge.geste, JSON.stringify(marge));
+    const val1 = await T.valorisation();
+    verifier('La valorisation du stock des 184 références du jeu est INCHANGÉE par tout ce scénario (somme au CUMP, au prix de vente, valeurs unitaires)', val0.n === val1.n && val0.cump === val1.cump && val0.vente === val1.vente && val0.unitaires === val1.unitaires, JSON.stringify({ val0, val1 }));
+    const e134 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e134.length === 0, e134.join(' | '));
   });
 
   await browser.close();

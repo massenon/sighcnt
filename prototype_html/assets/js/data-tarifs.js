@@ -416,10 +416,11 @@
     function egal(a, b) { return (a == null && b == null) || a === b; }
 
     function indexer(tarifs, versions) {
-      var h = { tarifs: tarifs, versions: versions, parCode: {}, parActe: {}, parGrille: {}, parAnalyse: {}, vers: {} };
+      var h = { tarifs: tarifs, versions: versions, parCode: {}, parActe: {}, parGrille: {}, parAnalyse: {}, parProduit: {}, vers: {} };
       tarifs.forEach(function (p) {
         if (p.statut === 'archive') return;
         h.parCode[p.code] = p;
+        if (p.famille === 'PRODUIT') h.parProduit[p.code] = p;
         if (p.codeActe) h.parActe[p.codeActe] = p;
         if (p.codeGrille) h.parGrille[p.codeGrille] = p;
         if (p.codeAnalyse) h.parAnalyse[p.codeAnalyse] = p;
@@ -522,6 +523,48 @@
       poser('prixNonAssure', s.na); poser('nonCouvert', s.nc); poser('prixAssure', s.nc ? null : s.pa);
       poser('prixAValider', s.na == null || (s.pa == null && !s.nc && p.assurable !== false));
       return Object.keys(c).length ? c : null;
+    }
+
+    /* ---- Les PRODUITS (PRD-TARIFS, lot T5) : le MÊME moteur, la famille `PRODUIT` -------------------------------------------------------------------------------
+       Le code de la prestation EST le code de l'article. La colonne « non assuré » d'une version porte le PRIX D'ACHAT (un produit n'a qu'un prix : la colonne assurée vaut
+       `unique`) ; un prix de vente propre n'existe que hors médicament et vit sur la version (`prixVente`). RG-02 : le prix de vente d'un MÉDICAMENT est son prix d'achat, jamais
+       une marge ; il se DÉRIVE à la lecture, de la catégorie de la fiche et de la version, il ne se saisit pas. Un prix d'achat absent est un `manquant` : l'article ne se facture pas. */
+    var CATEGORIE_SANS_MARGE = 'medicament';
+    function prixAchatDe(v) { return v && v.etatNonAssure !== 'manquant' && v.prixNonAssure != null ? v.prixNonAssure : null; }
+    function prixVenteProduit(categorie, v) {
+      var achat = prixAchatDe(v);
+      if (achat == null) return null;
+      if (categorie === CATEGORIE_SANS_MARGE) return achat;
+      return v.prixVente != null ? v.prixVente : achat;
+    }
+    /** Ce que la fiche `produits` doit porter aujourd'hui : le correctif des seuls champs de PRIX qui diffèrent. Un prix absent ne corrige rien (la fiche garde son marquage « à valoriser »). */
+    function correctifProduit(doc, p, s) {
+      var achat = s.na;
+      if (achat == null) return null;
+      var c = {}, vente = prixVenteProduit(doc.categorie, s.vrs);
+      if (doc.prixAchat !== achat) c.prixAchat = achat;
+      if (doc.prixVente !== vente) c.prixVente = vente;
+      return Object.keys(c).length ? c : null;
+    }
+    /** La version d'un produit à la reprise d'une fiche existante (ou à la semence) : le prix d'achat TENU AUJOURD'HUI. Un prix absent ou nul n'est jamais un tarif : `manquant`. */
+    function versionProduit(pr, n, origine, o) {
+      o = o || {};
+      var achat = typeof pr.prixAchat === 'number' && pr.prixAchat > 0 ? pr.prixAchat : null;
+      var e = { na: achat, etatNA: achat == null ? 'manquant' : 'montant', pa: null, etatA: 'unique' };
+      var v = creerVersion(pr.code, n, e, { origine: origine, dateEffet: o.dateEffet || null, motif: o.motif || null });
+      if (achat != null && pr.categorie !== CATEGORIE_SANS_MARGE && typeof pr.prixVente === 'number' && pr.prixVente > 0 && pr.prixVente !== achat) v.prixVente = pr.prixVente;
+      if (pr.valorisationProvisoire && pr.sourceValorisation) v.source = pr.sourceValorisation;
+      return v;
+    }
+    /** Les produits `produits` (actifs) deviennent des prestations de la famille PRODUIT, chacune avec sa version 1. Rend { tarifs, versions }. */
+    function migrerProduits(produits, o) {
+      var tarifs = [], versions = [];
+      (produits || []).forEach(function (pr) {
+        if (!pr || pr.statut === 'archive' || !pr.code) return;
+        tarifs.push({ id: pr.code, code: pr.code, libelle: pr.designation || pr.code, famille: 'PRODUIT', statut: 'actif' });
+        versions.push(versionProduit(pr, 1, (o && o.origine) || 'migration', o));
+      });
+      return { tarifs: tarifs, versions: versions };
     }
 
     /* ---- Migration : les trois listes d'avant deviennent UN référentiel, sans changer un prix facturé aujourd'hui ----------------------------------- */
@@ -639,6 +682,7 @@
       brancher: brancher, invalider: invalider, modeSemence: modeSemence, lire: lire, indexer: indexer, enVigueur: enVigueur, resoudre: resoudre,
       instantane: instantane, entreeGrille: entreeGrille, jourDe: jourDe, migrer: migrer, normLibelle: normLib,
       correctifActe: correctifActe, correctifAnalyse: correctifAnalyse, correctifGrille: correctifGrille,
+      correctifProduit: correctifProduit, prixVenteProduit: prixVenteProduit, prixAchatDe: prixAchatDe, versionProduit: versionProduit, migrerProduits: migrerProduits, CATEGORIE_SANS_MARGE: CATEGORIE_SANS_MARGE,
       semence: null, DATE_SEMENCE: DATE_SEMENCE, MOTIF_GRILLE_ANALYSES: MOTIF_GRILLE_ANALYSES, MOTIF_NC: MOTIF_NC,
     };
   })();

@@ -478,8 +478,10 @@
                    Lire l'API plutôt que la supposer : p.id valait undefined, et
                    le combo retombait silencieusement sur « Choisir un article ». */
                 var p = S.collection('produits').insert(v).record;
+                /* La version 1 du prix d'achat naît avec la fiche, par la MÊME voie que tout changement de prix (PRD-TARIFS, lot T5). */
+                var rp = global.SIGH.parcours.creerPrixProduit(p, { source: 'Nouvel article saisi à l’écran des achats' });
                 ma.close();
-                U.toast('Article ' + p.code + ' créé au référentiel.', { type: 'success' });
+                U.toast('Article ' + p.code + ' créé au référentiel.', { type: rp.ok ? 'success' : 'warning', detail: rp.ok ? (p.prixAchat > 0 ? null : 'à valoriser : sans prix d’achat, l’article ne se facture pas') : 'le prix d’achat n’a pas pu être versionné : ' + rp.motif });
                 if (apres) apres(p);
               },
             }),

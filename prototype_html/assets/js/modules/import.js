@@ -260,7 +260,7 @@
       }
       return pb;
     },
-    ecrire: function (lignes, ecrireFiche, lot) {
+    ecrire: function (lignes, ecrireFiche, lot, ctx, declarer) {
       var jour = aujourdhuiIso(), groupes = {}, ordre = [];
       lignes.forEach(function (l) {
         var k = C.norm(l.v.code);
@@ -281,6 +281,8 @@
           stockGros: total, stockDetail: 0, stock: total, quantiteImportee: total,
           emplacement: p.emplacement || '', fournisseur: p.fournisseur || '', valoriseSage: false,
         }, prix ? {} : { valorisationProvisoire: true, sourceValorisation: 'Prix de revient absent du fichier d’import ' + lot.reference + ' : à valoriser' }));
+        /* La version 1 du prix d'achat naît avec la fiche (lot T5) : le prix de revient du fichier, ou `manquant` (l'article se crée « à valoriser » et ne se facture pas). */
+        poserPrixInitial(prod, 'grand-stock', lot, declarer);
         ls.forEach(function (x) {
           if (x.lot) {
             var jours = joursEntre(jour, x.peremption);
@@ -512,6 +514,34 @@
     }
     return o;
   }
+  /** Les deux jeux de PRIX (prestations, prix d'achat) s'annulent de la même façon : on RETIRE les propositions du lot, on archive les identités qu'il a créées ; une version déjà validée ne s'efface pas. */
+  function dependancesLotPrix(lot) {
+    if (lot.ecrits.some(function (e) { return e.collection === 'actes'; })) {
+      return { code: 'LOT_ANCIEN', motif: 'ce lot a écrit l’ancienne liste des actes, devenue une projection de lecture du référentiel de prix', geste: 'Corrigez le prix à l’écran « Tarifs et prix » : une version se remplace par une nouvelle version.' };
+    }
+    var valide = lot.ecrits.filter(function (e) { return e.collection === 'versionsTarif'; }).map(function (e) { return S.collection('versionsTarif').get(e.id); })
+      .filter(function (x) { return x && x.statut === 'valide'; })[0];
+    return valide ? { code: 'VERSION_DEJA_VALIDEE', motif: 'la version ' + valide.id + ' est déjà validée : une décision se remplace par une nouvelle version, elle ne s’efface pas',
+      geste: 'Proposez une nouvelle version à l’écran « Tarifs et prix » (ou « Changer le prix d’achat » pour un produit) ; seules les propositions encore en attente se retirent avec leur lot.' } : null;
+  }
+  function annulerLotPrix(lot, motif) {
+    var PR_ = global.SIGH.parcours, retirees = 0, archivees = 0;
+    for (var i = 0; i < lot.ecrits.length; i++) {
+      var e = lot.ecrits[i];
+      if (e.collection !== 'versionsTarif') continue;
+      var v = S.collection('versionsTarif').get(e.id);
+      if (!v || v.statut !== 'propose') continue;
+      var r = PR_.retirerProposition(e.id, 'Lot ' + lot.reference + ' annulé' + (motif ? ' : ' + motif : ''));
+      if (!r.ok) return { ok: false, code: r.code, motif: r.motif, geste: r.geste };
+      retirees++;
+    }
+    lot.ecrits.forEach(function (e) {
+      if (e.collection !== 'tarifs') return;
+      var vivantes = S.collection('versionsTarif').all().filter(function (x) { return x.code === e.id && (x.statut === 'propose' || x.statut === 'valide'); });
+      if (!vivantes.length && S.collection('tarifs').archive(e.id, 'Annulation du lot ' + lot.reference)) archivees++;
+    });
+    return { ok: true, archives: retirees + archivees };
+  }
   JEUX.push({
     id: 'tarifs', ecran: 'imp-actes', libelle: 'Importation des tarifs et prix', module: 'IMP', statut: 'supporte',
     description: 'Prix des prestations (consultations, actes, soins, analyses, imagerie, certificats) à deux colonnes, avec les trois états de la colonne assurée, une date d’effet et la décision Oui ou Non : chaque ligne qui change devient une version datée, jamais un écrasement.',
@@ -544,6 +574,10 @@
       function pb_(colonne, valeur, code, niveau, motif, geste) { pb.push({ colonne: colonne, valeur: valeur, code: code, niveau: niveau, motif: motif, geste: geste }); }
       if (!ctx.h) { pb_('Code', v.code, 'REFERENTIEL_ABSENT', 'refus', 'le référentiel de prix n’est pas chargé', 'Rechargez la page.'); return pb; }
       var p = ctx.h.parCode[v.code], na = v.prixNonAssure, pa = v.prixAssure;
+      if (p && p.famille === 'PRODUIT') {
+        pb_('Code', v.code, 'CODE_PRODUIT', 'refus', 'le code « ' + v.code + ' » est celui d’un produit : son prix d’achat se change par le jeu « Importation des prix d’achat », jamais par les prix de prestations', 'Placez cette ligne dans le fichier du jeu « Importation des prix d’achat ».');
+        return pb;
+      }
       var s = p ? D.TARIFS.instantane(ctx.h, p, v.dateEffet) : null;
       var extra = { ancien: s ? prixAffiche(s.na, s.etatAssure, s.pa) : 'nouvelle prestation', nouveau: prixAffiche(na.etat === 'montant' ? na.montant : null, pa.etat, pa.montant), variation: '', decision: '' };
       sc.extras[n] = extra;
@@ -603,33 +637,120 @@
       });
     },
     /* Un lot de prix s'annule en RETIRANT ses propositions (RG-14, rien ne se supprime) ; une version déjà validée se remplace par une nouvelle version, elle ne s'efface pas. */
-    dependances: function (lot) {
-      if (lot.ecrits.some(function (e) { return e.collection === 'actes'; })) {
-        return { code: 'LOT_ANCIEN', motif: 'ce lot a écrit l’ancienne liste des actes, devenue une projection de lecture du référentiel de prix', geste: 'Corrigez le prix à l’écran « Tarifs et prix » : une version se remplace par une nouvelle version.' };
-      }
-      var valide = lot.ecrits.filter(function (e) { return e.collection === 'versionsTarif'; }).map(function (e) { return S.collection('versionsTarif').get(e.id); })
-        .filter(function (x) { return x && x.statut === 'valide'; })[0];
-      return valide ? { code: 'VERSION_DEJA_VALIDEE', motif: 'la version ' + valide.id + ' est déjà validée : une décision se remplace par une nouvelle version, elle ne s’efface pas',
-        geste: 'Proposez une nouvelle version à l’écran « Tarifs et prix » ; seules les propositions encore en attente se retirent avec leur lot.' } : null;
+    dependances: dependancesLotPrix,
+    annuler: annulerLotPrix,
+  });
+
+  /* --- 4 bis. PRIX D'ACHAT DES PRODUITS (PRD-TARIFS, lot T5) ------------------------------------------------------------------------ *
+   * Le prix d'achat d'un article CONNU se versionne par date d'effet : le MÊME chemin que les prix de prestations (`PR.proposerTarif`, famille PRODUIT), jamais un écrasement de la
+   * fiche. Clé : code article + date d'effet. Aucune quantité, aucun lot, aucun prix de vente : RG-02 dérive le prix de vente d'un médicament de son prix d'achat. Même règle de décision
+   * que les prix de prestations : Oui + droit de décider = version validée d'emblée ; Oui sans ce droit = proposition (alerte) ; Non (motif) = aucune version ; prix identique = « inchangée ».
+   * Une pièce déjà émise garde le prix de sa date : la version prend effet à sa date d'effet, et le contrôle d'usage refuse une date qu'une pièce a déjà dépassée. */
+  var COLONNE_DU_REFUS_PRODUIT = { MOTIF_REQUIS: 'Motif', DATE_EFFET_REQUISE: 'Date d’effet', DATE_PASSEE: 'Date d’effet', DATE_PASSEE_RESERVEE: 'Date d’effet', TARIF_DEJA_UTILISE: 'Date d’effet',
+    CHANGEMENT_EN_ATTENTE: 'Code article', PRESTATION_INTROUVABLE: 'Code article', PRODUIT_INTROUVABLE: 'Code article', PRIX_ABSENT: 'Prix d’achat', PRIX_ZERO: 'Prix d’achat', PRIX_INVALIDE: 'Prix d’achat', RG02_MARGE: 'Prix d’achat' };
+  function offreProduit(v, produit, lot) {
+    return { code: produit.code, prixNonAssure: v.prixAchat.etat === 'montant' ? v.prixAchat.montant : null, dateEffet: v.dateEffet, motif: v.motif, source: v.source || undefined,
+      import: { jeu: 'tarifs-produits', lot: lot || undefined } };
+  }
+  function achatVente(achat, vente) { return achat == null ? 'absent' : C.num(achat) + (vente != null && vente !== achat ? ' / vente ' + C.num(vente) : ''); }
+  JEUX.push({
+    id: 'tarifs-produits', ecran: 'imp-tarifs-produits', libelle: 'Importation des prix d’achat', module: 'M6', statut: 'supporte',
+    description: 'Prix d’achat des articles du référentiel produits, avec une date d’effet et la décision Oui ou Non : chaque ligne qui change devient une version datée, jamais un écrasement de la fiche.',
+    source: 'Fiche du référentiel produits (écran « Référentiel produits ») et inventaire SAGE « Grand Stock » (docs/) ; les prix du fichier font foi, aucun n’est complété par le logiciel.',
+    limite: 'Ce jeu ne change jamais le prix en vigueur par lui-même : la ligne devient une proposition soumise à l’alerte Oui/Non de la Directrice Administrative ou de la Direction, sauf si votre profil détient le droit de décider ET que la ligne dit Oui. '
+      + 'RG-02 : le prix de vente d’un médicament est son prix d’achat, il suit sans marge. Une pièce déjà émise garde le prix de sa date. Jamais de quantité : le stock se reprend par le jeu « Importation Grand Stock ». '
+      + 'Un tiret n’est pas un zéro : une ligne sans prix d’achat est refusée.',
+    cibles: ['tarifs', 'versionsTarif'], fichierModele: 'modele-import-prix-achat',
+    colonnesRetirees: [
+      { label: 'Quantité', motif: 'ce jeu ne porte jamais de quantité : le stock se reprend par le jeu « Importation Grand Stock »' },
+      { label: 'N° de lot', motif: 'ce jeu ne porte jamais de lot : les lots se reprennent par le jeu « Importation Grand Stock »' },
+      { label: 'Stock gros', motif: 'ce jeu ne porte jamais de stock : il se reprend par le jeu « Importation Grand Stock »' },
+      { label: 'Stock détail', motif: 'ce jeu ne porte jamais de stock : le détail se pose par le jeu « Importation du stock détail initial »' },
+      { label: 'Prix de vente', motif: 'le prix de vente d’un médicament est son prix d’achat (RG-02) et se dérive ; hors médicament il se change au « Référentiel produits »' },
+    ],
+    colonnes: [
+      oblig('code', 'Code article', 'texte', { longueurMax: 24, exemple: 'PARA500', aide: 'Code d’un article connu du référentiel produits (une ligne par article et par date d’effet). Un article inconnu est refusé : il se crée par le jeu « Importation du référentiel produits ».' }),
+      oblig('prixAchat', 'Prix d’achat', 'tarif', { exemple: 400, aide: 'Montant entier strictement positif en FCFA. Un tiret n’est pas un zéro : une ligne sans prix d’achat est refusée ; NC n’existe pas pour un prix d’achat.' }),
+      oblig('dateEffet', 'Date d’effet', 'date', { exemple: '2027-01-01', aide: 'Le prix en vigueur ne change qu’à cette date. Une date passée est refusée (elle se propose à l’écran, avec sa case et son motif) ; une date que la facturation a déjà dépassée l’est aussi.' }),
+      oblig('valider', 'Valider (Oui/Non)', 'liste', { liste: [{ valeur: 'oui', label: 'Oui' }, { valeur: 'non', label: 'Non' }], exemple: 'Oui', aide: 'Oui : le prix s’applique (validé d’emblée si votre profil décide, sinon proposition). Non : la ligne n’est pas appliquée, le motif est obligatoire.' }),
+      oblig('motif', 'Motif', 'texte', { longueurMax: 160, exemple: 'Nouveau tarif du fournisseur', aide: 'Obligatoire pour toute ligne : il se lit à l’historique du prix et à l’alerte de décision.' }),
+      col('source', 'Source', 'texte', { longueurMax: 160, exemple: 'Facture fournisseur du 01/12/2026' }),
+    ],
+    contexte: function () {
+      var p = {};
+      toutes('produits').forEach(function (x) { if (x.statut !== 'archive') p[C.norm(x.code)] = x; });
+      return { h: D.TARIFS.lire(), produits: p, jour: aujourdhuiIso(), peutDecider: !!(global.SIGH.parcours && global.SIGH.parcours.peutDeciderTarif()) };
     },
-    annuler: function (lot, motif) {
-      var PR_ = global.SIGH.parcours, retirees = 0, archivees = 0;
-      for (var i = 0; i < lot.ecrits.length; i++) {
-        var e = lot.ecrits[i];
-        if (e.collection !== 'versionsTarif') continue;
-        var v = S.collection('versionsTarif').get(e.id);
-        if (!v || v.statut !== 'propose') continue;
-        var r = PR_.retirerProposition(e.id, 'Lot ' + lot.reference + ' annulé' + (motif ? ' : ' + motif : ''));
-        if (!r.ok) return { ok: false, code: r.code, motif: r.motif, geste: r.geste };
-        retirees++;
+    cle: function (v) { return [C.norm(v.code) + '@' + v.dateEffet]; },
+    regles: function (v, ctx, sc, n) {
+      var pb = [], ligne = sc.ligne, PR_ = global.SIGH.parcours;
+      function pb_(colonne, valeur, code, niveau, motif, geste) { pb.push({ colonne: colonne, valeur: valeur, code: code, niveau: niveau, motif: motif, geste: geste }); }
+      if (!ctx.h) { pb_('Code article', v.code, 'REFERENTIEL_ABSENT', 'refus', 'le référentiel de prix n’est pas chargé', 'Rechargez la page.'); return pb; }
+      var produit = ctx.produits[C.norm(v.code)];
+      if (!produit) { pb_('Code article', v.code, 'ARTICLE_INCONNU', 'refus', 'aucun article « ' + v.code + ' » au référentiel produits', 'Créez l’article (jeu « Importation du référentiel produits ») ou corrigez le code.'); return pb; }
+      var p = ctx.h.parProduit[produit.code], na = v.prixAchat;
+      var s = p ? D.TARIFS.instantane(ctx.h, p, v.dateEffet) : null;
+      var extra = { ancien: s && s.na != null ? achatVente(s.na, D.TARIFS.prixVenteProduit(produit.categorie, s.vrs)) : (p ? 'absent' : 'aucun prix versionné'),
+        nouveau: na.etat === 'montant' ? achatVente(na.montant, produit.categorie === D.TARIFS.CATEGORIE_SANS_MARGE ? na.montant : null) : 'absent', variation: '', decision: '' };
+      sc.extras[n] = extra;
+      if (s && s.na && na.etat === 'montant') extra.variation = pourcent(s.na, na.montant);
+      /* Un NON est la décision de l'importateur : ni version, ni erreur. Son motif est obligatoire. */
+      if (v.valider === 'non') {
+        if (!v.motif) pb_('Motif', '', 'MOTIF_REQUIS', 'refus', 'une ligne « Non » se motive : sans motif, on ne sait pas pourquoi le prix d’achat n’est pas appliqué', 'Saisissez le motif de la ligne ' + n + '.');
+        else { ligne.sansEcriture = 'non'; extra.decision = 'Non : non appliquée'; pb_('Valider (Oui/Non)', 'Non', 'LIGNE_NON_APPLIQUEE', 'info', 'ligne non appliquée sur décision de l’importateur (motif : ' + v.motif + ')', 'Aucune version n’est créée.'); }
+        return pb;
       }
-      lot.ecrits.forEach(function (e) {
-        if (e.collection !== 'tarifs') return;
-        var vivantes = S.collection('versionsTarif').all().filter(function (x) { return x.code === e.id && (x.statut === 'propose' || x.statut === 'valide'); });
-        if (!vivantes.length && S.collection('tarifs').archive(e.id, 'Annulation du lot ' + lot.reference)) archivees++;
+      if (na.etat === 'nc') pb_('Prix d’achat', 'NC', 'NC_INTERDIT', 'refus', 'NC n’existe pas pour un prix d’achat (un article n’a pas de colonne assurée)', 'Saisissez le prix d’achat en francs.');
+      else if (na.etat === 'manquant') pb_('Prix d’achat', '-', 'PRIX_ABSENT', 'refus', 'un tiret n’est pas un zéro, et un prix d’achat absent n’est pas un prix : l’article ne se facturerait pas', 'Saisissez le prix d’achat, ou retirez la ligne.');
+      if (pb.some(function (x) { return x.niveau === 'refus'; })) return pb;
+      /* LE MÊME CHEMIN QUE L'ÉCRAN : tous les contrôles de la proposition, sans écrire (essai). */
+      var o = offreProduit(v, produit, null);
+      o.essai = true; o.valider = ctx.peutDecider && v.valider === 'oui';
+      var ev = PR_.proposerTarif(o);
+      if (!ev.ok && o.valider === true && (ev.code === 'VALIDATION_RESERVEE' || ev.code === 'CONFIGURATION_DE_LA_MERE')) { o.valider = false; ev = PR_.proposerTarif(o); }
+      if (!ev.ok && ev.code === 'PRIX_INCHANGE') {
+        ligne.sansEcriture = 'inchange'; extra.decision = 'Inchangée';
+        pb_('Prix d’achat', '', 'PRIX_INCHANGE', 'info', 'ce prix d’achat est déjà celui en vigueur à cette date : aucune version, la ligne est comptée', 'Rien à faire.');
+        return pb;
+      }
+      if (!ev.ok) { pb_(COLONNE_DU_REFUS_PRODUIT[ev.code] || 'Prix d’achat', '', ev.code, 'refus', ev.motif, ev.geste); return pb; }
+      if (o.valider) extra.decision = 'Oui : version validée à l’import';
+      else if (v.valider === 'oui') {
+        extra.decision = 'Proposition (votre Oui vaut proposition)';
+        pb_('Valider (Oui/Non)', 'Oui', 'OUI_VAUT_PROPOSITION', 'avertissement', 'votre profil ne détient pas le droit de décider un prix : le Oui vaut proposition, la décision revient à la Directrice Administrative ou à la Direction (alerte)', 'Aucune action : la ligne sera proposée.');
+      } else extra.decision = 'Proposition (alerte Oui/Non)';
+      return pb;
+    },
+    /* Un profil qui ne décide pas ne peut déposer qu'UNE proposition par article : une seconde ligne du même article (autre date) serait refusée à l'écriture, et le lot entier avec elle. */
+    reglesLot: function (lignes, ctx) {
+      if (ctx.peutDecider) return [];
+      var vus = {}, out = [];
+      lignes.forEach(function (l) {
+        if (l.sansEcriture || l.etat === 'refus') return;
+        var k = C.norm(l.v.code);
+        if (vus[k]) out.push({ n: 0, colonne: 'Code article', valeur: '', code: 'UNE_PROPOSITION_PAR_ARTICLE', niveau: 'refus',
+          motif: 'l’article « ' + l.v.code + ' » porte deux lignes (lignes ' + vus[k] + ' et ' + l.n + ') : une seule proposition peut attendre une décision par article',
+          geste: 'Gardez une seule ligne par article, ou faites importer le fichier par un profil qui décide.' });
+        else vus[k] = l.n;
       });
-      return { ok: true, archives: retirees + archivees };
+      return out;
     },
+    ecrire: function (lignes, ecrireFiche, lot, ctx, declarer) {
+      var PR_ = global.SIGH.parcours;
+      lignes.forEach(function (l) {
+        var v = l.v, produit = ctx.produits[C.norm(v.code)];
+        /* Un article qu'aucune prestation de prix ne porte encore reçoit sa version 1 de reprise AVANT la proposition (réparation de donnée, pas un geste de l'importateur). */
+        if (S.assurerTarifProduit) S.assurerTarifProduit(produit);
+        var o = offreProduit(v, produit, lot.reference);
+        o.valider = PR_.peutDeciderTarif() && v.valider === 'oui';
+        var r = PR_.proposerTarif(o);
+        if (!r.ok && o.valider === true && (r.code === 'VALIDATION_RESERVEE' || r.code === 'CONFIGURATION_DE_LA_MERE')) { o.valider = false; r = PR_.proposerTarif(o); }
+        if (!r.ok) throw new Error('ligne ' + l.n + ' (' + v.code + ') : ' + r.motif);
+        declarer('versionsTarif', r.version.id);
+      });
+    },
+    dependances: dependancesLotPrix,
+    annuler: annulerLotPrix,
   });
 
   /* --- 5. ANALYSES (proposition à valider) ------------------------------------------------------------------------------- */
@@ -909,6 +1030,15 @@
     return null;
   }
 
+  /** La version 1 du prix d'achat d'un article CRÉÉ par un import : la MÊME voie que l'écran (`PR.creerPrixProduit`, lot T5). La prestation de prix et la version posées sont DÉCLARÉES au lot :
+      un échec en cours de lot les retire avec le reste (atomicité). */
+  function poserPrixInitial(fiche, jeuId, lot, declarer) {
+    var r = global.SIGH.parcours.creerPrixProduit(fiche, { import: { jeu: jeuId, lot: lot.reference }, source: 'Import ' + lot.reference });
+    if (!r.ok) throw new Error('le prix d’achat de « ' + fiche.code + ' » n’a pas pu être versionné : ' + r.motif);
+    if (r.identite) declarer('tarifs', r.identite.id);
+    if (r.version) declarer('versionsTarif', r.version.id);
+  }
+
   /* --- 11. RÉFÉRENTIEL PRODUITS (sans quantités ni lots) -------------------------------------------------------------- */
   JEUX.push({
     id: 'produits-referentiel', ecran: 'imp-produits-referentiel', libelle: 'Importation du référentiel produits', module: 'M6', statut: 'supporte',
@@ -969,15 +1099,17 @@
       }
       return pb;
     },
-    ecrire: function (lignes, ecrireFiche, lot) {
+    ecrire: function (lignes, ecrireFiche, lot, ctx, declarer) {
       lignes.forEach(function (l) {
         var v = l.v, med = v.categorie === 'medicament', prix = v.prixAchat == null ? 0 : v.prixAchat;
-        ecrireFiche('produits', Object.assign({
+        var fiche = ecrireFiche('produits', Object.assign({
           code: v.code, designation: v.designation, unite: v.unite, categorie: v.categorie,
           prixAchat: prix, prixVente: (med || v.prixVente == null) ? prix : v.prixVente, cump: prix,
           seuilAlerte: v.seuil == null ? null : v.seuil,
           stockGros: 0, stockDetail: 0, stock: 0, emplacement: v.emplacement || '', fournisseur: v.fournisseur || '',
         }, v.prixAchat == null ? { valorisationProvisoire: true, sourceValorisation: 'Prix d’achat absent du fichier d’import ' + lot.reference + ' : à valoriser' } : {}));
+        /* La version 1 du prix d'achat naît avec la fiche, par la MÊME voie que tout changement de prix ; un prix absent la pose `manquant` (l'article ne se facture pas). */
+        poserPrixInitial(fiche, 'produits-referentiel', lot, declarer);
       });
     },
     dependances: function (lot) {
@@ -1591,6 +1723,8 @@
       var e = lot.ecrits[i], c = S.collection(e.collection);
       var f = c.get(e.id);
       if (!f || f.statut === 'archive') continue;
+      /* Une VERSION de prix est immuable et ne s'archive pas (RG-14, lot T5) : celles que posent la création d'un article restent lisibles à l'historique du prix. */
+      if (e.collection === 'versionsTarif') continue;
       if (!c.archive(e.id, 'Annulation du lot ' + lot.reference + (motif ? ' : ' + motif : ''))) echec = e; else faits.push(e);
     }
     if (echec) {

@@ -218,6 +218,67 @@
     return b;
   }
 
+  /* ==========================================================================
+   * « HISTORIQUE DE PRIX » D'UN PRODUIT (lot T5) : UNE FABRIQUE, DEUX ÉCRANS (onglet Produits de « Tarifs et prix », « Référentiel produits »)
+   * --------------------------------------------------------------------------
+   * Toutes les versions du prix d'achat d'un produit, la version EN VIGUEUR désignée : prix d'achat, prix de vente DÉRIVÉ (RG-02), date d'effet, version, statut, auteur et date de
+   * proposition, décision, motif, lot d'import. C'est une LECTURE : le bouton est offert à tout profil qui voit la ligne, jamais conditionné à un nom de rôle ; les colonnes de prix
+   * suivent le droit de VOIR l'écran qui l'héberge (aucun droit de lire les prix n'existe à part). Le moteur de version est celui des prestations : les versions se lisent de
+   * `versionsTarif`, jamais de la fiche du produit.
+   * ======================================================================== */
+  function historiquePrix(produit, opts) {
+    var o = opts || {}, PR = global.SIGH.parcours, TA = global.SIGH.data.TARIFS, h = TA.lire();
+    var jour = C.iso(C.aujourdhui());
+    var vs = PR.versionsTarifDe ? PR.versionsTarifDe(produit.code) : [];
+    var enVigueur = h && vs.length ? TA.enVigueur(h, produit.code, jour) : null;
+    var prixVisibles = o.prixVisibles != null ? !!o.prixVisibles : !!droits(o.moduleCode).voir;
+    function achatDe(v) { return v.etatNonAssure === 'manquant' || v.prixNonAssure == null ? null : v.prixNonAssure; }
+    function argent(x) { return x == null ? 'à valider' : C.money(x, false); }
+    function etat(v) {
+      if (v.statut === 'propose') return U.badge('Proposée', 'warning');
+      if (v.statut === 'refuse') return U.badge('Refusée', 'danger');
+      if (v.statut === 'retire') return U.badge('Retirée', 'neutral');
+      if (enVigueur && enVigueur.id === v.id) return U.badge('En vigueur', 'success');
+      if (v.dateEffet && v.dateEffet > jour) return U.badge('À venir', 'info');
+      return U.badge('Remplacée', 'neutral');
+    }
+    var ORIGINES = { migration: 'Reprise des listes d’avant', reprise: 'Reprise de la fiche', creation: 'Création de l’article', ecran: 'Saisie à l’écran', import: 'Importation' };
+    var colonnes = [
+      { key: 'version', label: 'Version', align: 'right', nowrap: true, render: function (v) { return 'v' + v.version; }, text: function (v) { return 'v' + v.version; } },
+      { key: 'dateEffet', label: 'Date d’effet', nowrap: true, render: function (v) { return v.dateEffet ? C.dateFR(v.dateEffet) : 'Depuis l’origine'; }, text: function (v) { return v.dateEffet || 'Depuis l’origine'; } },
+    ];
+    if (prixVisibles) {
+      colonnes.push({ key: 'prixNonAssure', label: 'Prix d’achat', align: 'right', render: function (v) { return argent(achatDe(v)); }, text: function (v) { return argent(achatDe(v)); } });
+      colonnes.push({ key: 'prixVente', label: 'Prix de vente (dérivé)', align: 'right',
+        render: function (v) { return argent(TA.prixVenteProduit(produit.categorie, v)); }, text: function (v) { return argent(TA.prixVenteProduit(produit.categorie, v)); } });
+    }
+    colonnes.push(
+      { key: 'statut', label: 'Statut', render: etat, text: function (v) { return v.statut; } },
+      { key: 'proposePar', label: 'Proposée par', render: function (v) { return v.proposePar ? v.proposePar + (v.proposeLe ? ' le ' + C.dateFR(v.proposeLe) : '') : 'Non renseigné'; }, text: function (v) { return v.proposePar || ''; } },
+      { key: 'decidePar', label: 'Décision', render: function (v) { return v.decidePar ? v.decidePar + (v.roleDecision ? ' (' + v.roleDecision + ')' : '') + (v.decideLe ? ' le ' + C.dateFR(v.decideLe) : '') : (v.statut === 'propose' ? 'En attente' : 'Non renseigné'); }, text: function (v) { return v.decidePar || ''; } },
+      { key: 'motif', label: 'Motif', render: function (v) { return v.motifDecision ? (v.motif ? v.motif + ' / ' : '') + v.motifDecision : (v.motif || 'Non renseigné'); }, text: function (v) { return v.motif || ''; } },
+      { key: 'origine', label: 'Origine', render: function (v) { return (ORIGINES[v.origine] || v.origine || 'Non renseigné'); }, text: function (v) { return v.origine || ''; } },
+      { key: 'lot', label: 'Lot d’import', nowrap: true, render: function (v) { return v.lot || 'Aucun'; }, text: function (v) { return v.lot || ''; } });
+    var corps = el('div.space-y-3', { 'data-historique-produit': produit.code }, [
+      enVigueur
+        ? note('En vigueur aujourd’hui (' + C.dateFR(jour) + ') : <strong>version ' + enVigueur.version + '</strong>' + (enVigueur.dateEffet ? ', depuis le ' + C.dateFR(enVigueur.dateEffet) : ', depuis l’origine')
+          + (prixVisibles ? ', prix d’achat <strong>' + argent(achatDe(enVigueur)) + '</strong>, prix de vente <strong>' + argent(TA.prixVenteProduit(produit.categorie, enVigueur)) + '</strong>' : '')
+          + '. Une pièce déjà émise garde le prix de sa date.', { tone: 'info', icon: 'history' })
+        : note('Aucune version de prix n’est en vigueur aujourd’hui pour cet article : il ne se facture pas (un prix d’achat absent n’est jamais un zéro).', { tone: 'warning', icon: 'triangle-alert' }),
+      vs.length ? U.dataTable({ rows: vs.slice().reverse(), searchable: false, pageSize: 20, columns: colonnes, exportName: 'historique-prix-' + produit.code })
+        : U.empty('Aucune version de prix pour cet article.', { icon: 'history' }),
+    ]);
+    var m = U.modal({ title: 'Historique de prix', subtitle: produit.code + ' : ' + (produit.designation || ''), size: 'xl', body: corps, footer: [btn('Fermer', { onclick: function () { m.close(); } })] });
+    U.icons(document.body);
+    return m;
+  }
+  /** Le bouton de LIGNE « Historique de prix » : une lecture, offerte à tout profil qui voit la ligne. */
+  function boutonHistoriquePrix(produit, opts) {
+    var b = iconBtn('history', 'Historique de prix', function () { historiquePrix(produit, opts); });
+    b.setAttribute('data-historique-prix', produit.code);
+    return b;
+  }
+
   /** Même règle pour une commande rendue par une icône seule. */
   function commandeIcone(icone, titre, onclick, opts) {
     var o = typeof opts === 'string' ? { variant: opts } : (opts || {});
@@ -437,10 +498,13 @@
                 ecriture.then(function (w) {
                   if (refusEcriture(w)) return;
                   var res = w.res;
+                  /* `apresCreation(fiche)` : ce qui DOIT suivre l'insertion d'une fiche (la version 1 du prix d'achat d'un produit, lot T5). Un texte rendu s'ajoute au détail du message. */
+                  var suite = null;
+                  if (!isEdit && cfg.apresCreation) { try { suite = cfg.apresCreation(res.record); } catch (e) { console.error('[SIGH] apresCreation ' + cfg.collection + ' :', e); } }
                   m.close(); refresh();
                   U.toast(isEdit ? 'Modifications enregistrées.' : 'Nouveau ' + cfg.entite + ' créé.', {
                     type: 'success', undo: annulable(res.undo),
-                    detail: res.record.code || res.record.reference || res.record.numero || null,
+                    detail: [res.record.code || res.record.reference || res.record.numero || null, suite].filter(Boolean).join(' : ') || null,
                   });
                 });
               },
@@ -1818,6 +1882,7 @@
   global.SIGH.kit = {
     btn: btn, iconBtn: iconBtn, lien: lien,
     commande: commande, commandeIcone: commandeIcone, importer: importer, chargerMoteurImport: chargerMoteurImport,
+    historiquePrix: historiquePrix, boutonHistoriquePrix: boutonHistoriquePrix,
     boutonValider: boutonValider, badgeValidation: badgeValidation, peutValider: peutValider, remettreAValider: remettreAValider,
     ecrireValidable: ecrireValidable, refusEcriture: refusEcriture, boutonValiderModale: boutonValiderModale,
     gardeValidation: gardeValidation, suivreValidation: suivreValidation,
