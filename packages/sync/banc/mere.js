@@ -40,6 +40,8 @@ const FAMILLES = {
   parametres: 'R', usagesParametres: 'B',
   /* Lot T6 : le référentiel de prix unique (versions immuables, R) et les demandes de prix d'un fileul (A : le fileul dépose, la mère complète du verdict). */
   versionsTarif: 'R', propositionsTarif: 'A',
+  /* Lot IMP-C : la demande d'import d'un fileul (A : le fileul dépose, la mère complète du verdict ; jamais vers un téléphone). */
+  demandesImport: 'A',
 };
 const ESSENTIELLES = new Set(['tarifs', 'versionsTarif', 'chambres']);
 

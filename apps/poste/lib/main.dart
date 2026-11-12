@@ -9,6 +9,7 @@ import 'package:window_manager/window_manager.dart';
 
 
 import 'donnees/organigramme_poste.dart';
+import 'sync/service_demandes_import.dart';
 import 'donnees/tarifs_poste.dart';
 import 'donnees/magasin.dart';
 import 'donnees/persistance.dart';
@@ -201,6 +202,7 @@ Future<void> main() async {
     }
     // L'ACTIVITÉ et les mots de passe voyagent dans les deux sens (pont magasin / journal, E2130 à E2134).
     PontActivite? pontMere, pontFileul;
+    ServiceDemandesImport? demandesImport;
     void demarrerPontMere() {
       final transport = TransportMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin);
       // La mère prend ses numéros de dossier dans le même carnet que les fileuls (RG-01).
@@ -210,6 +212,8 @@ Future<void> main() async {
         ..installer(magasin);
       unawaited(PlagesCodes.de(magasin).recharger());
       pontMere ??= PontActivite(magasin, transport, etiquette: 'M', surveillerLesAutres: true)..demarrer();
+      // Lot IMP-C : la mère traite les DEMANDES D'IMPORT que les fileuls lui déposent (elle rejoue l'analyse sous le rôle de l'auteur, applique ou refuse en nommant).
+      demandesImport ??= ServiceDemandesImport(magasin)..demarrer();
     }
     PontActivite creerPontFileul() => PontActivite(
         magasin,

@@ -38,6 +38,10 @@ const Set<String> collectionsActivite = {
   // Lot T6 : les DEMANDES de prix d'un fileul (proposition, décision, retrait), une fiche par demande. Le fileul la dépose ; la MÈRE l'applique après avoir refait les mêmes
   // contrôles sous le rôle de son auteur, puis écrit le verdict (`etat`, `resultatCode`, `resultatMotif`) sur la même fiche, qui revient au fileul par le même chemin.
   'propositionsTarif',
+  // Lot IMP-C : les DEMANDES D'IMPORT d'un fileul (réponse Q5 de la Direction). Un référentiel de configuration importé à un fileul est refusé (réglé sur la mère) : le fileul dépose une demande
+  // VÉRIFIÉE, la MÈRE rejoue l'analyse sous le rôle de l'auteur, applique ou refuse en nommant, et écrit le verdict sur la même fiche, qui revient au fileul par ce chemin. Les lignes du fichier
+  // sont effacées de la fiche dès le verdict. Jamais vers un téléphone (RG-13).
+  'demandesImport',
   // Les pièces et les compteurs, avec leurs règles de fusion propres (`fusion_activite.dart`).
   'factures',
   'avoirs',

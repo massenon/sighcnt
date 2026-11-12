@@ -64,6 +64,8 @@ const familleDeBase = <String, String>{
   // mère seule écrit, un fileul reçoit. Les DEMANDES de prix d'un fileul (proposition, décision, retrait) sont des fiches descriptives que le fileul dépose et que la mère
   // complète du verdict : famille A, champ à champ, dans les deux sens.
   'versionsTarif': 'R', 'propositionsTarif': 'A',
+  // Lot IMP-C : la demande d'import d'un fileul (A : le fileul dépose, la mère complète du verdict, champ à champ dans les deux sens).
+  'demandesImport': 'A',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
@@ -81,6 +83,9 @@ final Set<String> collectionsPosteSeulement = {'identifiants'};
 /// Le PRIX ne part JAMAIS vers un téléphone (lot T6, RG-13) : ni le référentiel (`tarifs`, `versionsTarif`), ni les demandes d'un fileul (`propositionsTarif`) avec leurs
 /// refus et leurs motifs. Aucun lecteur de prix n'existe à `apps/mobile` ; l'exclusion est posée ici, au chemin de lecture du mobile, comme celle des hachés.
 const Set<String> collectionsPrixJamaisMobile = {'tarifs', 'versionsTarif', 'propositionsTarif'};
+
+/// Les DEMANDES D'IMPORT d'un fileul portent les lignes d'un fichier (patients, personnel, prix, soldes) puis un verdict nommé : jamais vers un téléphone (lot IMP-C, RG-13).
+const Set<String> collectionsImportJamaisMobile = {'demandesImport'};
 const _clinique = 'NASSIERA TOO';
 const _deriveMaxMs = 2 * 60 * 1000;
 const autorise = <String, Set<String>>{
@@ -586,7 +591,7 @@ class Mere {
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
         // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
-        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, parCollectionParametres] : const <String>[];
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})

@@ -6,6 +6,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../core/service_installation.dart';
+import '../../donnees/demandes_import_poste.dart';
 import '../../donnees/magasin.dart';
 import '../../import/classeur_xlsx.dart';
 import '../../import/port_magasin.dart';
@@ -27,6 +29,67 @@ PortMagasin _port(ContexteEcran c) =>
 /// Les anciennes fiches de lot (RG-14 : elles restent lisibles) portent l'identifiant des deux jeux qui ont changé de nom avec le référentiel de prix unique (lot IMP-A).
 const _anciensJeux = {'actes': 'tarifs', 'analyses': 'analyses-modele'};
 String _jeuDeLot(Fiche l) => '${_anciensJeux[l['jeu']] ?? l['jeu']}';
+
+/// La demande d'import : l'état d'une demande se LIT (en attente, appliquée, refusée avec son code, son motif et son geste), jamais une valeur de cellule.
+const _tonsDemande = {
+  'en_attente': ('En attente de la mère', TonSigh.attention),
+  'appliquee': ('Appliquée par la mère', TonSigh.succes),
+  'refusee': ('Refusée par la mère', TonSigh.danger),
+};
+
+DemandesImportPoste _demandes(ContexteEcran c) => DemandesImportPoste(c.magasin,
+    role: c.role,
+    auteur: () => c.agent.nom,
+    matrice: c.donnees!.matrice,
+    aujourdhui: () => c.aujourdhui,
+    etiquette: c.magasin.poste.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toUpperCase());
+
+/// Ce poste est-il un FILEUL rattaché pour lequel ce jeu passe par une demande à la mère (une de ses collections cibles est de configuration) ?
+bool _passeParLaMere(ContexteEcran c, String jeuId) =>
+    c.donnees != null &&
+    DemandesImportPoste.passeParUneDemande(fileulRattache: ServiceInstallation.de(c.magasin).rattache, declaration: c.donnees!.matrice.matriceImport.declaration(jeuId));
+
+/// Le tableau des demandes que CE poste a envoyées à la mère, pour un jeu : l'agent voit la réponse nommée, jamais les lignes de son fichier.
+Widget tableauDemandes(List<Fiche> demandes) => TableauSigh(
+      lignes: [for (final d in demandes) {...d, '_etat': _tonsDemande[d['etat']]?.$1 ?? '${d['etat']}'}],
+      taillePage: 10,
+      triInitial: 'demandeLe',
+      sensInitial: 'desc',
+      nomExport: 'demandes-importation',
+      messageVide: 'Aucune demande envoyée à la mère.',
+      colonnes: [
+        ColonneTableau(
+            cle: 'id',
+            libelle: 'Demande',
+            sansCoupure: true,
+            texte: (l) => '${l['id']}',
+            rendu: (_, l) => Text('${l['id']}', style: const TextStyle(fontFamily: 'LiberationMono', fontSize: 12, fontWeight: FontWeight.w600, color: JetonsShell.navy800))),
+        const ColonneTableau(cle: 'fichier', libelle: 'Fichier'),
+        ColonneTableau(cle: 'demandeLe', libelle: 'Envoyée le', texte: (l) => _dateJour(l['demandeLe']), valeur: (l) => l['demandeLe']),
+        const ColonneTableau(cle: 'aEcrire', libelle: 'Lignes', droite: true),
+        ColonneTableau(
+            cle: 'etat',
+            libelle: 'État',
+            texte: (l) => '${l['_etat']}',
+            rendu: (_, l) {
+              final t = _tonsDemande[l['etat']] ?? ('${l['etat']}', TonSigh.neutre);
+              return BadgeSigh(t.$1, ton: t.$2);
+            }),
+        ColonneTableau(
+            cle: 'resultatMotif',
+            libelle: 'Réponse de la mère',
+            triable: false,
+            texte: (l) => l['etat'] == 'appliquee'
+                ? 'Lot ${l['resultatLot']} : ${l['resultatEcrits']} fiche(s) écrite(s)'
+                : (l['etat'] == 'refusee' ? '${l['resultatCode']} : ${l['resultatMotif']}. ${l['resultatGeste']}' : ''),
+            rendu: (_, l) => l['etat'] == 'appliquee'
+                ? Text('Lot ${l['resultatLot']} : ${l['resultatEcrits']} fiche(s) écrite(s).', key: const Key('imp-demande-appliquee'), style: const TextStyle(fontSize: 12, color: JetonsShell.success700))
+                : (l['etat'] == 'refusee'
+                    ? Text('${l['resultatCode']} : ${l['resultatMotif']}. ${l['resultatGeste']}', key: Key('imp-demande-refus-${l['resultatCode']}'), style: const TextStyle(fontSize: 12, color: JetonsShell.danger700))
+                    : const Text('')),
+            ),
+      ],
+    );
 
 /// Un lot se lit de son AUTEUR et des profils qui SUPERVISENT (droit d'annuler sur chaque jeu : tiré du droit, pas d'un nom de rôle), pour un jeu que le profil voit.
 bool _lotVisible(ProfilImport p, String agent, Fiche l) {
@@ -321,6 +384,25 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
     }
   }
 
+  /// FILEUL : dépose la demande du fichier VÉRIFIÉ à la mère (rien n'est écrit ici). La mère rejoue l'analyse sous le rôle de l'auteur et répond sur la même fiche.
+  Future<void> _envoyerDemande(ContexteEcran c) async {
+    final a = _analyse!;
+    final ok = await confirmerSigh(context,
+        titre: 'Envoyer cette demande à la mère ?',
+        message:
+            '${a.aEcrire} ligne(s) du fichier « ${a.fichier} » sont envoyées à la mère, au nom de ${c.agent.nom}. Elle rejoue la vérification sous votre profil, applique ou refuse en nommant le code, le motif et le geste ; vous voyez sa réponse ici. Rien n’est écrit sur ce poste.',
+        libelleOk: 'Envoyer la demande');
+    if (!ok || !mounted) return;
+    final d = _demandes(c).deposer(_jeu, a);
+    setState(() {
+      _analyse = null;
+      _lotRefuse = null;
+      _resultatOk = true;
+      _resultat = 'Demande ${d['id']} envoyée à la mère. Elle rejoue la vérification et répond ici : en attente, appliquée, ou refusée avec son motif.';
+    });
+    ToastsSigh.afficher(context, 'Demande envoyée à la mère.', type: TypeToast.succes, detail: '${d['id']} : ${a.aEcrire} ligne(s) vérifiée(s).');
+  }
+
   Future<void> _rapportAnalyse(ContexteEcran c) async {
     final a = _analyse!;
     final lot = _lotRefuse;
@@ -334,7 +416,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             ignores: a.compte.ignores, sansValeur: port.profil.restreint(_jeu.id)));
   }
 
-  Widget _apercu(ContexteEcran c, AnalyseImport a, DroitImport droit) {
+  Widget _apercu(ContexteEcran c, AnalyseImport a, DroitImport droit, {required bool viaMere}) {
     final ps = a.problemes;
     final avecDetail = a.lignes.any((l) => l.detail != null && l.detail!.isNotEmpty);
     return CarteSigh(
@@ -431,11 +513,18 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         const SizedBox(height: 12),
         Wrap(spacing: 8, runSpacing: 8, children: [
           // La commande d'écriture n'existe que pour qui détient le droit d'IMPORTER CE JEU (pas celui d'éditer l'écran) : absente, jamais grisée.
-          if (a.accepte && a.aEcrire > 0 && droit.importer)
+          if (a.accepte && a.aEcrire > 0 && droit.importer && !viaMere)
             BoutonSigh(
                 libelle: 'Confirmer l’importation (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
                 icone: LucideIcons.packageCheck,
                 onPressed: _occupe ? null : () => _confirmer(c)),
+          // Sur un FILEUL rattaché, un référentiel de configuration ne s'écrit pas ici : le fichier VÉRIFIÉ part en demande à la mère, qui rejoue l'analyse et répond.
+          if (a.accepte && a.aEcrire > 0 && droit.importer && viaMere)
+            BoutonSigh(
+                key: const Key('imp-envoyer-demande'),
+                libelle: 'Envoyer la demande à la mère (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
+                icone: LucideIcons.send,
+                onPressed: _occupe ? null : () => _envoyerDemande(c)),
           if (ps.isNotEmpty && !a.droitRefuse)
             BoutonSigh(
                 libelle: 'Rapport d’erreurs (.xlsx)',
@@ -457,7 +546,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
     final vp = ValidationPoste(c);
     // Un jeu en proposition se valide par le moteur commun (famille `jeux_import`, cible = l'écran du jeu) : l'état se LIT, il ne se déduit pas de la constante.
     return ListenableBuilder(
-      listenable: Listenable.merge([lots, c.magasin.collection(valCollectionValidations), c.magasin.collection('reglages')]),
+      listenable: Listenable.merge([lots, c.magasin.collection(valCollectionValidations), c.magasin.collection('reglages'), c.magasin.collection(demandesImportCollection)]),
       builder: (context, _) {
         final port = _port(c);
         final profil = port.profil;
@@ -469,6 +558,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         final mode = profil.modeDoublon(j.id);
         final jeuValide = vp.etat('jeux_import', j.ecran)?.enAttente == false;
         final reprise = !modale && j.id == 'grand-stock';
+        final viaMere = _passeParLaMere(c, j.id);
         // La REPRISE valorisée du Grand Stock a ses propres droits (ceux de M6) : elle reste atteignable de qui l'a, même sans détenir le JEU.
         Widget repriseValorisee() => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: const [
               SizedBox(height: 24),
@@ -519,6 +609,12 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
           ] else if (j.limite != null) ...[
             const SizedBox(height: 16),
             NoteSigh(j.limite!, icone: LucideIcons.info),
+          ],
+          if (viaMere) ...[
+            const SizedBox(height: 16),
+            const NoteSigh(
+                'Réglé sur la mère. Ce jeu écrit la configuration de la clinique, que la mère seule écrit : votre fichier est vérifié ici, puis envoyé à la mère par une demande. Elle rejoue la vérification sous votre profil, applique ou refuse en nommant le code, le motif et le geste, et vous voyez sa réponse ci-dessous.',
+                icone: LucideIcons.serverCog),
           ],
           if (profil.restreint(j.id)) ...[
             const SizedBox(height: 16),
@@ -585,7 +681,11 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             const SizedBox(height: 16),
             NoteSigh(_resultat!, ton: _resultatOk ? TonSigh.succes : TonSigh.danger, icone: _resultatOk ? LucideIcons.circleCheck : LucideIcons.octagonAlert),
           ],
-          if (_analyse != null) ...[const SizedBox(height: 16), _apercu(c, _analyse!, d)],
+          if (_analyse != null) ...[const SizedBox(height: 16), _apercu(c, _analyse!, d, viaMere: viaMere)],
+          if (viaMere) ...[
+            const SizedBox(height: 16),
+            CarteSigh(titre: 'Demandes envoyées à la mère', sansRemplissage: true, child: tableauDemandes(_demandes(c).sesDemandes(jeu: j.id))),
+          ],
           if (!modale) ...[
             const SizedBox(height: 16),
             CarteSigh(

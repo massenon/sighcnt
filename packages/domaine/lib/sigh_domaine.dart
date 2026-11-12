@@ -134,6 +134,7 @@ export 'src/mobile/mob_textes.dart';
 export 'src/mobile/mob_transcription.dart';
 
 // Module d'importation (IMP) : moteur générique et dix jeux (modèles .xlsx, analyse complète, lots, annulation).
+export 'src/import/demande_import.dart';
 export 'src/import/donnees_import.dart';
 export 'src/import/moteur_import.dart';
 export 'src/import/jeux_import.dart';
