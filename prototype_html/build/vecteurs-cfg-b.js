@@ -114,6 +114,10 @@ const NOMS_JEU = fs.readdirSync(JEU).filter((f) => f.endsWith('.json') && f !== 
 
     /* Le JEU DU POSTE entier est posé dans le magasin de la maquette : ce que l'écran lit est ce que le poste lit. */
     const jeu = Object.fromEntries(NOMS_JEU.map((n) => [n, JSON.parse(fs.readFileSync(path.join(JEU, n + '.json'), 'utf8'))]));
+    /* LES FERMETURES PROPRES AU POSTE ne sont pas dans le vecteur (lot T5b, E2453) : le jeu du poste porte quatre fiches `modulesActifs` marquées `proprePoste` (les quatre écrans que
+       la maquette porte et que le poste ne porte pas encore), et le vecteur du domaine suppose le jeu SANS elles : la maquette ne les ferme pas, `rbac.json` ne les connaît pas. Les laisser
+       fermait six activités au lieu de deux et faussait les compteurs de la section `modules` (320 écrans retirés au lieu de 322...), ce qu'on corrigeait à la main. */
+    jeu.modulesActifs = (jeu.modulesActifs || []).filter((x) => !x.proprePoste);
     await m.page.evaluate((j) => {
       const S = SIGH.store;
       window.__jeu = j;
@@ -305,7 +309,10 @@ const NOMS_JEU = fs.readdirSync(JEU).filter((f) => f.endsWith('.json') && f !== 
       return out;
     }));
 
-    /* ---------------------------------------------------------------- 6. cfg-compte : un rôle après l'autre */
+    /* ---------------------------------------------------------------- 6. cfg-compte : un rôle après l'autre
+       L'écran n'a PLUS de formulaire ni de bouton (« Fausses sauvegardes », E2278) : aucune action serveur ne change le profil, le mot de passe ni le double facteur. Le générateur
+       qui cliquait « Enregistrer » et « Modifier le mot de passe » échouait donc sur un bouton absent (« ÉCHEC compte », lot T5b, E2453) ; il relève désormais ce que l'écran DIT
+       (cartes, notes, valeurs lues en lecture seule, périmètre par rôle, activité), jamais un geste qu'il n'offre plus. */
     await essayer('compte', () => m.page.evaluate(async () => {
       const S = SIGH.store, N = SIGH.nav;
       const out = { parRole: {} };
@@ -316,7 +323,7 @@ const NOMS_JEU = fs.readdirSync(JEU).filter((f) => f.endsWith('.json') && f !== 
         const root = await H.monter('cfg-compte');
         const cartes = H.cartesTexte(root);
         const peri = [...root.querySelectorAll('.card')].find((c) => /Périmètre/.test(c.innerText));
-        out.parRole[r] = { perimetre: [...peri.querySelectorAll('span')].map((x) => H.norm(x.textContent)).filter((t) => /^[A-Z]{1,5}\d*$/.test(t)), poste: H.norm(root.querySelector('p.text-xs.text-slate-500').innerText), mfa: (document.getElementById('f_mfa') || {}).checked };
+        out.parRole[r] = { perimetre: [...peri.querySelectorAll('span')].map((x) => H.norm(x.textContent)).filter((t) => /^[A-Z]{1,5}\d*$/.test(t)), poste: H.norm(root.querySelector('p.text-xs.text-slate-500').innerText) };
         H.retirer(root);
       }
       S.setSession(sess0);
@@ -326,19 +333,6 @@ const NOMS_JEU = fs.readdirSync(JEU).filter((f) => f.endsWith('.json') && f !== 
       out.avatar = H.norm(root.querySelector('span.rounded-full.bg-navy-900').innerText);
       out.activite = [...root.querySelectorAll('.card')].find((c) => /Activité récente/.test(c.innerText)) ? H.norm([...root.querySelectorAll('.card')].find((c) => /Activité récente/.test(c.innerText)).innerText) : null;
       out.auditUtilisateur = S.raw().audit.filter((a) => a.utilisateur === sess0.nom).slice(0, 6).map((a) => [a.action, a.entite, a.module, a.dateHeure]);
-      // enregistrer le profil
-      H.poser('nom', 'NOUVEAU Nom'); H.viderToasts(); H.bouton(root, 'Enregistrer').click(); await H.dormir(200);
-      out.enregistrer = { toasts: H.toasts(), session: H.propre(S.session()) };
-      H.poser('nom', ''); H.viderToasts(); H.bouton(root, 'Enregistrer').click(); await H.dormir(200);
-      out.enregistrerVide = { toasts: H.toasts(), session: H.propre(S.session()) };
-      S.setSession(sess0);
-      // mot de passe : formulaire invalide, divergence, trop court, valide
-      const mdp = async (a, n, c) => { H.poser('actuel', a); H.poser('nouveau', n); H.poser('confirmation', c); H.viderToasts(); const nbAudit = S.raw().audit.length; H.bouton(root, 'Modifier le mot de passe').click(); await H.dormir(200); return { toasts: H.toasts(), audit: S.raw().audit.length - nbAudit, premier: S.raw().audit.length ? H.audit0() : null }; };
-      out.mdpVide = await mdp('', '', '');
-      out.mdpDivergent = await mdp('ancien', 'MotDePasse#2026X', 'MotDePasse#2027X');
-      out.mdpCourt = await mdp('ancien', 'Court#1', 'Court#1');
-      out.mdpTreize = await mdp('ancien', 'Exact12Chars', 'Exact12Chars');
-      out.mdpValide = await mdp('ancien', 'MotDePasse#2026X', 'MotDePasse#2026X');
       H.retirer(root);
       return out;
     }));

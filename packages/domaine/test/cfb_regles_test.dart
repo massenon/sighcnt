@@ -276,23 +276,24 @@ void main() {
 
   group('cfg-compte', () {
     final cm = obj(v['compte']);
+    // La maquette n'offre PLUS de formulaire de mot de passe ni de double facteur (« Fausses sauvegardes » : aucune action serveur ne les enregistre) : le vecteur ne porte donc
+    // plus les messages d'un formulaire qui n'existe pas (lot T5b, E2453). Les règles du domaine que le poste applique encore sont éprouvées sur leurs valeurs écrites, non plus
+    // sur des messages tirés d'un écran retiré.
     test('mot de passe : confirmation d’abord, puis huit caractères ; la politique affichée n’est pas contrôlée', () {
       expect(cfbRefusMotDePasse('MotDePasse#2026X', 'MotDePasse#2027X'), 'Les deux mots de passe ne correspondent pas.');
       expect(cfbRefusMotDePasse('Court#1', 'Court#1'), 'Le mot de passe doit comporter au moins 8 caractères.');
       expect(cfbRefusMotDePasse('Exact12Chars', 'Exact12Chars'), isNull);
       expect(cfbRefusMotDePasse('aaaaaaaaaaaa', 'aaaaaaaaaaaa'), isNull);
-      expect(obj(cm['mdpDivergent'])['toasts'], [
-        ['Les deux mots de passe ne correspondent pas.']
-      ]);
-      expect(obj(cm['mdpCourt'])['toasts'], [
-        ['Le mot de passe doit comporter au moins 8 caractères.']
-      ]);
     });
     test('authentification à deux facteurs cochée d’office pour admin, direction, dm, da — et pour eux seuls', () {
       final parRole = obj(cm['parRole']);
+      expect(parRole.keys.length, greaterThan(15));
       for (final role in parRole.keys) {
-        expect(cfbMfaParDefaut(role), obj(parRole[role])['mfa'], reason: role);
+        expect(cfbMfaParDefaut(role), const ['admin', 'direction', 'dm', 'da'].contains(role), reason: role);
       }
+    });
+    test('l’écran de la maquette ne propose plus aucune commande : le vecteur le dit', () {
+      expect(obj(cm['lecture'])['boutons'], isEmpty);
     });
   });
 

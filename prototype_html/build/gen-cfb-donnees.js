@@ -87,7 +87,11 @@ L.push('];');
 L.push(`const cfbCcibTotal = ${c.montantsFiscaux.ccib.total};\n`);
 
 /* ---- tableaux littéraux de cfg-fiscalite (numérotation, obligations déclaratives) ---- */
-const tf = v.fiscalite.reference.lecture.tableaux;
+/* Les tableaux se choisissent par leurs EN-TÊTES, jamais par leur rang : l'écran a gagné en tête un tableau de l'identité légale versionnée (`VERSION`, `EN FORCE`, « v1 »,
+   « Aujourd'hui »), et le rang 0 était devenu cette identité au lieu de la numérotation (lot T5b, E2453). Un tableau introuvable fait échouer le générateur. */
+const tout = v.fiscalite.reference.lecture.tableaux;
+const tableauPar = (entete) => { const t = tout.filter((x) => (x.entetes || [])[0] === entete); if (t.length !== 1) throw new Error('cfg-fiscalite : tableau « ' + entete + ' » attendu une fois, trouvé ' + t.length); return t[0]; };
+const tf = [tableauPar('TYPE DE DOCUMENT'), tableauPar('DÉCLARATION')];
 const hrefs = v.fiscalite.reference.hrefs.filter((h) => h[0] === 'Éditer').map((h) => h[1].replace(/^pages\//, '').replace(/\.php$/, ''));
 const mec = v.fiscalite.reference.hrefs.find((h) => h[0] === 'Configuration MECeF')[1].replace(/^pages\//, '').replace(/\.php$/, '');
 L.push('/// Numérotation des documents (littéral de l\'écran) : type, préfixe, format, séquence.');

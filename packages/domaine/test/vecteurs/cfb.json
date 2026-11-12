@@ -6520,8 +6520,7 @@
      "M12",
      "DASH"
     ],
-    "poste": "Administrateur système",
-    "mfa": true
+    "poste": "Administrateur système"
    },
    "direction": {
     "perimetre": [
@@ -6553,8 +6552,7 @@
      "M12",
      "DASH"
     ],
-    "poste": "Direction / Gérance",
-    "mfa": true
+    "poste": "Direction / Gérance"
    },
    "dm": {
     "perimetre": [
@@ -6574,8 +6572,7 @@
      "PIL",
      "DASH"
     ],
-    "poste": "Directeur Médical",
-    "mfa": true
+    "poste": "Directeur Médical"
    },
    "da": {
     "perimetre": [
@@ -6606,8 +6603,7 @@
      "M12",
      "DASH"
     ],
-    "poste": "Directrice de l’Administration et des Finances (DAF)",
-    "mfa": true
+    "poste": "Directrice de l’Administration et des Finances (DAF)"
    },
    "medecin": {
     "perimetre": [
@@ -6624,8 +6620,7 @@
      "PIL",
      "DASH"
     ],
-    "poste": "Médecin",
-    "mfa": false
+    "poste": "Médecin"
    },
    "infirmier": {
     "perimetre": [
@@ -6643,13 +6638,11 @@
      "PIL",
      "DASH"
     ],
-    "poste": "Infirmier / Sage-femme",
-    "mfa": false
+    "poste": "Infirmier / Sage-femme"
    },
    "pharmacien": {
     "perimetre": [],
-    "poste": "Pharmacien",
-    "mfa": false
+    "poste": "Pharmacien"
    },
    "laborantin": {
     "perimetre": [
@@ -6664,8 +6657,7 @@
      "PIL",
      "DASH"
     ],
-    "poste": "Biologiste médical",
-    "mfa": false
+    "poste": "Biologiste médical"
    },
    "stock": {
     "perimetre": [
@@ -6676,8 +6668,7 @@
      "IMP",
      "DASH"
     ],
-    "poste": "Gestionnaire de Stock",
-    "mfa": false
+    "poste": "Gestionnaire de Stock"
    },
    "caissier": {
     "perimetre": [
@@ -6691,8 +6682,7 @@
      "RAP",
      "DASH"
     ],
-    "poste": "Caissier — Dispensaire (Pharmacie)",
-    "mfa": false
+    "poste": "Caissier — Dispensaire (Pharmacie)"
    },
    "comptable": {
     "perimetre": [
@@ -6714,13 +6704,11 @@
      "M12",
      "DASH"
     ],
-    "poste": "Comptable",
-    "mfa": false
+    "poste": "Comptable"
    },
    "rh": {
     "perimetre": [],
-    "poste": "Responsable RH",
-    "mfa": false
+    "poste": "Responsable RH"
    },
    "reception": {
     "perimetre": [
@@ -6736,8 +6724,7 @@
      "IMP",
      "DASH"
     ],
-    "poste": "Réception / Accueil",
-    "mfa": false
+    "poste": "Réception / Accueil"
    },
    "agentadmin": {
     "perimetre": [
@@ -6750,8 +6737,7 @@
      "IMP",
      "DASH"
     ],
-    "poste": "Agent Administratif",
-    "mfa": false
+    "poste": "Agent Administratif"
    },
    "ambulancier": {
     "perimetre": [
@@ -6762,15 +6748,13 @@
      "RAP",
      "DASH"
     ],
-    "poste": "Ambulancier",
-    "mfa": false
+    "poste": "Ambulancier"
    },
    "aide_soignant": {
     "perimetre": [
      "DASH"
     ],
-    "poste": "Aide-soignante",
-    "mfa": false
+    "poste": "Aide-soignante"
    },
    "echographiste": {
     "perimetre": [
@@ -6784,16 +6768,14 @@
      "PIL",
      "DASH"
     ],
-    "poste": "Technicien d’échographie",
-    "mfa": false
+    "poste": "Technicien d’échographie"
    },
    "surveillant": {
     "perimetre": [
      "PIL",
      "DASH"
     ],
-    "poste": "Surveillant",
-    "mfa": false
+    "poste": "Surveillant"
    },
    "assistant_comptable": {
     "perimetre": [
@@ -6803,8 +6785,7 @@
      "PIL",
      "DASH"
     ],
-    "poste": "Assistant de Direction",
-    "mfa": false
+    "poste": "Assistant de Direction"
    },
    "chirurgien": {
     "perimetre": [
@@ -6819,8 +6800,7 @@
      "PIL",
      "DASH"
     ],
-    "poste": "Chirurgien",
-    "mfa": false
+    "poste": "Chirurgien"
    },
    "anesthesiste": {
     "perimetre": [
@@ -6832,8 +6812,7 @@
      "PIL",
      "DASH"
     ],
-    "poste": "Anesthésiste — Réanimateur",
-    "mfa": false
+    "poste": "Anesthésiste — Réanimateur"
    },
    "aide_comptable": {
     "perimetre": [
@@ -6843,11 +6822,11 @@
      "MECEF",
      "M12",
      "RAP",
+     "IMP",
      "M12",
      "DASH"
     ],
-    "poste": "Assistant Comptable",
-    "mfa": false
+    "poste": "Assistant Comptable"
    }
   },
   "session": {
@@ -6866,36 +6845,29 @@
     "Activité récente"
    ],
    "cartesTexte": [
-    "Informations personnelles Nom et prénoms * Identifiant de connexion Poste Téléphone Adresse électronique Enregistrer",
-    "Sécurité du compte Mot de passe actuel * Nouveau mot de passe * Confirmer le nouveau mot de passe * Activer l’authentification à deux facteurs Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses. Modifier le mot de passe",
+    "Informations personnelles Nom et prénoms Identifiant de connexion Poste Ces informations viennent du compte tenu par l’administrateur (écran « Utilisateurs »). Elles ne se modifient pas depuis cet écran dans la maquette.",
+    "Sécurité du compte Le changement du mot de passe personnel et l’authentification à deux facteurs ne sont pas disponibles dans la maquette : rien ne serait enregistré. L’administrateur définit ou réinitialise le mot de passe depuis « Utilisateurs ». Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses.",
     "BC BASSONGUI Chabi Séko Administrateur système Compte actif",
     "Périmètre d’accès Matrice RBAC M2 M1 M13 CFG M1 M2 M2 M3 M4 M5 M6 M7 M8 M9 MECEF M12 M10 M11 M13 GED RAP M14 CFG IMP MERE MERE MERE MERE MERE RLS PIL M12 DASH",
-    "Activité récente Modification — ParametrageNotifications Module CFG à l’instant Paramétrage — Valorisation des sorties Module M6 à l’instant Paramétrage — Valorisation des sorties Module M6 à l’instant Création — centre de coûts Module M12 à l’instant Création — centre de coûts Module M12 à l’instant Création — relevé de constantes Module M1 à l’instant"
+    "Activité récente Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant"
    ],
    "notes": [
+    "Ces informations viennent du compte tenu par l’administrateur (écran « Utilisateurs »). Elles ne se modifient pas depuis cet écran dans la maquette.",
+    "Le changement du mot de passe personnel et l’authentification à deux facteurs ne sont pas disponibles dans la maquette : rien ne serait enregistré. L’administrateur définit ou réinitialise le mot de passe depuis « Utilisateurs ».",
     "Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses."
    ],
-   "boutons": [
-    "Enregistrer",
-    "Modifier le mot de passe"
-   ],
+   "boutons": [],
    "labels": [
-    "Nom et prénoms *",
+    "Nom et prénoms",
     "Identifiant de connexion",
-    "Poste",
-    "Téléphone",
-    "Adresse électronique",
-    "Mot de passe actuel *",
-    "Nouveau mot de passe *",
-    "Confirmer le nouveau mot de passe *",
-    "Activer l’authentification à deux facteurs"
+    "Poste"
    ]
   },
   "valeursInitiales": [
    [
     "nom",
     "BASSONGUI Chabi Séko",
-    false
+    true
    ],
    [
     "identifiant",
@@ -6909,52 +6881,52 @@
    ],
    [
     "telephone",
-    "",
-    false
+    null,
+    null
    ],
    [
     "email",
-    "",
-    false
+    null,
+    null
    ],
    [
     "mfa",
-    true,
-    false
+    null,
+    null
    ]
   ],
   "avatar": "BC",
-  "activite": "Activité récente Modification — ParametrageNotifications Module CFG à l’instant Paramétrage — Valorisation des sorties Module M6 à l’instant Paramétrage — Valorisation des sorties Module M6 à l’instant Création — centre de coûts Module M12 à l’instant Création — centre de coûts Module M12 à l’instant Création — relevé de constantes Module M1 à l’instant",
+  "activite": "Activité récente Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant Création — relevé de constantes Module M1 à l’instant",
   "auditUtilisateur": [
    [
-    "Modification",
-    "ParametrageNotifications",
-    "CFG",
-    "2026-10-30T10:00:00.000Z"
-   ],
-   [
-    "Paramétrage",
-    "Valorisation des sorties",
-    "M6",
-    "2026-10-30T10:00:00.000Z"
-   ],
-   [
-    "Paramétrage",
-    "Valorisation des sorties",
-    "M6",
-    "2026-10-30T10:00:00.000Z"
+    "Création",
+    "relevé de constantes",
+    "M1",
+    "2026-10-30T21:12:31.208Z"
    ],
    [
     "Création",
-    "centre de coûts",
-    "M12",
-    "2026-10-30T10:00:00.000Z"
+    "relevé de constantes",
+    "M1",
+    "2026-10-30T21:12:31.208Z"
    ],
    [
     "Création",
-    "centre de coûts",
-    "M12",
-    "2026-10-30T10:00:00.000Z"
+    "relevé de constantes",
+    "M1",
+    "2026-10-30T21:12:31.208Z"
+   ],
+   [
+    "Création",
+    "relevé de constantes",
+    "M1",
+    "2026-10-30T21:12:31.208Z"
+   ],
+   [
+    "Création",
+    "relevé de constantes",
+    "M1",
+    "2026-10-30T21:12:31.208Z"
    ],
    [
     "Création",
@@ -6962,128 +6934,7 @@
     "M1",
     "2026-10-30T21:12:31.208Z"
    ]
-  ],
-  "enregistrer": {
-   "toasts": [
-    [
-     "Informations enregistrées."
-    ]
-   ],
-   "session": {
-    "role": "admin",
-    "nom": "NOUVEAU Nom",
-    "poste": "Administrateur système",
-    "identifiant": "c.bassongui",
-    "fonction": "direction",
-    "secteur": "ADM"
-   }
-  },
-  "enregistrerVide": {
-   "toasts": [],
-   "session": {
-    "role": "admin",
-    "nom": "NOUVEAU Nom",
-    "poste": "Administrateur système",
-    "identifiant": "c.bassongui",
-    "fonction": "direction",
-    "secteur": "ADM"
-   }
-  },
-  "mdpVide": {
-   "toasts": [
-    [
-     "Le formulaire comporte des erreurs."
-    ]
-   ],
-   "audit": 0,
-   "premier": {
-    "utilisateur": "BASSONGUI Chabi Séko",
-    "action": "Modification",
-    "module": "CFG",
-    "entite": "ParametrageNotifications",
-    "reference": "NOTIF",
-    "ancienneValeur": null,
-    "nouvelleValeur": "{\"canauxActifs\":20}",
-    "poste": "POSTE-LOCAL",
-    "succes": true
-   }
-  },
-  "mdpDivergent": {
-   "toasts": [
-    [
-     "Les deux mots de passe ne correspondent pas."
-    ]
-   ],
-   "audit": 0,
-   "premier": {
-    "utilisateur": "BASSONGUI Chabi Séko",
-    "action": "Modification",
-    "module": "CFG",
-    "entite": "ParametrageNotifications",
-    "reference": "NOTIF",
-    "ancienneValeur": null,
-    "nouvelleValeur": "{\"canauxActifs\":20}",
-    "poste": "POSTE-LOCAL",
-    "succes": true
-   }
-  },
-  "mdpCourt": {
-   "toasts": [
-    [
-     "Le mot de passe doit comporter au moins 8 caractères."
-    ]
-   ],
-   "audit": 0,
-   "premier": {
-    "utilisateur": "BASSONGUI Chabi Séko",
-    "action": "Modification",
-    "module": "CFG",
-    "entite": "ParametrageNotifications",
-    "reference": "NOTIF",
-    "ancienneValeur": null,
-    "nouvelleValeur": "{\"canauxActifs\":20}",
-    "poste": "POSTE-LOCAL",
-    "succes": true
-   }
-  },
-  "mdpTreize": {
-   "toasts": [
-    [
-     "Mot de passe modifié."
-    ]
-   ],
-   "audit": 0,
-   "premier": {
-    "utilisateur": "BASSONGUI Chabi Séko",
-    "action": "Modification",
-    "module": "M14",
-    "entite": "Utilisateur",
-    "reference": "c.bassongui",
-    "ancienneValeur": null,
-    "nouvelleValeur": "{\"motDePasse\":\"modifié\"}",
-    "poste": "POSTE-LOCAL",
-    "succes": true
-   }
-  },
-  "mdpValide": {
-   "toasts": [
-    [
-     "Mot de passe modifié."
-    ]
-   ],
-   "audit": 0,
-   "premier": {
-    "utilisateur": "BASSONGUI Chabi Séko",
-    "action": "Modification",
-    "module": "M14",
-    "entite": "Utilisateur",
-    "reference": "c.bassongui",
-    "ancienneValeur": null,
-    "nouvelleValeur": "{\"motDePasse\":\"modifié\"}",
-    "poste": "POSTE-LOCAL",
-    "succes": true
-   }
-  }
+  ]
  },
  "modules": {
   "lecture": {
@@ -7536,7 +7387,7 @@
   "fermerM7Confirmation": "Fermer « Module — Achats & Fournisseurs » ? Le module M7 entier disparaîtra du méga-menu, de la recherche globale et de ses adresses, pour tous les rôles, administrateur compris. Aucune donnée n’est supprimée : la réouverture rend les écrans en l’état. Motif (consigné dans le journal d’audit) Annuler Fermer l’activité",
   "fermerM7": {
    "fiche": {
-    "id": "MODxmvuswn40pzqo4",
+    "id": "MODxmvuswn402880t",
     "statut": "actif",
     "code": "MODULE-M7",
     "module": "M7",
@@ -7793,7 +7644,7 @@
   "rouvrirM7Confirmation": "Rouvrir « Module — Achats & Fournisseurs » ? Le module M7 réapparaîtra au méga-menu, avec leurs données inchangées. Annuler Rouvrir l’activité",
   "rouvrirM7": {
    "fiche": {
-    "id": "MODxmvuswn40pzqo4",
+    "id": "MODxmvuswn402880t",
     "statut": "actif",
     "code": "MODULE-M7",
     "module": "M7",
@@ -7961,11 +7812,11 @@
      "DASH — Tableaux de bord par poste"
     ]
    ],
-   "nbEcrans": 323
+   "nbEcrans": 324
   },
   "declarerCfg": {
    "fiche": {
-    "id": "MODxmvuswn40srvfd",
+    "id": "MODxmvuswn40scqim",
     "statut": "actif",
     "libelle": "Activité noyau test",
     "module": "CFG",
@@ -7996,7 +7847,7 @@
   },
   "declarerEcrans": {
    "fiche": {
-    "id": "MODxmvuswn400ssns",
+    "id": "MODxmvuswn40oh0vh",
     "statut": "actif",
     "libelle": "Écrans de test",
     "module": "M6",
@@ -8021,7 +7872,7 @@
   },
   "fermerEcrans": {
    "fiche": {
-    "id": "MODxmvuswn400ssns",
+    "id": "MODxmvuswn40oh0vh",
     "statut": "actif",
     "libelle": "Écrans de test",
     "module": "M6",
