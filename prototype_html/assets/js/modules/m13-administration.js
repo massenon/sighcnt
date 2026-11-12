@@ -45,7 +45,7 @@
          gagnait toujours, et sa forme muette laissait la colonne Traitement
          afficher des tirets. Un seul seed, une seule forme. */
       return K.crud({
-        collection: 'courriers', entite: 'courrier', entiteP: 'courriers', module: 'M13',
+        collection: 'courriers', entite: 'courrier', entiteP: 'courriers', module: 'M13', importer: 'courriers',
         defaultSort: 'date', defaultDir: 'desc', pageSize: 15,
         columns: [
           { key: 'reference', label: 'N° d’ordre', nowrap: true, render: function (c) { return el('span.font-mono.text-xs.font-semibold', { text: c.reference }); } },
@@ -82,8 +82,8 @@
           { name: 'date', label: 'Date', type: 'date', required: true },
           { name: 'correspondant', label: 'Correspondant', required: true, col: 'full' },
           { name: 'objet', label: 'Objet', required: true, col: 'full' },
-          { name: 'nature', label: 'Nature', type: 'select', required: true, options: ['Lettre', 'Courriel', 'Note', 'Facture', 'Convocation', 'Rapport'] },
-          { name: 'affecteA', label: 'Service destinataire', type: 'select', required: true, options: ['Direction Médicale', 'Direction Administrative', 'Comptabilité', 'Ressources humaines', 'Gestion des stocks', 'Laboratoire', 'Pharmacie'] },
+          { name: 'nature', label: 'Nature', type: 'select', required: true, options: D.COURRIERS.NATURES },
+          { name: 'affecteA', label: 'Service destinataire', type: 'select', required: true, options: D.COURRIERS.SERVICES },
           { name: 'traitement', label: 'État du traitement', type: 'select', required: true, options: [{ value: 'en_attente', label: 'En attente' }, { value: 'en_cours', label: 'En cours' }, { value: 'traite', label: 'Traité' }] },
           { name: 'accuseReception', label: 'Accusé de réception', type: 'checkbox' },
           { name: 'numerise', label: 'Document numérisé', type: 'checkbox' },

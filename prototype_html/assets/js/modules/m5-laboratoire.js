@@ -1550,7 +1550,7 @@
       + '« g/dl » — et non les notations normalisées 10⁹/L ou g/L. Le laboratoire lit ce qu’il écrit : '
       + 'lui imposer une autre notation, plus « correcte », l’obligerait à traduire à chaque lecture.',
     render: K.crud({
-      collection: 'unitesLabo', entite: 'unité', entiteP: 'unités', module: 'M5',
+      collection: 'unitesLabo', entite: 'unité', entiteP: 'unités', module: 'M5', importer: 'unites-labo',
       pageSize: 25, defaultSort: 'domaine', validation: { famille: 'labo_variables' },
       columns: [
         {
@@ -1577,7 +1577,7 @@
         { name: 'libelle', label: 'Intitulé complet', type: 'text', required: true, col: 'full' },
         {
           name: 'domaine', label: 'Domaine', type: 'select', required: true,
-          options: ['Hématologie', 'Biochimie', 'Hormonologie', 'Bactériologie', 'Parasitologie', 'Hémostase', 'Andrologie', 'Général'],
+          options: D.DOMAINES_UNITES_LABO,
         },
       ],
       kpis: function (rows) {

@@ -332,9 +332,7 @@
       { name: 'dateEffet', label: 'Date d’effet du changement', type: 'date', required: true,
         value: C.iso(AUJ), hint: 'La couverture précédente est close la veille de cette date.' },
       { name: 'motif', label: 'Motif du changement', type: 'select', required: true, col: 'full',
-        options: ['Changement d’employeur', 'Changement de compagnie par l’assuré',
-          'Convention non reconduite', 'Renouvellement de carte', 'Changement de police',
-          'Fin de couverture — patient redevenu non assuré', 'Correction d’une saisie erronée'] },
+        options: D.MOTIFS_COUVERTURE },
       { type: 'section', label: 'Nouvelle couverture' },
       { name: 'assureur', label: 'Compagnie', type: 'select', col: 'full',
         value: p.assureur || '',
@@ -412,6 +410,8 @@
     description: 'Fiche assuré : compagnie, numéro de police, catégorie de carte, taux et date d’expiration.',
     regle: '<strong>RG-09</strong> — la prise en charge n’est appliquée que si la carte est <strong>valide au moment de la facturation</strong>. '
       + 'À défaut, la facturation est intégrale au patient.',
+    /* « Importer les données » : le jeu des couvertures (même fabrique que « Mettre à jour la couverture »), selon le droit d'IMPORTER de ce jeu (lot IMP-B2). */
+    actions: function () { return [K.importer('couvertures-assurance')].filter(Boolean); },
     render: function (root) {
       var rows = assures();
       var host = el('div.space-y-4');
@@ -617,8 +617,9 @@
   function assuresDe(sousId) {
     return S.collection('patients').active().filter(function (p) { return p.souscripteurId === sousId; });
   }
+  /* La grille d'un souscripteur se LIT dans ses versions EN VIGUEUR aujourd'hui (lot IMP-B2) : une ligne par garantie, jamais les versions remplacées ni celles à venir. */
   function garantiesDuSouscripteur(sousId) {
-    return colGaranties().active().filter(function (g) { return g.souscripteurId === sousId; });
+    return PR.garantiesEnVigueur(colGaranties().active().filter(function (g) { return g.souscripteurId === sousId; }), C.iso(C.aujourdhui()));
   }
   function libelleCategorie(id) {
     var c = D.CATEGORIES_GARANTIE.filter(function (x) { return x.id === id; })[0];
@@ -637,7 +638,9 @@
         K.btn('Assurés & cartes', { icon: 'id-card', onclick: function () { global.SIGH.app.go('m9-assures'); } }),
         K.btn('Compagnies', { icon: 'building-2', onclick: function () { global.SIGH.app.go('m9-compagnies'); } }),
         K.btn('Prises en charge', { icon: 'shield-check', onclick: function () { global.SIGH.app.go('m9-prises-en-charge'); } }),
-      ];
+        /* « Importer les données » : le jeu des garanties (version datée, MÊME fabrique que la saisie à l'écran), selon le droit d'IMPORTER de ce jeu (lot IMP-B2). */
+        K.importer('garanties'),
+      ].filter(Boolean);
     },
     render: function (root) {
       var host = el('div.space-y-4');
@@ -877,16 +880,20 @@
             onclick: function () {
               var v = f.collect();
               if (!v) return;
+              /* La MÊME fabrique que l'importation (`PR.poserGarantie`) : la première ligne d'une série naît « depuis l'origine », aucune date d'effet n'est inventée. */
+              var refus = null;
               lignes.forEach(function (g, i) {
-                colGaranties().insert({
-                  souscripteurId: s.id, assureur: s.assureur,
-                  code: g.code, libelle: g.libelle, categorie: g.categorie,
+                if (refus) return;
+                var r = PR.poserGarantie({
+                  souscripteurId: s.id, code: g.code, libelle: g.libelle, categorie: g.categorie,
                   taux: Number(v['taux_' + i]) || 0,
                   plafond: v['plafond_' + i] === '' || v['plafond_' + i] == null ? null : Number(v['plafond_' + i]),
-                  unitePlafond: g.unitePlafond, zone: g.zone,
+                  unitePlafond: g.unitePlafond, sansDate: true,
                   source: D.BAREME_REFERENCE.reference + ' — ajusté par la clinique',
                 });
+                if (!r.ok) refus = r;
               });
+              if (refus) { U.toast('Convention non enregistrée.', { type: 'error', detail: refus.motif + '. ' + refus.geste }); return; }
               colSous().update(s.id, {
                 grilleSaisie: true,
                 actesExclus: D.BAREME_REFERENCE.actesExclus.slice(),
@@ -904,10 +911,13 @@
       });
     }
 
+    /* MODIFIER UNE GRILLE, C'EST POSER UNE VERSION DATÉE (lot IMP-B2) : la version remplacée reste écrite, la facture émise garde son taux. La date d'effet est obligatoire et la fabrique
+       (`PR.poserGarantie`, celle de l'importation) refuse une date qu'une facture a déjà dépassée. Une ligne dont ni le taux ni le plafond ne change n'écrit rien. */
     function editerGrille(s) {
       var g = garantiesDuSouscripteur(s.id);
       if (!g.length) { proposerBareme(s); return; }
-      var champs = [];
+      var champs = [{ name: 'dateEffet', label: 'Date d’effet des nouvelles valeurs', type: 'date', required: true, value: C.iso(C.aujourdhui()), col: 'full',
+        hint: 'Les valeurs actuelles restent écrites et servent aux pièces antérieures à cette date.' }];
       g.forEach(function (x, i) {
         champs.push({ name: 'taux_' + i, label: x.libelle + ' — taux (%)', type: 'number', min: 0, max: 100, value: x.taux });
         champs.push({ name: 'plafond_' + i, label: 'Plafond (FCFA)', type: 'money', min: 0, value: x.plafond });
@@ -922,14 +932,21 @@
             onclick: function () {
               var v = f.collect();
               if (!v) return;
+              var specs = [], refus = null, ecrits = 0;
               g.forEach(function (x, i) {
-                colGaranties().update(x.id, {
-                  taux: Number(v['taux_' + i]) || 0,
-                  plafond: v['plafond_' + i] === '' || v['plafond_' + i] == null ? null : Number(v['plafond_' + i]),
-                });
+                specs.push({ souscripteurId: s.id, code: x.code, libelle: x.libelle, categorie: x.categorie, unitePlafond: x.unitePlafond, dateEffet: v.dateEffet,
+                  taux: Number(v['taux_' + i]) || 0, plafond: v['plafond_' + i] === '' || v['plafond_' + i] == null ? null : Number(v['plafond_' + i]), source: 'Modification de la grille à l’écran' });
               });
+              /* Tout ou rien : chaque ligne est d'abord contrôlée sans rien écrire. */
+              specs.forEach(function (sp) {
+                if (refus) return;
+                var e = PR.poserGarantie(Object.assign({ essai: true }, sp));
+                if (!e.ok && e.code !== 'GARANTIE_INCHANGEE') refus = e;
+              });
+              if (refus) { U.toast('Grille non modifiée.', { type: 'error', detail: refus.motif + '. ' + refus.geste }); return; }
+              specs.forEach(function (sp) { var r = PR.poserGarantie(sp); if (r.ok) ecrits++; });
               m.close();
-              U.toast('Grille mise à jour.', { type: 'success' });
+              U.toast(ecrits ? 'Grille mise à jour : ' + ecrits + ' nouvelle(s) version(s) datée(s).' : 'Aucune valeur n’a changé : rien n’est écrit.', { type: ecrits ? 'success' : 'info' });
               dessiner();
             },
           }),
@@ -1027,6 +1044,9 @@
         { key: 'compagnie', label: 'Compagnie', render: function (g) { return U.badge(g.compagnie, 'navy'); } },
         { key: 'libelle', label: 'Garantie' },
         { key: 'categorie', label: 'Catégorie', text: libelleCategorie, render: function (g) { return libelleCategorie(g.categorie); } },
+        { key: 'dateEffet', label: 'Date d’effet', nowrap: true, text: function (g) { return g.dateEffet || ''; },
+          render: function (g) { return g.dateEffet ? C.dateFR(g.dateEffet) : el('span.text-xs.text-slate-400', { text: 'depuis l’origine' }); } },
+        { key: 'version', label: 'Version', align: 'right', render: function (g) { return 'v' + (g.version || 1); }, text: function (g) { return 'v' + (g.version || 1); } },
         {
           key: 'taux', label: 'Taux', align: 'right',
           render: function (g) { return el('span.font-semibold', { text: g.taux + ' %' }); },

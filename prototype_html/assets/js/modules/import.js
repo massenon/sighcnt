@@ -85,6 +85,11 @@
     LOT_OBLIGATOIRE: 'lot et péremption obligatoires (RG-05)', LOT_INCOMPLET: 'lot et péremption vont ensemble', LOT_INCONNU: 'lot absent pour cet article', LOT_PERIME: 'lot périmé',
     LOT_NON_FEFO: 'lot qui ne part pas en premier (FEFO, RG-05)', PEREMPTION_PASSEE: 'lot déjà périmé', QUANTITE_NULLE: 'quantité nulle',
     DETAIL_DEJA_MOUVEMENTE: 'article déjà mouvementé : le stock détail initial ne se pose qu’une fois', DETAIL_DEJA_EN_STOCK: 'stock détail déjà présent', STOCK_INCOHERENT: 'stocks gros et détail incohérents avec le stock total',
+    /* Jeux du lot IMP-B2 (couvertures, immobilisations, budgets, courriers) : jamais un code patient, une police, un numéro de compte, une année ni un numéro d'ordre. */
+    IGNORE_EXISTANT: 'fiche déjà tenue : ligne ignorée', PATIENT_INCONNU: 'dossier absent du répertoire', POLICE_INCONNUE: 'police absente des souscripteurs', POLICE_AUTRE_COMPAGNIE: 'police d’une autre compagnie',
+    DATE_EFFET_ANTERIEURE: 'date d’effet antérieure à la couverture en cours', CARTE_SANS_EXPIRATION: 'carte sans date d’expiration', FACTURE_DEJA_EMISE: 'facture déjà émise à partir de cette date',
+    VALEUR_NULLE: 'valeur nulle', COMPTE_NON_IMMOBILISATION: 'compte qui n’est pas un compte d’immobilisation', BIEN_CEDE: 'bien déjà cédé', EXERCICE_CLOS: 'exercice clos : lecture seule',
+    EXERCICE_EN_CLOTURE: 'exercice en clôture', NUMERO_INCOHERENT: 'numéro hors série', CORRESPONDANT_ABSENT: 'correspondant non renseigné', SERVICE_ABSENT: 'service non renseigné',
     DESTINATION_ABSENTE: 'aucun service destinataire', DESTINATIONS_MULTIPLES: 'plusieurs services destinataires : une feuille est un seul bon', BON_UNIQUE: 'plusieurs valeurs pour un bon unique', FEUILLE_UNIQUE: 'plusieurs valeurs pour une feuille unique',
   };
   function masquer(j, p) {
@@ -1440,6 +1445,563 @@
     },
   });
 
+  /* ==========================================================================
+   * LOT IMP-B2 (12/11/2026) : LES DIX AUTRES RÉFÉRENTIELS (PRD-IMP 4 et 7.2, maquette seule).
+   * --------------------------------------------------------------------------
+   * Un référentiel est lu des DEUX côtés, l'écran et le fichier : chaque jeu écrit par la fabrique ou la garde que la saisie à l'écran emploie, jamais à côté.
+   *   garanties            `PR.poserGarantie` (version datée, jamais d'écrasement), la même que « Conventions & garanties » ;
+   *   couvertures          `PR.changerCouverture` (l'ancienne se clôt, la fiche du dossier suit la couverture en force aujourd'hui) ;
+   *   budgets              la garde du magasin (`S.garder('budgets')`) et l'état de l'exercice (`SIGH.exercice`) ;
+   *   courriers            la série annuelle ARR-AAAA-NNNN et DEP-AAAA-NNNN de l'écran (`C.referenceSuivante`) ;
+   *   immobilisations      les champs de l'écran, l'amortissement se CALCULE à la lecture et n'est jamais importé ;
+   *   les autres           les listes de choix de l'écran (`D.SECTEURS_ACTIVITE`, `D.CATEGORIES_IMMOBILISATION`, `D.IMAGERIE.MODALITES`, ...).
+   * Un import ne modifie JAMAIS une fiche tenue. Les quatre jeux RESTREINTS (couvertures, immobilisations, budgets, courriers) ne recopient aucune valeur de cellule.
+   * ======================================================================== */
+  function pbRefus(colonne, valeur, code, motif, geste) { return { colonne: colonne, valeur: valeur, code: code, niveau: 'refus', motif: motif, geste: geste }; }
+  function pbAvert(colonne, valeur, code, motif, geste) { return { colonne: colonne, valeur: valeur, code: code, niveau: 'avertissement', motif: motif, geste: geste }; }
+  /** Un jeu écrit des fiches NEUVES : l'annulation d'un lot archive ce que le lot a écrit tant qu'aucun acte ne s'appuie dessus (`dependances` dit lequel sinon). */
+  function actifsParCode(nom, champ) { var o = {}; toutes(nom).forEach(function (x) { if (x.statut !== 'archive' && x[champ] != null) o[C.norm(x[champ])] = x; }); return o; }
+
+  /* --- 11. NATURES DE FACTURE --------------------------------------------------------------------------------------------------- */
+  JEUX.push({
+    id: 'natures-facture', ecran: 'imp-natures-facture', libelle: 'Importation des natures de facture', module: 'CFG', statut: 'supporte',
+    description: 'Natures proposées à l’émission d’une facture : code, nature, secteur émetteur.',
+    source: 'Écran « Natures de facture » (configuration) : la liste que la caisse propose à l’émission.',
+    limite: 'Le secteur émetteur se choisit parmi les secteurs porteurs d’activité facturable que propose l’écran « Natures de facture » (la même liste que la saisie). Une nature importée est proposée à la caisse dès l’import.',
+    cibles: ['naturesFacture'], fichierModele: 'modele-import-natures-facture',
+    colonnes: [
+      oblig('code', 'Code', 'texte', { motif: /^[A-Za-z0-9]{2,8}$/, motifTexte: '2 à 8 lettres ou chiffres, sans espace', exemple: 'ORTH', aide: 'Quatre lettres en usage ; écrit en majuscules. Un code déjà tenu refuse le fichier.' }),
+      oblig('libelle', 'Nature de la facture', 'texte', { longueurMax: 80, exemple: 'Orthopédie', aide: 'Le libellé que la caisse choisit à l’émission : deux natures ne portent jamais le même.' }),
+      oblig('secteur', 'Secteur émetteur', 'liste', { liste: function () { return D.SECTEURS_ACTIVITE; }, exemple: 'Chirurgie' }),
+      col('source', 'Origine', 'texte', { longueurMax: 120, exemple: 'Décision de la Direction' }),
+    ],
+    contexte: function () { return { codes: actifsParCode('naturesFacture', 'code'), libelles: actifsParCode('naturesFacture', 'libelle'), archives: toutes('naturesFacture').filter(function (x) { return x.statut === 'archive'; }).length }; },
+    cle: function (v) { return [C.norm(v.code), 'lib:' + C.norm(v.libelle)]; },
+    existe: function (v, ctx) {
+      var a = ctx.codes[C.norm(v.code)], b = ctx.libelles[C.norm(v.libelle)];
+      if (a) return 'la nature « ' + a.code + ' » existe déjà (' + a.libelle + ')';
+      return b ? 'la nature « ' + b.libelle + ' » existe déjà sous le code ' + b.code : null;
+    },
+    gesteExiste: 'Retirez la ligne : une nature tenue se modifie à l’écran « Natures de facture ».',
+    regles: function () { return []; },
+    ecrire: function (lignes, ecrireFiche) {
+      lignes.forEach(function (l) {
+        var v = l.v, f = { code: String(v.code).toUpperCase(), libelle: v.libelle, secteur: v.secteur, ordre: toutes('naturesFacture').length + 1 };
+        if (v.source) f.source = v.source;
+        ecrireFiche('naturesFacture', f, { module: 'CFG', entite: 'nature de facture', prefix: 'NAT' });
+      });
+    },
+    dependances: function (lot) {
+      var libs = {};
+      lot.ecrits.forEach(function (e) { var n = S.collection('naturesFacture').get(e.id); if (n) libs[n.libelle] = true; });
+      var f = S.collection('factures').active().filter(function (x) { return libs[x.type] || libs[x.nature]; })[0];
+      return f ? { code: 'NATURE_UTILISEE', motif: 'la facture ' + f.numero + ' porte déjà cette nature', geste: 'Archivez la nature à l’écran « Natures de facture » (RG-14) plutôt que d’annuler son lot.' } : null;
+    },
+  });
+
+  /* --- 12. CENTRES DE COÛTS ----------------------------------------------------------------------------------------------------- */
+  JEUX.push({
+    id: 'centres-couts', ecran: 'imp-centres-couts', libelle: 'Importation des centres de coûts', module: 'M12', statut: 'supporte',
+    description: 'Axes d’imputation analytique : code, intitulé, type, responsable.',
+    source: 'Écran « Centres de coûts » : les six secteurs porteurs de recette plus la Direction (transverse), complétés par la clinique.',
+    limite: 'Le code EST l’imputation que portent les écritures comptables : il ne se double jamais, majuscules et minuscules confondues, et un code tenu n’est jamais modifié.',
+    cibles: ['centresCouts'], fichierModele: 'modele-import-centres-couts',
+    colonnes: [
+      oblig('code', 'Code', 'texte', { motif: /^[A-Za-z0-9_-]{2,24}$/, motifTexte: '2 à 24 lettres, chiffres, tiret ou souligné, sans espace', exemple: 'orthopedie', aide: 'L’imputation portée par les écritures. Écrit tel quel.' }),
+      oblig('libelle', 'Intitulé du centre', 'texte', { longueurMax: 80, exemple: 'Orthopédie' }),
+      oblig('type', 'Type', 'liste', { liste: [{ valeur: 'exploitation', label: 'Centre d’exploitation' }, { valeur: 'support', label: 'Centre de support' }], exemple: 'Centre d’exploitation' }),
+      col('responsable', 'Responsable', 'texte', { longueurMax: 80, exemple: '' }),
+      col('source', 'Origine', 'texte', { longueurMax: 120, exemple: 'Décision de la Direction' }),
+    ],
+    contexte: function () { return { codes: actifsParCode('centresCouts', 'code'), libelles: actifsParCode('centresCouts', 'libelle') }; },
+    cle: function (v) { return [C.norm(v.code), 'lib:' + C.norm(v.libelle)]; },
+    existe: function (v, ctx) {
+      var a = ctx.codes[C.norm(v.code)], b = ctx.libelles[C.norm(v.libelle)];
+      if (a) return 'le centre « ' + a.code + ' » existe déjà (' + a.libelle + ')';
+      return b ? 'le centre « ' + b.libelle + ' » existe déjà sous le code ' + b.code : null;
+    },
+    gesteExiste: 'Retirez la ligne : le code d’un centre ne se double jamais (les écritures le portent) ; un centre tenu se modifie à l’écran « Centres de coûts ».',
+    regles: function (v) {
+      return v.responsable ? [] : [pbAvert('Responsable', '', 'SANS_RESPONSABLE', 'aucun responsable désigné', 'Il se désigne à l’écran « Centres de coûts ».')];
+    },
+    ecrire: function (lignes, ecrireFiche) {
+      lignes.forEach(function (l) {
+        var v = l.v, f = { code: v.code, libelle: v.libelle, type: v.type, responsable: v.responsable || null };
+        if (v.source) f.source = v.source;
+        ecrireFiche('centresCouts', f, { module: 'M12', entite: 'centre de coûts', prefix: 'CC' });
+      });
+    },
+    dependances: function (lot) {
+      var codes = {}, budgets = false;
+      lot.ecrits.forEach(function (e) { var c = S.collection('centresCouts').get(e.id); if (c) codes[c.code] = true; });
+      var ec = S.collection('ecritures').active().filter(function (x) { return codes[x.centreCout]; })[0];
+      if (ec) return { code: 'CENTRE_IMPUTE', motif: 'l’écriture ' + ec.numero + ' est déjà imputée à ce centre', geste: 'Archivez le centre à l’écran « Centres de coûts » (RG-14) plutôt que d’annuler son lot.' };
+      var b = S.collection('budgets').active().filter(function (x) { return codes[x.centreCout]; })[0];
+      return b ? { code: 'CENTRE_BUDGETE', motif: 'le budget ' + b.reference + ' porte déjà ce centre', geste: 'Annulez d’abord le lot de budgets, ou archivez le centre.' } : null;
+    },
+  });
+
+  /* --- 13. CATALOGUE DE L'IMAGERIE ---------------------------------------------------------------------------------------------- */
+  JEUX.push({
+    id: 'catalogue-imagerie', ecran: 'imp-catalogue-imagerie', libelle: 'Importation du catalogue de l’imagerie', module: 'CFG', statut: 'supporte',
+    description: 'Examens d’imagerie : code, libellé, modalité (échographie, radiographie, mammographie, scanner, IRM), voie d’abord, code tarifaire.',
+    source: 'Écran « Catalogue de l’imagerie » : l’examen est un acte facturable, rangé dans le tableau de sa modalité.',
+    limite: 'PROPOSITION À VALIDER : un examen importé naît « à valider » et le dit ; il ne porte AUCUNE variable de compte rendu (elles se définissent au catalogue). Le prix ne s’importe pas : sans tarif en vigueur, l’examen est refusé à la prescription en le nommant.',
+    cibles: ['examensImagerie'], fichierModele: 'modele-import-catalogue-imagerie',
+    colonnes: [
+      oblig('code', 'Code examen', 'texte', { motif: /^[A-Za-z0-9_-]{2,40}$/, motifTexte: '2 à 40 lettres, chiffres, tiret ou souligné', exemple: 'IMG-RAD-THO', aide: 'Aligné sur le code du référentiel tarifaire : un examen est un acte facturable.' }),
+      oblig('libelle', 'Intitulé', 'texte', { longueurMax: 160, exemple: 'Radiographie du thorax' }),
+      oblig('modalite', 'Modalité', 'liste', { liste: function () { return ((D.IMAGERIE && D.IMAGERIE.MODALITES) || []).map(function (m) { return { valeur: m.code, label: m.label }; }); }, exemple: 'Radiographie', aide: 'Elle range l’examen dans SON tableau.' }),
+      col('voie', 'Voie d’abord', 'texte', { longueurMax: 60, exemple: 'sus-pubienne' }),
+      col('tarifCode', 'Code tarifaire (si différent)', 'texte', { longueurMax: 30, exemple: '', aide: 'Quand l’examen se facture comme un autre.' }),
+    ],
+    contexte: function () { return { examens: actifsParCode('examensImagerie', 'code'), jour: aujourdhuiIso() }; },
+    cle: function (v) { return [C.norm(v.code)]; },
+    existe: function (v, ctx) { var x = ctx.examens[C.norm(v.code)]; return x ? 'l’examen « ' + x.code + ' » existe déjà (' + x.label + ')' : null; },
+    gesteExiste: 'Retirez la ligne : un examen tenu se modifie à l’écran « Catalogue de l’imagerie ».',
+    regles: function (v, ctx) {
+      var pb = [], tarif = D.tarifPrix ? D.tarifPrix(v.tarifCode || v.code, false, ctx.jour) : { montant: null };
+      pb.push(pbAvert('Code examen', '', 'A_VALIDER', 'examen importé en proposition : il porte la mention « à valider » jusqu’à la relecture du praticien de la famille', 'L’échographiste ou le directeur médical le valide à l’écran « Catalogue de l’imagerie ».'));
+      pb.push(pbAvert('Code examen', '', 'SANS_VARIABLES', 'aucune variable de compte rendu n’est importée', 'Elles se définissent au catalogue (onglet « Variables »), jamais depuis un fichier.'));
+      if (tarif.montant == null) pb.push(pbAvert(v.tarifCode ? 'Code tarifaire (si différent)' : 'Code examen', v.tarifCode || v.code, 'SANS_TARIF', 'aucun tarif en vigueur pour ce code : l’examen sera refusé à la prescription en le nommant',
+        'Proposez son prix à l’écran « Tarifs et prix » (famille Imagerie médicale) ou indiquez le code tarifaire d’un examen déjà tarifé.'));
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche) {
+      lignes.forEach(function (l) {
+        var v = l.v, m = D.IMAGERIE && D.IMAGERIE.modalite ? D.IMAGERIE.modalite(v.modalite) : null;
+        ecrireFiche('examensImagerie', { code: v.code, label: v.libelle, icone: (m && m.icone) || 'scan-line', voie: v.voie || null, modalite: v.modalite, tarifCode: v.tarifCode || null, aValider: true },
+          { module: 'CFG', entite: 'examen d’imagerie', prefix: 'EXI' });
+      });
+    },
+    dependances: function (lot) {
+      var codes = {};
+      lot.ecrits.forEach(function (e) { var x = S.collection('examensImagerie').get(e.id); if (x) codes[x.code] = true; });
+      var d = S.collection('demandesImagerie').active().filter(function (x) { return codes[x.examenCode]; })[0];
+      return d ? { code: 'EXAMEN_DEMANDE', motif: 'l’examen est déjà demandé (' + d.reference + ')', geste: 'Archivez l’examen à l’écran « Catalogue de l’imagerie » (RG-14) plutôt que d’annuler son lot.' } : null;
+    },
+  });
+
+  /* --- 14. UNITÉS DE MESURE DU LABORATOIRE -------------------------------------------------------------------------------------- */
+  JEUX.push({
+    id: 'unites-labo', ecran: 'imp-unites-labo', libelle: 'Importation des unités de mesure', module: 'M5', statut: 'supporte',
+    description: 'Unités dans lesquelles les résultats s’expriment : symbole tel que le laboratoire l’écrit, intitulé, domaine.',
+    source: 'Fiche de résultats de la clinique du 21/08/2026 et écran « Unités de mesure » : « G/l », « T/l », « g/dl », jamais les notations normalisées.',
+    limite: 'Le symbole s’écrit comme le laboratoire le lit et ne se normalise JAMAIS : « G/l » (giga par litre) et « g/l » (gramme par litre) sont deux unités. Une unité importée naît « à confirmer » ; le biologiste médical la valide.',
+    cibles: ['unitesLabo'], fichierModele: 'modele-import-unites-labo',
+    colonnes: [
+      oblig('symbole', 'Symbole', 'texte', { longueurMax: 20, exemple: 'mmol/l', aide: 'Tel qu’il s’imprime sur la fiche de résultats. Les majuscules et minuscules comptent.' }),
+      oblig('libelle', 'Intitulé complet', 'texte', { longueurMax: 80, exemple: 'millimole par litre' }),
+      oblig('domaine', 'Domaine', 'liste', { liste: function () { return D.DOMAINES_UNITES_LABO; }, exemple: 'Biochimie' }),
+    ],
+    contexte: function () { var o = {}; toutes('unitesLabo').forEach(function (u) { if (u.statut !== 'archive') o[String(u.symbole)] = u; }); return { unites: o }; },
+    cle: function (v) { return [String(v.symbole)]; },
+    existe: function (v, ctx) { var u = ctx.unites[String(v.symbole)]; return u ? 'l’unité « ' + u.symbole + ' » existe déjà (' + u.libelle + ')' : null; },
+    gesteExiste: 'Retirez la ligne : une unité tenue se modifie à l’écran « Unités de mesure ».',
+    regles: function () { return [pbAvert('Symbole', '', 'A_CONFIRMER', 'unité importée « à confirmer » jusqu’à sa validation par le biologiste médical', 'Le biologiste la valide à l’écran « Unités de mesure ».')]; },
+    ecrire: function (lignes, ecrireFiche) {
+      lignes.forEach(function (l) {
+        ecrireFiche('unitesLabo', { symbole: l.v.symbole, libelle: l.v.libelle, domaine: l.v.domaine, aValider: true }, { module: 'M5', entite: 'unité', prefix: 'UNI' });
+      });
+    },
+    dependances: function (lot) {
+      var sym = {};
+      lot.ecrits.forEach(function (e) { var u = S.collection('unitesLabo').get(e.id); if (u) sym[u.symbole] = true; });
+      var v = S.collection('variablesLabo').active().filter(function (x) { return sym[x.unite]; })[0];
+      return v ? { code: 'UNITE_UTILISEE', motif: 'la variable « ' + (v.libelle || v.code) + ' » s’exprime déjà dans cette unité', geste: 'Archivez l’unité à l’écran « Unités de mesure » (RG-14) plutôt que d’annuler son lot.' } : null;
+    },
+  });
+
+  /* --- 15. PRESTATAIRES EXTERNES ------------------------------------------------------------------------------------------------ */
+  JEUX.push({
+    id: 'prestataires', ecran: 'imp-prestataires', libelle: 'Importation des prestataires externes', module: 'M10', statut: 'supporte',
+    description: 'Intervenants extérieurs rémunérés à l’acte : nom, spécialité, téléphone, tarif par acte, IFU, facture normalisée.',
+    source: 'Écran « Prestataires externes » (circoncision, hydrotubation, accouchement, analyses, chirurgie, échographie, anesthésie).',
+    limite: 'Les actes réalisés ne s’importent pas : c’est un compteur d’activité du mois, il part de zéro. Le numéro (PE-NNNN) est attribué par le logiciel, jamais lu du fichier.',
+    cibles: ['prestataires'], fichierModele: 'modele-import-prestataires',
+    colonnesRetirees: [
+      { label: 'Actes réalisés', motif: 'les actes réalisés sont un compteur d’activité du mois : ils ne s’importent pas et partent de zéro' },
+      { label: 'N°', motif: 'le numéro PE-NNNN est attribué par le logiciel, jamais lu d’un fichier' },
+    ],
+    colonnes: [
+      oblig('nom', 'Nom du prestataire', 'texte', { longueurMax: 120, exemple: 'Dr SANNI Idrissou' }),
+      oblig('specialite', 'Spécialité / type d’acte', 'liste', { liste: function () { return D.SPECIALITES_PRESTATAIRE; }, exemple: 'Chirurgie' }),
+      col('telephone', 'Téléphone', 'texte', { longueurMax: 30, exemple: '0197000000' }),
+      oblig('tarifActe', 'Tarif par acte (FCFA)', 'entier', { min: 0, exemple: 25000, aide: 'Montant entier en francs, zéro ou plus. Un tiret n’est pas un zéro : il est refusé.' }),
+      col('ifu', 'IFU du prestataire', 'texte', { motif: /^\d{13}$/, motifTexte: '13 chiffres', exemple: '3202112446712' }),
+      col('factureNormalisee', 'Facture normalisée fournie', 'liste', { liste: [{ valeur: 'oui', label: 'Oui' }, { valeur: 'non', label: 'Non' }], exemple: 'Non', aide: 'Vide : « Non » (comme l’écran).' }),
+    ],
+    contexte: function () {
+      var n = {}, f = {};
+      toutes('prestataires').forEach(function (p) { if (p.statut === 'archive') return; n[C.norm(p.nom)] = p; if (p.ifu) f[p.ifu] = p; });
+      return { noms: n, ifus: f };
+    },
+    cle: function (v) { return [C.norm(v.nom)].concat(v.ifu ? ['ifu:' + v.ifu] : []); },
+    existe: function (v, ctx) {
+      var a = v.ifu ? ctx.ifus[v.ifu] : null, b = ctx.noms[C.norm(v.nom)];
+      if (a) return 'un prestataire porte déjà cet IFU (' + a.nom + ')';
+      return b ? 'le prestataire « ' + b.nom + ' » existe déjà' : null;
+    },
+    gesteExiste: 'Retirez la ligne : un prestataire tenu se modifie à l’écran « Prestataires externes ».',
+    regles: function (v) {
+      var pb = [];
+      if (!v.ifu) pb.push(pbAvert('IFU du prestataire', '', 'IFU_ABSENT', 'IFU absent : la charge n’est pas déductible', 'Renseignez-le dès que le prestataire le fournit.'));
+      if (v.factureNormalisee !== 'oui') pb.push(pbAvert('Facture normalisée fournie', '', 'FACTURE_NORMALISEE_ABSENTE', 'pas de facture normalisée : la dépense reste hors du circuit MECeF', 'Le prestataire doit la fournir ; la case se coche à l’écran.'));
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche) {
+      lignes.forEach(function (l) {
+        var v = l.v;
+        ecrireFiche('prestataires', { reference: C.referenceSuivante('PE-', 4, toutes('prestataires')), nom: v.nom, specialite: v.specialite, telephone: v.telephone || null,
+          tarifActe: v.tarifActe, actesRealises: 0, ifu: v.ifu || null, factureNormalisee: v.factureNormalisee === 'oui' }, { module: 'M10', entite: 'PrestataireExterne' });
+      });
+    },
+    dependances: function (lot) {
+      var p = lot.ecrits.map(function (e) { return S.collection('prestataires').get(e.id); }).filter(function (x) { return x && x.actesRealises > 0; })[0];
+      return p ? { code: 'PRESTATAIRE_EN_ACTIVITE', motif: 'le prestataire « ' + p.nom + ' » a déjà ' + p.actesRealises + ' acte(s) réalisé(s) ce mois', geste: 'Archivez-le à l’écran « Prestataires externes » (RG-14).' } : null;
+    },
+  });
+
+  /* --- 16. GARANTIES (version datée) -------------------------------------------------------------------------------------------- */
+  function decrireGarantie(g) {
+    if (!g) return 'aucune version';
+    return g.taux + ' %, ' + (g.plafond == null ? 'sans plafond' : 'plafond ' + C.num(g.plafond) + ' ' + (PR.libelleUnite ? PR.libelleUnite(g.unitePlafond) : g.unitePlafond));
+  }
+  var COLONNE_DU_REFUS_GARANTIE = { SOUSCRIPTEUR_INCONNU: 'N° de police', CATEGORIE_INCONNUE: 'Catégorie', GARANTIE_SANS_LIBELLE: 'Garantie', TAUX_INVALIDE: 'Taux (%)', PLAFOND_INVALIDE: 'Plafond (FCFA)',
+    UNITE_PLAFOND_REQUISE: 'Unité du plafond', DATE_EFFET_REQUISE: 'Date d’effet', VERSION_MEME_DATE: 'Date d’effet', VERSION_ANTERIEURE: 'Date d’effet', FACTURE_DEJA_EMISE: 'Date d’effet' };
+  JEUX.push({
+    id: 'garanties', ecran: 'imp-garanties', libelle: 'Importation des garanties des souscripteurs', module: 'M9', statut: 'supporte',
+    description: 'Taux et plafonds par souscripteur et par garantie, avec une date d’effet : chaque ligne qui change crée une NOUVELLE VERSION datée, jamais un écrasement.',
+    source: 'Conventions de prise en charge par souscripteur (barème de remboursement, docs/) et écran « Conventions & garanties ».',
+    limite: 'Une version ne s’écrit que pour un souscripteur connu (par son numéro de police). La version remplacée reste écrite : une facture émise garde son taux, et une date d’effet qu’une facture a déjà dépassée est refusée. La clé est le souscripteur, la catégorie, la garantie (une catégorie en porte plusieurs : consultation généraliste et spécialiste) et la date d’effet. Une seule version par garantie et par fichier.',
+    cibles: ['garanties'], fichierModele: 'modele-import-garanties',
+    colonnes: [
+      oblig('police', 'N° de police', 'texte', { longueurMax: 40, exemple: 'AFR/2024/0100', aide: 'La police d’un souscripteur connu : importez-le d’abord au besoin.' }),
+      oblig('categorie', 'Catégorie', 'liste', { liste: function () { return D.CATEGORIES_GARANTIE.map(function (c) { return { valeur: c.id, label: c.label }; }); }, exemple: 'Consultations' }),
+      oblig('garantie', 'Garantie', 'texte', { longueurMax: 120, exemple: 'Consultation généraliste', aide: 'Le libellé de la garantie : il distingue deux garanties d’une même catégorie.' }),
+      oblig('taux', 'Taux (%)', 'decimal', { min: 0, max: 100, exemple: 80 }),
+      col('plafond', 'Plafond (FCFA)', 'entier', { min: 0, exemple: 5000, aide: 'Vide : sans plafond. Un tiret n’est pas un zéro.' }),
+      col('unite', 'Unité du plafond', 'liste', { liste: function () { return D.UNITES_PLAFOND.map(function (u) { return { valeur: u.id, label: u.label }; }); }, exemple: 'par acte', aide: 'Obligatoire quand un plafond est renseigné.' }),
+      oblig('dateEffet', 'Date d’effet', 'date', { exemple: '2027-01-01', aide: 'Le jour où ces valeurs s’appliquent. Les pièces antérieures gardent les valeurs de leur date.' }),
+      col('motif', 'Motif', 'texte', { longueurMax: 160, exemple: 'Avenant du 01/12/2026' }),
+      col('source', 'Source', 'texte', { longueurMax: 160, exemple: '' }),
+    ],
+    contexte: function () {
+      var p = {};
+      toutes('souscripteurs').forEach(function (s) { if (s.statut !== 'archive') p[C.norm(s.police)] = s; });
+      return { polices: p };
+    },
+    cle: function (v) { return [C.norm(v.police) + '|' + v.categorie + '|' + C.norm(v.garantie) + '|' + v.dateEffet]; },
+    regles: function (v, ctx, sc, n) {
+      var pb = [], ligne = sc.ligne, s = ctx.polices[C.norm(v.police)];
+      if (!s) return [pbRefus('N° de police', v.police, 'SOUSCRIPTEUR_INCONNU', 'aucun souscripteur ne porte la police « ' + v.police + ' »', 'Importez d’abord le souscripteur (jeu « Importation des souscripteurs ») ou corrigez le numéro de police.')];
+      var e = PR.poserGarantie({ essai: true, souscripteurId: s.id, categorie: v.categorie, libelle: v.garantie, taux: v.taux, plafond: v.plafond, unitePlafond: v.unite, dateEffet: v.dateEffet });
+      var nouveau = decrireGarantie({ taux: v.taux, plafond: v.plafond, unitePlafond: v.unite });
+      if (!e.ok && e.code === 'GARANTIE_INCHANGEE') {
+        ligne.sansEcriture = 'inchange';
+        sc.extras[n] = { ancien: nouveau, nouveau: nouveau, variation: '', decision: 'Inchangée' };
+        return [{ colonne: 'Taux (%)', valeur: '', code: 'GARANTIE_INCHANGEE', niveau: 'info', motif: 'cette garantie porte déjà ces valeurs à cette date : aucune version, la ligne est comptée', geste: 'Rien à faire.' }];
+      }
+      if (!e.ok) return [pbRefus(COLONNE_DU_REFUS_GARANTIE[e.code] || 'Garantie', '', e.code, e.motif, e.geste)];
+      var anc = e.ancienne && (!e.ancienne.dateEffet || e.ancienne.dateEffet <= v.dateEffet) ? e.ancienne : null;
+      sc.extras[n] = { ancien: anc ? decrireGarantie(anc) : 'première version', nouveau: nouveau, variation: anc ? (Math.round((v.taux - anc.taux) * 10) / 10 > 0 ? '+' : '') + (Math.round((v.taux - anc.taux) * 10) / 10) + ' pt' : '',
+        decision: anc ? 'Nouvelle version v' + e.version + ' au ' + C.dateFR(v.dateEffet) : 'Première version au ' + C.dateFR(v.dateEffet) };
+      if (v.unite && v.plafond == null) pb.push(pbAvert('Unité du plafond', '', 'UNITE_SANS_PLAFOND', 'une unité de plafond sans plafond : elle est ignorée (garantie sans plafond)', 'Retirez l’unité ou renseignez le plafond.'));
+      return pb;
+    },
+    /* Une seule version par garantie et par fichier : deux dates pour la même garantie se poseraient dans l'ordre du fichier, et la seconde serait refusée à l'écriture, le lot entier avec elle. */
+    reglesLot: function (lignes, ctx) {
+      var vus = {}, out = [];
+      lignes.forEach(function (l) {
+        if (l.sansEcriture || l.etat === 'refus') return;
+        var k = C.norm(l.v.police) + '|' + l.v.categorie + '|' + C.norm(l.v.garantie);
+        if (vus[k]) out.push({ n: 0, colonne: 'Date d’effet', valeur: '', code: 'UNE_VERSION_PAR_GARANTIE', niveau: 'refus',
+          motif: 'la garantie porte deux versions dans ce fichier (lignes ' + vus[k] + ' et ' + l.n + ') : une seule version par garantie et par fichier',
+          geste: 'Gardez une ligne par garantie ; la version suivante s’importe dans un second fichier.' });
+        else vus[k] = l.n;
+      });
+      return out;
+    },
+    ecrire: function (lignes, ecrireFiche, lot, ctx, declarer) {
+      lignes.forEach(function (l) {
+        var v = l.v, s = ctx.polices[C.norm(v.police)];
+        var r = PR.poserGarantie({ souscripteurId: s.id, categorie: v.categorie, libelle: v.garantie, taux: v.taux, plafond: v.plafond, unitePlafond: v.unite, dateEffet: v.dateEffet,
+          source: v.source || ('Lot d’import ' + lot.reference), motif: v.motif || null, champs: { lotImport: lot.reference, validePar: S.currentUser(), dateImport: aujourdhuiIso() } });
+        if (!r.ok) throw new Error('ligne ' + l.n + ' : ' + r.motif);
+        declarer('garanties', r.garantie.id);
+      });
+    },
+    /* Une version s'annule (archivage) tant qu'aucune facture n'a été émise sous elle et qu'aucune version plus récente de la série n'a été posée. */
+    dependances: function (lot) {
+      var out = null;
+      lot.ecrits.forEach(function (e) {
+        if (out || e.collection !== 'garanties') return;
+        var g = S.collection('garanties').get(e.id);
+        if (!g || g.statut === 'archive') return;
+        var propres = {}; lot.ecrits.forEach(function (x) { propres[x.id] = true; });
+        var posterieure = PR.versionsGarantie(g.souscripteurId, g.categorie, g.libelle).filter(function (x) { return !propres[x.id] && (x.dateEffet || '') > (g.dateEffet || ''); })[0];
+        if (posterieure) { out = { code: 'VERSION_POSTERIEURE', motif: 'une version plus récente de « ' + g.libelle + ' » prend effet le ' + C.dateFR(posterieure.dateEffet), geste: 'Annulez d’abord le lot qui a posé la version plus récente.' }; return; }
+        var s = S.collection('souscripteurs').get(g.souscripteurId), f = s && g.dateEffet ? PR.factureSousGrille(s, g.dateEffet) : null;
+        if (f) out = { code: 'GARANTIE_UTILISEE', motif: 'la facture ' + f.numero + ' du ' + C.dateFR(f.date) + ' a été émise sous cette version', geste: 'Une version employée par une pièce émise ne s’annule plus : posez une nouvelle version datée.' };
+      });
+      return out;
+    },
+  });
+
+  /* --- 17. COUVERTURES D'ASSURANCE (RESTREINT, version datée par assuré) -------------------------------------------------------- */
+  var CHAMPS_MIROIR_ASSURE = ['assureur', 'assureurNom', 'numeroPolice', 'categorieAssurance', 'tauxPriseEnCharge', 'carteExpiration', 'souscripteurId', 'souscripteur'];
+  JEUX.push({
+    id: 'couvertures-assurance', ecran: 'imp-couvertures-assurance', libelle: 'Importation des couvertures d’assurance', module: 'M9', statut: 'supporte',
+    description: 'Changement de couverture d’un assuré à une date d’effet : compagnie, police, motif, expiration de la carte. La couverture en cours est close la veille.',
+    source: 'Écran « Assurés & cartes », geste « Mettre à jour la couverture » : l’historique conserve la couverture précédente.',
+    limite: 'La date d’effet et le motif sont OBLIGATOIRES : une date qu’on n’a pas saisie ne s’invente pas (aucune couverture « depuis l’origine » n’est écrite par un import). Le dossier du patient n’est jamais écrit par ce jeu : la fiche suit la couverture en force aujourd’hui, comme à l’écran. Aucune facture n’est écrite ni modifiée.',
+    cibles: ['couverturesAssurance'], fichierModele: 'modele-import-couvertures-assurance',
+    colonnes: [
+      oblig('patient', 'Code patient', 'texte', { longueurMax: 24, exemple: 'CNT/1/26', aide: 'Le code d’un dossier connu. Un code attribué ne se modifie jamais (RG-01).' }),
+      oblig('assureur', 'Code compagnie', 'liste', { liste: function (ctx) { return ctx.assureursListe; }, exemple: 'NSIA', aide: 'Une compagnie connue du magasin.' }),
+      oblig('police', 'N° de police', 'texte', { longueurMax: 40, exemple: 'AFR/2024/0100', aide: 'La police d’un souscripteur connu de cette compagnie.' }),
+      oblig('dateEffet', 'Date d’effet', 'date', { exemple: '2027-01-01', aide: 'La couverture précédente est close la veille. Obligatoire : une date d’effet ne s’invente pas.' }),
+      oblig('motif', 'Motif', 'liste', { liste: function () { return D.MOTIFS_COUVERTURE.filter(function (m) { return !/^Fin de couverture/.test(m); }); }, exemple: 'Changement d’employeur' }),
+      col('categorie', 'Catégorie', 'liste', { liste: ['entreprise', 'particulier', 'personnel'], exemple: 'entreprise', aide: 'Vide : celle du souscripteur.' }),
+      col('taux', 'Taux de prise en charge (%)', 'decimal', { min: 0, max: 100, exemple: 80, aide: 'Vide : 0. La grille par garantie vit au souscripteur.' }),
+      col('carteExpiration', 'Expiration de la carte', 'date', { exemple: '2027-12-31', aide: 'Vide : la carte n’est jamais valide (RG-09) : facturation intégrale au patient.' }),
+    ],
+    contexte: function () {
+      var pat = {}, pol = {}, ass = [], couv = {}, assNom = {};
+      toutes('patients').forEach(function (p) { if (p.statut !== 'archive') pat[C.norm(p.code)] = p; });
+      toutes('souscripteurs').forEach(function (s) { if (s.statut !== 'archive') pol[C.norm(s.police)] = s; });
+      toutes('assureurs').forEach(function (a) { if (a.statut !== 'archive') { ass.push({ valeur: a.code, label: a.code }); assNom[a.code] = a.nom; } });
+      toutes('couverturesAssurance').forEach(function (c) { if (c.statut !== 'archive') (couv[c.patientId] = couv[c.patientId] || []).push(c); });
+      var parPatient = null;
+      return { patients: pat, polices: pol, assureursListe: ass, nomsAssureurs: assNom, couvertures: couv,
+        facturesDe: function (id) {
+          if (!parPatient) { parPatient = {}; toutes('factures').forEach(function (f) { if (f.statut !== 'archive' && f.patientId) (parPatient[f.patientId] = parPatient[f.patientId] || []).push(f); }); }
+          return parPatient[id] || [];
+        } };
+    },
+    cle: function (v) { return [C.norm(v.patient) + '@' + v.dateEffet]; },
+    regles: function (v, ctx) {
+      var pb = [], p = ctx.patients[C.norm(v.patient)];
+      if (!p) return [pbRefus('Code patient', v.patient, 'PATIENT_INCONNU', 'aucun dossier ne porte ce code', 'Importez d’abord le patient (jeu « Importation du répertoire patients ») ou corrigez le code.')];
+      var s = ctx.polices[C.norm(v.police)];
+      if (!s) pb.push(pbRefus('N° de police', v.police, 'POLICE_INCONNUE', 'aucun souscripteur ne porte la police « ' + v.police + ' »', 'Importez d’abord le souscripteur ou corrigez le numéro de police.'));
+      else if (s.assureur !== v.assureur) pb.push(pbRefus('N° de police', v.police, 'POLICE_AUTRE_COMPAGNIE', 'la police appartient à une autre compagnie que celle du fichier', 'Alignez le code compagnie sur celui du souscripteur.'));
+      var courante = (ctx.couvertures[p.id] || []).filter(function (c) { return !c.fin; })[0];
+      if (courante && courante.debut && v.dateEffet <= courante.debut) {
+        pb.push(pbRefus('Date d’effet', v.dateEffet, 'DATE_EFFET_ANTERIEURE', 'la date d’effet doit être postérieure au début de la couverture en cours (' + C.dateFR(courante.debut) + ')', 'Choisissez une date d’effet plus tardive.'));
+      }
+      if (!v.carteExpiration) pb.push(pbAvert('Expiration de la carte', '', 'CARTE_SANS_EXPIRATION', 'sans date d’expiration, la carte n’est jamais valide (RG-09) : le patient serait facturé intégralement', 'Renseignez l’expiration de la carte.'));
+      var f = ctx.facturesDe(p.id).filter(function (x) { return x.date && String(x.date).slice(0, 10) >= v.dateEffet; })[0];
+      if (f) pb.push(pbAvert('Date d’effet', v.dateEffet, 'FACTURE_DEJA_EMISE', 'une facture du patient est datée à partir de cette date d’effet : elle garde sa répartition, seule sa relecture changerait', 'Vérifiez la date d’effet : elle ne rattrape jamais une pièce émise.'));
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche, lot, ctx, declarer) {
+      var ordre = lignes.slice().sort(function (a, b) { return C.norm(a.v.patient) < C.norm(b.v.patient) ? -1 : (C.norm(a.v.patient) > C.norm(b.v.patient) ? 1 : (a.v.dateEffet < b.v.dateEffet ? -1 : 1)); });
+      ordre.forEach(function (l) {
+        var v = l.v, p = S.collection('patients').get(ctx.patients[C.norm(v.patient)].id), s = ctx.polices[C.norm(v.police)];
+        var avantFins = {}, miroir = {};
+        S.collection('couverturesAssurance').all().forEach(function (c) { if (c.patientId === p.id) avantFins[c.id] = c.fin == null ? null : c.fin; });
+        CHAMPS_MIROIR_ASSURE.forEach(function (k) { miroir[k] = p[k] === undefined ? null : p[k]; });
+        var r = PR.changerCouverture(p, { dateEffet: v.dateEffet, motif: v.motif, assureur: v.assureur, assureurNom: ctx.nomsAssureurs[v.assureur] || null, numeroPolice: s.police,
+          categorieAssurance: v.categorie || s.categorie || null, tauxPriseEnCharge: v.taux || 0, carteExpiration: v.carteExpiration || null, souscripteurId: s.id });
+        if (!r.ok) throw new Error('ligne ' + l.n + ' : ' + r.motif);
+        /* Ce que le geste a écrit, relevé par comparaison : la couverture neuve (et celle reprise du dossier au premier changement), la couverture CLOSE, le miroir du dossier. */
+        S.collection('couverturesAssurance').all().forEach(function (c) {
+          if (c.patientId !== p.id) return;
+          if (!(c.id in avantFins)) {
+            declarer('couverturesAssurance', c.id);
+            /* Seule la couverture NEUVE porte la trace du lot ; la couverture reprise du dossier (première modification d'un dossier ancien) est un état d'AVANT, déclarée pour s'archiver avec le lot. */
+            if (c.debut === v.dateEffet) S.collection('couverturesAssurance', { module: 'M9', entite: 'couverture d’assurance', prefix: 'COU' }).update(c.id, { source: 'Import ' + lot.reference, lotImport: lot.reference, validePar: S.currentUser(), dateImport: aujourdhuiIso() });
+          } else if ((c.fin == null ? null : c.fin) !== avantFins[c.id]) declarer('couverturesAssurance', c.id, { avant: { fin: avantFins[c.id] } });
+        });
+        var apres = S.collection('patients').get(p.id), avantP = {}, change = false;
+        CHAMPS_MIROIR_ASSURE.forEach(function (k) { var a = apres[k] === undefined ? null : apres[k]; if (a !== miroir[k]) { avantP[k] = miroir[k]; change = true; } });
+        if (change) declarer('patients', p.id, { avant: avantP });
+      });
+    },
+    /* Une couverture s'annule (l'ancienne reprend sa fin, le dossier retrouve son état) tant qu'aucune couverture plus récente n'a été posée et qu'aucune facture n'a été émise après le lot sous elle. */
+    dependances: function (lot) {
+      var out = null, propres = {};
+      lot.ecrits.forEach(function (e) { propres[e.id] = true; });
+      lot.ecrits.forEach(function (e) {
+        if (out || e.collection !== 'couverturesAssurance' || e.avant) return;
+        var c = S.collection('couverturesAssurance').get(e.id);
+        if (!c || c.statut === 'archive') return;
+        var apres = S.collection('couverturesAssurance').active().filter(function (x) { return x.patientId === c.patientId && !propres[x.id] && (x.debut || '') > (c.debut || ''); })[0];
+        if (apres) { out = { code: 'COUVERTURE_POSTERIEURE', motif: 'une couverture plus récente de cet assuré a été posée depuis (effet le ' + C.dateFR(apres.debut) + ')', geste: 'Annulez d’abord cette couverture, ou corrigez l’assuré à l’écran « Assurés & cartes ».' }; return; }
+        var f = S.collection('factures').active().filter(function (x) { return x.patientId === c.patientId && c.debut && String(x.date || '').slice(0, 10) >= c.debut && String(x._creeLe || '') > String(lot._creeLe || ''); })[0];
+        if (f) out = { code: 'FACTURE_SOUS_COUVERTURE', motif: 'la facture ' + f.numero + ' du ' + C.dateFR(f.date) + ' a été émise sous cette couverture', geste: 'Une couverture employée par une pièce émise ne s’annule plus : posez une nouvelle couverture datée à l’écran « Assurés & cartes ».' };
+      });
+      return out;
+    },
+  });
+
+  /* --- 18. IMMOBILISATIONS (RESTREINT) ------------------------------------------------------------------------------------------ */
+  JEUX.push({
+    id: 'immobilisations', ecran: 'imp-immobilisations', libelle: 'Importation des immobilisations', module: 'M12', statut: 'supporte',
+    description: 'Registre des biens : désignation, catégorie, date d’acquisition, valeur, durée d’amortissement, compte SYSCOHADA.',
+    source: 'Écran « Immobilisations & amortissements » : les biens du patrimoine de la clinique.',
+    limite: 'L’amortissement SEMESTRIEL se CALCULE à la lecture, de la date d’acquisition à aujourd’hui : il ne s’importe jamais, et aucune écriture comptable n’est écrite. Un bien cédé ne s’importe pas (la cession se déclare à l’écran). Le numéro IM-NNN est attribué par le logiciel quand la colonne Référence est vide.',
+    cibles: ['immobilisations'], fichierModele: 'modele-import-immobilisations',
+    colonnesRetirees: [
+      { label: 'Date de cession', motif: 'une cession se déclare à l’écran « Immobilisations & amortissements » : un bien déjà cédé ne s’importe pas' },
+      { label: 'Prix de cession', motif: 'une cession se déclare à l’écran : un bien déjà cédé ne s’importe pas' },
+      { label: 'Motif de la sortie', motif: 'une sortie du patrimoine se déclare à l’écran : un bien déjà sorti ne s’importe pas' },
+      { label: 'Amortissement cumulé', motif: 'l’amortissement se calcule à la lecture, jamais importé' },
+      { label: 'Valeur nette comptable', motif: 'la valeur nette se calcule à la lecture, jamais importée' },
+      { label: 'Dotation', motif: 'la dotation se calcule à la lecture, jamais importée' },
+    ],
+    colonnes: [
+      col('reference', 'Référence', 'texte', { motif: /^[A-Za-z0-9-]{2,20}$/, motifTexte: '2 à 20 lettres, chiffres ou tirets', exemple: 'IM-050', aide: 'Vide : numéro IM-NNN attribué par le logiciel. Renseignée, elle ne doit pas déjà exister.' }),
+      oblig('designation', 'Désignation du bien', 'texte', { longueurMax: 160, exemple: 'Moniteur multiparamétrique' }),
+      oblig('categorie', 'Catégorie', 'liste', { liste: function () { return D.CATEGORIES_IMMOBILISATION; }, exemple: 'Matériel médical' }),
+      oblig('dateAcquisition', 'Date d’acquisition', 'date', { exemple: '2026-03-15', aide: 'Jamais dans le futur.' }),
+      oblig('valeur', 'Valeur d’acquisition (FCFA)', 'entier', { min: 1, exemple: 1800000, aide: 'Montant entier strictement positif. Un tiret n’est pas un zéro.',
+        sousMin: { code: 'VALEUR_NULLE', motif: 'la valeur d’acquisition doit être strictement positive : un bien sans valeur n’est pas une immobilisation', geste: 'Saisissez la valeur d’acquisition en francs, ou retirez la ligne.' } }),
+      oblig('duree', 'Durée d’amortissement (années)', 'entier', { min: 1, max: 30, exemple: 5 }),
+      oblig('compte', 'Compte d’immobilisation', 'texte', { motif: /^\d{3,8}$/, motifTexte: 'numéro de compte SYSCOHADA de 3 à 8 chiffres', exemple: '241000', aide: 'Un compte d’immobilisation (classe 21 à 27) connu du plan comptable.' }),
+      col('fournisseur', 'Fournisseur', 'texte', { longueurMax: 120, exemple: '' }),
+      col('etat', 'État', 'liste', { liste: ['En service', 'En maintenance', 'Hors service', 'Cédé'], exemple: 'En service', aide: 'Vide : « En service ». « Cédé » est refusé : un bien déjà cédé ne s’importe pas.' }),
+    ],
+    contexte: function () {
+      var refs = {}, ids = {}, comptes = {};
+      toutes('immobilisations').forEach(function (i) { if (i.statut === 'archive') return; if (i.reference) refs[C.norm(i.reference)] = i; ids[C.norm(i.designation) + '|' + i.dateAcquisition + '|' + i.valeurAcquisition] = i; });
+      toutes('comptes').forEach(function (c) { if (c.statut !== 'archive') comptes[String(c.num)] = c; });
+      return { refs: refs, ids: ids, comptes: comptes, jour: aujourdhuiIso() };
+    },
+    cle: function (v) { return (v.reference ? ['ref:' + C.norm(v.reference)] : []).concat([C.norm(v.designation) + '|' + v.dateAcquisition + '|' + v.valeur]); },
+    existe: function (v, ctx) {
+      var a = v.reference ? ctx.refs[C.norm(v.reference)] : null, b = ctx.ids[C.norm(v.designation) + '|' + v.dateAcquisition + '|' + v.valeur];
+      if (a) return 'le bien « ' + a.reference + ' » existe déjà (' + a.designation + ')';
+      return b ? 'un bien identique existe déjà (' + b.reference + ')' : null;
+    },
+    gesteExiste: 'Retirez la ligne : un bien tenu se modifie à l’écran « Immobilisations & amortissements » ; son numéro n’est jamais réécrit.',
+    regles: function (v, ctx) {
+      var pb = [];
+      if (v.dateAcquisition > ctx.jour) pb.push(pbRefus('Date d’acquisition', v.dateAcquisition, 'DATE_FUTURE', 'la date d’acquisition est dans le futur', 'Saisissez la date réelle d’acquisition (un bien ne s’amortit pas avant d’exister).'));
+      if (v.etat === 'Cédé') pb.push(pbRefus('État', v.etat, 'BIEN_CEDE', 'un bien déjà cédé ne s’importe pas : il sort du patrimoine par la déclaration de cession à l’écran', 'Retirez la ligne.'));
+      if (!ctx.comptes[String(v.compte)]) pb.push(pbRefus('Compte d’immobilisation', v.compte, 'COMPTE_INCONNU', 'le compte ' + v.compte + ' n’existe pas au plan comptable', 'Importez-le d’abord (jeu « Importation du plan comptable ») ou corrigez le numéro.'));
+      else if (!/^2[1-7]/.test(String(v.compte))) pb.push(pbRefus('Compte d’immobilisation', v.compte, 'COMPTE_NON_IMMOBILISATION', 'le compte ' + v.compte + ' n’est pas un compte d’immobilisation (classes 21 à 27)', 'Choisissez un compte d’immobilisation.'));
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche) {
+      /* Les numéros EXPLICITES d'abord : un numéro automatique ne prend jamais un numéro que le fichier porte plus bas. */
+      var ordre = lignes.filter(function (l) { return l.v.reference; }).concat(lignes.filter(function (l) { return !l.v.reference; }));
+      ordre.forEach(function (l) {
+        var v = l.v;
+        ecrireFiche('immobilisations', { reference: v.reference || C.referenceSuivante('IM-', 3, toutes('immobilisations')), designation: v.designation, categorie: v.categorie, dateAcquisition: v.dateAcquisition,
+          valeurAcquisition: v.valeur, dureeAmortissement: v.duree, compte: String(v.compte), fournisseur: v.fournisseur || '', etat: v.etat || 'En service' }, { module: 'M12', entite: 'Immobilisation' });
+      });
+    },
+    dependances: function (lot) {
+      var b = lot.ecrits.map(function (e) { return S.collection('immobilisations').get(e.id); }).filter(function (x) { return x && (x.dateCession || x.etat === 'Cédé'); })[0];
+      return b ? { code: 'BIEN_CEDE_DEPUIS', motif: 'le bien ' + b.reference + ' a été cédé ou sorti du patrimoine depuis l’import', geste: 'Un bien sorti se traite à l’écran « Immobilisations & amortissements » : sa fiche reste au registre.' } : null;
+    },
+  });
+
+  /* --- 19. BUDGETS (RESTREINT, exercice OUVERT seulement) ----------------------------------------------------------------------- */
+  JEUX.push({
+    id: 'budgets', ecran: 'imp-budgets', libelle: 'Importation des budgets', module: 'M12', statut: 'supporte',
+    description: 'Budget prévisionnel par exercice, centre de coûts et nature budgétaire.',
+    source: 'Écran « Budgets » : un budget par exercice, centre et nature ; le réalisé se lit des écritures.',
+    limite: 'Seul un exercice OUVERT reçoit un budget : un exercice en clôture ou clos est refusé en le nommant (la garde est au magasin, l’écran la subit comme le fichier). Le réalisé n’est jamais importé : il se lit des écritures. Le numéro BG-AAAA-NNN est attribué par le logiciel.',
+    cibles: ['budgets'], fichierModele: 'modele-import-budgets',
+    colonnes: [
+      oblig('exercice', 'Exercice', 'entier', { min: 2000, max: 2100, exemple: 2027, aide: 'L’année de l’exercice, qui doit être ouvert.' }),
+      oblig('centre', 'Centre de coûts', 'liste', { liste: function (ctx) { return ctx.centresListe; }, exemple: 'Laboratoire', aide: 'Le code ou l’intitulé d’un centre connu : importez-le d’abord au besoin.' }),
+      oblig('nature', 'Nature budgétaire', 'liste', { liste: function () { return D.NATURES_BUDGET; }, exemple: 'Charges de fonctionnement' }),
+      oblig('prevu', 'Montant prévisionnel (FCFA)', 'entier', { min: 0, exemple: 5000000, aide: 'Montant entier, zéro ou plus. Un tiret n’est pas un zéro : il est refusé.' }),
+    ],
+    contexte: function () {
+      var centres = [], lib = {}, b = {};
+      toutes('centresCouts').forEach(function (c) { if (c.statut !== 'archive') { centres.push({ valeur: c.code, label: c.libelle }); lib[c.code] = c.libelle; } });
+      toutes('budgets').forEach(function (x) { if (x.statut !== 'archive') b[x.exercice + '|' + x.centreCout + '|' + C.norm(x.nature)] = x; });
+      var E = global.SIGH.exercice;
+      return { centresListe: centres, libelles: lib, budgets: b, etat: function (a) { return E && E.etat ? E.etat(a) : 'ouvert'; } };
+    },
+    cle: function (v) { return [v.exercice + '|' + v.centre + '|' + C.norm(v.nature)]; },
+    existe: function (v, ctx) { var x = ctx.budgets[v.exercice + '|' + v.centre + '|' + C.norm(v.nature)]; return x ? 'le budget ' + x.reference + ' existe déjà pour cet exercice, ce centre et cette nature' : null; },
+    gesteExiste: 'Retirez la ligne : un budget tenu se modifie à l’écran « Budgets » ; son numéro n’est jamais réécrit.',
+    regles: function (v, ctx) {
+      var e = ctx.etat(v.exercice);
+      if (e === 'clos') return [pbRefus('Exercice', v.exercice, 'EXERCICE_CLOS', 'l’exercice ' + v.exercice + ' est clos : lecture seule', 'Seul un exercice ouvert reçoit un budget : rouvrez l’exercice (comptable, motif obligatoire) ou datez le budget de l’exercice ouvert.')];
+      if (e !== 'ouvert') return [pbRefus('Exercice', v.exercice, 'EXERCICE_EN_CLOTURE', 'l’exercice ' + v.exercice + ' est en clôture : les modules n’y écrivent plus', 'Terminez ou reprenez la clôture, ou datez le budget de l’exercice ouvert.')];
+      return [];
+    },
+    ecrire: function (lignes, ecrireFiche, lot, ctx) {
+      lignes.forEach(function (l) {
+        var v = l.v, ref = C.referenceSuivante('BG-' + v.exercice + '-', 3, toutes('budgets'));
+        ecrireFiche('budgets', { reference: ref, exercice: v.exercice, centreCout: v.centre, centre: ctx.libelles[v.centre] || v.centre, nature: v.nature, prevu: v.prevu }, { module: 'M12', entite: 'Budget' });
+      });
+    },
+    dependances: function (lot) {
+      var E = global.SIGH.exercice;
+      var b = lot.ecrits.map(function (e) { return S.collection('budgets').get(e.id); }).filter(function (x) { return x && E && E.etat && E.etat(x.exercice) === 'clos'; })[0];
+      return b ? { code: 'EXERCICE_CLOS', motif: 'l’exercice ' + b.exercice + ' a été clos depuis l’import : le budget ' + b.reference + ' est en lecture seule', geste: 'Rouvrez l’exercice (comptable, motif obligatoire) pour corriger.' } : null;
+    },
+  });
+
+  /* --- 20. COURRIERS (RESTREINT, ajout seul, « ignorer » permis) ----------------------------------------------------------------- */
+  JEUX.push({
+    id: 'courriers', ecran: 'imp-courriers', libelle: 'Importation des courriers', module: 'M13', statut: 'supporte',
+    description: 'Registre du courrier : sens, date, correspondant, objet, nature, service destinataire.',
+    source: 'Écran « Courriers (départ / arrivée) » : le registre numéroté ARR-AAAA-NNNN et DEP-AAAA-NNNN.',
+    limite: 'Le registre est en AJOUT SEUL : un numéro d’ordre n’est jamais réécrit. La colonne N° d’ordre est facultative (vide : numéro attribué à la suite du registre) ; renseignée, elle doit suivre la série (ARR ou DEP selon le sens, année de la date). Le traitement, l’accusé de réception et la numérisation ne s’importent jamais : le courrier naît « en attente ». Un courrier déjà tenu est IGNORÉ, compté et listé.',
+    cibles: ['courriers'], fichierModele: 'modele-import-courriers',
+    colonnesRetirees: [
+      { label: 'État du traitement', motif: 'le traitement d’un courrier est un geste du service : il ne s’importe pas (le courrier naît « en attente »)' },
+      { label: 'Accusé de réception', motif: 'l’accusé de réception est un geste du service : il ne s’importe pas' },
+      { label: 'Document numérisé', motif: 'la pièce numérisée se dépose à l’écran : elle ne s’importe pas' },
+    ],
+    colonnes: [
+      col('reference', 'N° d’ordre', 'texte', { motif: /^(ARR|DEP)-\d{4}-\d{4,}$/, motifTexte: 'ARR-AAAA-NNNN ou DEP-AAAA-NNNN', exemple: '', aide: 'Facultatif. Vide : numéro attribué à la suite du registre. Jamais réécrit.' }),
+      oblig('sens', 'Sens', 'liste', { liste: function () { return D.COURRIERS.SENS.map(function (x) { return { valeur: x.value, label: x.label }; }); }, exemple: 'Arrivée' }),
+      oblig('date', 'Date', 'date', { exemple: '2026-11-03' }),
+      col('correspondant', 'Correspondant', 'texte', { longueurMax: 120, exemple: 'DDS Atacora-Donga' }),
+      oblig('objet', 'Objet', 'texte', { longueurMax: 200, exemple: 'Demande de renseignements' }),
+      col('nature', 'Nature', 'liste', { liste: function () { return D.COURRIERS.NATURES; }, exemple: 'Lettre', aide: 'Vide : « Lettre » (comme l’écran).' }),
+      col('affecteA', 'Service destinataire', 'liste', { liste: function () { return D.COURRIERS.SERVICES; }, exemple: 'Direction Administrative' }),
+    ],
+    contexte: function () {
+      var refs = {}, trio = {};
+      toutes('courriers').forEach(function (c) { if (c.reference) refs[C.norm(c.reference)] = c; trio[String(c.date).slice(0, 10) + '|' + c.sens + '|' + C.norm(c.objet)] = c; });
+      return { refs: refs, trio: trio };
+    },
+    cle: function (v) { return (v.reference ? ['ref:' + C.norm(v.reference)] : []).concat([v.date + '|' + v.sens + '|' + C.norm(v.objet)]); },
+    existe: function (v, ctx) {
+      var a = v.reference ? ctx.refs[C.norm(v.reference)] : null, b = ctx.trio[v.date + '|' + v.sens + '|' + C.norm(v.objet)];
+      if (a) return 'le courrier ' + a.reference + ' est déjà au registre';
+      return b ? 'le courrier ' + b.reference + ' (même date, même sens, même objet) est déjà au registre' : null;
+    },
+    gesteExiste: 'Retirez la ligne : le registre est en ajout seul, un courrier tenu ne se modifie pas par un import.',
+    regles: function (v) {
+      var pb = [];
+      if (v.reference) {
+        var pref = v.sens === 'arrivee' ? 'ARR' : 'DEP';
+        if (v.reference.slice(0, 3) !== pref || v.reference.slice(4, 8) !== String(v.date).slice(0, 4)) {
+          pb.push(pbRefus('N° d’ordre', v.reference, 'NUMERO_INCOHERENT', 'le numéro ne suit pas la série : ' + pref + '-' + String(v.date).slice(0, 4) + '-NNNN (sens et année de la date)', 'Alignez le numéro sur le sens et l’année du courrier, ou laissez la colonne vide.'));
+        }
+      }
+      if (!v.correspondant) pb.push(pbAvert('Correspondant', '', 'CORRESPONDANT_ABSENT', 'correspondant non renseigné', 'Il se complète à l’écran « Courriers (départ / arrivée) ».'));
+      if (!v.affecteA) pb.push(pbAvert('Service destinataire', '', 'SERVICE_ABSENT', 'service destinataire non renseigné', 'Il se complète à l’écran.'));
+      return pb;
+    },
+    ecrire: function (lignes, ecrireFiche) {
+      /* Les numéros EXPLICITES d'abord : un numéro automatique ne prend jamais un numéro que le fichier porte plus bas. */
+      var ordre = lignes.filter(function (l) { return l.v.reference; }).concat(lignes.filter(function (l) { return !l.v.reference; }));
+      ordre.forEach(function (l) {
+        var v = l.v;
+        var ref = v.reference || C.referenceSuivante((v.sens === 'arrivee' ? 'ARR-' : 'DEP-') + String(v.date).slice(0, 4) + '-', 4, toutes('courriers'));
+        ecrireFiche('courriers', { reference: ref, sens: v.sens, date: v.date, correspondant: v.correspondant || '', objet: v.objet, nature: v.nature || 'Lettre', affecteA: v.affecteA || null,
+          traitement: 'en_attente', accuseReception: false, numerise: false }, { module: 'M13', entite: 'courrier' });
+      });
+    },
+    dependances: function (lot) {
+      var c = lot.ecrits.map(function (e) { return S.collection('courriers').get(e.id); }).filter(function (x) { return x && (x.traitement !== 'en_attente' || x.numerise || x.accuseReception); })[0];
+      return c ? { code: 'COURRIER_TRAITE', motif: 'le courrier ' + c.reference + ' a déjà été traité, accusé ou numérisé', geste: 'Un courrier traité reste au registre : archivez-le à l’écran (RG-14) plutôt que d’annuler son lot.' } : null;
+    },
+  });
+
   function jeu(id) { return JEUX.filter(function (j) { return j.id === id; })[0] || null; }
 
   /* --- Les colonnes d'un jeu selon le PROFIL (I9, I10) ---------------------------------------------------------------- *
@@ -1600,9 +2162,10 @@
   /** Ce qui entre dans l'HISTORIQUE : masqué pour un jeu restreint, intégral sinon. */
   function problemesConsignes(j, analyse) { return problemes(analyse, j); }
   /** Les lignes ignorées (mode « ignorer »), pour le lot : le nombre ET la liste (borne de 500 noms, le total reste exact). */
-  function ignoresDe(analyse) {
+  function ignoresDe(analyse, j) {
     var l = analyse.lignes.filter(function (x) { return x.etat === 'ignore'; });
-    return { ignoresTotal: l.length, ignores: l.slice(0, 500).map(function (x) { return { n: x.n, cle: x.brut[0] }; }) };
+    /* Jeu RESTREINT : la liste dit les LIGNES ignorées, jamais la valeur de leur clé. */
+    return { ignoresTotal: l.length, ignores: l.slice(0, 500).map(function (x) { return j && restreint(j) ? { n: x.n } : { n: x.n, cle: x.brut[0] }; }) };
   }
 
   function analyserOctets(jeuId, octets, fichier) {
@@ -1683,9 +2246,10 @@
     if (!rejeu.aEcrire) return { ok: false, code: 'RIEN_A_ECRIRE', motif: 'aucune ligne ne s’écrirait : toutes sont ignorées, inchangées ou refusées par leur auteur (Non)', geste: 'Rien à confirmer : aucun lot n’est consigné.' };
     var ctx = j.contexte ? j.contexte() : {};
     var lot = { reference: referenceLot() }, ecrits = [], par = S.currentUser(), jour = aujourdhuiIso();
-    function declarer(nom, id) { ecrits.push({ collection: nom, id: id }); }
-    function ecrireFiche(nom, fiche) {
-      var meta = { module: j.module === 'IMP' ? 'IMP' : j.module, entite: nom };
+    /* `extra.avant` : une MODIFICATION de fiche tenue (la couverture close, le miroir du dossier), pas une création : l'atomicité et l'annulation la RESTITUENT au lieu de l'archiver. */
+    function declarer(nom, id, extra) { ecrits.push(Object.assign({ collection: nom, id: id }, extra || {})); }
+    function ecrireFiche(nom, fiche, metaSup) {
+      var meta = Object.assign({ module: j.module === 'IMP' ? 'IMP' : j.module, entite: nom }, metaSup || {});
       var res = S.collection(nom, meta).insert(Object.assign({
         source: 'Import ' + j.libelle + ' (' + (analyse.fichier || 'fichier') + ')', lotImport: lot.reference, validePar: par, dateImport: jour,
       }, fiche));
@@ -1697,7 +2261,9 @@
       j.ecrire(rejeu.lignes.filter(function (l) { return !l.sansEcriture && l.etat !== 'refus'; }), ecrireFiche, lot, ctx, declarer);
     } catch (e) {
       /* Atomicité : on retire ce qui vient d'être posé dans CE geste. Ces fiches n'ont jamais été vues d'un autre écran. */
-      ecrits.slice().reverse().forEach(function (x) { S.collection(x.collection)._remove(x.id); });
+      ecrits.slice().reverse().forEach(function (x) {
+        if (x.avant) { var fm = S.collection(x.collection).get(x.id); if (fm) Object.assign(fm, x.avant); } else S.collection(x.collection)._remove(x.id);
+      });
       var motif = e && e.message ? e.message : String(e);
       var consigne = consigner(j, Object.assign(rejeu, { globaux: rejeu.globaux.concat([{ n: 0, colonne: '', valeur: '', code: 'ECRITURE_REFUSEE', niveau: 'refus', motif: motif, geste: 'Rien n’a été écrit. Corrigez la cause puis téléversez de nouveau.' }]), empreinte: analyse.empreinte }));
       return { ok: false, code: 'ECRITURE_REFUSEE', motif: motif, geste: 'Rien n’a été écrit ; le fichier est consigné (' + consigne.reference + ').', lot: consigne };
@@ -1707,7 +2273,7 @@
       date: jour, par: par, validePar: par, etat: 'applique', nbLignes: rejeu.nbLignes, nbAvertissements: rejeu.compte.avertissements, nbRefus: 0,
       nbIgnores: rejeu.compte.ignores, nbInchanges: rejeu.compte.inchanges, nbNon: rejeu.compte.non,
       ecrits: ecrits, erreurs: problemesConsignes(j, rejeu).slice(0, 100), erreursTotal: problemes(rejeu).length,
-    }, ignoresDe(rejeu)));
+    }, ignoresDe(rejeu, j)));
     rec = rec.record;
     S.log('Import', 'IMP', 'LotImport', rec.reference, null, { jeu: j.id, fichier: analyse.fichier, lignes: rejeu.nbLignes, fiches: ecrits.length });
     return { ok: true, lot: rec, ecrits: ecrits.length };
@@ -1739,6 +2305,7 @@
       var e = lot.ecrits[i], c = S.collection(e.collection);
       var f = c.get(e.id);
       if (!f || f.statut === 'archive') continue;
+      if (e.avant) continue; /* une modification se restitue plus bas, dans l'ordre inverse de son écriture */
       /* Une VERSION de prix est immuable et ne s'archive pas (RG-14, lot T5) : celles que posent la création d'un article restent lisibles à l'historique du prix. */
       if (e.collection === 'versionsTarif') continue;
       if (!c.archive(e.id, 'Annulation du lot ' + lot.reference + (motif ? ' : ' + motif : ''))) echec = e; else faits.push(e);
@@ -1746,6 +2313,11 @@
     if (echec) {
       faits.forEach(function (e) { S.collection(e.collection).restore(e.id); });
       return { ok: false, code: 'ARCHIVAGE_REFUSE', motif: 'le moteur a refusé d’archiver une fiche de « ' + echec.collection + ' » (exercice clos ou fiche verrouillée)', geste: 'Rien n’a été annulé. Rouvrez l’exercice ou traitez la fiche à la main.' };
+    }
+    /* Les MODIFICATIONS du lot (couverture reprise à son état, miroir du dossier) se restituent en ordre INVERSE : la dernière écrite est défaite la première. */
+    for (var k = lot.ecrits.length - 1; k >= 0; k--) {
+      var m = lot.ecrits[k];
+      if (m.avant && S.collection(m.collection).get(m.id)) S.collection(m.collection).update(m.id, m.avant);
     }
     col_.update(lot.id, { etat: 'annule', annulePar: S.currentUser(), annuleLe: aujourdhuiIso(), motifAnnulation: motif || null });
     S.log('Import annulé', 'IMP', 'LotImport', lot.reference, { etat: 'applique' }, { etat: 'annule', fiches: faits.length });

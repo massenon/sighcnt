@@ -671,6 +671,25 @@
   ];
 
   /* ==========================================================================
+   * LISTES DE SAISIE LUES DES DEUX CÔTÉS (écran et importation, lot IMP-B2)
+   * --------------------------------------------------------------------------
+   * Un référentiel de choix écrit dans un écran ET attendu par un jeu d'import finit par diverger : l'écran propose sept catégories de biens, le fichier en accepte six. Ces
+   * listes vivent ICI, une seule fois ; l'écran les propose, le jeu d'import les contrôle.
+   * ======================================================================== */
+  var CATEGORIES_IMMOBILISATION = ['Matériel médical', 'Matériel de laboratoire', 'Matériel technique', 'Matériel de transport', 'Mobilier médical', 'Matériel informatique', 'Installations'];
+  var SPECIALITES_PRESTATAIRE = ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie', 'Autre'];
+  var DOMAINES_UNITES_LABO = ['Hématologie', 'Biochimie', 'Hormonologie', 'Bactériologie', 'Parasitologie', 'Hémostase', 'Andrologie', 'Général'];
+  var NATURES_BUDGET = ['Charges de fonctionnement', 'Investissements', 'Charges de personnel', 'Achats de marchandises'];
+  var COURRIERS = {
+    NATURES: ['Lettre', 'Courriel', 'Note', 'Facture', 'Convocation', 'Rapport'],
+    SERVICES: ['Direction Médicale', 'Direction Administrative', 'Comptabilité', 'Ressources humaines', 'Gestion des stocks', 'Laboratoire', 'Pharmacie'],
+    SENS: [{ value: 'arrivee', label: 'Arrivée' }, { value: 'depart', label: 'Départ' }],
+  };
+  /** Les motifs d'un changement de couverture : la liste fermée de l'écran « Assurés & cartes », reprise telle quelle par l'importation. */
+  var MOTIFS_COUVERTURE = ['Changement d’employeur', 'Changement de compagnie par l’assuré', 'Convention non reconduite', 'Renouvellement de carte', 'Changement de police',
+    'Fin de couverture — patient redevenu non assuré', 'Correction d’une saisie erronée'];
+
+  /* ==========================================================================
    * 5. CATALOGUE DES ANALYSES DE LABORATOIRE (48)
    * source : docs/liste_des_analyses_de_labo.jpeg (+ suite)
    * NB : le document fourni ne porte QUE les désignations ; la colonne tarif est
@@ -2381,5 +2400,6 @@
     delaisFiscauxALaDate: delaisFiscauxALaDate, montantCcibALaDate: montantCcibALaDate,
     CAPACITES: CAPACITES, NATURES_PRESCRIPTION: NATURES_PRESCRIPTION,
     BAREME_REFERENCE: BAREME_REFERENCE, CATEGORIES_GARANTIE: CATEGORIES_GARANTIE, UNITES_PLAFOND: UNITES_PLAFOND,
+    SPECIALITES_PRESTATAIRE: SPECIALITES_PRESTATAIRE, DOMAINES_UNITES_LABO: DOMAINES_UNITES_LABO, CATEGORIES_IMMOBILISATION: CATEGORIES_IMMOBILISATION, NATURES_BUDGET: NATURES_BUDGET, COURRIERS: COURRIERS, MOTIFS_COUVERTURE: MOTIFS_COUVERTURE,
   };
 })(window);

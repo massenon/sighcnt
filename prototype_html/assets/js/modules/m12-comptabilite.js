@@ -1243,7 +1243,7 @@
       }
 
       return K.crud({
-        collection: 'budgets', entite: 'budget', entiteP: 'budgets', module: 'M12',
+        collection: 'budgets', entite: 'budget', entiteP: 'budgets', module: 'M12', importer: 'budgets',
         defaultSort: 'prevu', defaultDir: 'desc', pageSize: 15,
         columns: [
           { key: 'reference', label: 'N°', nowrap: true, render: function (b) { return el('span.font-mono.text-xs', { text: b.reference }); } },
@@ -1285,7 +1285,7 @@
         fields: [
           { name: 'exercice', label: 'Exercice', type: 'number', required: true, value: AUJ.getFullYear() },
           { name: 'centreCout', label: 'Centre de coûts', type: 'select', required: true, options: optionsCentres() },
-          { name: 'nature', label: 'Nature budgétaire', type: 'select', required: true, options: ['Charges de fonctionnement', 'Investissements', 'Charges de personnel', 'Achats de marchandises'] },
+          { name: 'nature', label: 'Nature budgétaire', type: 'select', required: true, options: D.NATURES_BUDGET },
           { name: 'prevu', label: 'Montant prévisionnel (FCFA)', type: 'money', required: true, min: 0 },
         ],
         /* E772/E773 : la référence vient des budgets EXISTANTS (le compteur de page redonnait « BG-2026-001 », déjà attribuée), et une MODIFICATION
@@ -1548,7 +1548,7 @@
       }
 
       return K.crud({
-        collection: 'immobilisations', entite: 'immobilisation', entiteP: 'immobilisations', module: 'M12',
+        collection: 'immobilisations', entite: 'immobilisation', entiteP: 'immobilisations', module: 'M12', importer: 'immobilisations',
         defaultSort: 'valeurAcquisition', defaultDir: 'desc', pageSize: 15, drawerWidth: 'max-w-2xl',
         columns: [
           { key: 'reference', label: 'N°', nowrap: true, render: function (i) { return el('span.font-mono.text-xs', { text: i.reference }); } },
@@ -1582,7 +1582,7 @@
         ],
         fields: [
           { name: 'designation', label: 'Désignation du bien', required: true, col: 'full' },
-          { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: ['Matériel médical', 'Matériel de laboratoire', 'Matériel technique', 'Matériel de transport', 'Mobilier médical', 'Matériel informatique', 'Installations'] },
+          { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: D.CATEGORIES_IMMOBILISATION },
           { name: 'dateAcquisition', label: 'Date d’acquisition', type: 'date', required: true },
           { name: 'valeurAcquisition', label: 'Valeur d’acquisition (FCFA)', type: 'money', required: true, min: 0 },
           { name: 'dureeAmortissement', label: 'Durée d’amortissement (années)', type: 'number', required: true, min: 1, max: 30 },
@@ -1603,7 +1603,7 @@
         },
         onCreate: function () { return { dateAcquisition: C.iso(AUJ), dureeAmortissement: 5, etat: 'En service', compte: '241000' }; },
         filters: [
-          { name: 'categorie', label: 'Catégorie', options: ['Matériel médical', 'Matériel de laboratoire', 'Matériel technique', 'Matériel de transport', 'Mobilier médical', 'Matériel informatique', 'Installations'] },
+          { name: 'categorie', label: 'Catégorie', options: D.CATEGORIES_IMMOBILISATION },
           { name: 'etat', label: 'État', options: ['En service', 'En maintenance', 'Hors service', 'Cédé'] },
         ],
         kpis: function (rows) {

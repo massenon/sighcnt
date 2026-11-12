@@ -1448,7 +1448,9 @@
       return [
         K.btn('Émettre une facture', { variant: 'primary', icon: 'receipt', onclick: function () { global.SIGH.app.go('m8-facturation'); } }),
         K.btn('Tarifs et prix', { icon: 'tag', onclick: function () { global.SIGH.app.go('cfg-tarifs'); } }),
-      ];
+        /* « Importer les données » : le jeu des natures de facture, selon le droit d'IMPORTER de ce jeu (lot IMP-B2). */
+        K.importer('natures-facture'),
+      ].filter(Boolean);
     },
     render: function (root) {
       dessiner();
@@ -1526,7 +1528,9 @@
       return [
         K.btn('Saisie des écritures', { variant: 'primary', icon: 'pencil-line', onclick: function () { global.SIGH.app.go('m12-ecritures'); } }),
         K.btn('Comptabilité analytique', { icon: 'pie-chart', onclick: function () { global.SIGH.app.go('m12-analytique'); } }),
-      ];
+        /* « Importer les données » : le jeu des centres de coûts, selon le droit d'IMPORTER de ce jeu (lot IMP-B2). */
+        K.importer('centres-couts'),
+      ].filter(Boolean);
     },
     render: function (root) {
       dessiner();
@@ -4595,6 +4599,8 @@
       + 'comptes rendus d\u00e9j\u00e0 rendus la conservent. \u00ab Annexes \u00bb et \u00ab Conclusion \u00bb ne se '
       + 'param\u00e8trent pas : elles restent en texte libre \u2014 \u00ab \u00e0 remplir par moi-m\u00eame \u00bb, '
       + '\u00e9crit de sa main.',
+    /* « Importer les données » : le jeu du catalogue de l'imagerie, selon le droit d'IMPORTER de ce jeu (lot IMP-B2). Les examens importés naissent « à valider ». */
+    actions: function () { return [K.importer('catalogue-imagerie')].filter(Boolean); },
     render: function (root) {
       var vue = el('div.space-y-4');
       root.appendChild(vue);

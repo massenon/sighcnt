@@ -2595,16 +2595,104 @@
     return S.collection('souscripteurs').get(id);
   }
 
-  /** Garanties applicables : celles du souscripteur, sinon celles de la compagnie. */
+  /** Garanties applicables : celles du souscripteur, sinon celles de la compagnie, chacune dans sa VERSION EN VIGUEUR à la date. */
   function garantiesDe(patient, date) {
     /* La grille est celle du souscripteur DE LA DATE : un assuré qui a changé
        d’employeur en cours d’année n’avait pas le même barème en janvier. */
     var sous = souscripteurDe(patient, date);
     if (!sous) return [];
+    var jour = jourDe(date || new Date());
     var toutes = S.collection('garanties').active();
     var propres = toutes.filter(function (g) { return g.souscripteurId === sous.id; });
-    if (propres.length) return propres;
-    return toutes.filter(function (g) { return !g.souscripteurId && g.assureur === sous.assureur; });
+    /* Un souscripteur qui porte sa propre grille la porte seule, même si aucune de ses versions n'est encore en vigueur à cette date : pas de repli sur la compagnie. */
+    if (propres.length) return garantiesEnVigueur(propres, jour);
+    return garantiesEnVigueur(toutes.filter(function (g) { return !g.souscripteurId && g.assureur === sous.assureur; }), jour);
+  }
+
+  /* ==========================================================================
+   * LES GARANTIES SONT DATÉES (lot IMP-B2, 12/11/2026)
+   * --------------------------------------------------------------------------
+   * Même mécanisme que les prix, la grille des primes et les couvertures : quand une donnée de référence change alors que des pièces ont été émises sous l'ancienne, on
+   * VERSIONNE par date, on n'écrase jamais. Une garantie est une SÉRIE (souscripteur, catégorie, libellé) ; chaque changement de taux ou de plafond est une nouvelle ligne de la série,
+   * portant sa `dateEffet` et son rang `version`. Une ligne sans `dateEffet` vaut « depuis l'origine » (les grilles saisies avant ce mécanisme restent lues telles quelles, aucune
+   * date n'est inventée). `repartir` lit la version EN VIGUEUR à la date de la pièce ; l'écran « Conventions & garanties » et l'importation écrivent par la MÊME fabrique
+   * (`poserGarantie`) : il n'y a pas de second chemin qui écraserait une version.
+   * ======================================================================== */
+  function colGaranties() { return S.collection('garanties', { module: 'M9', entite: 'garantie', prefix: 'GAR' }); }
+  function cleSerieGarantie(g) { return [g.souscripteurId || ('~' + (g.assureur || '')), g.categorie || '', C.norm(g.libelle || '').trim()].join('|'); }
+  /** UNE version par série : la plus récente dont la date d'effet est atteinte au jour dit (une ligne sans date vaut « depuis l'origine ») ; l'ordre d'origine est conservé. */
+  function garantiesEnVigueur(rows, jour) {
+    var parSerie = {};
+    (rows || []).forEach(function (g, i) {
+      if (g.dateEffet && g.dateEffet > jour) return;
+      var k = cleSerieGarantie(g), cur = parSerie[k], d = g.dateEffet || '';
+      if (!cur || d > (cur.g.dateEffet || '') || (d === (cur.g.dateEffet || '') && i > cur.i)) parSerie[k] = { g: g, i: i };
+    });
+    return Object.keys(parSerie).map(function (k) { return parSerie[k]; }).sort(function (a, b) { return a.i - b.i; }).map(function (x) { return x.g; });
+  }
+  /** Les versions d'une série, de la plus ancienne à la plus récente. */
+  function versionsGarantie(souscripteurId, categorie, libelle) {
+    var cle = cleSerieGarantie({ souscripteurId: souscripteurId, categorie: categorie, libelle: libelle });
+    return colGaranties().active().filter(function (g) { return cleSerieGarantie(g) === cle; })
+      .sort(function (a, b) { return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')); });
+  }
+  /** La première facture non archivée d'un assuré de ce souscripteur datée du jour dit ou après : ce qu'une version ne peut pas rattraper (la pièce émise garde son taux). */
+  function factureSousGrille(sous, jour) {
+    var patients = {};
+    return S.collection('factures').active().filter(function (f) {
+      if (!f.assureur || f.assureur !== sous.assureur || !f.date || String(f.date).slice(0, 10) < jour) return false;
+      var p = patients[f.patientId] || (patients[f.patientId] = S.collection('patients').get(f.patientId) || false);
+      var sd = p && souscripteurDe(p, f.date);
+      return !!(sd && sd.id === sous.id);
+    }).sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); })[0] || null;
+  }
+  /**
+   * poserGarantie(spec) : une VERSION de garantie, jamais un écrasement. Un refus se NOMME (code, motif, geste) ; `essai: true` contrôle sans écrire.
+   * spec : { souscripteurId, categorie, libelle, taux, plafond, unitePlafond, dateEffet, sansDate?, source?, motif?, champs? }. `sansDate` n'est admis que pour la PREMIÈRE ligne d'une série
+   * (la grille d'une convention saisie d'un bloc : « depuis l'origine », aucune date n'est inventée). `champs` : traces posées sur la fiche (lot d'import).
+   */
+  function poserGarantie(spec) {
+    spec = spec || {};
+    function refus(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
+    var sous = spec.souscripteurId ? S.collection('souscripteurs').get(spec.souscripteurId) : null;
+    if (!sous || sous.statut === 'archive') return refus('SOUSCRIPTEUR_INCONNU', 'aucun souscripteur actif ne porte cette identité', 'Choisissez un souscripteur connu (écran « Souscripteurs ») ou importez-le d’abord.');
+    var cat = D.CATEGORIES_GARANTIE.filter(function (x) { return x.id === spec.categorie; })[0];
+    if (!cat) return refus('CATEGORIE_INCONNUE', 'la catégorie « ' + spec.categorie + ' » n’est pas une catégorie de garantie', 'Choisissez une catégorie de la liste.');
+    var libelle = String(spec.libelle == null ? '' : spec.libelle).trim();
+    if (!libelle) return refus('GARANTIE_SANS_LIBELLE', 'la garantie n’a pas de libellé : la série ne se distinguerait pas des autres garanties de la catégorie', 'Saisissez le libellé de la garantie.');
+    var taux = spec.taux === '' || spec.taux == null ? NaN : Number(spec.taux);
+    if (!isFinite(taux) || taux < 0 || taux > 100) return refus('TAUX_INVALIDE', 'le taux doit être un nombre de 0 à 100', 'Saisissez un pourcentage entre 0 et 100.');
+    var plafond = spec.plafond === '' || spec.plafond == null ? null : Number(spec.plafond);
+    if (plafond != null && (!isFinite(plafond) || plafond < 0 || Math.floor(plafond) !== plafond)) return refus('PLAFOND_INVALIDE', 'le plafond doit être un montant entier de francs, zéro ou plus', 'Saisissez un montant entier, ou laissez vide pour « sans plafond ».');
+    var unite = plafond == null ? null : (spec.unitePlafond || null);
+    if (plafond != null && !D.UNITES_PLAFOND.some(function (u) { return u.id === unite; })) return refus('UNITE_PLAFOND_REQUISE', 'un plafond se dit toujours « par quoi » (acte, jour, an…)', 'Choisissez l’unité du plafond.');
+    var jour = spec.sansDate ? null : (spec.dateEffet ? (/^\d{4}-\d{2}-\d{2}$/.test(spec.dateEffet) ? spec.dateEffet : C.iso(spec.dateEffet)) : '');
+    if (!spec.sansDate && !jour) return refus('DATE_EFFET_REQUISE', 'la date d’effet est obligatoire : sans elle, la nouvelle version ne se distinguerait pas de l’ancienne sur les pièces déjà émises', 'Saisissez la date à laquelle la garantie change.');
+    var rows = versionsGarantie(sous.id, spec.categorie, libelle);
+    if (spec.sansDate) {
+      if (rows.length) return refus('SERIE_EXISTANTE', 'la garantie « ' + libelle + ' » existe déjà pour ce souscripteur : elle ne se redéfinit pas « depuis l’origine »', 'Posez une nouvelle version avec sa date d’effet.');
+    } else {
+      var meme = rows.filter(function (g) { return (g.dateEffet || '') === jour; })[0];
+      var enForce = garantiesEnVigueur(rows, jour)[0];
+      var identique = enForce && Number(enForce.taux) === taux && (enForce.plafond == null ? null : Number(enForce.plafond)) === plafond && (plafond == null || enForce.unitePlafond === unite);
+      if (identique) return refus('GARANTIE_INCHANGEE', 'la garantie « ' + libelle + ' » porte déjà ce taux et ce plafond à cette date', 'Rien à faire : aucune version n’est créée.');
+      if (meme) return refus('VERSION_MEME_DATE', 'une version de « ' + libelle + ' » prend déjà effet le ' + C.dateFR(jour) + ' avec d’autres valeurs : une version ne se réécrit pas', 'Choisissez une autre date d’effet.');
+      var plusRecente = rows.filter(function (g) { return (g.dateEffet || '') > jour; })[0];
+      if (plusRecente) return refus('VERSION_ANTERIEURE', 'une version plus récente de « ' + libelle + ' » prend effet le ' + C.dateFR(plusRecente.dateEffet) + ' : on ne glisse pas une version dans le passé d’une série', 'Choisissez une date d’effet postérieure à la dernière version.');
+      var fac = factureSousGrille(sous, jour);
+      if (fac) return refus('FACTURE_DEJA_EMISE', 'la facture ' + fac.numero + ' du ' + C.dateFR(fac.date) + ' a été émise sous la grille de ce souscripteur : une pièce émise garde son taux', 'Choisissez une date d’effet postérieure à la dernière facture émise (' + C.dateFR(fac.date) + ').');
+    }
+    var ancienne = rows.length ? garantiesEnVigueur(rows, jour || '9999-12-31')[0] || rows[rows.length - 1] : null;
+    if (spec.essai) return { ok: true, essai: true, ancienne: ancienne, version: rows.length + 1 };
+    var res = colGaranties().insert(Object.assign({
+      souscripteurId: sous.id, assureur: sous.assureur,
+      code: spec.code || (rows[0] && rows[0].code) || null, libelle: libelle, categorie: spec.categorie,
+      taux: taux, plafond: plafond, unitePlafond: unite, zone: (rows[0] && rows[0].zone) || 'Bénin',
+      dateEffet: spec.sansDate ? null : jour, version: rows.length + 1,
+      motif: spec.motif || null, source: spec.source || null,
+    }, spec.champs || {}));
+    if (!res) return refus('ECRITURE_REFUSEE', 'le magasin a refusé d’écrire la garantie', 'Réessayez ; si le refus se répète, prévenez l’administrateur.');
+    return { ok: true, garantie: res.record, ancienne: ancienne, version: rows.length + 1 };
   }
 
   /* ==========================================================================
@@ -2728,6 +2816,8 @@
       tauxPriseEnCharge: auj.tauxPriseEnCharge || 0,
       carteExpiration: auj.carteExpiration || null,
       souscripteurId: auj.souscripteurId || null,
+      /* Le NOM du souscripteur suit son identifiant (lot IMP-B2) : un changement de police par l'importation change aussi le souscripteur, et le répertoire des assurés lit le nom sur la fiche. */
+      souscripteur: (function () { var sc = auj.souscripteurId ? S.collection('souscripteurs').get(auj.souscripteurId) : null; return sc ? sc.nom : (auj.souscripteurId ? (patient.souscripteur || null) : null); })(),
     });
     return { ok: true, couverture: neuve };
   }
@@ -3640,6 +3730,7 @@
     peutVoirResultat: peutVoirResultat, peutPrescrire: peutPrescrire,
     peutExecuterSoin: peutExecuterSoin, filtrerResultats: filtrerResultats,
     repartir: repartir, garantiesDe: garantiesDe, souscripteurDe: souscripteurDe,
+    poserGarantie: poserGarantie, factureSousGrille: factureSousGrille, garantiesEnVigueur: garantiesEnVigueur, versionsGarantie: versionsGarantie, cleSerieGarantie: cleSerieGarantie,
     carteValide: carteValide, categoriser: categoriser, libelleUnite: libelleUnite,
     colTarifs: colTarifs, colVersionsTarif: colVersionsTarif,
     colActes: colActes, colAnalyses: colAnalyses, colCatalogueTarifs: colCatalogueTarifs,
@@ -3769,6 +3860,15 @@
       return 'Exercice ' + a + ' en clôture : les modules n’y écrivent plus. Seul le comptable y passe ses écritures d’inventaire (saisie manuelle) ; sinon dater la pièce de l’exercice ouvert.';
     }
     return null;
+  });
+
+  /* LE BUDGET D'UN EXERCICE CLOS EST EN LECTURE SEULE (lot IMP-B2), d'où que l'écriture vienne (écran, importation) : un budget prévisionnel n'est pas une écriture comptable, mais un exercice
+     clos est un exercice arrêté, et lui ajouter une ligne prévue le contredit. Seul `clos` est refusé ici ; l'importation, elle, n'admet que les exercices OUVERTS. Limite connue : la garde lit
+     l'exercice de la fiche telle qu'elle sera ; un budget que l'on ferait passer d'un exercice clos à un exercice ouvert en changeant son année échappe à la garde de modification. */
+  S.garder('budgets', function (op, rec) {
+    var a = Number(rec && rec.exercice);
+    if (!a || etatExercice(a) !== 'clos') return null;
+    return 'Exercice ' + a + ' clôturé : le budget d’un exercice clos ne s’écrit plus. La correction passe par la réouverture de l’exercice par le comptable (motif obligatoire), ou par un budget de l’exercice ouvert.';
   });
 
   function sensLettrable(compte) {

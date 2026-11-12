@@ -3832,7 +3832,7 @@
       }
 
       return K.crud({
-        collection: 'prestataires', entite: 'prestataire', entiteP: 'prestataires', module: 'M10',
+        collection: 'prestataires', entite: 'prestataire', entiteP: 'prestataires', module: 'M10', importer: 'prestataires',
         defaultSort: 'nom', pageSize: 15,
         columns: [
           { key: 'reference', label: 'N°', nowrap: true, render: function (p) { return el('span.font-mono.text-xs', { text: p.reference }); } },
@@ -3856,7 +3856,7 @@
         ],
         fields: [
           { name: 'nom', label: 'Nom du prestataire', required: true, col: 'full' },
-          { name: 'specialite', label: 'Spécialité / type d’acte', type: 'select', required: true, options: ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie', 'Autre'] },
+          { name: 'specialite', label: 'Spécialité / type d’acte', type: 'select', required: true, options: D.SPECIALITES_PRESTATAIRE },
           { name: 'telephone', label: 'Téléphone', type: 'tel' },
           { name: 'tarifActe', label: 'Tarif par acte (FCFA)', type: 'money', required: true, min: 0 },
           { name: 'actesRealises', label: 'Actes réalisés (mois en cours)', type: 'number', min: 0 },
