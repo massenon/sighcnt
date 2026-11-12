@@ -35,6 +35,14 @@
   /* ==========================================================================
    * COURRIERS
    * ======================================================================== */
+  /** Un courrier est numérisé quand un FICHIER est rattaché à sa fiche (dérivé, jamais saisi). */
+  function numeriseCourrier(c) { return !!(c && c.fichier && typeof c.fichier === 'object' && c.fichier.sha256); }
+  /** Ce que la recherche ne lit pas : les pièces numérisées dont le texte n'est pas indexé (images sans couche texte). */
+  function indiceNonIndexe() {
+    var n = S.collection('courriers').active().filter(function (c) { return numeriseCourrier(c) && !c.fichier.texteIndexe; }).length;
+    return n ? n + ' pièce' + (n > 1 ? 's numérisées n’ont' : ' numérisée n’a') + ' pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées.' : null;
+  }
+
   global.SIGH.screen('m13-courriers', {
     title: 'Courriers (départ / arrivée)',
     description: 'Registre numérisé du courrier administratif, avec suivi des réponses et des accusés de réception.',
@@ -47,6 +55,23 @@
       return K.crud({
         collection: 'courriers', entite: 'courrier', entiteP: 'courriers', module: 'M13', importer: 'courriers',
         defaultSort: 'date', defaultDir: 'desc', pageSize: 15,
+        /* RECHERCHE AVANCÉE (lot D4) : les colonnes, plus ce qui ne s'y voit pas (observations, date lisible, nom du fichier, TEXTE extrait d'un PDF qui porte une couche texte), et un filtre du/au
+           sur la date du courrier. Une pièce sans texte indexé (image) le DIT sous « Aucun résultat » : le vide ne se lit jamais « rien dans ce courrier ». */
+        plageDates: { champ: 'date', aujourdhui: AUJ },
+        recherche: {
+          extra: function (c) {
+            var x = c.fichier && c.fichier.sha256 ? c.fichier : null;
+            return [c.observations, c.date ? C.dateFR(c.date) : '', x ? x.nom : '', x ? x.nomNormalise : '', x && global.SIGH.fichiers ? global.SIGH.fichiers.texteDe(x) : ''].join(' ');
+          },
+          indice: function () { return indiceNonIndexe(); },
+        },
+        detailSup: function (c, ctx) {
+          var F = global.SIGH.fichiers; if (!F) return null;
+          var dr = K.droits('M13');
+          return F.cartePiece({ famille: 'courrier', col: S.collection('courriers'), fiche: c, titre: 'Courrier ' + c.reference,
+            journal: { module: 'M13', entite: 'courrier', ecran: 'm13-courriers' }, peutVoir: true,
+            peutDeposer: !!dr.editer && c.statut !== 'archive', peutRetirer: !!dr.annuler && c.statut !== 'archive', refresh: ctx.rouvrir });
+        },
         columns: [
           { key: 'reference', label: 'N° d’ordre', nowrap: true, render: function (c) { return el('span.font-mono.text-xs.font-semibold', { text: c.reference }); } },
           {
@@ -71,10 +96,17 @@
               return U.badge(x[0], x[1]);
             },
           },
+          /* `numerise` est DÉRIVÉ (lot DOCS-1) : « Oui » seulement quand un fichier est rattaché à la fiche, jamais une case que l'on coche. Un courrier que la reprise disait numérisé sans qu'aucun
+             fichier existe reste « À scanner » : la case annonçait un scan que rien n'ouvrait. */
           {
-            key: 'numerise', label: 'Numérisé',
-            text: function (c) { return c.numerise ? 'Oui' : 'Non'; },
-            render: function (c) { return c.numerise ? U.badge('Oui', 'success') : U.badge('À scanner', 'warning'); },
+            key: 'numerise', label: 'Numérisé', value: function (c) { return numeriseCourrier(c) ? 'Oui' : 'À scanner'; },
+            text: function (c) { return numeriseCourrier(c) ? 'Oui' : 'Non'; },
+            render: function (c) {
+              if (!numeriseCourrier(c)) return U.badge('À scanner', 'warning');
+              var x = c.fichier;
+              return el('div.flex.flex-col.items-start.gap-0\\.5', null, [U.badge('Oui', 'success'),
+                el('span.text-\\[10px\\].text-slate-400', { text: x.texteIndexe ? 'texte indexé' : 'texte non indexé' })]);
+            },
           },
         ],
         fields: [
@@ -86,12 +118,15 @@
           { name: 'affecteA', label: 'Service destinataire', type: 'select', required: true, options: D.COURRIERS.SERVICES },
           { name: 'traitement', label: 'État du traitement', type: 'select', required: true, options: [{ value: 'en_attente', label: 'En attente' }, { value: 'en_cours', label: 'En cours' }, { value: 'traite', label: 'Traité' }] },
           { name: 'accuseReception', label: 'Accusé de réception', type: 'checkbox' },
-          { name: 'numerise', label: 'Document numérisé', type: 'checkbox' },
           { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
         ],
         transform: function (v, record) {
           /* E530 : à la modification, le formulaire ne porte pas la référence — elle était recalculée (ARR-2026-0004 devenait ARR-2026-0012). */
           if (record && record.reference) v.reference = record.reference;
+          /* Le nom de téléchargement de la pièce suit la date de la fiche ; la RÉFÉRENCE, elle, ne change jamais. */
+          if (record && record.fichier && record.fichier.sha256 && D.DOCUMENTS) {
+            v.fichier = Object.assign({}, record.fichier, { nomNormalise: D.DOCUMENTS.nomNormalise('courrier', Object.assign({}, record, v), (record.fichier.nomNormalise || '').split('.').pop()) });
+          }
           /* E538 : série annuelle ARR-AAAA-NNNN / DEP-AAAA-NNNN. Le millésime est l'année de la DATE du courrier, le rang court par sens et par année (archivés compris). */
           if (!v.reference) v.reference = C.referenceSuivante((v.sens === 'arrivee' ? 'ARR-' : 'DEP-') + String(v.date || C.iso(AUJ)).slice(0, 4) + '-', 4,
             S.collection('courriers').all().concat(S.collection('courriers').archived()));
@@ -102,6 +137,8 @@
           { name: 'sens', label: 'Sens', options: [{ value: 'arrivee', label: 'Arrivée' }, { value: 'depart', label: 'Départ' }] },
           { name: 'traitement', label: 'Traitement', options: [{ value: 'traite', label: 'Traité' }, { value: 'en_cours', label: 'En cours' }, { value: 'en_attente', label: 'En attente' }] },
           { name: 'affecteA', label: 'Service', options: ['Direction Médicale', 'Direction Administrative', 'Comptabilité', 'Ressources humaines', 'Gestion des stocks'] },
+          { name: 'numerise', label: 'Numérisé', options: [{ value: 'oui', label: 'Pièce numérisée' }, { value: 'non', label: 'À scanner' }, { value: 'sansTexte', label: 'Texte non indexé' }],
+            match: function (r, v) { return v === 'oui' ? numeriseCourrier(r) : (v === 'non' ? !numeriseCourrier(r) : (numeriseCourrier(r) && !r.fichier.texteIndexe)); } },
         ],
         kpis: function (rows) {
           return [
@@ -122,7 +159,9 @@
               { k: 'Objet', v: c.objet },
               { k: 'État du traitement', v: { traite: 'Traité', en_cours: 'En cours', en_attente: 'En attente' }[c.traitement] },
               { k: 'Accusé de réception', v: c.accuseReception ? 'Oui' : 'Non' },
-              { k: 'Document numérisé', v: c.numerise ? 'Oui' : 'Non' },
+              { k: 'Document numérisé', v: numeriseCourrier(c) ? 'Oui' : 'Non, à scanner' },
+              { k: 'Nom du fichier', v: numeriseCourrier(c) ? D.DOCUMENTS.nomNormalise('courrier', c, (c.fichier.nomNormalise || '').split('.').pop()) : 'Aucun fichier rattaché' },
+              { k: 'Empreinte SHA-256 (8 premiers caractères)', v: numeriseCourrier(c) ? D.DOCUMENTS.abrege(c.fichier.sha256) : 'Sans objet' },
               { k: 'Observations', v: c.observations || '—' },
             ]),
             signatures: [{ role: 'L’Agent administratif' }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
@@ -131,7 +170,7 @@
       })(root);
     },
     actions: function () {
-      return [K.btn('Imprimer le registre', {
+      return [global.SIGH.fichiers && global.SIGH.fichiers.boutonReglage ? global.SIGH.fichiers.boutonReglage() : null, K.btn('Imprimer le registre', {
         icon: 'printer',
         onclick: function () {
           var rows = C.sortBy(S.collection('courriers').active(), 'date', 'desc');

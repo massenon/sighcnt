@@ -23831,6 +23831,234 @@ async function viderMessages(page) {
     const e153 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
     verifier('Aucune erreur JavaScript', e153.length === 0, e153.join(' | '));
   });
+  await etape(async () => {
+    scenario('Vague 154 : DOCS-1 D2 courriers : dépôt au geste sur la fiche, nom normalisé, empreinte, aperçu PDF et visionneuse d’image (zoom, rotation, ajustement), téléchargement sous le bon nom, numérisé dérivé, chemin local, retrait annulable, remplacement, journal RG-12');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), sfx = O.sfx();
+    await poserSessionServeur(roleImp('agentadmin', 'AGENT154'));
+    await ouvrir('m13-courriers.html');
+    const pdf = await Fx.pdfTexte(1541), png = await Fx.image('png', 1542), shaPdf = O.sha(pdf), shaPng = O.sha(png);
+    const ref1 = await O.creerCourrier(sfx + 'a', '2026-08-20'), ref2 = await O.creerCourrier(sfx + 'b', '2026-09-03');
+    const n1 = /ARR-2026-(\d+)/.exec(ref1)[1], n2 = /ARR-2026-(\d+)/.exec(ref2)[1];
+
+    verifier('La fiche n’a plus de case « Document numérisé » à la saisie (la colonne est dérivée), et une fiche neuve est « À scanner »', await (async () => {
+      await O.chercher(ref1);
+      const ligne = await page.evaluate((r) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(r) >= 0); return tr ? tr.textContent : ''; }, ref1);
+      await cliquer('Nouveau', 'button'); await pause(700);
+      const caseNumerise = await page.evaluate(() => !!document.querySelector('[role=dialog] #f_numerise'));
+      await O.fermerTout(); await pause(300);
+      return /À scanner/.test(ligne) && !caseNumerise;
+    })());
+
+    /* DÉPÔT D'UN PDF SUR LA FICHE, AU GESTE */
+    verifier('La fiche s’ouvre en tiroir avec sa carte « Pièce numérisée » : aucune pièce, une zone d’import', await O.ouvrirLigne(ref1) && await O.attendre(() => !!document.querySelector('[data-zone-import="courrier"]')));
+    await O.deposerUI(pdf);
+    verifier('Après le dépôt, la fiche porte la pièce : la carte réapparaît avec le nom normalisé AAAA-MM-JJ_ARR_NNNN.pdf (date de la fiche, rang de la référence), l’empreinte abrégée (8 caractères) et une page',
+      await O.attendre(() => !!document.querySelector('[data-piece-nom]')));
+    let c = await O.carte();
+    verifier('Nom de téléchargement normalisé et empreinte abrégée exacts (empreinte calculée ici, indépendamment)', c && c.nom === '2026-08-20_ARR_' + n1 + '.pdf' && c.empreinte === shaPdf.slice(0, 8) + '…' && /1 page/.test(c.texte) && /Texte indexé/.test(c.texte), JSON.stringify(c && { nom: c.nom, empreinte: c.empreinte }));
+    const fiche = await page.evaluate((r) => { const f = window.SIGH.store.collection('courriers').all().find((x) => x.reference === r); return { fichier: f.fichier, numerise: f.numerise, keys: Object.keys(f) }; }, ref1);
+    verifier('La fiche garde les métadonnées seulement (empreinte entière, nom d’origine, nom normalisé, type, taille, pages, texte indexé, déposant) : aucun octet du fichier dans le magasin, et `numerise` n’est pas une donnée saisie',
+      fiche.fichier.sha256 === shaPdf && fiche.fichier.nom === 'texte-1541.pdf' && fiche.fichier.mime === 'application/pdf' && fiche.fichier.taille === fs.statSync(pdf).size && fiche.fichier.pages === 1 && fiche.fichier.texteIndexe === true && !!fiche.fichier.deposePar
+      && !fiche.keys.includes('donnees') && JSON.stringify(fiche).indexOf('base64') < 0 && !fiche.keys.includes('numerise'), JSON.stringify(fiche).slice(0, 300));
+    verifier('Le fichier est au disque du poste sous son empreinte, identique à l’original', fs.existsSync(O.disque(shaPdf, 'pdf')) && O.sha(O.disque(shaPdf, 'pdf')) === shaPdf);
+
+    /* CHEMIN LOCAL SUR LA FICHE */
+    await O.attendre(() => !!document.querySelector('[data-piece-chemin-valeur]'));
+    c = await O.carte();
+    verifier('La fiche indique le chemin du fichier sur CE poste (dossier de données puis nom de stockage), avec « Copier le chemin »', c.chemin === fs.realpathSync(O.disque(shaPdf, 'pdf')) && c.cheminEtat === 'present' && /Copier le chemin/.test(c.texte), JSON.stringify(c.chemin));
+    await cliquer('Copier le chemin', 'button'); await pause(500);
+    verifier('« Copier le chemin » le copie et le dit', await page.evaluate(() => /Chemin copié\./.test(document.querySelector('#toast-host') ? document.querySelector('#toast-host').textContent : '')) === true);
+    await viderMessages(page);
+
+    /* APERÇU PDF : lecteur natif en iframe sur le fichier relu, empreinte vérifiée */
+    await cliquer('Aperçu', 'button');
+    verifier('L’aperçu d’un PDF ouvre le lecteur natif du navigateur (iframe) sur le fichier relu du serveur', await O.attendre(() => !!document.querySelector('[data-apercu-pdf]')));
+    const ap = await page.evaluate(async () => { const f = document.querySelector('[data-apercu-pdf]'); const u = f.getAttribute('src'); const b = new Uint8Array(await (await fetch(u)).arrayBuffer());
+      return { blob: /^blob:/.test(u), sha: window.SIGH.fichiers.sha256Octets(b), taille: b.length, titre: [...document.querySelectorAll('[role=dialog] h2')].pop().textContent, sous: [...document.querySelectorAll('[role=dialog] h2 + p')].pop().textContent }; });
+    verifier('Le contenu de l’aperçu a exactement l’empreinte de la pièce, et la modale nomme la pièce par son nom normalisé', ap.blob && ap.sha === shaPdf && ap.taille === fs.statSync(pdf).size && ap.sous === '2026-08-20_ARR_' + n1 + '.pdf', JSON.stringify(ap));
+    await O.fermerHaut(); await pause(300);
+
+    /* TÉLÉCHARGEMENT SOUS LE NOM NORMALISÉ */
+    await page.evaluate(() => { window.__dl = null; const orig = HTMLAnchorElement.prototype.click; HTMLAnchorElement.prototype.click = function () { if (this.hasAttribute('download')) window.__dl = { nom: this.getAttribute('download'), href: this.href }; return orig.apply(this, arguments); }; });
+    await cliquer('Télécharger', 'button'); await pause(1200);
+    const dl = await page.evaluate(async () => { const d = window.__dl; if (!d) return null; const b = new Uint8Array(await (await fetch(d.href)).arrayBuffer()); return { nom: d.nom, sha: window.SIGH.fichiers.sha256Octets(b) }; });
+    verifier('Le téléchargement se fait sous le nom normalisé et rend les octets de la pièce (même empreinte)', dl && dl.nom === '2026-08-20_ARR_' + n1 + '.pdf' && dl.sha === shaPdf, JSON.stringify(dl));
+
+    /* LA COLONNE « NUMÉRISÉ » EST DÉRIVÉE */
+    await O.fermerTout(); await pause(300);
+    await O.chercher(ref1);
+    const ligne1 = await page.evaluate((r) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(r) >= 0); return tr ? tr.textContent : ''; }, ref1);
+    verifier('Le registre affiche « Oui » et « texte indexé » pour la fiche qui porte un fichier (colonne dérivée du fichier)', /Oui/.test(ligne1) && /texte indexé/.test(ligne1), ligne1.slice(0, 160));
+
+    /* IMAGE : visionneuse écrite pour le projet */
+    verifier('Seconde fiche : dépôt d’un PNG', await O.ouvrirLigne(ref2) && await O.attendre(() => !!document.querySelector('[data-zone-import="courrier"]')));
+    await O.deposerUI(png);
+    await O.attendre(() => !!document.querySelector('[data-piece-nom]'));
+    c = await O.carte();
+    verifier('PNG : nom normalisé à la date de SA fiche, texte non indexé dit', c.nom === '2026-09-03_ARR_' + n2 + '.png' && /Texte non indexé/.test(c.texte), JSON.stringify(c && c.nom));
+    await cliquer('Aperçu', 'button');
+    verifier('L’aperçu d’une image ouvre la visionneuse du projet', await O.attendre(() => !!document.querySelector('[data-visionneuse] img')));
+    const vs = (action) => page.evaluate((a) => { if (a) document.querySelector('[data-visionneuse] [data-action="' + a + '"]').click(); const v = document.querySelector('[data-visionneuse]'); return { zoom: v.getAttribute('data-zoom'), rot: v.getAttribute('data-rotation'), ajuste: v.getAttribute('data-ajuste'), transform: document.querySelector('[data-visionneuse] img').style.transform }; }, action);
+    const v0 = await vs(null), v1 = await vs('zoom-avant'), v2 = await vs('zoom-avant'), v3 = await vs('zoom-arriere'), r1 = await vs('rotation-droite'), r2 = await vs('rotation-gauche'), r3 = await vs('rotation-gauche'), aj = await vs('ajuster'), tr = await vs('taille-reelle');
+    verifier('Visionneuse : ajustée au départ ; zoom avant 1,25 puis 1,56 ; arrière 1,25 ; rotation droite 90 puis gauche 0 puis 270 ; « Ajuster » revient à 100 % ajusté',
+      v0.zoom === '1' && v0.ajuste === '1' && v1.zoom === '1.25' && v2.zoom === '1.56' && v3.zoom === '1.25' && r1.rot === '90' && r2.rot === '0' && r3.rot === '270' && aj.zoom === '1' && aj.ajuste === '1' && /rotate\(-90deg\)/.test(r3.transform), JSON.stringify([v0, v1, v2, v3, r1, r2, r3, aj]));
+    verifier('« Taille réelle » sort de l’ajustement (zoom recalculé sur la taille naturelle de l’image)', tr.ajuste === '0' && Number(tr.zoom) > 0);
+    const imgOk = await page.evaluate(async () => { const i = document.querySelector('[data-visionneuse] img'); await new Promise((r) => { if (i.complete) r(); else i.onload = r; }); return { w: i.naturalWidth, h: i.naturalHeight }; });
+    verifier('L’image de la visionneuse est celle du fichier (600 par 400)', imgOk.w === 600 && imgOk.h === 400, JSON.stringify(imgOk));
+    await O.fermerHaut(); await pause(300);
+
+    /* REMPLACER : le même fichier est un doublon sur la MÊME fiche, un autre fichier prend la place */
+    await O.fermerTout();
+    verifier('La fiche à pièce propose de la remplacer', await O.ouvrirLigne(ref1) && await O.attendre(() => !!document.querySelector('[data-remplacer]')));
+    await page.evaluate(() => { document.querySelector('[data-remplacer]').open = true; });
+    await O.deposerUI(pdf);
+    c = await O.carte();
+    verifier('Même fichier déposé sur la même fiche : refusé, DOUBLON_MEME_FICHE, la pièce existante nommée (référence et nom normalisé)', c.refus.indexOf('DOUBLON_MEME_FICHE') >= 0 && c.texte.indexOf('2026-08-20_ARR_' + n1 + '.pdf') >= 0 && c.texte.indexOf(ref1) >= 0, JSON.stringify(c.refus));
+    const png3 = await Fx.image('png', 1543);
+    await page.evaluate(() => { const d = document.querySelector('[data-remplacer]'); if (d) d.open = true; });
+    await O.deposerUI(png3);
+    await O.attendre(() => document.querySelector('[data-piece-nom]') && /\.png$/.test(document.querySelector('[data-piece-nom]').textContent));
+    const apresRempl = await page.evaluate((r) => { const f = window.SIGH.store.collection('courriers').all().find((x) => x.reference === r); return { sha: f.fichier.sha256, retires: (f.fichiersRetires || []).map((x) => [x.sha256, x.motif]) }; }, ref1);
+    verifier('Un autre fichier remplace la pièce : l’ancienne est RETIRÉE (historique avec empreinte et motif), pas supprimée ; son fichier reste au disque', apresRempl.sha === O.sha(png3) && apresRempl.retires.length === 1 && apresRempl.retires[0][0] === shaPdf && /Remplacée/.test(apresRempl.retires[0][1]) && fs.existsSync(O.disque(shaPdf, 'pdf')), JSON.stringify(apresRempl));
+
+    /* AUTRE FICHE : avertissement nommé */
+    const ref3 = await O.creerCourrier(sfx + 'c', '2026-09-10');
+    await O.fermerTout();
+    await O.ouvrirLigne(ref3); await O.attendre(() => !!document.querySelector('[data-zone-import="courrier"]'));
+    await O.deposerUI(png3);
+    const avert = await O.attendre(() => [...document.querySelectorAll('[role=dialog]')].some((d) => /déjà rattaché ailleurs/.test(d.textContent)));
+    const texteAvert = await page.evaluate(() => { const d = [...document.querySelectorAll('[role=dialog]')].find((x) => /déjà rattaché ailleurs/.test(x.textContent)); return d ? d.textContent : ''; });
+    verifier('Le même fichier déjà pièce d’une AUTRE fiche : avertissement nommé (référence de l’autre fiche, empreinte abrégée) avant tout rattachement', avert && texteAvert.indexOf(ref1) >= 0 && texteAvert.indexOf(O.sha(png3).slice(0, 8)) >= 0, texteAvert.slice(0, 200));
+    await cliquer('Rattacher quand même', 'button'); await pause(1500);
+    const nbAutre = await page.evaluate((s) => window.SIGH.store.collection('courriers').all().filter((x) => x.fichier && x.fichier.sha256 === s).length, O.sha(png3));
+    verifier('Accepté, le fichier est rattaché à la seconde fiche aussi (deux fiches, un seul fichier au disque)', nbAutre === 2);
+
+    /* RETRAIT ANNULABLE */
+    await O.fermerTout(); await pause(300);
+    await O.ouvrirLigne(ref2); await O.attendre(() => !!document.querySelector('[data-piece-nom]'));
+    await cliquer('Retirer la pièce', 'button'); await pause(500);
+    await page.evaluate(() => { const t = [...document.querySelectorAll('[role=dialog] textarea')].pop(); t.value = 'Scan illisible, à refaire'; t.dispatchEvent(new Event('input', { bubbles: true })); });
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role=dialog] button.btn-danger')].filter((x) => x.textContent.trim() === 'Retirer').pop(); b.click(); }); await pause(1200);
+    const retire = await page.evaluate((r) => { const f = window.SIGH.store.collection('courriers').all().find((x) => x.reference === r); return { piece: !!(f.fichier && f.fichier.sha256), retires: (f.fichiersRetires || []).length, motif: (f.fichiersRetires || [{}])[0].motif, statut: f.statut }; }, ref2);
+    verifier('Retirer la pièce : la fiche n’a plus de fichier (« À scanner »), l’historique garde la pièce avec son motif, la fiche n’est pas archivée, le fichier reste au disque',
+      retire.piece === false && retire.retires === 1 && retire.motif === 'Scan illisible, à refaire' && retire.statut === 'actif' && fs.existsSync(O.disque(shaPng, 'png')), JSON.stringify(retire));
+    await cliquer('Annuler', '#toast-host button'); await pause(800);
+    const reprise = await page.evaluate((r) => { const f = window.SIGH.store.collection('courriers').all().find((x) => x.reference === r); return !!(f.fichier && f.fichier.sha256) && (f.fichiersRetires || []).length === 0; }, ref2);
+    verifier('Annuler le retrait remet la pièce en place (annulable, RG-14)', reprise === true);
+
+    /* JOURNAL RG-12 */
+    const aud = await page.evaluate(() => { const A = window.SIGH.store.raw().audit; const n = (a) => A.filter((x) => x.action === a); return {
+      depot: n('Dépôt d’un fichier numérisé').length, retrait: n('Pièce numérisée retirée de la fiche').length, consult: n('Consultation d’un document numérisé').length, telech: n('Téléchargement d’un document numérisé').length,
+      cibles: n('Consultation d’un document numérisé').map((x) => x.cible), ref: (n('Consultation d’un document numérisé')[0] || {}).reference, util: (n('Dépôt d’un fichier numérisé')[0] || {}).utilisateur }; });
+    verifier('Journal RG-12 : dépôts, retrait, consultation et téléchargement sont écrits, avec la référence de la fiche, l’empreinte abrégée et l’auteur', aud.depot >= 3 && aud.retrait >= 2 && aud.consult >= 2 && aud.telech >= 1 && aud.cibles.some((x) => x.indexOf(shaPdf.slice(0, 8)) >= 0) && /ARR-/.test(aud.ref) && !!aud.util, JSON.stringify(aud));
+
+    /* FICHE IMPRIMÉE : nom normalisé et empreinte abrégée */
+    const imp = await page.evaluate(async (r) => { const P = window.SIGH.print; let vu = null; const orig = P.etat; P.etat = (o) => { vu = { cartouche: JSON.stringify(o.cartouche), texte: o.contenu ? o.contenu.textContent : '' }; };
+      const ligne = [...document.querySelectorAll('#page-content tbody tr')]; await new Promise((x) => setTimeout(x, 0));
+      const b = document.querySelector('[role=dialog] button, .drawer-backdrop button'); void b;
+      return vu; }, ref1);
+    void imp;
+    await O.fermerTout(); await pause(300);
+    await O.chercher(ref1);
+    const impression = await page.evaluate(() => new Promise((resolve) => { const P = window.SIGH.print; const orig = P.etat; P.etat = (o) => { P.etat = orig; resolve({ cartouche: JSON.stringify(o.cartouche), texte: o.contenu ? o.contenu.textContent : '' }); };
+      const tr = document.querySelector('#page-content tbody tr'); const b = [...tr.querySelectorAll('button')].find((x) => /Imprimer/.test(x.getAttribute('title') || x.getAttribute('aria-label') || '')); if (b) b.click(); else resolve(null); }));
+    verifier('La fiche imprimée porte le nom normalisé du fichier et l’empreinte abrégée (8 caractères)', impression && impression.texte.indexOf('2026-08-20_ARR_' + n1 + '.png') >= 0 && impression.texte.indexOf(O.sha(png3).slice(0, 8)) >= 0, JSON.stringify(impression).slice(0, 300));
+
+    const e154 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e154.length === 0, e154.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 155 : DOCS-1 D2 courriers : refus NOMMÉS (format, faux format, WEBP, taille), taille maximale réglable en base par la DAF et l’administrateur seuls, droit de dépôt et de retrait, un import de lignes ne porte aucun fichier');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), sfx = O.sfx();
+    const pdf = await Fx.pdfTexte(1551), shaPdf = O.sha(pdf);
+    const gros = O.gonfler(pdf, 150 * 1024, 'gros-155.pdf'), shaGros = O.sha(gros);
+    const exe = await Fx.octets(4000, 'faux-155.exe');
+    const camoufle = path.join(O.dossier, 'camoufle-155.pdf'); fs.copyFileSync(exe, camoufle);
+    const webp = await Fx.image('webp', 1551);
+    const refDe = async (lib) => O.creerCourrier(sfx + lib, '2026-10-05');
+
+    /* LA TAILLE MAXIMALE : réglée par la DAF, à l'écran, motivée, journalisée */
+    await poserSessionServeur(roleImp('agentadmin', 'AGENT155'));
+    await ouvrir('m13-courriers.html');
+    verifier('Le bouton « Taille maximale des fichiers » est ABSENT pour l’agent administratif (réglage réservé à l’administrateur et à la DAF)', await page.evaluate(() => ![...document.querySelectorAll('button')].some((b) => /Taille maximale des fichiers/.test(b.textContent))));
+    const refus = await page.evaluate(() => window.SIGH.fichiers.definirTailleMax(20 * 1048576, 'essai'));
+    verifier('Régler la taille sans y avoir droit est refusé par le service (REGLAGE_RESERVE), motif et geste nommés', refus.ok === false && refus.code === 'REGLAGE_RESERVE' && !!refus.motif && !!refus.geste, JSON.stringify(refus));
+    await poserSessionServeur(roleImp('da', 'DAF155'));
+    await ouvrir('m13-courriers.html');
+    const inv = await page.evaluate(() => { const F = window.SIGH.fichiers; return { vide: F.definirTailleMax('', 'm').code, petit: F.definirTailleMax(1000, 'm').code, enorme: F.definirTailleMax(500 * 1048576, 'm').code, sansMotif: F.definirTailleMax(20 * 1048576, '  ').code, defaut: F.tailleMax(), reglee: F.tailleMaxReglee() }; });
+    verifier('Une taille invalide ou sans motif est refusée en la nommant (TAILLE_INVALIDE, MOTIF_REQUIS) ; le défaut est 10 Mo « à valider » tant que rien n’est réglé', inv.vide === 'TAILLE_INVALIDE' && inv.petit === 'TAILLE_INVALIDE' && inv.enorme === 'TAILLE_INVALIDE' && inv.sansMotif === 'MOTIF_REQUIS' && inv.defaut === 10 * 1048576 && inv.reglee === false, JSON.stringify(inv));
+    await cliquer('Taille maximale des fichiers', 'button'); await pause(600);
+    verifier('La fenêtre de réglage dit que 10 Mo est « à valider » tant que la clinique n’a rien réglé', await page.evaluate(() => { const d = [...document.querySelectorAll('[role=dialog]')].pop(); return !!d && /à valider/.test(d.textContent); }));
+    await page.evaluate(() => { const d = [...document.querySelectorAll('[role=dialog]')].pop(); const n = d.querySelector('input[type=number]'); n.value = '0.1'; n.dispatchEvent(new Event('input', { bubbles: true }));
+      const t = d.querySelector('textarea'); t.value = 'Réglage de sonde 155'; t.dispatchEvent(new Event('input', { bubbles: true })); });
+    await cliquer('Enregistrer', '[role=dialog] button'); await pause(700);
+    const reg = await page.evaluate(() => ({ r: window.SIGH.store.reglage('documentsBornes', null), a: window.SIGH.store.raw().audit.filter((x) => x.action === 'Taille maximale d’un fichier numérisé').length }));
+    verifier('Taille réglée à 0,1 Mo depuis l’écran : valeur en base (réglage), auteur et date portés, et une ligne de journal (RG-12)', reg.r && reg.r.tailleMax === 104858 && !!reg.r.reglePar && reg.a >= 1, JSON.stringify(reg));
+    await attendreEcritures();
+
+    /* LES REFUS NOMMÉS, AU GESTE, par l'agent */
+    await poserSessionServeur(roleImp('agentadmin', 'AGENT155'));
+    await ouvrir('m13-courriers.html');
+    const ref1 = await refDe('a');
+    await O.ouvrirLigne(ref1); await O.attendre(() => !!document.querySelector('[data-zone-import="courrier"]'));
+    const dit = await page.evaluate(() => document.querySelector('[data-zone-import] p').textContent);
+    verifier('La zone d’import annonce la taille maximale RÉGLÉE (102 Ko) et les formats admis au courrier (PDF, JPEG, PNG, pas WEBP)', /102 Ko/.test(dit) && /PDF/.test(dit) && /JPEG/.test(dit) && /PNG/.test(dit) && !/WEBP/.test(dit), dit);
+    const essais = [['gros', gros, 'TAILLE_DEPASSEE', /150|Ko/], ['exe', exe, 'FORMAT_REFUSE', /format/], ['camoufle', camoufle, 'FORMAT_REFUSE', /contenu|extension/], ['webp', webp, 'FORMAT_REFUSE', /format/]];
+    const lus = [];
+    for (const e of essais) {
+      await O.deposerUI(e[1]);
+      const m = await page.evaluate(() => { const n = document.querySelector('[data-refus-code]'); return n ? { code: n.getAttribute('data-refus-code'), texte: n.textContent } : null; });
+      lus.push([e[0], m && m.code, m && /Numériser|Enregistrer|Choisir|Demander/.test(m.texte), m && e[3].test(m.texte)]);
+    }
+    verifier('Chaque dépôt refusé l’est en NOMMANT le code, le motif et le geste de correction : taille (TAILLE_DEPASSEE), exécutable, faux PDF et WEBP (FORMAT_REFUSE)',
+      lus.every((l, i) => l[1] === essais[i][2] && l[2] === true && l[3] === true), JSON.stringify(lus));
+    const fiche1 = await page.evaluate((r) => { const f = window.SIGH.store.collection('courriers').all().find((x) => x.reference === r); return !!(f.fichier && f.fichier.sha256); }, ref1);
+    verifier('Aucun refus ne rattache ni ne range quoi que ce soit : la fiche reste sans pièce et le gros fichier n’est pas au disque', fiche1 === false && !fs.existsSync(O.disque(shaGros, 'pdf')));
+
+    /* LE SERVEUR REFUSE AUSSI (même taille lue en base) */
+    const jt = await O.jeton('agentadmin');
+    const srv = await O.deposer(jt, 'courrier', gros);
+    verifier('Le serveur applique la même taille maximale (lue en base) : 413 TAILLE_DEPASSEE même si le navigateur est contourné', srv.statut === 413 && srv.json.code === 'TAILLE_DEPASSEE', JSON.stringify(srv.json));
+
+    /* LE RÉGLAGE RETIRÉ, LE DÉFAUT REVIENT : le même gros fichier passe */
+    await page.evaluate(() => window.SIGH.store.setReglage('documentsBornes', null));
+    await attendreEcritures();
+    await O.ouvrirLigne(ref1);
+    await O.deposerUI(gros);
+    await O.attendre(() => !!document.querySelector('[data-piece-nom]'));
+    const cg = await O.carte();
+    verifier('La taille réglée retirée, le défaut de 10 Mo s’applique et le fichier de 150 Ko est rattaché', (cg || {}).nom === '2026-10-05_ARR_' + /ARR-2026-(\d+)/.exec(ref1)[1] + '.pdf' && fs.existsSync(O.disque(shaGros, 'pdf')), JSON.stringify({ cg: cg && { nom: cg.nom, refus: cg.refus, zone: cg.zoneDepot }, tailleReglee: await page.evaluate(() => [window.SIGH.fichiers.tailleMax(), window.SIGH.store.reglage('documentsBornes', 'absent')]), disque: fs.existsSync(O.disque(shaGros, 'pdf')) }));
+
+    /* LES DROITS : retirer une pièce demande le droit d'annuler ; l'accueil dépose sans retirer */
+    await poserSessionServeur(roleImp('reception', 'ACCUEIL155'));
+    await ouvrir('m13-courriers.html');
+    await O.ouvrirLigne(ref1); await O.attendre(() => !!document.querySelector('[data-carte-piece]'));
+    const btnRec = await page.evaluate(() => { const c = document.querySelector('[data-carte-piece]'); const t = (x) => [...c.querySelectorAll('button')].some((b) => b.textContent.indexOf(x) >= 0); return { apercu: t('Aperçu'), retirer: t('Retirer la pièce'), remplacer: !!c.querySelector('[data-remplacer]') }; });
+    verifier('L’accueil (voir et éditer, sans annuler) consulte la pièce et peut la remplacer, mais la commande « Retirer la pièce » est ABSENTE (jamais grisée)', btnRec.apercu && btnRec.remplacer && !btnRec.retirer, JSON.stringify(btnRec));
+    const droitCaisse = await page.evaluate(() => { const N = window.SIGH.nav; return N.can('caissier', N.get('m13-courriers')); });
+    verifier('Le caissier n’ouvre pas les courriers (droit fermé au manifeste) : ni dépôt ni lecture', droitCaisse === false);
+    await O.fermerTout();
+
+    /* UN IMPORT DE LIGNES NE PORTE AUCUN FICHIER */
+    await poserSessionServeur(roleImp('agentadmin', 'AGENT155b'));
+    await ouvrir('m13-courriers.html');
+    await page.evaluate(async () => { await window.SIGH.app.chargerScript('assets/js/vendor/xlsx-mini.js'); await window.SIGH.app.chargerScript('assets/js/modules/import.js'); });
+    const lot = await page.evaluate((x) => { const I = window.SIGH.importer; const a = I.analyserLignes(I.jeu('courriers'), [['N° d’ordre', 'Sens', 'Date', 'Correspondant', 'Objet', 'Nature', 'Service destinataire'], ['', 'Arrivée', '2026-10-06', 'Import 155', 'Courrier importé 155 ' + x, 'Lettre', 'Comptabilité']], 'c155.csv');
+      const r = I.appliquer('courriers', a); const f = window.SIGH.store.collection('courriers').all().find((c) => String(c.objet).indexOf('Courrier importé 155 ' + x) >= 0);
+      return { ok: !!r.ok, id: r.lot && r.lot.id, fichier: f && f.fichier, cles: f ? Object.keys(f) : [], ref: f && f.reference }; }, sfx);
+    verifier('Une fiche importée par le jeu « courriers » ne porte AUCUN fichier et n’écrit pas `numerise` : elle est « À scanner », la pièce se dépose ensuite sur la fiche', lot.ok && !lot.fichier && lot.cles.indexOf('numerise') < 0 && lot.cles.indexOf('donnees') < 0, JSON.stringify(lot));
+    await attendreEcritures();
+    await O.chercher(lot.ref);
+    const lg = await page.evaluate((r) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(r) >= 0); return tr ? tr.textContent : ''; }, lot.ref);
+    verifier('Au registre, la fiche importée est « À scanner »', /À scanner/.test(lg), lg.slice(0, 120));
+    const an = await page.evaluate((i) => { const r = window.SIGH.importer.annulerLot(i, 'sonde 155'); return { ok: !!r.ok }; }, lot.id);
+    verifier('Le lot importé s’annule (RG-14) sans toucher aux pièces', an.ok);
+
+    const e155 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e155.length === 0, e155.join(' | '));
+  });
   /* DOCS-1 FIN */
 
   await browser.close();

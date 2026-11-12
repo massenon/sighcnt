@@ -1993,11 +1993,11 @@
         var v = l.v;
         var ref = v.reference || C.referenceSuivante((v.sens === 'arrivee' ? 'ARR-' : 'DEP-') + String(v.date).slice(0, 4) + '-', 4, toutes('courriers'));
         ecrireFiche('courriers', { reference: ref, sens: v.sens, date: v.date, correspondant: v.correspondant || '', objet: v.objet, nature: v.nature || 'Lettre', affecteA: v.affecteA || null,
-          traitement: 'en_attente', accuseReception: false, numerise: false }, { module: 'M13', entite: 'courrier' });
+          traitement: 'en_attente', accuseReception: false }, { module: 'M13', entite: 'courrier' });   /* un import de lignes ne porte AUCUN fichier : `numerise` (dérivé du fichier rattaché) reste faux, la pièce se dépose ensuite sur la fiche */
       });
     },
     dependances: function (lot) {
-      var c = lot.ecrits.map(function (e) { return S.collection('courriers').get(e.id); }).filter(function (x) { return x && (x.traitement !== 'en_attente' || x.numerise || x.accuseReception); })[0];
+      var c = lot.ecrits.map(function (e) { return S.collection('courriers').get(e.id); }).filter(function (x) { return x && (x.traitement !== 'en_attente' || (x.fichier && x.fichier.sha256) || x.accuseReception); })[0];
       return c ? { code: 'COURRIER_TRAITE', motif: 'le courrier ' + c.reference + ' a déjà été traité, accusé ou numérisé', geste: 'Un courrier traité reste au registre : archivez-le à l’écran (RG-14) plutôt que d’annuler son lot.' } : null;
     },
   });

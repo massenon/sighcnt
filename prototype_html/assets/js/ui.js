@@ -1070,6 +1070,7 @@
       rows = rows.slice();
       if (state.q) {
         rows = rows.filter(function (r) {
+          if (cfg.searchExtra && C.matches(cfg.searchExtra(r), state.q)) return true;
           return cfg.columns.some(function (c) {
             if (c.key === '_actions') return false;
             return C.matches(cellValue(r, c), state.q);
@@ -1104,9 +1105,10 @@
 
       C.clear(tableWrap);
       if (!rows.length) {
-        tableWrap.appendChild(empty(state.q || Object.keys(state.filters).some(function (k) { return state.filters[k]; })
-          ? 'Aucun résultat pour cette recherche.' : cfg.emptyMessage,
-          { hint: cfg.emptyHint, icon: 'inbox' }));
+        var enRecherche = state.q || Object.keys(state.filters).some(function (k) { return state.filters[k]; });
+        /* `indiceRecherche(q)` : ce que la recherche ne lit PAS (le texte d'une pièce numérisée sans couche texte), dit sous « Aucun résultat » : jamais un vide qui se lit « il n'y a rien ». */
+        tableWrap.appendChild(empty(enRecherche ? 'Aucun résultat pour cette recherche.' : cfg.emptyMessage,
+          { hint: enRecherche && cfg.indiceRecherche ? (cfg.indiceRecherche(state.q) || cfg.emptyHint) : cfg.emptyHint, icon: 'inbox' }));
       } else {
         var table = el('table.tbl');
         var thead = el('thead'), htr = el('tr');

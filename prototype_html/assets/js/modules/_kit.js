@@ -596,6 +596,12 @@
       function openDetail(record) {
         var body = cfg.detail ? cfg.detail(record, { refresh: refresh, edit: function () { openForm(record); } })
           : detailParDefaut(record);
+        /* `detailSup(record, ctx)` : un bloc posé SOUS le détail par défaut (la pièce numérisée d'une fiche : aperçu, dépôt, chemin). `ctx.rouvrir()` referme le tiroir et le rouvre sur la fiche
+           relue : après un dépôt, la fiche a changé. */
+        if (cfg.detailSup) {
+          var sup = cfg.detailSup(record, { refresh: refresh, rouvrir: function () { d.close(); var frais = col.get(record.id); if (frais) openDetail(frais); } });
+          if (sup) body = el('div.space-y-4', null, [body, sup]);
+        }
         var footer = [];
         if (cfg.etat) footer.push(btn('Imprimer', { icon: 'printer', onclick: function () { cfg.etat(record); } }));
         if (peutEditer) footer.push(btn('Modifier', { variant: 'primary', icon: 'pencil', onclick: function () { d.close(); openForm(record); } }));
@@ -657,6 +663,9 @@
           selectable: cfg.selectable && !archived,
           exportName: cfg.collection,
           searchPlaceholder: 'Rechercher un ' + cfg.entite + '…',
+          /* `recherche: { extra(r), indice(q) }` : ce que la recherche lit EN PLUS des colonnes (le texte extrait d'une pièce numérisée), et ce qu'elle ne lit pas. */
+          searchExtra: cfg.recherche && cfg.recherche.extra ? cfg.recherche.extra : null,
+          indiceRecherche: cfg.recherche && cfg.recherche.indice ? cfg.recherche.indice : null,
           emptyMessage: archived ? 'Aucun enregistrement archivé.' : 'Aucun ' + cfg.entite + ' enregistré.',
           emptyHint: (archived || cfg.readonly) ? null : 'Utiliser le bouton « Nouveau » pour créer le premier enregistrement.',
           onRowClick: openDetail,

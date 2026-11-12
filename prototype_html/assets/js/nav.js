@@ -306,7 +306,7 @@
             { id: 'm1-constantes', label: 'Constantes à l’accueil', icon: 'thermometer' },
             { id: 'm1-reference', label: 'Fiches de référence', icon: 'share-2' },
             { id: 'm1-contre-reference', label: 'Fiches de contre-référence', icon: 'reply' },
-            { id: 'm1-documents', label: 'Documents numérisés', icon: 'paperclip' },
+            { id: 'm1-documents', label: 'Documents numérisés', icon: 'paperclip', scripts: ['modules/fichiers.js'] },
             { id: 'm1-numerisation', label: 'Plan de numérisation', icon: 'scan-line' },
           ],
         },
@@ -691,7 +691,7 @@
           roles: ['agentadmin', 'da', 'admin', 'direction', 'ambulancier',
             'assistant_comptable'],
           items: [
-            { id: 'm13-courriers', label: 'Courriers (départ / arrivée)', icon: 'mail' },
+            { id: 'm13-courriers', label: 'Courriers (départ / arrivée)', icon: 'mail', scripts: ['modules/fichiers.js'] },
             { id: 'm13-reunions', label: 'Réunions', icon: 'users-round' },
             { id: 'm13-evenements', label: 'Événements & notifications', icon: 'calendar-clock' },
             { id: 'm13-plan-annuel', label: 'Plan annuel de travail', icon: 'calendar-range' },

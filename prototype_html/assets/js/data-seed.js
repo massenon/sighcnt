@@ -1882,8 +1882,8 @@
           affecteA: C.pick(rnd, SERVICES_COURRIER),
           traitement: C.daysBetween(dtc, FIN) > 6 ? 'traite' : C.pick(rnd, ['en_attente', 'en_cours', 'traite']),
           accuseReception: rnd() > 0.4,
-          numerise: rnd() > 0.25,
-          statut: 'actif',
+          /* `numerise` n'est plus écrit : il est DÉRIVÉ du fichier rattaché (lot DOCS-1). Le tirage de l'ancienne case est conservé, pour ne pas décaler les tirages qui suivent dans le jeu. */
+          statut: (rnd(), 'actif'),
         });
       }
     }
