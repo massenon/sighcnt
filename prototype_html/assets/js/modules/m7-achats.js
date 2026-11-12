@@ -1265,11 +1265,27 @@
                   annulations.push(function () { S.collection('produits').update(p.id, avant); mv.undo(); });
                 });
 
+                /* UNE RÉCEPTION À UN AUTRE PRIX PROPOSE le changement du prix d'achat (lot T5b, Direction, 12/11/2026) : APRÈS l'entrée en stock et le CUMP, qui ne changent pas, et sans jamais
+                   bloquer la réception. Le moteur (`PR.proposerPrixReception`) n'ouvre qu'UNE proposition par produit, rien quand le prix est identique, et ne change aucun prix avant le Oui. */
+                var prop = { ouvertes: [], deja: [], refusees: [] };
+                vals.forEach(function (x) {
+                  if (x.recu <= 0) return;
+                  var p = produits().filter(function (pp) { return pp.id === x.ligne.produitId; })[0];
+                  if (!p) return;
+                  var r = global.SIGH.parcours.proposerPrixReception({ produit: p, prixRecu: x.ligne.prixUnitaire, date: v.date, reference: v.referenceBL });
+                  if (r.etat === 'ouverte') { prop.ouvertes.push(r); annulations.push(function () { global.SIGH.parcours.retirerProposition(r.version.id, 'Réception ' + v.referenceBL + ' annulée'); }); }
+                  else if (r.etat === 'deja_ouverte') prop.deja.push(r);
+                  else if (r.etat === 'refusee') prop.refusees.push(r);
+                });
                 var maj = cmds.update(c.id, { statutCommande: 'livree' });
                 m.close(); table.refresh();
+                var detailProp = '';
+                if (prop.ouvertes.length) detailProp += ' ' + prop.ouvertes.length + ' proposition(s) de changement du prix d’achat ouverte(s) (' + prop.ouvertes.map(function (r) { return r.code + ' : ' + (r.ancien == null ? 'sans prix' : C.num(r.ancien)) + ' à ' + C.num(r.prix); }).join(' ; ') + ') : le prix en vigueur ne change qu’au Oui de la Directrice Administrative.';
+                if (prop.deja.length) detailProp += ' Une proposition attend déjà sa décision pour ' + prop.deja.map(function (r) { return r.code; }).join(', ') + ' : aucune seconde n’a été ouverte.';
+                if (prop.refusees.length) detailProp += ' Proposition de prix non ouverte (la réception n’est pas bloquée) : ' + prop.refusees.map(function (r) { return r.code + ' (' + r.refus.code + ')'; }).join(', ') + '.';
                 U.toast('Réception enregistrée — ' + (ecarts.length ? ecarts.length + ' écart(s) constaté(s).' : 'livraison conforme.'), {
                   type: ecarts.length ? 'warning' : 'success',
-                  detail: 'Stock gros mis à jour, CUMP recalculé.',
+                  detail: 'Stock gros mis à jour, CUMP recalculé.' + detailProp,
                   undo: function () {
                     annulations.forEach(function (u) { u(); });
                     bl.undo(); maj.undo(); table.refresh();

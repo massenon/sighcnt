@@ -177,6 +177,30 @@
     });
     return out;
   }
+  /** UNE RÉCEPTION À UN AUTRE PRIX (lot T5b, décision de la Direction du 12/11/2026). Le prix de réception est celui de la ligne reçue (prix unitaire du bon de commande) ; quand il diffère du
+      prix d'achat en vigueur à la DATE DE RÉCEPTION, une PROPOSITION de changement du prix d'achat s'ouvre par `proposerTarif` (famille PRODUIT, date d'effet = date de réception, motif « prix
+      constaté à la réception n° … »), soumise à l'alerte et au Oui ou Non du circuit existant. Elle NE BLOQUE JAMAIS la réception : le CUMP, le stock et le mouvement sont écrits avant, par le
+      geste de l'écran, et un refus du moteur (date antérieure réservée, pièce déjà émise depuis cette date, droit) se dit sans rien défaire. UNE SEULE proposition ouverte par produit : si l'une
+      attend déjà son Oui ou son Non, la réception le dit et n'en ouvre pas une seconde. Un prix identique ne propose rien. Le prix en vigueur, le prix de vente dérivé d'un médicament (RG-02)
+      et les pièces émises ne bougent QU'AU OUI : une proposition ne change rien. Rend `{ etat: 'ouverte' | 'identique' | 'deja_ouverte' | 'refusee' | 'sans_objet', ... }`. */
+  function proposerPrixReception(o) {
+    o = o || {};
+    var pr = o.produit, prix = Number(o.prixRecu);
+    if (!pr || !pr.code || !entierPositif(prix)) return { etat: 'sans_objet', motif: 'prix de réception non renseigné' };
+    var TA = D.TARIFS, jour = TA.jourDe(o.date || C.aujourdhui());
+    var en = prixProduitALaDate(pr, jour);
+    if (!en.absent && en.achat === prix) return { etat: 'identique', code: pr.code, prix: prix };
+    var h = TA.lire(), p = h && h.parProduit[pr.code];
+    if (!p) return { etat: 'sans_objet', code: pr.code, motif: 'produit sans prix versionné' };
+    var attente = (h.vers[p.code] || []).filter(function (x) { return x.statut === 'propose'; })[0];
+    if (attente) return { etat: 'deja_ouverte', code: pr.code, version: attente.version, prix: attente.prixNonAssure };
+    var ref = String(o.reference || '').trim();
+    var passee = jour < jourTarif(null);
+    var r = proposerTarif({ code: pr.code, prixNonAssure: prix, dateEffet: jour, datePassee: passee ? true : undefined,
+      motif: 'prix constaté à la réception n° ' + ref, source: 'Réception ' + ref, reception: { reference: ref } });
+    if (!r.ok) return { etat: 'refusee', code: pr.code, refus: { code: r.code, motif: r.motif, geste: r.geste } };
+    return { etat: 'ouverte', code: pr.code, ancien: en.absent ? null : en.achat, prix: prix, dateEffet: jour, version: r.version };
+  }
   /** Le refus d'un article créé sans prix d'achat (lot T5b) : code, motif, geste. Un tiret n'est pas un zéro, et zéro n'est pas un prix : l'article ne se crée pas. Le seul cas où un article
       naît sans prix est la reprise du Grand Stock (le stock existe déjà), qui le marque « à valoriser » et le rend non facturable. */
   function refusPrixAchatAbsent(code, designation) {
@@ -223,6 +247,9 @@
   function peutProposerProduit(o) {
     var N = global.SIGH.nav, r = roleDeLaSession();
     if (o && o.import && o.import.jeu) return !!(N && N.droitImport && N.droitImport(r, o.import.jeu).importer);
+    /* LA RÉCEPTION D'UN ACHAT (lot T5b) : la proposition naît du geste de réceptionner, dont l'autorité est celle de MODIFIER l'écran des réceptions (M7), comme la création d'une fiche
+       n'a pas d'autorité propre. Ce que la proposition peut devenir (Oui ou Non d'un profil qui décide) reste réglé par les MÊMES fonctions. */
+    if (o && o.reception) { var dr = N && N.droitsEcran ? N.droitsEcran(r, 'm7-receptions', 'M7') : null; return !!(dr && dr.editer); }
     var d = N && N.droitsEcran ? N.droitsEcran(r, 'm6-produits', 'M6') : null;
     return !!(d && d.editer);
   }
@@ -3622,7 +3649,7 @@
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
     proposerTarif: proposerTarif, evaluerProposition: evaluerProposition, peutProposerParImport: peutProposerParImport, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
     tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate,
-    produitsAValoriser: produitsAValoriser, refusPrixAchatAbsent: refusPrixAchatAbsent,
+    produitsAValoriser: produitsAValoriser, refusPrixAchatAbsent: refusPrixAchatAbsent, proposerPrixReception: proposerPrixReception,
     prixProduitALaDate: prixProduitALaDate, prixAchatALaDate: prixAchatALaDate, prixVenteALaDate: prixVenteALaDate, produitDeCode: produitDeCode, peutProposerProduit: peutProposerProduit, creerPrixProduit: creerPrixProduit,
     couvertureALaDate: couvertureALaDate, historiqueCouverture: historiqueCouverture,
     changerCouverture: changerCouverture,
