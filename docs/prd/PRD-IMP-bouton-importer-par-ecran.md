@@ -562,6 +562,8 @@ Moteur et dix jeux (`packages/domaine/lib/src/import/`), écran et fenêtre (`ap
 
 Où est le poste du gestionnaire de stock (mère ou fileul), c'est ce qui commande la solution : **non vérifié** dans le dépôt. Q5 pose la question à la Direction.
 
+**Mise à jour du lot IMP-D (12/11/2026, décision N de la Direction, option (c)) : un fileul importe AUSSI directement chez lui.** La ligne « Référentiels R » du tableau ci-dessus n'est plus « refusé » : pour un jeu dont toutes les cibles sont de configuration (analyses (modèle), fournisseurs, compagnies, souscripteurs, plan comptable, natures de facture, centres de coûts, unités du laboratoire, emplacements), le fileul **écrit chez lui tout de suite** (même chemin que la mère, sous la garde qui ne laisse passer que ce geste) **ET une demande part automatiquement** à la mère, qui reste l'autorité : elle rejoue sous le rôle de l'auteur et ne confirme que le MÊME résultat, avec les mêmes identifiants de fiche ; sinon elle refuse en nommant et le fileul restitue (archivage, RG-14). La mère injoignable, la demande attend dans la file du fileul et ses fiches portent « En attente de la mère ». En cas de conflit, la mère gagne. Le Grand Stock (configuration ET quantités) reste par demande seule, le jeu restreint de configuration (le personnel) reste réservé à la mère. Voir `ECARTS-MAQUETTE.md` E2500 à E2508 et `DECISIONS-A-VALIDER.md` section P.
+
 ---
 
 ## 9. Lots proposés
