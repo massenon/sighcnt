@@ -1658,7 +1658,16 @@
     return r.record;
   }
 
-  function appliquer(jeuId, analyse) {
+  /* L'ÉCRITURE EN LOT (lot T5b, Direction, 12/11/2026). Chaque `insert` du magasin pose la fiche en mémoire, la JOURNALISE (RG-12), puis la met en file d'envoi : une requête par
+     fiche (`crud.php`), dans l'ordre. Un import de 184 articles écrit 552 fiches (l'article, sa prestation de prix, sa version) et la file partait en 554 requêtes (21 s). Le magasin
+     sait déjà écrire en lot (`S.enLot`, qu'emploient l'amorçage et la validation d'un exercice) : pendant le lot rien ne part, à la sortie UN seul envoi porte l'écart de chaque
+     collection touchée (`magasin.php`), dans UNE transaction serveur qui projette les tables relationnelles et inscrit un événement par collection. Le journal est celui des gestes
+     (une ligne par fiche, plus celle du lot) : il fait partie de l'écart envoyé. TOUT OU RIEN devient plus sûr, pas moins : un échec se défait en mémoire AVANT le premier envoi, le serveur
+     ne voit jamais le lot à moitié écrit. Une seule fabrique : le geste d'écran ordinaire (`insert` seul, hors lot) n'est pas touché. */
+  function appliquer(jeuId, analyse) { return S.enLot(function () { return appliquerSansEnvoi(jeuId, analyse); }); }
+  function annulerLot(lotId, motif) { return S.enLot(function () { return annulerLotSansEnvoi(lotId, motif); }); }
+
+  function appliquerSansEnvoi(jeuId, analyse) {
     var j = jeu(jeuId);
     /* LE MOTEUR REFUSE AUSSI : un bouton masqué ne protège rien. Le droit d'importer ce jeu se relit ICI, au moment d'écrire, pas à l'ouverture de la fenêtre. */
     var rd = j && refusDroit(j, 'importer');
@@ -1704,7 +1713,7 @@
     return { ok: true, lot: rec, ecrits: ecrits.length };
   }
 
-  function annulerLot(lotId, motif) {
+  function annulerLotSansEnvoi(lotId, motif) {
     var col_ = colLots(), lot = col_.get(lotId);
     if (!lot) return { ok: false, code: 'LOT_INCONNU', motif: 'lot introuvable', geste: 'Actualisez l’historique.' };
     if (lot.etat !== 'applique') return { ok: false, code: 'LOT_NON_APPLIQUE', motif: 'seul un lot appliqué s’annule (état actuel : ' + lot.etat + ')', geste: 'Aucune action : ce lot n’a rien écrit ou est déjà annulé.' };

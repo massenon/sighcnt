@@ -4000,6 +4000,7 @@
         }
         FILE.enCours = false;
         if (FILE.actions.length) viderFile();
+        else if (_apresFile) { _apresFile = false; ecrire(); }
         return null;
       })
       .catch(function (e) {
@@ -4052,8 +4053,16 @@
       return fn();
     } finally {
       _lot--;
-      if (_lot === 0) ecrire();
+      if (_lot === 0) ecrireQuandLaFileEstVide();
     }
+  }
+  /* L'ENVOI D'UN LOT NE DOUBLE PAS LA FILE (lot T5b). Les gestes nommés encore en file (`crud.php`) portent la fiche TELLE QU'ELLE ÉTAIT quand ils ont été posés : si l'écart du lot
+     arrivait avant eux, une insertion en attente réécrirait au serveur une fiche que le lot venait de modifier (et la modifier ensuite n'arriverait plus : le lot est muet sur la file).
+     L'envoi attend donc que la file soit vide ; `viderFile` le déclenche à sa dernière réponse. File vide, rien ne change : l'envoi part tout de suite, comme avant. */
+  var _apresFile = false;
+  function ecrireQuandLaFileEstVide() {
+    if (SRV.actif && (FILE.actions.length || FILE.enCours) && !PANNE.active) { _apresFile = true; return; }
+    ecrire();
   }
 
   /**
