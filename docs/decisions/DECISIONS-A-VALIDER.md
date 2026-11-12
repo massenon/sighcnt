@@ -169,7 +169,7 @@ Sur `docs/prd/PRD-M12-cloture-annuelle-ecarts-et-droits-parametres.md` :
 
 ## M. Lot DOCS-1 (12/11/2026, maquette) : documents numérisés, ce qui reste à trancher par la Direction
 
-Mise en œuvre des réponses Q1 à Q10 (section H) pour les courriers M13 et le dossier patient M1 : `ECARTS-MAQUETTE.md` E2481 à E2492, plan `docs/plans/PLAN-documents-numerises.md`.
+Mise en œuvre des réponses Q1 à Q10 (section H) pour les courriers M13 et le dossier patient M1 : `ECARTS-MAQUETTE.md` E2481 à E2491, plan `docs/plans/PLAN-documents-numerises.md`.
 
 - **Droit de dépôt** : le droit d'import par jeu (IMP-A) est celui d'un FICHIER TABLEUR de lignes ; déposer un scan sur une fiche est un autre geste. Il suit le droit de l'écran (éditer pour déposer et remplacer, annuler pour retirer). Recommandation : garder. ☐ Garder ☐ Un droit « déposer » distinct, réglable par rôle.
 - **Zones du dossier patient** : seules la pièce d'identité et la carte d'assurance sont administratives (zone 1, lisibles de tout profil qui ouvre l'écran) ; les huit autres types (dont la facture, par prudence) sont médicaux (zone 2, profils cliniques : administrateur, directeur médical, médecin, infirmier, chirurgien, anesthésiste). Conséquence à connaître : la DAF et la Direction, qui ouvrent l'écran, ne lisent plus que la zone 1 (RG-13, PRD section 3). ☐ Accepter ☐ Autre classement.
@@ -177,9 +177,22 @@ Mise en œuvre des réponses Q1 à Q10 (section H) pour les courriers M13 et le 
 - **`numerise` dérivé** : les 25 courriers du jeu qui se disaient « numérisés » sans aucun fichier redeviennent « À scanner ». ☐ Accepter.
 - **Taille maximale** : 10 Mo reste « à valider » ; réglable par l'administrateur et la DAF (hypothèse, à confirmer), entre 100 Ko et 64 Mo.
 - **Chemin local** : dans la maquette, c'est le chemin sur le serveur du poste (le serveur PHP tourne sur la machine du poste). Un bouton « Ouvrir le dossier » n'existe pas dans un navigateur : absent. ☐ Accepter.
-- **Sauvegarde des fichiers** : la sauvegarde nocturne (`api/cron.php`) ne copie que le magasin JSON, PAS le dossier de fichiers (`api/fichiers/`). Tant que le lot D5 et la synchronisation par empreinte ne sont pas faits, une panne de disque perd les scans. Recommandation : étendre la sauvegarde nocturne au dossier de fichiers (lot à part). ☐ Lot à faire.
+- **Sauvegarde des fichiers** : FAITE par le lot SAUV-F (12/11/2026), voir la section O. La sauvegarde nocturne ne copiait que le magasin JSON ; une tâche à part copie maintenant le dossier de fichiers, et une restauration le relit.
 - **Pièces produites, dans la vue unifiée** : ordonnances, résultats rendus (selon le droit de lire un résultat), comptes rendus opératoires et comptes rendus d'imagerie rendus. Les comptes rendus de maternité et les fiches de consultation n'y sont pas : à confirmer. ☐ Accepter ☐ Les ajouter.
 
 ## N. Décision de la Direction du 12/11/2026 : un fileul importe directement dans son propre magasin
 
 Phrase reçue : « un fileul peut importer donc directement dans son propre magasin ». Elle REMPLACE la réponse précédente (le fileul qui importe de la configuration passe par une demande que la mère applique, lot IMP-C). Point non tranché : un référentiel de la famille R est écrit par la mère seule, et le fileul refuse aujourd'hui toute écriture de référentiel (`FILEUL_LECTURE_SEULE`). Trois façons de l'appliquer : (a) écriture locale seule, jamais propagée ; (b) exception à la règle de synchronisation, la mère accepte ces écritures du fileul pour les jeux concernés ; (c) écriture directe chez le fileul ET demande automatique à la mère. Recommandation : (c). Lot IMP-D, après DOCS-1, une fois l'option choisie. **Choisi par la Direction le 12/11/2026 : (c)**, écriture directe chez le fileul ET demande automatique à la mère (la mère reste l'autorité de la configuration). Lot IMP-D ouvert après le lot de sauvegarde des fichiers (SAUV-F).
+
+## O. Lot SAUV-F (12/11/2026, maquette) : sauvegarde, restauration et contrôle des fichiers numérisés
+
+Mise en œuvre du constat E2491 (le dossier `api/fichiers/` n'était pas sauvegardé) : `ECARTS-MAQUETTE.md` E2492 à E2499, plan `docs/plans/PLAN-documents-numerises.md` (lot SAUV-F), guide `docs/guides/GUIDE-DEMARRAGE.md` sections 7 et 8.4. Ce qui reste à trancher :
+
+- **Désigner un AUTRE disque avant la mise en service.** Par défaut la destination est `api/sauvegardes/`, sur le MÊME disque que les données : une panne de disque emporte les scans ET leur copie (c'est aussi vrai de la copie du magasin, qui existait déjà). L'écran « Tâches planifiées » et une alerte à l'administrateur et à la DAF le disent tant que c'est le cas. Le geste est fait (« Destination de la sauvegarde »), mais le CHOIX du support est à la Direction : un disque externe, un partage réseau, un autre poste. Support retenu : ________.
+- **Une seule destination pour le magasin et pour les fichiers** (hypothèse) : le réglage s'applique aux copies du magasin (7 derniers jours) et aux fichiers numérisés. ☐ Garder ☐ Deux réglages séparés.
+- **Fréquence** (proposition) : copie des fichiers toutes les heures (incrémentale, peu coûteuse tant que rien ne change), contrôle d'intégrité chaque nuit. ☐ Accepter ☐ Autre fréquence : ________.
+- **Conservation** : les fichiers ne tournent jamais (réponse de la Direction, section H). Le magasin garde 7 jours (inchangé). Les manifestes datés (`fichiers-AAAA-MM-JJ.json.gz`) sont conservés sans limite (proposition, un par jour, quelques Ko à quelques centaines de Ko). ☐ Garder ☐ Une conservation plus longue du magasin : ________ jours.
+- **Copie hors site** : non faite. La destination est un dossier ; une copie hors site (service en ligne, disque emporté) est une décision à part. ☐ À prévoir.
+- **Support de sauvegarde non chiffré** : les scans (données de santé) sont copiés tels quels, comme sur le disque source. Si le support quitte la clinique, il doit être chiffré par le système (BitLocker, LUKS) : ce n'est pas fait par l'application. ☐ Chiffrement du support à prévoir.
+- **Orphelins** : un fichier déposé dont la fiche n'a jamais été enregistrée est SIGNALÉ (alerte en information), jamais supprimé (RG-14). ☐ Garder ainsi ☐ Prévoir un geste d'archivage explicite.
+- **Qui règle la destination** : l'administrateur et la DAF, comme la taille maximale des fichiers. Le serveur vérifie le chemin et la tâche le revérifie à chaque passage, mais il ne peut pas empêcher un autre profil d'écrire le réglage par le magasin tant que la matrice des droits n'est pas portée en PHP (même limite que `documentsBornes`).

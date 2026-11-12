@@ -32,6 +32,9 @@ Chiffres relevés par un script de mesure (Chrome sans interface, serveur PHP et
 ### Lot D4 : recherche avancée [FAIT 12/11/2026, maquette]
 - Fichiers : `api/_pdf_texte.php`, `assets/js/ui.js` (`searchExtra` du tableau), `assets/js/modules/_kit.js` (`recherche` de `K.crud`), les deux registres.
 - Vérification : scénario Vague 157 (un PDF à couche texte se retrouve par un mot de son corps ; un scan image est dit « texte non indexé », jamais « aucun résultat »).
+### Lot SAUV-F : sauvegarde et restauration du dossier de fichiers [FAIT 12/11/2026, maquette]
+Constat E2491 : la sauvegarde nocturne ne copiait pas `api/fichiers/`. Trois tâches du planificateur (`sauvegarde_nocturne` désormais sensible à la destination, `sauvegarde_fichiers` horaire et incrémentale, `controle_fichiers` nocturne), une destination RÉGLABLE (`_reglages.sauvegardeFichiers`, défaut `api/sauvegardes/` dit « même disque »), `api/restaurer.php --fichiers`, `api/controler_fichiers.php`, la carte de sauvegarde de `m14-taches`. Scénarios Vagues 158 à 162. Écarts E2492 à E2499, décisions à confirmer : `DECISIONS-A-VALIDER.md` section O.
+
 ### Lot A1 : antériorités [À FAIRE, hors de ce brief]
 - N antériorités, variation, courbe, colonne « Antériorités » imprimée remplie (EF-ANT-1, 2, 4, 5, 6).
 ### Lot A2 : seuils de variation brutale [À FAIRE, hors de ce brief]

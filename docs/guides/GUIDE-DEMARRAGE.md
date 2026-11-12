@@ -122,14 +122,25 @@ sauvegardé (§7) et sans avoir lu `RELEASE-<version>.md` s'il existe.
 
 ## 7. Sauvegarder
 
-- **Automatique** : le planificateur écrit `api/sauvegardes/magasin-AAAA-MM-JJ.json.gz`
-  (7 derniers jours). Installer la tâche système :
-  `sh api/planificateur/installer-linux.sh` (Linux) ou
+- **Automatique** : le planificateur tient trois tâches de sauvegarde et de contrôle (écran **Tâches planifiées**, M14) :
+  - `sauvegarde_nocturne` : copie compressée du magasin, `magasin-AAAA-MM-JJ.json.gz`, **7 derniers jours** ;
+  - `sauvegarde_fichiers` (toutes les heures) : copie **incrémentale** des fichiers numérisés (`api/fichiers/<aa>/<sha256>.<ext>` et leur fiche
+    d'accompagnement `.json`) vers `fichiers/<aa>/…` de la destination. Elle ne copie que ce qui manque, **ne tourne jamais** (conservation illimitée des pièces),
+    recalcule l'empreinte SHA-256 de chaque fichier avant de le copier et **refuse de copier un fichier altéré** (il est nommé, jamais propagé), puis écrit un manifeste daté
+    `fichiers-AAAA-MM-JJ.json.gz` (empreintes, tailles, octets copiés, altérés signalés). Sans dossier de fichiers : « Rien à copier », jamais une erreur ;
+  - `controle_fichiers` (chaque nuit) : relit tous les fichiers que le magasin référence et signale les manquants, les altérés et les orphelins (sur le disque, aucune fiche : conservés, jamais supprimés).
+- **La destination est un réglage de la clinique**, par défaut `api/sauvegardes/` (**le même disque que les données** : cela ne protège PAS d'une panne de disque, et l'écran
+  comme l'alerte le disent). Pour protéger vraiment : écran **Tâches planifiées**, « Destination de la sauvegarde » (administrateur et DAF), un dossier d'**un autre disque ou d'un
+  partage** (chemin complet, par exemple `/mnt/sauvegarde` ou `D:\Sauvegardes`). Le serveur refuse en le nommant un dossier inexistant, non inscriptible, relatif, ou qui recouvre
+  les fichiers ; il ne le crée jamais. Si le disque disparaît, les tâches finissent **en erreur** et une alerte critique part (administrateur, DAF) : aucun « ok » silencieux.
+- Installer la tâche système : `sh api/planificateur/installer-linux.sh` (Linux) ou
   `.\api\planificateur\installer-windows.ps1 -Racine <dossier> -Php <php.exe>` (Windows, PowerShell
   administrateur). Essai à blanc : `php api/cron.php --force`. Un planificateur arrêté se voit à
-  l'écran **Tâches planifiées** (M14).
+  l'écran **Tâches planifiées** (M14). Sans la tâche système, une passe lancée par le serveur à la demande d'un poste est bornée en temps (15 s, puis la copie reprend à la passe suivante).
+- **Contrôle à la main** : `php api/controler_fichiers.php` (compte rendu), `--sauvegarde` (relit aussi les copies de la destination), `--json` (lisible par une machine). Code de sortie 3 si un fichier manque ou est altéré.
 - **Complète** : `pg_dump -U postgres --clean --if-exists --no-owner --no-privileges sigh_prototype > sigh_prototype.sql`.
   Elle porte aussi les comptes et les sessions. Les exports `*.sql` ne sont **jamais versionnés**.
+  Le dossier des fichiers numérisés se sauvegarde par la tâche ci-dessus ; `pg_dump` ne le porte pas.
 
 ## 8. Repartir d'une base propre
 
@@ -164,8 +175,10 @@ douteuse, **jamais** sur une base qui porte autre chose que de la démonstration
 
 ```bash
 cd prototype_html
-php api/restaurer.php api/sauvegardes/magasin-2026-10-21.json.gz          # simulation : affiche, ne modifie rien
-php api/restaurer.php api/sauvegardes/magasin-2026-10-21.json.gz --oui    # remplace le magasin
+php api/restaurer.php api/sauvegardes/magasin-2026-10-21.json.gz          # simulation : affiche, ne modifie rien (magasin ET fichiers)
+php api/restaurer.php api/sauvegardes/magasin-2026-10-21.json.gz --oui    # remplace le magasin, puis restaure les fichiers manquants
+php api/restaurer.php --fichiers                                          # simulation, fichiers seuls (le magasin n'est pas touché)
+php api/restaurer.php --fichiers --oui                                    # restaure les fichiers manquants ou altérés
 ```
 
 - Remplace **toutes** les collections et la méta ; **ne touche pas** aux comptes ni aux sessions
@@ -173,6 +186,10 @@ php api/restaurer.php api/sauvegardes/magasin-2026-10-21.json.gz --oui    # remp
 - L'état précédent est conservé avant d'être écrasé (`api/sauvegardes/avant-restauration-<date>.json.gz`) :
   une restauration à la mauvaise date se rattrape. Ces fichiers ne sont pas purgés automatiquement.
 - Les tables de module sont reconstruites et la parité contrôlée à la fin.
+- **Les fichiers numérisés** : chaque fichier de la sauvegarde est vérifié (empreinte) avant d'être posé. Un fichier présent et **intact n'est jamais écrasé**. Un fichier présent mais
+  **altéré** est mis de côté dans `<dossier des fichiers>/_alteres/` puis remplacé par la copie saine. Une **copie altérée n'est jamais posée** : elle est nommée. Rien n'est supprimé.
+  Le compte rendu dit : restaurés, déjà présents, altérés, introuvables dans la sauvegarde (code de sortie 3 s'il en reste). Les fiches d'accompagnement (famille, zone du document) sont restaurées avec eux : sans elles, la règle de lecture par zone ne s'appliquerait plus.
+- La destination des fichiers se lit, dans l'ordre : `--destination=<dossier>`, le réglage de la clinique contenu dans la sauvegarde du magasin (ou dans la base en cours pour `--fichiers`), le défaut `api/sauvegardes/`. `--sans-fichiers` restaure le magasin seul.
 - Pour restaurer un export complet : `psql -U postgres -d sigh_prototype -f sigh_prototype.sql`
   (il porte `DROP … IF EXISTS` et peut être rejoué).
 
