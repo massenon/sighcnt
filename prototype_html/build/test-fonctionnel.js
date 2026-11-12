@@ -716,6 +716,96 @@ async function viderMessages(page) {
     return { dossier, base, fabrique, sha, sfx, jeton, api, deposer, disque, gonfler, creerCourrier, chercher, ouvrirLigne, attendre, zone, deposerUI, carte, fermerTout, fermerHaut, audit };
   })();
 
+  /* --- Outils du lot SAUV-F (Vagues 158 à 162) : sauvegarde, restauration et contrôle des fichiers numérisés. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`).
+         Le banc a sa destination de sauvegarde PAR DÉFAUT (SIGH_SAUVEGARDES_DIR, dossier du banc) comme il a son dossier de fichiers (SIGH_FICHIERS_DIR). --- */
+  const outilsSauv = (() => {
+    const zlib = require('zlib'), cp = require('child_process'), os = require('os');
+    const O = outilsDocs;
+    const dest = () => fs.realpathSync(process.env.SIGH_SAUVEGARDES_DIR);
+    const src = () => process.env.SIGH_FICHIERS_DIR;
+    const copieDe = (d, s, ext) => path.join(d, 'fichiers', s.slice(0, 2), s + '.' + ext);
+    const LIBELLES = { sauvegarde_nocturne: 'Sauvegarde du magasin', sauvegarde_fichiers: 'Sauvegarde des fichiers numérisés', controle_fichiers: 'Contrôle d’intégrité des fichiers' };
+    async function ouvrirTaches() {
+      await ouvrir('m14-taches.html');
+      await page.waitForFunction(() => /Registre des tâches/.test(document.body.textContent) && !!document.querySelector('[data-carte-sauvegarde]'), { timeout: 30000 });
+      await pause(300);
+    }
+    const lignesRegistre = () => page.evaluate(() => { const t = document.querySelectorAll('#page-content table')[0]; return t ? [...t.querySelectorAll('tbody tr')].map((tr) => [...tr.cells].map((c) => c.textContent.replace(/\s+/g, ' ').trim())) : []; });
+    const carte = () => page.evaluate(() => {
+      const c = document.querySelector('[data-carte-sauvegarde]'); if (!c) return null;
+      const d = c.querySelector('[data-sauv-destination]');
+      return { texte: c.textContent.replace(/\s+/g, ' ').trim(), destination: d ? d.textContent : null, bouton: [...c.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Destination de la sauvegarde') };
+    });
+    /** Le geste réel : le clic sur « Exécuter » de la ligne de la tâche, puis l'attente de sa confirmation. */
+    async function executer(code) {
+      await viderMessages(page);
+      const r = await page.evaluate((lib) => {
+        const t = document.querySelectorAll('#page-content table')[0];
+        const tr = t && [...t.querySelectorAll('tbody tr')].find((x) => x.cells[0].textContent.indexOf(lib) >= 0);
+        if (!tr) return 'ligne absente';
+        const b = [...tr.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Exécuter');
+        if (!b) return 'bouton absent';
+        b.click(); return 'ok';
+      }, LIBELLES[code]);
+      if (r !== 'ok') return r;
+      await O.attendre(() => /Tâche exécutée/.test((document.querySelector('#toast-host') || { textContent: '' }).textContent), null, 60000);
+      await pause(900);
+      await viderMessages(page);
+      return 'ok';
+    }
+    async function api(jt, methode, query, corps) {
+      const r = await fetch(O.base + '/api/notifications.php' + (query || ''), { method: methode || 'GET', headers: Object.assign({ 'X-Sigh-Jeton': jt || '' }, corps ? { 'Content-Type': 'application/json' } : {}), body: corps ? JSON.stringify(corps) : undefined });
+      let j = null; try { j = await r.json(); } catch (e) { /* vide */ }
+      return { statut: r.status, json: j };
+    }
+    const tache = async (jt, code) => ((await api(jt, 'GET', '?action=taches')).json.taches || []).find((t) => t.code === code);
+    const cles = async (jt) => ((await api(jt, 'GET', '')).json.notifications || []).map((n) => n.cle);
+    const alerte = async (jt, cle) => ((await api(jt, 'GET', '')).json.notifications || []).find((n) => n.cle === cle) || null;
+    const compte = (titre) => { const m = /^(\d+)/.exec(titre || ''); return m ? Number(m[1]) : 0; };
+    const cli = (script, args, env) => {
+      const r = cp.spawnSync('php', [path.join(ROOT, 'api', script)].concat(args || []), { env: Object.assign({}, process.env, { SIGH_BASE: BANC.BASE_TEST }, env || {}), encoding: 'utf8', timeout: 180000 });
+      return { code: r.status, out: r.stdout || '', err: r.stderr || '' };
+    };
+    const nomsManifeste = (d) => fs.readdirSync(d || dest()).filter((n) => /^fichiers-\d{4}-\d{2}-\d{2}\.json\.gz$/.test(n)).sort();
+    const manifeste = (d) => {
+      const noms = nomsManifeste(d);
+      return noms.length ? JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(d || dest(), noms[noms.length - 1]))).toString()) : null;
+    };
+    /** Tous les fichiers de données d'un dossier de fichiers : { empreinte : octets lus } (le contenu, pour comparer octet par octet). */
+    const donnees = (racine) => {
+      const out = {};
+      if (!fs.existsSync(racine)) return out;
+      for (const aa of fs.readdirSync(racine)) {
+        if (!/^[0-9a-f]{2}$/.test(aa)) continue;
+        for (const f of fs.readdirSync(path.join(racine, aa))) { const m = /^([0-9a-f]{64})\.(pdf|jpg|png|webp)$/.exec(f); if (m) out[m[1]] = fs.readFileSync(path.join(racine, aa, f)); }
+      }
+      return out;
+    };
+    /** Les fichiers dont le contenu a bien l'empreinte de leur nom. */
+    const intacts = (racine) => { const d = donnees(racine), out = {}; Object.keys(d).forEach((s) => { if (require('crypto').createHash('sha256').update(d[s]).digest('hex') === s) out[s] = d[s]; }); return out; };
+    const alterer = (f) => { const o = fs.readFileSync(f); const a = Buffer.from(o); a[a.length - 1] ^= 0xff; fs.writeFileSync(f, a); return o; };
+    /** Date tous les fichiers d'un dossier de fichiers en 2020 (une rotation par ÂGE les retirerait) ; rend le nombre de fichiers datés. */
+    const vieillir = (racine) => {
+      const vieux = new Date('2020-01-01T00:00:00Z'); let n = 0;
+      for (const aa of fs.readdirSync(racine)) { if (!/^[0-9a-f]{2}$/.test(aa)) continue; for (const f of fs.readdirSync(path.join(racine, aa))) { fs.utimesSync(path.join(racine, aa, f), vieux, vieux); n++; } }
+      return n;
+    };
+    /** Dépose un scan sur une fiche de courrier, AU GESTE (comme la Vague 154) ; rend { ref, ok, sha }. */
+    async function deposerScan(fichier, suffixe, date) {
+      await ouvrir('m13-courriers.html');
+      const ref = await O.creerCourrier(O.sfx() + suffixe, date || '2026-08-20');
+      const ouvert = await O.ouvrirLigne(ref) && await O.attendre(() => !!document.querySelector('[data-zone-import="courrier"]'));
+      await O.deposerUI(fichier);
+      const pose = await O.attendre(() => !!document.querySelector('[data-piece-nom]'));
+      await O.fermerTout();
+      await attendreEcritures();
+      return { ref, ok: ouvert && pose, sha: O.sha(fichier) };
+    }
+    const hors = fs.existsSync('/dev/shm');
+    const autreDisque = () => fs.realpathSync(fs.mkdtempSync(path.join('/dev/shm', 'sigh-sauv-ext-')));
+    return { dest, src, copieDe, ouvrirTaches, lignesRegistre, carte, executer, api, tache, cles, alerte, compte, cli, manifeste, nomsManifeste, donnees, intacts, alterer, vieillir, deposerScan, hors, autreDisque, os, zlib };
+  })();
+
 
   await etape(async () => {
     scenario('M1 — Cycle de vie complet d’un dossier patient');
@@ -11912,8 +12002,8 @@ async function viderMessages(page) {
       lignes: [...document.querySelectorAll('#page-content table')][0] ? [...document.querySelectorAll('#page-content table')][0].querySelectorAll('tbody tr').length : 0,
       texte: document.querySelector('#page-content').textContent,
     }));
-    verifier('L’écran « Tâches planifiées » lit le registre du serveur : six tâches, dont la sauvegarde et les échéances fiscales',
-      reg.lignes === 6 && /Sauvegarde du magasin/.test(reg.texte) && /Échéances fiscales/.test(reg.texte), 'lignes=' + reg.lignes);
+    verifier('L’écran « Tâches planifiées » lit le registre du serveur : huit tâches (les six d’origine plus la sauvegarde et le contrôle des fichiers numérisés), dont la sauvegarde et les échéances fiscales',
+      reg.lignes === 8 && /Sauvegarde du magasin/.test(reg.texte) && /Sauvegarde des fichiers numérisés/.test(reg.texte) && /Contrôle d’intégrité des fichiers/.test(reg.texte) && /Échéances fiscales/.test(reg.texte), 'lignes=' + reg.lignes);
 
     /* Isolation : le registre du planificateur survit à la remise à neuf des collections, et chaque tâche a une fréquence
        minimale (60 min pour les échéances). Un passage précédent, ses alertes résolues, ferait paraître la tâche « déjà faite »
@@ -24276,6 +24366,453 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', e157.length === 0, e157.join(' | '));
   });
   /* DOCS-1 FIN */
+
+  /* SAUV-F DEBUT */
+  await etape(async () => {
+    scenario('Vague 158 : SAUV-F1 sauvegarde des fichiers numérisés : copie incrémentale vérifiée octet par octet, manifeste daté, fichier altéré jamais copié et nommé, rotation du magasin sans toucher un fichier, destination par défaut dite (même disque)');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), Z = outilsSauv;
+    await poserSessionServeur(roleImp('admin', 'ADMIN158'));
+    const jtAdmin = await O.jeton('admin'), jtAccueil = await O.jeton('reception');
+    /* Le registre se peuple à la première exécution : on lance tout une fois, pour que les huit tâches soient inscrites et que le point de départ soit connu. */
+    await Z.api(jtAdmin, 'POST', '', { action: 'executer', code: '' });
+    await Z.ouvrirTaches();
+
+    /* 1. L'ÉCRAN : les trois tâches, la destination par défaut et le mot sur le même disque. */
+    const lignes0 = await Z.lignesRegistre();
+    const libelles0 = lignes0.map((l) => l[0]).join(' | ');
+    verifier('L’écran « Tâches planifiées » liste la sauvegarde du magasin, la sauvegarde des fichiers numérisés et le contrôle d’intégrité (8 tâches)', lignes0.length === 8 && /Sauvegarde du magasin/.test(libelles0) && /Sauvegarde des fichiers numérisés/.test(libelles0) && /Contrôle d’intégrité des fichiers/.test(libelles0), String(lignes0.length) + ' ' + libelles0);
+    const c0 = await Z.carte();
+    verifier('La carte de sauvegarde donne la destination par défaut (celle du banc), le dit (« par défaut »), et DIT que le même disque ne protège pas d’une panne de disque', !!c0 && c0.destination === Z.dest() && /par défaut/.test(c0.texte) && /Même disque que les données/.test(c0.texte) && /ne protège PAS d’une panne de disque/.test(c0.texte), JSON.stringify(c0));
+
+    /* 2. DEUX SCANS DÉPOSÉS AU GESTE sur deux fiches de courrier, plus un fichier sans fiche et un document de zone 2 déposé par le serveur de fichiers. */
+    const pdfA = await Fx.pdfTexte(1581), pngB = await Fx.image('png', 1582), crOrphelin = await Fx.pdfTexte(1583, 'Compte rendu sans fiche, zone 2.');
+    const dA = await Z.deposerScan(pdfA, 'a'), dB = await Z.deposerScan(pngB, 'b');
+    verifier('Deux scans (un PDF, un PNG) sont déposés au geste sur deux fiches de courrier : rangés sur le disque sous leur empreinte', dA.ok && dB.ok && fs.existsSync(O.disque(dA.sha, 'pdf')) && fs.existsSync(O.disque(dB.sha, 'png')));
+    const crDepot = await O.deposer(jtAdmin, 'patient', crOrphelin, '&type=' + encodeURIComponent('Compte rendu médical'));
+    verifier('Un document de zone 2 est déposé par le serveur de fichiers (sans fiche : il sera un orphelin)', crDepot.statut === 200 && fs.existsSync(O.disque(crDepot.json.sha256, 'pdf')));
+    const shaCR = crDepot.json.sha256;
+    const neufs = [[dA.sha, 'pdf'], [dB.sha, 'png'], [shaCR, 'pdf']];
+    verifier('Avant la tâche, la destination ne porte AUCUN de ces trois fichiers', neufs.every(([s, e]) => !fs.existsSync(Z.copieDe(Z.dest(), s, e))));
+
+    /* 3. LA TÂCHE, AU GESTE : le clic sur « Exécuter ». */
+    await Z.ouvrirTaches();
+    verifier('Le clic sur « Exécuter » de la sauvegarde des fichiers lance la tâche', await Z.executer('sauvegarde_fichiers') === 'ok');
+    const t1 = await Z.tache(jtAdmin, 'sauvegarde_fichiers');
+    verifier('Le registre garde la dernière exécution : réussie, avec son compte rendu chiffré (fichiers à la source, copiés, octets) et la destination', t1 && t1.dernier_statut === 'ok' && /fichier\(s\) à la source/.test(t1.dernier_message) && /copié\(s\)/.test(t1.dernier_message) && t1.dernier_message.indexOf(Z.dest()) >= 0, JSON.stringify(t1));
+    let tousIdentiques = true, detail = '';
+    for (const [s, e] of neufs) {
+      const a = fs.readFileSync(path.join(Z.src(), s.slice(0, 2), s + '.' + e)), b = fs.existsSync(Z.copieDe(Z.dest(), s, e)) ? fs.readFileSync(Z.copieDe(Z.dest(), s, e)) : null;
+      const meta = path.join(Z.src(), s.slice(0, 2), s + '.json'), metaD = path.join(Z.dest(), 'fichiers', s.slice(0, 2), s + '.json');
+      if (!b || !a.equals(b) || O.sha(Z.copieDe(Z.dest(), s, e)) !== s || !fs.existsSync(metaD) || !fs.readFileSync(meta).equals(fs.readFileSync(metaD))) { tousIdentiques = false; detail += s.slice(0, 8) + ' '; }
+    }
+    verifier('Chaque copie est IDENTIQUE octet par octet à la source (contenu comparé, SHA-256 recalculé ici) et la fiche d’accompagnement (zone, famille) est copiée avec elle', tousIdentiques, detail);
+    const m1 = Z.manifeste();
+    const dansM = (m, s) => (m.fichiers || []).find((x) => x[0] === s);
+    verifier('Le manifeste daté (fichiers-AAAA-MM-JJ.json.gz, à côté de celui du magasin) liste les empreintes et tailles exactes, le nombre de fichiers et les octets copiés', !!m1 && /^\d{4}-\d{2}-\d{2}$/.test(m1.date)
+      && neufs.every(([s, e]) => dansM(m1, s) && dansM(m1, s)[1] === e && dansM(m1, s)[2] === fs.statSync(O.disque(s, e)).size) && m1.totalSauvegardes === m1.fichiers.length && m1.octetsCopies >= 1 && m1.alteres.length >= 0 && Array.isArray(m1.alteres) && m1.source.fichiers >= 3, JSON.stringify(m1 && { date: m1.date, total: m1.totalSauvegardes, copies: m1.copies }));
+    const empAvant = JSON.parse(Z.cli('../build/_sonde-sauvegarde.php', ['magasin']).out || '{}');
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    await Z.executer('controle_fichiers');
+    const empApres = JSON.parse(Z.cli('../build/_sonde-sauvegarde.php', ['magasin']).out || '{}');
+    verifier('Les tâches de sauvegarde et de contrôle n’écrivent AUCUNE collection du magasin (doctrine du planificateur) : l’empreinte de toutes les collections en base est la même avant et après', !!empAvant.empreinte && empAvant.empreinte === empApres.empreinte && empAvant.collections > 50, JSON.stringify([empAvant, empApres]));
+
+    /* 4. INCRÉMENTALE : une seconde passe ne recopie rien. */
+    const avantMtimes = neufs.map(([s, e]) => fs.statSync(Z.copieDe(Z.dest(), s, e)).mtimeMs);
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    const m2 = Z.manifeste();
+    verifier('Seconde passe : AUCUNE copie, tout est « déjà présent » (la copie est incrémentale), et les copies existantes ne sont pas réécrites (dates de modification intactes)', m2.copies === 0 && m2.octetsCopies === 0 && m2.dejaPresents >= 3 && neufs.every(([s, e], i) => fs.statSync(Z.copieDe(Z.dest(), s, e)).mtimeMs === avantMtimes[i]), JSON.stringify({ copies: m2.copies, deja: m2.dejaPresents }));
+
+    /* 5. UN FICHIER ALTÉRÉ À LA SOURCE N'EST JAMAIS PROPAGÉ : il est signalé, nommé. */
+    const baseAlertes = await Z.alerte(jtAdmin, 'sauvegarde-fichiers:alteres');
+    const pngC = await Fx.image('png', 1584);
+    const dC = await O.deposer(jtAdmin, 'courrier', pngC), shaC = dC.json.sha256;
+    const origineC = Z.alterer(O.disque(shaC, 'png'));
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    const m3 = Z.manifeste(), t3 = await Z.tache(jtAdmin, 'sauvegarde_fichiers');
+    verifier('Un fichier dont l’empreinte n’est plus celle de son nom n’est PAS copié à la sauvegarde (aucune copie, ni sous son nom, ni partielle)', !fs.existsSync(Z.copieDe(Z.dest(), shaC, 'png')) && fs.readdirSync(path.join(Z.dest(), 'fichiers', shaC.slice(0, 2))).filter((n) => n.indexOf(shaC) === 0 && n !== shaC + '.json').length === 0);
+    verifier('Il est NOMMÉ : le manifeste porte son empreinte, l’exécution est en erreur et le message dit « altéré(s) non copié(s) »', m3.alteres.some((a) => a.sha256 === shaC && a.sauvegardeSaine === false) && t3.dernier_statut === 'erreur' && /altéré\(s\) non copié\(s\)/.test(t3.dernier_message), JSON.stringify({ st: t3.dernier_statut, m: t3.dernier_message }));
+    const al = await Z.alerte(jtAdmin, 'sauvegarde-fichiers:alteres'), alDa = await Z.alerte(await O.jeton('da'), 'sauvegarde-fichiers:alteres'), alAccueil = await Z.alerte(jtAccueil, 'sauvegarde-fichiers:alteres');
+    verifier('Une alerte CRITIQUE est routée à l’administrateur et à la DAF, jamais à la réception (RG-13), et nomme le geste de restauration', !!al && al.priorite === 'critique' && !!alDa && !alAccueil && /restaurer\.php --fichiers --oui/.test(al.detail) && Z.compte(al.titre) === Z.compte(baseAlertes && baseAlertes.titre) + 1, JSON.stringify(al));
+    fs.writeFileSync(O.disque(shaC, 'png'), origineC);
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    const alApres = await Z.alerte(jtAdmin, 'sauvegarde-fichiers:alteres');
+    verifier('Le fichier réparé, la passe suivante le copie (copie identique) et l’alerte est RÉSOLUE (elle disparaît de la cloche sans être supprimée)', fs.existsSync(Z.copieDe(Z.dest(), shaC, 'png')) && O.sha(Z.copieDe(Z.dest(), shaC, 'png')) === shaC && Z.compte(alApres && alApres.titre) === Z.compte(baseAlertes && baseAlertes.titre));
+
+    /* 6. LE TEMPS ACCORDÉ BORNE UNE PASSE (requête de poste) : au moins un fichier par passe, le reste à la passe suivante. */
+    const vide = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sigh-sauv-budget-'));
+    const sonde = Z.cli('../build/_sonde-sauvegarde.php', [vide, '0']);
+    let budget = null; try { budget = JSON.parse(sonde.out); } catch (e) { /* illisible */ }
+    verifier('Une passe à temps nul copie EXACTEMENT un fichier et en laisse le reste pour la passe suivante (aucune perte, aucune boucle)', !!budget && budget.copies + budget.alteres === 1 && budget.restants === budget.totalSource - 1 && budget.totalSource >= 4, sonde.out + sonde.err);
+    const sonde2 = Z.cli('../build/_sonde-sauvegarde.php', [vide, '']);
+    let budget2 = null; try { budget2 = JSON.parse(sonde2.out); } catch (e) { /* illisible */ }
+    verifier('La passe suivante, sans limite, termine : tout est copié, plus rien ne reste', !!budget2 && budget2.restants === 0 && budget2.copies + budget2.alteres + budget2.dejaPresents === budget2.totalSource && budget2.dejaPresents === budget.copies, sonde2.out + sonde2.err);
+    fs.rmSync(vide, { recursive: true, force: true });
+
+    /* 7. LA ROTATION À 7 JOURS NE VISE QUE LE MAGASIN : aucun fichier numérisé n'en est touché. */
+    for (let j = 1; j <= 9; j++) fs.writeFileSync(path.join(Z.dest(), 'magasin-2026-01-0' + j + '.json.gz'), 'ancien ' + j);
+    const avantFichiers = Z.donnees(path.join(Z.dest(), 'fichiers'));
+    const nVieux = Z.vieillir(path.join(Z.dest(), 'fichiers'));
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_nocturne');
+    const restes = fs.readdirSync(Z.dest()).filter((n) => /^magasin-.*\.json\.gz$/.test(n)).sort();
+    const apresFichiers = Z.donnees(path.join(Z.dest(), 'fichiers'));
+    const tNoct = await Z.tache(jtAdmin, 'sauvegarde_nocturne');
+    verifier('La rotation du magasin garde les 7 dernières copies (les plus anciennes sont retirées)', restes.length === 7 && restes.indexOf('magasin-2026-01-01.json.gz') < 0 && restes.indexOf('magasin-2026-01-02.json.gz') < 0, restes.join(','));
+    verifier('Les fichiers numérisés de la sauvegarde ne tournent JAMAIS (conservation illimitée) : datés de 2020 (donc bien au-delà de 7 jours), après la rotation du magasin, les mêmes empreintes, aux mêmes octets', Object.keys(avantFichiers).length >= 4 && nVieux >= 8 && Object.keys(avantFichiers).every((s) => apresFichiers[s] && apresFichiers[s].equals(avantFichiers[s])) && Object.keys(apresFichiers).length === Object.keys(avantFichiers).length);
+    const copieMagasin = JSON.parse(Z.zlib.gunzipSync(fs.readFileSync(path.join(Z.dest(), restes[restes.length - 1]))).toString());
+    verifier('La copie du magasin est écrite dans la destination, relisible (méta et collections), et son message dit le mot sur le disque', !!copieMagasin.meta && !!copieMagasin.collections && Object.keys(copieMagasin.collections).length > 50 && tNoct.dernier_statut === 'ok' && /Même disque que les données/.test(tNoct.dernier_message), JSON.stringify(tNoct));
+
+    /* 8. L'ALERTE DU MÊME DISQUE : dite, routée, jamais masquée. */
+    const mem = await Z.alerte(jtAdmin, 'sauvegarde-meme-disque');
+    verifier('Avec la destination par défaut (même disque), une alerte l’écrit : les copies du magasin et des fichiers ne protègent pas d’une panne de disque ; routée à l’administrateur et à la DAF, pas à la réception', !!mem && /même disque/.test(mem.titre) && /ne protège pas d’une panne de disque/.test(mem.detail) && !!(await Z.alerte(await O.jeton('da'), 'sauvegarde-meme-disque')) && !(await Z.alerte(jtAccueil, 'sauvegarde-meme-disque')), JSON.stringify(mem));
+
+    const e158 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e158.length === 0, e158.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 159 : SAUV-F2 destination réglable (administrateur et DAF seuls) : refus nommés (inexistante, relative, non inscriptible, dans les fichiers, pas un dossier, sans motif), jamais créée, autre disque dit, inatteignable = erreur ET alerte (jamais un ok silencieux), retour au défaut');
+    erreursJS = [];
+    const O = outilsDocs, Z = outilsSauv;
+    await poserSessionServeur(roleImp('admin', 'ADMIN159'));
+    const jtAdmin = await O.jeton('admin'), jtDa = await O.jeton('da'), jtDirection = await O.jeton('direction'), jtCaisse = await O.jeton('caissier');
+    verifier('Prérequis du banc : un second périphérique (/dev/shm) existe pour éprouver « autre disque »', Z.hors);
+    const Fx159 = await O.fabrique();
+    const dep159 = [await O.deposer(jtAdmin, 'courrier', await Fx159.pdfTexte(1591)), await O.deposer(jtAdmin, 'courrier', await Fx159.image('png', 1592))];
+    verifier('Deux fichiers sont déposés pour que les sauvegardes aient de quoi copier', dep159.every((d) => d.statut === 200));
+    await page.evaluate(() => window.SIGH.store.setReglage('sauvegardeFichiers', null));
+    await attendreEcritures();
+    await Z.ouvrirTaches();
+
+    /* 1. LES REFUS, au geste : la fenêtre, le chemin, le motif, « Enregistrer », et la réponse DU SERVEUR. */
+    const tenter = async (chemin, motif) => {
+      await page.evaluate(() => { const b = [...document.querySelectorAll('[data-carte-sauvegarde] button')].find((x) => x.textContent.trim() === 'Destination de la sauvegarde'); b.click(); });
+      await O.attendre(() => !!document.querySelector('[role=dialog] input[aria-label="Dossier de sauvegarde"]'));
+      await page.evaluate((c, m) => {
+        const i = document.querySelector('[role=dialog] input[aria-label="Dossier de sauvegarde"]'); i.value = c; i.dispatchEvent(new Event('input', { bubbles: true }));
+        const t = document.querySelector('[role=dialog] textarea[aria-label="Motif"]'); t.value = m; t.dispatchEvent(new Event('input', { bubbles: true }));
+      }, chemin, motif);
+      await cliquer('Enregistrer', '[role=dialog] button');
+      await O.attendre(() => { const r = document.querySelector('[role=dialog] [data-sauv-refus]'); return !r || r.textContent.length > 0; }, null, 15000);
+      const r = await page.evaluate(() => { const n = document.querySelector('[role=dialog] [data-sauv-refus]'); return n ? { texte: n.textContent, code: n.getAttribute('data-code') } : null; });
+      return r;
+    };
+    const fermer = async () => { await page.evaluate(() => { const b = [...document.querySelectorAll('[role=dialog] button')].find((x) => x.textContent.trim() === 'Annuler'); if (b) b.click(); }); await pause(300); };
+    const reglage = () => page.evaluate(() => window.SIGH.store.reglage('sauvegardeFichiers', null));
+    const unFichier = path.join(require('os').tmpdir(), 'sigh-sauv-un-fichier-' + O.sfx());
+    fs.writeFileSync(unFichier, 'pas un dossier');
+    const cas = [
+      ['/nexiste/pas/du/tout', 'DESTINATION_INEXISTANTE', /n’existe pas/, /jamais créé|Brancher ou monter/],
+      ['sauvegarde/relatif', 'CHEMIN_RELATIF', /chemin complet/, /Saisir le chemin complet/],
+      ['/proc', 'DESTINATION_NON_INSCRIPTIBLE', /ne peut pas écrire/, /droit d’écrire/],
+      [Z.src(), 'DESTINATION_DANS_SOURCE', /recouvre le dossier des fichiers/, /autre disque|extérieur/],
+      [path.join(Z.src(), 'sous-dossier'), 'DESTINATION_DANS_SOURCE', /recouvre/, /extérieur/],
+      [unFichier, 'DESTINATION_PAS_UN_DOSSIER', /est un fichier/, /Désigner un dossier/],
+    ];
+    fs.mkdirSync(path.join(Z.src(), 'sous-dossier'), { recursive: true });
+    const refusOk = [];
+    for (const [chemin, code, motifRe, gesteRe] of cas) {
+      const r = await tenter(chemin, 'essai ' + code);
+      refusOk.push(!!r && r.code === code && r.texte.indexOf(code + ' :') === 0 && motifRe.test(r.texte) && gesteRe.test(r.texte));
+      await fermer();
+    }
+    verifier('Six destinations impossibles sont REFUSÉES par le serveur, chacune en nommant le code, le motif et le geste : inexistante, relative, non inscriptible, dans le dossier des fichiers (deux fois), pas un dossier', refusOk.every(Boolean), JSON.stringify(refusOk));
+    verifier('Aucun réglage n’est enregistré par un refus, et la destination inexistante n’a JAMAIS été créée (créer un dossier de disque absent écrirait sur le disque du système)', (await reglage()) === null && !fs.existsSync('/nexiste'));
+    const rs = await tenter('/tmp', '');
+    verifier('Sans motif, le réglage est refusé (MOTIF_REQUIS) avant même d’interroger le disque', !!rs && /^MOTIF_REQUIS/.test(rs.texte));
+    await fermer();
+    fs.rmSync(unFichier, { force: true });
+    fs.rmSync(path.join(Z.src(), 'sous-dossier'), { recursive: true, force: true });
+
+    /* 2. LES DROITS : réservé à l'administrateur et à la DAF, par le serveur. */
+    const verifSrv = (jt, chemin) => Z.api(jt, 'POST', '', { action: 'sauvegarde_verifier', chemin: chemin });
+    const rCaisse = await verifSrv(jtCaisse, '/tmp'), rDirection = await verifSrv(jtDirection, '/tmp');
+    verifier('Le serveur refuse la vérification au caissier et à la Direction (403 REGLAGE_RESERVE, geste nommé) : l’administrateur et la DAF seuls règlent', rCaisse.statut === 403 && rCaisse.json.code === 'REGLAGE_RESERVE' && !!rCaisse.json.geste && rDirection.statut === 403 && rDirection.json.code === 'REGLAGE_RESERVE', JSON.stringify([rCaisse, rDirection]));
+    const rDa = await verifSrv(jtDa, '/proc');
+    verifier('La DAF interroge le serveur (elle obtient le refus nommé du chemin, pas un refus de droit)', rDa.statut === 200 && rDa.json.ok === false && rDa.json.code === 'DESTINATION_NON_INSCRIPTIBLE', JSON.stringify(rDa));
+
+    /* 3. UNE DESTINATION VALIDE SUR UN AUTRE DISQUE : enregistrée, dite « autre disque », utilisée. */
+    const autre = Z.autreDisque();
+    const ok1 = await tenter(autre, 'Disque de sauvegarde externe (banc)');
+    await O.attendre((d) => { const c = document.querySelector('[data-sauv-destination]'); return !!c && c.textContent === d; }, autre, 20000);
+    const c1 = await Z.carte();
+    verifier('Une destination valide est enregistrée : la carte donne le nouveau dossier, dit qu’il est « réglé par la clinique » et « autre disque que les données », sans le mot d’alerte du même disque', ok1 !== undefined && !!c1 && c1.destination === autre && /réglée par la clinique/.test(c1.texte) && /Autre disque que les données/.test(c1.texte) && !/ne protège PAS/.test(c1.texte), JSON.stringify(c1));
+    const regl = await reglage();
+    verifier('Le réglage est en base (réservé à l’administrateur et à la DAF), daté et signé, et le journal RG-12 porte l’ancienne et la nouvelle valeur', !!regl && regl.destination === autre && !!regl.regleLe && !!regl.reglePar && await page.evaluate(() => window.SIGH.store.raw().audit.filter((x) => x.action === 'Destination de la sauvegarde').length) >= 1);
+    const srv1 = (await Z.api(jtAdmin, 'GET', '?action=taches')).json.sauvegarde;
+    verifier('Le SERVEUR lit le réglage en base et rend la même destination, « autre disque » (memeDisque faux)', srv1.destination === autre && srv1.defaut === false && srv1.ok === true && srv1.memeDisque === false, JSON.stringify(srv1));
+
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    await Z.executer('sauvegarde_nocturne');
+    const donneesSrc = Z.intacts(Z.src());
+    const copiesAutre = Z.donnees(path.join(autre, 'fichiers'));
+    verifier('Les tâches écrivent maintenant dans la nouvelle destination : tous les fichiers intacts y sont copiés à l’identique, le manifeste daté et la copie du magasin aussi', Object.keys(donneesSrc).length >= 2 && Object.keys(donneesSrc).every((s) => copiesAutre[s] && copiesAutre[s].equals(donneesSrc[s])) && Z.nomsManifeste(autre).length === 1 && fs.readdirSync(autre).some((n) => /^magasin-.*\.json\.gz$/.test(n)));
+    verifier('L’alerte du même disque est RÉSOLUE (la destination est ailleurs), pour l’administrateur comme pour la DAF', !(await Z.alerte(jtAdmin, 'sauvegarde-meme-disque')) && !(await Z.alerte(jtDa, 'sauvegarde-meme-disque')));
+
+    /* 4. UNE DESTINATION QUI DISPARAÎT : erreur ET alerte, jamais un « ok » silencieux, jamais un repli en silence sur le défaut. */
+    const mtimeDefaut = Z.nomsManifeste(Z.dest()).map((n) => fs.statSync(path.join(Z.dest(), n)).mtimeMs);
+    const nbDefaut = fs.readdirSync(Z.dest()).length;
+    fs.renameSync(autre, autre + '.debranche');
+    await Z.ouvrirTaches();
+    const cIn = await Z.carte();
+    verifier('Disque débranché : la carte dit « Destination inatteignable » avec le code, le motif et le geste (en rouge), et que rien n’est écrit tant que ce n’est pas réglé', !!cIn && /Destination inatteignable/.test(cIn.texte) && /DESTINATION_INEXISTANTE/.test(cIn.texte) && /Aucune sauvegarde n’est écrite/.test(cIn.texte), JSON.stringify(cIn));
+    await Z.executer('sauvegarde_fichiers');
+    await Z.executer('sauvegarde_nocturne');
+    const tF = await Z.tache(jtAdmin, 'sauvegarde_fichiers'), tM = await Z.tache(jtAdmin, 'sauvegarde_nocturne');
+    verifier('Les DEUX tâches finissent en ERREUR et le disent (code DESTINATION_INEXISTANTE, motif, geste) : ce n’est jamais un « ok » sans rien avoir écrit', tF.dernier_statut === 'erreur' && /DESTINATION_INEXISTANTE/.test(tF.dernier_message) && tM.dernier_statut === 'erreur' && /DESTINATION_INEXISTANTE/.test(tM.dernier_message), JSON.stringify([tF.dernier_message, tM.dernier_message]));
+    const aF = await Z.alerte(jtAdmin, 'sauvegarde-fichiers:inatteignable'), aM = await Z.alerte(jtDa, 'sauvegarde-magasin:inatteignable'), aAcc = await Z.alerte(await O.jeton('reception'), 'sauvegarde-fichiers:inatteignable');
+    verifier('Deux alertes CRITIQUES sont routées à l’administrateur et à la DAF (jamais à la réception) : la sauvegarde des fichiers et celle du magasin sont impossibles', !!aF && aF.priorite === 'critique' && !!aM && aM.priorite === 'critique' && !aAcc && /inatteignable/.test(aF.titre), JSON.stringify([aF, aM]));
+    verifier('Aucun repli silencieux sur le défaut : rien n’a été écrit dans le dossier par défaut pendant la panne (ni manifeste réécrit, ni nouvelle copie du magasin)', Z.nomsManifeste(Z.dest()).every((n, i) => fs.statSync(path.join(Z.dest(), n)).mtimeMs === mtimeDefaut[i]) && fs.readdirSync(Z.dest()).length === nbDefaut);
+    fs.renameSync(autre + '.debranche', autre);
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    await Z.executer('sauvegarde_nocturne');
+    const tF2 = await Z.tache(jtAdmin, 'sauvegarde_fichiers');
+    verifier('Le disque rebranché, la passe suivante réussit et les deux alertes sont résolues', tF2.dernier_statut === 'ok' && !(await Z.alerte(jtAdmin, 'sauvegarde-fichiers:inatteignable')) && !(await Z.alerte(jtAdmin, 'sauvegarde-magasin:inatteignable')));
+
+    /* 5. REVENIR AU DÉFAUT : le mot du même disque revient. */
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[data-carte-sauvegarde] button')].find((x) => x.textContent.trim() === 'Destination de la sauvegarde'); b.click(); });
+    await O.attendre(() => !!document.querySelector('[role=dialog] input[aria-label="Dossier de sauvegarde"]'));
+    await page.evaluate(() => { const t = document.querySelector('[role=dialog] textarea[aria-label="Motif"]'); t.value = 'Retour au défaut du banc'; t.dispatchEvent(new Event('input', { bubbles: true })); });
+    await cliquer('Revenir au défaut', '[role=dialog] button');
+    await O.attendre((d) => { const c = document.querySelector('[data-sauv-destination]'); return !!c && c.textContent === d; }, Z.dest(), 20000);
+    const c2 = await Z.carte();
+    verifier('« Revenir au défaut » : la carte redonne le dossier par défaut, le dit, et DIT de nouveau que le même disque ne protège pas', !!c2 && c2.destination === Z.dest() && /par défaut/.test(c2.texte) && /ne protège PAS d’une panne de disque/.test(c2.texte) && (await reglage()) === null, JSON.stringify(c2));
+    fs.rmSync(autre, { recursive: true, force: true });
+
+    const e159 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e159.length === 0, e159.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 160 : SAUV-F3 restauration : le dossier des fichiers SUPPRIMÉ puis restauré (SHA-256 identique), simulation par défaut, un fichier intact jamais écrasé, un altéré mis de côté puis remplacé, une copie altérée jamais posée et nommée, fiches d’accompagnement restaurées (zone 2), magasin et fichiers ensemble');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), Z = outilsSauv, crypto = require('crypto');
+    const sha256 = (b) => crypto.createHash('sha256').update(b).digest('hex');
+    await poserSessionServeur(roleImp('admin', 'ADMIN160'));
+    const jtAdmin = await O.jeton('admin'), jtAccueil = await O.jeton('reception'), jtMedecin = await O.jeton('medecin');
+    const tmp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sigh-sauv-rapports-'));
+    const rapport = (nom) => JSON.parse(fs.readFileSync(path.join(tmp, nom), 'utf8'));
+
+    /* 1. DES SCANS DÉPOSÉS AU GESTE, UN DOCUMENT DE ZONE 2, LA SAUVEGARDE FAITE AU GESTE. */
+    const pdfA = await Fx.pdfTexte(1601), pngB = await Fx.image('png', 1602), pdfZ = await Fx.pdfTexte(1603, 'Compte rendu médical de zone 2, jamais lisible par l’accueil.');
+    const dA = await Z.deposerScan(pdfA, 'a'), dB = await Z.deposerScan(pngB, 'b');
+    const cr = await O.deposer(jtMedecin, 'patient', pdfZ, '&type=' + encodeURIComponent('Compte rendu médical'));
+    const shaZ = cr.json.sha256;
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    const avant = Z.intacts(Z.src());
+    const attendus = Z.intacts(path.join(Z.dest(), 'fichiers'));
+    const nAttendus = Object.keys(attendus).length;
+    const fichesAvant = {};
+    [dA.sha, dB.sha, shaZ].forEach((s) => { fichesAvant[s] = fs.readFileSync(path.join(Z.src(), s.slice(0, 2), s + '.json')); });
+    verifier('Avant le sinistre : les trois fichiers déposés sont à la source ET dans la sauvegarde, identiques', dA.ok && dB.ok && cr.statut === 200 && [dA.sha, dB.sha, shaZ].every((s) => avant[s] && fs.existsSync(Z.copieDe(Z.dest(), s, s === dB.sha ? 'png' : 'pdf'))) && Object.keys(avant).length >= 3 && Object.keys(avant).every((s) => attendus[s]));
+    const nAvant = Object.keys(avant).length;
+
+    /* 2. LE SINISTRE : le dossier des fichiers est SUPPRIMÉ. La sauvegarde ne suit pas, elle ne se vide pas. */
+    fs.rmSync(Z.src(), { recursive: true, force: true });
+    const copiesAvantSinistre = Z.donnees(path.join(Z.dest(), 'fichiers'));
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    const tRien = await Z.tache(jtAdmin, 'sauvegarde_fichiers');
+    const copiesApres = Z.donnees(path.join(Z.dest(), 'fichiers'));
+    verifier('Dossier source ABSENT : la tâche rend « Rien à copier », réussie (jamais une erreur), et la sauvegarde existante reste intacte (une copie qui miroiterait la source la viderait)', tRien.dernier_statut === 'ok' && /Rien à copier/.test(tRien.dernier_message)
+      && Object.keys(copiesAvantSinistre).length >= nAvant && Object.keys(copiesAvantSinistre).every((s) => copiesApres[s] && copiesApres[s].equals(copiesAvantSinistre[s])), JSON.stringify(tRien));
+    fs.mkdirSync(Z.src(), { recursive: true });
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    const tVide = await Z.tache(jtAdmin, 'sauvegarde_fichiers');
+    verifier('Dossier source VIDE : de même, « Rien à copier », et la sauvegarde garde tous ses fichiers', tVide.dernier_statut === 'ok' && /Rien à copier/.test(tVide.dernier_message) && Object.keys(Z.donnees(path.join(Z.dest(), 'fichiers'))).length === Object.keys(copiesAvantSinistre).length);
+
+    /* 3. SIMULATION : rien n'est modifié par défaut. */
+    const sim = Z.cli('restaurer.php', ['--fichiers', '--rapport=' + path.join(tmp, 'sim.json')]);
+    const r1 = rapport('sim.json');
+    verifier('Simulation (c’est le défaut) : le compte rendu annonce les fichiers à restaurer, dit « Simulation », et le dossier des fichiers reste VIDE', /Simulation/.test(sim.out) && /Fichiers à restaurer : \d+/.test(sim.out) && r1.appliquer === false && r1.restaures.length === nAttendus && nAttendus >= nAvant && Object.keys(Z.donnees(Z.src())).length === 0, sim.out + sim.err);
+    verifier('Le compte rendu dit : restaurés, déjà présents, altérés, introuvables (quatre rubriques), et le code de sortie suit (3 seulement si des fichiers référencés restent introuvables)', /déjà présents et intacts/.test(sim.out) && /Copies altérées dans la sauvegarde/.test(sim.out) && /introuvables dans la sauvegarde/.test(sim.out) && (sim.code === (r1.introuvables.length || r1.alteresSauvegarde.length ? 3 : 0)), String(sim.code));
+
+    /* 4. LA RESTAURATION : chaque fichier revient avec le MÊME SHA-256, et la fiche d'accompagnement avec lui. */
+    const app = Z.cli('restaurer.php', ['--fichiers', '--oui', '--rapport=' + path.join(tmp, 'app.json')]);
+    const r2 = rapport('app.json');
+    const apres = Z.donnees(Z.src());
+    verifier('Après restauration, CHAQUE fichier d’avant le sinistre est revenu, avec le même contenu et le même SHA-256 (contrôlé ici sur les octets relus du disque)', Object.keys(avant).every((s) => apres[s] && apres[s].equals(avant[s]) && sha256(apres[s]) === s) && Object.keys(attendus).every((s) => apres[s] && apres[s].equals(attendus[s])) && Object.keys(apres).length === nAttendus && r2.restaures.length === nAttendus, app.out + app.err);
+    verifier('Les fiches d’accompagnement (usages, zone) sont restaurées à l’identique', [dA.sha, dB.sha, shaZ].every((s) => fs.existsSync(path.join(Z.src(), s.slice(0, 2), s + '.json')) && fs.readFileSync(path.join(Z.src(), s.slice(0, 2), s + '.json')).equals(fichesAvant[s])));
+    const lA = await O.api('GET', 'action=lire&famille=courrier&sha256=' + dA.sha, jtAdmin);
+    const lZ = await O.api('GET', 'action=lire&famille=patient&sha256=' + shaZ, jtAccueil);
+    const lZm = await O.api('GET', 'action=lire&famille=patient&sha256=' + shaZ, jtMedecin);
+    verifier('Le serveur de fichiers sert de nouveau le scan restauré (octets identiques) ; l’accueil ne lit TOUJOURS pas le document de zone 2 (la fiche d’accompagnement restaurée porte la règle, RG-13) ; le médecin le lit', lA.statut === 200 && O.sha(lA.octets) === dA.sha && lZ.statut === 403 && lZ.json.code === 'ZONE_REFUSEE' && lZm.statut === 200 && O.sha(lZm.octets) === shaZ, JSON.stringify([lA.statut, lZ.statut, lZm.statut]));
+
+    /* 5. UN FICHIER INTACT N'EST JAMAIS ÉCRASÉ. */
+    const ancien = new Date('2020-01-01T00:00:00Z');
+    const chemins = Object.keys(apres).map((s) => path.join(Z.src(), s.slice(0, 2), s + '.' + fs.readdirSync(path.join(Z.src(), s.slice(0, 2))).find((n) => n.indexOf(s) === 0 && n !== s + '.json').split('.')[1]));
+    chemins.forEach((f) => fs.utimesSync(f, ancien, ancien));
+    const app2 = Z.cli('restaurer.php', ['--fichiers', '--oui', '--rapport=' + path.join(tmp, 'app2.json')]);
+    const r3 = rapport('app2.json');
+    verifier('Une seconde restauration ne pose RIEN : tous les fichiers sont « déjà présents », aucun n’est réécrit (la date de modification, posée en 2020, est intacte)', r3.restaures.length === 0 && r3.dejaPresents === nAttendus && r3.remplaces.length === 0 && chemins.every((f) => fs.statSync(f).mtime.getUTCFullYear() === 2020), app2.out);
+
+    /* 6. UN FICHIER ALTÉRÉ À LA SOURCE : mis de côté (conservé), remplacé par la copie saine. */
+    const fA = O.disque(dA.sha, 'pdf');
+    Z.alterer(fA);
+    const contenuAltere = fs.readFileSync(fA);
+    const app3 = Z.cli('restaurer.php', ['--fichiers', '--oui', '--rapport=' + path.join(tmp, 'app3.json')]);
+    const r4 = rapport('app3.json');
+    const misDeCote = fs.existsSync(path.join(Z.src(), '_alteres')) ? fs.readdirSync(path.join(Z.src(), '_alteres')).filter((n) => n.indexOf(dA.sha) === 0) : [];
+    verifier('Le fichier altéré est REMPLACÉ par la copie saine (SHA-256 de nouveau celui du nom) et l’altéré est CONSERVÉ à part (_alteres/), octet pour octet : rien n’est supprimé (RG-14)', r4.remplaces.length === 1 && r4.remplaces[0].sha256 === dA.sha && O.sha(fA) === dA.sha && misDeCote.length === 1 && fs.readFileSync(path.join(Z.src(), '_alteres', misDeCote[0])).equals(contenuAltere), app3.out);
+    verifier('Les autres fichiers, intacts, ne sont pas touchés par cette restauration (toujours datés de 2020)', chemins.filter((f) => f !== fA).every((f) => fs.statSync(f).mtime.getUTCFullYear() === 2020));
+    const ctl = JSON.parse(Z.cli('controler_fichiers.php', ['--json']).out);
+    verifier('Le dossier _alteres n’est pas lu comme des fichiers du magasin : le contrôle ne trouve plus aucun fichier altéré pour cette empreinte, ni orphelin, ni intrus', !ctl.divergents.some((d) => d.sha256 === dA.sha) && !ctl.orphelins.some((d) => d.sha256 === dA.sha) && ctl.intrus.length === 0);
+
+    /* 7. UNE COPIE ALTÉRÉE DANS LA SAUVEGARDE N'EST JAMAIS POSÉE, ET ELLE EST NOMMÉE. */
+    const fB = O.disque(dB.sha, 'png'), copieB = Z.copieDe(Z.dest(), dB.sha, 'png');
+    fs.rmSync(fB);
+    const origineCopieB = Z.alterer(copieB);
+    const fZ = O.disque(shaZ, 'pdf'), copieZ = Z.copieDe(Z.dest(), shaZ, 'pdf');
+    const origineCopieZ = Z.alterer(copieZ);
+    Z.alterer(fZ);
+    const contenuZsource = fs.readFileSync(fZ);
+    const app4 = Z.cli('restaurer.php', ['--fichiers', '--oui', '--rapport=' + path.join(tmp, 'app4.json')]);
+    const r5 = rapport('app4.json');
+    verifier('Fichier manquant dont la COPIE est altérée : il n’est PAS posé (aucun fichier, aucun octet), il est nommé au compte rendu et le code de sortie est 3', !fs.existsSync(fB) && r5.alteresSauvegarde.some((a) => a.sha256 === dB.sha) && app4.out.indexOf(dB.sha) >= 0 && app4.code === 3, app4.out);
+    verifier('Source altérée ET copie altérée : la source n’est ni touchée ni mise de côté (on ne remplace pas un mal par un mal), les deux sont nommés', fs.readFileSync(fZ).equals(contenuZsource) && r5.alteresSauvegarde.some((a) => a.sha256 === shaZ && a.surDisqueAltere === true) && (fs.readdirSync(path.join(Z.src(), '_alteres')).filter((n) => n.indexOf(shaZ) === 0).length === 0));
+    fs.writeFileSync(copieB, origineCopieB);
+    const app5 = Z.cli('restaurer.php', ['--fichiers', '--oui', '--rapport=' + path.join(tmp, 'app5.json')]);
+    verifier('La copie réparée, la restauration suivante pose le fichier (SHA-256 identique) ; celui dont la copie reste altérée reste nommé', fs.existsSync(fB) && O.sha(fB) === dB.sha && rapport('app5.json').alteresSauvegarde.some((a) => a.sha256 === shaZ), app5.out);
+    fs.writeFileSync(copieZ, origineCopieZ);
+    const app6 = Z.cli('restaurer.php', ['--fichiers', '--oui', '--rapport=' + path.join(tmp, 'app6.json')]);
+    verifier('Les deux copies saines, tout est remplacé et rien ne reste en suspens : le fichier de zone 2 retrouve son empreinte et le code de sortie redevient 0 (ou 3 pour des références hors de ce lot)', O.sha(fZ) === shaZ && rapport('app6.json').alteresSauvegarde.length === 0, app6.out);
+
+    /* 8. LE MAGASIN ET LES FICHIERS ENSEMBLE : la destination est lue DANS la sauvegarde (réglage de la clinique), sans qu'on la redise. */
+    const autre = Z.autreDisque();
+    await page.evaluate((a) => window.SIGH.store.setReglage('sauvegardeFichiers', { destination: a, regleLe: new Date().toISOString(), reglePar: 'banc' }), autre);
+    await attendreEcritures();
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_nocturne');
+    await Z.executer('sauvegarde_fichiers');
+    const avantMagasin = Z.intacts(Z.src());
+    const copieMagasin = fs.readdirSync(autre).filter((n) => /^magasin-.*\.json\.gz$/.test(n)).sort().pop();
+    const empAvant = JSON.parse(Z.cli('../build/_sonde-sauvegarde.php', ['magasin']).out).empreinte;
+    fs.rmSync(Z.src(), { recursive: true, force: true });
+    const simM = Z.cli('restaurer.php', [path.join(autre, copieMagasin), '--rapport=' + path.join(tmp, 'simM.json')]);
+    const empSim = JSON.parse(Z.cli('../build/_sonde-sauvegarde.php', ['magasin']).out).empreinte;
+    verifier('Magasin + fichiers en simulation : les deux sont annoncés, le magasin n’est pas modifié (même empreinte en base), aucun fichier n’est posé, et la destination est celle du RÉGLAGE contenu dans la sauvegarde', /Simulation/.test(simM.out) && /Sauvegarde : magasin-/.test(simM.out) && /réglage de la clinique/.test(simM.out) && simM.out.indexOf(autre) >= 0 && empAvant === empSim && Object.keys(Z.donnees(Z.src())).length === 0, simM.out + simM.err);
+    const appM = Z.cli('restaurer.php', [path.join(autre, copieMagasin), '--oui', '--rapport=' + path.join(tmp, 'appM.json')]);
+    const aprM = Z.donnees(Z.src());
+    verifier('Magasin + fichiers restaurés d’un geste : « Magasin restauré. », puis tous les fichiers reviennent, identiques, depuis la destination réglée', /Magasin restauré\./.test(appM.out) && Object.keys(avantMagasin).length >= 3 && Object.keys(avantMagasin).every((s) => aprM[s] && aprM[s].equals(avantMagasin[s])) && Object.keys(aprM).length === Object.keys(avantMagasin).length, appM.out + appM.err);
+    const sansF = Z.cli('restaurer.php', [path.join(autre, copieMagasin), '--sans-fichiers']);
+    verifier('Avec --sans-fichiers, la restauration reste celle du magasin seul (aucune ligne « Fichiers »)', !/Fichiers/.test(sansF.out) && /Simulation/.test(sansF.out), sansF.out);
+    await ouvrir('m14-taches.html');
+    await page.evaluate(() => window.SIGH.store.setReglage('sauvegardeFichiers', null));
+    await attendreEcritures();
+    fs.rmSync(autre, { recursive: true, force: true });
+    fs.rmSync(tmp, { recursive: true, force: true });
+
+    const e160 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e160.length === 0, e160.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 161 : SAUV-F4 contrôle d’intégrité des fichiers : manquants, altérés, orphelins (jamais supprimés) et sans fiche d’accompagnement, alerte critique routée à l’administrateur et à la DAF, alerte résolue à la réparation, sauvegarde relue');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), Z = outilsSauv;
+    await poserSessionServeur(roleImp('admin', 'ADMIN161'));
+    const jtAdmin = await O.jeton('admin'), jtDa = await O.jeton('da'), jtDirection = await O.jeton('direction'), jtAccueil = await O.jeton('reception');
+    await Z.api(jtAdmin, 'POST', '', { action: 'executer', code: '' });
+    await Z.ouvrirTaches();
+    await Z.executer('controle_fichiers');
+    const base = { manq: Z.compte(((await Z.alerte(jtAdmin, 'controle-fichiers:manquants')) || {}).titre), alt: Z.compte(((await Z.alerte(jtAdmin, 'controle-fichiers:alteres')) || {}).titre), orph: Z.compte(((await Z.alerte(jtAdmin, 'controle-fichiers:orphelins')) || {}).titre) };
+    const r0 = JSON.parse(Z.cli('controler_fichiers.php', ['--json']).out);
+
+    /* 1. QUATRE ÉCARTS PROVOQUÉS : un fichier supprimé, un altéré, un sans fiche, un sans fiche d'accompagnement. */
+    const pdfD = await Fx.pdfTexte(1611), pngE = await Fx.image('png', 1612), pngF = await Fx.image('png', 1613), pngG = await Fx.image('png', 1614);
+    const dD = await Z.deposerScan(pdfD, 'd'), dE = await Z.deposerScan(pngE, 'e'), dG = await Z.deposerScan(pngG, 'g');
+    const dF = await O.deposer(jtAdmin, 'courrier', pngF), shaF = dF.json.sha256;
+    const origineD = fs.readFileSync(O.disque(dD.sha, 'pdf'));
+    fs.rmSync(O.disque(dD.sha, 'pdf'));
+    const origineE = Z.alterer(O.disque(dE.sha, 'png'));
+    fs.rmSync(path.join(Z.src(), dG.sha.slice(0, 2), dG.sha + '.json'));
+    const listeAvant = fs.readdirSync(Z.src()).sort().join(',') + '|' + Object.keys(Z.donnees(Z.src())).sort().join(',');
+    const cli1 = Z.cli('controler_fichiers.php', ['--json']);
+    const r1 = JSON.parse(cli1.out);
+    verifier('Le contrôle relit TOUT ce que le magasin référence : le fichier SUPPRIMÉ est dit manquant (référencé par le registre ET la fiche), un de plus qu’au départ', r1.manquants.some((m) => m.sha256 === dD.sha && m.registre === true && m.fiches === 1) && r1.manquants.length === r0.manquants.length + 1, JSON.stringify(r1.manquants));
+    verifier('Le fichier ALTÉRÉ est dit divergent (son empreinte n’est plus celle de son nom) ; les fichiers intacts ne le sont pas', r1.divergents.some((m) => m.sha256 === dE.sha && m.reference === true) && !r1.divergents.some((m) => m.sha256 === dG.sha) && r1.divergents.length === r0.divergents.length + 1, JSON.stringify(r1.divergents));
+    verifier('Le fichier SANS FICHE est dit orphelin ; un fichier référencé (manquant, altéré) n’est JAMAIS pris pour un orphelin', r1.orphelins.some((m) => m.sha256 === shaF) && !r1.orphelins.some((m) => m.sha256 === dE.sha || m.sha256 === dD.sha), JSON.stringify(r1.orphelins));
+    verifier('Le fichier dont la fiche d’accompagnement manque est nommé (sans elle, la règle de lecture par famille et par zone ne s’appliquerait plus)', r1.sansFiche.some((m) => m.sha256 === dG.sha), JSON.stringify(r1.sansFiche));
+    verifier('Le contrôle ne corrige rien et ne supprime RIEN : mêmes dossiers, mêmes fichiers avant et après (l’orphelin est conservé), code de sortie 3', fs.readdirSync(Z.src()).sort().join(',') + '|' + Object.keys(Z.donnees(Z.src())).sort().join(',') === listeAvant && fs.existsSync(O.disque(shaF, 'png')) && cli1.code === 3);
+    const cliTexte = Z.cli('controler_fichiers.php', []);
+    verifier('Le compte rendu lisible nomme chaque rubrique et l’empreinte du fichier manquant', /Manquants \(référencés, absents du disque\)/.test(cliTexte.out) && cliTexte.out.indexOf(dD.sha) >= 0 && /Orphelins/.test(cliTexte.out) && cliTexte.code === 3, cliTexte.out.slice(0, 400));
+
+    /* 2. LA TÂCHE, AU GESTE, ET SES ALERTES. */
+    await Z.ouvrirTaches();
+    await Z.executer('controle_fichiers');
+    const t = await Z.tache(jtAdmin, 'controle_fichiers');
+    verifier('Le clic sur « Exécuter » : exécution en erreur avec le compte rendu chiffré (manquants, altérés, sans fiche, sans fiche d’accompagnement)', t.dernier_statut === 'erreur' && /manquant\(s\)/.test(t.dernier_message) && /altéré\(s\)/.test(t.dernier_message) && /orphelin/.test(t.dernier_message) && /sans fiche d’accompagnement/.test(t.dernier_message), JSON.stringify(t));
+    const aM = await Z.alerte(jtAdmin, 'controle-fichiers:manquants'), aA = await Z.alerte(jtAdmin, 'controle-fichiers:alteres'), aO = await Z.alerte(jtAdmin, 'controle-fichiers:orphelins');
+    verifier('Trois alertes naissent : manquants et altérés CRITIQUES (un de plus), orphelins en information ; chacune nomme le geste de restauration', !!aM && aM.priorite === 'critique' && Z.compte(aM.titre) === base.manq + 1 && /restaurer\.php --fichiers --oui/.test(aM.detail) && !!aA && aA.priorite === 'critique' && Z.compte(aA.titre) === base.alt + 1 && !!aO && aO.priorite === 'information' && Z.compte(aO.titre) === base.orph + 1, JSON.stringify([aM, aA, aO]));
+    verifier('Les alertes sont routées à l’administrateur et à la DAF, JAMAIS à la Direction ni à la réception (filtrage au serveur, RG-13)', !!(await Z.alerte(jtDa, 'controle-fichiers:manquants')) && !!(await Z.alerte(jtDa, 'controle-fichiers:alteres')) && !(await Z.alerte(jtDirection, 'controle-fichiers:manquants')) && !(await Z.alerte(jtAccueil, 'controle-fichiers:alteres')) && !(await Z.alerte(jtAccueil, 'controle-fichiers:manquants')));
+
+    /* 3. LA RÉPARATION RÉSOUT LES ALERTES. */
+    fs.writeFileSync(O.disque(dD.sha, 'pdf'), origineD);
+    fs.writeFileSync(O.disque(dE.sha, 'png'), origineE);
+    await Z.ouvrirTaches();
+    await Z.executer('controle_fichiers');
+    const aM2 = await Z.alerte(jtAdmin, 'controle-fichiers:manquants'), aA2 = await Z.alerte(jtAdmin, 'controle-fichiers:alteres');
+    verifier('Les fichiers remis en place, la passe suivante RÉSOUT les alertes manquants et altérés (retour au point de départ) ; l’orphelin, lui, reste signalé et conservé', Z.compte(aM2 && aM2.titre) === base.manq && Z.compte(aA2 && aA2.titre) === base.alt && !!(await Z.alerte(jtAdmin, 'controle-fichiers:orphelins')) && fs.existsSync(O.disque(shaF, 'png')));
+
+    /* 4. LA SAUVEGARDE RELUE : non sauvegardés, copies altérées. */
+    await Z.ouvrirTaches();
+    await Z.executer('sauvegarde_fichiers');
+    const pngH = await Fx.image('png', 1615), dH = await Z.deposerScan(pngH, 'h');
+    const copieE = Z.copieDe(Z.dest(), dE.sha, 'png');
+    const origineCopieE = Z.alterer(copieE);
+    const cliS = Z.cli('controler_fichiers.php', ['--sauvegarde', '--json']);
+    const rS = JSON.parse(cliS.out);
+    verifier('Avec --sauvegarde, le contrôle relit aussi les copies : le scan déposé après la dernière passe est « non sauvegardé », la copie altérée est nommée, un fichier dont la copie est saine n’est dans aucune des deux listes', rS.sauvegardeVerifiee === true && rS.nonSauvegardes.some((x) => x.sha256 === dH.sha) && rS.copiesAlterees.some((x) => x.sha256 === dE.sha) && !rS.copiesAlterees.some((x) => x.sha256 === dD.sha) && !rS.nonSauvegardes.some((x) => x.sha256 === dD.sha) && cliS.code === 3, cliS.out.slice(0, 500));
+    fs.writeFileSync(copieE, origineCopieE);
+
+    /* 5. UN SERVEUR SANS DOSSIER DE FICHIERS : rien à contrôler, jamais une erreur. */
+    const txt = Z.cli('controler_fichiers.php', ['--json'], { SIGH_FICHIERS_DIR: path.join(require('os').tmpdir(), 'sigh-sauv-inexistant-' + O.sfx()) });
+    const rVide = JSON.parse(txt.out);
+    verifier('Sans dossier de fichiers, le contrôle dit que le dossier est absent et que les fichiers référencés sont manquants (il ne crée rien, ne plante pas)', rVide.dossierPresent === false && rVide.surDisque === 0 && rVide.manquants.length === rVide.references && txt.err === '', txt.err);
+
+    const e161 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e161.length === 0, e161.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 162 : SAUV-F5 écran des tâches planifiées : la carte de sauvegarde pour l’administrateur, la DAF et la Direction, la commande de réglage absente sans le droit, l’exécution manuelle réservée à l’administrateur');
+    erreursJS = [];
+    const O = outilsDocs, Z = outilsSauv;
+    const sessions = {};
+    for (const r of ['admin', 'da', 'direction']) {
+      await poserSessionServeur(roleImp(r, 'ECRAN162'));
+      await Z.ouvrirTaches();
+      sessions[r] = { carte: await Z.carte(), lignes: await Z.lignesRegistre() };
+    }
+    verifier('L’administrateur, la DAF et la Direction voient la carte de sauvegarde : destination, et le mot sur le même disque', ['admin', 'da', 'direction'].every((r) => sessions[r].carte && sessions[r].carte.destination === Z.dest() && /Même disque que les données/.test(sessions[r].carte.texte)), JSON.stringify(Object.keys(sessions).map((r) => [r, sessions[r].carte && sessions[r].carte.destination])));
+    verifier('La commande « Destination de la sauvegarde » est offerte à l’administrateur et à la DAF, ABSENTE pour la Direction (qui lit sans régler)', sessions.admin.carte.bouton === true && sessions.da.carte.bouton === true && sessions.direction.carte.bouton === false, JSON.stringify([sessions.admin.carte.bouton, sessions.da.carte.bouton, sessions.direction.carte.bouton]));
+    const lignesAdmin = sessions.admin.lignes;
+    const ligneFichiers = lignesAdmin.find((l) => /Sauvegarde des fichiers numérisés/.test(l[0]));
+    verifier('Chaque tâche montre sa fréquence, sa dernière exécution, son résultat (avec le compte rendu de la passe) et sa durée : la sauvegarde des fichiers est horaire', !!ligneFichiers && /toutes les 60 min/.test(ligneFichiers[1]) && /UTC/.test(ligneFichiers[2]) && /Réussie|Erreur/.test(ligneFichiers[3]) && /ms/.test(ligneFichiers[4]), JSON.stringify(ligneFichiers));
+    await poserSessionServeur(roleImp('caissier', 'ECRAN162'));
+    await ouvrir('m14-taches.html');
+    await pause(800);
+    const ferme = await page.evaluate(() => ({ carte: !!document.querySelector('[data-carte-sauvegarde]'), url: location.pathname }));
+    verifier('Un profil qui n’ouvre pas l’écran (caissier) ne voit ni la carte ni la destination', ferme.carte === false, JSON.stringify(ferme));
+    const jtCaisse = await O.jeton('caissier'), jtDa = await O.jeton('da');
+    const lecture = await Z.api(jtCaisse, 'GET', '?action=taches');
+    verifier('Le serveur refuse aussi le registre et l’état de sauvegarde au caissier (403), pas seulement l’écran', lecture.statut === 403 && !lecture.json.sauvegarde, JSON.stringify(lecture.json));
+    const exec = await Z.api(jtDa, 'POST', '', { action: 'executer', code: 'sauvegarde_fichiers' });
+    verifier('Lancer une tâche à la main reste réservé à l’administrateur (la DAF reçoit 403)', exec.statut === 403, JSON.stringify(exec));
+    await poserSessionServeur(roleImp('admin', 'ADMIN162'));
+    const e162 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e162.length === 0, e162.join(' | '));
+  });
+  /* SAUV-F FIN */
 
   await browser.close();
   server.close();
