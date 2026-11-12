@@ -268,7 +268,8 @@
     98,
     117,
     118,
-    119
+    119,
+    124
    ],
    "statut": "porté"
   },
@@ -1731,7 +1732,7 @@
     3,
     117
    ],
-   "statut": "à porter"
+   "statut": "porté"
   },
   {
    "id": "m5-unites",
@@ -1988,7 +1989,13 @@
     95,
     103,
     105,
-    117
+    117,
+    131,
+    136,
+    137,
+    138,
+    140,
+    141
    ],
    "statut": "porté"
   },
@@ -2009,7 +2016,9 @@
    ],
    "scenarios": [
     41,
-    55
+    55,
+    124,
+    125
    ],
    "statut": "porté"
   },
@@ -2030,7 +2039,8 @@
     "comptable"
    ],
    "scenarios": [
-    41
+    41,
+    133
    ],
    "statut": "porté"
   },
@@ -2052,7 +2062,8 @@
    "scenarios": [
     5,
     41,
-    43
+    43,
+    134
    ],
    "statut": "porté"
   },
@@ -2137,7 +2148,8 @@
     "comptable"
    ],
    "scenarios": [
-    66
+    66,
+    135
    ],
    "statut": "porté"
   },
@@ -2205,7 +2217,8 @@
     "comptable"
    ],
    "scenarios": [
-    33
+    33,
+    132
    ],
    "statut": "porté"
   },
@@ -2275,7 +2288,8 @@
    "scenarios": [
     38,
     77,
-    90
+    90,
+    140
    ],
    "statut": "porté"
   },
@@ -2378,7 +2392,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    32
+    32,
+    142
    ],
    "statut": "porté"
   },
@@ -2462,7 +2477,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    32
+    32,
+    124
    ],
    "statut": "porté"
   },
@@ -2534,7 +2550,8 @@
     34,
     88,
     90,
-    117
+    117,
+    139
    ],
    "statut": "porté"
   },
@@ -2792,7 +2809,8 @@
    ],
    "scenarios": [
     9,
-    62
+    62,
+    124
    ],
    "statut": "porté"
   },
@@ -2838,7 +2856,8 @@
    "scenarios": [
     18,
     20,
-    90
+    90,
+    148
    ],
    "statut": "porté"
   },
@@ -3126,7 +3145,10 @@
     "comptable",
     "aide_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    124,
+    125
+   ],
    "statut": "porté"
   },
   {
@@ -3266,7 +3288,9 @@
     "comptable",
     "aide_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    151
+   ],
    "statut": "porté"
   },
   {
@@ -3285,7 +3309,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    59
+    59,
+    150
    ],
    "statut": "porté"
   },
@@ -3495,7 +3520,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    59
+    59,
+    124
    ],
    "statut": "porté"
   },
@@ -3552,7 +3578,8 @@
     24,
     40,
     55,
-    77
+    77,
+    124
    ],
    "statut": "porté"
   },
@@ -4672,7 +4699,9 @@
    "scenarios": [
     21,
     32,
-    34
+    34,
+    125,
+    153
    ],
    "statut": "porté"
   },
@@ -4784,7 +4813,8 @@
    "scenarios": [
     17,
     107,
-    114
+    114,
+    129
    ],
    "statut": "porté"
   },
@@ -4829,9 +4859,16 @@
     120,
     121,
     122,
-    123
+    123,
+    124,
+    128,
+    136,
+    137,
+    138,
+    139,
+    141
    ],
-   "statut": "à porter"
+   "statut": "porté"
   },
   {
    "id": "cfg-imagerie-catalogue",
@@ -4852,7 +4889,8 @@
     1,
     51,
     95,
-    105
+    105,
+    146
    ],
    "statut": "porté"
   },
@@ -5207,9 +5245,30 @@
     "stock",
     "comptable",
     "reception",
-    "agentadmin"
+    "agentadmin",
+    "aide_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    124,
+    125,
+    126,
+    130,
+    131,
+    134,
+    135,
+    140,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151,
+    152,
+    153,
+    154
+   ],
    "statut": "porté"
   },
   {
@@ -5222,11 +5281,16 @@
    "universel": false,
    "roles": [
     "admin",
+    "direction",
     "da",
     "reception",
     "agentadmin"
    ],
-   "scenarios": [],
+   "scenarios": [
+    125,
+    126,
+    130
+   ],
    "statut": "porté"
   },
   {
@@ -5239,14 +5303,19 @@
    "universel": false,
    "roles": [
     "admin",
+    "direction",
     "da"
    ],
-   "scenarios": [],
+   "scenarios": [
+    125,
+    126,
+    130
+   ],
    "statut": "porté"
   },
   {
    "id": "imp-actes",
-   "label": "Importation du catalogue des actes",
+   "label": "Importation des tarifs et prix",
    "module": "IMP",
    "domaine": "Système",
    "tranche": 6,
@@ -5255,14 +5324,20 @@
    "roles": [
     "admin",
     "direction",
-    "da"
+    "da",
+    "stock"
    ],
-   "scenarios": [],
-   "statut": "porté"
+   "scenarios": [
+    125,
+    127,
+    128,
+    130
+   ],
+   "statut": "non commencé"
   },
   {
-   "id": "imp-analyses",
-   "label": "Importation du catalogue des analyses",
+   "id": "imp-tarifs-produits",
+   "label": "Importation des prix d’achat",
    "module": "IMP",
    "domaine": "Système",
    "tranche": 6,
@@ -5270,6 +5345,26 @@
    "universel": false,
    "roles": [
     "admin",
+    "da",
+    "stock",
+    "comptable"
+   ],
+   "scenarios": [
+    138
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-analyses",
+   "label": "Importation du modèle des analyses",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
     "da",
     "laborantin"
    ],
@@ -5290,11 +5385,18 @@
    "universel": false,
    "roles": [
     "admin",
+    "direction",
     "da",
     "stock",
-    "comptable"
+    "comptable",
+    "aide_comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    125,
+    126,
+    130,
+    143
+   ],
    "statut": "porté"
   },
   {
@@ -5307,8 +5409,10 @@
    "universel": false,
    "roles": [
     "admin",
+    "direction",
     "da",
-    "comptable"
+    "comptable",
+    "aide_comptable"
    ],
    "scenarios": [],
    "statut": "porté"
@@ -5323,8 +5427,10 @@
    "universel": false,
    "roles": [
     "admin",
+    "direction",
     "da",
-    "comptable"
+    "comptable",
+    "aide_comptable"
    ],
    "scenarios": [],
    "statut": "porté"
@@ -5339,8 +5445,10 @@
    "universel": false,
    "roles": [
     "admin",
+    "direction",
     "da",
-    "comptable"
+    "comptable",
+    "aide_comptable"
    ],
    "scenarios": [],
    "statut": "porté"
@@ -5355,11 +5463,299 @@
    "universel": false,
    "roles": [
     "admin",
+    "direction",
     "da",
-    "comptable"
+    "comptable",
+    "aide_comptable"
    ],
    "scenarios": [],
    "statut": "porté"
+  },
+  {
+   "id": "imp-produits-referentiel",
+   "label": "Importation du référentiel produits",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ],
+   "scenarios": [
+    130,
+    131,
+    139,
+    141
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-emplacements",
+   "label": "Importation des emplacements de rangement",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ],
+   "scenarios": [
+    130
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-stock-detail-initial",
+   "label": "Importation du stock détail initial",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ],
+   "scenarios": [
+    130
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-transfert-lignes",
+   "label": "Importation d’un bon de transfert",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ],
+   "scenarios": [
+    130
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-inventaire-comptage",
+   "label": "Importation d’un comptage d’inventaire",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ],
+   "scenarios": [
+    130
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-natures-facture",
+   "label": "Importation des natures de facture",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    144
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-centres-couts",
+   "label": "Importation des centres de coûts",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    144
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-catalogue-imagerie",
+   "label": "Importation du catalogue de l’imagerie",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    144
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-unites-labo",
+   "label": "Importation des unités de mesure",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "laborantin"
+   ],
+   "scenarios": [
+    144
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-prestataires",
+   "label": "Importation des prestataires externes",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    144
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-garanties",
+   "label": "Importation des garanties des souscripteurs",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    144
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-couvertures-assurance",
+   "label": "Importation des couvertures d’assurance",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    144
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-immobilisations",
+   "label": "Importation des immobilisations",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    144
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-budgets",
+   "label": "Importation des budgets",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    144
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "imp-courriers",
+   "label": "Importation des courriers",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "agentadmin"
+   ],
+   "scenarios": [
+    144,
+    153
+   ],
+   "statut": "non commencé"
   },
   {
    "id": "mere-supervision",
@@ -7145,7 +7541,7 @@
     34,
     117
    ],
-   "statut": "à porter"
+   "statut": "porté"
   },
   {
    "id": "m1-certificats-externes",

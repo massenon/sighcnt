@@ -55,6 +55,23 @@ class ContexteEcran extends InheritedWidget {
   final DateTime Function()? horloge;
   DateTime get aujourdhui => (horloge ?? DateTime.now)();
 
+  /// Le MÊME contexte autour d'un autre enfant : une fenêtre ouverte depuis l'écran (modale, tiroir) vit sous le navigateur, hors de l'arbre de l'écran, et doit
+  /// retrouver ses droits, son magasin et son agent (la fenêtre du bouton « Importer les données »).
+  Widget enveloppe(Widget child) => ContexteEcran(
+        ecranId: ecranId,
+        role: role,
+        droit: droit,
+        magasin: magasin,
+        aller: aller,
+        utilisateur: utilisateur,
+        agentConnecte: agentConnecte,
+        horloge: horloge,
+        ouvre: ouvre,
+        donnees: donnees,
+        ecranPorte: ecranPorte,
+        child: child,
+      );
+
   static ContexteEcran of(BuildContext context) {
     final c = context.dependOnInheritedWidgetOfExactType<ContexteEcran>();
     assert(c != null,

@@ -24,7 +24,11 @@ Magasin magasinVecteurs() => Magasin({
       'audit': const [],
     });
 
-PortMagasin portVecteurs(Magasin m) => PortMagasin(m, aujourdhui: () => DateTime(2026, 11, 1), nomAgent: 'ADMIN TEST');
+/// La matrice d'import ENGENDRÉE par la maquette (`rbac.json`) : l'administrateur détient tous les jeux, comme au tirage des vecteurs.
+final matriceImport = MatriceDroits.depuisJson((jsonDecode(File('assets/donnees/rbac.json').readAsStringSync()) as Map).cast<String, Object?>()).matriceImport;
+
+PortMagasin portVecteurs(Magasin m) => PortMagasin(m,
+    aujourdhui: () => DateTime(2026, 11, 1), nomAgent: 'ADMIN TEST', profil: ProfilImport(role: 'admin', libelleRole: 'Administrateur', matrice: matriceImport));
 
 void main() {
   group('lecture des classeurs écrits par la maquette', () {

@@ -17,10 +17,13 @@
   "Importation du personnel",
   "Importation de données"
  ],
- "regle": [],
+ "regle": [
+  "Supervision. Votre profil détient le droit d’annuler sur chaque jeu : vous lisez les lots de tous les agents. Chacun des autres ne lit que les siens."
+ ],
  "onglets": [
   "Jeux d’import",
-  "Historique des lots"
+  "Historique des lots",
+  "Tailles maximales"
  ],
  "kpis": [
   "Jeux d’import",
@@ -32,18 +35,35 @@
   "Importation Grand Stock",
   "Importation du personnel",
   "Importation du répertoire patients",
-  "Importation du catalogue des actes",
-  "Importation du catalogue des analyses",
+  "Importation des tarifs et prix",
+  "Importation des prix d’achat",
+  "Importation du modèle des analyses",
   "Importation des fournisseurs",
   "Importation des compagnies d’assurance",
   "Importation des souscripteurs",
   "Importation du plan comptable",
-  "Importation des soldes d’ouverture"
+  "Importation des soldes d’ouverture",
+  "Importation du référentiel produits",
+  "Importation des emplacements de rangement",
+  "Importation du stock détail initial",
+  "Importation d’un bon de transfert",
+  "Importation d’un comptage d’inventaire",
+  "Importation des natures de facture",
+  "Importation des centres de coûts",
+  "Importation du catalogue de l’imagerie",
+  "Importation des unités de mesure",
+  "Importation des prestataires externes",
+  "Importation des garanties des souscripteurs",
+  "Importation des couvertures d’assurance",
+  "Importation des immobilisations",
+  "Importation des budgets",
+  "Importation des courriers"
  ],
  "tableaux": [],
  "commandes": [
   "Jeux d’import",
   "Historique des lots0",
+  "Tailles maximales",
   "Ouvrir"
  ],
  "champs": [],

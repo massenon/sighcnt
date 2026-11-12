@@ -56,7 +56,14 @@ void main() {
   // Écrans de la maquette ENTRÉS AU MANIFESTE avant d'être portés (lots A5 et SMS, régénération du 11/11/2026, ECARTS E2380) : le poste n'a pas encore leur widget. Liste
   // NOMMÉE et fermée, jamais « tout écran non porté » : tout autre écran manquant fait échouer l'inventaire. Chaque entrée doit être déclarée « non commencé » à
   // `parite-statuts.json` et rester absente de `ecransPortes` : dès qu'un écran est porté, il sort de cette liste (le test l'y oblige).
-  const nonPortesNommes = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms'};
+  // Lot IMP-C : s'y ajoutent les PAGES DE JEU d'import que le poste ne porte pas encore (leur jeu n'est pas au registre `jeuxImport`) ; porter un jeu retire sa page d'ici, de
+  // `gen-poste-jeu.js` (`JEUX_IMPORT_NON_PORTES`) et de `parite-statuts.json`.
+  const impNonPortes = {
+    'imp-actes', 'imp-tarifs-produits', 'imp-produits-referentiel', 'imp-emplacements', 'imp-stock-detail-initial', 'imp-transfert-lignes', 'imp-inventaire-comptage',
+    'imp-natures-facture', 'imp-centres-couts', 'imp-catalogue-imagerie', 'imp-unites-labo', 'imp-prestataires', 'imp-garanties', 'imp-couvertures-assurance',
+    'imp-immobilisations', 'imp-budgets', 'imp-courriers',
+  };
+  const nonPortesNommes = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms', ...impNonPortes};
 
   // Les droits EN FORCE au poste : la matrice engendrée superposée aux fiches `rbac` et `modulesActifs` du jeu livré (la coque fait ce calcul à chaque écriture).
   final magasinDuJeu = Magasin.depuisDossier(['rbac', 'modulesActifs']);
@@ -87,8 +94,10 @@ void main() {
       expect(ecrans.length, 1, reason: '${f['id']} ferme un seul écran');
       expect(f['actif'], false, reason: '${f['id']} doit être fermée');
       expect(f['statut'], isNot('archive'), reason: 'une fiche archivée ne ferme plus rien (RG-14)');
-      expect('${f['motif']}', allOf(contains('Non porté au poste, à porter'), contains('11/11/2026')), reason: '${f['id']} : motif écrit et daté');
-      expect(f['fermeLe'], '2026-11-11');
+      final jeuImport = impNonPortes.contains('${ecrans.single}');
+      expect('${f['motif']}', jeuImport ? contains('Jeu d’import non porté au poste (lot IMP-C), à porter') : allOf(contains('Non porté au poste, à porter'), contains('11/11/2026')),
+          reason: '${f['id']} : motif écrit et daté');
+      expect(f['fermeLe'], jeuImport ? '2026-11-12' : '2026-11-11');
       expect('${f['fermePar']}', isNotEmpty, reason: 'RG-12 : une fermeture a un auteur');
       expect(f['module'], donnees.manifeste.ecran('${ecrans.single}')!.module, reason: 'le module de la fiche est celui de l\'écran');
     }
@@ -236,7 +245,8 @@ void main() {
       }
       expect(find.byKey(const Key('ecran-a-porter')), findsNothing, reason: '$ecran affiche le gabarit de chantier');
       expect(find.byKey(const Key('activite-fermee')), findsOneWidget, reason: '$ecran doit dire qu\'il est fermé');
-      expect(find.textContaining('Non porté au poste, à porter'), findsOneWidget, reason: '$ecran : le motif de la fiche');
+      expect(find.textContaining(impNonPortes.contains(ecran) ? 'Jeu d’import non porté au poste (lot IMP-C), à porter' : 'Non porté au poste, à porter'), findsOneWidget,
+          reason: '$ecran : le motif de la fiche');
     }
   });
 }

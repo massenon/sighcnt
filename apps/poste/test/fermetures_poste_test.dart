@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_domaine/sigh_domaine.dart' show Droit, cfbEssentielles, tarCollectionsReferentiel, valCollectionValidations;
@@ -18,6 +21,9 @@ const quatre = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'c
 
 /// Les collections fusionnables du démarrage réel (`main.dart`).
 final fusionnables = {...cfbEssentielles, valCollectionValidations, ...tarCollectionsReferentiel}.difference({'utilisateurs', 'identifiants'});
+
+/// Les fiches `proprePoste` du jeu livré : les quatre écrans non portés plus les pages de jeux d'import non portés (lot IMP-C).
+int nbPropresDuJeu() => (jsonDecode(File('assets/donnees/jeu/modulesActifs.json').readAsStringSync()) as List).where((f) => (f as Map)['proprePoste'] == true).length;
 
 void main() {
   setUpAll(chargerPolices);
@@ -52,7 +58,10 @@ void main() {
       // Nouvelle version du poste : le jeu livré porte les quatre fermetures.
       final v2 = Magasin.depuisDossier(['rbac', 'modulesActifs']);
       await v2.brancherPersistance(p, fusionnables: fusionnables);
-      expect(v2.jeuxFusionnes, {'modulesActifs': 4}, reason: 'quatre fiches arrivent, rien d\'autre');
+      // Les quatre écrans non portés plus les pages de jeux d'import non portés (lot IMP-C) : une fiche `proprePoste` du jeu livré par écran, comptées du fichier même.
+      final nbPropres = nbPropresDuJeu();
+      expect(nbPropres, 21);
+      expect(v2.jeuxFusionnes, {'modulesActifs': nbPropres}, reason: 'les fiches propres au poste arrivent, rien d\'autre');
       final col = v2.collection('modulesActifs');
       expect([for (final id in ['MODP01', 'MODP02', 'MODP03', 'MODP04']) col.parId(id)!['actif']], everyElement(false));
       expect(col.parId('MOD01')!['actif'], true, reason: 'la réouverture faite à l\'écran n\'est pas écrasée');
@@ -116,7 +125,7 @@ void main() {
       await v1.ecrireMaintenant();
       final v2 = Magasin.depuisDossier(['rbac', 'modulesActifs']);
       await v2.brancherPersistance(p, fusionnables: fusionnables);
-      expect(v2.jeuxFusionnes, {'modulesActifs': 3}, reason: 'la fiche MODP02 est déjà là (archivée) : seules les trois autres arrivent');
+      expect(v2.jeuxFusionnes, {'modulesActifs': nbPropresDuJeu() - 1}, reason: 'la fiche MODP02 est déjà là (archivée) : toutes les autres fiches propres au poste arrivent');
       expect(fermesPour(v2, 'admin'), quatre.difference({'m13-sms-journal'}));
     });
   });
@@ -148,6 +157,7 @@ void main() {
     testWidgets('les quatre lignes n\'ont pas de commande de réouverture (absente, pas grisée) et la page dit lesquels et pourquoi', (t) async {
       await monter(t, ecranPorte: portes.containsKey);
       expect(find.byTooltip('Rouvrir cette activité'), findsNWidgets(2), reason: 'seules la banque de sang et la transfusion se rouvrent');
+      // Les pages de jeux d'import non portés sont dans le même cas : fermées, sans commande de réouverture (leur jeu n'a pas de widget).
       expect(find.textContaining('que ce poste ne porte pas encore'), findsOneWidget);
       for (final l in ['Calendrier fiscal mensuel', 'Journal des envois SMS', 'Barème de l’AIB', 'Passerelle SMS']) {
         expect(find.textContaining('« $l »'), findsOneWidget, reason: l);
@@ -164,7 +174,7 @@ void main() {
 
     testWidgets('coque qui ne dit rien (`ecranPorte` absent) : tout est réputé porté, rien ne change pour les écrans de la maquette', (t) async {
       await monter(t);
-      expect(find.byTooltip('Rouvrir cette activité'), findsNWidgets(6));
+      expect(find.byTooltip('Rouvrir cette activité'), findsNWidgets((2 + nbPropresDuJeu()).clamp(0, 15)), reason: 'sans coque qui dise ce qui est porté, tout est réputé porté : la banque de sang, la transfusion et chaque fiche propre au poste (une page de quinze lignes)');
       expect(find.textContaining('que ce poste ne porte pas encore'), findsNothing);
     });
   });

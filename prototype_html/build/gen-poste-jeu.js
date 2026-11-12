@@ -23,16 +23,30 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
    n'existent que dans le jeu du poste (`proprePoste`), ce qui les écarte de la RÉFÉRENCE de la matrice des droits (`rbac.json` ne les connaît pas). Porter un écran,
    c'est retirer son entrée ici et régénérer ; un poste déjà installé garde la fiche fermée tant qu'on ne la rouvre pas depuis la gestion des activités, qui ne le
    propose que si l'écran a un widget. Le jeu sobre (fixture des vecteurs) n'en porte aucune : il reproduit la maquette. */
+const JEUX_IMPORT_NON_PORTES = [
+  ['05', 'imp-actes', 'Importation des tarifs et prix'], ['06', 'imp-tarifs-produits', 'Importation des prix d’achat'],
+  ['07', 'imp-produits-referentiel', 'Importation du référentiel produits'], ['08', 'imp-emplacements', 'Importation des emplacements de rangement'],
+  ['09', 'imp-stock-detail-initial', 'Importation du stock détail initial'], ['10', 'imp-transfert-lignes', 'Importation d’un bon de transfert'],
+  ['11', 'imp-inventaire-comptage', 'Importation d’un comptage d’inventaire'], ['12', 'imp-natures-facture', 'Importation des natures de facture'],
+  ['13', 'imp-centres-couts', 'Importation des centres de coûts'], ['14', 'imp-catalogue-imagerie', 'Importation du catalogue de l’imagerie'],
+  ['15', 'imp-unites-labo', 'Importation des unités de mesure'], ['16', 'imp-prestataires', 'Importation des prestataires externes'],
+  ['17', 'imp-garanties', 'Importation des garanties des souscripteurs'], ['18', 'imp-couvertures-assurance', 'Importation des couvertures d’assurance'],
+  ['19', 'imp-immobilisations', 'Importation des immobilisations'], ['20', 'imp-budgets', 'Importation des budgets'], ['21', 'imp-courriers', 'Importation des courriers'],
+];
 const FERMETURES_PROPRES_AU_POSTE = [
   { id: 'MODP01', module: 'M12', ecran: 'm12-calendrier-fiscal', libelle: 'Calendrier fiscal mensuel' },
   { id: 'MODP02', module: 'M13', ecran: 'm13-sms-journal', libelle: 'Journal des envois SMS' },
   { id: 'MODP03', module: 'CFG', ecran: 'cfg-bareme-aib', libelle: 'Barème de l’AIB' },
   { id: 'MODP04', module: 'CFG', ecran: 'cfg-sms', libelle: 'Passerelle SMS' },
+  /* LOT IMP-C (12/11/2026) : les JEUX D'IMPORT que le poste ne porte pas encore. Leur page `imp-<jeu>` existe au manifeste et à la maquette ; sans jeu au registre du poste elle n'aurait
+     aucun widget. Elle est fermée comme les quatre ci-dessus (activité fermée par écran, jamais par un nom de rôle) ; PORTER UN JEU, c'est retirer sa ligne ici ET dans
+     `ecrans_sans_chantier_test.dart` puis régénérer. La fermeture ferme aussi le DROIT du jeu (`droitImport` lit les activités fermées) : aucun bouton « Importer les données ». */
+  ...JEUX_IMPORT_NON_PORTES.map(([id, ecran, libelle]) => ({ id: 'MODP' + id, module: 'IMP', ecran: ecran, libelle: libelle, impNonPorte: true })),
 ].map((f) => ({
   /* `code` suit la règle d'une activité déclarée à l'écran (`cfbCodeActivite` : module, tiret, libellé en majuscules hors A-Z0-9, huit caractères) */
   id: f.id, code: f.module + '-' + f.libelle.toUpperCase().replace(/[^A-Z0-9]+/g, '').slice(0, 8), libelle: f.libelle, module: f.module, ecrans: [f.ecran], actif: false,
-  motif: 'Non porté au poste, à porter (décision de la Direction du 11/11/2026). L’écran existe à la maquette.',
-  fermeLe: '2026-11-11', fermePar: 'Direction', proprePoste: true,
+  motif: f.impNonPorte ? 'Jeu d’import non porté au poste (lot IMP-C), à porter. La page existe à la maquette.' : 'Non porté au poste, à porter (décision de la Direction du 11/11/2026). L’écran existe à la maquette.',
+  fermeLe: f.impNonPorte ? '2026-11-12' : '2026-11-11', fermePar: f.impNonPorte ? 'Lot IMP-C (à confirmer par la Direction)' : 'Direction', proprePoste: true,
 }));
 /* SIGH_JEU=sobre : jeu SANS le peuplement des parcours, sur lequel les vecteurs des tranches 1-2 ont été tirés (fixture de test). */
 const SOBRE = process.env.SIGH_JEU === 'sobre';

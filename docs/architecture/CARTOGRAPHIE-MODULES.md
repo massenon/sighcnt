@@ -60,7 +60,7 @@
 |---|---|---|---|---|
 | Sécurité & Utilisateurs | M14 | canonique | 8 | admin, direction, da |
 | Configuration Clinique | CFG | canonique | 22 | admin, da, direction |
-| Importation de données | IMP | canonique | 10 | admin, da, direction, stock, reception, agentadmin, comptable, laborantin |
+| Importation de données | IMP | canonique | 26 | admin, da, stock, direction, comptable, aide_comptable, reception, agentadmin, laborantin |
 
 ## Poste mère
 
@@ -113,4 +113,4 @@ Cases : `V` voir · `E` éditer · `A` annuler (droits du MODULE ; un écran peu
 | Assistant de Direction | · | · | · | · | · | · | · | · | · | · | · | · | · | VE | VE | · | · | · | · | · | · | VEA | VEA | — |
 | Chirurgien | VE | VE | VE | · | V | · | · | · | · | · | · | · | · | · | · | V | · | · | · | · | · | VEA | VEA | — |
 | Anesthésiste — Réanimateur | · | V | VE | · | V | · | · | · | · | · | · | · | · | · | · | V | · | · | · | · | · | VEA | VEA | — |
-| Assistant Comptable | · | · | · | · | · | · | VE | V | VE | V | VE | · | · | · | · | V | · | · | · | · | · | · | VEA | — |
+| Assistant Comptable | · | · | · | · | · | · | VE | V | VE | V | VE | · | · | · | · | V | · | · | VEA | · | · | · | VEA | — |

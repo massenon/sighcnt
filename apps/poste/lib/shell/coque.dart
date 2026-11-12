@@ -6,6 +6,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../core/config_poste.dart';
 import '../core/donnees_navigation.dart';
+import '../modules/imp/bouton_importer.dart';
 import '../modules/registre.dart';
 import '../sync/etat_sync.dart';
 import 'barre_superieure.dart';
@@ -746,6 +747,8 @@ class _CoquePosteState extends State<CoquePoste> {
         w is EcranMaquette ? w.actionsEntete(context) : <Widget>[];
     return [
       ...declarees,
+      // LE BOUTON « Importer les données » : posé ICI, une seule fois, pour les écrans hôtes DÉCLARÉS au manifeste ; absent sans le droit d'importer un jeu de l'écran.
+      ...boutonsImporter(context, ecranId: e.id, matrice: _nav.matrice, role: _role),
       if (w is EcranMaquette)
         ...accesRapides(
             ecran: e, ruban: ruban, declarees: declarees, aller: _ouvrir),

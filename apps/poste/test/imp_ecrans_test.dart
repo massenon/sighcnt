@@ -236,16 +236,35 @@ void main() {
     expect(find.widgetWithText(BoutonSigh, 'Téléverser un fichier (.xlsx ou .csv)'), findsNothing);
   });
 
-  cas('l\'accueil du module : dix jeux marqués supporté ou proposition à valider, source et dernier lot, historique général', (t) async {
+  cas('l\'accueil du module : une carte par jeu que le profil VOIT, « Ouvrir » pour les jeux portés, « Non porté au poste » pour les autres ; la supervision se dit', (t) async {
     final m = magasin();
     await ouvrir(t, m, 'imp-accueil');
+    final visibles = [for (final d in donnees.matrice.matriceImport.declarations) if (donnees.matrice.droitImport('admin', d.id).voir) d];
+    final portes = visibles.where((d) => jeuImportParId(d.id) != null).length;
     expect(find.text('Jeux d’import'), findsWidgets);
-    expect(find.widgetWithText(BoutonSigh, 'Ouvrir'), findsNWidgets(10));
+    expect(find.textContaining('Supervision. Votre profil détient le droit d’annuler sur chaque jeu'), findsOneWidget);
+    expect(find.widgetWithText(BoutonSigh, 'Ouvrir'), findsNWidgets(portes));
+    expect(find.text('Non porté au poste'), findsNWidgets(visibles.length - portes), reason: 'un jeu que le poste ne porte pas le dit, sans bouton');
     expect(find.text('Proposition à valider'), findsOneWidget);
-    expect(find.text('Supporté'), findsNWidgets(9));
     expect(find.textContaining('Source : Inventaire initial (reprise)'), findsOneWidget);
     expect(find.textContaining('Écrit dans : produits, lots, mouvements. Aucun lot à ce jour.'), findsOneWidget);
     await toucher(t, find.text('Historique des lots'));
     expect(find.text('Aucun lot.'), findsOneWidget);
+  });
+
+  cas('le profil qui ne SUPERVISE pas lit ses seuls lots et ne règle pas les tailles maximales ; la supervision règle, motive et journalise', (t) async {
+    // La Direction voit des jeux sans pouvoir annuler : elle ne supervise pas.
+    final m = magasin();
+    await ouvrir(t, m, 'imp-accueil', role: 'direction');
+    expect(find.textContaining('Vous lisez les lots que vous avez vous-même écrits'), findsOneWidget);
+    await toucher(t, find.text('Tailles maximales'));
+    expect(find.textContaining('Elle se règle par un profil qui supervise les importations.'), findsOneWidget);
+    expect(find.byWidgetPredicate((w) => w is BoutonIcone && w.libelle == 'Régler la taille maximale'), findsNothing);
+    // L'administrateur supervise : la commande existe, le réglage est écrit en base et journalisé.
+    final m2 = magasin();
+    await ouvrir(t, m2, 'imp-accueil', role: 'admin');
+    await toucher(t, find.text('Tailles maximales'));
+    expect(find.textContaining('Votre profil la règle.'), findsOneWidget);
+    expect(find.byWidgetPredicate((w) => w is BoutonIcone && w.libelle == 'Régler la taille maximale'), findsWidgets);
   });
 }
