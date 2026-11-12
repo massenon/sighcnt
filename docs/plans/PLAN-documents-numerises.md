@@ -1,5 +1,5 @@
 # PLAN : documents numérisés (courriers M13, dossier patient M1), stockage des fichiers hors du magasin, recherche avancée, puis suivi d'antériorité
-Source : `docs/prd/PRD-DOCS-numerisation-courriers-dossier-et-antecedents.md` (EF-DOC-1 à 10, EF-ANT-1 à 6), réponses de la Direction du 11/11/2026 (`docs/decisions/DECISIONS-A-VALIDER.md` sections H et H bis : Q1 à Q10 acceptées), `docs/specs/SPEC-protocole-synchronisation.md` EF-SYNC-18 (fichiers par empreinte), `docs/plans/PLAN-importation-bouton-par-ecran.md` (forme et jeu `courriers`) · Écarts : `docs/architecture/ECARTS-MAQUETTE.md` à partir de E2481 · Branche : `claude/sighcnt-monorepo-offline-first-i0v3v9`.
+Source : `docs/prd/PRD-DOCS-numerisation-courriers-dossier-et-antecedents.md` (EF-DOC-1 à 10, EF-ANT-1 à 6), réponses de la Direction du 11/11/2026 (`docs/decisions/DECISIONS-A-VALIDER.md` sections H et H bis : Q1 à Q10 acceptées), `docs/specs/SPEC-protocole-synchronisation.md` EF-SYNC-18 (fichiers par empreinte), `docs/plans/PLAN-importation-bouton-par-ecran.md` (forme et jeu `courriers`) · Écarts : `docs/architecture/ECARTS-MAQUETTE.md` E2481 à E2491 · Branche : `claude/sighcnt-monorepo-offline-first-i0v3v9`.
 
 ## Résultat attendu
 - Un agent dépose un scan (PDF, JPEG, PNG, WEBP au dossier patient) sur la fiche d'un courrier ou d'un document patient, le voit tout de suite (visionneuse d'image écrite pour le projet, PDF dans le lecteur du navigateur), le télécharge sous son nom normalisé, et retrouve la pièce par un mot de son texte quand le PDF porte une couche texte.
@@ -18,20 +18,20 @@ Chiffres relevés par un script de mesure (Chrome sans interface, serveur PHP et
 ## Étapes
 ### Lot D0 : mesure [FAIT 12/11/2026]
 - Chiffres ci-dessus. Script : `build/mesure-quota-documents.js` (rejouable, base isolée).
-### Lot D1 : stockage de fichiers [À FAIRE]
-- Fichiers : `api/fichiers.php` (dépôt, lecture, chemin ; empreinte SHA-256 recalculée par le serveur ; session obligatoire ; règle par famille ; journal serveur `acces_fichiers`), `api/_pdf_texte.php` (extracteur local, lot D4), `api/regles-fichiers.json` ENGENDRÉ par `build/gen-regles-fichiers.js` depuis `packages/rbac/data/rbac.json` et `data.js`, `.gitignore` (`prototype_html/api/fichiers/`), `build/_banc.js` (dossier de fichiers PAR BANC, comme la passerelle SMS), `api/banc.php` (deux altérations de banc, fermées hors `SIGH_BANC=1`), `assets/js/fichiers.js` (service client, empreinte, visionneuse), `assets/js/data.js` (`D.DOCUMENTS` : formats, taille par défaut, types et zones), `assets/js/store.js` (`VERSION` 82, `LIBELLES.fichiers`, reprise de ce qui porte un fichier, migration du base64), schéma relationnel régénéré (`build/gen-schema-pg.js`), `docs/architecture/DICTIONNAIRE-DONNEES.md`.
+### Lot D1 : stockage de fichiers [FAIT 12/11/2026, maquette]
+- Fichiers : `api/fichiers.php` (dépôt, lecture, chemin ; empreinte SHA-256 recalculée par le serveur ; session obligatoire ; règle par famille ; journal serveur `acces_fichiers`), `api/_pdf_texte.php` (extracteur local, lot D4), `api/regles-fichiers.json` ENGENDRÉ par `build/gen-regles-fichiers.js` depuis `packages/rbac/data/rbac.json` et `data.js`, `.gitignore` (`prototype_html/api/fichiers/`), `build/_banc.js` (dossier de fichiers PAR BANC, comme la passerelle SMS), `api/banc.php` (deux altérations de banc, fermées hors `SIGH_BANC=1`), `assets/js/modules/fichiers.js` (service client, empreinte, visionneuse), `assets/js/data.js` (`D.DOCUMENTS` : formats, taille par défaut, types et zones), `assets/js/store.js` (`VERSION` 82, `LIBELLES.fichiers`, reprise de ce qui porte un fichier, migration du base64), schéma relationnel régénéré (`build/gen-schema-pg.js`), `docs/architecture/DICTIONNAIRE-DONNEES.md`.
 - Données : collection `fichiers` (empreinte, taille, première date, nombre de références, texte indexé), champ `fichier` d'un courrier ou d'un document patient (`sha256`, `nom`, `nomNormalise`, `mime`, `taille`, `pages`, `texteIndexe`, `deposePar`, `deposeLe`), `fichiersRetires` (historique d'une pièce retirée), `numerise` d'un courrier DÉRIVÉ de `fichier`.
-- Vérification : `projection --verifier` 0 écart ; le magasin ne porte plus un octet de base64 après la migration ; empreinte vérifiée AVANT retrait ; SHA-256 identique après restauration.
-### Lot D2 : courriers [À FAIRE]
-- Fichiers : `assets/js/modules/m13-administration.js` (fiche, zone d'import, aperçu, téléchargement, retrait annulable, chemin local, fiche imprimée), `assets/js/fichiers.js` (visionneuse, zone d'import, refus nommés), `assets/js/nav.js` (script de l'écran), réglage de la taille maximale (`documentsBornes`, défaut 10 Mo « à valider ») dans « Paramètres système ».
-- Vérification : scénarios Vague 152 à 156.
-### Lot D3 : dossier patient [À FAIRE]
+- Vérification : scénarios Vague 152 (serveur) et 153 (migration, restauration) ; `projection --verifier` 117 collections, 11 668 fiches, 0 écart ; le magasin ne porte plus un octet de base64 après la migration (5 564 938 octets avec deux scans en base64, 5 512 146 après, 5 510 135 sans scan) ; empreinte vérifiée AVANT retrait ; SHA-256 identique après restauration.
+### Lot D2 : courriers [FAIT 12/11/2026, maquette]
+- Fichiers : `assets/js/modules/m13-administration.js` (fiche, zone d'import, aperçu, téléchargement, retrait annulable, chemin local, fiche imprimée), `assets/js/modules/fichiers.js` (visionneuse, zone d'import, refus nommés), `assets/js/nav.js` (script de l'écran), réglage de la taille maximale (`documentsBornes`, défaut 10 Mo « à valider ») dans « Paramètres système ».
+- Vérification : scénarios Vague 154 et 155.
+### Lot D3 : dossier patient [FAIT 12/11/2026, maquette]
 - Fichiers : `assets/js/modules/m1-patients.js` (`m1-documents` : même geste, vue unifiée, journal de consultation), `assets/js/parcours.js` (`PR.peutVoirDocument`, droit par zone), `assets/js/data.js` (zones des types).
 - Droit : le droit d'IMPORT par jeu (`N.IMPORTS`, IMP-A) est celui d'un FICHIER TABLEUR de lignes ; déposer un scan sur une fiche est un autre geste. Il suit donc le droit de l'écran (`editer` pour déposer, `annuler` pour retirer) auquel s'ajoute la zone du type de document (l'accueil dépose une pièce d'identité, ne lit pas un compte rendu). Hypothèse à confirmer : E2487.
-- Vérification : scénarios Vague 157 à 159, audit RBAC ciblé 0 promesse.
-### Lot D4 : recherche avancée [À FAIRE]
+- Vérification : scénarios Vague 156, audit RBAC ciblé 0 promesse.
+### Lot D4 : recherche avancée [FAIT 12/11/2026, maquette]
 - Fichiers : `api/_pdf_texte.php`, `assets/js/ui.js` (`searchExtra` du tableau), `assets/js/modules/_kit.js` (`recherche` de `K.crud`), les deux registres.
-- Vérification : scénario Vague 160 (un PDF à couche texte se retrouve par un mot de son corps ; un scan image est dit « texte non indexé », jamais « aucun résultat »).
+- Vérification : scénario Vague 157 (un PDF à couche texte se retrouve par un mot de son corps ; un scan image est dit « texte non indexé », jamais « aucun résultat »).
 ### Lot A1 : antériorités [À FAIRE, hors de ce brief]
 - N antériorités, variation, courbe, colonne « Antériorités » imprimée remplie (EF-ANT-1, 2, 4, 5, 6).
 ### Lot A2 : seuils de variation brutale [À FAIRE, hors de ce brief]
@@ -65,4 +65,7 @@ OCR (phase 2, après essai sur trois vrais scans), recherche par le sens (NON, Q
 | Texte de PDF non extrait | « texte non indexé » sur un PDF qui en porte | dit à l'écran, jamais « aucun résultat » |
 
 ## Définition de « fini »
-lint + build + check ciblé + scénarios 152 à 160 + audit RBAC ciblé verts, `projection --verifier` 0 écart, mutations rouges nommées, CLAUDE.md et `ECARTS-MAQUETTE.md` à jour. La suite complète est lancée par le relecteur.
+lint + build + check ciblé + scénarios 152 à 157 + audit RBAC ciblé verts, `projection --verifier` 0 écart, mutations rouges nommées, CLAUDE.md et `ECARTS-MAQUETTE.md` à jour. La suite complète est lancée par le relecteur.
+
+## Résultat du lot (12/11/2026)
+Scénarios Vagues 152 à 157 : 6 sur 6, 110 vérifications ; rejoués sur l'arbre d'avant : 0 sur 6 ; 8 mutations rouges, SHA-256 identique après restauration ; audit RBAC ciblé (`m13-courriers`, `m1-documents`) 0 promesse, 0 lecture non dite ; `check` ciblé 0 erreur JS, 0 lien cassé ; `projection --verifier` 0 écart. La suite complète n'a PAS été lancée par ce lot. Écarts E2481 à E2491, décisions à confirmer section M de `DECISIONS-A-VALIDER.md`.
