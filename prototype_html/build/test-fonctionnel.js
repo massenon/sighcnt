@@ -3113,7 +3113,7 @@ async function viderMessages(page) {
     verifier('Le prix de vente est retenu par défaut, comme demandé', valo.defaut === 'prixVente');
     verifier('L’écran mesure ce que le choix change réellement', valo.affiche && valo.mesure);
 
-    verifier('Les sept familles viennent de l’inventaire SAGE', valo.familles === 7);
+    verifier('Les sept familles viennent de l’inventaire initial', valo.familles === 7);
     /* Vague 49 : les quatre groupes sont CONFIRMÉS par la Direction. */
     verifier('Les quatre groupes d’articles sont CONFIRMÉS (vague 49)',
       valo.groupes === 4 && valo.aConfirmer === false);
@@ -21236,10 +21236,11 @@ async function viderMessages(page) {
     await televerserBanc(await classeurBanc('p128.xlsx', [ENT,
       ['ZZB1-P1', 'Paracétamol sonde B1', 'Médicaments', 'Boîte', 350, '', 20, '', ''],
       ['ZZB1-P2', 'Gants sonde B1', 'Consommables médicaux', 'Paire', 1200, 1500, '', '', ''],
-      ['ZZB1-P3', 'Lancettes sonde B1', 'Consommables médicaux', 'Boîte', '', '', 15, '', '']]));
+      ['ZZB1-P3', 'Lancettes sonde B1', 'Consommables médicaux', 'Boîte', 80, '', 15, '', '']]));
     const t1 = await texteCorps();
-    verifier('La vérification annonce une analyse conforme de 3 lignes, avec deux avertissements NOMMÉS (prix d’achat absent « à valoriser », seuil absent « sans seuil »), sans rien écrire',
-      /Analyse conforme/.test(t1) && /3 ligne\(s\) lue\(s\)/.test(t1) && /A_VALORISER|à valoriser/.test(t1) && /sans seuil/.test(t1) && !(await page.evaluate(() => window.SIGH.store.collection('produits').all().some((p) => p.code === 'ZZB1-P1'))), t1.slice(0, 400));
+    /* Lot T5b : un prix d'achat absent REFUSE désormais la ligne (Vague 138) ; ce fichier porte donc un prix partout et ne garde que l'avertissement « sans seuil ». */
+    verifier('La vérification annonce une analyse conforme de 3 lignes, avec un avertissement NOMMÉ (seuil absent « sans seuil ») et AUCUN « à valoriser » (le prix d’achat est obligatoire), sans rien écrire',
+      /Analyse conforme/.test(t1) && /3 ligne\(s\) lue\(s\)/.test(t1) && !/A_VALORISER|à valoriser/.test(t1) && /sans seuil/.test(t1) && !(await page.evaluate(() => window.SIGH.store.collection('produits').all().some((p) => p.code === 'ZZB1-P1'))), t1.slice(0, 400));
     await cliquer('Confirmer l’importation', 'button');
     await cliquer('Écrire le lot', 'button');
     await pause(1200);
@@ -21251,8 +21252,8 @@ async function viderMessages(page) {
       && (await B.lotsDe(p1.id)).length === 0 && (await B.mouvementsDe(p1.id)).length === 0 && (await B.lotsDe(p2.id)).length === 0, JSON.stringify([p1, p2, p3]));
     verifier('RG-02 : le prix de vente d’un MÉDICAMENT est son prix d’achat (350 / 350), le CUMP part du prix d’achat ; un article hors médicament garde le prix de vente fourni (1 200 / 1 500)',
       p1.prixAchat === 350 && p1.prixVente === 350 && p1.cump === 350 && p2.prixAchat === 1200 && p2.prixVente === 1500, JSON.stringify([p1, p2]));
-    verifier('Le seuil vide est « sans seuil », JAMAIS zéro (seuilAlerte absent) ; le prix d’achat absent crée l’article « à valoriser » (marqué, source dite), jamais un prix inventé',
-      p2.seuilAlerte == null && p1.seuilAlerte === 20 && p3.valorisationProvisoire === true && p3.prixAchat === 0 && p1.valorisationProvisoire === false, JSON.stringify([p1, p2, p3]));
+    verifier('Le seuil vide est « sans seuil », JAMAIS zéro (seuilAlerte absent) ; le prix d’achat est renseigné pour chaque article (aucun « à valoriser » par ce jeu : lot T5b)',
+      p2.seuilAlerte == null && p1.seuilAlerte === 20 && p3.prixAchat === 80 && p3.valorisationProvisoire !== true && p1.valorisationProvisoire === false, JSON.stringify([p1, p2, p3]));
     const lot1 = await page.evaluate(() => { const l = window.SIGH.importer.lots().all().filter((x) => x.fichier === 'p128.xlsx')[0]; return l ? { etat: l.etat, jeu: l.jeu, ecrits: l.ecrits.map((e) => e.collection).join(','), ref: l.reference, id: l.id } : null; });
     verifier('Le lot est appliqué, il a écrit trois fiches de « produits » et leur prix d’achat versionné (lot T5 : prestation de prix et version 1), jamais un lot de stock, jamais un mouvement', lot1 && lot1.etat === 'applique' && lot1.jeu === 'produits-referentiel' && lot1.ecrits.split(',').filter((c) => c === 'produits').length === 3 && !/lots|mouvements/.test(lot1.ecrits), JSON.stringify(lot1));
 
@@ -21268,8 +21269,9 @@ async function viderMessages(page) {
       ['ZZB1-R5', 'Doublon A', 'Médicaments', 'Boîte', 100, '', 5, '', ''],
       ['zzb1-r5', 'Doublon B', 'Médicaments', 'Boîte', 100, '', 5, '', '']]);
     const c = (n) => (refus.lignes.filter((l) => l.n === n)[0] || { problemes: [] }).problemes.map((p) => p.code);
-    verifier('Refus NOMMÉS, ligne par ligne : catégorie inconnue (VALEUR_HORS_LISTE), prix négatif (HORS_BORNES), médicament à prix de vente libre (RG02_PRIX_DE_VENTE), unité absente (CHAMP_OBLIGATOIRE), code en double dans le fichier (DOUBLON_FICHIER)',
-      refus.accepte === false && c(2).indexOf('VALEUR_HORS_LISTE') >= 0 && c(3).indexOf('HORS_BORNES') >= 0 && c(4).indexOf('RG02_PRIX_DE_VENTE') >= 0 && c(5).indexOf('CHAMP_OBLIGATOIRE') >= 0 && c(7).indexOf('DOUBLON_FICHIER') >= 0, JSON.stringify(refus.lignes.map((l) => [l.n, l.problemes.map((p) => p.code)])));
+    /* Lot T5b : le prix d'achat est lu en « montant, NC ou tiret » : un prix négatif n'est plus HORS_BORNES mais TYPE_INVALIDE (« n'est ni un montant entier, ni NC, ni un tiret »), refusé de la même façon. */
+    verifier('Refus NOMMÉS, ligne par ligne : catégorie inconnue (VALEUR_HORS_LISTE), prix négatif (TYPE_INVALIDE), médicament à prix de vente libre (RG02_PRIX_DE_VENTE), unité absente (CHAMP_OBLIGATOIRE), code en double dans le fichier (DOUBLON_FICHIER)',
+      refus.accepte === false && c(2).indexOf('VALEUR_HORS_LISTE') >= 0 && c(3).indexOf('TYPE_INVALIDE') >= 0 && c(4).indexOf('RG02_PRIX_DE_VENTE') >= 0 && c(5).indexOf('CHAMP_OBLIGATOIRE') >= 0 && c(7).indexOf('DOUBLON_FICHIER') >= 0, JSON.stringify(refus.lignes.map((l) => [l.n, l.problemes.map((p) => p.code)])));
     verifier('Le refus RG-02 dit le geste (laisser le prix de vente vide : il est le prix d’achat) et celui de la catégorie dit les valeurs permises',
       refus.lignes.filter((l) => l.n === 4)[0].problemes.some((p) => /prix d’achat/.test(p.geste) && /RG-02/.test(p.motif)) && refus.lignes.filter((l) => l.n === 2)[0].problemes.some((p) => /Médicaments/.test(p.geste)), JSON.stringify(refus.lignes[0]));
 
@@ -21325,7 +21327,7 @@ async function viderMessages(page) {
     verifier('Le lot de P1 ne s’annule PLUS : l’article a servi (stock, puis facture) ; le refus est NOMMÉ et dit le geste (archiver l’article à l’écran, RG-14)',
       refusAnnul.ok === false && /^(STOCK_PRESENT|PRODUIT_FACTURE|MOUVEMENT_POSTERIEUR|LOT_RATTACHE)$/.test(refusAnnul.code || ''), JSON.stringify(refusAnnul));
 
-    /* --- 7. MESURE : un import de 184 articles (la taille de l'inventaire SAGE), temps et envoi au serveur ----------------------------------------------------- */
+    /* --- 7. MESURE : un import de 184 articles (la taille de l'inventaire initial), temps et envoi au serveur ----------------------------------------------------- */
     const grosses = [ENT];
     for (let i = 1; i <= 184; i++) grosses.push(['ZZB1-M' + String(i).padStart(3, '0'), 'Article de mesure ' + i, i % 3 ? 'Consommables médicaux' : 'Médicaments', 'Boîte', 100 + i, '', 10, '', '']);
     const mes = await B.mesurerEnvoi(() => page.evaluate((l) => { const I = window.SIGH.importer, t0 = performance.now(); const a = I.analyserLignes(I.jeu('produits-referentiel'), l, 'mesure184.csv'); const tA = performance.now() - t0;
@@ -22131,17 +22133,19 @@ async function viderMessages(page) {
     const ENT_P = B.ENT.produits;
 
     /* --- 1. Le référentiel produits : chaque fiche créée reçoit sa version 1 par la voie de la création --------------------------------------------------------------- */
+    /* Lot T5b : le référentiel produits REFUSE un prix d'achat absent (Vague 138) ; l'article « à valoriser » de ce scénario naît donc par la reprise du Grand Stock, seul cas où un stock existant le justifie. */
+    const ENT_G = ['Code article', 'Désignation', 'Catégorie', 'Unité', 'Quantité', 'N° de lot', 'Date de péremption', 'Prix de revient unitaire', 'Seuil d’alerte', 'Emplacement', 'Code fournisseur'];
     const lot1 = await B.appliquer('produits-referentiel', [ENT_P,
       [p1, 'Paracétamol sonde 136', 'Médicaments', 'Boîte', 350, '', 20, '', ''],
-      [p2, 'Gants sonde 136', 'Consommables médicaux', 'Paire', 1200, 1500, '', '', ''],
-      [p3, 'Lancettes sonde 136 (sans prix)', 'Médicaments', 'Boîte', '', '', 15, '', '']], 't136-ref.csv');
+      [p2, 'Gants sonde 136', 'Consommables médicaux', 'Paire', 1200, 1500, '', '', '']], 't136-ref.csv');
+    const lotP3 = await B.appliquer('grand-stock', [ENT_G, [p3, 'Lancettes sonde 136 (sans prix)', 'Médicaments', 'Boîte', 20, 'L136-C', '2030-12-31', '', 15, '', '']], 't136-p3.csv');
     const v1 = await T.versions(p1), v2 = await T.versions(p2), v3 = await T.versions(p3);
     const compo = lot1.ok ? await page.evaluate((id) => { const l = window.SIGH.importer.lots().get(id); const o = {}; l.ecrits.forEach((e) => { o[e.collection] = (o[e.collection] || 0) + 1; }); return o; }, lot1.id) : null;
     verifier('Le lot du référentiel produits pose, pour chaque fiche, sa prestation de prix et sa version 1 (le lot n’a écrit que « produits », « tarifs » et « versionsTarif » : jamais un lot de stock ni un mouvement)',
-      lot1.ok && compo && compo.produits === 3 && compo.tarifs === 3 && compo.versionsTarif === 3 && Object.keys(compo).length === 3, JSON.stringify({ lot1, compo }));
+      lot1.ok && compo && compo.produits === 2 && compo.tarifs === 2 && compo.versionsTarif === 2 && Object.keys(compo).length === 3, JSON.stringify({ lot1, compo }));
     verifier('Version 1 de chaque article : origine « import », lot nommé, VALIDE d’emblée, tracée à la création ; prix d’achat 350, puis 1 200 avec un prix de vente propre de 1 500 (hors médicament), puis « manquant » (aucun prix inventé)',
       v1.length === 1 && v1[0].statut === 'valide' && v1[0].origine === 'import' && v1[0].lot === lot1.ref && v1[0].achat === 350 && /Première version/.test(v1[0].motifDecision || '')
-      && v2[0].achat === 1200 && v2[0].vente === 1500 && v3.length === 1 && v3[0].achat === null && v3[0].lot === lot1.ref, JSON.stringify({ v1, v2, v3 }));
+      && v2[0].achat === 1200 && v2[0].vente === 1500 && lotP3.ok && v3.length === 1 && v3[0].achat === null && v3[0].lot === lotP3.ref, JSON.stringify({ v1, v2, v3, lotP3 }));
     const f1 = await T.fiche(p1), f3 = await T.fiche(p3);
     verifier('La fiche d’un médicament à 350 porte 350 / 350 (RG-02) ; celle de l’article sans prix reste « à valoriser » (0, jamais un prix inventé) et le dit', f1.prixAchat === 350 && f1.prixVente === 350 && f3.prixAchat === 0
       && await page.evaluate((c) => window.SIGH.store.collection('produits').all().filter((x) => x.code === c)[0].valorisationProvisoire === true, p3), JSON.stringify({ f1, f3 }));
@@ -22181,7 +22185,6 @@ async function viderMessages(page) {
       prix.ok && prix.valide === 'valide' && apresPrix.ok && apresPrix.pu === 400 && apresPrix.montant === 800 && avantPrix.absent === true, JSON.stringify({ prix, apresPrix, avantPrix }));
 
     /* --- 4. Le Grand Stock : même voie, prix de revient ou « à valoriser » ------------------------------------------------------------------------------------------------- */
-    const ENT_G = ['Code article', 'Désignation', 'Catégorie', 'Unité', 'Quantité', 'N° de lot', 'Date de péremption', 'Prix de revient unitaire', 'Seuil d’alerte', 'Emplacement', 'Code fournisseur'];
     await poserSessionServeur(roleImp('stock', 'STOCK136'));
     await ouvrir('imp-produits-referentiel.html');
     const lotG = await B.appliquer('grand-stock', [ENT_G,
@@ -22205,6 +22208,449 @@ async function viderMessages(page) {
     verifier('L’annulation du lot ARCHIVE l’article et sa prestation de prix ; la version 1 reste lisible (une version ne s’archive pas : RG-14, l’historique d’un prix se relit)', ann.ok === true && apresAnn.produit === 'archive' && apresAnn.identite === 'archive' && apresAnn.versions.join() === 'valide', JSON.stringify({ ann, apresAnn }));
     const e136 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
     verifier('Aucune erreur JavaScript', e136.length === 0, e136.join(' | '));
+  });
+
+  /* ==========================================================================
+   * VAGUE 137, LOT T5b : PLUS AUCUN « SAGE » VISIBLE (Direction, 12/11/2026). Tous les libellés visibles (écrans, onglets, modales, aides, messages, états imprimés de la reprise,
+   * rapports et modèles d'import, fiches semées) disent « Inventaire initial (reprise) » : le mot ne nomme plus l'ancien logiciel. Les identifiants techniques (`INVENTAIRE_SAGE`,
+   * `valorisationsSage`, `SIGH.sage`, noms de fichiers et de collections) ne changent pas : aucune donnée ne migre. « Sage-femme » est une profession, jamais l'ancien logiciel.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 137 : T5b aucun « SAGE » visible (tous les écrans du manifeste, les onglets et modales de la reprise, le bordereau imprimé, les jeux d’import, leurs modèles et rapports, la fiche semée d’un article repris)');
+    erreursJS = [];
+    await poserSessionServeur(roleImp('admin', 'ADMIN137'));
+    await ouvrir('m6-import-grand-stock.html');
+    /* Le mot qui nomme l'ancien logiciel : SAGE seul (insensible à la casse), hors « sage-femme », « sages-femmes » et « sage femme ». L'identifiant `valorisationsSage` n'est pas un mot. */
+    const MOT = '(?:^|[^A-Za-zÀ-ÿ_])sage(?![A-Za-zÀ-ÿ_]|[- ]?femmes?|s[- ]?femmes?)';
+    const idsTous = await page.evaluate(() => Object.keys(window.SIGH.nav.INDEX));
+    /* SIGH_V137_RAPIDE=1 : un échantillon de l'index, pour itérer ; le passage de preuve lit les 370 écrans. */
+    const ids = process.env.SIGH_V137_RAPIDE === '1' ? idsTous.filter((x, i) => i % 15 === 0) : idsTous;
+    const re137 = new RegExp(MOT, 'i');
+    const trouves = { vus: 0, total: ids.length, out: [], rechargees: 0 };
+    for (const id of ids) {
+      let texte = null;
+      try {
+        texte = await page.evaluate(async (i) => {
+          window.SIGH.app.go(i);
+          const debut = Date.now(); let precedent = '', stable = 0, t = '';
+          while (Date.now() - debut < 4000) {
+            await new Promise((r) => setTimeout(r, 60));
+            const c = document.querySelector('#page-content'); t = document.body.innerText;
+            if (location.pathname.indexOf(i) >= 0 && c && t.length > 40 && t === precedent) { if (++stable >= 2) break; } else stable = 0;
+            precedent = t;
+          }
+          return location.pathname.indexOf(i) >= 0 ? t : null;
+        }, id);
+      } catch (e) { texte = null; }
+      if (texte == null) {
+        trouves.rechargees++;
+        /* Un écran AUTONOME (connexion, erreurs, enquête publique) n'a pas de coquille : `ouvrir` attendrait 150 s une peinture qui n'existe pas. On le lit directement. */
+        if (/^(auth-|error-|enquete-publique)/.test(id)) { await page.goto('http://127.0.0.1:' + PORT + '/pages/' + id + '.php', { waitUntil: 'domcontentloaded' }).catch(() => null); await pause(700); }
+        else await ouvrir(id + '.html');
+        texte = await page.evaluate(() => document.body.innerText).catch(() => '');
+      }
+      trouves.vus++;
+      const m = re137.exec(texte || '');
+      if (m) trouves.out.push({ id: id, extrait: texte.slice(Math.max(0, m.index - 50), m.index + 70).replace(/\s+/g, ' ') });
+    }
+    console.log('\n  CRAWL V137 : ' + JSON.stringify(trouves).slice(0, 1500));
+    await ouvrir('m6-import-grand-stock.html');
+    verifier('Les écrans du manifeste s’ouvrent tous sans SAGE visible (' + (trouves.vus || 0) + ' écrans lus sur ' + (trouves.total || 0) + ')', trouves.out && trouves.out.length === 0 && (process.env.SIGH_V137_RAPIDE === '1' || trouves.vus > 280), JSON.stringify(trouves).slice(0, 600));
+
+    /* --- Les états que le rendu par défaut ne montre pas : les trois onglets de la reprise, la modale de valorisation, le bordereau imprimé, la fiche d'un article repris ----------- */
+    const lire137 = () => page.evaluate(() => document.body.innerText);
+    const onglet137 = (d) => page.evaluate((x) => { const b = [...document.querySelectorAll('#page-content button')].find((y) => y.textContent.trim().startsWith(x)); if (b) b.click(); return !!b; }, d);
+    let reprise = '';
+    for (const t of ['Articles repris', 'Points à traiter', 'Rapprochement']) { await onglet137(t); await pause(600); reprise += '\n' + await lire137(); }
+    await onglet137('Points à traiter'); await pause(500);
+    await page.evaluate(() => { const b = document.querySelector('button[title="Valoriser"], button[title="Corriger la valorisation"]'); if (b) b.click(); });
+    await pause(600);
+    const modaleVal = await page.evaluate(() => { const m = document.querySelector('.modal-root, [role=dialog]'); return m ? m.innerText : ''; });
+    await page.evaluate(() => [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => /^(Annuler|Fermer)$/.test(x.textContent.trim())).forEach((b) => b.click()));
+    await pause(300);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim().startsWith('Éditer le bordereau')); if (b) b.click(); });
+    await pause(1000);
+    const bordereau = await lire137();
+    await page.evaluate(() => [...document.querySelectorAll('button')].filter((x) => /^Fermer$/.test(x.textContent.trim())).forEach((b) => b.click()));
+    const re = new RegExp(MOT, 'i');
+    verifier('La reprise (trois onglets), sa modale de valorisation et son bordereau imprimé ne nomment plus l’ancien logiciel, et disent « Inventaire initial (reprise) »',
+      !re.test(reprise) && !re.test(modaleVal) && !re.test(bordereau) && /Inventaire initial \(reprise\)/.test(reprise) && /Bordereau de reprise/.test(bordereau) && /IMPORT-INVENTAIRE-20260715/.test(reprise) && /Origine/.test(reprise),
+      JSON.stringify({ reprise: (re.exec(reprise) || {}).index, modale: modaleVal.slice(0, 120), bordereau: (re.exec(bordereau) || {}).index, aLeLibelle: /Inventaire initial \(reprise\)/.test(reprise) }));
+    const codeRepris = await page.evaluate(() => window.SIGH.sage.INVENTAIRE_SAGE[5].code);
+    await ouvrir('m6-produits.html');
+    await outilsT5.chercher(codeRepris);
+    await page.evaluate(() => { const tr = document.querySelector('#page-content tbody tr'); if (tr) tr.click(); });
+    await pause(900);
+    const tiroir = await lire137();
+    verifier('La fiche (tiroir) d’un article repris par l’inventaire initial ne nomme pas l’ancien logiciel', /Inventaire|Désignation|Prix d’achat/.test(tiroir) && !re.test(tiroir), (re.exec(tiroir) ? tiroir.slice(re.exec(tiroir).index - 60, re.exec(tiroir).index + 80) : tiroir.slice(0, 80)));
+
+    /* --- Les jeux d'import : définitions, modèle .xlsx (instructions comprises) et rapport d'erreurs d'une analyse de reprise ----------------------------------------------- */
+    await ouvrir('imp-accueil.html');
+    const jeux = await page.evaluate((motif) => {
+      const I = window.SIGH.importer, X = window.SIGH.xlsx, re = new RegExp(motif, 'i'), fautifs = [];
+      const aplat = (o) => JSON.stringify(o, (k, v) => (typeof v === 'function' ? undefined : (v instanceof RegExp ? String(v) : v)));
+      I.JEUX.forEach((j) => {
+        if (re.test(aplat(j))) fautifs.push(j.id + ' (définition)');
+        const m = X.lire(I.modele(j.id)); const t = m.feuilles.map((f) => f.lignes.map((l) => l.join(' ')).join('\n')).join('\n');
+        if (re.test(t)) fautifs.push(j.id + ' (modèle)');
+      });
+      const a = I.analyserLignes(I.jeu('grand-stock'), [['Code article', 'Désignation', 'Catégorie', 'Unité', 'Quantité', 'N° de lot', 'Date de péremption', 'Prix de revient unitaire', 'Seuil d’alerte', 'Emplacement', 'Code fournisseur'],
+        ['ZZT5B-SG1', 'Article sans prix de revient', 'Médicaments', 'Boîte', 10, 'L1', '2031-12-31', '', 5, '', '']], 'r137.csv');
+      const rap = X.lire(I.rapport(a, I.jeu('grand-stock'))); const tr = rap.feuilles.map((f) => f.lignes.map((l) => l.join(' ')).join('\n')).join('\n');
+      if (re.test(tr)) fautifs.push('rapport');
+      return { nb: I.JEUX.length, fautifs: fautifs, geste: (a.lignes[0].problemes.filter((p) => p.code === 'A_VALORISER')[0] || {}).geste || null };
+    }, MOT);
+    verifier('Les ' + jeux.nb + ' jeux d’import (définition et modèle .xlsx) et le rapport d’une analyse de reprise ne nomment pas l’ancien logiciel ; le geste de l’article sans prix de revient renvoie à la liste « Produits à valoriser »',
+      jeux.fautifs.length === 0 && /Produits à valoriser/.test(jeux.geste || ''), JSON.stringify(jeux));
+    const e137 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e137.length === 0, e137.join(' | '));
+  });
+
+  /* ==========================================================================
+   * VAGUE 138, LOT T5b : LE PRIX D'ACHAT ABSENT, DEUX CAS SÉPARÉS (Direction, 12/11/2026). (a) L'import du référentiel produits et la création à l'écran REFUSENT un article sans prix d'achat, en
+   * nommant l'article (code, motif, geste) ; tout ou rien. (b) La reprise du Grand Stock GARDE le marquage « à valoriser » (le stock existe déjà, RG-03) : version 1 `manquant`, jamais facturable, liste
+   * « Produits à valoriser » avec son compte et sa raison, alerte à la Directrice Administrative qui paraît puis disparaît avec la liste, premier prix par une proposition ordinaire (Oui ou Non).
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 138 : T5b le prix d’achat absent : refusé en nommant l’article au référentiel produits (import et création à l’écran, rien d’écrit), mais la reprise du Grand Stock garde « à valoriser » (jamais facturable) : liste avec compte et raison, alerte à la DAF qui paraît et disparaît, premier prix par proposition puis Oui');
+    erreursJS = [];
+    const T = outilsT5, B = outilsB1, sfx = T.suffixe();
+    const [r1, r2, r3, r4, r5, g1, g2, g3, g4, m1] = ['ZZ138A', 'ZZ138B', 'ZZ138C', 'ZZ138D', 'ZZ138E', 'ZZ138G1', 'ZZ138G2', 'ZZ138G3', 'ZZ138G4', 'ZZ138M'].map((x) => x + sfx);
+    await poserSessionServeur(roleImp('stock', 'STOCK138'));
+    await ouvrir('imp-produits-referentiel.html');
+    const compteurs = () => page.evaluate(() => { const S = window.SIGH.store; return { produits: S.collection('produits').all().length, tarifs: S.collection('tarifs').all().length, versions: S.collection('versionsTarif').all().length, lots: S.collection('lotsImportation').all().length }; });
+    const ENT_P = B.ENT.produits;
+
+    /* --- (a) Le référentiel produits REFUSE un prix d'achat absent, tiret, nul ou NC, en nommant l'article ------------------------------------------------------------------- */
+    const avant = await compteurs();
+    const fichier = [ENT_P,
+      [r1, 'Article valide sonde 138', 'Médicaments', 'Boîte', 350, '', 20, '', ''],
+      [r2, 'Article sans prix sonde 138', 'Médicaments', 'Boîte', '', '', 15, '', ''],
+      [r3, 'Article au tiret sonde 138', 'Consommables médicaux', 'Boîte', '-', '', 15, '', ''],
+      [r4, 'Article à zéro sonde 138', 'Consommables médicaux', 'Boîte', 0, '', 15, '', ''],
+      [r5, 'Article NC sonde 138', 'Consommables médicaux', 'Boîte', 'NC', '', 15, '', '']];
+    const an = await B.analyser('produits-referentiel', fichier, 't138-refus.csv');
+    const pb = (n) => (an.lignes.filter((l) => l.n === n)[0] || { problemes: [] }).problemes.filter((p) => p.niveau === 'refus');
+    verifier('Le fichier est REFUSÉ : un prix d’achat vide, un tiret et un zéro portent PRIX_ACHAT_ABSENT, NC porte NC_INTERDIT ; la ligne valide ne porte aucun refus',
+      an.accepte === false && pb(2).length === 0 && pb(3).map((p) => p.code).join() === 'PRIX_ACHAT_ABSENT' && pb(4).map((p) => p.code).join() === 'PRIX_ACHAT_ABSENT' && pb(5).map((p) => p.code).join() === 'PRIX_ACHAT_ABSENT' && pb(6).map((p) => p.code).join() === 'NC_INTERDIT', JSON.stringify(an.lignes.map((l) => [l.n, l.problemes.map((p) => p.code)])));
+    const p3 = pb(3)[0], p4 = pb(4)[0], p5 = pb(5)[0];
+    verifier('Chaque refus NOMME l’article (code et désignation dans le motif) et dit le GESTE (renseigner le prix d’achat, ou passer par « Importation Grand Stock » si le stock existe déjà)',
+      p3 && p3.motif.indexOf(r2) >= 0 && /Article sans prix sonde 138/.test(p3.motif) && /Importation Grand Stock/.test(p3.geste) && /FCFA/.test(p3.geste) && p4.motif.indexOf(r3) >= 0 && p5.motif.indexOf(r4) >= 0, JSON.stringify([p3, p4, p5]));
+    const lot0 = await B.appliquer('produits-referentiel', fichier, 't138-refus.csv');
+    const apres0 = await compteurs();
+    verifier('TOUT OU RIEN : le fichier n’est pas appliqué (ANALYSE_REFUSEE), la ligne valide n’est pas écrite : ni fiche, ni prestation de prix, ni version, ni lot',
+      lot0.ok === false && lot0.code === 'ANALYSE_REFUSEE' && JSON.stringify(avant) === JSON.stringify(apres0) && (await B.produitPar(r1)) === null, JSON.stringify({ lot0, avant, apres0 }));
+    const lotOk = await B.appliquer('produits-referentiel', [ENT_P, [r1, 'Article valide sonde 138', 'Médicaments', 'Boîte', 350, '', 20, '', '']], 't138-valide.csv');
+    const v1 = await T.versions(r1);
+    verifier('Le fichier corrigé (un prix d’achat renseigné) s’importe : version 1 validée d’emblée, prix 350, origine « import »', lotOk.ok && v1.length === 1 && v1[0].statut === 'valide' && v1[0].achat === 350 && v1[0].origine === 'import', JSON.stringify({ lotOk, v1 }));
+
+    /* --- (a bis) La création manuelle à « Référentiel produits » exige aussi le prix d'achat --------------------------------------------------------------------------------- */
+    await ouvrir('m6-produits.html');
+    await cliquer('Nouveau', 'button'); await pause(700);
+    await T.remplir('code', m1); await T.remplir('designation', 'Article de sonde 138 sans prix'); await T.remplir('unite', 'Boîte');
+    await T.remplir('prixAchat', 0); await T.remplir('seuilAlerte', 5);
+    await T.cliquerDansModale('Créer'); await pause(600);
+    const refusForm = await T.toast();
+    const ficheForm = await T.fiche(m1);
+    verifier('La création à l’écran avec un prix d’achat à zéro est REFUSÉE en nommant l’article (PRIX_ACHAT_ABSENT, geste : Importation Grand Stock) et aucune fiche n’est écrite',
+      /PRIX_ACHAT_ABSENT/.test(refusForm) && new RegExp(m1).test(refusForm) && /Importation Grand Stock/.test(refusForm) && ficheForm === null, refusForm.slice(0, 260));
+    await T.fermerModales(); await pause(300);
+
+    /* --- (b) La reprise du Grand Stock GARDE « à valoriser » : version 1 manquante, jamais facturable ------------------------------------------------------------------------ */
+    await ouvrir('imp-produits-referentiel.html');
+    const baseListe = await page.evaluate(() => window.SIGH.parcours.produitsAValoriser().length);
+    const ENT_G = ['Code article', 'Désignation', 'Catégorie', 'Unité', 'Quantité', 'N° de lot', 'Date de péremption', 'Prix de revient unitaire', 'Seuil d’alerte', 'Emplacement', 'Code fournisseur'];
+    const lotG = await B.appliquer('grand-stock', [ENT_G,
+      [g1, 'Amoxicilline sonde 138 (prix connu)', 'Médicaments', 'Boîte', 40, 'L138-A', '2030-12-31', 80, 5, '', ''],
+      [g2, 'Sérum sonde 138 (sans prix de revient)', 'Médicaments', 'Flacon', 25, 'L138-B', '2030-12-31', '', 5, '', ''],
+      [g3, 'Gants sonde 138 (sans prix de revient)', 'Consommables médicaux', 'Paire', 60, '', '', '', 10, '', ''],
+      [g4, 'Seringues sonde 138 (sans prix de revient)', 'Consommables médicaux', 'Boîte', 15, '', '', '', 10, '', '']], 't138-gs.csv');
+    const vg2 = await T.versions(g2), fg2 = await T.fiche(g2);
+    const liste = await page.evaluate((cs) => window.SIGH.parcours.produitsAValoriser().filter((x) => cs.indexOf(x.code) >= 0).map((x) => ({ code: x.code, raison: x.raison, enAttente: x.enAttente })), [g1, g2, g3, g4]);
+    verifier('La reprise du Grand Stock crée les articles sans prix de revient « à valoriser » (version 1 manquante, stock repris intact : RG-03) ; la liste en compte TROIS (pas l’article au prix connu), avec la raison « prix d’achat non renseigné »',
+      lotG.ok && vg2.length === 1 && vg2[0].achat === null && fg2.stock === 25 && liste.length === 3 && liste.every((x) => x.raison === 'prix d’achat non renseigné' && x.enAttente === false) && !liste.some((x) => x.code === g1)
+      && (await page.evaluate(() => window.SIGH.parcours.produitsAValoriser().length)) === baseListe + 3, JSON.stringify({ lotG, vg2, liste, baseListe }));
+    const refusFact = await T.prescrire(g2, 1, null, false);
+    verifier('La facturation REFUSE toujours un article « à valoriser » en le nommant (jamais à zéro) : ni ordonnance ni facture', refusFact.ok === false && /Prix d’achat absent/.test(refusFact.erreur || '') && /Sérum sonde 138/.test(refusFact.erreur || ''), JSON.stringify(refusFact));
+
+    /* --- La LISTE à l'écran : « Tarifs et prix », onglet Produits (bandeau avec le compte, filtre « À valoriser »), et « Référentiel produits » (indicateur, badge) ----------------------- */
+    await poserSessionServeur(roleImp('da', 'DAF138'));
+    await ouvrir('cfg-tarifs.html');
+    await cliquer('Produits', '[role="tab"], .tab'); await pause(700);
+    const ecranT = await page.evaluate(() => { const b = document.querySelector('[data-produits-a-valoriser]'); const t = document.querySelector('[data-onglet-produits]');
+      const f = [...document.querySelectorAll('[data-onglet-produits] select')].map((x) => [...x.options].map((o) => o.textContent.trim())).filter((o) => o.some((x) => /À valoriser/.test(x)))[0];
+      return { compte: b ? Number(b.getAttribute('data-produits-a-valoriser')) : null, texte: b ? b.innerText.replace(/\s+/g, ' ') : '', filtre: f || null, ecriture: t ? [...t.querySelectorAll('button')].filter((x) => /Nouvelle|Enregistrer|Importer|Changer/.test(x.textContent + (x.getAttribute('title') || ''))).length : -1 }; });
+    verifier('« Tarifs et prix », onglet Produits : le bandeau annonce le COMPTE des produits à valoriser et la RAISON « prix d’achat non renseigné », le filtre « À valoriser » existe, et l’onglet reste en lecture seule',
+      ecranT.compte === baseListe + 3 && /produit\(s\) à valoriser/.test(ecranT.texte) && /prix d’achat non renseigné/.test(ecranT.texte) && ecranT.filtre && ecranT.ecriture === 0, JSON.stringify(ecranT));
+    await poserSessionServeur(roleImp('stock', 'STOCK138'));
+    await ouvrir('m6-produits.html');
+    await T.chercher(g2);
+    const ecranP = await page.evaluate((c) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(c) >= 0); const kpi = [...document.querySelectorAll('#page-content *')].find((x) => x.children.length === 0 && x.textContent.trim() === 'À valoriser');
+      return { ligne: tr ? tr.innerText.replace(/\s+/g, ' ') : null, badge: tr ? !!tr.querySelector('[data-a-valoriser]') : false, kpi: !!kpi }; }, g2);
+    verifier('« Référentiel produits » : la ligne de l’article porte le badge « à valoriser » (raison en infobulle) et l’indicateur « À valoriser » est affiché', ecranP.ligne && /à valoriser/.test(ecranP.ligne) && ecranP.badge && ecranP.kpi, JSON.stringify(ecranP));
+
+    /* --- L'ALERTE à la Directrice Administrative (moteur d'alertes existant) : elle paraît, sans donnée sensible, et ne va pas aux postes qui ne décident pas ------------------------- */
+    const alertes = (poste) => page.evaluate((p) => window.SIGH.notifications.collecter({ poste: p, detaille: true }).filter((n) => n.source === 'produits_a_valoriser')
+      .map((n) => ({ cle: n.cle, groupe: !!n.groupe, nombre: n.nombre || 1, membres: n.membres || [], titre: n.titre, detail: n.detail })), poste);
+    const aDa = await alertes('da'), aCaissier = await alertes('caissier');
+    const cles = (l) => l.reduce((o, a) => o.concat(a.groupe ? a.membres : [a.cle]), []);
+    verifier('L’alerte paraît chez la DAF pour chacun des trois articles (une ligne par article, ou UNE ligne de groupe portant le compte au-delà du seuil de regroupement), jamais chez le caissier',
+      [g2, g3, g4].every((c) => cles(aDa).indexOf('valoriser:' + c) >= 0) && cles(aDa).indexOf('valoriser:' + g1) < 0 && aCaissier.length === 0, JSON.stringify({ aDa: aDa.map((a) => [a.cle, a.groupe, a.nombre]), caissier: aCaissier.length }));
+    const messages = aDa.map((a) => a.titre + ' ' + a.detail).join(' | ');
+    verifier('Le message de l’alerte ne porte AUCUNE donnée sensible (ni quantité, ni valeur, ni prix), et dit le geste', !/\b25\b|\b60\b|\b15\b|FCFA|unité/i.test(messages.replace(/ZZ138\w+/g, '').replace(/sonde 138/g, '')) && /valoriser/.test(messages), messages.slice(0, 300));
+
+    /* --- Le premier prix : une proposition ordinaire (gestionnaire de stock), puis le Oui de la DAF ; l'alerte et la liste suivent ------------------------------------------------------- */
+    const D = await T.dates();
+    const prop = await page.evaluate((c, jour) => { const r = window.SIGH.parcours.proposerTarif({ code: c, prixNonAssure: 120, dateEffet: jour, motif: 'Premier prix sonde 138' }); return { ok: r.ok, code: r.code || null, version: r.version ? r.version.id : null }; }, g2, D.aujourdhui);
+    const listeAttente = await page.evaluate((c) => window.SIGH.parcours.produitsAValoriser().filter((x) => x.code === c).map((x) => x.enAttente)[0], g2);
+    const refusEncore = await T.prescrire(g2, 1, null, false);
+    verifier('Une proposition ouverte ne sort PAS l’article de la liste (seul le Oui met un prix en vigueur) : la liste le dit « proposition en attente », la facturation refuse encore', prop.ok && listeAttente === true && refusEncore.ok === false, JSON.stringify({ prop, listeAttente, refusEncore }));
+    await poserSessionServeur(roleImp('da', 'DAF138'));
+    const oui = await page.evaluate((id) => { const r = window.SIGH.parcours.deciderTarif(id, 'oui'); return { ok: r.ok, code: r.code || null }; }, prop.version);
+    const apresOui = await page.evaluate((c) => ({ liste: window.SIGH.parcours.produitsAValoriser().map((x) => x.code).indexOf(c) >= 0 }), g2);
+    await poserSessionServeur(roleImp('stock', 'STOCK138'));
+    const facture = await T.prescrire(g2, 1, null, false);
+    verifier('Après le Oui, l’article sort de la liste et se facture à 120 (le prix décidé), la proposition ayant été le seul chemin', oui.ok && apresOui.liste === false && facture.ok === true && facture.pu === 120, JSON.stringify({ oui, apresOui, facture }));
+    await poserSessionServeur(roleImp('da', 'DAF138'));
+    const aApres = await alertes('da');
+    verifier('L’alerte de g2 a disparu avec lui (g3 et g4 restent à valoriser)', cles(aApres).indexOf('valoriser:' + g2) < 0 && [g3, g4].every((c) => cles(aApres).indexOf('valoriser:' + c) >= 0), JSON.stringify(aApres.map((a) => [a.cle, a.groupe, a.nombre])));
+    /* Les deux derniers reçoivent leur premier prix : plus aucun des trois sur la liste ni à l'alerte. */
+    for (const c of [g3, g4]) {
+      const r = await page.evaluate((code, jour) => { const PR = window.SIGH.parcours; const p = PR.proposerTarif({ code: code, prixNonAssure: 90, dateEffet: jour, motif: 'Premier prix sonde 138', valider: true }); return { ok: p.ok, code: p.code || null }; }, c, D.aujourdhui);
+      verifier('Le premier prix de ' + c + ' se pose en un geste par la DAF (version validée) : l’article sort de la liste', r.ok === true && (await page.evaluate((x) => window.SIGH.parcours.produitsAValoriser().map((y) => y.code).indexOf(x) < 0, c)), JSON.stringify(r));
+    }
+    const aFin = await alertes('da'), listeFin = await page.evaluate((cs) => window.SIGH.parcours.produitsAValoriser().filter((x) => cs.indexOf(x.code) >= 0).length, [g1, g2, g3, g4]);
+    verifier('La liste ne compte plus aucun des articles de la sonde et l’alerte n’en nomme plus : quand la liste est vide, l’alerte disparaît', listeFin === 0 && [g2, g3, g4].every((c) => cles(aFin).indexOf('valoriser:' + c) < 0) && (baseListe > 0 || aFin.length === 0), JSON.stringify({ listeFin, aFin: aFin.length, baseListe }));
+    await B.restituer();
+    const e138 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e138.length === 0, e138.join(' | '));
+  });
+
+  /* ==========================================================================
+   * VAGUE 139, LOT T5b : UNE RÉCEPTION D'ACHAT À UN AUTRE PRIX PROPOSE un changement du prix d'achat (Direction, 12/11/2026). Le CUMP, le stock, le mouvement, la livraison et le BFR bougent comme avant ;
+   * EN PLUS une proposition (famille PRODUIT, date d'effet = date de réception, motif « prix constaté à la réception n° … ») s'ouvre, soumise à l'alerte et au Oui ou Non du circuit. Jamais bloquante,
+   * une seule ouverte par produit, rien quand le prix est identique, et AUCUN prix (ni le prix de vente dérivé d'un médicament, RG-02) ne change avant le Oui.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 139 : T5b une réception à un autre prix propose le changement du prix d’achat (CUMP, stock, mouvement, livraison et BFR comme avant ; une seule proposition par produit, rien si le prix est identique, jamais bloquante, aucun prix ne change avant le Oui)');
+    erreursJS = [];
+    const T = outilsT5, B = outilsB1, sfx = T.suffixe();
+    const [pa, pb, pc, pd] = ['ZZ139A', 'ZZ139B', 'ZZ139C', 'ZZ139D'].map((x) => x + sfx);
+    await poserSessionServeur(roleImp('stock', 'STOCK139'));
+    await ouvrir('m7-receptions.html');
+    await B.photographier();
+    const D = await T.dates();
+    await T.produit({ code: pa, designation: 'Médicament A sonde 139', prixAchat: 100, stockDetail: 10 });
+    await T.produit({ code: pb, designation: 'Médicament B sonde 139', prixAchat: 200, stockDetail: 0 });
+    await T.produit({ code: pc, designation: 'Consommable C sonde 139', categorie: 'consommable', prixAchat: 50, prixVente: 80, stockDetail: 4 });
+    await T.produit({ code: pd, designation: 'Médicament D sonde 139', prixAchat: 70, stockDetail: 2 });
+    const commande = (ref, lignes) => page.evaluate((r, ls, jour) => { const S = window.SIGH.store; const ps = S.collection('produits').all();
+      const L = ls.map((l) => { const p = ps.filter((x) => x.code === l.code)[0]; return { produitId: p.id, produit: p.designation, unite: p.unite, quantite: l.quantite, prixUnitaire: l.prix }; });
+      const rec = S.collection('commandes', { module: 'M7', entite: 'BonCommande' }).insert({ reference: r, date: jour, fournisseur: 'ZZ139', fournisseurNom: 'Fournisseur sonde 139', montant: L.reduce((t, l) => t + l.quantite * l.prixUnitaire, 0), lignes: L, statutCommande: 'validee', valideePar: 'TAKI Alimatou', sondeT5b: true });
+      return rec.record.id; }, ref, lignes, D.aujourdhui);
+    const etat = (code) => page.evaluate((c, jour) => { const S = window.SIGH.store, PR = window.SIGH.parcours; const p = S.collection('produits').all().filter((x) => x.code === c)[0];
+      const v = S.collection('versionsTarif').all().filter((x) => x.code === c).sort((a, b) => a.version - b.version).map((x) => ({ version: x.version, statut: x.statut, achat: x.prixNonAssure, dateEffet: x.dateEffet || null, motif: x.motif, source: x.source || null }));
+      return { stockGros: p.stockGros, stock: p.stock, cump: p.cump, vu: S.valeurUnitaire(p), prixAchat: p.prixAchat, prixVente: p.prixVente, versions: v, enVigueur: PR.prixProduitALaDate(p, jour).achat, venteEnVigueur: PR.prixProduitALaDate(p, jour).vente,
+        mouvements: S.collection('mouvements').all().filter((m) => m.produitId === p.id).map((m) => ({ type: m.type, quantite: m.quantite, stockType: m.stockType, justificatif: m.justificatif })) }; }, code, D.aujourdhui);
+    const globaux = () => page.evaluate(() => { const S = window.SIGH.store, b = window.SIGH.parcours.bfr(); return { ff: S.collection('facturesFournisseurs').all().length, livraisons: S.collection('livraisons').all().length, dettes: b.dettes, stocks: b.stocks }; });
+    const receptionner = async (ref, bl, date) => {
+      await ouvrir('m7-receptions.html');
+      const clic = await page.evaluate((r) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(r) >= 0); const b = tr && [...tr.querySelectorAll('button')].find((x) => /Réceptionner/.test(x.textContent + (x.getAttribute('title') || ''))); if (b) b.click(); return !!b; }, ref);
+      if (!clic) return { clic: false, toast: '' };
+      await pause(700);
+      await T.remplir('referenceBL', bl);
+      if (date) await T.remplir('date', date);
+      await T.cliquerDansModale('Valider la réception'); await pause(1000);
+      return { clic: true, toast: await T.toast() };
+    };
+
+    /* --- 1. Une réception A : A à 120 (le prix d'achat en vigueur est 100), B à 200 (identique), C à 55 (50 en vigueur) ------------------------------------------------------------------- */
+    const a0 = await etat(pa), b0 = await etat(pb), c0 = await etat(pc), g0 = await globaux();
+    await commande('CMD139A', [{ code: pa, quantite: 5, prix: 120 }, { code: pb, quantite: 3, prix: 200 }, { code: pc, quantite: 2, prix: 55 }]);
+    const r1 = await receptionner('CMD139A', 'BL139A');
+    const a1 = await etat(pa), b1 = await etat(pb), c1 = await etat(pc), g1 = await globaux();
+    verifier('LE GESTE EXISTANT EST INCHANGÉ : stock, CUMP et mouvement d’entrée comme avant (A : CUMP = (10 × 100 + 5 × 120) / 15 = 107 ; B : 200 ; C : (4 × 50 + 2 × 55) / 6 = 52), justificatif « Bon de livraison BL139A »',
+      r1.clic && a1.stockGros === a0.stockGros + 5 && a1.stock === 15 && a1.cump === Math.round((10 * 100 + 5 * 120) / 15) && b1.stock === 3 && b1.cump === 200 && c1.stock === 6 && c1.cump === Math.round((4 * 50 + 2 * 55) / 6)
+      && a1.mouvements.some((m) => m.type === 'entree' && m.quantite === 5 && m.stockType === 'gros' && m.justificatif === 'Bon de livraison BL139A'), JSON.stringify({ r1: r1.toast.slice(0, 200), a1, b1, c1 }));
+    const bfrAttendu = [[pa, a0, a1], [pb, b0, b1], [pc, c0, c1]].reduce((t, [c, x, y]) => t + y.stock * y.vu - x.stock * x.vu, 0);
+    verifier('Livraison, facture fournisseur et BFR comme avant : une livraison de plus, AUCUNE facture fournisseur créée par la réception, les dettes inchangées, les stocks du BFR valorisés comme avant, par la méthode en vigueur (variation ' + bfrAttendu + ')',
+      g1.livraisons === g0.livraisons + 1 && g1.ff === g0.ff && g1.dettes === g0.dettes && Math.abs((g1.stocks - g0.stocks) - bfrAttendu) < 1, JSON.stringify({ g0, g1, bfrAttendu }));
+    verifier('A (reçu à 120, en vigueur 100) : UNE proposition est ouverte, version 2, prix 120, date d’effet = date de réception, motif « prix constaté à la réception n° BL139A »',
+      a1.versions.length === 2 && a1.versions[1].statut === 'propose' && a1.versions[1].achat === 120 && a1.versions[1].dateEffet === D.aujourdhui && a1.versions[1].motif === 'prix constaté à la réception n° BL139A', JSON.stringify(a1.versions));
+    verifier('Un prix IDENTIQUE ne propose rien (B reçu à 200, en vigueur 200 : une seule version)', b1.versions.length === 1 && b1.versions[0].statut === 'valide', JSON.stringify(b1.versions));
+    verifier('C (consommable reçu à 55, en vigueur 50) ouvre aussi sa proposition, mais son prix de vente propre (80) ne bouge pas', c1.versions.length === 2 && c1.versions[1].statut === 'propose' && c1.versions[1].achat === 55 && c1.prixVente === 80 && c1.prixAchat === 50, JSON.stringify({ v: c1.versions, vente: c1.prixVente }));
+    verifier('AUCUN PRIX NE CHANGE AVANT LE OUI : A garde 100 / 100 à la fiche et à l’accesseur daté (le prix de vente d’un médicament EST son prix d’achat, RG-02), la proposition n’est lue par aucune pièce',
+      a1.prixAchat === 100 && a1.prixVente === 100 && a1.enVigueur === 100 && a1.venteEnVigueur === 100, JSON.stringify(a1));
+    verifier('Le toast de réception DIT la proposition ouverte (A : 100 à 120) et l’attente du Oui de la Directrice Administrative', /proposition\(s\) de changement du prix d’achat ouverte\(s\)/.test(r1.toast) && new RegExp(pa + ' : 100 à 120').test(r1.toast) && /Oui de la Directrice Administrative/.test(r1.toast), r1.toast.slice(0, 400));
+    const alerte = await page.evaluate(() => window.SIGH.notifications.collecter({ poste: 'da', detaille: true }).filter((n) => n.source === 'prix_a_valider').length);
+    verifier('La proposition est SOUMISE à l’alerte du circuit existant (prix à valider, chez la DAF)', alerte >= 1, String(alerte));
+
+    /* --- 2. Une seconde réception du même article alors que la proposition attend : pas de doublon, et la réception le dit ------------------------------------------------------------- */
+    await commande('CMD139B', [{ code: pa, quantite: 1, prix: 130 }]);
+    const r2 = await receptionner('CMD139B', 'BL139B');
+    const a2 = await etat(pa);
+    verifier('PAS DE DOUBLON : la proposition de A attend déjà son Oui, la seconde réception (130) n’en ouvre pas une seconde (toujours deux versions) et le DIT (« une proposition attend déjà sa décision pour… ») ; le CUMP a bougé comme avant ((15 × 107 + 130) / 16 = 108)',
+      a2.versions.length === 2 && a2.versions[1].achat === 120 && /attend déjà sa décision/.test(r2.toast) && new RegExp(pa).test(r2.toast) && a2.stock === 16 && a2.cump === Math.round((15 * 107 + 130) / 16), JSON.stringify({ toast: r2.toast.slice(0, 300), a2 }));
+
+    /* --- 3. Le OUI de la DAF : le prix d'achat et le prix de vente dérivé changent, et seulement alors ------------------------------------------------------------------------------- */
+    await poserSessionServeur(roleImp('da', 'DAF139'));
+    const v2id = await page.evaluate((c) => window.SIGH.store.collection('versionsTarif').all().filter((x) => x.code === c && x.version === 2)[0].id, pa);
+    const oui = await page.evaluate((id) => { const r = window.SIGH.parcours.deciderTarif(id, 'oui'); return { ok: r.ok, code: r.code || null }; }, v2id);
+    const a3 = await etat(pa);
+    verifier('APRÈS LE OUI : le prix d’achat de A vaut 120 et son prix de vente DÉRIVÉ aussi (RG-02 : un médicament se vend à son prix d’achat), à la fiche comme à l’accesseur daté', oui.ok && a3.prixAchat === 120 && a3.prixVente === 120 && a3.enVigueur === 120 && a3.venteEnVigueur === 120, JSON.stringify({ oui, a3 }));
+    verifier('Le Oui ne touche NI le CUMP NI le stock (la valorisation du stock suit le CUMP, comme avant)', a3.cump === a2.cump && a3.stock === a2.stock && a3.stockGros === a2.stockGros, JSON.stringify({ a2: [a2.cump, a2.stock], a3: [a3.cump, a3.stock] }));
+
+    /* --- 4. Un prix reçu qui égale désormais le prix en vigueur ne propose rien ; un prix reçu quand une proposition attend déjà pour C ne la double pas ------------------------------------ */
+    await poserSessionServeur(roleImp('stock', 'STOCK139'));
+    await commande('CMD139C', [{ code: pa, quantite: 1, prix: 120 }]);
+    const r3 = await receptionner('CMD139C', 'BL139C');
+    const a4 = await etat(pa);
+    verifier('Réception de A à 120, désormais le prix en vigueur : aucune proposition (deux versions seulement), pas un mot de proposition au toast', a4.versions.length === 2 && !/proposition/.test(r3.toast), JSON.stringify({ toast: r3.toast.slice(0, 200), v: a4.versions }));
+
+    /* --- 5. Jamais bloquante : une date de réception ANTÉRIEURE (autorité de la DAF et de la Direction) refuse la proposition mais la réception a lieu ------------------------------------ */
+    await commande('CMD139D', [{ code: pd, quantite: 2, prix: 75 }]);
+    const d0 = await etat(pd);
+    const r4 = await receptionner('CMD139D', 'BL139D', D.hier);
+    const d1 = await etat(pd);
+    verifier('Réception datée d’HIER par le gestionnaire de stock : la réception a LIEU (stock + 2, CUMP recalculé, mouvement) ; la proposition n’est pas ouverte (une seule version) et le toast NOMME le refus (DATE_PASSEE_RESERVEE)',
+      d1.stock === d0.stock + 2 && d1.cump === Math.round((2 * 70 + 2 * 75) / 4) && d1.versions.length === 1 && /Proposition de prix non ouverte/.test(r4.toast) && /DATE_PASSEE_RESERVEE/.test(r4.toast) && /Réception enregistrée/.test(r4.toast), JSON.stringify({ toast: r4.toast.slice(0, 300), d1 }));
+
+    /* --- 6. Annuler la réception (bouton « Annuler » du message) retire la proposition qu'elle avait ouverte : une version ne s'efface pas, elle est « retirée » ----------------------------- */
+    const pe = 'ZZ139E' + sfx;
+    await T.produit({ code: pe, designation: 'Médicament E sonde 139', prixAchat: 40, stockDetail: 1 });
+    await commande('CMD139E', [{ code: pe, quantite: 1, prix: 45 }]);
+    const e0 = await etat(pe);
+    await receptionner('CMD139E', 'BL139E');
+    const e1 = await etat(pe);
+    /* L'annulation d'une création archive la fiche au serveur par un geste nommé ; on laisse d'abord la file d'écriture se vider (annuler dans la seconde qui suit une saisie de plusieurs fiches croise l'envoi du magasin : écart d'avant ce lot, dit à ECARTS). */
+    await attendreEcritures();
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#toast-host button')].find((x) => /Annuler/i.test(x.textContent)); if (b) b.click(); });
+    await pause(900); await attendreEcritures();
+    const e2 = await etat(pe);
+    verifier('ANNULATION de la réception : le stock et le CUMP reviennent comme avant, et la proposition ouverte par elle est RETIRÉE (statut « retire », lisible à l’historique)',
+      e1.versions.length === 2 && e1.versions[1].statut === 'propose' && e2.stock === e0.stock && e2.cump === e0.cump && e2.versions.length === 2 && e2.versions[1].statut === 'retire', JSON.stringify({ e0: [e0.stock, e0.cump], e1: e1.versions, e2: [e2.stock, e2.cump, e2.versions] }));
+    await B.restituer();
+    const e139 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e139.length === 0, e139.join(' | '));
+  });
+
+  /* ==========================================================================
+   * VAGUE 140, LOT T5b : L'ÉCRITURE EN LOT DE L'IMPORT (Direction, 12/11/2026). Un lot s'écrit en UN envoi par collection touchée (`magasin.php`) au lieu d'une requête par fiche (`crud.php`),
+   * SANS rien perdre : mêmes fiches au serveur, journal RG-12 (une ligne par fiche et celle du lot), événements pour les autres postes, projection relationnelle à zéro écart, tout ou rien,
+   * annulation ; et le geste d'écran ordinaire (un `insert` seul) est inchangé. Les mesures de l'AVANT (554 requêtes pour 184 articles, 1 002 pour 1 000 lignes) sont au journal du banc.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 140 : T5b l’import d’un lot s’écrit en UN envoi par collection : mêmes fiches au serveur, même journal, événements aux autres postes, parité relationnelle à zéro écart, tout ou rien, annulation ; le geste d’écran ordinaire (un insert) est inchangé ; mesures avant et après');
+    erreursJS = [];
+    const B = outilsB1, sfx = String(Date.now()).slice(-5);
+    await poserSessionServeur(roleImp('da', 'DAF140'));
+    await ouvrir('imp-fournisseurs.html');
+    await B.photographier();
+    const racine = await page.evaluate(() => document.documentElement.getAttribute('data-root') || '');
+    /* La mesure attend la file JUSQU'AU BOUT (jusqu'à cinq minutes) : l'attente ordinaire des bancs plafonne à 30 s et ferait passer un envoi inachevé pour un envoi complet. */
+    const mesurer = async (f) => {
+      let octets = 0, requetes = 0, crud = 0, magasin = 0;
+      const ecoute = (r) => { if (r.method() === 'POST' && /api\/(magasin|crud)\.php/.test(r.url())) { requetes++; octets += (r.postData() || '').length; if (/crud\.php/.test(r.url())) crud++; else magasin++; } };
+      page.on('request', ecoute);
+      const t0 = Date.now();
+      const retour = await f();
+      await page.evaluate(() => { if (window.SIGH.store.pousserMaintenant) window.SIGH.store.pousserMaintenant(); });
+      await page.waitForFunction(() => window.SIGH.store.fileEnAttente() === 0, { timeout: 300000, polling: 100 });
+      const ms = Date.now() - t0;
+      page.off('request', ecoute);
+      return { retour, ms, octets, requetes, crud, magasin };
+    };
+    /* `modifierApres` : le code d'une fiche du lot (fournisseurs) que l'on MODIFIE aussitôt, dans le même tour, pour éprouver l'ordre entre l'écart du lot et un geste nommé posé juste après. */
+    const appliquerMesure = (jeu, lignes, nom, modifierApres) => mesurer(() => page.evaluate((j, l, n, m) => { const I = window.SIGH.importer; const a = I.analyserLignes(I.jeu(j), l, n);
+      const r = I.appliquer(j, a);
+      if (m && r.ok) { const S = window.SIGH.store, f = S.collection('fournisseurs').all().filter((x) => x.code === m)[0]; if (f) S.collection('fournisseurs').update(f.id, { ville: 'Natitingou' }); }
+      return { ok: !!r.ok, code: r.code || null, motif: r.motif || null, ecrits: r.ecrits || 0, id: r.lot ? r.lot.id : null, ref: r.lot ? r.lot.reference : null }; }, jeu, lignes, nom, modifierApres || null));
+    const serveur = (cols) => page.evaluate(async (c, r) => { const j = window.SIGH.store.jetonServeur(); const x = await fetch(r + 'api/magasin.php?collections=' + c, { headers: { 'X-Sigh-Jeton': j } }); return await x.json(); }, cols, racine);
+    const ENTF = ['Code fournisseur', 'Raison sociale', 'Type', 'Ville', 'Adresse', 'Téléphone', 'IFU', 'Délai de livraison (jours)', 'Banque', 'N° de compte'];
+    const lignesF = (prefixe, n) => { const l = [ENTF]; for (let i = 1; i <= n; i++) l.push([prefixe + '-' + String(i).padStart(4, '0'), 'Fournisseur ' + prefixe + ' ' + i, 'Grossiste', 'Parakou', '', '', '', 5, '', '']); return l; };
+
+    /* --- 1. Le geste d'écran ORDINAIRE est inchangé : un `insert` seul part en UNE requête nommée (crud.php), journalisé, jamais en lot ---------------------------------------------------- */
+    const unique = await mesurer(() => page.evaluate((c) => { const r = window.SIGH.store.collection('fournisseurs').insert({ code: c, nom: 'Fournisseur ordinaire ' + c, statut: 'actif', sondeT5b: true }); return { id: r.record.id }; }, 'ZZ140O' + sfx));
+    const audOrd = await serveur('audit');
+    verifier('Le geste d’écran ordinaire est INCHANGÉ : un insert seul part en UNE requête crud.php (aucune autre écriture que celle de sa fiche), et son entrée de journal est au serveur',
+      unique.crud === 1 && unique.magasin <= 1 && (audOrd.audit || []).some((x) => x.action === 'Création' && x.reference === unique.retour.id), JSON.stringify({ crud: unique.crud, magasin: unique.magasin, requetes: unique.requetes, ms: unique.ms }));
+
+    /* --- 2. Un lot de 30 fournisseurs : mêmes fiches au serveur, même journal, événements, parité ------------------------------------------------------------------------------------------ */
+    const jeton2 = await page.evaluate(async (r) => { const x = await fetch(r + 'api/session.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: 'da', nom: 'AUTRE POSTE 140', nomComplet: 'AUTRE POSTE 140', identifiant: 'autre.140', fonction: 'da', secteur: 'DIR' }) }); return (await x.json()).jeton; }, racine);
+    const evts = (depuis) => page.evaluate(async (r, j, d) => { const x = await fetch(r + 'api/evenements.php?depuis=' + d, { headers: { 'X-Sigh-Jeton': j } }); return await x.json(); }, racine, jeton2, depuis);
+    const seq0 = (await evts(0)).seq;
+    const parite = () => page.evaluate(async (r) => { const S = window.SIGH.store; for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((x) => setTimeout(x, 250));
+      const x = await fetch(r + 'api/parite.php', { headers: { 'X-Sigh-Jeton': S.jetonServeur() } }); const o = await x.json(); return { statut: x.status, ecarts: (o.parite && o.parite.ecarts) || ['réponse sans parité'], collections: o.parite && o.parite.collections }; }, racine);
+    const par0 = await parite();
+    const code30 = 'ZZ140L' + sfx;
+    const m30 = await appliquerMesure('fournisseurs', lignesF(code30, 30), 'lot30.csv');
+    const lotId = m30.retour.id, lotRef = m30.retour.ref;
+    const local = await page.evaluate((p) => { const S = window.SIGH.store; return S.collection('fournisseurs').all().filter((f) => (f.code || '').indexOf(p) === 0).map((f) => ({ id: f.id, code: f.code, nom: f.nom, delai: f.delai, lotImport: f.lotImport, validePar: f.validePar, statut: f.statut })); }, code30);
+    const srv = await serveur('fournisseurs,audit,lotsImportation');
+    const distant = (srv.fournisseurs || []).filter((f) => (f.code || '').indexOf(code30) === 0).map((f) => ({ id: f.id, code: f.code, nom: f.nom, delai: f.delai, lotImport: f.lotImport, validePar: f.validePar, statut: f.statut }));
+    const tri = (l) => l.slice().sort((a, b) => (a.id < b.id ? -1 : 1));
+    verifier('MÊMES FICHES : les trente fournisseurs sont au serveur tels qu’ils sont en mémoire (identifiants, champs, signature du lot), et la fiche du lot y est',
+      m30.retour.ok && local.length === 30 && JSON.stringify(tri(local)) === JSON.stringify(tri(distant)) && (srv.lotsImportation || []).some((l) => l.reference === lotRef && l.etat === 'applique' && l.ecrits.length === 30), JSON.stringify({ ok: m30.retour, local: local.length, distant: distant.length }));
+    /* L'ORDRE avec les gestes nommés : une fiche écrite PAR LE LOT n'est au serveur que par l'écart du lot ; un geste posé aussitôt après (la modifier) ne doit pas arriver avant lui. */
+    const codeApres = code30 + '-0001';
+    const apresLot = await page.evaluate(async (c) => { const S = window.SIGH.store; const f = S.collection('fournisseurs').all().filter((x) => x.code === c)[0];
+      S.collection('fournisseurs').update(f.id, { ville: 'Natitingou' }); return { id: f.id, enAttente: S.fileEnAttente() }; }, codeApres);
+    await attendreEcritures();
+    const srvApres = await serveur('fournisseurs');
+    const fApres = (srvApres.fournisseurs || []).filter((x) => x.id === apresLot.id)[0];
+    verifier('L’ORDRE avec les gestes nommés : la modification posée aussitôt après le lot, sur une fiche que seul l’écart du lot porte au serveur, y arrive APRÈS elle (ville modifiée, aucune panne « Aucune fiche… »)',
+      fApres && fApres.ville === 'Natitingou' && !erreursJS.some((x) => /Aucune fiche|Écriture refusée/.test(x)), JSON.stringify({ apresLot, ville: fApres && fApres.ville, erreurs: erreursJS.slice(0, 2) }));
+    const aud = srv.audit || [];
+    const crees = local.filter((f) => aud.some((x) => x.action === 'Création' && x.reference === f.id)).length;
+    verifier('MÊME JOURNAL (RG-12) : une entrée « Création » par fiche écrite (30 sur 30) et l’entrée « Import » du lot, au journal du serveur',
+      crees === 30 && aud.some((x) => x.action === 'Import' && x.reference === lotRef), JSON.stringify({ crees, import: aud.filter((x) => x.action === 'Import').length }));
+    verifier('UN ENVOI par collection : le lot de trente fiches part en au plus TROIS requêtes (une seule pour le magasin entier ici), aucune par fiche', m30.requetes <= 3 && m30.crud === 0, JSON.stringify({ requetes: m30.requetes, crud: m30.crud, magasin: m30.magasin, octets: m30.octets, ms: m30.ms }));
+    const ev = await evts(seq0);
+    const colsEv = Array.from(new Set((ev.evenements || []).map((e) => e.collection)));
+    verifier('LES AUTRES POSTES SONT PRÉVENUS : un autre poste voit un événement pour chaque collection touchée (fournisseurs, journal d’audit, lots d’importation), sans le contenu des fiches',
+      ['fournisseurs', 'audit', 'lotsImportation'].every((c) => colsEv.indexOf(c) >= 0), JSON.stringify(colsEv));
+    const par1 = await parite();
+    /* Un écart d'AVANT le lot (le premier passage par les achats resème les commandes sous les mêmes identifiants : constaté, hors lot, dit à ECARTS) ne se met pas sur le compte du lot :
+       la parité est mesurée AVANT et APRÈS, et le lot n'y ajoute aucun écart ; sur un magasin sain elle est à zéro. */
+    verifier('PARITÉ RELATIONNELLE : le lot n’ajoute AUCUN écart entre le magasin et les tables (la projection suit le delta dans la même transaction) ; à zéro sur un magasin sain (' + par1.ecarts.length + ' écart(s) hérité(s) avant le lot)',
+      par1.statut === 200 && JSON.stringify(par1.ecarts) === JSON.stringify(par0.ecarts) && (par0.ecarts.length > 0 || par1.ecarts.length === 0), JSON.stringify({ avant: par0.ecarts.slice(0, 3), apres: par1.ecarts.slice(0, 3) }));
+
+    /* --- 3. L'annulation du lot : par archivage, en un envoi, au serveur aussi ---------------------------------------------------------------------------------------------------------- */
+    const ann = await mesurer(() => B.annuler(lotId, 'sonde 140'));
+    const srv2 = await serveur('fournisseurs,lotsImportation');
+    const archives = (srv2.fournisseurs || []).filter((f) => (f.code || '').indexOf(code30) === 0 && f.statut === 'archive').length;
+    verifier('ANNULATION : les trente fiches sont ARCHIVÉES (RG-14) au serveur, le lot passe « annulé », en au plus trois requêtes (aucune par fiche)',
+      ann.retour.ok === true && archives === 30 && (srv2.lotsImportation || []).some((l) => l.reference === lotRef && l.etat === 'annule') && ann.requetes <= 3 && ann.crud === 0, JSON.stringify({ ann: ann.retour, archives, requetes: ann.requetes, crud: ann.crud }));
+
+    /* --- 4. Tout ou rien : une écriture refusée par le moteur défait le lot AVANT tout envoi, le serveur ne voit rien -------------------------------------------------------------------- */
+    const codeRien = 'ZZ140R' + sfx;
+    const comp = () => page.evaluate(() => { const S = window.SIGH.store; return { produits: S.collection('produits').all().length, tarifs: S.collection('tarifs').all().length, versions: S.collection('versionsTarif').all().length }; });
+    const c0 = await comp();
+    const rien = await mesurer(() => page.evaluate((c) => { const I = window.SIGH.importer; const ENT = ['Code article', 'Désignation', 'Catégorie', 'Unité', 'Prix d’achat', 'Prix de vente', 'Seuil d’alerte', 'Emplacement', 'Code fournisseur'];
+      const a = I.analyserLignes(I.jeu('produits-referentiel'), [ENT, [c, 'Article valide sonde 140', 'Médicaments', 'Boîte', 100, '', 5, '', ''], ['MG01', 'Article au code d’une prestation', 'Médicaments', 'Boîte', 100, '', 5, '', '']], 'rien140.csv');
+      const r = I.appliquer('produits-referentiel', a); return { ok: !!r.ok, code: r.code || null }; }, codeRien));
+    const c1 = await comp(), srv3 = await serveur('produits,tarifs,versionsTarif');
+    verifier('TOUT OU RIEN : une création refusée par le moteur (code d’une prestation) retire TOUT ce que le lot venait de poser, en mémoire ET au serveur : ni la fiche valide, ni sa prestation de prix, ni sa version ; le refus est consigné',
+      rien.retour.ok === false && rien.retour.code === 'ECRITURE_REFUSEE' && JSON.stringify(c0) === JSON.stringify(c1)
+      && !(srv3.produits || []).some((x) => x.code === codeRien) && !(srv3.tarifs || []).some((x) => x.code === codeRien) && !(srv3.versionsTarif || []).some((x) => x.code === codeRien) && rien.crud === 0, JSON.stringify({ rien: rien.retour, c0, c1, crud: rien.crud, requetes: rien.requetes }));
+
+    /* --- 5. MESURES : 184 articles du référentiel (552 fiches) et 1 000 lignes d'un jeu simple (fournisseurs) ----------------------------------------------------------------------------- */
+    const gros = [B.ENT.produits];
+    for (let i = 1; i <= 184; i++) gros.push(['ZZ140M' + sfx + '-' + String(i).padStart(3, '0'), 'Article de mesure ' + i, i % 3 ? 'Consommables médicaux' : 'Médicaments', 'Boîte', 100 + i, '', 10, '', '']);
+    const m184 = await appliquerMesure('produits-referentiel', gros, 'mesure184.csv');
+    console.log('\n  MESURE T5b 184 articles (' + m184.retour.ecrits + ' fiches) : ' + JSON.stringify({ ms: m184.ms, requetes: m184.requetes, crud: m184.crud, octets: m184.octets }));
+    const m1000 = await appliquerMesure('fournisseurs', lignesF('ZZ140K' + sfx, 1000), 'mesure1000.csv', 'ZZ140K' + sfx + '-0001');
+    const srv1000 = await serveur('fournisseurs');
+    const f1000 = (srv1000.fournisseurs || []).filter((x) => x.code === 'ZZ140K' + sfx + '-0001')[0];
+    console.log('\n  MESURE T5b 1000 fournisseurs (' + m1000.retour.ecrits + ' fiches) : ' + JSON.stringify({ ms: m1000.ms, requetes: m1000.requetes, crud: m1000.crud, octets: m1000.octets }));
+    verifier('MESURE : 184 articles (552 fiches) s’écrivent en au plus TROIS requêtes, aucune par fiche (avant : 554 requêtes, 920 796 octets, 20,2 s)', m184.retour.ok && m184.retour.ecrits === 552 && m184.requetes <= 3 && m184.crud === 0, JSON.stringify({ requetes: m184.requetes, crud: m184.crud, octets: m184.octets, ms: m184.ms }));
+    verifier('MESURE : 1 000 lignes d’un jeu simple s’écrivent en au plus TROIS requêtes (la modification d’une fiche posée aussitôt après compte pour une de plus, nommée), aucune par fiche d’import (avant : 1 002 requêtes, 1 254 101 octets, 43,4 s)', m1000.retour.ok && m1000.retour.ecrits === 1000 && m1000.requetes <= 4 && m1000.crud <= 1, JSON.stringify({ requetes: m1000.requetes, crud: m1000.crud, octets: m1000.octets, ms: m1000.ms }));
+    verifier('L’ORDRE, à la taille d’un gros lot : la fiche modifiée aussitôt après les 1 000 lignes y arrive APRÈS le lot (ville modifiée au serveur, aucune panne « Aucune fiche… »)', f1000 && f1000.ville === 'Natitingou' && !erreursJS.some((x) => /Aucune fiche|Écriture refusée/.test(x)), JSON.stringify({ ville: f1000 && f1000.ville, erreurs: erreursJS.slice(0, 2) }));
+    const par2 = await parite();
+    verifier('PARITÉ RELATIONNELLE après les deux gros lots (552 puis 1 000 fiches) : aucun écart de plus qu’avant', par2.statut === 200 && JSON.stringify(par2.ecarts) === JSON.stringify(par0.ecarts), JSON.stringify(par2.ecarts.slice(0, 3)));
+    await B.restituer();
+    const e140 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e140.length === 0, e140.join(' | '));
   });
 
   await browser.close();
