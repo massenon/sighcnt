@@ -698,6 +698,7 @@
     "imp-patients",
     "imp-personnel",
     "imp-actes",
+    "imp-tarifs-produits",
     "imp-analyses",
     "imp-fournisseurs",
     "imp-assureurs",
@@ -5842,6 +5843,25 @@
     "direction",
     "da",
     "stock"
+   ]
+  },
+  {
+   "id": "imp-tarifs-produits",
+   "label": "Importation des prix d’achat",
+   "icone": "banknote",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "jeuImport": "tarifs-produits",
+   "roles": [
+    "admin",
+    "da",
+    "stock",
+    "comptable"
    ]
   },
   {

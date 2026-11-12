@@ -1903,6 +1903,10 @@
         "href": "pages/imp-actes.php"
        },
        {
+        "label": "Importation des prix d’achat",
+        "href": "pages/imp-tarifs-produits.php"
+       },
+       {
         "label": "Importation du modèle des analyses",
         "href": "pages/imp-analyses.php"
        },
@@ -2398,7 +2402,7 @@
     ]
    }
   ],
-  "pied": "330 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
+  "pied": "331 écrans métier recensés au manifeste, plus 23 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },
@@ -2410,7 +2414,7 @@
    },
    {
     "label": "Écrans disponibles",
-    "valeur": "330"
+    "valeur": "331"
    },
    {
     "label": "Règles de gestion appliquées",
@@ -2731,7 +2735,7 @@
    "Modules fonctionnels",
    "33",
    "Écrans disponibles",
-   "330",
+   "331",
    "Règles de gestion appliquées",
    "14",
    "Profils d’utilisateur",

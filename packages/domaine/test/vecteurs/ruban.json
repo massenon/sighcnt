@@ -452,6 +452,7 @@
         "imp-patients",
         "imp-personnel",
         "imp-actes",
+        "imp-tarifs-produits",
         "imp-analyses",
         "imp-fournisseurs",
         "imp-assureurs",
@@ -648,6 +649,7 @@
         "imp-patients",
         "imp-personnel",
         "imp-actes",
+        "imp-tarifs-produits",
         "imp-analyses",
         "imp-fournisseurs",
         "imp-assureurs",
@@ -1915,6 +1917,7 @@
         "imp-patients",
         "imp-personnel",
         "imp-actes",
+        "imp-tarifs-produits",
         "imp-analyses",
         "imp-fournisseurs",
         "imp-assureurs",
@@ -2096,6 +2099,7 @@
         "imp-patients",
         "imp-personnel",
         "imp-actes",
+        "imp-tarifs-produits",
         "imp-analyses",
         "imp-fournisseurs",
         "imp-assureurs",
@@ -2910,6 +2914,7 @@
        "ecrans": [
         "imp-accueil",
         "imp-actes",
+        "imp-tarifs-produits",
         "imp-fournisseurs",
         "imp-produits-referentiel",
         "imp-emplacements",
@@ -2946,6 +2951,7 @@
        "ecrans": [
         "imp-accueil",
         "imp-actes",
+        "imp-tarifs-produits",
         "imp-fournisseurs",
         "imp-produits-referentiel",
         "imp-emplacements",
@@ -3344,6 +3350,7 @@
        "hub": "hub-imp",
        "ecrans": [
         "imp-accueil",
+        "imp-tarifs-produits",
         "imp-fournisseurs",
         "imp-assureurs",
         "imp-souscripteurs",
@@ -3406,6 +3413,7 @@
        "hub": "hub-imp",
        "ecrans": [
         "imp-accueil",
+        "imp-tarifs-produits",
         "imp-fournisseurs",
         "imp-assureurs",
         "imp-souscripteurs",

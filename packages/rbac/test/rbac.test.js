@@ -79,10 +79,12 @@ test('accueil et agent administratif : le répertoire des patients seulement ; l
   assert.deepEqual(di('laborantin', 'tarifs'), [0, 0, 0]);
 });
 const jeuxStock = ['produits-referentiel', 'emplacements', 'stock-detail-initial', 'transfert-lignes', 'inventaire-comptage'];
+/* Lot T5 : les prix d'achat des produits : le gestionnaire de stock, la DAF et l'administrateur importent ; le comptable lit ; la Direction n'a pas la lecture de ce jeu (consigne du lot, comme pour les jeux du stock). */
+const jeuxPrixAchat = ['tarifs-produits'];
 test('la Direction arrête les prix (voir, importer, annuler sur tarifs) et lit le reste sans l\'importer, SAUF les cinq jeux du stock (lot IMP-B1 : aucun autre profil que le gestionnaire, la DAF et l\'administrateur) ; la DAF et l\'administrateur détiennent tout', () => {
   assert.deepEqual(di('direction', 'tarifs'), [1, 1, 1]);
-  for (const j of jeuxImp.filter((x) => x !== 'tarifs' && jeuxStock.indexOf(x) < 0)) assert.deepEqual(di('direction', j), [1, 0, 0], j);
-  for (const j of jeuxStock) assert.deepEqual(di('direction', j), [0, 0, 0], j);
+  for (const j of jeuxImp.filter((x) => x !== 'tarifs' && jeuxStock.indexOf(x) < 0 && jeuxPrixAchat.indexOf(x) < 0)) assert.deepEqual(di('direction', j), [1, 0, 0], j);
+  for (const j of jeuxStock.concat(jeuxPrixAchat)) assert.deepEqual(di('direction', j), [0, 0, 0], j);
   for (const r of ['da', 'admin']) for (const j of jeuxImp) assert.deepEqual(di(r, j), [1, 1, 1], r + ' ' + j);
 });
 test('aucun import pour le médecin, le caissier, l\'infirmier, l\'ambulancier, l\'échographiste ni les rôles archivés', () => {
@@ -106,6 +108,13 @@ test('IMP-B1 (I6, I8, I13) : le gestionnaire de stock importe les cinq jeux du s
   const hote = (id) => imp.jeux.find((j) => j.id === id).hotes;
   assert.deepEqual(hote('produits-referentiel'), ['m6-produits']); assert.deepEqual(hote('emplacements'), ['m6-etiquetage']); assert.deepEqual(hote('stock-detail-initial'), ['m6-stock-detail']);
   assert.deepEqual(hote('transfert-lignes'), ['m6-transferts']); assert.deepEqual(hote('inventaire-comptage'), ['m6-inventaire']);
+});
+test('T5 : le jeu des prix d\'achat (tarifs-produits) : le gestionnaire de stock, la DAF et l\'administrateur ont VIA, le comptable lit seulement, personne d\'autre ; hôtes : Tarifs et prix et Référentiel produits', () => {
+  for (const r of ['stock', 'da', 'admin']) assert.deepEqual(di(r, 'tarifs-produits'), [1, 1, 1], r);
+  assert.deepEqual(di('comptable', 'tarifs-produits'), [1, 0, 0]);
+  for (const r of rbac.roles.map((x) => x.id).filter((x) => ['stock', 'da', 'admin', 'comptable'].indexOf(x) < 0)) assert.deepEqual(di(r, 'tarifs-produits'), [0, 0, 0], r);
+  assert.deepEqual(imp.jeux.find((j) => j.id === 'tarifs-produits').hotes, ['cfg-tarifs', 'm6-produits']);
+  assert.equal(imp.jeux.find((j) => j.id === 'tarifs-produits').doublon, 'versionner');
 });
 test('une page de jeu `imp-*` est visible de qui détient le droit VOIR du jeu (une seule vérité), et la page d\'accueil de qui détient un jeu au moins', () => {
   for (const r of rbac.roles) {

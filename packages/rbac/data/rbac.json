@@ -4137,6 +4137,11 @@
     1,
     1
    ],
+   "imp-tarifs-produits": [
+    1,
+    1,
+    1
+   ],
    "imp-analyses": [
     1,
     1,
@@ -7628,6 +7633,11 @@
     1,
     1
    ],
+   "imp-tarifs-produits": [
+    1,
+    1,
+    1
+   ],
    "imp-analyses": [
     1,
     1,
@@ -9497,6 +9507,11 @@
     1,
     1
    ],
+   "imp-tarifs-produits": [
+    1,
+    1,
+    1
+   ],
    "imp-fournisseurs": [
     1,
     1,
@@ -10357,6 +10372,11 @@
     1
    ],
    "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-tarifs-produits": [
     1,
     1,
     1
@@ -13077,6 +13097,22 @@
     "doublon": "versionner"
    },
    {
+    "id": "tarifs-produits",
+    "libelle": "Importation des prix d’achat",
+    "ecran": "imp-tarifs-produits",
+    "module": "M6",
+    "hotes": [
+     "cfg-tarifs",
+     "m6-produits"
+    ],
+    "sensibilite": "courante",
+    "collections": [
+     "tarifs",
+     "versionsTarif"
+    ],
+    "doublon": "versionner"
+   },
+   {
     "id": "analyses-modele",
     "libelle": "Importation du modèle des analyses",
     "ecran": "imp-analyses",
@@ -13253,6 +13289,11 @@
      1,
      1
     ],
+    "tarifs-produits": [
+     1,
+     1,
+     1
+    ],
     "analyses-modele": [
      1,
      1,
@@ -13330,6 +13371,11 @@
      1,
      1
     ],
+    "tarifs-produits": [
+     0,
+     0,
+     0
+    ],
     "analyses-modele": [
      1,
      0,
@@ -13403,6 +13449,11 @@
      0
     ],
     "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "tarifs-produits": [
      0,
      0,
      0
@@ -13484,6 +13535,11 @@
      1,
      1
     ],
+    "tarifs-produits": [
+     1,
+     1,
+     1
+    ],
     "analyses-modele": [
      1,
      1,
@@ -13557,6 +13613,11 @@
      0
     ],
     "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "tarifs-produits": [
      0,
      0,
      0
@@ -13638,6 +13699,11 @@
      0,
      0
     ],
+    "tarifs-produits": [
+     0,
+     0,
+     0
+    ],
     "analyses-modele": [
      0,
      0,
@@ -13711,6 +13777,11 @@
      0
     ],
     "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "tarifs-produits": [
      0,
      0,
      0
@@ -13792,6 +13863,11 @@
      0,
      0
     ],
+    "tarifs-produits": [
+     0,
+     0,
+     0
+    ],
     "analyses-modele": [
      1,
      1,
@@ -13865,6 +13941,11 @@
      0
     ],
     "tarifs": [
+     1,
+     1,
+     1
+    ],
+    "tarifs-produits": [
      1,
      1,
      1
@@ -13946,6 +14027,11 @@
      0,
      0
     ],
+    "tarifs-produits": [
+     0,
+     0,
+     0
+    ],
     "analyses-modele": [
      0,
      0,
@@ -14023,6 +14109,11 @@
      0,
      0
     ],
+    "tarifs-produits": [
+     1,
+     0,
+     0
+    ],
     "analyses-modele": [
      0,
      0,
@@ -14096,6 +14187,11 @@
      0
     ],
     "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "tarifs-produits": [
      0,
      0,
      0
@@ -14177,6 +14273,11 @@
      0,
      0
     ],
+    "tarifs-produits": [
+     0,
+     0,
+     0
+    ],
     "analyses-modele": [
      0,
      0,
@@ -14250,6 +14351,11 @@
      1
     ],
     "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "tarifs-produits": [
      0,
      0,
      0
@@ -14331,6 +14437,11 @@
      0,
      0
     ],
+    "tarifs-produits": [
+     0,
+     0,
+     0
+    ],
     "analyses-modele": [
      0,
      0,
@@ -14404,6 +14515,11 @@
      0
     ],
     "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "tarifs-produits": [
      0,
      0,
      0
@@ -14485,6 +14601,11 @@
      0,
      0
     ],
+    "tarifs-produits": [
+     0,
+     0,
+     0
+    ],
     "analyses-modele": [
      0,
      0,
@@ -14558,6 +14679,11 @@
      0
     ],
     "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "tarifs-produits": [
      0,
      0,
      0
@@ -14639,6 +14765,11 @@
      0,
      0
     ],
+    "tarifs-produits": [
+     0,
+     0,
+     0
+    ],
     "analyses-modele": [
      0,
      0,
@@ -14712,6 +14843,11 @@
      0
     ],
     "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "tarifs-produits": [
      0,
      0,
      0
@@ -14793,6 +14929,11 @@
      0,
      0
     ],
+    "tarifs-produits": [
+     0,
+     0,
+     0
+    ],
     "analyses-modele": [
      0,
      0,
@@ -14866,6 +15007,11 @@
      0
     ],
     "tarifs": [
+     0,
+     0,
+     0
+    ],
+    "tarifs-produits": [
      0,
      0,
      0
