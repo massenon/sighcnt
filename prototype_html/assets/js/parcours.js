@@ -3072,6 +3072,20 @@
     return { autorise: false, motif: 'Périmètre non défini' };
   }
 
+  /**
+   * peutVoirDocument(type, session) : décide, et dit pourquoi, si le profil lit (ou dépose) un document numérisé du dossier patient de ce TYPE (lot DOCS-1, D3).
+   * Deux zones (D.DOCUMENTS.TYPES_PATIENT) : la zone 1 (pièce d'identité, carte d'assurance) est administrative et se lit de tout profil qui ouvre l'écran ; la zone 2, médicale, ne se lit
+   * que des profils de `D.DOCUMENTS.ROLES_ZONE_2` (RG-13). La MÊME règle est écrite par `build/gen-regles-fichiers.js` pour le serveur : une règle en deux exemplaires diverge au premier correctif.
+   * Retourne { autorise, zone, motif }.
+   */
+  function peutVoirDocument(type, session) {
+    var s = session || S.session() || {};
+    var zone = D.DOCUMENTS.zoneDe(type);
+    if (zone < 2) return { autorise: true, zone: zone, motif: 'Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran' };
+    if (D.DOCUMENTS.ROLES_ZONE_2.indexOf(s.role) >= 0) return { autorise: true, zone: zone, motif: 'Profil clinique : les pièces médicales (zone 2) lui sont ouvertes' };
+    return { autorise: false, zone: zone, motif: 'Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)' };
+  }
+
   function peutPrescrire(nature, session) {
     var cap = capacites(session);
     return (cap.prescrire || []).indexOf(nature) >= 0;
@@ -3727,7 +3741,7 @@
     estPersonnel: estPersonnel, agentDe: agentDe,
     prendreEnChargePersonnel: prendreEnChargePersonnel,
     capacites: capacites, secteurCourant: secteurCourant, valoriserSortie: valoriserSortie,
-    peutVoirResultat: peutVoirResultat, peutPrescrire: peutPrescrire,
+    peutVoirResultat: peutVoirResultat, peutVoirDocument: peutVoirDocument, peutPrescrire: peutPrescrire,
     peutExecuterSoin: peutExecuterSoin, filtrerResultats: filtrerResultats,
     repartir: repartir, garantiesDe: garantiesDe, souscripteurDe: souscripteurDe,
     poserGarantie: poserGarantie, factureSousGrille: factureSousGrille, garantiesEnVigueur: garantiesEnVigueur, versionsGarantie: versionsGarantie, cleSerieGarantie: cleSerieGarantie,

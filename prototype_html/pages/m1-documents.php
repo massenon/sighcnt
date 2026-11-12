@@ -35,6 +35,7 @@
   <script src="../assets/js/data-seed.js"></script>
   <script src="../assets/js/modules/_kit.js"></script>
   <script src="../assets/js/modules/m1-patients.js"></script>
+  <script src="../assets/js/modules/fichiers.js"></script>
   <script>SIGH.mount("m1-documents");</script>
 </body>
 </html>

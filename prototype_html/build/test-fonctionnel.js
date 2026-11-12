@@ -24059,6 +24059,126 @@ async function viderMessages(page) {
     const e155 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
     verifier('Aucune erreur JavaScript', e155.length === 0, e155.join(' | '));
   });
+  await etape(async () => {
+    scenario('Vague 156 : DOCS-1 D3 dossier patient : même geste de dépôt, deux zones (l’accueil dépose une pièce d’identité et ne lit pas un compte rendu, le serveur le tient aussi), doublon par dossier, vue unifiée en renvois jamais copiés, journal de consultation');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), sfx = O.sfx();
+    const idPng = await Fx.image('png', 1561), crPng = await Fx.image('png', 1562), crPdf = await Fx.pdfTexte(1563), dupPng = await Fx.image('png', 1564);
+    const shaId = O.sha(idPng), shaCr = O.sha(crPdf);
+    const patients = await page.evaluate(() => { const S = window.SIGH.store; const ord = S.collection('ordonnances').active().filter((o) => o.patientId); const p = S.collection('patients').get(ord[0].patientId);
+      const autre = S.collection('patients').active().filter((x) => x.id !== p.id)[0];
+      return { p: { id: p.id, code: p.code, nom: p.nom + ' ' + p.prenom, ordos: ord.filter((o) => o.patientId === p.id).length }, autre: { id: autre.id, code: autre.code } }; });
+    const rempl = (champ, v) => page.evaluate((c, x) => { const e = document.querySelector('[role=dialog] #f_' + c); e.value = x; e.dispatchEvent(new Event('change', { bubbles: true })); }, champ, v);
+    const typeOptions = () => page.evaluate(() => { const e = document.querySelector('[role=dialog] #f_type'); return e && e.tagName === 'SELECT' ? [...e.options].map((o) => o.value).filter(Boolean) : (e && e.options ? e.options.map((o) => o.value) : null); });
+    const ajouter = async (ptId, type, fichier, date) => {
+      await cliquer('Ajouter un document', 'button'); await pause(700);
+      await rempl('patientId', ptId); await rempl('type', type); if (date) await rempl('date', date);
+      const h = await page.$('[role=dialog] [data-zone-fichier]'); await h.uploadFile(fichier); await pause(500);
+      await cliquer('Rattacher au dossier', '[role=dialog] button'); await pause(1800);
+    };
+
+    /* ACCUEIL : zone 1 seulement */
+    await poserSessionServeur(roleImp('reception', 'ACCUEIL156'));
+    await ouvrir('m1-documents.html');
+    const vue = await page.evaluate(() => { const S = window.SIGH.store, D = window.SIGH.data;
+      const toutes = S.collection('documentsPatient').active(), z1 = toutes.filter((r) => D.DOCUMENTS.zoneDe(r.type) < 2).length;
+      const lignes = [...document.querySelectorAll('#page-content tbody tr')];
+      const types = lignes.map((tr) => tr.children[3] ? tr.children[3].textContent.trim() : '');
+      return { total: toutes.length, z1: z1, note: /pièces administratives/.test(document.querySelector('#page-content').textContent), types: types }; });
+    verifier('L’accueil ne voit que les pièces ADMINISTRATIVES (identité, carte d’assurance) : la restriction s’annonce (« pièces administratives », nombre de pièces médicales non affichées) et aucune ligne médicale n’est au tableau',
+      vue.note && vue.total > vue.z1 && vue.types.length > 0 && vue.types.every((t) => t === 'Pièce d’identité' || t === 'Carte d’assurance'), JSON.stringify({ total: vue.total, z1: vue.z1, types: vue.types.slice(0, 5) }));
+    await cliquer('Ajouter un document', 'button'); await pause(700);
+    const opts = await typeOptions();
+    verifier('Le formulaire de dépôt de l’accueil ne propose que les deux types de zone 1', opts && opts.length === 2 && opts.indexOf('Pièce d’identité') >= 0 && opts.indexOf('Carte d’assurance') >= 0, JSON.stringify(opts));
+    await O.fermerTout(); await pause(300);
+    await ajouter(patients.p.id, 'Pièce d’identité', idPng, '2026-10-12');
+    const doc1 = await page.evaluate((s) => { const d = window.SIGH.store.collection('documentsPatient').all().find((x) => x.fichier && x.fichier.sha256 === s); return d ? { ref: d.reference, nom: d.fichier.nomNormalise, code: d.code, id: d.id, depose: d.depose } : null; }, shaId);
+    const nref = doc1 && /(\d+)$/.exec(doc1.ref)[1];
+    verifier('L’accueil dépose une pièce d’identité à la création du document : la fiche porte le fichier, le nom normalisé est AAAA-MM-JJ_CODE_type_NNN.png (code sans barre, type sans accent ni espace, rang de la référence)',
+      doc1 && doc1.nom === '2026-10-12_' + patients.p.code.replace(/[^A-Za-z0-9]+/g, '-') + '_piece-d-identite_' + String(parseInt(nref, 10)).padStart(3, '0') + '.png' && fs.existsSync(O.disque(shaId, 'png')), JSON.stringify(doc1));
+    const tente = await page.evaluate(async (donnees) => { const u8 = new Uint8Array(atob(donnees).split('').map((c) => c.charCodeAt(0))); const f = new File([u8], 'cr.pdf', { type: 'application/pdf' });
+      const S = window.SIGH.store, F = window.SIGH.fichiers; const fiche = { reference: 'GED-X', code: 'CNT/0/26', type: 'Compte rendu médical', date: '2026-10-12', patientId: 'x' };
+      const r = await F.deposerSurFiche(f, { famille: 'patient', col: S.collection('documentsPatient'), fiche: fiche, type: 'Compte rendu médical', journal: { module: 'M1', entite: 'document' } });
+      return { ok: r.ok, code: r.code, motif: r.motif }; }, fs.readFileSync(crPdf).toString('base64'));
+    verifier('Même en contournant le formulaire, le dépôt d’un compte rendu par l’accueil est refusé PAR LE SERVEUR : ZONE_REFUSEE, RG-13 cité, rien rangé', tente.ok === false && tente.code === 'ZONE_REFUSEE' && /RG-13/.test(tente.motif) && !fs.existsSync(O.disque(shaCr, 'pdf')), JSON.stringify(tente));
+
+    /* MÉDECIN : tout, et le dépôt d'un compte rendu */
+    await poserSessionServeur(roleImp('medecin', 'MEDECIN156'));
+    await ouvrir('m1-documents.html');
+    const mv = await page.evaluate(() => ({ note: /pièces administratives/.test(document.querySelector('#page-content').textContent), nb: window.SIGH.store.collection('documentsPatient').active().length }));
+    verifier('Le médecin ne voit pas la restriction de zone : toutes les pièces sont au tableau', mv.note === false);
+    await ajouter(patients.p.id, 'Compte rendu médical', crPdf, '2026-10-13');
+    const doc2 = await page.evaluate((s) => { const d = window.SIGH.store.collection('documentsPatient').all().find((x) => x.fichier && x.fichier.sha256 === s); return d ? { ref: d.reference, id: d.id, nom: d.fichier.nomNormalise, indexe: d.fichier.texteIndexe } : null; }, shaCr);
+    verifier('Le médecin dépose un compte rendu PDF : fiche, fichier rangé, texte indexé, nom normalisé « compte-rendu-medical »', doc2 && /_compte-rendu-medical_\d{3,}\.pdf$/.test(doc2.nom) && doc2.indexe === true && fs.existsSync(O.disque(shaCr, 'pdf')), JSON.stringify(doc2));
+    await attendreEcritures();
+
+    /* DOUBLON : même dossier refusé en nommant la pièce, autre dossier avertissement nommé */
+    await ajouter(patients.p.id, 'Compte rendu médical', crPdf, '2026-10-14');
+    const dm = await page.evaluate(() => { const d = [...document.querySelectorAll('[role=dialog]')].pop(); return d ? { refus: [...d.querySelectorAll('strong')].map((x) => x.textContent), texte: d.textContent } : null; });
+    verifier('Même fichier sur le même dossier patient : refusé, DOUBLON_MEME_FICHE, la pièce existante nommée (référence)', dm && dm.refus.indexOf('DOUBLON_MEME_FICHE') >= 0 && dm.texte.indexOf(doc2.ref) >= 0, JSON.stringify(dm && dm.refus));
+    await O.fermerTout(); await pause(300);
+    await cliquer('Ajouter un document', 'button'); await pause(700);
+    await rempl('patientId', patients.autre.id); await rempl('type', 'Compte rendu médical');
+    const hh = await page.$('[role=dialog] [data-zone-fichier]'); await hh.uploadFile(crPdf); await pause(500);
+    await cliquer('Rattacher au dossier', '[role=dialog] button'); await pause(1000);
+    const avert = await page.evaluate(() => [...document.querySelectorAll('[role=dialog]')].some((d) => /déjà rattaché ailleurs/.test(d.textContent) && d.textContent.indexOf('GED-') >= 0));
+    verifier('Même fichier sur le dossier d’un AUTRE patient : avertissement nommé avant tout rattachement', avert === true);
+    await O.fermerTout(); await pause(300);
+
+    /* JOURNAL DE CONSULTATION */
+    await O.fermerTout(); await pause(300);
+    await O.chercher(doc2.ref);
+    await page.evaluate((r) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(r) >= 0); const b = [...tr.querySelectorAll('button')].find((x) => x.getAttribute('title') === 'Prévisualiser'); b.click(); }, doc2.ref);
+    verifier('Prévisualiser une pièce du dossier ouvre le lecteur natif sur le fichier relu', await O.attendre(() => !!document.querySelector('[data-apercu-pdf]')));
+    const jc = await page.evaluate((p) => { const a = window.SIGH.store.raw().audit.filter((x) => x.action === 'Consultation d’un document numérisé' && x.module === 'M1'); return a.length ? { entite: a[0].entite, patientId: a[0].patientId, ref: a[0].reference, cible: a[0].cible, util: a[0].utilisateur, ok: a[0].patientId === p } : null; }, patients.p.id);
+    verifier('La consultation est journalisée (RG-12) : module M1, entité document, dossier du patient, référence, empreinte abrégée, auteur', jc && jc.ok && jc.entite === 'document' && jc.ref === doc2.ref && jc.cible.indexOf(shaCr.slice(0, 8)) >= 0 && !!jc.util, JSON.stringify(jc));
+    await O.fermerTout(); await pause(300);
+
+    /* DÉPÔT SUR UNE FICHE EXISTANTE (le même geste) : un document référencé sans fichier reçoit son scan */
+    const ref0 = await page.evaluate(() => { const d = window.SIGH.store.collection('documentsPatient').active().find((x) => !x.fichier && x.patientId); return { ref: d.reference, id: d.id, code: d.code, type: d.type, date: String(d.date).slice(0, 10) }; });
+    await O.ouvrirLigne(ref0.ref);
+    verifier('Le tiroir d’un document « référencé » porte la zone d’import : le même geste de dépôt, sur la fiche existante', await O.attendre(() => !!document.querySelector('[data-zone-import="patient"]')));
+    await O.deposerUI(dupPng);
+    await O.attendre(() => !!document.querySelector('[data-piece-nom]'));
+    const c0 = await O.carte();
+    verifier('Le scan déposé sur la fiche existante porte le nom normalisé de CETTE fiche (date, dossier, type, rang)', c0 && c0.nom.indexOf(ref0.date + '_') === 0 && c0.nom.indexOf(ref0.code.replace(/[^A-Za-z0-9]+/g, '-')) > 0 && /\.png$/.test(c0.nom), JSON.stringify(c0 && c0.nom));
+    await O.fermerTout(); await pause(300);
+
+    /* ACCUEIL : ne lit pas le compte rendu du médecin, même par l'appel direct (le serveur refuse) */
+    await poserSessionServeur(roleImp('reception', 'ACCUEIL156b'));
+    await ouvrir('m1-documents.html');
+    const lit = await page.evaluate(async (id) => { const S = window.SIGH.store, F = window.SIGH.fichiers; const d = S.collection('documentsPatient').get(id);
+      const peut = window.SIGH.parcours.peutVoirDocument(d.type);
+      const r = await F.lire(d.fichier, 'patient', 'apercu', 'x.pdf'); return { peut: peut.autorise, zone: peut.zone, ok: r.ok, code: r.code }; }, doc2.id);
+    verifier('L’accueil ne lit pas un compte rendu : la règle du client dit non (zone 2) ET la lecture directe est refusée par le serveur (ZONE_REFUSEE), aucun octet servi', lit.peut === false && lit.zone === 2 && lit.ok === false && lit.code === 'ZONE_REFUSEE', JSON.stringify(lit));
+    const vp = await page.evaluate(() => { const t = [...document.querySelectorAll('#page-content [role=tab], #page-content .tab')].find((b) => /Pièces produites/.test(b.textContent)); if (t) t.click(); return !!t; });
+    await pause(600);
+    const txtP = await page.evaluate(() => { const v = document.querySelector('[data-vue-produites]'); return v ? { texte: v.textContent, combo: !!v.querySelector('.combo, [role=combobox], button[aria-haspopup]'), tables: v.querySelectorAll('table').length } : null; });
+    verifier('Sur la vue unifiée, l’accueil lit que les pièces produites sont réservées aux profils cliniques (RG-13) : ni choix de dossier ni tableau', vp && txtP && /profil ne les lit pas/.test(txtP.texte) && txtP.tables === 0, JSON.stringify(txtP));
+    verifier('Aucun scan de zone 2 dans le tableau de l’accueil, même après les dépôts du médecin (le compte rendu déposé n’y est pas)', await page.evaluate((ref) => ![...document.querySelectorAll('#page-content tbody tr')].some((tr) => tr.textContent.indexOf(ref) >= 0), doc2.ref));
+
+    /* LA VUE UNIFIÉE : des renvois, jamais des copies */
+    await poserSessionServeur(roleImp('medecin', 'MEDECIN156b'));
+    await ouvrir('m1-documents.html');
+    const avant = await page.evaluate(() => { const r = window.SIGH.store.raw(); return { noms: Object.keys(r).filter((k) => Array.isArray(r[k])).sort(), docs: r.documentsPatient.length, audit: r.audit.length }; });
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content [role=tab], #page-content .tab')].find((b) => /Pièces produites/.test(b.textContent)).click(); });
+    await pause(600);
+    await page.evaluate((id) => { const v = document.querySelector('[data-vue-produites]'); const e = v.querySelector('[id], button'); void e; }, patients.p.id);
+    const choisi = await page.evaluate((id) => { const v = document.querySelector('[data-vue-produites]'); const nodes = [...v.querySelectorAll('*')].filter((n) => Object.getOwnPropertyDescriptor(n, 'value') && typeof n.options !== 'undefined' || (n.hasAttribute && n.hasAttribute('data-combo')));
+      const c = nodes[0] || null; if (!c) return false; c.value = id; c.dispatchEvent(new Event('change', { bubbles: true })); return true; }, patients.p.id);
+    await pause(900);
+    const unif = await page.evaluate(() => { const v = document.querySelector('[data-vue-produites]'); const lignes = [...v.querySelectorAll('tbody tr')].map((tr) => [...tr.children].map((c) => c.textContent.trim()));
+      return { texte: v.textContent, lignes: lignes, ouvrir: [...v.querySelectorAll('button')].filter((b) => /Ouvrir/.test(b.textContent)).length }; });
+    const apres = await page.evaluate(() => { const r = window.SIGH.store.raw(); return { noms: Object.keys(r).filter((k) => Array.isArray(r[k])).sort(), docs: r.documentsPatient.length }; });
+    verifier('La vue unifiée du dossier choisi liste ses scans (dont le compte rendu déposé) ET ses ordonnances produites, chacune avec un renvoi « Ouvrir » vers son écran',
+      choisi && unif.texte.indexOf(doc2.ref) >= 0 && unif.lignes.filter((l) => l[0] === 'Ordonnance').length === patients.p.ordos && patients.p.ordos > 0 && unif.ouvrir > 0, JSON.stringify({ choisi: choisi, ordos: patients.p.ordos, lignes: unif.lignes.slice(0, 3), ouvrir: unif.ouvrir }));
+    verifier('Les pièces produites ne sont JAMAIS copiées : aucune collection nouvelle au magasin, le nombre de documents numérisés est inchangé par la consultation de la vue', JSON.stringify(avant.noms) === JSON.stringify(apres.noms) && avant.docs === apres.docs && apres.noms.indexOf('piecesProduites') < 0, JSON.stringify({ avant: avant.noms.length, apres: apres.noms.length }));
+    const jv = await page.evaluate(() => window.SIGH.store.raw().audit.filter((x) => x.action === 'Consultation du dossier documentaire du patient').length);
+    verifier('Ouvrir la vue unifiée d’un dossier est journalisé (RG-12)', jv >= 1, String(jv));
+
+    const e156 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e156.length === 0, e156.join(' | '));
+  });
   /* DOCS-1 FIN */
 
   await browser.close();
