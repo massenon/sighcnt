@@ -208,7 +208,7 @@
         sousMin: { code: 'RG03_STOCK_NEGATIF', motif: 'quantité négative : le stock ne peut jamais être négatif (RG-03)', geste: 'Saisissez la quantité réellement comptée, zéro ou plus. Une sortie se déclare au mouvement de stock, pas à l’import.' } }),
       col('lot', 'N° de lot', 'texte', { longueurMax: 40, exemple: 'L2026-014', aide: 'Obligatoire pour les médicaments et réactifs (rangement FEFO, RG-05).' }),
       col('peremption', 'Date de péremption', 'date', { exemple: '2028-06-30' }),
-      col('prixRevient', 'Prix de revient unitaire', 'entier', { min: 0, exemple: 350, aide: 'En francs CFA. Vide : l’article est créé « à valoriser » et le dit (aucun prix n’est inventé).' }),
+      col('prixRevient', 'Prix de revient unitaire', 'entier', { min: 0, exemple: 350, aide: 'En francs CFA. Vide : l’article est créé « à valoriser » (le stock existe déjà, RG-03) et ne se facture pas : il figure à la liste « Produits à valoriser » jusqu’à la décision de son premier prix.' }),
       col('seuil', 'Seuil d’alerte', 'entier', { min: 0, exemple: 20, aide: 'Vide : proposé à 20 % de la quantité (minimum 5), marqué « à valider ».' }),
       col('emplacement', 'Emplacement', 'texte', { longueurMax: 60, exemple: 'Rayon A, Casier 3' }),
       col('fournisseur', 'Code fournisseur', 'texte', { longueurMax: 24, exemple: 'SOBAPS', aide: 'Code d’un fournisseur connu. Un code inconnu est signalé, jamais refusé.' }),
@@ -245,7 +245,8 @@
       }
       if (v.prixRevient == null) {
         pb.push({ colonne: 'Prix de revient unitaire', valeur: '', code: 'A_VALORISER', niveau: 'avertissement',
-          motif: 'prix de revient absent : l’article sera créé « à valoriser »', geste: 'Valorisez-le ensuite à l’écran Reprise SAGE, avec sa source.' });
+          motif: 'prix de revient absent : l’article « ' + v.code + ' » sera créé « à valoriser » (stock repris, jamais facturable)',
+          geste: 'Proposez son premier prix d’achat (« Tarifs et prix », liste « Produits à valoriser », ou « Changer le prix d’achat » au Référentiel produits) : la Directrice Administrative décide, Oui ou Non.' });
       }
       if (v.fournisseur && !ctx.fournisseurs[C.norm(v.fournisseur)]) {
         pb.push({ colonne: 'Code fournisseur', valeur: v.fournisseur, code: 'FOURNISSEUR_INCONNU', niveau: 'avertissement',
@@ -1045,7 +1046,7 @@
     description: 'Articles de la clinique : code, désignation, catégorie, unité, prix d’achat, seuil d’alerte. Jamais de quantité ni de lot.',
     source: 'Fiche du référentiel produits (écran « Référentiel produits ») et inventaire initial (reprise) « Grand Stock » (docs/).',
     limite: 'Ce jeu crée des fiches NEUVES, sans stock : les quantités et les lots se reprennent par « Importation Grand Stock », et un fichier qui porte une colonne de quantité ou de lot est refusé. '
-      + 'Il ne modifie jamais un article déjà tenu (RG-02 : le prix de vente d’un médicament est son prix d’achat). Un article sans seuil est signalé « sans seuil », jamais compté à zéro.',
+      + 'Il ne modifie jamais un article déjà tenu (RG-02 : le prix de vente d’un médicament est son prix d’achat). Un article sans seuil est signalé « sans seuil », jamais compté à zéro. Un article sans prix d’achat est REFUSÉ (lot T5b) : le seul cas où un article naît sans prix est la reprise d’un stock qui existe déjà (« Importation Grand Stock »).',
     cibles: ['produits'], fichierModele: 'modele-import-referentiel-produits',
     colonnesRetirees: [
       { label: 'Quantité', motif: 'un référentiel ne porte jamais de quantité : le stock se reprend par le jeu « Importation Grand Stock »' },
@@ -1059,7 +1060,7 @@
       oblig('designation', 'Désignation', 'texte', { longueurMax: 160, exemple: 'PARACETAMOL 500 MG CP B/100' }),
       oblig('categorie', 'Catégorie', 'liste', { liste: function () { return D.CATEGORIES_PRODUIT.map(function (c) { return { valeur: c.id, label: c.label }; }); }, exemple: 'Médicaments' }),
       oblig('unite', 'Unité', 'texte', { longueurMax: 30, exemple: 'Boîte' }),
-      col('prixAchat', 'Prix d’achat', 'entier', { min: 0, exemple: 350, aide: 'Francs CFA. Vide : l’article est créé « à valoriser » et le dit (aucun prix n’est inventé). Un médicament se facture à ce prix, sans marge (RG-02).' }),
+      col('prixAchat', 'Prix d’achat', 'tarif', { exemple: 350, aide: 'Obligatoire (la ligne sans prix est refusée en nommant l’article) : montant entier strictement positif en FCFA. Une ligne sans prix d’achat (cellule vide, tiret ou zéro) est REFUSÉE en nommant l’article : un tiret n’est pas un zéro. Si le stock de l’article existe déjà, passez par « Importation Grand Stock », qui le crée « à valoriser ». Un médicament se facture à ce prix, sans marge (RG-02).' }),
       col('prixVente', 'Prix de vente', 'entier', { min: 0, aide: 'Hors médicament seulement. Vide : égal au prix d’achat. Un médicament n’a pas de prix de vente libre : renseigner un prix différent du prix d’achat est refusé.' }),
       col('seuil', 'Seuil d’alerte', 'entier', { min: 0, exemple: 20, aide: 'Vide : l’article est signalé « sans seuil », jamais compté à zéro (aucune alerte n’est possible sans seuil).' }),
       col('emplacement', 'Emplacement', 'texte', { longueurMax: 60, exemple: 'Rayon A, Casier 3' }),
@@ -1080,13 +1081,18 @@
     gesteExiste: 'Retirez la ligne : un import ne modifie jamais un article tenu. Corrigez-le à l’écran Référentiel produits.',
     regles: function (v, ctx) {
       var pb = [], med = v.categorie === 'medicament';
-      if (med && v.prixVente != null && v.prixVente !== v.prixAchat) {
+      /* Le prix d'achat arrive en `tarif` (montant, NC, tiret) : seul un montant strictement positif est un prix. Chaque refus NOMME l'article (code stable, motif, geste). */
+      var pa = v.prixAchat, achat = pa && pa.etat === 'montant' ? pa.montant : null;
+      if (pa && pa.etat === 'nc') {
+        pb.push({ colonne: 'Prix d’achat', valeur: 'NC', code: 'NC_INTERDIT', niveau: 'refus', motif: 'NC n’existe pas pour un prix d’achat (article « ' + v.code + ' »)', geste: 'Saisissez le prix d’achat en francs.' });
+      } else if (!pa || pa.etat === 'manquant' || achat === 0) {
+        var r = global.SIGH.parcours.refusPrixAchatAbsent(v.code, v.designation);
+        pb.push({ colonne: 'Prix d’achat', valeur: !pa ? '' : pa.etat === 'manquant' ? '-' : '0', code: r.code, niveau: 'refus', motif: r.motif, geste: r.geste });
+      }
+      if (med && v.prixVente != null && achat != null && v.prixVente !== achat) {
         pb.push({ colonne: 'Prix de vente', valeur: v.prixVente, code: 'RG02_PRIX_DE_VENTE', niveau: 'refus',
           motif: 'RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente ne peut pas être libre',
           geste: 'Laissez la colonne « Prix de vente » vide : le prix de vente d’un médicament est son prix d’achat. Une exception se valide par la Direction, à l’écran.' });
-      }
-      if (v.prixAchat == null) {
-        pb.push({ colonne: 'Prix d’achat', valeur: '', code: 'A_VALORISER', niveau: 'avertissement', motif: 'prix d’achat absent : l’article sera créé « à valoriser »', geste: 'Renseignez le prix d’achat à l’écran Référentiel produits, avec sa source.' });
       }
       if (v.seuil == null) {
         pb.push({ colonne: 'Seuil d’alerte', valeur: '', code: 'SANS_SEUIL', niveau: 'avertissement', motif: 'seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera', geste: 'Fixez le seuil à l’écran Référentiel produits.' });
@@ -1101,14 +1107,15 @@
     },
     ecrire: function (lignes, ecrireFiche, lot, ctx, declarer) {
       lignes.forEach(function (l) {
-        var v = l.v, med = v.categorie === 'medicament', prix = v.prixAchat == null ? 0 : v.prixAchat;
-        var fiche = ecrireFiche('produits', Object.assign({
+        /* Le prix d'achat est ICI toujours un montant strictement positif : l'analyse a refusé le fichier sinon (jamais un article créé à zéro par ce jeu). */
+        var v = l.v, med = v.categorie === 'medicament', prix = v.prixAchat.montant;
+        var fiche = ecrireFiche('produits', {
           code: v.code, designation: v.designation, unite: v.unite, categorie: v.categorie,
           prixAchat: prix, prixVente: (med || v.prixVente == null) ? prix : v.prixVente, cump: prix,
           seuilAlerte: v.seuil == null ? null : v.seuil,
           stockGros: 0, stockDetail: 0, stock: 0, emplacement: v.emplacement || '', fournisseur: v.fournisseur || '',
-        }, v.prixAchat == null ? { valorisationProvisoire: true, sourceValorisation: 'Prix d’achat absent du fichier d’import ' + lot.reference + ' : à valoriser' } : {}));
-        /* La version 1 du prix d'achat naît avec la fiche, par la MÊME voie que tout changement de prix ; un prix absent la pose `manquant` (l'article ne se facture pas). */
+        });
+        /* La version 1 du prix d'achat naît avec la fiche, par la MÊME voie que tout changement de prix. */
         poserPrixInitial(fiche, 'produits-referentiel', lot, declarer);
       });
     },

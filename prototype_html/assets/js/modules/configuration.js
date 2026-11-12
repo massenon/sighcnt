@@ -1304,18 +1304,23 @@
               /* LECTURE SEULE (option B, Direction, 11/11/2026) : le prix d'achat est VERSIONNÉ par le même moteur que les prestations (famille PRODUIT) mais il se change au
                  « Référentiel produits » (« Changer le prix d'achat ») ou par l'import des prix d'achat ; ici, aucune commande d'écriture. Le prix de vente est DÉRIVÉ (RG-02). */
               var jour = jourPrix(), hh = D.TARIFS.lire();
+              /* LA LISTE « À VALORISER » (lot T5b) : les articles repris avec leur stock mais sans prix d'achat, lus à la source UNIQUE (`PR.produitsAValoriser`). */
+              var aValoriser = {}, nbAValoriser = 0;
+              PRC().produitsAValoriser().forEach(function (x) { aValoriser[x.code] = x; nbAValoriser++; });
               var lignes = S.collection('produits').active().map(function (pr) {
                 var p = hh && hh.parProduit[pr.code], s = p ? D.TARIFS.instantane(hh, p, jour) : null;
                 var vs = p ? (hh.vers[p.code] || []) : [];
                 var attente = vs.filter(function (v) { return v.statut === 'propose'; }).length;
                 var avenir = vs.filter(function (v) { return v.statut === 'valide' && v.dateEffet && v.dateEffet > jour; }).length;
                 var etat = !s ? 'Sans prix en vigueur' : s.na == null ? 'Prix d’achat à valider' : attente ? 'Proposition en attente' : avenir ? 'Changement à venir' : 'En vigueur';
-                return { id: pr.id, produit: pr, code: pr.code, designation: pr.designation, categorie: pr.categorie, achat: s ? s.na : null,
+                return { id: pr.id, produit: pr, code: pr.code, designation: pr.designation, categorie: pr.categorie, achat: s ? s.na : null, aValoriser: !!aValoriser[pr.code],
                   vente: s && s.na != null ? D.TARIFS.prixVenteProduit(pr.categorie, s.vrs) : null, depuis: s ? s.dateEffet : null, version: s ? s.version : null, etat: etat };
               });
               var ETATS_PRODUIT = ['En vigueur', 'Proposition en attente', 'Changement à venir', 'Prix d’achat à valider', 'Sans prix en vigueur'];
               var peutOuvrir = global.SIGH.nav.can(S.session().role, global.SIGH.nav.get('m6-produits'));
               return el('div.space-y-3', { 'data-onglet-produits': '' }, [
+                nbAValoriser ? el('div', { 'data-produits-a-valoriser': String(nbAValoriser) }, [K.note('<strong>' + C.num(nbAValoriser) + ' produit(s) à valoriser</strong> : prix d’achat non renseigné. Ces articles ont été repris avec leur stock (RG-03) '
+                  + 'et ne se facturent pas tant qu’un premier prix n’est pas décidé. Le filtre « À valoriser » les liste ; le premier prix se propose au Référentiel produits (« Changer le prix d’achat »), puis la Directrice Administrative décide (Oui ou Non).', { tone: 'warning', icon: 'triangle-alert' })]) : null,
                 K.note('<strong>Lecture seule.</strong> RG-02 : un médicament se facture au <strong>prix d’achat, sans marge</strong> ; son prix de vente est <strong>dérivé</strong> du prix d’achat en vigueur. '
                   + 'Le prix d’achat se versionne par date d’effet comme un prix de prestation (une pièce déjà émise garde le prix de sa date) et se change <strong>au Référentiel produits</strong> '
                   + '(« Changer le prix d’achat », décision Oui ou Non) ou par l’importation des prix d’achat. Le bouton « Historique de prix » de chaque ligne ouvre toutes ses versions.', { tone: 'info', icon: 'pill' }),
@@ -1327,6 +1332,7 @@
                   filters: [
                     { name: 'categorie', label: 'Catégorie', options: D.CATEGORIES_PRODUIT.map(function (c) { return { value: c.id, label: c.label }; }) },
                     { name: 'etat', label: 'État du prix', options: ETATS_PRODUIT },
+                    { name: 'valoriser', label: 'À valoriser', options: [{ value: 'oui', label: 'À valoriser (prix d’achat non renseigné)' }], match: function (r) { return r.aValoriser; } },
                   ],
                   columns: [
                     { key: 'code', label: 'Code', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold.text-navy-800', { text: r.code }); } },

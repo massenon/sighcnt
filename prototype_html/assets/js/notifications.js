@@ -345,6 +345,28 @@
       },
     },
     {
+      code: 'produits_a_valoriser', categorie: 'metier', domaine: 'À valider',
+      /* Les articles repris avec leur stock mais SANS prix d'achat (reprise du Grand Stock : le stock existe, RG-03) : ils ne se facturent pas tant qu'un premier prix n'est pas
+         décidé. UNE alerte par article ; au-delà du seuil de regroupement, une ligne portant le compte. La source LIT la liste unique (`PR.produitsAValoriser`) et disparaît quand elle
+         est vide ; le message ne porte AUCUNE donnée sensible (le code et la désignation de l'article, jamais une quantité ni une valeur). Les destinataires sont ceux de la
+         famille de décision des prix (`PR.ROLES_VALIDATION_TARIFS`), jamais une liste écrite ici ; le RBAC de l'écran visé filtre ensuite (`pourMoi`). */
+      lire: function () {
+        var PR = global.SIGH.parcours;
+        if (!PR || !PR.produitsAValoriser) return [];
+        return PR.produitsAValoriser().map(function (x) {
+          return {
+            cle: 'valoriser:' + x.code,
+            priorite: 'important',
+            titre: 'Produit à valoriser : ' + x.code,
+            detail: x.designation + ' : ' + x.raison + '. L’article ne se facture pas. '
+              + (x.enAttente ? 'Un premier prix est proposé : il attend le Oui ou le Non.' : 'Proposez son premier prix d’achat (Oui ou Non de la Directrice Administrative).'),
+            lien: 'cfg-tarifs', onglet: 'produits',
+            postes: PR.ROLES_VALIDATION_TARIFS ? PR.ROLES_VALIDATION_TARIFS.slice() : null,
+          };
+        });
+      },
+    },
+    {
       code: 'a_valider_ecritures', categorie: 'metier', domaine: 'À valider',
       /* Une PIÈCE comptable en brouillon (deux lignes de même numéro) compte
          pour une : le comptable valide des pièces, pas des lignes (RG-10). */
@@ -510,6 +532,7 @@
     creance_agee: ['créance(s) assureur en souffrance',
       'Relancer chaque compagnie : ces créances pèsent sur le besoin en fonds de roulement.'],
     a_valider_besoins: ['bon(s) de besoins à valider', 'Arbitrer chaque bon : validé, complément demandé ou rejeté avec son motif.'],
+    produits_a_valoriser: ['produit(s) à valoriser', 'Proposer le premier prix d’achat de chaque article (« Tarifs et prix », onglet Produits) : la Directrice Administrative décide.'],
     prix_a_valider: ['lot(s) de changements de prix à valider', 'Décider chaque changement (Oui ou Non) à « Tarifs et prix », onglet Alertes.'],
     a_valider_ecritures: ['pièce(s) comptable(s) en brouillon', 'Contrôler l’équilibre (RG-10) puis valider.'],
     poste: ['notification(s) de poste', 'À consulter dans les écrans concernés.'],

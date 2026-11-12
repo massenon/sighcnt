@@ -158,6 +158,32 @@
       motif: 'Le prix d’achat de « ' + (produit.designation || produit.code) + ' » n’est pas renseigné (à valider) : l’article ne se facture jamais à zéro.' };
     return { absent: false, achat: achat, vente: TA.prixVenteProduit(produit.categorie, v), version: v.version, dateEffet: v.dateEffet || null, code: produit.code };
   }
+  /** LES PRODUITS « À VALORISER » (lot T5b, décision de la Direction du 12/11/2026) : les articles actifs dont AUCUN prix d'achat n'est en vigueur aujourd'hui (version 1 `manquant`,
+      créée par la reprise du Grand Stock dont le stock existe déjà : RG-03). Source UNIQUE de la liste (« Tarifs et prix », onglet Produits ; « Référentiel produits »), de l'indicateur
+      et de l'alerte de la Directrice Administrative : trois lectures d'une même population ne se recomptent pas à part. Une fiche posée sans identité de prix n'en fait pas partie
+      (elle reçoit la sienne à l'ouverture d'un écran) ; une proposition en attente ne la sort PAS de la liste : seul le Oui, qui met un prix en vigueur, le fait. */
+  function produitsAValoriser(date) {
+    var TA = D.TARIFS, h = TA && TA.lire();
+    if (!h) return [];
+    var jour = TA.jourDe(date || C.aujourdhui()), out = [];
+    S.collection('produits').all().forEach(function (pr) {
+      if (pr.statut === 'archive') return;
+      var p = h.parProduit[pr.code];
+      if (!p) return;
+      var v = TA.enVigueur(h, p.code, jour);
+      if (v && TA.prixAchatDe(v) != null) return;
+      var attente = (h.vers[p.code] || []).filter(function (x) { return x.statut === 'propose'; }).length;
+      out.push({ produit: pr, code: pr.code, designation: pr.designation, raison: 'prix d’achat non renseigné', enAttente: attente > 0 });
+    });
+    return out;
+  }
+  /** Le refus d'un article créé sans prix d'achat (lot T5b) : code, motif, geste. Un tiret n'est pas un zéro, et zéro n'est pas un prix : l'article ne se crée pas. Le seul cas où un article
+      naît sans prix est la reprise du Grand Stock (le stock existe déjà), qui le marque « à valoriser » et le rend non facturable. */
+  function refusPrixAchatAbsent(code, designation) {
+    return refusTarif('PRIX_ACHAT_ABSENT',
+      'le prix d’achat de l’article « ' + [code, designation].filter(Boolean).join(' : ') + ' » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas',
+      'Renseignez son prix d’achat en FCFA. Si le stock existe déjà, passez par « Importation Grand Stock » : l’article y est créé « à valoriser », sans prix facturable, jusqu’à la décision d’un premier prix.');
+  }
   /** Le prix d'achat (RG-02) d'un produit à la date de la pièce : un nombre, ou `null` quand il est absent. */
   function prixAchatALaDate(produit, date) { var r = prixProduitALaDate(produit, date); return r.absent ? null : r.achat; }
   /** Le prix de vente DÉRIVÉ d'un produit à la date de la pièce : un nombre, ou `null`. */
@@ -3596,6 +3622,7 @@
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
     proposerTarif: proposerTarif, evaluerProposition: evaluerProposition, peutProposerParImport: peutProposerParImport, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
     tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate,
+    produitsAValoriser: produitsAValoriser, refusPrixAchatAbsent: refusPrixAchatAbsent,
     prixProduitALaDate: prixProduitALaDate, prixAchatALaDate: prixAchatALaDate, prixVenteALaDate: prixVenteALaDate, produitDeCode: produitDeCode, peutProposerProduit: peutProposerProduit, creerPrixProduit: creerPrixProduit,
     couvertureALaDate: couvertureALaDate, historiqueCouverture: historiqueCouverture,
     changerCouverture: changerCouverture,

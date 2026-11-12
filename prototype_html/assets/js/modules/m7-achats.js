@@ -439,7 +439,7 @@
           { name: 'categorie', label: 'Catégorie', type: 'select', required: true,
             options: D.CATEGORIES_PRODUIT.map(function (c) { return { value: c.id, label: c.label }; }) },
           { name: 'unite', label: 'Unité', required: true, placeholder: 'Boîte, Ramette, Flacon…' },
-          { name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'money', required: true, min: 0 },
+          { name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'money', required: true, min: 1, help: 'Obligatoire, strictement positif : un article sans prix d’achat ne se crée pas.' },
           { name: 'seuilAlerte', label: 'Seuil d’alerte', type: 'number', min: 0, required: true },
         ], { categorie: 'fourniture', unite: 'Unité', seuilAlerte: 10 });
         var ma = U.modal({
@@ -466,6 +466,12 @@
                     { type: 'error' });
                   return;
                 }
+                /* LE PRIX D'ACHAT EST OBLIGATOIRE À LA CRÉATION (lot T5b) : refusé en nommant l'article, rien n'est écrit. */
+                if (!(Number(v.prixAchat) > 0)) {
+                  var rp0 = global.SIGH.parcours.refusPrixAchatAbsent(null, v.designation);
+                  U.toast('Article refusé.', { type: 'error', detail: rp0.code + ' : ' + rp0.motif + '. ' + rp0.geste });
+                  return;
+                }
                 v.code = codeArticleSuivant();
                 v.prixAchat = Number(v.prixAchat) || 0;
                 v.seuilAlerte = Number(v.seuilAlerte) || 0;
@@ -481,7 +487,7 @@
                 /* La version 1 du prix d'achat naît avec la fiche, par la MÊME voie que tout changement de prix (PRD-TARIFS, lot T5). */
                 var rp = global.SIGH.parcours.creerPrixProduit(p, { source: 'Nouvel article saisi à l’écran des achats' });
                 ma.close();
-                U.toast('Article ' + p.code + ' créé au référentiel.', { type: rp.ok ? 'success' : 'warning', detail: rp.ok ? (p.prixAchat > 0 ? null : 'à valoriser : sans prix d’achat, l’article ne se facture pas') : 'le prix d’achat n’a pas pu être versionné : ' + rp.motif });
+                U.toast('Article ' + p.code + ' créé au référentiel.', { type: rp.ok ? 'success' : 'warning', detail: rp.ok ? null : 'le prix d’achat n’a pas pu être versionné : ' + rp.motif });
                 if (apres) apres(p);
               },
             }),

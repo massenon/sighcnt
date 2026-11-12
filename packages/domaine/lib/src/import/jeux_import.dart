@@ -67,13 +67,13 @@ final JeuImport jeuGrandStock = JeuImport(
   module: 'M6',
   statut: 'supporte',
   roles: const ['stock', 'da', 'admin', 'direction'],
-  description: 'Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire SAGE « Grand Stock »).',
-  source: 'Inventaire SAGE 100 « Grand Stock » du 15/07/2026 (docs/) : 184 articles, 12 080 unités, 3 976 459 FCFA.',
+  description: 'Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire initial « Grand Stock », reprise).',
+  source: 'Inventaire initial (reprise) « Grand Stock » du 15/07/2026 (docs/) : 184 articles, 12 080 unités, 3 976 459 FCFA.',
   cibles: const ['produits', 'lots', 'mouvements'],
   fichierModele: 'modele-import-grand-stock',
   gesteExiste: 'Retirez la ligne du fichier, ou archivez d’abord l’article existant (RG-14). Un import ne modifie jamais un article déjà tenu.',
   colonnes: [
-    _oblig('code', 'Code article', 'texte', longueurMax: 24, exemple: 'PARA500', aide: 'Référence SAGE de l’article. Une ligne par lot : le même code peut figurer plusieurs fois avec des lots différents.'),
+    _oblig('code', 'Code article', 'texte', longueurMax: 24, exemple: 'PARA500', aide: 'Référence de l’article. Une ligne par lot : le même code peut figurer plusieurs fois avec des lots différents.'),
     _oblig('designation', 'Désignation', 'texte', longueurMax: 160, exemple: 'PARACETAMOL 500 MG CP B/100'),
     _oblig('categorie', 'Catégorie', 'liste', liste: (_) => [for (final c in importCategoriesProduit) ValeurListe(c[0], c[1])], exemple: 'Médicaments'),
     _col('unite', 'Unité', 'texte', longueurMax: 30, exemple: 'Boîte', aide: 'Vide : « Unité ».'),
@@ -85,7 +85,7 @@ final JeuImport jeuGrandStock = JeuImport(
             'Saisissez la quantité réellement comptée, zéro ou plus. Une sortie se déclare au mouvement de stock, pas à l’import.')),
     _col('lot', 'N° de lot', 'texte', longueurMax: 40, exemple: 'L2026-014', aide: 'Obligatoire pour les médicaments et réactifs (rangement FEFO, RG-05).'),
     _col('peremption', 'Date de péremption', 'date', exemple: '2028-06-30'),
-    _col('prixRevient', 'Prix de revient unitaire', 'entier', min: 0, exemple: 350, aide: 'En francs CFA. Vide : l’article est créé « à valoriser » et le dit (aucun prix n’est inventé).'),
+    _col('prixRevient', 'Prix de revient unitaire', 'entier', min: 0, exemple: 350, aide: 'En francs CFA. Vide : l’article est créé « à valoriser » (le stock existe déjà, RG-03) et ne se facture pas : il figure à la liste « Produits à valoriser » jusqu’à la décision de son premier prix.'),
     _col('seuil', 'Seuil d’alerte', 'entier', min: 0, exemple: 20, aide: 'Vide : proposé à 20 % de la quantité (minimum 5), marqué « à valider ».'),
     _col('emplacement', 'Emplacement', 'texte', longueurMax: 60, exemple: 'Rayon A, Casier 3'),
     _col('fournisseur', 'Code fournisseur', 'texte', longueurMax: 24, exemple: 'SOBAPS', aide: 'Code d’un fournisseur connu. Un code inconnu est signalé, jamais refusé.'),
@@ -119,7 +119,8 @@ final JeuImport jeuGrandStock = JeuImport(
       pb.add(_p('Quantité', 0, 'QUANTITE_NULLE', importAvertissement, 'quantité nulle : l’article sera créé sans stock', 'Vérifiez le comptage si ce n’est pas voulu.'));
     }
     if (v['prixRevient'] == null) {
-      pb.add(_p('Prix de revient unitaire', '', 'A_VALORISER', importAvertissement, 'prix de revient absent : l’article sera créé « à valoriser »', 'Valorisez-le ensuite à l’écran Reprise SAGE, avec sa source.'));
+      pb.add(_p('Prix de revient unitaire', '', 'A_VALORISER', importAvertissement, 'prix de revient absent : l’article « ${v['code']} » sera créé « à valoriser » (stock repris, jamais facturable)',
+          'Proposez son premier prix d’achat (« Tarifs et prix », liste « Produits à valoriser », ou « Changer le prix d’achat » au Référentiel produits) : la Directrice Administrative décide, Oui ou Non.'));
     }
     final f = v['fournisseur'];
     if (f != null && (ctx['fournisseurs'] as Map)[_n(f)] == null) {

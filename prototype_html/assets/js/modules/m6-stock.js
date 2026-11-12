@@ -413,6 +413,11 @@
     return wrap;
   }
 
+  /** Un article « à valoriser » : aucun prix d'achat en vigueur (lot T5b). La liste vient d'UNE source (`PR.produitsAValoriser`), relue à chaque dessin. */
+  function aValoriser(p) {
+    return PR.produitsAValoriser().some(function (x) { return x.code === p.code; });
+  }
+
   global.SIGH.screen('m6-produits', {
     title: 'Référentiel produits',
     description: 'Catalogue de tous les articles gérés : médicaments, réactifs, consommables, fournitures, entretien, petit matériel et immobilisations.',
@@ -432,7 +437,8 @@
       columns: [
         colCode, colDesignation,
         { key: 'unite', label: 'Unité' },
-        { key: 'prixAchat', label: 'Prix d’achat', align: 'right', text: function (p) { return C.money(p.prixAchat, false); }, render: function (p) { return C.money(p.prixAchat, false); } },
+        { key: 'prixAchat', label: 'Prix d’achat', align: 'right', text: function (p) { return aValoriser(p) ? 'à valoriser' : C.money(p.prixAchat, false); },
+          render: function (p) { return aValoriser(p) ? el('span', { title: 'prix d’achat non renseigné : l’article ne se facture pas', 'data-a-valoriser': p.code }, [U.badge('à valoriser', 'warning')]) : C.money(p.prixAchat, false); } },
         { key: 'cump', label: 'CUMP', align: 'right', text: function (p) { return C.money(p.cump, false); }, render: function (p) { return C.money(p.cump, false); } },
         colStock('stockGros', 'Stock gros'), colStock('stockDetail', 'Stock détail'),
         colStock('stock', 'Total'),
@@ -465,7 +471,7 @@
         /* Lot T5 : le prix d'achat est VERSIONNÉ (version 1 à la création, puis « Changer le prix d'achat » : date d'effet, motif, Oui ou Non). À la modification il se LIT ici, il ne s'écrase plus. */
         edition
           ? { name: 'prixAchat', label: 'Prix d’achat en vigueur (FCFA)', type: 'money', readonly: true, help: 'Se change par « Changer le prix d’achat » (date d’effet, motif, Oui ou Non) : les pièces déjà émises gardent leur prix.' }
-          : { name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'money', required: true, min: 0, help: 'RG-02 — sert également de prix de vente pour les médicaments. Zéro : l’article est créé « à valoriser » et ne se facture pas (un prix absent n’est jamais un zéro facturé).' },
+          : { name: 'prixAchat', label: 'Prix d’achat (FCFA)', type: 'money', required: true, min: 0, help: 'Obligatoire, strictement positif (lot T5b). RG-02 : sert également de prix de vente pour les médicaments. Un article sans prix d’achat ne se crée pas ici : si son stock existe déjà, « Importation Grand Stock » le crée « à valoriser ».' },
         edition
           ? { name: 'prixVente', label: 'Prix de vente en vigueur (FCFA)', type: 'money', readonly: true, help: 'Dérivé : égal au prix d’achat pour un médicament (RG-02).' }
           : { name: 'prixVente', label: 'Prix de vente (FCFA)', type: 'money', min: 0, help: 'Hors médicament seulement. Vide : égal au prix d’achat.' },
@@ -494,13 +500,14 @@
           return v;
         }
         /* RG-02 : sans marge sur les médicaments. La fiche naît avec le prix saisi ; sa version 1 est posée juste après (`apresCreation`). */
-        if (v.prixAchat == null) v.prixAchat = 0;
         if (v.categorie === 'medicament' || !v.prixVente) v.prixVente = v.prixAchat;
         if (!v.cump) v.cump = v.prixAchat;
         return v;
       },
       beforeSave: function (v, record) {
         if (Number(v.stockGros) < 0 || Number(v.stockDetail) < 0) return 'RG-03 — le stock ne peut pas devenir négatif.';
+        /* LE PRIX D'ACHAT EST OBLIGATOIRE À LA CRÉATION (lot T5b, Direction, 12/11/2026) : absent, tiret ou nul, la création est REFUSÉE en nommant l'article (code, motif, geste). */
+        if (!record && !(Number(v.prixAchat) > 0)) { var rp = PR.refusPrixAchatAbsent(v.code, v.designation); return rp.code + ' : ' + rp.motif + '. ' + rp.geste; }
         /* RG-02 À L'ÉCRITURE (corrige E846) : un prix de vente libre pour un médicament est REFUSÉ en le nommant, plus aligné en silence. */
         if (!record && v.categorie === 'medicament' && v.prixVente != null && v.prixAchat != null && Number(v.prixVente) !== Number(v.prixAchat)) {
           return 'RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente (' + C.num(Number(v.prixVente)) + ') ne peut pas différer de son prix d’achat (' + C.num(Number(v.prixAchat)) + '). Laisser le prix de vente vide.';
@@ -512,7 +519,7 @@
         var r = PR.creerPrixProduit(fiche, { source: 'Saisi à l’écran « Référentiel produits »' });
         if (!r.ok) return 'attention, le prix d’achat n’a pas pu être versionné (' + r.motif + ')';
         if (r.ecart) return 'ce code avait déjà un prix d’achat versionné (' + C.money(r.ecart.enVigueur, false) + ') : il est conservé, le changer par « Changer le prix d’achat »';
-        return fiche.prixAchat > 0 ? null : 'à valoriser : sans prix d’achat, l’article ne se facture pas';
+        return null;
       },
       /* Deux gestes de ligne : l'HISTORIQUE (une lecture, offerte à tout profil qui voit la ligne) et le CHANGEMENT du prix d'achat (une écriture, absente sans le droit de modifier l'écran). */
       actionsSup: function (p, refresh) {
@@ -528,6 +535,8 @@
           options: [{ value: 'rupture', label: 'En rupture' }, { value: 'critique', label: 'Sous le seuil' }, { value: 'normal', label: 'Normal' }],
           match: function (p, v) { return etatStock(p) === v; },
         },
+        /* LA LISTE « À VALORISER » (lot T5b) : les articles repris avec leur stock mais sans prix d'achat (source unique `PR.produitsAValoriser`). */
+        { name: 'valoriser', label: 'À valoriser', options: [{ value: 'oui', label: 'À valoriser (prix d’achat non renseigné)' }], match: function (p) { return aValoriser(p); } },
       ],
       kpis: function (rows) {
         return [
@@ -535,6 +544,7 @@
           { label: 'Valeur du stock', value: C.money(valeurStock(rows)), icon: 'wallet', tone: 'info' },
           { label: 'Sous le seuil', value: C.num(rows.filter(function (p) { return p.stock <= p.seuilAlerte && p.stock > 0; }).length), icon: 'trending-down', tone: 'warning' },
           { label: 'En rupture', value: C.num(rows.filter(function (p) { return p.stock === 0; }).length), icon: 'x-circle', tone: 'danger' },
+          { label: 'À valoriser', value: C.num(rows.filter(aValoriser).length), icon: 'tag', tone: rows.some(aValoriser) ? 'warning' : 'neutral', hint: 'prix d’achat non renseigné' },
         ];
       },
       detail: detailProduit,
