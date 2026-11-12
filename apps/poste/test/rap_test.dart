@@ -214,7 +214,7 @@ void main() {
       await choisirM14(t, 'periode', 'Semestriel');
       await choisirM14(t, 'axe', 'Par famille d’articles');
       final f = vec('semestre', 'famille', '2026-08-16', false);
-      expect(find.text('Sept familles de l’inventaire SAGE'), findsOneWidget);
+      expect(find.text('Sept familles de l’inventaire initial'), findsOneWidget);
       expect(_txt((f['notes'] as List).last), findsOneWidget);
     });
 

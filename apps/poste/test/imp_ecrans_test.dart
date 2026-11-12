@@ -243,7 +243,7 @@ void main() {
     expect(find.widgetWithText(BoutonSigh, 'Ouvrir'), findsNWidgets(10));
     expect(find.text('Proposition à valider'), findsOneWidget);
     expect(find.text('Supporté'), findsNWidgets(9));
-    expect(find.textContaining('Source : Inventaire SAGE 100'), findsOneWidget);
+    expect(find.textContaining('Source : Inventaire initial (reprise)'), findsOneWidget);
     expect(find.textContaining('Écrit dans : produits, lots, mouvements. Aucun lot à ce jour.'), findsOneWidget);
     await toucher(t, find.text('Historique des lots'));
     expect(find.text('Aucun lot.'), findsOneWidget);

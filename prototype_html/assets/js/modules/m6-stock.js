@@ -72,7 +72,7 @@
       size: 'md',
       body: el('div.space-y-3', null, [
         K.note('<strong>' + article.designation + '</strong> — ' + C.num(article.quantite) + ' unité(s) en stock. '
-          + 'Cette référence figure à l’inventaire SAGE <strong>sans prix de revient</strong>. La valeur saisie '
+          + 'Cette référence figure à l’inventaire initial <strong>sans prix de revient</strong>. La valeur saisie '
           + 'ici <strong>ne modifie pas le document</strong> : elle est enregistrée à part, avec son auteur et sa '
           + 'date, pour que l’audit distingue toujours ce que le document portait de ce que la clinique a décidé.',
           { tone: 'info' }),
@@ -428,7 +428,7 @@
         cible: function (p) { var v = valorisationDe(p.code); return v ? v.id : null; },
         siChange: function (avant, apres) { return avant.prixAchat !== apres.prixAchat || avant.cump !== apres.cump; },
       },
-      source: 'Inventaire « Grand Stock » SAGE 100 et tarifs médicaments de la clinique.',
+      source: 'Inventaire initial (reprise) « Grand Stock » et tarifs médicaments de la clinique.',
       columns: [
         colCode, colDesignation,
         { key: 'unite', label: 'Unité' },
@@ -2853,8 +2853,8 @@
 
       /* Cartouche du lot d'import */
       host.appendChild(U.card('Lot de migration', U.descList([
-        ['Référence du lot', el('span.font-mono', { text: lot.reference })],
-        ['Système d’origine', lot.source],
+        ['Référence du lot', el('span.font-mono', { text: lot.referenceAffichee })],
+        ['Origine', lot.origine],
         ['Document source', lot.document],
         ['Date d’arrêté', C.dateFR(lot.dateArrete)],
         ['Date de tirage', C.dateHeure(lot.dateTirage)],
@@ -2883,7 +2883,7 @@
               if (deja && deja.lotReference === lot.reference) {
                 U.toast('Reprise déjà validée.', {
                   type: 'error',
-                  detail: 'REPRISE_DEJA_VALIDEE : le lot ' + lot.reference + ' a été validé par ' + deja.valideePar
+                  detail: 'REPRISE_DEJA_VALIDEE : le lot ' + lot.referenceAffichee + ' a été validé par ' + deja.valideePar
                     + ' le ' + C.dateFR(deja.valideeLe) + '. Une validation ne se rejoue pas.',
                 });
                 dessiner();
@@ -2891,7 +2891,7 @@
               }
               var fiche = { lotReference: lot.reference, valideePar: S.currentUser(), valideeLe: new Date().toISOString().slice(0, 10) };
               S.setReglage('repriseStock', fiche);
-              S.log('Validation', 'M6', 'LotImportStock', lot.reference, null, { valideePar: fiche.valideePar, valideeLe: fiche.valideeLe });
+              S.log('Validation', 'M6', 'LotImportStock', lot.referenceAffichee, null, { valideePar: fiche.valideePar, valideeLe: fiche.valideeLe });
               dessiner();
               U.toast('Reprise validée.', { type: 'success', detail: 'Le stock initial devient la situation de référence.' });
             });
@@ -2902,10 +2902,10 @@
           onclick: function () {
             P.etat({
               titre: 'Bordereau de reprise du stock initial',
-              sousTitre: 'Import ' + lot.reference + ' — ' + lot.document,
+              sousTitre: 'Import ' + lot.referenceAffichee + ' — ' + lot.document,
               cartouche: [
-                ['Référence du lot', lot.reference],
-                ['Système d’origine', lot.source],
+                ['Référence du lot', lot.referenceAffichee],
+                ['Origine', lot.origine],
                 ['Date d’arrêté', C.dateFR(lot.dateArrete)],
                 ['Articles repris', C.num(articles.length)],
                 ['Unités', C.num(C.sum(articles, 'quantite'))],
@@ -2950,7 +2950,7 @@
                 },
               ],
               columns: [
-                { key: 'code', label: 'Référence SAGE', nowrap: true, render: function (a) { return el('span.font-mono.text-xs.font-semibold.text-navy-800', { text: a.code }); } },
+                { key: 'code', label: 'Référence', nowrap: true, render: function (a) { return el('span.font-mono.text-xs.font-semibold.text-navy-800', { text: a.code }); } },
                 { key: 'designation', label: 'Désignation' },
                 {
                   key: 'categorie', label: 'Catégorie affectée',
@@ -2993,13 +2993,13 @@
             var wrap = el('div.space-y-3');
             var aTraiter = articles.filter(function (a) { return !a.valorise; });
 
-            wrap.appendChild(K.note('<strong>' + aTraiter.length + ' article(s)</strong> figurent à l’inventaire SAGE '
+            wrap.appendChild(K.note('<strong>' + aTraiter.length + ' article(s)</strong> figurent à l’inventaire initial '
               + 'sans prix de revient unitaire, pour ' + C.num(C.sum(aTraiter, 'quantite')) + ' unités. '
               + '<strong>Aucun document ne les tarife</strong> : le catalogue « Tarifs des médicaments » a lui aussi '
               + 'ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer '
               + 'fabriquerait une valeur de stock que personne n’a arrêtée.<br>'
               + '<strong>La saisie est donc ouverte ici</strong>, référence par référence. Elle ne modifie pas le '
-              + 'document SAGE, qui continue de faire foi sur ce qu’il porte : la valorisation est enregistrée à '
+              + 'document d’inventaire initial, qui continue de faire foi sur ce qu’il porte : la valorisation est enregistrée à '
               + 'part, datée et signée.', { tone: 'warning', icon: 'help-circle' }));
 
             wrap.appendChild(U.dataTable({
@@ -3031,7 +3031,7 @@
                   key: 'origine', label: 'Origine de la valeur', sortable: false,
                   render: function (a) {
                     var v = valorisationDe(a.code);
-                    if (!v) return el('span.text-xs.text-slate-400', { text: 'absente du document SAGE' });
+                    if (!v) return el('span.text-xs.text-slate-400', { text: 'absente de l’inventaire initial' });
                     return el('div', null, [
                       el('p.text-xs.text-slate-600', { text: v.source || 'source non précisée' }),
                       el('p.text-[10px].text-slate-400', {
@@ -3051,7 +3051,7 @@
                     })].filter(Boolean);
               },
             }));
-            wrap.appendChild(K.note('Le <strong>seuil d’alerte</strong> ne figure pas non plus dans le document SAGE. '
+            wrap.appendChild(K.note('Le <strong>seuil d’alerte</strong> ne figure pas non plus dans l’inventaire initial. '
               + 'Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article '
               + 'avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes.', { tone: 'info' }));
             return wrap;
@@ -3070,7 +3070,7 @@
               { label: 'Sans correspondance en stock', value: C.num(absents.length), icon: 'help-circle', tone: 'warning' },
             ]));
             wrap.appendChild(K.note('Le catalogue « Tarifs des médicaments et accessoires » recense les articles <strong>vendables</strong> ; '
-              + 'l’inventaire SAGE recense les articles <strong>détenus</strong>. Le rapprochement ci-dessous permet d’attribuer un prix à chaque '
+              + 'l’inventaire initial recense les articles <strong>détenus</strong>. Le rapprochement ci-dessous permet d’attribuer un prix à chaque '
               + 'désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.',
               { tone: 'info' }));
             wrap.appendChild(U.dataTable({
@@ -3101,7 +3101,7 @@
         },
       ]));
 
-      host.appendChild(K.source('Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026.'));
+      host.appendChild(K.source('Inventaire initial (reprise) « Grand Stock », arrêté au 15/07/2026.'));
       conteneur.appendChild(host);
       }
   }
@@ -3110,7 +3110,7 @@
   global.SIGH.screen('m6-import-grand-stock', {
     title: 'Importation Grand Stock',
     description: 'Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock.',
-    regle: 'Le stock initial n’a pas été saisi manuellement : il provient de l’<strong>import de l’inventaire SAGE 100</strong>. '
+    regle: 'Le stock initial n’a pas été saisi manuellement : il provient de l’<strong>import de l’inventaire initial (reprise)</strong>. '
       + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises '
       + 'des mouvements opérationnels ultérieurs.',
     render: rendreRepriseGrandStock,

@@ -15,7 +15,7 @@ import '../format/js.dart';
 import '../format/recherche.dart';
 import 'donnees_sage.dart';
 
-/// Un article de l'inventaire SAGE tel que le document le porte.
+/// Un article de l'inventaire initial tel que le document le porte.
 class ArticleSage {
   const ArticleSage({
     required this.code,

@@ -384,12 +384,12 @@
   });
 
   ecran('mere-import', {
-    title: 'Import de migration', description: 'Reprise des données existantes (SAGE, classeurs, jeux de départ) avec traçabilité complète.',
+    title: 'Import de migration', description: 'Reprise des données existantes (inventaires, classeurs, jeux de départ) avec traçabilité complète.',
     regle: 'Jamais de saisie manuelle pour une migration : chaque lot porte <strong>source</strong>, <strong>numéro de lot</strong> et <strong>validateur</strong>. Un lot se <strong>simule</strong> avant de s’appliquer, et se <strong>rejoue</strong> sans doublon.',
   }, function (root) {
     page(root, [U.kpiGrid([kpi('Lots importés', 4, 'upload'), kpi('Lignes rejetées', 0, 'circle-check', 'success')]),
       barre(bouton('Importer un fichier', 'file-up', function () { simuler('choix du fichier, correspondance des colonnes, simulation, validation'); }, 'primary')),
-      carte('Lots', tableau(['Lot', 'Source', 'Date', 'Lignes', 'Validé par', 'État'], [['IMP-2026-004', 'Inventaire SAGE « Grand Stock »', '14/10/2026', '184 articles', 'MAMAN Zoukanéri', U.badge('Appliqué', 'success')], ['IMP-2026-003', 'Plan comptable SYSCOHADA', '12/10/2026', '93 comptes', 'KASSA Augustin', U.badge('Appliqué', 'success')], ['IMP-2026-002', 'Organigramme', '12/10/2026', '44 agents', 'TAKI Alimatou', U.badge('Appliqué', 'success')], ['IMP-2026-001', 'Catalogue d’analyses', '11/10/2026', '48 analyses', 'KINNOU A. Ganiou', U.badge('Appliqué', 'success')]]))]);
+      carte('Lots', tableau(['Lot', 'Source', 'Date', 'Lignes', 'Validé par', 'État'], [['IMP-2026-004', 'Inventaire initial (reprise) « Grand Stock »', '14/10/2026', '184 articles', 'MAMAN Zoukanéri', U.badge('Appliqué', 'success')], ['IMP-2026-003', 'Plan comptable SYSCOHADA', '12/10/2026', '93 comptes', 'KASSA Augustin', U.badge('Appliqué', 'success')], ['IMP-2026-002', 'Organigramme', '12/10/2026', '44 agents', 'TAKI Alimatou', U.badge('Appliqué', 'success')], ['IMP-2026-001', 'Catalogue d’analyses', '11/10/2026', '48 analyses', 'KINNOU A. Ganiou', U.badge('Appliqué', 'success')]]))]);
   });
 
 })(window);

@@ -29,7 +29,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'Le stock initial n’a pas été saisi manuellement : il provient de l’import de l’inventaire SAGE 100. Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises des mouvements opérationnels ultérieurs.';
+      'Le stock initial n’a pas été saisi manuellement : il provient de l’import de l’inventaire initial (reprise). Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises des mouvements opérationnels ultérieurs.';
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +90,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
                     libelle: 'Valider la reprise',
                     icone: LucideIcons.badgeCheck,
                     taille: TailleBouton.sm,
-                    onPressed: () => _valider(context, c, articles.length, '${lot['reference']}')),
+                    onPressed: () => _valider(context, c, articles.length, '${lot['reference']}', '${lot['referenceAffichee']}')),
               BoutonSigh(
                   libelle: 'Éditer le bordereau',
                   icone: LucideIcons.printer,
@@ -99,8 +99,8 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
                   onPressed: () => _bordereau(context, ref)),
             ],
             child: DescListeSigh([
-              ('Référence du lot', cellMono('${lot['reference']}', taille: 14, couleur: JetonsShell.slate800)),
-              ('Système d’origine', lot['source']),
+              ('Référence du lot', cellMono('${lot['referenceAffichee']}', taille: 14, couleur: JetonsShell.slate800)),
+              ('Origine', lot['origine']),
               ('Document source', lot['document']),
               ('Date d’arrêté', dateDe(lot['dateArrete'])),
               ('Date de tirage', tirage == null ? '—' : dateHeure(tirage)),
@@ -140,7 +140,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
                 construire: (ctx) => _rapprochement(ref)),
           ]),
           const SourceFlux(
-              'Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026.'),
+              'Inventaire initial (reprise) « Grand Stock », arrêté au 15/07/2026.'),
         ]);
       },
     );
@@ -178,7 +178,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
         colonnes: [
           ColonneTableau(
               cle: 'code',
-              libelle: 'Référence SAGE',
+              libelle: 'Référence',
               sansCoupure: true,
               texte: (a) => '${a['code']}',
               rendu: (_, a) => cellMono('${a['code']}', poids: FontWeight.w600, couleur: JetonsShell.navy800)),
@@ -226,7 +226,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
     final unites = aTraiter.fold<num>(0, (t, a) => t + a.quantite);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       NoteSigh(
-          '${aTraiter.length} article(s) figurent à l’inventaire SAGE sans prix de revient unitaire, pour ${nombre(unites)} unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.\nLa saisie est donc ouverte ici, référence par référence. Elle ne modifie pas le document SAGE, qui continue de faire foi sur ce qu’il porte : la valorisation est enregistrée à part, datée et signée.',
+          '${aTraiter.length} article(s) figurent à l’inventaire initial sans prix de revient unitaire, pour ${nombre(unites)} unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.\nLa saisie est donc ouverte ici, référence par référence. Elle ne modifie pas le document d’inventaire initial, qui continue de faire foi sur ce qu’il porte : la valorisation est enregistrée à part, datée et signée.',
           ton: TonSigh.attention,
           icone: LucideIcons.circleHelp),
       const SizedBox(height: 12),
@@ -289,12 +289,12 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
               triable: false,
               texte: (a) {
                 final v = valorisationDe(a['code'], valo);
-                return v == null ? 'absente du document SAGE' : '${v['source'] ?? 'source non précisée'}';
+                return v == null ? 'absente de l’inventaire initial' : '${v['source'] ?? 'source non précisée'}';
               },
               rendu: (_, a) {
                 final v = valorisationDe(a['code'], valo);
                 if (v == null) {
-                  return const Text('absente du document SAGE',
+                  return const Text('absente de l’inventaire initial',
                       style: TextStyle(fontSize: 12, color: JetonsShell.slate400));
                 }
                 return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
@@ -320,7 +320,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
       ),
       const SizedBox(height: 12),
       const NoteSigh(
-          'Le seuil d’alerte ne figure pas non plus dans le document SAGE. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes.',
+          'Le seuil d’alerte ne figure pas non plus dans l’inventaire initial. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes.',
           ton: TonSigh.info),
     ]);
   }
@@ -353,7 +353,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
       ]),
       const SizedBox(height: 12),
       const NoteSigh(
-          'Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire SAGE recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.',
+          'Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire initial recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.',
           ton: TonSigh.info),
       const SizedBox(height: 12),
       TableauSigh(
@@ -419,7 +419,8 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
     ]);
   }
 
-  Future<void> _valider(BuildContext ctx, ContexteEcran c, int articles, String reference) async {
+  /// `reference` est l'IDENTIFIANT du lot (écrit au réglage de validation, sur les fiches : il ne change pas) ; `affichee` est son libellé VISIBLE (message, journal).
+  Future<void> _valider(BuildContext ctx, ContexteEcran c, int articles, String reference, String affichee) async {
     final ok = await confirmerSigh(ctx,
         titre: 'Valider la reprise du stock initial ?',
         message:
@@ -433,7 +434,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
       ToastsSigh.afficher(ctx, 'Reprise déjà validée.',
           type: TypeToast.erreur,
           detail:
-              'REPRISE_DEJA_VALIDEE : le lot $reference a été validé par ${deja['valideePar']} le ${dateDe(deja['valideeLe'])}. Une validation ne se rejoue pas.');
+              'REPRISE_DEJA_VALIDEE : le lot $affichee a été validé par ${deja['valideePar']} le ${dateDe(deja['valideeLe'])}. Une validation ne se rejoue pas.');
       return;
     }
     final fiche = {
@@ -447,7 +448,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
     } else {
       reglages.mettreAJour('repriseStock', fiche);
     }
-    c.magasin.journaliser('Validation', 'M6', 'LotImportStock', reference, null, {'valideePar': acteur(c).nom, 'valideeLe': fiche['valideeLe']});
+    c.magasin.journaliser('Validation', 'M6', 'LotImportStock', affichee, null, {'valideePar': acteur(c).nom, 'valideeLe': fiche['valideeLe']});
     ToastsSigh.afficher(ctx, 'Reprise validée.',
         type: TypeToast.succes, detail: 'Le stock initial devient la situation de référence.');
   }
@@ -458,13 +459,13 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
     final lot = ref.lot;
     return PieceA4(
       titre: 'Bordereau de reprise du stock initial',
-      sousTitre: 'Import ${lot['reference']} — ${lot['document']}',
+      sousTitre: 'Import ${lot['referenceAffichee']} — ${lot['document']}',
       reference: reference,
       utilisateur: utilisateur,
       edite: edite,
       cartouche: [
-        ('Référence du lot', '${lot['reference']}'),
-        ('Système d’origine', '${lot['source']}'),
+        ('Référence du lot', '${lot['referenceAffichee']}'),
+        ('Origine', '${lot['origine']}'),
         ('Date d’arrêté', dateDe(lot['dateArrete'])),
         ('Articles repris', nombre(ref.articles.length)),
         ('Unités', nombre(ref.totalUnites)),
@@ -527,7 +528,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
         titre: '${ancienne != null ? 'Corriger la valorisation' : 'Valoriser'} — ${article.designation}',
         taille: TailleModale.md,
         entete: NoteSigh(
-            '${article.designation} — ${nombre(article.quantite)} unité(s) en stock. Cette référence figure à l’inventaire SAGE sans prix de revient. La valeur saisie ici ne modifie pas le document : elle est enregistrée à part, avec son auteur et sa date, pour que l’audit distingue toujours ce que le document portait de ce que la clinique a décidé.',
+            '${article.designation} — ${nombre(article.quantite)} unité(s) en stock. Cette référence figure à l’inventaire initial sans prix de revient. La valeur saisie ici ne modifie pas le document : elle est enregistrée à part, avec son auteur et sa date, pour que l’audit distingue toujours ce que le document portait de ce que la clinique a décidé.',
             ton: TonSigh.info),
         champs: const [
           ChampDef(

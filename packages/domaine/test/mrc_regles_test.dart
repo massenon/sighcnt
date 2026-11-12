@@ -167,9 +167,13 @@ void main() {
 
     test('la référence du lot est datée et ne se répète pas', () {
       final d = DateTime(2026, 10, 31);
-      expect(mrcReferenceLot(mrcProfilSage, d, const []), 'IMPORT-SAGE-20261031');
-      expect(mrcReferenceLot(mrcProfilSage, d, const ['IMPORT-SAGE-20261031']), 'IMPORT-SAGE-20261031-2');
-      expect(mrcReferenceLot(mrcProfilSage, d, const ['IMPORT-SAGE-20261031', 'IMPORT-SAGE-20261031-2']), 'IMPORT-SAGE-20261031-3');
+      // Le préfixe VISIBLE ne nomme plus l'ancien logiciel (lot T5b) ; l'identifiant du profil, lui, ne change pas.
+      expect(mrcReferenceLot(mrcProfilSage, d, const []), 'IMPORT-INVENTAIRE-20261031');
+      expect(mrcReferenceLot(mrcProfilSage, d, const ['IMPORT-INVENTAIRE-20261031']), 'IMPORT-INVENTAIRE-20261031-2');
+      expect(mrcReferenceLot(mrcProfilSage, d, const ['IMPORT-INVENTAIRE-20261031', 'IMPORT-INVENTAIRE-20261031-2']), 'IMPORT-INVENTAIRE-20261031-3');
+      expect(mrcLibelleLot('IMPORT-SAGE-20260715'), 'IMPORT-INVENTAIRE-20260715', reason: 'un lot déjà écrit garde son identifiant ; il se lit sans l’ancien nom');
+      expect(mrcLibelleSource('SAGE_100_GESTION_COMMERCIALE_15.01'), 'Inventaire initial (reprise)');
+      expect(mrcLibelleSource('Organigramme'), 'Organigramme');
     });
   });
 }

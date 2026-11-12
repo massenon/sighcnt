@@ -3272,7 +3272,7 @@
     "lots",
     "mouvements"
    ],
-   "source": "Inventaire SAGE 100 « Grand Stock » du 15/07/2026 (docs/) : 184 articles, 12 080 unités, 3 976 459 FCFA.",
+   "source": "Inventaire initial (reprise) « Grand Stock » du 15/07/2026 (docs/) : 184 articles, 12 080 unités, 3 976 459 FCFA.",
    "fichier": "modele-import-grand-stock",
    "entetes": [
     "Code article",

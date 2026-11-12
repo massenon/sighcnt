@@ -131,7 +131,7 @@ const List<FamilleValidation> valFamilles = [
       champsChiffres: ['prix']),
   FamilleValidation(
       id: 'valorisation_sage',
-      libelle: 'Valorisation des références SAGE',
+      libelle: 'Valorisation des références de l’inventaire initial',
       module: 'M6',
       collections: ['valorisationsSage'],
       champs: ['aValider'],

@@ -4904,7 +4904,7 @@
        onglet Alertes, avec la comparaison. Mêmes profils que les familles des actes et des analyses. */
     { id: 'prix', libelle: 'Changements de prix en attente (Oui ou Non)', module: 'CFG', mode: 'prix', collections: ['versionsTarif'], champs: ['statut'],
       roles: ROLES_VALIDATION_TARIFS.slice(), ecran: 'cfg-tarifs' },
-    { id: 'valorisation_sage', libelle: 'Valorisation des références SAGE', module: 'M6', collections: ['valorisationsSage'], champs: ['aValider'],
+    { id: 'valorisation_sage', libelle: 'Valorisation des références de l’inventaire initial', module: 'M6', collections: ['valorisationsSage'], champs: ['aValider'],
       roles: ['direction', 'da', 'admin'], ecran: 'm6-produits', champsChiffres: ['prixRevient'] },
     { id: 'objectifs_pilotage', libelle: 'Objectifs de pilotage', module: 'M12', collections: ['objectifsPilotage'], champs: ['aValider'],
       roles: ['direction', 'da', 'admin'], ecran: 'm12-tableau-decisionnel', champsChiffres: ['cible'] },

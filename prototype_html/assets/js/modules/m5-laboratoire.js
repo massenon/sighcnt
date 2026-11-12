@@ -2591,7 +2591,7 @@
     description: 'Suivi des stocks de réactifs, consommation rattachée aux analyses réalisées et carnet de demande.',
     regle: 'Le <strong>coût unitaire moyen pondéré (CUMP)</strong> est calculé automatiquement pour les réactifs '
       + 'et consommables de laboratoire (CDCT §10.1). Le <strong>seuil d’alerte est fixé par la clinique</strong>, '
-      + 'référence par référence : le document SAGE d’origine ne le renseigne pas, et un seuil unique n’aurait '
+      + 'référence par référence : le document d’inventaire initial ne le renseigne pas, et un seuil unique n’aurait '
       + 'aucun sens entre un réactif à péremption courte et un consommable de fond de rayon.',
     render: function (root) {
       var colProduits = S.collection('produits', { module: 'M6', entite: 'Produit' });
@@ -2608,7 +2608,7 @@
       selPeriode.addEventListener('change', function () { rendreGraphes(); });
 
       rendreTout();
-      host.appendChild(K.source('Inventaire SAGE « Grand Stock » — les seuils d’alerte y sont absents et se '
+      host.appendChild(K.source('Inventaire initial (reprise) « Grand Stock » — les seuils d’alerte y sont absents et se '
         + 'définissent ici, référence par référence.'));
       root.appendChild(host);
       return null;
@@ -2630,7 +2630,7 @@
           { name: 'stock', label: 'Stock actuel', type: 'number', required: true, min: 0 },
           {
             name: 'seuilAlerte', label: 'Seuil d’alerte', type: 'number', required: true, min: 0,
-            hint: 'À partir de quelle quantité la clinique veut être prévenue. Absent du document SAGE : '
+            hint: 'À partir de quelle quantité la clinique veut être prévenue. Absent de l’inventaire initial : '
               + 'c’est à l’établissement de l’arrêter.',
           },
           {
@@ -2684,7 +2684,7 @@
         if (sansSeuil.length) {
           blocKpi.appendChild(K.note('<strong>' + C.num(sansSeuil.length) + ' référence(s) sans seuil d’alerte.</strong> '
             + 'Tant qu’un seuil n’est pas fixé, aucune alerte ne peut être émise sur ces articles — '
-            + 'le document SAGE d’origine ne renseigne pas cette colonne, c’est à la clinique de l’arrêter.',
+            + 'le document d’inventaire initial ne renseigne pas cette colonne, c’est à la clinique de l’arrêter.',
           { tone: 'warning', icon: 'alert-triangle' }));
         }
         U.icons(blocKpi);
@@ -3339,7 +3339,7 @@
       if (sansSeuil.length) {
         host.appendChild(K.note('<strong>' + C.num(sansSeuil.length) + ' référence(s) sans seuil d’alerte.</strong> '
           + 'Sans seuil, aucune alerte n’est possible : le seuil se fixe référence par référence à l’écran '
-          + '« Réactifs & consommables » — le document SAGE ne renseigne pas cette colonne.',
+          + '« Réactifs & consommables » — l’inventaire initial ne renseigne pas cette colonne.',
         { tone: 'warning', icon: 'triangle-alert' }));
       }
 

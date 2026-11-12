@@ -5,7 +5,7 @@
  "libelleManifeste": "Importation Grand Stock",
  "acces": "ouvert",
  "titre": "Importation Grand Stock",
- "description": "Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire SAGE « Grand Stock »).",
+ "description": "Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire initial « Grand Stock », reprise).",
  "fil": [
   "Accueil",
   "Logistique",
@@ -52,7 +52,7 @@
    "Exemple"
   ],
   [
-   "Référence SAGE",
+   "Référence",
    "Désignation",
    "Catégorie affectée",
    "Unité",

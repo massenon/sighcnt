@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  *   node build/capture-prix-produits.js <sortie.json>
  *
- * Pour CHAQUE référence du référentiel produits (les 184 de l'inventaire SAGE), relève ce que l'application donne RÉELLEMENT :
+ * Pour CHAQUE référence du référentiel produits (les 184 de l'inventaire initial), relève ce que l'application donne RÉELLEMENT :
  *   - la fiche (prix d'achat, prix de vente, CUMP, marquage « à valoriser ») ;
  *   - la valeur unitaire de la valorisation du stock, selon les DEUX méthodes (prix de vente, CUMP), et la valeur d'une sortie (`PR.valoriserSortie`) ;
  *   - la ligne de facture qu'une prescription engendre (`PR.prescrire`), patient non assuré puis assuré à carte valide ;

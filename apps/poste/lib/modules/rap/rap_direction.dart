@@ -218,7 +218,7 @@ class _VueDirectionState extends State<_VueDirection> {
                 if (axe.id == 'groupe') ...[
                   const SizedBox(height: 16),
                   const NoteSigh(
-                      'Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.',
+                      'Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.',
                       ton: TonSigh.attention,
                       icone: LucideIcons.circleHelp),
                 ],

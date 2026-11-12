@@ -13,7 +13,7 @@ const path = require('path');
 const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
 
 (async () => {
-  console.log('▶ Vecteurs de la reprise SAGE 100');
+  console.log('▶ Vecteurs de la reprise de l’inventaire initial');
   const m = await ouvrirMaquette();
   try {
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m6-stock.js') });
@@ -48,7 +48,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         const cas = { kpi: lireKpi(t0), lot: (() => { const d = t0.findIndex((x) => /^Éditer le bordereau/.test(x)) + 1; const f = t0.findIndex((x, i) => i > d && /^Articles repris/.test(x)); return t0.slice(d, f); })(), boutons: [...r.querySelectorAll('button')].map((b) => b.textContent.trim()).filter(Boolean).slice(0, 12) };
         cas.onglets = [...r.querySelectorAll('[role=tab], .tab, button')].map((b) => b.textContent.trim()).filter((x) => /^(Articles repris|Points à traiter|Rapprochement)/.test(x));
         cas.articles = { tables: tables(r), filtres: [...r.querySelectorAll('select')].map((s) => [...s.options].map((o) => o.textContent.trim())) };
-        cas.articles.pied = t0.filter((x) => /Inventaire « Grand Stock »/.test(x));
+        cas.articles.pied = t0.filter((x) => /Inventaire initial \(reprise\) « Grand Stock »/.test(x));
         await clicOnglet(r, 'Points à traiter');
         const t1 = texte(r);
         cas.points = { texte: t1.filter((x) => /article\(s\)|Aucun document|seuil d’alerte/.test(x)), tables: tables(r) };
@@ -119,7 +119,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
     ecrire('packages/domaine/test/vecteurs/reprise.json', { _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-reprise.js — m6-import-grand-stock piloté. Ne pas éditer.', ...Object.assign({}, sortie, { referentiel: undefined }) });
     const ref = sortie.referentiel;
     const dart = `/// ENGENDRÉ par prototype_html/build/vecteurs-reprise.js depuis \`SIGH.sage\` (data-sage.js) — ne pas éditer.
-/// Référentiel STATIQUE de la reprise de l'inventaire « Grand Stock » (SAGE 100, arrêté au 15/07/2026) : lot d'import, ${ref.articles.length} articles,
+/// Référentiel STATIQUE de la reprise de l'inventaire « Grand Stock » (inventaire initial, arrêté au 15/07/2026) : lot d'import, ${ref.articles.length} articles,
 /// ${ref.rapprochement.length} désignations du catalogue tarifaire déjà rapprochées, catégories de produit. Ce ne sont pas des collections : on ne les écrit pas.
 library;
 

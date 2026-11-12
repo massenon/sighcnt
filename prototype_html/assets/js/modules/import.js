@@ -191,16 +191,16 @@
 
   var JEUX = [];
 
-  /* --- 1. GRAND STOCK (inventaire SAGE) ------------------------------------------------------------------------------ */
+  /* --- 1. GRAND STOCK (inventaire initial) ------------------------------------------------------------------------------ */
   var PERISSABLES = ['medicament', 'reactif'];
   JEUX.push({
     id: 'grand-stock', ecran: 'm6-import-grand-stock', libelle: 'Importation Grand Stock', module: 'M6', statut: 'supporte',
-    description: 'Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire SAGE « Grand Stock »).',
-    source: 'Inventaire SAGE 100 « Grand Stock » du 15/07/2026 (docs/) : 184 articles, 12 080 unités, 3 976 459 FCFA.',
+    description: 'Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire initial « Grand Stock », reprise).',
+    source: 'Inventaire initial (reprise) « Grand Stock » du 15/07/2026 (docs/) : 184 articles, 12 080 unités, 3 976 459 FCFA.',
     cibles: ['produits', 'lots', 'mouvements'],
     fichierModele: 'modele-import-grand-stock',
     colonnes: [
-      oblig('code', 'Code article', 'texte', { longueurMax: 24, exemple: 'PARA500', aide: 'Référence SAGE de l’article. Une ligne par lot : le même code peut figurer plusieurs fois avec des lots différents.' }),
+      oblig('code', 'Code article', 'texte', { longueurMax: 24, exemple: 'PARA500', aide: 'Référence de l’article. Une ligne par lot : le même code peut figurer plusieurs fois avec des lots différents.' }),
       oblig('designation', 'Désignation', 'texte', { longueurMax: 160, exemple: 'PARACETAMOL 500 MG CP B/100' }),
       oblig('categorie', 'Catégorie', 'liste', { liste: function () { return D.CATEGORIES_PRODUIT.map(function (c) { return { valeur: c.id, label: c.label }; }); }, exemple: 'Médicaments' }),
       col('unite', 'Unité', 'texte', { longueurMax: 30, exemple: 'Boîte', aide: 'Vide : « Unité ».' }),
@@ -656,7 +656,7 @@
   JEUX.push({
     id: 'tarifs-produits', ecran: 'imp-tarifs-produits', libelle: 'Importation des prix d’achat', module: 'M6', statut: 'supporte',
     description: 'Prix d’achat des articles du référentiel produits, avec une date d’effet et la décision Oui ou Non : chaque ligne qui change devient une version datée, jamais un écrasement de la fiche.',
-    source: 'Fiche du référentiel produits (écran « Référentiel produits ») et inventaire SAGE « Grand Stock » (docs/) ; les prix du fichier font foi, aucun n’est complété par le logiciel.',
+    source: 'Fiche du référentiel produits (écran « Référentiel produits ») et inventaire initial (reprise) « Grand Stock » (docs/) ; les prix du fichier font foi, aucun n’est complété par le logiciel.',
     limite: 'Ce jeu ne change jamais le prix en vigueur par lui-même : la ligne devient une proposition soumise à l’alerte Oui/Non de la Directrice Administrative ou de la Direction, sauf si votre profil détient le droit de décider ET que la ligne dit Oui. '
       + 'RG-02 : le prix de vente d’un médicament est son prix d’achat, il suit sans marge. Une pièce déjà émise garde le prix de sa date. Jamais de quantité : le stock se reprend par le jeu « Importation Grand Stock ». '
       + 'Un tiret n’est pas un zéro : une ligne sans prix d’achat est refusée.',
@@ -1043,7 +1043,7 @@
   JEUX.push({
     id: 'produits-referentiel', ecran: 'imp-produits-referentiel', libelle: 'Importation du référentiel produits', module: 'M6', statut: 'supporte',
     description: 'Articles de la clinique : code, désignation, catégorie, unité, prix d’achat, seuil d’alerte. Jamais de quantité ni de lot.',
-    source: 'Fiche du référentiel produits (écran « Référentiel produits ») et inventaire SAGE « Grand Stock » (docs/).',
+    source: 'Fiche du référentiel produits (écran « Référentiel produits ») et inventaire initial (reprise) « Grand Stock » (docs/).',
     limite: 'Ce jeu crée des fiches NEUVES, sans stock : les quantités et les lots se reprennent par « Importation Grand Stock », et un fichier qui porte une colonne de quantité ou de lot est refusé. '
       + 'Il ne modifie jamais un article déjà tenu (RG-02 : le prix de vente d’un médicament est son prix d’achat). Un article sans seuil est signalé « sans seuil », jamais compté à zéro.',
     cibles: ['produits'], fichierModele: 'modele-import-referentiel-produits',

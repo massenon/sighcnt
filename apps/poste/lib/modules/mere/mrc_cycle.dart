@@ -304,7 +304,7 @@ class EcranMereImport extends StatefulWidget with EcranMaquette {
   @override
   String get titre => 'Import de migration';
   @override
-  String get description => 'Reprise des données existantes (SAGE, classeurs, jeux de départ) avec traçabilité complète.';
+  String get description => 'Reprise des données existantes (inventaires, classeurs, jeux de départ) avec traçabilité complète.';
   @override
   State<EcranMereImport> createState() => _EtatImport();
 }
@@ -349,8 +349,8 @@ class _EtatImport extends MrcEtatEcran<EcranMereImport> {
           sansRemplissage: true,
           child: MrcTableau(
               colonnes: [
-                MrcColonne('Lot', (l) => '${l['reference']}'),
-                MrcColonne('Source', (l) => '${l['source']}'),
+                MrcColonne('Lot', (l) => mrcLibelleLot('${l['reference']}')),
+                MrcColonne('Source', (l) => mrcLibelleSource('${l['source']}')),
                 MrcColonne('Date', (l) => '${l['date'] ?? 'non disponible'}'),
                 MrcColonne('Lignes', (l) => '${l['lignes']}'),
                 MrcColonne('Validé par', (l) => l['validePar'] == null || '${l['validePar']}'.isEmpty ? 'non renseigné' : '${l['validePar']}'),
@@ -360,7 +360,7 @@ class _EtatImport extends MrcEtatEcran<EcranMereImport> {
               vide: 'Aucun lot importé ni refusé sur ce poste.')),
       const SizedBox(height: 16),
       const NoteSigh(
-          'Profil disponible : inventaire SAGE (Grand Stock). Colonnes : reference; designation; quantite; pr_unitaire; categorie (unite facultative). Le prix de revient nul signale un article non valorisé, jamais valorisé d’office ; le prix de vente reprend le prix d’achat (RG-02) ; aucun seuil d’alerte n’est inventé. Les classeurs Excel ne se lisent pas encore : les exporter en CSV. Le sélecteur de fichier natif est absent (D5) : on saisit le chemin.',
+          'Profil disponible : inventaire initial (Grand Stock). Colonnes : reference; designation; quantite; pr_unitaire; categorie (unite facultative). Le prix de revient nul signale un article non valorisé, jamais valorisé d’office ; le prix de vente reprend le prix d’achat (RG-02) ; aucun seuil d’alerte n’est inventé. Les classeurs Excel ne se lisent pas encore : les exporter en CSV. Le sélecteur de fichier natif est absent (D5) : on saisit le chemin.',
           icone: LucideIcons.info),
     ]);
   }
@@ -435,7 +435,7 @@ class _EtatModaleImport extends State<_ModaleImport> {
   Widget build(BuildContext context) {
     final a = _analyse;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-      const Text('Profil : Inventaire SAGE (Grand Stock)', style: TextStyle(color: JetonsShell.slate700, fontSize: 13, fontWeight: FontWeight.w600)),
+      const Text('Profil : Inventaire initial (Grand Stock)', style: TextStyle(color: JetonsShell.slate700, fontSize: 13, fontWeight: FontWeight.w600)),
       const SizedBox(height: 8),
       TextField(
           key: const Key('mrc-chemin'),

@@ -446,7 +446,7 @@ void main() {
       await ouvrir(t, m, 'm6-import-grand-stock');
       expect(find.text('184'), findsWidgets);
       await toucher(t, find.textContaining('Points à traiter'));
-      expect(find.textContaining('32 article(s) figurent à l’inventaire SAGE sans prix de revient unitaire'), findsOneWidget);
+      expect(find.textContaining('32 article(s) figurent à l’inventaire initial sans prix de revient unitaire'), findsOneWidget);
       await toucher(t, find.byTooltip('Valoriser').first);
       expect(find.textContaining('Valoriser — '), findsWidgets);
       await saisir(t, 'prixRevient', '850');
@@ -478,7 +478,7 @@ void main() {
       expect(find.text('Valider la reprise du stock initial ?'), findsOneWidget);
       await toucher(t, find.widgetWithText(BoutonSigh, 'Valider la reprise').last);
       expect(find.text('Reprise validée.'), findsOneWidget);
-      expect(m.collection('audit').toutes.any((e) => e['action'] == 'Validation' && e['reference'] == 'IMPORT-SAGE-20260715'), isTrue);
+      expect(m.collection('audit').toutes.any((e) => e['action'] == 'Validation' && e['reference'] == 'IMPORT-INVENTAIRE-20260715'), isTrue);
     });
 
     cas('le bordereau : les totaux sont refaits depuis les lignes (TOTAL GRAND STOCK)', (t) async {

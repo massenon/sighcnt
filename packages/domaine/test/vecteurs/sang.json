@@ -619,7 +619,7 @@
     }
    ],
    "notes": [
-    "1 référence(s) sans seuil d’alerte. Sans seuil, aucune alerte n’est possible : le seuil se fixe référence par référence à l’écran « Réactifs & consommables » — le document SAGE ne renseigne pas cette colonne."
+    "1 référence(s) sans seuil d’alerte. Sans seuil, aucune alerte n’est possible : le seuil se fixe référence par référence à l’écran « Réactifs & consommables » — l’inventaire initial ne renseigne pas cette colonne."
    ],
    "cartes": [
     "Demandes d’analyses par section — activité qui consomme les réactifs",
@@ -2675,7 +2675,7 @@
      ]
     ],
     "fiche": {
-     "id": "DONxmvve8cutk1rxq",
+     "id": "DONxmvux72q2v9506",
      "statut": "actif",
      "nom": "IMOROU Zaki",
      "telephone": "97111111",
@@ -2690,7 +2690,7 @@
    },
    "creeDefauts": {
     "fiche": {
-     "id": "DONxmvve8dapydb7o",
+     "id": "DONxmvux7360v1b7q",
      "statut": "actif",
      "nom": "JOHNSON Mary",
      "telephone": "97222222",

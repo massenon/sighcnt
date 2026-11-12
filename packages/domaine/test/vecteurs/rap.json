@@ -4453,7 +4453,7 @@
     "Exporter",
     "Tout désélectionner"
    ],
-   "texte": "Périodicité Journalier Hebdomadaire Mensuel Trimestriel Semestriel Annuel Arrêté au Axe d’analyse Par client Par nature de facture Par assureur Par article Par famille d’articles Par groupe d’articles Cumul détaillé Éditer l’état Point annuel 6 543 814 FCFA 01/01/2026 → 31/12/2026 Encaissé 3 461 605 FCFA Pièces émises 397 Postes — groupe d’articles 5 Regroupement proposé — à valider Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel. Point annuel — par groupe d’articles Colonnes Exporter GROUPE D’ARTICLES PIÈCES QUANTITÉ VENDUE MONTANT Actes et prestations 705 825 6 150 325 Pharmacie et consommables de soins 239 460 324 279 Laboratoire 14 25 46 075 Logistique et fonctionnement 30 52 22 335 Équipement et petit matériel 3 8 800 Affichage de 1 à 5 sur 5 enregistrements Cumul global : 6 543 814 FCFA sur 1 370 unité(s) vendue(s), 5 poste(s) d’analyse.",
+   "texte": "Périodicité Journalier Hebdomadaire Mensuel Trimestriel Semestriel Annuel Arrêté au Axe d’analyse Par client Par nature de facture Par assureur Par article Par famille d’articles Par groupe d’articles Cumul détaillé Éditer l’état Point annuel 6 543 814 FCFA 01/01/2026 → 31/12/2026 Encaissé 3 461 605 FCFA Pièces émises 397 Postes — groupe d’articles 5 Regroupement proposé — à valider Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel. Point annuel — par groupe d’articles Colonnes Exporter GROUPE D’ARTICLES PIÈCES QUANTITÉ VENDUE MONTANT Actes et prestations 705 825 6 150 325 Pharmacie et consommables de soins 239 460 324 279 Laboratoire 14 25 46 075 Logistique et fonctionnement 30 52 22 335 Équipement et petit matériel 3 8 800 Affichage de 1 à 5 sur 5 enregistrements Cumul global : 6 543 814 FCFA sur 1 370 unité(s) vendue(s), 5 poste(s) d’analyse.",
    "reglageInitial": {
     "periode": "mois",
     "axe": "client",
@@ -5405,7 +5405,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -5508,7 +5508,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -5615,7 +5615,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -5719,7 +5719,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -6649,7 +6649,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -6752,7 +6752,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -6859,7 +6859,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -6963,7 +6963,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -7893,7 +7893,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -7996,7 +7996,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -8103,7 +8103,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point mensuel — par groupe d’articles",
@@ -8207,7 +8207,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point mensuel — par groupe d’articles",
@@ -14253,7 +14253,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "6",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -14448,7 +14448,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "6",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -14647,7 +14647,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 1 479 323 FCFA sur 199 unité(s) vendue(s), 4 poste(s) d’analyse."
     ],
     "titreTableau": "Point trimestriel — par groupe d’articles",
@@ -14813,7 +14813,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 1 479 323 FCFA sur 199 unité(s) vendue(s), 4 poste(s) d’analyse."
     ],
     "titreTableau": "Point trimestriel — par groupe d’articles",
@@ -26861,7 +26861,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -27086,7 +27086,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -27315,7 +27315,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 4 429 513 FCFA sur 848 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point semestriel — par groupe d’articles",
@@ -27496,7 +27496,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 4 429 513 FCFA sur 848 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point semestriel — par groupe d’articles",
@@ -41959,7 +41959,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -42184,7 +42184,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -42413,7 +42413,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 6 688 044 FCFA sur 1 435 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point annuel — par groupe d’articles",
@@ -42594,7 +42594,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 6 688 044 FCFA sur 1 435 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point annuel — par groupe d’articles",
@@ -43601,7 +43601,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -43704,7 +43704,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -43811,7 +43811,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -43915,7 +43915,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -46751,7 +46751,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "4",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -46916,7 +46916,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "4",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -47085,7 +47085,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 152 066 FCFA sur 52 unité(s) vendue(s), 3 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -47236,7 +47236,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 152 066 FCFA sur 52 unité(s) vendue(s), 3 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -53419,7 +53419,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "6",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -53614,7 +53614,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "6",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -53813,7 +53813,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 855 414 FCFA sur 219 unité(s) vendue(s), 4 poste(s) d’analyse."
     ],
     "titreTableau": "Point mensuel — par groupe d’articles",
@@ -53979,7 +53979,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 855 414 FCFA sur 219 unité(s) vendue(s), 4 poste(s) d’analyse."
     ],
     "titreTableau": "Point mensuel — par groupe d’articles",
@@ -64227,7 +64227,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -64452,7 +64452,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -64681,7 +64681,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 2 799 879 FCFA sur 634 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point trimestriel — par groupe d’articles",
@@ -64862,7 +64862,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 2 799 879 FCFA sur 634 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point trimestriel — par groupe d’articles",
@@ -78365,7 +78365,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -78590,7 +78590,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -78819,7 +78819,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 4 974 743 FCFA sur 1 181 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point semestriel — par groupe d’articles",
@@ -79000,7 +79000,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 4 974 743 FCFA sur 1 181 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point semestriel — par groupe d’articles",
@@ -92773,7 +92773,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -92998,7 +92998,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -93227,7 +93227,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 5 538 959 FCFA sur 1 344 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point annuel — par groupe d’articles",
@@ -93408,7 +93408,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 5 538 959 FCFA sur 1 344 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point annuel — par groupe d’articles",
@@ -94581,7 +94581,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "1",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -94701,7 +94701,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "1",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -94825,7 +94825,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 1 692 FCFA sur 5 unité(s) vendue(s), 1 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -94946,7 +94946,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 1 692 FCFA sur 5 unité(s) vendue(s), 1 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -96929,7 +96929,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "4",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -97094,7 +97094,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "4",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -97263,7 +97263,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 80 492 FCFA sur 31 unité(s) vendue(s), 3 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -97414,7 +97414,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 80 492 FCFA sur 31 unité(s) vendue(s), 3 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -103207,7 +103207,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -103432,7 +103432,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -103661,7 +103661,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 794 004 FCFA sur 196 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point mensuel — par groupe d’articles",
@@ -103842,7 +103842,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 794 004 FCFA sur 196 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point mensuel — par groupe d’articles",
@@ -115275,7 +115275,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -115500,7 +115500,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -115729,7 +115729,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 2 751 886 FCFA sur 679 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point trimestriel — par groupe d’articles",
@@ -115910,7 +115910,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 2 751 886 FCFA sur 679 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point trimestriel — par groupe d’articles",
@@ -128153,7 +128153,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -128378,7 +128378,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -128607,7 +128607,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 3 976 815 FCFA sur 947 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point semestriel — par groupe d’articles",
@@ -128788,7 +128788,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 3 976 815 FCFA sur 947 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point semestriel — par groupe d’articles",
@@ -141211,7 +141211,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -141436,7 +141436,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -141665,7 +141665,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 4 121 045 FCFA sur 1 012 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point annuel — par groupe d’articles",
@@ -141846,7 +141846,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 4 121 045 FCFA sur 1 012 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point annuel — par groupe d’articles",
@@ -142853,7 +142853,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -142956,7 +142956,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -143063,7 +143063,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -143167,7 +143167,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -144097,7 +144097,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -144200,7 +144200,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -144307,7 +144307,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -144411,7 +144411,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -145341,7 +145341,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -145444,7 +145444,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -145551,7 +145551,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point mensuel — par groupe d’articles",
@@ -145655,7 +145655,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point mensuel — par groupe d’articles",
@@ -146585,7 +146585,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -146688,7 +146688,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "0",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -146795,7 +146795,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point trimestriel — par groupe d’articles",
@@ -146899,7 +146899,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
     ],
     "titreTableau": "Point trimestriel — par groupe d’articles",
@@ -156005,7 +156005,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "7",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -156215,7 +156215,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "7",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -156429,7 +156429,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 2 555 274 FCFA sur 414 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point semestriel — par groupe d’articles",
@@ -156610,7 +156610,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 2 555 274 FCFA sur 414 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point semestriel — par groupe d’articles",
@@ -170953,7 +170953,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -171178,7 +171178,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "8",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -171407,7 +171407,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 6 543 814 FCFA sur 1 370 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point annuel — par groupe d’articles",
@@ -171588,7 +171588,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 6 543 814 FCFA sur 1 370 unité(s) vendue(s), 5 poste(s) d’analyse."
     ],
     "titreTableau": "Point annuel — par groupe d’articles",
@@ -171774,7 +171774,7 @@
     "Exporter",
     "Tout désélectionner"
    ],
-   "texte": "Périodicité Journalier Hebdomadaire Mensuel Trimestriel Semestriel Annuel Arrêté au Axe d’analyse Par client Par nature de facture Par assureur Par article Par famille d’articles Par groupe d’articles Cumul détaillé Éditer l’état Point mensuel 895 692 FCFA 13/07/2026 → 11/08/2026 Encaissé 423 488 FCFA Pièces émises 74 Postes — groupe d’articles 4 Regroupement proposé — à valider Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel. Point mensuel — par groupe d’articles Colonnes Exporter GROUPE D’ARTICLES PIÈCES QUANTITÉ VENDUE MONTANT Actes et prestations 127 154 845 700 Pharmacie et consommables de soins 28 54 40 151 Logistique et fonctionnement 5 8 4 241 Laboratoire 2 5 4 000 Affichage de 1 à 4 sur 4 enregistrements Cumul global : 894 092 FCFA sur 221 unité(s) vendue(s), 4 poste(s) d’analyse."
+   "texte": "Périodicité Journalier Hebdomadaire Mensuel Trimestriel Semestriel Annuel Arrêté au Axe d’analyse Par client Par nature de facture Par assureur Par article Par famille d’articles Par groupe d’articles Cumul détaillé Éditer l’état Point mensuel 895 692 FCFA 13/07/2026 → 11/08/2026 Encaissé 423 488 FCFA Pièces émises 74 Postes — groupe d’articles 4 Regroupement proposé — à valider Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel. Point mensuel — par groupe d’articles Colonnes Exporter GROUPE D’ARTICLES PIÈCES QUANTITÉ VENDUE MONTANT Actes et prestations 127 154 845 700 Pharmacie et consommables de soins 28 54 40 151 Logistique et fonctionnement 5 8 4 241 Laboratoire 2 5 4 000 Affichage de 1 à 4 sur 4 enregistrements Cumul global : 894 092 FCFA sur 221 unité(s) vendue(s), 4 poste(s) d’analyse."
   },
   "sorties": [
    {
@@ -173099,7 +173099,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "2",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -173234,7 +173234,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "2",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -173373,7 +173373,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 23 500 FCFA sur 9 unité(s) vendue(s), 2 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -173509,7 +173509,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 23 500 FCFA sur 9 unité(s) vendue(s), 2 poste(s) d’analyse."
     ],
     "titreTableau": "Point journalier — par groupe d’articles",
@@ -175837,7 +175837,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "5",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -176017,7 +176017,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "5",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -176201,7 +176201,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 65 901 FCFA sur 31 unité(s) vendue(s), 4 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -176367,7 +176367,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 65 901 FCFA sur 31 unité(s) vendue(s), 4 poste(s) d’analyse."
     ],
     "titreTableau": "Point hebdomadaire — par groupe d’articles",
@@ -179715,7 +179715,7 @@
      {
       "libelle": "Postes — famille d’articles",
       "valeur": "6",
-      "indice": "Sept familles de l’inventaire SAGE"
+      "indice": "Sept familles de l’inventaire initial"
      }
     ],
     "notes": [
@@ -179914,7 +179914,7 @@
      }
     ],
     "notes": [
-     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. À valider avant usage officiel.",
+     "Le regroupement en quatre groupes est une proposition : les documents de la clinique ne définissent que les sept familles de l’inventaire initial. À valider avant usage officiel.",
      "Cumul global : 894 092 FCFA sur 221 unité(s) vendue(s), 4 poste(s) d’analyse."
     ],
     "titreTableau": "Point mensuel — par groupe d’articles",

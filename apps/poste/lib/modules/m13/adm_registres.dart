@@ -404,7 +404,7 @@ class EcranMaintenance extends StatefulWidget with EcranMaquette {
   String get description => 'Équipements de la clinique, état de marche, entretiens périodiques et pannes signalées.';
   @override
   String get regle =>
-      'Un automate en panne arrête le laboratoire : l’état de marche prime sur tout le reste, et c’est la première colonne. Le parc amorcé ici est une proposition à compléter — aucun document de cadrage n’inventorie les équipements, l’inventaire SAGE ne porte que les articles. Les fiches non vérifiées sont signalées, jamais présentées comme relevées.';
+      'Un automate en panne arrête le laboratoire : l’état de marche prime sur tout le reste, et c’est la première colonne. Le parc amorcé ici est une proposition à compléter — aucun document de cadrage n’inventorie les équipements, l’inventaire initial ne porte que les articles. Les fiches non vérifiées sont signalées, jamais présentées comme relevées.';
 
   @override
   State<EcranMaintenance> createState() => _EcranMaintenanceState();

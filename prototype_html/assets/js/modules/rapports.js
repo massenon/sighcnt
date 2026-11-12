@@ -445,7 +445,7 @@
     { id: 'nature', label: 'Par nature de facture', cle: 'type', detail: 'Consultation, maternité, pharmacie…' },
     { id: 'assureur', label: 'Par assureur', cle: 'assureur', detail: 'Compagnies conventionnées' },
     { id: 'article', label: 'Par article', cle: null, detail: 'Chaque produit ou prestation vendu' },
-    { id: 'famille', label: 'Par famille d’articles', cle: null, detail: 'Sept familles de l’inventaire SAGE' },
+    { id: 'famille', label: 'Par famille d’articles', cle: null, detail: 'Sept familles de l’inventaire initial' },
     { id: 'groupe', label: 'Par groupe d’articles', cle: null, detail: 'Regroupement proposé — à valider' },
   ];
 
@@ -581,7 +581,7 @@
 
         if (selAxe.value === 'groupe') {
           vue.appendChild(K.note('Le regroupement en quatre groupes est une <strong>proposition</strong> : '
-            + 'les documents de la clinique ne définissent que les sept familles de l’inventaire SAGE. '
+            + 'les documents de la clinique ne définissent que les sept familles de l’inventaire initial. '
             + 'À valider avant usage officiel.', { tone: 'warning', icon: 'help-circle' }));
         }
 

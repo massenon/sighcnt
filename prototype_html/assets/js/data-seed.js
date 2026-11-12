@@ -2094,7 +2094,7 @@
    * détenait donc son stock actuel PLUS tout ce qui a été transféré depuis —
    * toujours au moins la quantité du bon. On ne retouche pas les stocks :
    * un transfert déplace, il ne crée rien, et la somme gros + détail reste
-   * réconciliée avec l'inventaire SAGE. Le cumul transféré par article est
+   * réconciliée avec l'inventaire initial. Le cumul transféré par article est
    * en outre plafonné à la moitié de son stock total, pour rester plausible.
    *
    * Chaque ligne écrit ses DEUX mouvements symétriques (sortie du magasin,

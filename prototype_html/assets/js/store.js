@@ -4491,7 +4491,7 @@
     facturesMere: 'M9|Factures mères d’assurance',
     ambulances: 'M13|Répertoire des ambulances',
     materiel: 'M13|Parc technique',
-    valorisationsSage: 'M6|Valorisations de la reprise SAGE',
+    valorisationsSage: 'M6|Valorisations de l’inventaire initial (reprise)',
     dossiersConsultation: 'M1|Dossiers de consultation',
     modelesMessage: 'CFG|Modèles de message',
     rappels: 'CFG|Rappels',

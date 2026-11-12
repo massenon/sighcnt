@@ -1051,7 +1051,7 @@
   },
   "m6-import-grand-stock": {
    "titre": "Importation Grand Stock",
-   "description": "Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire SAGE « Grand Stock »)."
+   "description": "Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire initial « Grand Stock », reprise)."
   },
   "m6-inventaire-feuille": {
    "titre": "Feuille d’inventaire",
@@ -1271,7 +1271,7 @@
   },
   "mere-import": {
    "titre": "Import de migration",
-   "description": "Reprise des données existantes (SAGE, classeurs, jeux de départ) avec traçabilité complète."
+   "description": "Reprise des données existantes (inventaires, classeurs, jeux de départ) avec traçabilité complète."
   },
   "mere-indicateurs": {
    "titre": "Indicateurs publiés",

@@ -74,7 +74,7 @@ class FamilleArticle {
   final String groupe;
 }
 
-/// `D.FAMILLES_ARTICLES` : les sept catégories de l'inventaire SAGE.
+/// `D.FAMILLES_ARTICLES` : les sept catégories de l'inventaire initial.
 const famillesArticles = [
   FamilleArticle('medicament', 'Médicaments', 'pharmacie'),
   FamilleArticle('conso_medical', 'Consommables médicaux', 'pharmacie'),

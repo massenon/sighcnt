@@ -31,9 +31,9 @@
   ],
   "lot": [
    "Référence du lot",
-   "IMPORT-SAGE-20260715",
-   "Système d’origine",
-   "SAGE_100_GESTION_COMMERCIALE_15.01",
+   "IMPORT-INVENTAIRE-20260715",
+   "Origine",
+   "Inventaire initial (reprise)",
    "Document source",
    "Inventaire : Grand Stock",
    "Date d’arrêté",
@@ -74,7 +74,7 @@
    "tables": [
     {
      "entetes": [
-      "RÉFÉRENCE SAGE",
+      "RÉFÉRENCE",
       "DÉSIGNATION",
       "CATÉGORIE AFFECTÉE",
       "UNITÉ",
@@ -431,13 +431,13 @@
     ]
    ],
    "pied": [
-    "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+    "Source : Inventaire initial (reprise) « Grand Stock », arrêté au 15/07/2026."
    ]
   },
   "points": {
    "texte": [
-    "32 article(s) figurent à l’inventaire SAGE sans prix de revient unitaire, pour 1 082 unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.",
-    "Le seuil d’alerte ne figure pas non plus dans le document SAGE. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes."
+    "32 article(s) figurent à l’inventaire initial sans prix de revient unitaire, pour 1 082 unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.",
+    "Le seuil d’alerte ne figure pas non plus dans l’inventaire initial. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes."
    ],
    "tables": [
     {
@@ -754,9 +754,9 @@
     "Valider la reprise",
     "Éditer le bordereau",
     "Référence du lot",
-    "IMPORT-SAGE-20260715",
-    "Système d’origine",
-    "SAGE_100_GESTION_COMMERCIALE_15.01",
+    "IMPORT-INVENTAIRE-20260715",
+    "Origine",
+    "Inventaire initial (reprise)",
     "Document source",
     "Inventaire : Grand Stock",
     "Date d’arrêté",
@@ -784,7 +784,7 @@
     "21",
     "Sans correspondance en stock",
     "81",
-    "Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire SAGE recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.",
+    "Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire initial recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.",
     "Correspondance",
     "exacte",
     "approchée",
@@ -823,7 +823,7 @@
     "3",
     "4",
     "5",
-    "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+    "Source : Inventaire initial (reprise) « Grand Stock », arrêté au 15/07/2026."
    ],
    "tables": [
     {
@@ -1146,9 +1146,9 @@
   ],
   "lot": [
    "Référence du lot",
-   "IMPORT-SAGE-20260715",
-   "Système d’origine",
-   "SAGE_100_GESTION_COMMERCIALE_15.01",
+   "IMPORT-INVENTAIRE-20260715",
+   "Origine",
+   "Inventaire initial (reprise)",
    "Document source",
    "Inventaire : Grand Stock",
    "Date d’arrêté",
@@ -1189,7 +1189,7 @@
    "tables": [
     {
      "entetes": [
-      "RÉFÉRENCE SAGE",
+      "RÉFÉRENCE",
       "DÉSIGNATION",
       "CATÉGORIE AFFECTÉE",
       "UNITÉ",
@@ -1546,13 +1546,13 @@
     ]
    ],
    "pied": [
-    "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+    "Source : Inventaire initial (reprise) « Grand Stock », arrêté au 15/07/2026."
    ]
   },
   "points": {
    "texte": [
-    "32 article(s) figurent à l’inventaire SAGE sans prix de revient unitaire, pour 1 082 unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.",
-    "Le seuil d’alerte ne figure pas non plus dans le document SAGE. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes."
+    "32 article(s) figurent à l’inventaire initial sans prix de revient unitaire, pour 1 082 unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.",
+    "Le seuil d’alerte ne figure pas non plus dans l’inventaire initial. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes."
    ],
    "tables": [
     {
@@ -1573,7 +1573,7 @@
         "Consommables médicaux",
         "2",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1587,7 +1587,7 @@
         "Médicaments",
         "5",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1601,7 +1601,7 @@
         "Consommables médicaux",
         "8",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1615,7 +1615,7 @@
         "Consommables médicaux",
         "77",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1629,7 +1629,7 @@
         "Consommables médicaux",
         "75",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1643,7 +1643,7 @@
         "Consommables médicaux",
         "26",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1657,7 +1657,7 @@
         "Consommables médicaux",
         "10",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1671,7 +1671,7 @@
         "Fournitures administratives",
         "10",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1685,7 +1685,7 @@
         "Fournitures administratives",
         "40",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1699,7 +1699,7 @@
         "Consommables médicaux",
         "1",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1713,7 +1713,7 @@
         "Consommables médicaux",
         "11",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1727,7 +1727,7 @@
         "Consommables de laboratoire",
         "100",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1741,7 +1741,7 @@
         "Médicaments",
         "40",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1755,7 +1755,7 @@
         "Consommables médicaux",
         "2",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1769,7 +1769,7 @@
         "Produits d’entretien",
         "3",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1783,7 +1783,7 @@
         "Produits d’entretien",
         "3",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1797,7 +1797,7 @@
         "Consommables de laboratoire",
         "10",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1811,7 +1811,7 @@
         "Médicaments",
         "3",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1825,7 +1825,7 @@
         "Consommables médicaux",
         "12",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1839,7 +1839,7 @@
         "Consommables médicaux",
         "2",
         "à saisir",
-        "absente du document SAGE",
+        "absente de l’inventaire initial",
         ""
        ],
        "actions": [
@@ -1869,9 +1869,9 @@
     "Valider la reprise",
     "Éditer le bordereau",
     "Référence du lot",
-    "IMPORT-SAGE-20260715",
-    "Système d’origine",
-    "SAGE_100_GESTION_COMMERCIALE_15.01",
+    "IMPORT-INVENTAIRE-20260715",
+    "Origine",
+    "Inventaire initial (reprise)",
     "Document source",
     "Inventaire : Grand Stock",
     "Date d’arrêté",
@@ -1899,7 +1899,7 @@
     "21",
     "Sans correspondance en stock",
     "81",
-    "Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire SAGE recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.",
+    "Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire initial recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.",
     "Correspondance",
     "exacte",
     "approchée",
@@ -1938,7 +1938,7 @@
     "3",
     "4",
     "5",
-    "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+    "Source : Inventaire initial (reprise) « Grand Stock », arrêté au 15/07/2026."
    ],
    "tables": [
     {
@@ -2233,7 +2233,7 @@
  },
  "saisie": {
   "code": "ABA",
-  "modale": "Valoriser — ABAISSE LANGUE ABAISSE LANGUE — 2 unité(s) en stock. Cette référence figure à l’inventaire SAGE sans prix de revient. La valeur saisie ici ne modifie pas le document : elle est enregistrée à part, avec son auteur et sa date, pour que l’audit distingue toujours ce que le document portait de ce que la clinique a décidé. Prix de revient unitaire (FCFA) * RG-02 — les médicaments se facturent au prix d’achat, sans marge. Origine de la valeur * Facture fournisseur, bon de commande, relevé de prix… Sans origine, la valeur ne se vérifie pas. Observation Annuler Valoriser",
+  "modale": "Valoriser — ABAISSE LANGUE ABAISSE LANGUE — 2 unité(s) en stock. Cette référence figure à l’inventaire initial sans prix de revient. La valeur saisie ici ne modifie pas le document : elle est enregistrée à part, avec son auteur et sa date, pour que l’audit distingue toujours ce que le document portait de ce que la clinique a décidé. Prix de revient unitaire (FCFA) * RG-02 — les médicaments se facturent au prix d’achat, sans marge. Origine de la valeur * Facture fournisseur, bon de commande, relevé de prix… Sans origine, la valeur ne se vérifie pas. Observation Annuler Valoriser",
   "champs": [
    "f_prixRevient=",
    "f_source=",
@@ -2295,9 +2295,9 @@
     ],
     "lot": [
      "Référence du lot",
-     "IMPORT-SAGE-20260715",
-     "Système d’origine",
-     "SAGE_100_GESTION_COMMERCIALE_15.01",
+     "IMPORT-INVENTAIRE-20260715",
+     "Origine",
+     "Inventaire initial (reprise)",
      "Document source",
      "Inventaire : Grand Stock",
      "Date d’arrêté",
@@ -2338,7 +2338,7 @@
      "tables": [
       {
        "entetes": [
-        "RÉFÉRENCE SAGE",
+        "RÉFÉRENCE",
         "DÉSIGNATION",
         "CATÉGORIE AFFECTÉE",
         "UNITÉ",
@@ -2695,13 +2695,13 @@
       ]
      ],
      "pied": [
-      "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+      "Source : Inventaire initial (reprise) « Grand Stock », arrêté au 15/07/2026."
      ]
     },
     "points": {
      "texte": [
-      "32 article(s) figurent à l’inventaire SAGE sans prix de revient unitaire, pour 1 082 unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.",
-      "Le seuil d’alerte ne figure pas non plus dans le document SAGE. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes."
+      "32 article(s) figurent à l’inventaire initial sans prix de revient unitaire, pour 1 082 unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.",
+      "Le seuil d’alerte ne figure pas non plus dans l’inventaire initial. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes."
      ],
      "tables": [
       {
@@ -2736,7 +2736,7 @@
           "Médicaments",
           "5",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2750,7 +2750,7 @@
           "Consommables médicaux",
           "8",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2764,7 +2764,7 @@
           "Consommables médicaux",
           "77",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2778,7 +2778,7 @@
           "Consommables médicaux",
           "75",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2792,7 +2792,7 @@
           "Consommables médicaux",
           "26",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2806,7 +2806,7 @@
           "Consommables médicaux",
           "10",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2820,7 +2820,7 @@
           "Fournitures administratives",
           "10",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2834,7 +2834,7 @@
           "Fournitures administratives",
           "40",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2848,7 +2848,7 @@
           "Consommables médicaux",
           "1",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2862,7 +2862,7 @@
           "Consommables médicaux",
           "11",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2876,7 +2876,7 @@
           "Consommables de laboratoire",
           "100",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2890,7 +2890,7 @@
           "Médicaments",
           "40",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2904,7 +2904,7 @@
           "Consommables médicaux",
           "2",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2918,7 +2918,7 @@
           "Produits d’entretien",
           "3",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2932,7 +2932,7 @@
           "Produits d’entretien",
           "3",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2946,7 +2946,7 @@
           "Consommables de laboratoire",
           "10",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2960,7 +2960,7 @@
           "Médicaments",
           "3",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2974,7 +2974,7 @@
           "Consommables médicaux",
           "12",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -2988,7 +2988,7 @@
           "Consommables médicaux",
           "2",
           "à saisir",
-          "absente du document SAGE",
+          "absente de l’inventaire initial",
           ""
          ],
          "actions": [
@@ -3018,9 +3018,9 @@
       "Valider la reprise",
       "Éditer le bordereau",
       "Référence du lot",
-      "IMPORT-SAGE-20260715",
-      "Système d’origine",
-      "SAGE_100_GESTION_COMMERCIALE_15.01",
+      "IMPORT-INVENTAIRE-20260715",
+      "Origine",
+      "Inventaire initial (reprise)",
       "Document source",
       "Inventaire : Grand Stock",
       "Date d’arrêté",
@@ -3048,7 +3048,7 @@
       "21",
       "Sans correspondance en stock",
       "81",
-      "Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire SAGE recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.",
+      "Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire initial recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.",
       "Correspondance",
       "exacte",
       "approchée",
@@ -3087,7 +3087,7 @@
       "3",
       "4",
       "5",
-      "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+      "Source : Inventaire initial (reprise) « Grand Stock », arrêté au 15/07/2026."
      ],
      "tables": [
       {
@@ -3383,7 +3383,7 @@
   }
  },
  "correction": {
-  "modale": "Corriger la valorisation — ABAISSE LANGUE ABAISSE LANGUE — 2 unité(s) en stock. Cette référence figure à l’inventaire SAGE sans prix de revient. La valeur saisie ici ne modifie pas le document : elle est enregistrée à part, avec son auteur et sa date, pour que l’audit distingue toujours ce que le document portait de ce que la clinique a décidé. Prix de revient unitaire (FCFA) * RG-02 — les médicaments se facturent au prix d’achat, sans marge. Origine de la valeur * Facture fournisseur, bon de commande, relevé de prix… Sans origine, la valeur ne se vérifie pas. Observation Annuler Corriger",
+  "modale": "Corriger la valorisation — ABAISSE LANGUE ABAISSE LANGUE — 2 unité(s) en stock. Cette référence figure à l’inventaire initial sans prix de revient. La valeur saisie ici ne modifie pas le document : elle est enregistrée à part, avec son auteur et sa date, pour que l’audit distingue toujours ce que le document portait de ce que la clinique a décidé. Prix de revient unitaire (FCFA) * RG-02 — les médicaments se facturent au prix d’achat, sans marge. Origine de la valeur * Facture fournisseur, bon de commande, relevé de prix… Sans origine, la valeur ne se vérifie pas. Observation Annuler Corriger",
   "champs": [
    "f_prixRevient=850",
    "f_source=Facture UBIPHARM n° 4471",
@@ -3422,7 +3422,7 @@
      "action": "Validation",
      "module": "M6",
      "entite": "LotImportStock",
-     "reference": "IMPORT-SAGE-20260715"
+     "reference": "IMPORT-INVENTAIRE-20260715"
     }
    ]
   }
@@ -3442,11 +3442,11 @@
    "E-mail : cliniquenassiera@gmail.com",
    "Votre santé, notre raison de vivre",
    "BORDEREAU DE REPRISE DU STOCK INITIAL",
-   "Import IMPORT-SAGE-20260715 — Inventaire : Grand Stock",
+   "Import IMPORT-INVENTAIRE-20260715 — Inventaire : Grand Stock",
    "Référence du lot :",
-   "IMPORT-SAGE-20260715",
-   "Système d’origine :",
-   "SAGE_100_GESTION_COMMERCIALE_15.01",
+   "IMPORT-INVENTAIRE-20260715",
+   "Origine :",
+   "Inventaire initial (reprise)",
    "Date d’arrêté :",
    "15/07/2026",
    "Articles repris :",

@@ -136,7 +136,7 @@
   },
   {
    "id": "valorisation_sage",
-   "libelle": "Valorisation des références SAGE",
+   "libelle": "Valorisation des références de l’inventaire initial",
    "module": "M6",
    "collections": [
     "valorisationsSage"
@@ -488,7 +488,7 @@
     },
     {
      "famille": "valorisation_sage",
-     "libelle": "Valorisation des références SAGE",
+     "libelle": "Valorisation des références de l’inventaire initial",
      "module": "M6",
      "mode": "fiche-marquee",
      "collections": [
@@ -872,7 +872,7 @@
     },
     {
      "famille": "valorisation_sage",
-     "libelle": "Valorisation des références SAGE",
+     "libelle": "Valorisation des références de l’inventaire initial",
      "module": "M6",
      "mode": "fiche-marquee",
      "collections": [
@@ -1259,7 +1259,7 @@
     },
     {
      "famille": "valorisation_sage",
-     "libelle": "Valorisation des références SAGE",
+     "libelle": "Valorisation des références de l’inventaire initial",
      "module": "M6",
      "mode": "fiche-marquee",
      "collections": [
@@ -1645,7 +1645,7 @@
     },
     {
      "famille": "valorisation_sage",
-     "libelle": "Valorisation des références SAGE",
+     "libelle": "Valorisation des références de l’inventaire initial",
      "module": "M6",
      "mode": "fiche-marquee",
      "collections": [
@@ -2038,7 +2038,7 @@
     },
     {
      "famille": "valorisation_sage",
-     "libelle": "Valorisation des références SAGE",
+     "libelle": "Valorisation des références de l’inventaire initial",
      "module": "M6",
      "mode": "fiche-marquee",
      "collections": [
@@ -2409,7 +2409,7 @@
     },
     {
      "famille": "valorisation_sage",
-     "libelle": "Valorisation des références SAGE",
+     "libelle": "Valorisation des références de l’inventaire initial",
      "module": "M6",
      "mode": "fiche-marquee",
      "collections": [
@@ -2779,7 +2779,7 @@
     },
     {
      "famille": "valorisation_sage",
-     "libelle": "Valorisation des références SAGE",
+     "libelle": "Valorisation des références de l’inventaire initial",
      "module": "M6",
      "mode": "fiche-marquee",
      "collections": [
@@ -3150,7 +3150,7 @@
     },
     {
      "famille": "valorisation_sage",
-     "libelle": "Valorisation des références SAGE",
+     "libelle": "Valorisation des références de l’inventaire initial",
      "module": "M6",
      "mode": "fiche-marquee",
      "collections": [
@@ -7191,7 +7191,7 @@
     {
      "famille": "valorisation_sage",
      "enAttente": "",
-     "texte": "Valorisation des références SAGEValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
+     "texte": "Valorisation des références de l’inventaire initialValide : Direction / Gérance, Directrice de l’Administration et des Finances (DAF), Administrateur système · non amorcé sur ce poste, ouvrir l’écran pour le charger—Ouvrir",
      "ouvrir": true
     },
     {
@@ -9154,7 +9154,7 @@
    "journal": {
     "action": "Validation",
     "module": "M6",
-    "entite": "Valorisation des références SAGE",
+    "entite": "Valorisation des références de l’inventaire initial",
     "reference": "VZ1",
     "avant": "{\"aValider\":true}",
     "apres": "{\"valideLe\":\"@@MAINTENANT@@\",\"validePar\":\"OROU YO Marguerite\",\"valideRole\":\"Direction / Gé",
@@ -9246,7 +9246,7 @@
    "journal": {
     "action": "Remise à valider",
     "module": "M6",
-    "entite": "Valorisation des références SAGE",
+    "entite": "Valorisation des références de l’inventaire initial",
     "reference": "VZ1",
     "avant": "{\"valideLe\":\"2026-09-01T09:00:00.000Z\"}",
     "apres": "{\"motif\":\"modifié depuis la validation\"}",

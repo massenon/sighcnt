@@ -128,7 +128,7 @@ function verifier(libelle, condition, detail) {
   verifier('L’accueil du module liste tous les jeux d’import déclarés, chacun marqué « Supporté » ou « Proposition à valider »',
     (await ev(() => [...document.querySelectorAll('#page-content a')].filter((a) => a.textContent.trim() === 'Ouvrir').length)) === (await ev(() => window.SIGH.nav.IMPORTS.length))
       && /Proposition à valider/.test(t) && (t.match(/Supporté/g) || []).length >= 9, t.slice(0, 300));
-  verifier('Chaque jeu dit sa source et ses collections cibles (rien d’inventé)', /Source : Inventaire SAGE 100/.test(t) && /Écrit dans : produits, lots, mouvements/.test(t), t.slice(0, 200));
+  verifier('Chaque jeu dit sa source et ses collections cibles (rien d’inventé)', /Source : Inventaire initial \(reprise\)/.test(t) && /Écrit dans : produits, lots, mouvements/.test(t), t.slice(0, 200));
 
   await ouvrir('m6-import-grand-stock');
   t = await texte();

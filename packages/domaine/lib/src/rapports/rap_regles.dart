@@ -129,7 +129,7 @@ const rapAxesDirection = [
   RapAxe('nature', 'Par nature de facture', 'Consultation, maternité, pharmacie…'),
   RapAxe('assureur', 'Par assureur', 'Compagnies conventionnées'),
   RapAxe('article', 'Par article', 'Chaque produit ou prestation vendu'),
-  RapAxe('famille', 'Par famille d’articles', 'Sept familles de l’inventaire SAGE'),
+  RapAxe('famille', 'Par famille d’articles', 'Sept familles de l’inventaire initial'),
   RapAxe('groupe', 'Par groupe d’articles', 'Regroupement proposé — à valider'),
 ];
 

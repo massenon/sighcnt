@@ -188,8 +188,12 @@ bool mrcPosteJoignable(DateTime? dernierContact, DateTime maintenant, {int silen
 
 /// Le profil d'un lot importable : son identifiant, la collection cible, les colonnes attendues (dans l'ordre), les colonnes facultatives.
 class MrcProfilImport {
-  const MrcProfilImport(this.id, this.libelle, this.collection, this.source, this.colonnes, {this.facultatives = const []});
+  const MrcProfilImport(this.id, this.libelle, this.collection, this.source, this.colonnes, {this.facultatives = const [], this.prefixeLot});
   final String id;
+
+  /// Le préfixe VISIBLE des références de lot (`IMPORT-<préfixe>-AAAAMMJJ`) ; à défaut, le premier mot de l'identifiant du profil. L'identifiant ne change pas (aucune migration) ;
+  /// ce qui se lit à l'écran ne nomme plus l'ancien logiciel (lot T5b, décision de la Direction du 12/11/2026).
+  final String? prefixeLot;
   final String libelle;
   final String collection;
   final String source;
@@ -197,20 +201,27 @@ class MrcProfilImport {
   final List<String> facultatives;
 }
 
-/// Inventaire SAGE « Grand Stock » : une ligne par article, `[référence, désignation, quantité, P.R. unitaire, catégorie]` (le P.R. unitaire est le coût
+/// Inventaire initial (reprise) « Grand Stock » : une ligne par article, `[référence, désignation, quantité, P.R. unitaire, catégorie]` (le P.R. unitaire est le coût
 /// moyen pondéré de SAGE ; zéro signale un article non valorisé dans le document source).
 const mrcProfilSage = MrcProfilImport(
   'sage-inventaire',
-  'Inventaire SAGE (Grand Stock)',
+  'Inventaire initial (Grand Stock)',
   'produits',
   'SAGE_100_GESTION_COMMERCIALE_15.01',
   ['reference', 'designation', 'quantite', 'pr_unitaire', 'categorie'],
   facultatives: ['unite'],
+  prefixeLot: 'INVENTAIRE',
 );
+
+/// Le libellé VISIBLE d'une référence de lot : les lots déjà écrits sous l'ancien préfixe (`IMPORT-SAGE-…`) gardent leur identifiant en base et se LISENT sans le nom de l'ancien logiciel.
+String mrcLibelleLot(String reference) => reference.replaceFirst('IMPORT-SAGE-', 'IMPORT-INVENTAIRE-');
+
+/// Le libellé VISIBLE de la source d'un lot : le code de l'ancien système d'origine se lit « Inventaire initial (reprise) ». Une autre source passe telle quelle.
+String mrcLibelleSource(String source) => source == 'SAGE_100_GESTION_COMMERCIALE_15.01' ? 'Inventaire initial (reprise)' : source;
 
 const mrcProfilsImport = <MrcProfilImport>[mrcProfilSage];
 
-/// Les sept familles d'articles de l'inventaire SAGE (D.FAMILLES_ARTICLES).
+/// Les sept familles d'articles de l'inventaire initial (D.FAMILLES_ARTICLES).
 const mrcCategoriesSage = {'medicament', 'conso_medical', 'reactif', 'conso_labo', 'petit_materiel', 'entretien', 'fourniture'};
 
 /// Une ligne refusée : son numéro dans le FICHIER (l'en-tête est la ligne 1), la colonne, la valeur lue et le motif.
@@ -369,7 +380,7 @@ MrcAnalyse mrcAnalyserImport(String texte, MrcProfilImport profil, {Set<String> 
 /// Référence d'un lot : `IMPORT-<PROFIL>-<AAAAMMJJ>`, suffixée `-2`, `-3`… si elle existe déjà.
 String mrcReferenceLot(MrcProfilImport profil, DateTime date, Iterable<String> existantes) {
   String d(int n, int l) => n.toString().padLeft(l, '0');
-  final base = 'IMPORT-${profil.id.split('-').first.toUpperCase()}-${d(date.year, 4)}${d(date.month, 2)}${d(date.day, 2)}';
+  final base = 'IMPORT-${(profil.prefixeLot ?? profil.id.split('-').first).toUpperCase()}-${d(date.year, 4)}${d(date.month, 2)}${d(date.day, 2)}';
   final pris = existantes.toSet();
   if (!pris.contains(base)) return base;
   for (var k = 2;; k++) {

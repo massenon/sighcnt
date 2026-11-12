@@ -62,7 +62,7 @@ const qualArbitrages = [
 const qualValidees = [
   ('Tarifs des actes (valeurs d’attente du 20/08)',
       'ARRÊTÉS par la Direction — plus aucun tarif provisoire au catalogue vivant ; la semence garde le marquage historique.'),
-  ('Valorisation des 34 références SAGE',
+  ('Valorisation des 34 références de l’inventaire initial',
       'Médiane de catégorie CONFIRMÉE ; révisable à la première facture fournisseur (surcouche tracée).'),
   ('Les quatre groupes d’articles', 'CONFIRMÉS — ils cessent d’être une proposition.'),
   ('Questionnaire de satisfaction', 'VALIDÉ — le recueil peut s’appuyer dessus.'),

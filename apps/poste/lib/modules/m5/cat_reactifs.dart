@@ -33,7 +33,7 @@ class EcranReactifsLabo extends StatefulWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'Le coût unitaire moyen pondéré (CUMP) est calculé automatiquement pour les réactifs et consommables de laboratoire (CDCT §10.1). Le seuil d’alerte est fixé par la clinique, référence par référence : le document SAGE d’origine ne le renseigne pas, et un seuil unique n’aurait aucun sens entre un réactif à péremption courte et un consommable de fond de rayon.';
+      'Le coût unitaire moyen pondéré (CUMP) est calculé automatiquement pour les réactifs et consommables de laboratoire (CDCT §10.1). Le seuil d’alerte est fixé par la clinique, référence par référence : le document d’inventaire initial ne le renseigne pas, et un seuil unique n’aurait aucun sens entre un réactif à péremption courte et un consommable de fond de rayon.';
 
   @override
   State<EcranReactifsLabo> createState() => _EtatReactifs();
@@ -116,7 +116,7 @@ class _EtatReactifs extends State<EcranReactifsLabo> {
           if (k.sansSeuil.isNotEmpty) ...[
             const SizedBox(height: 12),
             NoteSigh(
-                '${nombre(k.sansSeuil.length)} référence(s) sans seuil d’alerte. Tant qu’un seuil n’est pas fixé, aucune alerte ne peut être émise sur ces articles — le document SAGE d’origine ne renseigne pas cette colonne, c’est à la clinique de l’arrêter.',
+                '${nombre(k.sansSeuil.length)} référence(s) sans seuil d’alerte. Tant qu’un seuil n’est pas fixé, aucune alerte ne peut être émise sur ces articles — le document d’inventaire initial ne renseigne pas cette colonne, c’est à la clinique de l’arrêter.',
                 ton: TonSigh.attention,
                 icone: LucideIcons.triangleAlert),
           ],
@@ -126,7 +126,7 @@ class _EtatReactifs extends State<EcranReactifsLabo> {
           _consommation(context, c, prods, mouvements),
           const SizedBox(height: 16),
           const SourceFlux(
-              'Inventaire SAGE « Grand Stock » — les seuils d’alerte y sont absents et se définissent ici, référence par référence.'),
+              'Inventaire initial (reprise) « Grand Stock » — les seuils d’alerte y sont absents et se définissent ici, référence par référence.'),
         ]);
       },
     );
@@ -276,7 +276,7 @@ class _EtatReactifs extends State<EcranReactifsLabo> {
             type: TypeChamp.nombre,
             requis: true,
             aide:
-                'À partir de quelle quantité la clinique veut être prévenue. Absent du document SAGE : c’est à l’établissement de l’arrêter.'),
+                'À partir de quelle quantité la clinique veut être prévenue. Absent de l’inventaire initial : c’est à l’établissement de l’arrêter.'),
         const ChampDef(
             nom: 'seuilCritique',
             libelle: 'Seuil critique',

@@ -613,10 +613,10 @@ void main() {
       expect(find.text('LOT'), findsOneWidget, reason: 'le tableau reste lisible');
     });
 
-    cas('le lot SAGE repris à la migration figure au tableau, sans validateur inventé', (t) async {
+    cas('le lot de l’inventaire initial repris à la migration figure au tableau, sans validateur inventé', (t) async {
       final m = Magasin.depuisDossier(Magasin.collectionsDuJeu);
       await ouvrirImport(t, m);
-      expect(find.text('IMPORT-SAGE-20260715'), findsOneWidget);
+      expect(find.text('IMPORT-INVENTAIRE-20260715'), findsOneWidget, reason: 'l’identifiant en base reste IMPORT-SAGE-20260715 : le tableau le LIT sans le nom de l’ancien logiciel');
       expect(find.text('non renseigné'), findsWidgets);
       expect(kpi(t, 'Lots importés'), '1');
       expect(kpi(t, 'Lignes rejetées'), '0');
@@ -653,7 +653,7 @@ void main() {
       await toucher(t, bouton('Valider et importer'));
       expect(find.textContaining('au nom de'), findsOneWidget);
       await toucher(t, bouton('Valider et importer').last);
-      final ajoutes = m.collection('produits').toutes.where((p) => p['lotImport'] == 'IMPORT-SAGE-20261031').toList();
+      final ajoutes = m.collection('produits').toutes.where((p) => p['lotImport'] == 'IMPORT-INVENTAIRE-20261031').toList();
       expect(ajoutes.length, 2);
       expect(m.collection('produits').toutes.length, avant + 2);
       for (final p in ajoutes) {
@@ -665,7 +665,7 @@ void main() {
       final lot = m.collection('lotsImport').actives.single;
       expect(lot['etat'], 'importé');
       expect(lot['lignes'], 2);
-      expect(m.collection('audit').toutes.any((a) => a['action'] == 'Import' && a['reference'] == 'IMPORT-SAGE-20261031'), isTrue, reason: 'RG-12');
+      expect(m.collection('audit').toutes.any((a) => a['action'] == 'Import' && a['reference'] == 'IMPORT-INVENTAIRE-20261031'), isTrue, reason: 'RG-12');
     });
 
     cas('un code déjà au catalogue est refusé en le nommant : rien n’est écrasé', (t) async {

@@ -45,7 +45,7 @@ class EcranRegles extends StatelessWidget with EcranMaquette {
           titre: 'Groupes et familles d’articles',
           child: cfaPile([
             cfbNote(
-                'Les familles viennent du document : l’inventaire SAGE « Grand Stock » classe ses articles en sept catégories. Les groupes, eux, ne figurent dans aucun document — ce regroupement en quatre ensembles est une proposition soumise à la Direction, et non une donnée reprise d’une source.',
+                'Les familles viennent du document : l’inventaire initial (reprise) « Grand Stock » classe ses articles en sept catégories. Les groupes, eux, ne figurent dans aucun document — ce regroupement en quatre ensembles est une proposition soumise à la Direction, et non une donnée reprise d’une source.',
                 ton: 'warning',
                 icone: LucideIcons.circleQuestionMark),
             MiniTableauSigh(colonnes: [

@@ -1064,7 +1064,7 @@
    * DEUX PARTIS PRIS.
    *
    * 1. LE PARC EST UNE PROPOSITION, PAS UN RELEVÉ. Aucun document de cadrage
-   *    n'inventorie les équipements : l'inventaire SAGE porte les ARTICLES
+   *    n'inventorie les équipements : l'inventaire initial porte les ARTICLES
    *    (médicaments, consommables), pas les machines. Les fiches amorcées ici
    *    portent donc « aCompleter » et l'écran le dit. Inventer un numéro de
    *    série ou une date de mise en service donnerait une donnée fausse qu'on
@@ -1093,7 +1093,7 @@
     description: 'Équipements de la clinique, état de marche, entretiens périodiques et pannes signalées.',
     regle: 'Un automate en panne <strong>arrête le laboratoire</strong> : l’état de marche prime sur tout '
       + 'le reste, et c’est la première colonne. Le parc amorcé ici est une <strong>proposition à '
-      + 'compléter</strong> — aucun document de cadrage n’inventorie les équipements, l’inventaire SAGE '
+      + 'compléter</strong> — aucun document de cadrage n’inventorie les équipements, l’inventaire initial '
       + 'ne porte que les articles. Les fiches non vérifiées sont <strong>signalées, jamais présentées '
       + 'comme relevées</strong>.',
     render: function (root) {

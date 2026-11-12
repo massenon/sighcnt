@@ -1702,7 +1702,7 @@
       });
 
       host.appendChild(U.card('Groupes et familles d’articles', el('div.space-y-3', null, [
-        K.note('Les <strong>familles</strong> viennent du document : l’inventaire SAGE « Grand Stock » classe '
+        K.note('Les <strong>familles</strong> viennent du document : l’inventaire initial (reprise) « Grand Stock » classe '
           + 'ses articles en sept catégories. Les <strong>groupes</strong>, eux, ne figurent dans aucun document — '
           + 'ce regroupement en quatre ensembles est une <strong>proposition</strong> soumise à la Direction, '
           + 'et non une donnée reprise d’une source.', { tone: 'warning', icon: 'help-circle' }),

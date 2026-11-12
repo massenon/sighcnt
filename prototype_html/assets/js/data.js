@@ -1901,7 +1901,7 @@
    * Ce que cela change aujourd'hui : rien, ou presque. RG-02 impose que les
    * médicaments soient facturés au prix d'achat, sans marge ; le prix de vente
    * égale donc le prix d'achat, lui-même arrondi du CUMP. Sur les 184 articles
-   * de l'inventaire SAGE, l'écart entre les deux valorisations est de
+   * de l'inventaire initial, l'écart entre les deux valorisations est de
    * 1 015 FCFA au total — un effet d'arrondi, pas une différence de méthode.
    *
    * Ce que cela changera : le jour où une marge sera appliquée à un article
@@ -1933,7 +1933,7 @@
   /* ==========================================================================
    * GROUPES ET FAMILLES D'ARTICLES
    * --------------------------------------------------------------------------
-   * Les FAMILLES existent dans le document source : l'inventaire SAGE « Grand
+   * Les FAMILLES existent dans le document source : l'inventaire initial « Grand
    * Stock » classe ses 184 articles en sept catégories. Les GROUPES, eux, ne
    * figurent dans aucun document — ils sont ici une lecture à deux niveaux de
    * cette classification, proposée à la Direction et non déduite d'une source.
@@ -2292,7 +2292,7 @@
   GROUPES_ARTICLES.aConfirmer = false;
   GROUPES_ARTICLES.confirmesLe = '2026-09-01';
   GROUPES_ARTICLES.confirmesPar = 'Direction';
-  GROUPES_ARTICLES.source = 'Regroupement proposé à partir des sept catégories de l’inventaire SAGE — à valider par la Direction';
+  GROUPES_ARTICLES.source = 'Regroupement proposé à partir des sept catégories de l’inventaire initial — à valider par la Direction';
 
   function familleDe(categorie) {
     return FAMILLES_ARTICLES.filter(function (f) { return f.id === categorie; })[0] || null;
@@ -2328,7 +2328,7 @@
     { document: 'Fiche d’évaluation et de solde (juillet 2026)', devient: 'Modèle d’état imprimable', module: 'M10 / RAP', ecran: 'm10-evaluations', statut: 'Intégré' },
     { document: 'Tarifs des analyses de laboratoire (48)', devient: 'Catalogue laboratoire', module: 'M5', ecran: 'm5-catalogue', statut: 'Intégré — tarifs à confirmer' },
     { document: 'Tarifs des médicaments et accessoires (144)', devient: 'Catalogue tarifaire pharmacie', module: 'M6', ecran: 'cfg-tarifs', statut: 'Intégré — tarifs à confirmer' },
-    { document: 'Inventaire « Grand Stock » (SAGE 100)', devient: 'Stock initial — 175 articles repris', module: 'M6', ecran: 'm6-import-grand-stock', statut: 'Intégré' },
+    { document: 'Inventaire « Grand Stock » (reprise)', devient: 'Stock initial — 175 articles repris', module: 'M6', ecran: 'm6-import-grand-stock', statut: 'Intégré' },
     { document: 'Facture fournisseur SoBAPS (BL 26LNA00026)', devient: 'Modèle du workflow achat', module: 'M7', ecran: 'm7-receptions', statut: 'Intégré' },
     { document: 'Bon d’expression de besoins (modèle vierge)', devient: 'Workflow de demande interne', module: 'M7', ecran: 'm7-besoins', statut: 'Intégré' },
     { document: 'Classeur comptable SYSCOHADA', devient: 'Plan comptable + journaux', module: 'M12', ecran: 'm12-plan-comptable', statut: 'Intégré — partiel' },

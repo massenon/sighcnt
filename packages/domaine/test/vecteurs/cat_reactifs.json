@@ -235,7 +235,7 @@
     "indice": null
    }
   ],
-  "noteSansSeuil": "2 référence(s) sans seuil d’alerte. Tant qu’un seuil n’est pas fixé, aucune alerte ne peut être émise sur ces articles — le document SAGE d’origine ne renseigne pas cette colonne, c’est à la clinique de l’arrêter.",
+  "noteSansSeuil": "2 référence(s) sans seuil d’alerte. Tant qu’un seuil n’est pas fixé, aucune alerte ne peut être émise sur ces articles — le document d’inventaire initial ne renseigne pas cette colonne, c’est à la clinique de l’arrêter.",
   "entetes": [
    "CODE",
    "DÉSIGNATION",
@@ -680,7 +680,7 @@
    "Consommation au fil des mois"
   ],
   "aide": "Une référence dont le classement de valeur apparaît en rouge est sous son seuil d’alerte : c’est du stock immobilisé sur un article qui va manquer. Le rapprochement des deux classements — le plus consommé et le plus immobilisé — désigne les réapprovisionnements à passer en premier.",
-  "source": "Source : Inventaire SAGE « Grand Stock » — les seuils d’alerte y sont absents et se définissent ici, référence par référence."
+  "source": "Source : Inventaire initial (reprise) « Grand Stock » — les seuils d’alerte y sont absents et se définissent ici, référence par référence."
  },
  "graphiques": {
   "_doc": "graphiques de m5-reactifs (période « mois » par défaut)",
