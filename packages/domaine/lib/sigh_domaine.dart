@@ -19,6 +19,7 @@ export 'src/format/js.dart' show nombreOuZero, arrondiJs;
 export 'src/referentiels/regles.dart';
 export 'src/referentiels/periodes.dart';
 export 'src/design/jetons.dart';
+export 'src/droits/droit_import.dart';
 export 'src/droits/matrice.dart';
 export 'src/droits/a_chaud.dart';
 export 'src/navigation/manifeste.dart';

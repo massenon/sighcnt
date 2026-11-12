@@ -1,4 +1,5 @@
 import '../configuration/cfb_regles.dart' show CfbFermetures;
+import 'droit_import.dart';
 
 /// Droits d'un rôle sur un écran : voir, éditer, annuler. « Lecture seule » n'est pas un quatrième droit : un écran
 /// visible sans droit d'éditer EST en lecture seule.
@@ -33,7 +34,7 @@ class Droit {
 /// La matrice extraite est déjà résolue (surcharges d'écran, modules, écrans universels) ; ce moteur ne recalcule rien.
 class MatriceDroits {
   MatriceDroits._(this._parRole, this._archives, this._libelles, this._accueils,
-      [this.rolesBruts = const [], this.fermetures]);
+      [this.rolesBruts = const [], this.fermetures, MatriceImport? matriceImport]) : matriceImport = matriceImport ?? MatriceImport.vide;
 
   /// Assemblage public pour la SUPERPOSITION à chaud (`superposerDroits`, `a_chaud.dart`) : la matrice y est recalculée, jamais relue du JSON.
   MatriceDroits.assemblee(
@@ -42,8 +43,15 @@ class MatriceDroits {
       required Map<String, String> libelles,
       required Map<String, String> accueils,
       required List<Map<String, Object?>> rolesBruts,
-      required CfbFermetures fermetures})
-      : this._(parRole, archives, libelles, accueils, rolesBruts, fermetures);
+      required CfbFermetures fermetures,
+      MatriceImport? matriceImport})
+      : this._(parRole, archives, libelles, accueils, rolesBruts, fermetures, matriceImport);
+
+  /// LE DROIT D'IMPORT PAR JEU (lot IMP-C) : voir, importer, annuler, lus de la section `import` de `rbac.json` (puis superposés à chaud), jamais du droit d'éditer
+  /// l'écran `imp-*`. Un jeu ou un rôle inconnu est FERMÉ.
+  final MatriceImport matriceImport;
+
+  DroitImport droitImport(String role, String jeu) => matriceImport.droit(role, jeu);
 
   /// Les rôles tels que `rbac.json` les porte (libellés d'origine compris) : la base de la superposition.
   final List<Map<String, Object?>> rolesBruts;
@@ -86,6 +94,8 @@ class MatriceDroits {
           if (r['home'] != null) '${r['id']}': '${r['home']}'
       },
       [for (final r in roles) r.cast<String, Object?>()],
+      null,
+      MatriceImport.depuisJson(json['import']),
     );
   }
 

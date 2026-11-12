@@ -17,6 +17,7 @@ library;
 import '../configuration/cfb_donnees.dart' show cfbNoyau;
 import '../configuration/cfb_regles.dart' show CfbFermetures;
 import '../navigation/manifeste.dart';
+import 'droit_import.dart';
 import 'matrice.dart';
 
 typedef _Fiche = Map<String, Object?>;
@@ -35,7 +36,7 @@ Map<String, Map<String, Object?>> surchargesParRole(Iterable<Map<String, Object?
     final fusion = {...deja};
     f.forEach((k, v) {
       if (v == null) return;
-      if (k == 'droits' || k == 'droitsEcrans') {
+      if (k == 'droits' || k == 'droitsEcrans' || k == 'droitsImport') {
         fusion[k] = {
           ...((deja[k] as Map?)?.cast<String, Object?>() ?? const {}),
           ...((v as Map?)?.cast<String, Object?>() ?? const {})
@@ -68,7 +69,8 @@ typedef _Calcul = ({
   Map<String, String> libelles,
   Map<String, String> accueils,
   List<Map<String, Object?>> roles,
-  CfbFermetures fermetures
+  CfbFermetures fermetures,
+  MatriceImport imp
 });
 
 /// Calcule la matrice COMPLÈTE depuis le manifeste et les fiches. `base` ne fournit que la liste des rôles (libellés d'origine, couleurs, accueils).
@@ -189,11 +191,41 @@ _Calcul _calculer(MatriceDroits base, Manifeste manifeste, Iterable<Map<String, 
     }
     parRole[id] = droits;
   }
-  return (parRole: parRole, archives: archives, libelles: libelles, accueils: accueils, roles: roles, fermetures: ferm);
+  // LE DROIT D'IMPORT PAR JEU : `N.droitImport`, jamais le droit d'éditer l'écran du jeu. Un jeu dont l'écran ou le module d'import est fermé l'est pour tous les rôles.
+  final declarations = base.matriceImport.declarations;
+  final impParRole = <String, Map<String, DroitImport>>{};
+  final paie = <String>{};
+  for (final r in roles) {
+    final id = '${r['id']}';
+    impParRole[id] = {
+      for (final d in declarations)
+        d.id: resoudreDroitImport(
+          jeu: d.id,
+          defaut: d.defaut[id] ?? '',
+          surcharge: mapDe(mapDe(sur[id]?['droitsImport'])?[d.id]),
+          roleArchive: archive(id),
+          ouvert: ferm.ecranActif(d.ecran, d.module) && !ferm.modules.containsKey('IMP'),
+        ),
+    };
+    if (!archive(id) && droitsModule(id, 'M11').editer) paie.add(id);
+  }
+  final imp = _matriceImport(declarations, impParRole, paie);
+  return (parRole: parRole, archives: archives, libelles: libelles, accueils: accueils, roles: roles, fermetures: ferm, imp: imp);
 }
 
+/// Assemble la matrice d'import : les superviseurs sont TIRÉS du droit (annuler sur chaque jeu), jamais d'une liste de rôles.
+MatriceImport _matriceImport(List<DeclarationImport> declarations, Map<String, Map<String, DroitImport>> parRole, Set<String> paie) => MatriceImport(
+      declarations: declarations,
+      parRole: parRole,
+      superviseurs: {
+        for (final e in parRole.entries)
+          if (declarations.isNotEmpty && declarations.every((d) => e.value[d.id]?.annuler ?? false)) e.key
+      },
+      capacitePaie: paie,
+    );
+
 MatriceDroits _assembler(_Calcul c) => MatriceDroits.assemblee(
-    parRole: c.parRole, archives: c.archives, libelles: c.libelles, accueils: c.accueils, rolesBruts: c.roles, fermetures: c.fermetures);
+    parRole: c.parRole, archives: c.archives, libelles: c.libelles, accueils: c.accueils, rolesBruts: c.roles, fermetures: c.fermetures, matriceImport: c.imp);
 
 /// Superpose les fiches à la matrice.
 ///
@@ -246,11 +278,27 @@ MatriceDroits superposerDroits(MatriceDroits base, Manifeste manifeste,
     final acc = maintenant.accueils[id] != ref.accueils[id] ? maintenant.accueils[id] : base.accueil(id);
     if (acc != null) accueils[id] = acc;
   }
+  // Le droit d'import suit la même règle que les écrans : la case de la matrice engendrée reste la BASE, remplacée seulement quand les fiches d'aujourd'hui la font
+  // changer par rapport à celles de l'extraction (fiches inchangées, matrice inchangée) ; un rôle créé depuis l'extraction n'a que ses fiches.
+  final decl = base.matriceImport.declarations;
+  final impCases = <String, Map<String, DroitImport>>{};
+  final paie = <String>{};
+  for (final r in maintenant.roles) {
+    final id = '${r['id']}';
+    final ancien = connus.contains(id);
+    impCases[id] = {
+      for (final d in decl)
+        d.id: (ancien && maintenant.imp.droit(id, d.id) == ref.imp.droit(id, d.id)) ? base.matriceImport.droit(id, d.id) : maintenant.imp.droit(id, d.id),
+    };
+    final paieMaintenant = maintenant.imp.capacitePaie.contains(id), paieRef = ref.imp.capacitePaie.contains(id);
+    if (ancien && paieMaintenant == paieRef ? base.matriceImport.capacitePaie.contains(id) : paieMaintenant) paie.add(id);
+  }
   return MatriceDroits.assemblee(
       parRole: parRole,
       archives: archives,
       libelles: libelles,
       accueils: accueils,
       rolesBruts: maintenant.roles,
-      fermetures: maintenant.fermetures);
+      fermetures: maintenant.fermetures,
+      matriceImport: _matriceImport(decl, impCases, paie));
 }

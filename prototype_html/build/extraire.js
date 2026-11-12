@@ -135,7 +135,9 @@ async function extraireRbac() {
       /* LE DROIT D'IMPORT PAR JEU (lot IMP-A) : la déclaration du manifeste, puis ce que chaque rôle détient réellement (même appel que le bouton, `N.droitImport`), puis les deux
          faits dérivés de la matrice dont le poste aura besoin : qui SUPERVISE les lots (droit d'annuler sur chaque jeu) et qui détient la CAPACITÉ PAIE (colonne « Salaire de base »). */
       const importJeux = propre(N.IMPORTS).map((j) => ({ id: j.id, libelle: j.libelle, ecran: j.ecran, module: j.module, hotes: j.hotes, sensibilite: j.sensibilite,
-        collections: j.collections, doublon: j.doublon }));
+        collections: j.collections, doublon: j.doublon,
+        /* La matrice D'ORIGINE du jeu (V voir, I importer, A annuler) : le poste superpose à chaud les fiches RBAC (`droitsImport`) à ce défaut, comme `N.droitImport`. */
+        defaut: j.rolesDefaut }));
       const importParRole = {};
       roles.forEach((ro) => {
         importParRole[ro.id] = {};

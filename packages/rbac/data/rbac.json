@@ -13261,7 +13261,15 @@
      "lots",
      "mouvements"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "stock": "VIA",
+     "direction": "V",
+     "comptable": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "personnel",
@@ -13275,7 +13283,12 @@
     "collections": [
      "personnel"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "direction": "V"
+    }
    },
    {
     "id": "patients",
@@ -13289,7 +13302,14 @@
     "collections": [
      "patients"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "reception": "VIA",
+     "agentadmin": "VIA",
+     "direction": "V"
+    }
    },
    {
     "id": "tarifs",
@@ -13304,7 +13324,13 @@
      "tarifs",
      "versionsTarif"
     ],
-    "doublon": "versionner"
+    "doublon": "versionner",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "direction": "VIA",
+     "stock": "VIA"
+    }
    },
    {
     "id": "tarifs-produits",
@@ -13320,7 +13346,13 @@
      "tarifs",
      "versionsTarif"
     ],
-    "doublon": "versionner"
+    "doublon": "versionner",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "stock": "VIA",
+     "comptable": "V"
+    }
    },
    {
     "id": "analyses-modele",
@@ -13332,7 +13364,13 @@
     "collections": [
      "examensLabo"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "laborantin": "VIA",
+     "direction": "V"
+    }
    },
    {
     "id": "fournisseurs",
@@ -13346,7 +13384,15 @@
     "collections": [
      "fournisseurs"
     ],
-    "doublon": "ignorer"
+    "doublon": "ignorer",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "stock": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "assureurs",
@@ -13360,7 +13406,14 @@
     "collections": [
      "assureurs"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "souscripteurs",
@@ -13372,7 +13425,14 @@
     "collections": [
      "souscripteurs"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "plan-comptable",
@@ -13386,7 +13446,14 @@
     "collections": [
      "comptes"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "soldes-ouverture",
@@ -13400,7 +13467,14 @@
     "collections": [
      "ecritures"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "produits-referentiel",
@@ -13414,7 +13488,12 @@
     "collections": [
      "produits"
     ],
-    "doublon": "ignorer"
+    "doublon": "ignorer",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "stock": "VIA"
+    }
    },
    {
     "id": "emplacements",
@@ -13428,7 +13507,12 @@
     "collections": [
      "emplacements"
     ],
-    "doublon": "ignorer"
+    "doublon": "ignorer",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "stock": "VIA"
+    }
    },
    {
     "id": "stock-detail-initial",
@@ -13444,7 +13528,12 @@
      "lots",
      "mouvements"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "stock": "VIA"
+    }
    },
    {
     "id": "transfert-lignes",
@@ -13460,7 +13549,12 @@
      "mouvements",
      "produits"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "stock": "VIA"
+    }
    },
    {
     "id": "inventaire-comptage",
@@ -13474,7 +13568,12 @@
     "collections": [
      "inventaires"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "stock": "VIA"
+    }
    },
    {
     "id": "natures-facture",
@@ -13488,7 +13587,12 @@
     "collections": [
      "naturesFacture"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "direction": "V"
+    }
    },
    {
     "id": "centres-couts",
@@ -13502,7 +13606,14 @@
     "collections": [
      "centresCouts"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "catalogue-imagerie",
@@ -13516,7 +13627,12 @@
     "collections": [
      "examensImagerie"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "direction": "V"
+    }
    },
    {
     "id": "unites-labo",
@@ -13530,7 +13646,13 @@
     "collections": [
      "unitesLabo"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "laborantin": "VIA",
+     "direction": "V"
+    }
    },
    {
     "id": "prestataires",
@@ -13544,7 +13666,12 @@
     "collections": [
      "prestataires"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "direction": "V"
+    }
    },
    {
     "id": "garanties",
@@ -13558,7 +13685,14 @@
     "collections": [
      "garanties"
     ],
-    "doublon": "versionner"
+    "doublon": "versionner",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "couvertures-assurance",
@@ -13572,7 +13706,14 @@
     "collections": [
      "couverturesAssurance"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "immobilisations",
@@ -13586,7 +13727,14 @@
     "collections": [
      "immobilisations"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "budgets",
@@ -13600,7 +13748,14 @@
     "collections": [
      "budgets"
     ],
-    "doublon": "refuser"
+    "doublon": "refuser",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "comptable": "VIA",
+     "direction": "V",
+     "aide_comptable": "V"
+    }
    },
    {
     "id": "courriers",
@@ -13614,7 +13769,13 @@
     "collections": [
      "courriers"
     ],
-    "doublon": "ignorer"
+    "doublon": "ignorer",
+    "defaut": {
+     "admin": "VIA",
+     "da": "VIA",
+     "agentadmin": "VIA",
+     "direction": "V"
+    }
    }
   ],
   "parRole": {
