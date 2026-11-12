@@ -404,6 +404,83 @@ async function viderMessages(page) {
   })();
 
 
+  /* --- Outils du lot IMP-B2 (Vagues 141 à 151) : les dix autres référentiels. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
+  const outilsB2 = (() => {
+    const JEUX = ['natures-facture', 'centres-couts', 'catalogue-imagerie', 'unites-labo', 'prestataires', 'garanties', 'couvertures-assurance', 'immobilisations', 'budgets', 'courriers'];
+    const ENT = {
+      natures: ['Code', 'Nature de la facture', 'Secteur émetteur', 'Origine'],
+      centres: ['Code', 'Intitulé du centre', 'Type', 'Responsable', 'Origine'],
+      imagerie: ['Code examen', 'Intitulé', 'Modalité', 'Voie d’abord', 'Code tarifaire (si différent)'],
+      unites: ['Symbole', 'Intitulé complet', 'Domaine'],
+      prestataires: ['Nom du prestataire', 'Spécialité / type d’acte', 'Téléphone', 'Tarif par acte (FCFA)', 'IFU du prestataire', 'Facture normalisée fournie'],
+      garanties: ['N° de police', 'Catégorie', 'Garantie', 'Taux (%)', 'Plafond (FCFA)', 'Unité du plafond', 'Date d’effet', 'Motif', 'Source'],
+      couvertures: ['Code patient', 'Code compagnie', 'N° de police', 'Date d’effet', 'Motif', 'Catégorie', 'Taux de prise en charge (%)', 'Expiration de la carte'],
+      immo: ['Référence', 'Désignation du bien', 'Catégorie', 'Date d’acquisition', 'Valeur d’acquisition (FCFA)', 'Durée d’amortissement (années)', 'Compte d’immobilisation', 'Fournisseur', 'État'],
+      budgets: ['Exercice', 'Centre de coûts', 'Nature budgétaire', 'Montant prévisionnel (FCFA)'],
+      courriers: ['N° d’ordre', 'Sens', 'Date', 'Correspondant', 'Objet', 'Nature', 'Service destinataire'],
+    };
+    /** Les collections que le lot touche : on photographie les identifiants AVANT, on archive le NEUF APRÈS (RG-14), jamais une suppression. */
+    const COLS = ['naturesFacture', 'centresCouts', 'examensImagerie', 'variablesImagerie', 'unitesLabo', 'variablesLabo', 'prestataires', 'garanties', 'couverturesAssurance', 'souscripteurs', 'patients',
+      'immobilisations', 'budgets', 'courriers', 'lotsImportation', 'factures', 'ecritures', 'ordonnances', 'taches', 'notifications', 'produits', 'mouvements'];
+    const photographier = () => page.evaluate((cols) => { const S = window.SIGH.store, o = {}; cols.forEach((c) => { o[c] = S.collection(c).all().map((r) => r.id); }); sessionStorage.setItem('sigh-b2', JSON.stringify(o)); return cols.length; }, COLS);
+    const restituer = async () => {
+      await page.evaluate(() => { const S = window.SIGH.store, avant = JSON.parse(sessionStorage.getItem('sigh-b2') || '{}');
+        Object.keys(avant).forEach((c) => { const vus = {}; avant[c].forEach((i) => { vus[i] = true; }); S.collection(c).all().forEach((r) => { if (!vus[r.id] && r.statut !== 'archive') r.statut = 'archive'; }); });
+        S.save(); });
+      /* L'écriture différée du magasin part 300 ms après le dernier geste : on la laisse partir AVANT de quitter la page, sinon la navigation suivante l'interrompt (ERR_ABORTED). */
+      await pause(800);
+      await attendreEcritures();
+    };
+    const jours = () => page.evaluate(() => { const C = window.SIGH.core, d = (n) => C.iso(new Date(C.aujourdhui().getTime() + n * 86400000)); return { auj: d(0), p1: d(1), p10: d(10), p30: d(30), p60: d(60), m1: d(-1), m10: d(-10) }; });
+    const suffixe = () => String(Date.now()).slice(-6) + Math.floor(Math.random() * 90 + 10);
+    /** L'analyse du moteur sur des LIGNES (en-tête compris), sans écrire : ce que la vérification afficherait. */
+    const analyser = (jeu, lignes, nom) => page.evaluate((j, l, n) => { const I = window.SIGH.importer, a = I.analyserLignes(I.jeu(j), l, n || 'b2.csv');
+      return { accepte: a.accepte, aEcrire: a.aEcrire, droitRefuse: !!a.droitRefuse, compte: a.compte, nbLignes: a.nbLignes,
+        globaux: a.globaux.map((p) => ({ code: p.code, colonne: p.colonne, motif: p.motif, geste: p.geste, niveau: p.niveau })),
+        lignes: a.lignes.map((x) => ({ n: x.n, etat: x.etat, extra: x.extra || null, problemes: x.problemes.map((p) => ({ code: p.code, colonne: p.colonne, valeur: p.valeur, motif: p.motif, geste: p.geste, niveau: p.niveau })) })) }; }, jeu, lignes, nom);
+    const codes = (a) => a.globaux.map((p) => p.code).concat(...a.lignes.map((l) => l.problemes.filter((p) => p.niveau === 'refus').map((p) => p.code)));
+    const toutCodes = (a) => a.globaux.map((p) => p.code).concat(...a.lignes.map((l) => l.problemes.map((p) => p.code)));
+    /** Analyse PUIS application, comme le bouton le fait (le moteur rejoue l'analyse avant d'écrire). */
+    const appliquer = (jeu, lignes, nom) => page.evaluate((j, l, n) => { const I = window.SIGH.importer, a = I.analyserLignes(I.jeu(j), l, n || 'b2.csv'); const r = I.appliquer(j, a);
+      const lot = r.lot || null; return { ok: !!r.ok, code: r.code || null, motif: r.motif || null, geste: r.geste || null, ref: lot ? lot.reference : null, id: lot ? lot.id : null, ecrits: r.ecrits || 0, analyse: a.accepte }; }, jeu, lignes, nom);
+    const annuler = (id, motif) => page.evaluate((i, m) => { const r = window.SIGH.importer.annulerLot(i, m || 'sonde'); return { ok: !!r.ok, code: r.code || null, motif: r.motif || null, geste: r.geste || null, archives: r.archives }; }, id, motif);
+    const lot = (id) => page.evaluate((i) => { const l = window.SIGH.importer.lots().get(i); return l ? JSON.parse(JSON.stringify(l)) : null; }, id);
+    const compte = (cols) => page.evaluate((cs) => { const S = window.SIGH.store, o = {}; cs.forEach((c) => { o[c] = S.collection(c).all().length; }); return o; }, cols);
+    /** Les fiches d'une collection selon un champ (par valeur, jamais par rang). */
+    const fiches = (col, champ, valeur) => page.evaluate((c, k, v) => window.SIGH.store.collection(c).all().filter((x) => x[k] === v).map((x) => JSON.parse(JSON.stringify(x))), col, champ, valeur);
+    /** Une convention de sonde : deux compagnies, deux souscripteurs (polices à soi), trois patients (deux assurés du premier souscripteur, un non assuré). Des fiches NEUVES : une version ne se retire pas du serveur. */
+    const fixture = (sfx) => page.evaluate((s) => {
+      const S = window.SIGH.store, ass = S.collection('assureurs').active().slice(0, 2);
+      const colS = S.collection('souscripteurs', { module: 'M9', entite: 'souscripteur', prefix: 'SOU' });
+      const mkS = (n, a) => colS.insert({ nom: 'Sonde B2 ' + s + ' ' + n, police: 'B2-' + s + '-' + n, assureur: a.code, assureurNom: a.nom, categorie: 'entreprise', effectif: 10, dateDebut: '2026-01-01', dateFin: null,
+        grilleSaisie: false, actesExclus: [], produitsExclus: [], accordPrealable: [] }).record;
+      const s1 = mkS(1, ass[0]), s2 = mkS(2, ass[1]);
+      const modele = S.collection('patients').active().filter((p) => p.assureur && !p.externe && !p.personnelId)[0];
+      const colP = S.collection('patients', { module: 'M1', entite: 'patient' });
+      const mkP = (n, assure) => { const c = Object.assign({}, modele); delete c.id; delete c._creePar; delete c._creeLe; delete c._modifiePar; delete c._modifieLe;
+        return colP.insert(Object.assign(c, { code: 'CNT/B2' + s + n + '/26', nom: 'SONDEB2' + n, prenom: 'Patiente ' + s, personnelId: null, externe: false,
+          assureur: assure ? s1.assureur : null, assureurNom: assure ? s1.assureurNom : null, numeroPolice: assure ? s1.police : null, categorieAssurance: assure ? 'entreprise' : null,
+          tauxPriseEnCharge: assure ? 70 : 0, carteExpiration: assure ? '2027-12-31' : null, souscripteurId: assure ? s1.id : null, souscripteur: assure ? s1.nom : null })).record; };
+      const p1 = mkP(1, true), p2 = mkP(2, true), p3 = mkP(3, false);
+      return { s1: { id: s1.id, police: s1.police, nom: s1.nom, assureur: s1.assureur }, s2: { id: s2.id, police: s2.police, nom: s2.nom, assureur: s2.assureur },
+        p1: { id: p1.id, code: p1.code }, p2: { id: p2.id, code: p2.code }, p3: { id: p3.id, code: p3.code } };
+    }, sfx);
+    /** Mesure d'un envoi au serveur : octets et requêtes POST vers le magasin, pendant `f`. */
+    const mesurerEnvoi = async (f) => {
+      let octets = 0, requetes = 0;
+      const ecoute = (r) => { if (r.method() === 'POST' && /api\/(magasin|crud)\.php/.test(r.url())) { requetes++; octets += (r.postData() || '').length; } };
+      page.on('request', ecoute);
+      const t0 = Date.now(); const retour = await f(); const tF = Date.now() - t0;
+      const t1 = Date.now(); await attendreEcritures(); const tE = Date.now() - t1;
+      page.off('request', ecoute);
+      return { retour: retour, msFonction: tF, msEnvoi: tE, octets: octets, requetes: requetes };
+    };
+    const FAUX = ',,,,,,,,,';
+    return { JEUX, ENT, photographier, restituer, jours, suffixe, analyser, codes, toutCodes, appliquer, annuler, lot, compte, fiches, fixture, mesurerEnvoi, FAUX };
+  })();
+
+
+
   /* ==========================================================================
    * Vagues 124 et 125 : LOT IMP-A, jeu `tarifs` (PRD-TARIFS 7.2, T4). Un seul jeu, écrit par le MÊME chemin que la saisie à l'écran (PR.proposerTarif) :
    * Oui (par un détenteur du droit de décider : version validée ; sans ce droit : proposition + alerte), Non avec motif (aucune version, pas une erreur), ligne
@@ -20634,9 +20711,9 @@ async function viderMessages(page) {
     verifier('Le rapport .xlsx dit les lignes ignorées (colonne niveau « ignorée » et ligne de résumé)', /ignorée/.test(rapIgn) && /Lignes ignorées \(fiche déjà tenue\) 1/.test(rapIgn), rapIgn.slice(0, 300));
     const modes = await page.evaluate(() => window.SIGH.nav.IMPORTS.map((j) => j.id + ':' + j.doublon).join(','));
     /* « Ignorer » : la liste FERMÉE de la Direction (produits, fournisseurs, emplacements, courriers) ; le lot IMP-B1 y a ajouté le référentiel produits et les emplacements (Vague 127). Jamais patients, comptes ni pièces. */
-    verifier('Le mode de doublon est DÉCLARÉ par jeu au manifeste : « ignorer » sur fournisseurs, référentiel produits et emplacements SEULEMENT (liste fermée, I8), « versionner » sur les prix, « refuser » partout ailleurs, patients compris (aucun « mettre à jour en place »)',
+    verifier('Le mode de doublon est DÉCLARÉ par jeu au manifeste : « ignorer » sur fournisseurs, référentiel produits, emplacements et courriers SEULEMENT (liste fermée, I8 ; les courriers depuis le lot IMP-B2), « versionner » sur les prix et les garanties, « refuser » partout ailleurs, patients compris (aucun « mettre à jour en place »)',
       /fournisseurs:ignorer/.test(modes) && /produits-referentiel:ignorer/.test(modes) && /emplacements:ignorer/.test(modes) && /tarifs:versionner/.test(modes) && /patients:refuser/.test(modes) && /grand-stock:refuser/.test(modes)
-      && modes.split(',').filter((x) => /ignorer/.test(x)).length === 3 && !/mettre/.test(modes), modes);
+      && /courriers:ignorer/.test(modes) && /garanties:versionner/.test(modes) && modes.split(',').filter((x) => /ignorer/.test(x)).length === 4 && !/mettre/.test(modes), modes);
 
     /* (6) Chacun lit SES lots ; la supervision les lit tous ; un lot se défait par son auteur ou la supervision. */
     await poserSessionServeur(roleImp('stock', 'STOCKEUR'));
@@ -21157,9 +21234,9 @@ async function viderMessages(page) {
       ['stock', 'da', 'admin'].every((r) => M.roles[r] === 'VIA,VIA,VIA,VIA,VIA'), JSON.stringify(M.roles));
     verifier('Aucun autre profil : ni le comptable (qui ne lit que le Grand Stock), ni la Direction, ni l’assistant comptable, ni l’accueil, le caissier, le biologiste, le médecin',
       ['comptable', 'direction', 'aide_comptable', 'reception', 'caissier', 'laborantin', 'medecin', 'assistant_comptable'].every((r) => M.roles[r] === ',,,,') && M.gros.comptable === 'V' && M.gros.stock === 'VIA', JSON.stringify(M));
-    verifier('Déclarations : un hôte par jeu, les trois jeux qui écrivent des stocks sont RESTREINTS (aucune valeur recopiée), « ignorer » n’est admis que pour les produits et les emplacements (liste fermée, I8)',
+    verifier('Déclarations : un hôte par jeu, les trois jeux qui écrivent des stocks sont RESTREINTS (aucune valeur recopiée), « ignorer » n’est admis que pour les produits, les emplacements et les fournisseurs (liste fermée, I8 ; les courriers s’y ajoutent au lot IMP-B2)',
       M.decl.join('|') === 'produits-referentiel:m6-produits:courante:ignorer:M6|emplacements:m6-etiquetage:courante:ignorer:M6|stock-detail-initial:m6-stock-detail:restreinte:refuser:M6|transfert-lignes:m6-transferts:restreinte:refuser:M6|inventaire-comptage:m6-inventaire:restreinte:refuser:M6'
-      && M.ignorer === 'emplacements,fournisseurs,produits-referentiel', JSON.stringify(M));
+      && M.ignorer === 'courriers,emplacements,fournisseurs,produits-referentiel', JSON.stringify(M));
     verifier('La supervision (lire tous les lots) reste celle de la DAF et de l’administrateur : détenir cinq jeux ne suffit pas à superviser', M.superviseurs === 'admin,da', M.superviseurs);
 
     /* Le bouton sur chaque hôte : présent pour un détenteur, ABSENT pour un profil qui ouvre l'écran sans détenir le jeu. */
@@ -22651,6 +22728,882 @@ async function viderMessages(page) {
     await B.restituer();
     const e140 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
     verifier('Aucune erreur JavaScript', e140.length === 0, e140.join(' | '));
+  });
+
+  /* ==========================================================================
+   * Vagues 141 à 151 : LOT IMP-B2, les dix autres référentiels (natures de facture, centres de coûts, catalogue de l'imagerie, unités de mesure, prestataires,
+   * garanties, couvertures d'assurance, immobilisations, budgets, courriers). Chaque jeu écrit par la fabrique ou la garde que la saisie à l'écran emploie.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 141 : IMP-B2 les dix autres référentiels : droit distinct par jeu (matrice d’origine lue du manifeste), bouton « Importer les données » présent chez le détenteur et ABSENT d’un profil qui ouvre l’écran sans le détenir, pages de jeu, le moteur refuse aussi');
+    erreursJS = [];
+    const B = outilsB2;
+    await ouvrir('imp-accueil.html');
+    const M = await page.evaluate((jeux) => {
+      const N = window.SIGH.nav, g = (r, j) => { const d = N.droitImport(r, j); return (d.voir ? 'V' : '') + (d.importer ? 'I' : '') + (d.annuler ? 'A' : ''); };
+      const out = { roles: {} };
+      ['admin', 'da', 'direction', 'comptable', 'aide_comptable', 'laborantin', 'agentadmin', 'stock', 'reception', 'caissier', 'medecin', 'assistant_comptable', 'echographiste'].forEach((r) => { out.roles[r] = jeux.map((j) => g(r, j)).join(','); });
+      out.decl = jeux.map((j) => { const x = N.jeuImport(j); return j + ':' + x.hotes.join('+') + ':' + x.sensibilite + ':' + x.doublon + ':' + x.module; });
+      out.superviseurs = ['admin', 'da', 'direction', 'stock', 'comptable'].filter((r) => N.superviseImport(r)).join(',');
+      out.ignorer = N.IMPORTS.filter((j) => j.doublon === 'ignorer').map((j) => j.id).sort().join(',');
+      out.moteur = jeux.every((j) => !!window.SIGH.importer && !!window.SIGH.importer.jeu(j));
+      return out;
+    }, B.JEUX);
+    const VIA10 = 'VIA,VIA,VIA,VIA,VIA,VIA,VIA,VIA,VIA,VIA', V10 = 'V,V,V,V,V,V,V,V,V,V';
+    verifier('Matrice d’origine : l’administrateur et la DAF importent et annulent les dix jeux (VIA), la Direction les VOIT seulement (V : modèle et ses propres lots)',
+      M.roles.admin === VIA10 && M.roles.da === VIA10 && M.roles.direction === V10, JSON.stringify(M.roles));
+    verifier('Le comptable détient ses cinq jeux (centres de coûts, garanties, couvertures, immobilisations, budgets) ; l’assistant comptable les VOIT sans jamais les importer (I7)',
+      M.roles.comptable === ',VIA,,,,VIA,VIA,VIA,VIA,' && M.roles.aide_comptable === ',V,,,,V,V,V,V,', JSON.stringify(M.roles));
+    verifier('Le biologiste détient les unités de mesure seules, l’agent administratif les courriers seuls ; aucun autre profil (stock, accueil, caissier, médecin, assistant de direction, échographiste : l’échographiste n’écrit pas le catalogue de l’imagerie)',
+      M.roles.laborantin === ',,,VIA,,,,,,' && M.roles.agentadmin === ',,,,,,,,,VIA' && ['stock', 'reception', 'caissier', 'medecin', 'assistant_comptable', 'echographiste'].every((r) => M.roles[r] === ',,,,,,,,,'), JSON.stringify(M.roles));
+    verifier('Déclarations : un hôte par jeu ; quatre jeux RESTREINTS (couvertures, immobilisations, budgets, courriers) ; « garanties » versionne, « courriers » ignore (liste fermée de la Direction, décision I8)',
+      M.decl.join('|') === 'natures-facture:cfg-natures-facture:courante:refuser:CFG|centres-couts:cfg-centres-couts:courante:refuser:M12|catalogue-imagerie:cfg-imagerie-catalogue:courante:refuser:CFG|unites-labo:m5-unites:courante:refuser:M5|prestataires:m10-prestataires:courante:refuser:M10|garanties:m9-conventions:courante:versionner:M9|couvertures-assurance:m9-assures:restreinte:refuser:M9|immobilisations:m12-immobilisations:restreinte:refuser:M12|budgets:m12-budgets:restreinte:refuser:M12|courriers:m13-courriers:restreinte:ignorer:M13'
+      && M.ignorer === 'courriers,emplacements,fournisseurs,produits-referentiel' && M.moteur === true, JSON.stringify(M));
+    verifier('La supervision (lire tous les lots) reste celle de la DAF et de l’administrateur : détenir des jeux ne suffit pas à superviser', M.superviseurs === 'admin,da', M.superviseurs);
+
+    /* Le bouton sur chaque hôte : présent pour un détenteur, ABSENT pour un profil qui ouvre l'écran sans détenir le jeu (le droit d'ÉDITER l'écran n'emporte pas celui d'importer). */
+    const roles = await page.evaluate(() => Object.keys(window.SIGH.nav.ROLES).filter((r) => !window.SIGH.nav.roleArchive(r)));
+    const bilan = [];
+    for (const jeu of B.JEUX) {
+      const hote = await page.evaluate((j) => window.SIGH.nav.jeuImport(j).hotes[0], jeu);
+      const cand = await page.evaluate((j, e, rs) => {
+        const N = window.SIGH.nav, x = N.get(e);
+        const ouvre = rs.filter((r) => N.can(r, { id: e, roles: x.roles, module: x.module }));
+        return { detenteurs: ouvre.filter((r) => N.droitImport(r, j).importer), autres: ouvre.filter((r) => !N.droitImport(r, j).importer) };
+      }, jeu, hote, roles);
+      const choisis = [['detenteur', cand.detenteurs[0]], ['detenteur', cand.detenteurs[1]], ['detenteur', cand.detenteurs[2]], ['autre', cand.autres[0]], ['autre', cand.autres[1]]].filter((x) => x[1]);
+      for (const [genre, r] of choisis) {
+        await poserSessionServeur(roleImp(r));
+        await ouvrir(hote + '.html');
+        const b = await boutonsImport();
+        bilan.push({ hote: hote, jeu: jeu, role: r, genre: genre, present: b.some((x) => x.split(',').indexOf(jeu) >= 0) });
+      }
+      if (!cand.autres.length) bilan.push({ hote: hote, jeu: jeu, genre: 'aucun profil sans le droit qui ouvre l’écran' });
+    }
+    const faux = bilan.filter((x) => x.genre === 'detenteur' ? !x.present : (x.genre === 'autre' ? x.present : true));
+    verifier('Sur chacun des dix hôtes, le bouton est présent pour chaque détenteur, ABSENT de tout profil qui ouvre l’écran sans le jeu (' + bilan.length + ' sondages)',
+      bilan.length >= 40 && faux.length === 0 && B.JEUX.every((j) => bilan.some((b) => b.jeu === j && b.genre === 'autre')), JSON.stringify(faux.concat([{ lignes: bilan.length }])));
+    const hotesDe = bilan.reduce((o, b) => { o[b.hote] = 1; return o; }, {});
+    verifier('Les dix hôtes sont bien dix écrans distincts de ceux d’IMP-A et IMP-B1', Object.keys(hotesDe).length === 10, Object.keys(hotesDe).join(','));
+
+    /* Les pages de jeu : visibles de qui détient le jeu, FERMÉES (403) aux autres ; un jeu restreint le dit. */
+    await poserSessionServeur(roleImp('agentadmin'));
+    await ouvrir('imp-courriers.html');
+    const pc = await page.evaluate(() => ({ televerser: [...document.querySelectorAll('#page-content button')].some((b) => /Téléverser un fichier/.test(b.textContent)), restreint: /Jeu restreint/.test(document.getElementById('page-content').innerText),
+      modele: [...document.querySelectorAll('#page-content button')].some((b) => /Télécharger le modèle/.test(b.textContent)), colonnes: [...document.querySelectorAll('#page-content table tbody tr td:first-child')].map((t) => t.textContent.trim()) }));
+    verifier('La page du jeu « courriers » s’ouvre à l’agent administratif : modèle, téléversement, note « jeu restreint », colonnes lues de la déclaration',
+      pc.televerser && pc.restreint && pc.modele && pc.colonnes.indexOf('N° d’ordre') >= 0 && pc.colonnes.indexOf('Objet') >= 0 && pc.colonnes.indexOf('Document numérisé') < 0, JSON.stringify(pc));
+    await ouvrir('imp-budgets.html');
+    verifier('…et la page « budgets » lui est FERMÉE (403) : sa visibilité vient du droit voir du jeu', await page.evaluate(() => /error-403/.test(location.pathname)), '');
+    await poserSessionServeur(roleImp('laborantin'));
+    await ouvrir('imp-unites-labo.html');
+    const pu = await page.evaluate(() => ({ televerser: [...document.querySelectorAll('#page-content button')].some((b) => /Téléverser un fichier/.test(b.textContent)), restreint: /Jeu restreint/.test(document.getElementById('page-content').innerText), ferme: /error-403/.test(location.pathname) }));
+    verifier('La page des unités s’ouvre au biologiste médical (jeu non restreint : aucune note de restriction)', pu.televerser && !pu.restreint && !pu.ferme, JSON.stringify(pu));
+
+    /* La rangée du ruban : CALCULÉE de la matrice. */
+    await poserSessionServeur(roleImp('comptable'));
+    await ouvrir('imp-accueil.html');
+    const rub = await page.evaluate((jeux) => { const N = window.SIGH.nav, sys = N.treeRuban('comptable').filter((d) => d.domain === 'Système')[0];
+      return { modules: sys ? sys.modules.map((m) => m.code) : null, items: sys ? sys.modules[0].items.map((i) => i.id) : [], stock: jeux.filter((j) => N.importsVisibles('stock').indexOf(j) >= 0) }; }, B.JEUX);
+    verifier('Le comptable voit, dans la rangée « Importation de données » SEULE, ses cinq jeux nouveaux (jamais les natures, le catalogue de l’imagerie, les prestataires, les unités ni les courriers) ; le gestionnaire de stock n’en gagne aucun',
+      JSON.stringify(rub.modules) === '["IMP"]' && ['imp-centres-couts', 'imp-garanties', 'imp-couvertures-assurance', 'imp-immobilisations', 'imp-budgets'].every((x) => rub.items.indexOf(x) >= 0)
+      && ['imp-natures-facture', 'imp-catalogue-imagerie', 'imp-prestataires', 'imp-unites-labo', 'imp-courriers'].every((x) => rub.items.indexOf(x) < 0) && rub.stock.length === 0, JSON.stringify(rub));
+
+    /* LE MOTEUR REFUSE AUSSI : un profil qui ne détient pas le jeu n'analyse, n'applique ni n'annule rien, et aucun lot n'est consigné. */
+    await poserSessionServeur(roleImp('stock'));
+    await ouvrir('imp-accueil.html');
+    const refus = await page.evaluate((jeux) => { const I = window.SIGH.importer, lots0 = I.lots().all().length, out = [];
+      jeux.forEach((j) => { const a = I.analyserLignes(I.jeu(j), [['x'], ['y']], 'refus.csv'); const faux = { accepte: true, aEcrire: 1, lignesBrutes: [['x'], ['y']], fichier: 'refus.csv', lignes: [], nbLignes: 1, compte: {}, globaux: [] };
+        out.push([j, a.droitRefuse === true && a.accepte === false && a.globaux[0].code === 'DROIT_IMPORT_REFUSE', I.appliquer(j, faux).code]); });
+      return { out: out, lotsApres: I.lots().all().length - lots0 }; }, B.JEUX);
+    verifier('Le MOTEUR refuse sans le droit : pour chacun des dix jeux, l’analyse et l’application du gestionnaire de stock rendent DROIT_IMPORT_REFUSE, rien n’est consigné',
+      refus.out.length === 10 && refus.out.every((x) => x[1] === true && x[2] === 'DROIT_IMPORT_REFUSE') && refus.lotsApres === 0, JSON.stringify(refus));
+    const e141 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e141.length === 0, e141.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 142 : IMP-B2 les natures de facture et les centres de coûts : le secteur se choisit dans la liste de l’écran, le code d’un centre EST l’imputation des écritures (aucun doublon, majuscules confondues), doublons, tout ou rien, annulation refusée tant qu’une facture ou une écriture s’appuie dessus');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('da', 'DAF142'));
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+
+    /* ---------- NATURES DE FACTURE ---------- */
+    const existante = await page.evaluate(() => { const n = window.SIGH.store.collection('naturesFacture').active()[0]; return { code: n.code, libelle: n.libelle, secteur: n.secteur, n: window.SIGH.store.collection('naturesFacture').all().length }; });
+    const NA = 'ZB' + sfx.slice(0, 4), NB = 'ZC' + sfx.slice(0, 4);
+    const E = B.ENT.natures;
+    const ok1 = await B.analyser('natures-facture', [E, [NA, 'Sonde B2 Orthopédie ' + sfx, 'Chirurgie', 'Décision test'], [NB, 'Sonde B2 Pédiatrie ' + sfx, 'Maternité', '']]);
+    verifier('Natures : un fichier valide est accepté, deux lignes à écrire, aucun avertissement',
+      ok1.accepte && ok1.aEcrire === 2 && ok1.compte.avertissements === 0, JSON.stringify(ok1));
+    const refus = await B.analyser('natures-facture', [E,
+      ['ZZ1' + sfx.slice(0, 3), 'Nature à secteur inconnu', 'Cuisine', ''],
+      ['ABCDEFGHIJ', 'Code trop long', 'Chirurgie', ''],
+      ['AB C', 'Code avec espace', 'Chirurgie', ''],
+      [existante.code, 'Libellé neuf B2 ' + sfx, 'Chirurgie', ''],
+      ['ZZ2' + sfx.slice(0, 3), existante.libelle, 'Chirurgie', ''],
+      ['ZZ3' + sfx.slice(0, 3), '', 'Chirurgie', ''],
+      ['ZZ4' + sfx.slice(0, 3), 'Doublon fichier ' + sfx, 'Chirurgie', ''],
+      ['zz4' + sfx.slice(0, 3), 'Autre libellé fichier ' + sfx, 'Chirurgie', '']]);
+    const cr = B.codes(refus);
+    verifier('Natures : un refus NOMMÉ par règle (secteur hors liste, code trop long, code avec espace, code déjà tenu, libellé déjà tenu, libellé absent, code en double dans le fichier)',
+      cr.indexOf('VALEUR_HORS_LISTE') >= 0 && cr.filter((c) => c === 'FORMAT_INVALIDE').length === 2 && cr.filter((c) => c === 'DOUBLON_MAGASIN').length === 2 && cr.indexOf('CHAMP_OBLIGATOIRE') >= 0 && cr.indexOf('DOUBLON_FICHIER') >= 0 && !refus.accepte,
+      JSON.stringify(cr));
+    const horsListe = refus.lignes[0].problemes[0];
+    verifier('Le refus d’un secteur hors liste dit la liste permise (celle de l’écran « Natures de facture ») et le geste', /Médecine générale/.test(horsListe.geste) && /Choisissez parmi/.test(horsListe.geste), horsListe.geste);
+    const avantN = await B.compte(['naturesFacture', 'lotsImportation']);
+    const rien = await B.appliquer('natures-facture', [E, [NA + 'X', 'Ligne valide ' + sfx, 'Chirurgie', ''], ['ZZ9', '', 'Chirurgie', '']]);
+    const apresRien = await B.compte(['naturesFacture', 'lotsImportation']);
+    verifier('Natures, atomicité : une ligne valide et une fautive, le fichier est refusé en entier et RIEN n’est écrit',
+      rien.ok === false && rien.code === 'ANALYSE_REFUSEE' && apresRien.naturesFacture === avantN.naturesFacture, JSON.stringify({ rien, avantN, apresRien }));
+    const lot1 = await B.appliquer('natures-facture', [E, [NA, 'Sonde B2 Orthopédie ' + sfx, 'Chirurgie', 'Décision test'], [NB, 'Sonde B2 Pédiatrie ' + sfx, 'Maternité', '']]);
+    const natures = await page.evaluate((a, b) => { const c = window.SIGH.store.collection('naturesFacture').all(); const f = (x) => c.filter((n) => n.code === x)[0];
+      const opts = window.SIGH.store.collection('naturesFacture').active().map((n) => n.libelle);
+      return { a: f(a) ? { libelle: f(a).libelle, secteur: f(a).secteur, source: f(a).source, ordre: f(a).ordre, lot: f(a).lotImport } : null, b: f(b) ? { source: f(b).source, ordre: f(b).ordre } : null, optionsDeLaCaisse: opts, n: c.length }; }, NA, NB);
+    verifier('Natures : deux fiches NEUVES, code en majuscules, secteur de la liste, rang à la suite (comme l’écran), origine du fichier ou celle du lot, aucune fiche tenue touchée ; la caisse les propose (même collection)',
+      lot1.ok && lot1.ecrits === 2 && natures.a.secteur === 'Chirurgie' && natures.a.source === 'Décision test' && /^Import/.test(natures.b.source) && natures.b.ordre === natures.a.ordre + 1 && natures.n === avantN.naturesFacture + 2
+      && natures.optionsDeLaCaisse.indexOf('Sonde B2 Orthopédie ' + sfx) >= 0, JSON.stringify({ lot1, natures }));
+    const dbl = await B.analyser('natures-facture', [E, [NA, 'Autre libellé ' + sfx, 'Chirurgie', '']]);
+    verifier('Natures : le code d’une nature importée est à son tour tenu (doublon refusé, la fiche existante n’est pas modifiée)', !dbl.accepte && B.codes(dbl).indexOf('DOUBLON_MAGASIN') >= 0, JSON.stringify(dbl));
+    const annulOk = await B.annuler(lot1.id, 'sonde 142');
+    const archives = await page.evaluate((a, b) => window.SIGH.store.collection('naturesFacture').all().filter((n) => n.code === a || n.code === b).map((n) => n.statut), NA, NB);
+    verifier('Natures, annulation d’un lot sans acte : les deux fiches sont ARCHIVÉES (RG-14), jamais supprimées', annulOk.ok === true && archives.length === 2 && archives.every((s) => s === 'archive'), JSON.stringify({ annulOk, archives }));
+    const NC = 'ZD' + sfx.slice(0, 4);
+    const lot2 = await B.appliquer('natures-facture', [E, [NC, 'Sonde B2 Utilisée ' + sfx, 'Chirurgie', '']]);
+    await page.evaluate((lib) => { window.SIGH.store.collection('factures', { module: 'M8', entite: 'Facture' }).insert({ numero: 'FC-B2-142', type: lib, date: window.SIGH.core.iso(window.SIGH.core.aujourdhui()), montantTTC: 1, lignes: [] }); }, 'Sonde B2 Utilisée ' + sfx);
+    const refusAnnul = await B.annuler(lot2.id, 'sonde 142');
+    verifier('Natures, annulation : refusée quand une facture porte la nature, le refus NOMME la facture et dit le geste', refusAnnul.ok === false && refusAnnul.code === 'NATURE_UTILISEE' && /FC-B2-142/.test(refusAnnul.motif) && /Archivez/.test(refusAnnul.geste), JSON.stringify(refusAnnul));
+
+    /* ---------- CENTRES DE COÛTS ---------- */
+    const centre = await page.evaluate(() => { const c = window.SIGH.store.collection('centresCouts').active()[0]; return { code: c.code, libelle: c.libelle }; });
+    const EC = B.ENT.centres, CA = 'zb2centre' + sfx, CB = 'ZB2CENTRE' + sfx;
+    const refC = await B.analyser('centres-couts', [EC,
+      [centre.code.toUpperCase(), 'Libellé neuf ' + sfx, 'Centre d’exploitation', '', ''],
+      ['zb2neuf1' + sfx, centre.libelle, 'Centre d’exploitation', '', ''],
+      ['zb2neuf2' + sfx, 'Type inconnu ' + sfx, 'Centre fantôme', '', ''],
+      ['avec espace', 'Code avec espace ' + sfx, 'Centre de support', '', ''],
+      [CA, 'Premier ' + sfx, 'Centre de support', '', ''],
+      [CB, 'Second ' + sfx, 'Centre de support', '', '']]);
+    const crC = B.codes(refC);
+    verifier('Centres : le code existant refusé même en MAJUSCULES (le code EST l’imputation des écritures), le libellé déjà tenu refusé, type hors liste, code avec espace, et deux codes qui ne diffèrent que par la casse dans le même fichier',
+      crC.filter((c) => c === 'DOUBLON_MAGASIN').length === 2 && crC.indexOf('VALEUR_HORS_LISTE') >= 0 && crC.indexOf('FORMAT_INVALIDE') >= 0 && crC.indexOf('DOUBLON_FICHIER') >= 0 && !refC.accepte, JSON.stringify(crC));
+    const lotC = await B.appliquer('centres-couts', [EC, [CA, 'Sonde B2 Centre ' + sfx, 'Centre d’exploitation', '', 'Décision test'], ['zb2sup' + sfx, 'Sonde B2 Support ' + sfx, 'Centre de support', 'Mme SONDE', '']]);
+    const cc = await page.evaluate((c) => { const f = window.SIGH.store.collection('centresCouts').all().filter((x) => x.code === c)[0]; return f ? { code: f.code, type: f.type, resp: f.responsable, source: f.source, id: f.id, lot: f.lotImport } : null; }, CA);
+    verifier('Centres : le code est écrit TEL QUEL (l’imputation que les écritures porteront), type de la liste, responsable vide laissé vide (avertissement « sans responsable », jamais inventé)',
+      lotC.ok && cc && cc.code === CA && cc.type === 'exploitation' && (cc.resp === null || cc.resp === undefined) && cc.source === 'Décision test' && /^CC/.test(cc.id), JSON.stringify({ lotC, cc }));
+    /* Une écriture imputée à ce centre : l'analytique la voit sous ce code, et l'annulation du lot est refusée en la nommant. */
+    await page.evaluate((c) => { window.SIGH.store.collection('ecritures', { module: 'M12', entite: 'Écriture' }).insert({ numero: 'B2-ECR-142', date: window.SIGH.core.iso(window.SIGH.core.aujourdhui()), journal: 'OD', compte: '606000', debit: 0, credit: 0, centreCout: c, statut: 'brouillon', libelle: 'Sonde B2' }); }, CA);
+    const refusC = await B.annuler(lotC.id, 'sonde 142');
+    verifier('Centres, annulation : refusée quand une écriture est imputée au centre, le refus NOMME l’écriture', refusC.ok === false && refusC.code === 'CENTRE_IMPUTE' && /B2-ECR-142/.test(refusC.motif), JSON.stringify(refusC));
+    const lotC2 = await B.appliquer('centres-couts', [EC, ['zb2libre' + sfx, 'Sonde B2 Libre ' + sfx, 'Centre de support', '', '']]);
+    const annulC = await B.annuler(lotC2.id, 'sonde 142');
+    verifier('Centres, annulation d’un lot sans acte : acceptée, la fiche est archivée', annulC.ok === true && annulC.archives === 1, JSON.stringify(annulC));
+    await B.restituer();
+    const e142 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e142.length === 0, e142.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 143 : IMP-B2 le catalogue de l’imagerie et les unités de mesure : modalité parmi les CINQ, examens créés « à valider » sans AUCUNE variable, tarif absent signalé ; le symbole d’une unité s’écrit comme le laboratoire le lit (G/l et g/l sont deux unités), jamais normalisé');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('da', 'DAF143'));
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+
+    /* ---------- CATALOGUE DE L'IMAGERIE ---------- */
+    const E = B.ENT.imagerie;
+    const base = await page.evaluate(() => { const D = window.SIGH.data, S = window.SIGH.store; const ex = S.collection('examensImagerie').active()[0];
+      return { modalites: D.IMAGERIE.MODALITES.map((m) => m.code), labels: D.IMAGERIE.MODALITES.map((m) => m.label), existant: ex.code, nVar: S.collection('variablesImagerie').all().length, nEx: S.collection('examensImagerie').all().length,
+        colonnes: window.SIGH.importer.colonnesDe(window.SIGH.importer.jeu('catalogue-imagerie')).filter((c) => c.cle === 'modalite').map((c) => (typeof c.liste === 'function' ? c.liste({}) : c.liste).map((x) => x.valeur)) }; });
+    verifier('Imagerie : la liste des modalités du jeu EST celle des cinq modalités du catalogue (échographie, radiographie, mammographie, scanner, IRM)', base.modalites.length === 5 && JSON.stringify(base.colonnes[0]) === JSON.stringify(base.modalites), JSON.stringify(base));
+    const C1 = 'ZB2-IMG-A' + sfx, C2 = 'ZB2-IMG-B' + sfx;
+    const ok1 = await B.analyser('catalogue-imagerie', [E, [C1, 'Radiographie sonde B2 ' + sfx, 'Radiographie', '', ''], [C2, 'Échographie sonde B2 ' + sfx, 'Échographie', 'sus-pubienne', 'IMG-ECHO-OBS']]);
+    const tc = B.toutCodes(ok1);
+    verifier('Imagerie : un fichier valide est accepté ; chaque examen porte l’avertissement « à valider » ET « sans variable » ; le code sans tarif est signalé (SANS_TARIF), celui qui se facture comme l’obstétricale ne l’est pas',
+      ok1.accepte && ok1.aEcrire === 2 && tc.filter((c) => c === 'A_VALIDER').length === 2 && tc.filter((c) => c === 'SANS_VARIABLES').length === 2 && ok1.lignes[0].problemes.some((p) => p.code === 'SANS_TARIF') && !ok1.lignes[1].problemes.some((p) => p.code === 'SANS_TARIF'), JSON.stringify(tc));
+    const refus = await B.analyser('catalogue-imagerie', [E, ['ZB2-X1' + sfx, 'Modalité fantôme', 'Tomographie', '', ''], [base.existant, 'Déjà tenu', 'Échographie', '', ''], ['ZB2-X3' + sfx, '', 'IRM', '', ''], ['', 'Sans code', 'IRM', '', '']]);
+    const cr = B.codes(refus);
+    verifier('Imagerie : modalité hors des cinq, code déjà tenu, libellé absent, code absent : refus nommés, le fichier est refusé', cr.indexOf('VALEUR_HORS_LISTE') >= 0 && cr.indexOf('DOUBLON_MAGASIN') >= 0 && cr.filter((c) => c === 'CHAMP_OBLIGATOIRE').length === 2 && !refus.accepte, JSON.stringify(cr));
+    const colonnesVar = await B.analyser('catalogue-imagerie', [E.concat(['Variables']), [C1, 'Avec variables', 'IRM', '', '', 'x']]);
+    verifier('Imagerie : une colonne « Variables » n’existe pas (jamais de variable de compte rendu par import) : elle est ignorée en le disant, aucune variable n’est écrite', colonnesVar.globaux.some((p) => p.code === 'COLONNE_IGNOREE') , JSON.stringify(colonnesVar.globaux));
+    const lot1 = await B.appliquer('catalogue-imagerie', [E, [C1, 'Radiographie sonde B2 ' + sfx, 'Radiographie', '', ''], [C2, 'Échographie sonde B2 ' + sfx, 'Échographie', 'sus-pubienne', 'IMG-ECHO-OBS']]);
+    const ap = await page.evaluate((a, b) => { const S = window.SIGH.store, V = window.SIGH.validations; const f = (c) => S.collection('examensImagerie').all().filter((x) => x.code === c)[0];
+      const ea = f(a), eb = f(b);
+      return { a: ea ? { aValider: ea.aValider, modalite: ea.modalite, label: ea.label, tarifCode: ea.tarifCode || null, id: ea.id } : null, b: eb ? { aValider: eb.aValider, modalite: eb.modalite, voie: eb.voie, tarifCode: eb.tarifCode, id: eb.id } : null,
+        etatA: ea ? V.etatValidation('imagerie', ea.id) : null, nVar: S.collection('variablesImagerie').all().length, nEx: S.collection('examensImagerie').all().length }; }, C1, C2);
+    verifier('Imagerie : deux examens NEUFS « à valider » (marquage lu par le moteur de validation, que valide l’échographiste ou le directeur médical), modalité rangée sur l’examen, AUCUNE variable écrite',
+      lot1.ok && lot1.ecrits === 2 && ap.a.aValider === true && ap.b.aValider === true && ap.a.modalite === 'radiographie' && ap.b.modalite === 'echographie' && ap.b.tarifCode === 'IMG-ECHO-OBS' && ap.etatA && ap.etatA.enAttente === true
+      && ap.nVar === base.nVar && ap.nEx === base.nEx + 2, JSON.stringify({ lot1, ap, base }));
+    await ouvrir('cfg-imagerie-catalogue.html');
+    const dom = await page.evaluate(() => { const t = document.getElementById('page-content').innerText.replace(/\s+/g, ' '); return { aValider: /À valider/.test(t), bouton: !!document.querySelector('[data-importer*="catalogue-imagerie"]') }; });
+    verifier('Imagerie, à l’écran : l’examen importé porte la mention « À valider » au catalogue, et le bouton « Importer les données » de l’hôte est présent pour la DAF', dom.aValider && dom.bouton, JSON.stringify(dom));
+    await ouvrir('imp-accueil.html');
+    const annul = await B.annuler(lot1.id, 'sonde 143');
+    verifier('Imagerie, annulation d’un lot sans demande : acceptée, les examens sont archivés', annul.ok === true && annul.archives === 2, JSON.stringify(annul));
+    const lot2 = await B.appliquer('catalogue-imagerie', [E, ['ZB2-IMG-C' + sfx, 'Demandé sonde B2 ' + sfx, 'Échographie', '', 'IMG-ECHO-OBS']]);
+    await page.evaluate((c) => { window.SIGH.store.collection('demandesImagerie', { module: 'M2', entite: 'demande d’imagerie' }).insert({ reference: 'IME-B2-143', examenCode: c, examen: 'Demandé', statut: 'demandee', dateHeure: window.SIGH.core.iso(window.SIGH.core.aujourdhui()) }); }, 'ZB2-IMG-C' + sfx);
+    const refusAnnul = await B.annuler(lot2.id, 'sonde 143');
+    verifier('Imagerie, annulation : refusée dès qu’une demande porte l’examen, le refus NOMME la demande', refusAnnul.ok === false && refusAnnul.code === 'EXAMEN_DEMANDE' && /IME-B2-143/.test(refusAnnul.motif), JSON.stringify(refusAnnul));
+
+    /* ---------- UNITÉS DE MESURE ---------- */
+    const EU = B.ENT.unites, U1 = 'ZB2/L' + sfx.slice(0, 2), U2 = U1.toLowerCase();
+    const seed = await page.evaluate(() => window.SIGH.store.collection('unitesLabo').active().map((u) => u.symbole).filter((s) => s === 'G/l' || s === 'g/l' || s === 'g/dl'));
+    verifier('Unités : le jeu de démonstration porte DÉJÀ « G/l » (giga par litre) ET « g/l » (gramme par litre) : deux unités que la casse distingue', seed.indexOf('G/l') >= 0 && seed.indexOf('g/l') >= 0, JSON.stringify(seed));
+    const an = await B.analyser('unites-labo', [EU, ['G/l', 'Déjà tenue', 'Hématologie', ''].slice(0, 3), ['g/l', 'Déjà tenue aussi', 'Biochimie'], [U1, 'Majuscule neuve ' + sfx, 'Biochimie'], [U2, 'Minuscule neuve ' + sfx, 'Biochimie'], ['G/L', 'Autre casse neuve', 'Général'], ['ZB2ud' + sfx, 'Domaine fantôme', 'Cosmétique']]);
+    const ligneDe = (a, i) => a.lignes[i].problemes.map((p) => p.code);
+    verifier('Unités : « G/l » et « g/l » déjà tenus sont des doublons ; « ' + U1 + ' » et « ' + U2 + ' » (casse seule) sont DEUX unités neuves, « G/L » aussi ; domaine hors liste refusé : le symbole n’est JAMAIS normalisé',
+      ligneDe(an, 0).indexOf('DOUBLON_MAGASIN') >= 0 && ligneDe(an, 1).indexOf('DOUBLON_MAGASIN') >= 0 && ligneDe(an, 2).indexOf('DOUBLON_MAGASIN') < 0 && ligneDe(an, 3).indexOf('DOUBLON_MAGASIN') < 0 && ligneDe(an, 3).indexOf('DOUBLON_FICHIER') < 0
+      && ligneDe(an, 4).indexOf('DOUBLON_MAGASIN') < 0 && ligneDe(an, 5).indexOf('VALEUR_HORS_LISTE') >= 0, JSON.stringify(an.lignes.map((l) => l.problemes.map((p) => p.code))));
+    const lotU = await B.appliquer('unites-labo', [EU, [U1, 'Majuscule neuve ' + sfx, 'Biochimie'], [U2, 'Minuscule neuve ' + sfx, 'Biochimie'], ['G/L', 'Autre casse neuve', 'Général']]);
+    const apU = await page.evaluate((a, b) => { const S = window.SIGH.store, V = window.SIGH.validations; const t = S.collection('unitesLabo').all().filter((u) => u.symbole === a || u.symbole === b || u.symbole === 'G/L');
+      return { symboles: t.map((u) => u.symbole).sort(), aValider: t.every((u) => u.aValider === true), etat: V.etatValidation('labo_variables', t[0].id), g: S.collection('unitesLabo').all().filter((u) => u.symbole === 'G/l').length }; }, U1, U2);
+    verifier('Unités : trois fiches neuves, symbole écrit TEL QUEL, « à confirmer » (le biologiste les valide à l’écran), la fiche « G/l » tenue est restée unique',
+      lotU.ok && lotU.ecrits === 3 && apU.symboles.join('|') === [U1, U2, 'G/L'].sort().join('|') && apU.aValider && apU.etat && apU.etat.enAttente === true && apU.g === 1, JSON.stringify({ lotU, apU }));
+    await page.evaluate((s) => { window.SIGH.store.collection('variablesLabo', { module: 'M5', entite: 'variable' }).insert({ code: 'B2V143', libelle: 'Variable sonde B2', unite: s, actif: true }); }, U1);
+    const refusU = await B.annuler(lotU.id, 'sonde 143');
+    verifier('Unités, annulation : refusée dès qu’une variable s’exprime dans l’unité importée, le refus NOMME la variable', refusU.ok === false && refusU.code === 'UNITE_UTILISEE' && /Variable sonde B2/.test(refusU.motif), JSON.stringify(refusU));
+    await B.restituer();
+    const e143 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e143.length === 0, e143.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 144 : IMP-B2 les prestataires externes : spécialité de l’écran, tarif entier ≥ 0 (un tiret n’est pas un zéro), IFU de 13 chiffres, numéro PE-NNNN attribué par le logiciel, actes réalisés jamais importés, doublon par nom ou IFU, annulation refusée dès qu’un acte est réalisé');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('da', 'DAF144'));
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+    const E = B.ENT.prestataires;
+    const ex = await page.evaluate(() => { const p = window.SIGH.store.collection('prestataires').active().filter((x) => x.ifu)[0]; const t = window.SIGH.store.collection('prestataires').all().map((x) => Number(String(x.reference).replace(/\D/g, '')) || 0); return { nom: p.nom, ifu: p.ifu, max: Math.max.apply(null, t) }; });
+    const IFA = '3299' + sfx.slice(0, 4) + '12345';
+    const ok1 = await B.analyser('prestataires', [E, ['Dr SONDE B2 Alpha ' + sfx, 'Chirurgie', '0197000001', 25000, IFA, 'Oui'], ['Mme SONDE B2 Beta ' + sfx, 'Autre', '', 0, '', '']]);
+    const tc = B.toutCodes(ok1);
+    verifier('Prestataires : un fichier valide est accepté (tarif zéro admis, spécialité « Autre » de l’écran admise) ; IFU absent et facture normalisée absente sont signalés, jamais refusés',
+      ok1.accepte && ok1.aEcrire === 2 && tc.indexOf('IFU_ABSENT') >= 0 && tc.indexOf('FACTURE_NORMALISEE_ABSENTE') >= 0, JSON.stringify(tc));
+    const refus = await B.analyser('prestataires', [E,
+      ['Tiret ' + sfx, 'Chirurgie', '', '-', '', ''],
+      ['Spécialité fantôme ' + sfx, 'Sorcellerie', '', 1000, '', ''],
+      ['IFU court ' + sfx, 'Chirurgie', '', 1000, '12345', ''],
+      ['Négatif ' + sfx, 'Chirurgie', '', -5, '', ''],
+      [ex.nom, 'Chirurgie', '', 1000, '', ''],
+      ['Nom neuf ifu tenu ' + sfx, 'Chirurgie', '', 1000, ex.ifu, ''],
+      ['', 'Chirurgie', '', 1000, '', '']]);
+    const cr = B.codes(refus);
+    verifier('Prestataires : un refus nommé par règle (tiret ≠ zéro, spécialité hors liste, IFU de 5 chiffres, tarif négatif, nom déjà tenu, IFU déjà tenu, nom absent)',
+      cr.filter((c) => c === 'TYPE_INVALIDE').length === 1 && cr.indexOf('VALEUR_HORS_LISTE') >= 0 && cr.indexOf('FORMAT_INVALIDE') >= 0 && cr.indexOf('HORS_BORNES') >= 0 && cr.filter((c) => c === 'DOUBLON_MAGASIN').length === 2 && cr.indexOf('CHAMP_OBLIGATOIRE') >= 0 && !refus.accepte,
+      JSON.stringify(refus.lignes.map((l) => l.problemes.filter((p) => p.niveau === 'refus').map((p) => p.code))));
+    const actes = await B.analyser('prestataires', [E.concat(['Actes réalisés']), ['Dr Actes ' + sfx, 'Chirurgie', '', 1000, '', '', 12]]);
+    verifier('Prestataires : une colonne « Actes réalisés » REFUSE le fichier en la nommant (le compteur d’activité du mois part de zéro)', !actes.accepte && actes.globaux.some((p) => p.code === 'COLONNE_RETIREE' && p.colonne === 'Actes réalisés'), JSON.stringify(actes.globaux));
+    const lot1 = await B.appliquer('prestataires', [E, ['Dr SONDE B2 Alpha ' + sfx, 'Chirurgie', '0197000001', 25000, IFA, 'Oui'], ['Mme SONDE B2 Beta ' + sfx, 'Autre', '', 0, '', '']]);
+    const fiches = await page.evaluate((s) => window.SIGH.store.collection('prestataires').all().filter((p) => new RegExp(s).test(p.nom)).map((p) => ({ ref: p.reference, nom: p.nom, tarif: p.tarifActe, actes: p.actesRealises, ifu: p.ifu || null, fn: p.factureNormalisee, spec: p.specialite, id: p.id })), sfx);
+    const refs = fiches.map((f) => Number(f.ref.replace(/\D/g, ''))).sort((a, b) => a - b);
+    verifier('Prestataires : deux fiches NEUVES, numéros PE-NNNN attribués à la suite du registre (' + (ex.max + 1) + ' et ' + (ex.max + 2) + '), actes réalisés à zéro, IFU et case « facture normalisée » comme le fichier',
+      lot1.ok && fiches.length === 2 && refs[0] === ex.max + 1 && refs[1] === ex.max + 2 && fiches.every((f) => f.actes === 0) && fiches.some((f) => f.ifu === IFA && f.fn === true && f.tarif === 25000) && fiches.some((f) => f.tarif === 0 && f.fn === false && f.spec === 'Autre'), JSON.stringify({ lot1, fiches }));
+    const dbl = await B.analyser('prestataires', [E, ['dr sonde b2 alpha ' + sfx, 'Chirurgie', '', 1000, '', '']]);
+    verifier('Prestataires : le nom importé est à son tour tenu, sans tenir compte de la casse (doublon refusé)', !dbl.accepte && B.codes(dbl).indexOf('DOUBLON_MAGASIN') >= 0, JSON.stringify(dbl));
+    await page.evaluate((id) => { window.SIGH.store.collection('prestataires').update(id, { actesRealises: 3 }); }, fiches.filter((f) => f.tarif === 25000)[0].id);
+    const refusAnnul = await B.annuler(lot1.id, 'sonde 144');
+    verifier('Prestataires, annulation : refusée dès qu’un acte est réalisé, le refus NOMME le prestataire et le nombre d’actes', refusAnnul.ok === false && refusAnnul.code === 'PRESTATAIRE_EN_ACTIVITE' && /3 acte/.test(refusAnnul.motif), JSON.stringify(refusAnnul));
+    await page.evaluate((id) => { window.SIGH.store.collection('prestataires').update(id, { actesRealises: 0 }); }, fiches.filter((f) => f.tarif === 25000)[0].id);
+    const annul = await B.annuler(lot1.id, 'sonde 144');
+    verifier('Prestataires, annulation sans acte : acceptée, deux fiches archivées', annul.ok === true && annul.archives === 2, JSON.stringify(annul));
+    await B.restituer();
+    const e144 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e144.length === 0, e144.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 145 : IMP-B2 les garanties : une NOUVELLE VERSION datée, jamais un écrasement ; la facture émise garde son taux au franc près ; la répartition lit la version en vigueur à la date de la pièce ; date antérieure, même date, facture déjà émise refusées en nommant ; l’écran « Modifier la grille » passe par la MÊME fabrique');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('da', 'DAF145'));
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+    const J = await B.jours();
+    const F = await B.fixture(sfx);
+    const LIB = 'Frais pharmaceutiques sonde B2 ' + sfx, LIB2 = 'Analyses sonde B2 ' + sfx, CAT_MED = 'Médicaments et frais pharmaceutiques', CAT_AN = 'Analyses de laboratoire';
+    /* La grille d'origine : posée par la fabrique de l'écran (première ligne d'une série, « depuis l'origine », aucune date inventée). */
+    const g0 = await page.evaluate((id, lib, lib2) => { const PR = window.SIGH.parcours;
+      const a = PR.poserGarantie({ souscripteurId: id, categorie: 'medicament', libelle: lib, taux: 80, plafond: null, sansDate: true, source: 'sonde' });
+      const b = PR.poserGarantie({ souscripteurId: id, categorie: 'analyse', libelle: lib2, taux: 80, plafond: null, sansDate: true, source: 'sonde' });
+      const c = PR.poserGarantie({ souscripteurId: id, categorie: 'medicament', libelle: lib, taux: 10, plafond: null, sansDate: true });
+      return { a: a.ok, b: b.ok, aDate: a.garantie && a.garantie.dateEffet, refusSerie: c.code }; }, F.s1.id, LIB, LIB2);
+    verifier('Fabrique : la première ligne d’une série naît « depuis l’origine » (aucune date d’effet inventée) ; la redéfinir « depuis l’origine » est refusé en nommant (SERIE_EXISTANTE)', g0.a && g0.b && (g0.aDate === null || g0.aDate === undefined) && g0.refusSerie === 'SERIE_EXISTANTE', JSON.stringify(g0));
+    /* La grille se lit à l'ÉMISSION d'une facture à la caisse (écran de facturation : `PR.repartir`, ligne par ligne, à la date de la pièce) ; la prescription, elle, applique le taux plat du dossier
+       (inchangé, voir ECARTS-MAQUETTE). La pièce de la sonde est donc construite de la répartition du moteur à SA date, et posée au registre comme l'émission le fait. */
+    const emettre = (date) => page.evaluate((idP, lib, d, ass) => { const PR = window.SIGH.parcours, S = window.SIGH.store, p = S.collection('patients').get(idP);
+      const r = PR.repartir(p, [{ libelle: lib, categorie: 'medicament', montant: 10000 }], { date: d }), l = r.lignes[0];
+      const f = S.collection('factures', { module: 'M8', entite: 'Facture' }).insert({ numero: 'FC-B2-145-' + d, type: 'Pharmacie', patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code, date: d, assureur: ass,
+        montantTTC: r.total, partAssurance: r.partAssureur, partPatient: r.partPatient, lignes: [{ designation: lib, montant: l.montant, partAssureur: l.partAssureur, partPatient: l.partPatient, taux: l.taux, motif: l.motif }] }).record;
+      return { ok: true, id: f.id, numero: f.numero, date: f.date, partAssurance: f.partAssurance, partPatient: f.partPatient, montant: f.montantTTC, lignes: f.lignes.map((x) => [x.designation, x.montant, x.partAssureur, x.partPatient]) }; }, F.p1.id, LIB, date, F.s1.assureur);
+    const f1 = await emettre(J.auj);
+    const attendu = (f, taux) => f.lignes.reduce((t, l) => t + Math.round(l[1] * taux / 100), 0);
+    verifier('Facture 1 (émise avant l’import, à la caisse) : la part assureur est 80 % de la ligne (grille d’origine)', f1.ok && f1.partAssurance === attendu(f1, 80) && f1.partAssurance === 8000, JSON.stringify(f1));
+
+    const E = B.ENT.garanties;
+    const L2 = [E, [F.s1.police, CAT_MED, LIB, 50, '', '', J.p30, 'Avenant sonde B2', ''], [F.s1.police, CAT_AN, LIB2, 80, '', '', J.p30, '', '']];
+    const an = await B.analyser('garanties', L2);
+    verifier('Vérification : la ligne qui change montre ancien et nouveau (« Nouvelle version v2 »), la ligne identique est « inchangée » et comptée, une seule ligne s’écrirait',
+      an.accepte && an.aEcrire === 1 && an.compte.inchanges === 1 && /^Nouvelle version v2/.test(an.lignes[0].extra.decision) && /80 %/.test(an.lignes[0].extra.ancien) && /50 %/.test(an.lignes[0].extra.nouveau) && an.lignes[1].etat === 'inchange', JSON.stringify(an.lignes.map((l) => [l.etat, l.extra])));
+    const avant = await page.evaluate((sid, lib) => JSON.stringify(window.SIGH.parcours.versionsGarantie(sid, 'medicament', lib)), F.s1.id, LIB);
+    const lot2 = await B.appliquer('garanties', L2);
+    const v = await page.evaluate((sid, lib) => window.SIGH.parcours.versionsGarantie(sid, 'medicament', lib).map((g) => ({ id: g.id, taux: g.taux, plafond: g.plafond, dateEffet: g.dateEffet || null, version: g.version, statut: g.statut, lot: g.lotImport || null, modif: g._modifieLe || null })), F.s1.id, LIB);
+    verifier('Garanties : deux versions de la série (v1 depuis l’origine à 80 %, v2 à 50 % datée du ' + J.p30 + ') ; la version ancienne n’est PAS modifiée (aucune trace de modification, même taux), rien n’est retiré',
+      lot2.ok && lot2.ecrits === 1 && v.length === 2 && v[0].taux === 80 && v[0].dateEffet === null && v[0].version === 1 && v[0].statut === 'actif' && !v[0].modif && v[1].taux === 50 && v[1].dateEffet === J.p30 && v[1].version === 2 && !!v[1].lot
+      && JSON.parse(avant)[0].taux === 80, JSON.stringify({ lot2, v }));
+    const f1b = await page.evaluate((id) => { const f = window.SIGH.store.collection('factures').get(id); return { id: f.id, numero: f.numero, date: f.date, partAssurance: f.partAssurance, partPatient: f.partPatient, montant: f.montantTTC, lignes: (f.lignes || []).map((l) => [l.designation, l.montant, l.partAssureur, l.partPatient]) }; }, f1.id);
+    verifier('Une facture émise AVANT l’import garde son taux AU FRANC PRÈS : parts assureur et patient, chaque ligne, total identiques avant et après', JSON.stringify(f1b) === JSON.stringify({ id: f1.id, numero: f1.numero, date: f1.date, partAssurance: f1.partAssurance, partPatient: f1.partPatient, montant: f1.montant, lignes: f1.lignes }), JSON.stringify({ f1, f1b }));
+    const lec = await page.evaluate((code, lib, d) => { const PR = window.SIGH.parcours, S = window.SIGH.store; const p = S.collection('patients').all().filter((x) => x.code === code)[0];
+      const r = (date) => PR.repartir(p, [{ libelle: lib, categorie: 'medicament', montant: 10000 }], { date: date }).lignes[0].partAssureur;
+      return { auj: r(d.auj), p10: r(d.p10), p30: r(d.p30), p60: r(d.p60), garantiesAuj: PR.garantiesDe(p, d.auj).filter((g) => g.libelle === lib).length, garantiesP30: PR.garantiesDe(p, d.p30).filter((g) => g.libelle === lib).length }; }, F.p1.code, LIB, J);
+    verifier('La répartition lit la VERSION EN VIGUEUR à la date de la pièce : 8 000 sur 10 000 aujourd’hui et la veille de l’effet, 5 000 le jour de l’effet et après ; une seule version de la série par date',
+      lec.auj === 8000 && lec.p10 === 8000 && lec.p30 === 5000 && lec.p60 === 5000 && lec.garantiesAuj === 1 && lec.garantiesP30 === 1, JSON.stringify(lec));
+    const f2 = await emettre(J.p30);
+    verifier('Facture 2, émise à la date d’effet : la part assureur est 50 % de la ligne (la nouvelle version) ; la facture 1 n’a pas bougé', f2.ok && f2.partAssurance === attendu(f2, 50) && f2.partAssurance === 5000, JSON.stringify(f2));
+
+    /* ---- Refus nommés ---- */
+    const refus = await B.analyser('garanties', [E,
+      [F.s1.police, CAT_MED, LIB, 40, '', '', J.p10, '', ''],
+      [F.s1.police, CAT_MED, LIB, 60, '', '', J.p30, '', ''],
+      [F.s1.police, CAT_AN, LIB2, 60, '', '', J.auj, '', ''],
+      ['B2-INCONNUE-' + sfx, CAT_AN, LIB2, 60, '', '', J.p60, '', ''],
+      [F.s1.police, CAT_AN, LIB2, 120, '', '', J.p60, '', ''],
+      [F.s1.police, CAT_AN, LIB2, '-', '', '', J.p60, '', ''],
+      [F.s1.police, CAT_AN, LIB2, 60, -5, 'par acte', J.p60, '', ''],
+      [F.s1.police, CAT_AN, LIB2, 60, 5000, '', J.p60, '', ''],
+      [F.s1.police, CAT_AN, LIB2, 60, '-', 'par acte', J.p60, '', ''],
+      [F.s1.police, 'Cosmétique', LIB2, 60, '', '', J.p60, '', ''],
+      [F.s1.police, CAT_AN, LIB2, 60, '', '', '', '', '']]);
+    const refs = refus.lignes.map((l) => l.problemes.filter((p) => p.niveau === 'refus').map((p) => p.code));
+    verifier('Garanties : une version PLUS ANCIENNE que la dernière est refusée (VERSION_ANTERIEURE, la date de la version suivante est nommée) ; la même date avec d’autres valeurs aussi (VERSION_MEME_DATE)',
+      refs[0].indexOf('VERSION_ANTERIEURE') >= 0 && refs[1].indexOf('VERSION_MEME_DATE') >= 0, JSON.stringify(refs.slice(0, 2)));
+    const mFact = refus.lignes[2].problemes.filter((p) => p.code === 'FACTURE_DEJA_EMISE')[0];
+    verifier('Garanties : une date d’effet qu’une facture a déjà dépassée est refusée, le refus NOMME la facture émise et sa date (« une pièce émise garde son taux »)', !!mFact && mFact.motif.indexOf(f1.numero) >= 0 && /postérieure à la dernière facture/.test(mFact.geste), JSON.stringify(mFact));
+    verifier('Garanties : souscripteur inconnu, taux 120, taux « - » (un tiret n’est jamais un zéro), plafond négatif, plafond sans unité, plafond « - », catégorie hors liste, date absente : chacun refusé par son code',
+      refs[3].indexOf('SOUSCRIPTEUR_INCONNU') >= 0 && refs[4].indexOf('HORS_BORNES') >= 0 && refs[5].indexOf('TYPE_INVALIDE') >= 0 && refs[6].indexOf('HORS_BORNES') >= 0 && refs[7].indexOf('UNITE_PLAFOND_REQUISE') >= 0
+      && refs[8].indexOf('TYPE_INVALIDE') >= 0 && refs[9].indexOf('VALEUR_HORS_LISTE') >= 0 && refs[10].indexOf('CHAMP_OBLIGATOIRE') >= 0 && !refus.accepte, JSON.stringify(refs));
+    const deux = await B.analyser('garanties', [E, [F.s1.police, 'Chirurgie', 'Honoraires deux dates ' + sfx, 70, '', '', J.p60, '', ''], [F.s1.police, 'Chirurgie', 'Honoraires deux dates ' + sfx, 60, '', '', '2027-03-01', '', '']]);
+    verifier('Garanties : deux versions de la même garantie dans UN fichier sont refusées (UNE_VERSION_PAR_GARANTIE) : la version suivante s’importe dans un second fichier', !deux.accepte && B.codes(deux).indexOf('UNE_VERSION_PAR_GARANTIE') >= 0, JSON.stringify(deux.globaux));
+    const nGar = await B.compte(['garanties', 'lotsImportation']);
+    const rien = await B.appliquer('garanties', [E, [F.s1.police, 'Chirurgie', 'Garantie neuve ' + sfx, 70, '', '', J.p60, '', ''], [F.s1.police, CAT_AN, LIB2, 60, '', '', J.auj, '', '']]);
+    const nGar2 = await B.compte(['garanties', 'lotsImportation']);
+    verifier('Garanties, atomicité : une ligne valide et une fautive, le fichier est refusé en entier, aucune garantie n’est écrite', rien.ok === false && rien.code === 'ANALYSE_REFUSEE' && nGar2.garanties === nGar.garanties, JSON.stringify({ rien, nGar, nGar2 }));
+
+    /* ---- Annulation ---- */
+    const refusAnnul = await B.annuler(lot2.id, 'sonde 145');
+    verifier('Annulation du lot v2 : REFUSÉE parce que la facture 2 a été émise sous cette version, le refus la NOMME', refusAnnul.ok === false && refusAnnul.code === 'GARANTIE_UTILISEE' && refusAnnul.motif.indexOf(f2.numero) >= 0, JSON.stringify(refusAnnul));
+    const lotA = await B.appliquer('garanties', [E, [F.s1.police, 'Chirurgie', 'Honoraires sonde ' + sfx, 70, '', '', '2026-12-01', '', '']]);
+    const lotB = await B.appliquer('garanties', [E, [F.s1.police, 'Chirurgie', 'Honoraires sonde ' + sfx, 40, '', '', '2027-02-01', '', '']]);
+    const annA = await B.annuler(lotA.id, 'sonde 145');
+    verifier('Annulation d’un lot dont la série porte une version PLUS RÉCENTE posée depuis : refusée (VERSION_POSTERIEURE), la date de la version suivante est nommée', lotA.ok && lotB.ok && annA.ok === false && annA.code === 'VERSION_POSTERIEURE' && /01\/02\/2027/.test(annA.motif), JSON.stringify({ lotA: lotA.ok, lotB: lotB.ok, annA }));
+    const annB = await B.annuler(lotB.id, 'sonde 145'), annA2 = await B.annuler(lotA.id, 'sonde 145');
+    const apresAnn = await page.evaluate((sid, lib) => window.SIGH.parcours.versionsGarantie(sid, 'chirurgie', lib).length + '/' + window.SIGH.store.collection('garanties').all().filter((g) => g.libelle === lib && g.statut === 'archive').length, F.s1.id, 'Honoraires sonde ' + sfx);
+    verifier('Annulation dans l’ordre inverse : acceptée tant qu’aucun acte ne s’appuie dessus, les versions sont ARCHIVÉES (RG-14), la série n’a plus de version active', annB.ok === true && annA2.ok === true && apresAnn === '0/2', JSON.stringify({ annB, annA2, apresAnn }));
+
+    /* ---- L'écran « Modifier la grille » : la MÊME fabrique ---- */
+    await ouvrir('m9-conventions.html');
+    await page.evaluate((nom) => { const i = document.querySelector('#page-content input[type="search"]'); i.value = nom; i.dispatchEvent(new Event('input', { bubbles: true })); }, F.s1.nom);
+    await pause(500);
+    const ligne = await page.evaluate((nom) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(nom) >= 0); if (!tr) return false; tr.querySelector('td').click(); return true; }, F.s1.nom);
+    await pause(700);
+    const tiroir = await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Modifier la grille'); if (!b) return false; b.click(); return true; });
+    await pause(700);
+    const poser = (nom, val) => page.evaluate((n, x) => { const c = document.querySelector('[role="dialog"] [name="' + n + '"]'); if (!c) return false; c.value = String(x); c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); return true; }, nom, val);
+    const champs = await page.evaluate(() => [...document.querySelectorAll('[role="dialog"] [name]')].map((c) => c.getAttribute('name')));
+    verifier('Écran « Conventions & garanties » : la fiche du souscripteur propose « Modifier la grille », dont la fenêtre demande une DATE D’EFFET (obligatoire) avant les taux', ligne && tiroir && champs.indexOf('dateEffet') === 0 && champs.indexOf('taux_0') > 0, JSON.stringify({ ligne, tiroir, champs }));
+    const avantEcran = await page.evaluate((sid) => JSON.stringify(window.SIGH.store.collection('garanties').all().filter((g) => g.souscripteurId === sid).map((g) => [g.id, g.taux, g.plafond, g.dateEffet || null, g.version, g.statut]).sort()), F.s1.id);
+    await poser('dateEffet', J.auj); await poser('taux_0', 33); await poser('taux_1', 33);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Enregistrer'); if (b) b.click(); });
+    await pause(900);
+    const toastRefus = await page.evaluate(() => (document.querySelector('#toast-host') || { innerText: '' }).innerText.replace(/\s+/g, ' '));
+    const apresRefus = await page.evaluate((sid) => JSON.stringify(window.SIGH.store.collection('garanties').all().filter((g) => g.souscripteurId === sid).map((g) => [g.id, g.taux, g.plafond, g.dateEffet || null, g.version, g.statut]).sort()), F.s1.id);
+    verifier('Écran, date d’effet refusée (une facture l’a dépassée, ou une version plus récente existe) : « Grille non modifiée », le refus nomme la cause, AUCUNE ligne n’est écrite ni modifiée (tout ou rien)', /Grille non modifiée/.test(toastRefus) && (toastRefus.indexOf(f1.numero) >= 0 || /plus récente/.test(toastRefus)) && apresRefus === avantEcran, toastRefus.slice(0, 220));
+    await poser('dateEffet', J.p60); await poser('taux_0', 33); await poser('taux_1', 33);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Enregistrer'); if (b) b.click(); });
+    await pause(1200);
+    const apresEcran = await page.evaluate((sid) => window.SIGH.store.collection('garanties').all().filter((g) => g.souscripteurId === sid && g.statut === 'actif').map((g) => ({ id: g.id, lib: g.libelle, taux: g.taux, date: g.dateEffet || null, version: g.version, modif: g._modifieLe || null, source: g.source })), F.s1.id);
+    const neuves = apresEcran.filter((g) => g.taux === 33);
+    const anciennes = apresEcran.filter((g) => g.taux !== 33);
+    const ancIds = JSON.parse(avantEcran).map((x) => x[0]);
+    verifier('Écran, date valide : deux NOUVELLES versions (une par garantie) datées du ' + J.p60 + ', rang suivant, écrites par la fabrique ; les versions précédentes ne sont pas réécrites (aucune trace de modification, mêmes id et taux)',
+      neuves.length === 2 && neuves.every((g) => g.date === J.p60 && g.version >= 2 && /écran/.test(g.source)) && anciennes.length === JSON.parse(avantEcran).filter((x) => x[5] === 'actif').length && anciennes.every((g) => ancIds.indexOf(g.id) >= 0 && !g.modif), JSON.stringify(apresEcran));
+    const srcEcran = await page.evaluate(() => fetch('../assets/js/modules/m9-assurances.js').then((r) => r.text()));
+    verifier('Aucun second chemin : l’écran ne met plus une garantie à jour en place (plus de « garanties.update » dans le module), il appelle la fabrique',
+      srcEcran.indexOf('colGaranties().update') < 0 && srcEcran.indexOf('colGaranties().insert') < 0 && srcEcran.indexOf('PR.poserGarantie') > 0, '');
+    await B.restituer();
+    const e145 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e145.length === 0, e145.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 146 : IMP-B2 les couvertures d’assurance (RESTREINT) passent par PR.changerCouverture : l’ancienne se clôt la veille, jamais de date d’effet inventée, motif obligatoire, le dossier suit la couverture en force AUJOURD’HUI, aucune facture écrite ; annulation qui rend l’ancienne, refusée si une couverture plus récente ou une facture émise depuis s’appuie dessus');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('comptable', 'COMPTA146'));
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+    const J = await B.jours();
+    const F = await B.fixture(sfx);
+    const E = B.ENT.couvertures, MOTIF = 'Changement d’employeur';
+    const veille = (d) => { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() - 1); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); };
+    const histo = (id) => page.evaluate((i) => window.SIGH.store.collection('couverturesAssurance').all().filter((c) => c.patientId === i).map((c) => ({ id: c.id, debut: c.debut === undefined ? null : c.debut, fin: c.fin === undefined ? null : c.fin, assureur: c.assureur, police: c.numeroPolice, sous: c.souscripteurId, motif: c.motif || null, taux: c.tauxPriseEnCharge, carte: c.carteExpiration || null, lot: c.lotImport || null, statut: c.statut })), id);
+    const miroir = (id) => page.evaluate((i) => { const p = window.SIGH.store.collection('patients').get(i); return { assureur: p.assureur || null, police: p.numeroPolice || null, sous: p.souscripteurId || null, nomSous: p.souscripteur || null, taux: p.tauxPriseEnCharge || 0, carte: p.carteExpiration || null }; }, id);
+    const enForce = (id, d) => page.evaluate((i, jour) => { const PR = window.SIGH.parcours, p = window.SIGH.store.collection('patients').get(i); const c = PR.couvertureALaDate(p, jour); return c ? c.assureur || null : null; }, id, d);
+
+    const ok1 = await B.analyser('couvertures-assurance', [E, [F.p1.code, F.s2.assureur, F.s2.police, J.p10, MOTIF, '', 60, '2028-12-31']]);
+    verifier('Couvertures : un changement valide est accepté, aucun refus', ok1.accepte && ok1.aEcrire === 1 && B.codes(ok1).length === 0, JSON.stringify(ok1));
+    const refus = await B.analyser('couvertures-assurance', [E,
+      ['CNT/ZZ' + sfx + '/99', F.s2.assureur, F.s2.police, J.p10, MOTIF, '', 60, '2028-12-31'],
+      [F.p2.code, F.s2.assureur, 'B2-INCONNUE-' + sfx, J.p10, MOTIF, '', 60, '2028-12-31'],
+      [F.p2.code, F.s2.assureur, F.s1.police, J.p30, MOTIF, '', 60, '2028-12-31'],
+      [F.p2.code, 'ZZZ', F.s2.police, J.p60, MOTIF, '', 60, '2028-12-31'],
+      [F.p2.code, F.s2.assureur, F.s2.police, '2027-01-01', 'Fin de couverture — patient redevenu non assuré', '', 60, '2028-12-31'],
+      [F.p2.code, F.s2.assureur, F.s2.police, '', MOTIF, '', 60, '2028-12-31'],
+      [F.p2.code, F.s2.assureur, F.s2.police, 'depuis l’origine', MOTIF, '', 60, '2028-12-31'],
+      [F.p2.code, F.s2.assureur, F.s2.police, '2027-02-01', '', '', 60, '2028-12-31']]);
+    const refs = refus.lignes.map((l) => l.problemes.filter((p) => p.niveau === 'refus').map((p) => p.code));
+    verifier('Couvertures : patient inconnu, police inconnue, police d’une autre compagnie, compagnie hors liste, motif « Fin de couverture » (ne s’importe pas : il n’y a plus de compagnie), motif absent : chacun refusé par son code',
+      refs[0].indexOf('PATIENT_INCONNU') >= 0 && refs[1].indexOf('POLICE_INCONNUE') >= 0 && refs[2].indexOf('POLICE_AUTRE_COMPAGNIE') >= 0 && refs[3].indexOf('VALEUR_HORS_LISTE') >= 0 && refs[4].indexOf('VALEUR_HORS_LISTE') >= 0 && refs[7].indexOf('CHAMP_OBLIGATOIRE') >= 0 && !refus.accepte, JSON.stringify(refs));
+    const dateAbs = refus.lignes[5].problemes.filter((p) => p.niveau === 'refus')[0], dateTxt = refus.lignes[6].problemes.filter((p) => p.niveau === 'refus')[0];
+    verifier('« debut: null » REFUSÉ : une date d’effet absente est refusée (CHAMP_OBLIGATOIRE sur « Date d’effet »), et « depuis l’origine » n’est pas une date (TYPE_INVALIDE) : une date qu’on n’invente pas',
+      dateAbs.code === 'CHAMP_OBLIGATOIRE' && dateAbs.colonne === 'Date d’effet' && dateTxt.code === 'TYPE_INVALIDE' && dateTxt.colonne === 'Date d’effet', JSON.stringify({ dateAbs, dateTxt }));
+    const sansCarte = await B.analyser('couvertures-assurance', [E, [F.p3.code, F.s2.assureur, F.s2.police, J.p10, MOTIF, '', '', '']]);
+    verifier('Couvertures : une carte sans date d’expiration est SIGNALÉE (jamais refusée) : elle ne serait jamais valide, le patient serait facturé intégralement (RG-09)', sansCarte.accepte && B.toutCodes(sansCarte).indexOf('CARTE_SANS_EXPIRATION') >= 0, JSON.stringify(B.toutCodes(sansCarte)));
+
+    /* ---- Atomicité ---- */
+    const n0 = await B.compte(['couverturesAssurance', 'patients', 'factures', 'ecritures', 'lotsImportation']);
+    const rien = await B.appliquer('couvertures-assurance', [E, [F.p1.code, F.s2.assureur, F.s2.police, J.p10, MOTIF, '', 60, '2028-12-31'], [F.p2.code, F.s2.assureur, F.s2.police, J.p10, '', '', 60, '2028-12-31']]);
+    const n1 = await B.compte(['couverturesAssurance', 'patients', 'factures', 'ecritures', 'lotsImportation']);
+    verifier('Couvertures, atomicité : une ligne valide et une fautive, le fichier est refusé en entier, aucune couverture n’est écrite, aucun dossier n’est touché', rien.ok === false && rien.code === 'ANALYSE_REFUSEE' && n1.couverturesAssurance === n0.couverturesAssurance && n1.patients === n0.patients, JSON.stringify({ rien, n0, n1 }));
+
+    /* ---- Application : date d'effet FUTURE (le dossier ne bouge pas) ---- */
+    const m0 = await miroir(F.p1.id);
+    const lotA = await B.appliquer('couvertures-assurance', [E, [F.p1.code, F.s2.assureur, F.s2.police, J.p10, MOTIF, '', 60, '2028-12-31']]);
+    const hA = await histo(F.p1.id), mA = await miroir(F.p1.id), nA = await B.compte(['factures', 'ecritures', 'patients']);
+    const neuve = hA.filter((c) => c.lot), reprise = hA.filter((c) => !c.lot);
+    verifier('Couvertures, date d’effet future : la couverture reprise du dossier est CLOSE la veille (' + veille(J.p10) + '), la neuve prend effet le ' + J.p10 + ' avec le motif, la compagnie et la police du fichier ; aucune ligne ne porte « debut: null » parmi celles du lot',
+      lotA.ok && hA.length === 2 && neuve.length === 1 && reprise.length === 1 && neuve[0].debut === J.p10 && neuve[0].fin === null && neuve[0].assureur === F.s2.assureur && neuve[0].police === F.s2.police && neuve[0].sous === F.s2.id && neuve[0].motif === MOTIF && neuve[0].taux === 60 && neuve[0].carte === '2028-12-31'
+      && reprise[0].debut === null && reprise[0].fin === veille(J.p10) && reprise[0].assureur === F.s1.assureur, JSON.stringify({ lotA, hA }));
+    verifier('Couvertures, le dossier du patient suit la couverture en force AUJOURD’HUI : une bascule datée du mois prochain ne change rien ce matin (la fiche est intacte), la caisse lit l’ancienne jusqu’à la veille et la nouvelle ensuite',
+      JSON.stringify(mA) === JSON.stringify(m0) && (await enForce(F.p1.id, J.auj)) === F.s1.assureur && (await enForce(F.p1.id, J.p10)) === F.s2.assureur, JSON.stringify({ m0, mA }));
+    verifier('Couvertures : AUCUNE facture, AUCUNE écriture écrite ; aucun dossier créé ; les écrits du lot sont des couvertures seules', nA.factures === n0.factures && nA.ecritures === n0.ecritures && nA.patients === n0.patients, JSON.stringify({ n0, nA }));
+    const lotRec = await B.lot(lotA.id);
+    verifier('Le jeu n’écrit PAS le répertoire patients : il déclare couverturesAssurance pour seule cible, et ne modifie le dossier que par le geste de l’écran (aucune entrée « patients » ici, la date d’effet est future)',
+      await page.evaluate(() => JSON.stringify(window.SIGH.importer.jeu('couvertures-assurance').cibles)) === '["couverturesAssurance"]' && lotRec.ecrits.every((e) => e.collection === 'couverturesAssurance'), JSON.stringify(lotRec.ecrits));
+    const ant = await B.analyser('couvertures-assurance', [E, [F.p1.code, F.s1.assureur, F.s1.police, J.p10, MOTIF, '', 60, '2028-12-31'], [F.p1.code, F.s1.assureur, F.s1.police, J.p1, MOTIF, '', 60, '2028-12-31']]);
+    verifier('Une date d’effet qui ne suit pas le début de la couverture en cours est refusée (DATE_EFFET_ANTERIEURE), à la même date comme avant', ant.lignes.every((l) => l.problemes.some((p) => p.code === 'DATE_EFFET_ANTERIEURE')) && !ant.accepte, JSON.stringify(ant.lignes.map((l) => l.problemes.map((p) => p.code))));
+
+    /* ---- Annulation : la couverture plus récente, puis dans l'ordre inverse ---- */
+    const lotB = await B.appliquer('couvertures-assurance', [E, [F.p1.code, F.s1.assureur, F.s1.police, J.p30, 'Convention non reconduite', '', 70, '2028-12-31']]);
+    const hB = await histo(F.p1.id);
+    const annA = await B.annuler(lotA.id, 'sonde 146');
+    verifier('Annulation d’un lot dont une couverture plus récente a été posée depuis : refusée (COUVERTURE_POSTERIEURE), l’effet suivant est nommé', lotB.ok && annA.ok === false && annA.code === 'COUVERTURE_POSTERIEURE', JSON.stringify({ lotB, annA }));
+    const annB = await B.annuler(lotB.id, 'sonde 146');
+    const hB2 = await histo(F.p1.id);
+    const rouverte = hB2.filter((c) => c.lot && c.statut === 'actif');
+    verifier('Annulation du lot le plus récent : sa couverture est archivée et la précédente RETROUVE sa fin ouverte (en cours)', annB.ok === true && rouverte.length === 1 && rouverte[0].fin === null && hB2.filter((c) => c.statut === 'archive').length === 1, JSON.stringify({ annB, hB2 }));
+    const annA2 = await B.annuler(lotA.id, 'sonde 146');
+    const hA2 = await histo(F.p1.id);
+    verifier('Puis annulation du premier lot : plus aucune couverture active pour ce patient, la reprise du dossier est archivée avec elle (RG-14 : rien n’est supprimé), la caisse relit l’assureur d’origine',
+      annA2.ok === true && hA2.every((c) => c.statut === 'archive') && hA2.length === 3 && (await enForce(F.p1.id, J.p10)) === F.s1.assureur, JSON.stringify({ annA2, hA2 }));
+
+    /* ---- Date d'effet d'AUJOURD'HUI : le dossier change, l'annulation le restitue ---- */
+    const m2 = await miroir(F.p2.id);
+    const lotC = await B.appliquer('couvertures-assurance', [E, [F.p2.code, F.s2.assureur, F.s2.police, J.auj, MOTIF, 'particulier', 55, '2029-06-30']]);
+    const mC = await miroir(F.p2.id), recC = await B.lot(lotC.id);
+    verifier('Couvertures, effet aujourd’hui : la fiche du dossier suit (compagnie, police, souscripteur ET son nom, taux, carte) ; le lot garde de quoi la restituer (une entrée « patients » qui est une MODIFICATION)',
+      lotC.ok && mC.assureur === F.s2.assureur && mC.police === F.s2.police && mC.sous === F.s2.id && mC.nomSous === F.s2.nom && mC.taux === 55 && mC.carte === '2029-06-30' && m2.assureur === F.s1.assureur && recC.ecrits.some((e) => e.collection === 'patients' && !!e.avant), JSON.stringify({ m2, mC, ecrits: recC.ecrits.map((e) => e.collection) }));
+    const annC = await B.annuler(lotC.id, 'sonde 146');
+    const mC2 = await miroir(F.p2.id);
+    verifier('Annulation : le dossier retrouve EXACTEMENT son état d’avant (compagnie, police, souscripteur et son nom, taux, carte), les couvertures du lot sont archivées', annC.ok === true && JSON.stringify(mC2) === JSON.stringify(m2), JSON.stringify({ annC, m2, mC2 }));
+
+    /* ---- Une facture émise APRÈS le lot sous la nouvelle couverture : l'annulation est refusée en la nommant ---- */
+    const lotD = await B.appliquer('couvertures-assurance', [E, [F.p2.code, F.s2.assureur, F.s2.police, J.auj, MOTIF, '', 55, '2029-06-30']]);
+    const fD = await page.evaluate((code) => { const PR = window.SIGH.parcours, S = window.SIGH.store; const pr = S.collection('produits').active().filter((x) => x.categorie === 'medicament' && x.prixVente > 0 && x.stock > 10 && !x.valorisationProvisoire)[0];
+      try { const r = PR.prescrire({ patientCode: code, medecin: 'SONDE 146', diagnostic: 'sonde', medicaments: [{ produitId: pr.id, quantite: 1 }] }); return { ok: true, numero: r.facture.numero, assureur: r.facture.assureur }; } catch (e) { return { ok: false, erreur: String(e.message || e) }; } }, F.p2.code);
+    const annD = await B.annuler(lotD.id, 'sonde 146');
+    verifier('Une facture émise APRÈS le lot sous la nouvelle couverture : l’annulation est refusée (FACTURE_SOUS_COUVERTURE), le refus NOMME la facture ; la facture porte la compagnie du fichier',
+      lotD.ok && fD.ok && fD.assureur === F.s2.assureur && annD.ok === false && annD.code === 'FACTURE_SOUS_COUVERTURE' && annD.motif.indexOf(fD.numero) >= 0, JSON.stringify({ fD, annD }));
+
+    /* ---- Une facture émise AVANT le lot : signalée à la vérification, n'empêche pas l'annulation ---- */
+    const fE = await page.evaluate((code) => { const PR = window.SIGH.parcours, S = window.SIGH.store; const pr = S.collection('produits').active().filter((x) => x.categorie === 'medicament' && x.prixVente > 0 && x.stock > 10 && !x.valorisationProvisoire)[0];
+      try { const r = PR.prescrire({ patientCode: code, medecin: 'SONDE 146', diagnostic: 'sonde', medicaments: [{ produitId: pr.id, quantite: 1 }] }); return { ok: true, numero: r.facture.numero, partAssurance: r.facture.partAssurance, partPatient: r.facture.partPatient, id: r.facture.id }; } catch (e) { return { ok: false, erreur: String(e.message || e) }; } }, F.p3.code);
+    const anE = await B.analyser('couvertures-assurance', [E, [F.p3.code, F.s2.assureur, F.s2.police, J.m1, MOTIF, '', 60, '2028-12-31']]);
+    verifier('Une facture déjà émise à partir de la date d’effet est SIGNALÉE (FACTURE_DEJA_EMISE : elle garde sa répartition), jamais refusée', fE.ok && anE.accepte && B.toutCodes(anE).indexOf('FACTURE_DEJA_EMISE') >= 0, JSON.stringify({ fE, codes: B.toutCodes(anE) }));
+    const lotE = await B.appliquer('couvertures-assurance', [E, [F.p3.code, F.s2.assureur, F.s2.police, J.m1, MOTIF, '', 60, '2028-12-31']]);
+    const fE2 = await page.evaluate((id) => { const f = window.SIGH.store.collection('factures').get(id); return { partAssurance: f.partAssurance, partPatient: f.partPatient }; }, fE.id);
+    const annE = await B.annuler(lotE.id, 'sonde 146');
+    const mE = await miroir(F.p3.id);
+    verifier('Pour un patient NON assuré : la couverture se pose (aucune reprise à inscrire), la facture d’avant garde ses parts au franc près, et l’annulation est ACCEPTÉE (la facture date d’avant le lot) en rendant le dossier non assuré',
+      lotE.ok && fE2.partAssurance === fE.partAssurance && fE2.partPatient === fE.partPatient && annE.ok === true && mE.assureur === null && mE.sous === null, JSON.stringify({ lotE: lotE.ok, fE, fE2, annE, mE }));
+    await B.restituer();
+    const e146 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e146.length === 0, e146.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 147 : IMP-B2 les immobilisations (RESTREINT) : compte connu du plan, valeur entière > 0, date non future, bien cédé refusé ; l’amortissement SEMESTRIEL se calcule à la lecture et il est IDENTIQUE à celui d’un bien saisi à l’écran ; aucune écriture comptable ; annulation refusée dès qu’un bien est cédé');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('comptable', 'COMPTA147'));
+    await ouvrir('m12-immobilisations.html'); /* le registre est amorcé par son écran : on l'ouvre d'abord, comme la clinique le ferait */
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+    const J = await B.jours();
+    const E = B.ENT.immo;
+    const base = await page.evaluate(() => { const S = window.SIGH.store; const t = S.collection('immobilisations').all(); const max = Math.max.apply(null, t.map((x) => Number(String(x.reference).replace(/\D/g, '')) || 0));
+      const ex = S.collection('immobilisations').active()[0]; return { max: max, ex: { ref: ex.reference, designation: ex.designation, date: ex.dateAcquisition, valeur: ex.valeurAcquisition }, plan: S.collection('comptes').active().filter((c) => /^601/.test(String(c.num)))[0] ? String(S.collection('comptes').active().filter((c) => /^601/.test(String(c.num)))[0].num) : '601000' }; });
+    const D1 = 'Moniteur sonde B2 ' + sfx, D2 = 'Table sonde B2 ' + sfx, R2 = 'IM-B2' + sfx.slice(0, 4);
+    const L1 = ['', D1, 'Matériel médical', '2024-01-15', 1200000, 5, '241000', 'Fournisseur sonde', ''];
+    const L2 = [R2, D2, 'Mobilier médical', '2024-07-15', 1200000, 5, '241000', '', 'En maintenance'];
+    const ok1 = await B.analyser('immobilisations', [E, L1, L2]);
+    verifier('Immobilisations : un fichier valide est accepté (la référence est facultative, l’état vide vaut « En service »), aucun refus, aucun avertissement', ok1.accepte && ok1.aEcrire === 2 && ok1.compte.avertissements === 0, JSON.stringify(ok1));
+    const refus = await B.analyser('immobilisations', [E,
+      ['', 'Date future ' + sfx, 'Matériel médical', '2099-01-01', 1000, 5, '241000', '', ''],
+      ['', 'Valeur nulle ' + sfx, 'Matériel médical', '2024-01-15', 0, 5, '241000', '', ''],
+      ['', 'Valeur tiret ' + sfx, 'Matériel médical', '2024-01-15', '-', 5, '241000', '', ''],
+      ['', 'Durée nulle ' + sfx, 'Matériel médical', '2024-01-15', 1000, 0, '241000', '', ''],
+      ['', 'Compte inconnu ' + sfx, 'Matériel médical', '2024-01-15', 1000, 5, '999999', '', ''],
+      ['', 'Compte de charge ' + sfx, 'Matériel médical', '2024-01-15', 1000, 5, base.plan, '', ''],
+      ['', 'Catégorie fantôme ' + sfx, 'Œuvres d’art', '2024-01-15', 1000, 5, '241000', '', ''],
+      ['', 'Déjà cédé ' + sfx, 'Matériel médical', '2024-01-15', 1000, 5, '241000', '', 'Cédé'],
+      [base.ex.ref, 'Référence tenue ' + sfx, 'Matériel médical', '2024-01-15', 1000, 5, '241000', '', ''],
+      ['', base.ex.designation, 'Matériel médical', base.ex.date, base.ex.valeur, 5, '241000', '', '']]);
+    const refs = refus.lignes.map((l) => l.problemes.filter((p) => p.niveau === 'refus').map((p) => p.code));
+    verifier('Immobilisations : date future, valeur nulle, valeur « - » (un tiret n’est pas un zéro), durée nulle, compte inconnu du plan, compte qui n’est pas une immobilisation, catégorie hors liste, bien déjà cédé, référence tenue, bien identique : chacun refusé par son code',
+      refs[0].indexOf('DATE_FUTURE') >= 0 && refs[1].indexOf('VALEUR_NULLE') >= 0 && refs[2].indexOf('TYPE_INVALIDE') >= 0 && refs[3].indexOf('HORS_BORNES') >= 0 && refs[4].indexOf('COMPTE_INCONNU') >= 0 && refs[5].indexOf('COMPTE_NON_IMMOBILISATION') >= 0
+      && refs[6].indexOf('VALEUR_HORS_LISTE') >= 0 && refs[7].indexOf('BIEN_CEDE') >= 0 && refs[8].indexOf('DOUBLON_MAGASIN') >= 0 && refs[9].indexOf('DOUBLON_MAGASIN') >= 0 && !refus.accepte, JSON.stringify(refs));
+    const interdit = await B.analyser('immobilisations', [E.concat(['Date de cession', 'Amortissement cumulé']), L1.concat(['2025-01-01', 500000])]);
+    verifier('Immobilisations : une colonne « Date de cession » ou « Amortissement cumulé » REFUSE le fichier en la nommant : un bien cédé ne s’importe pas, l’amortissement se calcule, il ne s’importe JAMAIS',
+      !interdit.accepte && interdit.globaux.filter((p) => p.code === 'COLONNE_RETIREE').length === 2 && interdit.globaux.some((p) => p.colonne === 'Amortissement cumulé' && /calcule/.test(p.motif)), JSON.stringify(interdit.globaux));
+    const n0 = await B.compte(['immobilisations', 'ecritures', 'lotsImportation']);
+    const rien = await B.appliquer('immobilisations', [E, L1, ['', 'Fautive ' + sfx, 'Matériel médical', '2099-01-01', 1000, 5, '241000', '', '']]);
+    const n1 = await B.compte(['immobilisations', 'ecritures', 'lotsImportation']);
+    verifier('Immobilisations, atomicité : une ligne valide et une fautive, le fichier est refusé en entier, rien n’est écrit', rien.ok === false && rien.code === 'ANALYSE_REFUSEE' && n1.immobilisations === n0.immobilisations, JSON.stringify({ rien, n0, n1 }));
+    const lot = await B.appliquer('immobilisations', [E, L1, L2]);
+    const n2 = await B.compte(['immobilisations', 'ecritures']);
+    const fiches = await page.evaluate((d1, d2) => window.SIGH.store.collection('immobilisations').all().filter((x) => x.designation === d1 || x.designation === d2).map((x) => ({ ref: x.reference, d: x.designation, cat: x.categorie, date: x.dateAcquisition, val: x.valeurAcquisition, duree: x.dureeAmortissement, compte: x.compte, etat: x.etat, cles: Object.keys(x).filter((k) => /^(amort|cumul|vnc|dotation|nette|valeurNette)/i.test(k)) })), D1, D2);
+    const f1 = fiches.filter((f) => f.d === D1)[0], f2 = fiches.filter((f) => f.d === D2)[0];
+    verifier('Immobilisations : deux fiches NEUVES, la référence du fichier gardée telle quelle (' + R2 + '), l’autre numérotée IM-' + String(base.max + 1).padStart(3, '0') + ' à la suite du registre, état « En service » par défaut ; AUCUNE écriture comptable écrite, AUCUN champ d’amortissement sur la fiche',
+      lot.ok && lot.ecrits === 2 && f2.ref === R2 && f1.ref === 'IM-' + String(base.max + 1).padStart(3, '0') && f1.etat === 'En service' && f2.etat === 'En maintenance' && f1.val === 1200000 && f1.duree === 5 && f1.compte === '241000'
+      && fiches.every((f) => f.cles.length === 0) && n2.ecritures === n1.ecritures && n2.immobilisations === n1.immobilisations + 2, JSON.stringify({ lot, fiches, n1, n2 }));
+    const dbl = await B.analyser('immobilisations', [E, [R2, 'Autre désignation ' + sfx, 'Matériel médical', '2025-01-15', 1000, 5, '241000', '', '']]);
+    verifier('Immobilisations : la référence importée est à son tour tenue, jamais réécrite (doublon refusé)', !dbl.accepte && B.codes(dbl).indexOf('DOUBLON_MAGASIN') >= 0, JSON.stringify(dbl));
+
+    /* ---- L'amortissement : calculé à la lecture, IDENTIQUE à celui d'un bien saisi à l'ÉCRAN ---- */
+    await ouvrir('m12-immobilisations.html');
+    const lire = (designation) => page.evaluate(async (d) => {
+      const i = document.querySelector('#page-content input[type="search"]'); i.value = d; i.dispatchEvent(new Event('input', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 500));
+      const entetes = [...document.querySelectorAll('#page-content thead th')].map((t) => t.textContent.trim());
+      const rang = (nom) => entetes.findIndex((x) => x.indexOf(nom) === 0);
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(d) !== -1);
+      if (!tr) return null;
+      const tds = [...tr.querySelectorAll('td')], nb = (t) => Number(String(t || '').replace(/[^0-9]/g, ''));
+      return { cumul: nb((tds[rang('Amort. cumulé')] || {}).textContent), nette: nb((tds[rang('Valeur nette')] || {}).textContent), duree: (tds[rang('Durée')] || {}).textContent.replace(/\s+/g, ' ').trim() };
+    }, designation);
+    const l1 = await lire(D1), l2 = await lire(D2);
+    const DE = 'Écran sonde B2 ' + sfx;
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === 'Nouveau'); if (b) b.click(); });
+    await pause(700);
+    const poser = (nom, val) => page.evaluate((n, x) => { const c = document.querySelector('[role="dialog"] [name="' + n + '"]'); if (!c) return false; c.value = String(x); c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); return true; }, nom, val);
+    const champs = await page.evaluate(() => [...document.querySelectorAll('[role="dialog"] [name]')].map((c) => c.getAttribute('name')));
+    const posés = [await poser('designation', DE), await poser('dateAcquisition', '2024-01-15'), await poser('valeurAcquisition', 1200000), await poser('dureeAmortissement', 5)];
+    await page.evaluate(() => { const b = [...document.querySelectorAll('[role="dialog"] button')].find((x) => x.textContent.trim() === 'Créer'); if (b) b.click(); });
+    await pause(1200);
+    const ecran = await page.evaluate((d) => { const f = window.SIGH.store.collection('immobilisations').all().filter((x) => x.designation === d)[0]; return f ? { ref: f.reference, compte: f.compte, categorie: f.categorie, etat: f.etat, cles: Object.keys(f).filter((k) => f[k] !== '' && f[k] != null).sort() } : null; }, DE);
+    const le = ecran ? await lire(DE) : null;
+    verifier('Immobilisations : un bien saisi à l’ÉCRAN (fenêtre « Nouveau », mêmes date, valeur et durée que le premier bien importé) porte le MÊME amortissement cumulé et la MÊME valeur nette que lui, lus dans le même tableau',
+      !!l1 && !!le && posés.every(Boolean) && l1.cumul === le.cumul && l1.nette === le.nette && l1.cumul > 0 && l1.nette > 0 && l1.cumul + l1.nette === 1200000, JSON.stringify({ champs, posés, l1, le, ecran }));
+    verifier('Deux biens identiques acquis à SIX MOIS d’écart n’ont pas le même amortissement (le pas est le semestre) : l’écart vaut exactement une dotation de 120 000 F, calculé à la lecture sur les biens importés',
+      !!l1 && !!l2 && l1.cumul - l2.cumul === 120000, JSON.stringify({ l1, l2 }));
+    const clesImporte = f1 ? await page.evaluate((d) => { const f = window.SIGH.store.collection('immobilisations').all().filter((x) => x.designation === d)[0]; return Object.keys(f).filter((k) => f[k] !== '' && f[k] != null && k.charAt(0) !== '_' && ['source', 'lotImport', 'validePar', 'dateImport'].indexOf(k) < 0).sort(); }, D1) : [];
+    verifier('La fiche importée porte les MÊMES champs métier que celle de l’écran (aux traces d’import, au fournisseur facultatif et aux champs laissés vides près) : même forme, donc même lecture', !!ecran && JSON.stringify(clesImporte.filter((k) => k !== 'fournisseur')) === JSON.stringify(ecran.cles.filter((k) => k.charAt(0) !== '_' && k !== 'fournisseur').sort()), JSON.stringify({ clesImporte, ecran: ecran && ecran.cles }));
+
+    /* ---- Annulation ---- */
+    await ouvrir('imp-accueil.html');
+    const idF1 = await page.evaluate((d) => window.SIGH.store.collection('immobilisations').all().filter((x) => x.designation === d)[0].id, D1);
+    await page.evaluate((id, jour) => { window.SIGH.store.collection('immobilisations').update(id, { dateCession: jour, motifSortie: 'Cession', etat: 'Cédé' }); }, idF1, J.auj);
+    const refusAnnul = await B.annuler(lot.id, 'sonde 147');
+    verifier('Immobilisations, annulation : refusée dès qu’un bien est cédé depuis l’import, le refus NOMME le bien', refusAnnul.ok === false && refusAnnul.code === 'BIEN_CEDE_DEPUIS' && refusAnnul.motif.indexOf(f1.ref) >= 0, JSON.stringify(refusAnnul));
+    await page.evaluate((id) => { window.SIGH.store.collection('immobilisations').update(id, { dateCession: null, motifSortie: null, etat: 'En service' }); }, idF1);
+    const annul = await B.annuler(lot.id, 'sonde 147');
+    verifier('Immobilisations, annulation sans cession : acceptée, les deux biens sont archivés (RG-14), jamais supprimés', annul.ok === true && annul.archives === 2, JSON.stringify(annul));
+    await B.restituer();
+    const e147 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e147.length === 0, e147.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 148 : IMP-B2 les budgets (RESTREINT) : un exercice OUVERT seulement ; un exercice clos ou en clôture est refusé en le nommant, à la vérification comme à l’écriture, et la garde du magasin refuse aussi la saisie à l’écran ; centre connu, numéro BG-AAAA-NNN attribué par le logiciel');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('comptable', 'COMPTA148'));
+    await ouvrir('m12-budgets.html'); /* le registre est amorcé par son écran : on l'ouvre d'abord */
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+    const E = B.ENT.budgets;
+    const base = await page.evaluate(() => { const S = window.SIGH.store, X = window.SIGH.exercice; const c = S.collection('centresCouts').active()[0]; const b = S.collection('budgets').active().filter((x) => x.exercice === 2026)[0];
+      return { centre: { code: c.code, libelle: c.libelle }, etat2025: X.etat(2025), etat2026: X.etat(2026), etat2027: X.etat(2027), seed: b ? { exercice: b.exercice, centre: b.centreCout, nature: b.nature } : null }; });
+    verifier('Les exercices du jeu : 2025 clos (liasse déposée), 2026 ouvert, 2027 ouvert (aucun exercice n’existe encore, il est donc ouvert)', base.etat2025 === 'clos' && base.etat2026 === 'ouvert' && base.etat2027 === 'ouvert' && !!base.seed, JSON.stringify(base));
+    const ok1 = await B.analyser('budgets', [E, [2027, base.centre.libelle, 'Investissements', 1500000], [2027, base.centre.code, 'Charges de personnel', 0]]);
+    verifier('Budgets : un fichier valide est accepté (le centre se désigne par son code ou son intitulé, un prévu à zéro est un zéro écrit), aucun refus', ok1.accepte && ok1.aEcrire === 2 && B.codes(ok1).length === 0, JSON.stringify(ok1));
+    const clos = await B.analyser('budgets', [E, [2025, base.centre.code, 'Investissements', 1000]]);
+    const pClos = clos.lignes[0].problemes.filter((p) => p.code === 'EXERCICE_CLOS')[0];
+    verifier('Budgets, exercice CLOS refusé en le NOMMANT : « l’exercice 2025 est clos », avec le geste (rouvrir l’exercice, ou dater le budget de l’exercice ouvert)', !clos.accepte && !!pClos && /2025/.test(pClos.motif) && /clos/.test(pClos.motif) && /exercice ouvert/.test(pClos.geste), JSON.stringify(clos.lignes[0].problemes));
+    await page.evaluate(() => { const X = window.SIGH.exercice, f = X.de(2026); window.__b2 = { f: f, etat: f.etat }; f.etat = 'en_cloture'; });
+    const encl = await B.analyser('budgets', [E, [2026, base.centre.code, 'Investissements', 1000]]);
+    await page.evaluate(() => { window.__b2.f.etat = window.__b2.etat; });
+    verifier('Budgets, exercice EN CLÔTURE refusé lui aussi (EXERCICE_EN_CLOTURE) : « OUVERT seulement »', !encl.accepte && B.codes(encl).indexOf('EXERCICE_EN_CLOTURE') >= 0, JSON.stringify(B.codes(encl)));
+    const refus = await B.analyser('budgets', [E,
+      [2027, 'Centre fantôme ' + sfx, 'Investissements', 1000],
+      [2027, base.centre.code, 'Nature fantôme', 1000],
+      [2027, base.centre.code, 'Investissements', '-'],
+      [2027, base.centre.code, 'Investissements', -1],
+      [1999, base.centre.code, 'Investissements', 1000],
+      [base.seed.exercice, base.seed.centre, base.seed.nature, 1000]]);
+    const refs = refus.lignes.map((l) => l.problemes.filter((p) => p.niveau === 'refus').map((p) => p.code));
+    verifier('Budgets : centre inconnu, nature hors liste, prévu « - » (un tiret n’est pas un zéro), prévu négatif, exercice hors bornes, budget déjà tenu : chacun refusé par son code',
+      refs[0].indexOf('VALEUR_HORS_LISTE') >= 0 && refs[1].indexOf('VALEUR_HORS_LISTE') >= 0 && refs[2].indexOf('TYPE_INVALIDE') >= 0 && refs[3].indexOf('HORS_BORNES') >= 0 && refs[4].indexOf('HORS_BORNES') >= 0 && refs[5].indexOf('DOUBLON_MAGASIN') >= 0 && !refus.accepte, JSON.stringify(refs));
+    const n0 = await B.compte(['budgets', 'ecritures', 'lotsImportation']);
+    const rien = await B.appliquer('budgets', [E, [2027, base.centre.code, 'Investissements', 1000], [2025, base.centre.code, 'Investissements', 1000]]);
+    const n1 = await B.compte(['budgets', 'ecritures', 'lotsImportation']);
+    verifier('Budgets, atomicité : une ligne valide (2027) et une ligne d’un exercice clos, le fichier est refusé en entier, aucun budget n’est écrit', rien.ok === false && rien.code === 'ANALYSE_REFUSEE' && n1.budgets === n0.budgets, JSON.stringify({ rien, n0, n1 }));
+    const lot = await B.appliquer('budgets', [E, [2027, base.centre.libelle, 'Investissements', 1500000], [2027, base.centre.code, 'Charges de personnel', 0]]);
+    const n2 = await B.compte(['budgets', 'ecritures']);
+    const bud = await page.evaluate(() => window.SIGH.store.collection('budgets').all().filter((b) => b.exercice === 2027).map((b) => ({ ref: b.reference, centre: b.centreCout, lib: b.centre, nature: b.nature, prevu: b.prevu })).sort((a, b) => a.ref < b.ref ? -1 : 1));
+    verifier('Budgets : deux budgets NEUFS, numérotés BG-2027-001 et BG-2027-002 par le logiciel, le centre est écrit par son CODE (celui que les écritures portent) avec son intitulé, le prévu zéro est écrit ; aucune écriture comptable',
+      lot.ok && lot.ecrits === 2 && bud.length === 2 && bud[0].ref === 'BG-2027-001' && bud[1].ref === 'BG-2027-002' && bud.every((b) => b.centre === base.centre.code && b.lib === base.centre.libelle) && bud.some((b) => b.prevu === 0) && n2.ecritures === n1.ecritures, JSON.stringify({ lot, bud }));
+
+    /* ---- La garde du MAGASIN : l'écran la subit comme le fichier ---- */
+    const garde = await page.evaluate((c) => { const S = window.SIGH.store, col = S.collection('budgets', { module: 'M12', entite: 'Budget' }); const n = col.all().length;
+      const r = col.insert({ exercice: 2025, centreCout: c, centre: c, nature: 'Investissements', prevu: 5, reference: 'BG-2025-B2' }); return { refuse: r === null, n: col.all().length - n }; }, base.centre.code);
+    verifier('La garde est au MAGASIN : la saisie d’un budget sur l’exercice clos 2025 (le geste de l’écran) est refusée comme celle du fichier, rien n’est écrit', garde.refuse === true && garde.n === 0, JSON.stringify(garde));
+    /* ---- Le MOTEUR refuse aussi à l'application : l'exercice se clôt entre la vérification et la confirmation ---- */
+    const jeu = await page.evaluate((c) => { const I = window.SIGH.importer, X = window.SIGH.exercice;
+      const a = I.analyserLignes(I.jeu('budgets'), [['Exercice', 'Centre de coûts', 'Nature budgétaire', 'Montant prévisionnel (FCFA)'], [2026, c, 'Investissements', 1000]], 'moteur.csv');
+      const f = X.de(2026), etat = f.etat; f.etat = 'clos';
+      const r = I.appliquer('budgets', a); f.etat = etat;
+      const lotC = r.lot ? I.lots().get(r.lot.id) : null;
+      return { accepteAvant: a.accepte, code: r.code, etatLot: lotC && lotC.etat, codes: lotC ? lotC.erreurs.map((p) => p.code) : [], n: window.SIGH.store.collection('budgets').all().filter((b) => b.exercice === 2026 && b.nature === 'Investissements').length }; }, base.centre.code);
+    verifier('Le MOTEUR refuse à l’application : l’analyse était acceptée, l’exercice est clos entre-temps, le lot est refusé et consigné (EXERCICE_CLOS), rien n’est écrit', jeu.accepteAvant === true && jeu.code === 'MAGASIN_CHANGE' && jeu.etatLot === 'refuse' && jeu.codes.indexOf('EXERCICE_CLOS') >= 0 && jeu.n === 0, JSON.stringify(jeu));
+    /* ---- Annulation ---- */
+    const lot26 = await B.appliquer('budgets', [E, [2026, base.centre.code, 'Investissements', 2000000]]);
+    await page.evaluate(() => { const f = window.SIGH.exercice.de(2026); window.__b2 = { f: f, etat: f.etat }; f.etat = 'clos'; });
+    const refusAnnul = await B.annuler(lot26.id, 'sonde 148');
+    await page.evaluate(() => { window.__b2.f.etat = window.__b2.etat; });
+    verifier('Budgets, annulation : refusée quand l’exercice a été clos depuis l’import, le refus NOMME l’exercice (EXERCICE_CLOS : 2026)', lot26.ok && refusAnnul.ok === false && refusAnnul.code === 'EXERCICE_CLOS' && /2026/.test(refusAnnul.motif), JSON.stringify(refusAnnul));
+    const annul = await B.annuler(lot26.id, 'sonde 148'), annul2 = await B.annuler(lot.id, 'sonde 148');
+    verifier('Budgets, annulation sur exercice ouvert : acceptée, les budgets sont archivés (RG-14)', annul.ok === true && annul2.ok === true && annul2.archives === 2, JSON.stringify({ annul, annul2 }));
+    await B.restituer();
+    const e148 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e148.length === 0, e148.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 149 : IMP-B2 les courriers (RESTREINT, ajout seul) : un courrier déjà tenu est IGNORÉ (compté, listé au lot et au rapport, jamais modifié), un numéro d’ordre n’est JAMAIS réécrit et la série continue sans collision ; traitement, accusé et numérisation jamais importés ; annulation refusée dès qu’un courrier est traité');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('agentadmin', 'AGENT149'));
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+    const E = B.ENT.courriers;
+    const base = await page.evaluate(() => { const S = window.SIGH.store; const t = S.collection('courriers').all().filter((c) => c.statut !== 'archive');
+      const ex = t[0], ex2 = t.filter((c) => c.sens !== ex.sens)[0] || t[1];
+      const n = (pref) => Math.max.apply(null, [0].concat(S.collection('courriers').all().map((c) => String(c.reference || '').indexOf(pref) === 0 ? parseInt(String(c.reference).slice(pref.length), 10) || 0 : 0)));
+      return { ex: { ref: ex.reference, sens: ex.sens, date: String(ex.date).slice(0, 10), objet: ex.objet }, ex2: { ref: ex2.reference, sens: ex2.sens, date: String(ex2.date).slice(0, 10), objet: ex2.objet }, maxArr: n('ARR-2026-'), maxDep: n('DEP-2026-'),
+        avant: JSON.stringify(S.collection('courriers').all().map((c) => [c.id, c.reference, c.objet, c.date, c.statut, c.traitement]).sort()), n: S.collection('courriers').all().length }; });
+    const lib = (s) => s === 'arrivee' ? 'Arrivée' : 'Départ';
+    verifier('Le registre du jeu porte au moins deux courriers de séries ARR et DEP en 2026, et ses numéros sont inférieurs à 950', base.maxArr > 0 && base.maxArr < 950 && base.maxDep > 0, JSON.stringify(base));
+    const L1 = ['', 'Arrivée', '2026-11-02', 'DDS sonde ' + sfx, 'Sonde B2 objet un ' + sfx, 'Note', 'Direction Médicale'];
+    const L2 = ['', 'Départ', '2026-11-03', '', 'Sonde B2 objet deux ' + sfx, '', ''];
+    const L3 = ['ARR-2026-0950', 'Arrivée', '2026-11-04', 'Corr sonde', 'Sonde B2 objet trois ' + sfx, 'Lettre', 'Comptabilité'];
+    const L4 = ['ARR-2026-0951', lib(base.ex.sens), base.ex.date, 'Corr', base.ex.objet, 'Lettre', ''];
+    const L5 = [base.ex2.ref, 'Arrivée', '2026-11-05', '', 'Autre objet de sonde ' + sfx, 'Lettre', ''];
+    const an = await B.analyser('courriers', [E, L1, L2, L3, L4, L5]);
+    verifier('Courriers, mode « ignorer » : deux lignes déjà tenues (même date, sens et objet ; même numéro) sont IGNORÉES, comptées (2) et la vérification les nomme ; trois lignes s’écriraient ; le fichier est accepté',
+      an.accepte && an.aEcrire === 3 && an.compte.ignores === 2 && an.lignes[3].etat === 'ignore' && an.lignes[4].etat === 'ignore' && an.lignes[3].problemes.some((p) => p.code === 'IGNORE_EXISTANT') , JSON.stringify({ compte: an.compte, etats: an.lignes.map((l) => l.etat) }));
+    const refus = await B.analyser('courriers', [E,
+      ['DEP-2026-0900', 'Arrivée', '2026-11-06', '', 'Numéro de l’autre sens ' + sfx, '', ''],
+      ['ARR-2025-0900', 'Arrivée', '2026-11-06', '', 'Numéro de l’autre année ' + sfx, '', ''],
+      ['XX-1', 'Arrivée', '2026-11-06', '', 'Numéro hors format ' + sfx, '', ''],
+      ['', 'Courrier fantôme', '2026-11-06', '', 'Sens hors liste ' + sfx, '', ''],
+      ['', 'Arrivée', '31/02/2026', '', 'Date impossible ' + sfx, '', ''],
+      ['', 'Arrivée', '2026-11-06', '', '', '', ''],
+      ['', 'Arrivée', '2026-11-07', '', 'Doublon dans le fichier ' + sfx, '', ''],
+      ['', 'Arrivée', '2026-11-07', '', 'Doublon dans le fichier ' + sfx, '', ''],
+      ['', 'Arrivée', '2026-11-08', '', 'Nature fantôme ' + sfx, 'Télégramme', '']]);
+    const refs = refus.lignes.map((l) => l.problemes.filter((p) => p.niveau === 'refus').map((p) => p.code));
+    verifier('Courriers : numéro d’un autre sens, numéro d’une autre année (NUMERO_INCOHERENT), numéro hors format, sens hors liste, date impossible, objet absent, courrier en double dans le fichier, nature hors liste : chacun refusé par son code',
+      refs[0].indexOf('NUMERO_INCOHERENT') >= 0 && refs[1].indexOf('NUMERO_INCOHERENT') >= 0 && refs[2].indexOf('FORMAT_INVALIDE') >= 0 && refs[3].indexOf('VALEUR_HORS_LISTE') >= 0 && refs[4].indexOf('TYPE_INVALIDE') >= 0 && refs[5].indexOf('CHAMP_OBLIGATOIRE') >= 0 && refs[7].indexOf('DOUBLON_FICHIER') >= 0 && refs[8].indexOf('VALEUR_HORS_LISTE') >= 0 && !refus.accepte, JSON.stringify(refs));
+    const retirees = await B.analyser('courriers', [E.concat(['État du traitement', 'Accusé de réception', 'Document numérisé']), L1.concat(['Traité', 'Oui', 'Oui'])]);
+    verifier('Courriers : « État du traitement », « Accusé de réception » et « Document numérisé » REFUSENT le fichier en les nommant : le traitement, l’accusé et la pièce numérisée ne s’importent jamais',
+      !retirees.accepte && retirees.globaux.filter((p) => p.code === 'COLONNE_RETIREE').length === 3, JSON.stringify(retirees.globaux.map((p) => p.colonne)));
+    const rien = await B.appliquer('courriers', [E, L1, [ '', 'Arrivée', '2026-11-08', '', '', '', '']]);
+    const apresRien = await page.evaluate(() => window.SIGH.store.collection('courriers').all().length);
+    verifier('Courriers, atomicité : une ligne valide et une fautive, le fichier est refusé en entier, rien n’est écrit', rien.ok === false && rien.code === 'ANALYSE_REFUSEE' && apresRien === base.n, JSON.stringify({ rien, apresRien, base: base.n }));
+    const lot = await B.appliquer('courriers', [E, L1, L2, L3, L4, L5]);
+    const fiches = await page.evaluate((s) => window.SIGH.store.collection('courriers').all().filter((c) => String(c.objet).indexOf(s) >= 0).map((c) => ({ ref: c.reference, sens: c.sens, date: c.date, corr: c.correspondant, objet: c.objet, nature: c.nature, aff: c.affecteA, trait: c.traitement, accuse: c.accuseReception, num: c.numerise })), sfx);
+    const f1 = fiches.filter((f) => /objet un/.test(f.objet))[0], f2 = fiches.filter((f) => /objet deux/.test(f.objet))[0], f3 = fiches.filter((f) => /objet trois/.test(f.objet))[0];
+    verifier('Courriers : trois fiches NEUVES ; le numéro du fichier (ARR-2026-0950) est gardé TEL QUEL, les deux autres numérotés À LA SUITE du registre sans collision (ARR-2026-0951 après lui, DEP-2026-' + String(base.maxDep + 1).padStart(4, '0') + ') ; nature « Lettre » par défaut, service vide laissé vide',
+      lot.ok && lot.ecrits === 3 && f3.ref === 'ARR-2026-0950' && f1.ref === 'ARR-2026-0951' && f2.ref === 'DEP-2026-' + String(base.maxDep + 1).padStart(4, '0') && f2.nature === 'Lettre' && (f2.aff === null || f2.aff === undefined) && f1.nature === 'Note' && f1.aff === 'Direction Médicale', JSON.stringify({ lot, fiches }));
+    verifier('Courriers : le courrier naît « en attente », sans accusé ni numérisation (jamais importés)', fiches.every((f) => f.trait === 'en_attente' && f.accuse === false && f.num === false), JSON.stringify(fiches));
+    const apres = await page.evaluate((avantJson) => { const S = window.SIGH.store; const t = S.collection('courriers').all(); const avant = JSON.parse(avantJson);
+      const inchange = avant.every((a) => { const c = t.filter((x) => x.id === a[0])[0]; return c && c.reference === a[1] && c.objet === a[2] && c.date === a[3] && c.statut === a[4] && c.traitement === a[5]; });
+      const refs = t.map((c) => c.reference), uniques = refs.length === new Set(refs).size; return { inchange: inchange, uniques: uniques, n: t.length }; }, base.avant);
+    verifier('Les courriers déjà tenus n’ont PAS bougé (numéro, objet, date, statut, traitement) et tous les numéros du registre sont UNIQUES : un numéro d’ordre n’est jamais réécrit', apres.inchange && apres.uniques && apres.n === base.n + 3, JSON.stringify(apres));
+    const rec = await B.lot(lot.id);
+    verifier('Le lot porte le NOMBRE (2) et la LISTE des lignes ignorées (lignes 5 et 6 du fichier, par leur seul rang : jeu restreint, jamais la valeur de la clé)',
+      rec.ignoresTotal === 2 && rec.nbIgnores === 2 && rec.ignores.length === 2 && rec.ignores.map((x) => x.n).join(',') === '5,6' && rec.ignores.every((x) => x.cle === undefined), JSON.stringify({ ignoresTotal: rec.ignoresTotal, ignores: rec.ignores }));
+    const rap = await page.evaluate((id) => { const I = window.SIGH.importer, l = I.lots().get(id), j = I.jeu('courriers'); const rp = window.SIGH.xlsx.lire(new Uint8Array(I.rapport(l, j))); const cel = []; rp.feuilles.forEach((f) => f.lignes.forEach((r) => r.forEach((x) => cel.push(String(x))))); return cel.join('|'); }, lot.id);
+    verifier('Le rapport .xlsx liste les lignes IGNORÉES (code IGNORE_EXISTANT, lignes 5 et 6) et le total des lignes ignorées, sans recopier l’objet d’aucun courrier', /IGNORE_EXISTANT/.test(rap) && /Lignes ignorées/.test(rap) && rap.indexOf(base.ex.objet) < 0 && rap.indexOf('Sonde B2') < 0, rap.slice(0, 300));
+
+    /* ---- Annulation ---- */
+    const idF1 = await page.evaluate((s) => window.SIGH.store.collection('courriers').all().filter((c) => String(c.objet).indexOf('objet un ' + s) >= 0)[0].id, sfx);
+    await page.evaluate((id) => { window.SIGH.store.collection('courriers').update(id, { traitement: 'traite' }); }, idF1);
+    const refusAnnul = await B.annuler(lot.id, 'sonde 149');
+    verifier('Courriers, annulation : refusée dès qu’un courrier est traité, le refus NOMME le courrier (COURRIER_TRAITE)', refusAnnul.ok === false && refusAnnul.code === 'COURRIER_TRAITE' && /ARR-2026-0951/.test(refusAnnul.motif), JSON.stringify(refusAnnul));
+    await page.evaluate((id) => { window.SIGH.store.collection('courriers').update(id, { traitement: 'en_attente' }); }, idF1);
+    const annul = await B.annuler(lot.id, 'sonde 149');
+    verifier('Courriers, annulation d’un lot dont aucun courrier n’est traité : acceptée, les trois courriers sont archivés (RG-14) ; les courriers ignorés n’étaient pas au lot, ils restent', annul.ok === true && annul.archives === 3, JSON.stringify(annul));
+    await B.restituer();
+    const e149 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e149.length === 0, e149.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 150 : IMP-B2 aucun des quatre jeux RESTREINTS (couvertures, immobilisations, budgets, courriers) ne laisse une valeur de cellule dans le lot (refusé, appliqué, annulé) ni dans le rapport .xlsx, alors qu’un jeu courant garde ses valeurs ; la matrice ouvre puis ferme l’import à l’assistant comptable depuis « Rôles & permissions », sans code');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('da', 'DAF150'));
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+    const J = await B.jours();
+    const F = await B.fixture(sfx);
+    const base = await page.evaluate(() => { const S = window.SIGH.store; const c = S.collection('centresCouts').active()[0]; const k = S.collection('courriers').active()[0];
+      return { centre: c.code, courrier: { ref: k.reference, sens: k.sens, date: String(k.date).slice(0, 10), objet: k.objet } }; });
+    /* Pour chaque jeu : un fichier REFUSÉ (consigné), un fichier APPLIQUÉ, puis annulé ; les « sentinelles » sont les valeurs de cellule qui ne doivent apparaître nulle part. */
+    const CAS = {
+      'couvertures-assurance': { ent: B.ENT.couvertures,
+        refuse: [['CNT/ZQ777/26', F.s2.assureur, 'ZQPOLICE777', '2031-02-03', 'Changement d’employeur', '', 77, '2033-04-05']],
+        applique: [[F.p1.code, F.s2.assureur, F.s2.police, J.p10, 'Changement d’employeur', '', 77, '2033-04-05']],
+        sentinelles: ['CNT/ZQ777/26', 'ZQPOLICE777', '2031-02-03', '2033-04-05', F.p1.code, F.s2.police, J.p10] },
+      'immobilisations': { ent: B.ENT.immo,
+        refuse: [['IM-ZQ777', 'ZQBIEN-ALPHA', 'Matériel médical', '2099-09-09', 7654321, 5, '999999', 'ZQFOURNISSEUR', '']],
+        applique: [['IM-ZQ888', 'ZQBIEN-BETA', 'Matériel médical', '2024-03-03', 7654322, 5, '241000', 'ZQFOURNISSEUR2', '']],
+        sentinelles: ['IM-ZQ777', 'ZQBIEN-ALPHA', '2099-09-09', '7654321', '999999', 'ZQFOURNISSEUR', 'IM-ZQ888', 'ZQBIEN-BETA', '7654322', 'ZQFOURNISSEUR2'] },
+      'budgets': { ent: B.ENT.budgets,
+        refuse: [[2025, 'ZQCENTRE', 'Investissements', 8765431]],
+        applique: [[2027, base.centre, 'Investissements', 8765432]],
+        sentinelles: ['ZQCENTRE', '8765431', '8765432'] },
+      'courriers': { ent: B.ENT.courriers,
+        refuse: [['ARR-2026-0777', 'Arrivée', '31/02/2026', 'ZQCORR', 'ZQOBJET-ALPHA', 'Télégramme', '']],
+        applique: [['', 'Arrivée', '2026-11-09', 'ZQCORR2', 'ZQOBJET-BETA', 'Lettre', ''], ['ARR-2026-0952', base.courrier.sens === 'arrivee' ? 'Arrivée' : 'Départ', base.courrier.date, 'ZQCORR3', base.courrier.objet, 'Lettre', '']],
+        sentinelles: ['ARR-2026-0777', 'ZQCORR', 'ZQOBJET-ALPHA', 'ZQCORR2', 'ZQOBJET-BETA', 'ZQCORR3', base.courrier.objet, '2026-11-09'] },
+    };
+    const bilan = [];
+    for (const jeu of Object.keys(CAS)) {
+      const c = CAS[jeu];
+      const r = await page.evaluate((j, e, refuse, applique) => { const I = window.SIGH.importer, jj = I.jeu(j);
+        const a1 = I.analyserLignes(jj, [e].concat(refuse), j + '-refus.csv'); const l1 = I.consigner(jj, a1);
+        const a2 = I.analyserLignes(jj, [e].concat(applique), j + '-ok.csv'); const ap = I.appliquer(j, a2);
+        const lotsId = [l1 && l1.id, ap.lot && ap.lot.id];
+        const an = ap.ok ? I.annulerLot(ap.lot.id, 'sonde 150') : { ok: false };
+        const cellules = (lot) => { const rp = window.SIGH.xlsx.lire(new Uint8Array(I.rapport(I.lots().get(lot), jj))); const t = []; rp.feuilles.forEach((f) => f.lignes.forEach((x) => x.forEach((y) => t.push(String(y))))); return { texte: t.join('|'), entete: rp.feuilles[0].lignes[0] }; };
+        return { refuseAccepte: a1.accepte, consigne: !!l1, ecrit: ap.ok, annule: an.ok, annuleCode: an.code || null, lots: lotsId.filter(Boolean).map((id) => ({ json: JSON.stringify(I.lots().get(id)), etat: I.lots().get(id).etat, erreurs: (I.lots().get(id).erreurs || []).map((x) => [x.code, x.colonne, x.valeur === '' || x.valeur === undefined]), rapport: cellules(id) })) }; }, jeu, c.ent, c.refuse, c.applique);
+      const fuites = [];
+      r.lots.forEach((l) => c.sentinelles.forEach((s) => { if (l.json.indexOf(s) >= 0) fuites.push(['lot', s]); if (l.rapport.texte.indexOf(s) >= 0) fuites.push(['rapport', s]); }));
+      bilan.push({ jeu: jeu, ok: r.consigne && r.ecrit && r.refuseAccepte === false && r.lots.length === 2 && fuites.length === 0 && r.lots[0].etat === 'refuse' && r.lots[0].erreurs.length >= 1 && r.lots[0].erreurs.every((x) => x[2] === true) && r.lots[0].rapport.entete.indexOf('Valeur') < 0, fuites: fuites, detail: { annule: r.annule, annuleCode: r.annuleCode, erreurs: r.lots[0] && r.lots[0].erreurs, entete: r.lots[0] && r.lots[0].rapport.entete, ecrit: r.ecrit, consigne: r.consigne } });
+    }
+    bilan.forEach((b) => verifier('MASQUAGE « ' + b.jeu + ' » : le lot refusé (consigné), le lot appliqué puis annulé et leurs rapports .xlsx ne portent AUCUNE valeur de cellule (ni clé, ni numéro, ni date, ni montant) : colonne, code, geste seulement, et plus de colonne « Valeur » au rapport', b.ok, JSON.stringify({ fuites: b.fuites, detail: b.detail })));
+    /* Contraste : un jeu COURANT garde la valeur fautive, le masquage tient à la sensibilité du jeu. */
+    const contraste = await page.evaluate(() => { const I = window.SIGH.importer, jj = I.jeu('natures-facture'); const a = I.analyserLignes(jj, [['Code', 'Nature de la facture', 'Secteur émetteur', 'Origine'], ['ZQN1', 'ZQNATURE', 'ZQSECTEURFANTOME', '']], 'c.csv'); const l = I.consigner(jj, a); return JSON.stringify(I.lots().get(l.id)); });
+    verifier('Contraste : le jeu COURANT des natures de facture garde la valeur fautive dans son constat (le masquage est propre aux jeux restreints, ce n’est pas une panne)', /ZQSECTEURFANTOME/.test(contraste), contraste.slice(0, 200));
+    /* Ce que voit chacun : un profil qui détient le jeu sans superviser ne lit que SES lots (courriers : l'agent administratif ; les autres jeux : le comptable). */
+    await poserSessionServeur(roleImp('agentadmin', 'AGENT150'));
+    await ouvrir('imp-courriers.html');
+    const lecture = await page.evaluate(() => { const I = window.SIGH.importer; return { siens: I.lotsVisibles(I.jeu('courriers')).length, tous: I.lots().all().filter((l) => l.jeu === 'courriers').length }; });
+    verifier('Chacun lit ses lots, la supervision lit tous : l’agent administratif ne voit que les lots qu’il a écrits (aucun : ceux de la DAF lui sont fermés), alors que le registre en porte', lecture.siens === 0 && lecture.tous >= 2, JSON.stringify(lecture));
+
+    /* ---- La matrice : ouvrir puis fermer l'import à l'assistant comptable depuis « Rôles & permissions » ---- */
+    await poserSessionServeur(roleImp('admin', 'ADMIN150'));
+    await ouvrir('imp-accueil.html');
+    const cible = await page.evaluate(() => { const N = window.SIGH.nav; const jeux = ['immobilisations', 'budgets', 'garanties', 'couvertures-assurance', 'centres-couts'];
+      const j = jeux.filter((x) => { const e = N.jeuImport(x).hotes[0], i = N.get(e); return N.can('aide_comptable', { id: e, roles: i.roles, module: i.module }); })[0];
+      return j ? { jeu: j, hote: N.jeuImport(j).hotes[0], avant: N.droitImport('aide_comptable', j) } : null; });
+    verifier('L’assistant comptable ouvre au moins un hôte des jeux du comptable et les VOIT sans les importer (I7) : de quoi éprouver la matrice', !!cible && cible.avant.voir === true && cible.avant.importer === false, JSON.stringify(cible));
+    const ligneRole = () => page.evaluate(() => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf(window.SIGH.nav.ROLES.aide_comptable.label) >= 0); const b = tr && tr.querySelector('button[title="Régler les importations de ce rôle"]'); if (b) b.click(); return !!b; });
+    await ouvrir('m14-roles.html');
+    const ouvert = await ligneRole(); await pause(700);
+    const fen = await page.evaluate((j) => { const d = document.querySelector('[role="dialog"]'); return d ? { lignes: d.querySelectorAll('tr[data-jeu]').length, total: window.SIGH.nav.IMPORTS.length, dixPresents: ['natures-facture', 'centres-couts', 'catalogue-imagerie', 'unites-labo', 'prestataires', 'garanties', 'couvertures-assurance', 'immobilisations', 'budgets', 'courriers'].every((x) => !!d.querySelector('tr[data-jeu="' + x + '"]')),
+      voir: (d.querySelector('tr[data-jeu="' + j + '"] input[data-droit="voir"]') || {}).checked, imp: (d.querySelector('tr[data-jeu="' + j + '"] input[data-droit="importer"]') || {}).checked } : null; }, cible.jeu);
+    verifier('« Rôles & permissions » : la section Importation porte une ligne par jeu, dont les DIX nouveaux, trois cases chacune ; l’assistant comptable voit « ' + cible.jeu + ' » sans l’importer', ouvert && fen && fen.lignes === fen.total && fen.total >= 25 && fen.dixPresents && fen.voir === true && fen.imp === false, JSON.stringify(fen));
+    await page.evaluate((j) => { document.querySelector('[role="dialog"] tr[data-jeu="' + j + '"] input[data-droit="importer"]').click(); }, cible.jeu);
+    await cliquer('Enregistrer', '[role="dialog"] button'); await pause(900);
+    const ap = await page.evaluate((j) => { const N = window.SIGH.nav; N.invaliderRbac(); const d = N.droitImport('aide_comptable', j); return { importer: d.importer, annuler: d.annuler, autre: N.droitImport('aide_comptable', 'courriers').importer }; }, cible.jeu);
+    verifier('Sans code : la case cochée et enregistrée OUVRE l’import de « ' + cible.jeu + ' » à l’assistant comptable (une surcharge accorde), pas ses autres jeux, sans le droit d’annuler', ap.importer === true && ap.annuler === false && ap.autre === false, JSON.stringify(ap));
+    await poserSessionServeur(roleImp('aide_comptable', 'ASSIST150'));
+    await ouvrir(cible.hote + '.html');
+    const bOuvert = await boutonsImport();
+    verifier('Sous ce profil, le bouton « Importer les données » apparaît sur l’hôte (' + cible.hote + ')', bOuvert.some((x) => x.split(',').indexOf(cible.jeu) >= 0), JSON.stringify(bOuvert));
+    await poserSessionServeur(roleImp('admin', 'ADMIN150'));
+    await ouvrir('m14-roles.html');
+    await ligneRole(); await pause(700);
+    await page.evaluate((j) => { document.querySelector('[role="dialog"] tr[data-jeu="' + j + '"] input[data-droit="importer"]').click(); }, cible.jeu);
+    await cliquer('Enregistrer', '[role="dialog"] button'); await pause(900);
+    const ferme = await page.evaluate((j) => { const N = window.SIGH.nav; N.invaliderRbac(); return N.droitImport('aide_comptable', j).importer; }, cible.jeu);
+    await poserSessionServeur(roleImp('aide_comptable', 'ASSIST150'));
+    await ouvrir(cible.hote + '.html');
+    const bFerme = await boutonsImport();
+    verifier('Refermé par la même fenêtre : le droit et le bouton disparaissent', ferme === false && bFerme.every((x) => x.split(',').indexOf(cible.jeu) < 0), JSON.stringify({ ferme, bFerme }));
+    await poserSessionServeur(roleImp('admin', 'ADMIN150'));
+    await page.evaluate(() => { const S = window.SIGH.store, f = S.collection('rbac').all().filter((x) => x.role === 'aide_comptable')[0]; if (f) S.collection('rbac').update(f.id, { droitsImport: {} }); window.SIGH.nav.invaliderRbac(); });
+    await attendreEcritures();
+    await B.restituer();
+    const e150 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e150.length === 0, e150.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 151 : IMP-B2 mesures : un import de 100 lignes de garanties et de 200 lignes de courriers s’écrit en UN envoi par collection (écriture en lot du lot T5b), temps, requêtes et octets dits au journal du banc');
+    erreursJS = [];
+    const B = outilsB2, sfx = B.suffixe();
+    await poserSessionServeur(roleImp('da', 'DAF151'));
+    await ouvrir('imp-accueil.html');
+    await B.photographier();
+    const J = await B.jours();
+    const F = await B.fixture(sfx);
+    await attendreEcritures();
+    const cats = await page.evaluate(() => window.SIGH.data.CATEGORIES_GARANTIE.map((c) => c.label));
+    const lg = [B.ENT.garanties];
+    for (let i = 1; i <= 100; i++) lg.push([F.s1.police, cats[i % cats.length], 'Garantie de mesure ' + i, 50 + (i % 40), i % 3 ? '' : 10000 + i, i % 3 ? '' : 'par acte', J.p30, '', '']);
+    const mg = await B.mesurerEnvoi(() => page.evaluate((l) => { const I = window.SIGH.importer, t0 = performance.now(); const a = I.analyserLignes(I.jeu('garanties'), l, 'mesure100.csv'); const tA = performance.now() - t0;
+      const t1 = performance.now(); const r = I.appliquer('garanties', a); return { ok: !!r.ok, accepte: a.accepte, ecrits: r.ecrits, id: r.lot && r.lot.id, msAnalyse: Math.round(tA), msApplication: Math.round(performance.now() - t1) }; }, lg));
+    console.log('\n  MESURE IMP-B2 : 100 lignes de garanties : analyse ' + mg.retour.msAnalyse + ' ms, application en mémoire ' + mg.retour.msApplication + ' ms, envoi au serveur ' + mg.msEnvoi + ' ms, ' + mg.requetes + ' requête(s), ' + mg.octets + ' octets envoyés');
+    verifier('Mesure : 100 garanties s’importent d’un seul lot, sans erreur, la file d’écriture est vidée (temps et octets au journal du banc)', mg.retour.accepte && mg.retour.ok && mg.retour.ecrits === 100 && mg.requetes >= 1, JSON.stringify(mg));
+    const nv = await page.evaluate((s) => window.SIGH.store.collection('garanties').all().filter((g) => g.souscripteurId === s && g.statut === 'actif').length, F.s1.id);
+    verifier('Les cent garanties sont des PREMIÈRES versions de séries neuves (cent fiches actives pour le souscripteur de la sonde)', nv === 100, String(nv));
+    const mgAn = await B.mesurerEnvoi(() => B.annuler(mg.retour.id, 'mesure 151'));
+    console.log('  MESURE IMP-B2 : annulation du lot de 100 garanties : ' + mgAn.msFonction + ' ms en mémoire, envoi ' + mgAn.msEnvoi + ' ms, ' + mgAn.requetes + ' requête(s), ' + mgAn.octets + ' octets');
+    verifier('Annulation d’un lot de cent garanties : acceptée (aucune facture ne s’appuie dessus), les cent versions sont archivées', mgAn.retour.ok === true && mgAn.retour.archives === 100, JSON.stringify(mgAn));
+    const lc = [B.ENT.courriers];
+    for (let i = 1; i <= 200; i++) lc.push(['', i % 2 ? 'Arrivée' : 'Départ', '2026-10-' + String(1 + (i % 28)).padStart(2, '0'), 'Correspondant ' + i, 'Courrier de mesure ' + i + ' ' + sfx, 'Lettre', 'Comptabilité']);
+    await poserSessionServeur(roleImp('agentadmin', 'AGENT151'));
+    await ouvrir('imp-accueil.html');
+    const mc = await B.mesurerEnvoi(() => page.evaluate((l) => { const I = window.SIGH.importer, t0 = performance.now(); const a = I.analyserLignes(I.jeu('courriers'), l, 'mesure200.csv'); const tA = performance.now() - t0;
+      const t1 = performance.now(); const r = I.appliquer('courriers', a); return { ok: !!r.ok, accepte: a.accepte, ecrits: r.ecrits, id: r.lot && r.lot.id, msAnalyse: Math.round(tA), msApplication: Math.round(performance.now() - t1) }; }, lc));
+    console.log('  MESURE IMP-B2 : 200 lignes de courriers : analyse ' + mc.retour.msAnalyse + ' ms, application en mémoire ' + mc.retour.msApplication + ' ms, envoi au serveur ' + mc.msEnvoi + ' ms, ' + mc.requetes + ' requête(s), ' + mc.octets + ' octets envoyés');
+    verifier('Mesure : 200 courriers s’importent d’un seul lot, sans erreur ; chaque numéro est unique dans le registre', mc.retour.accepte && mc.retour.ok && mc.retour.ecrits === 200 && mc.requetes >= 1
+      && await page.evaluate(() => { const r = window.SIGH.store.collection('courriers').all().map((c) => c.reference); return r.length === new Set(r).size; }), JSON.stringify(mc));
+    const mcAn = await B.mesurerEnvoi(() => B.annuler(mc.retour.id, 'mesure 151'));
+    console.log('  MESURE IMP-B2 : annulation du lot de 200 courriers : ' + mcAn.msFonction + ' ms en mémoire, envoi ' + mcAn.msEnvoi + ' ms, ' + mcAn.requetes + ' requête(s), ' + mcAn.octets + ' octets');
+    verifier('Annulation du lot de 200 courriers : acceptée, deux cents courriers archivés', mcAn.retour.ok === true && mcAn.retour.archives === 200, JSON.stringify(mcAn));
+    await B.restituer();
+    const e151 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
+    verifier('Aucune erreur JavaScript', e151.length === 0, e151.join(' | '));
   });
 
   await browser.close();
