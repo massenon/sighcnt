@@ -31,6 +31,7 @@
  * ========================================================================== */
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/_sauvegarde.php';
 
 /* --------------------------------------------------------------------------
  * LES TABLES — propres au planificateur
@@ -127,6 +128,15 @@ function sigh_cron_delai_a_payer(PDO $pdo, int $auj): int
         throw new RuntimeException('Paramètre DELAIS-ALERTE absent du magasin : le délai d\'alerte des échéances fiscales n\'est pas fixé (cfg-comptabilite, Paramètres du calendrier).');
     }
     return (int) $retenu['delaiAPayer'];
+}
+
+/** Une sauvegarde qui n'a pas pu s'écrire : exécution en ERREUR (jamais « ok » sans rien avoir écrit) ET alerte critique routée à l'administrateur et à la DAF. */
+function sigh_cron_echec_sauvegarde(string $cle, string $titre, array $refus): array
+{
+    $texte = $refus['code'] . ' : ' . $refus['motif'] . ' ' . $refus['geste'];
+    return ['statut' => 'erreur', 'message' => $texte, 'alertes' => [[
+        'cle' => $cle, 'priorite' => 'critique', 'titre' => $titre, 'detail' => $texte, 'lien' => 'm14-taches', 'postes' => ['admin', 'da'],
+    ]]];
 }
 
 /* --------------------------------------------------------------------------
@@ -282,10 +292,12 @@ function sigh_cron_taches(): array
         'sauvegarde_nocturne' => [
             'libelle' => 'Sauvegarde du magasin (copie compressée, 7 derniers jours)',
             'frequence_min' => 1440,
-            'executer' => function (PDO $pdo, int $auj): array {
-                $dossier = __DIR__ . '/sauvegardes';
-                if (!is_dir($dossier) && !@mkdir($dossier, 0750, true)) {
-                    throw new RuntimeException('dossier de sauvegarde non créé : ' . $dossier);
+            'executer' => function (PDO $pdo, int $auj, array $ctx = []): array {
+                /* La destination est celle de la clinique (réglage en base), sinon `api/sauvegardes/`. Une destination INATTEIGNABLE est refusée en la nommant et
+                   donne une alerte : elle n'est jamais remplacée en silence par le défaut, et une exécution n'est jamais « ok » sans avoir rien écrit. */
+                $d = sigh_sauv_destination($pdo);
+                if (!$d['ok']) {
+                    return sigh_cron_echec_sauvegarde('sauvegarde-magasin:inatteignable', 'Sauvegarde du magasin impossible : destination inatteignable', $d);
                 }
                 $tout = ['meta' => [], 'collections' => []];
                 foreach ($pdo->query('SELECT cle, valeur FROM meta') as $l) {
@@ -294,14 +306,82 @@ function sigh_cron_taches(): array
                 foreach ($pdo->query('SELECT nom, donnees FROM collections') as $l) {
                     $tout['collections'][$l['nom']] = json_decode($l['donnees'], true);
                 }
-                $fichier = $dossier . '/magasin-' . gmdate('Y-m-d', $auj * 86400) . '.json.gz';
-                file_put_contents($fichier, gzencode(json_encode($tout, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 6));
-                $anciens = glob($dossier . '/magasin-*.json.gz') ?: [];
+                $nom = 'magasin-' . gmdate('Y-m-d', $auj * 86400) . '.json.gz';
+                $octets = @file_put_contents($d['chemin'] . '/' . $nom, gzencode(json_encode($tout, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 6));
+                if ($octets === false) {
+                    return sigh_cron_echec_sauvegarde('sauvegarde-magasin:inatteignable', 'Sauvegarde du magasin impossible : écriture refusée', sigh_sauv_refus(
+                        'ECRITURE_IMPOSSIBLE', 'la copie du magasin n’a pas pu être écrite dans « ' . $d['chemin'] . ' » (disque plein ou droits retirés)', 'Libérer de la place ou rendre le dossier inscriptible.'));
+                }
+                /* La rotation à 7 jours ne vise QUE les copies du magasin : les fichiers numérisés ne tournent jamais (conservation illimitée). */
+                $anciens = glob($d['chemin'] . '/magasin-*.json.gz') ?: [];
                 sort($anciens);
                 foreach (array_slice($anciens, 0, max(0, count($anciens) - 7)) as $a) {
                     @unlink($a);
                 }
-                return [];
+                return ['alertes' => [], 'message' => 'Copie écrite : ' . $nom . ' (' . sigh_sauv_poids((int) $octets) . ') dans ' . $d['chemin'] . '. ' . sigh_sauv_mot_disque($d['memeDisque'])];
+            },
+        ],
+        'sauvegarde_fichiers' => [
+            'libelle' => 'Sauvegarde des fichiers numérisés (copie incrémentale vérifiée, conservation illimitée)',
+            'frequence_min' => 60,
+            'executer' => function (PDO $pdo, int $auj, array $ctx = []): array {
+                if (!is_dir(sigh_fichiers_racine())) {
+                    return ['alertes' => [], 'message' => sigh_sauv_resume_sauvegarde(['rienACopier' => true])];
+                }
+                $d = sigh_sauv_destination($pdo);
+                if (!$d['ok']) {
+                    return sigh_cron_echec_sauvegarde('sauvegarde-fichiers:inatteignable', 'Sauvegarde des fichiers impossible : destination inatteignable', $d);
+                }
+                $r = sigh_sauv_sauvegarder($d, $ctx['budget_s'] ?? null, $auj);
+                $alertes = [];
+                $postes = ['admin', 'da'];
+                if ($r['alteres']) {
+                    $noms = implode(', ', array_map(function ($a) { return sigh_sauv_abrege($a['sha256']) . ($a['sauvegardeSaine'] ? ' (copie saine conservée)' : ' (aucune copie saine)'); }, array_slice($r['alteres'], 0, 5)));
+                    $alertes[] = ['cle' => 'sauvegarde-fichiers:alteres', 'priorite' => 'critique',
+                        'titre' => count($r['alteres']) . ' fichier(s) numérisé(s) altéré(s) à la source, non copié(s) à la sauvegarde',
+                        'detail' => 'Empreintes : ' . $noms . '. Un fichier altéré n’est jamais propagé à la sauvegarde. Restaurer la copie saine : php api/restaurer.php --fichiers --oui.',
+                        'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                if ($r['echecs'] || $r['illisibles']) {
+                    $alertes[] = ['cle' => 'sauvegarde-fichiers:echecs', 'priorite' => 'critique',
+                        'titre' => (count($r['echecs']) + count($r['illisibles'])) . ' fichier(s) numérisé(s) non sauvegardé(s) (écriture ou lecture impossible)',
+                        'detail' => 'Vérifier la place disponible et les droits du dossier « ' . $d['chemin'] . ' », puis relancer la tâche.', 'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                if ($d['memeDisque'] === true) {
+                    $alertes[] = ['cle' => 'sauvegarde-meme-disque', 'priorite' => 'important',
+                        'titre' => 'Les sauvegardes sont sur le même disque que les données',
+                        'detail' => 'Une copie sur le même disque ne protège pas d’une panne de disque (fichiers numérisés et copies du magasin). Désigner un autre disque ou un partage dans « Tâches planifiées », Destination de la sauvegarde.',
+                        'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                $erreur = $r['alteres'] || $r['echecs'] || $r['illisibles'];
+                return ['alertes' => $alertes, 'statut' => $erreur ? 'erreur' : 'ok', 'message' => sigh_sauv_resume_sauvegarde($r)];
+            },
+        ],
+        'controle_fichiers' => [
+            'libelle' => 'Contrôle d’intégrité des fichiers numérisés (manquants, altérés, sans fiche)',
+            'frequence_min' => 1440,
+            'executer' => function (PDO $pdo, int $auj, array $ctx = []): array {
+                $r = sigh_sauv_controler(sigh_sauv_collections($pdo));
+                $postes = ['admin', 'da'];
+                $alertes = [];
+                if ($r['manquants']) {
+                    $alertes[] = ['cle' => 'controle-fichiers:manquants', 'priorite' => 'critique',
+                        'titre' => count($r['manquants']) . ' fichier(s) numérisé(s) référencé(s) introuvable(s) sur le disque',
+                        'detail' => 'Empreintes : ' . implode(', ', array_map(function ($m) { return sigh_sauv_abrege($m['sha256']); }, array_slice($r['manquants'], 0, 5)))
+                            . '. Les restaurer depuis la sauvegarde : php api/restaurer.php --fichiers --oui.', 'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                if ($r['divergents']) {
+                    $alertes[] = ['cle' => 'controle-fichiers:alteres', 'priorite' => 'critique',
+                        'titre' => count($r['divergents']) . ' fichier(s) numérisé(s) dont l’empreinte a changé',
+                        'detail' => 'Empreintes : ' . implode(', ', array_map(function ($m) { return sigh_sauv_abrege($m['sha256']); }, array_slice($r['divergents'], 0, 5)))
+                            . '. Ces fichiers ne sont plus servis. Restaurer la copie saine : php api/restaurer.php --fichiers --oui.', 'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                if ($r['orphelins']) {
+                    $alertes[] = ['cle' => 'controle-fichiers:orphelins', 'priorite' => 'information',
+                        'titre' => count($r['orphelins']) . ' fichier(s) numérisé(s) sans fiche (conservés)',
+                        'detail' => 'Un dépôt dont la fiche n’a jamais été enregistrée laisse un fichier sans référence. Il est signalé, jamais supprimé (RG-14).', 'lien' => 'm14-taches', 'postes' => $postes];
+                }
+                return ['alertes' => $alertes, 'statut' => ($r['manquants'] || $r['divergents']) ? 'erreur' : 'ok', 'message' => sigh_sauv_resume_controle($r)];
             },
         ],
     ];
@@ -341,13 +421,23 @@ function sigh_cron_executer(PDO $pdo, string $origine = 'systeme', bool $force =
         $statut = 'ok';
         $message = '';
         $alertes = [];
+        $leve = false;
         try {
-            $alertes = $t['executer']($pdo, $auj);
+            $res = $t['executer']($pdo, $auj, ['origine' => $origine, 'budget_s' => sigh_sauv_budget($origine)]);
+            /* Une tâche rend la liste des alertes (forme d'origine) OU { alertes, statut?, message? } : une sauvegarde qui échoue doit pouvoir être « en erreur » ET alerter. */
+            if (is_array($res) && array_key_exists('alertes', $res)) {
+                $alertes = $res['alertes'];
+                $statut = $res['statut'] ?? 'ok';
+                $message = (string) ($res['message'] ?? '');
+            } else {
+                $alertes = $res;
+            }
         } catch (Throwable $e) {
+            $leve = true;
             $statut = 'erreur';
             $message = $e->getMessage();
         }
-        if ($statut === 'ok' && $code !== 'sauvegarde_nocturne') {
+        if (!$leve) {
             sigh_cron_rapprocher($pdo, $code, $alertes);
         }
         $duree = (int) round((microtime(true) - $debut) * 1000);
@@ -361,6 +451,18 @@ function sigh_cron_executer(PDO $pdo, string $origine = 'systeme', bool $force =
         $rapport[$code] = ['statut' => $statut, 'alertes' => count($alertes), 'duree_ms' => $duree, 'message' => $message];
     }
     return $rapport;
+}
+
+/** Inscrit au registre les tâches que le code connaît et que le registre ignore encore (une tâche ajoutée par une mise à jour se VOIT « jamais exécutée » au lieu d'être absente). */
+function sigh_cron_inscrire(PDO $pdo): void
+{
+    foreach (sigh_cron_taches() as $code => $t) {
+        $q = $pdo->prepare('SELECT 1 FROM taches_planifiees WHERE code = ?');
+        $q->execute([$code]);
+        if (!$q->fetchColumn()) {
+            $pdo->prepare('INSERT INTO taches_planifiees (code, libelle, frequence_min) VALUES (?, ?, ?)')->execute([$code, $t['libelle'], $t['frequence_min']]);
+        }
+    }
 }
 
 /** Ce que la tâche produit maintenant devient ouvert ; ce qu'elle ne produit plus est résolu. */

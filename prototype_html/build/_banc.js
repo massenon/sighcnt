@@ -89,6 +89,15 @@ async function demarrerPhp(racine) {
     fsF.mkdirSync(dossierF, { recursive: true });
     process.env.SIGH_FICHIERS_DIR = dossierF;
   }
+  /* LA DESTINATION DE SAUVEGARDE PAR DÉFAUT EST PAR BANC AUSSI (lot SAUV-F). Sans cela, la tâche de sauvegarde (le pseudo-cron en lance une dès qu'un poste interroge le serveur) écrirait
+     les copies du magasin et des fichiers du banc dans api/sauvegardes/ de l'arbre, mêlées à celles de la clinique. Remis à neuf à chaque démarrage. */
+  if (!process.env.SIGH_SAUVEGARDES_DIR) {
+    const fsS = require('fs'), pathS = require('path'), osS = require('os');
+    const dossierS = pathS.join(osS.tmpdir(), 'sigh-sauvegardes-banc-' + PORT_PHP);
+    try { fsS.rmSync(dossierS, { recursive: true, force: true }); } catch (e) { /* absent */ }
+    fsS.mkdirSync(dossierS, { recursive: true });
+    process.env.SIGH_SAUVEGARDES_DIR = dossierS;
+  }
   const proc = spawn('php', ['-S', '127.0.0.1:' + PORT_PHP, '-t', racine], {
     cwd: racine,
     env: Object.assign({}, process.env, { SIGH_BASE: BASE_TEST, SIGH_BANC: '1' }),

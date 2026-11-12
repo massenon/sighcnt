@@ -50,9 +50,33 @@ if ($action === 'taches') {
     if (!in_array($role, ['admin', 'da', 'direction'], true)) {
         sigh_repondre(['erreur' => 'accès refusé', 'detail' => 'Le registre des tâches est réservé à l’administration.'], 403);
     }
+    sigh_cron_inscrire($pdo);
     $taches = $pdo->query('SELECT * FROM taches_planifiees ORDER BY code')->fetchAll();
     $histo = $pdo->query('SELECT * FROM executions_taches ORDER BY id DESC LIMIT 40')->fetchAll();
-    sigh_repondre(['taches' => $taches, 'executions' => $histo]);
+    /* L'état de la sauvegarde est CALCULÉ ici (destination en force, même disque ou non) : l'écran le montre, il ne le devine pas. */
+    sigh_repondre(['taches' => $taches, 'executions' => $histo, 'sauvegarde' => sigh_sauv_etat($pdo)]);
+}
+
+/* Vérifier une destination AVANT que le poste ne l'enregistre comme réglage : le navigateur ne voit pas le disque du serveur. Rend { ok } ou le refus NOMMÉ
+   (code, motif, geste). Réservé à l'administrateur et à la DAF, comme le réglage lui-même. La tâche planifiée revérifie à CHAQUE passage : un réglage posé
+   sans passer par ici ne protège de rien, il produit une alerte. */
+if ($action === 'sauvegarde_verifier') {
+    if (!in_array($role, ['admin', 'da'], true)) {
+        sigh_repondre(['ok' => false, 'code' => 'REGLAGE_RESERVE', 'motif' => 'la destination des sauvegardes se règle par l’administrateur ou la Directrice Administrative', 'geste' => 'Demander le réglage à l’un d’eux.'], 403);
+    }
+    $chemin = trim((string) ($corps['chemin'] ?? ''));
+    if ($chemin === '') {
+        /* Revenir au défaut : toujours permis, et le défaut est vérifié comme le reste. */
+        $d = sigh_sauv_destination($pdo, sigh_sauvegardes_racine());
+        $d['defaut'] = true;
+    } else {
+        $d = sigh_sauv_verifier_chemin($chemin);
+        $d['defaut'] = false;
+    }
+    if ($d['ok']) {
+        $d['mot'] = sigh_sauv_mot_disque($d['memeDisque']);
+    }
+    sigh_repondre($d);
 }
 
 if ($action === 'executer') {

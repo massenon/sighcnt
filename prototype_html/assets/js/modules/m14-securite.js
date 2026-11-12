@@ -2582,10 +2582,12 @@
    * ======================================================================== */
   global.SIGH.screen('m14-taches', {
     title: 'Tâches planifiées',
-    description: 'Ce que le serveur évalue à heure fixe — échéances, péremptions, seuils de stock, rendez-vous du lendemain, créances âgées, sauvegarde — et ce qu’il a trouvé.',
+    description: 'Ce que le serveur évalue à heure fixe : échéances, péremptions, seuils de stock, rendez-vous du lendemain, créances âgées, sauvegarde du magasin et des fichiers numérisés, contrôle d’intégrité des fichiers, et ce qu’il a trouvé.',
     regle: 'Le planificateur (<code>api/cron.php</code>) tourne <strong>sans écran ouvert</strong>. Il lit les registres, n’en écrit aucun, '
       + 'et applique les seuils que la clinique a fixés. Une alerte <strong>disparaît quand sa cause cesse</strong> ; elle n’est jamais supprimée (RG-14). '
-      + 'Installer la tâche du système toutes les 5 minutes ; à défaut, le serveur se déclenche lui-même quand un poste est ouvert.',
+      + 'Installer la tâche du système toutes les 5 minutes ; à défaut, le serveur se déclenche lui-même quand un poste est ouvert. '
+      + 'Les sauvegardes vont à la <strong>destination réglée par la clinique</strong> (par défaut le dossier <code>api/sauvegardes</code>, sur le <strong>même disque</strong> que les données : '
+      + 'une copie sur le même disque ne protège pas d’une panne de disque).',
     render: function (root) {
       var host = el('div.space-y-4');
       root.appendChild(host);
@@ -2598,6 +2600,73 @@
           headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': jeton() || '' },
           body: opts.corps ? JSON.stringify(opts.corps) : undefined,
         }).then(function (r) { return r.json().then(function (o) { if (!r.ok) throw new Error(o.detail || o.erreur || String(r.status)); return o; }); });
+      }
+      /* LA DESTINATION DES SAUVEGARDES (lot SAUV-F) : réglage en base, défaut dit, vérifiée par le SERVEUR (le navigateur ne voit pas son disque) avant d'être
+         enregistrée ; la tâche la revérifie à chaque passage. Réservé à l'administrateur et à la DAF ET au droit d'écrire de l'écran : une commande de réglage se garde
+         par le rôle ET par le droit. Le mot « même disque » vient du serveur, jamais d'une supposition de l'écran. */
+      var ROLES_DESTINATION = ['admin', 'da'];
+      function peutRegler() { var se = S.session() || {}; return ROLES_DESTINATION.indexOf(se.role) >= 0; }
+      function attendreEnvoi(apres) {
+        var debut = Date.now();
+        if (S.pousserMaintenant) S.pousserMaintenant();
+        (function boucle() {
+          if (!S.fileEnAttente || S.fileEnAttente() === 0 || Date.now() - debut > 8000) { apres(); return; }
+          setTimeout(boucle, 100);
+        })();
+      }
+      function ouvrirDestination(sv) {
+        var champ = el('input.input', { type: 'text', 'aria-label': 'Dossier de sauvegarde', placeholder: '/mnt/sauvegarde ou D:\\Sauvegardes', spellcheck: 'false' });
+        champ.value = sv && !sv.defaut ? sv.destination : '';
+        var motif = el('textarea.textarea', { rows: 2, placeholder: 'Motif du réglage', 'aria-label': 'Motif' });
+        var msg = el('p.text-xs.text-danger-700', { role: 'alert', 'data-sauv-refus': '' });
+        var modal;
+        function enregistrer(chemin) {
+          msg.textContent = '';
+          msg.removeAttribute('data-code');
+          if (!String(motif.value || '').trim()) { msg.textContent = 'MOTIF_REQUIS : un réglage de destination se motive. Saisir le motif du réglage.'; return; }
+          appeler({ method: 'POST', corps: { action: 'sauvegarde_verifier', chemin: chemin } }).then(function (r) {
+            if (!r.ok) { msg.setAttribute('data-code', r.code || ''); msg.textContent = (r.code || 'REFUSE') + ' : ' + r.motif + ' ' + r.geste; return; }
+            S.log('Destination de la sauvegarde', 'M14', 'reglage', 'sauvegardeFichiers', { destination: sv && !sv.defaut ? sv.destination : 'défaut' },
+              { destination: chemin || 'défaut', motif: String(motif.value).slice(0, 60) });
+            S.setReglage('sauvegardeFichiers', chemin ? { destination: chemin, regleLe: new Date().toISOString(), reglePar: S.currentUser() } : null);
+            modal.close();
+            U.toast(chemin ? 'Destination de la sauvegarde réglée.' : 'Destination ramenée au défaut.', { type: 'success', detail: r.mot || '' });
+            attendreEnvoi(peindre);
+          }, function (e) { msg.textContent = 'La vérification par le serveur a échoué : ' + e.message; });
+        }
+        var corps = el('div.space-y-3', null, [
+          K.note('Dossier où le serveur copie le magasin (7 derniers jours) et les fichiers numérisés (copie incrémentale, conservation <strong>illimitée</strong>). '
+            + 'Le serveur vérifie que le dossier existe, qu’il est inscriptible et qu’il ne recouvre pas les fichiers ; il n’est <strong>jamais créé</strong> pour vous. '
+            + 'Laissé vide, la copie va au défaut <code>api/sauvegardes</code>, sur le même disque que les données.', { tone: 'info' }),
+          el('div', null, [el('label.label', { text: 'Dossier de sauvegarde (chemin complet)' }), champ]),
+          el('div', null, [el('label.label', { text: 'Motif (consigné dans le journal)' }), motif]),
+          msg,
+        ]);
+        modal = U.modal({ title: 'Destination de la sauvegarde', size: 'md', body: corps, footer: [
+          K.btn('Annuler', { onclick: function () { modal.close(); } }),
+          K.btn('Revenir au défaut', { onclick: function () { enregistrer(''); } }),
+          K.btn('Enregistrer', { variant: 'primary', icon: 'check', onclick: function () {
+            if (!String(champ.value).trim()) { msg.textContent = 'DESTINATION_VIDE : aucun chemin n’est indiqué. Saisir le chemin complet, ou utiliser « Revenir au défaut ».'; return; }
+            enregistrer(String(champ.value).trim());
+          } }),
+        ] });
+      }
+      function carteSauvegarde(sv) {
+        if (!sv) return null;
+        var lignes = [
+          el('p.text-sm', null, [el('strong', { text: 'Destination : ' }), el('code', { text: sv.destination, 'data-sauv-destination': '' }),
+            el('span.text-slate-500', { text: sv.defaut ? ' (par défaut : le dossier api/sauvegardes)' : ' (réglée par la clinique)' })]),
+        ];
+        if (sv.ok === false) {
+          lignes.push(K.note('<strong>Destination inatteignable.</strong> ' + sv.code + ' : ' + sv.motif + ' ' + sv.geste + ' Aucune sauvegarde n’est écrite tant que ce n’est pas réglé.', { tone: 'danger', icon: 'alert-triangle' }));
+        } else if (sv.memeDisque === false) {
+          lignes.push(K.note(sv.mot, { tone: 'success', icon: 'hard-drive' }));
+        } else {
+          lignes.push(K.note('<strong>' + (sv.memeDisque === true ? 'Même disque que les données. ' : 'Disque indéterminé. ') + '</strong>' + sv.mot.replace(/^Même disque que les données : /, ''), { tone: 'warning', icon: 'hard-drive' }));
+        }
+        lignes.push(el('p.text-xs.text-slate-500', { text: 'Dossier des fichiers numérisés : ' + sv.dossierFichiers + (sv.dossierPresent ? '' : ' (pas encore créé : aucun scan déposé)') + '. Les fichiers ne sont jamais supprimés de la sauvegarde.' }));
+        var bouton = peutRegler() ? K.commande('Destination de la sauvegarde', { icon: 'hard-drive', size: 'sm', onclick: function () { ouvrirDestination(sv); }, droit: 'editer' }) : null;
+        return U.card('Sauvegarde du magasin et des fichiers numérisés', el('div.space-y-2', { 'data-carte-sauvegarde': '' }, lignes.concat(bouton ? [bouton] : [])));
       }
       function peindre() {
         C.clear(host);
@@ -2619,11 +2688,14 @@
             host.appendChild(K.note('<strong>' + vieilles.length + ' tâche(s) n’ont pas tourné à leur fréquence.</strong> Vérifier que la tâche du système '
               + '(cron Linux ou Planificateur de tâches Windows) est installée et active.', { tone: 'warning', icon: 'clock-alert' }));
           }
+          var carte = carteSauvegarde(o.sauvegarde);
+          if (carte) host.appendChild(carte);
           var lignes = taches.map(function (t) {
             return [
               t.libelle, 'toutes les ' + t.frequence_min + ' min',
               t.derniere_le ? C.dateFR(String(t.derniere_le).slice(0, 10)) + ' ' + String(t.derniere_le).slice(11, 16) + ' UTC' : 'jamais',
-              t.dernier_statut === 'erreur' ? 'Erreur — ' + (t.dernier_message || '') : (t.dernier_statut ? 'Réussie' : '—'),
+              t.dernier_statut === 'erreur' ? 'Erreur — ' + (t.dernier_message || '')
+                : (t.dernier_statut ? 'Réussie' + (t.dernier_message ? ' : ' + t.dernier_message : '') : '—'),
               t.duree_ms != null ? t.duree_ms + ' ms' : '—', C.num(t.alertes || 0),
               K.commande('Exécuter', { type: 'button', onclick: function () {
                 appeler({ method: 'POST', corps: { action: 'executer', code: t.code } }).then(function () {

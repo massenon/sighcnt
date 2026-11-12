@@ -45,6 +45,28 @@ define('SIGH_DSN',  $reglages['dsn']  ?? 'pgsql:host=127.0.0.1;port=5432;dbname=
 define('SIGH_USER', $reglages['user'] ?? 'postgres');
 define('SIGH_PASS', $reglages['pass'] ?? '');
 
+/** LE DOSSIER DES FICHIERS NUMÉRISÉS (scans), sans rien créer. `SIGH_FICHIERS_DIR` le surcharge (un dossier par banc). UNE seule définition : le serveur de
+ *  fichiers, la sauvegarde, la restauration et le contrôle d'intégrité lisent la même, faute de quoi ils ne parleraient pas du même dossier. */
+function sigh_fichiers_racine(): string
+{
+    $d = getenv('SIGH_FICHIERS_DIR');
+    if (!is_string($d) || $d === '') {
+        $d = __DIR__ . '/fichiers';
+    }
+    return rtrim($d, '/\\');
+}
+
+/** LA DESTINATION DE SAUVEGARDE PAR DÉFAUT : `api/sauvegardes/` (le MÊME disque que les données, ce que l'écran des tâches DIT). `SIGH_SAUVEGARDES_DIR`
+ *  la surcharge (un dossier par banc) ; le réglage de la clinique (`sauvegardeFichiers`, en base) l'emporte sur l'un et l'autre. */
+function sigh_sauvegardes_racine(): string
+{
+    $d = getenv('SIGH_SAUVEGARDES_DIR');
+    if (!is_string($d) || $d === '') {
+        $d = __DIR__ . '/sauvegardes';
+    }
+    return rtrim($d, '/\\');
+}
+
 /** La connexion, ouverte une seule fois par requête. */
 function sigh_pdo(): PDO
 {

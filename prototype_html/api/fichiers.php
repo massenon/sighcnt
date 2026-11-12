@@ -42,14 +42,11 @@ function sigh_fichiers_refus(int $statut, string $code, string $motif, string $g
 
 function sigh_fichiers_dossier(): string
 {
-    $d = getenv('SIGH_FICHIERS_DIR');
-    if (!is_string($d) || $d === '') {
-        $d = __DIR__ . '/fichiers';
-    }
+    $d = sigh_fichiers_racine();
     if (!is_dir($d)) {
         @mkdir($d, 0775, true);
     }
-    return rtrim($d, '/\\');
+    return $d;
 }
 
 function sigh_fichiers_regles(): array
