@@ -80,6 +80,15 @@ async function demarrerPhp(racine) {
     fsSms.mkdirSync(dossierSms, { recursive: true });
     process.env.SIGH_SMS_DIR = dossierSms;
   }
+  /* LE DOSSIER DES FICHIERS EST PAR BANC, COMME CELUI DE LA PASSERELLE SMS (lot DOCS-1). Les scans déposés par un scénario ne doivent ni sortir du banc ni se mêler à
+     ceux d'un autre banc, et le test (qui lit SIGH_FICHIERS_DIR) rejoue des altérations sur le MÊME dossier que le serveur. Remis à neuf à chaque démarrage. */
+  if (!process.env.SIGH_FICHIERS_DIR) {
+    const fsF = require('fs'), pathF = require('path'), osF = require('os');
+    const dossierF = pathF.join(osF.tmpdir(), 'sigh-fichiers-banc-' + PORT_PHP);
+    try { fsF.rmSync(dossierF, { recursive: true, force: true }); } catch (e) { /* absent */ }
+    fsF.mkdirSync(dossierF, { recursive: true });
+    process.env.SIGH_FICHIERS_DIR = dossierF;
+  }
   const proc = spawn('php', ['-S', '127.0.0.1:' + PORT_PHP, '-t', racine], {
     cwd: racine,
     env: Object.assign({}, process.env, { SIGH_BASE: BASE_TEST, SIGH_BANC: '1' }),

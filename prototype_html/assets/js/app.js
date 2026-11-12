@@ -1515,6 +1515,18 @@
       U.consommerMessageDiffere();
       notificationsDOuverture();
 
+      /* LES SCANS QUI VIVAIENT EN BASE64 DANS LE MAGASIN SONT RANGÉS DANS LE DOSSIER DE FICHIERS (lot D1) : une fois par chargement, seulement s'il en reste, après la peinture de l'écran. Le service est
+         chargé à la demande ; la migration relit chaque fichier et compare son empreinte AVANT de retirer le base64 (voir `fichiers.js`). */
+      try {
+        if (S.migrationFichiersDue && S.migrationFichiersDue() && !global.__SIGH_MIGRATION_FICHIERS) {
+          global.__SIGH_MIGRATION_FICHIERS = true;
+          chargerScript('assets/js/modules/fichiers.js').then(function () { return global.SIGH.fichiers.migrerBase64(); }).then(function (rap) {
+            global.SIGH.fichiers.dernierRapportMigration = rap;
+            if (rap && rap.refuses && rap.refuses.length && global.console) console.warn('[SIGH] Migration des fichiers : ' + rap.refuses.length + ' pièce(s) gardée(s) dans le magasin faute d’empreinte vérifiée.', rap.refuses);
+          }).catch(function (e) { if (global.console) console.warn('[SIGH] Migration des fichiers interrompue :', e && e.message); });
+        }
+      } catch (e) { /* la migration ne bloque jamais l'écran */ }
+
       /* Raccourcis clavier — postes à forte saisie (CDCT §10.3). */
       ecoute(document, 'keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSearch(); }

@@ -6,13 +6,13 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 |---|---:|---:|---:|---:|
 | `cfg` — Configuration | 23 | 4 | 327 | 1411 |
 | `ged` — GED | 1 | 0 | 26 | 220 |
-| `imp` — Importation de données (IMP) | 1 | 2 | 17 | 0 |
-| `m1` — M1 Patients & DMI | 6 | 0 | 159 | 427 |
+| `imp` — Importation de données (IMP) | 1 | 2 | 28 | 1 |
+| `m1` — M1 Patients & DMI | 6 | 0 | 163 | 532 |
 | `m10` — M10 Ressources humaines | 22 | 1 | 270 | 2957 |
 | `m11` — M11 Paie & primes | 4 | 0 | 66 | 12 |
 | `m12` — M12 Comptabilité SYSCOHADA | 13 | 2 | 188 | 691 |
-| `m13` — M13 Administration & ambulance | 12 | 1 | 142 | 90 |
-| `m14` — M14 Sécurité & audit | 10 | 0 | 146 | 650 |
+| `m13` — M13 Administration & ambulance | 13 | 2 | 167 | 112 |
+| `m14` — M14 Sécurité & audit | 10 | 0 | 151 | 703 |
 | `m2` — M2 RDV, visites, consultations, imagerie | 10 | 4 | 242 | 1221 |
 | `m3` — M3 Hospitalisation & bloc | 10 | 3 | 181 | 599 |
 | `m4` — M4 Maternité, naissances, décès | 13 | 4 | 283 | 331 |
@@ -383,10 +383,8 @@ Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code t
 | `id` | id | text |  |
 | `code` | code | text |  |
 | `statut` | statut | text |  |
-| `cree_le` | _creeLe | timestamptz |  |
 | `famille` | famille | text |  |
 | `libelle` | libelle | text |  |
-| `cree_par` | _creePar | text |  |
 | `secteur` | secteur | text |  |
 | `code_acte` | codeActe | text |  |
 | `assurable` | assurable | jsonb |  |
@@ -395,6 +393,8 @@ Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code t
 | `variantes_grille` | variantesGrille | jsonb |  |
 | `libelle_grille` | libelleGrille | text |  |
 | `code_analyse` | codeAnalyse | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `cree_par` | _creePar | text |  |
 | `source` | source | text |  |
 
 ### `cfg.types_piece` (collection « typesPiece », 14 fiches)
@@ -448,32 +448,32 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
-| `lot` | lot | text |  |
 | `code` | code | text |  |
-| `motif` | motif | text |  |
 | `statut` | statut | text |  |
-| `cree_le` | _creeLe | timestamptz |  |
 | `origine` | origine | text |  |
 | `version` | version | integer |  |
+| `etat_assure` | etatAssure | text |  |
+| `prix_assure` | prixAssure | integer |  |
+| `prix_non_assure` | prixNonAssure | integer |  |
+| `arrete_le` | arreteLe | date |  |
+| `motif` | motif | text |  |
+| `provisoire` | provisoire | boolean |  |
+| `a_dater` | aDater | boolean |  |
+| `propose_le` | proposeLe | date |  |
+| `propose_par` | proposePar | text |  |
+| `source` | source | text |  |
+| `lot` | lot | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
 | `cree_par` | _creePar | text |  |
 | `decide_le` | decideLe | date |  |
 | `date_effet` | dateEffet | date |  |
 | `decide_par` | decidePar | text |  |
-| `propose_le` | proposeLe | date |  |
-| `etat_assure` | etatAssure | text |  |
-| `prix_assure` | prixAssure | integer |  |
-| `propose_par` | proposePar | text |  |
 | `propose_role` | proposeRole | text |  |
 | `role_decision` | roleDecision | text |  |
 | `motif_decision` | motifDecision | text |  |
-| `prix_non_assure` | prixNonAssure | integer |  |
 | `prix_vente` | prixVente | integer |  |
-| `source` | source | text |  |
 | `modifie_le` | _modifieLe | timestamptz |  |
 | `modifie_par` | _modifiePar | text |  |
-| `arrete_le` | arreteLe | date |  |
-| `provisoire` | provisoire | boolean |  |
-| `a_dater` | aDater | boolean |  |
 | `etat_non_assure` | etatNonAssure | text |  |
 
 ### `ged.documents` (collection « documents », 220 fiches)
@@ -507,29 +507,40 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `empreinte_balance` | empreinteBalance | text |  |
 | `manifeste_empreinte` | manifesteEmpreinte | text |  |
 
-### `imp.lots_importation` (collection « lotsImportation », 0 fiches)
+### `imp.lots_importation` (collection « lotsImportation », 1 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
-| `statut` | statut | text |  |
-| `reference` | reference | text |  |
 | `jeu` | jeu | text |  |
-| `jeu_libelle` | jeuLibelle | text |  |
-| `fichier` | fichier | text |  |
-| `empreinte` | empreinte | text |  |
-| `date` | date | date |  |
 | `par` | par | text |  |
-| `valide_par` | validePar | text |  |
+| `date` | date | date |  |
 | `etat` | etat | text |  |
-| `nb_lignes` | nbLignes | integer |  |
-| `nb_avertissements` | nbAvertissements | integer |  |
-| `nb_refus` | nbRefus | integer |  |
-| `erreurs_total` | erreursTotal | integer |  |
+| `nb_non` | nbNon | integer |  |
+| `statut` | statut | text |  |
 | `cree_le` | _creeLe | timestamptz |  |
+| `erreurs` | erreurs | jsonb |  |
+| `fichier` | fichier | text |  |
+| `ignores` | ignores | jsonb |  |
+| `nb_refus` | nbRefus | integer |  |
 | `cree_par` | _creePar | text |  |
+| `annule_le` | annuleLe | date |  |
+| `nb_lignes` | nbLignes | integer |  |
+| `annule_par` | annulePar | text |  |
+| `empreinte` | empreinte | text |  |
+| `nb_ignores` | nbIgnores | integer |  |
+| `reference` | reference | text |  |
+| `valide_par` | validePar | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `jeu_libelle` | jeuLibelle | text |  |
+| `modifie_par` | _modifiePar | text |  |
+| `nb_inchanges` | nbInchanges | integer |  |
+| `erreurs_total` | erreursTotal | integer |  |
+| `ignores_total` | ignoresTotal | integer |  |
+| `motif_annulation` | motifAnnulation | text |  |
+| `nb_avertissements` | nbAvertissements | integer |  |
 
-Table fille `imp.lots_importation_ecrits` — 0 lignes : collection text, id text
+Table fille `imp.lots_importation_ecrits` — 1 lignes : id text, collection text
 
 Table fille `imp.lots_importation_erreurs` — 0 lignes : n integer, colonne text, valeur text, code text, niveau text, motif text, geste text
 
@@ -1298,7 +1309,7 @@ Table fille `m12.depenses_lignes` — 0 lignes : libelle text, montant integer, 
 | `a_completer` | aCompleter | boolean |  |
 | `disponibilite` | disponibilite | text |  |
 
-### `m13.courriers` (collection « courriers », 34 fiches)
+### `m13.courriers` (collection « courriers », 42 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1309,13 +1320,25 @@ Table fille `m12.depenses_lignes` — 0 lignes : libelle text, montant integer, 
 | `nature` | nature | text |  |
 | `statut` | statut | text |  |
 | `cree_le` | _creeLe | timestamptz |  |
+| `fichier` | fichier | jsonb |  |
 | `cree_par` | _creePar | text |  |
 | `affecte_a` | affecteA | text |  |
-| `numerise` | numerise | boolean |  |
 | `reference` | reference | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
 | `traitement` | traitement | text |  |
+| `modifie_par` | _modifiePar | text |  |
 | `correspondant` | correspondant | text |  |
 | `accuse_reception` | accuseReception | boolean |  |
+| `source` | source | text |  |
+| `lot_import` | lotImport | text |  |
+| `valide_par` | validePar | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `date_import` | dateImport | date |  |
+| `archive_par` | _archivePar | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
+| `numerise` | numerise | boolean |  |
+
+Table fille `m13.courriers_fichiers_retires` — 1 lignes : nom text, mime text, motif text, pages integer, sha256 text, taille integer, depose_le timestamptz, retire_le timestamptz, depose_par text, retire_par text, texte_indexe boolean, nom_normalise text
 
 ### `m13.enquetes` (collection « enquetes », 0 fiches)
 
@@ -1349,6 +1372,26 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `categorie` | categorie | text |  |
 | `reference` | reference | text |  |
 | `responsable` | responsable | text |  |
+
+### `m13.fichiers` (collection « fichiers », 14 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `mime` | mime | text |  |
+| `pages` | pages | integer |  |
+| `texte` | texte | text |  |
+| `sha256` | sha256 | text |  |
+| `statut` | statut | text |  |
+| `taille` | taille | integer |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `cree_par` | _creePar | text |  |
+| `texte_indexe` | texteIndexe | boolean |  |
+| `mots_tronques` | motsTronques | boolean |  |
+| `nb_references` | nbReferences | integer |  |
+| `premiere_date` | premiereDate | timestamptz |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
 
 ### `m13.file_sms` (collection « fileSms », 0 fiches)
 
@@ -1478,6 +1521,11 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `ancienne_valeur` | ancienneValeur | text |  |
 | `nouvelle_valeur` | nouvelleValeur | text |  |
 | `role` | role | text |  |
+| `cible` | cible | text |  |
+| `ecran` | ecran | text |  |
+| `motif` | motif | text |  |
+| `trouve` | trouve | boolean |  |
+| `patient_id` | patientId | text | → patients (FK) |
 | `apres` | apres | text |  |
 | `avant` | avant | text |  |
 | `statut` | statut | text |  |
@@ -1569,7 +1617,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `couleur` | couleur | text |  |
 | `nouveau` | nouveau | boolean |  |
 
-### `m14.sessions_utilisateur` (collection « sessionsUtilisateur », 1 fiches)
+### `m14.sessions_utilisateur` (collection « sessionsUtilisateur », 6 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1627,7 +1675,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `horodatage` | horodatage | timestamptz |  |
 | `identifiant` | identifiant | text |  |
 
-### `m14.utilisateurs` (collection « utilisateurs », 0 fiches)
+### `m14.utilisateurs` (collection « utilisateurs », 48 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1716,7 +1764,7 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `motif_non_justifiee` | motifNonJustifiee | text |  |
 | `structure_provenance` | structureProvenance | text |  |
 
-### `m1.documents_patient` (collection « documentsPatient », 0 fiches)
+### `m1.documents_patient` (collection « documentsPatient », 105 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1726,14 +1774,18 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 | `etat` | etat | text |  |
 | `type` | type | text |  |
 | `depose` | depose | text |  |
-| `format` | format | text |  |
 | `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `fichier` | fichier | jsonb |  |
+| `patient` | patient | text |  |
+| `cree_par` | _creePar | text |  |
+| `patient_id` | patientId | text | → patients (FK) |
+| `reference` | reference | text |  |
+| `format` | format | text |  |
 | `taille` | taille | integer |  |
 | `donnees` | donnees | text |  |
-| `fichier` | fichier | text |  |
-| `patient` | patient | text |  |
-| `patient_id` | patientId | text |  |
-| `reference` | reference | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
 
 ### `m1.fiches_reference` (collection « fichesReference », 30 fiches)
 

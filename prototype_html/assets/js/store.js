@@ -126,8 +126,12 @@
      81 (12/11/2026) : le PRIX D'ACHAT des produits se versionne par le MÊME moteur que les prestations (PRD-TARIFS, lot T5). `tarifs` et `versionsTarif` portent aussi la famille
      `PRODUIT` (une prestation par référence, sa version 1 = le prix d'achat tenu aujourd'hui) ; `produits` devient, pour ses champs de PRIX, une projection de lecture ; le jeu d'import
      `tarifs-produits` s'ajoute à `N.IMPORTS` (fiches RBAC semées). Une reprise garde les prix déjà versionnés et les prix d'achat que la clinique avait corrigés. Sans incrément,
-     un poste n'aurait ni les prestations de produits ni leur version 1. */
-  var VERSION = 81;
+     un poste n'aurait ni les prestations de produits ni leur version 1.
+     82 (12/11/2026) : les FICHIERS NUMÉRISÉS quittent le magasin (lot DOCS-1, plan documents numérisés). Collection `fichiers` (registre par empreinte SHA-256), champ `fichier` (objet : empreinte, nom,
+     nom normalisé, type, taille, pages, texte indexé) sur `courriers` et `documentsPatient`, `fichiersRetires` (historique d'une pièce retirée) ; `numerise` d'un courrier devient DÉRIVÉ du fichier. Les
+     scans déjà déposés en base64 (`donnees`) sont REPRIS par la montée de version puis rangés dans le dossier de fichiers par une migration qui vérifie l'empreinte avant de retirer le base64.
+     Sans incrément, un poste garderait des scans dans le magasin et aucun écran ne saurait lire la forme neuve. */
+  var VERSION = 82;
   var db = null;
   var listeners = {};
 
@@ -3647,6 +3651,18 @@
     } catch (e) { return false; }
   }
 
+  /** Ce qu'une montée de version doit garder des FICHIERS numérisés : les trois collections, si une fiche porte un fichier ou un base64 ; sinon rien (le jeu de démonstration se resème). */
+  function fichiersAGarder(o) {
+    var a = (o && o.courriers) || [], b = (o && o.documentsPatient) || [], f = (o && o.fichiers) || [];
+    var porte = function (x) { return x && ((x.fichier && typeof x.fichier === 'object' && x.fichier.sha256) || (typeof x.donnees === 'string' && x.donnees.indexOf('data:') === 0)); };
+    if (!f.length && !a.some(porte) && !b.some(porte)) return null;
+    return { courriers: a, documentsPatient: b, fichiers: f };
+  }
+  /** Reste-t-il un scan en base64 dans le magasin ? C'est la condition de la migration (lot D1). */
+  function migrationFichiersDue() {
+    return !!(db && Array.isArray(db.documentsPatient) && db.documentsPatient.some(function (d) { return typeof d.donnees === 'string' && d.donnees.indexOf('data:') === 0 && !(d.fichier && typeof d.fichier === 'object'); }));
+  }
+
   /**
    * Charge le magasin depuis le serveur. Résout `true` si le magasin vient de
    * la base, `false` si l'on reste sur le stockage du navigateur.
@@ -3737,8 +3753,12 @@
              produits y sont AJOUTÉS (le prix d'achat tenu aujourd'hui devient la version 1). */
           var gardeTarifs = Array.isArray(o.tarifs) && o.tarifs.length && Array.isArray(o.versionsTarif) && o.versionsTarif.length
             ? { tarifs: o.tarifs, versions: o.versionsTarif, produits: o.produits } : null;
+          /* LES FICHIERS NUMÉRISÉS SURVIVENT AU RÉ-AMORÇAGE (lot DOCS-1) : un scan déposé est une pièce de la clinique, pas un jeu de démonstration. Les courriers, les documents du patient et le registre
+             des empreintes sont repris TELS QUELS dès qu'une fiche porte un fichier ou un base64 ; la migration range ensuite les base64 dans le dossier de fichiers. */
+          var gardeFichiers = fichiersAGarder(o);
           db = null;
           load();
+          if (gardeFichiers && db) { Object.keys(gardeFichiers).forEach(function (k) { db[k] = gardeFichiers[k]; }); save(); }
           if (anciensPostes && db) { db.postes = anciensPostes; reprendreOrganigramme(db); save(); }
           if (gardeTarifs && db) { reprendreTarifs(gardeTarifs); D.TARIFS.invalider(); projeterTarifs(); save(); }
           if (anciensTarifs && db) {
@@ -4414,7 +4434,7 @@
   /* Libellé lisible de chaque collection : « module | entité ». Une collection
      absente de cette table reste listée sous son nom technique. */
   var LIBELLES = {
-    lotsImportation: 'IMP|Lots d’importation', patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
+    fichiers: 'M13|Fichiers numérisés (registre par empreinte)', lotsImportation: 'IMP|Lots d’importation', patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
     documents: 'GED|Bibliothèque documentaire',
     archivesExercice: 'M12|Archives de clôture', clotures: 'M12|Clôtures et réouvertures', comptesResultat: 'M12|Comptes de résultat (131, 139)',
     consultations: 'M2|Consultations et rendez-vous', support: 'M2|Registre des appels',
@@ -4607,6 +4627,7 @@
     load: load, save: save, reset: reset, collection: collection,
     COLLECTIONS_ESSENTIELLES: COLLECTIONS_ESSENTIELLES, CHAMPS_DE_TEST_CONSERVES: CHAMPS_DE_TEST_CONSERVES, viderActivite: viderActivite,
     jeuVide: jeuVide, amorcable: amorcable, migrerOrganigramme: migrerOrganigramme,
+    migrationFichiersDue: migrationFichiersDue,
     hydraterServeur: hydraterServeur,
     surServeur: function () { return SRV.actif; },
     /** LE MAGASIN EN MAIN FAIT-IL AUTORITÉ ? Tant que l'hydratation est en

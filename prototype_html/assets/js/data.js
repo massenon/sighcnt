@@ -685,6 +685,75 @@
     SERVICES: ['Direction Médicale', 'Direction Administrative', 'Comptabilité', 'Ressources humaines', 'Gestion des stocks', 'Laboratoire', 'Pharmacie'],
     SENS: [{ value: 'arrivee', label: 'Arrivée' }, { value: 'depart', label: 'Départ' }],
   };
+  /* ==========================================================================
+   * DOCUMENTS NUMÉRISÉS (lot DOCS-1 : courriers M13 et dossier patient M1)
+   * --------------------------------------------------------------------------
+   * Ce que les DEUX écrans et le serveur (`api/regles-fichiers.json`, engendré par `build/gen-regles-fichiers.js` depuis CE fichier) lisent d'un seul endroit : formats admis,
+   * taille par défaut, types de document du patient et leur ZONE. La taille maximale est un RÉGLAGE en base (`documentsBornes`) ; la valeur ci-dessous ne sert que tant que la
+   * clinique n'a rien réglé, et reste « à valider » (réponse Q1 de la Direction du 11/11/2026 : 10 Mo, réglable).
+   * ZONES : 1 = administratif (identité, couverture d'assurance), lisible par tout profil qui ouvre l'écran ; 2 = médical, lisible par les seuls profils cliniques (RG-13). Aucun
+   * document de cadrage ne classe les types : la zone des dix types est une PROPOSITION À VALIDER (le PRD ne cite que la pièce d'identité et la carte d'assurance pour l'accueil, et la
+   * facture est rangée en zone 2 par prudence : elle liste des actes). Les profils de la zone 2 suivent la matrice : administrateur, directeur médical, médecin, infirmier, chirurgien,
+   * anesthésiste.
+   * ======================================================================== */
+  var DOCUMENTS = {
+    FORMATS: [
+      { id: 'pdf', libelle: 'PDF', mime: 'application/pdf', ext: ['pdf'], familles: ['courrier', 'patient'] },
+      { id: 'jpeg', libelle: 'JPEG', mime: 'image/jpeg', ext: ['jpg', 'jpeg'], familles: ['courrier', 'patient'] },
+      { id: 'png', libelle: 'PNG', mime: 'image/png', ext: ['png'], familles: ['courrier', 'patient'] },
+      { id: 'webp', libelle: 'WEBP', mime: 'image/webp', ext: ['webp'], familles: ['patient'] },
+    ],
+    TAILLE_DEFAUT: 10 * 1024 * 1024,
+    TAILLE_PLANCHER: 100 * 1024,
+    TAILLE_PLAFOND: 64 * 1024 * 1024,
+    TYPES_PATIENT: [
+      { libelle: 'Ordonnance', zone: 2 }, { libelle: 'Résultat de laboratoire', zone: 2 }, { libelle: 'Compte rendu médical', zone: 2 },
+      { libelle: 'Consentement éclairé', zone: 2 }, { libelle: 'Imagerie / Échographie', zone: 2 }, { libelle: 'Bulletin d’hospitalisation', zone: 2 },
+      { libelle: 'Facture', zone: 2 }, { libelle: 'Pièce d’identité', zone: 1 }, { libelle: 'Carte d’assurance', zone: 1 }, { libelle: 'Certificat médical', zone: 2 },
+    ],
+    ROLES_ZONE_2: ['admin', 'dm', 'medecin', 'infirmier', 'chirurgien', 'anesthesiste'],
+    FAMILLES: {
+      courrier: { libelle: 'Courriers', ecran: 'm13-courriers' },
+      patient: { libelle: 'Documents du dossier patient', ecran: 'm1-documents' },
+    },
+  };
+  /** Le format admis d'un nom de fichier et d'un type MIME déclarés, pour une famille ; null s'il n'est pas admis. */
+  DOCUMENTS.formatDe = function (nom, mime, famille) {
+    var ext = (String(nom || '').toLowerCase().match(/\.([a-z0-9]+)$/) || [])[1] || '';
+    var m = String(mime || '').toLowerCase();
+    for (var i = 0; i < DOCUMENTS.FORMATS.length; i++) {
+      var f = DOCUMENTS.FORMATS[i];
+      if (f.familles.indexOf(famille) < 0) continue;
+      if (f.ext.indexOf(ext) >= 0 || (!ext && f.mime === m)) return f;
+    }
+    return null;
+  };
+  DOCUMENTS.zoneDe = function (typeLibelle) {
+    for (var i = 0; i < DOCUMENTS.TYPES_PATIENT.length; i++) if (DOCUMENTS.TYPES_PATIENT[i].libelle === typeLibelle) return DOCUMENTS.TYPES_PATIENT[i].zone;
+    return 2;   /* un type inconnu se range à la zone la plus stricte */
+  };
+  /** Une chaîne sans accent ni espace, pour un nom de fichier : lettres minuscules, chiffres et tirets. */
+  DOCUMENTS.slug = function (t) {
+    return String(t == null ? '' : t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  };
+  /** Le NOM DE TÉLÉCHARGEMENT d'une pièce (EF-DOC-4). La RÉFÉRENCE de la fiche ne change jamais (E530, E538) : ce nom se recalcule, il ne se saisit pas.
+   *  Courrier : AAAA-MM-JJ_ARR_NNNN.ext (date de la fiche, rang de la référence ARR-AAAA-NNNN) ; patient : AAAA-MM-JJ_CODE_type_NNN.ext (NNN = numéro de la référence GED-NNNNN). */
+  DOCUMENTS.nomNormalise = function (famille, fiche, ext) {
+    var date = String((fiche && fiche.date) || '').slice(0, 10) || '0000-00-00';
+    ext = String(ext || 'pdf').toLowerCase().replace(/^\./, '');
+    if (famille === 'courrier') {
+      var m = /^(ARR|DEP)-\d{4}-(\d+)$/.exec(String((fiche && fiche.reference) || ''));
+      var sens = m ? m[1] : (fiche && fiche.sens === 'depart' ? 'DEP' : 'ARR');
+      return date + '_' + sens + '_' + (m ? m[2] : '0000') + '.' + ext;
+    }
+    var n = /(\d+)$/.exec(String((fiche && fiche.reference) || ''));
+    var rang = n ? String(parseInt(n[1], 10)) : '0';
+    while (rang.length < 3) rang = '0' + rang;
+    var code = String((fiche && fiche.code) || 'SANS-DOSSIER').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return date + '_' + code + '_' + (DOCUMENTS.slug(fiche && fiche.type) || 'document') + '_' + rang + '.' + ext;
+  };
+  /** Empreinte abrégée (huit caractères) imprimée sur la fiche (PRD, section 8). */
+  DOCUMENTS.abrege = function (sha) { return String(sha || '').slice(0, 8); };
   /** Les motifs d'un changement de couverture : la liste fermée de l'écran « Assurés & cartes », reprise telle quelle par l'importation. */
   var MOTIFS_COUVERTURE = ['Changement d’employeur', 'Changement de compagnie par l’assuré', 'Convention non reconduite', 'Renouvellement de carte', 'Changement de police',
     'Fin de couverture — patient redevenu non assuré', 'Correction d’une saisie erronée'];
@@ -2400,6 +2469,6 @@
     delaisFiscauxALaDate: delaisFiscauxALaDate, montantCcibALaDate: montantCcibALaDate,
     CAPACITES: CAPACITES, NATURES_PRESCRIPTION: NATURES_PRESCRIPTION,
     BAREME_REFERENCE: BAREME_REFERENCE, CATEGORIES_GARANTIE: CATEGORIES_GARANTIE, UNITES_PLAFOND: UNITES_PLAFOND,
-    SPECIALITES_PRESTATAIRE: SPECIALITES_PRESTATAIRE, DOMAINES_UNITES_LABO: DOMAINES_UNITES_LABO, CATEGORIES_IMMOBILISATION: CATEGORIES_IMMOBILISATION, NATURES_BUDGET: NATURES_BUDGET, COURRIERS: COURRIERS, MOTIFS_COUVERTURE: MOTIFS_COUVERTURE,
+    SPECIALITES_PRESTATAIRE: SPECIALITES_PRESTATAIRE, DOMAINES_UNITES_LABO: DOMAINES_UNITES_LABO, CATEGORIES_IMMOBILISATION: CATEGORIES_IMMOBILISATION, NATURES_BUDGET: NATURES_BUDGET, COURRIERS: COURRIERS, DOCUMENTS: DOCUMENTS, MOTIFS_COUVERTURE: MOTIFS_COUVERTURE,
   };
 })(window);

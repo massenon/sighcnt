@@ -18,6 +18,8 @@ target/
 *.local.php
 !*.local.exemple.php
 prototype_html/api/config.local.php
+# Les FICHIERS déposés (scans de courriers et de dossiers patient) vivent hors du magasin et hors de git : une donnée, pas du code.
+prototype_html/api/fichiers/
 
 # ---- données : un export de base est une donnée, pas du code ----
 *.sql

@@ -762,10 +762,8 @@ CREATE TABLE IF NOT EXISTS "cfg"."tarifs" (
   "id" text PRIMARY KEY,
   "code" text,
   "statut" text,
-  "cree_le" timestamptz,
   "famille" text,
   "libelle" text,
-  "cree_par" text,
   "secteur" text,
   "code_acte" text,
   "assurable" jsonb,
@@ -774,15 +772,15 @@ CREATE TABLE IF NOT EXISTS "cfg"."tarifs" (
   "variantes_grille" jsonb,
   "libelle_grille" text,
   "code_analyse" text,
+  "cree_le" timestamptz,
+  "cree_par" text,
   "source" text,
   "extra" jsonb
 );
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
-ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "famille" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
-ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "secteur" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "code_acte" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "assurable" jsonb; -- @montee
@@ -791,6 +789,8 @@ ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "codes_alias" jsonb; -- @mon
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "variantes_grille" jsonb; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "libelle_grille" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "code_analyse" text; -- @montee
+ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
 ALTER TABLE "cfg"."tarifs" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."tarifs" IS 'Collection « tarifs » — Configuration';
@@ -888,61 +888,61 @@ ALTER TABLE "cfg"."variables_imagerie_conditionnels" ADD COLUMN IF NOT EXISTS "e
 COMMENT ON TABLE "cfg"."variables_imagerie_conditionnels" IS 'Lignes « conditionnels » de « variablesImagerie »';
 CREATE TABLE IF NOT EXISTS "cfg"."versions_tarif" (
   "id" text PRIMARY KEY,
-  "lot" text,
   "code" text,
-  "motif" text,
   "statut" text,
-  "cree_le" timestamptz,
   "origine" text,
   "version" integer,
+  "etat_assure" text,
+  "prix_assure" integer,
+  "prix_non_assure" integer,
+  "arrete_le" date,
+  "motif" text,
+  "provisoire" boolean,
+  "a_dater" boolean,
+  "propose_le" date,
+  "propose_par" text,
+  "source" text,
+  "lot" text,
+  "cree_le" timestamptz,
   "cree_par" text,
   "decide_le" date,
   "date_effet" date,
   "decide_par" text,
-  "propose_le" date,
-  "etat_assure" text,
-  "prix_assure" integer,
-  "propose_par" text,
   "propose_role" text,
   "role_decision" text,
   "motif_decision" text,
-  "prix_non_assure" integer,
   "prix_vente" integer,
-  "source" text,
   "modifie_le" timestamptz,
   "modifie_par" text,
-  "arrete_le" date,
-  "provisoire" boolean,
-  "a_dater" boolean,
   "etat_non_assure" text,
   "extra" jsonb
 );
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "lot" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "origine" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "version" integer; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "etat_assure" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "prix_assure" integer; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "prix_non_assure" integer; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "arrete_le" date; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "provisoire" boolean; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "a_dater" boolean; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_le" date; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_par" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "lot" text; -- @montee
+ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "decide_le" date; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "decide_par" text; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_le" date; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "etat_assure" text; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "prix_assure" integer; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_par" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "propose_role" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "role_decision" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "motif_decision" text; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "prix_non_assure" integer; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "prix_vente" integer; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "arrete_le" date; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "provisoire" boolean; -- @montee
-ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "a_dater" boolean; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "etat_non_assure" text; -- @montee
 ALTER TABLE "cfg"."versions_tarif" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "cfg"."versions_tarif" IS 'Collection « versionsTarif » — Configuration';
@@ -1009,57 +1009,79 @@ CREATE INDEX IF NOT EXISTS "ix_documents_statut" ON "ged"."documents" ("statut")
 CREATE INDEX IF NOT EXISTS "ix_documents_reference" ON "ged"."documents" ("reference");
 CREATE TABLE IF NOT EXISTS "imp"."lots_importation" (
   "id" text PRIMARY KEY,
-  "statut" text,
-  "reference" text,
   "jeu" text,
-  "jeu_libelle" text,
-  "fichier" text,
-  "empreinte" text,
-  "date" date,
   "par" text,
-  "valide_par" text,
+  "date" date,
   "etat" text,
-  "nb_lignes" integer,
-  "nb_avertissements" integer,
-  "nb_refus" integer,
-  "erreurs_total" integer,
+  "nb_non" integer,
+  "statut" text,
   "cree_le" timestamptz,
+  "erreurs" jsonb,
+  "fichier" text,
+  "ignores" jsonb,
+  "nb_refus" integer,
   "cree_par" text,
+  "annule_le" date,
+  "nb_lignes" integer,
+  "annule_par" text,
+  "empreinte" text,
+  "nb_ignores" integer,
+  "reference" text,
+  "valide_par" text,
+  "modifie_le" timestamptz,
+  "jeu_libelle" text,
+  "modifie_par" text,
+  "nb_inchanges" integer,
+  "erreurs_total" integer,
+  "ignores_total" integer,
+  "motif_annulation" text,
+  "nb_avertissements" integer,
   "extra" jsonb
 );
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
 ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "jeu" text; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "jeu_libelle" text; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "fichier" text; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "empreinte" text; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
 ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "par" text; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "valide_par" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
 ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "etat" text; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "nb_lignes" integer; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "nb_avertissements" integer; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "nb_refus" integer; -- @montee
-ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "erreurs_total" integer; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "nb_non" integer; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
 ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "erreurs" jsonb; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "fichier" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "ignores" jsonb; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "nb_refus" integer; -- @montee
 ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "annule_le" date; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "nb_lignes" integer; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "annule_par" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "empreinte" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "nb_ignores" integer; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "valide_par" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "jeu_libelle" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "nb_inchanges" integer; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "erreurs_total" integer; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "ignores_total" integer; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "motif_annulation" text; -- @montee
+ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "nb_avertissements" integer; -- @montee
 ALTER TABLE "imp"."lots_importation" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "imp"."lots_importation" IS 'Collection « lotsImportation » — Importation de données (IMP)';
-CREATE INDEX IF NOT EXISTS "ix_lots_importation_statut" ON "imp"."lots_importation" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_lots_importation_reference" ON "imp"."lots_importation" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_lots_importation_date" ON "imp"."lots_importation" ("date");
 CREATE INDEX IF NOT EXISTS "ix_lots_importation_etat" ON "imp"."lots_importation" ("etat");
+CREATE INDEX IF NOT EXISTS "ix_lots_importation_statut" ON "imp"."lots_importation" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_lots_importation_reference" ON "imp"."lots_importation" ("reference");
 CREATE TABLE IF NOT EXISTS "imp"."lots_importation_ecrits" (
   "parent_id" text NOT NULL,
   "rang" integer NOT NULL,
-  "collection" text,
   "id" text,
+  "collection" text,
   "extra" jsonb,
   PRIMARY KEY ("parent_id", "rang"),
   FOREIGN KEY ("parent_id") REFERENCES "imp"."lots_importation" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
 );
-ALTER TABLE "imp"."lots_importation_ecrits" ADD COLUMN IF NOT EXISTS "collection" text; -- @montee
 ALTER TABLE "imp"."lots_importation_ecrits" ADD COLUMN IF NOT EXISTS "id" text; -- @montee
+ALTER TABLE "imp"."lots_importation_ecrits" ADD COLUMN IF NOT EXISTS "collection" text; -- @montee
 ALTER TABLE "imp"."lots_importation_ecrits" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "imp"."lots_importation_ecrits" IS 'Lignes « ecrits » de « lotsImportation »';
 CREATE TABLE IF NOT EXISTS "imp"."lots_importation_erreurs" (
@@ -2540,13 +2562,23 @@ CREATE TABLE IF NOT EXISTS "m13"."courriers" (
   "nature" text,
   "statut" text,
   "cree_le" timestamptz,
+  "fichier" jsonb,
   "cree_par" text,
   "affecte_a" text,
-  "numerise" boolean,
   "reference" text,
+  "modifie_le" timestamptz,
   "traitement" text,
+  "modifie_par" text,
   "correspondant" text,
   "accuse_reception" boolean,
+  "source" text,
+  "lot_import" text,
+  "valide_par" text,
+  "archive_le" timestamptz,
+  "date_import" date,
+  "archive_par" text,
+  "motif_archivage" text,
+  "numerise" boolean,
   "extra" jsonb
 );
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "date" date; -- @montee
@@ -2555,19 +2587,62 @@ ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "objet" text; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "nature" text; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "fichier" jsonb; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "affecte_a" text; -- @montee
-ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "numerise" boolean; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "traitement" text; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "correspondant" text; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "accuse_reception" boolean; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "source" text; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "lot_import" text; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "valide_par" text; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "date_import" date; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
+ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "numerise" boolean; -- @montee
 ALTER TABLE "m13"."courriers" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m13"."courriers" IS 'Collection « courriers » — M13 Administration & ambulance';
 CREATE INDEX IF NOT EXISTS "ix_courriers_date" ON "m13"."courriers" ("date");
 CREATE INDEX IF NOT EXISTS "ix_courriers_nature" ON "m13"."courriers" ("nature");
 CREATE INDEX IF NOT EXISTS "ix_courriers_statut" ON "m13"."courriers" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_courriers_reference" ON "m13"."courriers" ("reference");
+CREATE TABLE IF NOT EXISTS "m13"."courriers_fichiers_retires" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "nom" text,
+  "mime" text,
+  "motif" text,
+  "pages" integer,
+  "sha256" text,
+  "taille" integer,
+  "depose_le" timestamptz,
+  "retire_le" timestamptz,
+  "depose_par" text,
+  "retire_par" text,
+  "texte_indexe" boolean,
+  "nom_normalise" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m13"."courriers" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "nom" text; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "mime" text; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "pages" integer; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "sha256" text; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "taille" integer; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "depose_le" timestamptz; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "retire_le" timestamptz; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "depose_par" text; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "retire_par" text; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "texte_indexe" boolean; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "nom_normalise" text; -- @montee
+ALTER TABLE "m13"."courriers_fichiers_retires" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m13"."courriers_fichiers_retires" IS 'Lignes « fichiersRetires » de « courriers »';
 CREATE TABLE IF NOT EXISTS "m13"."enquetes" (
   "id" text PRIMARY KEY,
   "titre" text,
@@ -2640,6 +2715,41 @@ COMMENT ON TABLE "m13"."evenements_etablissement" IS 'Collection « evenementsEt
 CREATE INDEX IF NOT EXISTS "ix_evenements_etablissement_date" ON "m13"."evenements_etablissement" ("date");
 CREATE INDEX IF NOT EXISTS "ix_evenements_etablissement_statut" ON "m13"."evenements_etablissement" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_evenements_etablissement_reference" ON "m13"."evenements_etablissement" ("reference");
+CREATE TABLE IF NOT EXISTS "m13"."fichiers" (
+  "id" text PRIMARY KEY,
+  "mime" text,
+  "pages" integer,
+  "texte" text,
+  "sha256" text,
+  "statut" text,
+  "taille" integer,
+  "cree_le" timestamptz,
+  "cree_par" text,
+  "texte_indexe" boolean,
+  "mots_tronques" boolean,
+  "nb_references" integer,
+  "premiere_date" timestamptz,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
+  "extra" jsonb
+);
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "mime" text; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "pages" integer; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "texte" text; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "sha256" text; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "taille" integer; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "texte_indexe" boolean; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "mots_tronques" boolean; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "nb_references" integer; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "premiere_date" timestamptz; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m13"."fichiers" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m13"."fichiers" IS 'Collection « fichiers » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_fichiers_statut" ON "m13"."fichiers" ("statut");
 CREATE TABLE IF NOT EXISTS "m13"."file_sms" (
   "id" text PRIMARY KEY,
   "cle" text,
@@ -2845,44 +2955,55 @@ CREATE INDEX IF NOT EXISTS "ix_reunions_reference" ON "m13"."reunions" ("referen
 CREATE TABLE IF NOT EXISTS "m14"."audit" (
   "_rang" integer PRIMARY KEY,
   "id" text,
-  "role" text,
-  "apres" text,
-  "avant" text,
+  "poste" text,
   "action" text,
   "entite" text,
-  "statut" text,
-  "reference" text,
-  "horodatage" timestamptz,
-  "utilisateur" text,
-  "poste" text,
   "module" text,
   "succes" boolean,
   "date_heure" timestamptz,
+  "reference" text,
+  "utilisateur" text,
   "ancienne_valeur" text,
   "nouvelle_valeur" text,
+  "role" text,
+  "cible" text,
+  "ecran" text,
+  "motif" text,
+  "trouve" boolean,
+  "patient_id" text,
+  "apres" text,
+  "avant" text,
+  "statut" text,
+  "horodatage" timestamptz,
   "extra" jsonb
 );
 ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "id" text; -- @montee
-ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "role" text; -- @montee
-ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "apres" text; -- @montee
-ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "avant" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "poste" text; -- @montee
 ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "action" text; -- @montee
 ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "entite" text; -- @montee
-ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
-ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
-ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "horodatage" timestamptz; -- @montee
-ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "utilisateur" text; -- @montee
-ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "poste" text; -- @montee
 ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "module" text; -- @montee
 ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "succes" boolean; -- @montee
 ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "date_heure" timestamptz; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "utilisateur" text; -- @montee
 ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "ancienne_valeur" text; -- @montee
 ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "nouvelle_valeur" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "role" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "cible" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "ecran" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "motif" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "trouve" boolean; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "apres" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "avant" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "horodatage" timestamptz; -- @montee
 ALTER TABLE "m14"."audit" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m14"."audit" IS 'Collection « audit » — M14 Sécurité & audit';
-CREATE INDEX IF NOT EXISTS "ix_audit_statut" ON "m14"."audit" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_audit_reference" ON "m14"."audit" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_audit_date_heure" ON "m14"."audit" ("date_heure");
+CREATE INDEX IF NOT EXISTS "ix_audit_reference" ON "m14"."audit" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_audit_patient_id" ON "m14"."audit" ("patient_id");
+CREATE INDEX IF NOT EXISTS "ix_audit_statut" ON "m14"."audit" ("statut");
 CREATE TABLE IF NOT EXISTS "m14"."comptes" (
   "id" text PRIMARY KEY,
   "num" text,
@@ -3318,14 +3439,18 @@ CREATE TABLE IF NOT EXISTS "m1"."documents_patient" (
   "etat" text,
   "type" text,
   "depose" text,
-  "format" text,
   "statut" text,
-  "taille" integer,
-  "donnees" text,
-  "fichier" text,
+  "cree_le" timestamptz,
+  "fichier" jsonb,
   "patient" text,
+  "cree_par" text,
   "patient_id" text,
   "reference" text,
+  "format" text,
+  "taille" integer,
+  "donnees" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
   "extra" jsonb
 );
 ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
@@ -3333,14 +3458,18 @@ ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "date" date; -- @m
 ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "etat" text; -- @montee
 ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "type" text; -- @montee
 ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "depose" text; -- @montee
-ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "format" text; -- @montee
 ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
-ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "taille" integer; -- @montee
-ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "donnees" text; -- @montee
-ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "fichier" text; -- @montee
+ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "fichier" jsonb; -- @montee
 ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "patient" text; -- @montee
+ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
 ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
 ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
+ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "format" text; -- @montee
+ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "taille" integer; -- @montee
+ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "donnees" text; -- @montee
+ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
 ALTER TABLE "m1"."documents_patient" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m1"."documents_patient" IS 'Collection « documentsPatient » — M1 Patients & DMI';
 CREATE INDEX IF NOT EXISTS "ix_documents_patient_code" ON "m1"."documents_patient" ("code");
@@ -3674,12 +3803,12 @@ CREATE TABLE IF NOT EXISTS "m2"."demandes_imagerie" (
   "secteur_demandeur" text,
   "bloque_par_paiement" boolean,
   "dossier_consultation_id" text,
-  "archive_le" timestamptz,
-  "archive_par" text,
-  "motif_archivage" text,
   "regle_le" timestamptz,
   "valide_le" timestamptz,
   "execute_le" timestamptz,
+  "archive_le" timestamptz,
+  "archive_par" text,
+  "motif_archivage" text,
   "extra" jsonb
 );
 ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "prix" integer; -- @montee
@@ -3708,12 +3837,12 @@ ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "ordonnance_numero
 ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "secteur_demandeur" text; -- @montee
 ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "bloque_par_paiement" boolean; -- @montee
 ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "dossier_consultation_id" text; -- @montee
-ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
-ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
-ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
 ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "regle_le" timestamptz; -- @montee
 ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "valide_le" timestamptz; -- @montee
 ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "execute_le" timestamptz; -- @montee
+ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "archive_le" timestamptz; -- @montee
+ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "archive_par" text; -- @montee
+ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "motif_archivage" text; -- @montee
 ALTER TABLE "m2"."demandes_imagerie" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m2"."demandes_imagerie" IS 'Collection « demandesImagerie » — M2 RDV, visites, consultations, imagerie';
 CREATE INDEX IF NOT EXISTS "ix_demandes_imagerie_statut" ON "m2"."demandes_imagerie" ("statut");
@@ -3879,6 +4008,7 @@ CREATE INDEX IF NOT EXISTS "ix_file_attente_patient_id" ON "m2"."file_attente" (
 CREATE TABLE IF NOT EXISTS "m2"."ordonnances" (
   "id" text PRIMARY KEY,
   "date" timestamptz,
+  "actes" jsonb,
   "numero" text,
   "statut" text,
   "urgent" boolean,
@@ -3906,10 +4036,10 @@ CREATE TABLE IF NOT EXISTS "m2"."ordonnances" (
   "montant_medicaments" integer,
   "statut_dispensation" text,
   "dossier_consultation_id" text,
-  "actes" jsonb,
   "extra" jsonb
 );
 ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "date" timestamptz; -- @montee
+ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "actes" jsonb; -- @montee
 ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "numero" text; -- @montee
 ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
 ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "urgent" boolean; -- @montee
@@ -3937,7 +4067,6 @@ ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "montant_imagerie" integ
 ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "montant_medicaments" integer; -- @montee
 ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "statut_dispensation" text; -- @montee
 ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "dossier_consultation_id" text; -- @montee
-ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "actes" jsonb; -- @montee
 ALTER TABLE "m2"."ordonnances" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m2"."ordonnances" IS 'Collection « ordonnances » — M2 RDV, visites, consultations, imagerie';
 CREATE INDEX IF NOT EXISTS "ix_ordonnances_date" ON "m2"."ordonnances" ("date");
@@ -3947,25 +4076,6 @@ CREATE INDEX IF NOT EXISTS "ix_ordonnances_facture_id" ON "m2"."ordonnances" ("f
 CREATE INDEX IF NOT EXISTS "ix_ordonnances_patient_id" ON "m2"."ordonnances" ("patient_id");
 CREATE INDEX IF NOT EXISTS "ix_ordonnances_consultation_id" ON "m2"."ordonnances" ("consultation_id");
 CREATE INDEX IF NOT EXISTS "ix_ordonnances_dossier_consultation_id" ON "m2"."ordonnances" ("dossier_consultation_id");
-CREATE TABLE IF NOT EXISTS "m2"."ordonnances_actes" (
-  "parent_id" text NOT NULL,
-  "rang" integer NOT NULL,
-  "code" text,
-  "prix" integer,
-  "libelle" text,
-  "secteur" text,
-  "tarif_valide" boolean,
-  "extra" jsonb,
-  PRIMARY KEY ("parent_id", "rang"),
-  FOREIGN KEY ("parent_id") REFERENCES "m2"."ordonnances" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
-);
-ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
-ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "prix" integer; -- @montee
-ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
-ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "secteur" text; -- @montee
-ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "tarif_valide" boolean; -- @montee
-ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
-COMMENT ON TABLE "m2"."ordonnances_actes" IS 'Lignes « actes » de « ordonnances »';
 CREATE TABLE IF NOT EXISTS "m2"."ordonnances_analyses" (
   "parent_id" text NOT NULL,
   "rang" integer NOT NULL,
@@ -4012,6 +4122,25 @@ ALTER TABLE "m2"."ordonnances_medicaments" ADD COLUMN IF NOT EXISTS "posologie" 
 ALTER TABLE "m2"."ordonnances_medicaments" ADD COLUMN IF NOT EXISTS "produit_id" text; -- @montee
 ALTER TABLE "m2"."ordonnances_medicaments" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m2"."ordonnances_medicaments" IS 'Lignes « medicaments » de « ordonnances »';
+CREATE TABLE IF NOT EXISTS "m2"."ordonnances_actes" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "code" text,
+  "prix" integer,
+  "libelle" text,
+  "secteur" text,
+  "tarif_valide" boolean,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m2"."ordonnances" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "code" text; -- @montee
+ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "prix" integer; -- @montee
+ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "secteur" text; -- @montee
+ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "tarif_valide" boolean; -- @montee
+ALTER TABLE "m2"."ordonnances_actes" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m2"."ordonnances_actes" IS 'Lignes « actes » de « ordonnances »';
 CREATE TABLE IF NOT EXISTS "m2"."pathologies" (
   "id" text PRIMARY KEY,
   "code" text,
@@ -4044,7 +4173,6 @@ CREATE TABLE IF NOT EXISTS "m2"."prescriptions" (
   "id" text PRIMARY KEY,
   "date" timestamptz,
   "type" text,
-  "assure" boolean,
   "statut" text,
   "cree_le" timestamptz,
   "montant" integer,
@@ -4054,22 +4182,22 @@ CREATE TABLE IF NOT EXISTS "m2"."prescriptions" (
   "modalite" text,
   "patient_id" text,
   "reference" text,
-  "indication" text,
-  "admission_id" text,
   "patient_code" text,
+  "ordonnance_id" text,
   "prescripteur" text,
   "prescripteur_id" text,
   "statut_paiement" text,
   "secteur_destinataire" text,
   "premier_administrateur" text,
-  "ordonnance_id" text,
+  "assure" boolean,
   "modifie_le" timestamptz,
+  "indication" text,
   "modifie_par" text,
+  "admission_id" text,
   "extra" jsonb
 );
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "date" timestamptz; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "type" text; -- @montee
-ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "assure" boolean; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
@@ -4079,17 +4207,18 @@ ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @m
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "modalite" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
-ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "indication" text; -- @montee
-ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "admission_id" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "patient_code" text; -- @montee
+ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "ordonnance_id" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "prescripteur" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "prescripteur_id" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "statut_paiement" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "secteur_destinataire" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "premier_administrateur" text; -- @montee
-ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "ordonnance_id" text; -- @montee
+ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "assure" boolean; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "indication" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "admission_id" text; -- @montee
 ALTER TABLE "m2"."prescriptions" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m2"."prescriptions" IS 'Collection « prescriptions » — M2 RDV, visites, consultations, imagerie';
 CREATE INDEX IF NOT EXISTS "ix_prescriptions_date" ON "m2"."prescriptions" ("date");
@@ -4097,42 +4226,42 @@ CREATE INDEX IF NOT EXISTS "ix_prescriptions_type" ON "m2"."prescriptions" ("typ
 CREATE INDEX IF NOT EXISTS "ix_prescriptions_statut" ON "m2"."prescriptions" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_prescriptions_patient_id" ON "m2"."prescriptions" ("patient_id");
 CREATE INDEX IF NOT EXISTS "ix_prescriptions_reference" ON "m2"."prescriptions" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_prescriptions_admission_id" ON "m2"."prescriptions" ("admission_id");
-CREATE INDEX IF NOT EXISTS "ix_prescriptions_prescripteur_id" ON "m2"."prescriptions" ("prescripteur_id");
 CREATE INDEX IF NOT EXISTS "ix_prescriptions_ordonnance_id" ON "m2"."prescriptions" ("ordonnance_id");
+CREATE INDEX IF NOT EXISTS "ix_prescriptions_prescripteur_id" ON "m2"."prescriptions" ("prescripteur_id");
+CREATE INDEX IF NOT EXISTS "ix_prescriptions_admission_id" ON "m2"."prescriptions" ("admission_id");
 CREATE TABLE IF NOT EXISTS "m2"."prescriptions_lignes" (
   "parent_id" text NOT NULL,
   "rang" integer NOT NULL,
   "prix" integer,
   "duree" text,
+  "libelle" text,
+  "quantite" integer,
+  "posologie" text,
+  "produit_id" text,
+  "nb_administrations" integer,
   "tarif" text,
   "famille" text,
-  "libelle" text,
   "acte_code" text,
-  "quantite" integer,
   "frequence" text,
   "motif_tarif" text,
   "prix_a_valider" boolean,
-  "nb_administrations" integer,
-  "posologie" text,
-  "produit_id" text,
   "extra" jsonb,
   PRIMARY KEY ("parent_id", "rang"),
   FOREIGN KEY ("parent_id") REFERENCES "m2"."prescriptions" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
 );
 ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "prix" integer; -- @montee
 ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "duree" text; -- @montee
+ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "quantite" integer; -- @montee
+ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "posologie" text; -- @montee
+ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "produit_id" text; -- @montee
+ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "nb_administrations" integer; -- @montee
 ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "tarif" text; -- @montee
 ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "famille" text; -- @montee
-ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
 ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "acte_code" text; -- @montee
-ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "quantite" integer; -- @montee
 ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "frequence" text; -- @montee
 ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "motif_tarif" text; -- @montee
 ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "prix_a_valider" boolean; -- @montee
-ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "nb_administrations" integer; -- @montee
-ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "posologie" text; -- @montee
-ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "produit_id" text; -- @montee
 ALTER TABLE "m2"."prescriptions_lignes" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m2"."prescriptions_lignes" IS 'Lignes « lignes » de « prescriptions »';
 CREATE TABLE IF NOT EXISTS "m2"."resultats_imagerie" (
@@ -5625,45 +5754,45 @@ CREATE TABLE IF NOT EXISTS "m5"."demandes_analyses" (
   "analyse_" text,
   "origine" text,
   "patient" text,
+  "recu_par" text,
+  "regle_le" timestamptz,
+  "saisi_le" timestamptz,
+  "valeurs" jsonb,
+  "version" integer,
   "cree_par" text,
+  "resultat" text,
+  "saisi_par" text,
+  "valide_le" timestamptz,
+  "anormales" integer,
   "categorie" text,
   "date_heure" timestamptz,
   "patient_id" text,
+  "preleve_le" timestamptz,
   "reference" text,
+  "modifie_le" timestamptz,
+  "conclusion" text,
   "laborantin" text,
+  "preleve_par" text,
+  "recu_labo_le" timestamptz,
+  "modifie_par" text,
   "analyse_code" text,
   "code_analyse" text,
   "echantillon" text,
   "etat_analyse" text,
   "patient_code" text,
   "ordonnance_id" text,
+  "preleve_par_id" text,
   "prescripteur" text,
+  "statut_paiement" text,
   "ordonnance_numero" text,
   "secteur_demandeur" text,
   "bloque_par_paiement" boolean,
-  "dossier_consultation_id" text,
-  "recu_par" text,
-  "regle_le" timestamptz,
-  "saisi_le" timestamptz,
-  "valeurs" jsonb,
-  "version" integer,
-  "resultat" text,
-  "saisi_par" text,
-  "valide_le" timestamptz,
-  "anormales" integer,
-  "preleve_le" timestamptz,
-  "modifie_le" timestamptz,
-  "conclusion" text,
-  "preleve_par" text,
-  "recu_labo_le" timestamptz,
-  "modifie_par" text,
-  "preleve_par_id" text,
-  "statut_paiement" text,
   "qualite_validateur" text,
   "resultat_structure" boolean,
   "valide_technique_le" timestamptz,
   "valide_technique_par" text,
   "valide_biologique_par" text,
+  "dossier_consultation_id" text,
   "facture_id" text,
   "residence" text,
   "indication" text,
@@ -5683,45 +5812,45 @@ ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "cree_le" timestam
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "analyse_" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "origine" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "patient" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "recu_par" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "regle_le" timestamptz; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "saisi_le" timestamptz; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "valeurs" jsonb; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "version" integer; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "resultat" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "saisi_par" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "valide_le" timestamptz; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "anormales" integer; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "categorie" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "date_heure" timestamptz; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "preleve_le" timestamptz; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "conclusion" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "laborantin" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "preleve_par" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "recu_labo_le" timestamptz; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "analyse_code" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "code_analyse" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "echantillon" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "etat_analyse" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "patient_code" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "ordonnance_id" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "preleve_par_id" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "prescripteur" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "statut_paiement" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "ordonnance_numero" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "secteur_demandeur" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "bloque_par_paiement" boolean; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "dossier_consultation_id" text; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "recu_par" text; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "regle_le" timestamptz; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "saisi_le" timestamptz; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "valeurs" jsonb; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "version" integer; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "resultat" text; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "saisi_par" text; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "valide_le" timestamptz; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "anormales" integer; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "preleve_le" timestamptz; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "conclusion" text; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "preleve_par" text; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "recu_labo_le" timestamptz; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "preleve_par_id" text; -- @montee
-ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "statut_paiement" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "qualite_validateur" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "resultat_structure" boolean; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "valide_technique_le" timestamptz; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "valide_technique_par" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "valide_biologique_par" text; -- @montee
+ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "dossier_consultation_id" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "facture_id" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "residence" text; -- @montee
 ALTER TABLE "m5"."demandes_analyses" ADD COLUMN IF NOT EXISTS "indication" text; -- @montee
@@ -5738,8 +5867,8 @@ CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_date_heure" ON "m5"."demandes_a
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_patient_id" ON "m5"."demandes_analyses" ("patient_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_reference" ON "m5"."demandes_analyses" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_ordonnance_id" ON "m5"."demandes_analyses" ("ordonnance_id");
-CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_dossier_consultation_id" ON "m5"."demandes_analyses" ("dossier_consultation_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_preleve_par_id" ON "m5"."demandes_analyses" ("preleve_par_id");
+CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_dossier_consultation_id" ON "m5"."demandes_analyses" ("dossier_consultation_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_facture_id" ON "m5"."demandes_analyses" ("facture_id");
 CREATE TABLE IF NOT EXISTS "m5"."donneurs" (
   "_rang" integer PRIMARY KEY,
@@ -6410,13 +6539,26 @@ CREATE TABLE IF NOT EXISTS "m8"."factures" (
   "numero" text,
   "statut" text,
   "cree_le" timestamptz,
+  "aib_taux" integer,
   "patient" text,
   "cree_par" text,
   "assureur" text,
   "reliquat" integer,
+  "aib_arrete" boolean,
+  "aib_charge" text,
+  "base_mecef" integer,
+  "ifu_client" text,
+  "mode_mecef" text,
   "montant_ht" integer,
   "patient_id" text,
+  "modifie_le" timestamptz,
+  "aib_montant" integer,
+  "aib_version" text,
+  "code_retour" text,
   "montant_ttc" integer,
+  "modifie_par" text,
+  "acheteur_nom" text,
+  "mecef_simule" boolean,
   "montant_brut" integer,
   "montant_paye" integer,
   "numero_mecef" text,
@@ -6425,35 +6567,22 @@ CREATE TABLE IF NOT EXISTS "m8"."factures" (
   "personnel_id" text,
   "statut_mecef" text,
   "total_remise" integer,
+  "aib_situation" text,
   "mode_paiement" text,
+  "normalise_par" text,
+  "ordonnance_id" text,
+  "aib_date_bareme" date,
   "part_assurance" integer,
   "part_personnel" integer,
   "statut_paiement" text,
-  "taux_prise_en_charge" integer,
-  "prise_en_charge_personnel" boolean,
-  "ordonnance_id" text,
-  "ordonnance_numero" text,
-  "dossier_consultation_id" text,
-  "aib_taux" integer,
-  "aib_arrete" boolean,
-  "aib_charge" text,
-  "base_mecef" integer,
-  "ifu_client" text,
-  "mode_mecef" text,
-  "modifie_le" timestamptz,
-  "aib_montant" integer,
-  "aib_version" text,
-  "code_retour" text,
-  "modifie_par" text,
-  "acheteur_nom" text,
-  "mecef_simule" boolean,
-  "aib_situation" text,
-  "normalise_par" text,
-  "aib_date_bareme" date,
   "motif_refus_mecef" text,
   "aib_charge_arretee" boolean,
   "date_transmission" timestamptz,
   "dernier_reglement" jsonb,
+  "ordonnance_numero" text,
+  "taux_prise_en_charge" integer,
+  "dossier_consultation_id" text,
+  "prise_en_charge_personnel" boolean,
   "origine_demande" text,
   "prescripteur_exterieur" text,
   "taux_remise" integer,
@@ -6466,13 +6595,26 @@ ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "type" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "numero" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_taux" integer; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "patient" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "assureur" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "reliquat" integer; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_arrete" boolean; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_charge" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "base_mecef" integer; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "ifu_client" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "mode_mecef" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "montant_ht" integer; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_montant" integer; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_version" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "code_retour" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "montant_ttc" integer; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "acheteur_nom" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "mecef_simule" boolean; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "montant_brut" integer; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "montant_paye" integer; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "numero_mecef" text; -- @montee
@@ -6481,35 +6623,22 @@ ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "patient_code" text; -- @mo
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "personnel_id" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "statut_mecef" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "total_remise" integer; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_situation" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "mode_paiement" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "normalise_par" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "ordonnance_id" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_date_bareme" date; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "part_assurance" integer; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "part_personnel" integer; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "statut_paiement" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "taux_prise_en_charge" integer; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "prise_en_charge_personnel" boolean; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "ordonnance_id" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "ordonnance_numero" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "dossier_consultation_id" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_taux" integer; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_arrete" boolean; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_charge" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "base_mecef" integer; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "ifu_client" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "mode_mecef" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_montant" integer; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_version" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "code_retour" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "acheteur_nom" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "mecef_simule" boolean; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_situation" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "normalise_par" text; -- @montee
-ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_date_bareme" date; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "motif_refus_mecef" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "aib_charge_arretee" boolean; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "date_transmission" timestamptz; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "dernier_reglement" jsonb; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "ordonnance_numero" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "taux_prise_en_charge" integer; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "dossier_consultation_id" text; -- @montee
+ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "prise_en_charge_personnel" boolean; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "origine_demande" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "prescripteur_exterieur" text; -- @montee
 ALTER TABLE "m8"."factures" ADD COLUMN IF NOT EXISTS "taux_remise" integer; -- @montee
@@ -6778,71 +6907,71 @@ CREATE INDEX IF NOT EXISTS "ix_appels_date_heure" ON "socle"."appels" ("date_heu
 CREATE INDEX IF NOT EXISTS "ix_appels_reference" ON "socle"."appels" ("reference");
 CREATE TABLE IF NOT EXISTS "socle"."taches" (
   "id" text PRIMARY KEY,
-  "type" text,
-  "poste" text,
-  "cree_le" timestamptz,
-  "detail" text,
-  "statut" text,
-  "cree_le_2" timestamptz,
-  "libelle" text,
-  "patient" text,
-  "cree_par" text,
-  "facture_id" text,
-  "patient_id" text,
-  "reference" text,
-  "montant" integer,
   "date" timestamptz,
   "icon" text,
   "role" text,
+  "type" text,
   "ecran" text,
   "titre" text,
+  "detail" text,
   "fait_le" timestamptz,
   "module" text,
+  "statut" text,
   "urgent" boolean,
+  "cree_le" timestamptz,
   "fait_par" text,
+  "montant" integer,
+  "patient" text,
+  "cree_par" text,
+  "facture_id" text,
+  "reference" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
   "patient_code" text,
   "ordonnance_id" text,
   "facture_numero" text,
-  "modifie_le" timestamptz,
-  "modifie_par" text,
+  "poste" text,
+  "cree_le_2" timestamptz,
+  "libelle" text,
+  "patient_id" text,
   "extra" jsonb
 );
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "type" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "poste" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "detail" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "cree_le_2" timestamptz; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "patient" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "facture_id" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "date" timestamptz; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "icon" text; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "role" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "type" text; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "ecran" text; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "titre" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "detail" text; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "fait_le" timestamptz; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "module" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "urgent" boolean; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "fait_par" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "montant" integer; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "patient" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "facture_id" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "reference" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "patient_code" text; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "ordonnance_id" text; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "facture_numero" text; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "modifie_le" timestamptz; -- @montee
-ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "modifie_par" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "poste" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "cree_le_2" timestamptz; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "libelle" text; -- @montee
+ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "patient_id" text; -- @montee
 ALTER TABLE "socle"."taches" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "socle"."taches" IS 'Collection « taches » — Socle commun (référentiels lus par plusieurs modules)';
+CREATE INDEX IF NOT EXISTS "ix_taches_date" ON "socle"."taches" ("date");
 CREATE INDEX IF NOT EXISTS "ix_taches_type" ON "socle"."taches" ("type");
 CREATE INDEX IF NOT EXISTS "ix_taches_statut" ON "socle"."taches" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_taches_facture_id" ON "socle"."taches" ("facture_id");
-CREATE INDEX IF NOT EXISTS "ix_taches_patient_id" ON "socle"."taches" ("patient_id");
 CREATE INDEX IF NOT EXISTS "ix_taches_reference" ON "socle"."taches" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_taches_date" ON "socle"."taches" ("date");
 CREATE INDEX IF NOT EXISTS "ix_taches_ordonnance_id" ON "socle"."taches" ("ordonnance_id");
+CREATE INDEX IF NOT EXISTS "ix_taches_patient_id" ON "socle"."taches" ("patient_id");
 CREATE TABLE IF NOT EXISTS "socle"."visites_hospi" (
   "id" text PRIMARY KEY,
   "lit" text,

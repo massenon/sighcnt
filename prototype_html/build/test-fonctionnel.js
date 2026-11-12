@@ -657,6 +657,66 @@ async function viderMessages(page) {
     return null;
   }
 
+  /* --- Outils du lot DOCS-1 (Vagues 152 à 157) : fichiers de test fabriqués par Chrome, appels directs à api/fichiers.php (le serveur se sonde SANS l'écran), disque du banc ---------- */
+  const outilsDocs = (() => {
+    const crypto = require('crypto');
+    const dossier = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sigh-docs-'));
+    const base = 'http://127.0.0.1:' + BANC.PORT_PHP;
+    let F = null;
+    const fabrique = async () => F || (F = await require('./_documents-fixtures').fabriquer(browser, dossier));
+    const sha = (f) => crypto.createHash('sha256').update(Buffer.isBuffer(f) ? f : fs.readFileSync(f)).digest('hex');
+    const sfx = () => String(Date.now()).slice(-7);
+    async function jeton(role) {
+      const r = await fetch(base + '/api/session.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: role, nom: 'SONDE docs ' + role, identifiant: 'docs.' + role, fonction: role }) });
+      return (await r.json()).jeton;
+    }
+    async function api(methode, q, jt, corps) {
+      const r = await fetch(base + '/api/fichiers.php?' + q, { method: methode, headers: Object.assign({ 'X-Sigh-Jeton': jt || '' }, corps ? { 'Content-Type': 'application/octet-stream' } : {}), body: corps });
+      const t = Buffer.from(await r.arrayBuffer());
+      let j = null; try { j = JSON.parse(t.toString()); } catch (e) { /* octets */ }
+      return { statut: r.status, json: j, octets: t, entetes: r.headers };
+    }
+    const deposer = (jt, famille, f, extra) => api('POST', 'action=deposer&famille=' + famille + '&nom=' + encodeURIComponent(path.basename(f)) + (extra || ''), jt, fs.readFileSync(f));
+    const disque = (s, ext) => path.join(process.env.SIGH_FICHIERS_DIR, s.slice(0, 2), s + '.' + ext);
+    /** Un PDF alourdi (octets de remplissage APRÈS le marqueur de fin : le PDF reste valide) pour passer une taille maximale basse. */
+    const gonfler = (f, octets, nom) => { const g = path.join(dossier, nom); fs.writeFileSync(g, Buffer.concat([fs.readFileSync(f), Buffer.alloc(octets, 32)])); return g; };
+    /** Crée un courrier SANS fichier dans le magasin du navigateur ; rend sa référence. */
+    const creerCourrier = (s, date) => page.evaluate((x, d) => {
+      const S = window.SIGH.store, C = window.SIGH.core;
+      const ref = C.referenceSuivante('ARR-' + d.slice(0, 4) + '-', 4, S.collection('courriers').all());
+      S.collection('courriers').insert({ reference: ref, sens: 'arrivee', date: d, correspondant: 'Correspondant docs ' + x, objet: 'Objet docs ' + x, nature: 'Lettre', affecteA: 'Direction Administrative', traitement: 'en_attente', accuseReception: false });
+      return ref;
+    }, s, date || '2026-08-20');
+    async function fermerTout() { await page.evaluate(() => { document.querySelectorAll('[role=dialog] [aria-label="Fermer"]').forEach((b) => b.click()); document.body.style.overflow = ''; }); }
+    const chercher = async (ref) => {
+      await page.evaluate(() => { const i = document.querySelector('#page-content input[type=search]'); if (i) { i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); } });
+      await pause(300);
+      await page.evaluate((r) => { const i = document.querySelector('#page-content input[type=search]'); i.value = r; i.dispatchEvent(new Event('input', { bubbles: true })); }, ref);
+      await pause(600);
+    };
+    const ouvrirLigne = async (ref) => {
+      await fermerTout(); await pause(250);
+      await chercher(ref);
+      const ok = await page.evaluate((r) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf(r) >= 0); if (!tr) return false; (tr.querySelector('td:nth-child(3)') || tr.querySelector('td')).click(); return true; }, ref);
+      await pause(900);
+      return ok;
+    };
+    const attendre = async (fn, arg, ms) => { const fin = Date.now() + (ms || 15000); while (Date.now() < fin) { if (await page.evaluate(fn, arg).catch(() => false)) return true; await pause(250); } return false; };
+    const zone = async () => { const hs = await page.$$('[data-zone-fichier]'); return hs[hs.length - 1]; };
+    const deposerUI = async (f) => { const z = await zone(); await z.uploadFile(f); await pause(1200); };
+    const carte = () => page.evaluate(() => {
+      const c = [...document.querySelectorAll('[data-carte-piece]')].pop(); if (!c) return null;
+      const q = (s) => { const n = c.querySelector(s); return n ? n.textContent.trim() : null; };
+      return { nom: q('[data-piece-nom]'), empreinte: q('[data-piece-empreinte]'), texte: c.textContent, chemin: q('[data-piece-chemin-valeur]'),
+        cheminEtat: (c.querySelector('[data-piece-chemin]') || { getAttribute: () => null }).getAttribute('data-piece-chemin-etat'),
+        zoneDepot: !!c.querySelector('[data-zone-import]'), refus: [...c.querySelectorAll('[data-refus-code]')].map((n) => n.getAttribute('data-refus-code')) };
+    });
+    const fermerHaut = () => page.evaluate(() => { const b = [...document.querySelectorAll('[role=dialog] [aria-label="Fermer"]')].pop(); if (b) b.click(); });
+    const audit = (action) => page.evaluate((a) => window.SIGH.store.raw().audit.filter((x) => x.action === a).length, action);
+    return { dossier, base, fabrique, sha, sfx, jeton, api, deposer, disque, gonfler, creerCourrier, chercher, ouvrirLigne, attendre, zone, deposerUI, carte, fermerTout, fermerHaut, audit };
+  })();
+
+
   await etape(async () => {
     scenario('M1 — Cycle de vie complet d’un dossier patient');
     await ouvrir('m1-patients.html');
@@ -23605,6 +23665,173 @@ async function viderMessages(page) {
     const e151 = erreursJS.filter((x) => !/Failed to load resource|403|404/.test(x));
     verifier('Aucune erreur JavaScript', e151.length === 0, e151.join(' | '));
   });
+
+  /* DOCS-1 DEBUT */
+  await etape(async () => {
+    scenario('Vague 152 : DOCS-1 D1 le serveur de fichiers : session obligatoire, empreinte SHA-256 recalculée, format lu sur les octets, taille maximale, règle par famille alignée sur rbac.json et zone du type, lecture qui refuse un fichier altéré, journal serveur');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), sfx = O.sfx();
+    await poserSessionServeur(roleImp('admin', 'ADMIN152'));
+    await ouvrir('m13-courriers.html');
+    const pdf = await Fx.pdfTexte(152), shaPdf = O.sha(pdf);
+    const jtAdmin = await O.jeton('admin'), jtAccueil = await O.jeton('reception'), jtCaisse = await O.jeton('caissier'), jtMedecin = await O.jeton('medecin');
+
+    /* 1. Session obligatoire. */
+    const sans = await O.deposer('', 'courrier', pdf);
+    verifier('Sans session : dépôt refusé, 401 SESSION_REQUISE, motif et geste nommés, aucun fichier rangé', sans.statut === 401 && sans.json.code === 'SESSION_REQUISE' && !!sans.json.motif && !!sans.json.geste && !fs.existsSync(O.disque(shaPdf, 'pdf')), JSON.stringify(sans.json));
+
+    /* 2. Dépôt : empreinte recalculée, pages, texte, rangement hors du magasin. */
+    const d1 = await O.deposer(jtAdmin, 'courrier', pdf, '&sha256=' + shaPdf);
+    verifier('Dépôt d’un PDF : l’empreinte rendue est le SHA-256 des octets (calculé ici, de façon indépendante), taille et type exacts, une page, texte indexé', d1.statut === 200 && d1.json.sha256 === shaPdf && d1.json.taille === fs.statSync(pdf).size && d1.json.mime === 'application/pdf' && d1.json.pages === 1 && d1.json.texteIndexe === true, JSON.stringify(Object.assign({}, d1.json, { mots: undefined })));
+    verifier('Le fichier est rangé sous sa clé d’empreinte hors du magasin et son contenu relu du disque a la même empreinte', fs.existsSync(O.disque(shaPdf, 'pdf')) && O.sha(O.disque(shaPdf, 'pdf')) === shaPdf);
+    verifier('Le texte extrait (extracteur local) porte des mots du corps du PDF, accents conservés', d1.json.mots.indexOf('zebraforte152') >= 0 && d1.json.mots.indexOf('hyperglycémie') >= 0 && d1.json.mots.indexOf('amoxicilline') >= 0, d1.json.mots.slice(0, 8).join(','));
+
+    /* 3. Empreinte annoncée fausse. */
+    const png = await Fx.image('png', 152), jpg = await Fx.image('jpeg', 153), webp = await Fx.image('webp', 154);
+    const faux = await O.deposer(jtAdmin, 'courrier', png, '&sha256=' + '0'.repeat(64));
+    verifier('Empreinte annoncée différente de celle des octets : 409 EMPREINTE_DIVERGENTE, les deux empreintes nommées, rien rangé', faux.statut === 409 && faux.json.code === 'EMPREINTE_DIVERGENTE' && faux.json.recu === O.sha(png) && !fs.existsSync(O.disque(O.sha(png), 'png')), JSON.stringify(faux.json));
+
+    /* 4. Formats lus sur les octets, jamais sur le nom. */
+    const exe = await Fx.octets(3000, 'faux-152.exe');
+    const r1 = await O.deposer(jtAdmin, 'courrier', exe);
+    const camoufle = path.join(O.dossier, 'camoufle-152.pdf'); fs.copyFileSync(exe, camoufle);
+    const r2 = await O.deposer(jtAdmin, 'courrier', camoufle);
+    const r3 = await O.deposer(jtAdmin, 'courrier', webp);
+    verifier('Un exécutable et un faux « .pdf » sont refusés (415 FORMAT_REFUSE : le format se lit sur les octets) ; le WEBP est refusé au courrier', r1.statut === 415 && r2.statut === 415 && r3.statut === 415 && [r1, r2, r3].every((x) => x.json.code === 'FORMAT_REFUSE' && x.json.geste), [r1.statut, r2.statut, r3.statut].join(','));
+    const w2 = await O.deposer(jtMedecin, 'patient', webp, '&type=' + encodeURIComponent('Compte rendu médical'));
+    const j2 = await O.deposer(jtAdmin, 'courrier', jpg);
+    verifier('Le WEBP est admis au dossier patient, le JPEG au courrier', w2.statut === 200 && w2.json.format === 'webp' && w2.json.texteIndexe === false && j2.statut === 200 && j2.json.format === 'jpeg', [w2.statut, j2.statut].join(','));
+
+    /* 5. Taille maximale réglée en base : le serveur la lit. */
+    const gros = O.gonfler(pdf, 150 * 1024, 'gros-152.pdf');
+    await page.evaluate(() => window.SIGH.store.setReglage('documentsBornes', { tailleMax: 100 * 1024 }));
+    await attendreEcritures(); await pause(500);
+    const t1 = await O.deposer(jtAdmin, 'courrier', gros);
+    await page.evaluate(() => window.SIGH.store.setReglage('documentsBornes', null));
+    await attendreEcritures(); await pause(500);
+    const t2 = await O.deposer(jtAdmin, 'courrier', gros);
+    verifier('Taille maximale réglée à 100 Ko : un fichier de 150 Ko est refusé (413 TAILLE_DEPASSEE, motif chiffré) ; le réglage retiré, le défaut de 10 Mo l’admet', t1.statut === 413 && t1.json.code === 'TAILLE_DEPASSEE' && /Mo|Ko/.test(t1.json.motif) && t2.statut === 200, JSON.stringify([t1.statut, t1.json.motif, t2.statut]));
+
+    /* 6. Règle par famille. */
+    const ordo = await O.deposer(jtMedecin, 'patient', await Fx.pdfTexte(1520), '&type=' + encodeURIComponent('Compte rendu médical'));
+    const cr = ordo.json.sha256;
+    const c1 = await O.deposer(jtCaisse, 'courrier', await Fx.image('png', 155));
+    const c2 = await O.deposer(jtAccueil, 'courrier', await Fx.image('png', 156));
+    const p1 = await O.deposer(jtAccueil, 'patient', await Fx.image('png', 157), '&type=' + encodeURIComponent('Pièce d’identité'));
+    const p2 = await O.deposer(jtAccueil, 'patient', await Fx.image('png', 158), '&type=' + encodeURIComponent('Compte rendu médical'));
+    verifier('Le caissier ne dépose pas de courrier (403 DROIT_REFUSE) ; l’accueil dépose un courrier et une pièce d’identité', c1.statut === 403 && c1.json.code === 'DROIT_REFUSE' && c2.statut === 200 && p1.statut === 200, [c1.statut, c2.statut, p1.statut].join(','));
+    verifier('L’accueil ne dépose pas un compte rendu : 403 ZONE_REFUSEE, RG-13 cité', p2.statut === 403 && p2.json.code === 'ZONE_REFUSEE' && /RG-13/.test(p2.json.motif), JSON.stringify(p2.json));
+    const l1 = await O.api('GET', 'action=lire&famille=patient&sha256=' + cr, jtAccueil);
+    const l2 = await O.api('GET', 'action=lire&famille=patient&sha256=' + cr, jtMedecin);
+    const l3 = await O.api('GET', 'action=lire&famille=patient&sha256=' + shaPdf, jtMedecin);
+    const l4 = await O.api('GET', 'action=lire&famille=courrier&sha256=' + cr, jtAdmin);
+    verifier('L’accueil ne LIT pas un compte rendu déposé par le médecin (403 ZONE_REFUSEE, aucun octet servi) ; le médecin le lit', l1.statut === 403 && l1.json.code === 'ZONE_REFUSEE' && l2.statut === 200 && O.sha(l2.octets) === cr, [l1.statut, l2.statut].join(','));
+    verifier('Une empreinte déposée comme courrier ne se lit pas par la famille « patient » (PIECE_NON_RATTACHEE), et un compte rendu patient ne se lit pas par la famille « courrier »', l3.statut === 403 && l3.json.code === 'PIECE_NON_RATTACHEE' && l4.statut === 403 && l4.json.code === 'PIECE_NON_RATTACHEE', [l3.statut, l3.json && l3.json.code, l4.statut, l4.json && l4.json.code].join(','));
+
+    /* 7. La règle du serveur est celle de rbac.json et de la matrice du client. */
+    const regles = require('./gen-regles-fichiers').construire();
+    const surDisque = JSON.parse(fs.readFileSync(path.join(ROOT, 'api/regles-fichiers.json'), 'utf8'));
+    const client = await page.evaluate(() => { const N = window.SIGH.nav, out = {};
+      /* Un écran que le rôle ne peut pas OUVRIR (N.can) n'a aucun droit : droitsEcran seul rend alors le droit par défaut du module. */
+      const droit = (r, id, mod) => { const e = N.get(id); if (!N.can(r, e)) return [0, 0, 0]; const a = N.droitsEcran(r, N.ecranDesDroits(e), mod); return [a.voir ? 1 : 0, a.editer ? 1 : 0, a.annuler ? 1 : 0]; };
+      Object.keys(N.ROLES).forEach((r) => { out[r] = { courrier: droit(r, 'm13-courriers', 'M13'), patient: droit(r, 'm1-documents', 'M1') }; }); return out; });
+    const divergences = Object.keys(surDisque.roles).filter((r) => client[r] && (JSON.stringify(client[r].courrier) !== JSON.stringify(surDisque.roles[r].courrier) || JSON.stringify(client[r].patient) !== JSON.stringify(surDisque.roles[r].patient)));
+    verifier('api/regles-fichiers.json est à jour (régénéré, il est identique) et la matrice du client (N.droitsEcran) donne, pour chaque rôle, les mêmes droits courrier et patient', JSON.stringify(regles) === JSON.stringify(surDisque) && divergences.length === 0, divergences.join(','));
+
+    /* 8. Lecture : empreinte vérifiée à chaque lecture, fichier altéré jamais servi, réparation par un nouveau dépôt. */
+    const lu = await O.api('GET', 'action=lire&famille=courrier&usage=telechargement&nom=2026-08-20_ARR_0001.pdf&sha256=' + shaPdf, jtAdmin);
+    verifier('Lecture : les octets rendus ont l’empreinte annoncée, le type est PDF, le nom de téléchargement est celui demandé', lu.statut === 200 && O.sha(lu.octets) === shaPdf && lu.entetes.get('content-type') === 'application/pdf' && /attachment; filename="2026-08-20_ARR_0001.pdf"/.test(lu.entetes.get('content-disposition')) && lu.entetes.get('x-sigh-empreinte') === shaPdf);
+    const cheminPdf = O.disque(shaPdf, 'pdf'), intact = fs.readFileSync(cheminPdf);
+    const alter = Buffer.from(intact); alter[alter.length - 1] ^= 0xff; fs.writeFileSync(cheminPdf, alter);
+    const la = await O.api('GET', 'action=lire&famille=courrier&sha256=' + shaPdf, jtAdmin);
+    verifier('Un fichier altéré sur le disque n’est JAMAIS servi : 409 FICHIER_ALTERE, aucun octet de pièce', la.statut === 409 && la.json.code === 'FICHIER_ALTERE' && la.octets.length < 1000, JSON.stringify(la.json));
+    const rep = await O.deposer(jtAdmin, 'courrier', pdf);
+    const lb = await O.api('GET', 'action=lire&famille=courrier&sha256=' + shaPdf, jtAdmin);
+    verifier('Redéposer le même fichier RÉPARE la copie altérée : l’empreinte est de nouveau celle des octets', rep.statut === 200 && lb.statut === 200 && O.sha(lb.octets) === shaPdf && O.sha(cheminPdf) === shaPdf);
+    const ch = await O.api('GET', 'action=chemin&famille=courrier&sha256=' + shaPdf, jtAdmin);
+    verifier('Le chemin dit où le fichier est rangé sur ce poste (celui du disque du banc)', ch.json.present === true && ch.json.chemin === fs.realpathSync(cheminPdf).replace(/\\/g, '/') && ch.json.nomStockage === shaPdf + '.pdf', JSON.stringify(ch.json));
+
+    /* 9. Journal serveur. */
+    const jr = await O.api('GET', 'action=journal&sha256=' + shaPdf, jtAdmin);
+    const actions = (jr.json.lignes || []).map((x) => x.action + ':' + (x.ok ? 'ok' : 'refus'));
+    verifier('Le journal serveur garde, pour l’empreinte, les dépôts, les lectures et le refus du fichier altéré, avec le profil et l’identifiant de session',
+      actions.indexOf('depot:ok') >= 0 && actions.indexOf('apercu:ok') >= 0 && actions.indexOf('telechargement:ok') >= 0 && actions.indexOf('lecture:refus') >= 0 && jr.json.lignes.every((x) => x.role && x.identifiant), actions.join(','));
+    const jrRefus = await O.api('GET', 'action=journal&sha256=' + cr, jtAccueil);
+    verifier('Le journal serveur est réservé à l’administrateur (403 DROIT_REFUSE pour l’accueil)', jrRefus.statut === 403);
+
+    const e152 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e152.length === 0, e152.join(' | '));
+  });
+  await etape(async () => {
+    scenario('Vague 153 : DOCS-1 D1 la migration du base64 de documentsPatient vers le dossier de fichiers : empreinte identique avant retrait, une copie qui ne relit pas à l’identique ne retire RIEN, le magasin perd son poids, restauration du dossier à l’empreinte identique');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique();
+    await poserSessionServeur(roleImp('admin', 'ADMIN153'));
+    await ouvrir('m1-documents.html');
+    const png1 = await Fx.image('png', 1531), png2 = await Fx.image('png', 1532), pdf3 = await Fx.pdfTexte(1533);
+    const sh1 = O.sha(png1), sh2 = O.sha(png2), sh3 = O.sha(pdf3);
+    const b64 = (f, mime) => 'data:' + mime + ';base64,' + fs.readFileSync(f).toString('base64');
+    const poser = (docs) => page.evaluate((l) => { const S = window.SIGH.store, p = S.collection('patients').active()[0];
+      return l.map((d, i) => S.collection('documentsPatient').insert({ reference: 'GED-MIG' + d.n, patientId: p.id, code: p.code, patient: p.nom + ' ' + p.prenom, type: 'Ordonnance', date: '2026-08-10',
+        fichier: d.nom, format: d.format, taille: d.taille, donnees: d.donnees, etat: 'valide', depose: 'Sonde migration' }).record.id); }, docs);
+    const poidsMagasin = () => page.evaluate(async () => { const S = window.SIGH.store; await S.pousserMaintenant(); for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      await new Promise((r) => setTimeout(r, 600));
+      const r = await fetch('/api/magasin.php', { headers: { 'X-Sigh-Jeton': S.jetonServeur() } }); return (await r.arrayBuffer()).byteLength; });
+
+    const avant0 = await poidsMagasin();
+    const ids = await poser([
+      { n: 1, nom: 'ancien-1.png', format: 'PNG', taille: fs.statSync(png1).size, donnees: b64(png1, 'image/png') },
+      { n: 3, nom: 'ancien-3.pdf', format: 'PDF', taille: fs.statSync(pdf3).size, donnees: b64(pdf3, 'application/pdf') }]);
+    const avant = await poidsMagasin();
+    const total64 = fs.statSync(png1).size + fs.statSync(pdf3).size;
+    verifier('Avant migration : deux scans en base64 alourdissent le magasin lu du serveur d’au moins leur poids (octets du magasin mesurés)', avant - avant0 > total64, JSON.stringify({ avant0: avant0, avant: avant, total: total64 }));
+    verifier('Le magasin signale qu’une migration est due (S.migrationFichiersDue)', await page.evaluate(() => window.SIGH.store.migrationFichiersDue()) === true);
+
+    /* LA MIGRATION RÉUSSIE */
+    const rap = await page.evaluate(() => window.SIGH.fichiers.migrerBase64());
+    verifier('Migration : deux candidats, deux migrés, aucun refus', rap.candidats === 2 && rap.migres === 2 && rap.refuses.length === 0, JSON.stringify(rap));
+    const fiches = await page.evaluate((i) => i.map((x) => { const d = window.SIGH.store.collection('documentsPatient').get(x); return { sha: d.fichier && d.fichier.sha256, taille: d.fichier && d.fichier.taille, mime: d.fichier && d.fichier.mime, donnees: !!d.donnees, nom: d.fichier && d.fichier.nom, indexe: d.fichier && d.fichier.texteIndexe }; }), ids);
+    verifier('Chaque fiche porte l’empreinte SHA-256 des octets d’origine (calculée ici), le type, la taille et le nom d’origine, et n’a plus de base64',
+      fiches[0].sha === sh1 && fiches[1].sha === sh3 && fiches[0].mime === 'image/png' && fiches[1].mime === 'application/pdf' && fiches[0].taille === fs.statSync(png1).size && !fiches[0].donnees && !fiches[1].donnees && fiches[0].nom === 'ancien-1.png', JSON.stringify(fiches));
+    verifier('Les fichiers sont au disque sous leur empreinte, identiques aux octets d’origine ; le PDF a gardé son texte indexé',
+      O.sha(O.disque(sh1, 'png')) === sh1 && O.sha(O.disque(sh3, 'pdf')) === sh3 && fiches[1].indexe === true, JSON.stringify(fiches));
+    const apres = await poidsMagasin();
+    console.log('\n  MESURE D1 : magasin lu du serveur : ' + avant0 + ' octets sans scan, ' + avant + ' avec deux scans en base64, ' + apres + ' après migration (poids des deux scans : ' + total64 + ' octets).');
+    verifier('Après migration le magasin retrouve son poids d’avant les scans, à quelques centaines d’octets de métadonnées près', apres - avant0 < 6000 && avant - apres > total64 * 0.9, JSON.stringify({ avant0: avant0, avant: avant, apres: apres }));
+    const texteServeur = await page.evaluate(async () => { const S = window.SIGH.store; const r = await fetch('/api/magasin.php?collections=documentsPatient', { headers: { 'X-Sigh-Jeton': S.jetonServeur() } }); return r.text(); });
+    verifier('Côté serveur aussi, plus un octet de base64 dans la collection des documents du patient', texteServeur.indexOf('base64,') < 0 && texteServeur.indexOf(sh1) > 0);
+    verifier('Plus de migration due', await page.evaluate(() => window.SIGH.store.migrationFichiersDue()) === false);
+    const j = await page.evaluate(() => window.SIGH.store.raw().audit.filter((x) => x.action === 'Fichier migré du magasin vers le dossier de fichiers').length);
+    verifier('Chaque migration est journalisée (RG-12)', j >= 2, String(j));
+
+    /* LA MIGRATION QUI NE RELIT PAS À L'IDENTIQUE NE RETIRE RIEN */
+    const sentinelle = path.join(process.env.SIGH_FICHIERS_DIR, '.alterer-lecture');
+    fs.writeFileSync(sentinelle, '1');
+    const [id2] = await poser([{ n: 2, nom: 'ancien-2.png', format: 'PNG', taille: fs.statSync(png2).size, donnees: b64(png2, 'image/png') }]);
+    const refus = await page.evaluate(() => window.SIGH.fichiers.migrerBase64());
+    const d2 = await page.evaluate((x) => { const d = window.SIGH.store.collection('documentsPatient').get(x); return { donnees: typeof d.donnees === 'string' && d.donnees.length > 1000, fichier: !!(d.fichier && d.fichier.sha256), nom: d.fichier }; }, id2);
+    verifier('Copie relue ALTÉRÉE (le serveur la sert corrompue sans le voir) : la migration est refusée en nommant EMPREINTE_RELUE_DIFFERENTE, la fiche garde son base64 et n’a pas de fichier',
+      refus.migres === 0 && refus.refuses.length === 1 && refus.refuses[0].code === 'EMPREINTE_RELUE_DIFFERENTE' && refus.refuses[0].reference === 'GED-MIG2' && d2.donnees && !d2.fichier, JSON.stringify({ refus: refus, d2: d2 }));
+    fs.unlinkSync(sentinelle);
+    const ok2 = await page.evaluate(() => window.SIGH.fichiers.migrerBase64());
+    verifier('La cause levée, la même migration reprend et réussit (idempotente)', ok2.migres === 1 && ok2.refuses.length === 0 && await page.evaluate((x) => !window.SIGH.store.collection('documentsPatient').get(x).donnees, id2));
+
+    /* RESTAURATION DU DOSSIER DE FICHIERS : mêmes octets, même empreinte */
+    const sauvegarde = path.join(O.dossier, 'sauvegarde-153');
+    fs.cpSync(process.env.SIGH_FICHIERS_DIR, sauvegarde, { recursive: true });
+    const jt = await O.jeton('admin');
+    fs.unlinkSync(O.disque(sh1, 'png'));
+    const perdu = await O.api('GET', 'action=chemin&famille=patient&sha256=' + sh1, jt);
+    const perdu2 = await O.api('GET', 'action=lire&famille=patient&sha256=' + sh1, jt);
+    verifier('Fichier perdu du disque : le chemin dit « pas présent », la lecture refuse en nommant FICHIER_ABSENT (jamais un chemin faux)', perdu.json.present === false && perdu.json.chemin === null && perdu2.statut === 404 && perdu2.json.code === 'FICHIER_ABSENT', JSON.stringify([perdu.json, perdu2.json]));
+    fs.copyFileSync(path.join(sauvegarde, sh1.slice(0, 2), sh1 + '.png'), O.disque(sh1, 'png'));
+    const restaure = await O.api('GET', 'action=lire&famille=patient&sha256=' + sh1, jt);
+    verifier('Après restauration depuis la sauvegarde du dossier : la lecture réussit et les octets ont EXACTEMENT l’empreinte d’origine (SHA-256 identique)', restaure.statut === 200 && O.sha(restaure.octets) === sh1 && O.sha(O.disque(sh1, 'png')) === sh1);
+
+    const e153 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e153.length === 0, e153.join(' | '));
+  });
+  /* DOCS-1 FIN */
 
   await browser.close();
   server.close();
