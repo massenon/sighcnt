@@ -23,7 +23,9 @@ ColonneImport _col(String cle, String label, String type,
         String? motifTexte,
         Object? exemple,
         String? aide,
-        SousMinImport? sousMin}) =>
+        SousMinImport? sousMin,
+        String? capacite,
+        bool unique = false}) =>
     ColonneImport(cle, label, type,
         obligatoire: obligatoire,
         liste: liste,
@@ -34,7 +36,9 @@ ColonneImport _col(String cle, String label, String type,
         motifTexte: motifTexte,
         exemple: exemple,
         aide: aide,
-        sousMin: sousMin);
+        sousMin: sousMin,
+        capacite: capacite,
+        unique: unique);
 
 ColonneImport _oblig(String cle, String label, String type,
         {List<ValeurListe> Function(dynamic ctx)? liste,
@@ -45,9 +49,22 @@ ColonneImport _oblig(String cle, String label, String type,
         String? motifTexte,
         Object? exemple,
         String? aide,
-        SousMinImport? sousMin}) =>
+        SousMinImport? sousMin,
+        String? capacite,
+        bool unique = false}) =>
     _col(cle, label, type,
-        obligatoire: true, liste: liste, min: min, max: max, longueurMax: longueurMax, motif: motif, motifTexte: motifTexte, exemple: exemple, aide: aide, sousMin: sousMin);
+        obligatoire: true,
+        liste: liste,
+        min: min,
+        max: max,
+        longueurMax: longueurMax,
+        motif: motif,
+        motifTexte: motifTexte,
+        exemple: exemple,
+        aide: aide,
+        sousMin: sousMin,
+        capacite: capacite,
+        unique: unique);
 
 List<ValeurListe> Function(dynamic) _fixe(List<String> valeurs) => (_) => [for (final v in valeurs) ValeurListe(v)];
 ProblemeImport _p(String colonne, Object? valeur, String code, String niveau, String motif, String geste) => constat(colonne, valeur, code, niveau, motif, geste);
@@ -66,7 +83,6 @@ final JeuImport jeuGrandStock = JeuImport(
   libelle: 'Importation Grand Stock',
   module: 'M6',
   statut: 'supporte',
-  roles: const ['stock', 'da', 'admin', 'direction'],
   description: 'Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire initial « Grand Stock », reprise).',
   source: 'Inventaire initial (reprise) « Grand Stock » du 15/07/2026 (docs/) : 184 articles, 12 080 unités, 3 976 459 FCFA.',
   cibles: const ['produits', 'lots', 'mouvements'],
@@ -137,7 +153,7 @@ final JeuImport jeuGrandStock = JeuImport(
     }
     return pb;
   },
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
     final jour = port.jour;
     final groupes = <String, List<_V>>{};
     final ordre = <String>[];
@@ -243,7 +259,6 @@ final JeuImport jeuPersonnel = JeuImport(
   libelle: 'Importation du personnel',
   module: 'IMP',
   statut: 'supporte',
-  roles: const ['da', 'admin'],
   description: 'Fiches des agents : matricule, identité, fonction, service, embauche. Aucune donnée de paie hors salaire de base.',
   source: 'Organigramme et liste du personnel de la clinique (docs/) : 44 agents.',
   cibles: const ['personnel'],
@@ -262,7 +277,11 @@ final JeuImport jeuPersonnel = JeuImport(
     _col('telephone', 'Téléphone', 'texte', longueurMax: 20, exemple: '0197000000'),
     _col('cnss', 'N° CNSS', 'texte', motif: RegExp(r'^\d{9}$'), motifTexte: '9 chiffres', exemple: '294011540'),
     _col('situation', 'Situation familiale', 'liste', liste: _fixe(['Célibataire', 'Marié(e)', 'Veuf(ve)']), exemple: 'Marié(e)'),
-    _col('salaireBase', 'Salaire de base', 'entier', min: 0, exemple: 150000, aide: 'Francs CFA bruts mensuels. Réservé à la DAF et à l’administrateur.'),
+    _col('salaireBase', 'Salaire de base', 'entier',
+        min: 0,
+        capacite: 'paie',
+        exemple: 150000,
+        aide: 'Francs CFA bruts mensuels. Réservé aux profils qui détiennent la capacité paie (écriture dans le module Paie) : absente du modèle des autres, et un fichier qui la porte est refusé.'),
   ],
   contexte: (port) {
     final m = <String, _V>{}, ident = <String, _V>{};
@@ -272,7 +291,7 @@ final JeuImport jeuPersonnel = JeuImport(
       ident['${_n(p['nom'])}|${_n(p['prenom'])}'] = p;
       if (p['statut'] != 'archive' && p['service'] != null && '${p['service']}'.isNotEmpty) serv.add('${p['service']}');
     }
-    return {'matricules': m, 'identites': ident, 'services': serv.toList()..sort(), 'jour': port.jour};
+    return {'matricules': m, 'identites': ident, 'services': serv.toList()..sort(), 'jour': port.jour, 'capacitePaie': port.profil.capacitePaie};
   },
   cle: (v) => [_n(v['matricule']), 'id:${_n(v['nom'])}|${_n(v['prenom'])}'],
   existe: (v, ctx) {
@@ -285,12 +304,12 @@ final JeuImport jeuPersonnel = JeuImport(
     if (d != null && d.compareTo(ctx['jour'] as String) > 0) {
       pb.add(_p('Date d’embauche', d, 'DATE_FUTURE', importRefus, 'la date d’embauche est dans le futur', 'Saisissez la date réelle d’entrée en fonction.'));
     }
-    if (v['salaireBase'] == null) {
+    if (v['salaireBase'] == null && ctx['capacitePaie'] == true) {
       pb.add(_p('Salaire de base', '', 'SALAIRE_ABSENT', importAvertissement, 'salaire de base non renseigné', 'Le bulletin de paie ne pourra pas se calculer avant sa saisie.'));
     }
     return pb;
   },
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
     for (final l in lignes) {
       final v = l.v;
       ecrireFiche('personnel', {
@@ -328,11 +347,15 @@ final JeuImport jeuPatients = JeuImport(
   libelle: 'Importation du répertoire patients',
   module: 'IMP',
   statut: 'supporte',
-  roles: const ['reception', 'agentadmin', 'da', 'admin'],
   description: 'Reprise du répertoire papier : identité, coordonnées, couverture. Jamais de dossier médical.',
   source: 'Registre papier des dossiers (environ 18 000) : seule l’identité administrative se reprend (CDCT 4.3).',
   cibles: const ['patients'],
   fichierModele: 'modele-import-patients',
+  // I9 (Direction, 11/11/2026) : le groupe sanguin est une donnée de santé, il se saisit à la première consultation par un soignant. La colonne est RETIRÉE du modèle ; un fichier
+  // qui la porte est refusé en la nommant. Champs sensibles que ce jeu ÉCRIT encore : identité, téléphone, quartier, adresse, personne à prévenir, assureur et n° de police.
+  colonnesRetirees: const [
+    ColonneRetiree('Groupe sanguin', 'le groupe sanguin est une donnée de santé : il ne se reprend pas à l’accueil, il se saisit à la première consultation par un soignant')
+  ],
   gesteExiste: 'Retirez la ligne : le dossier existe déjà. Un doublon d’identité se règle à l’écran Patients, jamais par un second dossier.',
   colonnes: [
     _col('code', 'Code dossier', 'texte',
@@ -349,7 +372,6 @@ final JeuImport jeuPatients = JeuImport(
     _col('quartier', 'Quartier', 'texte', longueurMax: 60, exemple: 'Boukoumbé'),
     _col('adresse', 'Adresse', 'texte', longueurMax: 120, exemple: 'Tchirimina, Natitingou'),
     _col('personneAPrevenir', 'Personne à prévenir', 'texte', longueurMax: 100, exemple: 'ADJOVI Paul'),
-    _col('groupeSanguin', 'Groupe sanguin', 'liste', liste: _fixe(importGroupesSanguins), exemple: 'O+'),
     _col('assureur', 'Code assureur', 'liste', liste: (ctx) => [for (final a in ctx['assureurs'] as List<String>) ValeurListe(a)], exemple: ''),
     _col('numeroPolice', 'N° de police', 'texte', longueurMax: 40, exemple: ''),
     _col('dateCreation', 'Date d’ouverture du dossier', 'date', exemple: '2024-05-02', aide: 'Vide : date du jour.'),
@@ -402,7 +424,7 @@ final JeuImport jeuPatients = JeuImport(
     }
     return pb;
   },
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
     final rangs = <String, int>{};
     void noter(String? code) {
       final m = code == null ? null : RegExp(r'^CNT/?(\d+)/(\d{2})$').firstMatch(code);
@@ -438,7 +460,6 @@ final JeuImport jeuPatients = JeuImport(
         'quartier': v['quartier'],
         'adresse': v['adresse'],
         'personneAPrevenir': v['personneAPrevenir'],
-        'groupeSanguin': v['groupeSanguin'],
         'assureur': v['assureur'],
         'numeroPolice': v['numeroPolice'],
         'dateCreation': creation,
@@ -470,96 +491,14 @@ final JeuImport jeuPatients = JeuImport(
   },
 );
 
-// --- 4. ACTES ET TARIFS ------------------------------------------------------------------------------------------------------------
-
-final JeuImport jeuActes = JeuImport(
-  id: 'actes',
-  ecran: 'imp-actes',
-  libelle: 'Importation du catalogue des actes',
-  module: 'IMP',
-  statut: 'supporte',
-  roles: const ['da', 'admin', 'direction'],
-  description: 'Actes et tarifs à deux prix (non assuré, assuré) avec les trois états de la colonne assurée : montant, NC (non couvert), tiret (valeur manquante).',
-  source: 'Six grilles tarifaires imprimées et « Répartition des activités » (docs/) ; les prix du fichier font foi, aucun n’est complété par le logiciel.',
-  cibles: const ['actes'],
-  fichierModele: 'modele-import-actes',
-  gesteExiste: 'Retirez la ligne : un tarif en vigueur se modifie à l’écran Catalogue des actes, versionné, jamais écrasé par un import.',
-  colonnes: [
-    _oblig('code', 'Code acte', 'texte', longueurMax: 20, exemple: 'MG01'),
-    _oblig('libelle', 'Libellé', 'texte', longueurMax: 160, exemple: 'Consultation généraliste'),
-    _oblig('secteur', 'Secteur', 'liste', liste: (ctx) => [for (final s in ctx['secteurs'] as List<String>) ValeurListe(s)], exemple: 'Médecine générale'),
-    _oblig('prixNonAssure', 'Prix non assuré', 'tarif', exemple: 5000, aide: 'Montant entier en FCFA, ou un tiret si le prix manque. Un tiret n’est pas un zéro : l’acte ne se facture pas.'),
-    _oblig('prixAssure', 'Prix assuré', 'tarif', exemple: 3000, aide: 'Montant, NC (aucune compagnie ne couvre l’acte : l’assuré paie le prix non assuré) ou un tiret (valeur manquante).'),
-    _col('codeTarif', 'Code tarif', 'texte', longueurMax: 30, exemple: 'CONS-GEN'),
-  ],
-  contexte: (port) {
-    final c = <String, _V>{};
-    final sec = <String>{...importSecteursActes};
-    for (final a in port.toutes('actes')) {
-      c[_n(a['code'])] = a;
-      if (a['statut'] != 'archive' && a['secteur'] != null && '${a['secteur']}'.isNotEmpty) sec.add('${a['secteur']}');
-    }
-    return {'actes': c, 'secteurs': sec.toList()..sort()};
-  },
-  cle: (v) => [_n(v['code'])],
-  existe: (v, ctx) {
-    final a = (ctx['actes'] as Map)[_n(v['code'])];
-    return a != null ? 'l’acte « ${a['code']} » existe déjà (${a['libelle']})' : null;
-  },
-  regles: (v, ctx, sc, n) {
-    final pb = <ProblemeImport>[];
-    final na = (v['prixNonAssure'] as Map)['etat'], as = (v['prixAssure'] as Map)['etat'];
-    if (na == 'nc') {
-      pb.add(_p('Prix non assuré', 'NC', 'NC_INTERDIT', importRefus, 'NC n’a de sens que dans la colonne assurée', 'Saisissez le prix de guichet, ou un tiret s’il manque.'));
-    }
-    if (na == 'manquant') {
-      pb.add(_p('Prix non assuré', '-', 'PRIX_MANQUANT', importAvertissement, 'prix non assuré manquant : l’acte ne se facturera pas (un tiret n’est pas un zéro)', 'Saisissez le prix au catalogue dès qu’il est arrêté.'));
-    }
-    if (as == 'manquant') {
-      pb.add(_p('Prix assuré', '-', 'PRIX_MANQUANT', importAvertissement, 'prix assuré manquant : l’acte ne se facturera pas aux assurés', 'Saisissez le prix assuré, ou NC si aucune compagnie ne couvre l’acte.'));
-    }
-    return pb;
-  },
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
-    for (final l in lignes) {
-      final v = l.v;
-      final na = v['prixNonAssure'] as Map, as = v['prixAssure'] as Map;
-      ecrireFiche('actes', {
-        'code': v['code'],
-        'libelle': v['libelle'],
-        'secteur': v['secteur'],
-        'codeTarif': v['codeTarif'],
-        'prixNonAssure': na['etat'] == 'montant' ? na['montant'] : null,
-        'prixAssure': as['etat'] == 'montant' ? as['montant'] : null,
-        'nonCouvert': as['etat'] == 'nc',
-        'assurable': as['etat'] != 'nc',
-        'prix': na['etat'] == 'montant' ? na['montant'] : null,
-        'tarifProvisoire': false,
-        if (na['etat'] == 'manquant' || as['etat'] == 'manquant')
-          'motifPrix': 'Valeur manquante à l’import ${lot['reference']} : l’acte ne se facture pas tant que le prix n’est pas saisi.',
-      });
-    }
-  },
-  dependances: (lot, port) {
-    final codes = <Object?>{};
-    for (final e in (lot['ecrits'] as List).cast<Map>()) {
-      final a = port.parId('${e['collection']}', e['id']);
-      if (a != null) codes.add(a['code']);
-    }
-    final u = port.actives('prescriptions').where((x) => codes.contains(x['acteCode'])).firstOrNull;
-    return u != null ? DependanceImport('ACTE_UTILISE', 'l’acte « ${u['acteCode']} » est déjà prescrit', 'Archivez l’acte au catalogue plutôt que d’annuler son lot.') : null;
-  },
-);
-
 // --- 5. ANALYSES (proposition à valider) ---------------------------------------------------------------------------------------------
 
 final JeuImport jeuAnalyses = JeuImport(
-  id: 'analyses',
+  id: 'analyses-modele',
   ecran: 'imp-analyses',
-  libelle: 'Importation du catalogue des analyses',
+  libelle: 'Importation du modèle des analyses',
   module: 'IMP',
   statut: 'proposition',
-  roles: const ['laborantin', 'da', 'admin'],
   description: 'Entrées du catalogue des examens (code, désignation, section). Les variables, unités et bornes ne se reprennent pas : le biologiste les valide.',
   source: 'Bulletin d’analyses bio-médicales et fiche de résultats du 21/08/2026 (docs/) : 48 analyses au catalogue.',
   limite: 'PROPOSITION À VALIDER : seule l’entrée du catalogue est créée. Sans variables ni bornes, un examen importé ne peut pas recevoir de résultat avant que le biologiste les ait saisies et validées.',
@@ -582,7 +521,7 @@ final JeuImport jeuAnalyses = JeuImport(
     return e != null ? 'l’examen « ${e['code']} » existe déjà (${e['designation']})' : null;
   },
   regles: (v, ctx, sc, n) => [_p('Code examen', '', 'SANS_VARIABLES', importAvertissement, 'examen importé sans variables ni bornes de référence', 'Le biologiste les saisit puis les valide avant toute saisie de résultat.')],
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
     for (final l in lignes) {
       final v = l.v;
       ecrireFiche('examensLabo', {
@@ -617,7 +556,6 @@ final JeuImport jeuFournisseurs = JeuImport(
   libelle: 'Importation des fournisseurs',
   module: 'IMP',
   statut: 'supporte',
-  roles: const ['stock', 'da', 'comptable', 'admin'],
   description: 'Fournisseurs de la clinique : identité fiscale, coordonnées, délai, banque.',
   source: 'Factures de vente et bons de livraison collectés (docs/), dont la facture SoBAPS.',
   cibles: const ['fournisseurs'],
@@ -646,7 +584,7 @@ final JeuImport jeuFournisseurs = JeuImport(
   regles: (v, ctx, sc, n) => v['ifu'] != null
       ? const []
       : [_p('IFU', '', 'IFU_ABSENT', importAvertissement, 'IFU absent : la facture fournisseur ne sera pas justifiable fiscalement', 'Renseignez-le dès que la facture le porte.')],
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
     for (final l in lignes) {
       final v = l.v;
       ecrireFiche('fournisseurs', {
@@ -683,7 +621,6 @@ final JeuImport jeuAssureurs = JeuImport(
   libelle: 'Importation des compagnies d’assurance',
   module: 'IMP',
   statut: 'supporte',
-  roles: const ['da', 'comptable', 'admin'],
   description: 'Compagnies d’assurance : code, raison sociale, contacts, état de la convention.',
   source: 'Treize assureurs relevés dans les documents de cadrage (docs/).',
   cibles: const ['assureurs'],
@@ -707,7 +644,7 @@ final JeuImport jeuAssureurs = JeuImport(
   regles: (v, ctx, sc, n) => v['convention'] != null
       ? const []
       : [_p('Convention', '', 'CONVENTION_ABSENTE', importAvertissement, 'état de la convention non renseigné', 'Sans convention saisie, la facture reste intégralement au patient.')],
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
     for (final l in lignes) {
       final v = l.v;
       ecrireFiche('assureurs', {
@@ -739,7 +676,6 @@ final JeuImport jeuSouscripteurs = JeuImport(
   libelle: 'Importation des souscripteurs',
   module: 'IMP',
   statut: 'supporte',
-  roles: const ['da', 'comptable', 'admin'],
   description: 'Souscripteurs rattachés à une compagnie : n° de police, catégorie, effectif, période.',
   source: 'Relevés de prestations et factures mensuelles par souscripteur (docs/).',
   limite: 'La grille de garanties du souscripteur (taux par catégorie, plafonds, exclusions) ne s’importe pas : elle se saisit à l’écran Souscripteurs. Sans elle, la facture reste intégralement au patient.',
@@ -774,7 +710,7 @@ final JeuImport jeuSouscripteurs = JeuImport(
     }
     return const [];
   },
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
     for (final l in lignes) {
       final v = l.v;
       ecrireFiche('souscripteurs', {
@@ -808,7 +744,6 @@ final JeuImport jeuPlanComptable = JeuImport(
   libelle: 'Importation du plan comptable',
   module: 'IMP',
   statut: 'supporte',
-  roles: const ['comptable', 'da', 'admin'],
   description: 'Comptes SYSCOHADA : numéro, libellé, journal par défaut. La classe se déduit du premier chiffre.',
   source: 'Plan comptable de la clinique, classeur SYSCOHADA 2025 (docs/) : 93 comptes.',
   cibles: const ['comptes'],
@@ -828,7 +763,7 @@ final JeuImport jeuPlanComptable = JeuImport(
     return c != null ? 'le compte ${c['num']} existe déjà (${c['libelle']})' : null;
   },
   regles: _aucun,
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
     for (final l in lignes) {
       final v = l.v;
       ecrireFiche('comptes', {'num': v['num'], 'libelle': v['libelle'], 'classe': int.parse('${v['num']}'[0]), 'journal': v['journal'] ?? 'OD'});
@@ -853,7 +788,6 @@ final JeuImport jeuSoldesOuverture = JeuImport(
   libelle: 'Importation des soldes d’ouverture',
   module: 'IMP',
   statut: 'supporte',
-  roles: const ['comptable', 'da', 'admin'],
   description: 'À-nouveaux d’un exercice : une pièce du journal AN, en brouillon, équilibrée (RG-10). Seules les classes 1 à 5 se reportent.',
   source: 'Bilan de clôture de l’exercice précédent : liasse déposée le 15/05/2026 (docs/).',
   cibles: const ['ecritures'],
@@ -920,7 +854,7 @@ final JeuImport jeuSoldesOuverture = JeuImport(
     }
     return pb;
   },
-  ecrire: (lignes, ecrireFiche, lot, ctx, port) {
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
     final an = '${lignes.first.v['date']}'.substring(0, 4);
     final existants = port.toutes('ecritures').where((e) => e['journal'] == 'AN' && '${e['numero']}'.startsWith('AN-$an-')).length;
     final numero = 'AN-$an-${(existants + 1).toString().padLeft(5, '0')}';
@@ -951,7 +885,6 @@ final List<JeuImport> jeuxImport = [
   jeuGrandStock,
   jeuPersonnel,
   jeuPatients,
-  jeuActes,
   jeuAnalyses,
   jeuFournisseurs,
   jeuAssureurs,

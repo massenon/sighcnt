@@ -193,6 +193,9 @@ _Calcul _calculer(MatriceDroits base, Manifeste manifeste, Iterable<Map<String, 
   }
   // LE DROIT D'IMPORT PAR JEU : `N.droitImport`, jamais le droit d'éditer l'écran du jeu. Un jeu dont l'écran ou le module d'import est fermé l'est pour tous les rôles.
   final declarations = base.matriceImport.declarations;
+  // Une fermeture PROPRE AU POSTE (`proprePoste` : un écran que le poste ne porte pas encore) ne ferme pas le DROIT : le droit d'un jeu est un droit métier, la page non portée est
+  // une affaire de présentation (l'accueil du module nomme le jeu « non porté au poste », le bouton ne le propose pas). Seules les activités fermées par la clinique le ferment.
+  final fermImp = fermeturesEnVigueur([for (final f in modulesActifs) if (f['proprePoste'] != true) f]);
   final impParRole = <String, Map<String, DroitImport>>{};
   final paie = <String>{};
   for (final r in roles) {
@@ -204,7 +207,7 @@ _Calcul _calculer(MatriceDroits base, Manifeste manifeste, Iterable<Map<String, 
           defaut: d.defaut[id] ?? '',
           surcharge: mapDe(mapDe(sur[id]?['droitsImport'])?[d.id]),
           roleArchive: archive(id),
-          ouvert: ferm.ecranActif(d.ecran, d.module) && !ferm.modules.containsKey('IMP'),
+          ouvert: fermImp.ecranActif(d.ecran, d.module) && !fermImp.modules.containsKey('IMP'),
         ),
     };
     if (!archive(id) && droitsModule(id, 'M11').editer) paie.add(id);

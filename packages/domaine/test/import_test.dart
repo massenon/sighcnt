@@ -1,19 +1,35 @@
 // Le module d'importation rejoué sur les vecteurs de la maquette (prototype_html/build/vecteurs-import.js) :
 // quarante-sept fichiers analysés sur un magasin contrôlé, dix lots appliqués puis annulés, un refus d'annulation sous un stock vivant (RG-03),
 // l'atomicité d'une écriture refusée en cours de lot, les modèles téléchargeables et le CSV.
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:test/test.dart';
 
 import 'aide_vecteurs.dart';
 
+/// La matrice d'import ENGENDRÉE par la maquette (`rbac.json`) : le moteur lit le droit, la sensibilité et le mode de doublon de la DÉCLARATION du manifeste, jamais d'un
+/// nom de rôle ni d'une constante du port.
+final MatriceImport matriceReelle =
+    MatriceDroits.depuisJson((jsonDecode(File('../rbac/data/rbac.json').readAsStringSync()) as Map).cast<String, Object?>()).matriceImport;
+
+/// Le profil de la maquette au tirage des vecteurs : l'administrateur, qui détient tous les jeux.
+ProfilImport profilDe(String role, {Map<String, int> bornes = const {}}) =>
+    ProfilImport(role: role, libelleRole: role == 'admin' ? 'Administrateur' : role, matrice: matriceReelle, bornes: bornes);
+
 /// Un magasin en mémoire qui se comporte comme celui de la maquette : insertion EN TÊTE, archivage logique, gardes d'écriture.
 class MagasinMemoire extends PortImport {
-  MagasinMemoire(Map<String, Object?> jeu, {this.jourFixe = '2026-11-01', this.utilisateurFixe = 'ADMIN TEST'}) {
+  MagasinMemoire(Map<String, Object?> jeu, {this.jourFixe = '2026-11-01', this.utilisateurFixe = 'ADMIN TEST', ProfilImport? profil}) : profil = profil ?? profilDe('admin') {
     for (final e in jeu.entries) {
       _c[e.key] = [for (final f in (e.value as List).cast<Map>()) {...f.cast<String, Object?>()}];
     }
   }
-  final String jourFixe, utilisateurFixe;
+  final String jourFixe;
+  String utilisateurFixe;
+  /// Le profil change d'un geste à l'autre (un fichier analysé par un profil, appliqué ou annulé par un autre), comme `enRole` du tirage des vecteurs.
+  @override
+  ProfilImport profil;
   final Map<String, List<FicheImport>> _c = {};
   final Map<String, String? Function(String op, FicheImport f)> gardes = {};
   int _rang = 0;
@@ -106,14 +122,13 @@ void main() {
 
   group('modèles téléchargeables', () {
     final modeles = (V['modeles'] as Map).cast<String, Object?>();
-    for (final e in modeles.entries) {
+    for (final e in modeles.entries.where((e) => jeuImportParId(e.key) != null)) {
       test(e.key, () {
         final m = (e.value as Map).cast<String, Object?>();
         final jeu = jeuImportParId(e.key)!;
         expect(jeu.libelle, m['libelle']);
         expect(jeu.ecran, m['ecran']);
         expect(jeu.statut, m['statut']);
-        expect(jeu.roles, m['roles']);
         expect(jeu.cibles, m['cibles']);
         expect(jeu.fichierModele, m['fichier']);
         expect([for (final c in jeu.colonnes) c.label], m['entetes']);
@@ -177,12 +192,12 @@ void main() {
     test('un fichier refusé est consigné et n\'écrit rien', () {
       final avant = {for (final n in ['produits', 'lots', 'mouvements']) n: port.toutes(n).length};
       final a = analyseDuCas('gs-quantite-negative');
-      final lot = consigner(jeuGrandStock, a, port);
+      final lot = consigner(jeuGrandStock, a, port)!;
       memes({for (final k in ['reference', 'etat', 'nbLignes', 'nbAvertissements', 'nbRefus', 'erreursTotal', 'jeu', 'fichier']) k: lot[k]}, V['lotRefus'], 'lotRefus');
       expect({for (final n in ['produits', 'lots', 'mouvements']) n: port.toutes(n).length}, avant);
     });
 
-    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'ac-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide'];
+    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide'];
     for (final app in liste(V['applications'])) {
       test('application de ${app['cas']}', () {
         final id = '${app['cas']}';
@@ -194,14 +209,18 @@ void main() {
         final lot = r.lot!;
         lots[id] = lot;
         expect(lot['reference'], app['reference']);
-        expect((lot['ecrits'] as List).length, app['ecrits']);
+        // La version 1 du prix d'achat (`tarifs`, `versionsTarif`, lot T5 de la maquette) n'est pas portée au poste : le prix reste à plat sur l'article, comme à l'écran
+        // « Référentiel produits » du poste (ECARTS E2470). On compare tout le reste, collection par collection.
+        const horsPoste = {'tarifs', 'versionsTarif'};
+        final attendues = {for (final e in (app['fiches'] as Map).entries) if (!horsPoste.contains(e.key)) '${e.key}': e.value};
+        expect((lot['ecrits'] as List).length, attendues.values.fold<int>(0, (t, l) => t + (l as List).length));
         final idVersCode = {for (final p in port.toutes('produits')) p['id']: '${p['code']}'};
         final fiches = <String, List<Map<String, Object?>>>{};
         for (final e in (lot['ecrits'] as List).cast<Map>()) {
           (fiches['${e['collection']}'] ??= []).add(_net(port.parId('${e['collection']}', e['id'])!, idVersCode));
         }
         // Dans la maquette, l'ordre des fiches suit l'ordre d'écriture ; ici de même.
-        memes(fiches, app['fiches'], '${app['cas']}.fiches');
+        memes(fiches, attendues, '${app['cas']}.fiches');
         memes({for (final k in ['etat', 'nbLignes', 'nbAvertissements', 'jeu', 'fichier', 'validePar', 'date']) k: lot[k]}, app['lot'], '${app['cas']}.lot');
       });
     }
@@ -224,14 +243,17 @@ void main() {
       expect(port.toutes('produits').where((p) => p['lotImport'] == 'IMP-2026-002' && p['statut'] == 'archive'), isEmpty, reason: 'rien n\'est archivé');
       port.archiver('mouvements', port.toutes('mouvements').firstWhere((m) => m['reference'] == 'M000050')['id'], 'test');
       var k = 1;
+      final apps = {for (final a in liste(V['applications'])) '${a['cas']}': a};
       for (final id in ordre) {
         r = annulerLot(jeuImportParId, lots[id]!['id'], 'test', port);
         final att = annulations[k++];
         expect(att['cas'], id);
         expect(r.ok, att['ok'], reason: '$id : ${r.motif}');
-        expect(r.archives, att['archives'], reason: id);
+        // La maquette archive aussi l'identité de prix (`tarifs`) que l'import du stock a créée avec l'article ; le poste n'en écrit pas (ECARTS E2470).
+        final identites = ((apps[id]!['fiches'] as Map)['tarifs'] as List?)?.length ?? 0;
+        expect(r.archives, (att['archives'] as int) - identites, reason: id);
         final ecrits = (lots[id]!['ecrits'] as List).cast<Map>();
-        expect(ecrits.where((e) => port.parId('${e['collection']}', e['id'])!['statut'] == 'archive').length, att['archivesVerifiees']);
+        expect(ecrits.where((e) => port.parId('${e['collection']}', e['id'])!['statut'] == 'archive').length, (att['archivesVerifiees'] as int) - identites);
         expect(port.parId(collectionLots, lots[id]!['id'])!['etat'], att['etatLot']);
       }
       r = annulerLot(jeuImportParId, lots['gs-valide']!['id'], 'encore', port);
@@ -251,6 +273,181 @@ void main() {
       expect(port.toutes('ecritures').length, att['ecrituresApres']);
       expect(port.toutes(collectionLots).length - avantLots, att['lotsAjoutes']);
       expect(r.lot!['etat'], att['lotEtat']);
+    });
+  });
+
+  group('le droit d\'import tenu par le moteur (lot IMP-C)', () {
+    final D = (V['droits'] as Map).cast<String, Object?>();
+    List<List<Object?>> lignesDuCas(String id) {
+      final c = liste(V['cas']).firstWhere((x) => x['id'] == id);
+      return [
+        for (final l in (c['lignes'] as List)) [for (final x in (l as List)) x]
+      ];
+    }
+
+    String sansRef(Object? m) => '$m'.replaceAll(RegExp(r'IMP-\d{4}-\d{3}'), 'IMP-REF');
+
+    test('l\'analyse sans le droit d\'importer est REFUSÉE en nommant, et rien n\'est consigné', () {
+      final att = (D['analyseSansDroit'] as Map).cast<String, Object?>();
+      final port = MagasinMemoire(magasinInitial, profil: profilDe('${att['role']}'));
+      final a = analyserLignes(jeuFournisseurs, lignesDuCas('fo-valide'), 'fo-valide.xlsx', port);
+      expect(a.accepte, att['accepte']);
+      expect(a.droitRefuse, att['droitRefuse']);
+      expect([for (final p in a.problemes) p.code], att['codes']);
+      expect(a.globaux.single.motif.replaceAll('Caissier — Dispensaire (Pharmacie)', 'caissier'), contains('ne détient pas le droit de importer le jeu « Importation des fournisseurs »'));
+      expect(a.globaux.single.geste, att['geste']);
+      final avant = port.toutes(collectionLots).length;
+      expect(consigner(jeuFournisseurs, a, port), isNull, reason: 'rien n\'a été tenté par un détenteur du droit');
+      expect(port.toutes(collectionLots).length - avant, att['lotsAjoutes']);
+    });
+
+    test('l\'application relit le droit AU MOMENT D\'ÉCRIRE : analysé par qui peut, appliqué par qui ne peut pas, rien n\'est écrit', () {
+      final att = (D['applicationSansDroit'] as Map).cast<String, Object?>();
+      final port = MagasinMemoire(magasinInitial);
+      final a = analyserLignes(jeuPatients, lignesDuCas('pa-valide'), 'pa-valide.xlsx', port);
+      expect(a.accepte, isTrue);
+      final patients = port.toutes('patients').length, lots = port.toutes(collectionLots).length;
+      port.profil = profilDe('${att['role']}');
+      final r = appliquer(jeuPatients, a, port);
+      expect(r.ok, att['ok']);
+      expect(r.code, att['code']);
+      expect(port.toutes('patients').length - patients, att['patientsAjoutes']);
+      expect(port.toutes(collectionLots).length - lots, att['lotsAjoutes']);
+    });
+
+    test('l\'annulation : sans le droit d\'annuler, puis le lot d\'un AUTRE agent (LOT_D_UN_AUTRE) ; l\'auteur et la supervision le défont', () {
+      final att = (D['annulation'] as Map).cast<String, Object?>();
+      final port = MagasinMemoire(magasinInitial);
+      final r0 = appliquer(jeuGrandStock, analyserLignes(jeuGrandStock, lignesDuCas('gs-valide'), 'gs-valide.xlsx', port), port);
+      expect(r0.ok, isTrue, reason: '${r0.motif}');
+      final lot = r0.lot!['id'];
+      port
+        ..profil = profilDe('caissier')
+        ..utilisateurFixe = 'CAISSIER TEST';
+      var r = annulerLot(jeuImportParId, lot, 'essai', port);
+      expect(r.code, (att['sansDroit'] as Map)['code']);
+      port
+        ..profil = profilDe('stock')
+        ..utilisateurFixe = 'STOCK TEST';
+      r = annulerLot(jeuImportParId, lot, 'essai', port);
+      expect(r.code, (att['dUnAutre'] as Map)['code']);
+      expect(sansRef(r.motif), sansRef((att['dUnAutre'] as Map)['motif']));
+      expect(r.geste, (att['dUnAutre'] as Map)['geste']);
+      expect(port.parId(collectionLots, lot)!['etat'], att['etatLot'], reason: 'le lot reste appliqué');
+      // La supervision (droit d'annuler sur CHAQUE jeu) lit les lots de tous.
+      port
+        ..profil = profilDe('da')
+        ..utilisateurFixe = 'DA TEST';
+      expect(matriceReelle.supervise('da'), isTrue);
+      expect(annulerLot(jeuImportParId, lot, 'supervision', port).ok, isTrue);
+    });
+
+    test('la taille maximale d\'un fichier est un réglage en base par jeu : refus nommé au-delà', () {
+      final att = (D['borne'] as Map).cast<String, Object?>();
+      final port = MagasinMemoire(magasinInitial, profil: profilDe('admin', bornes: {'fournisseurs': att['borne'] as int}));
+      final a = analyserLignes(jeuFournisseurs, lignesDuCas('fo-valide'), 'fo-valide.xlsx', port);
+      expect(a.accepte, att['accepte']);
+      expect([for (final p in a.problemes) p.code], att['codes']);
+      expect(a.globaux.single.motif, att['motif']);
+      expect(ProfilImport.borneParDefaut, 5000, reason: 'sans réglage, le défaut de la maquette');
+    });
+
+    test('régler la taille maximale : réservé à qui SUPERVISE, entier de 1 à 100 000, motivé, jeu connu (mesuré sur la maquette)', () {
+      final att = (D['reglageBorne'] as Map).cast<String, Object?>();
+      ResultatBorneImport regler(String role, String jeu, Object? n, String motif) =>
+          definirBorneImport(jeu, n, motif, MagasinMemoire(magasinInitial, profil: profilDe(role)), jeu: jeuImportParId);
+      final essais = <String, ResultatBorneImport>{
+        'sansSupervision': regler('stock', 'fournisseurs', 100, 'essai'),
+        'invalide': regler('da', 'fournisseurs', 'abc', 'essai'),
+        'zero': regler('da', 'fournisseurs', 0, 'essai'),
+        'trop': regler('da', 'fournisseurs', 100001, 'essai'),
+        'decimal': regler('da', 'fournisseurs', 12.5, 'essai'),
+        'sansMotif': regler('da', 'fournisseurs', 100, ' '),
+        'inconnu': regler('da', 'nimporte-quoi', 100, 'essai'),
+        'ok': regler('da', 'fournisseurs', 8000, 'Grosse reprise'),
+      };
+      for (final e in essais.entries) {
+        final a = (att[e.key] as Map).cast<String, Object?>();
+        expect([e.value.ok, e.value.code], [a['ok'], a['code']], reason: e.key);
+      }
+      final ok = essais['ok']!;
+      expect([ok.avant, ok.lignes], [(att['ok'] as Map)['avant'], (att['ok'] as Map)['lignes']]);
+      expect(ok.bornes, {for (final e in (att['lu'] as Map).entries) '${e.key}': (e.value as num).toInt()});
+    });
+
+    test('la capacité paie se lit de la matrice : un profil qui importe le personnel sans écrire dans la paie n\'a pas la colonne « Salaire de base »', () {
+      final att = (D['capacitePaie'] as Map).cast<String, Object?>();
+      final brut = (jsonDecode(File('../rbac/data/rbac.json').readAsStringSync()) as Map).cast<String, Object?>();
+      final base = MatriceDroits.depuisJson(brut);
+      final manifeste = Manifeste.depuisJson((jsonDecode(File('../referentiels/data/manifeste.json').readAsStringSync()) as Map).cast<String, Object?>());
+      final jeuRbac = [for (final f in jsonDecode(File('../../apps/poste/assets/donnees/jeu/rbac.json').readAsStringSync()) as List) (f as Map).cast<String, Object?>()];
+      final m = superposerDroits(base, manifeste, rbac: [
+        ...jeuRbac,
+        {'role': 'agentadmin', 'statut': 'actif', 'droitsImport': {'personnel': {'voir': true, 'importer': true, 'annuler': false}}}
+      ]);
+      ProfilImport profil(String r) => ProfilImport(role: r, libelleRole: r == 'agentadmin' ? 'Agent Administratif' : 'Administrateur', matrice: m.matriceImport);
+      expect(profil('admin').capacitePaie, isTrue);
+      expect(profil('agentadmin').capacitePaie, isFalse);
+      final tete = [for (final c in jeuPersonnel.colonnes) c.label];
+      final base0 = {'matricule': '88', 'nom': 'NOUVEAU', 'prenom': 'Agent', 'sexe': 'F', 'fonction': 'infirmier', 'poste': 'Infirmière', 'service': 'Soins infirmiers'};
+      List<Object?> ligne(Map<String, Object?> o) => [for (final c in jeuPersonnel.colonnes) o[c.cle] ?? ''];
+      final avec = [tete, ligne({...base0, 'salaireBase': 150000})];
+      final sans = [
+        [for (final c in jeuPersonnel.colonnes) if (c.cle != 'salaireBase') c.label],
+        [for (final c in jeuPersonnel.colonnes) if (c.cle != 'salaireBase') base0[c.cle] ?? '']
+      ];
+      List<String> noms(AnalyseImport a) => [for (final p in a.problemes) '${p.code}:${p.niveau}'];
+      var port = MagasinMemoire(magasinInitial, profil: profil('admin'));
+      var a = analyserLignes(jeuPersonnel, avec, 'x.xlsx', port);
+      expect([a.accepte, noms(a)], [(att['avecSalaireAdmin'] as Map)['accepte'], (att['avecSalaireAdmin'] as Map)['codes']]);
+      port = MagasinMemoire(magasinInitial, profil: profil('agentadmin'));
+      a = analyserLignes(jeuPersonnel, avec, 'x.xlsx', port);
+      expect([a.accepte, noms(a)], [(att['avecSalaireAgent'] as Map)['accepte'], (att['avecSalaireAgent'] as Map)['codes']]);
+      expect(a.globaux.single.motif, (att['avecSalaireAgent'] as Map)['motif']);
+      a = analyserLignes(jeuPersonnel, sans, 'x.xlsx', port);
+      expect([a.accepte, noms(a)], [(att['sansSalaireAgent'] as Map)['accepte'], (att['sansSalaireAgent'] as Map)['codes']],
+          reason: 'sans la colonne, pas d\'avertissement « salaire absent » : elle n\'est pas dans son modèle');
+      expect([for (final x in modeleImport(jeuPersonnel, port).donnees.first) '$x'], att['modeleAgent']);
+      port = MagasinMemoire(magasinInitial, profil: profil('admin'));
+      expect([for (final x in modeleImport(jeuPersonnel, port).donnees.first) '$x'], att['modeleAdmin']);
+    });
+
+    test('UN JEU RESTREINT NE RECOPIE JAMAIS UNE VALEUR DE CELLULE : ce qui entre à l\'historique et au rapport est masqué, motif fixe par code', () {
+      var restreints = 0, lisibles = 0;
+      for (final c in liste(V['cas'])) {
+        final jeu = jeuImportParId('${c['jeu']}')!;
+        final port = MagasinMemoire(magasinInitial);
+        final a = analyserLignes(jeu, lignesDuCas('${c['id']}'), '${c['id']}.xlsx', port);
+        final att = liste((c['attendu'] as Map)['consignes']);
+        final obtenus = [
+          for (final p in problemesConsignes(jeu, a, port)) {'n': p.n, 'colonne': p.colonne, 'code': p.code, 'niveau': p.niveau, 'valeur': texteDe(p.valeur), 'motif': p.motif}
+        ];
+        memes(obtenus, att, '${c['id']}.consignes');
+        if (port.profil.restreint(jeu.id)) {
+          restreints++;
+          for (final p in obtenus) {
+            expect(p['valeur'], '', reason: '${c['id']} : ${p['code']} recopie une valeur');
+          }
+        } else {
+          lisibles++;
+        }
+      }
+      expect(restreints, greaterThan(10));
+      expect(lisibles, greaterThan(10));
+    });
+
+    test('un fichier REFUSÉ d\'un jeu restreint est consigné sans aucune valeur de cellule ; le rapport n\'a plus de colonne « Valeur »', () {
+      final port = MagasinMemoire(magasinInitial);
+      final a = analyserLignes(jeuPatients, lignesDuCas('pa-code-existant'), 'pa-code-existant.xlsx', port);
+      expect(a.accepte, isFalse);
+      expect([for (final p in a.problemes) p.valeur].any((v) => '$v'.contains('CNT/1/25')), isTrue, reason: 'à l\'écran de la vérification, la valeur se lit');
+      final lot = consigner(jeuPatients, a, port)!;
+      final erreurs = (lot['erreurs'] as List).cast<Map>();
+      expect(erreurs, isNotEmpty);
+      expect(jsonEncode(erreurs), isNot(contains('CNT/1/25')), reason: 'l\'historique ne recopie aucun code patient');
+      expect(jsonEncode(erreurs), isNot(contains('TCHANE')), reason: 'ni le nom du patient déjà tenu');
+      final rap = rapportImport([for (final e in erreurs) e.cast<String, Object?>()], sansValeur: true);
+      expect(rap.first, ['Ligne', 'Colonne', 'Niveau', 'Code', 'Motif', 'Geste de correction']);
     });
   });
 

@@ -148,7 +148,8 @@ const CAS = [
   try {
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/vendor/xlsx-mini.js') });
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/import.js') });
-    const sortie = await m.page.evaluate(async ([MAG, CAS]) => {
+    const GS_LOT = GS({ code: 'MED77', designation: 'IBUPROFENE 400 MG CP B/30', categorie: 'Médicaments', unite: 'Boîte', quantite: 10, lot: 'L77', peremption: '2028-06-30', prixRevient: 100 });
+    const sortie = await m.page.evaluate(async ([MAG, CAS, GS_LOT]) => {
       const S = SIGH.store, C = SIGH.core, D = SIGH.data, I = SIGH.importer, X = SIGH.xlsx;
       C.aujourdhui = () => new Date(2026, 10, 1, 12, 0, 0);
       S.currentUser = () => 'ADMIN TEST';
@@ -183,6 +184,9 @@ const CAS = [
           attendu: {
             accepte: a.accepte, nbLignes: a.nbLignes, compte: a.compte, coherentCsv: JSON.stringify(a.compte) === JSON.stringify(b.compte) && a.accepte === b.accepte,
             problemes: I.problemes(a).map((p) => ({ n: p.n, colonne: p.colonne, code: p.code, niveau: p.niveau, valeur: String(p.valeur === undefined ? '' : p.valeur) })),
+            /* Ce qui entre à l'HISTORIQUE et au rapport : MASQUÉ pour un jeu restreint (aucune valeur de cellule, motif fixe par code), intégral sinon (lot IMP-A). */
+            consignes: I.problemes(a, I.jeu(j)).map((p) => ({ n: p.n, colonne: p.colonne, code: p.code, niveau: p.niveau, valeur: String(p.valeur === undefined ? '' : p.valeur), motif: p.motif })),
+            aEcrire: a.aEcrire,
             etats: a.lignes.map((l) => [l.n, l.etat]),
           },
         });
@@ -248,6 +252,69 @@ const CAS = [
       const ate = I.appliquer('soldes-ouverture', I.analyserOctets('soldes-ouverture', Uint8Array.from(out.fixtures['so-valide']), 'so-valide.xlsx'));
       S.garder('ecritures', null);
       out.atomicite = { ok: ate.ok, code: ate.code || null, ecrituresAvant: avantEcr, ecrituresApres: S.collection('ecritures').all().length, lotsAjoutes: S.collection('lotsImportation').all().length - avantLots, lotEtat: ate.lot ? ate.lot.etat : null };
+      /* 6 bis. LE DROIT D'IMPORT (lot IMP-A), mesuré en changeant le profil de la session : le moteur REFUSE sans le droit (masquer un bouton ne protège rien). */
+      out.droits = {};
+      const sess0 = S.session();
+      const enRole = (role, utilisateur, f) => {
+        S.setSession(Object.assign({}, sess0, { role: role }));
+        const u0 = S.currentUser; S.currentUser = () => utilisateur;
+        try { return f(); } finally { S.setSession(sess0); S.currentUser = u0; }
+      };
+      const octetsDe = (id) => Uint8Array.from(out.fixtures[id]);
+      const codes = (a) => a.globaux.concat(a.lignes.reduce((t, l) => t.concat(l.problemes), [])).map((p) => p.code);
+      const nbLots = () => S.collection('lotsImportation').all().length;
+      {
+        /* 1. Analyse sans le droit d'importer : refusée en nommant, rien n'est consigné. */
+        const avant = nbLots();
+        const a = enRole('caissier', 'CAISSIER TEST', () => I.analyserOctets('fournisseurs', octetsDe('fo-valide'), 'fo-valide.xlsx'));
+        const lotRefus2 = enRole('caissier', 'CAISSIER TEST', () => I.consigner(I.jeu('fournisseurs'), a));
+        out.droits.analyseSansDroit = { role: 'caissier', jeu: 'fournisseurs', accepte: a.accepte, droitRefuse: !!a.droitRefuse, codes: codes(a), motif: a.globaux[0].motif, geste: a.globaux[0].geste,
+          consigne: lotRefus2 === null ? null : 'consigné', lotsAjoutes: nbLots() - avant };
+        /* 2. Application sans le droit (analyse faite sous un profil qui l'a) : le moteur relit le droit au moment d'écrire. */
+        const aOk = I.analyserOctets('patients', octetsDe('pa-valide'), 'pa-valide.xlsx');
+        const avantPat = S.collection('patients').all().length;
+        const r = enRole('stock', 'STOCK TEST', () => I.appliquer('patients', aOk));
+        out.droits.applicationSansDroit = { role: 'stock', jeu: 'patients', ok: r.ok, code: r.code, motif: r.motif, patientsAjoutes: S.collection('patients').all().length - avantPat, lotsAjoutes: nbLots() - avant };
+        /* 3. Annulation : sans le droit d'annuler, puis le lot d'un AUTRE agent (le gestionnaire détient `A` sur les fournisseurs mais ne supervise pas). */
+        /* Un lot APPLIQUÉ à défaire, d'un jeu que le gestionnaire détient (`A` sur le Grand Stock) : un article neuf, écrit par l'administrateur. */
+        const tableGs = [I.jeu('grand-stock').colonnes.map((c) => c.label), versLigne('grand-stock', GS_LOT)];
+        const octetsGs = X.ecrire({ feuilles: [{ nom: 'Données', lignes: tableGs }] });
+        const reposé = I.appliquer('grand-stock', I.analyserOctets('grand-stock', octetsGs, 'gs-droits.xlsx'));
+        if (!reposé.ok) throw new Error('lot à défaire non posé : ' + JSON.stringify({ code: reposé.code, motif: reposé.motif }));
+        const lotFo = S.collection('lotsImportation').get(reposé.lot.id);
+        const sansDroit = enRole('caissier', 'CAISSIER TEST', () => I.annulerLot(lotFo.id, 'essai'));
+        const dUnAutre = enRole('stock', 'STOCK TEST', () => I.annulerLot(lotFo.id, 'essai'));
+        out.droits.annulation = { jeu: 'grand-stock', sansDroit: { code: sansDroit.code, motif: sansDroit.motif }, dUnAutre: { code: dUnAutre.code, motif: dUnAutre.motif, geste: dUnAutre.geste }, etatLot: S.collection('lotsImportation').get(lotFo.id).etat };
+        /* 4. Taille maximale : un réglage en base par jeu, un refus nommé (le défaut vaut 5 000 lignes). */
+        S.setReglage('importBornes', { fournisseurs: 1 });
+        const b = I.analyserOctets('fournisseurs', octetsDe('fo-valide'), 'fo-valide.xlsx');
+        S.setReglage('importBornes', null);
+        out.droits.borne = { borne: 1, accepte: b.accepte, codes: codes(b), motif: b.globaux[0].motif };
+        /* 4 bis. Régler la taille maximale : réservé à qui SUPERVISE (droit d'annuler sur chaque jeu), entier de 1 à 100 000, motivé. */
+        const rg = (role, jeuId, n, motif) => { const r = enRole(role, role.toUpperCase() + ' TEST', () => I.definirBorne(jeuId, n, motif)); return { ok: r.ok, code: r.code || null, avant: r.avant === undefined ? null : r.avant, lignes: r.lignes === undefined ? null : r.lignes }; };
+        out.droits.reglageBorne = { sansSupervision: rg('stock', 'fournisseurs', 100, 'essai'), invalide: rg('da', 'fournisseurs', 'abc', 'essai'), zero: rg('da', 'fournisseurs', 0, 'essai'),
+          trop: rg('da', 'fournisseurs', 100001, 'essai'), decimal: rg('da', 'fournisseurs', 12.5, 'essai'), sansMotif: rg('da', 'fournisseurs', 100, ' '), inconnu: rg('da', 'nimporte-quoi', 100, 'essai'),
+          ok: rg('da', 'fournisseurs', 8000, 'Grosse reprise'), lu: S.reglage('importBornes', null) };
+        S.setReglage('importBornes', null);
+        /* 5. Capacité paie : un profil qui importe le personnel SANS écrire dans la paie n'a pas la colonne « Salaire de base » (lue de la matrice, jamais d'un nom de rôle). */
+        const fiche = S.collection('rbac').insert({ role: 'agentadmin', statut: 'actif', droitsImport: { personnel: { voir: true, importer: true, annuler: false } } });
+        SIGH.nav.invaliderRbac();
+        const tete = I.jeu('personnel').colonnes.map((c) => c.label);
+        const ligne = (o) => I.jeu('personnel').colonnes.map((c) => (o[c.cle] === undefined ? '' : o[c.cle]));
+        const base = { matricule: '88', nom: 'NOUVEAU', prenom: 'Agent', sexe: 'F', fonction: 'infirmier', poste: 'Infirmière', service: 'Soins infirmiers' };
+        const avecSalaire = [tete, ligne(Object.assign({ salaireBase: 150000 }, base))];
+        const sansSalaire = [tete.filter((t) => t !== 'Salaire de base'), ligne(base).filter((_, k) => I.jeu('personnel').colonnes[k].cle !== 'salaireBase')];
+        const enteteAdmin = enRole('admin', 'ADMIN TEST', () => I.analyserLignes(I.jeu('personnel'), avecSalaire, 'x.xlsx'));
+        const enteteAgent = enRole('agentadmin', 'AGENT TEST', () => I.analyserLignes(I.jeu('personnel'), avecSalaire, 'x.xlsx'));
+        const agentSans = enRole('agentadmin', 'AGENT TEST', () => I.analyserLignes(I.jeu('personnel'), sansSalaire, 'x.xlsx'));
+        const modeleAgent = enRole('agentadmin', 'AGENT TEST', () => X.lire(I.modele('personnel')).feuilles[0].lignes[0]);
+        const modeleAdmin = enRole('admin', 'ADMIN TEST', () => X.lire(I.modele('personnel')).feuilles[0].lignes[0]);
+        S.collection('rbac')._remove(fiche.record.id);
+        SIGH.nav.invaliderRbac();
+        const noms = (a) => a.globaux.concat(a.lignes.reduce((t, l) => t.concat(l.problemes), [])).map((p) => p.code + ':' + p.niveau);
+        out.droits.capacitePaie = { avecSalaireAdmin: { accepte: enteteAdmin.accepte, codes: noms(enteteAdmin) }, avecSalaireAgent: { accepte: enteteAgent.accepte, codes: noms(enteteAgent), motif: enteteAgent.globaux[0].motif },
+          sansSalaireAgent: { accepte: agentSans.accepte, codes: noms(agentSans) }, modeleAgent: modeleAgent, modeleAdmin: modeleAdmin };
+      }
       /* 7. Rapport d'erreurs et CSV. */
       const rap = X.lire(I.rapport(lotRefus, I.jeu('grand-stock')));
       out.rapport = { feuilles: rap.feuilles.map((f) => f.nom), entete: rap.feuilles[0].lignes[0], nbLignes: rap.feuilles[0].lignes.length };
@@ -266,7 +333,7 @@ const CAS = [
       };
       out.lienCellules = { serie1: X.versDate(1), serie60: X.versDate(61), serie45000: X.versDate(45000), serie46023: X.versDate(46023) };
       return out;
-    }, [MAGASIN, CAS]);
+    }, [MAGASIN, CAS, GS_LOT]);
 
     const fixtures = sortie.fixtures; delete sortie.fixtures;
     const dossier = path.join(REPO, 'apps/poste/test/fixtures/import');

@@ -429,7 +429,13 @@ void main() {
     });
   });
   group('FERMETURES PROPRES AU POSTE : quatre écrans non portés, fermés pour tous les rôles par le jeu du poste (ECARTS E2422)', () {
-    const quatre = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms'};
+    // Lot IMP-C : les pages de jeux d'import que le poste ne porte pas encore sont fermées de la même façon (liste NOMMÉE : porter un jeu retire sa page d'ici).
+    const impNonPortes = {
+      'imp-actes', 'imp-tarifs-produits', 'imp-produits-referentiel', 'imp-emplacements', 'imp-stock-detail-initial', 'imp-transfert-lignes', 'imp-inventaire-comptage',
+      'imp-natures-facture', 'imp-centres-couts', 'imp-catalogue-imagerie', 'imp-unites-labo', 'imp-prestataires', 'imp-garanties', 'imp-couvertures-assurance',
+      'imp-immobilisations', 'imp-budgets', 'imp-courriers',
+    };
+    const quatre = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms', ...impNonPortes};
     MatriceDroits chaud({List<Fiche>? modules, List<Fiche>? reference}) => superposerDroits(base, manifeste,
         rbac: jeuRbac, modulesActifs: modules ?? [...jeuModules, ...fermeturesPoste], referenceRbac: jeuRbac, referenceModules: reference ?? jeuModules);
     String cases(MatriceDroits m, String role) {
@@ -458,7 +464,7 @@ void main() {
         }
       }
       for (final id in quatre) {
-        expect(m.fermetures!.fermeturePour(id, manifeste.ecran(id)!.module)?['motif'], contains('Non porté au poste'), reason: id);
+        expect(m.fermetures!.fermeturePour(id, manifeste.ecran(id)!.module)?['motif'], anyOf(contains('Non porté au poste'), contains('Jeu d’import non porté au poste')), reason: id);
       }
     });
 

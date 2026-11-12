@@ -255,7 +255,10 @@
     "compte": {
      "valides": 2,
      "avertissements": 1,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -267,6 +270,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 4,
+      "colonne": "Prix de revient unitaire",
+      "code": "A_VALORISER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "prix de revient absent : l’article « GANT1 » sera créé « à valoriser » (stock repris, jamais facturable)"
+     }
+    ],
+    "aEcrire": 3,
     "etats": [
      [
       2,
@@ -320,7 +334,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -332,6 +349,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "",
+      "code": "FICHIER_VIDE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "aucune ligne de données (la ligne d’exemple du modèle n’est pas importée)"
+     }
+    ],
+    "aEcrire": 0,
     "etats": []
    }
   },
@@ -385,7 +413,10 @@
     "compte": {
      "valides": 1,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -397,6 +428,17 @@
       "valeur": "med1"
      }
     ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Code article",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "med1",
+      "motif": "identique à la ligne 2 du même fichier"
+     }
+    ],
+    "aEcrire": 1,
     "etats": [
      [
       2,
@@ -446,7 +488,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -458,6 +503,17 @@
       "valeur": "PARA500"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "PARA500",
+      "motif": "l’article « PARA500 » existe déjà dans le référentiel (PARACETAMOL 500 MG CP B/100)"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -501,7 +557,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -513,6 +572,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Quantité",
+      "code": "COLONNE_MANQUANTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "colonne obligatoire « Quantité » absente de la première ligne du fichier"
+     }
+    ],
+    "aEcrire": 0,
     "etats": []
    }
   },
@@ -553,7 +623,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -565,6 +638,17 @@
       "valeur": "abc"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "abc",
+      "motif": "nombre attendu, « abc » n’en est pas un"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -610,7 +694,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 1,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -622,6 +709,17 @@
       "valeur": "2020-01-01"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date de péremption",
+      "code": "PEREMPTION_PASSEE",
+      "niveau": "avertissement",
+      "valeur": "2020-01-01",
+      "motif": "le lot est déjà périmé au 2020-01-01"
+     }
+    ],
+    "aEcrire": 1,
     "etats": [
      [
       2,
@@ -667,7 +765,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -679,6 +780,17 @@
       "valeur": "-5"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "RG03_STOCK_NEGATIF",
+      "niveau": "refus",
+      "valeur": "-5",
+      "motif": "quantité négative : le stock ne peut jamais être négatif (RG-03)"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -724,7 +836,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -736,6 +851,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "un médicament sans lot ni péremption ne peut pas se ranger en FEFO (RG-05)"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -781,7 +907,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -800,6 +929,25 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date de péremption",
+      "code": "LOT_INCOMPLET",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "le lot et sa péremption vont ensemble : l’un est renseigné, l’autre non"
+     },
+     {
+      "n": 2,
+      "colonne": "Prix de revient unitaire",
+      "code": "A_VALORISER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "prix de revient absent : l’article « FOU1 » sera créé « à valoriser » (stock repris, jamais facturable)"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -845,7 +993,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -857,6 +1008,17 @@
       "valeur": "Bijoux"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Catégorie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Bijoux",
+      "motif": "« Bijoux » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -915,7 +1077,10 @@
     "compte": {
      "valides": 1,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -927,6 +1092,17 @@
       "valeur": "AUTRE NOM"
      }
     ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Désignation",
+      "code": "ARTICLE_INCOHERENT",
+      "niveau": "refus",
+      "valeur": "AUTRE NOM",
+      "motif": "le code « MED2 » porte une autre désignation ou catégorie que la ligne 2"
+     }
+    ],
+    "aEcrire": 1,
     "etats": [
      [
       2,
@@ -976,7 +1152,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -988,6 +1167,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Désignation",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur obligatoire absente"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -1020,7 +1210,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1032,6 +1225,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "",
+      "code": "FICHIER_VIDE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "aucune ligne de données (la ligne d’exemple du modèle n’est pas importée)"
+     }
+    ],
+    "aEcrire": 0,
     "etats": []
    }
   },
@@ -1050,7 +1254,6 @@
      "Quartier",
      "Adresse",
      "Personne à prévenir",
-     "Groupe sanguin",
      "Code assureur",
      "N° de police",
      "Date d’ouverture du dossier"
@@ -1066,7 +1269,6 @@
      "Boukoumbé",
      "",
      "",
-     "",
      "AFR",
      "AFR/2024/0100",
      "2024-05-02"
@@ -1079,7 +1281,6 @@
      "2001-09-30",
      "",
      "0197000011",
-     "",
      "",
      "",
      "",
@@ -1100,7 +1301,6 @@
      "",
      "",
      "",
-     "",
      ""
     ]
    ],
@@ -1110,7 +1310,10 @@
     "compte": {
      "valides": 2,
      "avertissements": 1,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1122,6 +1325,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 4,
+      "colonne": "Téléphone",
+      "code": "TELEPHONE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucun téléphone"
+     }
+    ],
+    "aEcrire": 3,
     "etats": [
      [
       2,
@@ -1153,7 +1367,6 @@
      "Quartier",
      "Adresse",
      "Personne à prévenir",
-     "Groupe sanguin",
      "Code assureur",
      "N° de police",
      "Date d’ouverture du dossier"
@@ -1171,7 +1384,6 @@
      "",
      "",
      "",
-     "",
      ""
     ]
    ],
@@ -1181,7 +1393,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1193,6 +1408,17 @@
       "valeur": "CNT/1/25"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code dossier",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "une fiche équivalente est déjà tenue"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -1216,7 +1442,6 @@
      "Quartier",
      "Adresse",
      "Personne à prévenir",
-     "Groupe sanguin",
      "Code assureur",
      "N° de police",
      "Date d’ouverture du dossier"
@@ -1234,7 +1459,6 @@
      "",
      "",
      "",
-     "",
      ""
     ]
    ],
@@ -1244,7 +1468,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1256,6 +1483,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code dossier",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "une fiche équivalente est déjà tenue"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -1279,7 +1517,6 @@
      "Quartier",
      "Adresse",
      "Personne à prévenir",
-     "Groupe sanguin",
      "Code assureur",
      "N° de police",
      "Date d’ouverture du dossier"
@@ -1297,7 +1534,6 @@
      "",
      "",
      "",
-     "",
      ""
     ]
    ],
@@ -1307,7 +1543,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1319,6 +1558,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code dossier",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "une fiche équivalente est déjà tenue"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -1342,7 +1592,6 @@
      "Quartier",
      "Adresse",
      "Personne à prévenir",
-     "Groupe sanguin",
      "Code assureur",
      "N° de police",
      "Date d’ouverture du dossier"
@@ -1360,7 +1609,6 @@
      "",
      "",
      "",
-     "",
      ""
     ]
    ],
@@ -1370,7 +1618,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1382,6 +1633,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date de naissance",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur obligatoire absente"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -1405,7 +1667,6 @@
      "Quartier",
      "Adresse",
      "Personne à prévenir",
-     "Groupe sanguin",
      "Code assureur",
      "N° de police",
      "Date d’ouverture du dossier"
@@ -1423,7 +1684,6 @@
      "",
      "",
      "",
-     "",
      ""
     ]
    ],
@@ -1433,7 +1693,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1445,6 +1708,17 @@
       "valeur": "DOSSIER-12"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code dossier",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "format non conforme"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -1468,7 +1742,6 @@
      "Quartier",
      "Adresse",
      "Personne à prévenir",
-     "Groupe sanguin",
      "Code assureur",
      "N° de police",
      "Date d’ouverture du dossier"
@@ -1486,7 +1759,6 @@
      "",
      "",
      "",
-     "",
      ""
     ]
    ],
@@ -1496,7 +1768,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1515,6 +1790,25 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date de naissance",
+      "code": "DATE_FUTURE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "date dans le futur"
+     },
+     {
+      "n": 2,
+      "colonne": "Téléphone",
+      "code": "TELEPHONE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucun téléphone"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -1574,10 +1868,15 @@
     "compte": {
      "valides": 4,
      "avertissements": 0,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [],
+    "consignes": [],
+    "aEcrire": 4,
     "etats": [
      [
       2,
@@ -1633,7 +1932,10 @@
     "compte": {
      "valides": 2,
      "avertissements": 0,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1645,6 +1947,17 @@
       "valeur": "débit 250000 ≠ crédit 200000"
      }
     ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Débit / Crédit",
+      "code": "RG10_DESEQUILIBRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "écriture non équilibrée (RG-10)"
+     }
+    ],
+    "aEcrire": 2,
     "etats": [
      [
       2,
@@ -1692,7 +2005,10 @@
     "compte": {
      "valides": 1,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1704,6 +2020,17 @@
       "valeur": "601000"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "CLASSE_NON_REPORTABLE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "compte de gestion : il ne se reporte pas"
+     }
+    ],
+    "aEcrire": 1,
     "etats": [
      [
       2,
@@ -1743,7 +2070,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1755,6 +2085,17 @@
       "valeur": "1000"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Crédit",
+      "code": "DEUX_SENS",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "débit et crédit renseignés ensemble"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -1798,7 +2139,10 @@
     "compte": {
      "valides": 1,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1817,6 +2161,25 @@
       "valeur": "999999"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "COMPTE_INCONNU",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "compte absent du plan comptable"
+     },
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "CLASSE_NON_REPORTABLE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "compte de gestion : il ne se reporte pas"
+     }
+    ],
+    "aEcrire": 1,
     "etats": [
      [
       2,
@@ -1864,7 +2227,10 @@
     "compte": {
      "valides": 2,
      "avertissements": 0,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1876,6 +2242,17 @@
       "valeur": "2025-01-01"
      }
     ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Date",
+      "code": "A_NOUVEAU_EXISTANT",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "l’exercice porte déjà un à-nouveau"
+     }
+    ],
+    "aEcrire": 2,
     "etats": [
      [
       2,
@@ -1923,7 +2300,10 @@
     "compte": {
      "valides": 2,
      "avertissements": 0,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -1935,6 +2315,17 @@
       "valeur": "2026-01-01, 2026-01-02"
      }
     ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Date",
+      "code": "DATES_MULTIPLES",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "plusieurs dates dans le fichier"
+     }
+    ],
+    "aEcrire": 2,
     "etats": [
      [
       2,
@@ -1943,225 +2334,6 @@
      [
       3,
       "valide"
-     ]
-    ]
-   }
-  },
-  {
-   "id": "ac-valide",
-   "jeu": "actes",
-   "lignes": [
-    [
-     "Code acte",
-     "Libellé",
-     "Secteur",
-     "Prix non assuré",
-     "Prix assuré",
-     "Code tarif"
-    ],
-    [
-     "X1",
-     "Acte A",
-     "Médecine générale",
-     5000,
-     3000,
-     "T1"
-    ],
-    [
-     "X2",
-     "Acte B",
-     "Chirurgie",
-     8000,
-     "NC",
-     ""
-    ],
-    [
-     "X3",
-     "Acte C",
-     "Médecine générale",
-     "-",
-     "-",
-     ""
-    ]
-   ],
-   "attendu": {
-    "accepte": true,
-    "nbLignes": 3,
-    "compte": {
-     "valides": 2,
-     "avertissements": 1,
-     "refus": 0
-    },
-    "coherentCsv": true,
-    "problemes": [
-     {
-      "n": 4,
-      "colonne": "Prix non assuré",
-      "code": "PRIX_MANQUANT",
-      "niveau": "avertissement",
-      "valeur": "-"
-     },
-     {
-      "n": 4,
-      "colonne": "Prix assuré",
-      "code": "PRIX_MANQUANT",
-      "niveau": "avertissement",
-      "valeur": "-"
-     }
-    ],
-    "etats": [
-     [
-      2,
-      "valide"
-     ],
-     [
-      3,
-      "valide"
-     ],
-     [
-      4,
-      "avertissement"
-     ]
-    ]
-   }
-  },
-  {
-   "id": "ac-nc-non-assure",
-   "jeu": "actes",
-   "lignes": [
-    [
-     "Code acte",
-     "Libellé",
-     "Secteur",
-     "Prix non assuré",
-     "Prix assuré",
-     "Code tarif"
-    ],
-    [
-     "X4",
-     "Acte D",
-     "Médecine générale",
-     "NC",
-     3000,
-     ""
-    ]
-   ],
-   "attendu": {
-    "accepte": false,
-    "nbLignes": 1,
-    "compte": {
-     "valides": 0,
-     "avertissements": 0,
-     "refus": 1
-    },
-    "coherentCsv": true,
-    "problemes": [
-     {
-      "n": 2,
-      "colonne": "Prix non assuré",
-      "code": "NC_INTERDIT",
-      "niveau": "refus",
-      "valeur": "NC"
-     }
-    ],
-    "etats": [
-     [
-      2,
-      "refus"
-     ]
-    ]
-   }
-  },
-  {
-   "id": "ac-type-invalide",
-   "jeu": "actes",
-   "lignes": [
-    [
-     "Code acte",
-     "Libellé",
-     "Secteur",
-     "Prix non assuré",
-     "Prix assuré",
-     "Code tarif"
-    ],
-    [
-     "X5",
-     "Acte E",
-     "Médecine générale",
-     "12,5",
-     3000,
-     ""
-    ]
-   ],
-   "attendu": {
-    "accepte": false,
-    "nbLignes": 1,
-    "compte": {
-     "valides": 0,
-     "avertissements": 0,
-     "refus": 1
-    },
-    "coherentCsv": true,
-    "problemes": [
-     {
-      "n": 2,
-      "colonne": "Prix non assuré",
-      "code": "TYPE_INVALIDE",
-      "niveau": "refus",
-      "valeur": "12,5"
-     }
-    ],
-    "etats": [
-     [
-      2,
-      "refus"
-     ]
-    ]
-   }
-  },
-  {
-   "id": "ac-secteur-inconnu",
-   "jeu": "actes",
-   "lignes": [
-    [
-     "Code acte",
-     "Libellé",
-     "Secteur",
-     "Prix non assuré",
-     "Prix assuré",
-     "Code tarif"
-    ],
-    [
-     "X6",
-     "Acte F",
-     "Astrologie",
-     1000,
-     500,
-     ""
-    ]
-   ],
-   "attendu": {
-    "accepte": false,
-    "nbLignes": 1,
-    "compte": {
-     "valides": 0,
-     "avertissements": 0,
-     "refus": 1
-    },
-    "coherentCsv": true,
-    "problemes": [
-     {
-      "n": 2,
-      "colonne": "Secteur",
-      "code": "VALEUR_HORS_LISTE",
-      "niveau": "refus",
-      "valeur": "Astrologie"
-     }
-    ],
-    "etats": [
-     [
-      2,
-      "refus"
      ]
     ]
    }
@@ -2222,7 +2394,10 @@
     "compte": {
      "valides": 1,
      "avertissements": 1,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2234,6 +2409,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Salaire de base",
+      "code": "SALAIRE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "salaire de base non renseigné"
+     }
+    ],
+    "aEcrire": 2,
     "etats": [
      [
       2,
@@ -2287,7 +2473,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2306,6 +2495,25 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Matricule",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "une fiche équivalente est déjà tenue"
+     },
+     {
+      "n": 2,
+      "colonne": "Salaire de base",
+      "code": "SALAIRE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "salaire de base non renseigné"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -2355,7 +2563,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2374,6 +2585,25 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Matricule",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "une fiche équivalente est déjà tenue"
+     },
+     {
+      "n": 2,
+      "colonne": "Salaire de base",
+      "code": "SALAIRE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "salaire de base non renseigné"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -2423,7 +2653,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2435,6 +2668,17 @@
       "valeur": "Service fantôme"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Service",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur hors de la liste permise"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -2484,7 +2728,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2503,6 +2750,25 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’embauche",
+      "code": "DATE_FUTURE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "date dans le futur"
+     },
+     {
+      "n": 2,
+      "colonne": "Salaire de base",
+      "code": "SALAIRE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "salaire de base non renseigné"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -2558,7 +2824,10 @@
     "compte": {
      "valides": 1,
      "avertissements": 1,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2570,6 +2839,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "IFU",
+      "code": "IFU_ABSENT",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "IFU absent : la facture fournisseur ne sera pas justifiable fiscalement"
+     }
+    ],
+    "aEcrire": 2,
     "etats": [
      [
       2,
@@ -2612,34 +2892,41 @@
     ]
    ],
    "attendu": {
-    "accepte": false,
+    "accepte": true,
     "nbLignes": 1,
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 0,
+     "ignores": 1,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
      {
       "n": 2,
       "colonne": "Code fournisseur",
-      "code": "DOUBLON_MAGASIN",
-      "niveau": "refus",
+      "code": "IGNORE_EXISTANT",
+      "niveau": "ignore",
       "valeur": "sobaps"
-     },
-     {
-      "n": 2,
-      "colonne": "IFU",
-      "code": "IFU_ABSENT",
-      "niveau": "avertissement",
-      "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code fournisseur",
+      "code": "IGNORE_EXISTANT",
+      "niveau": "ignore",
+      "valeur": "sobaps",
+      "motif": "le fournisseur « SOBAPS » existe déjà (SoBAPS SA)"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
-      "refus"
+      "ignore"
      ]
     ]
    }
@@ -2679,7 +2966,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2691,6 +2981,17 @@
       "valeur": "12AB"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "IFU",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "12AB",
+      "motif": "13 chiffres"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -2731,7 +3032,10 @@
     "compte": {
      "valides": 1,
      "avertissements": 1,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2743,6 +3047,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Convention",
+      "code": "CONVENTION_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "état de la convention non renseigné"
+     }
+    ],
+    "aEcrire": 2,
     "etats": [
      [
       2,
@@ -2780,7 +3095,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2799,6 +3117,25 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code compagnie",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "afr",
+      "motif": "la compagnie « AFR » existe déjà (AFRICAINE DES ASSURANCES)"
+     },
+     {
+      "n": 2,
+      "colonne": "Convention",
+      "code": "CONVENTION_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "état de la convention non renseigné"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -2832,7 +3169,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2844,6 +3184,17 @@
       "valeur": "pas-un-email"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "E-mail",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "pas-un-email",
+      "motif": "adresse e-mail"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -2881,10 +3232,15 @@
     "compte": {
      "valides": 1,
      "avertissements": 0,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [],
+    "consignes": [],
+    "aEcrire": 1,
     "etats": [
      [
       2,
@@ -2922,7 +3278,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2934,6 +3293,17 @@
       "valeur": "ZZZ"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code compagnie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "ZZZ",
+      "motif": "« ZZZ » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -2971,7 +3341,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -2983,6 +3356,17 @@
       "valeur": "2026-01-01"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date de fin",
+      "code": "PERIODE_INVERSEE",
+      "niveau": "refus",
+      "valeur": "2026-01-01",
+      "motif": "la date de fin précède la date de début"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -3020,7 +3404,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -3032,6 +3419,17 @@
       "valeur": "PIB bis"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Souscripteur",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "PIB bis",
+      "motif": "la police « AFR/2024/0100 » existe déjà (PIB Bénin)"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -3066,10 +3464,15 @@
     "compte": {
      "valides": 2,
      "avertissements": 0,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [],
+    "consignes": [],
+    "aEcrire": 2,
     "etats": [
      [
       2,
@@ -3103,7 +3506,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -3115,6 +3521,17 @@
       "valeur": "571000"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "571000",
+      "motif": "le compte 571000 existe déjà (Caisse)"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -3144,7 +3561,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -3156,6 +3576,17 @@
       "valeur": "05"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "05",
+      "motif": "numéro de 4 à 8 chiffres, premier chiffre de 1 à 9"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -3166,7 +3597,7 @@
   },
   {
    "id": "an-valide",
-   "jeu": "analyses",
+   "jeu": "analyses-modele",
    "lignes": [
     [
      "Code examen",
@@ -3189,7 +3620,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 1,
-     "refus": 0
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -3201,6 +3635,17 @@
       "valeur": ""
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "examen importé sans variables ni bornes de référence"
+     }
+    ],
+    "aEcrire": 1,
     "etats": [
      [
       2,
@@ -3211,7 +3656,7 @@
   },
   {
    "id": "an-section-inconnue",
-   "jeu": "analyses",
+   "jeu": "analyses-modele",
    "lignes": [
     [
      "Code examen",
@@ -3234,7 +3679,10 @@
     "compte": {
      "valides": 0,
      "avertissements": 0,
-     "refus": 1
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
     },
     "coherentCsv": true,
     "problemes": [
@@ -3246,6 +3694,17 @@
       "valeur": "Magie"
      }
     ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Section",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Magie",
+      "motif": "« Magie » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
     "etats": [
      [
       2,
@@ -3261,12 +3720,6 @@
    "ecran": "m6-import-grand-stock",
    "statut": "supporte",
    "module": "M6",
-   "roles": [
-    "stock",
-    "da",
-    "admin",
-    "direction"
-   ],
    "cibles": [
     "produits",
     "lots",
@@ -3344,7 +3797,7 @@
     "Instructions",
     "Listes"
    ],
-   "instructions": 23,
+   "instructions": 24,
    "listes": [
     "Catégorie"
    ]
@@ -3354,10 +3807,6 @@
    "ecran": "imp-personnel",
    "statut": "supporte",
    "module": "IMP",
-   "roles": [
-    "da",
-    "admin"
-   ],
    "cibles": [
     "personnel"
    ],
@@ -3443,7 +3892,7 @@
     "Instructions",
     "Listes"
    ],
-   "instructions": 25,
+   "instructions": 26,
    "listes": [
     "Sexe",
     "Fonction",
@@ -3456,12 +3905,6 @@
    "ecran": "imp-patients",
    "statut": "supporte",
    "module": "IMP",
-   "roles": [
-    "reception",
-    "agentadmin",
-    "da",
-    "admin"
-   ],
    "cibles": [
     "patients"
    ],
@@ -3478,7 +3921,6 @@
     "Quartier",
     "Adresse",
     "Personne à prévenir",
-    "Groupe sanguin",
     "Code assureur",
     "N° de police",
     "Date d’ouverture du dossier"
@@ -3494,7 +3936,6 @@
     "quartier",
     "adresse",
     "personneAPrevenir",
-    "groupeSanguin",
     "assureur",
     "numeroPolice",
     "dateCreation"
@@ -3504,7 +3945,6 @@
     true,
     true,
     true,
-    false,
     false,
     false,
     false,
@@ -3527,7 +3967,6 @@
     "texte",
     "texte",
     "liste",
-    "liste",
     "texte",
     "date"
    ],
@@ -3542,7 +3981,6 @@
     "Boukoumbé",
     "Tchirimina, Natitingou",
     "ADJOVI Paul",
-    "O+",
     "",
     "",
     "2024-05-02"
@@ -3555,40 +3993,124 @@
    "instructions": 26,
    "listes": [
     "Sexe",
-    "Groupe sanguin",
     "Code assureur"
    ]
   },
-  "actes": {
-   "libelle": "Importation du catalogue des actes",
+  "tarifs": {
+   "libelle": "Importation des tarifs et prix",
    "ecran": "imp-actes",
    "statut": "supporte",
    "module": "IMP",
-   "roles": [
-    "da",
-    "admin",
-    "direction"
-   ],
    "cibles": [
-    "actes"
+    "tarifs",
+    "versionsTarif"
    ],
    "source": "Six grilles tarifaires imprimées et « Répartition des activités » (docs/) ; les prix du fichier font foi, aucun n’est complété par le logiciel.",
-   "fichier": "modele-import-actes",
+   "fichier": "modele-import-tarifs",
    "entetes": [
-    "Code acte",
-    "Libellé",
+    "Code",
+    "Désignation",
+    "Famille",
     "Secteur",
     "Prix non assuré",
     "Prix assuré",
-    "Code tarif"
+    "Couverture",
+    "Date d’effet",
+    "Valider (Oui/Non)",
+    "Motif",
+    "Source"
    ],
    "cles": [
     "code",
-    "libelle",
+    "designation",
+    "famille",
     "secteur",
     "prixNonAssure",
     "prixAssure",
-    "codeTarif"
+    "couverture",
+    "dateEffet",
+    "valider",
+    "motif",
+    "source"
+   ],
+   "obligatoires": [
+    true,
+    false,
+    false,
+    false,
+    true,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "liste",
+    "tarif",
+    "tarif",
+    "liste",
+    "date",
+    "liste",
+    "texte",
+    "texte"
+   ],
+   "exemple": [
+    "MG01",
+    "Consultation généraliste",
+    "Actes",
+    "Médecine générale",
+    5000,
+    3000,
+    "Toutes compagnies",
+    "2027-01-01",
+    "Oui",
+    "Nouvelle grille tarifaire",
+    "Grille du 01/12/2026"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 24,
+   "listes": [
+    "Famille",
+    "Secteur",
+    "Couverture",
+    "Valider (Oui/Non)"
+   ]
+  },
+  "tarifs-produits": {
+   "libelle": "Importation des prix d’achat",
+   "ecran": "imp-tarifs-produits",
+   "statut": "supporte",
+   "module": "M6",
+   "cibles": [
+    "tarifs",
+    "versionsTarif"
+   ],
+   "source": "Fiche du référentiel produits (écran « Référentiel produits ») et inventaire initial (reprise) « Grand Stock » (docs/) ; les prix du fichier font foi, aucun n’est complété par le logiciel.",
+   "fichier": "modele-import-prix-achat",
+   "entetes": [
+    "Code article",
+    "Prix d’achat",
+    "Date d’effet",
+    "Valider (Oui/Non)",
+    "Motif",
+    "Source"
+   ],
+   "cles": [
+    "code",
+    "prixAchat",
+    "dateEffet",
+    "valider",
+    "motif",
+    "source"
    ],
    "obligatoires": [
     true,
@@ -3600,40 +4122,35 @@
    ],
    "types": [
     "texte",
-    "texte",
+    "tarif",
+    "date",
     "liste",
-    "tarif",
-    "tarif",
+    "texte",
     "texte"
    ],
    "exemple": [
-    "MG01",
-    "Consultation généraliste",
-    "Médecine générale",
-    5000,
-    3000,
-    "CONS-GEN"
+    "PARA500",
+    400,
+    "2027-01-01",
+    "Oui",
+    "Nouveau tarif du fournisseur",
+    "Facture fournisseur du 01/12/2026"
    ],
    "feuilles": [
     "Données",
     "Instructions",
     "Listes"
    ],
-   "instructions": 18,
+   "instructions": 19,
    "listes": [
-    "Secteur"
+    "Valider (Oui/Non)"
    ]
   },
-  "analyses": {
-   "libelle": "Importation du catalogue des analyses",
+  "analyses-modele": {
+   "libelle": "Importation du modèle des analyses",
    "ecran": "imp-analyses",
    "statut": "proposition",
    "module": "IMP",
-   "roles": [
-    "laborantin",
-    "da",
-    "admin"
-   ],
    "cibles": [
     "examensLabo"
    ],
@@ -3679,7 +4196,7 @@
     "Instructions",
     "Listes"
    ],
-   "instructions": 17,
+   "instructions": 18,
    "listes": [
     "Section"
    ]
@@ -3689,12 +4206,6 @@
    "ecran": "imp-fournisseurs",
    "statut": "supporte",
    "module": "IMP",
-   "roles": [
-    "stock",
-    "da",
-    "comptable",
-    "admin"
-   ],
    "cibles": [
     "fournisseurs"
    ],
@@ -3765,7 +4276,7 @@
     "Instructions",
     "Listes"
    ],
-   "instructions": 22,
+   "instructions": 23,
    "listes": [
     "Aucune liste pour ce jeu"
    ]
@@ -3775,11 +4286,6 @@
    "ecran": "imp-assureurs",
    "statut": "supporte",
    "module": "IMP",
-   "roles": [
-    "da",
-    "comptable",
-    "admin"
-   ],
    "cibles": [
     "assureurs"
    ],
@@ -3825,7 +4331,7 @@
     "Instructions",
     "Listes"
    ],
-   "instructions": 17,
+   "instructions": 18,
    "listes": [
     "Convention"
    ]
@@ -3835,11 +4341,6 @@
    "ecran": "imp-souscripteurs",
    "statut": "supporte",
    "module": "IMP",
-   "roles": [
-    "da",
-    "comptable",
-    "admin"
-   ],
    "cibles": [
     "souscripteurs"
    ],
@@ -3894,7 +4395,7 @@
     "Instructions",
     "Listes"
    ],
-   "instructions": 19,
+   "instructions": 20,
    "listes": [
     "Code compagnie",
     "Catégorie"
@@ -3905,11 +4406,6 @@
    "ecran": "imp-plan-comptable",
    "statut": "supporte",
    "module": "IMP",
-   "roles": [
-    "comptable",
-    "da",
-    "admin"
-   ],
    "cibles": [
     "comptes"
    ],
@@ -3945,7 +4441,7 @@
     "Instructions",
     "Listes"
    ],
-   "instructions": 15,
+   "instructions": 16,
    "listes": [
     "Journal"
    ]
@@ -3955,11 +4451,6 @@
    "ecran": "imp-soldes-ouverture",
    "statut": "supporte",
    "module": "IMP",
-   "roles": [
-    "comptable",
-    "da",
-    "admin"
-   ],
    "cibles": [
     "ecritures"
    ],
@@ -4009,9 +4500,917 @@
     "Instructions",
     "Listes"
    ],
-   "instructions": 18,
+   "instructions": 19,
    "listes": [
     "Aucune liste pour ce jeu"
+   ]
+  },
+  "produits-referentiel": {
+   "libelle": "Importation du référentiel produits",
+   "ecran": "imp-produits-referentiel",
+   "statut": "supporte",
+   "module": "M6",
+   "cibles": [
+    "produits"
+   ],
+   "source": "Fiche du référentiel produits (écran « Référentiel produits ») et inventaire initial (reprise) « Grand Stock » (docs/).",
+   "fichier": "modele-import-referentiel-produits",
+   "entetes": [
+    "Code article",
+    "Désignation",
+    "Catégorie",
+    "Unité",
+    "Prix d’achat",
+    "Prix de vente",
+    "Seuil d’alerte",
+    "Emplacement",
+    "Code fournisseur"
+   ],
+   "cles": [
+    "code",
+    "designation",
+    "categorie",
+    "unite",
+    "prixAchat",
+    "prixVente",
+    "seuil",
+    "emplacement",
+    "fournisseur"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "texte",
+    "tarif",
+    "entier",
+    "entier",
+    "texte",
+    "texte"
+   ],
+   "exemple": [
+    "PARA500",
+    "PARACETAMOL 500 MG CP B/100",
+    "Médicaments",
+    "Boîte",
+    350,
+    "",
+    20,
+    "Rayon A, Casier 3",
+    "SOBAPS"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 22,
+   "listes": [
+    "Catégorie"
+   ]
+  },
+  "emplacements": {
+   "libelle": "Importation des emplacements de rangement",
+   "ecran": "imp-emplacements",
+   "statut": "supporte",
+   "module": "M6",
+   "cibles": [
+    "emplacements"
+   ],
+   "source": "Fiche du référentiel des emplacements (écran « Étiquetage & emplacements ») : même zones, mêmes conservations.",
+   "fichier": "modele-import-emplacements",
+   "entetes": [
+    "Code du casier",
+    "Intitulé",
+    "Zone",
+    "Température de conservation",
+    "Capacité (références)",
+    "Observation"
+   ],
+   "cles": [
+    "code",
+    "libelle",
+    "zone",
+    "temperature",
+    "capacite",
+    "observation"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "liste",
+    "entier",
+    "texte"
+   ],
+   "exemple": [
+    "A2",
+    "Rayon A, casier 2",
+    "Rayonnage sec",
+    "Ambiante",
+    40
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 19,
+   "listes": [
+    "Zone",
+    "Température de conservation"
+   ]
+  },
+  "stock-detail-initial": {
+   "libelle": "Importation du stock détail initial",
+   "ecran": "imp-stock-detail-initial",
+   "statut": "supporte",
+   "module": "M6",
+   "cibles": [
+    "produits",
+    "lots",
+    "mouvements"
+   ],
+   "source": "Comptage de la pharmacie d’urgence à la mise en service (décision de la Direction du 11/11/2026 : un stock détail initial est légitime, UNE SEULE FOIS).",
+   "fichier": "modele-import-stock-detail-initial",
+   "entetes": [
+    "Code article",
+    "N° de lot",
+    "Date de péremption",
+    "Quantité"
+   ],
+   "cles": [
+    "code",
+    "lot",
+    "peremption",
+    "quantite"
+   ],
+   "obligatoires": [
+    true,
+    false,
+    false,
+    true
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "date",
+    "entier"
+   ],
+   "exemple": [
+    "PARA500",
+    "L2026-014",
+    "2028-06-30",
+    40
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 17,
+   "listes": [
+    "Aucune liste pour ce jeu"
+   ]
+  },
+  "transfert-lignes": {
+   "libelle": "Importation d’un bon de transfert",
+   "ecran": "imp-transfert-lignes",
+   "statut": "supporte",
+   "module": "M6",
+   "cibles": [
+    "transferts",
+    "mouvements",
+    "produits"
+   ],
+   "source": "Bon de transfert de l’écran « Transferts gros → détail » : même numérotation, mêmes mouvements, mêmes stocks.",
+   "fichier": "modele-import-transfert-lignes",
+   "entetes": [
+    "Code article",
+    "N° de lot",
+    "Quantité",
+    "Service destinataire",
+    "Date du transfert",
+    "Motif"
+   ],
+   "cles": [
+    "code",
+    "lot",
+    "quantite",
+    "destination",
+    "date",
+    "motif"
+   ],
+   "obligatoires": [
+    true,
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "entier",
+    "liste",
+    "date",
+    "texte"
+   ],
+   "exemple": [
+    "PARA500",
+    "L2026-014",
+    20,
+    "Pharmacie d’urgence"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 19,
+   "listes": [
+    "Service destinataire"
+   ]
+  },
+  "inventaire-comptage": {
+   "libelle": "Importation d’un comptage d’inventaire",
+   "ecran": "imp-inventaire-comptage",
+   "statut": "supporte",
+   "module": "M6",
+   "cibles": [
+    "inventaires"
+   ],
+   "source": "Feuille d’inventaire de l’écran « Inventaires » : même magasin nommé, même écart calculé du stock théorique de CE magasin.",
+   "fichier": "modele-import-inventaire-comptage",
+   "entetes": [
+    "Magasin",
+    "Code article",
+    "Quantité comptée",
+    "Type d’inventaire",
+    "Date du comptage"
+   ],
+   "cles": [
+    "magasin",
+    "code",
+    "compte",
+    "type",
+    "date"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    false,
+    false
+   ],
+   "types": [
+    "liste",
+    "texte",
+    "entier",
+    "liste",
+    "date"
+   ],
+   "exemple": [
+    "Stock gros",
+    "PARA500",
+    118,
+    "Ponctuel"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 18,
+   "listes": [
+    "Magasin",
+    "Type d’inventaire"
+   ]
+  },
+  "natures-facture": {
+   "libelle": "Importation des natures de facture",
+   "ecran": "imp-natures-facture",
+   "statut": "supporte",
+   "module": "CFG",
+   "cibles": [
+    "naturesFacture"
+   ],
+   "source": "Écran « Natures de facture » (configuration) : la liste que la caisse propose à l’émission.",
+   "fichier": "modele-import-natures-facture",
+   "entetes": [
+    "Code",
+    "Nature de la facture",
+    "Secteur émetteur",
+    "Origine"
+   ],
+   "cles": [
+    "code",
+    "libelle",
+    "secteur",
+    "source"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "texte"
+   ],
+   "exemple": [
+    "ORTH",
+    "Orthopédie",
+    "Chirurgie",
+    "Décision de la Direction"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 17,
+   "listes": [
+    "Secteur émetteur"
+   ]
+  },
+  "centres-couts": {
+   "libelle": "Importation des centres de coûts",
+   "ecran": "imp-centres-couts",
+   "statut": "supporte",
+   "module": "M12",
+   "cibles": [
+    "centresCouts"
+   ],
+   "source": "Écran « Centres de coûts » : les six secteurs porteurs de recette plus la Direction (transverse), complétés par la clinique.",
+   "fichier": "modele-import-centres-couts",
+   "entetes": [
+    "Code",
+    "Intitulé du centre",
+    "Type",
+    "Responsable",
+    "Origine"
+   ],
+   "cles": [
+    "code",
+    "libelle",
+    "type",
+    "responsable",
+    "source"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "texte",
+    "texte"
+   ],
+   "exemple": [
+    "orthopedie",
+    "Orthopédie",
+    "Centre d’exploitation",
+    "",
+    "Décision de la Direction"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 18,
+   "listes": [
+    "Type"
+   ]
+  },
+  "catalogue-imagerie": {
+   "libelle": "Importation du catalogue de l’imagerie",
+   "ecran": "imp-catalogue-imagerie",
+   "statut": "supporte",
+   "module": "CFG",
+   "cibles": [
+    "examensImagerie"
+   ],
+   "source": "Écran « Catalogue de l’imagerie » : l’examen est un acte facturable, rangé dans le tableau de sa modalité.",
+   "fichier": "modele-import-catalogue-imagerie",
+   "entetes": [
+    "Code examen",
+    "Intitulé",
+    "Modalité",
+    "Voie d’abord",
+    "Code tarifaire (si différent)"
+   ],
+   "cles": [
+    "code",
+    "libelle",
+    "modalite",
+    "voie",
+    "tarifCode"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "texte",
+    "texte"
+   ],
+   "exemple": [
+    "IMG-RAD-THO",
+    "Radiographie du thorax",
+    "Radiographie",
+    "sus-pubienne"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 18,
+   "listes": [
+    "Modalité"
+   ]
+  },
+  "unites-labo": {
+   "libelle": "Importation des unités de mesure",
+   "ecran": "imp-unites-labo",
+   "statut": "supporte",
+   "module": "M5",
+   "cibles": [
+    "unitesLabo"
+   ],
+   "source": "Fiche de résultats de la clinique du 21/08/2026 et écran « Unités de mesure » : « G/l », « T/l », « g/dl », jamais les notations normalisées.",
+   "fichier": "modele-import-unites-labo",
+   "entetes": [
+    "Symbole",
+    "Intitulé complet",
+    "Domaine"
+   ],
+   "cles": [
+    "symbole",
+    "libelle",
+    "domaine"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste"
+   ],
+   "exemple": [
+    "mmol/l",
+    "millimole par litre",
+    "Biochimie"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 16,
+   "listes": [
+    "Domaine"
+   ]
+  },
+  "prestataires": {
+   "libelle": "Importation des prestataires externes",
+   "ecran": "imp-prestataires",
+   "statut": "supporte",
+   "module": "M10",
+   "cibles": [
+    "prestataires"
+   ],
+   "source": "Écran « Prestataires externes » (circoncision, hydrotubation, accouchement, analyses, chirurgie, échographie, anesthésie).",
+   "fichier": "modele-import-prestataires",
+   "entetes": [
+    "Nom du prestataire",
+    "Spécialité / type d’acte",
+    "Téléphone",
+    "Tarif par acte (FCFA)",
+    "IFU du prestataire",
+    "Facture normalisée fournie"
+   ],
+   "cles": [
+    "nom",
+    "specialite",
+    "telephone",
+    "tarifActe",
+    "ifu",
+    "factureNormalisee"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    false,
+    true,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "liste",
+    "texte",
+    "entier",
+    "texte",
+    "liste"
+   ],
+   "exemple": [
+    "Dr SANNI Idrissou",
+    "Chirurgie",
+    "0197000000",
+    25000,
+    "3202112446712",
+    "Non"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 19,
+   "listes": [
+    "Spécialité / type d’acte",
+    "Facture normalisée fournie"
+   ]
+  },
+  "garanties": {
+   "libelle": "Importation des garanties des souscripteurs",
+   "ecran": "imp-garanties",
+   "statut": "supporte",
+   "module": "M9",
+   "cibles": [
+    "garanties"
+   ],
+   "source": "Conventions de prise en charge par souscripteur (barème de remboursement, docs/) et écran « Conventions & garanties ».",
+   "fichier": "modele-import-garanties",
+   "entetes": [
+    "N° de police",
+    "Catégorie",
+    "Garantie",
+    "Taux (%)",
+    "Plafond (FCFA)",
+    "Unité du plafond",
+    "Date d’effet",
+    "Motif",
+    "Source"
+   ],
+   "cles": [
+    "police",
+    "categorie",
+    "garantie",
+    "taux",
+    "plafond",
+    "unite",
+    "dateEffet",
+    "motif",
+    "source"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "liste",
+    "texte",
+    "decimal",
+    "entier",
+    "liste",
+    "date",
+    "texte",
+    "texte"
+   ],
+   "exemple": [
+    "AFR/2024/0100",
+    "Consultations",
+    "Consultation généraliste",
+    80,
+    5000,
+    "par acte",
+    "2027-01-01",
+    "Avenant du 01/12/2026"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 22,
+   "listes": [
+    "Catégorie",
+    "Unité du plafond"
+   ]
+  },
+  "couvertures-assurance": {
+   "libelle": "Importation des couvertures d’assurance",
+   "ecran": "imp-couvertures-assurance",
+   "statut": "supporte",
+   "module": "M9",
+   "cibles": [
+    "couverturesAssurance"
+   ],
+   "source": "Écran « Assurés & cartes », geste « Mettre à jour la couverture » : l’historique conserve la couverture précédente.",
+   "fichier": "modele-import-couvertures-assurance",
+   "entetes": [
+    "Code patient",
+    "Code compagnie",
+    "N° de police",
+    "Date d’effet",
+    "Motif",
+    "Catégorie",
+    "Taux de prise en charge (%)",
+    "Expiration de la carte"
+   ],
+   "cles": [
+    "patient",
+    "assureur",
+    "police",
+    "dateEffet",
+    "motif",
+    "categorie",
+    "taux",
+    "carteExpiration"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "liste",
+    "texte",
+    "date",
+    "liste",
+    "liste",
+    "decimal",
+    "date"
+   ],
+   "exemple": [
+    "CNT/1/26",
+    "NSIA",
+    "AFR/2024/0100",
+    "2027-01-01",
+    "Changement d’employeur",
+    "entreprise",
+    80,
+    "2027-12-31"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 21,
+   "listes": [
+    "Code compagnie",
+    "Motif",
+    "Catégorie"
+   ]
+  },
+  "immobilisations": {
+   "libelle": "Importation des immobilisations",
+   "ecran": "imp-immobilisations",
+   "statut": "supporte",
+   "module": "M12",
+   "cibles": [
+    "immobilisations"
+   ],
+   "source": "Écran « Immobilisations & amortissements » : les biens du patrimoine de la clinique.",
+   "fichier": "modele-import-immobilisations",
+   "entetes": [
+    "Référence",
+    "Désignation du bien",
+    "Catégorie",
+    "Date d’acquisition",
+    "Valeur d’acquisition (FCFA)",
+    "Durée d’amortissement (années)",
+    "Compte d’immobilisation",
+    "Fournisseur",
+    "État"
+   ],
+   "cles": [
+    "reference",
+    "designation",
+    "categorie",
+    "dateAcquisition",
+    "valeur",
+    "duree",
+    "compte",
+    "fournisseur",
+    "etat"
+   ],
+   "obligatoires": [
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "date",
+    "entier",
+    "entier",
+    "texte",
+    "texte",
+    "liste"
+   ],
+   "exemple": [
+    "IM-050",
+    "Moniteur multiparamétrique",
+    "Matériel médical",
+    "2026-03-15",
+    1800000,
+    5,
+    "241000",
+    "",
+    "En service"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 22,
+   "listes": [
+    "Catégorie",
+    "État"
+   ]
+  },
+  "budgets": {
+   "libelle": "Importation des budgets",
+   "ecran": "imp-budgets",
+   "statut": "supporte",
+   "module": "M12",
+   "cibles": [
+    "budgets"
+   ],
+   "source": "Écran « Budgets » : un budget par exercice, centre et nature ; le réalisé se lit des écritures.",
+   "fichier": "modele-import-budgets",
+   "entetes": [
+    "Exercice",
+    "Centre de coûts",
+    "Nature budgétaire",
+    "Montant prévisionnel (FCFA)"
+   ],
+   "cles": [
+    "exercice",
+    "centre",
+    "nature",
+    "prevu"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "types": [
+    "entier",
+    "liste",
+    "liste",
+    "entier"
+   ],
+   "exemple": [
+    2027,
+    "Laboratoire",
+    "Charges de fonctionnement",
+    5000000
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 17,
+   "listes": [
+    "Centre de coûts",
+    "Nature budgétaire"
+   ]
+  },
+  "courriers": {
+   "libelle": "Importation des courriers",
+   "ecran": "imp-courriers",
+   "statut": "supporte",
+   "module": "M13",
+   "cibles": [
+    "courriers"
+   ],
+   "source": "Écran « Courriers (départ / arrivée) » : le registre numéroté ARR-AAAA-NNNN et DEP-AAAA-NNNN.",
+   "fichier": "modele-import-courriers",
+   "entetes": [
+    "N° d’ordre",
+    "Sens",
+    "Date",
+    "Correspondant",
+    "Objet",
+    "Nature",
+    "Service destinataire"
+   ],
+   "cles": [
+    "reference",
+    "sens",
+    "date",
+    "correspondant",
+    "objet",
+    "nature",
+    "affecteA"
+   ],
+   "obligatoires": [
+    false,
+    true,
+    true,
+    false,
+    true,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "liste",
+    "date",
+    "texte",
+    "texte",
+    "liste",
+    "liste"
+   ],
+   "exemple": [
+    "",
+    "Arrivée",
+    "2026-11-03",
+    "DDS Atacora-Donga",
+    "Demande de renseignements",
+    "Lettre",
+    "Direction Administrative"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 20,
+   "listes": [
+    "Sens",
+    "Nature",
+    "Service destinataire"
    ]
   }
  },
@@ -4021,7 +5420,7 @@
    "jeu": "grand-stock",
    "ok": true,
    "reference": "IMP-2026-002",
-   "ecrits": 7,
+   "ecrits": 11,
    "fiches": {
     "produits": [
      {
@@ -4071,6 +5470,61 @@
       "valoriseSage": false,
       "valorisationProvisoire": true,
       "sourceValorisation": "Prix de revient absent du fichier d’import IMP-2026-002 : à valoriser"
+     }
+    ],
+    "tarifs": [
+     {
+      "statut": "actif",
+      "code": "MED1",
+      "libelle": "AMOXICILLINE 500 MG GELULE B/100",
+      "famille": "PRODUIT"
+     },
+     {
+      "statut": "actif",
+      "code": "GANT1",
+      "libelle": "GANTS LATEX M B/100",
+      "famille": "PRODUIT"
+     }
+    ],
+    "versionsTarif": [
+     {
+      "statut": "valide",
+      "code": "MED1",
+      "version": 1,
+      "prixNonAssure": 350,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Création de l’article",
+      "origine": "import",
+      "proposePar": "BASSONGUI Chabi Séko",
+      "proposeLe": "2026-11-01",
+      "proposeRole": "admin",
+      "lot": "IMP-2026-002",
+      "source": "Import IMP-2026-002",
+      "decidePar": "BASSONGUI Chabi Séko",
+      "decideLe": "2026-11-01",
+      "roleDecision": "admin",
+      "motifDecision": "Première version du prix d’achat, posée à la création de l’article (import IMP-2026-002)"
+     },
+     {
+      "statut": "valide",
+      "code": "GANT1",
+      "version": 1,
+      "prixNonAssure": null,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Article créé sans prix d’achat : à valoriser",
+      "origine": "import",
+      "proposePar": "BASSONGUI Chabi Séko",
+      "proposeLe": "2026-11-01",
+      "proposeRole": "admin",
+      "etatNonAssure": "manquant",
+      "lot": "IMP-2026-002",
+      "source": "Import IMP-2026-002",
+      "decidePar": "BASSONGUI Chabi Séko",
+      "decideLe": "2026-11-01",
+      "roleDecision": "admin",
+      "motifDecision": "Première version du prix d’achat, posée à la création de l’article (import IMP-2026-002)"
      }
     ],
     "lots": [
@@ -4188,7 +5642,6 @@
       "quartier": "Boukoumbé",
       "adresse": null,
       "personneAPrevenir": null,
-      "groupeSanguin": null,
       "assureur": "AFR",
       "numeroPolice": "AFR/2024/0100",
       "dateCreation": "2024-05-02",
@@ -4213,7 +5666,6 @@
       "quartier": null,
       "adresse": null,
       "personneAPrevenir": null,
-      "groupeSanguin": null,
       "assureur": null,
       "numeroPolice": null,
       "dateCreation": "2026-03-10",
@@ -4236,7 +5688,6 @@
       "quartier": null,
       "adresse": null,
       "personneAPrevenir": null,
-      "groupeSanguin": null,
       "assureur": null,
       "numeroPolice": null,
       "dateCreation": "2026-11-01",
@@ -4346,89 +5797,17 @@
    }
   },
   {
-   "cas": "ac-valide",
-   "jeu": "actes",
-   "ok": true,
-   "reference": "IMP-2026-005",
-   "ecrits": 3,
-   "fiches": {
-    "actes": [
-     {
-      "statut": "actif",
-      "source": "Import Importation du catalogue des actes (ac-valide.xlsx)",
-      "lotImport": "IMP-2026-005",
-      "validePar": "ADMIN TEST",
-      "dateImport": "2026-11-01",
-      "code": "X1",
-      "libelle": "Acte A",
-      "secteur": "Médecine générale",
-      "codeTarif": "T1",
-      "prixNonAssure": 5000,
-      "prixAssure": 3000,
-      "nonCouvert": false,
-      "assurable": true,
-      "prix": 5000,
-      "tarifProvisoire": false
-     },
-     {
-      "statut": "actif",
-      "source": "Import Importation du catalogue des actes (ac-valide.xlsx)",
-      "lotImport": "IMP-2026-005",
-      "validePar": "ADMIN TEST",
-      "dateImport": "2026-11-01",
-      "code": "X2",
-      "libelle": "Acte B",
-      "secteur": "Chirurgie",
-      "codeTarif": null,
-      "prixNonAssure": 8000,
-      "prixAssure": null,
-      "nonCouvert": true,
-      "assurable": false,
-      "prix": 8000,
-      "tarifProvisoire": false
-     },
-     {
-      "statut": "actif",
-      "source": "Import Importation du catalogue des actes (ac-valide.xlsx)",
-      "lotImport": "IMP-2026-005",
-      "validePar": "ADMIN TEST",
-      "dateImport": "2026-11-01",
-      "code": "X3",
-      "libelle": "Acte C",
-      "secteur": "Médecine générale",
-      "codeTarif": null,
-      "prixNonAssure": null,
-      "prixAssure": null,
-      "nonCouvert": false,
-      "assurable": true,
-      "prix": null,
-      "tarifProvisoire": false,
-      "motifPrix": "Valeur manquante à l’import IMP-2026-005 : l’acte ne se facture pas tant que le prix n’est pas saisi."
-     }
-    ]
-   },
-   "lot": {
-    "etat": "applique",
-    "nbLignes": 3,
-    "nbAvertissements": 1,
-    "jeu": "actes",
-    "fichier": "ac-valide.xlsx",
-    "validePar": "ADMIN TEST",
-    "date": "2026-11-01"
-   }
-  },
-  {
    "cas": "pe-valide",
    "jeu": "personnel",
    "ok": true,
-   "reference": "IMP-2026-006",
+   "reference": "IMP-2026-005",
    "ecrits": 2,
    "fiches": {
     "personnel": [
      {
       "statut": "actif",
       "source": "Import Importation du personnel (pe-valide.xlsx)",
-      "lotImport": "IMP-2026-006",
+      "lotImport": "IMP-2026-005",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "matricule": "45",
@@ -4449,7 +5828,7 @@
      {
       "statut": "actif",
       "source": "Import Importation du personnel (pe-valide.xlsx)",
-      "lotImport": "IMP-2026-006",
+      "lotImport": "IMP-2026-005",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "matricule": "46",
@@ -4483,14 +5862,14 @@
    "cas": "fo-valide",
    "jeu": "fournisseurs",
    "ok": true,
-   "reference": "IMP-2026-007",
+   "reference": "IMP-2026-006",
    "ecrits": 2,
    "fiches": {
     "fournisseurs": [
      {
       "statut": "actif",
       "source": "Import Importation des fournisseurs (fo-valide.xlsx)",
-      "lotImport": "IMP-2026-007",
+      "lotImport": "IMP-2026-006",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "code": "CAME",
@@ -4508,7 +5887,7 @@
      {
       "statut": "actif",
       "source": "Import Importation des fournisseurs (fo-valide.xlsx)",
-      "lotImport": "IMP-2026-007",
+      "lotImport": "IMP-2026-006",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "code": "LOCAL",
@@ -4539,14 +5918,14 @@
    "cas": "as-valide",
    "jeu": "assureurs",
    "ok": true,
-   "reference": "IMP-2026-008",
+   "reference": "IMP-2026-007",
    "ecrits": 2,
    "fiches": {
     "assureurs": [
      {
       "statut": "actif",
       "source": "Import Importation des compagnies d’assurance (as-valide.xlsx)",
-      "lotImport": "IMP-2026-008",
+      "lotImport": "IMP-2026-007",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "code": "SUNU",
@@ -4562,7 +5941,7 @@
      {
       "statut": "actif",
       "source": "Import Importation des compagnies d’assurance (as-valide.xlsx)",
-      "lotImport": "IMP-2026-008",
+      "lotImport": "IMP-2026-007",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "code": "OLEA",
@@ -4588,14 +5967,14 @@
    "cas": "sc-valide",
    "jeu": "souscripteurs",
    "ok": true,
-   "reference": "IMP-2026-009",
+   "reference": "IMP-2026-008",
    "ecrits": 1,
    "fiches": {
     "souscripteurs": [
      {
       "statut": "actif",
       "source": "Import Importation des souscripteurs (sc-valide.xlsx)",
-      "lotImport": "IMP-2026-009",
+      "lotImport": "IMP-2026-008",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "nom": "Société X",
@@ -4627,14 +6006,14 @@
    "cas": "pc-valide",
    "jeu": "plan-comptable",
    "ok": true,
-   "reference": "IMP-2026-010",
+   "reference": "IMP-2026-009",
    "ecrits": 2,
    "fiches": {
     "comptes": [
      {
       "statut": "actif",
       "source": "Import Importation du plan comptable (pc-valide.xlsx)",
-      "lotImport": "IMP-2026-010",
+      "lotImport": "IMP-2026-009",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "num": "605000",
@@ -4645,7 +6024,7 @@
      {
       "statut": "actif",
       "source": "Import Importation du plan comptable (pc-valide.xlsx)",
-      "lotImport": "IMP-2026-010",
+      "lotImport": "IMP-2026-009",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "num": "6051",
@@ -4667,16 +6046,16 @@
   },
   {
    "cas": "an-valide",
-   "jeu": "analyses",
+   "jeu": "analyses-modele",
    "ok": true,
-   "reference": "IMP-2026-011",
+   "reference": "IMP-2026-010",
    "ecrits": 1,
    "fiches": {
     "examensLabo": [
      {
       "statut": "actif",
-      "source": "Import Importation du catalogue des analyses (an-valide.xlsx)",
-      "lotImport": "IMP-2026-011",
+      "source": "Import Importation du modèle des analyses (an-valide.xlsx)",
+      "lotImport": "IMP-2026-010",
       "validePar": "ADMIN TEST",
       "dateImport": "2026-11-01",
       "code": "HBA1C",
@@ -4695,7 +6074,7 @@
     "etat": "applique",
     "nbLignes": 1,
     "nbAvertissements": 1,
-    "jeu": "analyses",
+    "jeu": "analyses-modele",
     "fichier": "an-valide.xlsx",
     "validePar": "ADMIN TEST",
     "date": "2026-11-01"
@@ -4730,8 +6109,8 @@
    "cas": "gs-valide",
    "ok": true,
    "code": null,
-   "archives": 7,
-   "archivesVerifiees": 7,
+   "archives": 9,
+   "archivesVerifiees": 9,
    "etatLot": "annule"
   },
   {
@@ -4748,14 +6127,6 @@
    "code": null,
    "archives": 4,
    "archivesVerifiees": 4,
-   "etatLot": "annule"
-  },
-  {
-   "cas": "ac-valide",
-   "ok": true,
-   "code": null,
-   "archives": 3,
-   "archivesVerifiees": 3,
    "etatLot": "annule"
   },
   {
@@ -4819,6 +6190,150 @@
   "ecrituresApres": 5,
   "lotsAjoutes": 1,
   "lotEtat": "refuse"
+ },
+ "droits": {
+  "analyseSansDroit": {
+   "role": "caissier",
+   "jeu": "fournisseurs",
+   "accepte": false,
+   "droitRefuse": true,
+   "codes": [
+    "DROIT_IMPORT_REFUSE"
+   ],
+   "motif": "le profil « Caissier — Dispensaire (Pharmacie) » ne détient pas le droit de importer le jeu « Importation des fournisseurs »",
+   "geste": "Demander ce droit à l’administrateur : il se règle par jeu dans « Rôles & permissions », section Importation.",
+   "consigne": null,
+   "lotsAjoutes": 0
+  },
+  "applicationSansDroit": {
+   "role": "stock",
+   "jeu": "patients",
+   "ok": false,
+   "code": "DROIT_IMPORT_REFUSE",
+   "motif": "le profil « Gestionnaire de Stock » ne détient pas le droit de importer le jeu « Importation du répertoire patients »",
+   "patientsAjoutes": 0,
+   "lotsAjoutes": 0
+  },
+  "annulation": {
+   "jeu": "grand-stock",
+   "sansDroit": {
+    "code": "DROIT_IMPORT_REFUSE",
+    "motif": "le profil « Caissier — Dispensaire (Pharmacie) » ne détient pas le droit de annuler un lot de le jeu « Importation Grand Stock »"
+   },
+   "dUnAutre": {
+    "code": "LOT_D_UN_AUTRE",
+    "motif": "le lot IMP-2026-012 a été écrit par un autre agent",
+    "geste": "Seul son auteur, ou un profil qui supervise les importations, peut l’annuler."
+   },
+   "etatLot": "applique"
+  },
+  "borne": {
+   "borne": 1,
+   "accepte": false,
+   "codes": [
+    "FICHIER_TROP_GROS"
+   ],
+   "motif": "le fichier porte 2 lignes ; le maximum réglé pour ce jeu est 1"
+  },
+  "reglageBorne": {
+   "sansSupervision": {
+    "ok": false,
+    "code": "REGLAGE_RESERVE",
+    "avant": null,
+    "lignes": null
+   },
+   "invalide": {
+    "ok": false,
+    "code": "BORNE_INVALIDE",
+    "avant": null,
+    "lignes": null
+   },
+   "zero": {
+    "ok": false,
+    "code": "BORNE_INVALIDE",
+    "avant": null,
+    "lignes": null
+   },
+   "trop": {
+    "ok": false,
+    "code": "BORNE_INVALIDE",
+    "avant": null,
+    "lignes": null
+   },
+   "decimal": {
+    "ok": false,
+    "code": "BORNE_INVALIDE",
+    "avant": null,
+    "lignes": null
+   },
+   "sansMotif": {
+    "ok": false,
+    "code": "MOTIF_REQUIS",
+    "avant": null,
+    "lignes": null
+   },
+   "inconnu": {
+    "ok": false,
+    "code": "JEU_INCONNU",
+    "avant": null,
+    "lignes": null
+   },
+   "ok": {
+    "ok": true,
+    "code": null,
+    "avant": 5000,
+    "lignes": 8000
+   },
+   "lu": {
+    "fournisseurs": 8000
+   }
+  },
+  "capacitePaie": {
+   "avecSalaireAdmin": {
+    "accepte": true,
+    "codes": []
+   },
+   "avecSalaireAgent": {
+    "accepte": false,
+    "codes": [
+     "COLONNE_RESERVEE:refus"
+    ],
+    "motif": "la colonne « Salaire de base » est réservée aux profils qui détiennent la capacité « paie » : elle n’est pas dans votre modèle"
+   },
+   "sansSalaireAgent": {
+    "accepte": true,
+    "codes": []
+   },
+   "modeleAgent": [
+    "Matricule",
+    "Nom",
+    "Prénom",
+    "Sexe",
+    "Fonction",
+    "Poste",
+    "Service",
+    "Catégorie",
+    "Date d’embauche",
+    "Téléphone",
+    "N° CNSS",
+    "Situation familiale"
+   ],
+   "modeleAdmin": [
+    "Matricule",
+    "Nom",
+    "Prénom",
+    "Sexe",
+    "Fonction",
+    "Poste",
+    "Service",
+    "Catégorie",
+    "Date d’embauche",
+    "Téléphone",
+    "N° CNSS",
+    "Situation familiale",
+    "Salaire de base"
+   ]
+  }
  },
  "rapport": {
   "feuilles": [

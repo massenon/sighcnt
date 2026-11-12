@@ -162,6 +162,16 @@ void main() {
     expect(d3(archivee, 'admin', 'emplacements'), '111');
   });
 
+  test('une fermeture PROPRE AU POSTE (écran non porté) ne ferme pas le droit du jeu : seule une activité fermée par la clinique le ferme', () {
+    final jeu = base.matriceImport.declaration('emplacements')!;
+    final propre = {'id': 'MODP90', 'module': 'IMP', 'ecrans': [jeu.ecran], 'actif': false, 'statut': 'actif', 'proprePoste': true};
+    final m = calc(modules: [...jeuModules, propre]);
+    expect(d3(m, 'admin', 'emplacements'), '111', reason: 'la page non portée est fermée, le droit métier demeure');
+    expect(m.droitImport('admin', 'emplacements'), base.droitImport('admin', 'emplacements'));
+    final clinique = {...propre}..remove('proprePoste');
+    expect(d3(calc(modules: [...jeuModules, clinique]), 'admin', 'emplacements'), '000');
+  });
+
   test('chaque jeu déclare au moins un hôte parmi les écrans du manifeste, ou aucun (jeu sans bouton) ; chaque écran de jeu existe au manifeste', () {
     for (final d in base.matriceImport.declarations) {
       expect(manifeste.ecran(d.ecran), isNotNull, reason: '${d.id} : écran ${d.ecran}');

@@ -12,6 +12,7 @@
 /// Les vecteurs viennent de la maquette (`prototype_html/build/vecteurs-import.js`).
 library;
 
+import '../droits/droit_import.dart';
 import '../format/recherche.dart' show normaliser;
 
 typedef FicheImport = Map<String, Object?>;
@@ -69,9 +70,11 @@ class ColonneImport {
     this.exemple,
     this.aide,
     this.sousMin,
+    this.capacite,
+    this.unique = false,
   });
 
-  /// Types : `texte`, `entier`, `decimal`, `date`, `liste`, `tarif` (montant, NC ou tiret).
+  /// Types : `texte`, `entier`, `decimal`, `date`, `liste`, `tarif` (montant, NC ou tiret ; `unique` y ajoute « prix unique »).
   final String cle, label, type;
   final bool obligatoire;
   final List<ValeurListe> Function(dynamic ctx)? liste;
@@ -81,6 +84,19 @@ class ColonneImport {
   final String? motifTexte, aide;
   final Object? exemple;
   final SousMinImport? sousMin;
+
+  /// Une colonne qui porte `capacite: 'paie'` n'est dans le modèle, et acceptée au fichier, que pour un profil qui détient cette capacité (lue de la matrice : écrire dans le
+  /// module de la paie), jamais d'un nom de rôle.
+  final String? capacite;
+
+  /// Colonne de prix : la valeur `unique` dit « prix unique » (jamais un montant fabriqué).
+  final bool unique;
+}
+
+/// Une colonne RETIRÉE du modèle (le groupe sanguin du répertoire, la quantité d'un référentiel) : un fichier qui la porte est REFUSÉ en la nommant.
+class ColonneRetiree {
+  const ColonneRetiree(this.label, this.motif);
+  final String label, motif;
 }
 
 /// Une ligne du fichier une fois lue : [n] est son rang dans la feuille (l'en-tête est la ligne 1).
@@ -90,13 +106,22 @@ class LigneImport {
   final Map<String, Object?> v;
   final List<String> brut;
   final List<ProblemeImport> problemes = [];
+
+  /// `valide`, `avertissement`, `refus`, `ignore` (fiche déjà tenue, mode « ignorer »), `inchange`, `non` (refusée par son auteur : décision ligne à ligne).
   String etat = 'valide';
+
+  /// Une ligne qui n'écrit rien sans être un refus : `ignore`, `inchange`, `non`. Elle est comptée, jamais perdue en silence.
+  String? sansEcriture;
+
+  /// Le détail que la vérification montre pour la ligne (stock avant la ligne, lot retenu, écart d'un comptage…).
+  String? detail;
 }
 
 class CompteImport {
-  CompteImport({this.valides = 0, this.avertissements = 0, this.refus = 0});
-  int valides, avertissements, refus;
-  Map<String, Object?> versJson() => {'valides': valides, 'avertissements': avertissements, 'refus': refus};
+  CompteImport({this.valides = 0, this.avertissements = 0, this.refus = 0, this.ignores = 0, this.inchanges = 0, this.non = 0});
+  int valides, avertissements, refus, ignores, inchanges, non;
+  Map<String, Object?> versJson() =>
+      {'valides': valides, 'avertissements': avertissements, 'refus': refus, 'ignores': ignores, 'inchanges': inchanges, 'non': non};
 }
 
 /// Le résultat de l'analyse d'un fichier : rien n'est écrit.
@@ -108,6 +133,12 @@ class AnalyseImport {
   final List<LigneImport> lignes = [];
   final List<ProblemeImport> globaux = [];
   bool accepte = false;
+
+  /// Le nombre de lignes qui s'écriraient (ni refusées, ni ignorées, ni inchangées, ni refusées par leur auteur).
+  int aEcrire = 0;
+
+  /// Le profil n'a pas le droit d'importer ce jeu : le moteur REFUSE (masquer un bouton ne protège rien), et le refus ne se consigne pas.
+  bool droitRefuse = false;
   final CompteImport compte = CompteImport();
   String? empreinte;
 
@@ -117,7 +148,38 @@ class AnalyseImport {
 
 /// Le PORT d'écriture du moteur : le magasin du poste, la mère ou la mémoire d'un test. Une écriture refusée par le moteur (garde d'exercice clos)
 /// lève une exception ; le moteur défait alors ce qu'il vient de poser.
+/// Le PROFIL qui importe, et ce que le moteur lit de la matrice : jamais un nom de rôle en dur. Le droit (voir, importer, annuler), la sensibilité du jeu, son mode de
+/// doublon, la capacité paie et la supervision viennent de la section `import` de `rbac.json` (superposée à chaud par les fiches RBAC). Le moteur REFUSE sans le droit :
+/// masquer un bouton ne protège rien.
+class ProfilImport {
+  const ProfilImport({required this.role, required this.libelleRole, required this.matrice, this.bornes = const {}});
+  final String role, libelleRole;
+  final MatriceImport matrice;
+
+  /// Le réglage `importBornes` (lignes maximales par jeu), lu en base ; un jeu sans réglage prend [borneParDefaut].
+  final Map<String, int> bornes;
+
+  static const int borneParDefaut = 5000;
+  static const int borneMaximale = 100000;
+
+  DroitImport droit(String jeu) => matrice.droit(role, jeu);
+  bool get supervise => matrice.supervise(role);
+  bool get capacitePaie => matrice.aLaCapacitePaie(role);
+  DeclarationImport? declaration(String jeu) => matrice.declaration(jeu);
+
+  /// Un jeu sans déclaration est traité comme RESTREINT : dans le doute, aucune valeur de cellule n'est recopiée.
+  bool restreint(String jeu) => declaration(jeu)?.restreint ?? true;
+  String modeDoublon(String jeu) => declaration(jeu)?.doublon ?? 'refuser';
+  int borne(String jeu) {
+    final v = bornes[jeu];
+    return v != null && v > 0 ? v : borneParDefaut;
+  }
+}
+
 abstract class PortImport {
+  /// Le profil qui importe : droits, sensibilité des jeux, bornes (jamais un nom de rôle en dur).
+  ProfilImport get profil;
+
   List<FicheImport> toutes(String collection);
   List<FicheImport> actives(String collection) => [
         for (final f in toutes(collection))
@@ -170,6 +232,25 @@ class DependanceImport {
 
 typedef EcrireFiche = FicheImport Function(String collection, FicheImport fiche);
 
+/// Déclare au lot une fiche écrite hors de [EcrireFiche] (la fabrique du geste d'écran l'a écrite : un bon de transfert, une version de prix) ou une MODIFICATION de fiche tenue
+/// (`avant` : l'état restitué par l'atomicité et par l'annulation, au lieu d'être archivé).
+typedef DeclarerFiche = void Function(String collection, Object? id, {Map<String, Object?>? avant});
+
+/// La réponse du geste d'annulation propre à un jeu.
+class ResultatAnnulationImport {
+  const ResultatAnnulationImport.ok(this.archives)
+      : ok = true,
+        code = null,
+        motif = null,
+        geste = null;
+  const ResultatAnnulationImport.refus(String this.code, String this.motif, String this.geste)
+      : ok = false,
+        archives = 0;
+  final bool ok;
+  final int archives;
+  final String? code, motif, geste;
+}
+
 /// Un jeu d'import, déclaratif. Les fonctions reçoivent le contexte (ce que le magasin sait déjà) lu UNE fois par analyse.
 class JeuImport {
   const JeuImport({
@@ -178,7 +259,6 @@ class JeuImport {
     required this.libelle,
     required this.module,
     required this.statut,
-    required this.roles,
     required this.description,
     required this.source,
     required this.cibles,
@@ -193,17 +273,25 @@ class JeuImport {
     this.limite,
     this.gesteExiste,
     this.reglesLot,
+    this.colonnesRetirees = const [],
+    this.annuler,
   });
   final String id, ecran, libelle, module, statut, description, source, fichierModele;
   final String? limite, gesteExiste;
-  final List<String> roles, cibles;
+  final List<String> cibles;
   final List<ColonneImport> colonnes;
+
+  /// Les colonnes que le modèle ne porte plus : un fichier qui en porte une est refusé en la nommant.
+  final List<ColonneRetiree> colonnesRetirees;
+
+  /// Un jeu qui ne s'annule pas par l'archivage de ses fiches (les versions de prix sont immuables, un transfert restitue des stocks) porte son propre geste d'annulation.
+  final ResultatAnnulationImport Function(FicheImport lot, String? motif, PortImport port)? annuler;
   final dynamic Function(PortImport port) contexte;
   final List<String> Function(Map<String, Object?> v) cle;
   final String? Function(Map<String, Object?> v, dynamic ctx) existe;
   final List<ProblemeImport> Function(Map<String, Object?> v, dynamic ctx, Map<String, Object?> sc, int n) regles;
   final List<ProblemeImport> Function(List<LigneImport> lignes, dynamic ctx)? reglesLot;
-  final void Function(List<LigneImport> lignes, EcrireFiche ecrire, FicheImport lot, dynamic ctx, PortImport port) ecrire;
+  final void Function(List<LigneImport> lignes, EcrireFiche ecrire, FicheImport lot, dynamic ctx, PortImport port, DeclarerFiche declarer) ecrire;
   final DependanceImport? Function(FicheImport lot, PortImport port) dependances;
 
   bool get supporte => statut == 'supporte';
@@ -342,6 +430,7 @@ _Cellule _lireCellule(ColonneImport col, Object? brut, dynamic ctx) {
       final tv = texteDe(v).trim();
       if (RegExp('^(-|\u2013|\u2014)\$').hasMatch(tv)) return _Cellule.valeur({'etat': 'manquant'});
       if (RegExp(r'^(nc|non couvert)$', caseSensitive: false).hasMatch(tv)) return _Cellule.valeur({'etat': 'nc'});
+      if (col.unique && RegExp(r'^(unique|prix unique)$', caseSensitive: false).hasMatch(tv)) return _Cellule.valeur({'etat': 'unique'});
       final nn = v is num ? v : num.tryParse(tv.replaceAll(RegExp(r'\s'), '').replaceFirst(',', '.'));
       if (nn == null || !nn.isFinite || nn != nn.truncate() || nn < 0) {
         return _Cellule.erreur(_err('TYPE_INVALIDE', '« ${texteDe(v)} » n’est ni un montant entier, ni NC, ni un tiret', 'Saisissez un montant en francs, NC (non couvert) ou un tiret (valeur manquante).'));
@@ -353,25 +442,163 @@ _Cellule _lireCellule(ColonneImport col, Object? brut, dynamic ctx) {
 
 String _clefEntete(Object? s) => normaliser(texteDe(s).replaceAll('*', '')).replaceAll(RegExp(r'\s+'), ' ').trim();
 
-List<Object?> ligneExemple(JeuImport j) => [for (final c in j.colonnes) c.exemple ?? ''];
+// --- Le droit, la sensibilité et les colonnes selon le profil -------------------------------------------------------------------------
+
+/// Un refus de droit se NOMME : le profil, le jeu, le geste (`refusDroit` de la maquette).
+ResultatImport? refusDroitImport(JeuImport j, String geste, PortImport port) {
+  final p = port.profil;
+  final d = p.droit(j.id);
+  final ok = switch (geste) { 'voir' => d.voir, 'importer' => d.importer, 'annuler' => d.annuler, _ => false };
+  if (ok) return null;
+  final verbe = const {'voir': 'voir', 'importer': 'importer', 'annuler': 'annuler un lot de'}[geste] ?? geste;
+  return ResultatImport.refus(
+      'DROIT_IMPORT_REFUSE',
+      'le profil « ${p.libelleRole.isEmpty ? 'inconnu' : p.libelleRole} » ne détient pas le droit de $verbe le jeu « ${j.libelle} »',
+      'Demander ce droit à l’administrateur : il se règle par jeu dans « Rôles & permissions », section Importation.');
+}
+
+/// Les colonnes du modèle SELON LE PROFIL : une colonne de capacité (« Salaire de base », capacité paie) n'existe que pour qui la détient.
+List<ColonneImport> colonnesDe(JeuImport j, PortImport port) => [
+      for (final c in j.colonnes)
+        if (c.capacite == null || (c.capacite == 'paie' && port.profil.capacitePaie)) c
+    ];
+
+/// Les colonnes qu'un fichier ne doit pas porter : celles d'une capacité que le profil n'a pas, et les colonnes retirées du modèle. Un fichier qui en porte une est REFUSÉ
+/// en la nommant : l'ignorer en silence ferait croire qu'elle a été reprise.
+List<({String label, String code, String motif, String geste})> colonnesInterdites(JeuImport j, PortImport port) {
+  final out = <({String label, String code, String motif, String geste})>[];
+  for (final c in j.colonnes) {
+    if (c.capacite != null && !(c.capacite == 'paie' && port.profil.capacitePaie)) {
+      out.add((
+        label: c.label,
+        code: 'COLONNE_RESERVEE',
+        motif: 'la colonne « ${c.label} » est réservée aux profils qui détiennent la capacité « ${c.capacite} » : elle n’est pas dans votre modèle',
+        geste: 'Retirez la colonne « ${c.label} » du fichier ; elle se renseigne à l’écran par un profil habilité.'
+      ));
+    }
+  }
+  for (final c in j.colonnesRetirees) {
+    out.add((label: c.label, code: 'COLONNE_RETIREE', motif: c.motif, geste: 'Retirez la colonne « ${c.label} » du fichier.'));
+  }
+  return out;
+}
+
+/// Les motifs FIXES d'un jeu RESTREINT (patients, personnel, soldes d'ouverture, couvertures, immobilisations, budgets, courriers, stock mouvementé) : un constat garde la
+/// ligne, la colonne, le code et le geste, JAMAIS la valeur de la cellule ni un motif qui la cite (le nom d'un agent déjà tenu, les totaux d'une pièce). Même table que la
+/// maquette (`MOTIFS_FIXES`).
+const Map<String, String> motifsFixesImport = {
+  'CHAMP_OBLIGATOIRE': 'valeur obligatoire absente',
+  'TYPE_INVALIDE': 'valeur d’un autre type que celui attendu',
+  'FORMAT_INVALIDE': 'format non conforme',
+  'TROP_LONG': 'texte plus long que le maximum',
+  'HORS_BORNES': 'valeur hors des bornes',
+  'VALEUR_HORS_LISTE': 'valeur hors de la liste permise',
+  'DOUBLON_FICHIER': 'ligne en double dans le fichier',
+  'DOUBLON_MAGASIN': 'une fiche équivalente est déjà tenue',
+  'DATE_FUTURE': 'date dans le futur',
+  'SALAIRE_ABSENT': 'salaire de base non renseigné',
+  'TELEPHONE_ABSENT': 'aucun téléphone',
+  'POLICE_ABSENTE': 'assuré sans numéro de police',
+  'COMPTE_INCONNU': 'compte absent du plan comptable',
+  'CLASSE_NON_REPORTABLE': 'compte de gestion : il ne se reporte pas',
+  'DEUX_SENS': 'débit et crédit renseignés ensemble',
+  'LIGNE_NULLE': 'ligne sans montant',
+  'DATES_MULTIPLES': 'plusieurs dates dans le fichier',
+  'RG10_DESEQUILIBRE': 'écriture non équilibrée (RG-10)',
+  'A_NOUVEAU_EXISTANT': 'l’exercice porte déjà un à-nouveau',
+  'COLONNE_RESERVEE': 'colonne réservée à un autre profil',
+  'COLONNE_RETIREE': 'colonne retirée du modèle',
+  'ARTICLE_INCONNU': 'article absent du référentiel produits',
+  'RG03_STOCK_INSUFFISANT': 'stock du magasin insuffisant (RG-03)',
+  'RG03_STOCK_NEGATIF': 'quantité négative (RG-03)',
+  'LOT_OBLIGATOIRE': 'lot et péremption obligatoires (RG-05)',
+  'LOT_INCOMPLET': 'lot et péremption vont ensemble',
+  'LOT_INCONNU': 'lot absent pour cet article',
+  'LOT_PERIME': 'lot périmé',
+  'LOT_NON_FEFO': 'lot qui ne part pas en premier (FEFO, RG-05)',
+  'PEREMPTION_PASSEE': 'lot déjà périmé',
+  'QUANTITE_NULLE': 'quantité nulle',
+  'DETAIL_DEJA_MOUVEMENTE': 'article déjà mouvementé : le stock détail initial ne se pose qu’une fois',
+  'DETAIL_DEJA_EN_STOCK': 'stock détail déjà présent',
+  'STOCK_INCOHERENT': 'stocks gros et détail incohérents avec le stock total',
+  'IGNORE_EXISTANT': 'fiche déjà tenue : ligne ignorée',
+  'PATIENT_INCONNU': 'dossier absent du répertoire',
+  'POLICE_INCONNUE': 'police absente des souscripteurs',
+  'POLICE_AUTRE_COMPAGNIE': 'police d’une autre compagnie',
+  'DATE_EFFET_ANTERIEURE': 'date d’effet antérieure à la couverture en cours',
+  'CARTE_SANS_EXPIRATION': 'carte sans date d’expiration',
+  'FACTURE_DEJA_EMISE': 'facture déjà émise à partir de cette date',
+  'VALEUR_NULLE': 'valeur nulle',
+  'COMPTE_NON_IMMOBILISATION': 'compte qui n’est pas un compte d’immobilisation',
+  'BIEN_CEDE': 'bien déjà cédé',
+  'EXERCICE_CLOS': 'exercice clos : lecture seule',
+  'EXERCICE_EN_CLOTURE': 'exercice en clôture',
+  'NUMERO_INCOHERENT': 'numéro hors série',
+  'CORRESPONDANT_ABSENT': 'correspondant non renseigné',
+  'SERVICE_ABSENT': 'service non renseigné',
+  'DESTINATION_ABSENTE': 'aucun service destinataire',
+  'DESTINATIONS_MULTIPLES': 'plusieurs services destinataires : une feuille est un seul bon',
+  'BON_UNIQUE': 'plusieurs valeurs pour un bon unique',
+  'FEUILLE_UNIQUE': 'plusieurs valeurs pour une feuille unique',
+};
+
+/// `masquer(j, p)` : pour un jeu RESTREINT, la valeur n'est pas recopiée et le motif est remplacé par une phrase fixe propre au code.
+ProblemeImport masquerProbleme(JeuImport j, ProblemeImport p, PortImport port) {
+  if (!port.profil.restreint(j.id)) return p;
+  return ProblemeImport(
+      n: p.n,
+      colonne: p.colonne,
+      valeur: '',
+      code: p.code,
+      motif: motifsFixesImport[p.code] ?? 'constat de contrôle (le détail n’est pas recopié)',
+      geste: p.geste,
+      niveau: p.niveau);
+}
+
+/// Tous les constats à plat, MASQUÉS pour un jeu restreint : c'est ce qui entre à l'historique et au rapport.
+List<ProblemeImport> problemesConsignes(JeuImport j, AnalyseImport a, PortImport port) => [for (final p in a.problemes) masquerProbleme(j, p, port)];
+
+List<Object?> ligneExemple(JeuImport j, [PortImport? port]) => [for (final c in (port == null ? j.colonnes : colonnesDe(j, port))) c.exemple ?? ''];
 
 // --- Analyse ---------------------------------------------------------------------------------------------------------------------
 
-/// Analyse des lignes (la première est l'en-tête) contre un jeu. [port] fournit le contexte ; RIEN n'est écrit.
+/// Analyse des lignes (la première est l'en-tête) contre un jeu. [port] fournit le contexte et le profil ; RIEN n'est écrit.
 AnalyseImport analyserLignes(JeuImport j, List<List<Object?>> lignes, String fichier, PortImport port) {
   final res = AnalyseImport(j.id, fichier, lignes);
   void globalement(String code, String colonne, String motif, String geste, [String niveau = importRefus, Object? valeur = '']) {
     res.globaux.add(ProblemeImport(n: 0, colonne: colonne, valeur: valeur, code: code, motif: motif, geste: geste, niveau: niveau));
   }
 
+  // LE MOTEUR REFUSE AUSSI : pas de droit d'importer ce jeu, pas d'analyse (le refus ne se consigne pas : rien n'a été tenté par un détenteur).
+  final rd = refusDroitImport(j, 'importer', port);
+  if (rd != null) {
+    globalement(rd.code!, '', rd.motif!, rd.geste!);
+    res.droitRefuse = true;
+    return res;
+  }
   if (lignes.isEmpty) {
     globalement('FICHIER_VIDE', '', 'le fichier ne contient aucune ligne', 'Téléchargez le modèle, remplissez l’onglet Données et téléversez-le de nouveau.');
     return res;
   }
+  // LA TAILLE MAXIMALE, avant tout travail : un refus nommé, jamais une constante muette (réglage `importBornes`).
+  final borne = port.profil.borne(j.id);
+  if (lignes.length - 1 > borne) {
+    globalement('FICHIER_TROP_GROS', '', 'le fichier porte ${lignes.length - 1} lignes ; le maximum réglé pour ce jeu est $borne',
+        'Découpez le fichier en plusieurs fichiers de $borne lignes au plus, ou faites relever la taille maximale du jeu par un profil qui supervise les importations (onglet « Tailles maximales » de l’accueil du module).');
+    return res;
+  }
+  final cols = colonnesDe(j, port);
   final entete = [for (final h in lignes.first) _clefEntete(h)];
+  final interdites = [for (final c in colonnesInterdites(j, port)) if (entete.contains(_clefEntete(c.label))) c];
+  if (interdites.isNotEmpty) {
+    for (final c in interdites) {
+      globalement(c.code, c.label, c.motif, c.geste);
+    }
+    return res;
+  }
   final idx = <String, int>{};
   final manquantes = <ColonneImport>[];
-  for (final c in j.colonnes) {
+  for (final c in cols) {
     final i = entete.indexOf(_clefEntete(c.label));
     if (i < 0) {
       if (c.obligatoire) {
@@ -390,15 +617,17 @@ AnalyseImport analyserLignes(JeuImport j, List<List<Object?>> lignes, String fic
     }
     return res;
   }
-  final connus = {for (final c in j.colonnes) _clefEntete(c.label)};
+  final connus = {for (final c in cols) _clefEntete(c.label)};
   for (final h in lignes.first) {
     if (!_vide(h) && !connus.contains(_clefEntete(h))) {
       globalement('COLONNE_IGNOREE', texteDe(h), 'colonne « ${texteDe(h)} » inconnue : elle est ignorée', 'Retirez-la du fichier si elle est inutile.', importAvertissement);
     }
   }
   final ctx = j.contexte(port);
-  final sc = <String, Object?>{'articles': <String, Map<String, Object?>>{}};
-  final exemple = [for (final x in ligneExemple(j)) texteDe(x).trim()];
+  final extras = <int, String>{};
+  final sc = <String, Object?>{'articles': <String, Map<String, Object?>>{}, 'extras': extras, 'pose': <Object?, num>{}};
+  final mode = port.profil.modeDoublon(j.id);
+  final exemple = [for (final x in ligneExemple(j, port)) texteDe(x).trim()];
   final vus = <String, int>{};
   for (var r = 1; r < lignes.length; r++) {
     final brute = lignes[r];
@@ -408,12 +637,12 @@ AnalyseImport analyserLignes(JeuImport j, List<List<Object?>> lignes, String fic
       return i < brute.length ? brute[i] : '';
     }
 
-    final lecture = [for (final c in j.colonnes) texteDe(_nettoyer(cellule(c) ?? '')).trim()];
+    final lecture = [for (final c in cols) texteDe(_nettoyer(cellule(c) ?? '')).trim()];
     if (r == 1 && lecture.join('|') == exemple.join('|')) continue; // la ligne d'exemple du modèle, restée telle quelle
     final n = r + 1;
     final ligne = LigneImport(n, {}, lecture);
     var ok = true;
-    for (final c in j.colonnes) {
+    for (final c in cols) {
       final b = cellule(c);
       final lc = _lireCellule(c, b, ctx);
       if (lc.erreur != null) {
@@ -440,22 +669,38 @@ AnalyseImport analyserLignes(JeuImport j, List<List<Object?>> lignes, String fic
       }
       if (doublon != null) {
         ligne.problemes.add(ProblemeImport(
-            n: n, colonne: j.colonnes.first.label, valeur: lecture.first, code: 'DOUBLON_FICHIER', niveau: importRefus, motif: 'identique à la ligne $doublon du même fichier', geste: 'Retirez l’une des deux lignes.'));
+            n: n, colonne: cols.first.label, valeur: lecture.first, code: 'DOUBLON_FICHIER', niveau: importRefus, motif: 'identique à la ligne $doublon du même fichier', geste: 'Retirez l’une des deux lignes.'));
       } else {
         for (final k in cles) {
           vus[k] = n;
         }
       }
       final existe = j.existe(ligne.v, ctx);
-      if (existe != null) {
+      if (existe != null && mode == 'ignorer' && doublon == null) {
+        // IGNORER LES EXISTANTS (I8, jeux de la liste fermée seulement) : la ligne n'écrit rien, elle est COMPTÉE et NOMMÉE au rapport, jamais perdue en silence.
         ligne.problemes.add(ProblemeImport(
-            n: n, colonne: j.colonnes.first.label, valeur: lecture.first, code: 'DOUBLON_MAGASIN', niveau: importRefus, motif: existe, geste: j.gesteExiste ?? 'Retirez la ligne.'));
-      }
-      for (final p in j.regles(ligne.v, ctx, sc, n)) {
-        ligne.problemes.add(p.avecLigne(n));
+            n: n,
+            colonne: cols.first.label,
+            valeur: lecture.first,
+            code: 'IGNORE_EXISTANT',
+            niveau: 'ignore',
+            motif: existe,
+            geste: 'Ligne ignorée : la fiche existe déjà et un import ne modifie jamais une fiche tenue.'));
+        ligne.sansEcriture = 'ignore';
+      } else {
+        if (existe != null) {
+          ligne.problemes.add(ProblemeImport(
+              n: n, colonne: cols.first.label, valeur: lecture.first, code: 'DOUBLON_MAGASIN', niveau: importRefus, motif: existe, geste: j.gesteExiste ?? 'Retirez la ligne.'));
+        }
+        for (final p in j.regles(ligne.v, ctx, sc, n)) {
+          ligne.problemes.add(p.avecLigne(n));
+        }
       }
     }
-    ligne.etat = ligne.problemes.any((p) => p.estRefus) ? 'refus' : (ligne.problemes.isNotEmpty ? 'avertissement' : 'valide');
+    final refus = ligne.problemes.any((p) => p.estRefus);
+    ligne.etat = refus ? 'refus' : (ligne.sansEcriture ?? (ligne.problemes.any((p) => p.niveau == importAvertissement) ? 'avertissement' : 'valide'));
+    if (refus) ligne.sansEcriture = null;
+    ligne.detail = extras[n];
     res.lignes.add(ligne);
   }
   res.nbLignes = res.lignes.length;
@@ -467,14 +712,22 @@ AnalyseImport analyserLignes(JeuImport j, List<List<Object?>> lignes, String fic
     res.globaux.addAll(j.reglesLot!(res.lignes, ctx));
   }
   for (final l in res.lignes) {
-    if (l.etat == 'refus') {
-      res.compte.refus++;
-    } else if (l.etat == 'avertissement') {
-      res.compte.avertissements++;
-    } else {
-      res.compte.valides++;
+    switch (l.etat) {
+      case 'refus':
+        res.compte.refus++;
+      case 'ignore':
+        res.compte.ignores++;
+      case 'inchange':
+        res.compte.inchanges++;
+      case 'non':
+        res.compte.non++;
+      case 'avertissement':
+        res.compte.avertissements++;
+      default:
+        res.compte.valides++;
     }
   }
+  res.aEcrire = res.lignes.where((l) => l.sansEcriture == null && l.etat != 'refus').length;
   res.accepte = !res.globaux.any((p) => p.estRefus) && res.compte.refus == 0 && res.nbLignes > 0;
   return res;
 }
@@ -482,7 +735,13 @@ AnalyseImport analyserLignes(JeuImport j, List<List<Object?>> lignes, String fic
 /// L'analyse d'un fichier déjà lu en lignes, ou d'un fichier illisible (le lecteur du poste rend alors [motifIllisible]).
 AnalyseImport analyserFichier(JeuImport j, List<List<Object?>>? lignes, String fichier, PortImport port, {String? motifIllisible, String? empreinte}) {
   AnalyseImport a;
-  if (lignes == null) {
+  final rd = refusDroitImport(j, 'importer', port);
+  if (rd != null) {
+    // Pas de droit : le moteur REFUSE avant de lire le fichier, et le refus ne se consigne pas.
+    a = AnalyseImport(j.id, fichier, const []);
+    a.droitRefuse = true;
+    a.globaux.add(ProblemeImport(n: 0, colonne: '', valeur: '', code: rd.code!, motif: rd.motif!, geste: rd.geste!, niveau: importRefus));
+  } else if (lignes == null) {
     a = AnalyseImport(j.id, fichier, const []);
     a.globaux.add(ProblemeImport(
         n: 0,
@@ -497,6 +756,46 @@ AnalyseImport analyserFichier(JeuImport j, List<List<Object?>>? lignes, String f
   }
   a.empreinte = empreinte;
   return a;
+}
+
+// --- La taille maximale d'un fichier, par jeu -----------------------------------------------------------------------------------
+
+/// La réponse de `definirBorne` : un refus se NOMME ; sinon [bornes] est le réglage `importBornes` à écrire en base, [avant] la valeur qu'il remplace.
+class ResultatBorneImport {
+  const ResultatBorneImport.ok({required this.bornes, required this.avant, required this.lignes})
+      : ok = true,
+        code = null,
+        motif = null,
+        geste = null;
+  const ResultatBorneImport.refus(String this.code, String this.motif, String this.geste)
+      : ok = false,
+        bornes = const {},
+        avant = 0,
+        lignes = 0;
+  final bool ok;
+  final String? code, motif, geste;
+  final Map<String, int> bornes;
+  final int avant, lignes;
+}
+
+/// `definirBorne(jeuId, lignes, motif)` de la maquette : un réglage en base par jeu (jamais une constante du code). Réservé aux profils qui SUPERVISENT les importations
+/// (droit d'annuler sur chaque jeu : tiré de la matrice), entier de 1 à [ProfilImport.borneMaximale], motivé.
+ResultatBorneImport definirBorneImport(String jeuId, Object? lignes, String? motif, PortImport port, {JeuImport? Function(String id)? jeu}) {
+  final j = (jeu ?? (String id) => null)(jeuId);
+  if (j == null && port.profil.declaration(jeuId) == null) {
+    return ResultatBorneImport.refus('JEU_INCONNU', 'aucun jeu d’import « $jeuId »', 'Choisir un jeu de la liste.');
+  }
+  if (!port.profil.supervise) {
+    return const ResultatBorneImport.refus('REGLAGE_RESERVE',
+        'la taille maximale d’un fichier se règle par un profil qui supervise les importations (droit d’annuler sur tous les jeux)', 'Demander le réglage à la Directrice Administrative ou à l’administrateur.');
+  }
+  final n = lignes is num ? lignes : num.tryParse('${lignes ?? ''}'.trim());
+  if (lignes == null || '$lignes'.trim().isEmpty || n == null || !n.isFinite || n != n.floor() || n < 1 || n > ProfilImport.borneMaximale) {
+    return const ResultatBorneImport.refus('BORNE_INVALIDE', 'la taille maximale est un nombre entier de lignes, de 1 à ${ProfilImport.borneMaximale}', 'Saisir un nombre entier de lignes.');
+  }
+  if ((motif ?? '').trim().isEmpty) return const ResultatBorneImport.refus('MOTIF_REQUIS', 'un réglage de taille se motive', 'Saisir le motif du réglage.');
+  final avant = port.profil.borne(jeuId);
+  return ResultatBorneImport.ok(bornes: {...port.profil.bornes, jeuId: n.toInt()}, avant: avant, lignes: n.toInt());
 }
 
 // --- Lots -----------------------------------------------------------------------------------------------------------------------
@@ -518,9 +817,11 @@ String referenceLot(PortImport port) {
 
 List<Map<String, Object?>> _erreursPlafonnees(List<ProblemeImport> ps) => [for (final p in ps.take(100)) p.versJson()];
 
-/// Consigne un fichier REFUSÉ : une fiche de lot « refusé » ; aucune donnée métier n'est écrite.
-FicheImport consigner(JeuImport j, AnalyseImport a, PortImport port) {
-  final ps = a.problemes;
+/// Consigne un fichier REFUSÉ : une fiche de lot « refusé » ; aucune donnée métier n'est écrite. Les constats d'un jeu restreint sont MASQUÉS (aucune valeur de cellule).
+/// Un refus de droit ne se consigne pas : rien n'a été tenté par un détenteur du droit.
+FicheImport? consigner(JeuImport j, AnalyseImport a, PortImport port) {
+  if (a.droitRefuse) return null;
+  final ps = problemesConsignes(j, a, port);
   final lot = port.inserer(collectionLots, {
     'reference': referenceLot(port),
     'jeu': j.id,
@@ -541,24 +842,43 @@ FicheImport consigner(JeuImport j, AnalyseImport a, PortImport port) {
   return lot;
 }
 
-/// Applique un lot ACCEPTÉ d'un seul geste : toutes les fiches ou aucune. L'analyse est REJOUÉE sur les lignes d'origine (le magasin a pu changer
-/// entre l'analyse et la confirmation) ; en cas d'échec d'écriture, ce qui vient d'être posé est retiré et le fichier est consigné.
+/// Les lignes ignorées (mode « ignorer »), pour le lot : le nombre ET la liste (borne de 500, le total reste exact). Jeu RESTREINT : la liste dit les LIGNES ignorées, jamais
+/// la valeur de leur clé.
+Map<String, Object?> _ignoresDe(JeuImport j, AnalyseImport a, PortImport port) {
+  final l = a.lignes.where((x) => x.etat == 'ignore').toList();
+  final restreint = port.profil.restreint(j.id);
+  return {
+    'ignoresTotal': l.length,
+    'ignores': [for (final x in l.take(500)) restreint ? {'n': x.n} : {'n': x.n, 'cle': x.brut.first}],
+  };
+}
+
+/// Applique un lot ACCEPTÉ d'un seul geste : toutes les fiches ou aucune. Le MOTEUR REFUSE sans le droit d'importer (relu ICI, au moment d'écrire). L'analyse est REJOUÉE
+/// sur les lignes d'origine (le magasin a pu changer entre l'analyse et la confirmation) ; en cas d'échec d'écriture, ce qui vient d'être posé est retiré (les
+/// modifications de fiches tenues sont restituées) et le fichier est consigné.
 ResultatImport appliquer(JeuImport j, AnalyseImport analyse, PortImport port) {
+  final rd = refusDroitImport(j, 'importer', port);
+  if (rd != null) return rd;
   if (!analyse.accepte) {
     return const ResultatImport.refus('ANALYSE_REFUSEE', 'le fichier n’a pas passé l’analyse', 'Corrigez les refus listés, puis téléversez de nouveau.');
   }
   final rejeu = analyserLignes(j, analyse.lignesBrutes, analyse.fichier, port)..empreinte = analyse.empreinte;
   if (!rejeu.accepte) {
-    final c = consigner(j, rejeu, port);
+    final c = consigner(j, rejeu, port)!;
     return ResultatImport.refus('MAGASIN_CHANGE', 'le magasin a changé depuis l’analyse ; le fichier est refusé et consigné (${c['reference']})',
         'Relisez le rapport du lot ${c['reference']} et téléversez de nouveau.',
         lot: c, analyse: rejeu);
+  }
+  if (rejeu.aEcrire == 0) {
+    return const ResultatImport.refus('RIEN_A_ECRIRE', 'aucune ligne ne s’écrirait : toutes sont ignorées, inchangées ou refusées par leur auteur (Non)', 'Rien à confirmer : aucun lot n’est consigné.');
   }
   final ctx = j.contexte(port);
   final reference = referenceLot(port);
   final lot = <String, Object?>{'reference': reference};
   final ecrits = <Map<String, Object?>>[];
   final par = port.utilisateur, jour = port.jour;
+  // `avant` : une MODIFICATION de fiche tenue (la couverture close, le miroir du dossier), pas une création : l'atomicité et l'annulation la RESTITUENT au lieu de l'archiver.
+  void declarer(String collection, Object? id, {Map<String, Object?>? avant}) => ecrits.add({'collection': collection, 'id': id, if (avant != null) 'avant': avant});
   FicheImport ecrireFiche(String collection, FicheImport fiche) {
     final stockee = port.inserer(collection, {
       'statut': 'actif',
@@ -573,18 +893,23 @@ ResultatImport appliquer(JeuImport j, AnalyseImport analyse, PortImport port) {
   }
 
   try {
-    j.ecrire(rejeu.lignes, ecrireFiche, lot, ctx, port);
+    j.ecrire([for (final l in rejeu.lignes) if (l.sansEcriture == null && l.etat != 'refus') l], ecrireFiche, lot, ctx, port, declarer);
   } catch (e) {
     for (final x in ecrits.reversed) {
-      port.retirer('${x['collection']}', x['id']);
+      final avant = x['avant'];
+      if (avant is Map) {
+        port.mettreAJour('${x['collection']}', x['id'], avant.cast<String, Object?>());
+      } else {
+        port.retirer('${x['collection']}', x['id']);
+      }
     }
-    final motif = e.toString();
+    final motif = e is StateError ? e.message : e.toString();
     rejeu.globaux.add(ProblemeImport(
         n: 0, colonne: '', valeur: '', code: 'ECRITURE_REFUSEE', niveau: importRefus, motif: motif, geste: 'Rien n’a été écrit. Corrigez la cause puis téléversez de nouveau.'));
-    final consigne = consigner(j, rejeu, port);
+    final consigne = consigner(j, rejeu, port)!;
     return ResultatImport.refus('ECRITURE_REFUSEE', motif, 'Rien n’a été écrit ; le fichier est consigné (${consigne['reference']}).', lot: consigne);
   }
-  final ps = rejeu.problemes;
+  final ps = problemesConsignes(j, rejeu, port);
   final rec = port.inserer(collectionLots, {
     'reference': reference,
     'jeu': j.id,
@@ -598,15 +923,20 @@ ResultatImport appliquer(JeuImport j, AnalyseImport analyse, PortImport port) {
     'nbLignes': rejeu.nbLignes,
     'nbAvertissements': rejeu.compte.avertissements,
     'nbRefus': 0,
+    'nbIgnores': rejeu.compte.ignores,
+    'nbInchanges': rejeu.compte.inchanges,
+    'nbNon': rejeu.compte.non,
     'ecrits': ecrits,
     'erreurs': _erreursPlafonnees(ps),
-    'erreursTotal': ps.length,
+    'erreursTotal': rejeu.problemes.length,
+    ..._ignoresDe(j, rejeu, port),
   });
   port.journaliser('Import', 'IMP', 'LotImport', reference, null, {'jeu': j.id, 'fichier': analyse.fichier, 'lignes': rejeu.nbLignes, 'fiches': ecrits.length});
   return ResultatImport.ok(lot: rec, ecrits: ecrits.length);
 }
 
-/// Annule un lot appliqué : ses fiches sont ARCHIVÉES (RG-14), jamais supprimées. Refusé en nommant la dépendance si un acte s'appuie dessus.
+/// Annule un lot appliqué : ses fiches sont ARCHIVÉES (RG-14), jamais supprimées ; les MODIFICATIONS du lot sont restituées dans l'ordre inverse. Refusé sans le droit
+/// d'annuler le jeu, refusé pour le lot d'un AUTRE agent sauf pour un profil qui supervise (`LOT_D_UN_AUTRE`), refusé en nommant la dépendance si un acte s'appuie dessus.
 ResultatImport annulerLot(JeuImport? Function(String id) jeu, Object? lotId, String? motif, PortImport port) {
   final lot = port.parId(collectionLots, lotId);
   if (lot == null) return const ResultatImport.refus('LOT_INCONNU', 'lot introuvable', 'Actualisez l’historique.');
@@ -614,16 +944,36 @@ ResultatImport annulerLot(JeuImport? Function(String id) jeu, Object? lotId, Str
     return ResultatImport.refus('LOT_NON_APPLIQUE', 'seul un lot appliqué s’annule (état actuel : ${lot['etat']})', 'Aucune action : ce lot n’a rien écrit ou est déjà annulé.');
   }
   final j = jeu('${lot['jeu']}');
+  if (j != null) {
+    final rd = refusDroitImport(j, 'annuler', port);
+    if (rd != null) return rd;
+  }
+  // Un lot se défait par son AUTEUR ; celui d'un autre relève de la SUPERVISION (droit d'annuler sur chaque jeu).
+  if (lot['par'] != port.utilisateur && !port.profil.supervise) {
+    return ResultatImport.refus('LOT_D_UN_AUTRE', 'le lot ${lot['reference']} a été écrit par un autre agent', 'Seul son auteur, ou un profil qui supervise les importations, peut l’annuler.');
+  }
   final dep = j?.dependances(lot, port);
   if (dep != null) return ResultatImport.refus(dep.code, dep.motif, dep.geste);
+  final ecrits = (lot['ecrits'] as List).cast<Map>().map((e) => e.cast<String, Object?>()).toList();
+  final libelleMotif = 'Annulation du lot ${lot['reference']}${motif != null && motif.isNotEmpty ? ' : $motif' : ''}';
+  // Un jeu qui ne s'annule pas par archivage (versions de prix immuables, transfert qui restitue des stocks) porte son propre geste d'annulation.
+  if (j?.annuler != null) {
+    final ra = j!.annuler!(lot, motif, port);
+    if (!ra.ok) return ResultatImport.refus(ra.code!, ra.motif!, ra.geste!);
+    port.mettreAJour(collectionLots, lot['id'], {'etat': 'annule', 'annulePar': port.utilisateur, 'annuleLe': port.jour, 'motifAnnulation': motif});
+    port.journaliser('Import annulé', 'IMP', 'LotImport', '${lot['reference']}', {'etat': 'applique'}, {'etat': 'annule', 'fiches': ra.archives});
+    return ResultatImport.ok(lot: port.parId(collectionLots, lot['id']), archives: ra.archives);
+  }
   final faits = <Map<String, Object?>>[];
   Map<String, Object?>? echec;
-  final ecrits = (lot['ecrits'] as List).cast<Map>().map((e) => e.cast<String, Object?>()).toList();
   for (final e in ecrits) {
     if (echec != null) break;
     final f = port.parId('${e['collection']}', e['id']);
     if (f == null || f['statut'] == 'archive') continue;
-    if (!port.archiver('${e['collection']}', e['id'], 'Annulation du lot ${lot['reference']}${motif != null && motif.isNotEmpty ? ' : $motif' : ''}')) {
+    if (e['avant'] != null) continue; // une modification se restitue plus bas, dans l'ordre inverse de son écriture
+    // Une VERSION de prix est immuable et ne s'archive pas (RG-14) : celles que pose la création d'un article restent lisibles à l'historique du prix.
+    if (e['collection'] == 'versionsTarif') continue;
+    if (!port.archiver('${e['collection']}', e['id'], libelleMotif)) {
       echec = e;
     } else {
       faits.add(e);
@@ -635,6 +985,11 @@ ResultatImport annulerLot(JeuImport? Function(String id) jeu, Object? lotId, Str
     }
     return ResultatImport.refus('ARCHIVAGE_REFUSE', 'le moteur a refusé d’archiver une fiche de « ${echec['collection']} » (exercice clos ou fiche verrouillée)',
         'Rien n’a été annulé. Rouvrez l’exercice ou traitez la fiche à la main.');
+  }
+  // Les MODIFICATIONS du lot (couverture reprise à son état, miroir du dossier) se restituent en ordre INVERSE : la dernière écrite est défaite la première.
+  for (final m in ecrits.reversed) {
+    final avant = m['avant'];
+    if (avant is Map && port.parId('${m['collection']}', m['id']) != null) port.mettreAJour('${m['collection']}', m['id'], avant.cast<String, Object?>());
   }
   port.mettreAJour(collectionLots, lot['id'], {'etat': 'annule', 'annulePar': port.utilisateur, 'annuleLe': port.jour, 'motifAnnulation': motif});
   port.journaliser('Import annulé', 'IMP', 'LotImport', '${lot['reference']}', {'etat': 'applique'}, {'etat': 'annule', 'fiches': faits.length});
@@ -657,7 +1012,7 @@ String _typeLisible(ColonneImport c) =>
 String _valeursPermises(ColonneImport c, dynamic ctx) {
   if (c.type == 'liste') return valeursListe(c, ctx).map((x) => x.label).join(' ; ');
   if (c.type == 'entier') return 'entier${c.min != null ? ' ≥ ${c.min}' : ''}${c.max != null ? ' et ≤ ${c.max}' : ''}';
-  if (c.type == 'tarif') return 'montant entier en FCFA ; NC ; tiret (-)';
+  if (c.type == 'tarif') return 'montant entier en FCFA ; NC ; tiret (-)${c.unique ? ' ; UNIQUE (prix unique)' : ''}';
   if (c.motifTexte != null) return c.motifTexte!;
   if (c.longueurMax != null) return 'jusqu’à ${c.longueurMax} caractères';
   return '';
@@ -674,9 +1029,10 @@ class ModeleImport {
 
 ModeleImport modeleImport(JeuImport j, PortImport port) {
   final ctx = j.contexte(port);
+  final cols = colonnesDe(j, port);
   final donnees = <List<Object?>>[
-    [for (final c in j.colonnes) c.label],
-    ligneExemple(j),
+    [for (final c in cols) c.label],
+    ligneExemple(j, port),
   ];
   final instructions = <List<Object?>>[
     ['Modèle d’importation : ${j.libelle}'],
@@ -689,12 +1045,20 @@ ModeleImport modeleImport(JeuImport j, PortImport port) {
     ['3. Téléversez le fichier : l’analyse complète s’exécute avant toute écriture, ligne par ligne. Un refus nomme la ligne, la colonne, la valeur, le motif et le geste de correction.'],
     ['4. Si une seule ligne est refusée, le fichier entier est refusé et rien n’est écrit. Corrigez et téléversez de nouveau.'],
     ['5. Un lot confirmé s’annule (les fiches sont archivées, jamais supprimées) tant qu’aucun acte ne s’appuie dessus.'],
+    [
+      const {
+            'refuser': '6. Doublon : une ligne dont la fiche existe déjà REFUSE le fichier entier ; un import ne modifie jamais une fiche tenue.',
+            'ignorer': '6. Doublon : une ligne dont la fiche existe déjà est IGNORÉE (ni écrite, ni modifiée) ; leur nombre et leur liste figurent au rapport du lot.',
+            'versionner': '6. Doublon : une ligne dont le prix diffère crée une NOUVELLE VERSION datée (jamais d’écrasement) ; une ligne identique est comptée « inchangée ».',
+          }[port.profil.modeDoublon(j.id)] ??
+          '',
+    ],
     [''],
     ['Colonne', 'Obligatoire', 'Type', 'Valeurs permises', 'Exemple', 'Explication'],
-    for (final c in j.colonnes) [c.label, c.obligatoire ? 'oui' : 'non', _typeLisible(c), _valeursPermises(c, ctx), c.exemple ?? '', c.aide ?? ''],
+    for (final c in cols) [c.label, c.obligatoire ? 'oui' : 'non', _typeLisible(c), _valeursPermises(c, ctx), c.exemple ?? '', c.aide ?? ''],
   ];
   final colsListes = <({String titre, List<String> valeurs})>[];
-  for (final c in j.colonnes) {
+  for (final c in cols) {
     if (c.type != 'liste') continue;
     colsListes.add((titre: c.label, valeurs: [for (final x in valeursListe(c, ctx)) x.label]));
   }
@@ -705,8 +1069,8 @@ ModeleImport modeleImport(JeuImport j, PortImport port) {
   ];
   final validations = <({int colonne, String formule})>[];
   var k = 0;
-  for (var ci = 0; ci < j.colonnes.length; ci++) {
-    if (j.colonnes[ci].type != 'liste') continue;
+  for (var ci = 0; ci < cols.length; ci++) {
+    if (cols[ci].type != 'liste') continue;
     final lettre = String.fromCharCode(65 + k);
     final fin = colsListes[k].valeurs.length + 1;
     validations.add((colonne: ci, formule: 'Listes!\$$lettre\$2:\$$lettre\$${fin < 2 ? 2 : fin}'));
@@ -717,30 +1081,45 @@ ModeleImport modeleImport(JeuImport j, PortImport port) {
     instructions,
     colsListes.isEmpty ? [['Aucune liste pour ce jeu']] : listes,
     validations,
-    [for (var ci = 0; ci < j.colonnes.length; ci++) if (j.colonnes[ci].type == 'texte') ci],
+    [for (var ci = 0; ci < cols.length; ci++) if (cols[ci].type == 'texte') ci],
   );
 }
 
 /// Le modèle CSV : BOM, point-virgule, guillemets doublés.
-String modeleCsvImport(JeuImport j) {
+String modeleCsvImport(JeuImport j, [PortImport? port]) {
   String ligne(List<Object?> a) => a.map((x) => '"${texteDe(x).replaceAll('"', '""')}"').join(';');
-  return '\uFEFF${ligne([for (final c in j.colonnes) c.label])}\r\n${ligne(ligneExemple(j))}\r\n';
+  return '\uFEFF${ligne([for (final c in (port == null ? j.colonnes : colonnesDe(j, port))) c.label])}\r\n${ligne(ligneExemple(j, port))}\r\n';
 }
 
-/// Le contenu de la feuille « Erreurs » du rapport téléchargeable.
-List<List<Object?>> rapportImport(List<Map<String, Object?>> problemes) => [
-      ['Ligne', 'Colonne', 'Valeur', 'Niveau', 'Code', 'Motif', 'Geste de correction'],
-      for (final p in problemes) [p['n'] ?? '', p['colonne'] ?? '', texteDe(p['valeur']), p['niveau'], p['code'], p['motif'], p['geste']],
-    ];
+/// Le contenu de la feuille « Erreurs » du rapport téléchargeable. [sansValeur] : un jeu RESTREINT n'a pas de colonne « Valeur » (aucune valeur de cellule recopiée) ;
+/// [masquer] rend idempotent le masquage d'un lot déjà consigné.
+List<List<Object?>> rapportImport(List<Map<String, Object?>> problemes, {bool sansValeur = false}) {
+  const lib = {'refus': 'refus', 'avertissement': 'avertissement', 'ignore': 'ignorée', 'info': 'information'};
+  return [
+    sansValeur ? ['Ligne', 'Colonne', 'Niveau', 'Code', 'Motif', 'Geste de correction'] : ['Ligne', 'Colonne', 'Valeur', 'Niveau', 'Code', 'Motif', 'Geste de correction'],
+    for (final p in problemes)
+      [
+        p['n'] ?? '',
+        p['colonne'] ?? '',
+        if (!sansValeur) texteDe(p['valeur']),
+        lib[p['niveau']] ?? p['niveau'],
+        p['code'],
+        p['motif'],
+        p['geste']
+      ],
+  ];
+}
 
 /// Le contenu de la feuille « Résumé » du rapport.
-List<List<Object?>> resumeRapportImport(String jeuLibelle, String fichier, String lot, int nbLignes, int nbProblemes) => [
+List<List<Object?>> resumeRapportImport(String jeuLibelle, String fichier, String lot, int nbLignes, int nbProblemes, {int ignores = 0, bool sansValeur = false}) => [
       ['Rapport d’importation'],
       ['Jeu', jeuLibelle],
       ['Fichier', fichier],
       ['Lot', lot],
       ['Lignes lues', nbLignes],
       ['Problèmes', nbProblemes],
+      ['Lignes ignorées (fiche déjà tenue)', ignores],
+      if (sansValeur) ['Valeurs de cellule', 'non recopiées (jeu restreint, RG-13)'],
     ];
 
 // --- Lecture CSV et empreinte ----------------------------------------------------------------------------------------------------
