@@ -49,6 +49,11 @@ bool _passeParLaMere(ContexteEcran c, String jeuId) =>
     c.donnees != null &&
     DemandesImportPoste.passeParUneDemande(fileulRattache: ServiceInstallation.de(c.magasin).rattache, declaration: c.donnees!.matrice.matriceImport.declaration(jeuId));
 
+/// Ce jeu RESTREINT écrit de la configuration : sur un fileul rattaché il ne s'importe qu'au poste de la mère (ses lignes ne voyagent pas dans une demande).
+bool _reserveALaMere(ContexteEcran c, String jeuId) =>
+    c.donnees != null &&
+    DemandesImportPoste.reserveALaMere(fileulRattache: ServiceInstallation.de(c.magasin).rattache, declaration: c.donnees!.matrice.matriceImport.declaration(jeuId));
+
 /// Le tableau des demandes que CE poste a envoyées à la mère, pour un jeu : l'agent voit la réponse nommée, jamais les lignes de son fichier.
 Widget tableauDemandes(List<Fiche> demandes) => TableauSigh(
       lignes: [for (final d in demandes) {...d, '_etat': _tonsDemande[d['etat']]?.$1 ?? '${d['etat']}'}],
@@ -416,7 +421,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             ignores: a.compte.ignores, sansValeur: port.profil.restreint(_jeu.id)));
   }
 
-  Widget _apercu(ContexteEcran c, AnalyseImport a, DroitImport droit, {required bool viaMere}) {
+  Widget _apercu(ContexteEcran c, AnalyseImport a, DroitImport droit, {required bool viaMere, required bool reserve}) {
     final ps = a.problemes;
     final avecDetail = a.lignes.any((l) => l.detail != null && l.detail!.isNotEmpty);
     return CarteSigh(
@@ -513,7 +518,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         const SizedBox(height: 12),
         Wrap(spacing: 8, runSpacing: 8, children: [
           // La commande d'écriture n'existe que pour qui détient le droit d'IMPORTER CE JEU (pas celui d'éditer l'écran) : absente, jamais grisée.
-          if (a.accepte && a.aEcrire > 0 && droit.importer && !viaMere)
+          if (a.accepte && a.aEcrire > 0 && droit.importer && !viaMere && !reserve)
             BoutonSigh(
                 libelle: 'Confirmer l’importation (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
                 icone: LucideIcons.packageCheck,
@@ -559,6 +564,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         final jeuValide = vp.etat('jeux_import', j.ecran)?.enAttente == false;
         final reprise = !modale && j.id == 'grand-stock';
         final viaMere = _passeParLaMere(c, j.id);
+        final reserve = _reserveALaMere(c, j.id);
         // La REPRISE valorisée du Grand Stock a ses propres droits (ceux de M6) : elle reste atteignable de qui l'a, même sans détenir le JEU.
         Widget repriseValorisee() => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: const [
               SizedBox(height: 24),
@@ -615,6 +621,12 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             const NoteSigh(
                 'Réglé sur la mère. Ce jeu écrit la configuration de la clinique, que la mère seule écrit : votre fichier est vérifié ici, puis envoyé à la mère par une demande. Elle rejoue la vérification sous votre profil, applique ou refuse en nommant le code, le motif et le geste, et vous voyez sa réponse ci-dessous.',
                 icone: LucideIcons.serverCog),
+          ],
+          if (reserve) ...[
+            const SizedBox(height: 16),
+            const NoteSigh(
+                'Réglé sur la mère et jeu restreint. Ce jeu écrit la configuration de la clinique et porte des données sensibles : ses lignes ne voyagent pas dans une demande. Il s’importe au poste de la mère ; le fichier peut être vérifié ici, rien n’y est écrit.',
+                icone: LucideIcons.shieldAlert),
           ],
           if (profil.restreint(j.id)) ...[
             const SizedBox(height: 16),
@@ -681,7 +693,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             const SizedBox(height: 16),
             NoteSigh(_resultat!, ton: _resultatOk ? TonSigh.succes : TonSigh.danger, icone: _resultatOk ? LucideIcons.circleCheck : LucideIcons.octagonAlert),
           ],
-          if (_analyse != null) ...[const SizedBox(height: 16), _apercu(c, _analyse!, d, viaMere: viaMere)],
+          if (_analyse != null) ...[const SizedBox(height: 16), _apercu(c, _analyse!, d, viaMere: viaMere, reserve: reserve)],
           if (viaMere) ...[
             const SizedBox(height: 16),
             CarteSigh(titre: 'Demandes envoyées à la mère', sansRemplissage: true, child: tableauDemandes(_demandes(c).sesDemandes(jeu: j.id))),

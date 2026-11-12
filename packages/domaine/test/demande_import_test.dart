@@ -43,6 +43,12 @@ void main() {
     for (final jeu in ['patients', 'soldes-ouverture']) {
       expect(jeuExigeLaMere(matriceReelle.declaration(jeu)!, config), isFalse, reason: '$jeu s\'écrit au fileul, par ses propres règles de fusion');
     }
+    // UN JEU RESTREINT n'y passe jamais : ses lignes (identité, salaire) ne voyagent pas dans une fiche partagée ; il s'importe à la mère.
+    final personnel = matriceReelle.declaration('personnel')!;
+    expect(personnel.restreint && personnel.collections.any(config.contains), isTrue, reason: 'le personnel est de configuration ET restreint');
+    expect(jeuExigeLaMere(personnel, config), isFalse);
+    expect(jeuReserveALaMere(personnel, config), isTrue);
+    expect(jeuReserveALaMere(matriceReelle.declaration('assureurs')!, config), isFalse);
   });
 
   test('LE FILEUL DÉPOSE une fiche vérifiée : jeu, fichier, lignes, comptes, rôle et nom de l\'auteur, état « en attente » ; elle porte les lignes que la mère rejouera', () {

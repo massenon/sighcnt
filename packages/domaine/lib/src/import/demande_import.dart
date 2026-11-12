@@ -23,8 +23,12 @@ const String demandesImportCollection = 'demandesImport';
 const String demandeImportEnAttente = 'en_attente', demandeImportAppliquee = 'appliquee', demandeImportRefusee = 'refusee';
 
 /// Un jeu passe par une demande quand un fileul rattaché ne peut écrire l'une de ses collections cibles : [collectionsDeLaMere] est l'ensemble des collections de configuration
-/// (garde « réglé sur la mère »).
-bool jeuExigeLaMere(DeclarationImport d, Set<String> collectionsDeLaMere) => d.collections.any(collectionsDeLaMere.contains);
+/// (garde « réglé sur la mère »). UN JEU RESTREINT n'y passe JAMAIS : ses lignes (identité, salaire, soldes) ne voyagent pas dans une fiche partagée, la rémunération du personnel n'étant
+/// publiée à personne (RG-13) ; voir [jeuReserveALaMere].
+bool jeuExigeLaMere(DeclarationImport d, Set<String> collectionsDeLaMere) => !d.restreint && d.collections.any(collectionsDeLaMere.contains);
+
+/// Un jeu RESTREINT qui écrit de la configuration ne s'importe qu'au poste de la MÈRE : le fileul le dit au lieu de proposer un envoi (le personnel, par exemple).
+bool jeuReserveALaMere(DeclarationImport d, Set<String> collectionsDeLaMere) => d.restreint && d.collections.any(collectionsDeLaMere.contains);
 
 /// La fiche déposée par le fileul. [analyse] est celle qu'il a faite lui-même (acceptée, au moins une ligne à écrire) : un fichier refusé ne part jamais.
 Map<String, Object?> composerDemandeImport({

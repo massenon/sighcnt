@@ -85,6 +85,26 @@ void main() {
     expect(DemandesImportPoste.passeParUneDemande(fileulRattache: false, declaration: decl('fournisseurs')), isFalse, reason: 'la mère, ou un poste autonome, écrit directement');
     expect(DemandesImportPoste.passeParUneDemande(fileulRattache: true, declaration: decl('patients')), isFalse, reason: 'l\'activité s\'écrit au fileul, par ses règles de fusion');
     expect(DemandesImportPoste.passeParUneDemande(fileulRattache: true, declaration: null), isFalse);
+    // Un jeu RESTREINT qui écrit de la configuration (le personnel : identité et salaire) ne passe JAMAIS par une demande : il s'importe à la mère.
+    expect(DemandesImportPoste.passeParUneDemande(fileulRattache: true, declaration: decl('personnel')), isFalse);
+    expect(DemandesImportPoste.reserveALaMere(fileulRattache: true, declaration: decl('personnel')), isTrue);
+    expect(DemandesImportPoste.reserveALaMere(fileulRattache: false, declaration: decl('personnel')), isFalse, reason: 'la mère importe en direct');
+    expect(DemandesImportPoste.reserveALaMere(fileulRattache: true, declaration: decl('fournisseurs')), isFalse);
+  });
+
+  cas('JEU RESTREINT DE CONFIGURATION (le personnel) : le fileul le dit, vérifie le fichier si on veut, et ne propose NI import NI demande ; la mère importe', (t) async {
+    final m = magasin();
+    await rattacher(t, m);
+    await ouvrir(t, m, 'm10-personnel', role: 'admin');
+    await toucher(t, find.byKey(const Key('imp-bouton-importer')));
+    expect(find.textContaining('Réglé sur la mère et jeu restreint.'), findsOneWidget);
+    SelecteursImport.choisir = () async => FichierChoisi('pe-valide.xlsx', fixture('pe-valide'));
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Téléverser un fichier (.xlsx ou .csv)'));
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('Analyse conforme.'), findsOneWidget);
+    expect(find.byKey(const Key('imp-envoyer-demande')), findsNothing, reason: 'les lignes d\'un jeu restreint ne voyagent pas dans une demande');
+    expect(find.widgetWithText(BoutonSigh, 'Confirmer l’importation (2 lignes)'), findsNothing, reason: 'et rien ne s\'écrit sur un fileul : la configuration est réglée sur la mère');
+    expect(m.collection(demandesImportCollection).toutes, isEmpty);
   });
 
   cas('FILEUL RATTACHÉ : le fichier est vérifié ici, puis envoyé en demande ; rien n\'est écrit chez lui ; il lit l\'état puis la réponse nommée de la mère', (t) async {

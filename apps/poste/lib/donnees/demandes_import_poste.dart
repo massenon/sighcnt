@@ -34,6 +34,10 @@ class DemandesImportPoste {
   static bool passeParUneDemande({required bool fileulRattache, required DeclarationImport? declaration}) =>
       fileulRattache && declaration != null && jeuExigeLaMere(declaration, collectionsDeLaMere());
 
+  /// Un jeu RESTREINT qui écrit de la configuration ne s'importe qu'à la mère : sur un fileul rattaché, la fenêtre le dit et ne propose rien.
+  static bool reserveALaMere({required bool fileulRattache, required DeclarationImport? declaration}) =>
+      fileulRattache && declaration != null && jeuReserveALaMere(declaration, collectionsDeLaMere());
+
   String get _jour {
     final d = aujourdhui();
     return '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
