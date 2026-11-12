@@ -1,0 +1,55 @@
+{
+ "id": "imp-emplacements",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation des emplacements de rangement",
+ "acces": "ouvert",
+ "titre": "Importation des emplacements de rangement",
+ "description": "Casiers et rayons du magasin : code (celui de l’étiquette), intitulé, zone, conservation, capacité.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation des emplacements de rangement"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "Une zone ou une conservation vide reste vide (« à préciser ») : aucune valeur par défaut n’est inventée. Le code est celui qui figure sur l’étiquette : deux écritures qui ne diffèrent que par la casse ou les accents (« A2 », « a2 ») sont un seul casier. Les écritures qui diffèrent aussi par un tiret (« A2 », « A-2 ») restent deux casiers : la comparaison ne les rapproche pas.",
+  "Fiches déjà tenues : ignorées. Une ligne dont la fiche existe déjà n’écrit rien et ne modifie rien ; elle est comptée et nommée au rapport. Un fichier peut donc être rejoué sans refus (mode arrêté par la Direction pour ce jeu seulement)."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

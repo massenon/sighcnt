@@ -28,6 +28,11 @@ class PortMagasin extends PortImport {
     'comptes': 'CPT',
     'ecritures': 'ECR',
     collectionLots: 'LIM',
+    'naturesFacture': 'NAT',
+    'centresCouts': 'CC',
+    'unitesLabo': 'UNI',
+    'prestataires': 'PRE',
+    'emplacements': 'EMP',
   };
 
   @override

@@ -52,6 +52,12 @@ const MAGASIN = {
     { id: 'CPT004', num: '601000', libelle: 'Achats de marchandises', classe: 6, journal: 'ACH', statut: 'actif' },
   ],
   ecritures: [{ id: 'ECR1', numero: 'AN-2025-00001', date: '2025-01-01', journal: 'AN', compte: '571000', debit: 1, credit: 0, statut: 'brouillon' }],
+  /* Lot IMP-C : les référentiels des jeux portés au poste (natures, centres, unités, prestataires, emplacements) : une fiche tenue chacun, de quoi éprouver les doublons. */
+  naturesFacture: [{ id: 'NAT01', code: 'CONS', libelle: 'Consultation', secteur: 'Médecine générale', statut: 'actif' }],
+  centresCouts: [{ id: 'CC01', code: 'laboratoire', libelle: 'Laboratoire', type: 'exploitation', statut: 'actif' }],
+  unitesLabo: [{ id: 'UNI1', symbole: 'g/dl', libelle: 'gramme par décilitre', domaine: 'Biochimie', statut: 'actif' }],
+  prestataires: [{ id: 'PE1', reference: 'PE-0001', nom: 'Dr ADJO Marius', specialite: 'Chirurgie', tarifActe: 20000, actesRealises: 3, ifu: '3202112446712', statut: 'actif' }],
+  emplacements: [{ id: 'EMP1', code: 'A2', libelle: 'Rayon A, casier 2', zone: 'Rayonnage sec', statut: 'actif' }],
   lotsImportation: [],
 };
 
@@ -65,6 +71,11 @@ const FO = (o) => Object.assign({ code: null, nom: null, type: null, ville: null
 const AS = (o) => Object.assign({ code: null, nom: null, tel: null, email: null, convention: null }, o);
 const SC = (o) => Object.assign({ nom: null, police: null, assureur: null, categorie: null, effectif: null, dateDebut: null, dateFin: null }, o);
 const PC = (o) => Object.assign({ num: null, libelle: null, journal: null }, o);
+const NA = (o) => Object.assign({ code: null, libelle: null, secteur: null, source: null }, o);
+const CE = (o) => Object.assign({ code: null, libelle: null, type: 'Centre d’exploitation', responsable: null, source: null }, o);
+const UN = (o) => Object.assign({ symbole: null, libelle: null, domaine: null }, o);
+const PS = (o) => Object.assign({ nom: null, specialite: null, telephone: null, tarifActe: null, ifu: null, factureNormalisee: null }, o);
+const EM = (o) => Object.assign({ code: null, libelle: null, zone: null, temperature: null, capacite: null, observation: null }, o);
 const AN = (o) => Object.assign({ code: null, designation: null, section: null, echantillon: null, delai: null }, o);
 
 const CAS = [
@@ -140,6 +151,30 @@ const CAS = [
   ['pc-numero-invalide', 'plan-comptable', [PC({ num: '05', libelle: 'Trop court' })]],
   ['an-valide', 'analyses-modele', [AN({ code: 'HBA1C', designation: 'Hémoglobine glyquée', section: 'Biochimie', echantillon: 'Sang total (EDTA)', delai: '24 h' })]],
   ['an-section-inconnue', 'analyses-modele', [AN({ code: 'GLY', designation: 'Glycémie', section: 'Magie' })]],
+  /* Lot IMP-C : cinq référentiels de plus au poste. */
+  ['na-valide', 'natures-facture', [NA({ code: 'orth', libelle: 'Orthopédie', secteur: 'Chirurgie', source: 'Décision de la Direction' }), NA({ code: 'KINE', libelle: 'Kinésithérapie', secteur: 'Chirurgie' })]],
+  ['na-doublon-code', 'natures-facture', [NA({ code: 'cons', libelle: 'Autre libellé', secteur: 'Chirurgie' })]],
+  ['na-doublon-libelle', 'natures-facture', [NA({ code: 'NEWC', libelle: 'consultation', secteur: 'Chirurgie' })]],
+  ['na-code-invalide', 'natures-facture', [NA({ code: 'A B', libelle: 'Avec espace', secteur: 'Chirurgie' })]],
+  ['na-secteur-inconnu', 'natures-facture', [NA({ code: 'XYZ', libelle: 'Secteur fantôme', secteur: 'Magie' })]],
+  ['ce-valide', 'centres-couts', [CE({ code: 'orthopedie', libelle: 'Orthopédie', responsable: 'Dr BASSONGUI' }), CE({ code: 'support-logistique', libelle: 'Logistique', type: 'Centre de support' })]],
+  ['ce-doublon-code', 'centres-couts', [CE({ code: 'LABORATOIRE', libelle: 'Autre', type: 'Centre de support' })]],
+  ['ce-doublon-libelle', 'centres-couts', [CE({ code: 'labo2', libelle: 'laboratoire' })]],
+  ['ce-code-invalide', 'centres-couts', [CE({ code: 'un code', libelle: 'Avec espace' })]],
+  ['un-valide', 'unites-labo', [UN({ symbole: 'mmol/l', libelle: 'millimole par litre', domaine: 'Biochimie' }), UN({ symbole: 'G/dl', libelle: 'giga par décilitre', domaine: 'Hématologie' })]],
+  ['un-doublon', 'unites-labo', [UN({ symbole: 'g/dl', libelle: 'doublon exact', domaine: 'Biochimie' })]],
+  ['un-casse-distincte', 'unites-labo', [UN({ symbole: 'G/dl', libelle: 'distincte de g/dl : la casse compte', domaine: 'Hématologie' })]],
+  ['un-domaine-inconnu', 'unites-labo', [UN({ symbole: 'xx', libelle: 'inconnu', domaine: 'Magie' })]],
+  ['ps-valide', 'prestataires', [PS({ nom: 'Dr SANNI Idrissou', specialite: 'Échographie', telephone: '0197000000', tarifActe: 25000, ifu: '3202112446799', factureNormalisee: 'Oui' }), PS({ nom: 'Mme KOUDJO Rose', specialite: 'Accouchement', tarifActe: 15000 })]],
+  ['ps-doublon-nom', 'prestataires', [PS({ nom: 'dr adjo marius', specialite: 'Chirurgie', tarifActe: 1000 })]],
+  ['ps-doublon-ifu', 'prestataires', [PS({ nom: 'Dr AUTRE', specialite: 'Chirurgie', tarifActe: 1000, ifu: '3202112446712' })]],
+  ['ps-ifu-invalide', 'prestataires', [PS({ nom: 'Dr IFU', specialite: 'Chirurgie', tarifActe: 1000, ifu: '12AB' })]],
+  ['ps-tarif-tiret', 'prestataires', [PS({ nom: 'Dr TIRET', specialite: 'Chirurgie', tarifActe: '-' })]],
+  ['ps-colonne-retiree', 'prestataires', [PS({ nom: 'Dr RETIRE', specialite: 'Chirurgie', tarifActe: 1000 })], 'plus:Actes réalisés'],
+  ['em-valide', 'emplacements', [EM({ code: 'B7', libelle: 'Rayon B, casier 7', zone: 'Chaîne du froid', temperature: '2 à 8 °C', capacite: 40 }), EM({ code: 'C1', libelle: 'Réserve C1' })]],
+  ['em-doublon-casse', 'emplacements', [EM({ code: 'a2', libelle: 'Doublon par la casse' }), EM({ code: 'A-2', libelle: 'Casier distinct : le tiret compte' })]],
+  ['em-zone-inconnue', 'emplacements', [EM({ code: 'Z9', libelle: 'Zone inconnue', zone: 'Cave' })]],
+  ['em-capacite-negative', 'emplacements', [EM({ code: 'N1', libelle: 'Capacité négative', capacite: -3 })]],
 ];
 
 (async () => {
@@ -169,6 +204,9 @@ const CAS = [
         let tete = entetes(j);
         let donnees = lignes.map((o) => versLigne(j, o));
         if (mode === 'exemple') donnees = [I.jeu(j).colonnes.map((c) => (c.exemple === undefined ? '' : c.exemple))];
+        if (mode && mode.indexOf('plus:') === 0) {
+          tete = tete.concat([mode.slice(5)]); donnees = donnees.map((l) => l.concat([5]));
+        }
         if (mode && mode.indexOf('sans:') === 0) {
           const cle = mode.slice(5), i = I.jeu(j).colonnes.findIndex((c) => c.cle === cle);
           tete = tete.filter((_, k) => k !== i); donnees = donnees.map((l) => l.filter((_, k) => k !== i));
@@ -205,7 +243,7 @@ const CAS = [
         };
       });
       /* 3. Application, relevé des fiches, annulation. L'ordre fixe les références de lot. */
-      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide'];
+      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide'];
       out.applications = [];
       const refus = I.analyserOctets('grand-stock', Uint8Array.from(out.fixtures['gs-quantite-negative']), 'gs-quantite-negative.xlsx');
       const lotRefus = I.consigner(I.jeu('grand-stock'), refus);
@@ -330,6 +368,9 @@ const CAS = [
         sectionsLabo: SIGH.labo.SECTIONS.map((s) => [s.id, s.label]),
         services: D.SERVICES,
         secteursActes: Array.from(new Set(D.ACTES.map((a) => a.secteur).filter(Boolean))),
+        /* Lot IMP-C : les listes de saisie des cinq référentiels portés, lues des colonnes des jeux (aucune recopiée à la main). */
+        secteursActivite: D.SECTEURS_ACTIVITE, specialitesPrestataire: D.SPECIALITES_PRESTATAIRE, domainesUnitesLabo: D.DOMAINES_UNITES_LABO,
+        zonesEmplacement: I.jeu('emplacements').colonnes.find((c) => c.cle === 'zone').liste, temperaturesEmplacement: I.jeu('emplacements').colonnes.find((c) => c.cle === 'temperature').liste,
       };
       out.lienCellules = { serie1: X.versDate(1), serie60: X.versDate(61), serie45000: X.versDate(45000), serie46023: X.versDate(46023) };
       return out;
@@ -356,6 +397,15 @@ const CAS = [
       + 'const importServices = <String>[' + R.services.map(q).join(', ') + '];\n\n'
       + '/// Secteurs du catalogue des actes (`D.ACTES`).\n'
       + 'const importSecteursActes = <String>[' + R.secteursActes.map(q).join(', ') + '];\n\n'
+      + '/// Secteurs porteurs d\'activité facturable (`D.SECTEURS_ACTIVITE`).\n'
+      + 'const importSecteursActivite = <String>[' + R.secteursActivite.map(q).join(', ') + '];\n\n'
+      + '/// Spécialités d\'un prestataire externe (`D.SPECIALITES_PRESTATAIRE`).\n'
+      + 'const importSpecialitesPrestataire = <String>[' + R.specialitesPrestataire.map(q).join(', ') + '];\n\n'
+      + '/// Domaines des unités de mesure du laboratoire (`D.DOMAINES_UNITES_LABO`).\n'
+      + 'const importDomainesUnitesLabo = <String>[' + R.domainesUnitesLabo.map(q).join(', ') + '];\n\n'
+      + '/// Zones et températures de conservation d\'un emplacement de rangement (colonnes du jeu `emplacements`).\n'
+      + 'const importZonesEmplacement = <String>[' + R.zonesEmplacement.map(q).join(', ') + '];\n'
+      + 'const importTemperaturesEmplacement = <String>[' + R.temperaturesEmplacement.map(q).join(', ') + '];\n\n'
       + '/// Sections du laboratoire (`SIGH.labo.SECTIONS`) : [identifiant, libellé].\n'
       + 'const importSectionsLabo = <List<String>>[\n' + R.sectionsLabo.map((c) => '  [' + q(c[0]) + ', ' + q(c[1]) + '],').join('\n') + '\n];\n';
     const dir = path.join(REPO, 'packages/domaine/lib/src/import');

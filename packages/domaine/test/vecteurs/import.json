@@ -189,6 +189,54 @@
     "statut": "brouillon"
    }
   ],
+  "naturesFacture": [
+   {
+    "id": "NAT01",
+    "code": "CONS",
+    "libelle": "Consultation",
+    "secteur": "Médecine générale",
+    "statut": "actif"
+   }
+  ],
+  "centresCouts": [
+   {
+    "id": "CC01",
+    "code": "laboratoire",
+    "libelle": "Laboratoire",
+    "type": "exploitation",
+    "statut": "actif"
+   }
+  ],
+  "unitesLabo": [
+   {
+    "id": "UNI1",
+    "symbole": "g/dl",
+    "libelle": "gramme par décilitre",
+    "domaine": "Biochimie",
+    "statut": "actif"
+   }
+  ],
+  "prestataires": [
+   {
+    "id": "PE1",
+    "reference": "PE-0001",
+    "nom": "Dr ADJO Marius",
+    "specialite": "Chirurgie",
+    "tarifActe": 20000,
+    "actesRealises": 3,
+    "ifu": "3202112446712",
+    "statut": "actif"
+   }
+  ],
+  "emplacements": [
+   {
+    "id": "EMP1",
+    "code": "A2",
+    "libelle": "Rayon A, casier 2",
+    "zone": "Rayonnage sec",
+    "statut": "actif"
+   }
+  ],
   "lotsImportation": []
  },
  "cas": [
@@ -3712,6 +3760,1519 @@
      ]
     ]
    }
+  },
+  {
+   "id": "na-valide",
+   "jeu": "natures-facture",
+   "lignes": [
+    [
+     "Code",
+     "Nature de la facture",
+     "Secteur émetteur",
+     "Origine"
+    ],
+    [
+     "orth",
+     "Orthopédie",
+     "Chirurgie",
+     "Décision de la Direction"
+    ],
+    [
+     "KINE",
+     "Kinésithérapie",
+     "Chirurgie",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "na-doublon-code",
+   "jeu": "natures-facture",
+   "lignes": [
+    [
+     "Code",
+     "Nature de la facture",
+     "Secteur émetteur",
+     "Origine"
+    ],
+    [
+     "cons",
+     "Autre libellé",
+     "Chirurgie",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "cons"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "cons",
+      "motif": "la nature « CONS » existe déjà (Consultation)"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "na-doublon-libelle",
+   "jeu": "natures-facture",
+   "lignes": [
+    [
+     "Code",
+     "Nature de la facture",
+     "Secteur émetteur",
+     "Origine"
+    ],
+    [
+     "NEWC",
+     "consultation",
+     "Chirurgie",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "NEWC"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "NEWC",
+      "motif": "la nature « Consultation » existe déjà sous le code CONS"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "na-code-invalide",
+   "jeu": "natures-facture",
+   "lignes": [
+    [
+     "Code",
+     "Nature de la facture",
+     "Secteur émetteur",
+     "Origine"
+    ],
+    [
+     "A B",
+     "Avec espace",
+     "Chirurgie",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "A B"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "A B",
+      "motif": "2 à 8 lettres ou chiffres, sans espace"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "na-secteur-inconnu",
+   "jeu": "natures-facture",
+   "lignes": [
+    [
+     "Code",
+     "Nature de la facture",
+     "Secteur émetteur",
+     "Origine"
+    ],
+    [
+     "XYZ",
+     "Secteur fantôme",
+     "Magie",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Secteur émetteur",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Magie"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Secteur émetteur",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Magie",
+      "motif": "« Magie » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ce-valide",
+   "jeu": "centres-couts",
+   "lignes": [
+    [
+     "Code",
+     "Intitulé du centre",
+     "Type",
+     "Responsable",
+     "Origine"
+    ],
+    [
+     "orthopedie",
+     "Orthopédie",
+     "Centre d’exploitation",
+     "Dr BASSONGUI",
+     ""
+    ],
+    [
+     "support-logistique",
+     "Logistique",
+     "Centre de support",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Responsable",
+      "code": "SANS_RESPONSABLE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Responsable",
+      "code": "SANS_RESPONSABLE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucun responsable désigné"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ce-doublon-code",
+   "jeu": "centres-couts",
+   "lignes": [
+    [
+     "Code",
+     "Intitulé du centre",
+     "Type",
+     "Responsable",
+     "Origine"
+    ],
+    [
+     "LABORATOIRE",
+     "Autre",
+     "Centre de support",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "LABORATOIRE"
+     },
+     {
+      "n": 2,
+      "colonne": "Responsable",
+      "code": "SANS_RESPONSABLE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "LABORATOIRE",
+      "motif": "le centre « laboratoire » existe déjà (Laboratoire)"
+     },
+     {
+      "n": 2,
+      "colonne": "Responsable",
+      "code": "SANS_RESPONSABLE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucun responsable désigné"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ce-doublon-libelle",
+   "jeu": "centres-couts",
+   "lignes": [
+    [
+     "Code",
+     "Intitulé du centre",
+     "Type",
+     "Responsable",
+     "Origine"
+    ],
+    [
+     "labo2",
+     "laboratoire",
+     "Centre d’exploitation",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "labo2"
+     },
+     {
+      "n": 2,
+      "colonne": "Responsable",
+      "code": "SANS_RESPONSABLE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "labo2",
+      "motif": "le centre « Laboratoire » existe déjà sous le code laboratoire"
+     },
+     {
+      "n": 2,
+      "colonne": "Responsable",
+      "code": "SANS_RESPONSABLE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucun responsable désigné"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ce-code-invalide",
+   "jeu": "centres-couts",
+   "lignes": [
+    [
+     "Code",
+     "Intitulé du centre",
+     "Type",
+     "Responsable",
+     "Origine"
+    ],
+    [
+     "un code",
+     "Avec espace",
+     "Centre d’exploitation",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "un code"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "un code",
+      "motif": "2 à 24 lettres, chiffres, tiret ou souligné, sans espace"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "un-valide",
+   "jeu": "unites-labo",
+   "lignes": [
+    [
+     "Symbole",
+     "Intitulé complet",
+     "Domaine"
+    ],
+    [
+     "mmol/l",
+     "millimole par litre",
+     "Biochimie"
+    ],
+    [
+     "G/dl",
+     "giga par décilitre",
+     "Hématologie"
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Symbole",
+      "code": "A_CONFIRMER",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Symbole",
+      "code": "A_CONFIRMER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "unité importée « à confirmer » jusqu’à sa validation par le biologiste médical"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "un-doublon",
+   "jeu": "unites-labo",
+   "lignes": [
+    [
+     "Symbole",
+     "Intitulé complet",
+     "Domaine"
+    ],
+    [
+     "g/dl",
+     "doublon exact",
+     "Biochimie"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Symbole",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "g/dl"
+     },
+     {
+      "n": 2,
+      "colonne": "Symbole",
+      "code": "A_CONFIRMER",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Symbole",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "g/dl",
+      "motif": "l’unité « g/dl » existe déjà (gramme par décilitre)"
+     },
+     {
+      "n": 2,
+      "colonne": "Symbole",
+      "code": "A_CONFIRMER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "unité importée « à confirmer » jusqu’à sa validation par le biologiste médical"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "un-casse-distincte",
+   "jeu": "unites-labo",
+   "lignes": [
+    [
+     "Symbole",
+     "Intitulé complet",
+     "Domaine"
+    ],
+    [
+     "G/dl",
+     "distincte de g/dl : la casse compte",
+     "Hématologie"
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Symbole",
+      "code": "A_CONFIRMER",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Symbole",
+      "code": "A_CONFIRMER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "unité importée « à confirmer » jusqu’à sa validation par le biologiste médical"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "un-domaine-inconnu",
+   "jeu": "unites-labo",
+   "lignes": [
+    [
+     "Symbole",
+     "Intitulé complet",
+     "Domaine"
+    ],
+    [
+     "xx",
+     "inconnu",
+     "Magie"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Domaine",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Magie"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Domaine",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Magie",
+      "motif": "« Magie » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ps-valide",
+   "jeu": "prestataires",
+   "lignes": [
+    [
+     "Nom du prestataire",
+     "Spécialité / type d’acte",
+     "Téléphone",
+     "Tarif par acte (FCFA)",
+     "IFU du prestataire",
+     "Facture normalisée fournie"
+    ],
+    [
+     "Dr SANNI Idrissou",
+     "Échographie",
+     "0197000000",
+     25000,
+     "3202112446799",
+     "Oui"
+    ],
+    [
+     "Mme KOUDJO Rose",
+     "Accouchement",
+     "",
+     15000,
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "IFU du prestataire",
+      "code": "IFU_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 3,
+      "colonne": "Facture normalisée fournie",
+      "code": "FACTURE_NORMALISEE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "IFU du prestataire",
+      "code": "IFU_ABSENT",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "IFU absent : la charge n’est pas déductible"
+     },
+     {
+      "n": 3,
+      "colonne": "Facture normalisée fournie",
+      "code": "FACTURE_NORMALISEE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "pas de facture normalisée : la dépense reste hors du circuit MECeF"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ps-doublon-nom",
+   "jeu": "prestataires",
+   "lignes": [
+    [
+     "Nom du prestataire",
+     "Spécialité / type d’acte",
+     "Téléphone",
+     "Tarif par acte (FCFA)",
+     "IFU du prestataire",
+     "Facture normalisée fournie"
+    ],
+    [
+     "dr adjo marius",
+     "Chirurgie",
+     "",
+     1000,
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Nom du prestataire",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "dr adjo marius"
+     },
+     {
+      "n": 2,
+      "colonne": "IFU du prestataire",
+      "code": "IFU_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 2,
+      "colonne": "Facture normalisée fournie",
+      "code": "FACTURE_NORMALISEE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Nom du prestataire",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "dr adjo marius",
+      "motif": "le prestataire « Dr ADJO Marius » existe déjà"
+     },
+     {
+      "n": 2,
+      "colonne": "IFU du prestataire",
+      "code": "IFU_ABSENT",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "IFU absent : la charge n’est pas déductible"
+     },
+     {
+      "n": 2,
+      "colonne": "Facture normalisée fournie",
+      "code": "FACTURE_NORMALISEE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "pas de facture normalisée : la dépense reste hors du circuit MECeF"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ps-doublon-ifu",
+   "jeu": "prestataires",
+   "lignes": [
+    [
+     "Nom du prestataire",
+     "Spécialité / type d’acte",
+     "Téléphone",
+     "Tarif par acte (FCFA)",
+     "IFU du prestataire",
+     "Facture normalisée fournie"
+    ],
+    [
+     "Dr AUTRE",
+     "Chirurgie",
+     "",
+     1000,
+     "3202112446712",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Nom du prestataire",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "Dr AUTRE"
+     },
+     {
+      "n": 2,
+      "colonne": "Facture normalisée fournie",
+      "code": "FACTURE_NORMALISEE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Nom du prestataire",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "Dr AUTRE",
+      "motif": "un prestataire porte déjà cet IFU (Dr ADJO Marius)"
+     },
+     {
+      "n": 2,
+      "colonne": "Facture normalisée fournie",
+      "code": "FACTURE_NORMALISEE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "pas de facture normalisée : la dépense reste hors du circuit MECeF"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ps-ifu-invalide",
+   "jeu": "prestataires",
+   "lignes": [
+    [
+     "Nom du prestataire",
+     "Spécialité / type d’acte",
+     "Téléphone",
+     "Tarif par acte (FCFA)",
+     "IFU du prestataire",
+     "Facture normalisée fournie"
+    ],
+    [
+     "Dr IFU",
+     "Chirurgie",
+     "",
+     1000,
+     "12AB",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "IFU du prestataire",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "12AB"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "IFU du prestataire",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "12AB",
+      "motif": "13 chiffres"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ps-tarif-tiret",
+   "jeu": "prestataires",
+   "lignes": [
+    [
+     "Nom du prestataire",
+     "Spécialité / type d’acte",
+     "Téléphone",
+     "Tarif par acte (FCFA)",
+     "IFU du prestataire",
+     "Facture normalisée fournie"
+    ],
+    [
+     "Dr TIRET",
+     "Chirurgie",
+     "",
+     "-",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Tarif par acte (FCFA)",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "-"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Tarif par acte (FCFA)",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "-",
+      "motif": "nombre attendu, « - » n’en est pas un"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ps-colonne-retiree",
+   "jeu": "prestataires",
+   "lignes": [
+    [
+     "Nom du prestataire",
+     "Spécialité / type d’acte",
+     "Téléphone",
+     "Tarif par acte (FCFA)",
+     "IFU du prestataire",
+     "Facture normalisée fournie",
+     "Actes réalisés"
+    ],
+    [
+     "Dr RETIRE",
+     "Chirurgie",
+     "",
+     1000,
+     "",
+     "",
+     5
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 0,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Actes réalisés",
+      "code": "COLONNE_RETIREE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Actes réalisés",
+      "code": "COLONNE_RETIREE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "les actes réalisés sont un compteur d’activité du mois : ils ne s’importent pas et partent de zéro"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": []
+   }
+  },
+  {
+   "id": "em-valide",
+   "jeu": "emplacements",
+   "lignes": [
+    [
+     "Code du casier",
+     "Intitulé",
+     "Zone",
+     "Température de conservation",
+     "Capacité (références)",
+     "Observation"
+    ],
+    [
+     "B7",
+     "Rayon B, casier 7",
+     "Chaîne du froid",
+     "2 à 8 °C",
+     40,
+     ""
+    ],
+    [
+     "C1",
+     "Réserve C1",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Zone",
+      "code": "ZONE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Zone",
+      "code": "ZONE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "zone non renseignée : le casier est créé « à préciser »"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "em-doublon-casse",
+   "jeu": "emplacements",
+   "lignes": [
+    [
+     "Code du casier",
+     "Intitulé",
+     "Zone",
+     "Température de conservation",
+     "Capacité (références)",
+     "Observation"
+    ],
+    [
+     "a2",
+     "Doublon par la casse",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "A-2",
+     "Casier distinct : le tiret compte",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 1,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code du casier",
+      "code": "IGNORE_EXISTANT",
+      "niveau": "ignore",
+      "valeur": "a2"
+     },
+     {
+      "n": 3,
+      "colonne": "Zone",
+      "code": "ZONE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code du casier",
+      "code": "IGNORE_EXISTANT",
+      "niveau": "ignore",
+      "valeur": "a2",
+      "motif": "le casier « A2 » existe déjà (Rayon A, casier 2)"
+     },
+     {
+      "n": 3,
+      "colonne": "Zone",
+      "code": "ZONE_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "zone non renseignée : le casier est créé « à préciser »"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "ignore"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "em-zone-inconnue",
+   "jeu": "emplacements",
+   "lignes": [
+    [
+     "Code du casier",
+     "Intitulé",
+     "Zone",
+     "Température de conservation",
+     "Capacité (références)",
+     "Observation"
+    ],
+    [
+     "Z9",
+     "Zone inconnue",
+     "Cave",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Zone",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Cave"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Zone",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Cave",
+      "motif": "« Cave » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "em-capacite-negative",
+   "jeu": "emplacements",
+   "lignes": [
+    [
+     "Code du casier",
+     "Intitulé",
+     "Zone",
+     "Température de conservation",
+     "Capacité (références)",
+     "Observation"
+    ],
+    [
+     "N1",
+     "Capacité négative",
+     "",
+     "",
+     -3,
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Capacité (références)",
+      "code": "HORS_BORNES",
+      "niveau": "refus",
+      "valeur": "-3"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Capacité (références)",
+      "code": "HORS_BORNES",
+      "niveau": "refus",
+      "valeur": "-3",
+      "motif": "valeur -3 inférieure au minimum 0"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
   }
  ],
  "modeles": {
@@ -6079,6 +7640,217 @@
     "validePar": "ADMIN TEST",
     "date": "2026-11-01"
    }
+  },
+  {
+   "cas": "na-valide",
+   "jeu": "natures-facture",
+   "ok": true,
+   "reference": "IMP-2026-011",
+   "ecrits": 2,
+   "fiches": {
+    "naturesFacture": [
+     {
+      "statut": "actif",
+      "source": "Décision de la Direction",
+      "lotImport": "IMP-2026-011",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "ORTH",
+      "libelle": "Orthopédie",
+      "secteur": "Chirurgie",
+      "ordre": 2
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation des natures de facture (na-valide.xlsx)",
+      "lotImport": "IMP-2026-011",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "KINE",
+      "libelle": "Kinésithérapie",
+      "secteur": "Chirurgie",
+      "ordre": 3
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 0,
+    "jeu": "natures-facture",
+    "fichier": "na-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "ce-valide",
+   "jeu": "centres-couts",
+   "ok": true,
+   "reference": "IMP-2026-012",
+   "ecrits": 2,
+   "fiches": {
+    "centresCouts": [
+     {
+      "statut": "actif",
+      "source": "Import Importation des centres de coûts (ce-valide.xlsx)",
+      "lotImport": "IMP-2026-012",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "orthopedie",
+      "libelle": "Orthopédie",
+      "type": "exploitation",
+      "responsable": "Dr BASSONGUI"
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation des centres de coûts (ce-valide.xlsx)",
+      "lotImport": "IMP-2026-012",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "support-logistique",
+      "libelle": "Logistique",
+      "type": "support",
+      "responsable": null
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 1,
+    "jeu": "centres-couts",
+    "fichier": "ce-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "un-valide",
+   "jeu": "unites-labo",
+   "ok": true,
+   "reference": "IMP-2026-013",
+   "ecrits": 1,
+   "fiches": {
+    "unitesLabo": [
+     {
+      "statut": "actif",
+      "source": "Import Importation des unités de mesure (un-valide.xlsx)",
+      "lotImport": "IMP-2026-013",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "symbole": "G/dl",
+      "libelle": "giga par décilitre",
+      "domaine": "Hématologie",
+      "aValider": true
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 1,
+    "nbAvertissements": 1,
+    "jeu": "unites-labo",
+    "fichier": "un-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "ps-valide",
+   "jeu": "prestataires",
+   "ok": true,
+   "reference": "IMP-2026-014",
+   "ecrits": 2,
+   "fiches": {
+    "prestataires": [
+     {
+      "statut": "actif",
+      "source": "Import Importation des prestataires externes (ps-valide.xlsx)",
+      "lotImport": "IMP-2026-014",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "PE-0002",
+      "nom": "Dr SANNI Idrissou",
+      "specialite": "Échographie",
+      "telephone": "0197000000",
+      "tarifActe": 25000,
+      "actesRealises": 0,
+      "ifu": "3202112446799",
+      "factureNormalisee": true
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation des prestataires externes (ps-valide.xlsx)",
+      "lotImport": "IMP-2026-014",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "PE-0003",
+      "nom": "Mme KOUDJO Rose",
+      "specialite": "Accouchement",
+      "telephone": null,
+      "tarifActe": 15000,
+      "actesRealises": 0,
+      "ifu": null,
+      "factureNormalisee": false
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 1,
+    "jeu": "prestataires",
+    "fichier": "ps-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "em-valide",
+   "jeu": "emplacements",
+   "ok": true,
+   "reference": "IMP-2026-015",
+   "ecrits": 2,
+   "fiches": {
+    "emplacements": [
+     {
+      "statut": "actif",
+      "source": "Import Importation des emplacements de rangement (em-valide.xlsx)",
+      "lotImport": "IMP-2026-015",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "B7",
+      "libelle": "Rayon B, casier 7",
+      "zone": "Chaîne du froid",
+      "temperature": "2 à 8 °C",
+      "capacite": 40,
+      "observation": null
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation des emplacements de rangement (em-valide.xlsx)",
+      "lotImport": "IMP-2026-015",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "C1",
+      "libelle": "Réserve C1",
+      "zone": null,
+      "temperature": null,
+      "capacite": null,
+      "observation": null
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 1,
+    "jeu": "emplacements",
+    "fichier": "em-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
   }
  ],
  "lotRefus": {
@@ -6178,6 +7950,46 @@
    "etatLot": "annule"
   },
   {
+   "cas": "na-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "ce-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "un-valide",
+   "ok": true,
+   "code": null,
+   "archives": 1,
+   "archivesVerifiees": 1,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "ps-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "em-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
    "cas": "gs-valide-deuxieme-fois",
    "ok": false,
    "code": "LOT_NON_APPLIQUE"
@@ -6222,7 +8034,7 @@
    },
    "dUnAutre": {
     "code": "LOT_D_UN_AUTRE",
-    "motif": "le lot IMP-2026-012 a été écrit par un autre agent",
+    "motif": "le lot IMP-2026-017 a été écrit par un autre agent",
     "geste": "Seul son auteur, ou un profil qui supervise les importations, peut l’annuler."
    },
    "etatLot": "applique"
@@ -6527,6 +8339,49 @@
    "Maternité",
    "Imagerie médicale",
    "Soins et observation"
+  ],
+  "secteursActivite": [
+   "Médecine générale",
+   "Chirurgie",
+   "Maternité",
+   "Imagerie médicale",
+   "Laboratoire",
+   "Accueil",
+   "Soins et observation",
+   "Pharmacie"
+  ],
+  "specialitesPrestataire": [
+   "Circoncision",
+   "Hydrotubation",
+   "Accouchement",
+   "Analyses spécialisées",
+   "Chirurgie",
+   "Échographie",
+   "Anesthésie",
+   "Autre"
+  ],
+  "domainesUnitesLabo": [
+   "Hématologie",
+   "Biochimie",
+   "Hormonologie",
+   "Bactériologie",
+   "Parasitologie",
+   "Hémostase",
+   "Andrologie",
+   "Général"
+  ],
+  "zonesEmplacement": [
+   "Rayonnage sec",
+   "Chaîne du froid",
+   "Armoire sécurisée",
+   "Réserve",
+   "Salle de soins"
+  ],
+  "temperaturesEmplacement": [
+   "Ambiante",
+   "2 à 8 °C",
+   "− 20 °C",
+   "Sous clé, ambiante"
   ]
  },
  "lienCellules": {

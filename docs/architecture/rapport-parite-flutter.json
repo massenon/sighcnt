@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 357,
- "ecrans_portes": 359,
+ "ecrans_portes": 364,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -671,7 +671,31 @@
    "manquants": []
   },
   {
+   "id": "imp-centres-couts",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-emplacements",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "imp-fournisseurs",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-natures-facture",
    "mesure": true,
    "attendus": 19,
    "presents": 19,
@@ -703,6 +727,14 @@
    "manquants": []
   },
   {
+   "id": "imp-prestataires",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "imp-soldes-ouverture",
    "mesure": true,
    "attendus": 19,
@@ -712,6 +744,14 @@
   },
   {
    "id": "imp-souscripteurs",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-unites-labo",
    "mesure": true,
    "attendus": 19,
    "presents": 19,

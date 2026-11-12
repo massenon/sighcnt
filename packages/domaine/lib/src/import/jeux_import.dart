@@ -5,6 +5,7 @@
 /// une donnée incomplète et le dit. Les vecteurs de la maquette (`test/vecteurs/import.json`) rejouent chaque règle.
 library;
 
+import '../comptabilite/cpb_gestion.dart' show cpbReferenceSuivante;
 import '../format/recherche.dart' show normaliser;
 import 'donnees_import.dart';
 import 'moteur_import.dart';
@@ -880,7 +881,279 @@ final JeuImport jeuSoldesOuverture = JeuImport(
   dependances: (lot, port) => null,
 );
 
-/// Les dix jeux, dans l'ordre de la maquette.
+// --- LOT IMP-C : CINQ RÉFÉRENTIELS DE PLUS AU POSTE (natures de facture, centres de coûts, unités du laboratoire, prestataires, emplacements) --------------
+//
+// Chacun écrit la fiche que la saisie à l'écran écrit, jamais à côté, et ne modifie JAMAIS une fiche tenue : un doublon refuse le fichier (l'emplacement l'ignore, liste fermée de la Direction).
+// Le droit, la sensibilité et le mode de doublon viennent de la déclaration du manifeste (`rbac.json`), jamais d'ici.
+
+ProblemeImport _avert(String colonne, Object? valeur, String code, String motif, String geste) => _p(colonne, valeur, code, importAvertissement, motif, geste);
+
+Map<String, _V> _actifsParCode(PortImport port, String collection, String champ) =>
+    {for (final x in port.toutes(collection)) if (x['statut'] != 'archive' && x[champ] != null) _n(x[champ]): x};
+
+Iterable<Object?> _ecritsDe(FicheImport lot, String collection) => [for (final e in (lot['ecrits'] as List).cast<Map>()) if (e['collection'] == collection) e['id']];
+
+final JeuImport jeuNaturesFacture = JeuImport(
+  id: 'natures-facture',
+  ecran: 'imp-natures-facture',
+  libelle: 'Importation des natures de facture',
+  module: 'CFG',
+  statut: 'supporte',
+  description: 'Natures proposées à l’émission d’une facture : code, nature, secteur émetteur.',
+  source: 'Écran « Natures de facture » (configuration) : la liste que la caisse propose à l’émission.',
+  limite:
+      'Le secteur émetteur se choisit parmi les secteurs porteurs d’activité facturable que propose l’écran « Natures de facture » (la même liste que la saisie). Une nature importée est proposée à la caisse dès l’import.',
+  cibles: const ['naturesFacture'],
+  fichierModele: 'modele-import-natures-facture',
+  gesteExiste: 'Retirez la ligne : une nature tenue se modifie à l’écran « Natures de facture ».',
+  colonnes: [
+    _oblig('code', 'Code', 'texte',
+        motif: RegExp(r'^[A-Za-z0-9]{2,8}$'), motifTexte: '2 à 8 lettres ou chiffres, sans espace', exemple: 'ORTH', aide: 'Quatre lettres en usage ; écrit en majuscules. Un code déjà tenu refuse le fichier.'),
+    _oblig('libelle', 'Nature de la facture', 'texte', longueurMax: 80, exemple: 'Orthopédie', aide: 'Le libellé que la caisse choisit à l’émission : deux natures ne portent jamais le même.'),
+    _oblig('secteur', 'Secteur émetteur', 'liste', liste: _fixe(importSecteursActivite), exemple: 'Chirurgie'),
+    _col('source', 'Origine', 'texte', longueurMax: 120, exemple: 'Décision de la Direction'),
+  ],
+  contexte: (port) => {'codes': _actifsParCode(port, 'naturesFacture', 'code'), 'libelles': _actifsParCode(port, 'naturesFacture', 'libelle')},
+  cle: (v) => [_n(v['code']), 'lib:${_n(v['libelle'])}'],
+  existe: (v, ctx) {
+    final a = (ctx['codes'] as Map)[_n(v['code'])] as _V?, b = (ctx['libelles'] as Map)[_n(v['libelle'])] as _V?;
+    if (a != null) return 'la nature « ${a['code']} » existe déjà (${a['libelle']})';
+    return b != null ? 'la nature « ${b['libelle']} » existe déjà sous le code ${b['code']}' : null;
+  },
+  regles: _aucun,
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
+    for (final l in lignes) {
+      final v = l.v;
+      ecrireFiche('naturesFacture', {
+        'code': '${v['code']}'.toUpperCase(),
+        'libelle': v['libelle'],
+        'secteur': v['secteur'],
+        'ordre': port.toutes('naturesFacture').length + 1,
+        if (v['source'] != null) 'source': v['source'],
+      });
+    }
+  },
+  dependances: (lot, port) {
+    final libs = {for (final id in _ecritsDe(lot, 'naturesFacture')) port.parId('naturesFacture', id)?['libelle']}..remove(null);
+    final f = port.actives('factures').where((x) => libs.contains(x['type']) || libs.contains(x['nature'])).firstOrNull;
+    return f == null
+        ? null
+        : DependanceImport('NATURE_UTILISEE', 'la facture ${f['numero']} porte déjà cette nature', 'Archivez la nature à l’écran « Natures de facture » (RG-14) plutôt que d’annuler son lot.');
+  },
+);
+
+final JeuImport jeuCentresCouts = JeuImport(
+  id: 'centres-couts',
+  ecran: 'imp-centres-couts',
+  libelle: 'Importation des centres de coûts',
+  module: 'M12',
+  statut: 'supporte',
+  description: 'Axes d’imputation analytique : code, intitulé, type, responsable.',
+  source: 'Écran « Centres de coûts » : les six secteurs porteurs de recette plus la Direction (transverse), complétés par la clinique.',
+  limite: 'Le code EST l’imputation que portent les écritures comptables : il ne se double jamais, majuscules et minuscules confondues, et un code tenu n’est jamais modifié.',
+  cibles: const ['centresCouts'],
+  fichierModele: 'modele-import-centres-couts',
+  gesteExiste: 'Retirez la ligne : le code d’un centre ne se double jamais (les écritures le portent) ; un centre tenu se modifie à l’écran « Centres de coûts ».',
+  colonnes: [
+    _oblig('code', 'Code', 'texte',
+        motif: RegExp(r'^[A-Za-z0-9_-]{2,24}$'), motifTexte: '2 à 24 lettres, chiffres, tiret ou souligné, sans espace', exemple: 'orthopedie', aide: 'L’imputation portée par les écritures. Écrit tel quel.'),
+    _oblig('libelle', 'Intitulé du centre', 'texte', longueurMax: 80, exemple: 'Orthopédie'),
+    _oblig('type', 'Type', 'liste', liste: (_) => const [ValeurListe('exploitation', 'Centre d’exploitation'), ValeurListe('support', 'Centre de support')], exemple: 'Centre d’exploitation'),
+    _col('responsable', 'Responsable', 'texte', longueurMax: 80, exemple: ''),
+    _col('source', 'Origine', 'texte', longueurMax: 120, exemple: 'Décision de la Direction'),
+  ],
+  contexte: (port) => {'codes': _actifsParCode(port, 'centresCouts', 'code'), 'libelles': _actifsParCode(port, 'centresCouts', 'libelle')},
+  cle: (v) => [_n(v['code']), 'lib:${_n(v['libelle'])}'],
+  existe: (v, ctx) {
+    final a = (ctx['codes'] as Map)[_n(v['code'])] as _V?, b = (ctx['libelles'] as Map)[_n(v['libelle'])] as _V?;
+    if (a != null) return 'le centre « ${a['code']} » existe déjà (${a['libelle']})';
+    return b != null ? 'le centre « ${b['libelle']} » existe déjà sous le code ${b['code']}' : null;
+  },
+  regles: (v, ctx, sc, n) => v['responsable'] != null
+      ? const []
+      : [_avert('Responsable', '', 'SANS_RESPONSABLE', 'aucun responsable désigné', 'Il se désigne à l’écran « Centres de coûts ».')],
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
+    for (final l in lignes) {
+      final v = l.v;
+      ecrireFiche('centresCouts', {'code': v['code'], 'libelle': v['libelle'], 'type': v['type'], 'responsable': v['responsable'], if (v['source'] != null) 'source': v['source']});
+    }
+  },
+  dependances: (lot, port) {
+    final codes = {for (final id in _ecritsDe(lot, 'centresCouts')) port.parId('centresCouts', id)?['code']}..remove(null);
+    final ec = port.actives('ecritures').where((x) => codes.contains(x['centreCout'])).firstOrNull;
+    if (ec != null) {
+      return DependanceImport('CENTRE_IMPUTE', 'l’écriture ${ec['numero']} est déjà imputée à ce centre', 'Archivez le centre à l’écran « Centres de coûts » (RG-14) plutôt que d’annuler son lot.');
+    }
+    final b = port.actives('budgets').where((x) => codes.contains(x['centreCout'])).firstOrNull;
+    return b == null ? null : DependanceImport('CENTRE_BUDGETE', 'le budget ${b['reference']} porte déjà ce centre', 'Annulez d’abord le lot de budgets, ou archivez le centre.');
+  },
+);
+
+final JeuImport jeuUnitesLabo = JeuImport(
+  id: 'unites-labo',
+  ecran: 'imp-unites-labo',
+  libelle: 'Importation des unités de mesure',
+  module: 'M5',
+  statut: 'supporte',
+  description: 'Unités dans lesquelles les résultats s’expriment : symbole tel que le laboratoire l’écrit, intitulé, domaine.',
+  source: 'Fiche de résultats de la clinique du 21/08/2026 et écran « Unités de mesure » : « G/l », « T/l », « g/dl », jamais les notations normalisées.',
+  limite:
+      'Le symbole s’écrit comme le laboratoire le lit et ne se normalise JAMAIS : « G/l » (giga par litre) et « g/l » (gramme par litre) sont deux unités. Une unité importée naît « à confirmer » ; le biologiste médical la valide.',
+  cibles: const ['unitesLabo'],
+  fichierModele: 'modele-import-unites-labo',
+  gesteExiste: 'Retirez la ligne : une unité tenue se modifie à l’écran « Unités de mesure ».',
+  colonnes: [
+    _oblig('symbole', 'Symbole', 'texte', longueurMax: 20, exemple: 'mmol/l', aide: 'Tel qu’il s’imprime sur la fiche de résultats. Les majuscules et minuscules comptent.'),
+    _oblig('libelle', 'Intitulé complet', 'texte', longueurMax: 80, exemple: 'millimole par litre'),
+    _oblig('domaine', 'Domaine', 'liste', liste: _fixe(importDomainesUnitesLabo), exemple: 'Biochimie'),
+  ],
+  // Le symbole ne se normalise jamais : la clé est le symbole TEL QUEL (la casse compte).
+  contexte: (port) => {
+        'unites': {for (final u in port.toutes('unitesLabo')) if (u['statut'] != 'archive') '${u['symbole']}': u}
+      },
+  cle: (v) => ['${v['symbole']}'],
+  existe: (v, ctx) {
+    final u = (ctx['unites'] as Map)['${v['symbole']}'] as _V?;
+    return u != null ? 'l’unité « ${u['symbole']} » existe déjà (${u['libelle']})' : null;
+  },
+  regles: (v, ctx, sc, n) => [_avert('Symbole', '', 'A_CONFIRMER', 'unité importée « à confirmer » jusqu’à sa validation par le biologiste médical', 'Le biologiste la valide à l’écran « Unités de mesure ».')],
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
+    for (final l in lignes) {
+      ecrireFiche('unitesLabo', {'symbole': l.v['symbole'], 'libelle': l.v['libelle'], 'domaine': l.v['domaine'], 'aValider': true});
+    }
+  },
+  dependances: (lot, port) {
+    final sym = {for (final id in _ecritsDe(lot, 'unitesLabo')) port.parId('unitesLabo', id)?['symbole']}..remove(null);
+    final v = port.actives('variablesLabo').where((x) => sym.contains(x['unite'])).firstOrNull;
+    return v == null
+        ? null
+        : DependanceImport('UNITE_UTILISEE', 'la variable « ${v['libelle'] ?? v['code']} » s’exprime déjà dans cette unité', 'Archivez l’unité à l’écran « Unités de mesure » (RG-14) plutôt que d’annuler son lot.');
+  },
+);
+
+final JeuImport jeuPrestataires = JeuImport(
+  id: 'prestataires',
+  ecran: 'imp-prestataires',
+  libelle: 'Importation des prestataires externes',
+  module: 'M10',
+  statut: 'supporte',
+  description: 'Intervenants extérieurs rémunérés à l’acte : nom, spécialité, téléphone, tarif par acte, IFU, facture normalisée.',
+  source: 'Écran « Prestataires externes » (circoncision, hydrotubation, accouchement, analyses, chirurgie, échographie, anesthésie).',
+  limite: 'Les actes réalisés ne s’importent pas : c’est un compteur d’activité du mois, il part de zéro. Le numéro (PE-NNNN) est attribué par le logiciel, jamais lu du fichier.',
+  cibles: const ['prestataires'],
+  fichierModele: 'modele-import-prestataires',
+  gesteExiste: 'Retirez la ligne : un prestataire tenu se modifie à l’écran « Prestataires externes ».',
+  colonnesRetirees: const [
+    ColonneRetiree('Actes réalisés', 'les actes réalisés sont un compteur d’activité du mois : ils ne s’importent pas et partent de zéro'),
+    ColonneRetiree('N°', 'le numéro PE-NNNN est attribué par le logiciel, jamais lu d’un fichier'),
+  ],
+  colonnes: [
+    _oblig('nom', 'Nom du prestataire', 'texte', longueurMax: 120, exemple: 'Dr SANNI Idrissou'),
+    _oblig('specialite', 'Spécialité / type d’acte', 'liste', liste: _fixe(importSpecialitesPrestataire), exemple: 'Chirurgie'),
+    _col('telephone', 'Téléphone', 'texte', longueurMax: 30, exemple: '0197000000'),
+    _oblig('tarifActe', 'Tarif par acte (FCFA)', 'entier', min: 0, exemple: 25000, aide: 'Montant entier en francs, zéro ou plus. Un tiret n’est pas un zéro : il est refusé.'),
+    _col('ifu', 'IFU du prestataire', 'texte', motif: RegExp(r'^\d{13}$'), motifTexte: '13 chiffres', exemple: '3202112446712'),
+    _col('factureNormalisee', 'Facture normalisée fournie', 'liste',
+        liste: (_) => const [ValeurListe('oui', 'Oui'), ValeurListe('non', 'Non')], exemple: 'Non', aide: 'Vide : « Non » (comme l’écran).'),
+  ],
+  contexte: (port) {
+    final n = <String, _V>{}, f = <String, _V>{};
+    for (final p in port.toutes('prestataires')) {
+      if (p['statut'] == 'archive') continue;
+      n[_n(p['nom'])] = p;
+      if (p['ifu'] != null) f['${p['ifu']}'] = p;
+    }
+    return {'noms': n, 'ifus': f};
+  },
+  cle: (v) => [_n(v['nom']), if (v['ifu'] != null) 'ifu:${v['ifu']}'],
+  existe: (v, ctx) {
+    final a = v['ifu'] != null ? (ctx['ifus'] as Map)['${v['ifu']}'] as _V? : null, b = (ctx['noms'] as Map)[_n(v['nom'])] as _V?;
+    if (a != null) return 'un prestataire porte déjà cet IFU (${a['nom']})';
+    return b != null ? 'le prestataire « ${b['nom']} » existe déjà' : null;
+  },
+  regles: (v, ctx, sc, n) => [
+    if (v['ifu'] == null) _avert('IFU du prestataire', '', 'IFU_ABSENT', 'IFU absent : la charge n’est pas déductible', 'Renseignez-le dès que le prestataire le fournit.'),
+    if (v['factureNormalisee'] != 'oui')
+      _avert('Facture normalisée fournie', '', 'FACTURE_NORMALISEE_ABSENTE', 'pas de facture normalisée : la dépense reste hors du circuit MECeF', 'Le prestataire doit la fournir ; la case se coche à l’écran.'),
+  ],
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
+    for (final l in lignes) {
+      final v = l.v;
+      ecrireFiche('prestataires', {
+        'reference': cpbReferenceSuivante('PE-', 4, port.toutes('prestataires')),
+        'nom': v['nom'],
+        'specialite': v['specialite'],
+        'telephone': v['telephone'],
+        'tarifActe': v['tarifActe'],
+        'actesRealises': 0,
+        'ifu': v['ifu'],
+        'factureNormalisee': v['factureNormalisee'] == 'oui',
+      });
+    }
+  },
+  dependances: (lot, port) {
+    final p = [for (final id in _ecritsDe(lot, 'prestataires')) port.parId('prestataires', id)].where((x) => x != null && ((x['actesRealises'] as num?) ?? 0) > 0).firstOrNull;
+    return p == null
+        ? null
+        : DependanceImport('PRESTATAIRE_EN_ACTIVITE', 'le prestataire « ${p['nom']} » a déjà ${p['actesRealises']} acte(s) réalisé(s) ce mois', 'Archivez-le à l’écran « Prestataires externes » (RG-14).');
+  },
+);
+
+final JeuImport jeuEmplacements = JeuImport(
+  id: 'emplacements',
+  ecran: 'imp-emplacements',
+  libelle: 'Importation des emplacements de rangement',
+  module: 'M6',
+  statut: 'supporte',
+  description: 'Casiers et rayons du magasin : code (celui de l’étiquette), intitulé, zone, conservation, capacité.',
+  source: 'Fiche du référentiel des emplacements (écran « Étiquetage & emplacements ») : même zones, mêmes conservations.',
+  limite:
+      'Une zone ou une conservation vide reste vide (« à préciser ») : aucune valeur par défaut n’est inventée. Le code est celui qui figure sur l’étiquette : deux écritures qui ne diffèrent que par la casse ou les accents (« A2 », « a2 ») sont un seul casier. Les écritures qui diffèrent aussi par un tiret (« A2 », « A-2 ») restent deux casiers. Une ligne dont le casier existe déjà est ignorée, jamais modifiée.',
+  cibles: const ['emplacements'],
+  fichierModele: 'modele-import-emplacements',
+  gesteExiste: 'Retirez la ligne : modifiez le casier à l’écran Étiquetage & emplacements.',
+  colonnes: [
+    _oblig('code', 'Code du casier', 'texte', longueurMax: 30, exemple: 'A2', aide: 'Court et stable : c’est lui qui figure sur l’étiquette.'),
+    _oblig('libelle', 'Intitulé', 'texte', longueurMax: 120, exemple: 'Rayon A, casier 2'),
+    _col('zone', 'Zone', 'liste', liste: _fixe(importZonesEmplacement), exemple: 'Rayonnage sec'),
+    _col('temperature', 'Température de conservation', 'liste', liste: _fixe(importTemperaturesEmplacement), exemple: 'Ambiante'),
+    _col('capacite', 'Capacité (références)', 'entier', min: 0, exemple: 40),
+    _col('observation', 'Observation', 'texte', longueurMax: 200),
+  ],
+  contexte: (port) => {
+        'e': {for (final e in port.toutes('emplacements')) _n(e['code']): e}
+      },
+  cle: (v) => [_n(v['code'])],
+  existe: (v, ctx) {
+    final e = (ctx['e'] as Map)[_n(v['code'])] as _V?;
+    return e != null ? 'le casier « ${e['code']} » existe déjà (${e['libelle']})' : null;
+  },
+  regles: (v, ctx, sc, n) => v['zone'] != null
+      ? const []
+      : [_avert('Zone', '', 'ZONE_ABSENTE', 'zone non renseignée : le casier est créé « à préciser »', 'Précisez la zone à l’écran Étiquetage & emplacements.')],
+  ecrire: (lignes, ecrireFiche, lot, ctx, port, declarer) {
+    for (final l in lignes) {
+      final v = l.v;
+      ecrireFiche('emplacements', {
+        'code': v['code'],
+        'libelle': v['libelle'],
+        'zone': v['zone'],
+        'temperature': v['temperature'],
+        'capacite': v['capacite'],
+        'observation': v['observation'],
+      });
+    }
+  },
+  dependances: (lot, port) {
+    final codes = {for (final id in _ecritsDe(lot, 'emplacements')) port.parId('emplacements', id)?['code']}..remove(null);
+    final p = port.actives('produits').where((x) => codes.contains(x['emplacement'])).firstOrNull;
+    return p == null
+        ? null
+        : DependanceImport('EMPLACEMENT_UTILISE', 'l’article « ${p['designation']} » est rangé dans ce casier', 'Changez l’emplacement de l’article, puis archivez le casier à l’écran Étiquetage & emplacements.');
+  },
+);
+
+/// Les jeux portés au poste, dans l'ordre de la maquette.
 final List<JeuImport> jeuxImport = [
   jeuGrandStock,
   jeuPersonnel,
@@ -891,6 +1164,12 @@ final List<JeuImport> jeuxImport = [
   jeuSouscripteurs,
   jeuPlanComptable,
   jeuSoldesOuverture,
+  // Lot IMP-C : cinq référentiels de plus (les autres jeux de la maquette ne sont pas portés au poste : ECARTS-MAQUETTE.md E2470 et suivants).
+  jeuNaturesFacture,
+  jeuCentresCouts,
+  jeuUnitesLabo,
+  jeuPrestataires,
+  jeuEmplacements,
 ];
 
 JeuImport? jeuImportParId(String id) => jeuxImport.where((j) => j.id == id).firstOrNull;

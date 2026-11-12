@@ -321,9 +321,21 @@
    "titre": "Importation des compagnies d’assurance",
    "description": "Compagnies d’assurance : code, raison sociale, contacts, état de la convention."
   },
+  "imp-centres-couts": {
+   "titre": "Importation des centres de coûts",
+   "description": "Axes d’imputation analytique : code, intitulé, type, responsable."
+  },
+  "imp-emplacements": {
+   "titre": "Importation des emplacements de rangement",
+   "description": "Casiers et rayons du magasin : code (celui de l’étiquette), intitulé, zone, conservation, capacité."
+  },
   "imp-fournisseurs": {
    "titre": "Importation des fournisseurs",
    "description": "Fournisseurs de la clinique : identité fiscale, coordonnées, délai, banque."
+  },
+  "imp-natures-facture": {
+   "titre": "Importation des natures de facture",
+   "description": "Natures proposées à l’émission d’une facture : code, nature, secteur émetteur."
   },
   "imp-patients": {
    "titre": "Importation du répertoire patients",
@@ -337,6 +349,10 @@
    "titre": "Importation du plan comptable",
    "description": "Comptes SYSCOHADA : numéro, libellé, journal par défaut. La classe se déduit du premier chiffre."
   },
+  "imp-prestataires": {
+   "titre": "Importation des prestataires externes",
+   "description": "Intervenants extérieurs rémunérés à l’acte : nom, spécialité, téléphone, tarif par acte, IFU, facture normalisée."
+  },
   "imp-soldes-ouverture": {
    "titre": "Importation des soldes d’ouverture",
    "description": "À-nouveaux d’un exercice : une pièce du journal AN, en brouillon, équilibrée (RG-10). Seules les classes 1 à 5 se reportent."
@@ -344,6 +360,10 @@
   "imp-souscripteurs": {
    "titre": "Importation des souscripteurs",
    "description": "Souscripteurs rattachés à une compagnie : n° de police, catégorie, effectif, période."
+  },
+  "imp-unites-labo": {
+   "titre": "Importation des unités de mesure",
+   "description": "Unités dans lesquelles les résultats s’expriment : symbole tel que le laboratoire l’écrit, intitulé, domaine."
   },
   "m1-antecedents": {
    "titre": "Antécédents & allergies",

@@ -9,7 +9,7 @@
 | Hubs de module (un par module, engendrés) | 23 |
 | Écrans nommés par au moins un scénario de la maquette | 261 (73 %) |
 | Écrans **sans** scénario (recette à écrire) | 96 |
-| Écrans portés | 336 |
+| Écrans portés | 341 |
 | Écrans recettés | 0 |
 | Scénarios de la maquette analysés | 154 |
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 67 | 0 |
 | 5 · assurances et comptabilité | 32 | 24 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 170 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 175 | 0 |
 
 ## Par écran
 
@@ -286,26 +286,26 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `imp-assureurs` | Importation des compagnies d’assurance | IMP | 5 | — | porté |
 | `imp-budgets` | Importation des budgets | IMP | 5 | 144 | non commencé |
 | `imp-catalogue-imagerie` | Importation du catalogue de l’imagerie | IMP | 3 | 144 | non commencé |
-| `imp-centres-couts` | Importation des centres de coûts | IMP | 5 | 144 | non commencé |
+| `imp-centres-couts` | Importation des centres de coûts | IMP | 5 | 144 | porté |
 | `imp-courriers` | Importation des courriers | IMP | 4 | 144, 153 | non commencé |
 | `imp-couvertures-assurance` | Importation des couvertures d’assurance | IMP | 5 | 144 | non commencé |
-| `imp-emplacements` | Importation des emplacements de rangement | IMP | 3 | 130 | non commencé |
+| `imp-emplacements` | Importation des emplacements de rangement | IMP | 3 | 130 | porté |
 | `imp-fournisseurs` | Importation des fournisseurs | IMP | 6 | 125, 126, 130, 143 | porté |
 | `imp-garanties` | Importation des garanties des souscripteurs | IMP | 5 | 144 | non commencé |
 | `imp-immobilisations` | Importation des immobilisations | IMP | 5 | 144 | non commencé |
 | `imp-inventaire-comptage` | Importation d’un comptage d’inventaire | IMP | 3 | 130 | non commencé |
-| `imp-natures-facture` | Importation des natures de facture | IMP | 3 | 144 | non commencé |
+| `imp-natures-facture` | Importation des natures de facture | IMP | 3 | 144 | porté |
 | `imp-patients` | Importation du répertoire patients | IMP | 5 | 125, 126, 130 | porté |
 | `imp-personnel` | Importation du personnel | IMP | 3 | 125, 126, 130 | porté |
 | `imp-plan-comptable` | Importation du plan comptable | IMP | 5 | — | porté |
-| `imp-prestataires` | Importation des prestataires externes | IMP | 3 | 144 | non commencé |
+| `imp-prestataires` | Importation des prestataires externes | IMP | 3 | 144 | porté |
 | `imp-produits-referentiel` | Importation du référentiel produits | IMP | 3 | 130, 131, 139, 141 | non commencé |
 | `imp-soldes-ouverture` | Importation des soldes d’ouverture | IMP | 5 | — | porté |
 | `imp-souscripteurs` | Importation des souscripteurs | IMP | 5 | — | porté |
 | `imp-stock-detail-initial` | Importation du stock détail initial | IMP | 3 | 130 | non commencé |
 | `imp-tarifs-produits` | Importation des prix d’achat | IMP | 4 | 138 | non commencé |
 | `imp-transfert-lignes` | Importation d’un bon de transfert | IMP | 3 | 130 | non commencé |
-| `imp-unites-labo` | Importation des unités de mesure | IMP | 4 | 144 | non commencé |
+| `imp-unites-labo` | Importation des unités de mesure | IMP | 4 | 144 | porté |
 | `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 27, 112, 118 | porté |
 | `m10-badges` | Badges du personnel | M10 | 5 | 56, 68 | porté |
 | `m10-badges-impression` | Planche d’impression des badges | M10 | 3 | 56 | porté |

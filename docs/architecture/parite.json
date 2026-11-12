@@ -5508,7 +5508,7 @@
    "scenarios": [
     130
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "imp-stock-detail-initial",
@@ -5580,7 +5580,7 @@
    "scenarios": [
     144
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "imp-centres-couts",
@@ -5600,7 +5600,7 @@
    "scenarios": [
     144
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "imp-catalogue-imagerie",
@@ -5637,7 +5637,7 @@
    "scenarios": [
     144
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "imp-prestataires",
@@ -5655,7 +5655,7 @@
    "scenarios": [
     144
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "imp-garanties",

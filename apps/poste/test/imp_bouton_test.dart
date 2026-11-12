@@ -90,6 +90,36 @@ void main() {
     expect(absents, greaterThan(6));
   });
 
+  cas('LES CINQ RÉFÉRENTIELS PORTÉS PAR LE LOT : un bouton à chaque hôte déclaré (natures, centres de coûts, unités, prestataires, emplacements), pour qui détient le jeu seulement', (t) async {
+    final hotes5 = {
+      'natures-facture': 'cfg-natures-facture',
+      'centres-couts': 'cfg-centres-couts',
+      'unites-labo': 'm5-unites',
+      'prestataires': 'm10-prestataires',
+      'emplacements': 'm6-etiquetage',
+    };
+    for (final e in hotes5.entries) {
+      expect(donnees.matrice.matriceImport.declaration(e.key)!.hotes, contains(e.value), reason: 'l\'hôte vient de la déclaration : ${e.key}');
+      await ouvrir(t, magasin(), e.value, role: 'admin');
+      expect(bouton, findsOneWidget, reason: 'admin sur ${e.value}');
+      await ouvrir(t, magasin(), e.value, role: 'caissier');
+      expect(bouton, findsNothing, reason: 'le caissier ne détient aucun de ces jeux : ${e.value}');
+    }
+    // L'emplacement s'importe en mode « ignorer » (liste fermée de la Direction) : la fenêtre le dit, une ligne déjà tenue est comptée, jamais refusée.
+    final m = magasin();
+    await ouvrir(t, m, 'm6-etiquetage', role: 'admin');
+    await toucher(t, bouton);
+    expect(find.textContaining('Fiches déjà tenues : ignorées.'), findsOneWidget);
+    SelecteursImport.choisir = () async => FichierChoisi('em-doublon-casse.xlsx', fixture('em-doublon-casse'));
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Téléverser un fichier (.xlsx ou .csv)'));
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('1 ignorée(s) (fiche déjà tenue)'), findsOneWidget);
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Confirmer l’importation (1 ligne)'));
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Écrire le lot'));
+    expect(m.collection('emplacements').toutes.length, 2, reason: 'le casier A2 tenu n\'est pas réécrit ; A-2 est un casier distinct, écrit');
+    expect(m.collection('lotsImportation').toutes.single['nbIgnores'], 1);
+  });
+
   cas('LE DROIT N\'EST PAS CELUI D\'ÉDITER L\'ÉCRAN : le gestionnaire qui ÉDITE le Grand Stock n\'importe pas le répertoire des patients, et la Direction qui ne l\'édite pas peut importer si la matrice le lui donne', (t) async {
     expect(donnees.matrice.peutEditer('stock', 'm6-stock-gros'), isTrue);
     await ouvrir(t, magasin(), 'm6-stock-gros', role: 'stock');

@@ -25,13 +25,11 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
    propose que si l'écran a un widget. Le jeu sobre (fixture des vecteurs) n'en porte aucune : il reproduit la maquette. */
 const JEUX_IMPORT_NON_PORTES = [
   ['05', 'imp-actes', 'Importation des tarifs et prix'], ['06', 'imp-tarifs-produits', 'Importation des prix d’achat'],
-  ['07', 'imp-produits-referentiel', 'Importation du référentiel produits'], ['08', 'imp-emplacements', 'Importation des emplacements de rangement'],
-  ['09', 'imp-stock-detail-initial', 'Importation du stock détail initial'], ['10', 'imp-transfert-lignes', 'Importation d’un bon de transfert'],
-  ['11', 'imp-inventaire-comptage', 'Importation d’un comptage d’inventaire'], ['12', 'imp-natures-facture', 'Importation des natures de facture'],
-  ['13', 'imp-centres-couts', 'Importation des centres de coûts'], ['14', 'imp-catalogue-imagerie', 'Importation du catalogue de l’imagerie'],
-  ['15', 'imp-unites-labo', 'Importation des unités de mesure'], ['16', 'imp-prestataires', 'Importation des prestataires externes'],
-  ['17', 'imp-garanties', 'Importation des garanties des souscripteurs'], ['18', 'imp-couvertures-assurance', 'Importation des couvertures d’assurance'],
-  ['19', 'imp-immobilisations', 'Importation des immobilisations'], ['20', 'imp-budgets', 'Importation des budgets'], ['21', 'imp-courriers', 'Importation des courriers'],
+  ['07', 'imp-produits-referentiel', 'Importation du référentiel produits'], ['09', 'imp-stock-detail-initial', 'Importation du stock détail initial'],
+  ['10', 'imp-transfert-lignes', 'Importation d’un bon de transfert'], ['11', 'imp-inventaire-comptage', 'Importation d’un comptage d’inventaire'],
+  ['14', 'imp-catalogue-imagerie', 'Importation du catalogue de l’imagerie'], ['17', 'imp-garanties', 'Importation des garanties des souscripteurs'],
+  ['18', 'imp-couvertures-assurance', 'Importation des couvertures d’assurance'], ['19', 'imp-immobilisations', 'Importation des immobilisations'],
+  ['20', 'imp-budgets', 'Importation des budgets'], ['21', 'imp-courriers', 'Importation des courriers'],
 ];
 const FERMETURES_PROPRES_AU_POSTE = [
   { id: 'MODP01', module: 'M12', ecran: 'm12-calendrier-fiscal', libelle: 'Calendrier fiscal mensuel' },

@@ -36,6 +36,19 @@ const importServices = <String>['Médecine générale', 'Maternité', 'Chirurgie
 /// Secteurs du catalogue des actes (`D.ACTES`).
 const importSecteursActes = <String>['Médecine générale', 'Chirurgie', 'Maternité', 'Imagerie médicale', 'Soins et observation'];
 
+/// Secteurs porteurs d'activité facturable (`D.SECTEURS_ACTIVITE`).
+const importSecteursActivite = <String>['Médecine générale', 'Chirurgie', 'Maternité', 'Imagerie médicale', 'Laboratoire', 'Accueil', 'Soins et observation', 'Pharmacie'];
+
+/// Spécialités d'un prestataire externe (`D.SPECIALITES_PRESTATAIRE`).
+const importSpecialitesPrestataire = <String>['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie', 'Autre'];
+
+/// Domaines des unités de mesure du laboratoire (`D.DOMAINES_UNITES_LABO`).
+const importDomainesUnitesLabo = <String>['Hématologie', 'Biochimie', 'Hormonologie', 'Bactériologie', 'Parasitologie', 'Hémostase', 'Andrologie', 'Général'];
+
+/// Zones et températures de conservation d'un emplacement de rangement (colonnes du jeu `emplacements`).
+const importZonesEmplacement = <String>['Rayonnage sec', 'Chaîne du froid', 'Armoire sécurisée', 'Réserve', 'Salle de soins'];
+const importTemperaturesEmplacement = <String>['Ambiante', '2 à 8 °C', '− 20 °C', 'Sous clé, ambiante'];
+
 /// Sections du laboratoire (`SIGH.labo.SECTIONS`) : [identifiant, libellé].
 const importSectionsLabo = <List<String>>[
   ['hematologie', 'Hématologie'],
