@@ -177,7 +177,10 @@ void main() {
   test('IMP-D CAS 1, LA MÈRE APPLIQUE : même résultat, mêmes identifiants ; la fiche de la mère REMPLACE celle du fileul, aucun doublon, le marquage tombe', () {
     final e = ecrireChezLeFileul('fo-valide', 'stock');
     final mere = MagasinMemoire(magasinInitial);
-    final v = lamere(e.demande, mere);
+    // Le pont RENOMME la demande en arrivant à la mère (`F1-` + identifiant) : la série des identifiants de fiche ne doit pas suivre ce renommage.
+    final arrivee = {...e.demande, 'id': 'F1-${e.demande['id']}'};
+    expect(arrivee['serieIdentifiants'], 'DIMF1x1');
+    final v = lamere(arrivee, mere);
     expect(v.appliquee, isTrue, reason: '${v.motif}');
     final delaMere = mere.actives('fournisseurs').where((f) => f['lotImport'] == v.lot).toList();
     expect(delaMere.map((f) => f['id']).toSet(), {'FOU-DIMF1x1-1', 'FOU-DIMF1x1-2'}, reason: 'la mère rejoue avec la MÊME formule d\'identifiant');

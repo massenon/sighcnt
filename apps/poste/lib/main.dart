@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'donnees/organigramme_poste.dart';
 import 'sync/service_demandes_import.dart';
+import 'sync/service_verdicts_import.dart';
 import 'donnees/tarifs_poste.dart';
 import 'donnees/magasin.dart';
 import 'donnees/persistance.dart';
@@ -236,7 +237,12 @@ Future<void> main() async {
       pontFileul ??= creerPontFileul();
     }
     ApplicateurConfiguration? applicateur;
-    void demarrerApplication() => applicateur ??= ApplicateurConfiguration(magasin, moteur.liste)..demarrer();
+    ServiceVerdictsImport? verdictsImport;
+    void demarrerApplication() {
+      applicateur ??= ApplicateurConfiguration(magasin, moteur.liste)..demarrer();
+      // Lot IMP-D : un fileul importe directement chez lui ; il suit ensuite le verdict de la mère (restitue sur refus, lève le marquage sur confirmation).
+      verdictsImport ??= ServiceVerdictsImport(magasin, role: 'fileul', auteur: () => 'Poste fileul', etiquette: moteur.uuid.replaceAll('-', '').substring(0, 6))..demarrer();
+    }
     void demarrerApplicationEtPont() {
       demarrerApplication();
       demarrerPontFileul();

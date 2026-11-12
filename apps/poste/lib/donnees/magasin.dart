@@ -160,6 +160,15 @@ class CollectionMagasin extends ChangeNotifier {
     };
   }
 
+  /// Retire un CHAMP d'une fiche sans passer par les gardes ni le journal : l'entretien d'un marquage posé par le poste lui-même (le « en attente de la mère » de l'import d'un fileul,
+  /// lot IMP-D). Jamais pour une donnée métier : [mettreAJour] est le geste qui se journalise.
+  void retirerChamp(Object? id, String champ) {
+    final f = parId(id);
+    if (f == null || !f.containsKey(champ)) return;
+    f.remove(champ);
+    notifyListeners();
+  }
+
   /// Archive la fiche (`statut: 'archive'`, ancien statut conservé) et rend la fonction qui ANNULE — une annulation doit être possible
   /// et visible (CLAUDE.md, « quatre pièges »).
   ///
@@ -358,6 +367,24 @@ class Magasin {
 
   /// Horloge du journal (fixable par un test).
   DateTime Function() horloge = DateTime.now;
+
+  /// LOT IMP-D : les collections de configuration qu'un FILEUL peut écrire chez lui dans le geste d'import en cours (et dans celui-là seulement). Une pile : les gestes ne se
+  /// chevauchent pas, mais un geste qui en appelle un autre (restitution dans une annulation) ne doit pas lever l'autorisation de l'autre.
+  final List<Set<String>> _importsAutorises = [];
+
+  /// Vrai quand la collection [nom] est celle d'un import du fileul en cours : la garde « réglé sur la mère » (`ApplicateurConfiguration`) la laisse passer, et elle seule.
+  bool importAutorise(String nom) => _importsAutorises.any((s) => s.contains(nom));
+
+  /// Ouvre, le temps de [geste], l'autorisation d'écrire les collections [collections] chez un fileul (import direct, annulation, restitution). L'autorisation est LEVÉE à la sortie,
+  /// même sur exception : une écriture de référentiel hors de ce chemin reste refusée.
+  T pendantImportFileul<T>(Set<String> collections, T Function() geste) {
+    _importsAutorises.add({...collections});
+    try {
+      return geste();
+    } finally {
+      _importsAutorises.removeLast();
+    }
+  }
 
   static const _modules = {
     'factures': 'M8',

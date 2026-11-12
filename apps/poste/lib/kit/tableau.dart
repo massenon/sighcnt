@@ -3,10 +3,12 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../core/jetons_shell.dart';
+import 'badge.dart';
 import 'bouton.dart';
 import 'carte.dart';
 import 'formulaire.dart';
 import 'modale.dart';
+import 'ton.dart';
 
 typedef Ligne = Map<String, Object?>;
 
@@ -448,7 +450,7 @@ class TableauSighState extends State<TableauSigh> {
                                           alignment: col.droite
                                               ? Alignment.centerRight
                                               : Alignment.centerLeft,
-                                          child: col.rendu != null
+                                          child: _avecMarquesDeLaMere(i, r, col.rendu != null
                                               ? col.rendu!(context, r)
                                               : Text(
                                                   col.enTexte(r).isEmpty
@@ -465,7 +467,7 @@ class TableauSighState extends State<TableauSigh> {
                                                               FontFeature
                                                                   .tabularFigures()
                                                             ]
-                                                          : null))))),
+                                                          : null)))))),
                             if (widget.actionsLigne != null)
                               _cellule(
                                   cle: identical(r, page.first)
@@ -495,6 +497,19 @@ class TableauSighState extends State<TableauSigh> {
       height: 16 / 12,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.6);
+
+  /// LOT IMP-D : une fiche écrite par l'import d'un fileul que la mère n'a pas encore confirmée porte `enAttenteMere` ; une fiche que la mère a refusée mais qu'une pièce émise utilise
+  /// porte `refuseeParMere`. Les deux se LISENT sur la première colonne de TOUT tableau qui les liste, sans que chaque écran de référentiel ait à les connaître.
+  Widget _avecMarquesDeLaMere(int colonne, Ligne r, Widget w) {
+    if (colonne != 0) return w;
+    final attente = '${r['enAttenteMere'] ?? ''}'.isNotEmpty, refusee = '${r['refuseeParMere'] ?? ''}'.isNotEmpty;
+    if (!attente && !refusee) return w;
+    return Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 8, runSpacing: 4, children: [
+      w,
+      if (attente) const BadgeSigh('En attente de la mère', key: Key('kit:marque-attente-mere'), ton: TonSigh.attention),
+      if (refusee) const BadgeSigh('Refusée par la mère', key: Key('kit:marque-refusee-mere'), ton: TonSigh.danger),
+    ]);
+  }
 
   /// Cellule : px 12, py 10 (`px-3 py-2.5`).
   Widget _cellule(Widget w, {bool tete = false, Key? cle}) => TableCell(

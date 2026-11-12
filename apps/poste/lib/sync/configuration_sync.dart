@@ -127,17 +127,19 @@ class ApplicateurConfiguration {
 
   static const String motifGarde = 'Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.';
 
-  void _poserGardes() {
+  /// Pose la garde « réglé sur la mère » sur chaque collection de configuration. LOT IMP-D : elle laisse passer UNIQUEMENT l'écriture d'un import du fileul en cours
+  /// (`Magasin.pendantImportFileul`, ouvert pour les cibles du jeu), jamais une autre écriture de référentiel.
+  void poserGardes() {
     if (_gardesPosees) return;
     _gardesPosees = true;
     for (final n in collections.difference(collectionsLocalesDuFileul)) {
       // `appliquerDistante` ne passe pas par les gardes : seule l'écriture de l'agent est refusée.
-      magasin.collection(n).garder((op, f) => motifGarde);
+      magasin.collection(n).garder((op, f) => magasin.importAutorise(n) ? null : motifGarde);
     }
   }
 
   void demarrer({Duration intervalle = const Duration(seconds: 3)}) {
-    _poserGardes();
+    poserGardes();
     _minuterie?.cancel();
     _minuterie = Timer.periodic(intervalle, (_) => unawaited(tirer()));
     unawaited(tirer());

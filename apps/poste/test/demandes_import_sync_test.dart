@@ -58,7 +58,6 @@ void main() {
     }
 
     // Le fileul vérifie le fichier (même analyse que la mère), puis dépose. Le fichier est celui de la maquette (`fo-valide`) ; ici le jeu `assureurs` (la compagnie SUNU et OLEA).
-    DemandesImportPoste.passeParUneDemande(fileulRattache: true, declaration: donnees.matrice.matriceImport.declaration('assureurs'));
     final lignes = [
       for (final l in (vecteurs['cas'] as List).cast<Map>().firstWhere((c) => c['id'] == 'as-valide')['lignes'] as List) [for (final x in l as List) x]
     ];

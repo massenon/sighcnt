@@ -30,12 +30,35 @@ PortMagasin _port(ContexteEcran c) =>
 const _anciensJeux = {'actes': 'tarifs', 'analyses': 'analyses-modele'};
 String _jeuDeLot(Fiche l) => '${_anciensJeux[l['jeu']] ?? l['jeu']}';
 
-/// La demande d'import : l'état d'une demande se LIT (en attente, appliquée, refusée avec son code, son motif et son geste), jamais une valeur de cellule.
-const _tonsDemande = {
-  'en_attente': ('En attente de la mère', TonSigh.attention),
-  'appliquee': ('Appliquée par la mère', TonSigh.succes),
-  'refusee': ('Refusée par la mère', TonSigh.danger),
-};
+/// La demande d'import : l'état d'une demande se LIT (en attente, appliquée, refusée avec son code, son motif et son geste, restitution du fileul), jamais une valeur de cellule.
+/// Le libellé vient du domaine (`libelleEtatDemandeImport`) : un lot écrit chez le fileul n'est jamais dit « appliqué » avant que la mère l'ait confirmé (lot IMP-D).
+(String, TonSigh) _etatDemande(Fiche d) {
+  final e = libelleEtatDemandeImport(d);
+  return (e.libelle, const {'succes': TonSigh.succes, 'danger': TonSigh.danger, 'attention': TonSigh.attention}[e.ton] ?? TonSigh.neutre);
+}
+
+/// La réponse de la mère et la suite chez le fileul, en une phrase sans valeur de cellule.
+String _reponseDeLaMere(Fiche d) {
+  switch (d['etat']) {
+    case demandeImportAppliquee:
+      return 'Lot ${d['resultatLot']} : ${d['resultatEcrits']} fiche(s) écrite(s) à la mère.';
+    case demandeImportRefusee:
+      final r = d['restitution'];
+      final restit = d['ecritureDirecte'] != true
+          ? ''
+          : r == restitutionFaite
+              ? ' Votre écriture locale a été restituée (${d['restitutionArchives'] ?? 0} fiche(s) archivée(s)).'
+              : r == restitutionPartielle
+                  ? ' Votre écriture locale a été restituée, sauf ${((d['restitutionGardees'] as List?) ?? const []).length} fiche(s) qu’une pièce émise utilise : elles restent, marquées.'
+                  : ' La restitution de votre écriture locale est en cours.';
+      return '${d['resultatCode']} : ${d['resultatMotif']}. ${d['resultatGeste']}$restit';
+    case demandeImportEnAttente:
+      return d['ecritureDirecte'] == true ? 'Les fiches sont écrites chez vous et marquées « en attente de la mère ». Elle confirmera ou refusera.' : '';
+    case demandeImportRetiree:
+      return 'Vous avez annulé le lot avant la réponse de la mère : la demande est retirée.';
+  }
+  return '';
+}
 
 DemandesImportPoste _demandes(ContexteEcran c) => DemandesImportPoste(c.magasin,
     role: c.role,
@@ -44,19 +67,15 @@ DemandesImportPoste _demandes(ContexteEcran c) => DemandesImportPoste(c.magasin,
     aujourdhui: () => c.aujourdhui,
     etiquette: c.magasin.poste.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toUpperCase());
 
-/// Ce poste est-il un FILEUL rattaché pour lequel ce jeu passe par une demande à la mère (une de ses collections cibles est de configuration) ?
-bool _passeParLaMere(ContexteEcran c, String jeuId) =>
-    c.donnees != null &&
-    DemandesImportPoste.passeParUneDemande(fileulRattache: ServiceInstallation.de(c.magasin).rattache, declaration: c.donnees!.matrice.matriceImport.declaration(jeuId));
-
-/// Ce jeu RESTREINT écrit de la configuration : sur un fileul rattaché il ne s'importe qu'au poste de la mère (ses lignes ne voyagent pas dans une demande).
-bool _reserveALaMere(ContexteEcran c, String jeuId) =>
-    c.donnees != null &&
-    DemandesImportPoste.reserveALaMere(fileulRattache: ServiceInstallation.de(c.magasin).rattache, declaration: c.donnees!.matrice.matriceImport.declaration(jeuId));
+/// La VOIE de ce jeu sur ce poste (lot IMP-D) : directe (la mère, un poste autonome, ou un jeu d'activité), directe ET demande (un fileul rattaché, configuration seule), demande
+/// seule (configuration ET quantités de stock), réservée à la mère (jeu restreint de configuration).
+VoieImportFileul _voie(ContexteEcran c, String jeuId) => c.donnees == null
+    ? VoieImportFileul.directe
+    : DemandesImportPoste.voie(fileulRattache: ServiceInstallation.de(c.magasin).rattache, declaration: c.donnees!.matrice.matriceImport.declaration(jeuId));
 
 /// Le tableau des demandes que CE poste a envoyées à la mère, pour un jeu : l'agent voit la réponse nommée, jamais les lignes de son fichier.
 Widget tableauDemandes(List<Fiche> demandes) => TableauSigh(
-      lignes: [for (final d in demandes) {...d, '_etat': _tonsDemande[d['etat']]?.$1 ?? '${d['etat']}'}],
+      lignes: [for (final d in demandes) {...d, '_etat': _etatDemande(d).$1}],
       taillePage: 10,
       triInitial: 'demandeLe',
       sensInitial: 'desc',
@@ -77,21 +96,19 @@ Widget tableauDemandes(List<Fiche> demandes) => TableauSigh(
             libelle: 'État',
             texte: (l) => '${l['_etat']}',
             rendu: (_, l) {
-              final t = _tonsDemande[l['etat']] ?? ('${l['etat']}', TonSigh.neutre);
-              return BadgeSigh(t.$1, ton: t.$2);
+              final t = _etatDemande(l);
+              return BadgeSigh(t.$1, ton: t.$2, key: Key('imp-demande-etat-${l['etat']}'));
             }),
         ColonneTableau(
             cle: 'resultatMotif',
             libelle: 'Réponse de la mère',
             triable: false,
-            texte: (l) => l['etat'] == 'appliquee'
-                ? 'Lot ${l['resultatLot']} : ${l['resultatEcrits']} fiche(s) écrite(s)'
-                : (l['etat'] == 'refusee' ? '${l['resultatCode']} : ${l['resultatMotif']}. ${l['resultatGeste']}' : ''),
-            rendu: (_, l) => l['etat'] == 'appliquee'
-                ? Text('Lot ${l['resultatLot']} : ${l['resultatEcrits']} fiche(s) écrite(s).', key: const Key('imp-demande-appliquee'), style: const TextStyle(fontSize: 12, color: JetonsShell.success700))
-                : (l['etat'] == 'refusee'
-                    ? Text('${l['resultatCode']} : ${l['resultatMotif']}. ${l['resultatGeste']}', key: Key('imp-demande-refus-${l['resultatCode']}'), style: const TextStyle(fontSize: 12, color: JetonsShell.danger700))
-                    : const Text('')),
+            texte: _reponseDeLaMere,
+            rendu: (_, l) => l['etat'] == demandeImportAppliquee
+                ? Text(_reponseDeLaMere(l), key: const Key('imp-demande-appliquee'), style: const TextStyle(fontSize: 12, color: JetonsShell.success700))
+                : (l['etat'] == demandeImportRefusee
+                    ? Text(_reponseDeLaMere(l), key: Key('imp-demande-refus-${l['resultatCode']}'), style: const TextStyle(fontSize: 12, color: JetonsShell.danger700))
+                    : Text(_reponseDeLaMere(l), key: const Key('imp-demande-attente'), style: const TextStyle(fontSize: 12, color: JetonsShell.slate600))),
             ),
       ],
     );
@@ -110,6 +127,7 @@ const _tonsEtat = {
   'applique': ('Appliqué', TonSigh.succes),
   'refuse': ('Refusé, rien écrit', TonSigh.danger),
   'annule': ('Annulé', TonSigh.neutre),
+  'restitue': ('Restitué (refusé par la mère)', TonSigh.danger),
 };
 const _tonsLigne = {
   'valide': ('Valide', TonSigh.succes),
@@ -181,6 +199,15 @@ String _typeLisible(ColonneImport c) =>
     }[c.type] ??
     c.type;
 
+/// L'état d'un lot tel qu'on le lit. Un lot écrit chez un fileul et que la mère n'a pas confirmé n'est PAS « appliqué » tout court : il est écrit chez soi, en attente de la mère (lot IMP-D).
+(String, TonSigh) _etatLot(ContexteEcran c, Fiche l) {
+  if (l['etat'] == 'applique') {
+    final d = c.magasin.collection(demandesImportCollection).toutes.where((x) => x['statut'] != 'archive' && x['lotLocalId'] == l['id']).firstOrNull;
+    if (d != null && d['ecritureDirecte'] == true && d['etat'] != demandeImportAppliquee) return ('Écrit chez vous, en attente de la mère', TonSigh.attention);
+  }
+  return _tonsEtat[l['etat']] ?? ('${l['etat']}', TonSigh.neutre);
+}
+
 /// L'historique des lots : un tableau filtrable ; « Rapport » pour tout lot qui porte des constats, « Annuler le lot » (droit d'annuler) pour un lot appliqué.
 Widget tableauLots(BuildContext contexte, ContexteEcran c, List<Fiche> lots, VoidCallback rafraichir) {
   final profil = profilImportDe(c);
@@ -189,7 +216,7 @@ Widget tableauLots(BuildContext contexte, ContexteEcran c, List<Fiche> lots, Voi
       for (final l in lots)
         {
           ...l,
-          '_etat': (_tonsEtat[l['etat']]?.$1 ?? '${l['etat']}'),
+          '_etat': _etatLot(c, l).$1,
           '_valide': '${l['validePar'] ?? l['par'] ?? ''}',
         }
     ],
@@ -201,7 +228,7 @@ Widget tableauLots(BuildContext contexte, ContexteEcran c, List<Fiche> lots, Voi
       FiltreTableau(
           nom: 'etat',
           libelle: 'État',
-          options: const [OptionChamp('applique', 'Appliqué'), OptionChamp('refuse', 'Refusé'), OptionChamp('annule', 'Annulé')],
+          options: const [OptionChamp('applique', 'Appliqué'), OptionChamp('refuse', 'Refusé'), OptionChamp('annule', 'Annulé'), OptionChamp('restitue', 'Restitué')],
           correspond: (l, v) => l['etat'] == v),
     ],
     messageVide: 'Aucun lot.',
@@ -224,8 +251,8 @@ Widget tableauLots(BuildContext contexte, ContexteEcran c, List<Fiche> lots, Voi
           libelle: 'État',
           texte: (l) => '${l['_etat']}',
           rendu: (_, l) {
-            final t = _tonsEtat[l['etat']] ?? ('${l['etat']}', TonSigh.neutre);
-            return BadgeSigh(t.$1, ton: t.$2);
+            final t = _etatLot(c, l);
+            return BadgeSigh(t.$1, ton: t.$2, key: Key('imp-lot-etat-${l['reference']}'));
           }),
     ],
     actionsLigne: (ctx, l) => [
@@ -234,7 +261,8 @@ Widget tableauLots(BuildContext contexte, ContexteEcran c, List<Fiche> lots, Voi
             icone: LucideIcons.fileDown,
             libelle: 'Rapport d’erreurs (.xlsx)',
             onPressed: () => _telechargerRapport(contexte, c, l)),
-      if (l['etat'] == 'applique' && _peutAnnuler(profil, c.agent.nom, l))
+      // Une commande interdite est ABSENTE : un lot écrit chez un fileul que la mère a déjà confirmé ou refusé ne s'annule plus ici (refusAnnulationLotDirect).
+      if (l['etat'] == 'applique' && _peutAnnuler(profil, c.agent.nom, l) && refusAnnulationLotDirect(_demandes(c).demandeDuLot(l['id'])) == null)
         BoutonIcone(
             icone: LucideIcons.undo2,
             libelle: 'Annuler le lot',
@@ -280,14 +308,18 @@ Future<void> _enregistrer(BuildContext contexte, String nom, Uint8List octets) a
 
 Future<void> _annulerLot(BuildContext contexte, ContexteEcran c, Fiche lot, VoidCallback rafraichir) async {
   final nb = (lot['ecrits'] as List).length;
+  final direct = _demandes(c).demandeDuLot(lot['id']) != null;
   final ok = await confirmerSigh(contexte,
       titre: 'Annuler le lot ${lot['reference']} ?',
       message:
-          'Les $nb fiches écrites par ce lot seront archivées (RG-14), jamais supprimées. L’annulation est refusée si un acte s’appuie déjà sur elles.',
+          'Les $nb fiches écrites par ce lot seront archivées (RG-14), jamais supprimées. L’annulation est refusée si un acte s’appuie déjà sur elles.${direct ? ' La demande envoyée à la mère est retirée : elle ne la traitera plus.' : ''}',
       libelleOk: 'Annuler le lot',
       dangereux: true);
   if (!ok || !contexte.mounted) return;
-  final r = annulerLot(jeuImportParId, lot['id'], 'annulation demandée par ${c.agent.nom}', _port(c));
+  // Un lot écrit chez un fileul s'annule par son propre geste : tant que la mère n'a pas statué (la demande est alors retirée), refusé en nommant une fois qu'elle a confirmé.
+  final r = _demandes(c).demandeDuLot(lot['id']) != null
+      ? _demandes(c).annulerLotDuFileul(lot['id'], motif: 'annulation demandée par ${c.agent.nom}')
+      : annulerLot(jeuImportParId, lot['id'], 'annulation demandée par ${c.agent.nom}', _port(c));
   if (r.ok) {
     ToastsSigh.afficher(contexte, 'Lot annulé.', type: TypeToast.succes, detail: '${r.archives} fiche(s) archivée(s).');
   } else {
@@ -389,6 +421,37 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
     }
   }
 
+  /// FILEUL (configuration seule) : écrit le fichier VÉRIFIÉ chez soi, tout de suite, ET dépose la demande à la mère, en un seul geste (lot IMP-D). La fenêtre dit AVANT le oui ce qui va se
+  /// passer : l'écriture est immédiate, la mère confirmera ou refusera, un refus restitue.
+  Future<void> _importerEtDemander(ContexteEcran c) async {
+    final a = _analyse!;
+    final ok = await confirmerSigh(context,
+        titre: 'Écrire chez vous et prévenir la mère ?',
+        message:
+            '${a.aEcrire} ligne(s) du fichier « ${a.fichier} » vont s’écrire CHEZ VOUS maintenant, au nom de ${c.agent.nom} (validé par). Une demande part automatiquement à la mère, qui rejoue la vérification sous votre profil puis confirme ou refuse. '
+            'Tant qu’elle n’a pas répondu, ces fiches portent le marquage « en attente de la mère ». Si elle refuse, elles sont restituées (archivées, RG-14) et vous lisez le motif sur votre demande. Vous pouvez annuler le lot tant qu’elle n’a pas statué.',
+        libelleOk: 'Écrire chez moi et envoyer la demande');
+    if (!ok || !mounted) return;
+    setState(() => _occupe = true);
+    final r = _demandes(c).importerEtDemander(_jeu, a);
+    if (!mounted) return;
+    setState(() {
+      _occupe = false;
+      _analyse = null;
+      _lotRefuse = null;
+      _resultatOk = r.resultat.ok;
+      _resultat = r.resultat.ok
+          ? 'Lot ${r.resultat.lot!['reference']} écrit chez vous (${r.resultat.ecrits} fiche(s)). La demande ${r.demande!['id']} est partie à la mère : en attente de sa confirmation, les fiches portent le marquage « en attente de la mère ».'
+          : 'Importation refusée. ${r.resultat.motif}. ${r.resultat.geste}';
+    });
+    if (r.resultat.ok) {
+      ToastsSigh.afficher(context, 'Écrit chez vous, en attente de la mère.',
+          type: TypeToast.succes, detail: '${r.resultat.lot!['reference']} : ${r.resultat.ecrits} fiche(s). Demande ${r.demande!['id']} envoyée.');
+    } else {
+      ToastsSigh.afficher(context, 'Importation refusée.', type: TypeToast.erreur, detail: r.resultat.motif);
+    }
+  }
+
   /// FILEUL : dépose la demande du fichier VÉRIFIÉ à la mère (rien n'est écrit ici). La mère rejoue l'analyse sous le rôle de l'auteur et répond sur la même fiche.
   Future<void> _envoyerDemande(ContexteEcran c) async {
     final a = _analyse!;
@@ -421,7 +484,8 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             ignores: a.compte.ignores, sansValeur: port.profil.restreint(_jeu.id)));
   }
 
-  Widget _apercu(ContexteEcran c, AnalyseImport a, DroitImport droit, {required bool viaMere, required bool reserve}) {
+  Widget _apercu(ContexteEcran c, AnalyseImport a, DroitImport droit, {required VoieImportFileul voie}) {
+    final viaMere = voie == VoieImportFileul.demandeSeule, reserve = voie == VoieImportFileul.reserveeALaMere, direct = voie == VoieImportFileul.directeEtDemande;
     final ps = a.problemes;
     final avecDetail = a.lignes.any((l) => l.detail != null && l.detail!.isNotEmpty);
     return CarteSigh(
@@ -518,12 +582,19 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         const SizedBox(height: 12),
         Wrap(spacing: 8, runSpacing: 8, children: [
           // La commande d'écriture n'existe que pour qui détient le droit d'IMPORTER CE JEU (pas celui d'éditer l'écran) : absente, jamais grisée.
-          if (a.accepte && a.aEcrire > 0 && droit.importer && !viaMere && !reserve)
+          if (a.accepte && a.aEcrire > 0 && droit.importer && !viaMere && !reserve && !direct)
             BoutonSigh(
                 libelle: 'Confirmer l’importation (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
                 icone: LucideIcons.packageCheck,
                 onPressed: _occupe ? null : () => _confirmer(c)),
-          // Sur un FILEUL rattaché, un référentiel de configuration ne s'écrit pas ici : le fichier VÉRIFIÉ part en demande à la mère, qui rejoue l'analyse et répond.
+          // Sur un FILEUL rattaché, un référentiel de configuration s'écrit chez lui TOUT DE SUITE et la demande à la mère part toute seule (lot IMP-D).
+          if (a.accepte && a.aEcrire > 0 && droit.importer && direct)
+            BoutonSigh(
+                key: const Key('imp-importer-et-demander'),
+                libelle: 'Écrire chez moi et prévenir la mère (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
+                icone: LucideIcons.packageCheck,
+                onPressed: _occupe ? null : () => _importerEtDemander(c)),
+          // Jeu qui porte aussi des QUANTITÉS de stock : seule la mère les écrit (les compter deux fois doublerait le stock) ; le fichier VÉRIFIÉ part en demande, la mère rejoue et répond.
           if (a.accepte && a.aEcrire > 0 && droit.importer && viaMere)
             BoutonSigh(
                 key: const Key('imp-envoyer-demande'),
@@ -563,8 +634,10 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         final mode = profil.modeDoublon(j.id);
         final jeuValide = vp.etat('jeux_import', j.ecran)?.enAttente == false;
         final reprise = !modale && j.id == 'grand-stock';
-        final viaMere = _passeParLaMere(c, j.id);
-        final reserve = _reserveALaMere(c, j.id);
+        final voie = _voie(c, j.id);
+        final viaMere = voie == VoieImportFileul.demandeSeule;
+        final reserve = voie == VoieImportFileul.reserveeALaMere;
+        final direct = voie == VoieImportFileul.directeEtDemande;
         // La REPRISE valorisée du Grand Stock a ses propres droits (ceux de M6) : elle reste atteignable de qui l'a, même sans détenir le JEU.
         Widget repriseValorisee() => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: const [
               SizedBox(height: 24),
@@ -616,10 +689,16 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             const SizedBox(height: 16),
             NoteSigh(j.limite!, icone: LucideIcons.info),
           ],
+          if (direct) ...[
+            const SizedBox(height: 16),
+            const NoteSigh(
+                'Écrit chez vous maintenant, la mère confirmera. Ce jeu écrit la configuration de la clinique, dont la mère reste l’autorité : votre fichier est vérifié, puis écrit dans VOTRE magasin tout de suite, et une demande part automatiquement à la mère. Elle rejoue la vérification sous votre profil et applique ou refuse. Tant qu’elle n’a pas répondu, les fiches portent le marquage « en attente de la mère » ; si elle refuse, elles sont restituées (archivées) et vous lisez le motif sur votre demande ; hors ligne, la demande attend dans votre file. En cas de conflit, la mère l’emporte.',
+                icone: LucideIcons.serverCog),
+          ],
           if (viaMere) ...[
             const SizedBox(height: 16),
             const NoteSigh(
-                'Réglé sur la mère. Ce jeu écrit la configuration de la clinique, que la mère seule écrit : votre fichier est vérifié ici, puis envoyé à la mère par une demande. Elle rejoue la vérification sous votre profil, applique ou refuse en nommant le code, le motif et le geste, et vous voyez sa réponse ci-dessous.',
+                'Réglé sur la mère. Ce jeu écrit la configuration de la clinique ET des quantités de stock (lots, mouvements) : seule la mère les écrit, les écrire aussi chez vous les compterait deux fois. Votre fichier est vérifié ici, puis envoyé à la mère par une demande ; rien n’est écrit chez vous. Elle rejoue la vérification sous votre profil, applique ou refuse en nommant le code, le motif et le geste, et vous voyez sa réponse ci-dessous.',
                 icone: LucideIcons.serverCog),
           ],
           if (reserve) ...[
@@ -693,8 +772,8 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             const SizedBox(height: 16),
             NoteSigh(_resultat!, ton: _resultatOk ? TonSigh.succes : TonSigh.danger, icone: _resultatOk ? LucideIcons.circleCheck : LucideIcons.octagonAlert),
           ],
-          if (_analyse != null) ...[const SizedBox(height: 16), _apercu(c, _analyse!, d, viaMere: viaMere, reserve: reserve)],
-          if (viaMere) ...[
+          if (_analyse != null) ...[const SizedBox(height: 16), _apercu(c, _analyse!, d, voie: voie)],
+          if (viaMere || direct) ...[
             const SizedBox(height: 16),
             CarteSigh(titre: 'Demandes envoyées à la mère', sansRemplissage: true, child: tableauDemandes(_demandes(c).sesDemandes(jeu: j.id))),
           ],

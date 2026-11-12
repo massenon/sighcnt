@@ -182,6 +182,9 @@ Map<String, Object?> composerDemandeImport({
     'demandeLe': jour,
     if (directe) ...{
       'ecritureDirecte': true,
+      // L'identité des fiches écrites : la demande est RENOMMÉE par le pont en arrivant à la mère (l'étiquette du poste préfixe son identifiant de synchronisation), la série des
+      // identifiants de fiche ne doit pas l'être : elle voyage dans ce champ.
+      'serieIdentifiants': id,
       'lotLocal': lotLocal,
       'lotLocalId': lotLocalId,
       'rangsEcrits': rangsAEcrire(analyse),
@@ -255,7 +258,7 @@ VerdictDemandeImport traiterDemandeImport(FicheImport demande, PortImport port, 
     final diff = resultatIdentique([for (final n in (demande['rangsEcrits'] as List)) (n as num).toInt()], rangsAEcrire(a));
     if (diff != null) return VerdictDemandeImport.refusee('RESULTAT_DIFFERENT', diff.motif, diff.geste);
   }
-  final r = appliquer(j, a, directe ? PortDemandeImport(port, demandeId: '${demande['id']}') : port);
+  final r = appliquer(j, a, directe ? PortDemandeImport(port, demandeId: '${demande['serieIdentifiants'] ?? demande['id']}') : port);
   if (r.ok) return VerdictDemandeImport.appliquee(lot: '${r.lot!['reference']}', ecrits: r.ecrits);
   return VerdictDemandeImport.refusee(r.code ?? 'ECRITURE_REFUSEE', r.motif ?? 'l’écriture a été refusée', r.geste ?? 'Rien n’a été écrit.', lot: r.lot == null ? null : '${r.lot!['reference']}');
 }
