@@ -1110,6 +1110,8 @@
         tableWrap.appendChild(empty(enRecherche ? 'Aucun résultat pour cette recherche.' : cfg.emptyMessage,
           { hint: enRecherche && cfg.indiceRecherche ? (cfg.indiceRecherche(state.q) || cfg.emptyHint) : cfg.emptyHint, icon: 'inbox' }));
       } else {
+        /* `noteRecherche(q, rows)` : ce que les résultats ont de particulier (lot OCR-prep : « trouvé dans un texte lu par machine »), dit AU-DESSUS du tableau. */
+        if (state.q && cfg.noteRecherche) { var noteR = cfg.noteRecherche(state.q, rows); if (noteR) tableWrap.appendChild(el('div.mb-2', null, noteR)); }
         var table = el('table.tbl');
         var thead = el('thead'), htr = el('tr');
         if (cfg.selectable) {

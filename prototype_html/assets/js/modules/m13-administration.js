@@ -37,8 +37,14 @@
    * ======================================================================== */
   /** Un courrier est numérisé quand un FICHIER est rattaché à sa fiche (dérivé, jamais saisi). */
   function numeriseCourrier(c) { return !!(c && c.fichier && typeof c.fichier === 'object' && c.fichier.sha256); }
-  /** Ce que la recherche ne lit pas : les pièces numérisées dont le texte n'est pas indexé (images sans couche texte). */
+  /** Les pièces numérisées de la liste (objets `fichier`), pour ce que la recherche lit et ne lit pas. */
+  function fichiersCourriers() { return S.collection('courriers').active().filter(numeriseCourrier).map(function (c) { return c.fichier; }); }
+  /** L'état d'indexation d'une pièce (lot OCR-prep) : couche texte, lue par machine (à vérifier), en attente, en échec, non indexée. Sans le module de lecture : couche texte ou rien. */
+  function etatTexte(x) { var O = global.SIGH.ocr; return O ? O.etatDe(x) : { code: x.texteIndexe ? 'indexe' : 'non_indexe', court: x.texteIndexe ? 'texte indexé' : 'texte non indexé', disponible: !!x.texteIndexe }; }
+  /** Ce que la recherche ne lit pas : les pièces numérisées dont le texte n'est pas lisible (images sans couche texte, lecture OCR absente, en attente ou en échec). */
   function indiceNonIndexe() {
+    var O = global.SIGH.ocr;
+    if (O) return O.indiceVide(fichiersCourriers());
     var n = S.collection('courriers').active().filter(function (c) { return numeriseCourrier(c) && !c.fichier.texteIndexe; }).length;
     return n ? n + ' pièce' + (n > 1 ? 's numérisées n’ont' : ' numérisée n’a') + ' pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées.' : null;
   }
@@ -61,9 +67,11 @@
         recherche: {
           extra: function (c) {
             var x = c.fichier && c.fichier.sha256 ? c.fichier : null;
-            return [c.observations, c.date ? C.dateFR(c.date) : '', x ? x.nom : '', x ? x.nomNormalise : '', x && global.SIGH.fichiers ? global.SIGH.fichiers.texteDe(x) : ''].join(' ');
+            return [c.observations, c.date ? C.dateFR(c.date) : '', x ? x.nom : '', x ? x.nomNormalise : '', x && global.SIGH.fichiers ? global.SIGH.fichiers.texteDe(x, { famille: 'courrier' }) : ''].join(' ');
           },
           indice: function () { return indiceNonIndexe(); },
+          /* Un résultat trouvé par un texte lu par machine le DIT (lot OCR-prep) : la reconnaissance peut se tromper. */
+          note: function (q, rows) { return global.SIGH.ocr ? global.SIGH.ocr.noteRecherche(q, rows.filter(numeriseCourrier).map(function (c) { return c.fichier; })) : null; },
         },
         detailSup: function (c, ctx) {
           var F = global.SIGH.fichiers; if (!F) return null;
@@ -105,7 +113,7 @@
               if (!numeriseCourrier(c)) return U.badge('À scanner', 'warning');
               var x = c.fichier;
               return el('div.flex.flex-col.items-start.gap-0\\.5', null, [U.badge('Oui', 'success'),
-                el('span.text-\\[10px\\].text-slate-400', { text: x.texteIndexe ? 'texte indexé' : 'texte non indexé' })]);
+                el('span.text-\\[10px\\]', { class: etatTexte(x).code === 'ocr_indexe' ? 'text-warning-700' : 'text-slate-400', 'data-texte-etat': etatTexte(x).code, text: etatTexte(x).court })]);
             },
           },
         ],
@@ -137,8 +145,13 @@
           { name: 'sens', label: 'Sens', options: [{ value: 'arrivee', label: 'Arrivée' }, { value: 'depart', label: 'Départ' }] },
           { name: 'traitement', label: 'Traitement', options: [{ value: 'traite', label: 'Traité' }, { value: 'en_cours', label: 'En cours' }, { value: 'en_attente', label: 'En attente' }] },
           { name: 'affecteA', label: 'Service', options: ['Direction Médicale', 'Direction Administrative', 'Comptabilité', 'Ressources humaines', 'Gestion des stocks'] },
-          { name: 'numerise', label: 'Numérisé', options: [{ value: 'oui', label: 'Pièce numérisée' }, { value: 'non', label: 'À scanner' }, { value: 'sansTexte', label: 'Texte non indexé' }],
-            match: function (r, v) { return v === 'oui' ? numeriseCourrier(r) : (v === 'non' ? !numeriseCourrier(r) : (numeriseCourrier(r) && !r.fichier.texteIndexe)); } },
+          { name: 'numerise', label: 'Numérisé', options: [{ value: 'oui', label: 'Pièce numérisée' }, { value: 'non', label: 'À scanner' }, { value: 'sansTexte', label: 'Texte non indexé' }, { value: 'lu', label: 'Texte lu par machine' }],
+            match: function (r, v) {
+              if (v === 'oui') return numeriseCourrier(r);
+              if (v === 'non') return !numeriseCourrier(r);
+              if (v === 'lu') return numeriseCourrier(r) && etatTexte(r.fichier).code === 'ocr_indexe';
+              return numeriseCourrier(r) && !etatTexte(r.fichier).disponible;
+            } },
         ],
         kpis: function (rows) {
           return [
@@ -170,7 +183,7 @@
       })(root);
     },
     actions: function () {
-      return [global.SIGH.fichiers && global.SIGH.fichiers.boutonReglage ? global.SIGH.fichiers.boutonReglage() : null, K.btn('Imprimer le registre', {
+      return [global.SIGH.fichiers && global.SIGH.fichiers.boutonReglage ? global.SIGH.fichiers.boutonReglage() : null, global.SIGH.ocr ? global.SIGH.ocr.boutonReglage() : null, K.btn('Imprimer le registre', {
         icon: 'printer',
         onclick: function () {
           var rows = C.sortBy(S.collection('courriers').active(), 'date', 'desc');

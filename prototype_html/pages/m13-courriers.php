@@ -36,6 +36,7 @@
   <script src="../assets/js/modules/_kit.js"></script>
   <script src="../assets/js/modules/m13-administration.js"></script>
   <script src="../assets/js/modules/fichiers.js"></script>
+  <script src="../assets/js/modules/fichiers-ocr.js"></script>
   <script>SIGH.mount("m13-courriers");</script>
 </body>
 </html>

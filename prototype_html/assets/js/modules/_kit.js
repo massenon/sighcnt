@@ -666,6 +666,7 @@
           /* `recherche: { extra(r), indice(q) }` : ce que la recherche lit EN PLUS des colonnes (le texte extrait d'une pièce numérisée), et ce qu'elle ne lit pas. */
           searchExtra: cfg.recherche && cfg.recherche.extra ? cfg.recherche.extra : null,
           indiceRecherche: cfg.recherche && cfg.recherche.indice ? cfg.recherche.indice : null,
+          noteRecherche: cfg.recherche && cfg.recherche.note ? cfg.recherche.note : null,
           emptyMessage: archived ? 'Aucun enregistrement archivé.' : 'Aucun ' + cfg.entite + ' enregistré.',
           emptyHint: (archived || cfg.readonly) ? null : 'Utiliser le bouton « Nouveau » pour créer le premier enregistrement.',
           onRowClick: openDetail,

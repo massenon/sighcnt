@@ -130,8 +130,11 @@
      82 (12/11/2026) : les FICHIERS NUMÉRISÉS quittent le magasin (lot DOCS-1, plan documents numérisés). Collection `fichiers` (registre par empreinte SHA-256), champ `fichier` (objet : empreinte, nom,
      nom normalisé, type, taille, pages, texte indexé) sur `courriers` et `documentsPatient`, `fichiersRetires` (historique d'une pièce retirée) ; `numerise` d'un courrier devient DÉRIVÉ du fichier. Les
      scans déjà déposés en base64 (`donnees`) sont REPRIS par la montée de version puis rangés dans le dossier de fichiers par une migration qui vérifie l'empreinte avant de retirer le base64.
-     Sans incrément, un poste garderait des scans dans le magasin et aucun écran ne saurait lire la forme neuve. */
-  var VERSION = 83;
+     Sans incrément, un poste garderait des scans dans le magasin et aucun écran ne saurait lire la forme neuve.
+     84 (13/11/2026) : la lecture OCR des scans, PRÉPARÉE (lot OCR-prep, aucun moteur livré). Collection `lecturesOcr` (une version de texte lu par machine par fiche, identifiant déterministe, immuable : une relance
+     AJOUTE une version), et le registre `fichiers` porte `texteSource` et l'état de la file de lecture (`ocr`). Le réglage `ocr` (désactivé par défaut) vit dans `_reglages`. Une reprise garde les lectures. Sans
+     incrément, un poste n'aurait pas la collection et la garde d'immuabilité ne couvrirait rien. */
+  var VERSION = 84;
   var db = null;
   var listeners = {};
 
@@ -3653,10 +3656,10 @@
 
   /** Ce qu'une montée de version doit garder des FICHIERS numérisés : les trois collections, si une fiche porte un fichier ou un base64 ; sinon rien (le jeu de démonstration se resème). */
   function fichiersAGarder(o) {
-    var a = (o && o.courriers) || [], b = (o && o.documentsPatient) || [], f = (o && o.fichiers) || [];
+    var a = (o && o.courriers) || [], b = (o && o.documentsPatient) || [], f = (o && o.fichiers) || [], l = (o && o.lecturesOcr) || [];
     var porte = function (x) { return x && ((x.fichier && typeof x.fichier === 'object' && x.fichier.sha256) || (typeof x.donnees === 'string' && x.donnees.indexOf('data:') === 0)); };
-    if (!f.length && !a.some(porte) && !b.some(porte)) return null;
-    return { courriers: a, documentsPatient: b, fichiers: f };
+    if (!f.length && !l.length && !a.some(porte) && !b.some(porte)) return null;
+    return { courriers: a, documentsPatient: b, fichiers: f, lecturesOcr: l };
   }
   /** Reste-t-il un scan en base64 dans le magasin ? C'est la condition de la migration (lot D1). */
   function migrationFichiersDue() {
@@ -4437,7 +4440,7 @@
   /* Libellé lisible de chaque collection : « module | entité ». Une collection
      absente de cette table reste listée sous son nom technique. */
   var LIBELLES = {
-    fichiers: 'M13|Fichiers numérisés (registre par empreinte)', lotsImportation: 'IMP|Lots d’importation', patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
+    fichiers: 'M13|Fichiers numérisés (registre par empreinte)', lecturesOcr: 'M13|Lectures OCR des scans (texte lu par machine)', lotsImportation: 'IMP|Lots d’importation', patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
     documents: 'GED|Bibliothèque documentaire',
     archivesExercice: 'M12|Archives de clôture', clotures: 'M12|Clôtures et réouvertures', comptesResultat: 'M12|Comptes de résultat (131, 139)',
     consultations: 'M2|Consultations et rendez-vous', support: 'M2|Registre des appels',
@@ -4773,6 +4776,15 @@
     if (op !== 'modifier') return null;
     if (avant.etat === 'valide') return 'Un seuil validé est IMMUABLE : le modifier ajoute une version datée, il ne réécrit pas l’ancienne.';
     if (rec.etat === 'valide' && (!rec.valideLe || !rec.validePar || !String(rec.motifValidation || '').trim())) return 'Un seuil ne devient « validé » qu’avec son auteur, sa date et son motif.';
+    return null;
+  });
+  /* UNE LECTURE OCR NE SE RÉÉCRIT JAMAIS (lot OCR-prep) : une relance ou un autre moteur AJOUTE une version datée, l'ancienne reste lisible. Le texte lu par machine est une trace de ce que le moteur a rendu
+     à une date : le corriger sur place effacerait ce que l'agent a pu lire. Ni modification ni archivage ; l'identifiant est déterministe, un doublon exact est refusé. */
+  garder('lecturesOcr', function (op, rec) {
+    if (op === 'modifier') return 'Une lecture OCR est IMMUABLE : une relance AJOUTE une version datée, elle ne réécrit pas l’ancienne.';
+    if (op === 'archiver') return 'Une lecture OCR ne s’archive pas : elle reste lisible (RG-14), une nouvelle lecture devient la version courante.';
+    var existantes = (db && db.lecturesOcr) || [];
+    if (op === 'inserer' && existantes.some(function (x) { return x.id === rec.id; })) return 'La lecture « ' + rec.id + ' » existe déjà : une version ne se réécrit pas.';
     return null;
   });
   var VERSION_IMMUABLE = ['code', 'version', 'prixNonAssure', 'etatNonAssure', 'prixAssure', 'etatAssure', 'prixVente', 'origine', 'proposePar', 'proposeLe', 'lot'];

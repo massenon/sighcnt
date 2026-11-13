@@ -2794,6 +2794,47 @@ CREATE TABLE IF NOT EXISTS "m13"."jetons_enquete" (
 );
 ALTER TABLE "m13"."jetons_enquete" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m13"."jetons_enquete" IS 'Collection « jetonsEnquete » — M13 Administration & ambulance';
+CREATE TABLE IF NOT EXISTS "m13"."lectures_ocr" (
+  "id" text PRIMARY KEY,
+  "sha256" text,
+  "texte_brut" text,
+  "brut_tronque" boolean,
+  "texte" text,
+  "mots_tronques" boolean,
+  "nb_mots" integer,
+  "confiance" numeric,
+  "texte_source" text,
+  "moteur" text,
+  "moteur_version" text,
+  "langue" text,
+  "ocr_le" timestamptz,
+  "ocr_par" text,
+  "declencheur" text,
+  "pages" integer,
+  "duree_ms" integer,
+  "statut" text,
+  "extra" jsonb
+);
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "sha256" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "texte_brut" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "brut_tronque" boolean; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "texte" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "mots_tronques" boolean; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "nb_mots" integer; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "confiance" numeric; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "texte_source" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "moteur" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "moteur_version" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "langue" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "ocr_le" timestamptz; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "ocr_par" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "declencheur" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "pages" integer; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "duree_ms" integer; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m13"."lectures_ocr" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m13"."lectures_ocr" IS 'Collection « lecturesOcr » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_lectures_ocr_statut" ON "m13"."lectures_ocr" ("statut");
 CREATE TABLE IF NOT EXISTS "m13"."materiel" (
   "id" text PRIMARY KEY,
   "etat" text,

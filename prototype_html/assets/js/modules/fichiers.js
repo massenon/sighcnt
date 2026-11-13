@@ -224,22 +224,28 @@
     (mots || []).forEach(function (m) { var n = C.norm(m); if (n.length >= 2 && !vus[n]) { vus[n] = true; out.push(n); } });
     return out.join(' ');
   }
-  function noterFichier(depot, delta) {
+  /** `ctx` : { famille, type } de la fiche qui reçoit la pièce (lot OCR-prep) : un scan sans couche texte entre dans la file de lecture SI un moteur est prêt. */
+  function noterFichier(depot, delta, ctx) {
     var col = colFichiers();
     var ex = col.get('FIC-' + depot.sha256.slice(0, 16));
     if (ex) {
       col.update(ex.id, { nbReferences: Math.max(0, (ex.nbReferences || 0) + delta) });
-      return;
+    } else {
+      col.insert({ id: 'FIC-' + depot.sha256.slice(0, 16), sha256: depot.sha256, taille: depot.taille, mime: depot.mime, pages: depot.pages || null,
+        premiereDate: new Date().toISOString(), nbReferences: Math.max(0, delta), texteIndexe: !!depot.texteIndexe,
+        texteSource: depot.texteIndexe ? 'couche_texte' : null,
+        texte: depot.texteIndexe ? normaliserMots(depot.mots) : '', motsTronques: !!depot.motsTronques });
     }
-    col.insert({ id: 'FIC-' + depot.sha256.slice(0, 16), sha256: depot.sha256, taille: depot.taille, mime: depot.mime, pages: depot.pages || null,
-      premiereDate: new Date().toISOString(), nbReferences: Math.max(0, delta), texteIndexe: !!depot.texteIndexe,
-      texte: depot.texteIndexe ? normaliserMots(depot.mots) : '', motsTronques: !!depot.motsTronques });
+    if (delta > 0 && global.SIGH.ocr) global.SIGH.ocr.apresDepot(depot, ctx);
   }
-  /** Le texte indexé d'une empreinte (mots normalisés), ou '' ; `texteIndexe` dit si la pièce en porte. */
-  function texteDe(fichier) {
+  /** Le texte indexé d'une empreinte (mots normalisés), ou ''. LA COUCHE TEXTE NATIVE PRIME TOUJOURS : l'OCR ne parle que là où le fichier n'en porte pas. `ctx` : { famille, type } pour tenir la zone
+   *  (le texte d'un scan de zone 2 est de zone 2 : un profil qui ne lit pas la zone n'en reçoit rien). */
+  function texteDe(fichier, ctx) {
     if (!fichier || !fichier.sha256) return '';
     var ex = colFichiers().get('FIC-' + fichier.sha256.slice(0, 16));
-    return ex ? (ex.texte || '') : '';
+    if (ex && ex.texteIndexe) return ex.texte || '';
+    if (!global.SIGH.ocr) return '';
+    return global.SIGH.ocr.texteLisible(fichier.sha256, ctx && ctx.famille, ctx && ctx.type);
   }
 
   /** Le fichier de la fiche, ou null. */
@@ -301,7 +307,7 @@
     var res = col.update(fiche.id, { fichier: f }, { journal: { action: 'Dépôt d’un fichier numérisé', module: journal.module, entite: journal.entite,
       avant: { fichier: null }, apres: { empreinte: DOC.abrege(depot.sha256), nom: f.nomNormalise, taille: depot.taille } } });
     if (!res) return null;
-    noterFichier(depot, 1);
+    noterFichier(depot, 1, { famille: famille, type: famille === 'patient' ? fiche.type : null });
     /* L'ANNULATION DOIT REMETTRE LA FICHE « SANS PIÈCE ». Le magasin annule en réaffectant les valeurs d'AVANT : une clé qui n'existait pas avant (`fichier` d'une fiche jamais numérisée) resterait
        posée. On la remet donc à vide explicitement, et le registre des empreintes suit. */
     return { res: res, fichier: f, undo: function () { res.undo(); col.update(fiche.id, { fichier: null }); noterFichier(depot, -1); } };
@@ -485,11 +491,13 @@
         ['Fichier d’origine', fichier.nom],
         ['Format', (fichier.mime || '').replace('application/', '').replace('image/', '').toUpperCase() + ' · ' + poids(fichier.taille) + (fichier.pages ? ' · ' + fichier.pages + ' page' + (fichier.pages > 1 ? 's' : '') : '')],
         ['Empreinte SHA-256', el('span.font-mono.text-xs', { text: DOC.abrege(fichier.sha256) + '…', title: fichier.sha256, 'data-piece-empreinte': '1' })],
-        ['Recherche dans le texte', fichier.texteIndexe ? U.badge('Texte indexé', 'success') : U.badge('Texte non indexé', 'neutral')],
+        ['Recherche dans le texte', global.SIGH.ocr ? global.SIGH.ocr.ligneEtat(fichier) : (fichier.texteIndexe ? U.badge('Texte indexé', 'success') : U.badge('Texte non indexé', 'neutral'))],
         ['Déposé', (fichier.deposePar || 'auteur inconnu') + ', le ' + C.dateFR(String(fichier.deposeLe || '').slice(0, 10))],
       ];
       corps.appendChild(U.descList(lignes));
-      if (!fichier.texteIndexe) corps.appendChild(el('p.text-xs.text-slate-500', { text: 'Texte non indexé : la recherche par le contenu ne trouve pas cette pièce (image sans couche texte). Elle reste retrouvable par ses données de fiche.' }));
+      if (global.SIGH.ocr) {
+        if (!fichier.texteIndexe) corps.appendChild(global.SIGH.ocr.blocCarte({ fichier: fichier, famille: o.famille, type: o.type || o.fiche.type || null, peutDeposer: !!o.peutDeposer, refresh: o.refresh }));
+      } else if (!fichier.texteIndexe) corps.appendChild(el('p.text-xs.text-slate-500', { text: 'Texte non indexé : la recherche par le contenu ne trouve pas cette pièce (image sans couche texte). Elle reste retrouvable par ses données de fiche.' }));
       var actes = el('div.flex.flex-wrap.items-center.gap-2');
       actes.appendChild(K.btn('Aperçu', { icon: 'eye', size: 'sm', onclick: function () { apercu({ famille: o.famille, fiche: o.fiche, titre: o.titre, journal: o.journal }); } }));
       actes.appendChild(K.btn('Télécharger', { icon: 'download', size: 'sm', onclick: function () {
@@ -598,7 +606,7 @@
             f.deposePar = d.depose || f.deposePar;
             col.update(d.id, { fichier: f, donnees: null }, { journal: { action: 'Fichier migré du magasin vers le dossier de fichiers', module: 'M1', entite: 'document',
               avant: { base64Octets: u8.length }, apres: { empreinte: DOC.abrege(sha), verifiee: true } } });
-            noterFichier(rep, 1);
+            noterFichier(rep, 1, { famille: 'patient', type: d.type });
             rapport.migres++;
             return null;
           });

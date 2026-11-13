@@ -1445,6 +1445,8 @@
   function colDocs() { return S.collection('documentsPatient', { module: 'M1', entite: 'document', prefix: 'DOC' }); }
   function FX() { return global.SIGH.fichiers; }
   function fichierDoc(r) { return r && r.fichier && typeof r.fichier === 'object' && r.fichier.sha256 ? r.fichier : null; }
+  /** L'état d'indexation d'une pièce (lot OCR-prep) : couche texte, lue par machine (à vérifier), en attente, en échec, non indexée. */
+  function etatTexteDoc(x) { var O = global.SIGH.ocr; return O ? O.etatDe(x) : { code: x.texteIndexe ? 'indexe' : 'non_indexe', court: x.texteIndexe ? 'texte indexé' : 'texte non indexé', disponible: !!x.texteIndexe }; }
 
   function amorcerDocuments() {
     var db = S.raw();
@@ -1514,6 +1516,7 @@
     actions: function () {
       return [
         FX() && FX().boutonReglage ? FX().boutonReglage() : null,
+        global.SIGH.ocr ? global.SIGH.ocr.boutonReglage() : null,
         K.btn('Répertoire des patients', { icon: 'users', onclick: function () { global.SIGH.app.go('m1-patients'); } }),
         K.btn('Plan de numérisation', { icon: 'scan-line', onclick: function () { global.SIGH.app.go('m1-numerisation'); } }),
       ];
@@ -1529,7 +1532,7 @@
         var v = String(r.date || '').slice(0, 10);
         return !((duPlage && v < duPlage) || (auPlage && v > auPlage));
       }
-      function nonIndexes() { return lignesVisibles().filter(function (r) { return fichierDoc(r) && !r.fichier.texteIndexe; }); }
+      function fichiersVisibles() { return lignesVisibles().filter(fichierDoc).map(function (r) { return r.fichier; }); }
 
       function dessiner() {
         C.clear(root);
@@ -1572,18 +1575,28 @@
           /* RECHERCHE AVANCÉE (lot D4) : les colonnes, plus le nom du fichier et le TEXTE extrait d'un PDF qui porte une couche texte. Une pièce sans texte indexé (image) le DIT. */
           searchExtra: function (r) {
             var x = fichierDoc(r);
-            return [r.date ? C.dateFR(r.date) : '', x ? x.nom : '', x ? x.nomNormalise : '', x && FX() ? FX().texteDe(x) : ''].join(' ');
+            return [r.date ? C.dateFR(r.date) : '', x ? x.nom : '', x ? x.nomNormalise : '', x && FX() ? FX().texteDe(x, { famille: 'patient', type: r.type }) : ''].join(' ');
           },
           indiceRecherche: function () {
-            var n = nonIndexes().length;
+            var O = global.SIGH.ocr;
+            if (O) return O.indiceVide(fichiersVisibles());
+            var n = fichiersVisibles().filter(function (x) { return !x.texteIndexe; }).length;
             return n ? n + ' pièce' + (n > 1 ? 's numérisées n’ont' : ' numérisée n’a') + ' pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées.' : null;
           },
+          /* Un résultat trouvé par un texte lu par machine le DIT : la reconnaissance peut se tromper. */
+          noteRecherche: function (q, rows) { return global.SIGH.ocr ? global.SIGH.ocr.noteRecherche(q, rows.filter(fichierDoc).map(function (r) { return r.fichier; })) : null; },
           filters: [
             { name: 'type', label: 'Type de document', options: TYPES_DOCUMENT },
             {
               name: 'fichier', label: 'Fichier',
-              options: [{ value: 'oui', label: 'Fichier déposé' }, { value: 'non', label: 'Référencé seulement' }, { value: 'sansTexte', label: 'Texte non indexé' }],
-              match: function (r, v) { var x = fichierDoc(r) || r.donnees; return v === 'oui' ? !!x : (v === 'non' ? !x : (!!fichierDoc(r) && !r.fichier.texteIndexe)); },
+              options: [{ value: 'oui', label: 'Fichier déposé' }, { value: 'non', label: 'Référencé seulement' }, { value: 'sansTexte', label: 'Texte non indexé' }, { value: 'lu', label: 'Texte lu par machine' }],
+              match: function (r, v) {
+                var x = fichierDoc(r) || r.donnees;
+                if (v === 'oui') return !!x;
+                if (v === 'non') return !x;
+                if (v === 'lu') return !!fichierDoc(r) && etatTexteDoc(r.fichier).code === 'ocr_indexe';
+                return !!fichierDoc(r) && !etatTexteDoc(r.fichier).disponible;
+              },
             },
           ],
           columns: [
@@ -1600,7 +1613,7 @@
                 if (x) {
                   return el('div.min-w-0', null, [
                     el('p.text-xs.text-slate-600', { text: (x.mime || '').replace('application/', '').replace('image/', '').toUpperCase() + ' · ' + poidsDoc(x.taille) + (x.pages ? ' · ' + x.pages + ' p.' : '') }),
-                    el('p.text-\\[10px\\].text-success-600', { text: x.texteIndexe ? 'déposé, texte indexé' : 'déposé, texte non indexé' }),
+                    el('p.text-\\[10px\\]', { class: etatTexteDoc(x).code === 'ocr_indexe' ? 'text-warning-700' : 'text-success-600', 'data-texte-etat': etatTexteDoc(x).code, text: 'déposé, ' + etatTexteDoc(x).court }),
                   ]);
                 }
                 return el('div.min-w-0', null, [
@@ -1641,7 +1654,7 @@
           { id: 'scans', label: 'Documents numérisés', badge: visibles.length, render: function () {
             var bloc = el('div.space-y-3');
             bloc.appendChild(table);
-            var nb = nonIndexes().length;
+            var nb = fichiersVisibles().filter(function (x) { return !etatTexteDoc(x).disponible; }).length;
             if (nb) bloc.appendChild(K.note(nb + ' pièce' + (nb > 1 ? 's' : '') + ' sans texte indexé (image sans couche texte) : la recherche par le contenu ne les trouve pas, elles restent trouvables par leurs données de fiche.', { tone: 'info' }));
             return bloc;
           } },
@@ -1787,7 +1800,7 @@
                   v.fichier = FX().fichierPour('patient', v, r.depot, r.nomOrigine);
                   var res = colDocs().insert(v, { journal: { action: 'Création d’un document numérisé', module: 'M1', entite: 'document', avant: null,
                     apres: { reference: v.reference, type: v.type, empreinte: D.DOCUMENTS.abrege(r.depot.sha256), nom: v.fichier.nomNormalise } } });
-                  FX().noterFichier(r.depot, 1);
+                  FX().noterFichier(r.depot, 1, { famille: 'patient', type: v.type });
                   m.close(); dessiner();
                   U.toast('Document rattaché au dossier ' + v.code + '.', {
                     type: 'success', detail: v.type + ' : ' + v.fichier.nomNormalise,

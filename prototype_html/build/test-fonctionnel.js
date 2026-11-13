@@ -806,6 +806,86 @@ async function viderMessages(page) {
     return { dest, src, copieDe, ouvrirTaches, lignesRegistre, carte, executer, api, tache, cles, alerte, compte, cli, manifeste, nomsManifeste, donnees, intacts, alterer, vieillir, deposerScan, hors, autreDisque, os, zlib };
   })();
 
+  /* --- Outils du lot OCR-prep (Vagues 169 à 171) : la lecture OCR des scans, PRÉPARÉE, sans moteur réel. Un moteur FACTICE est branché dans la page (il rend le texte que le scénario lui donne) : ce qui est
+         éprouvé, c'est tout ce qui l'entoure (états, file, marquage, droits, zones), jamais une qualité de reconnaissance. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`). --- */
+  const outilsOcr = (() => {
+    const O = outilsDocs;
+    const TEXTE = 'Hyperglycémie sévère : père déjà traité à Natitingou, œuf de ç';
+    /** Branche le moteur factice dans la page COURANTE (une navigation le retire : le rebrancher après chaque `ouvrir`). */
+    const installerMoteur = (cfg) => page.evaluate((c, texte) => {
+      window.__ocrCfg = Object.assign({ texte: texte, appels: 0, entrees: [], attente: false, jamais: false, refus: null, langues: ['fra'], formats: ['png', 'jpeg', 'webp'], libere: null, maxParallele: 0, enCours: 0 }, c || {});
+      window.SIGH.ocr.retirerMoteur();
+      window.SIGH.ocr.enregistrerMoteur({ id: 'factice', version: '0.1', libelle: 'Moteur factice de test', langues: window.__ocrCfg.langues, formats: window.__ocrCfg.formats,
+        lire: function (e) {
+          const k = window.__ocrCfg; k.appels++; k.enCours++; k.maxParallele = Math.max(k.maxParallele, k.enCours);
+          k.entrees.push({ format: e.format, langue: e.langue, taille: e.octets.length });
+          const rep = function () { k.enCours--; return { texte: k.texte, mots: String(k.texte).split(/\s+/).filter(Boolean).map(function (m) { return { mot: m, confiance: 0.9 }; }), langue: e.langue }; };
+          if (k.refus && (k.refusN === undefined || k.refusN > 0)) { if (k.refusN !== undefined) k.refusN--; k.enCours--; return Promise.reject(k.refus); }
+          if (k.jamais) return new Promise(function () {});
+          if (k.attente) return new Promise(function (res) { k.libere = function () { k.libere = null; res(rep()); }; });
+          return Promise.resolve(rep());
+        } });
+    }, cfg || {}, TEXTE);
+    const regler = (v, motif) => page.evaluate((v, m) => window.SIGH.ocr.definirReglage(v, m), v, motif === undefined ? 'sonde OCR' : motif);
+    const cfg = (patch) => page.evaluate((p) => { Object.assign(window.__ocrCfg, p); return true; }, patch);
+    const lu = () => page.evaluate(() => window.__ocrCfg);
+    /** Libère le moteur en attente (quand il en tient un) ; rend vrai si une lecture a été libérée. */
+    const liberer = async (ms) => {
+      const fin = Date.now() + (ms || 15000);
+      while (Date.now() < fin) {
+        const ok = await page.evaluate(() => { const k = window.__ocrCfg; if (k && k.libere) { k.libere(); return true; } return false; });
+        if (ok) return true;
+        await pause(150);
+      }
+      return false;
+    };
+    const etat = (sha) => page.evaluate((s) => { const e = window.SIGH.ocr.etatDe({ sha256: s }); return e && { code: e.code, court: e.court, libelle: e.libelle, raison: e.raison, source: e.source, marque: e.marque, disponible: e.disponible }; }, sha);
+    const registre = (sha) => page.evaluate((s) => { const f = window.SIGH.store.collection('fichiers').get('FIC-' + s.slice(0, 16)); return f ? JSON.parse(JSON.stringify(f)) : null; }, sha);
+    const versions = (sha) => page.evaluate((s) => window.SIGH.ocr.versionsDe(s).map((v) => JSON.parse(JSON.stringify(v))), sha);
+    const nbVersions = () => page.evaluate(() => window.SIGH.store.collection('lecturesOcr').all().length);
+    const attendreEtat = async (sha, code, ms) => {
+      const fin = Date.now() + (ms || 20000); let e = null;
+      while (Date.now() < fin) { e = await etat(sha); if (e && e.code === code) return e; await pause(200); }
+      return e;
+    };
+    /** Dépose un fichier sur une fiche NEUVE (un courrier, ou un document du dossier d'un patient) par les fonctions de la maquette contre le serveur réel ; rend { ok, sha, ref, ficheId }. */
+    async function deposer(famille, chemin, opts) {
+      opts = opts || {};
+      const octets = fs.readFileSync(chemin).toString('base64');
+      const ref = famille === 'courrier' ? await O.creerCourrier(O.sfx() + (opts.suffixe || 'o'), opts.date || '2026-08-20') : null;
+      const r = await page.evaluate(async (b64, nom, famille, ref, type, patientId) => {
+        const F = window.SIGH.fichiers, S = window.SIGH.store;
+        const u8 = F.depuisBase64(b64);
+        const col = famille === 'courrier' ? S.collection('courriers') : S.collection('documentsPatient', { module: 'M1', entite: 'document', prefix: 'DOC' });
+        let fiche;
+        if (famille === 'courrier') fiche = col.all().find((c) => c.reference === ref);
+        else {
+          const p = S.collection('patients').get(patientId);
+          fiche = col.insert({ reference: 'GED-O' + String(Date.now()).slice(-6), patientId: patientId, code: p ? p.code : null, patient: p ? p.nom + ' ' + p.prenom : 'x', type: type, date: '2026-08-20', etat: 'valide', depose: 'sonde OCR' }).record;
+        }
+        const rep = await F.deposerOctets(u8, { famille: famille, type: famille === 'patient' ? type : null, nom: nom, sha256: F.sha256Octets(u8) });
+        if (!rep || !rep.ok) return { ok: false, code: rep && rep.code };
+        const rat = F.rattacher(col, fiche, famille, rep, nom, famille === 'courrier' ? { module: 'M13', entite: 'courrier' } : { module: 'M1', entite: 'document' });
+        return { ok: !!rat, sha: rep.sha256, ficheId: fiche.id, ref: fiche.reference };
+      }, octets, path.basename(chemin), famille, ref, opts.type || null, opts.patientId || null);
+      await attendreEcritures();
+      return Object.assign({}, r, { ref: r.ref || ref });
+    }
+    const premierPatient = () => page.evaluate(() => window.SIGH.store.collection('patients').active()[5].id);
+    const carte = () => page.evaluate(() => {
+      const c = [...document.querySelectorAll('[data-carte-piece]')].pop(); if (!c) return null;
+      const b = c.querySelector('[data-ocr-bloc]'), e = c.querySelector('[data-ocr-etat]');
+      return { texte: c.textContent.replace(/\s+/g, ' '), etat: e ? e.getAttribute('data-ocr-etat') : null, marque: !!c.querySelector('[data-ocr-marque]'), bloc: b ? b.getAttribute('data-ocr-bloc') : null,
+        relancer: !!c.querySelector('[data-ocr-relancer]'), historique: (c.querySelector('[data-ocr-historique]') || { getAttribute: () => null }).getAttribute('data-ocr-historique'),
+        textes: [...c.querySelectorAll('[data-ocr-texte]')].map((n) => [n.getAttribute('data-ocr-texte'), n.textContent]) };
+    });
+    const lignes = () => page.evaluate(() => [...document.querySelectorAll('#page-content tbody tr')].map((tr) => tr.textContent.replace(/\s+/g, ' ')));
+    const noteOcr = () => page.evaluate(() => { const n = document.querySelector('#page-content [data-note-ocr]'); return n ? n.getAttribute('data-note-ocr') : null; });
+    const vide = () => page.evaluate(() => { const c = document.querySelector('#page-content'); const m = [...c.querySelectorAll('p')].find((p) => /Aucun résultat pour cette recherche/.test(p.textContent)); return m ? m.parentElement.textContent.replace(/\s+/g, ' ') : null; });
+    const audit = (action) => page.evaluate((a) => window.SIGH.store.raw().audit.filter((x) => x.action === a).length, action);
+    return { TEXTE, installerMoteur, regler, cfg, lu, liberer, etat, registre, versions, nbVersions, attendreEtat, deposer, premierPatient, carte, lignes, noteOcr, vide, audit };
+  })();
+
   /* --- Outils des lots A1 et A2 (Vagues 163 et suivantes) : antériorités et seuils de variation brutale. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`).
          Aucun patient du jeu ne porte deux mesures rendues d'un même examen : chaque scénario sème SES patients de sonde (code CNT/A1…/40) et SES mesures, par le magasin, avant d'ouvrir l'écran. --- */
   const outilsAnt = (() => {
@@ -25478,6 +25558,360 @@ async function viderMessages(page) {
     await attendreEcritures();
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
+
+  /* OCR-PREP DEBUT */
+  await etape(async () => {
+    scenario('Vague 169 : OCR-prep états d’indexation : sans moteur « aucun moteur d’OCR installé sur ce poste » (jamais indexé, jamais un échec muet), moteur factice : lu par machine à vérifier partout (ligne, carte, recherche), la couche texte native prime, une relance AJOUTE une version, réglage réservé');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), Q = outilsOcr, sfx = O.sfx();
+    const png1 = await Fx.image('png', 1691), png2 = await Fx.image('png', 1692), pdfN = await Fx.pdfTexte(1693, 'Facture native zebranatif' + sfx + ' sans erreur.');
+    const RAISON = 'aucun moteur d’OCR installé sur ce poste';
+
+    /* A. SANS MOTEUR : l'état le dit, rien ne se met en file, rien n'est indexé. */
+    await poserSessionServeur(roleImp('agentadmin', 'AGENT169'));
+    await ouvrir('m13-courriers.html');
+    const v0 = await Q.nbVersions();
+    const d1 = await Q.deposer('courrier', png1, { suffixe: 'a' });
+    verifier('Dépôt d’un scan image sans aucun moteur : le dépôt réussit', d1.ok && !!d1.sha, JSON.stringify(d1));
+    const e1 = await Q.etat(d1.sha), r1 = await Q.registre(d1.sha);
+    verifier('Sans moteur, l’état est « non_indexe » avec la raison EXACTE « ' + RAISON + ' » : jamais « indexé », jamais « ocr_indexe »', e1 && e1.code === 'non_indexe' && e1.raison === RAISON && e1.disponible === false && e1.source === null, JSON.stringify(e1));
+    verifier('Sans moteur, rien n’entre en file (aucun état de lecture sur le registre) et aucune lecture n’existe', r1 && !r1.ocr && (await Q.nbVersions()) === v0, JSON.stringify(r1 && r1.ocr));
+    await O.ouvrirLigne(d1.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    let c = await Q.carte();
+    verifier('La carte dit l’état en toutes lettres (texte non indexé, raison du moteur absent) et n’offre AUCUNE commande « Relancer la lecture » (absente, pas grisée)', c && c.etat === 'non_indexe' && c.texte.indexOf(RAISON) >= 0 && c.relancer === false, JSON.stringify(c && c.texte.slice(0, 300)));
+    await O.fermerTout();
+    const reglBtn = () => page.evaluate(() => !!document.querySelector('[data-ocr-reglage]'));
+    verifier('Le bouton de réglage de la lecture des scans est ABSENT pour l’agent administratif', (await reglBtn()) === false);
+    const refusAgent = await Q.regler({ actif: false, moteur: null, langue: 'fra' }, 'essai');
+    verifier('Le moteur refuse aussi le réglage d’un profil non autorisé (REGLAGE_RESERVE) et ne change rien', refusAgent.ok === false && refusAgent.code === 'REGLAGE_RESERVE' && (await page.evaluate(() => window.SIGH.ocr.reglage().regle)) === false, JSON.stringify(refusAgent));
+    await O.chercher('motintrouvable' + sfx);
+    const nUnreadable = await page.evaluate(() => window.SIGH.store.collection('courriers').active().filter((x) => x.fichier && x.fichier.sha256 && !(window.SIGH.store.collection('fichiers').get('FIC-' + x.fichier.sha256.slice(0, 16)) || {}).texteIndexe).length);
+    const vv = await Q.vide();
+    verifier('Sous « Aucun résultat » : « N pièce(s) sans texte lu : aucun moteur d’OCR n’est installé sur ce poste. » avec le BON nombre, en plus de la phrase sur la couche texte',
+      !!vv && vv.indexOf(nUnreadable + ' pièce' + (nUnreadable > 1 ? 's' : '') + ' sans texte lu : ' + RAISON + '.') >= 0 && /image sans couche texte/.test(vv), String(nUnreadable) + ' ' + String(vv).slice(0, 400));
+    await O.chercher('');
+
+    /* Le réglage : réservé à l'administrateur et à la DAF ; activer sans moteur est REFUSÉ en le nommant. */
+    await poserSessionServeur(roleImp('admin', 'ADMIN169'));
+    await ouvrir('m13-courriers.html');
+    verifier('Le bouton de réglage est présent pour l’administrateur', (await reglBtn()) === true);
+    const sansMoteur = await Q.regler({ actif: true, moteur: 'factice', langue: 'fra' }, 'sonde');
+    verifier('Activer la lecture sans moteur installé est REFUSÉ en nommant (MOTEUR_ABSENT) et le réglage reste désactivé', sansMoteur.ok === false && sansMoteur.code === 'MOTEUR_ABSENT' && /installé/.test(sansMoteur.motif) && (await page.evaluate(() => window.SIGH.ocr.reglage().actif)) === false, JSON.stringify(sansMoteur));
+    await Q.installerMoteur({ attente: true });
+    const sansMotif = await Q.regler({ actif: true, moteur: 'factice', langue: 'fra' }, '');
+    const mauvaiseLangue = await Q.regler({ actif: true, moteur: 'factice', langue: 'xxx' }, 'sonde');
+    verifier('Un réglage sans motif est refusé (MOTIF_REQUIS) ; une langue que le moteur ne lit pas aussi (LANGUE_ABSENTE)', sansMotif.code === 'MOTIF_REQUIS' && mauvaiseLangue.code === 'LANGUE_ABSENTE', JSON.stringify([sansMotif.code, mauvaiseLangue.code]));
+    const activer = await Q.regler({ actif: true, moteur: 'factice', langue: 'fra' }, 'sonde OCR-prep');
+    verifier('Avec un moteur installé, l’administrateur active la lecture ; le réglage est écrit en base avec son auteur et sa date', activer.ok === true && (await page.evaluate(() => { const r = window.SIGH.ocr.reglage(); return r.actif && r.moteur === 'factice' && !!r.regleLe && !!r.reglePar; })), JSON.stringify(activer));
+
+    /* B. L'ACTIVATION RATTRAPE les scans déjà déposés : en attente, puis en cours (un seul à la fois), puis lu. */
+    const enCours1 = await Q.attendreEtat(d1.sha, 'ocr_en_cours');
+    verifier('L’activation met en file le scan déjà déposé, qui passe « en cours » (le moteur le tient)', enCours1 && enCours1.code === 'ocr_en_cours', JSON.stringify(enCours1));
+    const d2 = await Q.deposer('courrier', png2, { suffixe: 'b' });
+    const e2a = await Q.etat(d2.sha);
+    verifier('Un second scan déposé pendant ce temps est « en attente » (jamais deux lectures à la fois)', e2a && e2a.code === 'ocr_en_attente', JSON.stringify(e2a));
+    verifier('Le moteur n’a jamais tenu deux scans à la fois', (await Q.lu()).maxParallele === 1);
+    verifier('La libération du moteur termine le premier scan : état « ocr_indexe », source « ocr », MARQUÉ « à vérifier »', await Q.liberer() && (await Q.attendreEtat(d1.sha, 'ocr_indexe')).marque === true && (await Q.etat(d1.sha)).source === 'ocr');
+    verifier('Le second scan est alors pris à son tour, puis lu', await Q.liberer() && (await Q.attendreEtat(d2.sha, 'ocr_indexe')).code === 'ocr_indexe');
+    const vs = await Q.versions(d1.sha);
+    verifier('La lecture est une VERSION datée : moteur, version du moteur, langue, auteur, nombre de mots, confiance moyenne, texte brut AVEC ses accents',
+      vs.length === 1 && vs[0].moteur === 'factice' && vs[0].moteurVersion === '0.1' && vs[0].langue === 'fra' && vs[0].nbMots > 5 && vs[0].confiance === 0.9 && vs[0].texteBrut === Q.TEXTE && !!vs[0].ocrLe && !!vs[0].ocrPar, JSON.stringify(vs[0] && [vs[0].moteur, vs[0].nbMots, vs[0].confiance]));
+
+    /* C. LE MARQUAGE « LU PAR MACHINE, À VÉRIFIER » : ligne, carte, recherche. */
+    await ouvrir('m13-courriers.html');
+    await O.chercher(d1.ref);
+    let l = await Q.lignes();
+    verifier('La ligne du registre dit « texte lu par machine, à vérifier » (jamais « texte indexé » seul)', l.length === 1 && /texte lu par machine, à vérifier/.test(l[0]) && !/texte indexé/.test(l[0]), JSON.stringify(l));
+    await O.ouvrirLigne(d1.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    c = await Q.carte();
+    verifier('La carte marque le texte « Texte lu par machine, à vérifier » (badge, note d’avertissement, historique avec la version et son texte brut)', c && c.etat === 'ocr_indexe' && c.marque === true && /La reconnaissance de caractères peut se tromper/.test(c.texte) && c.historique === '1' && c.textes.length === 1 && c.textes[0][1] === Q.TEXTE, JSON.stringify(c && [c.etat, c.marque, c.historique]));
+    await O.fermerTout();
+    await O.chercher('hyperglycemie');
+    l = await Q.lignes();
+    verifier('Une recherche SANS accents trouve le courrier par le texte lu (« hyperglycemie » trouve « Hyperglycémie »)', l.some((x) => x.indexOf(d1.ref) >= 0) && l.some((x) => x.indexOf(d2.ref) >= 0), String(l.length));
+    verifier('Et la recherche DIT que le résultat vient d’un texte lu par machine (bandeau au-dessus des résultats, avec le compte)', Number(await Q.noteOcr()) >= 2, String(await Q.noteOcr()));
+    await O.chercher(d1.ref);
+    verifier('Une recherche qui ne passe pas par le texte lu (la référence) n’affiche aucun bandeau OCR', (await Q.noteOcr()) === null);
+    await O.chercher('');
+    await page.evaluate(() => { const s = [...document.querySelectorAll('#page-content select')].find((x) => [...x.options].some((o) => /Texte lu par machine/.test(o.textContent))); s.value = 'lu'; s.dispatchEvent(new Event('change', { bubbles: true })); });
+    await pause(600);
+    l = await Q.lignes();
+    verifier('Le filtre « Texte lu par machine » liste les deux scans lus', l.some((x) => x.indexOf(d1.ref) >= 0) && l.some((x) => x.indexOf(d2.ref) >= 0));
+    await page.evaluate(() => { const s = [...document.querySelectorAll('#page-content select')].find((x) => [...x.options].some((o) => /Texte non indexé/.test(o.textContent))); s.value = 'sansTexte'; s.dispatchEvent(new Event('change', { bubbles: true })); });
+    await pause(600);
+    l = await Q.lignes();
+    verifier('Le filtre « Texte non indexé » ne liste PLUS un scan dont le texte est lu', !l.some((x) => x.indexOf(d1.ref) >= 0) && !l.some((x) => x.indexOf(d2.ref) >= 0));
+    await page.evaluate(() => { const s = [...document.querySelectorAll('#page-content select')].find((x) => [...x.options].some((o) => /Texte non indexé/.test(o.textContent))); s.value = ''; s.dispatchEvent(new Event('change', { bubbles: true })); });
+    await pause(400);
+
+    /* D. LA COUCHE TEXTE NATIVE PRIME TOUJOURS. */
+    await Q.installerMoteur({});
+    const dn = await Q.deposer('courrier', pdfN, { suffixe: 'n' });
+    verifier('Un PDF à couche texte n’entre JAMAIS en file : pas d’état de lecture, état « indexe » non marqué', dn.ok && (await Q.etat(dn.sha)).code === 'indexe' && (await Q.etat(dn.sha)).marque === false && !(await Q.registre(dn.sha)).ocr);
+    const refusNatif = await page.evaluate((s) => window.SIGH.ocr.demander(s, { famille: 'courrier' }), dn.sha);
+    verifier('Demander la lecture d’un fichier à couche texte est refusé (TEXTE_NATIF)', refusNatif.ok === false && refusNatif.code === 'TEXTE_NATIF', JSON.stringify(refusNatif));
+    await page.evaluate((s) => window.SIGH.store.collection('lecturesOcr').insert({ id: 'OCR-' + s.slice(0, 16) + '-intrus00000a', sha256: s, texteBrut: 'intrus', texte: 'ocrintrus' + 'xyz', nbMots: 1, moteur: 'factice', moteurVersion: '0.1', langue: 'fra', ocrLe: '2026-11-13T10:00:00.000Z', ocrPar: 'sonde' }), dn.sha);
+    const tn = await page.evaluate((s) => window.SIGH.fichiers.texteDe({ sha256: s }, { famille: 'courrier' }), dn.sha);
+    verifier('Même si une lecture OCR ARRIVE pour ce fichier (synchronisation), le texte lu pour la recherche reste celui de la couche native : l’OCR ne l’écrase pas', tn.indexOf('zebranatif' + sfx) >= 0 && tn.indexOf('ocrintrusxyz') < 0 && (await Q.etat(dn.sha)).code === 'indexe', tn.slice(0, 80));
+    await O.chercher('ocrintrusxyz');
+    verifier('Et une recherche du texte OCR intrus ne trouve pas le PDF natif', !(await Q.lignes()).some((x) => x.indexOf(dn.ref) >= 0));
+    await O.chercher('zebranatif' + sfx);
+    l = await Q.lignes();
+    verifier('Le texte natif se cherche comme avant, SANS bandeau « lu par machine »', l.some((x) => x.indexOf(dn.ref) >= 0) && (await Q.noteOcr()) === null);
+    await O.chercher('');
+
+    /* E. RELANCE : une NOUVELLE version, l'ancienne reste lisible ; le même résultat ne fait pas une seconde version. */
+    await Q.installerMoteur({ texte: 'Seconde lecture : paludisme grave à Tanguiéta' });
+    await O.ouvrirLigne(d1.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    c = await Q.carte();
+    verifier('Avec un moteur prêt, le droit d’écrire et un texte lu, la commande « Relancer la lecture » est offerte', c && c.relancer === true);
+    await page.evaluate(() => document.querySelector('[data-carte-piece] [data-ocr-relancer]').click());
+    await Q.attendreEtat(d1.sha, 'ocr_indexe');
+    for (let i = 0; i < 40 && (await Q.versions(d1.sha)).length < 2; i++) await pause(250);
+    const vs2 = await Q.versions(d1.sha);
+    verifier('La relance AJOUTE une version (deux versions), l’ancienne est INCHANGÉE et lisible, la nouvelle est la courante', vs2.length === 2 && vs2[0].texteBrut === Q.TEXTE && vs2[1].texteBrut === 'Seconde lecture : paludisme grave à Tanguiéta' && vs2[1].declencheur === 'relance', JSON.stringify(vs2.map((x) => x.texteBrut.slice(0, 20))));
+    await O.fermerTout(); await ouvrir('m13-courriers.html');
+    await O.chercher('paludisme');
+    l = await Q.lignes();
+    verifier('La recherche lit la version COURANTE : « paludisme » trouve le courrier relancé', l.some((x) => x.indexOf(d1.ref) >= 0));
+    await O.chercher('hyperglycemie');
+    l = await Q.lignes();
+    verifier('…et le texte de la version précédente ne se cherche plus pour ce courrier (l’autre scan, non relancé, garde le sien)', !l.some((x) => x.indexOf(d1.ref) >= 0) && l.some((x) => x.indexOf(d2.ref) >= 0));
+    await O.chercher('');
+    await O.ouvrirLigne(d1.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    c = await Q.carte();
+    verifier('L’historique de la carte montre les DEUX versions et le texte de la première reste lisible', c && c.historique === '2' && c.textes.length === 2 && c.textes.some((t) => t[1] === Q.TEXTE), JSON.stringify(c && c.textes.map((t) => t[0])));
+    await O.fermerTout();
+    await Q.installerMoteur({ texte: 'Seconde lecture : paludisme grave à Tanguiéta' });
+    await page.evaluate((s) => window.SIGH.ocr.relancer({ sha256: s }, { peutDeposer: true, famille: 'courrier' }), d1.sha);
+    await Q.attendreEtat(d1.sha, 'ocr_indexe'); await pause(900);
+    verifier('Une relance qui rend le MÊME texte avec le MÊME moteur ne crée pas de troisième version (identifiant déterministe) et vide la file', (await Q.versions(d1.sha)).length === 2 && !(await Q.registre(d1.sha)).ocr, String((await Q.versions(d1.sha)).length));
+
+    /* F. IMMUABLE : une lecture ne se réécrit ni ne s'archive. */
+    const garde = await page.evaluate((id) => { const col = window.SIGH.store.collection('lecturesOcr'); const a = col.update(id, { texteBrut: 'réécrit' }); const b = col.archive ? col.archive(id, 'essai') : null; const x = col.get(id); return { modif: a, arch: b, texte: x && x.texteBrut, statut: x && x.statut }; }, vs2[0].id);
+    verifier('Une lecture OCR est IMMUABLE : la modifier ou l’archiver est refusé par le magasin, le texte reste celui de la lecture', !garde.modif && !garde.arch && garde.texte === Q.TEXTE && garde.statut !== 'archive', JSON.stringify(garde));
+
+    /* G. RELANCE ABSENTE sans moteur prêt. */
+    await page.evaluate(() => window.SIGH.ocr.retirerMoteur());
+    await O.ouvrirLigne(d1.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    c = await Q.carte();
+    const refusSansMoteur = await page.evaluate((s) => window.SIGH.ocr.relancer({ sha256: s }, { peutDeposer: true, famille: 'courrier' }), d1.sha);
+    verifier('Sans moteur installé : la commande « Relancer la lecture » est ABSENTE (pas grisée) et le moteur refuse la relance (MOTEUR_ABSENT)', c && c.relancer === false && refusSansMoteur.ok === false && refusSansMoteur.code === 'MOTEUR_ABSENT', JSON.stringify([c && c.relancer, refusSansMoteur.code]));
+    await O.fermerTout();
+    await Q.installerMoteur({});
+    await Q.regler({ actif: false, moteur: 'factice', langue: 'fra' }, 'désactivation de sonde');
+    await O.ouvrirLigne(d1.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    c = await Q.carte();
+    const refusDesact = await page.evaluate((s) => window.SIGH.ocr.relancer({ sha256: s }, { peutDeposer: true, famille: 'courrier' }), d1.sha);
+    verifier('Lecture désactivée au réglage (moteur présent) : commande ABSENTE et relance refusée (OCR_DESACTIVE)', c && c.relancer === false && refusDesact.code === 'OCR_DESACTIVE', JSON.stringify([c && c.relancer, refusDesact.code]));
+    await O.fermerTout();
+
+    /* H. JOURNAL RG-12 */
+    verifier('Chaque lecture, chaque relance et chaque réglage sont au journal (RG-12)', (await Q.audit('Lecture OCR d’un scan')) >= 3 && (await Q.audit('Relance de la lecture OCR')) >= 1 && (await Q.audit('Réglage de la lecture OCR des scans')) >= 2,
+      JSON.stringify([await Q.audit('Lecture OCR d’un scan'), await Q.audit('Relance de la lecture OCR'), await Q.audit('Réglage de la lecture OCR des scans')]));
+    const e169 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e169.length === 0, e169.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 170 : OCR-prep file : un scan à la fois, une seule file par empreinte (deux dépôts, un redémarrage, aucune seconde lecture), la saisie reste libre, borne de temps, reprise après arrêt, refus nommés, un échec ne bloque pas le suivant, rien ne se met en file lecture désactivée');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), Q = outilsOcr;
+    const imgs = [];
+    for (let i = 0; i < 7; i++) imgs.push(await Fx.image('png', 1700 + i));
+    const pdfScan = await Fx.pdfScan(1707);
+    await poserSessionServeur(roleImp('admin', 'ADMIN170'));
+    await ouvrir('m13-courriers.html');
+    await Q.installerMoteur({ attente: true });
+    /* LE BATTEMENT : une minuterie de 20 ms note le plus long silence de la page. Une file qui monopolise le navigateur (calcul synchrone, boucle sans rendre la main) le fait paraître en secondes. */
+    await page.evaluate(() => { window.__battement = { max: 0, dernier: performance.now() }; window.setInterval(() => { const n = performance.now(); window.__battement.max = Math.max(window.__battement.max, n - window.__battement.dernier); window.__battement.dernier = n; }, 20); });
+    verifier('Lecture activée avec le moteur factice', (await Q.regler({ actif: true, moteur: 'factice', langue: 'fra' }, 'sonde file')).ok === true);
+
+    /* 1. UNE FILE PAR EMPREINTE : le même scan sur deux courriers. */
+    const a1 = await Q.deposer('courrier', imgs[0], { suffixe: 'f1' });
+    const enc = await Q.attendreEtat(a1.sha, 'ocr_en_cours');
+    const a2 = await Q.deposer('courrier', imgs[0], { suffixe: 'f2' });
+    const nReg = await page.evaluate((s) => window.SIGH.store.collection('fichiers').all().filter((f) => f.sha256 === s).length, a1.sha);
+    verifier('Le même scan déposé sur deux courriers : UNE fiche de registre, UNE file (déjà en cours), une seule lecture engagée', enc && enc.code === 'ocr_en_cours' && a2.sha === a1.sha && nReg === 1 && (await Q.lu()).appels === 1, JSON.stringify([nReg, (await Q.lu()).appels]));
+    /* 2. LA SAISIE RESTE LIBRE pendant la lecture. */
+    const t0 = Date.now();
+    const libre = await page.evaluate(async () => {
+      const S = window.SIGH.store, avant = performance.now();
+      S.collection('courriers').insert({ reference: 'ARR-LIBRE-' + Date.now(), sens: 'arrivee', date: '2026-08-20', correspondant: 'Saisie libre', objet: 'Saisie pendant la lecture', nature: 'Lettre', affecteA: 'Direction Administrative', traitement: 'en_attente' });
+      await new Promise((r) => setTimeout(r, 0));
+      return { ms: performance.now() - avant, etat: window.SIGH.store.collection('fichiers').all().find((f) => f.ocr && f.ocr.etat === 'en_cours') ? 'en_cours' : 'autre' };
+    });
+    verifier('Pendant qu’un scan est lu (moteur lent), une saisie dans le magasin se fait sans attendre le moteur, et la lecture reste en cours', libre.ms < 1500 && libre.etat === 'en_cours' && Date.now() - t0 < 5000, JSON.stringify(libre));
+    await Q.liberer();
+    await Q.attendreEtat(a1.sha, 'ocr_indexe');
+    await pause(500);
+    verifier('Après la libération : UNE version, un seul appel du moteur, aucune seconde lecture du même fichier', (await Q.versions(a1.sha)).length === 1 && (await Q.lu()).appels === 1);
+    const silence = await page.evaluate(() => window.__battement.max);
+    verifier('Pendant tout ce temps (dépôts, lecture tenue par le moteur, libération), la page n’est jamais restée silencieuse plus d’une seconde et demie : la file ne monopolise pas le navigateur', silence < 1500, String(Math.round(silence)) + ' ms');
+    /* 3. UN REDÉMARRAGE (page rechargée) ne relit rien. */
+    await ouvrir('m13-courriers.html');
+    await Q.installerMoteur({});
+    const rb = await page.evaluate(async () => { const n = window.SIGH.ocr.balayer(); const f = await window.SIGH.ocr.vider(10); return { n: n, faits: f }; });
+    verifier('Après un redémarrage, le balayage ne remet rien en file et le moteur n’est pas rappelé pour un scan déjà lu', rb.n === 0 && rb.faits === 0 && (await Q.lu()).appels === 0 && (await Q.versions(a1.sha)).length === 1, JSON.stringify(rb));
+
+    /* 4. LA BORNE DE TEMPS : un moteur qui ne répond pas est coupé, nommé, et ne bloque pas le suivant. */
+    await Q.regler({ actif: true, moteur: 'factice', langue: 'fra', delaiMs: 600 }, 'délai court de sonde');
+    await Q.cfg({ jamais: true });
+    const b1 = await Q.deposer('courrier', imgs[1], { suffixe: 'g1' });
+    const ech = await Q.attendreEtat(b1.sha, 'ocr_echec', 15000);
+    const regB = await Q.registre(b1.sha);
+    verifier('Un moteur qui ne répond pas dans le délai réglé : « ocr_echec » avec le code DELAI_DEPASSE, la raison et le geste', ech && ech.code === 'ocr_echec' && regB.ocr.code === 'DELAI_DEPASSE' && /n’a pas répondu/.test(regB.ocr.raison) && regB.ocr.geste.length > 10, JSON.stringify(regB.ocr));
+    await Q.cfg({ jamais: false });
+    const b2 = await Q.deposer('courrier', imgs[2], { suffixe: 'g2' });
+    verifier('Le suivant est lu normalement : un échec ne bloque pas la file', (await Q.attendreEtat(b2.sha, 'ocr_indexe', 15000)).code === 'ocr_indexe');
+    await ouvrir('m13-courriers.html'); await Q.installerMoteur({});
+    await O.ouvrirLigne(b1.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    let c = await Q.carte();
+    verifier('La carte d’un échec dit la raison nommée (« Lecture OCR en échec : … ») et offre la relance', c && c.etat === 'ocr_echec' && /Lecture OCR en échec : le moteur n’a pas répondu/.test(c.texte) && c.relancer === true, JSON.stringify(c && c.texte.slice(0, 260)));
+    await O.fermerTout();
+
+    /* 5. LES REFUS NOMMÉS. */
+    const refusPour = async (cfg, sfx) => {
+      await Q.installerMoteur(cfg);
+      const d = await Q.deposer('courrier', imgs[3 + (sfx % 3)], { suffixe: 'h' + sfx });
+      return { d: d, e: await Q.attendreEtat(d.sha, 'ocr_echec', 15000), r: d.sha };
+    };
+    await Q.regler({ actif: true, moteur: 'factice', langue: 'fra', delaiMs: 5000 }, 'délai normal');
+    let x = await refusPour({ refus: { code: 'IMAGE_ILLISIBLE', motif: 'l’image est illisible' } }, 0);
+    verifier('Image illisible : IMAGE_ILLISIBLE, avec le geste (numériser de nouveau)', x.e && x.e.code === 'ocr_echec' && (await Q.registre(x.r)).ocr.code === 'IMAGE_ILLISIBLE' && /Numériser de nouveau/.test((await Q.registre(x.r)).ocr.geste));
+    await Q.cfg({ refus: null });
+    await page.evaluate(() => { window.SIGH.ocr.retirerMoteur(); });
+    await Q.installerMoteur({ texte: '   ' });
+    const e0 = await Q.deposer('courrier', imgs[6], { suffixe: 'v' });
+    verifier('Un moteur qui ne lit AUCUN mot : AUCUN_TEXTE, jamais « indexé » avec un texte vide', (await Q.attendreEtat(e0.sha, 'ocr_echec', 15000)).code === 'ocr_echec' && (await Q.registre(e0.sha)).ocr.code === 'AUCUN_TEXTE' && (await Q.versions(e0.sha)).length === 0);
+    await Q.installerMoteur({ refus: { code: 'INVENTE', message: 'plantage interne' } });
+    const e9 = await Q.deposer('courrier', await Fx.image('png', 1799), { suffixe: 'w' });
+    verifier('Un échec que le moteur ne sait pas nommer reste NOMMÉ (MOTEUR_EN_ECHEC, avec son message), jamais muet', (await Q.attendreEtat(e9.sha, 'ocr_echec', 15000)).code === 'ocr_echec' && (await Q.registre(e9.sha)).ocr.code === 'MOTEUR_EN_ECHEC' && /plantage interne/.test((await Q.registre(e9.sha)).ocr.raison));
+    await Q.installerMoteur({});
+    const pdfD = await Q.deposer('courrier', pdfScan, { suffixe: 'p' });
+    verifier('Un PDF sans couche texte, sans rendeur de pages : RENDU_PAGES_ABSENT nommé (jamais une lecture inventée)', (await Q.attendreEtat(pdfD.sha, 'ocr_echec', 15000)).code === 'ocr_echec' && (await Q.registre(pdfD.sha)).ocr.code === 'RENDU_PAGES_ABSENT');
+    await Q.installerMoteur({ langues: ['fra', 'eng'] });
+    await Q.regler({ actif: true, moteur: 'factice', langue: 'eng' }, 'langue anglaise');
+    await page.evaluate(() => window.SIGH.ocr.retirerMoteur());
+    await page.evaluate(() => window.SIGH.ocr.enregistrerMoteur({ id: 'factice', version: '0.1', langues: ['fra'], formats: ['png', 'jpeg'], lire: function () { return Promise.resolve({ texte: 'x' }); } }));
+    const lg = await Q.deposer('courrier', await Fx.image('png', 1798), { suffixe: 'l' });
+    verifier('Une langue que le moteur branché ne lit plus : LANGUE_ABSENTE nommé', (await Q.attendreEtat(lg.sha, 'ocr_echec', 15000)).code === 'ocr_echec' && (await Q.registre(lg.sha)).ocr.code === 'LANGUE_ABSENTE');
+
+    /* 6. REPRISE APRÈS ARRÊT. */
+    await Q.installerMoteur({ attente: true });
+    await Q.regler({ actif: true, moteur: 'factice', langue: 'fra', delaiMs: 60000 }, 'retour au français');
+    const rp = await Q.deposer('courrier', await Fx.image('png', 1797), { suffixe: 'r' });
+    await Q.attendreEtat(rp.sha, 'ocr_en_cours');
+    await ouvrir('m13-courriers.html');
+    await Q.installerMoteur({});
+    const r1 = await page.evaluate((s) => { const n = window.SIGH.ocr.reprendre(); return { n: n, etat: window.SIGH.store.collection('fichiers').get('FIC-' + s.slice(0, 16)).ocr.etat }; }, rp.sha);
+    verifier('Après un arrêt, un traitement commencé il y a peu est laissé en cours (peut-être vivant) : la reprise n’y touche pas encore', r1.n === 0 && r1.etat === 'en_cours', JSON.stringify(r1));
+    await page.evaluate((s) => { const col = window.SIGH.store.collection('fichiers'); const f = col.get('FIC-' + s.slice(0, 16)); col.update(f.id, { ocr: Object.assign({}, f.ocr, { debutLe: new Date(Date.now() - 3600000).toISOString() }) }); }, rp.sha);
+    const r2 = await page.evaluate((s) => { const n = window.SIGH.ocr.reprendre(); return { n: n, etat: window.SIGH.store.collection('fichiers').get('FIC-' + s.slice(0, 16)).ocr.etat }; }, rp.sha);
+    verifier('Passé deux délais, le traitement interrompu est REMIS EN ATTENTE (jamais perdu)', r2.n === 1 && r2.etat === 'en_attente', JSON.stringify(r2));
+    await page.evaluate(() => window.SIGH.ocr.vider(5));
+    verifier('…puis il est lu à la reprise : une version', (await Q.attendreEtat(rp.sha, 'ocr_indexe', 15000)).code === 'ocr_indexe' && (await Q.versions(rp.sha)).length === 1);
+    const ex = await Q.deposer('courrier', await Fx.image('png', 1796), { suffixe: 'x' });
+    await page.evaluate((s) => { const col = window.SIGH.store.collection('fichiers'); const f = col.get('FIC-' + s.slice(0, 16)); col.update(f.id, { ocr: Object.assign({}, f.ocr, { etat: 'en_cours', essais: 3, debutLe: new Date(Date.now() - 3600000).toISOString() }) }); window.SIGH.ocr.reprendre(); }, ex.sha);
+    const fx = await Q.registre(ex.sha);
+    verifier('Trois interruptions : « ocr_echec » ESSAIS_EPUISES, nommé (la file ne boucle pas)', fx.ocr.etat === 'echec' && fx.ocr.code === 'ESSAIS_EPUISES', JSON.stringify(fx.ocr));
+
+    /* 7. LECTURE DÉSACTIVÉE : rien ne se met en file. */
+    await Q.installerMoteur({});
+    await Q.regler({ actif: false, moteur: 'factice', langue: 'fra' }, 'désactivation');
+    const ds = await Q.deposer('courrier', await Fx.image('png', 1795), { suffixe: 'z' });
+    const ed = await Q.etat(ds.sha);
+    verifier('Lecture désactivée au réglage : le scan n’entre pas en file, l’état dit « la lecture OCR est désactivée au réglage »', ed.code === 'non_indexe' && /désactivée au réglage/.test(ed.raison) && !(await Q.registre(ds.sha)).ocr, JSON.stringify(ed));
+    const e170 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e170.length === 0, e170.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 171 : OCR-prep zone et droits : le texte lu d’un scan de zone 2 est de zone 2 (le profil sans le droit n’en lit rien et ne le traite pas), la relance suit le droit d’écrire de l’écran, le texte lu ne quitte jamais le magasin');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), Q = outilsOcr;
+    const MOT = 'zebrazone' + O.sfx();
+    const png = await Fx.image('png', 1710), png2 = await Fx.image('png', 1711);
+    await poserSessionServeur(roleImp('admin', 'ADMIN171'));
+    await ouvrir('m1-documents.html');
+    await Q.installerMoteur({ texte: 'Compte rendu confidentiel ' + MOT + ' hyperglycémie' });
+    await Q.regler({ actif: true, moteur: 'factice', langue: 'fra', delaiMs: 5000 }, 'sonde zone');
+    const pid = await Q.premierPatient();
+
+    /* 1. Un scan de zone 2 déposé par le médecin est lu sous SON rôle. */
+    await poserSessionServeur(roleImp('medecin', 'MEDECIN171'));
+    const z2 = await Q.deposer('patient', png, { type: 'Compte rendu médical', patientId: pid });
+    verifier('Le médecin dépose un compte rendu scanné (zone 2) : il est lu par machine sous son rôle', z2.ok && (await Q.attendreEtat(z2.sha, 'ocr_indexe', 20000)).code === 'ocr_indexe', JSON.stringify(z2));
+    const tm = await page.evaluate((s) => window.SIGH.fichiers.texteDe({ sha256: s }, { famille: 'patient', type: 'Compte rendu médical' }), z2.sha);
+    verifier('Le profil clinique lit le texte lu (zone 2)', tm.indexOf(MOT) >= 0, tm.slice(0, 60));
+
+    /* 2. L'accueil ne lit rien de ce texte. */
+    await poserSessionServeur(roleImp('reception', 'ACCUEIL171'));
+    const ta = await page.evaluate((s) => ({ texteDe: window.SIGH.fichiers.texteDe({ sha256: s }, { famille: 'patient', type: 'Compte rendu médical' }), lisible: window.SIGH.ocr.texteLisible(s, 'patient', 'Compte rendu médical'),
+      admin: window.SIGH.ocr.texteLisible(s, 'patient', 'Pièce d’identité') }), z2.sha);
+    verifier('L’accueil (zone 1) ne reçoit AUCUN mot du texte lu d’un scan de zone 2 ; le même texte rangé en zone 1 serait lisible (la règle suit la zone, pas le fichier)', ta.texteDe === '' && ta.lisible === '' && ta.admin.indexOf(MOT) >= 0, JSON.stringify(ta).slice(0, 160));
+    await ouvrir('m1-documents.html');
+    await O.chercher(MOT);
+    const la = await Q.lignes();
+    verifier('Recherche de ce mot par l’accueil : aucune ligne, et aucun bandeau « lu par machine »', la.every((x) => x.indexOf('Compte rendu') < 0) && (await Q.noteOcr()) === null, JSON.stringify(la.map((x) => x.slice(0, 50))));
+
+    await Q.installerMoteur({ texte: 'Compte rendu confidentiel ' + MOT + ' hyperglycémie' });   /* la page a été rechargée : le moteur factice est à rebrancher */
+    /* 3. Un scan de zone 2 en file n'est PAS traité par un profil qui ne lit pas la zone. */
+    const z2b = await Q.deposer('patient', png2, { type: 'Compte rendu médical', patientId: pid });   /* déposé sous l'accueil : refusé par le serveur (zone) */
+    verifier('L’accueil ne peut pas déposer un compte rendu (zone 2) : refus nommé du serveur', z2b.ok === false && z2b.code === 'ZONE_REFUSEE', JSON.stringify(z2b));
+    await poserSessionServeur(roleImp('medecin', 'MEDECIN171'));
+    await page.evaluate(() => window.SIGH.store.setReglage('ocr', { actif: false, moteur: 'factice', langue: 'fra', delaiMs: 5000 }));
+    const z2c = await Q.deposer('patient', await Fx.image('png', 1712), { type: 'Compte rendu médical', patientId: pid });
+    verifier('Lecture désactivée : le compte rendu déposé n’entre pas en file', z2c.ok && !(await Q.registre(z2c.sha)).ocr);
+    await poserSessionServeur(roleImp('reception', 'ACCUEIL171'));
+    const q = await page.evaluate(async (s) => {
+      window.SIGH.store.setReglage('ocr', { actif: true, moteur: 'factice', langue: 'fra', delaiMs: 5000 });
+      window.SIGH.ocr.balayer();
+      /* La file prend les scans un à un, du plus ancien : on la vide sous le rôle de l'accueil (les courriers qu'il lit sont lus, le compte rendu de zone 2 est ÉCARTÉ). */
+      const ecartes = [];
+      for (let i = 0; i < 12; i++) { const r = await window.SIGH.ocr.traiterSuivant(); if (r.ecarte) ecartes.push(r.ecarte); if (!r.fait && !r.ecarte) break; }
+      const f = window.SIGH.store.collection('fichiers').get('FIC-' + s.slice(0, 16));
+      return { ecartes: ecartes, etat: f.ocr && f.ocr.etat, versions: window.SIGH.ocr.versionsDe(s).length };
+    }, z2c.sha);
+    verifier('Sous le rôle de l’accueil, la file ÉCARTE le scan de zone 2 (ZONE_REFUSEE) : il reste « en attente », sans échec ni version', q.etat === 'en_attente' && q.versions === 0 && q.ecartes.some((c) => /ZONE_REFUSEE|DROIT_REFUSE/.test(c)), JSON.stringify(q));
+    await poserSessionServeur(roleImp('medecin', 'MEDECIN171'));
+    await page.evaluate(() => { window.SIGH.ocr.reprendre(); });
+    const fait = await page.evaluate(async () => { const out = []; for (let i = 0; i < 8; i++) { const r = await window.SIGH.ocr.traiterSuivant(); if (!r.fait) break; out.push(r.ok); } return out; });
+    verifier('Le médecin, lui, traite ce scan de zone 2 : « ocr_indexe » une fois lu sous son rôle', (await Q.attendreEtat(z2c.sha, 'ocr_indexe', 20000)).code === 'ocr_indexe' && fait.length >= 1, JSON.stringify(fait));
+
+    /* 4. LA RELANCE SUIT LE DROIT D'ÉCRIRE de l'écran : l'anesthésiste lit la zone 2 mais n'écrit pas. */
+    await poserSessionServeur(roleImp('anesthesiste', 'ANESTH171'));
+    await ouvrir('m1-documents.html');
+    await Q.installerMoteur({});
+    await page.evaluate(() => window.SIGH.store.setReglage('ocr', { actif: true, moteur: 'factice', langue: 'fra', delaiMs: 5000 }));
+    await O.chercher(z2.ref);
+    await O.ouvrirLigne(z2.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    let c = await Q.carte();
+    verifier('L’anesthésiste lit la pièce de zone 2 (texte lu, marqué) mais n’a PAS la commande « Relancer la lecture » (il n’écrit pas sur cet écran)', c && c.etat === 'ocr_indexe' && c.marque === true && c.relancer === false, JSON.stringify(c && [c.etat, c.relancer]));
+    await O.fermerTout();
+    await poserSessionServeur(roleImp('medecin', 'MEDECIN171'));
+    await ouvrir('m1-documents.html');
+    await Q.installerMoteur({});
+    await page.evaluate(() => window.SIGH.store.setReglage('ocr', { actif: true, moteur: 'factice', langue: 'fra', delaiMs: 5000 }));
+    await O.ouvrirLigne(z2.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    c = await Q.carte();
+    verifier('Le médecin (qui écrit) a la commande « Relancer la lecture »', c && c.relancer === true);
+    await O.fermerTout();
+    const refus = await page.evaluate((s) => window.SIGH.ocr.relancer({ sha256: s }, { peutDeposer: false, famille: 'patient', type: 'Compte rendu médical' }), z2.sha);
+    verifier('Le moteur refuse aussi une relance sans le droit (DROIT_REFUSE) : masquer le bouton ne protège rien', refus.ok === false && refus.code === 'DROIT_REFUSE', JSON.stringify(refus));
+
+    /* 5. LE TEXTE LU NE QUITTE JAMAIS LE MAGASIN : le dossier des fichiers ne porte aucune trace du texte. */
+    await attendreEcritures();
+    let trouve = 0;
+    const racine = process.env.SIGH_FICHIERS_DIR;
+    const parcourir = (d) => { for (const n of fs.readdirSync(d)) { const p = path.join(d, n); const st = fs.statSync(p); if (st.isDirectory()) parcourir(p); else if (fs.readFileSync(p).toString('latin1').indexOf(MOT) >= 0) trouve++; } };
+    parcourir(racine);
+    verifier('Le texte lu n’est écrit dans AUCUN fichier du dossier des fichiers : il vit au magasin (métadonnée), jamais à côté du binaire', trouve === 0, String(trouve));
+    const e171 = erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x));
+    verifier('Aucune erreur JavaScript', e171.length === 0, e171.join(' | '));
+  });
+  /* OCR-PREP FIN */
+
 
   await browser.close();
   server.close();

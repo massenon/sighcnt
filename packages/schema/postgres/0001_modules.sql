@@ -1690,6 +1690,29 @@ CREATE TABLE IF NOT EXISTS "m13"."jetons_enquete" (
   "extra" jsonb
 );
 COMMENT ON TABLE "m13"."jetons_enquete" IS 'Collection « jetonsEnquete » — M13 Administration & ambulance';
+CREATE TABLE IF NOT EXISTS "m13"."lectures_ocr" (
+  "id" text PRIMARY KEY,
+  "sha256" text,
+  "texte_brut" text,
+  "brut_tronque" boolean,
+  "texte" text,
+  "mots_tronques" boolean,
+  "nb_mots" integer,
+  "confiance" numeric,
+  "texte_source" text,
+  "moteur" text,
+  "moteur_version" text,
+  "langue" text,
+  "ocr_le" timestamptz,
+  "ocr_par" text,
+  "declencheur" text,
+  "pages" integer,
+  "duree_ms" integer,
+  "statut" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m13"."lectures_ocr" IS 'Collection « lecturesOcr » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_lectures_ocr_statut" ON "m13"."lectures_ocr" ("statut");
 CREATE TABLE IF NOT EXISTS "m13"."materiel" (
   "id" text PRIMARY KEY,
   "etat" text,

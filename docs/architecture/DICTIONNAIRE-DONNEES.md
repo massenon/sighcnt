@@ -11,7 +11,7 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 | `m10` — M10 Ressources humaines | 22 | 1 | 270 | 2957 |
 | `m11` — M11 Paie & primes | 4 | 0 | 66 | 12 |
 | `m12` — M12 Comptabilité SYSCOHADA | 13 | 2 | 188 | 691 |
-| `m13` — M13 Administration & ambulance | 13 | 2 | 167 | 112 |
+| `m13` — M13 Administration & ambulance | 14 | 2 | 186 | 112 |
 | `m14` — M14 Sécurité & audit | 10 | 0 | 151 | 703 |
 | `m2` — M2 RDV, visites, consultations, imagerie | 10 | 4 | 242 | 1221 |
 | `m3` — M3 Hospitalisation & bloc | 10 | 3 | 181 | 599 |
@@ -1418,6 +1418,31 @@ Table fille `m13.enquetes_questions` — 0 lignes : code text, type text, libell
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+
+### `m13.lectures_ocr` (collection « lecturesOcr », 0 fiches)
+
+Ajoutée À LA MAIN par le lot OCR-prep (`VERSION` 84) : le générateur lancé sur une entrée minimale aurait effacé les comptes de fiches de tout le dictionnaire (E2518). Une fiche par lecture OCR d'un scan : IMMUABLE, identifiant déterministe (`OCR-<empreinte 16>-<hash 12>`), jamais vers un téléphone.
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `sha256` | sha256 | text |  |
+| `texte_brut` | texteBrut | text |  |
+| `brut_tronque` | brutTronque | boolean |  |
+| `texte` | texte | text |  |
+| `mots_tronques` | motsTronques | boolean |  |
+| `nb_mots` | nbMots | integer |  |
+| `confiance` | confiance | numeric |  |
+| `texte_source` | texteSource | text |  |
+| `moteur` | moteur | text |  |
+| `moteur_version` | moteurVersion | text |  |
+| `langue` | langue | text |  |
+| `ocr_le` | ocrLe | timestamptz |  |
+| `ocr_par` | ocrPar | text |  |
+| `declencheur` | declencheur | text |  |
+| `pages` | pages | integer |  |
+| `duree_ms` | dureeMs | integer |  |
+| `statut` | statut | text |  |
 
 ### `m13.materiel` (collection « materiel », 0 fiches)
 
