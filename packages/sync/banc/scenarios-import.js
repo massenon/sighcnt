@@ -18,7 +18,13 @@
    (qui range `lots`, `mouvements` et `deltasCompteurs` comme la mère Dart) ; ce que le poste fait de ses fiches en attente (propres à lui, jamais publiées, valeur de départ, restitution par mouvements
    inverses) est éprouvé par `apps/poste/test/grand_stock_*_test.dart` (VRAIE mère Dart) et par `packages/domaine/test/demande_import_test.dart`. Ici : l'IDENTITÉ COMMUNE des fiches (une seule fiche par
    identifiant, jamais deux), les VARIATIONS ajoutées une fois, la demande qui voyage, le refus et la restitution partielle fusionnés champ à champ, la mère injoignable puis tuée, deux fileuls, le relais
-   opaque, et RIEN vers un téléphone. */
+   opaque, et RIEN vers un téléphone.
+
+   Scénario IDEM1 (lot IDEM, décisions de la Direction du 13/11/2026, section V) : l'IDEMPOTENCE chez les fileuls. Le même inventaire (même identité de contenu, donc même série d'identifiants de fiche)
+   importé par DEUX fileuls : la mère confirme UNE fois, le second est « déjà confirmé, adopté » (jamais refusé), aucune fiche ni variation n'est comptée deux fois, un verdict RE-ÉCRIT (rejeu) ou la mère
+   TUÉE puis relancée ne change rien, une restitution rebasée (tentative T2) se fusionne champ à champ avec le verdict, le relais n'a jamais d'identité de lot en clair, rien vers un téléphone. Même
+   nature de preuve que IMP2 : le banc tient la place de la mère de référence ; la logique du poste est éprouvée par `apps/poste/test/import_idempotence_direct_sync_test.dart` (VRAIE mère Dart) et
+   par `packages/domaine/test/idempotence_import_test.dart`. */
 const { dechiffrer } = require('./crypto');
 
 const SECRET = 'CELLULE-SECRETE-IMP1-Zébulon';
@@ -267,6 +273,123 @@ module.exports = ({ monde, verifier, attendre, dormir, titre }) => ({
     const recu = async (col) => (await mob.liste(col)).length;
     verifier('le téléphone ne reçoit AUCUNE demande d\'import, AUCUNE variation, AUCUN lot ni mouvement écrit par une demande', (await recu('demandesImport')) === 0 && (await recu('deltasCompteurs')) === 0 && (await recu('lots')) === 0 && (await recu('mouvements')) === 0,
       [await recu('demandesImport'), await recu('deltasCompteurs'), await recu('lots'), await recu('mouvements')]);
+    verifier('la mère n\'a pas écrit la demande du téléphone', (await compte('demandesImport')) === 4);
+    await m.fermer();
+  },
+  async IDEM1() {
+    titre('IMPORT-IDEM1 · le même inventaire chez deux fileuls : la mère confirme UNE fois, le second est adopté ; verdicts rejoués et mère tuée sans effet ; rebasage fusionné ; relais opaque ; rien vers un téléphone');
+    const m = await monde({ relais: true });
+    await m.mere.tuer();
+    m.mere.opts.cle = Buffer.from(m.clePair, 'hex').toString('base64');
+    await m.mere.demarrer();
+    const cleClinique = Buffer.from(m.clePair, 'hex');
+    const f1 = await m.fileul('F1');
+    const f2 = await m.fileul('F2');
+    const etatMere = () => m.mere.admin('GET', '/admin/etat').then((r) => r.json);
+    const compte = (col) => m.mere.admin('GET', '/admin/compte?collection=' + col).then((r) => r.json.n);
+    const mereEcrit = (collection, fiche, champs) => m.mere.admin('POST', '/admin/referentiel', { collection, fiche, champs }).then((x) => x.json);
+    const STOCK_SECRET = 'ARTICLE-SECRET-IDEM1-Quinquina';
+    const IDENTITE = '572b052bf8f01e4dddd4bbd3268fa0f089111f47dbda486b10c11440794576c9';
+    const SERIE = 'IMP' + IDENTITE.slice(0, 20), SERIE2 = SERIE + 'T2';
+    const ligneGS = [['Code article', 'Désignation', 'Catégorie', 'Unité', 'Quantité', 'N° de lot', 'Date de péremption'], ['MED1', STOCK_SECRET, 'Médicaments', 'Boîte', 100, 'L1', '2028-06-30'], ['MED1', STOCK_SECRET, 'Médicaments', 'Boîte', 50, 'L2', '2029-01-31']];
+    const demande = (serie, extra) => ({
+      etat: 'en_attente', jeu: 'grand-stock', jeuLibelle: 'Importation Grand Stock', fichier: 'inventaire.xlsx', demandePar: 'GESTIONNAIRE', demandeRole: 'stock', demandeLe: '2026-11-13',
+      lignes: ligneGS, nbLignes: 2, aEcrire: 2,
+      ecritureDirecte: true, serieIdentifiants: serie, identiteLot: IDENTITE, lotLocal: 'IMP-2026-001', lotLocalId: 'LOT-' + serie + '-1', rangsEcrits: [2, 3], ...extra,
+    });
+    const lot = (rang, q) => ({ produitId: 'PRO-' + SERIE + '-1', numeroLot: 'L' + rang, serieDemande: SERIE, identiteLot: IDENTITE, departCompteurs: { quantiteRestante: q }, statut: 'actif', lotImport: 'IMP-MERE-1' });
+    const mouvement = (rang, q) => ({ produitId: 'PRO-' + SERIE + '-1', type: 'entree', quantite: q, serieDemande: SERIE, identiteLot: IDENTITE, reference: 'M00000' + rang, statut: 'actif' });
+
+    /* 1. DEUX FILEULS, MÊME CONTENU : deux demandes (identifiants distincts), UNE seule série d'identifiants */
+    await f1.ecrire({ type: 'creer', collection: 'demandesImport', fiche: 'DIM-F1I-1', champs: demande(SERIE) });
+    await f2.ecrire({ type: 'creer', collection: 'demandesImport', fiche: 'DIM-F2I-1', champs: demande(SERIE, { demandePar: 'GESTIONNAIRE DEUX', lotLocalId: 'LOT-' + SERIE + '-9' }) });
+    verifier('la mère reçoit les deux demandes du même inventaire (deux demandes, une seule série et une seule identité de contenu)', await attendre(async () => (await compte('demandesImport')) === 2, 15000), await compte('demandesImport'));
+    const sources = [...(await f1.liste('demandesImport')), ...(await f2.liste('demandesImport'))];
+    verifier('les deux demandes portent la MÊME série et la MÊME identité de contenu', sources.length >= 2 && sources.every((x) => x.data.serieIdentifiants === SERIE && x.data.identiteLot === IDENTITE), sources.map((x) => x.data.serieIdentifiants));
+
+    /* 2. LA MÈRE CONFIRME UNE FOIS : ses fiches portent les identifiants communs ; le second fileul ne peut pas en écrire de seconde (fiche_existe) */
+    for (const [i, q] of [100, 50].entries()) {
+      const rl = await mereEcrit('lots', 'LOT-' + SERIE + '-' + (i + 1), lot(i + 1, q));
+      const rm = await mereEcrit('mouvements', 'MOU-' + SERIE + '-' + (i + 1), mouvement(i + 1, q));
+      verifier('la mère écrit le lot et le mouvement ' + (i + 1) + ' sous les identifiants communs', rl.statut === 'acceptee' && rm.statut === 'acceptee', [rl, rm]);
+    }
+    await f2.ecrire({ type: 'creer', collection: 'lots', fiche: 'LOT-' + SERIE + '-1', champs: lot(1, 100) });
+    verifier('le second fileul, qui tient la même identité, ne peut pas écrire une seconde fiche : refusée (fiche_existe), aucun lot doublé', await attendre(async () => (await f2.etat()).a_traiter.some((x) => x.code === 'fiche_existe'), 15000), (await f2.etat()).a_traiter);
+    verifier('la mère tient exactement DEUX lots et DEUX mouvements (pas quatre)', (await compte('lots')) === 2 && (await compte('mouvements')) === 2, [await compte('lots'), await compte('mouvements')]);
+
+    /* 3. LES VERDICTS : confirmation pour la première demande, ADOPTION pour la seconde (jamais un refus) ; chaque fileul reçoit le sien sur la même fiche */
+    const v1 = { etat: 'appliquee', resultatCode: '', resultatLot: 'IMP-MERE-1', resultatEcrits: 7, resultatAdoptee: false, resultatSerie: SERIE, traitePar: 'Mère', traiteLe: '2026-11-13', lignes: [] };
+    const v2 = { etat: 'appliquee', resultatCode: '', resultatLot: 'IMP-MERE-1', resultatEcrits: 7, resultatAdoptee: true, resultatSerie: SERIE, traitePar: 'Mère', traiteLe: '2026-11-13', lignes: [] };
+    verifier('la mère confirme la première et ADOPTE la seconde sur leurs fiches', (await mereEcrit('demandesImport', 'DIM-F1I-1', v1)).statut === 'acceptee' && (await mereEcrit('demandesImport', 'DIM-F2I-1', v2)).statut === 'acceptee');
+    verifier('chaque fileul lit son verdict : confirmée pour F1, « adoptée » (jamais refusée) pour F2', await attendre(async () => {
+      const a = (await f1.liste('demandesImport')).find((x) => x.id === 'DIM-F1I-1'), b = (await f2.liste('demandesImport')).find((x) => x.id === 'DIM-F2I-1');
+      return !!a && !!b && a.data.etat === 'appliquee' && a.data.resultatAdoptee === false && b.data.etat === 'appliquee' && b.data.resultatAdoptee === true && b.data.resultatCode === '' && b.data.resultatSerie === SERIE;
+    }, 15000));
+    verifier('l\'adoption n\'a rien écrit à la mère : toujours DEUX lots, DEUX mouvements', (await compte('lots')) === 2 && (await compte('mouvements')) === 2);
+
+    /* 4. UNE SORTIE CHEZ CHACUN : deux variations distinctes, comptées une fois chacune ; la même variation rejouée est refusée */
+    await f1.ecrire({ type: 'creer', collection: 'deltasCompteurs', fiche: 'F1~1~0', champs: { cle: 'lots/LOT-' + SERIE + '-1/quantiteRestante', delta: -10, poste: 'F1' } });
+    await f2.ecrire({ type: 'creer', collection: 'deltasCompteurs', fiche: 'F2~1~0', champs: { cle: 'lots/LOT-' + SERIE + '-1/quantiteRestante', delta: -10, poste: 'F2' } });
+    verifier('la mère reçoit UNE variation par fileul (deux sorties, deux fiches)', await attendre(async () => (await compte('deltasCompteurs')) === 2, 15000), await compte('deltasCompteurs'));
+    await f1.ecrire({ type: 'creer', collection: 'deltasCompteurs', fiche: 'F1~1~0', champs: { cle: 'lots/LOT-' + SERIE + '-1/quantiteRestante', delta: -10, poste: 'F1' } });
+    verifier('la même variation rejouée est refusée (fiche_existe) : une sortie ne se compte jamais deux fois', await attendre(async () => (await f1.etat()).a_traiter.filter((x) => x.code === 'fiche_existe').length >= 1, 15000), (await f1.etat()).a_traiter);
+    verifier('la mère ne détient que DEUX variations', (await compte('deltasCompteurs')) === 2);
+
+    /* 5. LE VERDICT EST RE-ÉCRIT (rejeu) PUIS LA MÈRE EST TUÉE ET RELANCÉE : l'état final est identique, rien n'est ajouté */
+    for (let i = 0; i < 3; i++) {
+      await mereEcrit('demandesImport', 'DIM-F1I-1', v1);
+      await mereEcrit('demandesImport', 'DIM-F2I-1', v2);
+    }
+    await dormir(600);
+    await m.mere.tuer();
+    await f1.ecrire({ type: 'modifier', collection: 'demandesImport', fiche: 'DIM-F1I-1', champs: { marquageLeve: true } });
+    await dormir(600);
+    await m.mere.demarrer();
+    verifier('mère tuée puis relancée : la levée du marquage du fileul arrive, une fois', await attendre(async () => {
+      const l = (await f2.liste('demandesImport')).find((x) => x.id === 'DIM-F1I-1');
+      return !!l && l.data.marquageLeve === true && l.data.resultatAdoptee === false;
+    }, 25000));
+    const apres = [await compte('demandesImport'), await compte('lots'), await compte('mouvements'), await compte('deltasCompteurs')];
+    verifier('après les rejeux et la mère tuée : deux demandes, deux lots, deux mouvements, deux variations, rien d\'ajouté', apres.join(',') === '2,2,2,2', apres);
+    verifier('le verdict rejoué n\'a pas changé : F2 reste « adoptée » sur la même fiche', await (async () => {
+      const b = (await f1.liste('demandesImport')).find((x) => x.id === 'DIM-F2I-1');
+      return !!b && b.data.etat === 'appliquee' && b.data.resultatAdoptee === true && b.data.resultatSerie === SERIE;
+    })());
+
+    /* 6. LE REBASAGE : un fileul qui avait réimporté sous la tentative T2 est adopté ; sa restitution (écrite par lui) se fusionne champ à champ avec le verdict de la mère */
+    await f2.ecrire({ type: 'creer', collection: 'demandesImport', fiche: 'DIM-F2I-2', champs: demande(SERIE2, { demandePar: 'GESTIONNAIRE DEUX', lotLocalId: 'LOT-' + SERIE2 + '-1' }) });
+    verifier('la demande de la tentative 2 arrive à la mère', await attendre(async () => (await compte('demandesImport')) === 3, 15000));
+    verifier('la mère l\'ADOPTE en rendant la série qu\'elle tient (celle du premier lot)', (await mereEcrit('demandesImport', 'DIM-F2I-2', { ...v2, resultatSerie: SERIE })).statut === 'acceptee');
+    await f2.ecrire({ type: 'modifier', collection: 'demandesImport', fiche: 'DIM-F2I-2', champs: { restitution: 'faite', restitutionLe: '2026-11-13', restitutionArchives: 4, marquageLeve: true } });
+    verifier('la restitution du fileul s\'ajoute au verdict d\'adoption sur la MÊME fiche : la mère garde le verdict ET la restitution', await attendre(async () => {
+      const l = (await f1.liste('demandesImport')).find((x) => x.id === 'DIM-F2I-2');
+      return !!l && l.data.etat === 'appliquee' && l.data.resultatAdoptee === true && l.data.resultatSerie === SERIE && l.data.serieIdentifiants === SERIE2 && l.data.restitution === 'faite' && l.data.marquageLeve === true;
+    }, 15000), (await f1.liste('demandesImport')).map((x) => x.data));
+    verifier('la mère n\'a écrit AUCUN lot de plus pour la tentative 2 : toujours deux lots, deux mouvements', (await compte('lots')) === 2 && (await compte('mouvements')) === 2);
+
+    /* 7. LE RELAIS ne voit que du chiffré : ni la désignation, ni l'identité de contenu, ni la série, ni le drapeau d'adoption */
+    await attendre(async () => { const e = await etatMere(); return e.rep_seq === e.seq_max; }, 20000);
+    const brut = (await m.relais.direct('GET', '/banc/tout')).json;
+    const journal = brut.lignes.filter((l) => l.dir === 'journal');
+    const tout = JSON.stringify({ lignes: brut.lignes, codes: brut.codes, appareils: brut.appareils, meta: brut.meta.filter((x) => x.k !== 'indicateurs') });
+    const octets = journal.map((l) => Buffer.from(l.ct, 'base64'));
+    const mots = new RegExp('Quinquina|ARTICLE-SECRET|' + IDENTITE.slice(0, 20) + '|identiteLot|resultatAdoptee|resultatSerie|serieIdentifiants|demandesImport|deltasCompteurs');
+    verifier('le relais détient le journal en enveloppes', journal.length >= 1, journal.length);
+    verifier('ni la désignation, ni l\'identité de contenu, ni la série, ni le drapeau d\'adoption ne sont lisibles au relais, même après décodage des octets', !mots.test(tout) && octets.every((b) => !mots.test(b.toString('latin1'))), tout.length);
+    const claires = journal.map((l) => dechiffrer(cleClinique, l)).flatMap((c) => c.ops || []);
+    verifier('avec la clé de clinique (que le relais n\'a pas), l\'enveloppe contient bien l\'identité de contenu : l\'opacité ne vient pas d\'un contenu vide',
+      claires.some((o) => o.collection === 'demandesImport' && JSON.stringify(o.champs || {}).includes(IDENTITE.slice(0, 20))), claires.length);
+
+    /* 8. UN TÉLÉPHONE ne reçoit NI la demande, NI l'identité de contenu, NI le verdict d'adoption, NI les variations ; il ne dépose pas une demande portant une identité */
+    const mob = await m.mobile('M1', { profil: 'soignant' });
+    await mob.ecrire({ type: 'creer', collection: 'demandesImport', fiche: 'DIM-M1I-1', champs: demande(SERIE, { demandeRole: 'medecin' }) });
+    verifier('le téléphone qui tente de déposer une demande portant une identité de lot est refusé, nommé (droit_refuse)', await attendre(async () => (await mob.etat()).a_traiter.some((x) => x.code === 'droit_refuse'), 15000));
+    await f1.ecrire({ type: 'creer', collection: 'demandesImport', fiche: 'DIM-F1I-3', champs: demande(SERIE, { fichier: 'apres-appairage.xlsx' }) });
+    await mereEcrit('demandesImport', 'DIM-F1I-3', v2);
+    await f1.ecrire({ type: 'creer', collection: 'deltasCompteurs', fiche: 'F1~2~0', champs: { cle: 'lots/LOT-' + SERIE + '-2/quantiteRestante', delta: -1, poste: 'F1' } });
+    await dormir(1200);
+    const recu = async (col) => (await mob.liste(col)).length;
+    verifier('le téléphone ne reçoit AUCUNE demande, AUCUNE variation', (await recu('demandesImport')) === 0 && (await recu('deltasCompteurs')) === 0, [await recu('demandesImport'), await recu('deltasCompteurs')]);
     verifier('la mère n\'a pas écrit la demande du téléphone', (await compte('demandesImport')) === 4);
     await m.fermer();
   },
