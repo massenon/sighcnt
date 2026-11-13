@@ -71,6 +71,8 @@ const familleDeBase = <String, String>{
   // Lot D5 : les METADONNÉES des fichiers numérisés voyagent par le journal comme toute fiche (le binaire voyage à part, par empreinte, `fichiers_mere.dart`). Le courrier et le
   // document du patient portent `fichier` ; le registre `fichiers` est une fiche par empreinte, AJOUT SEUL (famille B).
   'courriers': 'A', 'documentsPatient': 'A', 'fichiers': 'B',
+  // Lot OCR-prep : une lecture OCR est une version immuable du texte d'un fichier (famille B : ajout seul, identité commune).
+  'lecturesOcr': 'B',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
@@ -95,7 +97,7 @@ const Set<String> collectionsImportJamaisMobile = {'demandesImport'};
 /// Les FICHIERS NUMÉRISÉS ne vont JAMAIS vers un téléphone (lot D5, RG-13) : ni le binaire (les routes `/fichiers/*` refusent tout appareil mobile), ni les fiches qui le portent
 /// (courriers, documents du patient, y compris les pièces de zone 1 : pièce d'identité, carte d'assurance), ni le registre par empreinte et son texte indexé. Aucun écran du
 /// téléphone ne les lit ; un téléphone perdu n'emporte ni scan ni texte de scan.
-const Set<String> collectionsFichiersJamaisMobile = {'courriers', 'documentsPatient', 'fichiers'};
+const Set<String> collectionsFichiersJamaisMobile = {'courriers', 'documentsPatient', 'fichiers', 'lecturesOcr'};
 const _clinique = 'NASSIERA TOO';
 const _deriveMaxMs = 2 * 60 * 1000;
 const autorise = <String, Set<String>>{
@@ -381,7 +383,7 @@ class Mere {
       if (type != 'creer') return refus('journal_immuable', 'Un journal ne se modifie pas : on ajoute une ligne.', 'Ajouter une nouvelle ligne');
       // Lot D5 : le registre des fichiers est une fiche PAR EMPREINTE. Deux postes qui déposent le même fichier créent la même fiche : la seconde création est ACCEPTÉE SANS EFFET
       // (la première fait foi, jamais deux fiches ni un refus bruyant à « traiter »).
-      if (f != null && collection == 'fichiers') return {'id': id, 'statut': 'acceptee', 'seq': await seqMax(), 'rejeu': true};
+      if (f != null && (collection == 'fichiers' || collection == 'lecturesOcr')) return {'id': id, 'statut': 'acceptee', 'seq': await seqMax(), 'rejeu': true};
       if (f != null) return refus('fiche_existe', 'Cette ligne existe déjà.', 'Aucun');
       final seq = await journaliser(op, champsOp, app.uuid);
       await ecrire(collection, ficheId, Fiche({...champsOp}, {for (final k in champsOp.keys) k: seq}, false));

@@ -50,8 +50,10 @@ const FAMILLES = {
   /* Lot D5 : les MÉTADONNÉES des fichiers numérisés (le courrier et le document du patient portent `fichier` ; le registre `fichiers` est une fiche par empreinte, ajout seul). Le binaire voyage
      à part (`fichiers.js`). Jamais vers un téléphone (RG-13). */
   courriers: 'A', documentsPatient: 'A', fichiers: 'B',
+  /* Lot OCR-prep : une lecture OCR est une version immuable du texte d'un fichier (ajout seul, identité commune). */
+  lecturesOcr: 'B',
 };
-const FICHIERS_JAMAIS_MOBILE = new Set(['courriers', 'documentsPatient', 'fichiers']);
+const FICHIERS_JAMAIS_MOBILE = new Set(['courriers', 'documentsPatient', 'fichiers', 'lecturesOcr']);
 const ESSENTIELLES = new Set(['tarifs', 'versionsTarif', 'chambres']);
 
 const PARAMETRES = require('./parametres');
@@ -163,7 +165,7 @@ function traiter(op, app) {
   if (fam === 'B') {
     if (op.type !== 'creer') return refus('journal_immuable', 'Un journal ne se modifie pas : on ajoute une ligne.', 'Ajouter une nouvelle ligne');
     /* Lot D5 : deux postes qui déposent le même fichier créent la même fiche de registre (une par empreinte) : la seconde création est ACCEPTÉE SANS EFFET. */
-    if (f && op.collection === 'fichiers') return { id: op.id, statut: 'acceptee', seq: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s), rejeu: true };
+    if (f && (op.collection === 'fichiers' || op.collection === 'lecturesOcr')) return { id: op.id, statut: 'acceptee', seq: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s), rejeu: true };
     if (f) return refus('fiche_existe', 'Cette ligne existe déjà.', 'Aucun');
     const seq = journaliser(op, op.champs, app.uuid);
     ecrire(op.collection, op.fiche, { data: op.champs, fieldseq: Object.fromEntries(Object.keys(op.champs).map((k) => [k, seq])), archive: false });

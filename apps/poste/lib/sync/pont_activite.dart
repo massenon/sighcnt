@@ -49,6 +49,10 @@ const Set<String> collectionsActivite = {
   'courriers',
   'documentsPatient',
   'fichiers',
+  // Lot OCR-prep : les LECTURES OCR des scans (une fiche par version de texte lu par machine) sont une MÉTADONNÉE du fichier : elles voyagent par le journal avec le registre `fichiers`,
+  // identité commune (`OCR-<empreinte>-<hash du texte>` : deux postes qui lisent le même scan avec le même moteur ne font qu'une version), ajout seul, jamais vers un téléphone (RG-13).
+  // La FILE de lecture (`fileOcr`) reste locale au poste.
+  'lecturesOcr',
   // Les pièces et les compteurs, avec leurs règles de fusion propres (`fusion_activite.dart`).
   'factures',
   'avoirs',
@@ -263,7 +267,7 @@ class PontActivite {
         // préfixée, elle faisait de chaque article créé après le jeu d'origine DEUX fiches chez un fileul (mesuré avec un import de la mère).
         // Lot D5 : une fiche du registre `fichiers` a pour identifiant `FIC-<empreinte>` : déterministe, elle est la MÊME sur tous les postes (préfixée, deux postes qui déposent le même fichier
         // feraient deux fiches et le texte indexé deux fois).
-        final identiteCommune = magasin.idsOrigine(c).contains('${f['id']}') || '${f[champSerieDemande] ?? ''}'.isNotEmpty || collectionsDeLaMereSeule.contains(c) || c == 'fichiers';
+        final identiteCommune = magasin.idsOrigine(c).contains('${f['id']}') || '${f[champSerieDemande] ?? ''}'.isNotEmpty || collectionsDeLaMereSeule.contains(c) || c == 'fichiers' || c == 'lecturesOcr';
         f['idSync'] = identiteCommune ? '${f['id']}' : '$etiquette-${f['id']}';
       }
     }
