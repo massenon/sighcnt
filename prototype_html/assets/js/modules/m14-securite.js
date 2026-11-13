@@ -551,6 +551,7 @@
             K.iconBtn('sliders-horizontal', 'Modifier les droits de ce rôle', function () { editerRole(r); }),
             K.iconBtn('list-tree', 'Régler écran par écran', function () { editerEcrans(r); }),
             K.iconBtn('file-up', 'Régler les importations de ce rôle', function () { editerImports(r); }),
+            K.iconBtn('stamp', 'Régler les gestes réservés de ce rôle', function () { editerGestes(r); }),
             K.iconBtn('pencil', 'Renommer ce rôle', function () { renommerRole(r); }),
             K.iconBtn('archive', 'Archiver ce rôle', function () { archiverRole(r); }, 'ghost'),
           ]));
@@ -1127,6 +1128,71 @@
       }
 
       /* --------------------------------------------------------------------
+       * GESTES RÉSERVÉS : UN DROIT PAR GESTE (lot B, 13/11/2026)
+       * --------------------------------------------------------------------
+       * Une case par geste que le manifeste réserve (aujourd'hui : valider un seuil de variation brutale du laboratoire). Le droit s'accorde au RÔLE, jamais à un agent. Une case
+       * cochée ou décochée ici l'emporte sur l'origine du manifeste, dans les deux sens ; « Retirer les réglages » rend chaque geste à son origine. Ce droit n'ouvre pas l'écran
+       * du geste : l'écran se règle par « Régler écran par écran ».
+       * ------------------------------------------------------------------ */
+      function editerGestes(roleId) {
+        var f = ficheRole(roleId);
+        var etat = {};
+        var corps = el('div.space-y-3');
+        corps.appendChild(K.note('Un <strong>geste réservé</strong> engage un professionnel nommé : il ne se déduit d’aucun droit d’écran. Une case cochée ici l’emporte sur l’origine du manifeste, '
+          + 'dans les deux sens. Le droit s’accorde au <strong>rôle</strong>, jamais à un agent ; il n’ouvre <strong>pas</strong> l’écran du geste (à régler écran par écran).',
+        { tone: 'info', icon: 'stamp' }));
+        var zone = el('div.rounded-lg.border.border-slate-200');
+        var t = el('table.tbl');
+        t.appendChild(el('thead', null, el('tr', null, [
+          el('th', { text: 'Geste' }), el('th.text-center', { text: 'Accordé' }), el('th.text-right', { text: 'Origine' }),
+        ])));
+        var tb = el('tbody');
+        N.GESTES.forEach(function (g) {
+          var regle = !!(f && f.droitsGestes && (f.droitsGestes[g.id] === true || f.droitsGestes[g.id] === false));
+          var tr = el('tr', { 'data-geste': g.id });
+          tr.appendChild(el('td', null, el('div.min-w-0', null, [
+            el('p.text-sm.text-slate-800', { text: g.libelle }),
+            el('p.text-xs.text-slate-400', { text: g.id + ' · écran du geste : ' + g.ecran }),
+          ])));
+          var cb = el('input.checkbox', { type: 'checkbox', 'data-geste-case': g.id });
+          cb.checked = N.droitGeste(roleId, g.id);
+          cb.addEventListener('change', function () { etat[g.id] = cb.checked; });
+          tr.appendChild(el('td.text-center', null, cb));
+          tr.appendChild(el('td.text-right', null, regle ? U.badge('Réglé', 'navy') : el('span.text-xs.text-slate-400', { text: 'origine du manifeste' })));
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        zone.appendChild(t);
+        corps.appendChild(zone);
+        var m = U.modal({
+          title: 'Gestes réservés du rôle « ' + N.ROLES[roleId].label + ' »',
+          subtitle: 'Un droit par geste', size: 'lg', body: corps,
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Retirer les réglages', {
+              icon: 'rotate-ccw',
+              onclick: function () {
+                enregistrer(roleId, { droitsGestes: {} }, 'Retrait des réglages de gestes réservés');
+                m.close();
+                U.toast('Réglages de gestes retirés.', { type: 'success', detail: 'Chaque geste suit de nouveau l’origine du manifeste.' });
+              },
+            }),
+            K.btn('Enregistrer', {
+              variant: 'primary', icon: 'save',
+              onclick: function () {
+                var existants = (f && f.droitsGestes) ? Object.assign({}, f.droitsGestes) : {};
+                Object.keys(etat).forEach(function (id) { existants[id] = etat[id]; });
+                enregistrer(roleId, { droitsGestes: existants, statut: 'actif' }, 'Réglage des gestes réservés');
+                m.close();
+                U.toast('Gestes réservés enregistrés.', { type: 'success' });
+              },
+            }),
+          ],
+        });
+        U.icons(corps);
+      }
+
+      /* --------------------------------------------------------------------
        * CRÉATION D'UN RÔLE
        * --------------------------------------------------------------------
        * Un rôle créé part de ZÉRO : il n'apparaît dans aucune liste du
@@ -1199,6 +1265,9 @@
                 /* Et AUCUN jeu d'import : un rôle neuf part de zéro, nommément (lot IMP-A). */
                 var fermesImport = {};
                 N.IMPORTS.forEach(function (j) { fermesImport[j.id] = { voir: false, importer: false, annuler: false }; });
+                /* Et AUCUN geste réservé (lot B) : un rôle neuf part de zéro, nommément. */
+                var fermesGestes = {};
+                N.GESTES.forEach(function (g) { fermesGestes[g.id] = false; });
                 var fermesEcrans = {};
                 N.ids().forEach(function (idEcran) {
                   var e = N.get(idEcran);
@@ -1213,7 +1282,7 @@
                     nouveau: true, statut: 'actif', libelle: v.libelle,
                     libelleCourt: v.libelleCourt || v.libelle, libelleOrigine: v.libelle,
                     couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                    droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport,
+                    droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport, droitsGestes: fermesGestes,
                   });
                   N.invaliderRbac();
                   m.close(); afficher();
@@ -1225,7 +1294,7 @@
                   libelle: v.libelle, libelleCourt: v.libelleCourt || v.libelle,
                   libelleOrigine: v.libelle,
                   couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                  droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport,
+                  droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport, droitsGestes: fermesGestes,
                   definiLe: C.iso(AUJ), definiPar: S.currentUser(),
                 });
                 N.invaliderRbac();

@@ -25914,6 +25914,121 @@ async function viderMessages(page) {
   });
   /* OCR-PREP FIN */
 
+  /* ==========================================================================
+   * LOT B, ÉTAPE 1 : VALIDER UN SEUIL EST UN DROIT DE LA FICHE RBAC, PAR RÔLE (réponse de la Direction du 13/11/2026).
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 172 : lot B étape 1, valider un seuil est un droit RBAC par rôle (biologiste oui, administrateur non, technicien non puis oui par surcharge puis non au retrait), commande absente, moteur qui refuse en nommant');
+    erreursJS = [];
+    const A = outilsAnt;
+    const TECH = { role: 'technicien_b170', nom: 'TECH170 Sonde', nomComplet: 'TECH170 Sonde', identifiant: 'tech170', fonction: 'tsl', secteur: 'LAB' };
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-valeurs-reference.html');
+    const depart = await page.evaluate(() => { const S = window.SIGH.store; S.collection('rbac', { module: 'M14', entite: 'rôle', prefix: 'RBAC' }); return { rbac: JSON.stringify(S.raw().rbac || []), seuils: S.collection('seuilsDelta').all().length }; });
+    await A.viderSeuils();
+
+    /* --- 1. Le droit d'ORIGINE, tiré du manifeste, par profil --------------------------------------------------------------------------------------------------- */
+    const origine = await page.evaluate(() => { const N = window.SIGH.nav; const o = {}; Object.keys(N.ROLES).forEach((r) => { o[r] = N.droitGeste(r, 'valider_seuil_labo'); }); return { porteurs: Object.keys(o).filter((r) => o[r]), admin: o.admin, direction: o.direction, da: o.da, inconnu: N.droitGeste('role_qui_nexiste_pas', 'valider_seuil_labo'), geste: N.droitGeste('laborantin', 'geste_qui_nexiste_pas') }; });
+    verifier('D’origine, SEUL le Biologiste médical (laborantin) détient le droit de valider un seuil : ni l’administrateur système, ni la Direction, ni la DAF, aucun autre rôle',
+      origine.porteurs.length === 1 && origine.porteurs[0] === 'laborantin' && origine.admin === false && origine.direction === false && origine.da === false, JSON.stringify(origine));
+    verifier('Un rôle inconnu et un geste inconnu n’ont aucun droit (jamais « tous les droits » par défaut pour un geste réservé)', origine.inconnu === false && origine.geste === false, JSON.stringify(origine));
+
+    /* --- 2. Le technicien : un rôle CRÉÉ en exploitation part de zéro, il a l'accès à l'écran mais pas le droit ---------------------------------------------- */
+    await page.evaluate(() => {
+      const N = window.SIGH.nav, S = window.SIGH.store, col = S.collection('rbac', { module: 'M14', entite: 'rôle', prefix: 'RBAC' });
+      const modules = []; N.NAV.forEach((d) => d.modules.forEach((m) => modules.push(m.code)));
+      const ferme = {}; modules.forEach((c) => { ferme[c] = { voir: false, editer: false, annuler: false }; });
+      ferme.M5 = { voir: true, editer: true, annuler: false };
+      const fermesEcrans = {}; N.ids().forEach((id) => { const e = N.get(id); if (e && e.universel) fermesEcrans[id] = { voir: false, editer: false, annuler: false }; });
+      const fermesImport = {}; N.IMPORTS.forEach((j) => { fermesImport[j.id] = { voir: false, importer: false, annuler: false }; });
+      const fermesGestes = {}; N.GESTES.forEach((g) => { fermesGestes[g.id] = false; });
+      col.insert({ role: 'technicien_b170', nouveau: true, statut: 'actif', libelle: 'Technicien de laboratoire (sonde 170)', libelleCourt: 'Tech170', libelleOrigine: 'Technicien de laboratoire (sonde 170)', couleur: 'neutral', accueil: 'dash-admin',
+        droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport, droitsGestes: fermesGestes });
+      N.invaliderRbac();
+    });
+    await attendreEcritures();
+    const NFS = 'NFS';
+    await poserSessionServeur(TECH);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen(NFS);
+    const t0 = await page.evaluate(() => ({ droit: window.SIGH.nav.droitGeste('technicien_b170', 'valider_seuil_labo'), peut: window.SIGH.laboSeuils.peutValider(), peutEnr: window.SIGH.laboSeuils.peutEnregistrer() }));
+    verifier('Le rôle créé (technicien) part de zéro : il écrit sur l’écran des valeurs de référence mais n’a PAS le droit de valider un seuil', t0.droit === false && t0.peut === false && t0.peutEnr === true, JSON.stringify(t0));
+    await A.regler('GB', { ecartAbsolu: 1.5 }, 'Enregistrer');
+    const g0 = await A.ligneSeuil('GB');
+    verifier('Le technicien ENREGISTRE un seuil (sans effet) mais la commande « Valider » est ABSENTE de sa ligne (pas grisée)', g0.etat === 'Enregistré (sans effet)' && g0.valider === false && g0.regler === true, JSON.stringify(g0));
+    const r0 = await page.evaluate(() => window.SIGH.laboSeuils.valider('VAR-NFS-GB', { motif: 'Essai de la sonde 170' }));
+    const b0 = await page.evaluate(() => window.SIGH.laboSeuils.brouillon('VAR-NFS-GB'));
+    verifier('Le moteur refuse aussi le geste forcé : VALIDATION_RESERVEE, motif nommé (droit réservé, profil), geste de correction (accorder le droit à un rôle) ; le seuil reste Enregistré',
+      r0.ok === false && r0.code === 'VALIDATION_RESERVEE' && /droit réservé/.test(r0.motif) && /Technicien de laboratoire \(sonde 170\)/.test(r0.motif) && /gestes réservés/.test(r0.geste) && b0 && b0.etat === 'enregistre', JSON.stringify([r0, b0 && b0.etat]));
+
+    /* --- 3. L'administrateur accorde le droit par la fenêtre « gestes réservés » de la fiche du rôle ---------------------------------------------------------- */
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m14-roles.html');
+    const ouvert = await page.evaluate(() => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf('Technicien de laboratoire (sonde 170)') >= 0); const b = tr && tr.querySelector('button[title="Régler les gestes réservés de ce rôle"]'); if (b) b.click(); return !!b; });
+    await pause(600);
+    const fen = await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); const c = d && d.querySelector('input[data-geste-case="valider_seuil_labo"]'); return d ? { lignes: d.querySelectorAll('tr[data-geste]').length, coche: c ? c.checked : null } : null; });
+    verifier('« Rôles & permissions » : une fenêtre « gestes réservés » par rôle, une ligne par geste, case DÉCOCHÉE pour le technicien', ouvert && fen && fen.lignes === 1 && fen.coche === false, JSON.stringify(fen));
+    await page.evaluate(() => { document.querySelector('[role="dialog"] input[data-geste-case="valider_seuil_labo"]').click(); });
+    await cliquer('Enregistrer', '[role="dialog"] button'); await pause(900);
+    const apresAccord = await page.evaluate(() => { const N = window.SIGH.nav; N.invaliderRbac(); const f = window.SIGH.store.collection('rbac').all().filter((x) => x.role === 'technicien_b170')[0]; return { droit: N.droitGeste('technicien_b170', 'valider_seuil_labo'), laborantin: N.droitGeste('laborantin', 'valider_seuil_labo'), admin: N.droitGeste('admin', 'valider_seuil_labo'), fiche: f && f.droitsGestes, porteurs: N.rolesAvecGeste('valider_seuil_labo') }; });
+    verifier('La surcharge ACCORDE : le technicien détient le droit, l’administrateur ne l’a toujours pas, le biologiste le garde ; la fiche porte la case',
+      apresAccord.droit === true && apresAccord.admin === false && apresAccord.laborantin === true && apresAccord.fiche.valider_seuil_labo === true && apresAccord.porteurs.length === 2, JSON.stringify(apresAccord));
+    await attendreEcritures();
+
+    /* --- 4. Avec le droit : la commande apparaît, le moteur valide, la validation porte le rôle du technicien ------------------------------------------------- */
+    await poserSessionServeur(TECH);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen(NFS);
+    const g1 = await A.ligneSeuil('GB');
+    verifier('Avec le droit accordé, la commande « Valider » apparaît sur la ligne du technicien', g1.valider === true, JSON.stringify(g1));
+    await A.validerParGeste('GB', 'Seuil arrêté sur la notice du réactif (sonde 170)');
+    const v1 = await page.evaluate(() => { const s = window.SIGH.laboSeuils.enVigueur('VAR-NFS-GB', '9999-12-31'); return s && { etat: s.etat, par: s.validePar, role: s.valideRole, motif: s.motifValidation }; });
+    verifier('Le technicien valide : le seuil est en vigueur, la validation porte son nom, son rôle et le motif', v1 && v1.etat === 'valide' && /TECH170/.test(v1.par) && /Technicien de laboratoire \(sonde 170\)/.test(v1.role) && /sonde 170/.test(v1.motif), JSON.stringify(v1));
+
+    /* --- 5. Le retrait : la même fenêtre retire le droit, le moteur refuse de nouveau -------------------------------------------------------------------------- */
+    await A.regler('GB', { ecartAbsolu: 2, dateEffet: new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10) }, 'Enregistrer');
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m14-roles.html');
+    await page.evaluate(() => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf('Technicien de laboratoire (sonde 170)') >= 0); tr.querySelector('button[title="Régler les gestes réservés de ce rôle"]').click(); });
+    await pause(600);
+    const coche = await page.evaluate(() => document.querySelector('[role="dialog"] input[data-geste-case="valider_seuil_labo"]').checked);
+    await page.evaluate(() => { document.querySelector('[role="dialog"] input[data-geste-case="valider_seuil_labo"]').click(); });
+    await cliquer('Enregistrer', '[role="dialog"] button'); await pause(900);
+    await attendreEcritures();
+    await poserSessionServeur(TECH);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen(NFS);
+    const g2 = await A.ligneSeuil('GB');
+    const r2 = await page.evaluate(() => window.SIGH.laboSeuils.valider('VAR-NFS-GB', { motif: 'Après retrait' }));
+    verifier('Case cochée à l’ouverture, décochée puis enregistrée : le droit est RETIRÉ, la commande « Valider » disparaît de nouveau et le moteur refuse (VALIDATION_RESERVEE) : une surcharge restreint autant qu’elle accorde',
+      coche === true && g2.valider === false && r2.ok === false && r2.code === 'VALIDATION_RESERVEE', JSON.stringify([coche, g2, r2]));
+
+    /* --- 6. Le biologiste : droit d'origine ; une surcharge qui le RETIRE le lui retire ; l'administrateur ne valide jamais sans surcharge -------------------------- */
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-valeurs-reference.html');
+    const adm = await page.evaluate(() => ({ peut: window.SIGH.laboSeuils.peutValider(), r: window.SIGH.laboSeuils.valider('VAR-NFS-GB', { motif: 'Admin' }) }));
+    verifier('L’administrateur système n’a pas le droit : le moteur refuse (VALIDATION_RESERVEE)', adm.peut === false && adm.r.ok === false && adm.r.code === 'VALIDATION_RESERVEE', JSON.stringify(adm));
+    await page.evaluate(() => { const S = window.SIGH.store, col = S.collection('rbac'); const f = col.all().filter((x) => x.role === 'laborantin')[0]; const g = Object.assign({}, (f && f.droitsGestes) || {}, { valider_seuil_labo: false }); if (f) col.update(f.id, { droitsGestes: g }); else col.insert({ role: 'laborantin', droitsGestes: g, libelleOrigine: 'Biologiste médical' }); window.SIGH.nav.invaliderRbac(); });
+    await poserSessionServeur(A.BIOLOGISTE);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen(NFS);
+    const bio = await page.evaluate(() => ({ droit: window.SIGH.nav.droitGeste('laborantin', 'valider_seuil_labo'), r: window.SIGH.laboSeuils.valider('VAR-NFS-GB', { motif: 'Retiré au biologiste' }) }));
+    const gb = await A.ligneSeuil('GB');
+    verifier('Une surcharge peut RETIRER le droit au biologiste : commande absente, moteur qui refuse en nommant', bio.droit === false && bio.r.ok === false && bio.r.code === 'VALIDATION_RESERVEE' && gb.valider === false, JSON.stringify([bio, gb]));
+
+    /* --- 7. Restauration : fiches RBAC et seuils remis TELS QU'AVANT (règle 11), rôle créé retiré --------------------------------------------------------------- */
+    await poserSessionServeur(A.ADMIN);
+    await page.evaluate((d) => { const S = window.SIGH.store; const a = S.raw().rbac; a.splice(0, a.length, ...JSON.parse(d.rbac)); S.save(); window.SIGH.nav.invaliderRbac(); }, depart);
+    await A.viderSeuils();
+    await attendreEcritures();
+    await ouvrir('m5-valeurs-reference.html');
+    const fin = await page.evaluate(() => { const N = window.SIGH.nav; return { rbac: JSON.stringify(window.SIGH.store.raw().rbac || []), tech: !!N.ROLES.technicien_b170, bio: N.droitGeste('laborantin', 'valider_seuil_labo'), seuils: window.SIGH.store.collection('seuilsDelta').all().length }; });
+    verifier('Restauration : fiches RBAC identiques à celles d’avant le scénario, le rôle créé a disparu, le biologiste retrouve son droit, aucun seuil ne reste', fin.rbac === depart.rbac && fin.tech === false && fin.bio === true && fin.seuils === 0, JSON.stringify({ tech: fin.tech, bio: fin.bio, seuils: fin.seuils, memes: fin.rbac === depart.rbac }));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT B ÉTAPE 1 FIN */
+
+
 
   await browser.close();
   server.close();

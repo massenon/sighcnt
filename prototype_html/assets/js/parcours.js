@@ -7725,8 +7725,11 @@
   var ECRAN_SEUILS = 'm5-valeurs-reference';
   function colSeuils() { return S.collection('seuilsDelta', { module: 'M5', entite: 'seuil de variation brutale', prefix: 'SEU' }); }
   function refusSeuil(code, motif, geste, extra) { return refusCfg(code, motif, geste, extra); }
-  function rolesValidationSeuils() { var f = familleAValider('labo_variables'); return f ? f.roles.slice() : []; }
-  function peutValiderSeuil(role) { return rolesValidationSeuils().indexOf(role == null ? roleCourant() : role) >= 0; }
+  /* LE DROIT DE VALIDER UN SEUIL est un geste réservé de la fiche RBAC (nav.js, `valider_seuil_labo`) : aucune liste de rôles n'est écrite ici (lot B, réponse de la Direction du
+     13/11/2026). Le Biologiste médical l'a d'origine, un administrateur peut l'accorder à un rôle ou le retirer. */
+  var GESTE_VALIDER_SEUIL = 'valider_seuil_labo';
+  function rolesValidationSeuils() { var N = global.SIGH.nav; return N && N.rolesAvecGeste ? N.rolesAvecGeste(GESTE_VALIDER_SEUIL) : []; }
+  function peutValiderSeuil(role) { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, GESTE_VALIDER_SEUIL)); }
   function peutEnregistrerSeuil(role) {
     var N = global.SIGH.nav, r = role == null ? roleCourant() : role;
     var d = N && N.droitsEcran ? N.droitsEcran(r, ECRAN_SEUILS, 'M5') : null;
@@ -7818,8 +7821,10 @@
     var role = roleCourant();
     if (!peutValiderSeuil(role)) {
       var liste = rolesValidationSeuils();
-      return refusSeuil('VALIDATION_RESERVEE', 'La validation d’un seuil de variation brutale est réservée à : ' + liste.map(libelleRole).join(', ') + '. Profil : ' + libelleRole(role) + '.',
-        'Demander à ' + libelleRole(liste[0]) + ' de valider depuis son poste.');
+      return refusSeuil('VALIDATION_RESERVEE', 'Valider un seuil de variation brutale est un droit réservé' + (liste.length ? ' (porté aujourd’hui par : ' + liste.map(libelleRole).join(', ') + ')' : ' (aucun rôle ne le porte aujourd’hui)')
+        + '. Profil : ' + libelleRole(role) + '.',
+        liste.length ? 'Demander à ' + libelleRole(liste[0]) + ' de valider depuis son poste, ou faire accorder le droit « Valider un seuil » à ce rôle par un administrateur (Rôles et permissions, gestes réservés).'
+          : 'Faire accorder le droit « Valider un seuil » à un rôle par un administrateur (Rôles et permissions, gestes réservés).');
     }
     var b = brouillonSeuil(variableId);
     if (!b) return refusSeuil('SEUIL_NON_ENREGISTRE', 'Aucun seuil Enregistré à valider sur cette variable : un seuil se saisit et s’enregistre d’abord.', 'Régler le seuil, l’enregistrer, puis le valider.');

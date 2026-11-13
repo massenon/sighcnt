@@ -191,6 +191,21 @@
       sensibilite: 'restreinte', collections: ['courriers'], doublon: 'ignorer',
       rolesDefaut: { admin: 'VIA', da: 'VIA', agentadmin: 'VIA', direction: 'V' } },
   ];
+  /* ==========================================================================
+   * LES GESTES RÉSERVÉS PAR DROIT (lot B, 13/11/2026)
+   * --------------------------------------------------------------------------
+   * Un geste qui engage un professionnel nommé n'est pas une liste de rôles écrite dans le code : c'est un DROIT de la fiche RBAC, accordé PAR RÔLE (jamais par agent),
+   * que le manifeste ne donne d'origine qu'à la liste `rolesDefaut`. Valider un seuil de variation brutale du laboratoire reste au Biologiste médical (réponse de la
+   * Direction du 13/11/2026) ; l'administrateur système ne l'a pas, le technicien de laboratoire non plus, MAIS un administrateur peut l'accorder à un rôle (la fiche
+   * `droitsGestes[geste] = true`) comme il peut le retirer (`false`). Le technicien n'a pas de rôle propre dans la matrice d'origine (c'est une FONCTION portée par le
+   * rôle du Biologiste médical) : pour lui accorder le droit, on crée le rôle et on ouvre ce geste à ce rôle. Le droit n'ouvre PAS l'écran : l'écran se règle à part.
+   * ======================================================================== */
+  var GESTES = [
+    { id: 'valider_seuil_labo', libelle: 'Valider un seuil de variation brutale du laboratoire', module: 'M5', ecran: 'm5-valeurs-reference',
+      rolesDefaut: ['laborantin'] },
+  ];
+  var GESTES_INDEX = {};
+  GESTES.forEach(function (g) { GESTES_INDEX[g.id] = g; });
   var IMPORTS_INDEX = {};
   /* Le module « Importation de données » s'ouvre à l'UNION des rôles qui détiennent un jeu par défaut : liste DÉRIVÉE de la déclaration, jamais recopiée. */
   var ROLES_IMP = [];
@@ -1337,7 +1352,7 @@
         var fusion = Object.assign({}, deja);
         Object.keys(f).forEach(function (k) {
           if (f[k] === undefined || f[k] === null) return;
-          if (k === 'droits' || k === 'droitsEcrans' || k === 'droitsImport') {
+          if (k === 'droits' || k === 'droitsEcrans' || k === 'droitsImport' || k === 'droitsGestes') {
             fusion[k] = Object.assign({}, deja[k] || {}, f[k] || {});
             return;
           }
@@ -1565,6 +1580,25 @@
   }
   /** La capacité PAIE, lue de la matrice : écrire dans le module de la paie (M11). Elle décide de la colonne « Salaire de base » du jeu du personnel. */
   function capacitePaie(roleId) { return !!roleId && !!droits(roleId, 'M11').editer; }
+  /**
+   * Le droit d'un GESTE réservé, pour un rôle : rôle archivé, FERMÉ ; écran ou module désactivé, FERMÉ pour tous ; puis la fiche RBAC (`droitsGestes[geste]`, une
+   * surcharge accorde autant qu'elle restreint, dans les deux sens) ; à défaut, la liste d'origine du manifeste. Un rôle créé en exploitation n'est dans aucune
+   * liste d'origine : il part de zéro. Une fiche qui ne nomme pas le geste suit l'origine (ce n'est PAS « tous les droits » : la doctrine « sans fiche, tous les droits »
+   * vaut pour les écrans, jamais pour un geste réservé). Cette fonction ne lit JAMAIS `droitsEcran`.
+   */
+  function droitGeste(roleId, gesteId) {
+    var g = GESTES_INDEX[gesteId];
+    if (!g || !roleId || roleArchive(roleId)) return false;
+    if (!ecranActif(g.ecran, g.module)) return false;
+    var f = surcharges()[roleId];
+    var o = f && f.droitsGestes && f.droitsGestes[gesteId];
+    if (o === true || o === false) return o;
+    return g.rolesDefaut.indexOf(roleId) >= 0;
+  }
+  /** Les rôles qui détiennent un geste (liste DÉRIVÉE du droit, jamais recopiée). */
+  function rolesAvecGeste(gesteId) {
+    return Object.keys(ROLES).filter(function (r) { return droitGeste(r, gesteId); });
+  }
 
   function droitsEcran(roleId, ecranId, code) {
     var base = droits(roleId, code);
@@ -1978,6 +2012,7 @@
     droitsEcran: droitsEcran,
     IMPORTS: IMPORTS, IMPORTS_IGNORER_PERMIS: IMPORTS_IGNORER_PERMIS, RUBAN_SYSTEME_MODULES_OUVERTS: RUBAN_SYSTEME_MODULES_OUVERTS,
     jeuImport: function (id) { return IMPORTS_INDEX[id] || null; },
+    GESTES: GESTES, geste: function (id) { return GESTES_INDEX[id] || null; }, droitGeste: droitGeste, rolesAvecGeste: rolesAvecGeste,
     droitImport: droitImport, importsVisibles: importsVisibles, importsDeLHote: importsDeLHote, superviseImport: superviseImport, capacitePaie: capacitePaie,
     droitsOrigine: droitsOrigine,
     DROITS: DROITS,

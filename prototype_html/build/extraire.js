@@ -145,7 +145,12 @@ async function extraireRbac() {
       });
       const importSupervision = roles.filter((ro) => N.superviseImport(ro.id)).map((ro) => ro.id);
       const importPaie = roles.filter((ro) => N.capacitePaie(ro.id)).map((ro) => ro.id);
+      /* LES GESTES RÉSERVÉS (lot B) : la déclaration du manifeste, puis ce que chaque rôle détient réellement (même appel que la commande, `N.droitGeste`). */
+      const gestesDef = propre(N.GESTES).map((g) => ({ id: g.id, libelle: g.libelle, module: g.module, ecran: g.ecran, rolesDefaut: g.rolesDefaut }));
+      const gestesParRole = {};
+      roles.forEach((ro) => { gestesParRole[ro.id] = {}; N.GESTES.forEach((g) => { gestesParRole[ro.id][g.id] = N.droitGeste(ro.id, g.id) ? 1 : 0; }); });
       return { roles, domaines, raccourcis: propre(N.RACCOURCIS), modules, ecrans, matrice, parRole, version: SIGH.store.VERSION || null,
+        gestes: { jeux: gestesDef, parRole: gestesParRole },
         importation: { jeux: importJeux, parRole: importParRole, superviseurs: importSupervision, capacitePaie: importPaie } };
     });
     const total = Object.values(r.parRole).reduce((a, o) => a + Object.keys(o).length, 0);
@@ -154,6 +159,7 @@ async function extraireRbac() {
     ecrire('packages/rbac/data/rbac.json', {
       _doc: 'ENGENDRÉ par prototype_html/build/extraire.js — ne pas éditer. Source unique des droits : lue par le service de la mère, le poste, le mobile et le panneau. parRole[rôle][écran] = [voir, éditer, annuler].',
       roles: r.roles, matriceModules: r.matrice, parRole: r.parRole,
+      gestes: Object.assign({ _doc: 'Gestes réservés par droit (lot B) : parRole[rôle][geste] = 1 si le rôle détient le geste d\'origine. Une surcharge de fiche (`droitsGestes`) accorde autant qu\'elle restreint ; elle se superpose à chaud, comme `droitsImport`.' }, r.gestes),
       import: Object.assign({ _doc: 'Droit d\'import par jeu : parRole[rôle][jeu] = [voir, importer, annuler]. superviseurs : droit d\'annuler sur CHAQUE jeu (lisent tous les lots). capacitePaie : écriture dans M11 (colonne Salaire de base).' }, r.importation) });
     ecrire('packages/referentiels/data/manifeste.json', {
       _doc: 'ENGENDRÉ par prototype_html/build/extraire.js — manifeste de navigation de la maquette (domaines, rangées, écrans).',
