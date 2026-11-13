@@ -1,0 +1,9172 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-ocr.js : ne pas éditer. Maquette réelle pilotée dans Chrome, moteur FACTICE, serveur PHP du banc. Aucun moteur réel, aucune qualité d’OCR mesurée.",
+ "mots": [
+  {
+   "texte": "Hyperglycémie sévère : père déjà traité à Natitingou, œuf de ç",
+   "mots": [
+    "hyperglycemie",
+    "severe",
+    "pere",
+    "deja",
+    "traite",
+    "natitingou",
+    "œuf",
+    "de"
+   ]
+  },
+  {
+   "texte": "AMOXICILLINE 500 mg, deux fois par jour ; paracétamol 1 g.",
+   "mots": [
+    "amoxicilline",
+    "500",
+    "mg",
+    "deux",
+    "fois",
+    "par",
+    "jour",
+    "paracetamol"
+   ]
+  },
+  {
+   "texte": "Le le LE la  l’ordonnance d’Aïssatou N’TCHA-OROU",
+   "mots": [
+    "le",
+    "la",
+    "ordonnance",
+    "aissatou",
+    "tcha",
+    "orou"
+   ]
+  },
+  {
+   "texte": "a b cd e fg  12 3 45",
+   "mots": [
+    "cd",
+    "fg",
+    "12",
+    "45"
+   ]
+  },
+  {
+   "texte": "Œdème, ÉCHOGRAPHIE, naïf, Noël, ÇA",
+   "mots": [
+    "œdeme",
+    "echographie",
+    "naif",
+    "noel",
+    "ca"
+   ]
+  },
+  {
+   "texte": "",
+   "mots": []
+  }
+ ],
+ "ids": [
+  {
+   "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "moteur": "factice",
+   "version": "0.1",
+   "langue": "fra",
+   "texte": "Hyperglycémie sévère",
+   "mots": "hyperglycemie severe",
+   "id": "OCR-aaaaaaaaaaaaaaaa-ab3b3d0fbffc"
+  },
+  {
+   "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "moteur": "factice",
+   "version": "0.2",
+   "langue": "fra",
+   "texte": "Hyperglycémie sévère",
+   "mots": "hyperglycemie severe",
+   "id": "OCR-aaaaaaaaaaaaaaaa-db010fede9db"
+  },
+  {
+   "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "moteur": "autre",
+   "version": "0.1",
+   "langue": "fra",
+   "texte": "Hyperglycémie sévère",
+   "mots": "hyperglycemie severe",
+   "id": "OCR-aaaaaaaaaaaaaaaa-0a5e2b993e1f"
+  },
+  {
+   "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "moteur": "factice",
+   "version": "0.1",
+   "langue": "eng",
+   "texte": "Hyperglycémie sévère",
+   "mots": "hyperglycemie severe",
+   "id": "OCR-aaaaaaaaaaaaaaaa-c5b50c421275"
+  },
+  {
+   "sha": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+   "moteur": "factice",
+   "version": "0.1",
+   "langue": "fra",
+   "texte": "Hyperglycémie sévère",
+   "mots": "hyperglycemie severe",
+   "id": "OCR-0123456789abcdef-ab3b3d0fbffc"
+  },
+  {
+   "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "moteur": "factice",
+   "version": "0.1",
+   "langue": "fra",
+   "texte": "HYPERGLYCEMIE, sévère !",
+   "mots": "hyperglycemie severe",
+   "id": "OCR-aaaaaaaaaaaaaaaa-ab3b3d0fbffc"
+  },
+  {
+   "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "moteur": "factice",
+   "version": "0.1",
+   "langue": "fra",
+   "texte": "paludisme grave",
+   "mots": "paludisme grave",
+   "id": "OCR-aaaaaaaaaaaaaaaa-d797b1ec2c4c"
+  }
+ ],
+ "etats": [
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : aucun moteur d’OCR installé sur ce poste",
+    "raison": "aucun moteur d’OCR installé sur ce poste",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : la lecture OCR est désactivée au réglage",
+    "raison": "la lecture OCR est désactivée au réglage",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : le moteur choisi au réglage n’est pas installé sur ce poste",
+    "raison": "le moteur choisi au réglage n’est pas installé sur ce poste",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : lecture OCR non encore demandée",
+    "raison": "lecture OCR non encore demandée",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : aucun moteur d’OCR installé sur ce poste",
+    "raison": "aucun moteur d’OCR installé sur ce poste",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_indexe",
+    "court": "texte lu par machine, à vérifier",
+    "libelle": "Texte lu par machine, à vérifier",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": "ocr",
+    "marque": true,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : aucun moteur d’OCR installé sur ce poste",
+    "raison": "aucun moteur d’OCR installé sur ce poste",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : la lecture OCR est désactivée au réglage",
+    "raison": "la lecture OCR est désactivée au réglage",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : le moteur choisi au réglage n’est pas installé sur ce poste",
+    "raison": "le moteur choisi au réglage n’est pas installé sur ce poste",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : lecture OCR non encore demandée",
+    "raison": "lecture OCR non encore demandée",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "non_indexe",
+    "court": "texte non indexé",
+    "libelle": "Texte non indexé : aucun moteur d’OCR installé sur ce poste",
+    "raison": "aucun moteur d’OCR installé sur ce poste",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_attente",
+    "court": "lecture OCR en attente",
+    "libelle": "Lecture OCR en attente",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_en_cours",
+    "court": "lecture OCR en cours",
+    "libelle": "Lecture OCR en cours",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : le moteur n’a pas répondu en 120 s",
+    "raison": "le moteur n’a pas répondu en 120 s",
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": false,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "ocr_echec",
+    "court": "lecture OCR en échec",
+    "libelle": "Lecture OCR en échec : cause non renseignée",
+    "raison": null,
+    "source": null,
+    "marque": false,
+    "disponible": false
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": null,
+    "cleVersions": "aucune",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "aucune",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "une",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "une",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "une",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "une",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "une",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "deux",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "deux",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "deux",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": null,
+    "cleVersions": "videSeule",
+    "cleFile": "aucune",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_attente"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "attente",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "en_cours"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "cours",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-x-2026-10-01T10:00:00.000Z",
+      "nbMots": 0,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec"
+    },
+    "cleVersions": "videSeule",
+    "cleFile": "echecSansRaison",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true
+   }
+  }
+ ],
+ "courante": [
+  {
+   "nom": "une seule",
+   "versions": [
+    {
+     "id": "OCR-bbbb000000000000-111111111111",
+     "nbMots": 3,
+     "ocrLe": "2026-10-01T10:00:00.000Z"
+    }
+   ],
+   "ordre": [
+    "OCR-bbbb000000000000-111111111111"
+   ],
+   "courante": "OCR-bbbb000000000000-111111111111"
+  },
+  {
+   "nom": "deux dates",
+   "versions": [
+    {
+     "id": "OCR-cccc000000000000-aaaaaaaaaaaa",
+     "nbMots": 3,
+     "ocrLe": "2026-10-03T10:00:00.000Z"
+    },
+    {
+     "id": "OCR-cccc000000000000-bbbbbbbbbbbb",
+     "nbMots": 4,
+     "ocrLe": "2026-10-01T10:00:00.000Z"
+    }
+   ],
+   "ordre": [
+    "OCR-cccc000000000000-bbbbbbbbbbbb",
+    "OCR-cccc000000000000-aaaaaaaaaaaa"
+   ],
+   "courante": "OCR-cccc000000000000-aaaaaaaaaaaa"
+  },
+  {
+   "nom": "même instant, l’identifiant départage",
+   "versions": [
+    {
+     "id": "OCR-dddd000000000000-ffffffffffff",
+     "nbMots": 3,
+     "ocrLe": "2026-10-01T10:00:00.000Z"
+    },
+    {
+     "id": "OCR-dddd000000000000-000000000000",
+     "nbMots": 3,
+     "ocrLe": "2026-10-01T10:00:00.000Z"
+    }
+   ],
+   "ordre": [
+    "OCR-dddd000000000000-000000000000",
+    "OCR-dddd000000000000-ffffffffffff"
+   ],
+   "courante": "OCR-dddd000000000000-ffffffffffff"
+  },
+  {
+   "nom": "la plus récente est vide : la courante est la précédente qui porte du texte",
+   "versions": [
+    {
+     "id": "OCR-eeee000000000000-111111111111",
+     "nbMots": 3,
+     "ocrLe": "2026-10-01T10:00:00.000Z"
+    },
+    {
+     "id": "OCR-eeee000000000000-222222222222",
+     "nbMots": 0,
+     "ocrLe": "2026-10-02T10:00:00.000Z"
+    }
+   ],
+   "ordre": [
+    "OCR-eeee000000000000-111111111111",
+    "OCR-eeee000000000000-222222222222"
+   ],
+   "courante": "OCR-eeee000000000000-111111111111"
+  },
+  {
+   "nom": "aucune ne porte de texte",
+   "versions": [
+    {
+     "id": "OCR-ffff000000000000-111111111111",
+     "nbMots": 0,
+     "ocrLe": "2026-10-01T10:00:00.000Z"
+    }
+   ],
+   "ordre": [
+    "OCR-ffff000000000000-111111111111"
+   ],
+   "courante": null
+  }
+ ],
+ "texteRecherche": [
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "admin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "medecin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "reception",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "agentadmin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "infirmier",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "comptable",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "da",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "admin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "medecin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "reception",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "agentadmin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "infirmier",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "comptable",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "da",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "admin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "medecin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "reception",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "agentadmin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "infirmier",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "comptable",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "da",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "admin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "medecin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "reception",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "agentadmin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "infirmier",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "comptable",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "da",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "admin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "medecin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "reception",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "agentadmin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "infirmier",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "comptable",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "da",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "admin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "medecin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "reception",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "agentadmin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "infirmier",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "comptable",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "da",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "admin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "medecin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "reception",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "agentadmin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "infirmier",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "comptable",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "da",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "admin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "medecin",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "reception",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "agentadmin",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "infirmier",
+   "texte": "ocrmot ocr2"
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "comptable",
+   "texte": ""
+  },
+  {
+   "natif": false,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "da",
+   "texte": ""
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "admin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "medecin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "reception",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "agentadmin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "infirmier",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "comptable",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "courrier",
+   "type": null,
+   "role": "da",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "admin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "medecin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "reception",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "agentadmin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "infirmier",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "comptable",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "da",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "admin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "medecin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "reception",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "agentadmin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "infirmier",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "comptable",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "da",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "admin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "medecin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "reception",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "agentadmin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "infirmier",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "comptable",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": false,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "da",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "admin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "medecin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "reception",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "agentadmin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "infirmier",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "comptable",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "courrier",
+   "type": null,
+   "role": "da",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "admin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "medecin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "reception",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "agentadmin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "infirmier",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "comptable",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "role": "da",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "admin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "medecin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "reception",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "agentadmin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "infirmier",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "comptable",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Pièce d’identité",
+   "role": "da",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "admin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "medecin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "reception",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "agentadmin",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "infirmier",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "comptable",
+   "texte": "natifmot natif2"
+  },
+  {
+   "natif": true,
+   "lu": true,
+   "famille": "patient",
+   "type": "Type inconnu",
+   "role": "da",
+   "texte": "natifmot natif2"
+  }
+ ],
+ "reglage": [
+  {
+   "nom": "défaut : rien n’est réglé",
+   "role": "admin",
+   "moteurs": [],
+   "demande": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "motif": "remise à plat",
+   "ok": true,
+   "code": null,
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "un profil non autorisé",
+   "role": "agentadmin",
+   "moteurs": [
+    {
+     "id": "factice",
+     "langues": [
+      "fra",
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "fra"
+   },
+   "motif": "essai",
+   "ok": false,
+   "code": "REGLAGE_RESERVE",
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "le médecin non plus",
+   "role": "medecin",
+   "moteurs": [
+    {
+     "id": "factice",
+     "langues": [
+      "fra",
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": false,
+    "moteur": "factice",
+    "langue": "fra"
+   },
+   "motif": "essai",
+   "ok": false,
+   "code": "REGLAGE_RESERVE",
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "activer sans aucun moteur installé",
+   "role": "admin",
+   "moteurs": [],
+   "demande": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "fra"
+   },
+   "motif": "essai",
+   "ok": false,
+   "code": "MOTEUR_ABSENT",
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "activer sans moteur choisi",
+   "role": "admin",
+   "moteurs": [
+    {
+     "id": "factice",
+     "langues": [
+      "fra",
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": true,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "motif": "essai",
+   "ok": false,
+   "code": "MOTEUR_ABSENT",
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "activer avec un moteur inconnu",
+   "role": "admin",
+   "moteurs": [
+    {
+     "id": "factice",
+     "langues": [
+      "fra",
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": true,
+    "moteur": "inconnu",
+    "langue": "fra"
+   },
+   "motif": "essai",
+   "ok": false,
+   "code": "MOTEUR_ABSENT",
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "sans motif",
+   "role": "admin",
+   "moteurs": [
+    {
+     "id": "factice",
+     "langues": [
+      "fra",
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "fra"
+   },
+   "motif": "",
+   "ok": false,
+   "code": "MOTIF_REQUIS",
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "motif d’espaces",
+   "role": "admin",
+   "moteurs": [
+    {
+     "id": "factice",
+     "langues": [
+      "fra",
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "fra"
+   },
+   "motif": "   ",
+   "ok": false,
+   "code": "MOTIF_REQUIS",
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "langue que le moteur ne lit pas",
+   "role": "admin",
+   "moteurs": [
+    {
+     "id": "autre",
+     "langues": [
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": true,
+    "moteur": "autre",
+    "langue": "fra"
+   },
+   "motif": "essai",
+   "ok": false,
+   "code": "LANGUE_ABSENTE",
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "activer, administrateur",
+   "role": "admin",
+   "moteurs": [
+    {
+     "id": "factice",
+     "langues": [
+      "fra",
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "fra"
+   },
+   "motif": "activation",
+   "ok": true,
+   "code": null,
+   "avant": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "désactiver, administrateur",
+   "role": "admin",
+   "moteurs": [
+    {
+     "id": "factice",
+     "langues": [
+      "fra",
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": false,
+    "moteur": "factice",
+    "langue": "fra"
+   },
+   "motif": "désactivation",
+   "ok": true,
+   "code": null,
+   "avant": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": "factice",
+    "langue": "fra",
+    "regle": true
+   }
+  },
+  {
+   "nom": "activer, Directrice Administrative",
+   "role": "da",
+   "moteurs": [
+    {
+     "id": "factice",
+     "langues": [
+      "fra",
+      "eng"
+     ]
+    }
+   ],
+   "demande": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "eng"
+   },
+   "motif": "activation DA",
+   "ok": true,
+   "code": null,
+   "avant": {
+    "actif": false,
+    "moteur": "factice",
+    "langue": "fra"
+   },
+   "apres": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "eng",
+    "regle": true
+   }
+  },
+  {
+   "nom": "désactiver sans moteur installé reste permis",
+   "role": "admin",
+   "moteurs": [],
+   "demande": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra"
+   },
+   "motif": "désactivation",
+   "ok": true,
+   "code": null,
+   "avant": {
+    "actif": true,
+    "moteur": "factice",
+    "langue": "eng"
+   },
+   "apres": {
+    "actif": false,
+    "moteur": null,
+    "langue": "fra",
+    "regle": true
+   }
+  }
+ ],
+ "file": {
+  "demandes": [
+   {
+    "registre": "natif",
+    "moteur": "aucun moteur",
+    "relance": false,
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "natif",
+    "moteur": "aucun moteur",
+    "relance": true,
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "natif",
+    "moteur": "installé, désactivé",
+    "relance": false,
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "natif",
+    "moteur": "installé, désactivé",
+    "relance": true,
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "natif",
+    "moteur": "installé, activé, non choisi",
+    "relance": false,
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "natif",
+    "moteur": "installé, activé, non choisi",
+    "relance": true,
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "natif",
+    "moteur": "prêt",
+    "relance": false,
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "natif",
+    "moteur": "prêt",
+    "relance": true,
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "vide",
+    "moteur": "aucun moteur",
+    "relance": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "vide",
+    "moteur": "aucun moteur",
+    "relance": true,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "vide",
+    "moteur": "installé, désactivé",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "vide",
+    "moteur": "installé, désactivé",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "vide",
+    "moteur": "installé, activé, non choisi",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "vide",
+    "moteur": "installé, activé, non choisi",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "vide",
+    "moteur": "prêt",
+    "relance": false,
+    "ok": true,
+    "code": null,
+    "deja": false,
+    "lu": false,
+    "demande": true,
+    "etatFile": {
+     "etat": "en_attente",
+     "declencheur": "automatique",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "vide",
+    "moteur": "prêt",
+    "relance": true,
+    "ok": true,
+    "code": null,
+    "deja": false,
+    "lu": false,
+    "demande": true,
+    "etatFile": {
+     "etat": "en_attente",
+     "declencheur": "relance",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "attente",
+    "moteur": "aucun moteur",
+    "relance": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_attente",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "attente",
+    "moteur": "aucun moteur",
+    "relance": true,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_attente",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "attente",
+    "moteur": "installé, désactivé",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_attente",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "attente",
+    "moteur": "installé, désactivé",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_attente",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "attente",
+    "moteur": "installé, activé, non choisi",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_attente",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "attente",
+    "moteur": "installé, activé, non choisi",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_attente",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "attente",
+    "moteur": "prêt",
+    "relance": false,
+    "ok": true,
+    "code": null,
+    "deja": true,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_attente",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "attente",
+    "moteur": "prêt",
+    "relance": true,
+    "ok": true,
+    "code": null,
+    "deja": true,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_attente",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "cours",
+    "moteur": "aucun moteur",
+    "relance": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_cours",
+     "debutLe": "2026-10-01T09:30:00.000Z",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "cours",
+    "moteur": "aucun moteur",
+    "relance": true,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_cours",
+     "debutLe": "2026-10-01T09:30:00.000Z",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "cours",
+    "moteur": "installé, désactivé",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_cours",
+     "debutLe": "2026-10-01T09:30:00.000Z",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "cours",
+    "moteur": "installé, désactivé",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_cours",
+     "debutLe": "2026-10-01T09:30:00.000Z",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "cours",
+    "moteur": "installé, activé, non choisi",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_cours",
+     "debutLe": "2026-10-01T09:30:00.000Z",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "cours",
+    "moteur": "installé, activé, non choisi",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_cours",
+     "debutLe": "2026-10-01T09:30:00.000Z",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "cours",
+    "moteur": "prêt",
+    "relance": false,
+    "ok": true,
+    "code": null,
+    "deja": true,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_cours",
+     "debutLe": "2026-10-01T09:30:00.000Z",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "cours",
+    "moteur": "prêt",
+    "relance": true,
+    "ok": true,
+    "code": null,
+    "deja": true,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "en_cours",
+     "debutLe": "2026-10-01T09:30:00.000Z",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "echec",
+    "moteur": "aucun moteur",
+    "relance": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "echec",
+     "code": "IMAGE_ILLISIBLE",
+     "raison": "l’image est illisible",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "echec",
+    "moteur": "aucun moteur",
+    "relance": true,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "echec",
+     "code": "IMAGE_ILLISIBLE",
+     "raison": "l’image est illisible",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "echec",
+    "moteur": "installé, désactivé",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "echec",
+     "code": "IMAGE_ILLISIBLE",
+     "raison": "l’image est illisible",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "echec",
+    "moteur": "installé, désactivé",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "echec",
+     "code": "IMAGE_ILLISIBLE",
+     "raison": "l’image est illisible",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "echec",
+    "moteur": "installé, activé, non choisi",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "echec",
+     "code": "IMAGE_ILLISIBLE",
+     "raison": "l’image est illisible",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "echec",
+    "moteur": "installé, activé, non choisi",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "echec",
+     "code": "IMAGE_ILLISIBLE",
+     "raison": "l’image est illisible",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "echec",
+    "moteur": "prêt",
+    "relance": false,
+    "ok": true,
+    "code": null,
+    "deja": true,
+    "lu": false,
+    "demande": false,
+    "etatFile": {
+     "etat": "echec",
+     "code": "IMAGE_ILLISIBLE",
+     "raison": "l’image est illisible",
+     "famille": "courrier",
+     "type": null,
+     "essais": 1
+    }
+   },
+   {
+    "registre": "echec",
+    "moteur": "prêt",
+    "relance": true,
+    "ok": true,
+    "code": null,
+    "deja": false,
+    "lu": false,
+    "demande": true,
+    "etatFile": {
+     "etat": "en_attente",
+     "declencheur": "relance",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "lu",
+    "moteur": "aucun moteur",
+    "relance": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "lu",
+    "moteur": "aucun moteur",
+    "relance": true,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "lu",
+    "moteur": "installé, désactivé",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "lu",
+    "moteur": "installé, désactivé",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "lu",
+    "moteur": "installé, activé, non choisi",
+    "relance": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "lu",
+    "moteur": "installé, activé, non choisi",
+    "relance": true,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "lu",
+    "moteur": "prêt",
+    "relance": false,
+    "ok": true,
+    "code": null,
+    "deja": true,
+    "lu": true,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "lu",
+    "moteur": "prêt",
+    "relance": true,
+    "ok": true,
+    "code": null,
+    "deja": false,
+    "lu": false,
+    "demande": true,
+    "etatFile": {
+     "etat": "en_attente",
+     "declencheur": "relance",
+     "famille": "courrier",
+     "type": null,
+     "essais": 0
+    }
+   },
+   {
+    "registre": "absent",
+    "moteur": "aucun moteur",
+    "relance": false,
+    "ok": false,
+    "code": "REGISTRE_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "absent",
+    "moteur": "aucun moteur",
+    "relance": true,
+    "ok": false,
+    "code": "REGISTRE_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "absent",
+    "moteur": "installé, désactivé",
+    "relance": false,
+    "ok": false,
+    "code": "REGISTRE_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "absent",
+    "moteur": "installé, désactivé",
+    "relance": true,
+    "ok": false,
+    "code": "REGISTRE_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "absent",
+    "moteur": "installé, activé, non choisi",
+    "relance": false,
+    "ok": false,
+    "code": "REGISTRE_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "absent",
+    "moteur": "installé, activé, non choisi",
+    "relance": true,
+    "ok": false,
+    "code": "REGISTRE_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "absent",
+    "moteur": "prêt",
+    "relance": false,
+    "ok": false,
+    "code": "REGISTRE_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   },
+   {
+    "registre": "absent",
+    "moteur": "prêt",
+    "relance": true,
+    "ok": false,
+    "code": "REGISTRE_ABSENT",
+    "deja": false,
+    "lu": false,
+    "demande": false,
+    "etatFile": null
+   }
+  ],
+  "reprises": [
+   {
+    "nom": "récent",
+    "debutLe": "2026-10-30T09:59:00.000Z",
+    "essais": 1,
+    "delaiMs": 120000,
+    "repris": 8,
+    "etatFile": {
+     "etat": "en_cours",
+     "demandeLe": "2026-10-30T08:00:00.000Z",
+     "debutLe": "2026-10-30T09:59:00.000Z",
+     "essais": 1,
+     "famille": "courrier"
+    }
+   },
+   {
+    "nom": "ancien",
+    "debutLe": "2026-10-30T09:00:00.000Z",
+    "essais": 1,
+    "delaiMs": 120000,
+    "repris": 1,
+    "etatFile": {
+     "etat": "en_attente",
+     "demandeLe": "2026-10-30T08:00:00.000Z",
+     "debutLe": "2026-10-30T09:00:00.000Z",
+     "essais": 1,
+     "famille": "courrier"
+    }
+   },
+   {
+    "nom": "exactement deux délais",
+    "debutLe": "2026-10-30T09:56:00.000Z",
+    "essais": 1,
+    "delaiMs": 120000,
+    "repris": 1,
+    "etatFile": {
+     "etat": "en_attente",
+     "demandeLe": "2026-10-30T08:00:00.000Z",
+     "debutLe": "2026-10-30T09:56:00.000Z",
+     "essais": 1,
+     "famille": "courrier"
+    }
+   },
+   {
+    "nom": "trois essais",
+    "debutLe": "2026-10-30T09:00:00.000Z",
+    "essais": 3,
+    "delaiMs": 120000,
+    "repris": 1,
+    "etatFile": {
+     "etat": "echec",
+     "demandeLe": "2026-10-30T08:00:00.000Z",
+     "debutLe": "2026-10-30T09:00:00.000Z",
+     "essais": 3,
+     "famille": "courrier",
+     "code": "ESSAIS_EPUISES",
+     "raison": "la lecture a été interrompue 3 fois",
+     "geste": "Relancer la lecture à la main une fois la cause levée."
+    }
+   },
+   {
+    "nom": "sans date de début",
+    "debutLe": null,
+    "essais": 0,
+    "delaiMs": 120000,
+    "repris": 1,
+    "etatFile": {
+     "etat": "en_attente",
+     "demandeLe": "2026-10-30T08:00:00.000Z",
+     "debutLe": null,
+     "essais": 0,
+     "famille": "courrier"
+    }
+   }
+  ],
+  "relances": [
+   {
+    "peutDeposer": false,
+    "moteur": "aucun moteur",
+    "registre": "natif",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "aucun moteur",
+    "registre": "vide",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "aucun moteur",
+    "registre": "attente",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "aucun moteur",
+    "registre": "cours",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "aucun moteur",
+    "registre": "echec",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "aucun moteur",
+    "registre": "lu",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, désactivé",
+    "registre": "natif",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, désactivé",
+    "registre": "vide",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, désactivé",
+    "registre": "attente",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, désactivé",
+    "registre": "cours",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, désactivé",
+    "registre": "echec",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, désactivé",
+    "registre": "lu",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, activé, non choisi",
+    "registre": "natif",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, activé, non choisi",
+    "registre": "vide",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, activé, non choisi",
+    "registre": "attente",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, activé, non choisi",
+    "registre": "cours",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, activé, non choisi",
+    "registre": "echec",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "installé, activé, non choisi",
+    "registre": "lu",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "prêt",
+    "registre": "natif",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "prêt",
+    "registre": "vide",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "prêt",
+    "registre": "attente",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "prêt",
+    "registre": "cours",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "prêt",
+    "registre": "echec",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": false,
+    "moteur": "prêt",
+    "registre": "lu",
+    "possible": false,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "aucun moteur",
+    "registre": "natif",
+    "possible": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "aucun moteur",
+    "registre": "vide",
+    "possible": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "aucun moteur",
+    "registre": "attente",
+    "possible": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "aucun moteur",
+    "registre": "cours",
+    "possible": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "aucun moteur",
+    "registre": "echec",
+    "possible": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "aucun moteur",
+    "registre": "lu",
+    "possible": false,
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, désactivé",
+    "registre": "natif",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, désactivé",
+    "registre": "vide",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, désactivé",
+    "registre": "attente",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, désactivé",
+    "registre": "cours",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, désactivé",
+    "registre": "echec",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, désactivé",
+    "registre": "lu",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, activé, non choisi",
+    "registre": "natif",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, activé, non choisi",
+    "registre": "vide",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, activé, non choisi",
+    "registre": "attente",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, activé, non choisi",
+    "registre": "cours",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, activé, non choisi",
+    "registre": "echec",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "installé, activé, non choisi",
+    "registre": "lu",
+    "possible": false,
+    "ok": false,
+    "code": "OCR_DESACTIVE",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "prêt",
+    "registre": "natif",
+    "possible": false,
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "prêt",
+    "registre": "vide",
+    "possible": true,
+    "ok": true,
+    "code": null,
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "prêt",
+    "registre": "attente",
+    "possible": false,
+    "ok": true,
+    "code": null,
+    "deja": true
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "prêt",
+    "registre": "cours",
+    "possible": false,
+    "ok": true,
+    "code": null,
+    "deja": true
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "prêt",
+    "registre": "echec",
+    "possible": true,
+    "ok": true,
+    "code": null,
+    "deja": false
+   },
+   {
+    "peutDeposer": true,
+    "moteur": "prêt",
+    "registre": "lu",
+    "possible": true,
+    "ok": true,
+    "code": null,
+    "deja": false
+   }
+  ]
+ },
+ "messages": {
+  "vides": [
+   {
+    "nom": "sans aucun",
+    "moteur": {
+     "installe": false,
+     "actif": false,
+     "choisi": false
+    },
+    "genres": [],
+    "indice": null
+   },
+   {
+    "nom": "un scan sans moteur",
+    "moteur": {
+     "installe": false,
+     "actif": false,
+     "choisi": false
+    },
+    "genres": [
+     "non"
+    ],
+    "indice": "1 pièce numérisée n’a pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées. 1 pièce sans texte lu : aucun moteur d’OCR installé sur ce poste."
+   },
+   {
+    "nom": "trois scans sans moteur",
+    "moteur": {
+     "installe": false,
+     "actif": false,
+     "choisi": false
+    },
+    "genres": [
+     "non",
+     "non",
+     "non"
+    ],
+    "indice": "3 pièces numérisées n’ont pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées. 3 pièces sans texte lu : aucun moteur d’OCR installé sur ce poste."
+   },
+   {
+    "nom": "scan, moteur installé mais lecture désactivée",
+    "moteur": {
+     "installe": true,
+     "actif": false,
+     "choisi": true
+    },
+    "genres": [
+     "non"
+    ],
+    "indice": "1 pièce numérisée n’a pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées. 1 pièce sans texte lu : la lecture OCR est désactivée au réglage."
+   },
+   {
+    "nom": "scan, moteur installé, lecture non choisie",
+    "moteur": {
+     "installe": true,
+     "actif": true,
+     "choisi": false
+    },
+    "genres": [
+     "non"
+    ],
+    "indice": "1 pièce numérisée n’a pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées. 1 pièce sans texte lu : le moteur choisi au réglage n’est pas installé sur ce poste."
+   },
+   {
+    "nom": "natif seul",
+    "moteur": {
+     "installe": false,
+     "actif": false,
+     "choisi": false
+    },
+    "genres": [
+     "natif"
+    ],
+    "indice": null
+   },
+   {
+    "nom": "un lu par machine",
+    "moteur": {
+     "installe": true,
+     "actif": true,
+     "choisi": true
+    },
+    "genres": [
+     "lu"
+    ],
+    "indice": "1 pièce ne se cherche que par un texte lu par machine, à vérifier."
+   },
+   {
+    "nom": "deux lus par machine",
+    "moteur": {
+     "installe": true,
+     "actif": true,
+     "choisi": true
+    },
+    "genres": [
+     "lu",
+     "lu"
+    ],
+    "indice": "2 pièces ne se cherchent que par un texte lu par machine, à vérifier."
+   },
+   {
+    "nom": "en attente et en échec",
+    "moteur": {
+     "installe": true,
+     "actif": true,
+     "choisi": true
+    },
+    "genres": [
+     "attente",
+     "echec"
+    ],
+    "indice": "2 pièces numérisées n’ont pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées. 1 pièce en attente de lecture OCR. 1 pièce dont la lecture OCR a échoué."
+   },
+   {
+    "nom": "en cours",
+    "moteur": {
+     "installe": true,
+     "actif": true,
+     "choisi": true
+    },
+    "genres": [
+     "cours"
+    ],
+    "indice": "1 pièce numérisée n’a pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées. 1 pièce en attente de lecture OCR."
+   },
+   {
+    "nom": "mélange",
+    "moteur": {
+     "installe": true,
+     "actif": true,
+     "choisi": true
+    },
+    "genres": [
+     "non",
+     "lu",
+     "natif",
+     "echec",
+     "attente"
+    ],
+    "indice": "3 pièces numérisées n’ont pas de texte indexé (image sans couche texte) : la recherche par le contenu ne les lit pas, seules leurs données de fiche sont cherchées. 1 pièce sans texte lu : lecture OCR non encore demandée. 1 pièce en attente de lecture OCR. 1 pièce dont la lecture OCR a échoué. 1 pièce ne se cherche que par un texte lu par machine, à vérifier."
+   }
+  ],
+  "notes": [
+   {
+    "nom": "un résultat",
+    "q": "paludisme",
+    "fichiers": 1,
+    "note": {
+     "texte": "1 résultat trouvé dans un texte lu par machine (OCR) : la reconnaissance peut se tromper, à vérifier sur la pièce.",
+     "n": "1"
+    }
+   },
+   {
+    "nom": "deux résultats",
+    "q": "paludisme",
+    "fichiers": 2,
+    "note": {
+     "texte": "2 résultats trouvés dans un texte lu par machine (OCR) : la reconnaissance peut se tromper, à vérifier sur la pièce.",
+     "n": "2"
+    }
+   },
+   {
+    "nom": "recherche qui ne passe pas par le texte lu",
+    "q": "autre",
+    "fichiers": 2,
+    "note": null
+   },
+   {
+    "nom": "sans recherche",
+    "q": "",
+    "fichiers": 2,
+    "note": null
+   },
+   {
+    "nom": "accents et casse",
+    "q": "PALUDISMÉ",
+    "fichiers": 1,
+    "note": {
+     "texte": "1 résultat trouvé dans un texte lu par machine (OCR) : la reconnaissance peut se tromper, à vérifier sur la pièce.",
+     "n": "1"
+    }
+   }
+  ]
+ },
+ "lecture": {
+  "cas": [
+   {
+    "nom": "lecture réussie, confiance donnée",
+    "moteur": {
+     "texte": "Hyperglycémie sévère : père déjà traité à Natitingou, œuf de ç",
+     "confiance": 0.9,
+     "refus": null,
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.png",
+    "ok": true,
+    "code": null,
+    "fait": true,
+    "file": null,
+    "versions": [
+     {
+      "id": "ba3af4b94e28",
+      "texteBrut": "Hyperglycémie sévère : père déjà traité à Natitingou, œuf de ç",
+      "brutTronque": false,
+      "texte": "hyperglycemie severe pere deja traite natitingou œuf de",
+      "motsTronques": false,
+      "nbMots": 8,
+      "confiance": 0.9,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "declencheur": "automatique",
+      "pages": 1
+     }
+    ],
+    "id": "OCR-6070fb5b9cf4c9dd-ba3af4b94e28",
+    "sha": "6070fb5b9cf4c9dd44b7760cd2dde23d6238e2e30a6971689a7267e5c56db060"
+   },
+   {
+    "nom": "lecture réussie, JPEG",
+    "moteur": {
+     "texte": "Ordonnance du docteur ; amoxicilline 500 mg",
+     "confiance": 0.9,
+     "refus": null,
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.jpg",
+    "ok": true,
+    "code": null,
+    "fait": true,
+    "file": null,
+    "versions": [
+     {
+      "id": "5ec5c5856d44",
+      "texteBrut": "Ordonnance du docteur ; amoxicilline 500 mg",
+      "brutTronque": false,
+      "texte": "ordonnance du docteur amoxicilline 500 mg",
+      "motsTronques": false,
+      "nbMots": 6,
+      "confiance": 0.9,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "declencheur": "automatique",
+      "pages": 1
+     }
+    ],
+    "id": "OCR-324bd5ec2617008d-5ec5c5856d44",
+    "sha": "324bd5ec2617008d5b740429dde58fb40b7ca97c96db02b4173ddfe13eb2f63f"
+   },
+   {
+    "nom": "lecture réussie, WEBP",
+    "moteur": {
+     "texte": "Certificat médical établi le jour même",
+     "confiance": 0.9,
+     "refus": null,
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.webp",
+    "ok": true,
+    "code": null,
+    "fait": true,
+    "file": null,
+    "versions": [
+     {
+      "id": "17d310776d48",
+      "texteBrut": "Certificat médical établi le jour même",
+      "brutTronque": false,
+      "texte": "certificat medical etabli le jour meme",
+      "motsTronques": false,
+      "nbMots": 6,
+      "confiance": 0.9,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "declencheur": "automatique",
+      "pages": 1
+     }
+    ],
+    "id": "OCR-9c3e6046d6138bc7-17d310776d48",
+    "sha": "9c3e6046d6138bc786fdc830b51bae1d3f87f82dca91b02db358e535e911c00f"
+   },
+   {
+    "nom": "lecture réussie, confiance non donnée",
+    "moteur": {
+     "texte": "Convocation à la réunion de la Direction",
+     "confiance": null,
+     "refus": null,
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.png",
+    "ok": true,
+    "code": null,
+    "fait": true,
+    "file": null,
+    "versions": [
+     {
+      "id": "a22bb729344e",
+      "texteBrut": "Convocation à la réunion de la Direction",
+      "brutTronque": false,
+      "texte": "convocation la reunion de direction",
+      "motsTronques": false,
+      "nbMots": 5,
+      "confiance": null,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "declencheur": "automatique",
+      "pages": 1
+     }
+    ],
+    "id": "OCR-ab7aea9930125ce7-a22bb729344e",
+    "sha": "ab7aea9930125ce7faada86178d7e88837fcb1028b5536336e0395f179344788"
+   },
+   {
+    "nom": "texte sur plusieurs lignes",
+    "moteur": {
+     "texte": "Première ligne\nDeuxième ligne avec accents éèêà\nTroisième",
+     "confiance": 0.9,
+     "refus": null,
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.png",
+    "ok": true,
+    "code": null,
+    "fait": true,
+    "file": null,
+    "versions": [
+     {
+      "id": "b32aed57e2ad",
+      "texteBrut": "Première ligne\nDeuxième ligne avec accents éèêà\nTroisième",
+      "brutTronque": false,
+      "texte": "premiere ligne deuxieme avec accents eeea troisieme",
+      "motsTronques": false,
+      "nbMots": 7,
+      "confiance": 0.9,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "declencheur": "automatique",
+      "pages": 1
+     }
+    ],
+    "id": "OCR-7d7eaeb4fbb54007-b32aed57e2ad",
+    "sha": "7d7eaeb4fbb54007b9b765d69d3e71c50e2d359910046859e162d1bcd8313067"
+   },
+   {
+    "nom": "image illisible",
+    "moteur": {
+     "texte": "x",
+     "confiance": 0.9,
+     "refus": {
+      "code": "IMAGE_ILLISIBLE",
+      "motif": "l’image est illisible"
+     },
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.png",
+    "ok": false,
+    "code": "IMAGE_ILLISIBLE",
+    "fait": true,
+    "file": {
+     "etat": "echec",
+     "code": "IMAGE_ILLISIBLE",
+     "raison": "l’image est illisible",
+     "geste": "Numériser de nouveau le scan, à plus forte résolution."
+    },
+    "versions": [],
+    "id": null,
+    "sha": "8d2e4234f2ecb95790e5d7f5a13403569772c13cd6234915a32a4888a5622007"
+   },
+   {
+    "nom": "langue absente (le moteur ne lit plus la langue réglée)",
+    "moteur": {
+     "texte": "x",
+     "confiance": 0.9,
+     "refus": null,
+     "jamais": false,
+     "langues": [
+      "eng"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.png",
+    "ok": false,
+    "code": "LANGUE_ABSENTE",
+    "fait": true,
+    "file": {
+     "etat": "echec",
+     "code": "LANGUE_ABSENTE",
+     "raison": "le moteur « factice » ne lit pas la langue « fra »",
+     "geste": "Choisir une langue que le moteur sait lire, ou installer ses données de langue."
+    },
+    "versions": [],
+    "id": null,
+    "sha": "14eb7b8eae182d8ea06193ae493b9b9ee3d24006def387f9480d29f7e32a7304"
+   },
+   {
+    "nom": "moteur absent au moment de lire",
+    "moteur": {
+     "texte": "x",
+     "confiance": 0.9,
+     "refus": {
+      "code": "MOTEUR_ABSENT",
+      "motif": "le moteur a disparu"
+     },
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.png",
+    "ok": false,
+    "code": "MOTEUR_ABSENT",
+    "fait": true,
+    "file": {
+     "etat": "echec",
+     "code": "MOTEUR_ABSENT",
+     "raison": "le moteur a disparu",
+     "geste": "Installer un moteur d’OCR sur ce poste, puis le choisir au réglage de la lecture des scans."
+    },
+    "versions": [],
+    "id": null,
+    "sha": "ab4e901c02f672271ff82ff335fe4ecbeffbc82ecc067b15d9252a864cb0854f"
+   },
+   {
+    "nom": "délai dépassé",
+    "moteur": {
+     "texte": "x",
+     "confiance": 0.9,
+     "refus": null,
+     "jamais": true,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 400
+    },
+    "fichier": "scan.png",
+    "ok": false,
+    "code": "DELAI_DEPASSE",
+    "fait": true,
+    "file": {
+     "etat": "echec",
+     "code": "DELAI_DEPASSE",
+     "raison": "le moteur n’a pas répondu en 0,4 s",
+     "geste": "Relancer la lecture ; si elle se répète, numériser en résolution plus basse."
+    },
+    "versions": [],
+    "id": null,
+    "sha": "368bc40295cf36848a959df5b55ecda115bce87ce4bea5555d05ca8ceb911fb9"
+   },
+   {
+    "nom": "aucun texte",
+    "moteur": {
+     "texte": "   ",
+     "confiance": 0.9,
+     "refus": null,
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.png",
+    "ok": false,
+    "code": "AUCUN_TEXTE",
+    "fait": true,
+    "file": {
+     "etat": "echec",
+     "code": "AUCUN_TEXTE",
+     "raison": "le moteur n’a lu aucun mot",
+     "geste": "Vérifier le scan ; la page est vierge ou trop pâle pour être lue."
+    },
+    "versions": [],
+    "id": null,
+    "sha": "49cdf7cd344aa2def79344188ae30a2b552f4b3b59d75ea0ae2fb10ff2fda869"
+   },
+   {
+    "nom": "échec que le moteur ne nomme pas",
+    "moteur": {
+     "texte": "x",
+     "confiance": 0.9,
+     "refus": {
+      "code": "INVENTE",
+      "message": "plantage interne"
+     },
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.png",
+    "ok": false,
+    "code": "MOTEUR_EN_ECHEC",
+    "fait": true,
+    "file": {
+     "etat": "echec",
+     "code": "MOTEUR_EN_ECHEC",
+     "raison": "plantage interne",
+     "geste": "Relancer la lecture ; si elle se répète, le moteur est à vérifier."
+    },
+    "versions": [],
+    "id": null,
+    "sha": "6c6763f229ffe6a159f5a5b66a7c5221428033306daa48a4ddcd48581cea01a5"
+   },
+   {
+    "nom": "format que le moteur ne lit pas",
+    "moteur": {
+     "texte": "x",
+     "confiance": 0.9,
+     "refus": null,
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan.webp",
+    "ok": false,
+    "code": "FORMAT_NON_LU",
+    "fait": true,
+    "file": {
+     "etat": "echec",
+     "code": "FORMAT_NON_LU",
+     "raison": "le moteur « factice » ne lit pas le format WEBP",
+     "geste": "Déposer le scan en image (PNG, JPEG) ou brancher un moteur qui lit ce format."
+    },
+    "versions": [],
+    "id": null,
+    "sha": "99ac5178b0ec7b456b5bf4d2de902f8e04c72e2aea26c5c72622b2e3654c2853"
+   },
+   {
+    "nom": "PDF sans couche texte, sans rendeur de pages",
+    "moteur": {
+     "texte": "x",
+     "confiance": 0.9,
+     "refus": null,
+     "jamais": false,
+     "langues": [
+      "fra"
+     ],
+     "formats": [
+      "png",
+      "jpeg",
+      "webp"
+     ],
+     "delaiMs": 5000
+    },
+    "fichier": "scan-image.pdf",
+    "ok": false,
+    "code": "RENDU_PAGES_ABSENT",
+    "fait": true,
+    "file": {
+     "etat": "echec",
+     "code": "RENDU_PAGES_ABSENT",
+     "raison": "ce scan est un PDF sans couche texte : aucun rendeur de pages n’est installé pour en tirer des images",
+     "geste": "Brancher un rendeur de pages PDF, ou déposer le scan en image."
+    },
+    "versions": [],
+    "id": null,
+    "sha": "5ce5f22f3aea849ae5aa6a8fb56c8500b6a42f6ceac9e9b2777fc8194d5be1f5"
+   }
+  ],
+  "rejoue": {
+   "idAvant": "76739db21f72",
+   "idApres": "76739db21f72",
+   "versionsAvant": 1,
+   "versionsApres": 1
+  }
+ }
+}
