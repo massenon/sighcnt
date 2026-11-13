@@ -13244,6 +13244,88 @@
    ]
   }
  },
+ "gestes": {
+  "_doc": "Gestes réservés par droit (lot B) : parRole[rôle][geste] = 1 si le rôle détient le geste d'origine. Une surcharge de fiche (`droitsGestes`) accorde autant qu'elle restreint ; elle se superpose à chaud, comme `droitsImport`.",
+  "jeux": [
+   {
+    "id": "valider_seuil_labo",
+    "libelle": "Valider un seuil de variation brutale du laboratoire",
+    "module": "M5",
+    "ecran": "m5-valeurs-reference",
+    "rolesDefaut": [
+     "laborantin"
+    ]
+   }
+  ],
+  "parRole": {
+   "admin": {
+    "valider_seuil_labo": 0
+   },
+   "direction": {
+    "valider_seuil_labo": 0
+   },
+   "dm": {
+    "valider_seuil_labo": 0
+   },
+   "da": {
+    "valider_seuil_labo": 0
+   },
+   "medecin": {
+    "valider_seuil_labo": 0
+   },
+   "infirmier": {
+    "valider_seuil_labo": 0
+   },
+   "pharmacien": {
+    "valider_seuil_labo": 0
+   },
+   "laborantin": {
+    "valider_seuil_labo": 1
+   },
+   "stock": {
+    "valider_seuil_labo": 0
+   },
+   "caissier": {
+    "valider_seuil_labo": 0
+   },
+   "comptable": {
+    "valider_seuil_labo": 0
+   },
+   "rh": {
+    "valider_seuil_labo": 0
+   },
+   "reception": {
+    "valider_seuil_labo": 0
+   },
+   "agentadmin": {
+    "valider_seuil_labo": 0
+   },
+   "ambulancier": {
+    "valider_seuil_labo": 0
+   },
+   "aide_soignant": {
+    "valider_seuil_labo": 0
+   },
+   "echographiste": {
+    "valider_seuil_labo": 0
+   },
+   "surveillant": {
+    "valider_seuil_labo": 0
+   },
+   "assistant_comptable": {
+    "valider_seuil_labo": 0
+   },
+   "chirurgien": {
+    "valider_seuil_labo": 0
+   },
+   "anesthesiste": {
+    "valider_seuil_labo": 0
+   },
+   "aide_comptable": {
+    "valider_seuil_labo": 0
+   }
+  }
+ },
  "import": {
   "_doc": "Droit d'import par jeu : parRole[rôle][jeu] = [voir, importer, annuler]. superviseurs : droit d'annuler sur CHAQUE jeu (lisent tous les lots). capacitePaie : écriture dans M11 (colonne Salaire de base).",
   "jeux": [
