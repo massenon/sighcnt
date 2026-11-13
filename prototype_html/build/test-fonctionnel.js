@@ -3032,8 +3032,8 @@ async function viderMessages(page) {
       });
       col.update(r.record.id, {
         constantes: [
-          { heure: entree, temperature: '38.2', tension: '14/9', pouls: 104, spo2: 96, observation: 'Douleur vive', par: 'GARBA Yahouza' },
-          { heure: new Date(Date.now() - 2 * 3600000).toISOString(), temperature: '37.1', tension: '12/8', pouls: 82, spo2: 98, observation: 'Amélioration', par: 'GARBA Yahouza' },
+          { heure: entree, temperature: '38.2', tensionSys: 14, tensionDia: 9, pouls: 104, spo2: 96, observation: 'Douleur vive', par: 'GARBA Yahouza' },
+          { heure: new Date(Date.now() - 2 * 3600000).toISOString(), temperature: '37.1', tensionSys: 12, tensionDia: 8, pouls: 82, spo2: 98, observation: 'Amélioration', par: 'GARBA Yahouza' },
         ],
       });
       const ord = PR.prescrire({
@@ -26027,6 +26027,102 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT B ÉTAPE 1 FIN */
+
+  /* ==========================================================================
+   * LOT B, ÉTAPE 2 : LES CONSTANTES D'HOSPITALISATION CORRIGÉES À LA SOURCE (diurèse en millilitres partout, tension en deux nombres).
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 173 : lot B étape 2, constantes d’hospitalisation à la source : diurèse en mL partout (accueil et lit, aucune conversion), tension en deux nombres (tensionSys, tensionDia, cmHg), semence migrée, poste en version 84 ré-amorcé, courbe en mL');
+    erreursJS = [];
+    const A = outilsAnt;
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m3-feuille-temperature.html');
+
+    /* --- 1. La semence : une seule forme, partout -------------------------------------------------------------------------------------------------------- */
+    const semence = await page.evaluate(() => {
+      const S = window.SIGH.store, rel = S.collection('releves').all();
+      const entier = (x) => Number.isInteger(x);
+      return {
+        version: S.raw()._version, courante: S.VERSION, nRel: rel.length,
+        relOk: rel.every((r) => entier(r.tensionSys) && entier(r.tensionDia) && !('tension' in r) && entier(r.diurese) && r.diurese >= 100),
+        accueil: S.collection('constantes').all().every((c) => entier(c.tensionSys) && entier(c.tensionDia)),
+      };
+    });
+    verifier('Semence migrée : tous les relevés au lit portent la tension en DEUX nombres entiers (aucun texte « 12/8 » stocké), la diurèse en millilitres (entiers, centaines), l’accueil aussi, version du schéma 85',
+      semence.version === 85 && semence.nRel > 20 && semence.relOk && semence.accueil, JSON.stringify(semence));
+
+    /* --- 2. La saisie au lit : deux champs de tension en cmHg, diurèse en mL, rien d'autre ; l'enregistrement stocke des nombres ---------------------------- */
+    await cliquer('Nouveau relevé', '#page-content button'); await pause(500);
+    const champs = await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); const noms = [...d.querySelectorAll('[name]')].map((x) => x.getAttribute('name')); const lib = (n) => { const c = d.querySelector('[name="' + n + '"]'); const l = c && (c.closest('div') || {}).parentElement; return l ? l.textContent.replace(/\s+/g, ' ').trim() : null; }; return { noms, sys: lib('tensionSys'), dia: lib('tensionDia'), diu: lib('diurese') }; });
+    verifier('La feuille de température saisit la tension en deux champs « systolique (cmHg) » et « diastolique (cmHg) » et la diurèse « (mL) » : aucun champ texte « tension »',
+      champs.noms.indexOf('tensionSys') >= 0 && champs.noms.indexOf('tensionDia') >= 0 && champs.noms.indexOf('tension') < 0 && /systolique \(cmHg\)/.test(champs.sys) && /diastolique \(cmHg\)/.test(champs.dia) && /Diurèse \(mL\)/.test(champs.diu), JSON.stringify(champs));
+    await A.remplir('temperature', '37.5'); await A.remplir('tensionSys', '12'); await A.remplir('tensionDia', '8'); await A.remplir('fc', '80'); await A.remplir('spo2', '97'); await A.remplir('diurese', '1800'); await A.remplir('traitement', 'SONDE173');
+    await A.cliquerModale('Enregistrer'); await pause(700);
+    const sauve = await page.evaluate(() => { const r = window.SIGH.store.collection('releves').all().filter((x) => x.traitement === 'SONDE173')[0]; return r && { sys: r.tensionSys, dia: r.tensionDia, diu: r.diurese, texte: 'tension' in r, types: [typeof r.tensionSys, typeof r.tensionDia, typeof r.diurese] }; });
+    const page173 = await page.evaluate(() => document.getElementById('page-content').innerText.replace(/\s+/g, ' '));
+    verifier('L’enregistrement stocke 12 et 8 (nombres) et 1800 (mL, nombre), aucune clé « tension » ; la table affiche « 12/8 » et « 1800 » telles quelles, sans conversion',
+      sauve && sauve.sys === 12 && sauve.dia === 8 && sauve.diu === 1800 && sauve.texte === false && sauve.types.every((t) => t === 'number') && /12\/8/.test(page173) && /1800/.test(page173) && /Diurèse \(mL\)/i.test(page173) && /TA \(cmHg\)/i.test(page173), JSON.stringify([sauve, /12\/8/.test(page173), /1800/.test(page173), /Diurèse \(mL\)/i.test(page173), /TA \(cmHg\)/i.test(page173)]));
+
+    /* --- 3. L'accueil : la même unité, les mêmes champs ----------------------------------------------------------------------------------------------------- */
+    await ouvrir('m1-constantes.html');
+    await cliquer('Nouveau relevé', '#page-content button'); await pause(500);
+    const acc = await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); if (!d) return null; const lib = (n) => { const c = d.querySelector('[name="' + n + '"]'); const l = c && (c.closest('div') || {}).parentElement; return l ? l.textContent.replace(/\s+/g, ' ').trim() : null; }; const c = d.querySelector('[name="diurese"]'); return { noms: [...d.querySelectorAll('[name]')].map((x) => x.getAttribute('name')), diu: lib('diurese'), sys: lib('tensionSys'), step: c && c.getAttribute('step'), max: c && c.getAttribute('max') }; });
+    verifier('L’accueil saisit la diurèse en MILLILITRES (« Diurèse (mL) », pas de décimale, plafond 5 000 repris de l’ancienne saisie de 5 L) et la tension en deux champs, comme au lit',
+      acc && /Diurèse \(mL\)/.test(acc.diu) && !/\(L\)/.test(acc.diu) && acc.step === '1' && acc.max === '5000' && /systolique \(cmHg\)/.test(acc.sys) && acc.noms.indexOf('tension') < 0, JSON.stringify(acc));
+    await cliquer('Annuler', '[role="dialog"] button'); await pause(300);
+
+    /* --- 4. La feuille d'observation : le relevé stocke deux nombres, la table compose « 14/9 » ------------------------------------------------------------ */
+    await ouvrir('m3-observation.html');
+    const cl = await page.evaluate(() => { const b = document.querySelector('#page-content button[title="Relever les constantes"]'); if (b) b.click(); return !!b; });
+    await pause(500);
+    const champsObs = await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); return d ? [...d.querySelectorAll('[name]')].map((x) => x.getAttribute('name')) : null; });
+    const semObs = await page.evaluate(() => { const cst = [].concat(...window.SIGH.store.collection('observations').all().map((o) => o.constantes || [])); return { n: cst.length, ok: cst.every((c) => Number.isInteger(c.tensionSys) && Number.isInteger(c.tensionDia) && !('tension' in c)) }; });
+    verifier('Semence des feuilles d’observation migrée : chaque relevé porte la tension en deux nombres entiers, aucun texte', semObs.n > 5 && semObs.ok, JSON.stringify(semObs));
+    verifier('Le relevé d’une feuille d’observation propose les deux champs de tension et aucun champ texte', cl && champsObs && champsObs.indexOf('tensionSys') >= 0 && champsObs.indexOf('tensionDia') >= 0 && champsObs.indexOf('tension') < 0, JSON.stringify(champsObs));
+    await A.remplir('temperature', '37.9'); await A.remplir('tensionSys', '14'); await A.remplir('tensionDia', '9'); await A.remplir('pouls', '90'); await A.remplir('par', 'SONDE173');
+    await A.cliquerModale('Enregistrer le relevé'); await pause(700);
+    const obsSauve = await page.evaluate(() => { const o = window.SIGH.store.collection('observations').all().filter((x) => (x.constantes || []).some((c) => c.par === 'SONDE173'))[0]; const c = o && o.constantes.filter((x) => x.par === 'SONDE173')[0]; return c && { sys: c.tensionSys, dia: c.tensionDia, texte: 'tension' in c }; });
+    verifier('Le relevé d’observation stocke 14 et 9 (nombres), sans clé « tension »', obsSauve && obsSauve.sys === 14 && obsSauve.dia === 9 && obsSauve.texte === false, JSON.stringify(obsSauve));
+
+    /* --- 5. La courbe lit les nombres, dans l'échelle des millilitres : aucune conversion ni relecture de texte ---------------------------------------------- */
+    await ouvrir('m3-surveillance.html');
+    await page.evaluate(async () => {
+      const S = window.SIGH.store, cnt = {}; const pAdm = {}; S.collection('admissions').all().forEach((a) => { pAdm[a.id] = a.patientId; });
+      S.collection('releves').all().forEach((r) => { const p = pAdm[r.admissionId]; if (p) cnt[p] = (cnt[p] || 0) + 1; });
+      const best = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0];
+      const sel = document.querySelector('#page-content select'); sel.value = best; sel.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 400));
+    });
+    const courbe = await page.evaluate(() => {
+      const S = window.SIGH.store, H = 260;
+      const pos = (g, v) => { if (v <= g[0]) return 0; if (v >= g[g.length - 1]) return 1; for (let i = 0; i < g.length - 1; i++) if (v >= g[i] && v <= g[i + 1]) return (i + (v - g[i]) / (g[i + 1] - g[i])) / (g.length - 1); return null; };
+      const gD = [0, 500, 1000, 1500, 2000, 2500], gT = [5, 10, 15, 20, 25, 30];
+      const dVals = [].concat(S.collection('releves').all().map((r) => r.diurese), S.collection('constantes').all().map((c) => c.diurese)).filter((v) => v != null);
+      const tVals = [].concat(S.collection('releves').all().map((r) => r.tensionSys), S.collection('constantes').all().map((c) => c.tensionSys)).filter((v) => v != null);
+      const cy = (couleur) => [...document.querySelectorAll('#page-content svg circle')].filter((c) => c.getAttribute('fill') === couleur).map((c) => Number(c.getAttribute('cy')));
+      const attendu = (vals, g) => vals.map((v) => Math.round((H - pos(g, v) * H) * 100) / 100);
+      const d = cy('#ca8a04'), t = cy('#7c3aed'), ad = attendu(dVals, gD), at = attendu(tVals, gT);
+      const dans = (xs, ys) => xs.every((x) => ys.some((y) => Math.abs(x - y) < 0.02));
+      return { nD: d.length, nT: t.length, dOk: d.length > 0 && dans(d, ad), tOk: t.length > 0 && dans(t, at), etendue: d.length ? Math.max(...d) - Math.min(...d) : 0, legende: /Diurèse \(mL\) . 0 à 2500/.test(document.getElementById('page-content').innerText) };
+    });
+    verifier('La courbe de surveillance trace la diurèse à la position de sa valeur EN MILLILITRES sur l’échelle 0 à 2 500 mL (étendue verticale large, aucune valeur écrasée au pied de l’échelle) et la tension systolique lue du nombre stocké',
+      courbe.nD > 5 && courbe.nT > 5 && courbe.dOk && courbe.tOk && courbe.etendue > 60 && courbe.legende, JSON.stringify(courbe));
+
+    /* --- 6. Un poste en version 84 est ré-amorcé à l'ouverture : plus aucun relevé en texte, diurèse en mL ---------------------------------------------------- */
+    await page.evaluate(() => {
+      const S = window.SIGH.store, col = S.collection('releves');
+      col.all().push({ id: 'RELANCIEN173', statut: 'actif', admissionId: 'ADM0001', date: '2026-08-10', heure: '08:00', temperature: 37, tension: '12/8', fc: 80, spo2: 98, diurese: 1.5 });
+      S.raw()._version = 84; S.save();
+    });
+    await attendreEcritures();
+    await ouvrir('m3-feuille-temperature.html');
+    const migre = await page.evaluate(() => { const S = window.SIGH.store, rel = S.collection('releves').all(); return { version: S.raw()._version, ancien: rel.some((r) => r.id === 'RELANCIEN173'), texte: rel.filter((r) => 'tension' in r).length, nombres: rel.every((r) => Number.isInteger(r.tensionSys) && Number.isInteger(r.tensionDia) && r.diurese >= 100), n: rel.length }; });
+    verifier('Un poste en version 84 (relevé ancien en texte « 12/8 », diurèse 1,5) est RÉ-AMORCÉ à l’ouverture : version 85, l’ancien relevé n’est plus là, aucun texte de tension, toute diurèse en millilitres',
+      migre.version === 85 && migre.ancien === false && migre.texte === 0 && migre.nombres && migre.n > 20, JSON.stringify(migre));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT B ÉTAPE 2 FIN */
+
 
 
 

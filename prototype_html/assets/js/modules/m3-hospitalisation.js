@@ -127,7 +127,7 @@
         constantes.push({
           heure: new Date(entree.getTime() + k * 4 * 3600000).toISOString(),
           temperature: (36.4 + rnd() * 2.4).toFixed(1),
-          tension: C.between(rnd, 9, 15) + '/' + C.between(rnd, 5, 10),
+          tensionSys: C.between(rnd, 9, 15), tensionDia: C.between(rnd, 5, 10),
           pouls: C.between(rnd, 58, 118),
           spo2: C.between(rnd, 92, 100),
           observation: C.pick(rnd, ['Patient conscient, orienté', 'Douleur en diminution', 'Sous perfusion', 'Vomissements', 'Repos', 'Surveillance rapprochée']),
@@ -369,12 +369,12 @@
         var f = U.form([
           { name: 'heure', label: 'Heure du relevé', type: 'datetime-local', required: true, value: C.isoLocal() },
           { name: 'temperature', label: 'Température (°C)', type: 'number', step: '0.1', required: true },
-          { name: 'tension', label: 'Tension artérielle', required: true, placeholder: '12/8' },
+        ].concat(C.champsTension({ required: true }), [
           { name: 'pouls', label: 'Pouls (bpm)', type: 'number', required: true },
           { name: 'spo2', label: 'Saturation SpO₂ (%)', type: 'number', min: 0, max: 100 },
           { name: 'observation', label: 'Observation clinique', type: 'textarea', rows: 2, col: 'full' },
           { name: 'par', label: 'Relevé par', required: true, value: S.currentUser() },
-        ], {});
+        ]), {});
 
         var m = U.modal({
           title: 'Relevé de constantes — ' + o.patient,
@@ -389,13 +389,13 @@
                 if (!v) return;
                 var suite = (o.constantes || []).concat([{
                   heure: new Date(v.heure).toISOString(),
-                  temperature: v.temperature, tension: v.tension, pouls: v.pouls,
+                  temperature: v.temperature, tensionSys: v.tensionSys, tensionDia: v.tensionDia, pouls: v.pouls,
                   spo2: v.spo2 || null, observation: v.observation || '', par: v.par,
                 }]);
                 var res = colObs().update(o.id, { constantes: suite });
                 m.close(); dessiner();
                 U.toast('Constantes relevées à ' + C.heure(v.heure) + '.', {
-                  type: 'success', detail: v.temperature + ' °C · ' + v.tension + ' · ' + v.pouls + ' bpm',
+                  type: 'success', detail: v.temperature + ' °C · ' + C.tensionTexte(v.tensionSys, v.tensionDia) + ' ' + C.CONSTANTES_VITALES.tension.unite + ' · ' + v.pouls + ' bpm',
                   undo: function () { res.undo(); dessiner(); },
                 });
               },
@@ -496,7 +496,7 @@
           ? K.miniTable([
             { label: 'Heure', render: function (c) { return C.dateFR(c.heure) + ' ' + C.heure(c.heure); } },
             { label: 'T°', align: 'right', render: function (c) { return c.temperature + ' °C'; } },
-            { label: 'TA', align: 'right', key: 'tension' },
+            { label: 'TA (cmHg)', align: 'right', render: function (c) { return C.tensionTexte(c.tensionSys, c.tensionDia) || '—'; } },
             { label: 'Pouls', align: 'right', render: function (c) { return c.pouls + ' bpm'; } },
             { label: 'SpO₂', align: 'right', render: function (c) { return c.spo2 ? c.spo2 + ' %' : '—'; } },
             { label: 'Observation', key: 'observation' },
@@ -601,7 +601,7 @@
             cs.length ? P.tableau([
               { label: 'Heure', value: function (c) { return C.dateFR(c.heure) + ' ' + C.heure(c.heure); } },
               { label: 'Température', align: 'right', value: function (c) { return c.temperature + ' °C'; } },
-              { label: 'Tension', align: 'right', key: 'tension' },
+              { label: 'Tension (cmHg)', align: 'right', value: function (c) { return C.tensionTexte(c.tensionSys, c.tensionDia) || '—'; } },
               { label: 'Pouls', align: 'right', value: function (c) { return c.pouls + ' bpm'; } },
               { label: 'SpO₂', align: 'right', value: function (c) { return c.spo2 ? c.spo2 + ' %' : '—'; } },
               { label: 'Observation', key: 'observation' },
@@ -1081,14 +1081,14 @@
                 return el('span', { class: t >= 38 ? 'font-semibold text-danger-600' : (t < 36 ? 'font-semibold text-info-600' : ''), text: r.temperature });
               },
             },
-            { key: 'tension', label: 'TA', align: 'right' },
+            { key: 'tensionSys', label: 'TA (cmHg)', align: 'right', render: function (r) { return C.tensionTexte(r.tensionSys, r.tensionDia) || '—'; } },
             { key: 'fc', label: 'FC', align: 'right' },
             {
               key: 'spo2', label: 'SpO₂', align: 'right',
               render: function (r) { return el('span', { class: r.spo2 < 94 ? 'font-semibold text-danger-600' : '', text: r.spo2 + ' %' }); },
             },
             { key: 'fr', label: 'FR', align: 'right' },
-            { key: 'diurese', label: 'Diurèse (ml)', align: 'right' },
+            { key: 'diurese', label: 'Diurèse (mL)', align: 'right' },
             { key: 'poids', label: 'Poids (kg)', align: 'right' },
             { key: 'traitement', label: 'Traitement' },
             { key: 'saisiPar', label: 'Saisi par' },
@@ -1109,15 +1109,15 @@
           { name: 'date', label: 'Date', type: 'date', required: true, value: C.iso(AUJ) },
           { name: 'heure', label: 'Heure', type: 'time', required: true, value: '08:00' },
           { name: 'temperature', label: 'Température (°C)', type: 'number', step: '0.1', required: true, validate: function (v) { return (v < 30 || v > 45) ? 'Valeur hors plage physiologique (30–45 °C).' : null; } },
-          { name: 'tension', label: 'Tension artérielle', required: true, placeholder: '12/8' },
+        ].concat(C.champsTension({ required: true }), [
           { name: 'fc', label: 'Fréquence cardiaque (bpm)', type: 'number', required: true },
           { name: 'spo2', label: 'Saturation SpO₂ (%)', type: 'number', min: 0, max: 100, required: true },
           { name: 'fr', label: 'Fréquence respiratoire', type: 'number' },
-          { name: 'diurese', label: 'Diurèse (ml)', type: 'number' },
+          C.champDiurese(),
           { name: 'poids', label: 'Poids (kg)', type: 'number', step: '0.1' },
           { name: 'taille', label: 'Taille (cm)', type: 'number' },
           { name: 'traitement', label: 'Traitement administré', col: 'full' },
-        ], {});
+        ]), {});
         var m = U.modal({
           title: 'Nouveau relevé de constantes',
           subtitle: courant.patient + ' — lit ' + courant.lit,
@@ -1154,11 +1154,11 @@
             { label: 'Date', value: function (r) { return C.dateFR(r.date); } },
             { label: 'Heure', key: 'heure' },
             { label: 'T° (°C)', key: 'temperature', align: 'right' },
-            { label: 'TA', key: 'tension', align: 'right' },
+            { label: 'TA (cmHg)', value: function (r) { return C.tensionTexte(r.tensionSys, r.tensionDia) || '—'; }, align: 'right' },
             { label: 'FC', key: 'fc', align: 'right' },
             { label: 'SpO₂', key: 'spo2', align: 'right' },
             { label: 'FR', key: 'fr', align: 'right' },
-            { label: 'Diurèse', key: 'diurese', align: 'right' },
+            { label: 'Diurèse (mL)', key: 'diurese', align: 'right' },
             { label: 'Traitement', key: 'traitement' },
           ], rel) : el('p.italic', { text: 'Aucun relevé enregistré.' }),
           signatures: [{ role: 'L’Infirmier traitant', nom: courant.infirmier }, { role: 'Le Médecin' }],
@@ -2213,7 +2213,7 @@
     { code: 'pouls', label: 'Pouls', unite: 'bpm', graduations: [60, 80, 100, 120, 140, 180], couleur: '#dc2626' },
     { code: 'temperature', label: 'T°', unite: '°C', graduations: [36, 37, 38, 39, 40, 41], couleur: '#0f766e' },
     { code: 'fr', label: 'FR', unite: '/min', graduations: [10, 20, 30, 40, 50, 60], couleur: '#2563eb' },
-    { code: 'diurese', label: 'Diurèse', unite: 'L', graduations: [0, 0.5, 1, 1.5, 2, 2.5], couleur: '#ca8a04' },
+    { code: 'diurese', label: 'Diurèse', unite: 'mL', graduations: [0, 500, 1000, 1500, 2000, 2500], couleur: '#ca8a04' },
   ];
 
   var MOMENTS = [
@@ -2256,13 +2256,9 @@
     return 'soir';
   }
 
-  /* La tension systolique, en cmHg, extraite d'une notation « 12/8 ». C'est
-     elle que la feuille de température trace — la diastolique ne figure pas
-     sur l'échelle du document. */
-  function systoliqueDe(tension) {
-    var m = String(tension || '').match(/^\s*(\d+(?:[.,]\d+)?)/);
-    return m ? Number(String(m[1]).replace(',', '.')) : null;
-  }
+  /* La tension systolique, en cmHg, est un NOMBRE stocké (`tensionSys`) : c'est elle que la feuille de température trace, la diastolique ne figure pas sur l'échelle du
+     document. Plus aucune lecture d'un texte « 12/8 » (lot B). */
+  function systoliqueDe(rec) { return rec && rec.tensionSys != null && rec.tensionSys !== '' ? Number(rec.tensionSys) : null; }
 
   /* ==========================================================================
    * LES RELEVÉS D'UN PATIENT — UNE SEULE SÉRIE, DEUX SOURCES
@@ -2289,8 +2285,7 @@
           moment: c.moment || momentDe(C.heure(c.dateHeure)),
           heure: C.heure(c.dateHeure),
           temperature: c.temperature,
-          ta: c.tensionSys != null ? Number(c.tensionSys) : systoliqueDe(c.tension),
-          tension: c.tension,
+          ta: systoliqueDe(c), tensionSys: c.tensionSys, tensionDia: c.tensionDia,
           pouls: c.pouls, fr: c.fr, spo2: c.spo2, diurese: c.diurese,
           par: c.releveePar, origine: 'Accueil',
         });
@@ -2308,12 +2303,10 @@
           out.push({
             date: r.date, moment: momentDe(r.heure), heure: r.heure,
             temperature: r.temperature != null ? Number(r.temperature) : null,
-            ta: systoliqueDe(r.tension), tension: r.tension,
+            ta: systoliqueDe(r), tensionSys: r.tensionSys, tensionDia: r.tensionDia,
             pouls: r.fc, fr: r.fr, spo2: r.spo2,
-            /* La diurèse est saisie en millilitres au lit du patient, tandis
-               que l'échelle de la feuille est graduée en litres. Convertir ici
-               évite de tracer 1 800 sur une échelle qui s'arrête à 2,5. */
-            diurese: r.diurese != null ? Math.round((r.diurese / 1000) * 100) / 100 : null,
+            /* La diurèse est en millilitres PARTOUT, et l'échelle de la feuille aussi : aucune conversion (lot B). */
+            diurese: r.diurese != null ? Number(r.diurese) : null,
             par: r.saisiPar, origine: 'Hospitalisation',
           });
         });
@@ -2522,11 +2515,11 @@
               } },
               { key: 'temperature', label: 'Température', align: 'right',
                 render: function (r) { return r.temperature == null ? '—' : r.temperature + ' °C'; } },
-              { key: 'tension', label: 'TA', align: 'right', render: function (r) { return r.tension || '—'; } },
+              { key: 'tensionSys', label: 'TA (cmHg)', align: 'right', render: function (r) { return C.tensionTexte(r.tensionSys, r.tensionDia) || '—'; } },
               { key: 'fr', label: 'FR', align: 'right', render: function (r) { return r.fr == null ? '—' : r.fr; } },
               { key: 'pouls', label: 'Pouls', align: 'right', render: function (r) { return r.pouls == null ? '—' : r.pouls; } },
               { key: 'diurese', label: 'Diurèse', align: 'right',
-                render: function (r) { return r.diurese == null ? '—' : r.diurese + ' L'; } },
+                render: function (r) { return r.diurese == null ? '—' : r.diurese + ' mL'; } },
               { key: 'par', label: 'Relevé par' },
               { key: 'origine', label: 'Source',
                 render: function (r) {

@@ -616,8 +616,41 @@
   function pick(rnd, arr) { return arr[Math.floor(rnd() * arr.length) % arr.length]; }
   function between(rnd, a, b) { return Math.floor(rnd() * (b - a + 1)) + a; }
 
+  /* ==========================================================================
+   * LES CONSTANTES VITALES : UNE UNITÉ, UNE FORME (lot B, 13/11/2026, correction à la source)
+   * --------------------------------------------------------------------------
+   * La DIURÈSE se saisit et se stocke en MILLILITRES, partout (accueil comme hospitalisation) ; la TENSION se stocke en DEUX nombres entiers, systolique et diastolique, en
+   * cmHg (l'unité de la feuille de température et de la saisie d'accueil de la clinique : « 12/8 »). Aucune conversion à l'affichage : le texte « 12/8 » n'est qu'une mise
+   * en forme des deux nombres, jamais une donnée stockée. Les BORNES de saisie sont celles que la saisie d'accueil portait déjà (4 à 30 et 2 à 20 cmHg ; 5 L soit 5 000 mL) :
+   * aucune n'est inventée ici, et pour l'hospitalisation elles restent une proposition à valider par un soignant. Une source pour les trois écrans qui saisissent.
+   * ======================================================================== */
+  var CONSTANTES_VITALES = {
+    tension: { unite: 'cmHg', sys: { min: 4, max: 30 }, dia: { min: 2, max: 20 } },
+    diurese: { unite: 'mL', min: 0, max: 5000 },
+  };
+  /** « 12/8 » à partir des deux nombres ; « 12/—  » quand la diastolique manque (« non mesurée » n'est pas zéro) ; null sans systolique. */
+  function tensionTexte(sys, dia) {
+    var v = function (x) { return x == null || x === '' || !isFinite(Number(x)); };
+    if (v(sys)) return null;
+    return Number(sys) + '/' + (v(dia) ? '\u2014' : Number(dia));
+  }
+  /** Les deux champs de saisie de la tension (noms `tensionSys` et `tensionDia`), identiques à l'accueil et à l'hospitalisation. */
+  function champsTension(o) {
+    o = o || {}; var T = CONSTANTES_VITALES.tension;
+    return [
+      { name: 'tensionSys', label: 'Tension systolique (' + T.unite + ')', type: 'number', min: T.sys.min, max: T.sys.max, step: 1, required: !!o.required },
+      { name: 'tensionDia', label: 'Tension diastolique (' + T.unite + ')', type: 'number', min: T.dia.min, max: T.dia.max, step: 1, required: !!o.required },
+    ];
+  }
+  /** Le champ de saisie de la diurèse, en millilitres. */
+  function champDiurese(o) {
+    var D = CONSTANTES_VITALES.diurese;
+    return Object.assign({ name: 'diurese', label: 'Diurèse (' + D.unite + ')', type: 'number', min: D.min, max: D.max, step: 1 }, o || {});
+  }
+
   global.SIGH = global.SIGH || {};
   global.SIGH.core = {
+    CONSTANTES_VITALES: CONSTANTES_VITALES, tensionTexte: tensionTexte, champsTension: champsTension, champDiurese: champDiurese,
     BRAND: BRAND, BRAND_ORIGINE: BRAND_ORIGINE, CHAMPS_IDENTITE: CHAMPS_IDENTITE,
     champsIdentite: champsIdentite, identiteALaDate: identiteALaDate,
     MOIS: MOIS, JOURS: JOURS,

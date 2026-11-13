@@ -133,8 +133,12 @@
      Sans incrément, un poste garderait des scans dans le magasin et aucun écran ne saurait lire la forme neuve.
      84 (13/11/2026) : la lecture OCR des scans, PRÉPARÉE (lot OCR-prep, aucun moteur livré). Collection `lecturesOcr` (une version de texte lu par machine par fiche, identifiant déterministe, immuable : une relance
      AJOUTE une version), et le registre `fichiers` porte `texteSource` et l'état de la file de lecture (`ocr`). Le réglage `ocr` (désactivé par défaut) vit dans `_reglages`. Une reprise garde les lectures. Sans
-     incrément, un poste n'aurait pas la collection et la garde d'immuabilité ne couvrirait rien. */
-  var VERSION = 84;
+     incrément, un poste n'aurait pas la collection et la garde d'immuabilité ne couvrirait rien.
+     85 (13/11/2026) : les CONSTANTES D'HOSPITALISATION corrigées à la source (lot B) : la diurèse est en MILLILITRES partout (l'accueil la saisissait en litres) et la tension des relevés
+     au lit et des feuilles d'observation se stocke en DEUX nombres (`tensionSys`, `tensionDia`, cmHg) au lieu du texte « 12/8 » ; la semence est migrée, l'échelle de diurèse de la feuille de
+     température est graduée en mL. Les seuils de variation du laboratoire portent un délai maximal entre deux mesures (`delaiMaxJours`, absent par défaut), et les fiches RBAC peuvent porter
+     `droitsGestes` (valider un seuil). Les postes en version 84 sont ré-amorcés (les seuils survivent, comme avant). Sans incrément, un poste garderait des relevés en texte et la diurèse en litres. */
+  var VERSION = 85;
   var db = null;
   var listeners = {};
 
@@ -1498,9 +1502,10 @@
    * Trois fois par jour, aux heures de la feuille papier : 08 h, 14 h et 20 h —
    * matin, midi, soir, les trois colonnes que porte le document.
    *
-   * La diurèse est relevée en MILLILITRES au lit du patient, alors que
-   * l'échelle de la feuille de température est graduée en litres. La conversion
-   * se fait à l'affichage : convertir ici perdrait la précision de la mesure.
+   * La diurèse est relevée en MILLILITRES, ici comme à l'accueil, et l'échelle de la
+   * feuille de température est graduée en millilitres : AUCUNE conversion à
+   * l'affichage (lot B). La tension se stocke en DEUX nombres, `tensionSys` et
+   * `tensionDia` (cmHg), jamais en texte « 12/8 ».
    * ======================================================================== */
   function genReleves(rnd, admissions) {
     var out = [];
@@ -1519,7 +1524,7 @@
               id: 'REL' + C.uid(), statut: 'actif',
               admissionId: a.id, date: C.iso(C.addDays(ref, -j)), heure: h,
               temperature: Number((36.4 + rnd() * 2.2).toFixed(1)),
-              tension: C.between(rnd, 10, 15) + '/' + C.between(rnd, 6, 9),
+              tensionSys: C.between(rnd, 10, 15), tensionDia: C.between(rnd, 6, 9),
               fc: C.between(rnd, 62, 108), spo2: C.between(rnd, 92, 100),
               fr: C.between(rnd, 14, 24), diurese: C.between(rnd, 600, 2200),
               poids: C.between(rnd, 45, 92), taille: C.between(rnd, 150, 188),

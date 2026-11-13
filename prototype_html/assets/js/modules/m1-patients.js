@@ -418,7 +418,7 @@
             ? K.miniTable([
               { label: 'Date', render: function (t) { return C.dateFR(t.date) + (t.heure ? ' ' + t.heure : ''); } },
               { label: 'Température', align: 'right', render: function (t) { return (t.temperature || t.matin || '—') + ' °C'; } },
-              { label: 'Tension', render: function (t) { return t.tension || '—'; } },
+              { label: 'Tension (cmHg)', render: function (t) { return C.tensionTexte(t.tensionSys, t.tensionDia) || '—'; } },
               /* La feuille de M3 nomme le pouls `fc`. */
               { label: 'Pouls', align: 'right', render: function (t) { var v = t.fc != null ? t.fc : t.pouls; return v ? v + ' bpm' : '—'; } },
               { label: 'Relevé par', render: function (t) { return t.saisiPar || t.soignant || t.par || '—'; } },
@@ -2894,17 +2894,16 @@
             hint: 'La feuille de température comporte trois colonnes par jour : matin, midi, soir.' },
           { type: 'section', label: 'Constantes' },
           { name: 'temperature', label: 'Température (°C)', type: 'number', step: 0.1, min: 30, max: 45 },
-          { name: 'tensionSys', label: 'Tension systolique (cmHg)', type: 'number', min: 4, max: 30 },
-          { name: 'tensionDia', label: 'Tension diastolique (cmHg)', type: 'number', min: 2, max: 20 },
+        ].concat(C.champsTension(), [
           { name: 'pouls', label: 'Pouls (bpm)', type: 'number', min: 30, max: 220 },
           { name: 'fr', label: 'Fréquence respiratoire (/min)', type: 'number', min: 5, max: 70 },
           { name: 'spo2', label: 'SpO₂ (%)', type: 'number', min: 50, max: 100 },
-          { name: 'diurese', label: 'Diurèse (L)', type: 'number', step: 0.1, min: 0, max: 5 },
+          C.champDiurese(),
           { type: 'section', label: 'Mensurations' },
           { name: 'poids', label: 'Poids (kg)', type: 'number', step: 0.1, min: 0, max: 250 },
           { name: 'taille', label: 'Taille (cm)', type: 'number', min: 20, max: 230 },
           { name: 'releveePar', label: 'Relevé par', type: 'text', required: true },
-        ];
+        ]);
       }
 
       /* Un seuil dépassé se voit : c'est tout l'intérêt de relever à l'accueil
@@ -2992,7 +2991,7 @@
                   ['Pouls', r.pouls == null ? '—' : r.pouls + ' bpm'],
                   ['Fréquence respiratoire', r.fr == null ? '—' : r.fr + ' /min'],
                   ['SpO₂', r.spo2 == null ? '—' : r.spo2 + ' %'],
-                  ['Diurèse', r.diurese == null ? '—' : r.diurese + ' L'],
+                  ['Diurèse', r.diurese == null ? '—' : r.diurese + ' mL'],
                   ['Poids', r.poids == null ? '—' : r.poids + ' kg'],
                   ['Taille', r.taille == null ? '—' : r.taille + ' cm'],
                   ['IMC', r.imc == null ? '—' : r.imc + ' (calculé)'],
