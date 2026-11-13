@@ -35,6 +35,7 @@ Index détaillé : [`architecture/README.md`](architecture/README.md).
 | [`PRD-SOCLE-application-sans-rechargement`](prd/PRD-SOCLE-application-sans-rechargement.md) | Document unique, notifications, planificateur | P0/P1 livrés (vagues 69-70) ; flux poussé et deltas par séquence restent |
 | [`PRD-TARIFS-referentiel-unique-et-changement-de-prix`](prd/PRD-TARIFS-referentiel-unique-et-changement-de-prix.md) | Une liste de prix, un écran « Tarifs et prix », un changement de prix validé (Oui/Non) et jamais rétroactif | T0 à T5 livrés en maquette et T6 au poste Flutter (T4 et T5 : maquette seule), plus les corrections T5b du 12/11/2026 (prix absent, réception, plus de « SAGE ») ; T7 à faire |
 | [`PRD-SOCLE-synchronisation-bidirectionnelle`](prd/PRD-SOCLE-synchronisation-bidirectionnelle.md) | Synchronisation dans les deux sens : poste, hub, client web, mobile | brouillon 26/10/2026 |
+| [`PRD-RELAIS-synchronisation-fileuls-mere-mobiles`](prd/PRD-RELAIS-synchronisation-fileuls-mere-mobiles.md) | Écran « Synchronisation » du panneau du relais (mère, fileuls, mobiles, historique réglable) | livré 13/11/2026 (lot RLS-SYNC) |
 
 Index : [`prd/README.md`](prd/README.md).
 

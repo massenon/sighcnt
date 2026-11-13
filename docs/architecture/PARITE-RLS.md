@@ -98,3 +98,7 @@ const servisParWeb = {'rls-tableau', 'rls-appareils', 'rls-boites', 'rls-codes',
 ```
 
 et, dans la boucle sur `statuts`, un test supplémentaire qui vérifie que tout identifiant de `servisParWeb` déclaré « porté » est bien absent de `ecransPortes()` (un écran ne peut pas être mesuré des deux côtés) et que `rapport-parite-rls.json` donne `taux == 1.0` pour chacun.
+
+## Treizième écran : « Synchronisation » (lot RLS-SYNC, 13/11/2026)
+
+`/panneau/synchronisation` (`Synchronisation`, `synchronisation.blade.php`) ajoute au panneau un écran des synchronisations de la mère, des fileuls et des mobiles. **Il n'existe pas à la maquette** (qui n'a ni mère, ni fileul, ni relais) : aucune fiche `docs/architecture/ecrans/rls-synchronisation.json`, donc aucune mesure N1 et `ParitePanneauTest` reste à douze écrans (il rend désormais le menu à treize entrées, sans effet sur sa mesure qui ne porte que sur `<main>`). Il n'est pas porté dans `apps/poste`. Comme le reste du panneau, il est derrière l'authentification ; depuis ce lot, **tout le panneau est de plus réservé au superadmin** (colonne `users.superadmin`, middleware `ExigerSuperadmin`, 403 journalisé). Écarts E2557 à E2564, PRD `docs/prd/PRD-RELAIS-synchronisation-fileuls-mere-mobiles.md`.
