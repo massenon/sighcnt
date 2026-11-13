@@ -16,6 +16,7 @@
         'panneau.boites' => 'Boîtes aux lettres',
         'panneau.codes' => 'Codes d’appairage',
         'panneau.indicateurs' => 'Indicateurs reçus',
+        'panneau.synchronisation' => 'Synchronisation',
         'panneau.alertes' => 'Alertes et notifications',
         'panneau.journal' => 'Journal d’audit du relais',
         'panneau.superadmin' => 'Comptes superadmin',
@@ -29,7 +30,8 @@
 <header class="entete">
     <strong>SIGH-CNT · Relais en ligne (apps/web)</strong>
     <nav aria-label="Navigation du panneau">
-        @foreach($menu as $route => $libelle)
+        {{-- Réservé au superadmin : un compte qui ne l'est pas ne voit aucune entrée (et n'ouvre aucune route). --}}
+        @foreach(auth()->user()?->superadmin === true ? $menu : [] as $route => $libelle)
             <a href="{{ route($route) }}" @if(request()->routeIs($route)) aria-current="page" @endif>{{ $libelle }}</a>
         @endforeach
     </nav>

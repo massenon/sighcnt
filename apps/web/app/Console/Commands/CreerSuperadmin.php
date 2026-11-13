@@ -32,7 +32,8 @@ class CreerSuperadmin extends Command
             return self::FAILURE;
         }
         $existe = User::where('email', $courriel)->exists();
-        User::updateOrCreate(['email' => $courriel], ['name' => 'Superadmin', 'password' => Hash::make($mdp)]);
+        $u = User::updateOrCreate(['email' => $courriel], ['name' => 'Superadmin', 'password' => Hash::make($mdp)]);
+        $u->forceFill(['superadmin' => true])->save();
         DB::table('relais_audit')->insert([
             'quand' => (int) (microtime(true) * 1000), 'acteur' => 'console', 'action' => $existe ? 'superadmin_mis_a_jour' : 'superadmin_cree', 'detail' => $courriel,
         ]);

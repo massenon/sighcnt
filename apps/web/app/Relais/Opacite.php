@@ -3,6 +3,7 @@
 namespace App\Relais;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * MESURE d'opacité sur un échantillon d'enveloppes : entropie moyenne (bits par octet) et nombre d'enveloppes dont le contenu
@@ -49,6 +50,29 @@ class Opacite
         }
 
         return $h;
+    }
+
+    /** Lot RLS-SYNC : les SEULES colonnes de l'historique de synchronisation. Des horodatages et des compteurs, plus la référence de l'appareil. */
+    public const COLONNES_SYNCHRO = ['id', 'quand', 'nature', 'ref', 'dernier_contact', 'retard_journal', 'conflits', 'demandes', 'attente'];
+
+    /**
+     * Lot RLS-SYNC : l'historique de synchronisation ne détient aucun contenu. Deux mesures : (1) la table n'a que les colonnes numériques et la référence listées ci-dessus (une colonne ajoutée
+     * un jour, `libelle` ou `motif`, serait signalée) ; (2) chaque `ref` est un nom technique de poste, « mere » ou l'identifiant d'un appareil appairé : une valeur qui ressemble à un
+     * dossier ou à une phrase est comptée. La mesure ne peut pas distinguer un nom de personne d'un nom de poste : elle prouve la FORME, pas l'intention.
+     *
+     * @return array{lignes: int, colonnes_hors_liste: list<string>, refs_hors_liste: int}
+     */
+    public static function historiqueSynchro(): array
+    {
+        $colonnes = array_values(array_diff(Schema::getColumnListing('relais_synchro_historique'), self::COLONNES_SYNCHRO));
+        $hors = 0;
+        foreach (DB::table('relais_synchro_historique')->distinct()->pluck('ref') as $ref) {
+            if (! preg_match('/^[A-Za-z0-9\x{00C0}-\x{00FF}][A-Za-z0-9\x{00C0}-\x{00FF} _.:-]{0,63}\z/u', (string) $ref)) {
+                $hors++;
+            }
+        }
+
+        return ['lignes' => (int) DB::table('relais_synchro_historique')->count(), 'colonnes_hors_liste' => $colonnes, 'refs_hors_liste' => $hors];
     }
 
     /** La clé de clinique n'existe pas dans la configuration du relais : aucun réglage ne la désigne. */

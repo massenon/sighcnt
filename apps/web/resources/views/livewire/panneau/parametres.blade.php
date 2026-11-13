@@ -13,6 +13,25 @@
             </tbody>
         </table>
     </div>
+    <div class="carte">
+        <h2>Synchronisation : conservation et seuils</h2>
+        <p class="note">Réglages de l’écran « Synchronisation », enregistrés en base, bornés et journalisés. Toutes les valeurs de départ sont des propositions à valider par la Direction.</p>
+        @if($synchroMessage)<p class="message" role="status">{{ $synchroMessage }}</p>@endif
+        @foreach($synchroRefus as $refus)<p class="erreur" role="alert">{{ $refus['motif'] }} {{ $refus['geste'] }}</p>@endforeach
+        <table>
+            <thead><tr><th>Réglage</th><th>Valeur</th><th>Bornes</th></tr></thead>
+            <tbody>
+            @foreach($reglagesSynchro as $cle => $d)
+                <tr>
+                    <td><label for="synchro-{{ $cle }}">{{ $d['libelle'] }}</label></td>
+                    <td><input id="synchro-{{ $cle }}" type="number" wire:model="synchro.{{ $cle }}" min="{{ $d['min'] }}" max="{{ $d['max'] }}" step="1" aria-label="{{ $d['libelle'] }}"> {{ $d['unite'] }}</td>
+                    <td>de {{ $d['min'] }} à {{ $d['max'] }} {{ $d['unite'] }}, défaut {{ $d['defaut'] }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+        <p><button class="btn" type="button" wire:click="enregistrerSynchro">Enregistrer les réglages de synchronisation</button></p>
+    </div>
     <div class="carte" wire:ignore x-data="messagerieSmtp('{{ route('panneau.smtp') }}', '{{ route('panneau.smtp.envoi') }}', '{{ route('panneau.smtp.test') }}', '{{ csrf_token() }}')">
         <h2>Messagerie SMTP du relais</h2>
         <p class="note">Sans serveur SMTP réglé, le relais n'envoie aucun courriel (récupération de la clé comprise) et le dit. Le mot de passe est enregistré chiffré, jamais relu ni affiché : laisser le champ vide pour conserver l'actuel.</p>

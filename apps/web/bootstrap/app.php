@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Le panneau est le seul espace authentifié du relais.
         $middleware->redirectGuestsTo('/panneau/connexion');
         $middleware->redirectUsersTo('/panneau');
+        // Lot RLS-SYNC : le panneau est réservé au superadmin (403 sinon, tentative journalisée).
+        $middleware->alias(['superadmin' => \App\Http\Middleware\ExigerSuperadmin::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

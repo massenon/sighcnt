@@ -15,6 +15,7 @@ use App\Livewire\Panneau\Opacite;
 use App\Livewire\Panneau\Parametres;
 use App\Livewire\Panneau\Sauvegarde;
 use App\Livewire\Panneau\Superadmin;
+use App\Livewire\Panneau\Synchronisation;
 use App\Livewire\Panneau\Tableau;
 use Illuminate\Support\Facades\Route;
 
@@ -25,13 +26,14 @@ Route::prefix('panneau')->group(function () {
     Route::get('/connexion', [PanneauAuthController::class, 'formulaire'])->name('panneau.connexion')->middleware('guest');
     Route::post('/connexion', [PanneauAuthController::class, 'connecter'])->name('panneau.connexion.envoi')->middleware(['guest', 'throttle:6,1']);
 
-    // Les douze écrans du module RLS (maquette), chacun une page Livewire. Tout est derrière l'authentification.
-    Route::middleware('auth')->group(function () {
+    // Les douze écrans du module RLS (maquette), chacun une page Livewire, plus « Synchronisation » (lot RLS-SYNC). Tout est derrière l'authentification ET réservé au superadmin.
+    Route::middleware(['auth', 'superadmin'])->group(function () {
         Route::get('/', Tableau::class)->name('panneau.tableau');
         Route::get('/appareils', Appareils::class)->name('panneau.appareils');
         Route::get('/boites', Boites::class)->name('panneau.boites');
         Route::get('/codes', Codes::class)->name('panneau.codes');
         Route::get('/indicateurs', Indicateurs::class)->name('panneau.indicateurs');
+        Route::get('/synchronisation', Synchronisation::class)->name('panneau.synchronisation');
         Route::get('/alertes', Alertes::class)->name('panneau.alertes');
         Route::get('/journal', Journal::class)->name('panneau.journal');
         Route::get('/superadmin', Superadmin::class)->name('panneau.superadmin');

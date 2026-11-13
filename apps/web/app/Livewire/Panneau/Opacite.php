@@ -15,6 +15,7 @@ class Opacite extends Component
         return view('livewire.panneau.opacite', [
             'mesure' => MesureOpacite::mesurer(),
             'cle' => MesureOpacite::cleDeCliniqueAuRelais(),
+            'synchro' => MesureOpacite::historiqueSynchro(),
         ]);
     }
 }

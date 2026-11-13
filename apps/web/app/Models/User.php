@@ -18,6 +18,9 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    /** Un compte est superadmin par défaut : le seul chemin de création est la commande `relais:superadmin`. Un compte qui ne l'est pas n'ouvre aucune page du panneau. */
+    protected $attributes = ['superadmin' => true];
+
     protected $fillable = [
         'name',
         'email',
@@ -44,6 +47,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'superadmin' => 'boolean',
         ];
     }
 }

@@ -3,6 +3,7 @@
     <div class="grille">
         <div class="carte"><h2>Clé de clinique au relais</h2><div class="valeur">{{ $cle ? 'Présente' : 'Aucune' }}</div><span class="puce {{ $cle ? 'alerte' : 'ok' }}">{{ $cle ? 'ALERTE' : 'OK' }}</span></div>
         <div class="carte"><h2>Entropie moyenne</h2><div class="valeur">{{ $mesure['entropie'] === null ? 'n/d' : number_format($mesure['entropie'], 2, ',', ' ').' bits/octet' }}</div>@if($mesure['entropie'] === null)<p>Aucune enveloppe à mesurer.</p>@endif</div>
+        <div class="carte"><h2>Historique de synchronisation</h2><div class="valeur">{{ $synchro['lignes'] }}</div><span class="puce {{ $synchro['colonnes_hors_liste'] === [] && $synchro['refs_hors_liste'] === 0 ? 'ok' : 'alerte' }}">{{ $synchro['colonnes_hors_liste'] === [] && $synchro['refs_hors_liste'] === 0 ? 'OK' : 'ALERTE' }}</span><p>Compteurs et horodatages seulement : {{ count($synchro['colonnes_hors_liste']) }} colonne(s) hors liste, {{ $synchro['refs_hors_liste'] }} référence(s) hors forme.</p></div>
         <div class="carte"><h2>Noms de collection lisibles</h2><div class="valeur">{{ $mesure['lisibles'] }}</div><span class="puce {{ $mesure['lisibles'] === 0 ? 'ok' : 'alerte' }}">{{ $mesure['lisibles'] === 0 ? 'OK' : 'ALERTE' }}</span></div>
     </div>
     <div class="carte">
@@ -13,6 +14,7 @@
                 <tr><td>Identifiant et état de l’appareil</td><td>oui</td></tr>
                 <tr><td>Sens, rang, taille, date d’une enveloppe</td><td>oui</td></tr>
                 <tr><td>Indicateurs publiés par la mère (agrégats sans nom)</td><td>oui</td></tr>
+                <tr><td>État de synchronisation des fileuls (compteurs et horodatages publiés par la mère)</td><td>oui</td></tr>
                 <tr><td>Contenu d’une enveloppe</td><td><span class="puce ok">non (chiffré)</span></td></tr>
                 <tr><td>Nom d’une collection ou d’un champ</td><td><span class="puce ok">non</span></td></tr>
                 <tr><td>La clé de clinique</td><td><span class="puce ok">non</span></td></tr>
