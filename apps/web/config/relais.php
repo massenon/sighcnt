@@ -28,5 +28,9 @@ return [
         ['type' => 'appareil_bloque', 'libelle' => 'Appareil bloqué', 'canal' => 'Courriel + panneau', 'active' => true],
         ['type' => 'disque', 'libelle' => 'Espace disque faible', 'canal' => 'Courriel', 'active' => true],
         ['type' => 'cron', 'libelle' => 'Tâche cron non exécutée', 'canal' => 'Panneau', 'active' => true],
+        // Lot RLS-SYNC : seuils réglés en base (écran Paramètres), pas ici.
+        ['type' => 'fileul_silencieux', 'libelle' => 'Fileul silencieux', 'canal' => 'Panneau', 'active' => true],
+        ['type' => 'mobile_silencieux', 'libelle' => 'Mobile silencieux', 'canal' => 'Panneau', 'active' => true],
+        ['type' => 'boite_grossit', 'libelle' => 'Boîte aux lettres qui grossit', 'canal' => 'Panneau', 'active' => true],
     ],
 ];

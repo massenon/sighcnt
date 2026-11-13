@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
  */
 class Exporteur
 {
-    public const TABLES = ['relais_codes', 'relais_appareils', 'relais_enveloppes', 'relais_meta', 'relais_audit', 'relais_alertes', 'relais_indicateurs_historique'];
+    public const TABLES = ['relais_codes', 'relais_appareils', 'relais_enveloppes', 'relais_meta', 'relais_audit', 'relais_alertes', 'relais_indicateurs_historique', 'relais_synchro_historique'];
 
     public static function dossier(): string
     {

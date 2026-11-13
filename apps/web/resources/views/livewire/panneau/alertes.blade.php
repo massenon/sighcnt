@@ -14,5 +14,5 @@
         </table>
     </div>
     <p><button class="btn" type="button" wire:click="tester">Envoyer un courriel de test</button></p>
-    <p class="note">Les seuils se règlent dans le fichier .env du relais (voir « Paramètres du relais »). Les alertes levées se lisent au tableau de bord.</p>
+    <p class="note">Les seuils du battement, du disque et du cron se règlent dans le fichier .env du relais ; ceux de la synchronisation (fileul, mobile, boîte aux lettres), enregistrés en base, dans « Paramètres du relais ». Les alertes levées se lisent au tableau de bord.</p>
 </div>

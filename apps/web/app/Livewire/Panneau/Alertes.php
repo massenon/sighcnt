@@ -3,6 +3,7 @@
 namespace App\Livewire\Panneau;
 
 use App\Relais\Format;
+use App\Relais\Synchro\Reglages;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Layout;
@@ -37,6 +38,9 @@ class Alertes extends Component
             'appareil_bloque' => 'immédiat',
             'disque' => (int) config('relais.seuil_disque_pct').' %',
             'cron' => round((int) config('relais.seuil_cron_ms') / 60000, 1).' min',
+            'fileul_silencieux' => Reglages::valeur('fileul_silencieux_min').' min',
+            'mobile_silencieux' => Reglages::valeur('mobile_silencieux_min').' min',
+            'boite_grossit' => Reglages::valeur('boite_enveloppes_max').' enveloppes',
             default => 'n/d',
         };
     }

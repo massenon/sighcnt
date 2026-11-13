@@ -3,6 +3,8 @@
 namespace App\Relais;
 
 use App\Models\User;
+use App\Relais\Synchro\Etat;
+use App\Relais\Synchro\Reglages;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -20,6 +22,13 @@ class Surveillance
     public const DISQUE = 'disque';
 
     public const CRON = 'cron';
+
+    // Lot RLS-SYNC : trois signalements de plus. Le relais SIGNALE un silence ou une boîte qui grossit ; il ne juge aucun contenu.
+    public const FILEUL = 'fileul_silencieux';
+
+    public const MOBILE = 'mobile_silencieux';
+
+    public const BOITE = 'boite_grossit';
 
     public static function libelle(string $type): string
     {
@@ -63,11 +72,16 @@ class Surveillance
         $bloques = (int) ($ind['appareils_bloques'] ?? 0);
         $libre = self::disqueLibrePct();
         $ageCron = self::ageCron();
+        $synchro = Etat::resume();
+        $r = Reglages::toutes();
 
         return [
             self::BATTEMENT => [$age === null || $age > (int) config('relais.seuil_battement_ms'), $age === null ? 'aucun battement reçu' : 'silence de '.Format::duree($age)],
             self::BLOQUE => [$bloques > 0, $bloques.' appareil(s) bloqué(s) déclaré(s) par la mère'],
             self::DISQUE => [$libre !== null && $libre < (int) config('relais.seuil_disque_pct'), 'espace libre '.$libre.' %'],
+            self::FILEUL => [$synchro['fileuls_silencieux'] > 0, $synchro['fileuls_silencieux'].' fileul(s) silencieux au-delà de '.$r['fileul_silencieux_min'].' min'],
+            self::MOBILE => [$synchro['mobiles_silencieux'] > 0, $synchro['mobiles_silencieux'].' mobile(s) silencieux au-delà de '.$r['mobile_silencieux_min'].' min'],
+            self::BOITE => [$synchro['boites'] > 0, $synchro['boites'].' boîte(s) aux lettres au-delà de '.$r['boite_enveloppes_max'].' enveloppes en attente'],
             self::CRON => [$ageCron === null || $ageCron > (int) config('relais.seuil_cron_ms'), $ageCron === null ? 'aucun passage enregistré' : 'dernier passage il y a '.Format::duree($ageCron)],
         ];
     }

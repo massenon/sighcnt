@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Relais\Synchro\Historique;
+use App\Relais\Synchro\ListeBlanche;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
@@ -19,9 +21,9 @@ use Illuminate\Support\Facades\DB;
 class RelaisController extends Controller
 {
     // --- erreurs nommées --------------------------------------------------------------
-    private function refus(int $statut, string $code, string $motif = ''): never
+    private function refus(int $statut, string $code, string $motif = '', array $plus = []): never
     {
-        throw new HttpResponseException(response()->json(['code' => $code, 'motif' => $motif], $statut));
+        throw new HttpResponseException(response()->json(['code' => $code, 'motif' => $motif] + $plus, $statut));
     }
 
     private function estMere(Request $r): bool
@@ -192,8 +194,14 @@ class RelaisController extends Controller
         if ($dir !== 'vers_mobile' || $app !== $a->uuid) {
             $this->refus(403, 'lecture_interdite', 'Un appareil ne lit que SA boîte.');
         }
+        /* Lot RLS-SYNC : le relais note QUAND l'appareil a relevé sa boîte et JUSQU'À QUEL RANG il l'a relevée : le plus haut rang qu'il lui REMET (ou le `depuis_n` qu'il annonce, s'il est plus haut,
+           par exemple après un retour de réseau). Un mobile qui a reçu ses enveloppes n'appelle plus la relève avant d'en attendre de nouvelles : mesurer le seul `depuis_n` laisserait
+           toujours la dernière fournée « en attente ». Une heure et un rang : aucun contenu. Le rang ne recule jamais. */
+        $liste = $this->lister($dir, $app, $n, $lim);
+        $remis = $liste['env']->max('n');
+        DB::table('relais_appareils')->where('uuid', $a->uuid)->update(['dernier_releve' => (int) (microtime(true) * 1000), 'releve_n' => max((int) $a->releve_n, $n, (int) $remis)]);
 
-        return response()->json($this->lister($dir, $app, $n, $lim));
+        return response()->json($liste);
     }
 
     /* ADR-0006 : les journaux pair existants (appareil, dernier rang), pour que chaque appareil sache quoi relever. Aucun contenu. */
@@ -289,14 +297,29 @@ class RelaisController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    /** Agrégats SANS nom de patient : le seul contenu en clair que le relais accepte de la mère. */
+    /**
+     * Agrégats SANS nom de patient : le seul contenu en clair que le relais accepte de la mère. Lot RLS-SYNC : la partie « synchronisation » (tableau `fileuls`, version `protocole`) passe
+     * d'abord par la LISTE BLANCHE : une clé inconnue ou une valeur qui n'est pas un nombre est REFUSÉE en la nommant, et rien n'est enregistré d'un envoi refusé.
+     */
     public function indicateurs(Request $r): JsonResponse
     {
         $this->exigerMere($r);
-        $charge = json_encode($r->input('indicateurs', []), JSON_UNESCAPED_UNICODE);
-        $this->poserMeta('indicateurs', $charge);
-        // Historique (24 h affichées au panneau, 48 h conservées) : même contenu que le dernier envoi, rien de plus.
-        DB::table('relais_indicateurs_historique')->insert(['quand' => (int) (microtime(true) * 1000), 'charge' => $charge]);
+        $ind = $r->input('indicateurs', []);
+        $ind = is_array($ind) ? $ind : [];
+        $refus = ListeBlanche::verifier($ind);
+        if ($refus !== null) {
+            $this->refus(422, $refus['code'], $refus['motif'], ['geste' => $refus['geste'], 'chemin' => $refus['chemin']]);
+        }
+        $maintenant = (int) (microtime(true) * 1000);
+        $this->poserMeta('indicateurs', json_encode($ind, JSON_UNESCAPED_UNICODE));
+        $this->poserMeta('indicateurs_le', (string) $maintenant);
+        // Historique (24 h affichées au panneau, 48 h conservées) : les compteurs de l'envoi, sans le tableau des fileuls (il a son historique à part, purgé à la durée réglée).
+        $legacy = $ind;
+        unset($legacy['fileuls']);
+        DB::table('relais_indicateurs_historique')->insert(['quand' => $maintenant, 'charge' => json_encode($legacy, JSON_UNESCAPED_UNICODE)]);
+        if (isset($ind['fileuls']) && is_array($ind['fileuls'])) {
+            Historique::echantillonnerFileuls($ind['fileuls'], $maintenant);
+        }
 
         return response()->json(['ok' => true]);
     }
