@@ -624,11 +624,19 @@
                   },
                 },
                 { key: 'valideTechniquePar', label: 'Validation technique' },
+                {
+                  key: 'variationBrutale', label: 'Variation brutale',
+                  value: function (r) { return alertesDe(r).length; },
+                  render: function (r) {
+                    var n = alertesDe(r).length;
+                    return n ? el('span', { 'data-alerte-validation': String(n) }, U.badge(C.num(n) + ' variable(s) signalée(s)', 'warning')) : el('span.text-xs.text-slate-300', { text: '—' });
+                  },
+                },
               ]),
               onRowClick: function (r) {
                 U.drawer({
                   title: r.analyse, subtitle: r.patient + ' — ' + r.reference,
-                  body: detailDemande(r),
+                  body: el('div.space-y-3', null, [noteAlertes(r), detailDemande(r)].filter(Boolean)),
                   footer: [K.btn('Relire et corriger', { icon: 'pencil', onclick: function () { ouvrirSaisie(r); } })],
                 });
               },
@@ -678,7 +686,12 @@
                       title: 'Valider biologiquement ' + C.num(sel.length) + ' résultat(s) ?',
                       message: 'Une fois validés, ces résultats sont <strong>visibles du prescripteur</strong> '
                         + 'et font foi. Toute correction ultérieure donnera une version rectificative dont il '
-                        + 'sera averti.<br><br>Avez-vous relu l’ensemble ?',
+                        + 'sera averti.<br><br>'
+                        + (sel.filter(function (x) { return alertesDe(x).length; }).length
+                          ? '<strong>Variation brutale signalée sur ' + C.num(sel.filter(function (x) { return alertesDe(x).length; }).length)
+                            + ' résultat(s) de la sélection</strong> : le signalement n’empêche pas la validation, mais demande une relecture.<br><br>'
+                          : '')
+                        + 'Avez-vous relu l’ensemble ?',
                       confirmLabel: 'Valider biologiquement',
                     }).then(function (ok) {
                       if (!ok) return;
@@ -797,6 +810,11 @@
           title: interim ? 'Valider par intérim ?' : 'Validation biologique',
           message: 'Le résultat de <strong>' + r.analyse + '</strong> pour ' + r.patient
             + ' deviendra <strong>visible du prescripteur</strong> et fera foi.<br><br>'
+            + (alertesDe(r).length
+              ? '<strong>Variation brutale signalée</strong> (seuils validés) : '
+                + alertesDe(r).map(function (x) { return x.variable.libelle + ' ' + texteVariation(x.variation, x.suffixe); }).join(' ; ')
+                + '. Ce signalement n’empêche pas la validation : relire avant de signer.<br><br>'
+              : '')
             + (interim
               ? 'Vous portez cette validation <strong>en l’absence du biologiste médical</strong> : '
                 + 'votre qualité d’intérimaire sera portée sur le compte rendu.<br><br>'
@@ -1642,9 +1660,50 @@
     return t + ' (' + (variation.pourcent > 0 ? '+' : '') + C.num(variation.pourcent, 1) + ' %)';
   }
 
+  /* --------------------------------------------------------------------------
+   * ALERTE DE VARIATION BRUTALE (lot A2) : le moteur des seuils vit au socle (`SIGH.laboSeuils`), ici on ne fait que LIRE.
+   * Une mesure se juge au seuil Validé en vigueur à la date de sa validation biologique, à aujourd'hui tant qu'elle n'est pas rendue.
+   * L'alerte SIGNALE : elle ne bloque rien, et n'est lue que du comparatif et de l'écran de validation biologique.
+   * ----------------------------------------------------------------------- */
+  function seuils() { return global.SIGH.laboSeuils; }
+  function dateJugementMesure(d) { return D.resultatRendu(d.etatAnalyse) ? String(d.valideLe || d.dateHeure || '').slice(0, 10) : C.iso(AUJ); }
+  /** « variation de 1 G/l ou de 20 % » : ce que dit un seuil, dans l'unité de la variable. */
+  function texteSeuil(s, suffixe) {
+    var t = [];
+    if (s.ecartAbsolu != null) t.push(s.ecartAbsolu + (suffixe || ''));
+    if (s.ecartRelatif != null) t.push(s.ecartRelatif + ' %');
+    return t.join(' ou ');
+  }
+  function texteAlerte(a, suffixe) {
+    return 'Variation brutale : seuil de ' + texteSeuil(a.seuil, suffixe) + ' atteint (seuil validé, version ' + a.seuil.version + ' du ' + C.dateFR(a.seuil.dateEffet) + ')';
+  }
+  /** Les variations brutales d'UNE mesure (variables numériques seulement) : [{ variable, variation, alerte, precedente, suffixe }]. */
+  function alertesDe(demande) {
+    var code = codeExamenDeStatique(demande);
+    if (!code || !seuils()) return [];
+    var out = [];
+    variablesDe(code).filter(function (v) { return v.actif !== false && !v.accompagnement && v.type === 'numerique'; }).forEach(function (v) {
+      var val = (demande.valeurs || {})[v.code];
+      if (valeurVide(val)) return;
+      var prec = derniereValeurAnterieure(demande, v.code);
+      if (!prec) return;
+      var variation = variationEntre(v, prec.valeur, val);
+      var a = seuils().alerteVariation(v, variation, dateJugementMesure(demande));
+      if (a && a.alerte) { var u = symbole(v.unite); out.push({ variable: v, variation: variation, alerte: a, precedente: prec.demande, suffixe: u === '—' ? '' : ' ' + u }); }
+    });
+    return out;
+  }
+  function noteAlertes(demande) {
+    var al = alertesDe(demande);
+    if (!al.length) return null;
+    return K.note('<strong>Variation brutale signalée sur ' + C.num(al.length) + ' variable(s)</strong> par rapport à la mesure précédente rendue. Ce signalement n’empêche pas la validation : il demande une relecture avant de signer.<br>'
+      + al.map(function (x) { return x.variable.libelle + ' : ' + texteVariation(x.variation, x.suffixe) + '. ' + texteAlerte(x.alerte, x.suffixe) + '.'; }).join('<br>'),
+    { tone: 'warning', icon: 'activity' });
+  }
+
   global.SIGH.laboAnteriorites = {
     NB_ANTERIORITES: NB_ANTERIORITES, mesuresRendues: mesuresRendues, anterieuresDe: anterieuresDe,
-    derniereValeurAnterieure: derniereValeurAnterieure, variationEntre: variationEntre, texteVariation: texteVariation,
+    derniereValeurAnterieure: derniereValeurAnterieure, variationEntre: variationEntre, texteVariation: texteVariation, alertesDe: alertesDe,
   };
 
   /** Les variables d'un examen, dans l'ordre de rendu, telles que paramétrées. */
@@ -1734,6 +1793,7 @@
       var selSection = el('select.select');
       var selExamen = el('select.select');
       var selEtat = el('select.select');
+      var selSeuil = el('select.select', { 'data-filtre-seuil': '' });
 
       selSection.appendChild(el('option', { value: '' }, 'Toutes les sections'));
       L.SECTIONS.forEach(function (x) { selSection.appendChild(el('option', { value: x.id }, x.label)); });
@@ -1741,6 +1801,9 @@
       selEtat.appendChild(el('option', { value: 'documente' }, 'Documentées'));
       selEtat.appendChild(el('option', { value: 'valider' }, 'À valider'));
       selEtat.appendChild(el('option', { value: 'ferme' }, 'Fermées'));
+      [['', 'Tous les seuils'], ['aucun', 'Sans seuil configuré'], ['enregistre', 'Enregistrés (sans effet)'], ['valide', 'Validés (en vigueur)']].forEach(function (o) {
+        selSeuil.appendChild(el('option', { value: o[0] }, o[1]));
+      });
       remplirExamens();
 
       var barre = el('div.card');
@@ -1748,10 +1811,11 @@
         el('div.min-w-\[12rem\]', null, [el('label.label', { text: 'Section' }), selSection]),
         el('div.min-w-\[16rem\]', null, [el('label.label', { text: 'Examen' }), selExamen]),
         el('div', null, [el('label.label', { text: 'État' }), selEtat]),
+        el('div', null, [el('label.label', { text: 'Seuils de variation' }), selSeuil]),
         K.btn('Imprimer le référentiel', { icon: 'printer', onclick: imprimer }),
       ]));
       selSection.addEventListener('change', function () { remplirExamens(); afficher(); });
-      [selExamen, selEtat].forEach(function (x) { x.addEventListener('change', afficher); });
+      [selExamen, selEtat, selSeuil].forEach(function (x) { x.addEventListener('change', afficher); });
 
       root.appendChild(el('div.space-y-4', null, [barre, vue]));
       afficher();
@@ -1938,7 +2002,220 @@
             ];
           },
         }));
+        vue.appendChild(sectionSeuils());
         U.icons(vue);
+      }
+
+      /* ------------------------------------------------------------------
+       * SEUILS DE VARIATION BRUTALE (lot A2)
+       * ------------------------------------------------------------------
+       * Un seuil par variable numérique, VIDE par défaut : aucun document n'en donne, c'est une décision du biologiste médical. Enregistré
+       * (sans effet) puis Validé (en vigueur) ; modifier un seuil validé ajoute une version datée, l'ancienne reste lisible. Le MOTEUR
+       * (`SIGH.laboSeuils`) refuse aussi ce que l'écran n'offre pas : une commande interdite est ABSENTE, et un geste forcé reçoit un refus nommé.
+       * ---------------------------------------------------------------- */
+      function lignesSeuils() {
+        return colVariables().active().filter(function (v) {
+          if (v.type !== 'numerique' || v.accompagnement || v.actif === false) return false;
+          if (selSection.value && v.section !== selSection.value) return false;
+          if (selExamen.value && v.examen !== selExamen.value) return false;
+          var e = seuils().etat(v.id).etat;
+          if (selSeuil.value === 'aucun') return e === 'aucun';
+          if (selSeuil.value === 'enregistre') return e === 'enregistre' || e === 'enregistre_sur_valide';
+          if (selSeuil.value === 'valide') return e === 'valide' || e === 'enregistre_sur_valide';
+          return true;
+        });
+      }
+      function suffixeDe(v) { var u = symbole(v.unite); return u === '—' ? '' : ' ' + u; }
+      function etatSeuilBadge(e) {
+        if (e.etat === 'enregistre') return U.badge('Enregistré (sans effet)', 'warning');
+        if (e.etat === 'enregistre_sur_valide') return U.badge('Enregistré, la version validée reste en force', 'warning');
+        if (e.etat === 'valide') return U.badge('Validé', 'success');
+        return U.badge(e.retire ? 'Alerte retirée' : 'Aucun seuil', 'neutral');
+      }
+      function sectionSeuils() {
+        var tous = colVariables().active().filter(function (v) { return v.type === 'numerique' && !v.accompagnement && v.actif !== false; });
+        var etats = tous.map(function (v) { return seuils().etat(v.id).etat; });
+        var bloc = el('div.space-y-4', { 'data-seuils-variation': '' });
+        bloc.appendChild(U.kpiGrid([
+          { label: 'Variables numériques', value: C.num(tous.length), icon: 'hash', tone: 'navy' },
+          { label: 'Seuils validés', value: C.num(etats.filter(function (x) { return x === 'valide' || x === 'enregistre_sur_valide'; }).length), icon: 'shield-check', tone: 'success', hint: 'En vigueur' },
+          { label: 'Seuils enregistrés', value: C.num(etats.filter(function (x) { return x === 'enregistre' || x === 'enregistre_sur_valide'; }).length), icon: 'save', tone: 'warning', hint: 'Sans effet tant qu’ils ne sont pas validés' },
+          { label: 'Sans seuil', value: C.num(etats.filter(function (x) { return x === 'aucun'; }).length), icon: 'bell-off', tone: 'neutral', hint: 'Pas d’alerte configurée' },
+        ]));
+        bloc.appendChild(K.note('<strong>Seuils de variation brutale.</strong> Aucun seuil n’est proposé : un seuil vide veut dire « pas d’alerte configurée », jamais zéro. '
+          + 'Un seuil <strong>Enregistré</strong> est sans effet ; seul un seuil <strong>Validé</strong> par le biologiste médical alerte, au comparatif et à l’écran de validation biologique, '
+          + 'jamais sur le résultat que lit le prescripteur. Modifier un seuil validé ajoute une version datée : l’ancienne reste lisible et les alertes déjà levées gardent leur seuil.',
+        { tone: 'info', icon: 'activity' }));
+        bloc.appendChild(U.dataTable({
+          title: 'Seuils de variation brutale', rows: lignesSeuils(), exportName: 'seuils-variation', pageSize: 12, searchable: true,
+          emptyMessage: 'Aucune variable numérique ne correspond à ce filtre.',
+          columns: [
+            {
+              key: 'libelle', label: 'Variable',
+              render: function (v) {
+                return el('div.min-w-0', { 'data-seuil-variable': v.code }, [
+                  el('p.truncate.text-sm.font-medium.text-slate-800', { text: v.libelle }),
+                  el('p.text-xs.text-slate-400', { text: v.examenLibelle }),
+                ]);
+              },
+            },
+            { key: 'unite', label: 'Unité', align: 'right', text: function (v) { return symbole(v.unite); }, render: function (v) { return el('span.font-mono.text-xs', { text: symbole(v.unite) }); } },
+            {
+              key: 'enVigueur', label: 'Seuil en vigueur', value: function (v) { var e = seuils().etat(v.id); return e.enVigueur ? texteSeuil(e.enVigueur, suffixeDe(v)) : ''; },
+              render: function (v) {
+                var e = seuils().etat(v.id);
+                if (!e.enVigueur) return el('span.text-xs.text-slate-400', { text: e.retire ? 'Alerte retirée' : 'Aucun seuil configuré' });
+                return el('div', { 'data-seuil-vigueur': v.code }, [
+                  el('p.text-sm', { text: texteSeuil(e.enVigueur, suffixeDe(v)) }),
+                  el('p.text-[10px].text-slate-400', { text: 'version ' + e.enVigueur.version + ', depuis le ' + C.dateFR(e.enVigueur.dateEffet) }),
+                ]);
+              },
+            },
+            {
+              key: 'etat', label: 'État', value: function (v) { return seuils().etat(v.id).etat; },
+              render: function (v) { return el('span', { 'data-seuil-etat': v.code }, etatSeuilBadge(seuils().etat(v.id))); },
+            },
+            {
+              key: 'brouillon', label: 'Enregistré en attente', value: function (v) { var b = seuils().etat(v.id).brouillon; return b ? texteSeuil(b, suffixeDe(v)) : ''; },
+              render: function (v) {
+                var b = seuils().etat(v.id).brouillon;
+                if (!b) return el('span.text-xs.text-slate-300', { text: '—' });
+                return el('div', null, [
+                  el('p.text-sm', { text: b.retrait ? 'Retrait de l’alerte' : texteSeuil(b, suffixeDe(v)) }),
+                  el('p.text-[10px].text-slate-400', { text: 'à partir du ' + C.dateFR(b.dateEffet) }),
+                ]);
+              },
+            },
+          ],
+          rowActions: function (v) {
+            var e = seuils().etat(v.id), actes = [];
+            if (K.droits('M5').editer) {
+              var br = K.iconBtn('sliders-horizontal', 'Régler le seuil de ' + v.libelle, function () { reglerSeuil(v); });
+              br.setAttribute('data-regler-seuil', v.code); actes.push(br);
+            }
+            /* Valider : ABSENT pour tout profil hors de la famille du laboratoire, et le moteur refuse aussi. */
+            if (e.brouillon && seuils().peutValider()) {
+              var bv = K.btn('Valider', { size: 'sm', variant: 'primary', icon: 'shield-check', onclick: function () { validerLeSeuil(v); } });
+              bv.setAttribute('data-valider-seuil', v.code); actes.push(bv);
+            }
+            if (e.brouillon && K.droits('M5').editer) {
+              var ba = K.iconBtn('x', 'Abandonner le seuil enregistré', function () { abandonnerLeSeuil(v); });
+              ba.setAttribute('data-abandonner-seuil', v.code); actes.push(ba);
+            }
+            if (e.versions.length) {
+              var bh = K.iconBtn('history', 'Historique des versions du seuil', function () { historiqueSeuil(v); });
+              bh.setAttribute('data-historique-seuil', v.code); actes.push(bh);
+            }
+            return actes;
+          },
+        }));
+        return bloc;
+      }
+
+      function refusSeuilToast(r) { U.toast(r.motif, { type: 'error', detail: r.geste }); }
+
+      function validerLeSeuil(v, apres) {
+        var b = seuils().brouillon(v.id);
+        if (!b) return Promise.resolve(false);
+        return U.confirm({
+          title: 'Valider le seuil de « ' + v.libelle + ' » ?',
+          message: 'Le seuil <strong>' + (b.retrait ? 'retire l’alerte' : texteSeuil(b, suffixeDe(v))) + '</strong> entrera en vigueur le <strong>' + C.dateFR(b.dateEffet)
+            + '</strong>. À partir de là, une variation au moins égale à ce seuil est <strong>signalée</strong> au comparatif et à l’écran de validation biologique ; '
+            + 'elle n’empêche jamais de valider. La version validée ne se réécrit plus : la modifier ajoutera une version.<br><br>Le motif dit sur quoi le seuil s’appuie.',
+          confirmLabel: 'Valider le seuil', requireMotif: true,
+        }).then(function (rep) {
+          if (!rep) return false;
+          /* Un motif vide n'est pas ignoré en silence : le moteur le refuse en le nommant (MOTIF_OBLIGATOIRE). */
+          var r = seuils().valider(v.id, { motif: rep.motif });
+          if (!r.ok) { refusSeuilToast(r); return false; }
+          afficher();
+          U.toast('Seuil validé.', { type: 'success', detail: v.libelle + ' : en vigueur le ' + C.dateFR(b.dateEffet) + ', validé par ' + r.validePar + '.' });
+          if (apres) apres();
+          return true;
+        });
+      }
+
+      function abandonnerLeSeuil(v) {
+        U.confirm({
+          title: 'Abandonner le seuil enregistré de « ' + v.libelle + ' » ?',
+          message: 'Le seuil enregistré (sans effet) est archivé. La version validée, s’il y en a une, reste en force.',
+          confirmLabel: 'Abandonner', danger: true,
+        }).then(function (ok) {
+          if (!ok) return;
+          var r = seuils().abandonner(v.id, { motif: 'Brouillon abandonné' });
+          if (!r.ok) { refusSeuilToast(r); return; }
+          afficher();
+          U.toast('Seuil abandonné.', { type: 'success' });
+        });
+      }
+
+      function historiqueSeuil(v) {
+        var e = seuils().etat(v.id);
+        var t = el('table.tbl', { 'data-historique-seuils': v.code });
+        t.appendChild(el('thead', null, el('tr', null, ['Version', 'État', 'Seuil', 'Date d’effet', 'Enregistré par', 'Validé par', 'Motif'].map(function (x) { return el('th', { text: x }); }))));
+        var tb = el('tbody');
+        e.versions.slice().reverse().forEach(function (x) {
+          tb.appendChild(el('tr', null, [
+            el('td', { text: 'v' + x.version }),
+            el('td', { text: x.etat === 'valide' ? 'Validé' : 'Enregistré (sans effet)' }),
+            el('td', { text: x.retrait ? 'Retrait de l’alerte' : texteSeuil(x, suffixeDe(v)) }),
+            el('td', { text: C.dateFR(x.dateEffet) }),
+            el('td', { text: (x.enregistrePar || '') + (x.enregistreLe ? ', le ' + C.dateFR(x.enregistreLe) : '') }),
+            el('td', { text: x.etat === 'valide' ? x.validePar + ' (' + x.valideRole + '), le ' + C.dateFR(x.valideLe) : '' }),
+            el('td', { text: x.motifValidation || '' }),
+          ]));
+        });
+        t.appendChild(tb);
+        var m = U.modal({
+          title: 'Versions du seuil : ' + v.libelle, subtitle: v.examenLibelle, size: 'xl',
+          body: el('div.space-y-3', null, [K.note('Une version validée ne se réécrit jamais : une alerte déjà levée garde le seuil sous lequel elle l’a été.', { tone: 'info', icon: 'history' }), el('div.card', null, el('div.overflow-x-auto', null, t))]),
+          footer: [K.btn('Fermer', { onclick: function () { m.close(); } })],
+        });
+      }
+
+      function reglerSeuil(v) {
+        var e = seuils().etat(v.id), base = e.brouillon || e.enVigueur || {};
+        var u = symbole(v.unite);
+        var jour = C.iso(AUJ);
+        var champsS = [
+          { name: 'ecartAbsolu', label: 'Variation absolue d’au moins' + (u === '—' ? '' : ' (' + u + ')'), type: 'number', step: 'any', hint: 'Vide : pas d’alerte sur l’écart absolu' },
+          { name: 'ecartRelatif', label: 'Variation relative d’au moins (%)', type: 'number', step: 'any', hint: 'Vide : pas d’alerte sur le pourcentage' },
+          { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, hint: 'Aujourd’hui ou plus tard : un seuil ne s’applique jamais en arrière' },
+          { name: 'note', label: 'Note', type: 'text', col: 'full' },
+        ];
+        if (e.enVigueur) champsS.push({ name: 'retrait', label: 'Retirer l’alerte à partir de la date d’effet (vider les deux seuils)', type: 'checkbox', col: 'full' });
+        var f = U.form(champsS, {
+          ecartAbsolu: base.retrait ? null : base.ecartAbsolu, ecartRelatif: base.retrait ? null : base.ecartRelatif,
+          dateEffet: base.dateEffet && base.dateEffet >= jour ? base.dateEffet : jour, note: base.note || '', retrait: !!(e.brouillon && e.brouillon.retrait),
+        });
+        var m;
+        function enregistrer(apres) {
+          var val = f.collect();
+          if (!val) return;
+          var r = seuils().enregistrer(v.id, { ecartAbsolu: val.ecartAbsolu, ecartRelatif: val.ecartRelatif, dateEffet: val.dateEffet, note: val.note, retrait: val.retrait === true });
+          if (!r.ok) { refusSeuilToast(r); return; }
+          m.close();
+          afficher();
+          if (apres) apres(); else U.toast('Seuil enregistré : sans effet tant qu’il n’est pas validé.', { type: 'success', detail: v.libelle + ' : ' + (r.seuil.retrait ? 'retrait de l’alerte' : texteSeuil(r.seuil, suffixeDe(v))) + ', à partir du ' + C.dateFR(r.seuil.dateEffet) + '.' });
+        }
+        m = U.modal({
+          title: 'Seuil de variation brutale : ' + v.libelle, subtitle: v.examenLibelle, size: 'lg',
+          body: el('div.space-y-3', { 'data-modale-seuil': v.code }, [
+            e.enVigueur ? K.note('Version <strong>' + e.enVigueur.version + '</strong> en vigueur depuis le ' + C.dateFR(e.enVigueur.dateEffet) + ' : <strong>' + texteSeuil(e.enVigueur, suffixeDe(v))
+              + '</strong>. Enregistrer ajoute une nouvelle version sans effet ; la version en vigueur reste en force jusqu’à la validation de la nouvelle.', { tone: 'info', icon: 'shield-check' })
+              : K.note('Aucun seuil n’est validé sur cette variable : aucune alerte n’est configurée. Un seuil enregistré reste sans effet tant qu’il n’est pas validé.', { tone: 'info', icon: 'bell-off' }),
+            f,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer', { variant: 'secondary', icon: 'save', onclick: function () { enregistrer(null); } }),
+            /* Valider : ABSENT hors de la famille du laboratoire (le moteur refuse aussi). */
+            seuils().peutValider() ? K.btn('Valider', {
+              variant: 'primary', icon: 'shield-check',
+              onclick: function () { enregistrer(function () { validerLeSeuil(v); }); },
+            }) : null,
+          ].filter(Boolean),
+        });
       }
 
       function editerPlage(p) {
@@ -3199,9 +3476,10 @@
       });
       var vb = valeurs[valeurs.length - 1];
       var prec = valeurVide(vb) ? null : derniereValeurAnterieure(b, v.code);
+      var variation = prec ? variationEntre(v, prec.valeur, vb) : null;
       lignes.push({
-        variable: v, suffixe: suffixe, cellules: cellules, precedente: prec ? prec.demande : null,
-        variation: prec ? variationEntre(v, prec.valeur, vb) : null,
+        variable: v, suffixe: suffixe, cellules: cellules, precedente: prec ? prec.demande : null, variation: variation,
+        alerte: variation && seuils() ? seuils().alerteVariation(v, variation, dateJugementMesure(b)) : null,
       });
     });
     return { colonnes: colonnes, lignes: lignes, anterieures: ant, comparee: b };
@@ -3392,6 +3670,11 @@
             return;
           }
           var nb = mod.colonnes.length;
+          var nbAlertes = mod.lignes.filter(function (l) { return l.alerte && l.alerte.alerte; }).length;
+          if (nbAlertes) {
+            tableau.appendChild(K.note('<strong>' + C.num(nbAlertes) + ' variable(s) en variation brutale</strong> à la mesure comparée, selon les seuils validés par le biologiste médical. Le signalement n’invalide aucun résultat.',
+              { tone: 'warning', icon: 'activity' }));
+          }
           var t = el('table.tbl', { 'data-comparatif': code });
           t.appendChild(el('thead', null, el('tr', null, [el('th', { text: 'Variable' })]
             .concat(mod.colonnes.map(function (m, i) {
@@ -3429,6 +3712,11 @@
             if (ligne.variation && ligne.precedente && ligne.precedente !== mod.anterieures.mesures[mod.anterieures.mesures.length - 1]) {
               cVar.appendChild(el('p.text-[10px].text-slate-400', { text: 'à la mesure du ' + C.dateFR(ligne.precedente.dateHeure) }));
             }
+            if (ligne.alerte && ligne.alerte.alerte) {
+              cVar.appendChild(el('p.mt-1.text-xs.font-semibold.text-warning-700', { 'data-alerte-variation': '', text: texteAlerte(ligne.alerte, ligne.suffixe) }));
+            } else if (ligne.alerte && ligne.alerte.nonEvaluable) {
+              cVar.appendChild(el('p.mt-1.text-[10px].text-slate-400', { 'data-alerte-nonevaluable': '', text: 'Seuil relatif non évaluable : valeur précédente nulle.' }));
+            }
             cells.push(cVar);
             cells.push(el('td.text-right', null, el('span.text-xs.text-slate-500', { text: refB || '—' })));
             var tend = el('td');
@@ -3456,7 +3744,7 @@
           mod.colonnes.forEach(function (m, i) {
             cols.push({ label: C.dateFR(m.dateHeure) + (i === nb - 1 ? ' (comparée)' : ''), align: 'right', value: function (l) { return texteCellule(l, l.cellules[i]); } });
           });
-          cols.push({ label: 'Variation à la mesure précédente', value: function (l) { return texteVariation(l.variation, l.suffixe); } });
+          cols.push({ label: 'Variation à la mesure précédente', value: function (l) { return texteVariation(l.variation, l.suffixe) + (l.alerte && l.alerte.alerte ? ' : variation brutale' : ''); } });
           cols.push({ label: 'Références', value: function (l) { return l.cellules[nb - 1].reference || '—'; } });
           var pat = patients().filter(function (x) { return x.id === b.patientId; })[0];
           P.etat({

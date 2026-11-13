@@ -131,7 +131,7 @@
      nom normalisé, type, taille, pages, texte indexé) sur `courriers` et `documentsPatient`, `fichiersRetires` (historique d'une pièce retirée) ; `numerise` d'un courrier devient DÉRIVÉ du fichier. Les
      scans déjà déposés en base64 (`donnees`) sont REPRIS par la montée de version puis rangés dans le dossier de fichiers par une migration qui vérifie l'empreinte avant de retirer le base64.
      Sans incrément, un poste garderait des scans dans le magasin et aucun écran ne saurait lire la forme neuve. */
-  var VERSION = 82;
+  var VERSION = 83;
   var db = null;
   var listeners = {};
 
@@ -3756,9 +3756,12 @@
           /* LES FICHIERS NUMÉRISÉS SURVIVENT AU RÉ-AMORÇAGE (lot DOCS-1) : un scan déposé est une pièce de la clinique, pas un jeu de démonstration. Les courriers, les documents du patient et le registre
              des empreintes sont repris TELS QUELS dès qu'une fiche porte un fichier ou un base64 ; la migration range ensuite les base64 dans le dossier de fichiers. */
           var gardeFichiers = fichiersAGarder(o);
+          /* LES SEUILS DE VARIATION BRUTALE SURVIVENT AU RÉ-AMORÇAGE (lot A2) : un seuil validé est une décision du biologiste médical, tracée ; aucun seuil n'est jamais semé. */
+          var gardeSeuils = Array.isArray(o.seuilsDelta) && o.seuilsDelta.length ? o.seuilsDelta : null;
           db = null;
           load();
           if (gardeFichiers && db) { Object.keys(gardeFichiers).forEach(function (k) { db[k] = gardeFichiers[k]; }); save(); }
+          if (gardeSeuils && db) { db.seuilsDelta = gardeSeuils; save(); }
           if (anciensPostes && db) { db.postes = anciensPostes; reprendreOrganigramme(db); save(); }
           if (gardeTarifs && db) { reprendreTarifs(gardeTarifs); D.TARIFS.invalider(); projeterTarifs(); save(); }
           if (anciensTarifs && db) {
@@ -4147,7 +4150,7 @@
     'regimesTravail', 'regimesIndividuels', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
     'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'parametresFiscaux',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
-    'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
+    'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'seuilsDelta',
     'examensImagerie', 'variablesImagerie', 'pathologies',
     /* Modèles (badges, messages, questionnaires) et emplacements de rangement */
     'modelesBadge', 'modelesMessage', 'enquetes', 'emplacements',
@@ -4448,6 +4451,7 @@
     soinsCuratifsMaternite: 'M4|Soins curatifs & urgences maternité',
     demandesAnalyses: 'M5|Demandes d’analyses', analyses: 'M5|Catalogue des analyses',
     plagesReactif: 'M5|Plages de référence par lot de réactif',
+    seuilsDelta: 'M5|Seuils de variation brutale du laboratoire',
     actes: 'CFG|Catalogue des actes', ordonnances: 'M2|Ordonnances', taches: 'CFG|Files d’attente',
     certificats: 'CFG|Certificats médicaux', naturesFacture: 'CFG|Natures de facture', centresCouts: 'M12|Centres de coûts',
     objectifsPilotage: 'M12|Objectifs et seuils du pilotage',
@@ -4758,6 +4762,19 @@
     return n;
   }
   on('produits', projeterProduits);
+  /* UN SEUIL DE VARIATION BRUTALE VALIDÉ EST IMMUABLE (lot A2) : le modifier AJOUTE une version datée, l'ancienne reste lisible (une alerte déjà levée garde le seuil sous lequel elle l'a été).
+     Seul un seuil « enregistré » (sans effet) se remplace ou s'abandonne ; il ne passe à « validé » que par le moteur, qui pose en même temps ses traces. */
+  garder('seuilsDelta', function (op, rec) {
+    var existantes = (db && db.seuilsDelta) || [];
+    var avant = existantes.filter(function (x) { return x.id === rec.id; })[0];
+    if (op === 'inserer') return avant ? 'Le seuil « ' + rec.id + ' » existe déjà : une version ne se réécrit pas.' : null;
+    if (!avant) return null;
+    if (op === 'archiver') return avant.etat === 'valide' ? 'Une version de seuil validée ne s’archive pas : elle se remplace par une nouvelle version, et reste lisible (RG-14).' : null;
+    if (op !== 'modifier') return null;
+    if (avant.etat === 'valide') return 'Un seuil validé est IMMUABLE : le modifier ajoute une version datée, il ne réécrit pas l’ancienne.';
+    if (rec.etat === 'valide' && (!rec.valideLe || !rec.validePar || !String(rec.motifValidation || '').trim())) return 'Un seuil ne devient « validé » qu’avec son auteur, sa date et son motif.';
+    return null;
+  });
   var VERSION_IMMUABLE = ['code', 'version', 'prixNonAssure', 'etatNonAssure', 'prixAssure', 'etatAssure', 'prixVente', 'origine', 'proposePar', 'proposeLe', 'lot'];
   garder('versionsTarif', function (op, rec) {
     if (op === 'archiver') return 'Une version de prix ne s’archive pas : elle se REFUSE ou se RETIRE, et reste lisible (RG-14 : le prix d’une pièce émise doit pouvoir se relire).';

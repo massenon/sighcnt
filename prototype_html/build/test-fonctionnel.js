@@ -864,7 +864,49 @@ async function viderMessages(page) {
       });
       return { table: true, cols, lignes, texte: t.textContent.replace(/\s+/g, ' ') };
     });
-    return { ADMIN, MEDECIN, SAGE_FEMME, BIOLOGISTE, semer, choisir, comparer, lire };
+    /* --- Lot A2 : les seuils de variation brutale, par le geste de l'écran « Valeurs de référence » --- */
+    const viderSeuils = () => page.evaluate(() => { const S = window.SIGH.store; S.collection('seuilsDelta'); S.raw().seuilsDelta.splice(0); S.save(); });
+    const remplir = (nom, valeur) => page.evaluate((n, v) => {
+      const c = document.querySelector('.modal-root [name="' + n + '"], [role=dialog] [name="' + n + '"]'); if (!c) return false;
+      if (c.type === 'checkbox') c.checked = !!v; else c.value = v == null ? '' : String(v);
+      c.dispatchEvent(new Event('input', { bubbles: true })); c.dispatchEvent(new Event('change', { bubbles: true })); return true;
+    }, nom, valeur);
+    const cliquerModale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((x) => x.textContent.trim() === l && x.offsetParent !== null); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+    const boutonsModale = () => page.evaluate(() => [...document.querySelectorAll('.modal-root button, [role=dialog] button')].filter((x) => x.offsetParent !== null).map((x) => x.textContent.trim()));
+    const motif = (texte) => page.evaluate((t) => { const a = document.querySelector('[role=dialog] textarea'); if (!a) return false; a.value = t; a.dispatchEvent(new Event('input', { bubbles: true })); return true; }, texte);
+    const toast = () => page.evaluate(() => (document.querySelector('#toast-host') || { innerText: '' }).innerText.replace(/\s+/g, ' '));
+    const choisirExamen = async (code) => {
+      await page.evaluate((c) => { const sel = [...document.querySelectorAll('#page-content select.select')].find((x) => [...x.options].some((o) => o.value === c)); sel.value = c; sel.dispatchEvent(new Event('change', { bubbles: true })); }, code);
+      await pause(500);
+    };
+    /** Ce que l'écran des seuils montre pour une variable : état, seuil en vigueur, commandes offertes. */
+    const ligneSeuil = (code) => page.evaluate((c) => {
+      const t = (s) => { const n = document.querySelector(s); return n ? n.textContent.replace(/\s+/g, ' ').trim() : null; };
+      const q = (s) => !!document.querySelector(s);
+      return { etat: t('[data-seuil-etat="' + c + '"]'), vigueur: t('[data-seuil-vigueur="' + c + '"]'), regler: q('[data-regler-seuil="' + c + '"]'), valider: q('[data-valider-seuil="' + c + '"]'), abandonner: q('[data-abandonner-seuil="' + c + '"]'), historique: q('[data-historique-seuil="' + c + '"]') };
+    }, code);
+    /** Ouvre la fenêtre de réglage d'une variable, remplit, et clique le bouton nommé. */
+    async function regler(code, valeurs, bouton) {
+      const ouvert = await page.evaluate((c) => { const b = document.querySelector('[data-regler-seuil="' + c + '"]'); if (!b) return false; b.click(); return true; }, code);
+      if (!ouvert) return false;
+      await pause(300);
+      for (const k of Object.keys(valeurs)) await remplir(k, valeurs[k]);
+      await cliquerModale(bouton || 'Enregistrer');
+      await pause(500);
+      return true;
+    }
+    /** Valide par le geste de la ligne : bouton « Valider », puis le motif dans la fenêtre de confirmation. */
+    async function validerParGeste(code, texteMotif) {
+      const ouvert = await page.evaluate((c) => { const b = document.querySelector('[data-valider-seuil="' + c + '"]'); if (!b) return false; b.click(); return true; }, code);
+      if (!ouvert) return false;
+      await pause(300);
+      if (texteMotif != null) await motif(texteMotif);
+      await cliquerModale('Valider le seuil');
+      await pause(600);
+      return true;
+    }
+    const SE = (fn, ...args) => page.evaluate((f, a) => { const r = window.SIGH.laboSeuils[f].apply(null, a); return r === undefined ? null : JSON.parse(JSON.stringify(r)); }, fn, args);
+    return { ADMIN, MEDECIN, SAGE_FEMME, BIOLOGISTE, semer, choisir, comparer, lire, viderSeuils, remplir, cliquerModale, boutonsModale, motif, toast, choisirExamen, ligneSeuil, regler, validerParGeste, SE };
   })();
 
 
@@ -25130,6 +25172,310 @@ async function viderMessages(page) {
       rs.clic && rs.ouverte && b7 && b7['Globules blancs'].ant === '5 G/l (01/06/2026)' && fs2.texte.indexOf('6.5') < 0 && fs2.blocs.length === 2, JSON.stringify(fs2 && fs2.blocs));
     verifier('La fiche dit ce qu’elle ne reprend pas : « 1 antériorité(s) hors du périmètre du profil qui édite ne sont pas reprises »', fs2 && /1 antériorité\(s\) hors du périmètre du profil qui édite ne sont pas reprises/.test(fs2.texte), fs2 && fs2.texte.slice(-300));
     await poserSessionServeur(A.ADMIN);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  /* ==========================================================================
+   * LOT A2 : SEUILS DE VARIATION BRUTALE (Vagues 166 à 169). Aucun seuil n'est semé ni proposé ; Enregistré (sans effet) puis Validé (en vigueur) ;
+   * Valider réservé au biologiste médical et revérifié par le moteur ; un seuil validé ne se réécrit jamais.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 166 : A2 seuils : aucun seuil semé, Enregistré (sans effet) puis Validé (en vigueur) par le geste du biologiste médical, motif obligatoire, Valider absent et refusé par le moteur hors de la famille, refus nommés, journal');
+    erreursJS = [];
+    const A = outilsAnt;
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-demandes.html');
+    const depart = await page.evaluate(() => { const S = window.SIGH.store; return { n: S.collection('seuilsDelta').all().length, version: S.raw()._version }; });
+    verifier('Aucun seuil n’est semé : la collection des seuils est vide au départ', depart.n === 0, JSON.stringify(depart));
+    const NFS = 'NFS complète (hémogramme)';
+    const p = await A.semer('S1' + Date.now() % 100000, 'NFS', NFS, [
+      { date: '2026-08-17', etat: 'valide', valeurs: { GB: 6, HB: 12 } },
+      { date: '2026-08-18', etat: 'valide', valeurs: { GB: 9, HB: 12.5 } },
+    ]);
+    await attendreEcritures();
+
+    /* --- 1. Le biologiste voit des variables SANS seuil, en enregistre un : sans effet --------------------------------------------------------------------------- */
+    await poserSessionServeur(A.BIOLOGISTE);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen('NFS');
+    const gb0 = await A.ligneSeuil('GB');
+    const nbAucun = await page.evaluate(() => [...document.querySelectorAll('[data-seuil-etat]')].filter((n) => /Aucun seuil/.test(n.textContent)).length);
+    const nbVigueur = await page.evaluate(() => document.querySelectorAll('[data-seuil-vigueur]').length);
+    verifier('L’écran propose les variables numériques de l’examen, toutes « Aucun seuil » (pas d’alerte configurée), aucun seuil en vigueur, et la commande de réglage',
+      gb0.etat === 'Aucun seuil' && gb0.regler === true && nbAucun >= 10 && nbVigueur === 0, JSON.stringify([gb0, nbAucun, nbVigueur]));
+    await A.regler('GB', { ecartAbsolu: 1, ecartRelatif: 20 }, 'Enregistrer');
+    const gb1 = await A.ligneSeuil('GB');
+    verifier('« Enregistrer » garde l’état Enregistré : visible « Enregistré (sans effet) », aucun seuil en vigueur, le bouton Valider est offert au biologiste',
+      gb1.etat === 'Enregistré (sans effet)' && gb1.vigueur === null && gb1.valider === true && gb1.abandonner === true, JSON.stringify(gb1));
+    const effet0 = await A.SE('enVigueur', 'VAR-NFS-GB', '2026-08-20');
+    const alerte0 = await page.evaluate(() => { const v = window.SIGH.store.collection('variablesLabo').get('VAR-NFS-GB'); const L = window.SIGH.laboAnteriorites; return window.SIGH.laboSeuils.alerteVariation(v, L.variationEntre(v, 6, 9), '2026-08-20'); });
+    verifier('Un seuil seulement Enregistré est SANS EFFET : aucun seuil en vigueur, aucune alerte pour une variation de 6 à 9 (+3 G/l, +50 %)', effet0 === null && alerte0 === null, JSON.stringify([effet0, alerte0]));
+    await ouvrir('m5-resultats-comparatif.html');
+    await A.choisir(p.patientId, 'NFS');
+    let l = await A.lire();
+    verifier('Au comparatif, la même variation de 6 à 9 ne porte AUCUNE alerte tant que le seuil n’est pas validé', l.table && /↑ \+3 G\/l \(\+50\.0 %\)/.test(l.lignes.GB.variation) && l.lignes.GB.alerte === false, JSON.stringify(l.lignes && l.lignes.GB));
+
+    /* --- 2. Valider : motif obligatoire (refus nommé), puis le seuil est en vigueur ------------------------------------------------------------------------------- */
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen('NFS');
+    await A.validerParGeste('GB', '');
+    const refusMotif = await A.toast();
+    const gb2 = await A.ligneSeuil('GB');
+    verifier('Valider sans motif est refusé EN LE NOMMANT (le motif dit sur quoi le seuil s’appuie) : le seuil reste Enregistré', /motif de la validation est obligatoire/.test(refusMotif) && gb2.etat === 'Enregistré (sans effet)', refusMotif + ' ' + JSON.stringify(gb2));
+    await A.validerParGeste('GB', 'Protocole interne du laboratoire');
+    const gb3 = await A.ligneSeuil('GB');
+    verifier('Valider avec son motif fait passer le seuil de Enregistré à Validé : « Validé », en vigueur « 1 G/l ou 20 % » version 1 depuis le 16/08/2026, plus de bouton Valider',
+      gb3.etat === 'Validé' && /^1 G\/l ou 20 %\s*version 1, depuis le 16\/08\/2026$/.test(gb3.vigueur) && gb3.valider === false, JSON.stringify(gb3));
+    await ouvrir('m5-resultats-comparatif.html');
+    await A.choisir(p.patientId, 'NFS');
+    l = await A.lire();
+    verifier('Validé, le seuil alerte au comparatif : la variation de GB (+3 G/l) porte « Variation brutale : seuil de 1 G/l ou 20 % atteint (seuil validé, version 1 du 16/08/2026) », HB (aucun seuil) n’en porte pas',
+      l.table && l.lignes.GB.alerte === true && /seuil de 1 G\/l ou 20 % atteint \(seuil validé, version 1 du 16\/08\/2026\)/.test(l.lignes.GB.alerteTexte) && l.lignes.HB.alerte === false && /1 variable\(s\) en variation brutale/.test(await page.evaluate(() => document.getElementById('page-content').innerText)), JSON.stringify(l.lignes && [l.lignes.GB, l.lignes.HB]));
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => /Imprimer le comparatif/.test(x.textContent)); if (b) b.click(); });
+    const impA = await outilsDocs.attendre(() => !!document.querySelector('.print-chrome .print-sheet'));
+    const feuilleA = await page.evaluate(() => { const sh = document.querySelector('.print-chrome .print-sheet'); return sh ? sh.textContent.replace(/\s+/g, ' ') : ''; });
+    await page.evaluate(() => { const b = [...document.querySelectorAll('.print-chrome button')].find((x) => /Fermer/.test(x.textContent)); if (b) b.click(); });
+    verifier('Le comparatif imprimé porte la même alerte (« variation brutale ») que l’écran', impA && /↑ \+3 G\/l \(\+50\.0 %\) : variation brutale/.test(feuilleA), feuilleA.slice(0, 300));
+    const journal = await page.evaluate(() => {
+      const a = window.SIGH.store.raw().audit;
+      const e = a.filter((x) => x.action === 'Seuil de variation enregistré (sans effet)')[0], v = a.filter((x) => x.action === 'Seuil de variation validé')[0];
+      const ligne = window.SIGH.store.collection('seuilsDelta').all().filter((x) => x.variableId === 'VAR-NFS-GB')[0];
+      return { e: !!e, v: v ? { utilisateur: v.utilisateur, nouvelle: v.nouvelleValeur, quand: v.dateHeure } : null, ligne: { par: ligne.validePar, role: ligne.valideRole, motif: ligne.motifValidation, quand: ligne.valideLe } };
+    });
+    verifier('Le journal (RG-12) porte l’enregistrement (sans effet) et la validation (auteur, date, date d’effet, début du motif) ; la version validée garde l’auteur, le rôle, la date et le motif entier',
+      journal.e && journal.v && journal.v.utilisateur === 'GARBA Yahouza' && !!journal.v.quand && /"du":"2026-08-16"/.test(journal.v.nouvelle) && /Protocole interne/.test(journal.v.nouvelle)
+      && journal.ligne.par === 'GARBA Yahouza' && /Biologiste médical/.test(journal.ligne.role) && journal.ligne.motif === 'Protocole interne du laboratoire' && !!journal.ligne.quand, JSON.stringify(journal));
+
+    /* --- 3. Hors de la famille : l'administrateur ENREGISTRE mais ne VALIDE pas (commande absente, moteur qui refuse) -------------------------------------------- */
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen('NFS');
+    await A.regler('HB', { ecartAbsolu: 2 }, 'Enregistrer');
+    const hb1 = await A.ligneSeuil('HB');
+    verifier('L’administrateur enregistre un seuil (droit d’éditer l’écran) : « Enregistré (sans effet) »', hb1.etat === 'Enregistré (sans effet)', JSON.stringify(hb1));
+    verifier('…mais la commande « Valider » est ABSENTE de sa ligne (jamais grisée)', hb1.valider === false && hb1.regler === true, JSON.stringify(hb1));
+    await page.evaluate(() => document.querySelector('[data-regler-seuil="HB"]').click());
+    await pause(300);
+    const pied = await A.boutonsModale();
+    await A.cliquerModale('Annuler');
+    verifier('…et le pied de la fenêtre de réglage n’offre pas « Valider » (Enregistrer, Annuler seulement)', pied.indexOf('Enregistrer') >= 0 && pied.indexOf('Valider') < 0, JSON.stringify(pied));
+    const refus = await A.SE('valider', 'VAR-NFS-HB', { motif: 'Je force le geste' });
+    const hbApres = await A.SE('etat', 'VAR-NFS-HB');
+    verifier('Un geste forcé hors de la famille est refusé par le MOTEUR : VALIDATION_RESERVEE nomme le profil attendu, le seuil reste Enregistré', refus && refus.ok === false && refus.code === 'VALIDATION_RESERVEE' && /Biologiste médical/.test(refus.motif) && hbApres.etat === 'enregistre', JSON.stringify([refus, hbApres && hbApres.etat]));
+
+    /* --- 4. Refus nommés ---------------------------------------------------------------------------------------------------------------------------------- */
+    await poserSessionServeur(A.BIOLOGISTE);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen('NFS');
+    await A.regler('LY', { ecartAbsolu: '', ecartRelatif: '' }, 'Enregistrer');
+    const tVide = await A.toast();
+    const plq = await A.ligneSeuil('LY');
+    await A.cliquerModale('Annuler');
+    verifier('Enregistrer sans aucune valeur est refusé : « un seuil vide veut dire pas d’alerte configurée », rien n’est écrit', /pas d’alerte configurée/.test(tVide) && plq.etat === 'Aucun seuil', tVide + JSON.stringify(plq));
+    await A.regler('LY', { ecartAbsolu: 30, dateEffet: '2026-08-01' }, 'Enregistrer');
+    const tPassee = await A.toast();
+    await A.cliquerModale('Annuler');
+    verifier('Une date d’effet passée est refusée EN LE DISANT (un seuil ne s’applique jamais en arrière)', /est passée/.test(tPassee) && /jamais en arrière/.test(tPassee), tPassee);
+    const refZero = await A.SE('enregistrer', 'VAR-NFS-LY', { ecartAbsolu: 0 });
+    const refNonNum = await A.SE('enregistrer', 'VAR-CRP-CRPQ', { ecartAbsolu: 1 });
+    verifier('Un seuil de zéro est refusé (SEUIL_INVALIDE : zéro alerterait à chaque mesure) ; une variable qualitative n’en porte pas (VARIABLE_NON_NUMERIQUE)',
+      refZero.code === 'SEUIL_INVALIDE' && refNonNum.code === 'VARIABLE_NON_NUMERIQUE', JSON.stringify([refZero.code, refNonNum.code]));
+    await poserSessionServeur({ role: 'caissier', fonction: 'caissiere', nom: 'SONDE A2 caissier', nomComplet: 'SONDE A2 caissier', identifiant: 's.a2.cais', secteur: 'CAI' });
+    const refDroit = await A.SE('enregistrer', 'VAR-NFS-LY', { ecartAbsolu: 30 });
+    verifier('Un profil qui n’édite pas « Valeurs de référence » (caissier) est refusé par le moteur : DROIT_REFUSE', refDroit.ok === false && refDroit.code === 'DROIT_REFUSE', JSON.stringify(refDroit));
+    await poserSessionServeur(A.ADMIN);
+    await A.viderSeuils();
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 167 : A2 versions : modifier un seuil Validé AJOUTE une version datée, l’ancienne reste lisible et inchangée (garde du magasin), une alerte déjà levée garde le seuil sous lequel elle l’a été, retrait de l’alerte, seuils conservés à la montée de version');
+    erreursJS = [];
+    const A = outilsAnt;
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-demandes.html');
+    await A.viderSeuils();
+    const NFS = 'NFS complète (hémogramme)';
+    const p = await A.semer('S2' + Date.now() % 100000, 'NFS', NFS, [
+      { date: '2026-08-17', etat: 'valide', valeurs: { GB: 6 } },
+      { date: '2026-08-18', etat: 'valide', valeurs: { GB: 7.5 } },
+      { date: '2026-08-25', etat: 'valide', valeurs: { GB: 9 } },
+    ]);
+    await attendreEcritures();
+    await poserSessionServeur(A.BIOLOGISTE);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen('NFS');
+    /* Version 1 : écart absolu de 1 G/l, validée, en vigueur aujourd'hui. */
+    await A.regler('GB', { ecartAbsolu: 1 }, 'Enregistrer');
+    await A.validerParGeste('GB', 'Version 1 du protocole');
+    const v1 = await page.evaluate(() => JSON.parse(JSON.stringify(window.SIGH.store.collection('seuilsDelta').all().filter((x) => x.variableId === 'VAR-NFS-GB')[0])));
+    verifier('Version 1 validée : écart absolu de 1 G/l, état validé, tracée (auteur, rôle, date, motif)', v1.etat === 'valide' && v1.version === 1 && v1.ecartAbsolu === 1 && v1.validePar === 'GARBA Yahouza' && !!v1.valideLe && v1.motifValidation === 'Version 1 du protocole', JSON.stringify(v1));
+
+    /* Modifier le seuil validé : enregistrer 2 G/l à partir du 20/08. La version 1 reste en force, la nouvelle attend sa validation. */
+    await A.regler('GB', { ecartAbsolu: 2, dateEffet: '2026-08-20' }, 'Enregistrer');
+    const gbB = await A.ligneSeuil('GB');
+    verifier('Modifier un seuil validé crée une NOUVELLE version Enregistrée : la version 1 reste affichée en vigueur, l’état dit « Enregistré, la version validée reste en force »',
+      /Enregistré, la version validée reste en force/.test(gbB.etat) && /version 1/.test(gbB.vigueur) && gbB.valider === true, JSON.stringify(gbB));
+    const avantV2 = await A.SE('enVigueur', 'VAR-NFS-GB', '2026-08-25');
+    verifier('Tant que la version 2 n’est pas validée, la version 1 s’applique à toute date (aucun effet d’un Enregistré)', avantV2 && avantV2.version === 1, JSON.stringify(avantV2));
+    await A.validerParGeste('GB', 'Version 2, seuil relevé');
+    const apres = await page.evaluate(() => {
+      const S = window.SIGH.store, c = S.collection('seuilsDelta');
+      const toutes = c.all().filter((x) => x.variableId === 'VAR-NFS-GB').sort((a, b) => a.version - b.version);
+      const SE = window.SIGH.laboSeuils;
+      const un = toutes[0];
+      const maj = c.update(un.id, { ecartAbsolu: 99 });
+      const arc = c.archive(un.id, 'essai');
+      return { n: toutes.length, un: JSON.parse(JSON.stringify(un)), deux: JSON.parse(JSON.stringify(toutes[1] || null)),
+        a18: (SE.enVigueur('VAR-NFS-GB', '2026-08-18') || {}).version, a19: (SE.enVigueur('VAR-NFS-GB', '2026-08-19') || {}).version, a20: (SE.enVigueur('VAR-NFS-GB', '2026-08-20') || {}).version, a25: (SE.enVigueur('VAR-NFS-GB', '2026-08-25') || {}).version,
+        majRefusee: maj === null, archRefusee: arc === null, apresEssai: JSON.parse(JSON.stringify(c.get(un.id))) };
+    });
+    verifier('La version 2 est validée à son tour : deux versions, la version 1 INCHANGÉE (mêmes champs, mêmes traces), la version 2 à 2 G/l depuis le 20/08',
+      apres.n === 2 && JSON.stringify(apres.un) === JSON.stringify(v1) && apres.deux && apres.deux.etat === 'valide' && apres.deux.ecartAbsolu === 2 && apres.deux.dateEffet === '2026-08-20', JSON.stringify([apres.n, apres.un, apres.deux]));
+    verifier('Chaque mesure se juge à la version en vigueur à sa date : la version 1 jusqu’au 19/08, la version 2 à partir du 20/08',
+      apres.a18 === 1 && apres.a19 === 1 && apres.a20 === 2 && apres.a25 === 2, JSON.stringify([apres.a18, apres.a19, apres.a20, apres.a25]));
+    verifier('Le magasin REFUSE de réécrire ou d’archiver une version validée (garde posée sur la collection, d’où qu’on écrive) : la version 1 est intacte après l’essai',
+      apres.majRefusee && apres.archRefusee && JSON.stringify(apres.apresEssai) === JSON.stringify(v1), JSON.stringify([apres.majRefusee, apres.archRefusee, apres.apresEssai]));
+    await page.evaluate(() => document.querySelector('[data-historique-seuil="GB"]').click());
+    await pause(400);
+    const hist = await page.evaluate(() => { const t = document.querySelector('[data-historique-seuils="GB"]'); return t ? [...t.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map((td) => td.textContent.trim()).join(' ')) : null; });
+    await A.cliquerModale('Fermer');
+    verifier('L’historique liste les deux versions (la plus récente d’abord) avec leur validateur et leur motif : l’ancienne reste lisible',
+      hist && hist.length === 2 && /^v2 Validé 2 G\/l 20\/08\/2026/.test(hist[0]) && /Version 2, seuil relevé/.test(hist[0]) && /^v1 Validé 1 G\/l 16\/08\/2026/.test(hist[1]) && /Version 1 du protocole/.test(hist[1]) && /GARBA Yahouza/.test(hist[1]), JSON.stringify(hist));
+
+    /* Une alerte déjà levée garde le seuil sous lequel elle l'a été : la mesure du 18/08 (+1.5 G/l) alerte à 1 G/l, celle du 25/08 (+1.5) n'alerte plus à 2 G/l. */
+    await poserSessionServeur(A.MEDECIN);
+    await ouvrir('m5-resultats-comparatif.html');
+    await A.choisir(p.patientId, 'NFS');
+    await A.comparer(1);
+    let l = await A.lire();
+    const alerte18 = l.table && l.lignes.GB.alerte && /version 1 du 16\/08\/2026/.test(l.lignes.GB.alerteTexte);
+    await A.comparer(2);
+    l = await A.lire();
+    const alerte25 = l.table && l.lignes.GB.alerte === false && /\+1\.5 G\/l/.test(l.lignes.GB.variation);
+    verifier('La mesure du 18/08 (+1.5 G/l) garde son alerte au seuil de la version 1 (1 G/l) ; celle du 25/08 (+1.5 G/l) n’alerte pas au seuil de la version 2 (2 G/l)', alerte18 && alerte25, JSON.stringify([alerte18, alerte25, l.lignes && l.lignes.GB]));
+
+    /* Date d'effet antérieure à une version déjà validée, puis retrait de l'alerte. */
+    await poserSessionServeur(A.BIOLOGISTE);
+    const ant = await A.SE('enregistrer', 'VAR-NFS-GB', { ecartAbsolu: 3, dateEffet: '2026-08-16' });
+    verifier('Une date d’effet antérieure à la version 2 déjà validée est refusée (DATE_EFFET_ANTERIEURE)', ant.ok === false && ant.code === 'DATE_EFFET_ANTERIEURE', JSON.stringify(ant));
+    const ret = await A.SE('enregistrer', 'VAR-NFS-GB', { retrait: true, dateEffet: '2026-08-30' });
+    const retV = await A.SE('valider', 'VAR-NFS-GB', { motif: 'Alerte retirée à la demande du biologiste' });
+    const apresRetrait = await page.evaluate(() => { const SE = window.SIGH.laboSeuils, v = window.SIGH.store.collection('variablesLabo').get('VAR-NFS-GB'); const vr = window.SIGH.laboAnteriorites.variationEntre(v, 6, 12);
+      return { a25: (SE.enVigueur('VAR-NFS-GB', '2026-08-25') || {}).version, a31: (SE.enVigueur('VAR-NFS-GB', '2026-08-31') || {}).retrait === true, alerte31: SE.alerteVariation(v, vr, '2026-08-31'), alerte25: !!(SE.alerteVariation(v, vr, '2026-08-25') || {}).alerte }; });
+    verifier('Retirer l’alerte est aussi une version (enregistrée puis validée) : la version 2 reste en force jusqu’au 29/08, plus aucune alerte à partir du 30/08',
+      ret.ok && retV.ok && apresRetrait.a25 === 2 && apresRetrait.a31 === true && apresRetrait.alerte31 === null && apresRetrait.alerte25 === true, JSON.stringify([ret.code, retV.code, apresRetrait]));
+
+    /* La projection relationnelle suit : la version validée est une ligne de m5.seuils_delta, sans écart de parité. */
+    await poserSessionServeur(A.ADMIN);
+    const proj = await page.evaluate(async (id) => {
+      const S = window.SIGH.store;
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const ent = { 'X-Sigh-Jeton': S.jetonServeur() };
+      const ligne = await (await fetch(racine + 'api/parite.php?collection=seuilsDelta&id=' + encodeURIComponent(id), { headers: ent })).json();
+      const parite = await (await fetch(racine + 'api/parite.php', { headers: ent })).json();
+      return { ligne: JSON.stringify(ligne), ecarts: JSON.stringify((parite.parite && parite.parite.ecarts) || []), erreurs: JSON.stringify(parite.erreurs || []) };
+    }, v1.id);
+    verifier('La projection relationnelle suit : la version validée est une ligne de m5.seuils_delta (état, seuil, validateur) et aucun écart de parité ni erreur de projection ne nomme les seuils',
+      /"etat":"valide"/.test(proj.ligne) && /"ecart_absolu":"?1"?/.test(proj.ligne) && /GARBA Yahouza/.test(proj.ligne) && proj.ecarts.indexOf('seuilsDelta') < 0 && proj.erreurs.indexOf('seuilsDelta') < 0, JSON.stringify(proj).slice(0, 400));
+
+    /* La montée de VERSION ne perd pas les seuils : un magasin d'une version antérieure est ré-amorcé, les seuils validés sont repris tels quels. */
+    const avantMontee = await page.evaluate(() => window.SIGH.store.collection('seuilsDelta').all().length);
+    await page.evaluate(() => { window.SIGH.store.raw()._version = 82; window.SIGH.store.save(); });
+    await attendreEcritures();
+    await ouvrir('m5-demandes.html');
+    const apresMontee = await page.evaluate(() => { const S = window.SIGH.store; const c = S.collection('seuilsDelta').all(); return { n: c.length, version: S.raw()._version, v1: !!c.filter((x) => x.version === 1 && x.etat === 'valide')[0] }; });
+    verifier('Montée de VERSION : le magasin est ré-amorcé (version courante) et les seuils validés sont repris sans perte', avantMontee === 3 && apresMontee.n === 3 && apresMontee.v1 && apresMontee.version > 82, JSON.stringify([avantMontee, apresMontee]));
+    await poserSessionServeur(A.ADMIN);
+    await A.viderSeuils();
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 168 : A2 alerte à la validation biologique : signalée avant de signer, jamais bloquante, absente du résultat que lit le prescripteur et des notifications de poste, un Enregistré ne signale rien');
+    erreursJS = [];
+    const A = outilsAnt;
+    await poserSessionServeur(A.BIOLOGISTE);
+    await ouvrir('m5-demandes.html');
+    await A.viderSeuils();
+    const NFS = 'NFS complète (hémogramme)';
+    const cle = 'S3' + Date.now() % 100000;
+    const p = await A.semer(cle, 'NFS', NFS, [
+      { date: '2026-08-17', etat: 'valide', valeurs: { GB: 3, HB: 12 } },
+      { date: '2026-08-19', etat: 'valide_technique', valeurs: { GB: 6, HB: 8 } },
+    ]);
+    /* GB : seuil validé (1 G/l). HB : seuil seulement enregistré, sans effet. */
+    const r1 = await A.SE('enregistrer', 'VAR-NFS-GB', { ecartAbsolu: 1 });
+    const r2 = await A.SE('valider', 'VAR-NFS-GB', { motif: 'Protocole interne du laboratoire' });
+    const r3 = await A.SE('enregistrer', 'VAR-NFS-HB', { ecartAbsolu: 1 });
+    await attendreEcritures();
+    verifier('Mise en place : seuil de GB validé, seuil de HB seulement enregistré', r1.ok && r2.ok && r3.ok, JSON.stringify([r1.code, r2.code, r3.code]));
+    const notifsAvant = await page.evaluate(() => window.SIGH.store.collection('notifications').all().length);
+
+    const ouvrirValidation = async (profil) => {
+      await poserSessionServeur(profil);
+      await ouvrir('m5-resultats.html');
+      await page.evaluate(() => {
+        [...document.querySelectorAll('#page-content input[type=date]')].forEach((i) => { i.value = '2026-08-19'; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); });
+      });
+      await pause(600);
+      await page.evaluate(() => { const t = [...document.querySelectorAll('#page-content [role="tab"]')].find((x) => /À valider biologiquement/.test(x.textContent)); if (t) t.click(); });
+      await pause(500);
+    };
+    await ouvrirValidation(A.BIOLOGISTE);
+    const rang = await page.evaluate((cle) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('ANTER' + cle) >= 0); return tr ? { alerte: (tr.querySelector('[data-alerte-validation]') || {}).textContent || null, n: (tr.querySelector('[data-alerte-validation]') || { getAttribute: () => null }).getAttribute('data-alerte-validation'), texte: tr.textContent.replace(/\s+/g, ' ').slice(0, 200) } : null; }, cle);
+    verifier('Écran de validation biologique : la ligne du résultat en attente porte « 1 variable(s) signalée(s) » (GB +3 G/l au seuil validé de 1 G/l) ; HB, à seuil seulement enregistré, ne compte pas',
+      rang && rang.n === '1' && /1 variable\(s\) signalée\(s\)/.test(rang.alerte), JSON.stringify(rang));
+    /* Le tiroir de la ligne détaille la variation. */
+    await page.evaluate((cle) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('ANTER' + cle) >= 0); tr.querySelector('td:nth-child(2)').click(); }, cle);
+    await pause(500);
+    const tiroir = await page.evaluate(() => { const d = document.querySelector('[role=dialog], .drawer, aside'); return (d ? d.innerText : document.body.innerText).replace(/\s+/g, ' '); });
+    verifier('Le tiroir de la ligne dit la variation brutale : « Variation brutale signalée sur 1 variable(s) », Globules blancs ↑ +3 G/l (+100.0 %), seuil validé version 1',
+      /Variation brutale signalée sur 1 variable\(s\)/.test(tiroir) && /Globules blancs : ↑ \+3 G\/l \(\+100\.0 %\)/.test(tiroir) && /seuil validé, version 1/.test(tiroir) && !/Hémoglobine : ↓/.test(tiroir), tiroir.slice(0, 500));
+    await page.keyboard.press('Escape');
+    await pause(300);
+
+    /* Avant de signer : la fenêtre de validation nomme la variation. Elle n'empêche pas de valider. */
+    await page.evaluate((cle) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('ANTER' + cle) >= 0); const b = [...tr.querySelectorAll('button')].find((x) => /Validation biologique/.test(x.textContent)); if (b) b.click(); }, cle);
+    await pause(400);
+    const fen = await page.evaluate(() => { const d = document.querySelector('[role=dialog]'); return d ? d.innerText.replace(/\s+/g, ' ') : null; });
+    verifier('Avant de signer, la fenêtre de validation biologique SIGNALE la variation (Globules blancs ↑ +3 G/l) et dit qu’elle n’empêche pas la validation',
+      fen && /Variation brutale signalée/.test(fen) && /Globules blancs ↑ \+3 G\/l \(\+100\.0 %\)/.test(fen) && /n’empêche pas la validation/.test(fen), String(fen).slice(0, 500));
+    await A.cliquerModale('Valider biologiquement');
+    await pause(800);
+    await attendreEcritures();
+    const apres = await page.evaluate((ids) => { const S = window.SIGH.store; const d = S.collection('demandesAnalyses').get(ids[1]); const n = S.collection('notifications').all();
+      return { etat: d.etatAnalyse, par: d.valideBiologiquePar, nouvelles: n.slice(0, n.length).map((x) => (x.libelle || '') + ' ' + (x.detail || '')) }; }, p.ids);
+    verifier('Le signalement n’a JAMAIS bloqué : le résultat est validé biologiquement', apres.etat === 'valide' && apres.par === 'GARBA Yahouza', JSON.stringify(apres.etat));
+    const notifs = await page.evaluate((avant) => window.SIGH.store.collection('notifications').all().slice(0, window.SIGH.store.collection('notifications').all().length - avant).map((x) => (x.libelle || '') + ' ' + (x.detail || '')), notifsAvant);
+    verifier('Aucune notification de poste ne porte de donnée médicale ni de mention de variation (la seule notification est « Résultat disponible », sans valeur)',
+      notifs.length >= 1 && notifs.every((t) => !/variation|seuil|G\/l|g\/dl|Globules|\b6\b/i.test(t)), JSON.stringify(notifs));
+
+    /* Le prescripteur lit le résultat rendu : aucune alerte sur sa pièce, même si le comparatif la porte (EF-ANT-3). */
+    await poserSessionServeur(A.MEDECIN);
+    await ouvrir('m5-resultats.html');
+    await page.evaluate(() => {
+      [...document.querySelectorAll('#page-content input[type=date]')].forEach((i) => { i.value = '2026-08-19'; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); });
+    });
+    await pause(600);
+    await page.evaluate(() => { const t = [...document.querySelectorAll('#page-content [role="tab"]')].find((x) => /Rendus au prescripteur/.test(x.textContent)); if (t) t.click(); });
+    await pause(500);
+    const clic = await page.evaluate((cle) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('ANTER' + cle) >= 0); if (!tr) return false; tr.querySelector('td:nth-child(2)').click(); return true; }, cle);
+    await pause(600);
+    const lu = await page.evaluate(() => { const d = document.querySelector('[role=dialog], .drawer, aside'); return d ? d.innerText.replace(/\s+/g, ' ') : null; });
+    verifier('Le résultat que lit le prescripteur ne porte AUCUNE alerte de variation brutale (ni mention, ni seuil)', clic && lu && /Globules blancs|NFS/i.test(lu) && !/variation brutale|seuil/i.test(lu), String(lu).slice(0, 300));
+    await page.keyboard.press('Escape');
+    await ouvrir('m5-resultats-comparatif.html');
+    await A.choisir(p.patientId, 'NFS');
+    const l = await A.lire();
+    verifier('Le comparatif, lui, porte l’alerte (GB) : c’est l’un des deux endroits prévus ; HB (seuil seulement enregistré) n’en porte pas',
+      l.table && l.lignes.GB.alerte === true && l.lignes.HB.alerte === false, JSON.stringify(l.lignes && [l.lignes.GB, l.lignes.HB]));
+    await poserSessionServeur(A.ADMIN);
+    await A.viderSeuils();
+    await attendreEcritures();
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
 

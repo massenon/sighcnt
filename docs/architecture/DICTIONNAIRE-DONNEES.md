@@ -16,7 +16,7 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 | `m2` — M2 RDV, visites, consultations, imagerie | 10 | 4 | 242 | 1221 |
 | `m3` — M3 Hospitalisation & bloc | 10 | 3 | 181 | 599 |
 | `m4` — M4 Maternité, naissances, décès | 13 | 4 | 283 | 331 |
-| `m5` — M5 Laboratoire | 8 | 0 | 111 | 659 |
+| `m5` — M5 Laboratoire | 9 | 0 | 136 | 659 |
 | `m6` — M6 Pharmacie & stocks | 8 | 1 | 82 | 1286 |
 | `m7` — M7 Achats & fournisseurs | 6 | 4 | 78 | 39 |
 | `m8` — M8 Facturation & caisse | 2 | 1 | 55 | 409 |
@@ -2900,6 +2900,35 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+
+### `m5.seuils_delta` (collection « seuilsDelta », 0 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `variable_id` | variableId | text |  |
+| `variable_code` | variableCode | text |  |
+| `variable_libelle` | variableLibelle | text |  |
+| `examen` | examen | text |  |
+| `examen_libelle` | examenLibelle | text |  |
+| `unite` | unite | text |  |
+| `version` | version | integer |  |
+| `etat` | etat | text |  |
+| `ecart_absolu` | ecartAbsolu | numeric |  |
+| `ecart_relatif` | ecartRelatif | numeric |  |
+| `retrait` | retrait | boolean |  |
+| `date_effet` | dateEffet | date |  |
+| `note` | note | text |  |
+| `enregistre_par` | enregistrePar | text |  |
+| `enregistre_le` | enregistreLe | timestamptz |  |
+| `enregistre_role` | enregistreRole | text |  |
+| `valide_le` | valideLe | timestamptz |  |
+| `valide_par` | validePar | text |  |
+| `valide_role` | valideRole | text |  |
+| `motif_validation` | motifValidation | text |  |
+| `cree_par` | creePar | text |  |
+| `cree_le` | creeLe | timestamptz |  |
 
 ### `m5.unites_labo` (collection « unitesLabo », 23 fiches)
 

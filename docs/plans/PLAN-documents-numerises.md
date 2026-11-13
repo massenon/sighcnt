@@ -38,8 +38,9 @@ Constat E2491 : la sauvegarde nocturne ne copiait pas `api/fichiers/`. Trois tâ
 ### Lot A1 : antériorités [FAIT 13/11/2026, maquette]
 - Fichiers : `assets/js/modules/m5-laboratoire.js` (`SIGH.laboAnteriorites`, comparatif à mesure comparée et trois antériorités, variation, courbe, impression du comparatif, colonne « Antériorités » de la fiche imprimée), `assets/js/charts.js` (options de `G.ligne`).
 - Vérification : scénarios Vague 163 à 165, six mutations rouges, avant/après. Écarts E2510 à E2514 (hypothèses, un défaut de périmètre corrigé à l'impression, deux constats hors lot).
-### Lot A2 : seuils de variation brutale [À FAIRE, hors de ce brief]
-- Seuils par variable versionnés, bouton Valider (Enregistré / Validé), alerte à la validation biologique (EF-ANT-3, 3b).
+### Lot A2 : seuils de variation brutale [FAIT 13/11/2026, maquette]
+- Fichiers : `assets/js/parcours.js` (`SIGH.laboSeuils` : enregistrer, valider, abandonner, seuil en vigueur à une date, alerte), `assets/js/store.js` (collection `seuilsDelta`, garde d'immutabilité, reprise à la montée de `VERSION` 83), `assets/js/modules/m5-laboratoire.js` (section « Seuils de variation brutale » de `m5-valeurs-reference`, alerte au comparatif et à l'écran de validation biologique), schéma `m5.seuils_delta`.
+- Vérification : scénarios Vague 166 à 168, douze mutations rouges, avant/après. Écarts E2515 à E2519, décisions à confirmer : `DECISIONS-A-VALIDER.md` section Q.
 ### Lot D5 : poste Flutter [À FAIRE, hors de ce brief]
 - Domaine, vecteurs, composant de lecture PDF, fichiers par empreinte dans la synchronisation (EF-SYNC-18). Le vecteur `administration.json` n'est PAS régénéré par ce brief (la case `numerise` de la fiche courrier disparaît à la saisie : sa régénération rougirait le poste jusqu'à D5).
 

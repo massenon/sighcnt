@@ -7705,6 +7705,164 @@
     return { ok: true, nb: ecarts.length, mouvements: mouvs, annuler: function () { annulations.slice().reverse().forEach(function (u) { u(); }); } };
   }
 
+  /* ==========================================================================
+   * SEUILS DE VARIATION BRUTALE, OU DELTA CHECK (lot A2, EF-ANT-3 et EF-ANT-3b)
+   * --------------------------------------------------------------------------
+   * Un seuil dit de combien une variable numérique peut bouger entre deux mesures rendues du même patient avant que le laboratoire s'arrête
+   * pour relire. Cinq règles, toutes tenues ICI (l'écran de réglage, le comparatif et l'écran de validation biologique les appellent) :
+   *   1. AUCUN seuil par défaut, aucun n'est semé ni proposé : aucun document de cadrage n'en donne, c'est une décision du Biologiste médical.
+   *      Un seuil vide veut dire « pas d'alerte configurée », jamais zéro (une valeur nulle ou négative est refusée en le disant).
+   *   2. DEUX états visibles. « Enregistré » : saisi, SANS EFFET, aucune alerte. « Validé » : en vigueur. Enregistrer garde l'état Enregistré,
+   *      Valider fait passer de Enregistré à Validé. Seul un seuil Validé alerte.
+   *   3. Valider est le geste des profils de la famille « Variables et unités du laboratoire » (le Biologiste médical), liste de rôles lue à la
+   *      famille et revérifiée ICI : masquer un bouton ne protège rien. Le geste est tracé (auteur, rôle, date, motif obligatoire, RG-12).
+   *   4. Un seuil Validé est IMMUABLE (garde du magasin) : le modifier AJOUTE une version datée, l'ancienne reste lisible. Une mesure se juge au
+   *      seuil en vigueur à la date de sa validation biologique (à aujourd'hui tant qu'elle n'est pas validée) : une alerte déjà levée garde donc
+   *      le seuil sous lequel elle l'a été. La date d'effet ne peut pas être passée.
+   *   5. L'alerte SIGNALE, elle ne bloque jamais (doctrine du bloc : signalé, jamais bloqué) et ne porte aucune donnée médicale dans une
+   *      notification : elle n'en crée aucune.
+   * ======================================================================== */
+  var ECRAN_SEUILS = 'm5-valeurs-reference';
+  function colSeuils() { return S.collection('seuilsDelta', { module: 'M5', entite: 'seuil de variation brutale', prefix: 'SEU' }); }
+  function refusSeuil(code, motif, geste, extra) { return refusCfg(code, motif, geste, extra); }
+  function rolesValidationSeuils() { var f = familleAValider('labo_variables'); return f ? f.roles.slice() : []; }
+  function peutValiderSeuil(role) { return rolesValidationSeuils().indexOf(role == null ? roleCourant() : role) >= 0; }
+  function peutEnregistrerSeuil(role) {
+    var N = global.SIGH.nav, r = role == null ? roleCourant() : role;
+    var d = N && N.droitsEcran ? N.droitsEcran(r, ECRAN_SEUILS, 'M5') : null;
+    return !!(d && d.editer);
+  }
+  function versionsSeuil(variableId) {
+    return colSeuils().active().filter(function (x) { return x.variableId === variableId; }).sort(function (a, b) { return a.version - b.version; });
+  }
+  /** Le seuil VALIDÉ en vigueur à une date : la version validée la plus récente dont la date d'effet est atteinte. Jamais un Enregistré. */
+  function seuilEnVigueur(variableId, date) {
+    var d = isoJour(date || aujIso());
+    var c = versionsSeuil(variableId).filter(function (x) { return x.etat === 'valide' && x.dateEffet <= d; })
+      .sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)) || a.version - b.version; });
+    return c.length ? c[c.length - 1] : null;
+  }
+  function brouillonSeuil(variableId) { return versionsSeuil(variableId).filter(function (x) { return x.etat === 'enregistre'; })[0] || null; }
+  /** L'état affiché d'une variable : 'aucun' | 'enregistre' | 'valide' | 'enregistre_sur_valide' (un brouillon attend sa validation, la version validée reste en force). */
+  function etatSeuil(variableId) {
+    var vig = seuilEnVigueur(variableId), b = brouillonSeuil(variableId), vs = versionsSeuil(variableId);
+    var actif = vig && !vig.retrait ? vig : null;
+    return {
+      variableId: variableId, versions: vs, brouillon: b, enVigueur: actif, retire: !!(vig && vig.retrait),
+      aVenir: vs.filter(function (x) { return x.etat === 'valide' && x.dateEffet > aujIso(); })[0] || null,
+      etat: b ? (actif ? 'enregistre_sur_valide' : 'enregistre') : (actif ? 'valide' : 'aucun'),
+    };
+  }
+  function seuilNombre(x) { return x == null || x === '' ? null : Number(x); }
+  function controleDatesSeuil(variableId, d) {
+    if (d < aujIso()) {
+      return refusSeuil('DATE_EFFET_PASSEE', 'La date d’effet (' + C.dateFR(d) + ') est passée : un seuil ne s’applique jamais en arrière, une alerte déjà levée garde le seuil sous lequel elle l’a été.',
+        'Choisir une date d’effet à partir d’aujourd’hui (' + C.dateFR(aujIso()) + ').');
+    }
+    var valides = versionsSeuil(variableId).filter(function (x) { return x.etat === 'valide'; });
+    var derniere = valides.sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)) || a.version - b.version; }).pop();
+    if (derniere && d < derniere.dateEffet) {
+      return refusSeuil('DATE_EFFET_ANTERIEURE', 'La date d’effet (' + C.dateFR(d) + ') est antérieure à la version ' + derniere.version + ' déjà validée (' + C.dateFR(derniere.dateEffet) + ').',
+        'Choisir une date d’effet au plus tôt le ' + C.dateFR(derniere.dateEffet) + '.');
+    }
+    return null;
+  }
+  /** ENREGISTRER : saisit un seuil (ou son retrait), état Enregistré, SANS EFFET. Une seconde saisie remplace le brouillon, jamais une version validée. */
+  function enregistrerSeuil(variableId, o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    if (!peutEnregistrerSeuil()) {
+      return refusSeuil('DROIT_REFUSE', 'Le profil ' + libelleRole(roleCourant()) + ' ne règle pas les seuils de variation brutale (écran « Valeurs de référence »).',
+        'Demander à un profil qui modifie les valeurs de référence du laboratoire.');
+    }
+    var v = S.collection('variablesLabo').get(variableId);
+    if (!v || v.statut === 'archive') return refusSeuil('VARIABLE_INTROUVABLE', 'Aucune variable « ' + variableId + ' » au catalogue du laboratoire.', 'Choisir une variable à l’écran « Valeurs de référence ».');
+    if (v.type !== 'numerique' || v.accompagnement) {
+      return refusSeuil('VARIABLE_NON_NUMERIQUE', 'Un seuil de variation ne se pose que sur une variable numérique : « ' + v.libelle + ' » est de type « ' + global.SIGH.labo.type(v.type) + ' » et se compare en texte.',
+        'Choisir une variable numérique.');
+    }
+    var abs = seuilNombre(o.ecartAbsolu), rel = seuilNombre(o.ecartRelatif), retrait = o.retrait === true;
+    if ((abs != null && !(abs > 0)) || (rel != null && !(rel > 0))) {
+      return refusSeuil('SEUIL_INVALIDE', 'Un seuil est un nombre strictement positif : zéro alerterait à chaque mesure.', 'Saisir un nombre supérieur à zéro, ou laisser vide pour ne pas alerter.');
+    }
+    if (retrait) {
+      if (abs != null || rel != null) return refusSeuil('RETRAIT_AVEC_VALEURS', 'Retirer le seuil ne porte aucune valeur.', 'Vider les deux champs, ou décocher le retrait.');
+      if (!seuilEnVigueur(variableId, '9999-12-31')) return refusSeuil('RIEN_A_RETIRER', 'Aucun seuil validé sur « ' + v.libelle + ' » : il n’y a rien à retirer.', 'Fermer la fenêtre.');
+    } else if (abs == null && rel == null) {
+      return refusSeuil('SEUIL_VIDE', 'Aucune valeur saisie : un seuil vide veut dire « pas d’alerte configurée », il ne s’enregistre pas.', 'Saisir une variation absolue ou relative, ou ne rien enregistrer.');
+    }
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDatesSeuil(variableId, d); if (r) return r;
+    var b = brouillonSeuil(variableId), maintenant = new Date().toISOString();
+    var champs = { ecartAbsolu: abs, ecartRelatif: rel, retrait: retrait, dateEffet: d, note: o.note ? String(o.note).trim() : null,
+      enregistrePar: acteur(), enregistreLe: maintenant, enregistreRole: roleCourant() };
+    /* Le journal tronque ses extraits à 100 caractères : le plus utile vient en premier, la trace entière est la version elle-même (immuable une fois validée). */
+    var apres = { v: b ? b.version : versionsSeuil(variableId).reduce(function (m, x) { return Math.max(m, x.version); }, 0) + 1, du: d, abs: abs, rel: rel, retrait: retrait };
+    var rec;
+    if (b) {
+      rec = colSeuils().update(b.id, champs, { journal: { action: 'Seuil de variation enregistré (sans effet)', entite: 'seuil de variation', avant: { abs: b.ecartAbsolu, rel: b.ecartRelatif, du: b.dateEffet }, apres: apres } });
+    } else {
+      var n = versionsSeuil(variableId).reduce(function (m, x) { return Math.max(m, x.version); }, 0) + 1;
+      rec = colSeuils().insert(Object.assign({
+        variableId: variableId, variableCode: v.code, variableLibelle: v.libelle, examen: v.examen, examenLibelle: v.examenLibelle, unite: v.unite,
+        version: n, etat: 'enregistre', valideLe: null, validePar: null, valideRole: null, motifValidation: null,
+      }, champs), { journal: { action: 'Seuil de variation enregistré (sans effet)', entite: 'seuil de variation', avant: null, apres: apres } });
+    }
+    if (!rec) return refusSeuil('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture du seuil.', 'Voir le journal.');
+    return { ok: true, seuil: colSeuils().get(rec.record.id), creation: !b };
+  }
+  /** VALIDER : le brouillon devient la version en vigueur à sa date d'effet. Réservé à la famille du laboratoire, revérifié ici, motif obligatoire. */
+  function validerSeuil(variableId, o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var role = roleCourant();
+    if (!peutValiderSeuil(role)) {
+      var liste = rolesValidationSeuils();
+      return refusSeuil('VALIDATION_RESERVEE', 'La validation d’un seuil de variation brutale est réservée à : ' + liste.map(libelleRole).join(', ') + '. Profil : ' + libelleRole(role) + '.',
+        'Demander à ' + libelleRole(liste[0]) + ' de valider depuis son poste.');
+    }
+    var b = brouillonSeuil(variableId);
+    if (!b) return refusSeuil('SEUIL_NON_ENREGISTRE', 'Aucun seuil Enregistré à valider sur cette variable : un seuil se saisit et s’enregistre d’abord.', 'Régler le seuil, l’enregistrer, puis le valider.');
+    if (!String(o.motif || '').trim()) return refusSeuil('MOTIF_OBLIGATOIRE', 'Le motif de la validation est obligatoire : il dit sur quoi le seuil s’appuie.', 'Saisir le motif, puis valider.');
+    r = controleDatesSeuil(variableId, b.dateEffet);
+    if (r) return Object.assign(r, { geste: 'Enregistrer de nouveau le seuil avec une date d’effet à partir d’aujourd’hui, puis le valider.' });
+    var quand = new Date().toISOString(), qui = acteur(), lib = libelleRole(role);
+    var res = colSeuils().update(b.id, { etat: 'valide', valideLe: quand, validePar: qui, valideRole: lib, motifValidation: String(o.motif).trim() },
+      { journal: { action: 'Seuil de variation validé', entite: 'seuil de variation', avant: { etat: 'enregistre' },
+        apres: { v: b.version, du: b.dateEffet, abs: b.ecartAbsolu, rel: b.ecartRelatif, motif: String(o.motif).trim().slice(0, 40) } } });
+    if (!res) return refusSeuil('ECRITURE_REFUSEE', 'Le magasin a refusé la validation du seuil.', 'Voir le journal.');
+    return { ok: true, seuil: colSeuils().get(b.id), valideLe: quand, validePar: qui, valideRole: lib };
+  }
+  /** Abandonne le brouillon (archivage RG-14, jamais une suppression) : la version validée, s'il y en a une, reste en force. */
+  function abandonnerSeuil(variableId, o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    if (!peutEnregistrerSeuil()) return refusSeuil('DROIT_REFUSE', 'Le profil ' + libelleRole(roleCourant()) + ' ne règle pas les seuils de variation brutale.', 'Demander à un profil qui modifie les valeurs de référence du laboratoire.');
+    var b = brouillonSeuil(variableId);
+    if (!b) return refusSeuil('SEUIL_NON_ENREGISTRE', 'Aucun seuil Enregistré à abandonner sur cette variable.', 'Fermer la fenêtre.');
+    var res = colSeuils().archive(b.id, o.motif || 'Brouillon abandonné', { journal: { action: 'Seuil de variation abandonné (brouillon)', entite: 'seuil de variation', avant: { etat: 'enregistre', abs: b.ecartAbsolu, rel: b.ecartRelatif }, apres: { statut: 'archive' } } });
+    return res ? { ok: true } : refusSeuil('ECRITURE_REFUSEE', 'Le magasin a refusé l’abandon du brouillon.', 'Voir le journal.');
+  }
+  /**
+   * L'alerte d'une variation (EF-ANT-3) : `null` quand aucun seuil Validé n'est en vigueur à la date (pas d'alerte configurée), sinon
+   * { alerte, seuil, raisons[], nonEvaluable }. Le seuil absolu se compare à l'écart absolu, le relatif au pourcentage ; un seuil relatif ne s'évalue pas
+   * sur une valeur précédente nulle (pas de pourcentage inventé) et le dit.
+   */
+  function alerteVariation(variable, variation, date) {
+    if (!variable || !variation || variation.mode !== 'numerique') return null;
+    var s = seuilEnVigueur(variable.id, date);
+    if (!s || s.retrait) return null;
+    var raisons = [];
+    if (s.ecartAbsolu != null && variation.ecartAbsolu >= s.ecartAbsolu) raisons.push({ type: 'absolu', seuil: s.ecartAbsolu, mesure: variation.ecartAbsolu });
+    if (s.ecartRelatif != null && variation.pourcent != null && Math.abs(variation.pourcent) >= s.ecartRelatif) raisons.push({ type: 'relatif', seuil: s.ecartRelatif, mesure: Math.abs(variation.pourcent) });
+    return { alerte: raisons.length > 0, seuil: s, raisons: raisons, nonEvaluable: s.ecartRelatif != null && s.ecartAbsolu == null && variation.pourcent == null };
+  }
+  global.SIGH.laboSeuils = {
+    ECRAN: ECRAN_SEUILS, rolesValidation: rolesValidationSeuils, peutValider: peutValiderSeuil, peutEnregistrer: peutEnregistrerSeuil,
+    versions: versionsSeuil, enVigueur: seuilEnVigueur, brouillon: brouillonSeuil, etat: etatSeuil,
+    enregistrer: enregistrerSeuil, valider: validerSeuil, abandonner: abandonnerSeuil, alerteVariation: alerteVariation,
+  };
+
   global.SIGH.parcours.DESTINATIONS_TRANSFERT = DESTINATIONS_TRANSFERT;
   global.SIGH.parcours.lotFefo = lotFefo;
   global.SIGH.parcours.controlerTransfert = controlerTransfert;

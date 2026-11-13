@@ -5918,6 +5918,61 @@ CREATE TABLE IF NOT EXISTS "m5"."poches" (
 );
 ALTER TABLE "m5"."poches" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
 COMMENT ON TABLE "m5"."poches" IS 'Collection « poches » — M5 Laboratoire';
+CREATE TABLE IF NOT EXISTS "m5"."seuils_delta" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "variable_id" text,
+  "variable_code" text,
+  "variable_libelle" text,
+  "examen" text,
+  "examen_libelle" text,
+  "unite" text,
+  "version" integer,
+  "etat" text,
+  "ecart_absolu" numeric,
+  "ecart_relatif" numeric,
+  "retrait" boolean,
+  "date_effet" date,
+  "note" text,
+  "enregistre_par" text,
+  "enregistre_le" timestamptz,
+  "enregistre_role" text,
+  "valide_le" timestamptz,
+  "valide_par" text,
+  "valide_role" text,
+  "motif_validation" text,
+  "cree_par" text,
+  "cree_le" timestamptz,
+  "extra" jsonb
+);
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "statut" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "variable_id" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "variable_code" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "variable_libelle" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "examen" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "examen_libelle" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "unite" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "version" integer; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "etat" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "ecart_absolu" numeric; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "ecart_relatif" numeric; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "retrait" boolean; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "date_effet" date; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "note" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "enregistre_par" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "enregistre_le" timestamptz; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "enregistre_role" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "valide_le" timestamptz; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "valide_par" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "valide_role" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "motif_validation" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "cree_par" text; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "cree_le" timestamptz; -- @montee
+ALTER TABLE "m5"."seuils_delta" ADD COLUMN IF NOT EXISTS "extra" jsonb; -- @montee
+COMMENT ON TABLE "m5"."seuils_delta" IS 'Collection « seuilsDelta » — M5 Laboratoire';
+CREATE INDEX IF NOT EXISTS "ix_seuils_delta_statut" ON "m5"."seuils_delta" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_seuils_delta_variable_id" ON "m5"."seuils_delta" ("variable_id");
+CREATE INDEX IF NOT EXISTS "ix_seuils_delta_etat" ON "m5"."seuils_delta" ("etat");
 CREATE TABLE IF NOT EXISTS "m5"."unites_labo" (
   "id" text PRIMARY KEY,
   "source" text,

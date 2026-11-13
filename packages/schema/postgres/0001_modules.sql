@@ -3524,6 +3524,37 @@ CREATE TABLE IF NOT EXISTS "m5"."poches" (
   "extra" jsonb
 );
 COMMENT ON TABLE "m5"."poches" IS 'Collection « poches » — M5 Laboratoire';
+CREATE TABLE IF NOT EXISTS "m5"."seuils_delta" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "variable_id" text,
+  "variable_code" text,
+  "variable_libelle" text,
+  "examen" text,
+  "examen_libelle" text,
+  "unite" text,
+  "version" integer,
+  "etat" text,
+  "ecart_absolu" numeric,
+  "ecart_relatif" numeric,
+  "retrait" boolean,
+  "date_effet" date,
+  "note" text,
+  "enregistre_par" text,
+  "enregistre_le" timestamptz,
+  "enregistre_role" text,
+  "valide_le" timestamptz,
+  "valide_par" text,
+  "valide_role" text,
+  "motif_validation" text,
+  "cree_par" text,
+  "cree_le" timestamptz,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m5"."seuils_delta" IS 'Collection « seuilsDelta » — M5 Laboratoire';
+CREATE INDEX IF NOT EXISTS "ix_seuils_delta_statut" ON "m5"."seuils_delta" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_seuils_delta_variable_id" ON "m5"."seuils_delta" ("variable_id");
+CREATE INDEX IF NOT EXISTS "ix_seuils_delta_etat" ON "m5"."seuils_delta" ("etat");
 CREATE TABLE IF NOT EXISTS "m5"."unites_labo" (
   "id" text PRIMARY KEY,
   "source" text,
