@@ -289,6 +289,28 @@ void main() {
       expect(find.byKey(const Key('fichiers:retirer')), findsOneWidget);
     });
 
+    cas('MODIFICATION de la date d’un courrier qui porte une pièce : le nom de téléchargement SUIT la date, la RÉFÉRENCE ne change jamais', (t) async {
+      final m = poste({'courriers': courriers()});
+      brancher(m);
+      await ouvrir(t, m, 'm13-courriers');
+      await chercher(t, 'ARR-2026-0001');
+      await toucher(t, find.byTooltip('Consulter').first);
+      choisit('courrier-texte.pdf');
+      await toucher(t, find.byKey(const Key('fichiers:choisir')));
+      await attendreIo(t);
+      expect(fichierDe(m.collection('courriers').parId('C1'))!['nomNormalise'], '2026-08-20_ARR_0001.pdf');
+      await fermerTiroir(t);
+      await t.pump(const Duration(seconds: 12));
+      await toucher(t, find.byTooltip('Modifier').first);
+      final ctl = t.widget<FormulaireSigh>(find.byType(FormulaireSigh).last).controleur;
+      ctl.poser('date', '2026-09-15');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final f = m.collection('courriers').parId('C1')!;
+      expect(f['date'], '2026-09-15');
+      expect(f['reference'], 'ARR-2026-0001', reason: 'la référence ne change jamais');
+      expect(fichierDe(f)!['nomNormalise'], '2026-09-15_ARR_0001.pdf', reason: 'le nom de téléchargement est recalculé');
+    });
+
     cas('REMPLACER : l’ancienne pièce est retirée (historique), jamais supprimée du disque', (t) async {
       final m = poste({'courriers': courriers()});
       final fp = brancher(m);
