@@ -18,12 +18,19 @@
 ///  * [traiterDemandeImport] : ce que la MÈRE fait de la demande : elle REJOUE l'analyse sous le rôle et le nom de l'auteur (un bouton absent au fileul ne protège rien, et un autre
 ///    poste a pu créer la même fiche entre-temps), puis applique par le MÊME chemin que l'import local (`appliquer`) ou refuse en NOMMANT le code, le motif et le geste.
 ///
+///
+/// LOT IDEM (décisions de la Direction du 13/11/2026, section V) : le MÊME inventaire, importé par deux fileuls ou deux fois, est reconnu comme le MÊME lot. L'identité d'un lot dérive de son
+/// CONTENU normalisé (`identite_lot.dart`) et donne aux fiches d'un lot des identifiants identiques chez tous les postes. La mère confirme le lot UNE fois ; une autre demande du même contenu est
+/// « déjà confirmée, adoptée » (jamais un refus, rien n'est réécrit, [VerdictDemandeImport.adoptee]) ; un fileul dont la série diffère (nouvelle tentative après une annulation) rebase son écriture
+/// ([SuiteDuVerdict.rebaser]). Chaque étape (verdict, restitution, adoption, consignation d'un refus) rejouée est un NO-OP prouvé.
+///
 /// La demande est une fiche descriptive (`demandesImport`) : le fileul la dépose, la mère la complète du verdict, qui revient au fileul par le même chemin (précédent : `propositionsTarif`
 /// du lot T6). Les lignes du fichier voyagent dans la demande (la mère doit pouvoir rejouer) : elles sont EFFACÉES de la fiche dès que la mère a rendu son verdict, et un verdict
 /// d'un jeu restreint ne recopie aucune valeur de cellule (motifs fixes, comme l'historique d'un lot, RG-13).
 library;
 
 import 'moteur_import.dart';
+import 'identite_lot.dart';
 import '../droits/droit_import.dart';
 
 /// La collection des demandes (famille A de la synchronisation : champ à champ, dans les deux sens).
@@ -45,9 +52,8 @@ const String champEnAttenteMere = 'enAttenteMere';
 /// Lot IMP-D : une fiche que la mère a refusée mais qu'une pièce émise utilise déjà (valeur : le motif nommé). Elle reste en place, marquée, jamais réécrite.
 const String champRefuseeParMere = 'refuseeParMere';
 
-/// LOT IMP-E : la demande dont une fiche est née. Une fiche écrite par une demande porte `serieDemande` (la série des identifiants, la même chez le fileul et chez la mère) : c'est ce qui lui
-/// donne une IDENTITÉ COMMUNE à tous les postes (son identifiant, jamais préfixé par l'étiquette du poste) et qui permet de reconnaître un rejeu.
-const String champSerieDemande = 'serieDemande';
+/// LOT IMP-E : une fiche écrite par une demande porte `serieDemande` (la série des identifiants, la même chez le fileul et chez la mère, dérivée du CONTENU du lot depuis le lot IDEM :
+/// voir `identite_lot.dart`) : c'est ce qui lui donne une IDENTITÉ COMMUNE à tous les postes et qui permet de reconnaître un rejeu.
 
 /// LOT IMP-E : la valeur de DÉPART de chaque compteur d'une fiche écrite par une demande (stock d'un produit, quantité restante d'un lot), posée à l'écriture. C'est le point de départ
 /// COMMUN du compteur : le fileul et la mère écrivent la même valeur, aucun des deux ne la publie comme une variation (sinon elle s'additionnerait à celle de l'autre). Seules les sorties
@@ -103,9 +109,17 @@ String identifiantDeDemande(String collection, String demandeId, int rang) {
 /// du poste. Le fileul le pose avec [marquerEnAttente] (ses fiches portent [champEnAttenteMere] jusqu'à la confirmation de la mère) ; la mère le pose sans marquage.
 class PortDemandeImport extends PortImport {
   /// [compteurs] : les champs compteurs de chaque collection (stock d'un produit, quantité restante d'un lot), dont la valeur d'écriture est posée comme DÉPART ([champDepartCompteurs]).
-  PortDemandeImport(this.base, {required this.demandeId, this.marquerEnAttente = false, this.compteurs = const {}});
+  PortDemandeImport(this.base, {required this.demandeId, this.marquerEnAttente = false, this.compteurs = const {}, this.identiteLot, String? marquage}) : marquage = marquage ?? demandeId;
   final PortImport base;
+
+  /// La SÉRIE des identifiants de fiche (depuis le lot IDEM : dérivée du contenu du lot, la même chez tous les postes qui importent ce contenu ; avant, l'identifiant de la demande).
   final String demandeId;
+
+  /// LOT IDEM : l'identité de CONTENU du lot, posée sur chaque fiche écrite (lot d'import compris) pour que le même inventaire se reconnaisse partout.
+  final String? identiteLot;
+
+  /// La valeur du marquage « en attente de la mère » : l'identifiant de la DEMANDE (propre à ce fileul), jamais la série (commune à plusieurs fileuls).
+  final String marquage;
   final bool marquerEnAttente;
   final Map<String, Set<String>> compteurs;
   final Map<String, int> _rangs = {};
@@ -127,15 +141,20 @@ class PortDemandeImport extends PortImport {
     final rang = _rangs.update(collection, (n) => n + 1, ifAbsent: () => 1);
     final id = fiche['id'] ?? identifiantDeDemande(collection, demandeId, rang);
     final deja = base.parId(collection, id);
-    if (deja != null && deja[champSerieDemande] == demandeId) return deja;
+    if (deja != null && deja[champSerieDemande] == demandeId) {
+      // Une fiche ARCHIVÉE sous cette série ne se réutilise jamais (elle a été annulée ou restituée : une nouvelle tentative prend sa propre série).
+      if (deja['statut'] == 'archive') throw StateError('la fiche $id de la série $demandeId est archivée : une nouvelle tentative doit prendre une autre série');
+      return deja;
+    }
     final champs = compteurs[collection] ?? const <String>{};
     final depart = {for (final k in champs) if (fiche[k] is num) k: fiche[k]};
     return base.inserer(collection, {
       ...fiche,
       'id': id,
       champSerieDemande: demandeId,
+      if (identiteLot != null) champIdentiteLot: identiteLot,
       if (depart.isNotEmpty) champDepartCompteurs: depart,
-      if (marquerEnAttente && collection != collectionLots) champEnAttenteMere: demandeId,
+      if (marquerEnAttente && collection != collectionLots) champEnAttenteMere: marquage,
     });
   }
 
@@ -155,6 +174,28 @@ class PortDemandeImport extends PortImport {
 /// LOT IMP-E : le lot d'import déjà écrit par cette demande (il porte la série de la demande), ou `null`. Sert de preuve qu'un rejeu n'a rien à écrire.
 FicheImport? lotDeLaDemande(PortImport port, String demandeId) =>
     port.toutes(collectionLots).where((l) => l[champSerieDemande] == demandeId && l['etat'] == 'applique').firstOrNull;
+
+/// LOT IDEM : le lot appliqué qui porte cette identité de CONTENU (écrit par n'importe quelle demande, sous n'importe quelle tentative), ou `null`.
+FicheImport? lotDeLIdentite(PortImport port, String identite) =>
+    port.toutes(collectionLots).where((l) => l[champIdentiteLot] == identite && l['etat'] == 'applique').firstOrNull;
+
+/// LOT IDEM : la TENTATIVE de ce poste pour ce contenu : 1 la première fois, puis une de plus par série déjà utilisée ici (fiches, annulées, restituées ou archivées, et lots consignés). Une
+/// fiche archivée n'est jamais réutilisée : le même fichier réimporté après une annulation (ou un refus de la mère) s'écrit sous une série neuve.
+int tentativeDuLotImport(JeuImport j, PortImport port, String identite) {
+  final series = <String>{};
+  for (final c in [...j.cibles, collectionLots]) {
+    for (final f in port.toutes(c)) {
+      if (f[champIdentiteLot] == identite && '${f[champSerieDemande] ?? ''}'.isNotEmpty) series.add('${f[champSerieDemande]}');
+    }
+  }
+  return series.length + 1;
+}
+
+/// LOT IDEM : ce que le FILEUL fixe avant d'écrire : l'identité de contenu du fichier et la série de ses fiches (la même chez tous les postes pour la première tentative).
+({String identite, String serie}) preparerLotImport(JeuImport j, List<List<Object?>> lignes, PortImport port) {
+  final identite = identiteLotImport(j.id, lignes);
+  return (identite: identite, serie: serieDuLotImport(identite, tentativeDuLotImport(j, port, identite)));
+}
 
 /// LOT IMP-E : applique la demande, UNE SEULE fois. Si le lot de cette demande existe déjà (rejeu de la demande, redémarrage entre l'écriture et le verdict, reprise du journal), c'est un
 /// NO-OP : aucune fiche, aucun lot, aucune ligne de journal de plus ; le lot déjà écrit est rendu. Sinon, c'est `appliquer`, sous les identifiants de la demande.
@@ -195,6 +236,8 @@ Map<String, Object?> composerDemandeImport({
   required bool restreint,
   String? lotLocal,
   Object? lotLocalId,
+  String? serie,
+  String? identiteLot,
 }) {
   assert(analyse.accepte && analyse.aEcrire > 0, 'une demande ne part que d\'un fichier vérifié');
   // Lot IMP-D : `lotLocal` dit que le fileul a DÉJÀ écrit le fichier chez lui (écriture directe) ; `rangsEcrits` est ce qu'il a écrit, que la mère doit reproduire à l'identique.
@@ -219,7 +262,8 @@ Map<String, Object?> composerDemandeImport({
       'ecritureDirecte': true,
       // L'identité des fiches écrites : la demande est RENOMMÉE par le pont en arrivant à la mère (l'étiquette du poste préfixe son identifiant de synchronisation), la série des
       // identifiants de fiche ne doit pas l'être : elle voyage dans ce champ.
-      'serieIdentifiants': id,
+      'serieIdentifiants': serie ?? id,
+      if (identiteLot != null) 'identiteLot': identiteLot,
       'lotLocal': lotLocal,
       'lotLocalId': lotLocalId,
       'rangsEcrits': rangsAEcrire(analyse),
@@ -229,15 +273,23 @@ Map<String, Object?> composerDemandeImport({
 
 /// Le verdict de la mère sur une demande.
 class VerdictDemandeImport {
-  const VerdictDemandeImport.appliquee({required this.lot, required this.ecrits})
+  const VerdictDemandeImport.appliquee({required this.lot, required this.ecrits, this.adoptee = false, this.serie})
       : appliquee = true,
         code = null,
         motif = null,
         geste = null;
   const VerdictDemandeImport.refusee(String this.code, String this.motif, String this.geste, {this.lot})
       : appliquee = false,
+        adoptee = false,
+        serie = null,
         ecrits = 0;
   final bool appliquee;
+
+  /// LOT IDEM : « déjà confirmé, adopté ». Le même contenu avait déjà été confirmé par la mère pour une AUTRE demande : elle ne réécrit rien, elle rend ce lot. Jamais un refus.
+  final bool adoptee;
+
+  /// LOT IDEM : la série des identifiants du lot que la mère tient (celle de la demande, ou celle du lot adopté quand elle diffère).
+  final String? serie;
   final String? code, motif, geste;
 
   /// La référence du lot écrit (appliquée) ou du fichier consigné refusé (refusée, si le moteur en a consigné un).
@@ -252,6 +304,8 @@ class VerdictDemandeImport {
         'resultatGeste': geste ?? '',
         'resultatLot': lot ?? '',
         'resultatEcrits': ecrits,
+        'resultatAdoptee': adoptee,
+        'resultatSerie': serie ?? '',
         'traitePar': traitePar,
         'traiteLe': traiteLe,
         'lignes': <Object?>[],
@@ -273,18 +327,59 @@ VerdictDemandeImport traiterDemandeImport(FicheImport demande, PortImport port, 
   // LOT IMP-E : une demande que la mère a DÉJÀ appliquée (redémarrage entre l'écriture et le verdict, demande reçue deux fois) rend le même verdict sans rien réécrire. Sans cette preuve,
   // la seconde analyse refuserait le fichier comme un doublon de ce que la mère vient elle-même d'écrire.
   final serie = '${demande['serieIdentifiants'] ?? demande['id']}';
-  if (demande['ecritureDirecte'] == true) {
-    final deja = lotDeLaDemande(port, serie);
-    if (deja != null) return VerdictDemandeImport.appliquee(lot: '${deja['reference']}', ecrits: (deja['ecrits'] as List? ?? const []).length);
-  }
-  final lignes = [
+  final identiteDeclaree = demande['identiteLot'] is String ? demande['identiteLot'] as String : null;
+  final directe = demande['ecritureDirecte'] == true;
+  final lignesDeposees = [
     for (final l in (demande['lignes'] as List? ?? const [])) [for (final c in (l as List)) c]
   ];
+  if (directe && identiteDeclaree != null) {
+    // LOT IDEM : l'identité déclarée doit être celle du CONTENU (les lignes voyagent dans la demande tant que la mère n'a pas statué) et la série celle de cette identité : une demande ne
+    // peut pas se faire passer pour un autre lot (jamais d'adoption d'un lot qui n'est pas le sien).
+    final lignesIncoherentes = lignesDeposees.isNotEmpty && identiteLotImport(j.id, lignesDeposees) != identiteDeclaree;
+    if (lignesIncoherentes || !serieEstDeLIdentite(serie, identiteDeclaree)) {
+      return VerdictDemandeImport.refusee('IDENTITE_LOT_INCOHERENTE', 'l’identité du lot déclarée par la demande ne correspond pas au contenu du fichier',
+          'Refaites l’import depuis la page du jeu, avec une version à jour du poste : la demande est recalculée sur le fichier.');
+    }
+  }
+  if (directe) {
+    final deja = lotDeLaDemande(port, serie);
+    // Les lignes que la demande a écrites doivent être celles du lot tenu : sinon ce n'est pas le même résultat (le fileul a écrit autre chose chez lui).
+    VerdictDemandeImport? adopter(FicheImport lot) {
+      final rangsLot = lot['rangsEcrits'];
+      if (demande['rangsEcrits'] is List && rangsLot is List) {
+        final diff = resultatIdentique([for (final n in (demande['rangsEcrits'] as List)) (n as num).toInt()], [for (final n in rangsLot) (n as num).toInt()]);
+        if (diff != null) return VerdictDemandeImport.refusee('RESULTAT_DIFFERENT', diff.motif, diff.geste);
+      }
+      final origine = lot[champDemandeOrigine];
+      return VerdictDemandeImport.appliquee(
+          lot: '${lot['reference']}',
+          ecrits: (lot['ecrits'] as List? ?? const []).length,
+          adoptee: origine != null && '$origine' != '${demande['id']}',
+          serie: '${lot[champSerieDemande] ?? serie}');
+    }
+
+    if (deja != null) return adopter(deja)!;
+    if (identiteDeclaree != null) {
+      final autre = lotDeLIdentite(port, identiteDeclaree);
+      if (autre != null) return adopter(autre)!;
+    }
+    final annule = port.toutes(collectionLots).where((l) => l[champSerieDemande] == serie && l['etat'] == 'annule').firstOrNull;
+    if (annule != null) {
+      return VerdictDemandeImport.refusee('LOT_ANNULE_A_LA_MERE', 'le lot de cette série (${annule['reference']}) a été annulé à la mère',
+          'Refaites l’import : une nouvelle tentative prend une série neuve (jamais une fiche archivée réutilisée).');
+    }
+  }
+  final lignes = lignesDeposees;
   final a = analyserLignes(j, lignes, '${demande['fichier'] ?? ''}', port)..empreinte = demande['empreinte'] as String?;
   if (!a.accepte) {
     // Rejoué à la mère, le fichier ne passe plus (un autre poste a pu écrire la même fiche) : refusé en NOMMANT la première cause, consigné à l'historique de la mère.
     final premier = [for (final p in a.problemes.map((p) => masquerProbleme(j, p, port))) if (p.estRefus) p].firstOrNull;
-    final lot = consigner(j, a, port);
+    // LOT IDEM : un REJEU de la même demande refusée ne consigne pas un second lot refusé (le fichier refusé est consigné UNE fois par demande).
+    var lot = port.toutes(collectionLots).where((l) => l['etat'] == 'refuse' && l[champDemandeOrigine] == demande['id']).firstOrNull;
+    if (lot == null) {
+      lot = consigner(j, a, port);
+      if (lot != null) port.mettreAJour(collectionLots, lot['id'], {champDemandeOrigine: demande['id']});
+    }
     return VerdictDemandeImport.refusee(
         premier?.code ?? 'ANALYSE_REFUSEE',
         premier == null
@@ -295,13 +390,16 @@ VerdictDemandeImport traiterDemandeImport(FicheImport demande, PortImport port, 
   }
   // LOT IMP-D : une demande dont le fileul a déjà écrit chez lui n'est confirmée que si la mère écrit EXACTEMENT les mêmes lignes ; ses fiches reçoivent les identifiants de la demande
   // (ceux du fileul) pour le remplacer au lieu de le doubler. Un résultat différent est refusé en nommant les lignes, rien n'est écrit, le fileul restitue.
-  final directe = demande['ecritureDirecte'] == true;
   if (directe && demande['rangsEcrits'] is List) {
     final diff = resultatIdentique([for (final n in (demande['rangsEcrits'] as List)) (n as num).toInt()], rangsAEcrire(a));
     if (diff != null) return VerdictDemandeImport.refusee('RESULTAT_DIFFERENT', diff.motif, diff.geste);
   }
-  final r = directe ? appliquerDemande(j, a, PortDemandeImport(port, demandeId: serie, compteurs: compteurs)) : appliquer(j, a, port);
-  if (r.ok) return VerdictDemandeImport.appliquee(lot: '${r.lot!['reference']}', ecrits: r.ecrits);
+  final r = directe ? appliquerDemande(j, a, PortDemandeImport(port, demandeId: serie, compteurs: compteurs, identiteLot: identiteDeclaree)) : appliquer(j, a, port);
+  if (r.ok) {
+    // LOT IDEM : le lot écrit se souvient de la demande qui l'a écrit (confirmation) et des lignes écrites : une AUTRE demande du même contenu l'adopte sans rien réécrire.
+    port.mettreAJour(collectionLots, r.lot!['id'], {champDemandeOrigine: demande['id'], 'rangsEcrits': rangsAEcrire(a)});
+    return VerdictDemandeImport.appliquee(lot: '${r.lot!['reference']}', ecrits: r.ecrits, serie: directe ? serie : null);
+  }
   return VerdictDemandeImport.refusee(r.code ?? 'ECRITURE_REFUSEE', r.motif ?? 'l’écriture a été refusée', r.geste ?? 'Rien n’a été écrit.', lot: r.lot == null ? null : '${r.lot!['reference']}');
 }
 
@@ -338,7 +436,13 @@ class ResultatRestitution {
 ResultatRestitution restituerLotDirect(JeuImport? Function(String id) jeu, Object? lotId, {required String codeRefus, required String motifRefus, required PortImport port}) {
   final lot = port.parId(collectionLots, lotId);
   if (lot == null) return const ResultatRestitution.refus('LOT_INCONNU', 'le lot écrit chez vous est introuvable', 'Actualisez l’historique des lots.');
-  if (lot['etat'] == 'restitue') return const ResultatRestitution.ok(archives: 0);
+  if (lot['etat'] == 'restitue') {
+    // LOT IDEM : une restitution REJOUÉE rend ce qu'elle avait fait (fiches archivées, fiches gardées), sans rien contre-passer de plus : une restitution partielle ne devient jamais « faite ».
+    final detail = lot['restitueGardeesDetail'];
+    return ResultatRestitution.ok(
+        archives: (lot['restitueArchives'] as num?)?.toInt() ?? 0,
+        gardees: detail is List ? [for (final g in detail) (g as Map).cast<String, Object?>()] : const []);
+  }
   if (lot['etat'] != 'applique') {
     return ResultatRestitution.refus('LOT_NON_APPLIQUE', 'seul un lot appliqué se restitue (état actuel : ${lot['etat']})', 'Aucune action : ce lot a déjà été annulé.');
   }
@@ -384,6 +488,8 @@ ResultatRestitution restituerLotDirect(JeuImport? Function(String id) jeu, Objec
     'restitueLe': port.jour,
     'motifRestitution': motifMarque,
     'restitueGardees': gardees.length,
+    'restitueArchives': archives,
+    'restitueGardeesDetail': gardees,
   });
   port.journaliser('Import restitué (refusé par la mère)', 'IMP', 'LotImport', '${lot['reference']}', {'etat': 'applique'}, {'etat': 'restitue', 'code': codeRefus, 'fiches': archives, 'gardees': gardees.length});
   return ResultatRestitution.ok(archives: archives, gardees: gardees);
@@ -424,6 +530,10 @@ enum SuiteDuVerdict {
 
   /// La mère a confirmé : lever le marquage « en attente de la mère » des fiches qu'elle n'a pas encore remplacées.
   leverLeMarquage,
+
+  /// LOT IDEM : la mère tient déjà ce contenu sous une AUTRE série que celle de ce fileul (il l'avait réimporté après une annulation) : son écriture locale est rebasée, c'est-à-dire
+  /// restituée (jamais doublée) ; les fiches de la mère lui arrivent par la configuration. Ce n'est pas un refus.
+  rebaser,
 }
 
 SuiteDuVerdict suiteDuVerdict(FicheImport demande) {
@@ -432,7 +542,10 @@ SuiteDuVerdict suiteDuVerdict(FicheImport demande) {
     case demandeImportRefusee:
       return demande['restitution'] == restitutionFaite || demande['restitution'] == restitutionPartielle ? SuiteDuVerdict.aucune : SuiteDuVerdict.restituer;
     case demandeImportAppliquee:
-      return demande['marquageLeve'] == true ? SuiteDuVerdict.aucune : SuiteDuVerdict.leverLeMarquage;
+      if (demande['marquageLeve'] == true || demande['restitution'] == restitutionFaite || demande['restitution'] == restitutionPartielle) return SuiteDuVerdict.aucune;
+      final sienne = '${demande['serieIdentifiants'] ?? ''}', tenue = '${demande['resultatSerie'] ?? ''}';
+      if (demande['resultatAdoptee'] == true && tenue.isNotEmpty && sienne.isNotEmpty && sienne != tenue) return SuiteDuVerdict.rebaser;
+      return SuiteDuVerdict.leverLeMarquage;
   }
   return SuiteDuVerdict.aucune;
 }
@@ -443,6 +556,12 @@ SuiteDuVerdict suiteDuVerdict(FicheImport demande) {
   final directe = demande['ecritureDirecte'] == true;
   switch (demande['etat']) {
     case demandeImportAppliquee:
+      if (demande['resultatAdoptee'] == true) {
+        return (
+          libelle: demande['restitution'] == restitutionPartielle ? 'Déjà confirmé par la mère, adopté (restitution partielle de l’écriture locale)' : 'Déjà confirmé par la mère, adopté',
+          ton: 'succes'
+        );
+      }
       return (libelle: 'Appliquée par la mère', ton: 'succes');
     case demandeImportRefusee:
       final r = demande['restitution'];

@@ -260,7 +260,8 @@ void main() {
     expect(e.fileul.actives('fournisseurs').where((f) => f['code'] == 'CAME' || f['code'] == 'LOCAL'), isEmpty);
     expect(e.fileul.journal.any((l) => l.startsWith('Import restitué')), isTrue, reason: 'RG-12');
     final encore = restituerLotDirect(jeuImportParId, e.resultat.lot!['id'], codeRefus: 'X', motifRefus: 'x', port: e.fileul);
-    expect([encore.ok, encore.archives], [true, 0], reason: 'idempotent : un lot restitué ne se restitue pas deux fois');
+    expect([encore.ok, encore.archives, encore.etat], [true, 2, restitutionFaite], reason: 'idempotent : un lot restitué ne se restitue pas deux fois, la restitution rejouée rend ce qu\'elle avait fait (lot IDEM)');
+    expect(e.fileul.journal.where((l) => l.startsWith('Import restitué')), hasLength(1), reason: 'aucune seconde ligne de journal');
   });
 
   test('IMP-D UNE PIÈCE ÉMISE ENTRE-TEMPS : la fiche qu\'elle utilise n\'est pas archivée, elle reste marquée avec le motif de la mère ; les autres sont restituées', () {
