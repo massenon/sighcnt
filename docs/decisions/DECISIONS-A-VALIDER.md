@@ -253,3 +253,18 @@ Mise en œuvre du poste pour les documents numérisés de DOCS-1 : `ECARTS-MAQUE
 - **Le poste mère et son service partagent le dossier des fichiers** (même dossier, même clé) : un scan déposé à la mère est aussitôt chez elle, sans transfert. ☐ Garder.
 
 - Vérification : voir E2539 et E2540 (vingt-six mutations rouges, répétitions, avant/après).
+
+
+## T. Lot OCR-prep (13/11/2026, maquette et poste) : la lecture OCR des scans, PRÉPARÉE, ce qui reste à trancher par la Direction
+
+Suite de la décision Q7 (« OCR : OUI en phase 2, local, APRÈS un essai sur trois vrais scans »). Ce lot a préparé tout ce qui ne dépend pas du moteur ; **aucun moteur n'est choisi, installé ni embarqué, aucune qualité d'OCR n'a été mesurée**. Écarts : `ECARTS-MAQUETTE.md` E2544 à E2556, guide : `docs/guides/GUIDE-mesure-ocr.md`. Ce qui reste à trancher :
+
+- **Le moteur** : à choisir par la Direction APRÈS l'essai sur trois vrais scans de la clinique (candidats réalistes cités à E2551, tous « à mesurer »). ☐ Un moteur local installé avec le poste ☐ Un exécutable embarqué ☐ Une bibliothèque Dart ☐ Autre : ________. Les PDF scannés exigent en plus un rendeur de pages (pages de PDF en images) : à choisir avec le moteur.
+- **Activation par défaut** (hypothèse retenue : DÉSACTIVÉE tant qu'aucun moteur n'est choisi, puis activée à la main par l'administrateur ou la DAF) : ☐ Garder (activation explicite) ☐ Activer d'office quand un moteur est installé.
+- **Correction manuelle du texte reconnu** : PAS faite dans ce lot. Aujourd'hui le texte lu par machine est toujours marqué « à vérifier » et ne se corrige pas ; une relance ou un autre moteur AJOUTE une version datée. ☐ Pas de correction (le scan est la référence) ☐ Une correction par un agent habilité, qui s'ajoute comme une version signée (la lecture machine reste lisible).
+- **Durée de conservation du texte lu** (hypothèse retenue : conservation illimitée de toutes les versions, comme les fichiers, RG-14) : ☐ Garder ☐ Limiter les anciennes versions à : ________ (le texte reste une métadonnée peu volumineuse ; une durée courte ferait perdre ce que l'agent a pu lire).
+- **Qui peut relancer la lecture** (hypothèse retenue : qui peut ÉCRIRE sur l'écran de la pièce, la zone du type de document en plus pour le dossier patient) : ☐ Garder ☐ Réserver à l'administrateur et à la DAF.
+- **Le réglage est propre à chaque poste** (le moteur s'installe sur un poste, pas sur la clinique) : ☐ Garder ☐ Un réglage de clinique qui voyage avec la configuration de la mère.
+- **Le texte lu d'un scan de zone 2** (compte rendu, ordonnance) voyage par le journal vers TOUS les fileuls, comme la fiche qui le porte ; seul l'AFFICHAGE est de zone (un poste dont l'agent ne lit pas la zone n'en lit rien, et ne reçoit pas le binaire). ☐ Accepter la limite (même niveau que la fiche) ☐ Filtrer côté mère par rôle (la mère ne connaît pas la personne, E2542 de la section S).
+- **Les scans d'essai** : un dossier PROPRE AU POSTE, hors du dépôt, jamais versionné (`GUIDE-mesure-ocr.md`), avec une transcription recopiée à la main à côté de chaque scan. ☐ Garder ☐ Autre emplacement : ________. Le rapport de mesure ne cite par défaut AUCUN mot des documents. ☐ Trois scans suffisent pour décider ☐ Plus de trois (la décision Q7 dit trois : un échantillon de cette taille indique, il ne démontre pas).
+- **La charge d'un poste de clinique** pendant une lecture (UNE lecture à la fois, bornée à 120 s par page, hors de la saisie) : à relever sur un poste réel avec le moteur choisi ; le délai de 120 s est une valeur d'attente « à valider ».

@@ -46,7 +46,16 @@ Constat E2491 : la sauvegarde nocturne ne copiait pas `api/fichiers/`. Trois tâ
 - Le vecteur `administration.json` est RÉGÉNÉRÉ de la maquette (la case `numerise` du courrier est retirée, la colonne dérive du fichier).
 - Statuts de parité : `m13-courriers` et `m1-documents` étaient déjà « porté », N1 mesuré par `parite_ecrans_test.dart` reste vert ; `PARITE-MAQUETTE.md` est engendré et n'a pas changé.
 - Vérification : E2539 et E2540 (vingt-six mutations rouges, dix répétitions, avant/après). Écarts E2532 à E2543, décisions à confirmer : `DECISIONS-A-VALIDER.md` section S.
-- Reste : l'essai sur trois vrais scans, l'OCR (phase 2), le rendu PDF intégré et le transfert par le relais, si la Direction les demande (section S).
+- Reste : l'essai sur trois vrais scans puis le branchement du moteur d'OCR choisi (lot OCR-prep ci-dessous : le moteur n'est pas choisi), le rendu PDF intégré et le transfert par le relais, si la Direction les demande (section S).
+### Lot OCR-prep : préparer l'OCR local de la phase 2, SANS choisir ni embarquer de moteur [FAIT 13/11/2026, maquette et poste]
+Décision de la Direction (Q7) : « OCR : OUI en phase 2, local, APRÈS un essai sur trois vrais scans de la clinique. » Ce lot fait tout ce qui ne dépend pas du moteur ; **aucun moteur n'est choisi, installé ni embarqué, aucune qualité d'OCR n'est mesurée**.
+- Maquette d'abord (`VERSION` 84) : `assets/js/modules/fichiers-ocr.js` (interface de moteur injectable, six états d'indexation, file par empreinte, reprise après arrêt, délai, réglage, relance, marquage « lu par machine, à vérifier »), collection `lecturesOcr` (une version par fiche, identifiant déterministe, garde d'immuabilité du magasin), état de file porté par la fiche du registre `fichiers`, `ui.js` (`noteRecherche`), écrans `m13-courriers` et `m1-documents` (ligne, carte, filtre, message sous « Aucun résultat », bouton de réglage). Scénarios Vagues 169 à 171.
+- Domaine et vecteurs : `packages/domaine/lib/src/fichiers/ocr.dart` (interface `MoteurOcr`, `RendeurPages`, `MoteurOcrFactice`, états, demande, reprise, relance, réglage, lecture bornée) et `ocr_mesure.dart` (mesure d'un texte lu), vecteurs `test/vecteurs/ocr.json` tirés de la maquette pilotée dans Chrome par `prototype_html/build/vecteurs-ocr.js` (aussi : les scans synthétiques `test/fixtures/ocr_banc/`).
+- Poste : `apps/poste/lib/donnees/ocr_poste.dart` (file LOCALE `fileOcr`, lectures `lecturesOcr`, réglage propre au poste), `kit/ocr_ui.dart` (badge, bloc de la carte, relance, réglage), câblage dans `main.dart` (aucun moteur branché).
+- Synchronisation : `lecturesOcr` voyage par le journal (famille B, ajout seul, identité commune, jamais vers un téléphone) ; `fileOcr` reste locale. Scénario `OCR1` du banc et `ocr_direct_sync_test.dart` contre la vraie mère Dart.
+- Banc de mesure : `packages/domaine/tool/mesure_ocr.dart` (moteurs factices et moteur par commande, rapport Markdown et JSON), guide `docs/guides/GUIDE-mesure-ocr.md`.
+- Vérification : voir E2553 et E2554 (mutations rouges, répétitions, avant/après). Écarts E2544 à E2556, décisions à confirmer : `DECISIONS-A-VALIDER.md` section T.
+- **Reste, dans l'ordre** : (1) l'essai sur trois vrais scans (guide ci-dessus : déposer les scans et leurs transcriptions dans un dossier propre au poste, lancer le banc avec la ligne de commande du moteur candidat) ; (2) la décision de la Direction (moteur, activation, correction manuelle, conservation) ; (3) le branchement du moteur choisi : un adaptateur `MoteurOcr`, éventuellement un `RendeurPages`, l'installation du moteur et de ses données de langue avec le poste, `ocr.enregistrer(...)` au démarrage ; (4) la correction manuelle du texte reconnu, si la Direction la veut (NON faite dans ce lot).
 
 ## Commandes
 - `service postgresql start`, puis banc isolé : `SIGH_PORT_PHP=9210 SIGH_BASE_TEST=sigh_banc_d1 SIGH_PORT_TEST=9211 CHROME_PATH=/opt/pw-browsers/chromium node build/test-fonctionnel.js --seul=Vague_152|Vague_153|…` (`ps aux | grep "[p]hp -S"` avant de croire un résultat).
@@ -63,7 +72,7 @@ Constat E2491 : la sauvegarde nocturne ne copiait pas `api/fichiers/`. Trois tâ
 Aucune opération nouvelle au journal dans ce brief. Les fichiers voyagent à part, par empreinte (EF-SYNC-18), depuis le lot D5 (poste) ; `fichiers` est une collection de métadonnées (ajout seul par empreinte).
 
 ## Hors périmètre
-OCR (phase 2, après essai sur trois vrais scans), recherche par le sens (NON, Q8), pilotage du scanner, poste Flutter, antériorités et seuils.
+OCR : la PRÉPARATION est faite (lot OCR-prep), le choix et le branchement d'un moteur attendent l'essai sur trois vrais scans, recherche par le sens (NON, Q8), pilotage du scanner, poste Flutter, antériorités et seuils.
 
 ## Risques
 | Risque | Signal précoce | Parade |
