@@ -10,6 +10,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/sauvegarde_fichiers_ui.dart';
 import '../../shell/contexte_ecran.dart';
 import 'commun_m14.dart';
 
@@ -400,6 +401,9 @@ class _VueSauvegardesState extends State<_VueSauvegardes> {
             variante: VarianteBouton.secondaire,
             onPressed: () => _imprimerJournal(context, c, rows)),
       ]),
+      const SizedBox(height: 16),
+      // Lot D5 : les fichiers numérisés ne sont pas dans le magasin, leur sauvegarde est à part (destination réglée, copie incrémentale vérifiée, jamais tournante).
+      CarteSauvegardeFichiers(role: c.role),
       const SizedBox(height: 16),
       TableauSigh(
         titre: 'Historique des sauvegardes',

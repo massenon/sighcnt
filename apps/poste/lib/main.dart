@@ -9,6 +9,7 @@ import 'package:window_manager/window_manager.dart';
 
 
 import 'donnees/fichiers_poste.dart';
+import 'donnees/sauvegarde_fichiers_poste.dart';
 import 'donnees/organigramme_poste.dart';
 import 'sync/service_demandes_import.dart';
 import 'sync/service_fichiers.dart';
@@ -186,6 +187,10 @@ Future<void> main() async {
   // LES FICHIERS NUMÉRISÉS (lot D5) : rangés hors du magasin, par empreinte SHA-256, chiffrés au repos par la clé du poste (en clair sous `SIGH_CHIFFREMENT=non`). Installés pour les écrans
   // des courriers (M13) et des documents du patient (M1) ; un fileul rattaché leur ajoute le transfert du binaire à part (`ServiceFichiers`, ci-dessous).
   final fichiersPoste = FichiersPoste(magasin, StockageFichiers('$dossierDonnees/fichiers', cle: cle))..installer();
+  // Lot D5, étape 7 : la sauvegarde des fichiers numérisés, à part de celle du magasin (destination réglée par l'administrateur ou la DAF, propre à ce poste : un fichier local).
+  SauvegardeFichiersPoste(magasin, fichiersPoste, fichierReglage: '$dossierDonnees/sauvegarde-fichiers.json', dossierDonnees: dossierDonnees, cle: cle)
+    ..installer()
+    ..demarrer();
   final navigation = await DonneesNavigation.chargerAssets();
   SessionPoste? session;
   ServiceFichiers? serviceFichiers;

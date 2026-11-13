@@ -93,6 +93,9 @@ class FichiersPoste extends ChangeNotifier {
   static FichiersPoste? de(Magasin m) => _installes[m];
   void installer() => _installes[magasin] = this;
 
+  /// Prévient les écrans qu'un fichier a changé sous eux (restauration, arrivée d'un binaire).
+  void rafraichir() => notifyListeners();
+
   // --- taille maximale (réglage en base : collection `reglages`, fiche `documentsBornes`) --------------------------------------------------
 
   Map<String, Object?>? get _reglage {
