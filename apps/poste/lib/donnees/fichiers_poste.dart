@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
@@ -49,6 +48,9 @@ abstract class EtatTransfertFichiers {
   /// Ce poste joint sa mère (ou l'est).
   bool get mereJoignable;
 }
+
+/// La file d'envoi des fichiers vers la mère : collection LOCALE au poste.
+const String fichiersFileEnvoi = 'transfertsFichiers';
 
 /// Les noms des collections et le module du journal de chaque famille.
 String fichiersCollectionDe(String famille) => famille == 'patient' ? 'documentsPatient' : 'courriers';
@@ -220,11 +222,26 @@ class FichiersPoste extends ChangeNotifier {
     magasin.journaliser('Dépôt d’un fichier numérisé', _module(famille), _entite(famille), '${courante['reference'] ?? courante['id']}', {'fichier': null},
         {'empreinte': docAbrege(rg.sha256), 'nom': f['nomNormalise'], 'taille': rg.taille});
     notifyListeners();
+    _enfiler(rg.sha256, famille, type, role);
     return ResultatFichier.ok(fichier: f, avertissementDoublon: prep.autre, annuler: () {
       undo();
+      // L'ANNULATION DOIT SE PROPAGER : retirer la clé ne se propage pas (la fusion par champ ne sait pas dire « retiré »), on pose `fichier: null` comme la maquette.
+      col.mettreAJour(ficheId, {'fichier': null}, journaliser: false);
       undoRetrait?.call();
       notifyListeners();
     });
+  }
+
+  // --- la file d'envoi vers la mère (collection LOCALE `transfertsFichiers`, jamais synchronisée) ----------------------------------------------
+
+  /// Une ligne par (empreinte, famille, zone) : ce qu'il reste à envoyer à la mère, avec le RÔLE de l'agent qui a déposé (le droit et la zone se vérifient à la mère sous ce rôle).
+  /// Écrite au dépôt même, sur un poste autonome aussi : le jour où le poste rejoint une mère, ses fichiers partent.
+  void _enfiler(String sha, String famille, String? type, String role) {
+    final zone = famille == 'patient' ? docZoneDe(type) : 0;
+    final id = 'ENV-${sha.substring(0, 16)}-$famille-$zone';
+    final col = magasin.collection(fichiersFileEnvoi);
+    if (col.parId(id) != null) return;
+    col.inserer({'id': id, 'sha256': sha, 'sens': 'envoi', 'famille': famille, 'type': type, 'zone': zone, 'role': role, 'etat': 'attente', 'essais': 0}, prefixe: 'ENV');
   }
 
   // --- retrait (RG-14) ----------------------------------------------------------------------------------------------------------------------
@@ -299,9 +316,7 @@ class FichiersPoste extends ChangeNotifier {
     final zoneOk = famille != 'patient' || docPeutVoir(type, role).autorise;
     final e = await stockage.etat('${x['sha256']}');
     final bool? copie = switch (e) { EtatLocalFichier.present => true, EtatLocalFichier.altere => false, EtatLocalFichier.absent => null };
-    final t = transfert;
-    return fichierEtatPoste(
-        referenceParFiche: true, copieLocale: copie, transfertEnCours: t?.enCours('${x['sha256']}') ?? false, mereJoignable: t?.mereJoignable ?? false, zoneAutorisee: zoneOk);
+    return fichierEtatPoste(referenceParFiche: true, copieLocale: copie, mereJoignable: transfert?.mereJoignable ?? false, zoneAutorisee: zoneOk);
   }
 }
 

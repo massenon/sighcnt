@@ -130,7 +130,7 @@ class StockageFichiers {
 
   Future<List<int>> _sceller(List<int> clair, String aad) async {
     if (_cle == null) return clair;
-    final b = await _aes.encrypt(clair, secretKey: _cle!, aad: utf8.encode(aad));
+    final b = await _aes.encrypt(clair, secretKey: _cle, aad: utf8.encode(aad));
     return [..._entete, ...b.concatenation()];
   }
 
@@ -140,7 +140,7 @@ class StockageFichiers {
     if (brut.length < 4 + 12 + 16 || !(brut[0] == _entete[0] && brut[1] == _entete[1] && brut[2] == _entete[2] && brut[3] == _entete[3])) return null;
     try {
       final b = SecretBox.fromConcatenation(brut.sublist(4), nonceLength: 12, macLength: 16);
-      return Uint8List.fromList(await _aes.decrypt(b, secretKey: _cle!, aad: utf8.encode(aad)));
+      return Uint8List.fromList(await _aes.decrypt(b, secretKey: _cle, aad: utf8.encode(aad)));
     } catch (_) {
       return null;
     }
@@ -249,6 +249,18 @@ class StockageFichiers {
         deposePar: ancien?.deposePar ?? deposePar);
     await _ecrireAtomique(_cheminMeta(sha), await _sceller(utf8.encode(jsonEncode(m.toJson())), 'meta:$sha'));
     return FichierRange(sha256: sha, ext: ext, mime: c.format!.mime, taille: octets.length, nouveau: nouveau, repare: repare);
+  }
+
+  /// Ajoute un USAGE (famille, zone) à un fichier DÉJÀ rangé, sans rien réécrire d'autre : un second déposant du même fichier (même empreinte, une seule copie) ne crée pas une
+  /// seconde copie, il cumule son usage ; la lecture applique la zone la plus stricte. `false` si le fichier n'est pas rangé ici.
+  Future<bool> ajouterUsage(String sha, {required String famille, required int zone, String? deposePar}) async {
+    final m = await meta(sha);
+    if (m == null || !await existe(sha)) return false;
+    if (m.usages.any((u) => u['famille'] == famille && u['zone'] == zone)) return true;
+    final n = MetaFichier(
+        sha256: sha, mime: m.mime, ext: m.ext, taille: m.taille, usages: [...m.usages, {'famille': famille, 'zone': zone}], premiereLe: m.premiereLe, deposePar: m.deposePar ?? deposePar);
+    await _ecrireAtomique(_cheminMeta(sha), await _sceller(utf8.encode(jsonEncode(n.toJson())), 'meta:$sha'));
+    return true;
   }
 
   /// La fiche d'accompagnement d'un fichier, ou `null`.

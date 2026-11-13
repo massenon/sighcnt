@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'commun.dart';
 
@@ -213,6 +214,47 @@ class Fileul {
     }
     if (rep.statusCode >= 400) throw _ErrHttp(rep.statusCode, code, j);
     return j;
+  }
+
+  /// Une requête à la mère qui porte ou rend des OCTETS (les fichiers numérisés, lot D5) : même authentification que le journal (jeton d'appareil, renouvelé s'il a expiré,
+  /// suspension à la révocation), délai plus large (un morceau de 256 Kio). Rend le statut, le corps brut et les en-têtes ; un statut d'erreur n'est PAS une exception (le corps
+  /// porte le refus nommé), une mère injoignable l'est.
+  Future<({int statut, Uint8List corps, Map<String, String> entetes})> requeteBinaire(String methode, String chemin,
+      {List<int>? corps, Map<String, String> entetes = const {}, String typeContenu = 'application/octet-stream', Duration delai = const Duration(seconds: 15), bool essai = false}) async {
+    final jeton = base.meta('jeton');
+    final req = await _client.openUrl(methode, Uri.parse('${cfg.mere}$chemin')).timeout(const Duration(milliseconds: 1500));
+    req.headers.set('content-type', typeContenu);
+    if (jeton != null && jeton.isNotEmpty) req.headers.set('Authorization', 'Bearer $jeton');
+    entetes.forEach(req.headers.set);
+    if (corps != null) {
+      req.headers.contentLength = corps.length;
+      req.add(corps);
+    }
+    final rep = await req.close().timeout(delai);
+    final octets = BytesBuilder(copy: false);
+    await for (final c in rep.timeout(delai)) {
+      octets.add(c);
+    }
+    final brut = octets.takeBytes();
+    if (rep.statusCode == 401) {
+      Map<String, Object?> j = const {};
+      try {
+        j = (jsonDecode(utf8.decode(brut)) as Map).cast<String, Object?>();
+      } catch (_) {}
+      final code = j['code'] as String?;
+      if (code == 'jeton_expire' && !essai) {
+        await _renouveler();
+        return requeteBinaire(methode, chemin, corps: corps, entetes: entetes, typeContenu: typeContenu, delai: delai, essai: true);
+      }
+      if (code == 'appareil_revoque') {
+        base.poserMeta('suspendu', 1);
+        etat.suspendu = true;
+        throw _Suspendu();
+      }
+    }
+    final h = <String, String>{};
+    rep.headers.forEach((k, v) => h[k.toLowerCase()] = v.join(','));
+    return (statut: rep.statusCode, corps: brut, entetes: h);
   }
 
   Future<void> _renouveler() async {

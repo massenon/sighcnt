@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:sigh_sync/sigh_sync.dart';
 
@@ -25,6 +26,9 @@ class MoteurFileul {
   void demarrer() => unawaited(_fileul.boucle());
 
   String get uuid => _fileul.uuid;
+
+  /// Le jeton d'appareil auprès de la mère (`null` tant que le poste n'est pas appairé) : pour les tests qui parlent à la mère sans passer par le moteur.
+  String? get jeton => _fileul.base.meta('jeton');
 
   /// La base de synchronisation du poste, vue par la transcription des prescriptions du mobile (E1559).
   SourcePiecesMobile get pieces => SourcePiecesFileul(_fileul);
@@ -68,6 +72,12 @@ class MoteurFileul {
     final (_, corps) = await _fileul.commande('GET /etat', const {}, const {});
     return [for (final r in ((corps! as Map)['a_traiter'] as List? ?? const [])) (r as Map).cast<String, Object?>()];
   }
+
+  /// Une requête de FICHIERS à la mère (octets, lot D5) avec l'authentification de ce poste. Une mère injoignable lève ; un refus nommé de la mère est rendu tel quel
+  /// (statut et corps JSON), jamais avalé.
+  Future<({int statut, Uint8List corps, Map<String, String> entetes})> requeteBinaire(String methode, String chemin,
+          {List<int>? corps, Map<String, String> entetes = const {}, String typeContenu = 'application/octet-stream'}) =>
+      _fileul.requeteBinaire(methode, chemin, corps: corps, entetes: entetes, typeContenu: typeContenu);
 
   Future<InstantaneSync> instantane() async {
     final (_, corps) = await _fileul.commande('GET /etat', const {}, const {});

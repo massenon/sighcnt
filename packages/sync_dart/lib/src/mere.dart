@@ -25,7 +25,9 @@ import 'package:sigh_domaine/sigh_domaine.dart'
 import 'commun.dart';
 import 'depot.dart';
 import 'pont.dart';
+import 'fichiers_mere.dart';
 import 'pont_pair.dart';
+import 'stockage_fichiers.dart';
 import 'supervision.dart';
 
 /// Une famille par collection (PRD §8) : A fiche descriptive · B journal · C pièce émise · D agrégat à invariant ·
@@ -66,6 +68,9 @@ const familleDeBase = <String, String>{
   'versionsTarif': 'R', 'propositionsTarif': 'A',
   // Lot IMP-C : la demande d'import d'un fileul (A : le fileul dépose, la mère complète du verdict, champ à champ dans les deux sens).
   'demandesImport': 'A',
+  // Lot D5 : les METADONNÉES des fichiers numérisés voyagent par le journal comme toute fiche (le binaire voyage à part, par empreinte, `fichiers_mere.dart`). Le courrier et le
+  // document du patient portent `fichier` ; le registre `fichiers` est une fiche par empreinte, AJOUT SEUL (famille B).
+  'courriers': 'A', 'documentsPatient': 'A', 'fichiers': 'B',
 };
 const essentielles = {'tarifs', 'versionsTarif', 'chambres'};
 
@@ -86,6 +91,11 @@ const Set<String> collectionsPrixJamaisMobile = {'tarifs', 'versionsTarif', 'pro
 
 /// Les DEMANDES D'IMPORT d'un fileul portent les lignes d'un fichier (patients, personnel, prix, soldes) puis un verdict nommé : jamais vers un téléphone (lot IMP-C, RG-13).
 const Set<String> collectionsImportJamaisMobile = {'demandesImport'};
+
+/// Les FICHIERS NUMÉRISÉS ne vont JAMAIS vers un téléphone (lot D5, RG-13) : ni le binaire (les routes `/fichiers/*` refusent tout appareil mobile), ni les fiches qui le portent
+/// (courriers, documents du patient, y compris les pièces de zone 1 : pièce d'identité, carte d'assurance), ni le registre par empreinte et son texte indexé. Aucun écran du
+/// téléphone ne les lit ; un téléphone perdu n'emporte ni scan ni texte de scan.
+const Set<String> collectionsFichiersJamaisMobile = {'courriers', 'documentsPatient', 'fichiers'};
 const _clinique = 'NASSIERA TOO';
 const _deriveMaxMs = 2 * 60 * 1000;
 const autorise = <String, Set<String>>{
@@ -171,7 +181,12 @@ class ConfigMere {
     this.cleStockage = '',
     this.droits = 'matrice',
     this.matriceChemin = '',
+    this.dossierFichiers = '',
   });
+
+  /// Le dossier des fichiers numérisés de la mère (`<aa>/<sha256>.<ext>`, chiffrés au repos avec [cleStockage]). Vide : la mère ne tient pas de fichiers, ses routes `/fichiers/*`
+  /// répondent 503 `FICHIERS_NON_ACTIVES` (un fileul garde ses fichiers chez lui, sans erreur).
+  final String dossierFichiers;
 
   /// Les droits de l'échange entre pairs : `matrice` (production : la matrice RBAC engendrée `rbac.json`) ou `banc` (la table des rôles du banc d'essai).
   final String droits;
@@ -214,6 +229,10 @@ class Mere {
   HttpServer? _serveur;
   Timer? _sauvegardeur;
 
+  /// Le stockage des fichiers numérisés de la mère (`null` : non activé), et ses routes.
+  StockageFichiers? stockageFichiers;
+  FichiersMere? fichiersMere;
+
   static Future<Mere> creer(ConfigMere cfg) async {
     final base = await Depot.ouvrir(cfg.dbChemin, cfg.cleStockage);
     await base.initialiser(_ddl);
@@ -228,6 +247,10 @@ class Mere {
     if (await base.meta('next_patient') == null) await base.poserMeta('next_patient', 1000);
     if (await base.meta('reinit_ouverte') == null) await base.poserMeta('reinit_ouverte', 0);
     final m = Mere._(cfg, base);
+    if (cfg.dossierFichiers.isNotEmpty) {
+      m.stockageFichiers = StockageFichiers(cfg.dossierFichiers, cle: cfg.cleStockage.isEmpty ? null : [for (var i = 0; i + 1 < cfg.cleStockage.length; i += 2) int.parse(cfg.cleStockage.substring(i, i + 2), radix: 16)]);
+      m.fichiersMere = FichiersMere(m, m.stockageFichiers!);
+    }
     await m.pont.initialiser();
     await m.pair.initialiser();
     return m;
@@ -356,6 +379,9 @@ class Mere {
 
     if (fam == 'B') {
       if (type != 'creer') return refus('journal_immuable', 'Un journal ne se modifie pas : on ajoute une ligne.', 'Ajouter une nouvelle ligne');
+      // Lot D5 : le registre des fichiers est une fiche PAR EMPREINTE. Deux postes qui déposent le même fichier créent la même fiche : la seconde création est ACCEPTÉE SANS EFFET
+      // (la première fait foi, jamais deux fiches ni un refus bruyant à « traiter »).
+      if (f != null && collection == 'fichiers') return {'id': id, 'statut': 'acceptee', 'seq': await seqMax(), 'rejeu': true};
       if (f != null) return refus('fiche_existe', 'Cette ligne existe déjà.', 'Aucun');
       final seq = await journaliser(op, champsOp, app.uuid);
       await ecrire(collection, ficheId, Fiche({...champsOp}, {for (final k in champsOp.keys) k: seq}, false));
@@ -591,7 +617,7 @@ class Mere {
         // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
         // d'opérations visibles et que le curseur du téléphone avance toujours.
         // L0 : les paramètres ne passent JAMAIS par ce chemin pour un mobile ; la liste blanche lui est publiée par le pont (`Pont.diffuser`), qui la contrôle fiche par fiche.
-        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, parCollectionParametres] : const <String>[];
+        final exclues = app.role == 'mobile' ? [...collectionsPosteSeulement, ...collectionsPrixJamaisMobile, ...collectionsImportJamaisMobile, ...collectionsFichiersJamaisMobile, parCollectionParametres] : const <String>[];
         final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
         final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})
@@ -810,6 +836,18 @@ class Mere {
       }
     });
     _serveur!.listen((req) async {
+      // Les routes de FICHIERS portent des octets, pas du JSON : elles ont leur propre lecture du corps (`fichiers_mere.dart`).
+      if (req.uri.path.startsWith('/fichiers/')) {
+        final fm = fichiersMere;
+        if (fm == null) {
+          try {
+            await repondre(req, 503, {'code': 'FICHIERS_NON_ACTIVES', 'motif': 'cette mère ne tient pas de fichiers numérisés', 'geste': 'Activer le dossier des fichiers à la configuration de la mère.'});
+          } catch (_) {}
+        } else {
+          await fm.traiter(req);
+        }
+        return;
+      }
       final b = await corpsJson(req);
       final q = req.uri.queryParameters;
       int statut = 200;

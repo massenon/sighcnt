@@ -423,15 +423,14 @@ String? fichierIndiceNonIndexe(int nbNonIndexes) => nbNonIndexes == 0
 enum EtatFichierPoste { sansFichier, present, enCoursDeTransfert, nonDisponibleHorsLigne, altere, zoneRefusee }
 
 /// L'état d'un fichier. [referenceParFiche] : la fiche porte un `fichier` ; [copieLocale] : `true` présent et intact, `false` présent mais altéré, `null` absent ;
-/// [transfertEnCours] : un transfert de cette empreinte est commencé ou en attente ; [mereJoignable] : le poste joint sa mère (ou est la mère) ; [zoneAutorisee] : le
-/// profil lit la zone du document.
-EtatFichierPoste fichierEtatPoste(
-    {required bool referenceParFiche, required bool? copieLocale, required bool transfertEnCours, required bool mereJoignable, required bool zoneAutorisee}) {
+/// [mereJoignable] : le poste joint sa mère (ou est la mère) : le binaire absent est alors « en cours de transfert » (le poste vient le chercher) ; la mère coupée, il est « non
+/// disponible hors ligne », que le transfert ait commencé ou non (il reprendra au retour de la mère) ; [zoneAutorisee] : le profil lit la zone du document.
+EtatFichierPoste fichierEtatPoste({required bool referenceParFiche, required bool? copieLocale, required bool mereJoignable, required bool zoneAutorisee}) {
   if (!referenceParFiche) return EtatFichierPoste.sansFichier;
   if (!zoneAutorisee) return EtatFichierPoste.zoneRefusee;
   if (copieLocale == true) return EtatFichierPoste.present;
   if (copieLocale == false) return EtatFichierPoste.altere;
-  return (transfertEnCours || mereJoignable) ? EtatFichierPoste.enCoursDeTransfert : EtatFichierPoste.nonDisponibleHorsLigne;
+  return mereJoignable ? EtatFichierPoste.enCoursDeTransfert : EtatFichierPoste.nonDisponibleHorsLigne;
 }
 
 /// Le libellé de l'état, avec le geste (jamais un écran vide ni une erreur).

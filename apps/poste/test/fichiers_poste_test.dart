@@ -81,7 +81,7 @@ void main() {
       expect(j['module'], 'M13');
       // l'annulation remet la fiche « sans pièce » (la clé ajoutée est retirée)
       r.annuler!();
-      expect(b.magasin.collection('courriers').parId('C1')!.containsKey('fichier'), isFalse);
+      expect(b.magasin.collection('courriers').parId('C1')!['fichier'], isNull, reason: '`fichier: null` explicite : une clé retirée ne se propage pas à la synchronisation');
       expect(courrierNumerise(b.magasin.collection('courriers').parId('C1')), isFalse);
     });
 

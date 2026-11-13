@@ -195,6 +195,8 @@ class Pont {
               if (Parametres.autoriseMobile((champs as Map).cast<String, Object?>())) siennes.add({...o, 'champs': champs});
               continue;
             }
+            // Lot D5 : les fichiers numérisés ne vont jamais à un téléphone, même si une fiche se trouvait dans sa portée (RG-13).
+            if (collectionsFichiersJamaisMobile.contains(o['collection'])) continue;
             final dans = await base.select('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?', [uuid, o['collection'], o['fiche']]);
             if (dans.isNotEmpty) siennes.add({...o, 'champs': champs});
           }

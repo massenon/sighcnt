@@ -43,6 +43,12 @@ const Set<String> collectionsActivite = {
   // VÉRIFIÉE, la MÈRE rejoue l'analyse sous le rôle de l'auteur, applique ou refuse en nommant, et écrit le verdict sur la même fiche, qui revient au fileul par ce chemin. Les lignes du fichier
   // sont effacées de la fiche dès le verdict. Jamais vers un téléphone (RG-13).
   'demandesImport',
+  // Lot D5 (EF-SYNC-18) : les MÉTADONNÉES des fichiers numérisés. La fiche d'un courrier ou d'un document du patient porte `fichier` (empreinte, nom, nom normalisé, type, taille, pages) ;
+  // le registre `fichiers` est une fiche par empreinte (AJOUT SEUL, identité commune : deux postes qui déposent le même fichier ne font qu'une fiche). Le BINAIRE ne passe jamais par
+  // ici : il voyage à part, par morceaux avec reprise (`service_fichiers.dart`). Jamais vers un téléphone (RG-13).
+  'courriers',
+  'documentsPatient',
+  'fichiers',
   // Les pièces et les compteurs, avec leurs règles de fusion propres (`fusion_activite.dart`).
   'factures',
   'avoirs',
@@ -255,7 +261,9 @@ class PontActivite {
         // d'origine. Préfixée de l'étiquette du poste, la fiche du fileul et celle que la mère réécrit seraient DEUX fiches (mesuré : lots, mouvements et articles comptés deux fois).
         // Même règle pour un référentiel d'activité que la mère seule écrit (le catalogue des produits) : la configuration le publie sous son identifiant, le pont sous son identité de synchronisation ;
         // préfixée, elle faisait de chaque article créé après le jeu d'origine DEUX fiches chez un fileul (mesuré avec un import de la mère).
-        final identiteCommune = magasin.idsOrigine(c).contains('${f['id']}') || '${f[champSerieDemande] ?? ''}'.isNotEmpty || collectionsDeLaMereSeule.contains(c);
+        // Lot D5 : une fiche du registre `fichiers` a pour identifiant `FIC-<empreinte>` : déterministe, elle est la MÊME sur tous les postes (préfixée, deux postes qui déposent le même fichier
+        // feraient deux fiches et le texte indexé deux fois).
+        final identiteCommune = magasin.idsOrigine(c).contains('${f['id']}') || '${f[champSerieDemande] ?? ''}'.isNotEmpty || collectionsDeLaMereSeule.contains(c) || c == 'fichiers';
         f['idSync'] = identiteCommune ? '${f['id']}' : '$etiquette-${f['id']}';
       }
     }

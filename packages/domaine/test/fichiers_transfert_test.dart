@@ -109,13 +109,12 @@ void main() {
   });
 
   group('état d’un fichier au poste (EF-SYNC-17 : jamais un écran vide)', () {
-    EtatFichierPoste e({bool ref = true, bool? copie, bool transfert = false, bool mere = true, bool zone = true}) =>
-        fichierEtatPoste(referenceParFiche: ref, copieLocale: copie, transfertEnCours: transfert, mereJoignable: mere, zoneAutorisee: zone);
+    EtatFichierPoste e({bool ref = true, bool? copie, bool mere = true, bool zone = true}) =>
+        fichierEtatPoste(referenceParFiche: ref, copieLocale: copie, mereJoignable: mere, zoneAutorisee: zone);
     test('présent, altéré, en cours de transfert, non disponible hors ligne, sans fichier, zone refusée', () {
       expect(e(copie: true), EtatFichierPoste.present);
       expect(e(copie: false), EtatFichierPoste.altere);
-      expect(e(transfert: true), EtatFichierPoste.enCoursDeTransfert);
-      expect(e(), EtatFichierPoste.enCoursDeTransfert, reason: 'mère joignable, fichier pas encore arrivé');
+      expect(e(), EtatFichierPoste.enCoursDeTransfert, reason: 'mère joignable, fichier pas encore arrivé : le poste vient le chercher');
       expect(e(mere: false), EtatFichierPoste.nonDisponibleHorsLigne);
       expect(e(ref: false), EtatFichierPoste.sansFichier);
       expect(e(zone: false, copie: true), EtatFichierPoste.zoneRefusee, reason: 'la zone décide avant la copie locale (RG-13)');
