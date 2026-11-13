@@ -236,6 +236,9 @@ typedef EcrireFiche = FicheImport Function(String collection, FicheImport fiche)
 /// (`avant` : l'état restitué par l'atomicité et par l'annulation, au lieu d'être archivé).
 typedef DeclarerFiche = void Function(String collection, Object? id, {Map<String, Object?>? avant});
 
+/// LOT IMP-E : ce que la restitution propre à un jeu a fait : les fiches archivées et celles qu'il a GARDÉES (`{collection, id, code, motif}`, une pièce émise ne se réécrit jamais).
+typedef RestitutionJeu = ({int archives, List<Map<String, Object?>> gardees});
+
 /// La réponse du geste d'annulation propre à un jeu.
 class ResultatAnnulationImport {
   const ResultatAnnulationImport.ok(this.archives)
@@ -275,6 +278,7 @@ class JeuImport {
     this.reglesLot,
     this.colonnesRetirees = const [],
     this.annuler,
+    this.restituer,
   });
   final String id, ecran, libelle, module, statut, description, source, fichierModele;
   final String? limite, gesteExiste;
@@ -286,6 +290,11 @@ class JeuImport {
 
   /// Un jeu qui ne s'annule pas par l'archivage de ses fiches (les versions de prix sont immuables, un transfert restitue des stocks) porte son propre geste d'annulation.
   final ResultatAnnulationImport Function(FicheImport lot, String? motif, PortImport port)? annuler;
+
+  /// LOT IMP-E : une écriture de fileul que la mère REFUSE se restitue par l'archivage de ses fiches (RG-14) ; un jeu qui porte des QUANTITÉS (le Grand Stock) ne peut pas s'en tenir là :
+  /// un mouvement écrit ne se réécrit pas (il se contre-passe par un mouvement inverse nommé), un stock ne devient jamais négatif (RG-03) et un article déjà sorti ne se restitue pas.
+  /// [libelleMotif] : le motif d'archivage ; [motifMarque] : le motif de la mère, posé sur les fiches gardées.
+  final RestitutionJeu Function(FicheImport lot, String libelleMotif, String motifMarque, PortImport port)? restituer;
   final dynamic Function(PortImport port) contexte;
   final List<String> Function(Map<String, Object?> v) cle;
   final String? Function(Map<String, Object?> v, dynamic ctx) existe;

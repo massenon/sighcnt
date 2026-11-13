@@ -45,6 +45,20 @@ const String champEnAttenteMere = 'enAttenteMere';
 /// Lot IMP-D : une fiche que la mère a refusée mais qu'une pièce émise utilise déjà (valeur : le motif nommé). Elle reste en place, marquée, jamais réécrite.
 const String champRefuseeParMere = 'refuseeParMere';
 
+/// LOT IMP-E : la demande dont une fiche est née. Une fiche écrite par une demande porte `serieDemande` (la série des identifiants, la même chez le fileul et chez la mère) : c'est ce qui lui
+/// donne une IDENTITÉ COMMUNE à tous les postes (son identifiant, jamais préfixé par l'étiquette du poste) et qui permet de reconnaître un rejeu.
+const String champSerieDemande = 'serieDemande';
+
+/// LOT IMP-E : la valeur de DÉPART de chaque compteur d'une fiche écrite par une demande (stock d'un produit, quantité restante d'un lot), posée à l'écriture. C'est le point de départ
+/// COMMUN du compteur : le fileul et la mère écrivent la même valeur, aucun des deux ne la publie comme une variation (sinon elle s'additionnerait à celle de l'autre). Seules les sorties
+/// et les entrées POSTÉRIEURES voyagent, comptées depuis ce départ.
+const String champDepartCompteurs = 'departCompteurs';
+
+/// LOT IMP-E : une fiche écrite chez un fileul que la mère n'a pas confirmée (en attente) ou a refusée (gardée parce qu'une pièce s'appuie dessus) est PROPRE À CE POSTE : elle ne part
+/// pas au journal, aucun autre poste ne la voit. Un stock ne se rend visible aux autres postes qu'une fois la mère d'accord (jamais de stock doublé par deux fileuls, jamais une
+/// quantité que la mère refuserait ensuite).
+bool ficheLocaleAuPoste(Map<String, Object?> f) => '${f[champEnAttenteMere] ?? ''}'.isNotEmpty || '${f[champRefuseeParMere] ?? ''}'.isNotEmpty;
+
 /// Un jeu passe par une demande quand un fileul rattaché ne peut écrire l'une de ses collections cibles : [collectionsDeLaMere] est l'ensemble des collections de configuration
 /// (garde « réglé sur la mère »). UN JEU RESTREINT n'y passe JAMAIS : ses lignes (identité, salaire, soldes) ne voyagent pas dans une fiche partagée, la rémunération du personnel n'étant
 /// publiée à personne (RG-13) ; voir [jeuReserveALaMere].
@@ -58,22 +72,19 @@ enum VoieImportFileul {
   /// Aucune cible de configuration : le jeu s'écrit chez le fileul comme avant, sans demande (l'activité voyage par ses propres règles de fusion).
   directe,
 
-  /// Toutes les cibles sont de la configuration (famille R) et aucune n'est une donnée d'activité synchronisée : écriture directe chez le fileul ET demande automatique à la mère.
+  /// Une cible au moins est de la configuration (famille R) : écriture directe chez le fileul ET demande automatique à la mère. LOT IMP-E (décision de la Direction du 13/11/2026) : cela vaut
+  /// aussi pour le Grand Stock (produits, lots, mouvements), qui s'écrit chez le gestionnaire de stock. Le double comptage que l'on craignait existait (mesuré, E2520) ; il est levé
+  /// par l'identité commune des fiches d'une demande, leur valeur de départ ([champDepartCompteurs]) et le caractère propre au poste d'une fiche non confirmée ([ficheLocaleAuPoste]).
   directeEtDemande,
-
-  /// Le jeu écrit de la configuration ET de l'activité synchronisée (le Grand Stock : produits, lots, mouvements). Écrire les lots et les mouvements chez le fileul ET à la mère les
-  /// compterait DEUX fois (le stock voyage par ses variations, E2149) : seule la mère les écrit, le fileul vérifie puis dépose une demande, comme au lot IMP-C. Hypothèse à valider.
-  demandeSeule,
 
   /// Jeu RESTREINT qui écrit de la configuration (le personnel : identité et salaire) : ses lignes ne voyagent jamais dans une demande (RG-13), il s'importe au poste de la mère.
   reserveeALaMere,
 }
 
-/// La voie d'un jeu sur un fileul rattaché. [configuration] : les collections que la mère seule écrit ; [activiteSynchronisee] : les collections d'activité qui voyagent par le pont.
-VoieImportFileul voieImportFileul(DeclarationImport d, {required Set<String> configuration, required Set<String> activiteSynchronisee}) {
+/// La voie d'un jeu sur un fileul rattaché. [configuration] : les collections que la mère seule écrit.
+VoieImportFileul voieImportFileul(DeclarationImport d, {required Set<String> configuration}) {
   if (!d.collections.any(configuration.contains)) return VoieImportFileul.directe;
   if (d.restreint) return VoieImportFileul.reserveeALaMere;
-  if (d.collections.any((c) => !configuration.contains(c) && activiteSynchronisee.contains(c))) return VoieImportFileul.demandeSeule;
   return VoieImportFileul.directeEtDemande;
 }
 
@@ -91,10 +102,12 @@ String identifiantDeDemande(String collection, String demandeId, int rang) {
 /// Le PORT d'une demande d'import (lot IMP-D) : décore le port d'un poste pour que les fiches écrites reçoivent leur identifiant de demande ([identifiantDeDemande]) au lieu du « plus un »
 /// du poste. Le fileul le pose avec [marquerEnAttente] (ses fiches portent [champEnAttenteMere] jusqu'à la confirmation de la mère) ; la mère le pose sans marquage.
 class PortDemandeImport extends PortImport {
-  PortDemandeImport(this.base, {required this.demandeId, this.marquerEnAttente = false});
+  /// [compteurs] : les champs compteurs de chaque collection (stock d'un produit, quantité restante d'un lot), dont la valeur d'écriture est posée comme DÉPART ([champDepartCompteurs]).
+  PortDemandeImport(this.base, {required this.demandeId, this.marquerEnAttente = false, this.compteurs = const {}});
   final PortImport base;
   final String demandeId;
   final bool marquerEnAttente;
+  final Map<String, Set<String>> compteurs;
   final Map<String, int> _rangs = {};
 
   @override
@@ -106,12 +119,22 @@ class PortDemandeImport extends PortImport {
   @override
   String get utilisateur => base.utilisateur;
 
+  /// Écrit la fiche sous l'identifiant `(demande, collection, rang)`. LOT IMP-E : c'est IDEMPOTENT. Une fiche de cette demande qui existe déjà à ce rang (rejeu de la demande, reprise du
+  /// journal, redémarrage) est rendue telle quelle, sans écriture ni ligne de journal : une demande ne compte jamais deux fois la même fiche. La fiche porte la série de sa demande
+  /// ([champSerieDemande]) et, pour un compteur, sa valeur de DÉPART ([champDepartCompteurs]).
   @override
   FicheImport inserer(String collection, FicheImport fiche) {
     final rang = _rangs.update(collection, (n) => n + 1, ifAbsent: () => 1);
+    final id = fiche['id'] ?? identifiantDeDemande(collection, demandeId, rang);
+    final deja = base.parId(collection, id);
+    if (deja != null && deja[champSerieDemande] == demandeId) return deja;
+    final champs = compteurs[collection] ?? const <String>{};
+    final depart = {for (final k in champs) if (fiche[k] is num) k: fiche[k]};
     return base.inserer(collection, {
       ...fiche,
-      'id': fiche['id'] ?? identifiantDeDemande(collection, demandeId, rang),
+      'id': id,
+      champSerieDemande: demandeId,
+      if (depart.isNotEmpty) champDepartCompteurs: depart,
       if (marquerEnAttente && collection != collectionLots) champEnAttenteMere: demandeId,
     });
   }
@@ -127,6 +150,18 @@ class PortDemandeImport extends PortImport {
   @override
   void journaliser(String action, String module, String entite, String reference, Object? avant, Object? apres) =>
       base.journaliser(action, module, entite, reference, avant, apres);
+}
+
+/// LOT IMP-E : le lot d'import déjà écrit par cette demande (il porte la série de la demande), ou `null`. Sert de preuve qu'un rejeu n'a rien à écrire.
+FicheImport? lotDeLaDemande(PortImport port, String demandeId) =>
+    port.toutes(collectionLots).where((l) => l[champSerieDemande] == demandeId && l['etat'] == 'applique').firstOrNull;
+
+/// LOT IMP-E : applique la demande, UNE SEULE fois. Si le lot de cette demande existe déjà (rejeu de la demande, redémarrage entre l'écriture et le verdict, reprise du journal), c'est un
+/// NO-OP : aucune fiche, aucun lot, aucune ligne de journal de plus ; le lot déjà écrit est rendu. Sinon, c'est `appliquer`, sous les identifiants de la demande.
+ResultatImport appliquerDemande(JeuImport j, AnalyseImport analyse, PortDemandeImport port) {
+  final deja = lotDeLaDemande(port, port.demandeId);
+  if (deja != null) return ResultatImport.ok(lot: deja, ecrits: (deja['ecrits'] as List? ?? const []).length);
+  return appliquer(j, analyse, port);
 }
 
 /// Les rangs (numéros de ligne du fichier) qu'une analyse ÉCRIRAIT : ni refusés, ni ignorés, ni inchangés, ni refusés par leur auteur.
@@ -228,13 +263,20 @@ class VerdictDemandeImport {
 ///
 /// Refus nommés : `JEU_INCONNU` ; `DROIT_IMPORT_REFUSE` (le rôle de l'auteur ne détient plus le droit, relu ICI) ; le code du premier refus de l'analyse REJOUÉE (`DOUBLON_MAGASIN` quand un
 /// autre poste a créé la même fiche entre-temps, etc.) ; `RIEN_A_ECRIRE` ; `ECRITURE_REFUSEE`. Un jeu RESTREINT ne recopie aucune valeur de cellule dans le motif.
-VerdictDemandeImport traiterDemandeImport(FicheImport demande, PortImport port, JeuImport? Function(String id) jeu) {
+VerdictDemandeImport traiterDemandeImport(FicheImport demande, PortImport port, JeuImport? Function(String id) jeu, {Map<String, Set<String>> compteurs = const {}}) {
   final j = jeu('${demande['jeu']}');
   if (j == null) {
     return VerdictDemandeImport.refusee('JEU_INCONNU', 'le jeu « ${demande['jeu']} » n’existe pas à la mère', 'Refaire la demande depuis la page du jeu, avec une version à jour du poste.');
   }
   final rd = refusDroitImport(j, 'importer', port);
   if (rd != null) return VerdictDemandeImport.refusee(rd.code!, rd.motif!, rd.geste!);
+  // LOT IMP-E : une demande que la mère a DÉJÀ appliquée (redémarrage entre l'écriture et le verdict, demande reçue deux fois) rend le même verdict sans rien réécrire. Sans cette preuve,
+  // la seconde analyse refuserait le fichier comme un doublon de ce que la mère vient elle-même d'écrire.
+  final serie = '${demande['serieIdentifiants'] ?? demande['id']}';
+  if (demande['ecritureDirecte'] == true) {
+    final deja = lotDeLaDemande(port, serie);
+    if (deja != null) return VerdictDemandeImport.appliquee(lot: '${deja['reference']}', ecrits: (deja['ecrits'] as List? ?? const []).length);
+  }
   final lignes = [
     for (final l in (demande['lignes'] as List? ?? const [])) [for (final c in (l as List)) c]
   ];
@@ -258,7 +300,7 @@ VerdictDemandeImport traiterDemandeImport(FicheImport demande, PortImport port, 
     final diff = resultatIdentique([for (final n in (demande['rangsEcrits'] as List)) (n as num).toInt()], rangsAEcrire(a));
     if (diff != null) return VerdictDemandeImport.refusee('RESULTAT_DIFFERENT', diff.motif, diff.geste);
   }
-  final r = appliquer(j, a, directe ? PortDemandeImport(port, demandeId: '${demande['serieIdentifiants'] ?? demande['id']}') : port);
+  final r = directe ? appliquerDemande(j, a, PortDemandeImport(port, demandeId: serie, compteurs: compteurs)) : appliquer(j, a, port);
   if (r.ok) return VerdictDemandeImport.appliquee(lot: '${r.lot!['reference']}', ecrits: r.ecrits);
   return VerdictDemandeImport.refusee(r.code ?? 'ECRITURE_REFUSEE', r.motif ?? 'l’écriture a été refusée', r.geste ?? 'Rien n’a été écrit.', lot: r.lot == null ? null : '${r.lot!['reference']}');
 }
@@ -306,23 +348,32 @@ ResultatRestitution restituerLotDirect(JeuImport? Function(String id) jeu, Objec
   final motifMarque = '$codeRefus : $motifRefus';
   final faits = <Map<String, Object?>>[];
   final gardees = <Map<String, Object?>>[];
-  for (final e in ecrits) {
-    if (e['avant'] != null) continue; // une modification se restitue plus bas, dans l'ordre inverse de son écriture
-    final f = port.parId('${e['collection']}', e['id']);
-    if (f == null || f['statut'] == 'archive') continue;
-    // Une pièce émise s'appuie-t-elle sur CETTE fiche ? La dépendance du jeu est relue sur un lot d'une seule fiche.
-    final dep = j?.dependances({'reference': lot['reference'], 'jeu': lot['jeu'], 'ecrits': [e]}, port);
-    if (dep != null) {
-      port.mettreAJour('${e['collection']}', e['id'], {champRefuseeParMere: motifMarque});
-      gardees.add({'collection': e['collection'], 'id': e['id'], 'code': dep.code, 'motif': dep.motif});
-      continue;
+  var archives = 0;
+  if (j?.restituer != null) {
+    // Un jeu qui porte des quantités restitue à sa façon (mouvements inverses nommés, jamais de stock négatif, article déjà sorti gardé).
+    final r = j!.restituer!(lot, libelleMotif, motifMarque, port);
+    archives = r.archives;
+    gardees.addAll(r.gardees);
+  } else {
+    for (final e in ecrits) {
+      if (e['avant'] != null) continue; // une modification se restitue plus bas, dans l'ordre inverse de son écriture
+      final f = port.parId('${e['collection']}', e['id']);
+      if (f == null || f['statut'] == 'archive') continue;
+      // Une pièce émise s'appuie-t-elle sur CETTE fiche ? La dépendance du jeu est relue sur un lot d'une seule fiche.
+      final dep = j?.dependances({'reference': lot['reference'], 'jeu': lot['jeu'], 'ecrits': [e]}, port);
+      if (dep != null) {
+        port.mettreAJour('${e['collection']}', e['id'], {champRefuseeParMere: motifMarque});
+        gardees.add({'collection': e['collection'], 'id': e['id'], 'code': dep.code, 'motif': dep.motif});
+        continue;
+      }
+      if (port.archiver('${e['collection']}', e['id'], libelleMotif)) {
+        faits.add(e);
+      } else {
+        port.mettreAJour('${e['collection']}', e['id'], {champRefuseeParMere: motifMarque});
+        gardees.add({'collection': e['collection'], 'id': e['id'], 'code': 'ARCHIVAGE_REFUSE', 'motif': 'le moteur a refusé d’archiver la fiche (garde ou exercice clos)'});
+      }
     }
-    if (port.archiver('${e['collection']}', e['id'], libelleMotif)) {
-      faits.add(e);
-    } else {
-      port.mettreAJour('${e['collection']}', e['id'], {champRefuseeParMere: motifMarque});
-      gardees.add({'collection': e['collection'], 'id': e['id'], 'code': 'ARCHIVAGE_REFUSE', 'motif': 'le moteur a refusé d’archiver la fiche (garde ou exercice clos)'});
-    }
+    archives = faits.length;
   }
   for (final m in ecrits.reversed) {
     final avant = m['avant'];
@@ -334,8 +385,8 @@ ResultatRestitution restituerLotDirect(JeuImport? Function(String id) jeu, Objec
     'motifRestitution': motifMarque,
     'restitueGardees': gardees.length,
   });
-  port.journaliser('Import restitué (refusé par la mère)', 'IMP', 'LotImport', '${lot['reference']}', {'etat': 'applique'}, {'etat': 'restitue', 'code': codeRefus, 'fiches': faits.length, 'gardees': gardees.length});
-  return ResultatRestitution.ok(archives: faits.length, gardees: gardees);
+  port.journaliser('Import restitué (refusé par la mère)', 'IMP', 'LotImport', '${lot['reference']}', {'etat': 'applique'}, {'etat': 'restitue', 'code': codeRefus, 'fiches': archives, 'gardees': gardees.length});
+  return ResultatRestitution.ok(archives: archives, gardees: gardees);
 }
 
 /// Un lot écrit chez un fileul s'annule tant que la mère n'a pas statué. Une fois confirmé par elle, il ne s'annule plus ICI (la mère détient les mêmes fiches : l'annuler chez le fileul seul

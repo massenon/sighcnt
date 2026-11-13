@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../donnees/magasin.dart';
+import 'fusion_activite.dart' show champsCompteurs;
 import 'transcription_mobile.dart' show PieceSync;
 
 /// LA CONFIGURATION DE LA CLINIQUE VOYAGE DE LA MÈRE AUX POSTES FILEULS (PRD-POSTE-premiere-installation, EF-INST-06 et 07, PLAN étape 9).
@@ -127,6 +128,15 @@ class ApplicateurConfiguration {
 
   static const String motifGarde = 'Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici.';
 
+  /// Vrai quand les seules différences entre [avant] et [apres] sont des champs de [compteurs] (la fiche ne change pas autrement).
+  static bool seulementLesCompteurs(Fiche avant, Map<String, Object?> apres, Set<String> compteurs) {
+    for (final k in {...avant.keys, ...apres.keys}) {
+      if (compteurs.contains(k)) continue;
+      if (jsonEncode(avant[k]) != jsonEncode(apres[k])) return false;
+    }
+    return true;
+  }
+
   /// Pose la garde « réglé sur la mère » sur chaque collection de configuration. LOT IMP-D : elle laisse passer UNIQUEMENT l'écriture d'un import du fileul en cours
   /// (`Magasin.pendantImportFileul`, ouvert pour les cibles du jeu), jamais une autre écriture de référentiel.
   void poserGardes() {
@@ -134,7 +144,18 @@ class ApplicateurConfiguration {
     _gardesPosees = true;
     for (final n in collections.difference(collectionsLocalesDuFileul)) {
       // `appliquerDistante` ne passe pas par les gardes : seule l'écriture de l'agent est refusée.
-      magasin.collection(n).garder((op, f) => magasin.importAutorise(n) ? null : motifGarde);
+      final col = magasin.collection(n);
+      final compteurs = champsCompteurs[n];
+      col.garder((op, f) {
+        if (magasin.importAutorise(n)) return null;
+        // LOT IMP-E : le STOCK d'un produit est un compteur d'activité (dispensation, perte, transfert, inventaire), pas de la configuration : une modification qui ne touche QUE ses compteurs
+        // passe (elle voyage par ses variations). Le reste de la fiche reste réglé sur la mère.
+        if (op == 'modifier' && compteurs != null) {
+          final avant = col.parId(f['id']);
+          if (avant != null && seulementLesCompteurs(avant, f, compteurs)) return null;
+        }
+        return motifGarde;
+      });
     }
   }
 
@@ -166,6 +187,23 @@ class ApplicateurConfiguration {
             final distant = DateTime.tryParse('${f['definiLe'] ?? ''}');
             final ici = DateTime.tryParse('${local['definiLe'] ?? ''}');
             if (distant == null || (ici != null && !distant.isAfter(ici))) continue;
+          }
+          // LOT IMP-E : la valeur d'un compteur que la mère publie (le stock du jour, que les téléphones continuent de recevoir) n'est JAMAIS celle qu'un fileul adopte : un compteur voyage par ses
+          // variations (`PontActivite`). Une fiche que ce poste tient déjà garde SES compteurs (ses sorties n'ont pas encore atteint la mère : la valeur de la mère les effacerait, puis une
+          // variation en trop les rétablirait) ; une fiche nouvelle née d'une demande d'import prend sa valeur de DÉPART, commune à tous les postes, et les variations s'y ajoutent.
+          final compteurs = champsCompteurs[nom];
+          if (compteurs != null) {
+            final depart = f[champDepartCompteurs];
+            for (final k in compteurs) {
+              if (local != null && local.containsKey(k)) {
+                f[k] = local[k];
+              } else if (depart is Map && depart[k] is num) {
+                f[k] = depart[k];
+              } else {
+                // Aucun compteur chez ce poste (fiche nouvelle, ou créée sans compteur par le pont) : la valeur de la mère n'est pas adoptée, les variations s'y additionneront depuis zéro.
+                f.remove(k);
+              }
+            }
           }
           if (col.appliquerDistante(f)) n++;
         }

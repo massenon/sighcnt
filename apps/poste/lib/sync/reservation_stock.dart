@@ -1,3 +1,5 @@
+import 'package:sigh_domaine/sigh_domaine.dart' show ficheLocaleAuPoste;
+
 import '../donnees/magasin.dart';
 import 'fusion_activite.dart';
 
@@ -77,7 +79,10 @@ class ReservationStock {
       final cle = '$collection/${apres['id']}/$k';
       final base = _instantane[cle] ?? _n(avant[k]);
       final deja = base - _n(avant[k]);
-      final part = (base / (nbPostes < 1 ? 1 : nbPostes)).floor();
+      // LOT IMP-E : un stock que ce poste vient d'importer et que la mère n'a pas encore confirmé n'existe que chez lui (aucun autre poste ne le voit, il ne peut pas être sorti ailleurs) : sa
+      // part est le tout. Un import n'est pas une sortie ; la règle de la part protège un stock PARTAGÉ, et celui-ci ne l'est pas encore. À la confirmation de la mère, la fiche redevient
+      // ordinaire et la part redevient celle de tous les postes.
+      final part = ficheLocaleAuPoste(avant) ? base.floor() : (base / (nbPostes < 1 ? 1 : nbPostes)).floor();
       if ((deja > 0 ? deja : 0) + d > part) {
         final nom = '${apres['designation'] ?? apres['produit'] ?? apres['id']}';
         final heure = derniereSynchro == null

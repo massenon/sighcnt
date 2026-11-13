@@ -7,6 +7,7 @@ library;
 
 import '../comptabilite/cpb_gestion.dart' show cpbReferenceSuivante;
 import '../format/recherche.dart' show normaliser;
+import 'demande_import.dart' show champDepartCompteurs, champRefuseeParMere;
 import 'donnees_import.dart';
 import 'moteur_import.dart';
 
@@ -237,7 +238,101 @@ final JeuImport jeuGrandStock = JeuImport(
     }
     return null;
   },
+  restituer: _restituerGrandStock,
 );
+
+/// LOT IMP-E : la RESTITUTION du Grand Stock quand la mère refuse ce qu'un fileul a écrit chez lui. Article par article (tout ou rien par article) :
+///  * un article déjà SORTI (un compteur ou un lot sous sa valeur de départ, ou un autre mouvement qui s'appuie sur lui) ne se restitue PAS : une pièce émise ne se réécrit jamais ; l'article,
+///    ses lots et ses entrées restent, marqués « refusée par la mère » avec le motif de la mère, et le verdict le dit (restitution PARTIELLE) ;
+///  * sinon chaque mouvement d'entrée est CONTRE-PASSÉ par un mouvement de sortie inverse, nommé (un mouvement écrit ne se réécrit pas), puis le lot et l'article sont ARCHIVÉS (RG-14). La
+///    quantité inverse est celle de l'entrée, jamais plus que ce que le stock tient : le stock ne devient jamais négatif (RG-03).
+/// Les mouvements d'entrée et les mouvements inverses restent propres au poste (marqués), ils ne partent pas au journal : la mère n'a jamais tenu ce stock.
+RestitutionJeu _restituerGrandStock(FicheImport lot, String libelleMotif, String motifMarque, PortImport port) {
+  final ecrits = (lot['ecrits'] as List).cast<Map>();
+  List<Map> de(String c) => [for (final e in ecrits) if (e['collection'] == c) e];
+  final propres = {for (final e in de('mouvements')) e['id']};
+  final gardees = <Map<String, Object?>>[];
+  var archives = 0;
+  void garder(String collection, Map<String, Object?> f, String motif) {
+    port.mettreAJour(collection, f['id'], {champRefuseeParMere: motifMarque});
+    gardees.add({'collection': collection, 'id': f['id'], 'code': 'STOCK_DEJA_SORTI', 'motif': '$motif : une pièce émise ne se réécrit jamais, la fiche reste en place'});
+  }
+
+  for (final e in de('produits')) {
+    final p = port.parId('produits', e['id']);
+    if (p == null || p['statut'] == 'archive') continue;
+    final lots = [
+      for (final l in de('lots'))
+        if (port.parId('lots', l['id']) case final f? when f['produitId'] == p['id'] && f['statut'] != 'archive') f
+    ];
+    final entrees = [
+      for (final m in de('mouvements'))
+        if (port.parId('mouvements', m['id']) case final f? when f['produitId'] == p['id'] && f['statut'] != 'archive') f
+    ];
+    final autre = port.actives('mouvements').where((m) => m['produitId'] == p['id'] && !propres.contains(m['id']) && m['restitutionDe'] == null).firstOrNull;
+    String? sorti;
+    final dp = p[champDepartCompteurs];
+    for (final k in const ['stockGros', 'stockDetail', 'stock']) {
+      final d = dp is Map ? dp[k] : null;
+      if (d is num && p[k] is num && (p[k] as num) < d) sorti = 'le stock de « ${p['designation']} » est passé de $d à ${p[k]}';
+    }
+    for (final l in lots) {
+      final dl = l[champDepartCompteurs];
+      final d = dl is Map ? dl['quantiteRestante'] : null;
+      if (d is num && l['quantiteRestante'] is num && (l['quantiteRestante'] as num) < d) {
+        sorti ??= 'le lot ${l['numeroLot']} de « ${p['designation']} » est passé de $d à ${l['quantiteRestante']}';
+      }
+    }
+    if (sorti == null && autre != null) sorti = 'un mouvement de stock (${autre['reference']}, ${autre['typeLabel']}) s’appuie déjà sur « ${p['designation']} »';
+    if (sorti != null) {
+      garder('produits', p, sorti);
+      for (final l in lots) {
+        garder('lots', l, sorti);
+      }
+      for (final m in entrees) {
+        garder('mouvements', m, sorti);
+      }
+      continue;
+    }
+    // Rien n'est sorti : chaque entrée est contre-passée (mouvement inverse nommé), puis le lot et l'article sont archivés.
+    final mouvs = <_V>[...port.toutes('mouvements')];
+    for (final m in entrees) {
+      final ref = _referenceMouvement(mouvs);
+      mouvs.add({'reference': ref});
+      port.inserer('mouvements', {
+        'statut': 'actif',
+        'reference': ref,
+        'date': port.jour,
+        'produitId': p['id'],
+        'produit': p['designation'],
+        'type': 'sortie',
+        'typeLabel': 'Sortie',
+        'quantite': m['quantite'],
+        'stockType': m['stockType'] ?? 'gros',
+        'justificatif': 'Restitution du lot ${lot['reference']} : refusé par la mère (contre-passation de ${m['reference']})',
+        'restitutionDe': m['id'],
+        champRefuseeParMere: motifMarque,
+        'utilisateur': port.utilisateur,
+      });
+      port.mettreAJour('mouvements', m['id'], {champRefuseeParMere: motifMarque});
+    }
+    for (final l in lots) {
+      if (port.archiver('lots', l['id'], libelleMotif)) {
+        archives++;
+      } else {
+        port.mettreAJour('lots', l['id'], {champRefuseeParMere: motifMarque});
+        gardees.add({'collection': 'lots', 'id': l['id'], 'code': 'ARCHIVAGE_REFUSE', 'motif': 'le moteur a refusé d’archiver le lot (garde ou exercice clos)'});
+      }
+    }
+    if (port.archiver('produits', p['id'], libelleMotif)) {
+      archives++;
+    } else {
+      port.mettreAJour('produits', p['id'], {champRefuseeParMere: motifMarque});
+      gardees.add({'collection': 'produits', 'id': p['id'], 'code': 'ARCHIVAGE_REFUSE', 'motif': 'le moteur a refusé d’archiver l’article (garde ou exercice clos)'});
+    }
+  }
+  return (archives: archives, gardees: gardees);
+}
 
 /// `C.referenceSuivante('M', 6, fiches)` : le plus grand rang des références `M…` plus un, sur 6 chiffres.
 String _referenceMouvement(List<_V> fiches) {

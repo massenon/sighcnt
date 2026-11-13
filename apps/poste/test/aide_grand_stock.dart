@@ -185,3 +185,37 @@ class Clinique {
     } catch (_) {}
   }
 }
+
+/// Les collections qu'un téléphone du profil soignant reçoit de la mère (RG-13) : lues pour de vrai, jamais déduites.
+Future<List<({String collection, String fiche})>> collectionsRecuesParUnMobile(int port) async {
+  final http0 = HttpClient();
+  Future<Map<String, Object?>> appel(String methode, String chemin, {Map<String, Object?>? corps, Map<String, String> entetes = const {}}) async {
+    final req = await http0.openUrl(methode, Uri.parse('http://127.0.0.1:$port$chemin'));
+    req.headers.contentType = ContentType.json;
+    entetes.forEach(req.headers.set);
+    if (corps != null) req.add(utf8.encode(jsonEncode(corps)));
+    final rep = await req.close();
+    return (jsonDecode(await utf8.decoder.bind(rep).join()) as Map).cast<String, Object?>();
+  }
+
+  try {
+    final c = (await appel('POST', '/admin/code', corps: {'etiquette': 'mobile', 'role': 'mobile', 'profil': 'soignant', 'fonction': 'infirmier'}, entetes: {'x-admin': 'secret-test'}))['code'];
+    final jetons = await appel('POST', '/appairage', corps: {'code': c, 'uuid': 'dev-mobile-$port-${DateTime.now().microsecondsSinceEpoch}', 'plateforme': 'test'});
+    final noms = <({String collection, String fiche})>[];
+    var depuis = 0;
+    while (true) {
+      final pull = await appel('GET', '/sync/pull?depuis=$depuis&limite=500&epoch=${jetons['epoch']}', entetes: {'authorization': 'Bearer ${jetons['jeton']}'});
+      if (pull['ops'] == null) fail('pull du mobile à $depuis : $pull');
+      final ops = (pull['ops'] as List).cast<Map>();
+      for (final o in ops) {
+        noms.add((collection: '${o['collection']}', fiche: '${o['fiche']}'));
+        depuis = (o['seq'] as num).toInt();
+      }
+      if (pull['fin'] == true || ops.isEmpty) break;
+    }
+    expect(noms, isNotEmpty, reason: 'le téléphone lit bien le journal : l\'absence est une EXCLUSION, pas un journal vide');
+    return noms;
+  } finally {
+    http0.close(force: true);
+  }
+}

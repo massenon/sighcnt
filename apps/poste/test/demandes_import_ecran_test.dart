@@ -89,7 +89,7 @@ void main() {
     expect(voie('fournisseurs', fileul: false), VoieImportFileul.directe, reason: 'la mère, ou un poste autonome, écrit directement');
     expect(voie('patients'), VoieImportFileul.directe, reason: 'l\'activité s\'écrit au fileul, par ses règles de fusion');
     expect(DemandesImportPoste.voie(fileulRattache: true, declaration: null), VoieImportFileul.directe);
-    expect(voie('grand-stock'), VoieImportFileul.demandeSeule, reason: 'configuration ET quantités de stock : seule la mère écrit les quantités');
+    expect(voie('grand-stock'), VoieImportFileul.directeEtDemande, reason: 'IMP-E : le Grand Stock s\'écrit aussi chez le gestionnaire de stock');
     expect(voie('personnel'), VoieImportFileul.reserveeALaMere);
     expect(voie('personnel', fileul: false), VoieImportFileul.directe, reason: 'la mère importe en direct');
   });
@@ -121,7 +121,7 @@ void main() {
     await televerser(t, 'fo-valide');
     expect(find.textContaining('Analyse conforme. 2 ligne(s)'), findsOneWidget);
     expect(confirmer, findsNothing, reason: 'une seule commande : écrire chez soi ET prévenir la mère');
-    expect(envoyer, findsNothing, reason: 'la demande seule est celle du Grand Stock');
+    expect(envoyer, findsNothing, reason: 'il n\'y a plus de demande seule : tout jeu de configuration s\'écrit chez le fileul ET part en demande');
     expect(directe, findsOneWidget);
     expect(m.collection('fournisseurs').toutes.length, avant, reason: 'l\'analyse n\'écrit rien');
     await toucher(t, directe);
@@ -202,27 +202,35 @@ void main() {
     expect(find.byTooltip('Annuler le lot'), findsNothing, reason: 'une commande interdite est absente : la mère détient les mêmes fiches');
   });
 
-  cas('GRAND STOCK (configuration ET quantités) : demande seule, rien n\'est écrit chez le fileul ; la fenêtre dit pourquoi', (t) async {
+  cas('GRAND STOCK (IMP-E) : la fenêtre dit AVANT le oui « écrit chez vous maintenant, la mère confirmera » et que ce stock n\'est vu que de ce poste ; articles, lots et mouvements s\'écrivent chez le fileul, marqués ; la demande part ; aucun bouton de demande seule', (t) async {
     final m = magasin();
     await rattacher(t, m);
     ApplicateurConfiguration(m, (_) async => []).poserGardes();
     final avant = m.collection('produits').toutes.length;
     await ouvrir(t, m, 'm6-import-grand-stock', role: 'stock');
-    expect(find.textContaining('ET des quantités de stock (lots, mouvements)'), findsOneWidget);
-    expect(find.textContaining('Écrit chez vous maintenant'), findsNothing);
+    expect(find.textContaining('Écrit chez vous maintenant, la mère confirmera.'), findsOneWidget, reason: 'le même texte que les autres jeux, dès l\'ouverture');
+    expect(find.textContaining('Un stock chez vous d’abord.'), findsOneWidget, reason: 'et ce que cela veut dire pour un stock');
+    expect(find.textContaining('ET des quantités de stock (lots, mouvements)'), findsNothing, reason: 'l\'ancienne note de la demande seule n\'existe plus');
     await televerser(t, 'gs-valide');
-    final bouton = find.byKey(const Key('imp-envoyer-demande'));
-    expect(bouton, findsOneWidget);
-    expect(directe, findsNothing, reason: 'les quantités ne s\'écrivent qu\'à la mère');
+    expect(envoyer, findsNothing, reason: 'plus de demande seule');
     expect(find.textContaining('Confirmer l’importation'), findsNothing);
-    await toucher(t, bouton);
-    await toucher(t, find.widgetWithText(BoutonSigh, 'Envoyer la demande'));
+    expect(directe, findsOneWidget);
+    await toucher(t, directe);
+    expect(find.textContaining('ce stock n’est vu que de votre poste'), findsOneWidget, reason: 'la confirmation le dit aussi');
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Écrire chez moi et envoyer la demande'));
     final d = m.collection(demandesImportCollection).toutes.single;
-    expect([d['etat'], d['jeu']], [demandeImportEnAttente, 'grand-stock']);
-    expect(d.containsKey('ecritureDirecte'), isFalse);
-    expect(m.collection('produits').toutes.length, avant, reason: 'rien n\'est écrit chez le fileul');
-    expect(m.collection(collectionLots).toutes, isEmpty);
-    expect(find.text('En attente de la mère'), findsWidgets);
+    expect([d['etat'], d['jeu'], d['ecritureDirecte']], [demandeImportEnAttente, 'grand-stock', true]);
+    expect(m.collection('produits').toutes.length, avant + 2, reason: 'MED1 et GANT1 sont écrits chez le fileul');
+    expect(m.collection('lots').toutes.where((f) => f[champEnAttenteMere] == d['id']), hasLength(2), reason: 'les lots portent le marquage « en attente de la mère »');
+    expect(m.collection('mouvements').toutes.where((f) => f[champEnAttenteMere] == d['id']), hasLength(3));
+    expect(find.text('Écrit chez vous, en attente de la mère'), findsWidgets);
+    // L'état « en attente de la mère » se lit sur les lots importés (écran des lots de M6) et sur les mouvements.
+    await ouvrir(t, m, 'm6-lots', role: 'stock');
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.byKey(const Key('kit:marque-attente-mere')), findsWidgets, reason: 'un lot importé et non confirmé se lit « En attente de la mère » à l\'écran des lots');
+    await ouvrir(t, m, 'm6-mouvements', role: 'stock');
+    await t.pump(const Duration(milliseconds: 300));
+    expect(find.byKey(const Key('kit:marque-attente-mere')), findsWidgets, reason: 'et les entrées au registre des mouvements');
   });
 
   cas('UN FICHIER REFUSÉ NE PART JAMAIS : la vérification du fileul est la même que celle de la mère, rien n\'est écrit, aucune demande n\'est déposée', (t) async {

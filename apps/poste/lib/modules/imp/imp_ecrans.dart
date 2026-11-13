@@ -429,7 +429,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         titre: 'Écrire chez vous et prévenir la mère ?',
         message:
             '${a.aEcrire} ligne(s) du fichier « ${a.fichier} » vont s’écrire CHEZ VOUS maintenant, au nom de ${c.agent.nom} (validé par). Une demande part automatiquement à la mère, qui rejoue la vérification sous votre profil puis confirme ou refuse. '
-            'Tant qu’elle n’a pas répondu, ces fiches portent le marquage « en attente de la mère ». Si elle refuse, elles sont restituées (archivées, RG-14) et vous lisez le motif sur votre demande. Vous pouvez annuler le lot tant qu’elle n’a pas statué.',
+            'Tant qu’elle n’a pas répondu, ces fiches portent le marquage « en attente de la mère »${_jeu.cibles.contains('lots') ? ' et ce stock n’est vu que de votre poste' : ''}. Si elle refuse, elles sont restituées (archivées, RG-14${_jeu.cibles.contains('lots') ? ' ; chaque entrée est contre-passée par un mouvement inverse nommé, un article déjà sorti reste en place' : ''}) et vous lisez le motif sur votre demande. Vous pouvez annuler le lot tant qu’elle n’a pas statué.',
         libelleOk: 'Écrire chez moi et envoyer la demande');
     if (!ok || !mounted) return;
     setState(() => _occupe = true);
@@ -452,25 +452,6 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
     }
   }
 
-  /// FILEUL : dépose la demande du fichier VÉRIFIÉ à la mère (rien n'est écrit ici). La mère rejoue l'analyse sous le rôle de l'auteur et répond sur la même fiche.
-  Future<void> _envoyerDemande(ContexteEcran c) async {
-    final a = _analyse!;
-    final ok = await confirmerSigh(context,
-        titre: 'Envoyer cette demande à la mère ?',
-        message:
-            '${a.aEcrire} ligne(s) du fichier « ${a.fichier} » sont envoyées à la mère, au nom de ${c.agent.nom}. Elle rejoue la vérification sous votre profil, applique ou refuse en nommant le code, le motif et le geste ; vous voyez sa réponse ici. Rien n’est écrit sur ce poste.',
-        libelleOk: 'Envoyer la demande');
-    if (!ok || !mounted) return;
-    final d = _demandes(c).deposer(_jeu, a);
-    setState(() {
-      _analyse = null;
-      _lotRefuse = null;
-      _resultatOk = true;
-      _resultat = 'Demande ${d['id']} envoyée à la mère. Elle rejoue la vérification et répond ici : en attente, appliquée, ou refusée avec son motif.';
-    });
-    ToastsSigh.afficher(context, 'Demande envoyée à la mère.', type: TypeToast.succes, detail: '${d['id']} : ${a.aEcrire} ligne(s) vérifiée(s).');
-  }
-
   Future<void> _rapportAnalyse(ContexteEcran c) async {
     final a = _analyse!;
     final lot = _lotRefuse;
@@ -485,7 +466,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
   }
 
   Widget _apercu(ContexteEcran c, AnalyseImport a, DroitImport droit, {required VoieImportFileul voie}) {
-    final viaMere = voie == VoieImportFileul.demandeSeule, reserve = voie == VoieImportFileul.reserveeALaMere, direct = voie == VoieImportFileul.directeEtDemande;
+    final reserve = voie == VoieImportFileul.reserveeALaMere, direct = voie == VoieImportFileul.directeEtDemande;
     final ps = a.problemes;
     final avecDetail = a.lignes.any((l) => l.detail != null && l.detail!.isNotEmpty);
     return CarteSigh(
@@ -582,7 +563,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         const SizedBox(height: 12),
         Wrap(spacing: 8, runSpacing: 8, children: [
           // La commande d'écriture n'existe que pour qui détient le droit d'IMPORTER CE JEU (pas celui d'éditer l'écran) : absente, jamais grisée.
-          if (a.accepte && a.aEcrire > 0 && droit.importer && !viaMere && !reserve && !direct)
+          if (a.accepte && a.aEcrire > 0 && droit.importer && !reserve && !direct)
             BoutonSigh(
                 libelle: 'Confirmer l’importation (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
                 icone: LucideIcons.packageCheck,
@@ -594,13 +575,6 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
                 libelle: 'Écrire chez moi et prévenir la mère (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
                 icone: LucideIcons.packageCheck,
                 onPressed: _occupe ? null : () => _importerEtDemander(c)),
-          // Jeu qui porte aussi des QUANTITÉS de stock : seule la mère les écrit (les compter deux fois doublerait le stock) ; le fichier VÉRIFIÉ part en demande, la mère rejoue et répond.
-          if (a.accepte && a.aEcrire > 0 && droit.importer && viaMere)
-            BoutonSigh(
-                key: const Key('imp-envoyer-demande'),
-                libelle: 'Envoyer la demande à la mère (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
-                icone: LucideIcons.send,
-                onPressed: _occupe ? null : () => _envoyerDemande(c)),
           if (ps.isNotEmpty && !a.droitRefuse)
             BoutonSigh(
                 libelle: 'Rapport d’erreurs (.xlsx)',
@@ -635,7 +609,6 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         final jeuValide = vp.etat('jeux_import', j.ecran)?.enAttente == false;
         final reprise = !modale && j.id == 'grand-stock';
         final voie = _voie(c, j.id);
-        final viaMere = voie == VoieImportFileul.demandeSeule;
         final reserve = voie == VoieImportFileul.reserveeALaMere;
         final direct = voie == VoieImportFileul.directeEtDemande;
         // La REPRISE valorisée du Grand Stock a ses propres droits (ceux de M6) : elle reste atteignable de qui l'a, même sans détenir le JEU.
@@ -689,16 +662,16 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             const SizedBox(height: 16),
             NoteSigh(j.limite!, icone: LucideIcons.info),
           ],
+          if (direct && j.cibles.contains('lots')) ...[
+            const SizedBox(height: 16),
+            const NoteSigh(
+                'Un stock chez vous d’abord. Les articles, les lots et les entrées de ce fichier ne sont vus que de votre poste tant que la mère n’a pas confirmé : vous pouvez en sortir, aucun autre poste n’y touche, et rien n’est compté deux fois chez la mère. Si elle refuse, chaque entrée est contre-passée par un mouvement inverse nommé (un mouvement écrit ne se réécrit pas) et les articles sont archivés ; un article dont vous avez déjà sorti du stock reste en place, marqué « refusée par la mère » (restitution partielle), car une pièce émise ne se réécrit jamais.',
+                icone: LucideIcons.packageCheck),
+          ],
           if (direct) ...[
             const SizedBox(height: 16),
             const NoteSigh(
                 'Écrit chez vous maintenant, la mère confirmera. Ce jeu écrit la configuration de la clinique, dont la mère reste l’autorité : votre fichier est vérifié, puis écrit dans VOTRE magasin tout de suite, et une demande part automatiquement à la mère. Elle rejoue la vérification sous votre profil et applique ou refuse. Tant qu’elle n’a pas répondu, les fiches portent le marquage « en attente de la mère » ; si elle refuse, elles sont restituées (archivées) et vous lisez le motif sur votre demande ; hors ligne, la demande attend dans votre file. En cas de conflit, la mère l’emporte.',
-                icone: LucideIcons.serverCog),
-          ],
-          if (viaMere) ...[
-            const SizedBox(height: 16),
-            const NoteSigh(
-                'Réglé sur la mère. Ce jeu écrit la configuration de la clinique ET des quantités de stock (lots, mouvements) : seule la mère les écrit, les écrire aussi chez vous les compterait deux fois. Votre fichier est vérifié ici, puis envoyé à la mère par une demande ; rien n’est écrit chez vous. Elle rejoue la vérification sous votre profil, applique ou refuse en nommant le code, le motif et le geste, et vous voyez sa réponse ci-dessous.',
                 icone: LucideIcons.serverCog),
           ],
           if (reserve) ...[
@@ -773,7 +746,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             NoteSigh(_resultat!, ton: _resultatOk ? TonSigh.succes : TonSigh.danger, icone: _resultatOk ? LucideIcons.circleCheck : LucideIcons.octagonAlert),
           ],
           if (_analyse != null) ...[const SizedBox(height: 16), _apercu(c, _analyse!, d, voie: voie)],
-          if (viaMere || direct) ...[
+          if (direct) ...[
             const SizedBox(height: 16),
             CarteSigh(titre: 'Demandes envoyées à la mère', sansRemplissage: true, child: tableauDemandes(_demandes(c).sesDemandes(jeu: j.id))),
           ],

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:sigh_domaine/sigh_domaine.dart' show champDepartCompteurs, champEnAttenteMere, champSerieDemande, ficheLocaleAuPoste;
 
 import '../donnees/magasin.dart';
 import 'fusion_activite.dart';
@@ -250,7 +251,12 @@ class PontActivite {
       if (_atomique(c)) continue;
       for (final f in magasin.collection(c).toutes) {
         if ('${f['id'] ?? ''}'.isEmpty || '${f['idSync'] ?? ''}'.isNotEmpty) continue;
-        f['idSync'] = magasin.idsOrigine(c).contains('${f['id']}') ? '${f['id']}' : '$etiquette-${f['id']}';
+        // LOT IMP-E : une fiche née d'une DEMANDE D'IMPORT porte la même identité sur tous les postes (son identifiant, déterministe : `<COL>-<demande>-<rang>`), comme une fiche du jeu
+        // d'origine. Préfixée de l'étiquette du poste, la fiche du fileul et celle que la mère réécrit seraient DEUX fiches (mesuré : lots, mouvements et articles comptés deux fois).
+        // Même règle pour un référentiel d'activité que la mère seule écrit (le catalogue des produits) : la configuration le publie sous son identifiant, le pont sous son identité de synchronisation ;
+        // préfixée, elle faisait de chaque article créé après le jeu d'origine DEUX fiches chez un fileul (mesuré avec un import de la mère).
+        final identiteCommune = magasin.idsOrigine(c).contains('${f['id']}') || '${f[champSerieDemande] ?? ''}'.isNotEmpty || collectionsDeLaMereSeule.contains(c);
+        f['idSync'] = identiteCommune ? '${f['id']}' : '$etiquette-${f['id']}';
       }
     }
   }
@@ -264,6 +270,9 @@ class PontActivite {
       List<PieceSync>? distant;
       for (final f in List<Fiche>.of(col.toutes)) {
         if ('${f['id'] ?? ''}'.isEmpty) continue;
+        // LOT IMP-E : une fiche que la mère n'a pas confirmée (ou a refusée) est PROPRE À CE POSTE, et un mouvement qui s'appuie sur un article propre à ce poste aussi : aucun autre poste
+        // ne voit un stock que la mère n'a pas accepté.
+        if (_proprePoste(c, f)) continue;
 
         final cle = _cleSync(c, f);
         final champs = _versJournal(c, f);
@@ -347,20 +356,45 @@ class PontActivite {
         final local = _parSync(col, cle);
         final recu = <String, Object?>{...distant, 'idSync': cle, if (p.archive) 'statut': 'archive'};
         if (local == null) {
-          if (col.appliquerDistante({...recu, 'id': cle})) n++;
+          // LOT IMP-E : une fiche née d'une demande d'import arrive avec sa valeur de DÉPART : c'est son compteur tant qu'aucune variation n'est venue s'y ajouter.
+          final nouvelle = <String, Object?>{...recu, 'id': cle};
+          for (final k in champsCompteurs[c] ?? const <String>{}) {
+            // La valeur d'un compteur publiée par un autre poste n'est jamais adoptée : son départ (demande d'import), sinon rien (les variations qu'il a publiées s'y additionnent à partir de zéro).
+            final d = _depart(recu, k);
+            if (d != null) {
+              nouvelle[k] = d;
+            } else {
+              nouvelle.remove(k);
+            }
+          }
+          if (col.appliquerDistante(nouvelle)) n++;
           _base['$c/$cle'] = recu;
           continue;
         }
         final base = _base['$c/$cle'];
         final fusion = <String, Object?>{};
+        final compteursDeC = champsCompteurs[c] ?? const <String>{};
         for (final k in {...recu.keys, ...local.keys}) {
           if (k == 'id') continue;
+          // LOT IMP-E : un compteur ne se remplace JAMAIS par la valeur d'un autre poste (la fiche de configuration que la mère publie porte le stock du jour, comme avant, pour les
+          // téléphones) : il bouge par ses variations. Ce poste garde le sien ; remplacer sa valeur effacerait ses sorties que la mère n'a pas encore reçues.
+          if (compteursDeC.contains(k)) {
+            if (local.containsKey(k)) {
+              fusion[k] = local[k];
+            } else {
+              final d = _depart(recu, k);
+              if (d != null) fusion[k] = d;
+            }
+            continue;
+          }
           // Fusion à trois voies : ce que l'agent a changé ici est gardé, le reste suit le journal.
           final changeIci = base != null && _j(local[k]) != _j(base[k]);
           final v = changeIci ? local[k] : (recu.containsKey(k) ? recu[k] : local[k]);
           if (v != null) fusion[k] = v;
         }
         fusion['id'] = local['id'];
+        // LOT IMP-E : la fiche de la MÈRE est arrivée : c'est la confirmation du stock que ce poste tenait « en attente ». Le marquage tombe, la fiche suit désormais le chemin ordinaire.
+        if ('${local[champEnAttenteMere] ?? ''}'.isNotEmpty) fusion.remove(champEnAttenteMere);
         // Les règles propres à la famille : un règlement ne se perd pas.
         if (c == 'factures') {
           final regle = fusionnerFacture(fusion, local, recu);
@@ -377,6 +411,23 @@ class PontActivite {
     }
     recues.value += n;
     return n;
+  }
+
+  /// LOT IMP-E : cette fiche ne part pas au journal (voir [ficheLocaleAuPoste]). Un mouvement ou un lot qui s'appuie sur un article propre à ce poste l'est aussi.
+  bool _proprePoste(String c, Fiche f) {
+    if (ficheLocaleAuPoste(f)) return true;
+    if ((c == 'mouvements' || c == 'lots') && '${f['produitId'] ?? ''}'.isNotEmpty) {
+      final p = magasin.collection('produits').parId(f['produitId']);
+      if (p != null && ficheLocaleAuPoste(p)) return true;
+    }
+    return false;
+  }
+
+  /// LOT IMP-E : le point de départ d'un compteur d'une fiche née d'une demande d'import (la valeur d'écriture, commune à tous les postes), ou `null`.
+  static num? _depart(Map<String, Object?> f, String champ) {
+    final d = f[champDepartCompteurs];
+    final v = d is Map ? d[champ] : null;
+    return v is num ? v : null;
   }
 
   Fiche? _parSync(CollectionMagasin col, String cle) {
@@ -478,11 +529,14 @@ class PontActivite {
       for (final f in List<Fiche>.of(col.toutes)) {
         final idSync = '${f['idSync'] ?? ''}';
         if (idSync.isEmpty) continue;
+        // LOT IMP-E : un compteur propre à ce poste (stock non confirmé) ne publie rien : ses variations partiront, comptées depuis son départ, quand la mère aura confirmé.
+        if (_proprePoste(e.key, f)) continue;
         final origine = idSync == '${f['id']}' ? magasin.ficheOrigine(e.key, idSync) : null;
         for (final k in e.value) {
           final cleC = '${e.key}/$idSync/$k';
           if (!_totaux.containsKey(cleC)) {
-            _totaux[cleC] = origine != null && origine.containsKey(k) ? _n(origine[k]) : 0;
+            // Le point de départ commun : la valeur du jeu d'origine, ou celle d'écriture d'une demande d'import (lot IMP-E), sinon zéro.
+            _totaux[cleC] = origine != null && origine.containsKey(k) ? _n(origine[k]) : (_depart(f, k) ?? 0);
             change = true;
           }
           if (!f.containsKey(k)) continue;
@@ -520,7 +574,7 @@ class PontActivite {
       if (f == null) continue;
       if (!_totaux.containsKey(cleC)) {
         final origine = cible.cle == '${f['id']}' ? magasin.ficheOrigine(cible.collection, cible.cle) : null;
-        _totaux[cleC] = origine != null && origine.containsKey(cible.champ) ? _n(origine[cible.champ]) : 0;
+        _totaux[cleC] = origine != null && origine.containsKey(cible.champ) ? _n(origine[cible.champ]) : (_depart(f, cible.champ) ?? 0);
       }
       final delta = _n(d.data['delta']);
       f[cible.champ] = _n(f[cible.champ]) + delta;

@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../import/port_magasin.dart';
 import '../sync/configuration_sync.dart' show collectionsConfiguration;
+import '../sync/fusion_activite.dart' show champsCompteurs;
 import '../sync/pont_activite.dart' show collectionsActivite;
 import 'magasin.dart';
 
@@ -19,7 +21,8 @@ import 'magasin.dart';
 /// LOT IMP-D (décision N de la Direction, 12/11/2026) : un fileul importe AUSSI directement dans son propre magasin, la mère restant l'autorité de la configuration. Pour un jeu dont toutes
 /// les cibles sont de la configuration, [importerEtDemander] écrit chez le fileul tout de suite (par le MÊME chemin que l'import de la mère : `appliquer`, sous la garde qui ne laisse
 /// passer que ce geste) ET dépose la demande automatiquement, en UN geste ; [traiterVerdicts] fait ensuite ce que le verdict commande (restituer sur refus, lever le marquage sur
-/// confirmation) ; [annulerLotDuFileul] annule tant que la mère n'a pas statué. Le Grand Stock (configuration ET quantités) reste par demande seule, le personnel à la mère.
+/// confirmation) ; [annulerLotDuFileul] annule tant que la mère n'a pas statué. LOT IMP-E (décision du 13/11/2026) : le Grand Stock s'écrit AUSSI chez le fileul (produits, lots,
+/// mouvements), avec idempotence : identité commune des fiches, valeur de départ des compteurs, fiche propre au poste tant que la mère n'a pas confirmé. Le personnel reste à la mère.
 class DemandesImportPoste {
   DemandesImportPoste(this.m, {required this.role, required this.auteur, required this.matrice, required this.aujourdhui, this.etiquette = 'P'});
   final Magasin m;
@@ -39,7 +42,7 @@ class DemandesImportPoste {
   /// La VOIE de ce jeu sur ce poste (lot IMP-D). Hors fileul rattaché (la mère, un poste autonome) tout s'écrit directement.
   static VoieImportFileul voie({required bool fileulRattache, required DeclarationImport? declaration}) => !fileulRattache || declaration == null
       ? VoieImportFileul.directe
-      : voieImportFileul(declaration, configuration: collectionsDeLaMere(), activiteSynchronisee: collectionsActivite);
+      : voieImportFileul(declaration, configuration: collectionsDeLaMere());
 
   String get _jour {
     final d = aujourdhui();
@@ -73,7 +76,7 @@ class DemandesImportPoste {
           profil: ProfilImport(role: roleAuteur, libelleRole: matrice.libelle(roleAuteur) ?? roleAuteur, matrice: matrice.matriceImport, bornes: _bornes()));
       final VerdictDemandeImport v;
       try {
-        v = traiterDemandeImport(d, port, jeuImportParId);
+        v = traiterDemandeImport(d, port, jeuImportParId, compteurs: champsCompteurs);
       } catch (e) {
         // Jamais muet : une exception se nomme aussi, et la demande reste lisible du fileul.
         col.mettreAJour('${d['id']}', {
@@ -101,6 +104,10 @@ class DemandesImportPoste {
     return v is Map ? {for (final e in v.entries) if (e.value is num && (e.value as num) > 0) '${e.key}': (e.value as num).floor()} : <String, int>{};
   }
 
+  /// Le port d'écriture de ce poste (pour les tests qui analysent un fichier sur ce magasin).
+  @visibleForTesting
+  PortImport portPourTests(ProfilImport profil) => PortMagasin(m, aujourdhui: aujourdhui, nomAgent: auteur(), profil: profil);
+
   PortMagasin _port({String? nomAgent}) => PortMagasin(m,
       aujourdhui: aujourdhui,
       nomAgent: nomAgent ?? auteur(),
@@ -117,7 +124,7 @@ class DemandesImportPoste {
   ({ResultatImport resultat, Fiche? demande}) importerEtDemander(JeuImport jeu, AnalyseImport analyse) {
     final col = m.collection(demandesImportCollection);
     final id = 'DIM$etiquette${aujourdhui().microsecondsSinceEpoch}${col.toutes.length}';
-    final r = m.pendantImportFileul(_autorisees(jeu), () => appliquer(jeu, analyse, PortDemandeImport(_port(), demandeId: id, marquerEnAttente: true)));
+    final r = m.pendantImportFileul(_autorisees(jeu), () => appliquerDemande(jeu, analyse, PortDemandeImport(_port(), demandeId: id, marquerEnAttente: true, compteurs: champsCompteurs)));
     if (!r.ok) return (resultat: r, demande: null);
     final fiche = composerDemandeImport(
         id: id,
@@ -198,12 +205,23 @@ class DemandesImportPoste {
             n++;
           }
         case SuiteDuVerdict.leverLeMarquage:
+          // LOT IMP-E : une fiche d'une collection que le pont synchronise (stock, lots, mouvements) n'est confirmée que par l'ARRIVÉE de la fiche de la mère (le pont lève alors le marquage) :
+          // lever le marquage avant ferait partir au journal la version du fileul avant celle de la mère. La demande reste « à suivre » tant qu'il en reste une.
+          var attendues = 0;
           for (final e in ecrits) {
-            final f = m.collection('${e['collection']}').parId(e['id']);
-            if (f != null && f[champEnAttenteMere] == d['id']) m.collection('${e['collection']}').retirerChamp(e['id'], champEnAttenteMere);
+            final c = '${e['collection']}';
+            final f = m.collection(c).parId(e['id']);
+            if (f == null || f[champEnAttenteMere] != d['id']) continue;
+            if (collectionsActivite.contains(c)) {
+              attendues++;
+            } else {
+              m.collection(c).retirerChamp(e['id'], champEnAttenteMere);
+            }
           }
-          col.mettreAJour('${d['id']}', {'marquageLeve': true}, journaliser: false);
-          n++;
+          if (attendues == 0) {
+            col.mettreAJour('${d['id']}', {'marquageLeve': true}, journaliser: false);
+            n++;
+          }
       }
     }
     return n;

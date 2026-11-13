@@ -47,12 +47,11 @@ AnalyseImport verifier(Magasin m, String jeu, String cas, {String role = 'stock'
 }
 
 void main() {
-  test('LA VOIE sur le poste : les référentiels de configuration seuls s\'écrivent chez le fileul ET partent en demande ; le Grand Stock reste par demande seule ; le personnel à la mère ; hors fileul tout est direct', () {
+  test('LA VOIE sur le poste : les référentiels de configuration seuls s\'écrivent chez le fileul ET partent en demande ; le Grand Stock aussi (lot IMP-E) ; le personnel à la mère ; hors fileul tout est direct', () {
     VoieImportFileul voie(String jeu, {bool fileul = true}) => DemandesImportPoste.voie(fileulRattache: fileul, declaration: donnees.matrice.matriceImport.declaration(jeu));
-    for (final j in ['fournisseurs', 'assureurs', 'souscripteurs', 'plan-comptable', 'analyses-modele', 'natures-facture', 'centres-couts', 'unites-labo', 'emplacements']) {
+    for (final j in ['fournisseurs', 'assureurs', 'souscripteurs', 'plan-comptable', 'analyses-modele', 'natures-facture', 'centres-couts', 'unites-labo', 'emplacements', 'grand-stock']) {
       expect(voie(j), VoieImportFileul.directeEtDemande, reason: j);
     }
-    expect(voie('grand-stock'), VoieImportFileul.demandeSeule, reason: 'lots et mouvements voyagent par variations : les écrire ici ET à la mère compterait le stock deux fois');
     expect(voie('personnel'), VoieImportFileul.reserveeALaMere);
     for (final j in ['patients', 'soldes-ouverture', 'prestataires']) {
       expect(voie(j), VoieImportFileul.directe, reason: j);
