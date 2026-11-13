@@ -200,8 +200,31 @@ async function cycle() {
   }
 })();
 
+/* --- Lot D5 : les FICHIERS numérisés (le binaire voyage à part du journal, par morceaux avec reprise : `fichiers.js`) ----------------------------- */
+const FICHIERS = require('./fichiers');
+const stockageF = new FICHIERS.Stockage(DB === ':memory:' ? fs.mkdtempSync(require('node:path').join(require('node:os').tmpdir(), 'sigh-fil-')) : DB + '.fichiers');
+/** La requête de fichiers à la mère : même jeton d'appareil que le journal ; une mère injoignable LÈVE (le transfert reprendra), un refus nommé est rendu tel quel. */
+async function appelFichiers(methode, chemin, corps, entetes) {
+  const r = await fetch(MERE + chemin, { method: methode, headers: Object.assign({ Authorization: 'Bearer ' + meta('jeton') }, entetes || {}), body: corps || undefined });
+  return { status: r.status, octets: new Uint8Array(await r.arrayBuffer()) };
+}
+const clientFichiers = FICHIERS.client(appelFichiers, stockageF);
+
 /* --- API de commande (le « clavier » du banc) ----------------------------------- */
 const commandes = {
+  /* Poser un fichier de CE poste dans son stockage (le dépôt d'un scan). */
+  'POST /fichier/ranger': (b) => { try { return [200, stockageF.ranger(fs.readFileSync(b.chemin), b.famille, b.zone || 0)]; } catch (e) { return [e.statut || 500, e.corps || { code: 'erreur', motif: e.message }]; } },
+  'POST /fichier/envoyer': async (b) => {
+    try { return [200, await clientFichiers.envoyer(b)]; } catch (e) { return [503, { code: 'mere_injoignable', motif: String(e && e.message) }]; }
+  },
+  'POST /fichier/recevoir': async (b) => {
+    try { return [200, await clientFichiers.recevoir(b)]; } catch (e) { return [503, { code: 'mere_injoignable', motif: String(e && e.message) }]; }
+  },
+  'GET /fichier/etat': (b, q) => {
+    const partiels = require('node:path').join(stockageF.dossier, '_partiels', q.sha256);
+    return [200, { etat: stockageF.etat(q.sha256), copies: stockageF.nbCopies(), partiels: fs.existsSync(partiels) ? fs.readdirSync(partiels).length : 0 }];
+  },
+  'POST /fichier/alterer': (b) => { const p = stockageF.chemin(b.sha256); const x = fs.readFileSync(p); x[x.length - 3] ^= 0xff; fs.writeFileSync(p, x); return [200, { ok: true }]; },
   'POST /appairer': async (b) => {
     const r = await fetch(MERE + '/appairage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: b.code, uuid: meta('uuid'), plateforme: 'banc' }) });
     const j = await r.json(); if (!r.ok) return [r.status, j];

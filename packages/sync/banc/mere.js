@@ -26,6 +26,8 @@ const CLINIQUE = 'NASSIERA TOO';
 const DERIVE_MAX_MS = 2 * 60 * 1000;
 const RELAIS = arg('relais', ''); const SECRET_RELAIS = arg('secret-relais', 'secret-mere');
 const RESTAURER = arg('restaurer', '0') === '1'; const CLE_ARG = arg('cle', '');
+/* Lot D5 : le dossier des fichiers numérisés de la mère (vide : la mère n'en tient pas, 503). */
+const FICHIERS_DIR = arg('fichiers', '');
 
 /* Une famille par collection (PRD §8) : A fiche descriptive · B journal · C pièce
    émise · D agrégat à invariant · R référentiel (la mère seule écrit). */
@@ -45,7 +47,11 @@ const FAMILLES = {
   /* Lot IMP-E : le stock que le pont du poste synchronise comme la mère Dart (`sync_dart/lib/src/mere.dart`) : les lots et les mouvements sont des fiches descriptives (A, une identité par fiche,
      jamais dédoublée), les variations de stock sont des fiches AJOUTÉES (une par variation, jamais modifiées : `fiche_existe` à la seconde création du même identifiant). */
   lots: 'A', mouvements: 'A', deltasCompteurs: 'A',
+  /* Lot D5 : les MÉTADONNÉES des fichiers numérisés (le courrier et le document du patient portent `fichier` ; le registre `fichiers` est une fiche par empreinte, ajout seul). Le binaire voyage
+     à part (`fichiers.js`). Jamais vers un téléphone (RG-13). */
+  courriers: 'A', documentsPatient: 'A', fichiers: 'B',
 };
+const FICHIERS_JAMAIS_MOBILE = new Set(['courriers', 'documentsPatient', 'fichiers']);
 const ESSENTIELLES = new Set(['tarifs', 'versionsTarif', 'chambres']);
 
 const PARAMETRES = require('./parametres');
@@ -156,6 +162,8 @@ function traiter(op, app) {
 
   if (fam === 'B') {
     if (op.type !== 'creer') return refus('journal_immuable', 'Un journal ne se modifie pas : on ajoute une ligne.', 'Ajouter une nouvelle ligne');
+    /* Lot D5 : deux postes qui déposent le même fichier créent la même fiche de registre (une par empreinte) : la seconde création est ACCEPTÉE SANS EFFET. */
+    if (f && op.collection === 'fichiers') return { id: op.id, statut: 'acceptee', seq: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s), rejeu: true };
     if (f) return refus('fiche_existe', 'Cette ligne existe déjà.', 'Aucun');
     const seq = journaliser(op, op.champs, app.uuid);
     ecrire(op.collection, op.fiche, { data: op.champs, fieldseq: Object.fromEntries(Object.keys(op.champs).map((k) => [k, seq])), archive: false });
@@ -409,6 +417,9 @@ const routes = {
     adminOk(req);
     const fiches = [];
     const lot = b.fiches.slice();
+    /* Lot D5 : un lot de tournée ne porte JAMAIS une fiche de fichier numérisé (courrier, document du patient, registre par empreinte) : refus nommé, rien n'est publié (RG-13). */
+    const interdite = lot.find((f) => FICHIERS_JAMAIS_MOBILE.has(f.collection));
+    if (interdite) throw new Err(422, 'fichiers_interdits_au_mobile', `la collection « ${interdite.collection} » ne va jamais vers un téléphone (RG-13) : les fichiers numérisés se consultent depuis un poste`);
     /* E1600/E1559 : le CATALOGUE des produits (prix d'achat, stock du jour, RG-02) part avec le lot d'un soignant habilité à prescrire des médicaments ;
        jamais à une infirmière ni à une réception. Ce n'est pas une donnée patient : il ne sort pas du périmètre de la tournée. */
     const dest = db.prepare('SELECT * FROM appareils WHERE uuid=?').get(b.uuid);
@@ -554,7 +565,7 @@ function diffuser() {
     if (!ops.length) continue;
     /* L0 : un mobile ne reçoit de la configuration que les paramètres de la LISTE BLANCHE (déclarés `mobile`, non sensibles, famille non réservée : RG-13) ; le reste de
        `parametres`, comme toute autre collection hors de sa portée, ne part pas. */
-    const mine = ops.filter((o) => (o.collection === 'parametres' ? PARAMETRES.autoriseMobile(JSON.parse(o.champs)) : db.prepare('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?').get(a.uuid, o.collection, o.fiche)))
+    const mine = ops.filter((o) => FICHIERS_JAMAIS_MOBILE.has(o.collection) ? false : (o.collection === 'parametres' ? PARAMETRES.autoriseMobile(JSON.parse(o.champs)) : db.prepare('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?').get(a.uuid, o.collection, o.fiche)))
       .map((o) => Object.assign({}, o, { seq: Number(o.seq), champs: JSON.parse(o.champs) }));
     setMeta('sortie_seq:' + a.uuid, Number(ops[ops.length - 1].seq));
     if (mine.length) publier(a.uuid, { type: 'ops', ops: mine });
@@ -738,11 +749,18 @@ function demarrerPont() {
   }, 300);
 }
 
+const FICHIERS = require('./fichiers');
+const traiterFichiers = FICHIERS_DIR ? FICHIERS.mere(new FICHIERS.Stockage(FICHIERS_DIR), { auth }) : null;
 const serveur = http.createServer((req, res) => {
   const chunks = [];
   req.on('data', (c) => chunks.push(c));
   req.on('end', async () => {
     const u = new URL(req.url, 'http://x');
+    /* Lot D5 : les routes de FICHIERS portent des octets, pas du JSON : leur propre lecture du corps. */
+    if (u.pathname.startsWith('/fichiers/')) {
+      if (!traiterFichiers) { const t = JSON.stringify({ code: 'FICHIERS_NON_ACTIVES', motif: 'cette mère ne tient pas de fichiers numérisés' }); res.writeHead(503, { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(t) }); return res.end(t); }
+      return traiterFichiers(req, res, Buffer.concat(chunks), u);
+    }
     const q = Object.fromEntries(u.searchParams);
     let body = {};
     try { body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString()) : {}; } catch (e) { /* corps vide */ }

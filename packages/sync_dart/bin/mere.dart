@@ -18,6 +18,7 @@ Future<void> main(List<String> args) async {
     conservation: int.tryParse(arg(args, 'conservation', '7')) ?? 7,
     droits: arg(args, 'droits', 'matrice'),
     matriceChemin: arg(args, 'matrice', ''),
+    dossierFichiers: arg(args, 'fichiers', ''),
   ));
   await m.demarrer();
 }

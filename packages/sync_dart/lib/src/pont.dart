@@ -120,6 +120,13 @@ class Pont {
   Future<Map<String, Object?>> lot(Map<String, Object?> b) async {
     final fiches = <Map<String, Object?>>[];
     final lot = [...(b['fiches'] as List)];
+    // Lot D5 : un lot de tournée ne porte JAMAIS une fiche de fichier numérisé (courrier, document du patient, registre par empreinte) : refus nommé, rien n'est publié (RG-13).
+    for (final f in lot) {
+      final col = '${(f as Map)['collection']}';
+      if (collectionsFichiersJamaisMobile.contains(col)) {
+        throw Err(422, 'fichiers_interdits_au_mobile', 'la collection « $col » ne va jamais vers un téléphone (RG-13) : les fichiers numérisés se consultent depuis un poste');
+      }
+    }
     // E1600/E1559 : le CATALOGUE des produits (prix d'achat, stock du jour, RG-02) part avec le lot d'un soignant habilité à prescrire des médicaments ;
     // jamais à une infirmière ni à une réception. Ce n'est pas une donnée patient.
     if (b['catalogue'] != false) {

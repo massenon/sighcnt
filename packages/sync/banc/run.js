@@ -89,6 +89,7 @@ async function monde(opts = {}) {
     async demarrer() {
       const a = [`--port=${portMere}`, `--db=${m.mere.db}`, `--admin=${ADMIN}`, `--code-ttl=${opts.codeTtl || 900000}`, `--jeton-ttl=${opts.jetonTtl || 86400000}`];
       if (opts.relais) a.push(`--relais=http://127.0.0.1:${m.portInternet}`, '--secret-relais=secret-mere');
+      a.push(`--fichiers=${path.join(dir, 'fichiers-mere')}`); // lot D5 : le dossier des fichiers numérisés de la mère
       if (m.mere.opts.cle) a.push(`--cle=${m.mere.opts.cle}`);
       if (m.mere.opts.restaurer) a.push('--restaurer=1');
       a.push('--droits=' + (m.mere.opts.droits || process.env.SIGH_DROITS || 'banc')); // la mère Dart : droits du banc par défaut ici, la matrice RBAC en production
@@ -1044,6 +1045,7 @@ Object.assign(scenarios, require('./scenarios-copie-ordre.js')({ monde, verifier
 Object.assign(scenarios, require('./scenarios-droits-mere.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 Object.assign(scenarios, require('./scenarios-pair-pg.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 Object.assign(scenarios, require('./scenarios-parametres.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
+Object.assign(scenarios, require('./scenarios-fichiers.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 Object.assign(scenarios, require('./scenarios-import.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 
 /* --- exécution ------------------------------------------------------------------------------ */

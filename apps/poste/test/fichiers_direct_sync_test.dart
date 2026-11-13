@@ -438,6 +438,11 @@ void main() {
       expect(r.statusCode, 403, reason: '$m $ch');
       expect(jsonDecode(texte)['code'], 'FICHIERS_INTERDITS_AU_MOBILE');
     }
+    // le lot de tournée d'un téléphone ne peut pas NOMMER une fiche de fichier : refus nommé, rien n'est publié
+    final lot = await http.post(Uri.parse('$base/admin/lot'),
+        headers: {'x-admin': 'secret-test', 'content-type': 'application/json'}, body: jsonEncode({'uuid': 'tel-0001', 'fiches': [{'collection': 'courriers', 'id': 'C1'}, {'collection': 'documentsPatient', 'id': 'D2'}], 'ttl_ms': 60000}));
+    expect(lot.statusCode, 422);
+    expect(jsonDecode(lot.body)['code'], 'fichiers_interdits_au_mobile');
     // le journal qu'un téléphone tire ne contient aucune fiche de fichier : ni courrier, ni document du patient (pièce d'identité comprise), ni registre
     final pull = jsonDecode((await http.get(Uri.parse('$base/sync/pull?depuis=0&limite=500&epoch=1'), headers: {'authorization': 'Bearer ${app['jeton']}'})).body) as Map;
     final collections = {for (final o in (pull['ops'] as List)) (o as Map)['collection']};
