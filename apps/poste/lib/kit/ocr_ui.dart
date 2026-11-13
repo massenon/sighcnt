@@ -215,7 +215,7 @@ class _BlocOcrPieceState extends State<BlocOcrPiece> {
 
 String _dateFr(Object? iso) {
   final s = '${iso ?? ''}';
-  if (s.length < 16) return '—';
+  if (s.length < 16) return 'date inconnue';
   return '${s.substring(8, 10)}/${s.substring(5, 7)}/${s.substring(0, 4)} ${s.substring(11, 16)}';
 }
 
