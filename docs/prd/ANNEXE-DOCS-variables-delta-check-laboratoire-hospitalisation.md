@@ -40,6 +40,8 @@ Deux points à ne pas laisser passer :
 - La **diurèse** est en **litres** à l'accueil et en **millilitres** à l'hospitalisation. Une courbe qui les rapproche sans conversion est fausse. À corriger à la source ou à convertir à l'affichage, décision à prendre au lot A1.
 - La **tension** de l'hospitalisation est un **texte** (« 12/8 »), pas deux nombres. Elle ne se compare pas tant qu'elle n'est pas scindée en systolique et diastolique, comme à l'accueil.
 
+> **Tranché le 13/11/2026, appliqué au lot B (maquette).** Correction à la source : la diurèse est saisie et stockée en millilitres partout, la tension en deux nombres (`tensionSys`, `tensionDia`, cmHg) ; aucune conversion à l'affichage. Écarts E2577 à E2579, décisions à confirmer : `DECISIONS-A-VALIDER.md` section X. Le poste Flutter lit encore l'ancienne forme (E2579).
+
 ## 3. Variables numériques du laboratoire
 
 ### NFS complète (hémogramme) (`NFS`, Hématologie)
