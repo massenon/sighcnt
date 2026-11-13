@@ -14,7 +14,7 @@ import 'commun_m1.dart';
 
 String _t(Object? v, [String vide = '—']) => patVrai(v) ? '$v' : vide;
 
-/// `m1-documents` — la bibliothèque documentaire du patient. Un document se DÉPOSE (PDF, PNG, JPEG ; WEBP admis ici) et reste rattaché au dossier ; le fichier est rangé sur le disque du poste,
+/// `m1-documents` : la bibliothèque documentaire du patient. Un document se DÉPOSE (PDF, PNG, JPEG ; WEBP admis ici) et reste rattaché au dossier ; le fichier est rangé sur le disque du poste,
 /// hors du magasin, sous son empreinte SHA-256 (lot D5 : sélecteur de fichier injectable, visionneuse, téléchargement sous le nom normalisé, zones RG-13). RG-14 : retirer un document l'archive,
 /// avec son motif ; retirer sa pièce la garde au journal.
 ///

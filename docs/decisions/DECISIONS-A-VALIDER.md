@@ -238,3 +238,18 @@ Mise en œuvre de la décision du 13/11/2026 (« le Grand Stock s'écrit directe
 - **Deux fileuls, même inventaire** : le second est refusé en nommant (`DOUBLON_MAGASIN`) et restitue. Un fichier déjà importé par la mère ou un autre fileul se voit donc refusé après coup, pas avant : le fileul le découvre à la réponse de la mère. ☐ Garder ☐ Vérifier le doublon à la mère avant d'écrire chez le fileul (impossible hors ligne).
 - **Annulation du lot chez le fileul** : inchangée (permise tant que la mère n'a pas statué, refusée après sa confirmation) ; pour le Grand Stock elle est refusée dès qu'un autre mouvement s'appuie sur l'un des articles (`MOUVEMENT_POSTERIEUR`). ☐ Garder.
 
+
+
+## S. Lot D5 (13/11/2026, poste) : les fichiers numérisés au poste Flutter, ce qui reste à trancher par la Direction
+
+Mise en œuvre du poste pour les documents numérisés de DOCS-1 : `ECARTS-MAQUETTE.md` E2532 à E2543, plan `docs/plans/PLAN-documents-numerises.md` (lot D5). Ce qui reste à trancher :
+
+- **Chiffrement au repos des fichiers** (hypothèse retenue) : les scans sont chiffrés par la MÊME clé que le magasin du poste (AES-256-GCM), donc une seule clé à sauvegarder. ☐ Garder ☐ Une clé distincte pour les fichiers (deux clés à sauvegarder, une fuite de l'une ne livre pas l'autre).
+- **Les fichiers ne passent pas par le relais en ligne** (hypothèse retenue : le relais reste opaque, il ne détient que le journal chiffré). Un fileul qui ne joint pas la mère voit les pièces des autres postes « non disponible hors ligne ». ☐ Garder (les fichiers restent dans le réseau de la clinique) ☐ Prévoir un transfert de morceaux chiffrés par le relais (protocole à part, taille et coût d'hébergement à fixer).
+- **Le lecteur de PDF** : celui livré ouvre le PDF vérifié dans l'application PDF du système, à partir d'une copie temporaire en clair (supprimée au mieux après dix minutes). ☐ Garder ☐ Un rendu intégré au logiciel (paquet natif à éprouver sous Windows, aucune copie en clair).
+- **Le rôle qui décide du droit de zone est déclaré par le poste** : la mère authentifie l'appareil, non la personne (comme pour le journal). ☐ Accepter la limite ☐ Authentifier la personne auprès de la mère (jeton de session).
+- **Sauvegarde des fichiers du poste** : une passe par heure, copie incrémentale vérifiée, conservation illimitée, destination propre au poste réglée par l'administrateur et la DAF. ☐ Accepter la fréquence ☐ Autre : ________. **Désigner un AUTRE disque** avant la mise en service (le poste le dit tant que la destination est dans le dossier des données, et ne sait pas le dire autrement). ☐ Alerte au centre de notifications quand la destination disparaît (aujourd'hui : carte et journal seulement). ☐ Copie hors site à prévoir. ☐ Support de sauvegarde sorti de la clinique : la copie est chiffrée par la clé du poste, qui doit être sauvegardée à part (export existant).
+- **La taille maximale d'un fichier** reste à 10 Mo « à valider » (section M), réglage propre à chaque poste.
+- **Le poste mère et son service partagent le dossier des fichiers** (même dossier, même clé) : un scan déposé à la mère est aussitôt chez elle, sans transfert. ☐ Garder.
+
+- Vérification : voir E2539 et E2540 (vingt-six mutations rouges, répétitions, avant/après).

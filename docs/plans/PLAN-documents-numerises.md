@@ -41,8 +41,12 @@ Constat E2491 : la sauvegarde nocturne ne copiait pas `api/fichiers/`. Trois tâ
 ### Lot A2 : seuils de variation brutale [FAIT 13/11/2026, maquette]
 - Fichiers : `assets/js/parcours.js` (`SIGH.laboSeuils` : enregistrer, valider, abandonner, seuil en vigueur à une date, alerte), `assets/js/store.js` (collection `seuilsDelta`, garde d'immutabilité, reprise à la montée de `VERSION` 83), `assets/js/modules/m5-laboratoire.js` (section « Seuils de variation brutale » de `m5-valeurs-reference`, alerte au comparatif et à l'écran de validation biologique), schéma `m5.seuils_delta`.
 - Vérification : scénarios Vague 166 à 168, douze mutations rouges, avant/après. Écarts E2515 à E2519, décisions à confirmer : `DECISIONS-A-VALIDER.md` section Q.
-### Lot D5 : poste Flutter [À FAIRE, hors de ce brief]
-- Domaine, vecteurs, composant de lecture PDF, fichiers par empreinte dans la synchronisation (EF-SYNC-18). Le vecteur `administration.json` n'est PAS régénéré par ce brief (la case `numerise` de la fiche courrier disparaît à la saisie : sa régénération rougirait le poste jusqu'à D5).
+### Lot D5 : poste Flutter [FAIT 13/11/2026]
+- Étapes et commits : domaine et vecteurs tirés de la maquette (`packages/domaine/lib/src/fichiers/`, `prototype_html/build/vecteurs-fichiers.js`) ; extracteur de texte PDF en Dart pur (`pdf_texte.dart`) ; stockage local par empreinte, atomique, chiffré au repos (`packages/sync_dart/lib/src/stockage_fichiers.dart`, `apps/poste/lib/donnees/fichiers_poste.dart`) ; écrans (`apps/poste/lib/kit/fichiers_ui.dart`, courriers `modules/m13/adm_registres.dart`, documents `modules/m1/documents.dart`) ; synchronisation (`apps/poste/lib/sync/service_fichiers.dart`, `packages/sync_dart/lib/src/fichiers_mere.dart`) ; banc `FIC1` et test contre la vraie mère Dart ; sauvegarde, contrôle et restauration des fichiers du poste (`sauvegarde_fichiers.dart`, carte de `m14-sauvegardes`).
+- Le vecteur `administration.json` est RÉGÉNÉRÉ de la maquette (la case `numerise` du courrier est retirée, la colonne dérive du fichier).
+- Statuts de parité : `m13-courriers` et `m1-documents` étaient déjà « porté », N1 mesuré par `parite_ecrans_test.dart` reste vert ; `PARITE-MAQUETTE.md` est engendré et n'a pas changé.
+- Vérification : E2539 et E2540 (vingt-six mutations rouges, dix répétitions, avant/après). Écarts E2532 à E2543, décisions à confirmer : `DECISIONS-A-VALIDER.md` section S.
+- Reste : l'essai sur trois vrais scans, l'OCR (phase 2), le rendu PDF intégré et le transfert par le relais, si la Direction les demande (section S).
 
 ## Commandes
 - `service postgresql start`, puis banc isolé : `SIGH_PORT_PHP=9210 SIGH_BASE_TEST=sigh_banc_d1 SIGH_PORT_TEST=9211 CHROME_PATH=/opt/pw-browsers/chromium node build/test-fonctionnel.js --seul=Vague_152|Vague_153|…` (`ps aux | grep "[p]hp -S"` avant de croire un résultat).
@@ -56,7 +60,7 @@ Constat E2491 : la sauvegarde nocturne ne copiait pas `api/fichiers/`. Trois tâ
 `VERSION` 81 vers 82 (une seule constante). Collection nouvelle `fichiers` ; champs nouveaux sur `courriers` et `documentsPatient`. Une montée de `VERSION` ré-amorce le jeu : la reprise garde les fiches qui portent déjà un fichier ou un base64 (comme les postes de l'organigramme et les prix), puis la migration range les base64 dans le dossier de fichiers.
 
 ## Synchronisation
-Aucune opération nouvelle au journal dans ce brief. Les fichiers voyageront à part, par empreinte (EF-SYNC-18), au lot D5 ; `fichiers` est une collection de métadonnées (ajout seul par empreinte).
+Aucune opération nouvelle au journal dans ce brief. Les fichiers voyagent à part, par empreinte (EF-SYNC-18), depuis le lot D5 (poste) ; `fichiers` est une collection de métadonnées (ajout seul par empreinte).
 
 ## Hors périmètre
 OCR (phase 2, après essai sur trois vrais scans), recherche par le sens (NON, Q8), pilotage du scanner, poste Flutter, antériorités et seuils.
