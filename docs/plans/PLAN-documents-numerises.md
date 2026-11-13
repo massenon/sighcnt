@@ -35,8 +35,9 @@ Chiffres relevés par un script de mesure (Chrome sans interface, serveur PHP et
 ### Lot SAUV-F : sauvegarde et restauration du dossier de fichiers [FAIT 12/11/2026, maquette]
 Constat E2491 : la sauvegarde nocturne ne copiait pas `api/fichiers/`. Trois tâches du planificateur (`sauvegarde_nocturne` désormais sensible à la destination, `sauvegarde_fichiers` horaire et incrémentale, `controle_fichiers` nocturne), une destination RÉGLABLE (`_reglages.sauvegardeFichiers`, défaut `api/sauvegardes/` dit « même disque »), `api/restaurer.php --fichiers`, `api/controler_fichiers.php`, la carte de sauvegarde de `m14-taches`. Scénarios Vagues 158 à 162. Écarts E2492 à E2499, décisions à confirmer : `DECISIONS-A-VALIDER.md` section O.
 
-### Lot A1 : antériorités [À FAIRE, hors de ce brief]
-- N antériorités, variation, courbe, colonne « Antériorités » imprimée remplie (EF-ANT-1, 2, 4, 5, 6).
+### Lot A1 : antériorités [FAIT 13/11/2026, maquette]
+- Fichiers : `assets/js/modules/m5-laboratoire.js` (`SIGH.laboAnteriorites`, comparatif à mesure comparée et trois antériorités, variation, courbe, impression du comparatif, colonne « Antériorités » de la fiche imprimée), `assets/js/charts.js` (options de `G.ligne`).
+- Vérification : scénarios Vague 163 à 165, six mutations rouges, avant/après. Écarts E2510 à E2514 (hypothèses, un défaut de périmètre corrigé à l'impression, deux constats hors lot).
 ### Lot A2 : seuils de variation brutale [À FAIRE, hors de ce brief]
 - Seuils par variable versionnés, bouton Valider (Enregistré / Validé), alerte à la validation biologique (EF-ANT-3, 3b).
 ### Lot D5 : poste Flutter [À FAIRE, hors de ce brief]

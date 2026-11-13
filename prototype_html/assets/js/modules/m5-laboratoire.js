@@ -735,7 +735,9 @@
               rowActions: function (r) {
                 return [
                   K.iconBtn('file-text', 'Compte rendu complet du patient', function () {
-                    compteRendu(r.patientId, col.active().filter(function (d) { return d.patientId === r.patientId; }));
+                    /* Le compte rendu ne reprend que ce que le profil a le droit de lire (RBAC métier) : sans ce filtre, la fiche imprimée
+                       d'une sage-femme portait aussi les résultats des autres secteurs (écart E2511). */
+                    compteRendu(r.patientId, PR.filtrerResultats(col.active().filter(function (d) { return d.patientId === r.patientId; })));
                   }),
                   K.iconBtn('printer', 'Imprimer ce seul résultat', function () { etatResultat(r); }),
                   K.iconBtn('pencil', 'Corriger', function () { ouvrirSaisie(r); }),
@@ -1376,6 +1378,17 @@
     t.appendChild(thead);
     var tb = el('tbody');
     var anormales = 0;
+    var masqueesImprimees = 0;
+
+    /* LA COLONNE « ANTÉRIORITÉS » (EF-ANT-5) : la mesure et la date de l'antériorité la plus récente, par variable. Jamais un blanc :
+       une variable sans antériorité imprime « Aucune antériorité », une variable de traçabilité (réactif, lot) « Sans objet ». */
+    function texteAnteriorite(v, demande) {
+      if (v.accompagnement) return 'Sans objet';
+      var ant = derniereValeurAnterieure(demande, v.code);
+      if (!ant) return 'Aucune antériorité';
+      var u = symbole(v.unite);
+      return String(ant.valeur) + (u === '—' ? '' : ' ' + u) + ' (' + C.dateFR(ant.demande.dateHeure) + ')';
+    }
 
     ordre.forEach(function (sec) {
       var groupe = parSection[sec];
@@ -1401,9 +1414,12 @@
 
         if (!variables.length) {
           /* Résultat antérieur au modèle structuré : on rend ce qu'on a. */
-          tb.appendChild(ligneResultat(g.demande.analyse, g.demande.resultat || '—', '', null));
+          tb.appendChild(ligneResultat(g.demande.analyse, g.demande.resultat || '—', '', null, 'Non comparable (résultat non structuré)'));
           return;
         }
+        /* Les antériorités se lisent UNE fois par examen (lot A1) : la plus récente mesure RENDUE et lisible, par variable. */
+        var anterieures = anterieuresDe(g.demande, Infinity);
+        masqueesImprimees += anterieures.masquees;
 
         variables.forEach(function (v) {
           var val = valeurs[v.code];
@@ -1415,7 +1431,7 @@
           var u = symbole(v.unite);
           var affiche = String(val) + (u === '—' ? '' : ' ' + u);
           tb.appendChild(ligneResultat(v.libelle, affiche,
-            referenceALaDate(v, g.demande.dateHeure), ecart));
+            referenceALaDate(v, g.demande.dateHeure), ecart, texteAnteriorite(v, g.demande)));
         });
       });
     });
@@ -1436,7 +1452,8 @@
       style: 'margin-top:10px;font-size:9px;font-style:italic;',
       text: 'Les valeurs en gras sont hors des bornes de référence. Les résultats doivent être interprétés '
         + 'par le clinicien en fonction du contexte. Les valeurs de référence dépendent du réactif et de '
-        + 'l’automate employés.',
+        + 'l’automate employés. La colonne Antériorités reprend la mesure rendue la plus récente du même examen.'
+        + (masqueesImprimees ? ' ' + C.num(masqueesImprimees) + ' antériorité(s) hors du périmètre du profil qui édite ne sont pas reprises.' : ''),
     }));
 
     var valides = rendus.filter(function (d) { return d.etatAnalyse === 'valide'; }).length;
@@ -1455,7 +1472,7 @@
     }
 
     /** Une ligne de résultat. Le gras signale l'écart, comme sur le document. */
-    function ligneResultat(libelle, valeur, reference, ecart) {
+    function ligneResultat(libelle, valeur, reference, ecart, anteriorite) {
       return el('tr', null, [
         el('td', { style: 'padding:2px 4px;', text: libelle }),
         el('td', {
@@ -1463,7 +1480,7 @@
           text: String(valeur),
         }),
         el('td', { style: 'padding:2px 4px;text-align:center;font-size:9px;', text: reference || '' }),
-        el('td', { style: 'padding:2px 4px;text-align:center;font-size:9px;', text: '' }),
+        el('td', { style: 'padding:2px 4px;text-align:center;font-size:9px;', 'data-anteriorite': '', text: anteriorite || 'Aucune antériorité' }),
       ]);
     }
   }
@@ -1525,6 +1542,109 @@
      versionnement, il n'en recopie pas la logique. */
   global.SIGH.laboPlages = {
     plagePour: plagePour, variableALaDate: variableALaDate, referenceALaDate: referenceALaDate,
+  };
+
+  /* ==========================================================================
+   * ANTÉRIORITÉS D'UN EXAMEN (lot A1, EF-ANT-1 à EF-ANT-6)
+   * --------------------------------------------------------------------------
+   * Une antériorité est une mesure RENDUE du même examen, pour le même
+   * patient, antérieure à la mesure lue. Quatre règles, toutes tenues ici et
+   * nulle part ailleurs (le comparatif, la courbe, la fiche imprimée et, au
+   * lot A2, l'écran de validation biologique les appellent) :
+   *   1. RENDUE seulement (`D.resultatRendu` : validé biologiquement ou
+   *      rectifié). Un résultat saisi, même validé techniquement, n'entre
+   *      JAMAIS dans une antériorité : le prescripteur ne le voit pas encore,
+   *      et le comparer reviendrait à lire par-dessus l'épaule du laboratoire.
+   *   2. Dans le périmètre du RBAC métier (`PR.peutVoirResultat`) : on ne
+   *      compare que ce qu'on a le droit de voir. Ce qui est masqué est COMPTÉ
+   *      et son motif est rendu, pour que l'écran le dise.
+   *   3. Ordre chronologique (date de la demande, puis référence).
+   *   4. Au plus TROIS à l'écran ; la fiche imprimée n'en lit qu'une, la plus
+   *      récente, par variable.
+   * Chaque mesure se juge aux bornes de SON époque (`variableALaDate`).
+   * ======================================================================== */
+  var NB_ANTERIORITES = 3;
+  var TYPES_QUALITATIFS = ['binaire', 'ternaire', 'liste', 'titre'];
+  function valeurVide(x) { return x == null || x === ''; }
+  function cleChrono(d) { return String(d.dateHeure || d.date || '') + '#' + String(d.reference || d.id || ''); }
+
+  /** Les mesures rendues d'un examen pour un patient : { visibles (chronologiques), cachees, motif }. */
+  function mesuresRendues(patientId, codeExamen) {
+    var toutes = S.collection('demandesAnalyses').active().filter(function (r) {
+      return r.patientId === patientId && D.resultatRendu(r.etatAnalyse)
+        && r.valeurs && Object.keys(r.valeurs).length && codeExamenDeStatique(r) === codeExamen;
+    }).sort(function (a, b) { return cleChrono(a).localeCompare(cleChrono(b)); });
+    var visibles = PR.filtrerResultats(toutes);
+    var cachees = toutes.filter(function (r) { return visibles.indexOf(r) < 0; });
+    return { visibles: visibles, cachees: cachees, motif: cachees.length ? PR.peutVoirResultat(cachees[0]).motif : null };
+  }
+
+  /** Les antériorités d'une mesure : { toutes (chronologiques), mesures (les n plus récentes), masquees, motif }. */
+  function anterieuresDe(demande, n) {
+    var m = mesuresRendues(demande.patientId, codeExamenDeStatique(demande));
+    var cle = cleChrono(demande);
+    var avant = function (x) { return x.id !== demande.id && cleChrono(x) < cle; };
+    var toutes = m.visibles.filter(avant), cachees = m.cachees.filter(avant);
+    return {
+      toutes: toutes, mesures: toutes.slice(-(n == null ? NB_ANTERIORITES : n)),
+      masquees: cachees.length, motif: cachees.length ? PR.peutVoirResultat(cachees[0]).motif : null,
+    };
+  }
+
+  /** La mesure précédente d'UNE variable : la plus récente des antériorités qui porte une valeur pour elle. */
+  function derniereValeurAnterieure(demande, codeVariable) {
+    var a = anterieuresDe(demande, Infinity).toutes;
+    for (var i = a.length - 1; i >= 0; i--) {
+      var v = (a[i].valeurs || {})[codeVariable];
+      if (!valeurVide(v)) return { valeur: v, demande: a[i] };
+    }
+    return null;
+  }
+
+  /**
+   * La variation d'une variable entre deux mesures (EF-ANT-2). Trois natures :
+   *   numérique   : sens, écart signé, pourcentage ; une valeur précédente NULLE ne se divise pas, elle le dit
+   *                 (`divisionParZero`, `pourcent` vaut null : jamais un pourcentage inventé) ;
+   *   qualitative : comparaison en TEXTE (« Négatif » puis « Positif »), jamais de pourcentage ;
+   *   aucune      : variable de traçabilité (réactif, lot), texte libre : rien à comparer.
+   */
+  function variationEntre(variable, avant, apres) {
+    if (!variable || valeurVide(avant) || valeurVide(apres)) return null;
+    if (variable.accompagnement) return null;
+    var qualitative = estQualitative(variable);
+    var a = Number(avant), b = Number(apres);
+    if (!qualitative && variable.type === 'numerique' && isFinite(a) && isFinite(b)) {
+      var ecart = Math.round((b - a) * 1e6) / 1e6;
+      return {
+        mode: 'numerique', avant: a, apres: b, ecart: ecart, ecartAbsolu: Math.abs(ecart),
+        sens: ecart > 0 ? 'hausse' : (ecart < 0 ? 'baisse' : 'egal'),
+        divisionParZero: a === 0,
+        pourcent: a === 0 ? null : Math.round(ecart / Math.abs(a) * 10000) / 100,
+      };
+    }
+    if (qualitative || variable.type === 'numerique') {
+      var ta = String(avant).trim(), tb = String(apres).trim();
+      return { mode: 'texte', avant: ta, apres: tb, sens: ta.toLowerCase() === tb.toLowerCase() ? 'egal' : 'change' };
+    }
+    return null;
+  }
+  function estQualitative(variable) { return TYPES_QUALITATIFS.indexOf(variable.type) !== -1; }
+
+  /** La phrase d'une variation, pour l'écran comme pour la pièce imprimée. */
+  function texteVariation(variation, suffixe) {
+    if (!variation) return 'Aucune antériorité';
+    if (variation.mode === 'texte') {
+      return variation.sens === 'egal' ? 'Inchangé (' + variation.apres + ')' : variation.avant + ' puis ' + variation.apres;
+    }
+    var signe = variation.sens === 'hausse' ? '↑ +' : (variation.sens === 'baisse' ? '↓ ' : '= ');
+    var t = signe + (Math.round(variation.ecart * 100) / 100) + (suffixe || '');
+    if (variation.divisionParZero) return t + ' (écart relatif non calculable : valeur précédente nulle)';
+    return t + ' (' + (variation.pourcent > 0 ? '+' : '') + C.num(variation.pourcent, 1) + ' %)';
+  }
+
+  global.SIGH.laboAnteriorites = {
+    NB_ANTERIORITES: NB_ANTERIORITES, mesuresRendues: mesuresRendues, anterieuresDe: anterieuresDe,
+    derniereValeurAnterieure: derniereValeurAnterieure, variationEntre: variationEntre, texteVariation: texteVariation,
   };
 
   /** Les variables d'un examen, dans l'ordre de rendu, telles que paramétrées. */
@@ -3052,15 +3172,101 @@
   });
 
   /* --------------------------------------------------------------------------
-   * COMPARATIF DES RÉSULTATS — BI-PANNEAU (les « Antériorités » de la fiche)
+   * COMPARATIF DES RÉSULTATS (lot A1 : jusqu'à trois antériorités, variation, courbe)
+   * --------------------------------------------------------------------------
+   * La mesure COMPARÉE se choisit ; ses antériorités sont les (au plus) trois mesures rendues
+   * qui la précèdent, dans l'ordre chronologique, chacune jugée aux bornes de SON époque.
+   * La variation se lit à la mesure précédente DE LA VARIABLE (celle qui porte une valeur),
+   * pas forcément à la colonne voisine. Le modèle est construit une fois (`modeleComparatif`)
+   * et sert l'écran, la pièce imprimée et, au lot A2, l'alerte de variation brutale.
    * ----------------------------------------------------------------------- */
+  function modeleComparatif(code, b) {
+    var ant = anterieuresDe(b);
+    var colonnes = ant.mesures.concat([b]);
+    var lignes = [];
+    variablesDe(code).filter(function (v) { return v.actif !== false && !v.accompagnement; }).forEach(function (v) {
+      var valeurs = colonnes.map(function (m) { return (m.valeurs || {})[v.code]; });
+      if (valeurs.every(valeurVide)) return;
+      var u = symbole(v.unite);
+      var suffixe = u === '—' ? '' : ' ' + u;
+      var cellules = colonnes.map(function (m, i) {
+        var val = valeurs[i];
+        return {
+          demande: m, valeur: val,
+          ecart: valeurVide(val) ? null : L.ecart(variableALaDate(v, m.dateHeure), val),
+          reference: referenceALaDate(v, m.dateHeure) || '',
+        };
+      });
+      var vb = valeurs[valeurs.length - 1];
+      var prec = valeurVide(vb) ? null : derniereValeurAnterieure(b, v.code);
+      lignes.push({
+        variable: v, suffixe: suffixe, cellules: cellules, precedente: prec ? prec.demande : null,
+        variation: prec ? variationEntre(v, prec.valeur, vb) : null,
+      });
+    });
+    return { colonnes: colonnes, lignes: lignes, anterieures: ant, comparee: b };
+  }
+
+  /** Le texte d'une cellule de valeur (valeur et unité, ou un tiret quand la variable n'a pas été mesurée ce jour là). */
+  function texteCellule(ligne, cellule) {
+    return valeurVide(cellule.valeur) ? '—' : String(cellule.valeur) + ligne.suffixe;
+  }
+
+  /** La courbe de tendance d'une variable numérique : TOUTES les mesures rendues et lisibles du patient pour cet examen (EF-ANT-4). */
+  function ouvrirTendance(patientId, code, variable) {
+    var m = mesuresRendues(patientId, code);
+    var u = symbole(variable.unite);
+    var points = m.visibles.filter(function (r) {
+      var x = (r.valeurs || {})[variable.code];
+      return !valeurVide(x) && isFinite(Number(x));
+    }).map(function (r) {
+      var borne = variableALaDate(variable, r.dateHeure);
+      return { demande: r, valeur: Number((r.valeurs || {})[variable.code]), min: borne.min, max: borne.max, reference: referenceALaDate(variable, r.dateHeure) || '' };
+    });
+    var corps = el('div.space-y-3');
+    if (points.length < 2) {
+      corps.appendChild(U.empty('Moins de deux mesures rendues : aucune courbe à tracer.', { icon: 'line-chart' }));
+    } else {
+      var series = [{ label: variable.libelle + (u === '—' ? '' : ' (' + u + ')'), data: points.map(function (p) { return p.valeur; }), fill: false, points: true, tension: 0 }];
+      if (points.some(function (p) { return p.min != null; })) series.push({ label: 'Borne basse', data: points.map(function (p) { return p.min == null ? null : p.min; }), fill: false, dash: true, relier: true });
+      if (points.some(function (p) { return p.max != null; })) series.push({ label: 'Borne haute', data: points.map(function (p) { return p.max == null ? null : p.max; }), fill: false, dash: true, relier: true });
+      var g = el('div', { 'data-tendance-courbe': variable.code });
+      g.appendChild(G.ligne(points.map(function (p) { return C.dateFR(p.demande.dateHeure); }), series, { height: 280, scales: { y: { beginAtZero: false } } }));
+      corps.appendChild(g);
+    }
+    var t = el('table.tbl', { 'data-tendance-valeurs': variable.code });
+    t.appendChild(el('thead', null, el('tr', null, [
+      el('th', { text: 'Date' }), el('th', { text: 'Code d’analyse' }), el('th.text-right', { text: 'Valeur' }), el('th.text-right', { text: 'Références de l’époque' }),
+    ])));
+    var tb = el('tbody');
+    points.forEach(function (p) {
+      tb.appendChild(el('tr', null, [
+        el('td', { text: C.dateFR(p.demande.dateHeure) }),
+        el('td', null, el('span.font-mono.text-xs', { text: p.demande.codeAnalyse || p.demande.reference || '' })),
+        el('td.text-right', { text: String(p.valeur) + (u === '—' ? '' : ' ' + u) }),
+        el('td.text-right', null, el('span.text-xs.text-slate-500', { text: p.reference || '—' })),
+      ]));
+    });
+    t.appendChild(tb);
+    corps.appendChild(el('div.card', null, el('div.overflow-x-auto', null, t)));
+    if (m.cachees.length) {
+      corps.appendChild(K.note(C.num(m.cachees.length) + ' mesure(s) rendue(s) de cet examen sont hors de votre périmètre et ne figurent pas sur la courbe : ' + m.motif + '.',
+        { tone: 'info', icon: 'shield-check' }));
+    }
+    var modale = U.modal({
+      title: 'Tendance : ' + variable.libelle, subtitle: points.length ? C.num(points.length) + ' mesure(s) rendue(s)' : null, size: 'lg', body: corps,
+      footer: [K.btn('Fermer', { onclick: function () { modale.close(); } })],
+    });
+    U.icons(corps);
+  }
+
   global.SIGH.screen('m5-resultats-comparatif', {
     title: 'Comparatif des résultats',
-    description: 'Deux mesures du même examen côte à côte, variable par variable — la colonne « Antériorités » de la fiche de résultats, à l’écran.',
+    description: 'Une mesure du même examen face à ses trois dernières antériorités, variable par variable, avec la variation et la courbe de tendance.',
     regle: 'La fiche de résultats de la clinique porte une colonne <strong>Antériorités</strong> : c’est elle '
       + 'que cet écran développe. Seuls les résultats <strong>rendus</strong> (validés biologiquement) se '
-      + 'comparent — comparer une saisie non validée reviendrait à lire par-dessus l’épaule du laboratoire. '
-      + 'Le périmètre est celui du RBAC métier : chacun ne compare que ce qu’il a le droit de voir.',
+      + 'comparent : comparer une saisie non validée reviendrait à lire par-dessus l’épaule du laboratoire. '
+      + 'Le périmètre est celui du RBAC métier : chacun ne compare que ce qu’il a le droit de voir, et l’écran dit ce qu’il ne montre pas.',
     render: function (root) {
       amorcer();
       var col = S.collection('demandesAnalyses');
@@ -3079,7 +3285,7 @@
 
       var selPatient = U.combo(Object.keys(parPatient).map(function (pid) {
         var l = parPatient[pid];
-        return { value: pid, label: l[0].patient + ' (' + l[0].patientCode + ') — ' + C.num(l.length) + ' résultat(s)' };
+        return { value: pid, label: l[0].patient + ' (' + l[0].patientCode + ') : ' + C.num(l.length) + ' résultat(s)' };
       }), { placeholder: '— Choisir un patient —' });
       var selExamen = el('select.select');
       var zone = el('div.space-y-4');
@@ -3096,7 +3302,7 @@
         - rows.length;
       if (masques > 0) {
         host.appendChild(K.note(C.num(masques) + ' résultat(s) rendus sont hors de votre périmètre '
-          + 'et n’apparaissent pas ici — restriction du RBAC métier, pas donnée manquante.',
+          + 'et n’apparaissent pas ici : restriction du RBAC métier, pas donnée manquante.',
         { tone: 'info', icon: 'shield-check' }));
       }
 
@@ -3113,7 +3319,7 @@
 
       function siens() {
         return (parPatient[selPatient.value] || []).slice().sort(function (a, b) {
-          return String(a.dateHeure).localeCompare(String(b.dateHeure));
+          return cleChrono(a).localeCompare(cleChrono(b));
         });
       }
 
@@ -3137,95 +3343,134 @@
       function comparer() {
         var code = selExamen.value;
         if (!code) { vider('Choisir un examen.'); return; }
-        var mesures = siens().filter(function (r) { return codeExamenDeStatique(r) === code; });
+        var mesures = mesuresRendues(selPatient.value, code);
 
         C.clear(zone);
-        if (mesures.length < 2) {
+        if (mesures.cachees.length) {
+          zone.appendChild(K.note(C.num(mesures.cachees.length) + ' mesure(s) rendue(s) de cet examen sont hors de votre périmètre : '
+            + mesures.motif + '. Elles n’entrent ni dans les colonnes, ni dans la variation, ni dans la courbe.',
+          { tone: 'info', icon: 'shield-check' }));
+        }
+        var liste = mesures.visibles;
+        if (liste.length < 2) {
           zone.appendChild(U.empty('Une seule mesure de cet examen : aucune antériorité à comparer. '
             + 'La colonne « Antériorités » se remplira à la prochaine mesure.', { icon: 'history' }));
           U.icons(zone);
           return;
         }
 
-        /* Les deux plus récentes par défaut ; l'utilisateur choisit. */
-        var selA = el('select.select'), selB = el('select.select');
-        mesures.forEach(function (r, i) {
-          var lbl = C.dateFR(r.dateHeure) + ' — ' + (r.codeAnalyse || r.reference)
+        /* La plus récente par défaut ; l'utilisateur choisit la mesure comparée, ses antériorités s'en déduisent. */
+        var selB = el('select.select', { 'data-mesure-comparee': '' });
+        liste.forEach(function (r, i) {
+          var lbl = C.dateFR(r.dateHeure) + ' : ' + (r.codeAnalyse || r.reference)
             + (r.etatAnalyse === 'rectifie' ? ' (rectifié v' + (r.version || 2) + ')' : '');
-          selA.appendChild(el('option', { value: String(i) }, lbl));
           selB.appendChild(el('option', { value: String(i) }, lbl));
         });
-        selA.value = String(mesures.length - 2);
-        selB.value = String(mesures.length - 1);
+        selB.value = String(liste.length - 1);
 
-        var deux = el('div.card');
-        deux.appendChild(el('div.card-body.grid.gap-3.md:grid-cols-2', null, [
-          el('div', null, [el('label.label', { text: 'Antériorité (colonne gauche)' }), selA]),
-          el('div', null, [el('label.label', { text: 'Mesure comparée (colonne droite)' }), selB]),
+        var choix = el('div.card');
+        choix.appendChild(el('div.card-body.flex.flex-wrap.items-end.gap-3', null, [
+          el('div.min-w-\[16rem\]', null, [el('label.label', { text: 'Mesure comparée' }), selB]),
+          el('p.text-xs.text-slate-500.max-w-md', { text: 'Ses antériorités sont les ' + NB_ANTERIORITES + ' mesures rendues qui la précèdent, de la plus ancienne à la plus récente.' }),
+          K.btn('Imprimer le comparatif', { icon: 'printer', onclick: function () { imprimer(); } }),
         ]));
-        zone.appendChild(deux);
+        zone.appendChild(choix);
         var tableau = el('div');
         zone.appendChild(tableau);
-        [selA, selB].forEach(function (x) { x.addEventListener('change', peindre); });
+        selB.addEventListener('change', peindre);
+        var courant = null;
         peindre();
 
         function peindre() {
           C.clear(tableau);
-          var a = mesures[+selA.value], b = mesures[+selB.value];
-          if (!a || !b) return;
-          var variables = variablesDe(code).filter(function (v) { return v.actif !== false && !v.accompagnement; });
-          var t = el('table.tbl');
-          t.appendChild(el('thead', null, el('tr', null, [
-            el('th', { text: 'Variable' }),
-            el('th.text-right', { text: C.dateFR(a.dateHeure) }),
-            el('th.text-right', { text: C.dateFR(b.dateHeure) }),
-            el('th.text-right', { text: 'Évolution' }),
-            el('th.text-right', { text: 'Références' }),
-          ])));
+          var b = liste[+selB.value];
+          if (!b) return;
+          var mod = courant = modeleComparatif(code, b);
+          if (!mod.anterieures.mesures.length) {
+            tableau.appendChild(U.empty('Cette mesure est la plus ancienne rendue : aucune antériorité. Choisir une mesure plus récente.', { icon: 'history' }));
+            U.icons(tableau);
+            return;
+          }
+          var nb = mod.colonnes.length;
+          var t = el('table.tbl', { 'data-comparatif': code });
+          t.appendChild(el('thead', null, el('tr', null, [el('th', { text: 'Variable' })]
+            .concat(mod.colonnes.map(function (m, i) {
+              return el('th.text-right', { 'data-col': i === nb - 1 ? 'b' : 'a' + i }, [
+                el('span', { text: C.dateFR(m.dateHeure) }),
+                el('p.text-[10px].font-normal.text-slate-400', { text: i === nb - 1 ? 'Mesure comparée' : 'Antériorité ' + (i + 1) }),
+              ]);
+            }))
+            .concat([
+              el('th.text-right', { text: 'Variation à la mesure précédente' }),
+              el('th.text-right', { text: 'Références (mesure comparée)' }),
+              el('th', { text: 'Tendance' }),
+            ]))));
           var tb = el('tbody');
-          variables.forEach(function (v) {
-            var va = (a.valeurs || {})[v.code], vb = (b.valeurs || {})[v.code];
-            if ((va == null || va === '') && (vb == null || vb === '')) return;
-            var eA = L.ecart(variableALaDate(v, a.dateHeure), va);
-            var eB = L.ecart(variableALaDate(v, b.dateHeure), vb);
-            var u = symbole(v.unite);
-            var suffixe = u === '—' ? '' : ' ' + u;
-            var delta = null;
-            if (v.type === 'numerique' && va !== '' && vb !== '' && va != null && vb != null
-              && !isNaN(Number(va)) && !isNaN(Number(vb))) {
-              delta = Number(vb) - Number(va);
+          mod.lignes.forEach(function (ligne) {
+            var v = ligne.variable;
+            var refB = ligne.cellules[nb - 1].reference;
+            var cells = [el('td', null, el('p.text-sm', {
+              class: v.parent ? 'pl-4 text-slate-600' : 'font-medium text-slate-800',
+              text: (v.parent ? '↳ ' : '') + v.libelle,
+            }))];
+            ligne.cellules.forEach(function (c, i) {
+              var enfant = [el('span.text-sm', { class: c.ecart ? 'font-bold text-danger-700' : 'text-slate-700', text: texteCellule(ligne, c) })];
+              /* Chaque antériorité est jugée aux bornes de SON époque : quand elles diffèrent de celles de la mesure comparée, la cellule les nomme. */
+              if (i < nb - 1 && !valeurVide(c.valeur) && c.reference && c.reference !== refB) {
+                enfant.push(el('p.text-[10px].text-slate-400', { 'data-reference-epoque': '', text: 'réf. ' + c.reference }));
+              }
+              cells.push(el('td.text-right', { 'data-var': v.code, 'data-col': i === nb - 1 ? 'b' : 'a' + i, 'data-hors': c.ecart ? '1' : '0' }, enfant));
+            });
+            var ton = !ligne.variation ? 'text-slate-400'
+              : (ligne.variation.sens === 'hausse' ? 'text-danger-700' : (ligne.variation.sens === 'baisse' ? 'text-info-700' : 'text-slate-500'));
+            var cVar = el('td.text-right', { 'data-var': v.code, 'data-col': 'variation' }, [
+              el('span.text-xs.font-medium', { class: ton, text: texteVariation(ligne.variation, ligne.suffixe) }),
+            ]);
+            if (ligne.variation && ligne.precedente && ligne.precedente !== mod.anterieures.mesures[mod.anterieures.mesures.length - 1]) {
+              cVar.appendChild(el('p.text-[10px].text-slate-400', { text: 'à la mesure du ' + C.dateFR(ligne.precedente.dateHeure) }));
             }
-            tb.appendChild(el('tr', null, [
-              el('td', null, el('p.text-sm', {
-                class: v.parent ? 'pl-4 text-slate-600' : 'font-medium text-slate-800',
-                text: (v.parent ? '↳ ' : '') + v.libelle,
-              })),
-              el('td.text-right', null, el('span.text-sm', {
-                class: eA ? 'font-bold text-danger-700' : 'text-slate-700',
-                text: va == null || va === '' ? '—' : String(va) + suffixe,
-              })),
-              el('td.text-right', null, el('span.text-sm', {
-                class: eB ? 'font-bold text-danger-700' : 'text-slate-700',
-                text: vb == null || vb === '' ? '—' : String(vb) + suffixe,
-              })),
-              el('td.text-right', null, delta == null
-                ? el('span.text-xs.text-slate-300', { text: '—' })
-                : el('span.text-xs.font-medium', {
-                  class: delta > 0 ? 'text-danger-700' : (delta < 0 ? 'text-info-700' : 'text-slate-500'),
-                  text: (delta > 0 ? '↑ +' : (delta < 0 ? '↓ ' : '= ')) + (Math.round(delta * 100) / 100) + suffixe,
-                })),
-              el('td.text-right', null, el('span.text-xs.text-slate-500', {
-                text: referenceALaDate(v, b.dateHeure) || '—',
-              })),
-            ]));
+            cells.push(cVar);
+            cells.push(el('td.text-right', null, el('span.text-xs.text-slate-500', { text: refB || '—' })));
+            var tend = el('td');
+            if (v.type === 'numerique') {
+              var bt = K.iconBtn('line-chart', 'Courbe de tendance de ' + v.libelle, function () { ouvrirTendance(selPatient.value, code, v); });
+              bt.setAttribute('data-tendance', v.code);
+              tend.appendChild(bt);
+            }
+            cells.push(tend);
+            tb.appendChild(el('tr', null, cells));
           });
           t.appendChild(tb);
-          tableau.appendChild(el('div.card', null,
-            el('div.overflow-x-auto', null, t)));
-          tableau.appendChild(K.note('L’<strong>évolution</strong> se lit de gauche à droite. Les valeurs en '
+          tableau.appendChild(el('div.card', null, el('div.overflow-x-auto', null, t)));
+          tableau.appendChild(K.note('Les colonnes se lisent de gauche à droite, de la plus ancienne à la mesure comparée. Les valeurs en '
             + 'gras sont hors des références <strong>de leur époque</strong> : chaque colonne se compare aux '
-            + 'bornes du lot de réactif en service à sa date.', { tone: 'info', icon: 'git-compare-arrows' }));
+            + 'bornes du lot de réactif en service à sa date. Une valeur qualitative se compare en texte, sans pourcentage ; '
+            + 'un pourcentage n’est calculé que sur une valeur précédente non nulle.', { tone: 'info', icon: 'git-compare-arrows' }));
           U.icons(tableau);
+        }
+
+        function imprimer() {
+          if (!courant) return;
+          var mod = courant, b = mod.comparee, nb = mod.colonnes.length;
+          var cols = [{ label: 'Variable', value: function (l) { return l.variable.libelle; } }];
+          mod.colonnes.forEach(function (m, i) {
+            cols.push({ label: C.dateFR(m.dateHeure) + (i === nb - 1 ? ' (comparée)' : ''), align: 'right', value: function (l) { return texteCellule(l, l.cellules[i]); } });
+          });
+          cols.push({ label: 'Variation à la mesure précédente', value: function (l) { return texteVariation(l.variation, l.suffixe); } });
+          cols.push({ label: 'Références', value: function (l) { return l.cellules[nb - 1].reference || '—'; } });
+          var pat = patients().filter(function (x) { return x.id === b.patientId; })[0];
+          P.etat({
+            titre: 'Comparatif des résultats',
+            sousTitre: b.analyse + ' : ' + (pat ? pat.nom + ' ' + pat.prenom : b.patient),
+            cartouche: [['Patient', b.patient], ['Dossier', b.patientCode], ['Mesure comparée', C.dateFR(b.dateHeure)],
+              ['Antériorités', C.num(mod.anterieures.mesures.length)], ['Établi par', S.currentUser()], ['Date d’édition', C.dateFR(AUJ)]],
+            contenu: el('div.space-y-3', null, [
+              P.tableau(cols, mod.lignes),
+              el('p.mt-3.text-\[10px\].italic', { text: 'Seules les mesures rendues (validées biologiquement) et lisibles par le profil qui édite entrent dans ce comparatif.'
+                + (mod.anterieures.masquees ? ' ' + C.num(mod.anterieures.masquees) + ' antériorité(s) hors du périmètre de ce profil ne sont pas reprises.' : '') }),
+            ]),
+            signatures: [{ role: 'Le Biologiste médical' }],
+          });
         }
       }
     },

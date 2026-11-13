@@ -94,8 +94,9 @@
       return {
         label: s.label, data: s.data, borderColor: col,
         backgroundColor: s.fill === false ? 'transparent' : col + '22',
-        fill: s.fill !== false, tension: 0.35, borderWidth: 2,
-        pointRadius: 0, pointHoverRadius: 4, pointBackgroundColor: col,
+        fill: s.fill !== false, tension: s.tension != null ? s.tension : 0.35, borderWidth: 2,
+        pointRadius: s.points ? 4 : 0, pointHoverRadius: 5, pointBackgroundColor: col,
+        borderDash: s.dash ? [6, 4] : [], spanGaps: !!s.relier,
       };
     });
     return build('line', labels, ds, opts, (opts && opts.height) || 260);

@@ -806,6 +806,67 @@ async function viderMessages(page) {
     return { dest, src, copieDe, ouvrirTaches, lignesRegistre, carte, executer, api, tache, cles, alerte, compte, cli, manifeste, nomsManifeste, donnees, intacts, alterer, vieillir, deposerScan, hors, autreDisque, os, zlib };
   })();
 
+  /* --- Outils des lots A1 et A2 (Vagues 163 et suivantes) : antériorités et seuils de variation brutale. Déclarés dans le PRÉAMBULE (un outil posé entre deux scénarios serait retiré par `--seul`).
+         Aucun patient du jeu ne porte deux mesures rendues d'un même examen : chaque scénario sème SES patients de sonde (code CNT/A1…/40) et SES mesures, par le magasin, avant d'ouvrir l'écran. --- */
+  const outilsAnt = (() => {
+    const ADMIN = { role: 'admin', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui', fonction: 'direction', secteur: 'ADM' };
+    const MEDECIN = { role: 'medecin', fonction: 'medecin', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui', secteur: 'MED' };
+    const SAGE_FEMME = { role: 'infirmier', fonction: 'sage_femme', nom: 'BADO BANI Z.', nomComplet: 'BADO BANI Z.', identifiant: 'z.bado', secteur: 'MAT' };
+    const BIOLOGISTE = { role: 'laborantin', fonction: 'biologiste', nom: 'GARBA Yahouza', nomComplet: 'GARBA Yahouza', identifiant: 'y.garba', secteur: 'LAB' };
+    /** Sème un patient de sonde et ses mesures d'un examen. mesure = { date, etat, valeurs, secteur?, valideLe? }. Rend { patientId, ids }. */
+    const semer = (cle, examen, designation, mesures) => page.evaluate((cle, examen, designation, mesures) => {
+      const S = window.SIGH.store;
+      const pat = S.collection('patients', { module: 'M1', entite: 'Patient' }).insert({ code: 'CNT/A1' + cle + '/40', nom: 'ANTER' + cle, prenom: 'Sonde', sexe: 'F', statut: 'actif', dateNaissance: '1985-03-12' }).record;
+      const col = S.collection('demandesAnalyses', { module: 'M5', entite: 'demande', prefix: 'DEM' });
+      const ids = mesures.map((m, i) => {
+        const rendu = m.etat === 'valide' || m.etat === 'rectifie';
+        const fiche = {
+          patientId: pat.id, patient: pat.nom + ' ' + pat.prenom, patientCode: pat.code, analyse: designation, analyseCode: examen, examenCode: examen,
+          dateHeure: m.date + 'T09:00:00', reference: 'LAB-A1' + cle + i, codeAnalyse: 'A1' + cle + '-' + i, etatAnalyse: m.etat, valeurs: m.valeurs,
+          secteurDemandeur: m.secteur || 'Consultation', prescripteur: 'TAKI Orou', laborantin: 'GARBA Yahouza', origine: 'sonde A1', statutPaiement: 'soldee',
+          valideTechniqueLe: m.date + 'T10:00:00.000Z', valideTechniquePar: 'GARBA Yahouza', resultat: 'sonde', conclusion: 'Normal',
+        };
+        if (rendu) { fiche.valideLe = m.valideLe || (m.date + 'T12:00:00.000Z'); fiche.valideBiologiquePar = 'GARBA Yahouza'; }
+        return col.insert(fiche).record.id;
+      });
+      return { patientId: pat.id, ids };
+    }, cle, examen, designation, mesures);
+    /** Choisit le patient (liste à recherche : clic puis option) puis l'examen, sur le comparatif. */
+    async function choisir(patientId, examen) {
+      await page.evaluate(() => document.querySelector('#page-content .combo-input').click());
+      await pause(200);
+      await page.evaluate((id) => { const o = document.querySelector('.combo-option[data-value="' + id + '"]'); if (o) o.click(); }, patientId);
+      await pause(300);
+      await page.select('#page-content select.select:not([data-mesure-comparee])', examen);
+      await pause(500);
+    }
+    /** Choisit la mesure comparée (rang dans la liste des mesures rendues, de la plus ancienne à la plus récente). */
+    async function comparer(rang) {
+      await page.select('#page-content select[data-mesure-comparee]', String(rang));
+      await pause(400);
+    }
+    /** Ce que le comparatif affiche : en-têtes de colonne, et par variable les cellules et la variation. */
+    const lire = () => page.evaluate(() => {
+      const t = document.querySelector('[data-comparatif]');
+      if (!t) return { table: false, texte: document.getElementById('page-content').innerText.replace(/\s+/g, ' ') };
+      const cols = [...t.querySelectorAll('thead th[data-col]')].map((th) => ({ col: th.getAttribute('data-col'), date: th.querySelector('span').textContent }));
+      const lignes = {};
+      [...t.querySelectorAll('tbody tr')].forEach((tr) => {
+        const cells = [...tr.querySelectorAll('td[data-var]')]; if (!cells.length) return;
+        const v = cells[0].getAttribute('data-var'); const o = { cellules: {} };
+        cells.forEach((td) => {
+          const c = td.getAttribute('data-col');
+          if (c === 'variation') { o.variation = td.textContent.replace(/\s+/g, ' ').trim(); o.alerte = !!td.querySelector('[data-alerte-variation]'); o.alerteTexte = (td.querySelector('[data-alerte-variation]') || { textContent: '' }).textContent.replace(/\s+/g, ' ').trim(); }
+          else o.cellules[c] = { texte: td.querySelector('span').textContent.trim(), hors: td.getAttribute('data-hors') === '1', ref: (td.querySelector('[data-reference-epoque]') || { textContent: null }).textContent };
+        });
+        o.tendance = !!tr.querySelector('[data-tendance]');
+        lignes[v] = o;
+      });
+      return { table: true, cols, lignes, texte: t.textContent.replace(/\s+/g, ' ') };
+    });
+    return { ADMIN, MEDECIN, SAGE_FEMME, BIOLOGISTE, semer, choisir, comparer, lire };
+  })();
+
 
   await etape(async () => {
     scenario('M1 — Cycle de vie complet d’un dossier patient');
@@ -24813,6 +24874,264 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', e162.length === 0, e162.join(' | '));
   });
   /* SAUV-F FIN */
+
+  /* ==========================================================================
+   * LOT A1 : ANTÉRIORITÉS (Vagues 163 à 166). Les sondes partent du geste réel : choisir un patient, un examen, une mesure comparée, cliquer la courbe, imprimer.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 163 : A1 comparatif : jusqu’à trois antériorités RENDUES en ordre chronologique (une saisie non validée n’y entre jamais), variation à la mesure précédente (sens, écart, pourcentage), texte pour le qualitatif, division par zéro dite');
+    erreursJS = [];
+    const A = outilsAnt;
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-demandes.html');
+    const NFS = 'NFS complète (hémogramme)', CRP = 'Protéine C-réactive (CRP)';
+    const p1 = await A.semer('P1' + Date.now() % 100000, 'NFS', NFS, [
+      { date: '2026-04-01', etat: 'valide', valeurs: { GB: 4.2, HB: 13 } },
+      { date: '2026-05-02', etat: 'valide', valeurs: { GB: 5, HB: 12 } },
+      { date: '2026-06-10', etat: 'valide', valeurs: { GB: 6, HB: 12.5 } },
+      { date: '2026-07-05', etat: 'valide', valeurs: { GB: 6, HB: 11 } },
+      { date: '2026-07-20', etat: 'valide_technique', valeurs: { GB: 55, HB: 5 } },
+      { date: '2026-08-01', etat: 'valide', valeurs: { GB: 7.5, HB: 10, GR: 4.5 } },
+      { date: '2026-08-10', etat: 'valide_technique', valeurs: { GB: 99, HB: 1 } },
+    ]);
+    const p2 = await A.semer('P2' + Date.now() % 100000, 'CRP', CRP, [
+      { date: '2026-06-01', etat: 'valide', valeurs: { CRPQ: 'Négatif', CRPT: 0 } },
+      { date: '2026-07-01', etat: 'valide', valeurs: { CRPQ: 'Positif', CRPT: 12 } },
+      { date: '2026-08-01', etat: 'valide', valeurs: { CRPQ: 'Positif', CRPT: 12 } },
+    ]);
+    await attendreEcritures();
+    await poserSessionServeur(A.MEDECIN);
+    await ouvrir('m5-resultats-comparatif.html');
+    await A.choisir(p1.patientId, 'NFS');
+    let l = await A.lire();
+    const dates = l.table ? l.cols.map((c) => c.date) : [];
+    verifier('Le comparatif porte TROIS antériorités rendues puis la mesure comparée, de la plus ancienne à la plus récente (la plus ancienne des quatre rendues, hors des trois, n’y figure pas)',
+      l.table && JSON.stringify(l.cols.map((c) => c.col)) === '["a0","a1","a2","b"]' && JSON.stringify(dates) === '["02/05/2026","10/06/2026","05/07/2026","01/08/2026"]', JSON.stringify(l.cols || l.texte));
+    verifier('Les valeurs sont celles des mesures RENDUES : GB 5, 6, 6 puis 7.5 ; la mesure du 01/04 (quatrième antériorité) n’est pas là',
+      l.table && ['a0', 'a1', 'a2', 'b'].map((c) => l.lignes.GB.cellules[c].texte).join('|') === '5 G/l|6 G/l|6 G/l|7.5 G/l' && l.texte.indexOf('01/04/2026') < 0 && l.texte.indexOf('4.2') < 0, JSON.stringify(l.lignes && l.lignes.GB));
+    verifier('Une saisie NON VALIDÉE n’entre jamais : ni la mesure du 20/07 (avant la comparée, valeur 55), ni celle du 10/08 (valeur 99) ne paraissent, en colonne comme en variation',
+      l.table && l.texte.indexOf('20/07/2026') < 0 && l.texte.indexOf('10/08/2026') < 0 && !/\b55\b/.test(l.texte) && !/\b99\b/.test(l.texte) && /\+1\.5/.test(l.lignes.GB.variation), l.texte.slice(0, 300));
+    verifier('Variation numérique à la mesure précédente : sens, écart et pourcentage (GB 6 vers 7.5 : « ↑ +1.5 (+25.0 %) », HB 11 vers 10 : « ↓ -1 (-9.1 %) »)',
+      l.table && l.lignes.GB.variation === '↑ +1.5 G/l (+25.0 %)' && l.lignes.HB.variation === '↓ -1 g/dl (-9.1 %)', JSON.stringify([l.lignes.GB.variation, l.lignes.HB.variation]));
+    verifier('Une variable mesurée une seule fois dit « Aucune antériorité » (GR), jamais un blanc ni un zéro', l.table && l.lignes.GR && l.lignes.GR.variation === 'Aucune antériorité', JSON.stringify(l.lignes && l.lignes.GR));
+    verifier('Une valeur hors bornes est en gras sur sa seule colonne (HB 10 sous 11, la valeur 11 du 05/07 n’est pas hors bornes)',
+      l.table && l.lignes.HB.cellules.b.hors === true && l.lignes.HB.cellules.a2.hors === false && l.lignes.HB.cellules.a0.hors === false, JSON.stringify(l.lignes && l.lignes.HB));
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => /Imprimer le comparatif/.test(x.textContent)); if (b) b.click(); });
+    const imp = await outilsDocs.attendre(() => !!document.querySelector('.print-chrome .print-sheet'));
+    const feuilleC = await page.evaluate(() => { const sh = document.querySelector('.print-chrome .print-sheet'); return sh ? { texte: sh.textContent.replace(/\s+/g, ' '), entetes: [...sh.querySelectorAll('thead th')].map((th) => th.textContent.trim()) } : null; });
+    await page.evaluate(() => { const b = [...document.querySelectorAll('.print-chrome button')].find((x) => /Fermer/.test(x.textContent)); if (b) b.click(); });
+    verifier('Le comparatif s’imprime avec les mêmes colonnes que l’écran (quatre dates, variation, références), sans la saisie non validée',
+      imp && feuilleC && feuilleC.entetes.slice(1, 5).join('|') === '02/05/2026|10/06/2026|05/07/2026|01/08/2026 (comparée)' && /↑ \+1\.5 G\/l \(\+25\.0 %\)/.test(feuilleC.texte) && !/\b55\b|\b99\b/.test(feuilleC.texte), JSON.stringify(feuilleC && feuilleC.entetes));
+    await A.comparer(2);
+    l = await A.lire();
+    verifier('Choisir une mesure plus ancienne comme mesure comparée change ses antériorités : il n’en reste que deux (01/04 et 02/05), la variation se lit alors à la mesure du 02/05 (GB 5 vers 6 : « ↑ +1 (+20.0 %) »)',
+      l.table && JSON.stringify(l.cols.map((c) => c.col)) === '["a0","a1","b"]' && l.lignes.GB.variation === '↑ +1 G/l (+20.0 %)', JSON.stringify([l.cols, l.lignes && l.lignes.GB]));
+    await A.comparer(0);
+    l = await A.lire();
+    verifier('La mesure la plus ancienne n’a aucune antériorité : l’écran le dit au lieu d’un tableau vide', !l.table && /plus ancienne rendue : aucune antériorité/.test(l.texte), l.texte.slice(-200));
+    await A.comparer(4);
+
+    await A.choisir(p2.patientId, 'CRP');
+    await A.comparer(1);
+    l = await A.lire();
+    verifier('Une valeur QUALITATIVE se compare en texte (« Négatif puis Positif »), sans aucun pourcentage',
+      l.table && l.lignes.CRPQ.variation === 'Négatif puis Positif' && !/%/.test(l.lignes.CRPQ.variation) && l.lignes.CRPQ.tendance === false, JSON.stringify(l.lignes && l.lignes.CRPQ));
+    verifier('Une valeur précédente NULLE ne se divise pas : « écart relatif non calculable : valeur précédente nulle », aucun pourcentage affiché (jamais un nombre inventé)',
+      l.table && /écart relatif non calculable : valeur précédente nulle/.test(l.lignes.CRPT.variation) && !/%/.test(l.lignes.CRPT.variation) && !/Infinity|NaN/.test(l.texte), JSON.stringify(l.lignes && l.lignes.CRPT));
+    await A.comparer(2);
+    l = await A.lire();
+    verifier('Deux mesures qualitatives identiques : « Inchangé (Positif) » ; deux numériques égales : « = 0 » (écart nul, 0.0 %)',
+      l.table && l.lignes.CRPQ.variation === 'Inchangé (Positif)' && /^= 0 \S+ \(0\.0 %\)$/.test(l.lignes.CRPT.variation), JSON.stringify(l.lignes));
+    const ent = await page.evaluate(() => Object.keys(window.SIGH.laboAnteriorites));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+    verifier('Le moteur des antériorités est exposé pour être sondé (il n’est pas recopié)', ent.indexOf('anterieuresDe') >= 0 && ent.indexOf('variationEntre') >= 0);
+    await poserSessionServeur(A.ADMIN);
+  });
+
+  await etape(async () => {
+    scenario('Vague 164 : A1 périmètre et époque : on ne compare que ce que le profil a le droit de voir (l’écran dit ce qu’il ne montre pas et pourquoi), chaque colonne se juge aux bornes de SON époque');
+    erreursJS = [];
+    const A = outilsAnt;
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-demandes.html');
+    const NFS = 'NFS complète (hémogramme)';
+    const p3 = await A.semer('P3' + Date.now() % 100000, 'NFS', NFS, [
+      { date: '2026-06-01', etat: 'valide', valeurs: { GB: 5 }, secteur: 'Maternité' },
+      { date: '2026-07-01', etat: 'valide', valeurs: { GB: 6.5 }, secteur: 'Consultation' },
+      { date: '2026-08-01', etat: 'valide', valeurs: { GB: 7 }, secteur: 'Maternité' },
+    ]);
+    const p4 = await A.semer('P4' + Date.now() % 100000, 'NFS', NFS, [
+      { date: '2026-07-01', etat: 'valide', valeurs: { GB: 8.5 } },
+      { date: '2026-08-01', etat: 'valide', valeurs: { GB: 8.5 } },
+    ]);
+    const plage = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      return S.collection('plagesReactif', { module: 'M5', entite: 'plage de référence', prefix: 'PLG' }).insert({
+        variableId: 'VAR-NFS-GB', variableLibelle: 'Globules blancs', examenLibelle: 'NFS complète (hémogramme)', examen: 'NFS',
+        lot: 'LOT-A1', dateDebut: '2026-07-15', min: 4, max: 9, source: 'Sonde A1',
+      }).record.id;
+    });
+    await attendreEcritures();
+
+    /* Le médecin voit tout : les trois mesures rendues. */
+    await poserSessionServeur(A.MEDECIN);
+    await ouvrir('m5-resultats-comparatif.html');
+    await A.choisir(p3.patientId, 'NFS');
+    let l = await A.lire();
+    verifier('Le médecin (accès à tous les résultats) compare les trois mesures : deux antériorités (6.5 de la consultation comprise)',
+      l.table && l.cols.length === 3 && l.lignes.GB.cellules.a1.texte === '6.5 G/l', JSON.stringify(l.cols));
+
+    /* La sage-femme ne voit que le résultat de son secteur : celui de la consultation est hors de son périmètre. */
+    await poserSessionServeur(A.SAGE_FEMME);
+    await ouvrir('m5-resultats-comparatif.html');
+    await A.choisir(p3.patientId, 'NFS');
+    l = await A.lire();
+    const note = await page.evaluate(() => document.getElementById('page-content').innerText.replace(/\s+/g, ' '));
+    verifier('La sage-femme ne compare que sa maternité : une seule antériorité (5 G/l du 01/06), la mesure de la consultation (6.5) n’apparaît ni en colonne, ni en variation',
+      l.table && JSON.stringify(l.cols.map((c) => c.date)) === '["01/06/2026","01/08/2026"]' && l.texte.indexOf('6.5') < 0 && l.lignes.GB.variation === '↑ +2 G/l (+40.0 %)', JSON.stringify([l.cols, l.lignes && l.lignes.GB]));
+    verifier('L’écran DIT ce qu’il ne montre pas et pourquoi : « 1 mesure(s) rendue(s) de cet examen sont hors de votre périmètre » avec le motif du RBAC métier',
+      /1 mesure\(s\) rendue\(s\) de cet examen sont hors de votre périmètre/.test(note) && /hors de son périmètre/.test(note), note.slice(0, 400));
+
+    /* Un profil qui n'a droit à aucun résultat (infirmier) n'a aucun patient à comparer. */
+    await poserSessionServeur({ role: 'infirmier', fonction: 'infirmier', nom: 'SONDE A1 infirmier', nomComplet: 'SONDE A1 infirmier', identifiant: 's.a1.inf', secteur: 'SOI' });
+    await ouvrir('m5-resultats-comparatif.html');
+    await page.evaluate(() => document.querySelector('#page-content .combo-input').click());
+    await pause(200);
+    const options = await page.evaluate((id) => ({ cible: !!document.querySelector('.combo-option[data-value="' + id + '"]'), n: document.querySelectorAll('.combo-option').length }), p3.patientId);
+    verifier('Un profil sans droit sur les résultats (infirmier) ne trouve aucun patient à comparer : le droit d’ouvrir l’écran n’est pas le droit de lire les résultats', !options.cible && options.n === 0, JSON.stringify(options));
+    await page.keyboard.press('Escape');
+
+    /* Chaque colonne se juge aux bornes de SON époque (plages par lot datées). */
+    await poserSessionServeur(A.MEDECIN);
+    await ouvrir('m5-resultats-comparatif.html');
+    await A.choisir(p4.patientId, 'NFS');
+    l = await A.lire();
+    verifier('La mesure du 01/07 (8.5) est HORS bornes aux bornes de son époque (4 à 8) ; celle du 01/08 (8.5) ne l’est pas aux bornes du lot en service (4 à 9)',
+      l.table && l.lignes.GB.cellules.a0.hors === true && l.lignes.GB.cellules.b.hors === false, JSON.stringify(l.lignes && l.lignes.GB));
+    verifier('L’antériorité nomme les bornes de son époque quand elles diffèrent de celles de la mesure comparée (« réf. 4 - 8 »)',
+      l.table && l.lignes.GB.cellules.a0.ref === 'réf. 4 - 8', JSON.stringify(l.lignes && l.lignes.GB.cellules.a0));
+
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-demandes.html');
+    await page.evaluate((id) => { window.SIGH.store.collection('plagesReactif').archive(id, 'sonde A1'); }, plage);
+    await attendreEcritures();
+    const reste = await page.evaluate(() => window.SIGH.store.collection('plagesReactif').active().some((p) => p.lot === 'LOT-A1'));
+    verifier('La sonde ne laisse aucune plage de lot dans le paramétrage', reste === false);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+
+  await etape(async () => {
+    scenario('Vague 165 : A1 courbe de tendance par variable (toutes les mesures rendues, jamais une saisie non validée, aucune couleur en dur) et colonne « Antériorités » de la fiche IMPRIMÉE remplie (jamais un blanc), dans le périmètre du RBAC');
+    erreursJS = [];
+    const A = outilsAnt;
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-demandes.html');
+    const NFS = 'NFS complète (hémogramme)';
+    const cle1 = 'P5' + Date.now() % 100000;
+    const p1 = await A.semer(cle1, 'NFS', NFS, [
+      { date: '2026-04-01', etat: 'valide', valeurs: { GB: 4.2, HB: 13 } },
+      { date: '2026-05-02', etat: 'valide', valeurs: { GB: 5, HB: 12 } },
+      { date: '2026-06-10', etat: 'valide', valeurs: { GB: 6, HB: 12.5 } },
+      { date: '2026-07-05', etat: 'valide', valeurs: { GB: 6, HB: 11 } },
+      { date: '2026-07-20', etat: 'valide_technique', valeurs: { GB: 55, HB: 5 } },
+      { date: '2026-08-01', etat: 'valide', valeurs: { GB: 7.5, HB: 10, GR: 4.5 } },
+      { date: '2026-08-10', etat: 'valide_technique', valeurs: { GB: 99, HB: 1 } },
+    ]);
+    const cle3 = 'P6' + Date.now() % 100000;
+    const p3 = await A.semer(cle3, 'NFS', NFS, [
+      { date: '2026-06-01', etat: 'valide', valeurs: { GB: 5 }, secteur: 'Maternité' },
+      { date: '2026-07-01', etat: 'valide', valeurs: { GB: 6.5 }, secteur: 'Consultation' },
+      { date: '2026-08-01', etat: 'valide', valeurs: { GB: 7 }, secteur: 'Maternité' },
+    ]);
+    await attendreEcritures();
+
+    /* --- La courbe, depuis le comparatif --------------------------------------------------------------------------------------------------------------------- */
+    await poserSessionServeur(A.MEDECIN);
+    await ouvrir('m5-resultats-comparatif.html');
+    await A.choisir(p1.patientId, 'NFS');
+    const l = await A.lire();
+    verifier('Le bouton de courbe est offert aux variables NUMÉRIQUES (GB, HB), pas aux qualitatives', l.table && l.lignes.GB.tendance === true && l.lignes.HB.tendance === true, JSON.stringify(Object.keys(l.lignes || {})));
+    await page.evaluate(() => document.querySelector('[data-tendance="GB"]').click());
+    const ok = await outilsDocs.attendre(() => { const c = document.querySelector('[data-tendance-courbe="GB"] canvas'); return !!(c && window.Chart && window.Chart.getChart(c)); });
+    const courbe = await page.evaluate(() => {
+      const c = document.querySelector('[data-tendance-courbe="GB"] canvas');
+      const g = c && window.Chart.getChart(c);
+      if (!g) return null;
+      const lignes = [...document.querySelectorAll('[data-tendance-valeurs="GB"] tbody tr')].map((tr) => tr.textContent.replace(/\s+/g, ' ').trim());
+      return { labels: g.data.labels, series: g.data.datasets.map((d) => ({ label: d.label, data: d.data, pointilles: (d.borderDash || []).length > 0, couleur: !!d.borderColor })), lignes, texte: document.body.innerText };
+    });
+    verifier('La courbe de GB reprend TOUTES les mesures rendues du patient (cinq, au-delà des trois antériorités de l’écran), dans l’ordre chronologique',
+      ok && courbe && JSON.stringify(courbe.labels) === '["01/04/2026","02/05/2026","10/06/2026","05/07/2026","01/08/2026"]' && JSON.stringify(courbe.series[0].data) === '[4.2,5,6,6,7.5]', JSON.stringify(courbe));
+    verifier('Aucune saisie non validée n’y figure (ni 55 du 20/07, ni 99 du 10/08), et le tableau des valeurs sous la courbe compte cinq lignes',
+      courbe && !courbe.series[0].data.some((x) => x === 55 || x === 99) && courbe.lignes.length === 5 && courbe.lignes[4].indexOf('7.5') >= 0, JSON.stringify(courbe && courbe.lignes));
+    verifier('Les bornes de référence de chaque époque sont tracées en pointillé (basse 4, haute 8) ; la couleur vient de la palette du design system',
+      courbe && courbe.series.length === 3 && courbe.series[1].pointilles && courbe.series[2].pointilles && courbe.series[1].data.every((x) => x === 4) && courbe.series[2].data.every((x) => x === 8) && courbe.series.every((s) => s.couleur), JSON.stringify(courbe && courbe.series));
+    await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Fermer' && x.offsetParent !== null); if (b) b.click(); });
+    await pause(300);
+
+    /* --- Aucune couleur en dur ni appel réseau dans le lot (lecture du source) ------------------------------------------------------------------------------- */
+    const src = fs.readFileSync(path.join(ROOT, 'assets/js/modules/m5-laboratoire.js'), 'utf8');
+    const bornes = [['ANTÉRIORITÉS D\'UN EXAMEN (lot A1', 'global.SIGH.laboAnteriorites = {'], ['COMPARATIF DES RÉSULTATS (lot A1', 'VUES PAR SERVICE DEMANDEUR']];
+    const blocs = bornes.map(([a, b]) => { const i = src.indexOf(a), j = src.indexOf(b, i); return i >= 0 && j > i ? src.slice(i, j) : ''; });
+    verifier('Aucune couleur en dur (#hex, rgb) ni appel réseau dans le moteur des antériorités et le comparatif', blocs.every((b) => b.length > 500 && !/#[0-9a-fA-F]{3,8}\b/.test(b) && !/rgba?\(/.test(b) && !/https?:|fetch\(|XMLHttpRequest/.test(b)), String(blocs.map((b) => b.length)));
+
+    /* --- La fiche imprimée : depuis « Rendus au prescripteur », l'icône « Compte rendu complet du patient » ouvre l'aperçu que Chrome imprime ----------------------------------- */
+    const imprimerFiche = async (profil, cle, date) => {
+      await poserSessionServeur(profil);
+      await ouvrir('m5-resultats.html');
+      await page.evaluate((d) => {
+        [...document.querySelectorAll('#page-content input[type=date]')].forEach((i) => { i.value = d; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); });
+      }, date);
+      await pause(600);
+      await page.evaluate(() => { const t = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab, #page-content button')].find((x) => /Rendus au prescripteur/.test(x.textContent)); if (t) t.click(); });
+      await pause(500);
+      const clic = await page.evaluate((c) => {
+        const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('ANTER' + c) >= 0);
+        if (!tr) return false;
+        const b = [...tr.querySelectorAll('button')].find((x) => /Compte rendu complet/.test(x.getAttribute('title') || ''));
+        if (!b) return false; b.click(); return true;
+      }, cle);
+      const diag = clic ? null : await page.evaluate(() => ({ url: location.pathname, tabs: [...document.querySelectorAll('#page-content [role=tab]')].map((x) => x.textContent.trim().slice(0, 40)), lignes: [...document.querySelectorAll('#page-content tbody tr')].slice(0, 3).map((x) => x.textContent.replace(/\s+/g, ' ').slice(0, 120)), dates: [...document.querySelectorAll('#page-content input[type=date]')].length }));
+      if (diag) console.log('\n  DIAG impression ' + JSON.stringify(diag));
+      const ouverte = clic && await outilsDocs.attendre(() => !!document.querySelector('.print-chrome .print-sheet [data-anteriorite]'));
+      const fiche = await page.evaluate(() => {
+        const sheet = document.querySelector('.print-chrome .print-sheet'); if (!sheet) return null;
+        /* La fiche en blocs : un bloc par examen imprimé (ligne d'intitulé à quatre colonnes fusionnées), ses lignes par variable. */
+        const blocs = []; let courant = null;
+        [...sheet.querySelectorAll('tbody tr')].forEach((tr) => {
+          const tds = tr.querySelectorAll('td');
+          if (tds.length === 1 && /NFS complète/.test(tds[0].textContent)) { courant = {}; blocs.push(courant); return; }
+          if (tds.length === 4 && courant) courant[tds[0].textContent.trim()] = { valeur: tds[1].textContent.trim(), ant: tds[3].textContent.trim() };
+        });
+        return { blocs, vides: [...sheet.querySelectorAll('td[data-anteriorite]')].filter((td) => !td.textContent.trim()).length, nb: sheet.querySelectorAll('td[data-anteriorite]').length,
+          texte: sheet.textContent.replace(/\s+/g, ' '), entete: [...sheet.querySelectorAll('th')].map((th) => th.textContent.trim()) };
+      });
+      await page.evaluate(() => { const b = [...document.querySelectorAll('.print-chrome button')].find((x) => /Fermer/.test(x.textContent)); if (b) b.click(); });
+      await pause(300);
+      return { clic, ouverte, fiche };
+    };
+    const parGB = (fiche, gb) => fiche.blocs.find((b) => b['Globules blancs'] && b['Globules blancs'].valeur === gb);
+    const rb = await imprimerFiche(A.BIOLOGISTE, cle1, '2026-08-01');
+    const fb = rb.fiche;
+    verifier('Le biologiste ouvre la fiche du patient : elle porte bien sa colonne « Antériorités »', rb.clic && rb.ouverte && fb && fb.entete.indexOf('Antériorités') >= 0, JSON.stringify([rb.clic, rb.ouverte, fb && fb.entete]));
+    const b75 = fb && parGB(fb, '7.5 G/l');
+    verifier('La colonne « Antériorités » porte la mesure et la date de l’antériorité RENDUE la plus récente, par variable : GB « 6 G/l (05/07/2026) », HB « 11 g/dl (05/07/2026) »',
+      b75 && b75['Globules blancs'].ant === '6 G/l (05/07/2026)' && b75['Hémoglobine'].ant === '11 g/dl (05/07/2026)', JSON.stringify(fb && fb.blocs));
+    verifier('Une saisie non validée (55 du 20/07, entre la dernière mesure rendue et la mesure du 01/08) n’est JAMAIS reprise comme antériorité : ni la mesure du 01/08, ni celle du 10/08 ne la citent',
+      b75 && b75['Globules blancs'].ant.indexOf('55') < 0 && (parGB(fb, '99 G/l') || {})['Globules blancs'].ant === '7.5 G/l (01/08/2026)' && (parGB(fb, '55 G/l') || {})['Globules blancs'].ant === '6 G/l (05/07/2026)', JSON.stringify(fb && fb.blocs));
+    verifier('Une variable sans antériorité (GR, mesurée une seule fois) imprime « Aucune antériorité », et aucune cellule de la colonne n’est vide',
+      b75 && b75['Globules rouges'] && b75['Globules rouges'].ant === 'Aucune antériorité' && fb.vides === 0 && fb.nb >= 6, JSON.stringify([b75 && b75['Globules rouges'], fb && fb.vides, fb && fb.nb]));
+
+    /* --- Le périmètre à l'impression : la sage-femme imprime SES mesures (maternité) ; l'antériorité de la consultation n'y est pas reprise --------------------------- */
+    const rs = await imprimerFiche(A.SAGE_FEMME, cle3, '2026-08-01');
+    const fs2 = rs.fiche;
+    const b7 = fs2 && parGB(fs2, '7 G/l');
+    verifier('La sage-femme n’imprime que ses mesures : l’antériorité est celle de la maternité (5 G/l du 01/06), la valeur 6.5 de la consultation n’est reprise nulle part sur la fiche',
+      rs.clic && rs.ouverte && b7 && b7['Globules blancs'].ant === '5 G/l (01/06/2026)' && fs2.texte.indexOf('6.5') < 0 && fs2.blocs.length === 2, JSON.stringify(fs2 && fs2.blocs));
+    verifier('La fiche dit ce qu’elle ne reprend pas : « 1 antériorité(s) hors du périmètre du profil qui édite ne sont pas reprises »', fs2 && /1 antériorité\(s\) hors du périmètre du profil qui édite ne sont pas reprises/.test(fs2.texte), fs2 && fs2.texte.slice(-300));
+    await poserSessionServeur(A.ADMIN);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
 
   await browser.close();
   server.close();
