@@ -1,0 +1,7379 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-fichiers.js : ne pas éditer. Maquette réelle pilotée dans Chrome, serveur PHP du banc, horloge 30/10/2026 10 h.",
+ "derives": {
+  "faux-camoufle.pdf": {
+   "source": null,
+   "remplissage": 0,
+   "octets": 3000,
+   "octet": 7
+  },
+  "vide.pdf": {
+   "source": null,
+   "remplissage": 0,
+   "octets": 0,
+   "octet": null
+  },
+  "png-nomme-pdf.pdf": {
+   "source": "scan.png",
+   "remplissage": 0,
+   "octets": null,
+   "octet": null
+  },
+  "jpeg-nomme-png.png": {
+   "source": "scan.jpg",
+   "remplissage": 0,
+   "octets": null,
+   "octet": null
+  },
+  "pdf-nomme-jpg.jpg": {
+   "source": "courrier-texte.pdf",
+   "remplissage": 0,
+   "octets": null,
+   "octet": null
+  },
+  "gros.pdf": {
+   "source": "courrier-texte.pdf",
+   "remplissage": 153600,
+   "octets": null,
+   "octet": null
+  }
+ },
+ "donnees": {
+  "FORMATS": [
+   {
+    "id": "pdf",
+    "libelle": "PDF",
+    "mime": "application/pdf",
+    "ext": [
+     "pdf"
+    ],
+    "familles": [
+     "courrier",
+     "patient"
+    ]
+   },
+   {
+    "id": "jpeg",
+    "libelle": "JPEG",
+    "mime": "image/jpeg",
+    "ext": [
+     "jpg",
+     "jpeg"
+    ],
+    "familles": [
+     "courrier",
+     "patient"
+    ]
+   },
+   {
+    "id": "png",
+    "libelle": "PNG",
+    "mime": "image/png",
+    "ext": [
+     "png"
+    ],
+    "familles": [
+     "courrier",
+     "patient"
+    ]
+   },
+   {
+    "id": "webp",
+    "libelle": "WEBP",
+    "mime": "image/webp",
+    "ext": [
+     "webp"
+    ],
+    "familles": [
+     "patient"
+    ]
+   }
+  ],
+  "TAILLE_DEFAUT": 10485760,
+  "TAILLE_PLANCHER": 102400,
+  "TAILLE_PLAFOND": 67108864,
+  "TYPES_PATIENT": [
+   {
+    "libelle": "Ordonnance",
+    "zone": 2
+   },
+   {
+    "libelle": "Résultat de laboratoire",
+    "zone": 2
+   },
+   {
+    "libelle": "Compte rendu médical",
+    "zone": 2
+   },
+   {
+    "libelle": "Consentement éclairé",
+    "zone": 2
+   },
+   {
+    "libelle": "Imagerie / Échographie",
+    "zone": 2
+   },
+   {
+    "libelle": "Bulletin d’hospitalisation",
+    "zone": 2
+   },
+   {
+    "libelle": "Facture",
+    "zone": 2
+   },
+   {
+    "libelle": "Pièce d’identité",
+    "zone": 1
+   },
+   {
+    "libelle": "Carte d’assurance",
+    "zone": 1
+   },
+   {
+    "libelle": "Certificat médical",
+    "zone": 2
+   }
+  ],
+  "ROLES_ZONE_2": [
+   "admin",
+   "dm",
+   "medecin",
+   "infirmier",
+   "chirurgien",
+   "anesthesiste"
+  ],
+  "FAMILLES": {
+   "courrier": {
+    "libelle": "Courriers",
+    "ecran": "m13-courriers"
+   },
+   "patient": {
+    "libelle": "Documents du dossier patient",
+    "ecran": "m1-documents"
+   }
+  }
+ },
+ "octets": [
+  {
+   "fichier": "scan.png",
+   "taille": 20527,
+   "sha256": "c30e21c2556f0936e16c76c8017b46825c0f4a31f805c2cc400934061f5a6eb2",
+   "format": "png"
+  },
+  {
+   "fichier": "scan.jpg",
+   "taille": 69227,
+   "sha256": "e265f247b46ab1df0ea07909b4047ecd64d3109ab874ca04e37925bde7ce6967",
+   "format": "jpeg"
+  },
+  {
+   "fichier": "scan.webp",
+   "taille": 32890,
+   "sha256": "48dffa55523fd199accb59a622ba6c43682bc8e4b8b9dbb0161118ab64ea878b",
+   "format": "webp"
+  },
+  {
+   "fichier": "courrier-texte.pdf",
+   "taille": 16151,
+   "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+   "format": "pdf"
+  },
+  {
+   "fichier": "trois-pages.pdf",
+   "taille": 14420,
+   "sha256": "dd8441dfde67d5ebc1a7a6284f8b3dfeaa93bfcb76214dc35e8a6146df121001",
+   "format": "pdf"
+  },
+  {
+   "fichier": "scan-image.pdf",
+   "taille": 12648,
+   "sha256": "b4c9d8c87bd6cc03bd0ddb7fc7b7d4c6439f688bf6acb9b0eebeed2981086c47",
+   "format": "pdf"
+  },
+  {
+   "fichier": "simple-winansi.pdf",
+   "taille": 498,
+   "sha256": "71c8c652981e5e8ef2fa48b90fb6b163d51c6cb07f03f07771ff0c70ca8e17da",
+   "format": "pdf"
+  },
+  {
+   "fichier": "simple-flate.pdf",
+   "taille": 510,
+   "sha256": "ddc964421ae0891417f21028949c8cee1fa0c17ce3331c9b4dcd9b1932bb9326",
+   "format": "pdf"
+  },
+  {
+   "fichier": "chiffre.pdf",
+   "taille": 209,
+   "sha256": "3d5b5bafe20268b1a734823a07454e4589eaacaa7fcdb8a4435f5f841dadf1d6",
+   "format": "pdf"
+  },
+  {
+   "fichier": "sans-objets.pdf",
+   "taille": 35,
+   "sha256": "08f5d476f7b284592db771aa9d59b2077a3025eb8b61b1e929f87fc2a2851d79",
+   "format": "pdf"
+  },
+  {
+   "fichier": "contenu-illisible.pdf",
+   "taille": 177,
+   "sha256": "d38c97f36c15f141fbdf6a4fe72b315babab3e84b3ec6aed7feeed0925fb9cfb",
+   "format": "pdf"
+  },
+  {
+   "fichier": "faux.exe",
+   "taille": 2002,
+   "sha256": "39cae4e292e4265aeb5022b13434d6f5365521d9e5b195dc5b1c9b3796fbd80f",
+   "format": null
+  },
+  {
+   "fichier": "image.gif",
+   "taille": 206,
+   "sha256": "ebf8380d096a806f224bfe4cfa6530f1a8dd8d493add5e9c19c82b2c60173fa3",
+   "format": null
+  },
+  {
+   "fichier": "faux-camoufle.pdf",
+   "taille": 3000,
+   "sha256": "48c187767dddb44e5b7af78dabdec2b14f0f983e86e1fe695c65bc6a2a3cb42f",
+   "format": null
+  },
+  {
+   "fichier": "vide.pdf",
+   "taille": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "format": null
+  },
+  {
+   "fichier": "png-nomme-pdf.pdf",
+   "taille": 20527,
+   "sha256": "c30e21c2556f0936e16c76c8017b46825c0f4a31f805c2cc400934061f5a6eb2",
+   "format": "png"
+  },
+  {
+   "fichier": "jpeg-nomme-png.png",
+   "taille": 69227,
+   "sha256": "e265f247b46ab1df0ea07909b4047ecd64d3109ab874ca04e37925bde7ce6967",
+   "format": "jpeg"
+  },
+  {
+   "fichier": "pdf-nomme-jpg.jpg",
+   "taille": 16151,
+   "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+   "format": "pdf"
+  },
+  {
+   "fichier": "gros.pdf",
+   "taille": 169751,
+   "sha256": "ca41ed7bb35cd158f83444ebff55d52d22595f52be8272cf73843761d1011437",
+   "format": "pdf"
+  }
+ ],
+ "sha256": [
+  {
+   "taille": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+   "taille": 1,
+   "sha256": "ca358758f6d27e6cf45272937977a748fd88391db679ceda7dc7bf1f005ee879"
+  },
+  {
+   "taille": 3,
+   "sha256": "647674a296197442f518bcca323ec605dd8d098b2d4f22ee1fdcdd2bb753a189"
+  },
+  {
+   "taille": 55,
+   "sha256": "8aa994584139d128848eeebc4e815639ba5ab6e6e39574195a63ac4f14f7c43b"
+  },
+  {
+   "taille": 56,
+   "sha256": "ad574708f75c044c9b85de64cb568ee7711ff4f36448c6242f053ba8f6cc2b63"
+  },
+  {
+   "taille": 57,
+   "sha256": "5b46e502092be01b1100193e089fdda95638c12e19a1d24f308eb2c3d3ae849d"
+  },
+  {
+   "taille": 63,
+   "sha256": "280ed3e8ff1df845b2e7dfe6ac6cee817bef20e783cc65abc41b818b4d2fe076"
+  },
+  {
+   "taille": 64,
+   "sha256": "c6ab9724ade5b6a7a1edfffb12f3aa9181351355af8fd08c919952ad211339dd"
+  },
+  {
+   "taille": 65,
+   "sha256": "788367c73c7ddf4c53f65e68cc0d943e6227ab55b0e78ba63ace822b1c6301c0"
+  },
+  {
+   "taille": 119,
+   "sha256": "3d610547d68216dedf7435a4fb6260353911f6b3fd3f18805ddb8be285d726fe"
+  },
+  {
+   "taille": 120,
+   "sha256": "1f80156a804cb7862ad113e8200e9d74499723e7c7854d5f48776d3148e09656"
+  },
+  {
+   "taille": 128,
+   "sha256": "cc548ca2dec1f6fe4f58b2e27aa9c7521607df1130d140b55a4dad0665302356"
+  },
+  {
+   "taille": 1000,
+   "sha256": "5097e7d587352f5097062ae679f37bda5802d9f875aba14c8cb4d1a188ada179"
+  },
+  {
+   "taille": 65536,
+   "sha256": "ef4636928161808e87035fa51983821677527ccd9661991c5d0126a778b2268a"
+  },
+  {
+   "taille": 262145,
+   "sha256": "0c81a8a82c35279d837212a74d02631253ad986389cd257f6840a909f9e5c969"
+  },
+  {
+   "texte": "abc",
+   "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+  }
+ ],
+ "controles": [
+  {
+   "nom": "courrier.pdf",
+   "mime": "application/pdf",
+   "taille": 1234,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "COURRIER.PDF",
+   "mime": "",
+   "taille": 1234,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan.JPG",
+   "mime": "image/jpeg",
+   "taille": 2048,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "jpeg",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan.jpeg",
+   "mime": "",
+   "taille": 2048,
+   "famille": "patient",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "jpeg",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan",
+   "mime": "image/png",
+   "taille": 4096,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "png",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan",
+   "mime": "application/pdf",
+   "taille": 4096,
+   "famille": "patient",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan",
+   "mime": "text/plain",
+   "taille": 4096,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « scan » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "photo.webp",
+   "mime": "image/webp",
+   "taille": 5000,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « photo.webp » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "photo.webp",
+   "mime": "image/webp",
+   "taille": 5000,
+   "famille": "patient",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "webp",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "photo",
+   "mime": "image/webp",
+   "taille": 5000,
+   "famille": "patient",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "webp",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "document.exe",
+   "mime": "application/octet-stream",
+   "taille": 3000,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « document.exe » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "archive.tar.gz",
+   "mime": "",
+   "taille": 3000,
+   "famille": "patient",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « archive.tar.gz » n’est pas admis (PDF, JPEG, PNG, WEBP)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG (WEBP admis au dossier patient)."
+  },
+  {
+   "nom": "note.txt",
+   "mime": "text/plain",
+   "taille": 3000,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « note.txt » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "vide.pdf",
+   "mime": "application/pdf",
+   "taille": 0,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": false,
+   "format": null,
+   "code": "FICHIER_VIDE",
+   "motif": "« vide.pdf » ne contient aucun octet",
+   "geste": "Choisir un fichier numérisé non vide."
+  },
+  {
+   "nom": "limite.pdf",
+   "mime": "application/pdf",
+   "taille": 10485760,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "trop.pdf",
+   "mime": "application/pdf",
+   "taille": 10485761,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": false,
+   "format": null,
+   "code": "TAILLE_DEPASSEE",
+   "motif": "le fichier pèse 10,0 Mo, le maximum réglé est 10,0 Mo",
+   "geste": "Numériser en résolution plus basse, ou demander à l’administrateur de relever la taille maximale."
+  },
+  {
+   "nom": "un-octet.png",
+   "mime": "image/png",
+   "taille": 1,
+   "famille": "patient",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "png",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "sans-ext.",
+   "mime": "",
+   "taille": 10,
+   "famille": "courrier",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « sans-ext. » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "Résultat n° 3 (copie).PNG",
+   "mime": "image/png",
+   "taille": 99999,
+   "famille": "patient",
+   "reglage": null,
+   "tailleMax": null,
+   "ok": true,
+   "format": "png",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "courrier.pdf",
+   "mime": "application/pdf",
+   "taille": 1234,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "COURRIER.PDF",
+   "mime": "",
+   "taille": 1234,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan.JPG",
+   "mime": "image/jpeg",
+   "taille": 2048,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "jpeg",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan.jpeg",
+   "mime": "",
+   "taille": 2048,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "jpeg",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan",
+   "mime": "image/png",
+   "taille": 4096,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "png",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan",
+   "mime": "application/pdf",
+   "taille": 4096,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan",
+   "mime": "text/plain",
+   "taille": 4096,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « scan » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "photo.webp",
+   "mime": "image/webp",
+   "taille": 5000,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « photo.webp » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "photo.webp",
+   "mime": "image/webp",
+   "taille": 5000,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "webp",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "photo",
+   "mime": "image/webp",
+   "taille": 5000,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "webp",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "document.exe",
+   "mime": "application/octet-stream",
+   "taille": 3000,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « document.exe » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "archive.tar.gz",
+   "mime": "",
+   "taille": 3000,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « archive.tar.gz » n’est pas admis (PDF, JPEG, PNG, WEBP)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG (WEBP admis au dossier patient)."
+  },
+  {
+   "nom": "note.txt",
+   "mime": "text/plain",
+   "taille": 3000,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « note.txt » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "vide.pdf",
+   "mime": "application/pdf",
+   "taille": 0,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": false,
+   "format": null,
+   "code": "FICHIER_VIDE",
+   "motif": "« vide.pdf » ne contient aucun octet",
+   "geste": "Choisir un fichier numérisé non vide."
+  },
+  {
+   "nom": "limite.pdf",
+   "mime": "application/pdf",
+   "taille": 10485760,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": false,
+   "format": null,
+   "code": "TAILLE_DEPASSEE",
+   "motif": "le fichier pèse 10,0 Mo, le maximum réglé est 100 Ko",
+   "geste": "Numériser en résolution plus basse, ou demander à l’administrateur de relever la taille maximale."
+  },
+  {
+   "nom": "trop.pdf",
+   "mime": "application/pdf",
+   "taille": 10485761,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": false,
+   "format": null,
+   "code": "TAILLE_DEPASSEE",
+   "motif": "le fichier pèse 10,0 Mo, le maximum réglé est 100 Ko",
+   "geste": "Numériser en résolution plus basse, ou demander à l’administrateur de relever la taille maximale."
+  },
+  {
+   "nom": "un-octet.png",
+   "mime": "image/png",
+   "taille": 1,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "png",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "sans-ext.",
+   "mime": "",
+   "taille": 10,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « sans-ext. » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "Résultat n° 3 (copie).PNG",
+   "mime": "image/png",
+   "taille": 99999,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 102400
+   },
+   "tailleMax": 102400,
+   "ok": true,
+   "format": "png",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "courrier.pdf",
+   "mime": "application/pdf",
+   "taille": 1234,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "COURRIER.PDF",
+   "mime": "",
+   "taille": 1234,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan.JPG",
+   "mime": "image/jpeg",
+   "taille": 2048,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "jpeg",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan.jpeg",
+   "mime": "",
+   "taille": 2048,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "jpeg",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan",
+   "mime": "image/png",
+   "taille": 4096,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "png",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan",
+   "mime": "application/pdf",
+   "taille": 4096,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "pdf",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "scan",
+   "mime": "text/plain",
+   "taille": 4096,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « scan » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "photo.webp",
+   "mime": "image/webp",
+   "taille": 5000,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « photo.webp » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "photo.webp",
+   "mime": "image/webp",
+   "taille": 5000,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "webp",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "photo",
+   "mime": "image/webp",
+   "taille": 5000,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "webp",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "document.exe",
+   "mime": "application/octet-stream",
+   "taille": 3000,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « document.exe » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "archive.tar.gz",
+   "mime": "",
+   "taille": 3000,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « archive.tar.gz » n’est pas admis (PDF, JPEG, PNG, WEBP)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG (WEBP admis au dossier patient)."
+  },
+  {
+   "nom": "note.txt",
+   "mime": "text/plain",
+   "taille": 3000,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « note.txt » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "vide.pdf",
+   "mime": "application/pdf",
+   "taille": 0,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": false,
+   "format": null,
+   "code": "FICHIER_VIDE",
+   "motif": "« vide.pdf » ne contient aucun octet",
+   "geste": "Choisir un fichier numérisé non vide."
+  },
+  {
+   "nom": "limite.pdf",
+   "mime": "application/pdf",
+   "taille": 10485760,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": false,
+   "format": null,
+   "code": "TAILLE_DEPASSEE",
+   "motif": "le fichier pèse 10,0 Mo, le maximum réglé est 1,5 Mo",
+   "geste": "Numériser en résolution plus basse, ou demander à l’administrateur de relever la taille maximale."
+  },
+  {
+   "nom": "trop.pdf",
+   "mime": "application/pdf",
+   "taille": 10485761,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": false,
+   "format": null,
+   "code": "TAILLE_DEPASSEE",
+   "motif": "le fichier pèse 10,0 Mo, le maximum réglé est 1,5 Mo",
+   "geste": "Numériser en résolution plus basse, ou demander à l’administrateur de relever la taille maximale."
+  },
+  {
+   "nom": "un-octet.png",
+   "mime": "image/png",
+   "taille": 1,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "png",
+   "code": null,
+   "motif": null,
+   "geste": null
+  },
+  {
+   "nom": "sans-ext.",
+   "mime": "",
+   "taille": 10,
+   "famille": "courrier",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": false,
+   "format": null,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « sans-ext. » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "nom": "Résultat n° 3 (copie).PNG",
+   "mime": "image/png",
+   "taille": 99999,
+   "famille": "patient",
+   "reglage": {
+    "tailleMax": 1572864
+   },
+   "tailleMax": 1572864,
+   "ok": true,
+   "format": "png",
+   "code": null,
+   "motif": null,
+   "geste": null
+  }
+ ],
+ "tailleMax": [
+  {
+   "reglage": null,
+   "tailleMax": 10485760,
+   "reglee": false
+  },
+  {
+   "reglage": {},
+   "tailleMax": 10485760,
+   "reglee": false
+  },
+  {
+   "reglage": {
+    "tailleMax": 5242880
+   },
+   "tailleMax": 5242880,
+   "reglee": true
+  },
+  {
+   "reglage": {
+    "tailleMax": 999999999999
+   },
+   "tailleMax": 67108864,
+   "reglee": true
+  },
+  {
+   "reglage": {
+    "tailleMax": -5
+   },
+   "tailleMax": 10485760,
+   "reglee": false
+  },
+  {
+   "reglage": {
+    "tailleMax": 0
+   },
+   "tailleMax": 10485760,
+   "reglee": false
+  },
+  {
+   "reglage": {
+    "tailleMax": "abc"
+   },
+   "tailleMax": 10485760,
+   "reglee": false
+  },
+  {
+   "reglage": {
+    "tailleMax": "2097152"
+   },
+   "tailleMax": 2097152,
+   "reglee": true
+  },
+  {
+   "reglage": {
+    "tailleMax": 1500.7
+   },
+   "tailleMax": 1500,
+   "reglee": true
+  }
+ ],
+ "reglage": [
+  {
+   "role": "admin",
+   "octets": 5242880,
+   "motifSaisi": "Scans plus lourds",
+   "ok": true,
+   "code": null,
+   "motif": null,
+   "geste": null,
+   "avant": 7340032,
+   "tailleMax": 5242880,
+   "apresReglage": 5242880,
+   "journal": [
+    {
+     "action": "Taille maximale d’un fichier numérisé"
+    }
+   ]
+  },
+  {
+   "role": "da",
+   "octets": 8388608,
+   "motifSaisi": "Réunion de la Direction",
+   "ok": true,
+   "code": null,
+   "motif": null,
+   "geste": null,
+   "avant": 7340032,
+   "tailleMax": 8388608,
+   "apresReglage": 8388608,
+   "journal": [
+    {
+     "action": "Taille maximale d’un fichier numérisé"
+    }
+   ]
+  },
+  {
+   "role": "caissier",
+   "octets": 5242880,
+   "motifSaisi": "Je veux",
+   "ok": false,
+   "code": "REGLAGE_RESERVE",
+   "motif": "la taille maximale des fichiers se règle par l’administrateur ou la Directrice Administrative",
+   "geste": "Demander le réglage à l’un d’eux.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "direction",
+   "octets": 5242880,
+   "motifSaisi": "x",
+   "ok": false,
+   "code": "REGLAGE_RESERVE",
+   "motif": "la taille maximale des fichiers se règle par l’administrateur ou la Directrice Administrative",
+   "geste": "Demander le réglage à l’un d’eux.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "medecin",
+   "octets": 1048576,
+   "motifSaisi": "x",
+   "ok": false,
+   "code": "REGLAGE_RESERVE",
+   "motif": "la taille maximale des fichiers se règle par l’administrateur ou la Directrice Administrative",
+   "geste": "Demander le réglage à l’un d’eux.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "admin",
+   "octets": 102399,
+   "motifSaisi": "trop petit",
+   "ok": false,
+   "code": "TAILLE_INVALIDE",
+   "motif": "la taille maximale est un nombre entier d’octets, de 100 Ko à 64,0 Mo",
+   "geste": "Saisir une taille en mégaoctets dans cette plage.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "admin",
+   "octets": 102400,
+   "motifSaisi": "plancher",
+   "ok": true,
+   "code": null,
+   "motif": null,
+   "geste": null,
+   "avant": 7340032,
+   "tailleMax": 102400,
+   "apresReglage": 102400,
+   "journal": [
+    {
+     "action": "Taille maximale d’un fichier numérisé"
+    }
+   ]
+  },
+  {
+   "role": "admin",
+   "octets": 67108864,
+   "motifSaisi": "plafond",
+   "ok": true,
+   "code": null,
+   "motif": null,
+   "geste": null,
+   "avant": 7340032,
+   "tailleMax": 67108864,
+   "apresReglage": 67108864,
+   "journal": [
+    {
+     "action": "Taille maximale d’un fichier numérisé"
+    }
+   ]
+  },
+  {
+   "role": "admin",
+   "octets": 67108865,
+   "motifSaisi": "au-delà",
+   "ok": false,
+   "code": "TAILLE_INVALIDE",
+   "motif": "la taille maximale est un nombre entier d’octets, de 100 Ko à 64,0 Mo",
+   "geste": "Saisir une taille en mégaoctets dans cette plage.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "admin",
+   "octets": 1500.5,
+   "motifSaisi": "décimal",
+   "ok": false,
+   "code": "TAILLE_INVALIDE",
+   "motif": "la taille maximale est un nombre entier d’octets, de 100 Ko à 64,0 Mo",
+   "geste": "Saisir une taille en mégaoctets dans cette plage.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "admin",
+   "octets": "",
+   "motifSaisi": "vide",
+   "ok": false,
+   "code": "TAILLE_INVALIDE",
+   "motif": "la taille maximale est un nombre entier d’octets, de 100 Ko à 64,0 Mo",
+   "geste": "Saisir une taille en mégaoctets dans cette plage.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "admin",
+   "octets": null,
+   "motifSaisi": "nul",
+   "ok": false,
+   "code": "TAILLE_INVALIDE",
+   "motif": "la taille maximale est un nombre entier d’octets, de 100 Ko à 64,0 Mo",
+   "geste": "Saisir une taille en mégaoctets dans cette plage.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "admin",
+   "octets": "abc",
+   "motifSaisi": "texte",
+   "ok": false,
+   "code": "TAILLE_INVALIDE",
+   "motif": "la taille maximale est un nombre entier d’octets, de 100 Ko à 64,0 Mo",
+   "geste": "Saisir une taille en mégaoctets dans cette plage.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "admin",
+   "octets": 5242880,
+   "motifSaisi": "",
+   "ok": false,
+   "code": "MOTIF_REQUIS",
+   "motif": "un réglage de taille se motive",
+   "geste": "Saisir le motif du réglage.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "admin",
+   "octets": 5242880,
+   "motifSaisi": "   ",
+   "ok": false,
+   "code": "MOTIF_REQUIS",
+   "motif": "un réglage de taille se motive",
+   "geste": "Saisir le motif du réglage.",
+   "avant": null,
+   "tailleMax": null,
+   "apresReglage": 7340032,
+   "journal": []
+  },
+  {
+   "role": "da",
+   "octets": 3145728,
+   "motifSaisi": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "ok": true,
+   "code": null,
+   "motif": null,
+   "geste": null,
+   "avant": 7340032,
+   "tailleMax": 3145728,
+   "apresReglage": 3145728,
+   "journal": [
+    {
+     "action": "Taille maximale d’un fichier numérisé"
+    }
+   ]
+  }
+ ],
+ "roles": [
+  "admin",
+  "direction",
+  "dm",
+  "da",
+  "medecin",
+  "infirmier",
+  "pharmacien",
+  "laborantin",
+  "stock",
+  "caissier",
+  "comptable",
+  "rh",
+  "reception",
+  "agentadmin",
+  "ambulancier",
+  "aide_soignant",
+  "echographiste",
+  "surveillant",
+  "assistant_comptable",
+  "chirurgien",
+  "anesthesiste",
+  "aide_comptable"
+ ],
+ "zones": [
+  {
+   "type": "Ordonnance",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": "Résultat de laboratoire",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": "Compte rendu médical",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": "Consentement éclairé",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": "Imagerie / Échographie",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": "Bulletin d’hospitalisation",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": "Facture",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": "Pièce d’identité",
+   "zone": 1,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "direction": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "da": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "pharmacien": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "laborantin": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "stock": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "caissier": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "comptable": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "rh": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "reception": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "agentadmin": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "ambulancier": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "aide_soignant": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "echographiste": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "surveillant": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "assistant_comptable": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "aide_comptable": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    }
+   }
+  },
+  {
+   "type": "Carte d’assurance",
+   "zone": 1,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "direction": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "da": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "pharmacien": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "laborantin": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "stock": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "caissier": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "comptable": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "rh": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "reception": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "agentadmin": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "ambulancier": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "aide_soignant": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "echographiste": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "surveillant": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "assistant_comptable": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    },
+    "aide_comptable": {
+     "autorise": true,
+     "zone": 1,
+     "motif": "Pièce administrative (zone 1) : lisible de tout profil qui ouvre l’écran"
+    }
+   }
+  },
+  {
+   "type": "Certificat médical",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": "Type inconnu",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": "",
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  },
+  {
+   "type": null,
+   "zone": 2,
+   "roles": {
+    "admin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "direction": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "dm": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "da": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "medecin": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "infirmier": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "pharmacien": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "laborantin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "stock": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "caissier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "rh": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "reception": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "agentadmin": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "ambulancier": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "aide_soignant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "echographiste": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "surveillant": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "assistant_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    },
+    "chirurgien": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "anesthesiste": {
+     "autorise": true,
+     "zone": 2,
+     "motif": "Profil clinique : les pièces médicales (zone 2) lui sont ouvertes"
+    },
+    "aide_comptable": {
+     "autorise": false,
+     "zone": 2,
+     "motif": "Pièce médicale (zone 2) : seuls les profils cliniques la lisent (RG-13)"
+    }
+   }
+  }
+ ],
+ "noms": [
+  {
+   "famille": "courrier",
+   "fiche": {
+    "date": "2026-08-20",
+    "reference": "ARR-2026-0042",
+    "sens": "arrivee"
+   },
+   "ext": "pdf",
+   "nom": "2026-08-20_ARR_0042.pdf"
+  },
+  {
+   "famille": "courrier",
+   "fiche": {
+    "date": "2026-08-20",
+    "reference": "DEP-2026-0003",
+    "sens": "depart"
+   },
+   "ext": "png",
+   "nom": "2026-08-20_DEP_0003.png"
+  },
+  {
+   "famille": "courrier",
+   "fiche": {
+    "date": "2026-08-20",
+    "sens": "depart"
+   },
+   "ext": "jpg",
+   "nom": "2026-08-20_DEP_0000.jpg"
+  },
+  {
+   "famille": "courrier",
+   "fiche": {
+    "date": "2026-08-20",
+    "sens": "arrivee"
+   },
+   "ext": "pdf",
+   "nom": "2026-08-20_ARR_0000.pdf"
+  },
+  {
+   "famille": "courrier",
+   "fiche": {
+    "sens": "arrivee",
+    "reference": "ARR-2026-0001"
+   },
+   "ext": "pdf",
+   "nom": "0000-00-00_ARR_0001.pdf"
+  },
+  {
+   "famille": "courrier",
+   "fiche": {
+    "date": "2026-08-20T09:30:00",
+    "reference": "ARR-2026-0009"
+   },
+   "ext": ".PDF",
+   "nom": "2026-08-20_ARR_0009.pdf"
+  },
+  {
+   "famille": "courrier",
+   "fiche": {
+    "date": "2026-12-31",
+    "reference": "ARR-2027-12345",
+    "sens": "arrivee"
+   },
+   "ext": "webp",
+   "nom": "2026-12-31_ARR_12345.webp"
+  },
+  {
+   "famille": "courrier",
+   "fiche": {
+    "date": "2026-08-20",
+    "reference": "ARR-2026-ABCD"
+   },
+   "ext": "pdf",
+   "nom": "2026-08-20_ARR_0000.pdf"
+  },
+  {
+   "famille": "courrier",
+   "fiche": {
+    "date": "2026-08-20",
+    "reference": "COUR-0042"
+   },
+   "ext": "",
+   "nom": "2026-08-20_ARR_0000.pdf"
+  },
+  {
+   "famille": "courrier",
+   "fiche": null,
+   "ext": "pdf",
+   "nom": "0000-00-00_ARR_0000.pdf"
+  },
+  {
+   "famille": "patient",
+   "fiche": {
+    "date": "2026-08-12",
+    "reference": "GED-00007",
+    "code": "CNT/12/26",
+    "type": "Compte rendu médical"
+   },
+   "ext": "pdf",
+   "nom": "2026-08-12_CNT-12-26_compte-rendu-medical_007.pdf"
+  },
+  {
+   "famille": "patient",
+   "fiche": {
+    "date": "2026-08-12",
+    "reference": "GED-00123",
+    "code": "CNT530/25",
+    "type": "Pièce d’identité"
+   },
+   "ext": "jpg",
+   "nom": "2026-08-12_CNT530-25_piece-d-identite_123.jpg"
+  },
+  {
+   "famille": "patient",
+   "fiche": {
+    "date": "2026-08-12",
+    "reference": "GED-1234",
+    "code": "CNT/1/26",
+    "type": "Imagerie / Échographie"
+   },
+   "ext": "png",
+   "nom": "2026-08-12_CNT-1-26_imagerie-echographie_1234.png"
+  },
+  {
+   "famille": "patient",
+   "fiche": {
+    "date": "2026-08-12",
+    "reference": "GED-00007",
+    "type": "Facture"
+   },
+   "ext": "pdf",
+   "nom": "2026-08-12_SANS-DOSSIER_facture_007.pdf"
+  },
+  {
+   "famille": "patient",
+   "fiche": {
+    "date": "2026-08-12",
+    "reference": "GED-00007",
+    "code": "CNT/12/26"
+   },
+   "ext": "pdf",
+   "nom": "2026-08-12_CNT-12-26_document_007.pdf"
+  },
+  {
+   "famille": "patient",
+   "fiche": {
+    "date": "2026-08-12",
+    "reference": "SANS-NUMERO",
+    "code": "  CNT/12/26  ",
+    "type": "Bulletin d’hospitalisation"
+   },
+   "ext": "pdf",
+   "nom": "2026-08-12_CNT-12-26_bulletin-d-hospitalisation_000.pdf"
+  },
+  {
+   "famille": "patient",
+   "fiche": {
+    "reference": "GED-00002",
+    "code": "CNT/2/26",
+    "type": "Œuvre d’été (ÀÉÎÕÜ)"
+   },
+   "ext": "webp",
+   "nom": "0000-00-00_CNT-2-26_uvre-d-ete-aeiou_002.webp"
+  },
+  {
+   "famille": "patient",
+   "fiche": null,
+   "ext": "pdf",
+   "nom": "0000-00-00_SANS-DOSSIER_document_000.pdf"
+  }
+ ],
+ "diacritiques": [
+  {
+   "texte": "Hyperglycémie",
+   "sans": "hyperglycemie"
+  },
+  {
+   "texte": "ÀÉÎÕÜ àéîõü",
+   "sans": "aeiou aeiou"
+  },
+  {
+   "texte": "Œuvre æther ß ø ł",
+   "sans": "œuvre æther ß ø ł"
+  },
+  {
+   "texte": "Ç ç Ñ ñ",
+   "sans": "c c n n"
+  },
+  {
+   "texte": "Ǻ ǻ ȧ Ẃ ẃ",
+   "sans": "a a a w w"
+  },
+  {
+   "texte": "plain ASCII 123",
+   "sans": "plain ascii 123"
+  },
+  {
+   "texte": "Straße Łódź Ørsted",
+   "sans": "straße łodz ørsted"
+  },
+  {
+   "texte": "Ṩ ṩ ẞ ỳ Ỹ",
+   "sans": "s s ß y y"
+  },
+  {
+   "texte": "",
+   "sans": ""
+  },
+  {
+   "texte": "Ĳ ĳ Ŀ ŀ",
+   "sans": "ĳ ĳ ŀ ŀ"
+  }
+ ],
+ "slugs": [
+  {
+   "texte": "Compte rendu médical",
+   "slug": "compte-rendu-medical"
+  },
+  {
+   "texte": "Imagerie / Échographie",
+   "slug": "imagerie-echographie"
+  },
+  {
+   "texte": "  Œuvre d’été (ÀÉÎÕÜ) ",
+   "slug": "uvre-d-ete-aeiou"
+  },
+  {
+   "texte": "",
+   "slug": ""
+  },
+  {
+   "texte": null,
+   "slug": ""
+  },
+  {
+   "texte": null,
+   "slug": ""
+  },
+  {
+   "texte": "---",
+   "slug": ""
+  },
+  {
+   "texte": "A  B",
+   "slug": "a-b"
+  },
+  {
+   "texte": "déjà-vu",
+   "slug": "deja-vu"
+  }
+ ],
+ "abrege": [
+  {
+   "sha": null,
+   "abrege": ""
+  },
+  {
+   "sha": "",
+   "abrege": ""
+  },
+  {
+   "sha": "abc",
+   "abrege": "abc"
+  },
+  {
+   "sha": "0123456789abcdef",
+   "abrege": "01234567"
+  }
+ ],
+ "depots": [
+  {
+   "cas": "courrier-pdf",
+   "note": null,
+   "fichier": "courrier-texte.pdf",
+   "nom": "courrier-texte.pdf",
+   "mime": "application/pdf",
+   "famille": "courrier",
+   "type": null,
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+    "taille": 16151,
+    "mime": "application/pdf",
+    "format": "pdf",
+    "ext": "pdf",
+    "nom": "courrier-texte.pdf",
+    "pages": 1,
+    "texteIndexe": true,
+    "mots": [
+     "amoxicilline",
+     "compte",
+     "convocation",
+     "de",
+     "des",
+     "direction",
+     "hyperglycémie",
+     "la",
+     "médicale",
+     "numérisé",
+     "rendu",
+     "réunion",
+     "échantillons",
+     "étiquetage"
+    ],
+    "motsTronques": false,
+    "raison": null
+   },
+   "nomOrigine": "courrier-texte.pdf",
+   "avertissement": false
+  },
+  {
+   "cas": "courrier-png",
+   "note": null,
+   "fichier": "scan.png",
+   "nom": "scan.png",
+   "mime": "image/png",
+   "famille": "courrier",
+   "type": null,
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "c30e21c2556f0936e16c76c8017b46825c0f4a31f805c2cc400934061f5a6eb2",
+    "taille": 20527,
+    "mime": "image/png",
+    "format": "png",
+    "ext": "png",
+    "nom": "scan.png",
+    "pages": null,
+    "texteIndexe": false,
+    "mots": [],
+    "motsTronques": false,
+    "raison": "image sans couche texte"
+   },
+   "nomOrigine": "scan.png",
+   "avertissement": false
+  },
+  {
+   "cas": "courrier-jpeg",
+   "note": null,
+   "fichier": "scan.jpg",
+   "nom": "scan.jpg",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "e265f247b46ab1df0ea07909b4047ecd64d3109ab874ca04e37925bde7ce6967",
+    "taille": 69227,
+    "mime": "image/jpeg",
+    "format": "jpeg",
+    "ext": "jpg",
+    "nom": "scan.jpg",
+    "pages": null,
+    "texteIndexe": false,
+    "mots": [],
+    "motsTronques": false,
+    "raison": "image sans couche texte"
+   },
+   "nomOrigine": "scan.jpg",
+   "avertissement": false
+  },
+  {
+   "cas": "courrier-trois-pages",
+   "note": null,
+   "fichier": "trois-pages.pdf",
+   "nom": "trois-pages.pdf",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "dd8441dfde67d5ebc1a7a6284f8b3dfeaa93bfcb76214dc35e8a6146df121001",
+    "taille": 14420,
+    "mime": "application/pdf",
+    "format": "pdf",
+    "ext": "pdf",
+    "nom": "trois-pages.pdf",
+    "pages": 3,
+    "texteIndexe": true,
+    "mots": [
+     "la",
+     "mot",
+     "page",
+     "page1mot1",
+     "page2mot1",
+     "page3mot1",
+     "propre"
+    ],
+    "motsTronques": false,
+    "raison": null
+   },
+   "nomOrigine": "trois-pages.pdf",
+   "avertissement": false
+  },
+  {
+   "cas": "courrier-scan-image",
+   "note": null,
+   "fichier": "scan-image.pdf",
+   "nom": "scan-image.pdf",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "b4c9d8c87bd6cc03bd0ddb7fc7b7d4c6439f688bf6acb9b0eebeed2981086c47",
+    "taille": 12648,
+    "mime": "application/pdf",
+    "format": "pdf",
+    "ext": "pdf",
+    "nom": "scan-image.pdf",
+    "pages": 1,
+    "texteIndexe": false,
+    "mots": [],
+    "motsTronques": false,
+    "raison": "aucune couche texte lisible : scan image"
+   },
+   "nomOrigine": "scan-image.pdf",
+   "avertissement": false
+  },
+  {
+   "cas": "courrier-winansi",
+   "note": null,
+   "fichier": "simple-winansi.pdf",
+   "nom": "simple-winansi.pdf",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "71c8c652981e5e8ef2fa48b90fb6b163d51c6cb07f03f07771ff0c70ca8e17da",
+    "taille": 498,
+    "mime": "application/pdf",
+    "format": "pdf",
+    "ext": "pdf",
+    "nom": "simple-winansi.pdf",
+    "pages": 1,
+    "texteIndexe": true,
+    "mots": [
+     "500",
+     "apaisée",
+     "crème",
+     "délivrée",
+     "mg",
+     "ordonnance",
+     "paracétamol"
+    ],
+    "motsTronques": false,
+    "raison": null
+   },
+   "nomOrigine": "simple-winansi.pdf",
+   "avertissement": false
+  },
+  {
+   "cas": "courrier-flate",
+   "note": null,
+   "fichier": "simple-flate.pdf",
+   "nom": "simple-flate.pdf",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "ddc964421ae0891417f21028949c8cee1fa0c17ce3331c9b4dcd9b1932bb9326",
+    "taille": 510,
+    "mime": "application/pdf",
+    "format": "pdf",
+    "ext": "pdf",
+    "nom": "simple-flate.pdf",
+    "pages": 1,
+    "texteIndexe": true,
+    "mots": [
+     "certificat",
+     "confirmée",
+     "guérison",
+     "jour",
+     "le",
+     "même",
+     "établi"
+    ],
+    "motsTronques": false,
+    "raison": null
+   },
+   "nomOrigine": "simple-flate.pdf",
+   "avertissement": false
+  },
+  {
+   "cas": "courrier-webp-refuse",
+   "note": null,
+   "fichier": "scan.webp",
+   "nom": "scan.webp",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": false,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « scan.webp » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "cas": "patient-webp-admis",
+   "note": null,
+   "fichier": "scan.webp",
+   "nom": "scan.webp",
+   "mime": "",
+   "famille": "patient",
+   "type": "Compte rendu médical",
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "48dffa55523fd199accb59a622ba6c43682bc8e4b8b9dbb0161118ab64ea878b",
+    "taille": 32890,
+    "mime": "image/webp",
+    "format": "webp",
+    "ext": "webp",
+    "nom": "scan.webp",
+    "pages": null,
+    "texteIndexe": false,
+    "mots": [],
+    "motsTronques": false,
+    "raison": "image sans couche texte"
+   },
+   "nomOrigine": "scan.webp",
+   "avertissement": false
+  },
+  {
+   "cas": "patient-pdf",
+   "note": null,
+   "fichier": "courrier-texte.pdf",
+   "nom": "courrier-texte.pdf",
+   "mime": "",
+   "famille": "patient",
+   "type": "Ordonnance",
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+    "taille": 16151,
+    "mime": "application/pdf",
+    "format": "pdf",
+    "ext": "pdf",
+    "nom": "courrier-texte.pdf",
+    "pages": 1,
+    "texteIndexe": true,
+    "mots": [
+     "amoxicilline",
+     "compte",
+     "convocation",
+     "de",
+     "des",
+     "direction",
+     "hyperglycémie",
+     "la",
+     "médicale",
+     "numérisé",
+     "rendu",
+     "réunion",
+     "échantillons",
+     "étiquetage"
+    ],
+    "motsTronques": false,
+    "raison": null
+   },
+   "nomOrigine": "courrier-texte.pdf",
+   "avertissement": false
+  },
+  {
+   "cas": "exe-refuse",
+   "note": null,
+   "fichier": "faux.exe",
+   "nom": "faux.exe",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": false,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « faux.exe » n’est pas admis (PDF, JPEG, PNG)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+  },
+  {
+   "cas": "gif-refuse",
+   "note": null,
+   "fichier": "image.gif",
+   "nom": "image.gif",
+   "mime": "",
+   "famille": "patient",
+   "type": "Facture",
+   "ok": false,
+   "code": "FORMAT_REFUSE",
+   "motif": "le format de « image.gif » n’est pas admis (PDF, JPEG, PNG, WEBP)",
+   "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG (WEBP admis au dossier patient)."
+  },
+  {
+   "cas": "camoufle-pdf",
+   "note": null,
+   "fichier": "faux-camoufle.pdf",
+   "nom": "faux-camoufle.pdf",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": false,
+   "code": "FORMAT_REFUSE",
+   "motif": "le contenu de « faux-camoufle.pdf » n’est pas un PDF (l’extension ne suffit pas)",
+   "geste": "Enregistrer de nouveau la numérisation dans ce format."
+  },
+  {
+   "cas": "png-sous-nom-pdf",
+   "note": null,
+   "fichier": "png-nomme-pdf.pdf",
+   "nom": "png-nomme-pdf.pdf",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": false,
+   "code": "FORMAT_REFUSE",
+   "motif": "le contenu de « png-nomme-pdf.pdf » n’est pas un PDF (l’extension ne suffit pas)",
+   "geste": "Enregistrer de nouveau la numérisation dans ce format."
+  },
+  {
+   "cas": "jpeg-sous-nom-png",
+   "note": null,
+   "fichier": "jpeg-nomme-png.png",
+   "nom": "jpeg-nomme-png.png",
+   "mime": "",
+   "famille": "patient",
+   "type": "Facture",
+   "ok": false,
+   "code": "FORMAT_REFUSE",
+   "motif": "le contenu de « jpeg-nomme-png.png » n’est pas un PNG (l’extension ne suffit pas)",
+   "geste": "Enregistrer de nouveau la numérisation dans ce format."
+  },
+  {
+   "cas": "pdf-sous-nom-jpg",
+   "note": null,
+   "fichier": "pdf-nomme-jpg.jpg",
+   "nom": "pdf-nomme-jpg.jpg",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": false,
+   "code": "FORMAT_REFUSE",
+   "motif": "le contenu de « pdf-nomme-jpg.jpg » n’est pas un JPEG (l’extension ne suffit pas)",
+   "geste": "Enregistrer de nouveau la numérisation dans ce format."
+  },
+  {
+   "cas": "vide",
+   "note": null,
+   "fichier": "vide.pdf",
+   "nom": "vide.pdf",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": false,
+   "code": "FICHIER_VIDE",
+   "motif": "« vide.pdf » ne contient aucun octet",
+   "geste": "Choisir un fichier numérisé non vide."
+  },
+  {
+   "cas": "taille-reglee",
+   "note": "taille maximale réglée à 100 Ko",
+   "fichier": "gros.pdf",
+   "nom": "gros.pdf",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": false,
+   "code": "TAILLE_DEPASSEE",
+   "motif": "le fichier pèse 166 Ko, le maximum réglé est 100 Ko",
+   "geste": "Numériser en résolution plus basse, ou demander à l’administrateur de relever la taille maximale."
+  },
+  {
+   "cas": "taille-defaut",
+   "note": "défaut de 10 Mo : 150 Ko passent",
+   "fichier": "gros.pdf",
+   "nom": "gros.pdf",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": true,
+   "depot": {
+    "ok": true,
+    "sha256": "ca41ed7bb35cd158f83444ebff55d52d22595f52be8272cf73843761d1011437",
+    "taille": 169751,
+    "mime": "application/pdf",
+    "format": "pdf",
+    "ext": "pdf",
+    "nom": "gros.pdf",
+    "pages": 1,
+    "texteIndexe": true,
+    "mots": [
+     "amoxicilline",
+     "compte",
+     "convocation",
+     "de",
+     "des",
+     "direction",
+     "hyperglycémie",
+     "la",
+     "médicale",
+     "numérisé",
+     "rendu",
+     "réunion",
+     "échantillons",
+     "étiquetage"
+    ],
+    "motsTronques": false,
+    "raison": null
+   },
+   "nomOrigine": "gros.pdf",
+   "avertissement": false
+  },
+  {
+   "cas": "doublon-meme-fiche",
+   "note": "la fiche porte déjà ce fichier",
+   "fichier": "scan.png",
+   "nom": "scan.png",
+   "mime": "",
+   "famille": "courrier",
+   "type": null,
+   "ok": false,
+   "code": "DOUBLON_MEME_FICHE",
+   "motif": "ce fichier est déjà rattaché à cette fiche : pièce ARR-2026-0900 (2026-08-20_ARR_0900.pdf)",
+   "geste": "Ouvrir la pièce existante plutôt que de la déposer deux fois."
+  },
+  {
+   "cas": "doublon-meme-dossier",
+   "note": "une autre fiche du même dossier porte ce fichier",
+   "fichier": "scan.jpg",
+   "nom": "scan.jpg",
+   "mime": "",
+   "famille": "patient",
+   "type": "Facture",
+   "ok": false,
+   "code": "DOUBLON_MEME_FICHE",
+   "motif": "ce fichier est déjà rattaché à ce dossier : pièce GED-90002 (2026-08-13_CNT-9-26_facture_002.png)",
+   "geste": "Ouvrir la pièce existante plutôt que de la déposer deux fois."
+  }
+ ],
+ "doublons": {
+  "ordre": [
+   "ARR-2026-0954",
+   "ARR-2026-0953",
+   "ARR-2026-0952",
+   "ARR-2026-0951",
+   "ARR-2026-0900"
+  ],
+  "fiches": [
+   {
+    "id": "COUxmvuswn40mg1zu",
+    "reference": "ARR-2026-0951",
+    "statut": "actif",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "fichier": {
+     "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "nom": "ARR-2026-0951.pdf",
+     "nomNormalise": "ARR-2026-0951.pdf"
+    }
+   },
+   {
+    "id": "COUxmvuswn40l3jd6",
+    "reference": "ARR-2026-0952",
+    "statut": "actif",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "fichier": {
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "nom": "ARR-2026-0952.pdf",
+     "nomNormalise": "ARR-2026-0952.pdf"
+    }
+   },
+   {
+    "id": "COUxmvuswn40jh2xo",
+    "reference": "ARR-2026-0953",
+    "statut": "actif",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "fichier": {
+     "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "nom": "ARR-2026-0953.pdf",
+     "nomNormalise": "ARR-2026-0953.pdf"
+    }
+   },
+   {
+    "id": "COUxmvuswn40wdwf8",
+    "reference": "ARR-2026-0954",
+    "statut": "archive",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "fichier": {
+     "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "nom": "ARR-2026-0954.pdf",
+     "nomNormalise": "ARR-2026-0954.pdf"
+    }
+   }
+  ],
+  "cas": [
+   {
+    "sha": "aa",
+    "courante": "ARR-2026-0951",
+    "portee": false,
+    "memeFiche": "ARR-2026-0951",
+    "autre": null,
+    "aucun": false
+   },
+   {
+    "sha": "aa",
+    "courante": "ARR-2026-0952",
+    "portee": false,
+    "memeFiche": null,
+    "autre": "ARR-2026-0953",
+    "aucun": false
+   },
+   {
+    "sha": "aa",
+    "courante": null,
+    "portee": true,
+    "memeFiche": "ARR-2026-0953",
+    "autre": null,
+    "aucun": false
+   },
+   {
+    "sha": "bb",
+    "courante": null,
+    "portee": false,
+    "memeFiche": null,
+    "autre": "ARR-2026-0952",
+    "aucun": false
+   },
+   {
+    "sha": "cc",
+    "courante": null,
+    "portee": false,
+    "memeFiche": null,
+    "autre": null,
+    "aucun": true
+   },
+   {
+    "sha": "dd",
+    "courante": "ARR-2026-0951",
+    "portee": false,
+    "memeFiche": null,
+    "autre": null,
+    "aucun": true
+   },
+   {
+    "sha": "aa",
+    "courante": "ARR-2026-0953",
+    "portee": false,
+    "memeFiche": "ARR-2026-0953",
+    "autre": null,
+    "aucun": false
+   }
+  ],
+  "nomPiece": true
+ },
+ "rattachement": {
+  "depot": {
+   "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+   "taille": 16151,
+   "mime": "application/pdf",
+   "ext": "pdf",
+   "pages": 2,
+   "texteIndexe": true,
+   "mots": [
+    "hyperglycémie",
+    "Amoxicilline",
+    "x",
+    "amoxicilline",
+    "Éther",
+    "a1"
+   ],
+   "motsTronques": false
+  },
+  "fiche": {
+   "reference": "ARR-2026-0960",
+   "date": "2026-08-20"
+  },
+  "rattache": {
+   "id": "COUxmvuswn40z8bo9",
+   "statut": "actif",
+   "reference": "ARR-2026-0960",
+   "sens": "arrivee",
+   "date": "2026-08-20",
+   "correspondant": "Rattachement",
+   "objet": "Pièce",
+   "nature": "Lettre",
+   "affecteA": "Direction Administrative",
+   "traitement": "en_attente",
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-30T10:00:00.000Z",
+   "fichier": {
+    "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+    "nom": "Courrier.pdf",
+    "nomNormalise": "2026-08-20_ARR_0960.pdf",
+    "mime": "application/pdf",
+    "taille": 16151,
+    "pages": 2,
+    "texteIndexe": true,
+    "deposePar": "AGENT VECTEUR",
+    "deposeLe": "2026-10-30T10:00:00.000Z"
+   },
+   "_modifiePar": "BASSONGUI Chabi Séko",
+   "_modifieLe": "2026-10-30T10:00:00.000Z"
+  },
+  "registre": {
+   "id": "FIC-a647cb59303d1b4e",
+   "statut": "actif",
+   "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+   "taille": 16151,
+   "mime": "application/pdf",
+   "pages": 2,
+   "premiereDate": "2026-10-30T10:00:00.000Z",
+   "nbReferences": 1,
+   "texteIndexe": true,
+   "texte": "hyperglycemie amoxicilline ether a1",
+   "motsTronques": false,
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-30T10:00:00.000Z"
+  },
+  "audit": {
+   "action": "Dépôt d’un fichier numérisé",
+   "module": "M13",
+   "entite": "courrier",
+   "reference": "COUxmvuswn40z8bo9",
+   "ancienneValeur": "{\"fichier\":null}",
+   "nouvelleValeur": "{\"empreinte\":\"a647cb59\",\"nom\":\"2026-08-20_ARR_0960.pdf\",\"taille\":16151}"
+  },
+  "nomConstruit": {
+   "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+   "nom": "Courrier.pdf",
+   "nomNormalise": "2026-08-20_ARR_0960.pdf",
+   "mime": "application/pdf",
+   "taille": 16151,
+   "pages": 2,
+   "texteIndexe": true,
+   "deposePar": "AGENT VECTEUR",
+   "deposeLe": "2026-10-30T10:00:00.000Z"
+  },
+  "retire": {
+   "id": "COUxmvuswn40z8bo9",
+   "statut": "actif",
+   "reference": "ARR-2026-0960",
+   "sens": "arrivee",
+   "date": "2026-08-20",
+   "correspondant": "Rattachement",
+   "objet": "Pièce",
+   "nature": "Lettre",
+   "affecteA": "Direction Administrative",
+   "traitement": "en_attente",
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-30T10:00:00.000Z",
+   "fichier": null,
+   "_modifiePar": "BASSONGUI Chabi Séko",
+   "_modifieLe": "2026-10-30T10:00:00.000Z",
+   "fichiersRetires": [
+    {
+     "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+     "nom": "Courrier.pdf",
+     "nomNormalise": "2026-08-20_ARR_0960.pdf",
+     "mime": "application/pdf",
+     "taille": 16151,
+     "pages": 2,
+     "texteIndexe": true,
+     "deposePar": "AGENT VECTEUR",
+     "deposeLe": "2026-10-30T10:00:00.000Z",
+     "retireLe": "2026-10-30T10:00:00.000Z",
+     "retirePar": "AGENT VECTEUR",
+     "motif": "Mauvais scan, à refaire"
+    }
+   ]
+  },
+  "registreApresRetrait": {
+   "id": "FIC-a647cb59303d1b4e",
+   "statut": "actif",
+   "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+   "taille": 16151,
+   "mime": "application/pdf",
+   "pages": 2,
+   "premiereDate": "2026-10-30T10:00:00.000Z",
+   "nbReferences": 0,
+   "texteIndexe": true,
+   "texte": "hyperglycemie amoxicilline ether a1",
+   "motsTronques": false,
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-30T10:00:00.000Z",
+   "_modifiePar": "BASSONGUI Chabi Séko",
+   "_modifieLe": "2026-10-30T10:00:00.000Z"
+  },
+  "auditRetrait": {
+   "action": "Pièce numérisée retirée de la fiche",
+   "module": "M13",
+   "entite": "courrier",
+   "reference": "COUxmvuswn40z8bo9",
+   "ancienneValeur": "{\"empreinte\":\"a647cb59\",\"nom\":\"2026-08-20_ARR_0960.pdf\"}",
+   "nouvelleValeur": "{\"fichier\":null,\"motif\":\"Mauvais scan, à refaire\"}"
+  },
+  "apresAnnulationRetrait": {
+   "id": "COUxmvuswn40z8bo9",
+   "statut": "actif",
+   "reference": "ARR-2026-0960",
+   "sens": "arrivee",
+   "date": "2026-08-20",
+   "correspondant": "Rattachement",
+   "objet": "Pièce",
+   "nature": "Lettre",
+   "affecteA": "Direction Administrative",
+   "traitement": "en_attente",
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-30T10:00:00.000Z",
+   "fichier": {
+    "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+    "nom": "Courrier.pdf",
+    "nomNormalise": "2026-08-20_ARR_0960.pdf",
+    "mime": "application/pdf",
+    "taille": 16151,
+    "pages": 2,
+    "texteIndexe": true,
+    "deposePar": "AGENT VECTEUR",
+    "deposeLe": "2026-10-30T10:00:00.000Z"
+   },
+   "_modifiePar": "BASSONGUI Chabi Séko",
+   "_modifieLe": "2026-10-30T10:00:00.000Z",
+   "fichiersRetires": []
+  },
+  "retraitSansFichier": true,
+  "apresDeuxRetraits": {
+   "id": "COUxmvuswn40z8bo9",
+   "statut": "actif",
+   "reference": "ARR-2026-0960",
+   "sens": "arrivee",
+   "date": "2026-08-20",
+   "correspondant": "Rattachement",
+   "objet": "Pièce",
+   "nature": "Lettre",
+   "affecteA": "Direction Administrative",
+   "traitement": "en_attente",
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-30T10:00:00.000Z",
+   "fichier": null,
+   "_modifiePar": "BASSONGUI Chabi Séko",
+   "_modifieLe": "2026-10-30T10:00:00.000Z",
+   "fichiersRetires": [
+    {
+     "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+     "nom": "Courrier.pdf",
+     "nomNormalise": "2026-08-20_ARR_0960.pdf",
+     "mime": "application/pdf",
+     "taille": 16151,
+     "pages": 2,
+     "texteIndexe": true,
+     "deposePar": "AGENT VECTEUR",
+     "deposeLe": "2026-10-30T10:00:00.000Z",
+     "retireLe": "2026-10-30T10:00:00.000Z",
+     "retirePar": "AGENT VECTEUR",
+     "motif": "Premier retrait"
+    },
+    {
+     "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "nom": "Autre.pdf",
+     "nomNormalise": "2026-08-20_ARR_0960.pdf",
+     "mime": "application/pdf",
+     "taille": 16151,
+     "pages": 2,
+     "texteIndexe": true,
+     "deposePar": "AGENT VECTEUR",
+     "deposeLe": "2026-10-30T10:00:00.000Z",
+     "retireLe": "2026-10-30T10:00:00.000Z",
+     "retirePar": "AGENT VECTEUR",
+     "motif": "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
+    }
+   ]
+  },
+  "numeriseAvant": false,
+  "numeriseApres": true
+ },
+ "numerise": [
+  {
+   "fiche": null,
+   "numerise": false
+  },
+  {
+   "fiche": {},
+   "numerise": false
+  },
+  {
+   "fiche": {
+    "fichier": null
+   },
+   "numerise": false
+  },
+  {
+   "fiche": {
+    "fichier": "ancien.pdf"
+   },
+   "numerise": false
+  },
+  {
+   "fiche": {
+    "fichier": {}
+   },
+   "numerise": false
+  },
+  {
+   "fiche": {
+    "fichier": {
+     "sha256": ""
+    }
+   },
+   "numerise": false
+  },
+  {
+   "fiche": {
+    "fichier": {
+     "sha256": "abababababababababababababababababababababababababababababababab",
+     "nom": "x"
+    }
+   },
+   "numerise": true
+  },
+  {
+   "fiche": {
+    "numerise": true
+   },
+   "numerise": false
+  },
+  {
+   "fiche": {
+    "numerise": true,
+    "fichier": {
+     "sha256": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+    }
+   },
+   "numerise": true
+  }
+ ],
+ "textes": {
+  "entrees": [
+   {
+    "id": "FIC-f1f1f1f1f1f1f1f1",
+    "statut": "actif",
+    "sha256": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+    "taille": 10,
+    "mime": "application/pdf",
+    "pages": 1,
+    "premiereDate": "2026-10-30T10:00:00.000Z",
+    "nbReferences": 1,
+    "texteIndexe": true,
+    "texte": "hyperglycemie amoxicilline ether ok",
+    "motsTronques": false,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T10:00:00.000Z"
+   },
+   {
+    "id": "FIC-f2f2f2f2f2f2f2f2",
+    "statut": "actif",
+    "sha256": "f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2",
+    "taille": 10,
+    "mime": "application/pdf",
+    "pages": 1,
+    "premiereDate": "2026-10-30T10:00:00.000Z",
+    "nbReferences": 1,
+    "texteIndexe": false,
+    "texte": "",
+    "motsTronques": false,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T10:00:00.000Z"
+   },
+   {
+    "id": "FIC-f3f3f3f3f3f3f3f3",
+    "statut": "actif",
+    "sha256": "f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3",
+    "taille": 10,
+    "mime": "application/pdf",
+    "pages": 1,
+    "premiereDate": "2026-10-30T10:00:00.000Z",
+    "nbReferences": 1,
+    "texteIndexe": true,
+    "texte": "xxxxx",
+    "motsTronques": false,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T10:00:00.000Z",
+    "_modifiePar": "BASSONGUI Chabi Séko",
+    "_modifieLe": "2026-10-30T10:00:00.000Z"
+   }
+  ],
+  "texteDe": [
+   "hyperglycemie amoxicilline ether ok",
+   "",
+   "",
+   "",
+   ""
+  ]
+ },
+ "regles": {
+  "_doc": "ENGENDRÉ par prototype_html/build/gen-regles-fichiers.js : ne pas éditer. Règle par famille de api/fichiers.php. roles[rôle][famille] = [voir, éditer, annuler] lus de packages/rbac/data/rbac.json (matrice d'origine) ; zone2 = profils qui lisent les types de zone 2 (D.DOCUMENTS.ROLES_ZONE_2) ; types = zone de chaque type de document du patient.",
+  "familles": {
+   "courrier": "m13-courriers",
+   "patient": "m1-documents"
+  },
+  "roles": {
+   "admin": {
+    "courrier": [
+     1,
+     1,
+     1
+    ],
+    "patient": [
+     1,
+     1,
+     1
+    ]
+   },
+   "agentadmin": {
+    "courrier": [
+     1,
+     1,
+     1
+    ],
+    "patient": [
+     0,
+     0,
+     0
+    ]
+   },
+   "anesthesiste": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     0,
+     0
+    ]
+   },
+   "assistant_comptable": {
+    "courrier": [
+     1,
+     1,
+     0
+    ],
+    "patient": [
+     0,
+     0,
+     0
+    ]
+   },
+   "chirurgien": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   },
+   "da": {
+    "courrier": [
+     1,
+     1,
+     1
+    ],
+    "patient": [
+     1,
+     1,
+     1
+    ]
+   },
+   "direction": {
+    "courrier": [
+     1,
+     1,
+     1
+    ],
+    "patient": [
+     1,
+     0,
+     0
+    ]
+   },
+   "dm": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   },
+   "infirmier": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   },
+   "medecin": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   },
+   "reception": {
+    "courrier": [
+     1,
+     1,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "zone2": [
+   "admin",
+   "dm",
+   "medecin",
+   "infirmier",
+   "chirurgien",
+   "anesthesiste"
+  ],
+  "types": {
+   "Ordonnance": 2,
+   "Résultat de laboratoire": 2,
+   "Compte rendu médical": 2,
+   "Consentement éclairé": 2,
+   "Imagerie / Échographie": 2,
+   "Bulletin d’hospitalisation": 2,
+   "Facture": 2,
+   "Pièce d’identité": 1,
+   "Carte d’assurance": 1,
+   "Certificat médical": 2
+  },
+  "formats": [
+   {
+    "id": "pdf",
+    "mime": "application/pdf",
+    "ext": [
+     "pdf"
+    ],
+    "familles": [
+     "courrier",
+     "patient"
+    ]
+   },
+   {
+    "id": "jpeg",
+    "mime": "image/jpeg",
+    "ext": [
+     "jpg",
+     "jpeg"
+    ],
+    "familles": [
+     "courrier",
+     "patient"
+    ]
+   },
+   {
+    "id": "png",
+    "mime": "image/png",
+    "ext": [
+     "png"
+    ],
+    "familles": [
+     "courrier",
+     "patient"
+    ]
+   },
+   {
+    "id": "webp",
+    "mime": "image/webp",
+    "ext": [
+     "webp"
+    ],
+    "familles": [
+     "patient"
+    ]
+   }
+  ],
+  "tailleDefaut": 10485760,
+  "taillePlancher": 102400,
+  "taillePlafond": 67108864
+ },
+ "reglesGenerees": {
+  "_doc": "ENGENDRÉ par prototype_html/build/gen-regles-fichiers.js : ne pas éditer. Règle par famille de api/fichiers.php. roles[rôle][famille] = [voir, éditer, annuler] lus de packages/rbac/data/rbac.json (matrice d'origine) ; zone2 = profils qui lisent les types de zone 2 (D.DOCUMENTS.ROLES_ZONE_2) ; types = zone de chaque type de document du patient.",
+  "familles": {
+   "courrier": "m13-courriers",
+   "patient": "m1-documents"
+  },
+  "roles": {
+   "admin": {
+    "courrier": [
+     1,
+     1,
+     1
+    ],
+    "patient": [
+     1,
+     1,
+     1
+    ]
+   },
+   "agentadmin": {
+    "courrier": [
+     1,
+     1,
+     1
+    ],
+    "patient": [
+     0,
+     0,
+     0
+    ]
+   },
+   "anesthesiste": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     0,
+     0
+    ]
+   },
+   "assistant_comptable": {
+    "courrier": [
+     1,
+     1,
+     0
+    ],
+    "patient": [
+     0,
+     0,
+     0
+    ]
+   },
+   "chirurgien": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   },
+   "da": {
+    "courrier": [
+     1,
+     1,
+     1
+    ],
+    "patient": [
+     1,
+     1,
+     1
+    ]
+   },
+   "direction": {
+    "courrier": [
+     1,
+     1,
+     1
+    ],
+    "patient": [
+     1,
+     0,
+     0
+    ]
+   },
+   "dm": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   },
+   "infirmier": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   },
+   "medecin": {
+    "courrier": [
+     0,
+     0,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   },
+   "reception": {
+    "courrier": [
+     1,
+     1,
+     0
+    ],
+    "patient": [
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "zone2": [
+   "admin",
+   "dm",
+   "medecin",
+   "infirmier",
+   "chirurgien",
+   "anesthesiste"
+  ],
+  "types": {
+   "Ordonnance": 2,
+   "Résultat de laboratoire": 2,
+   "Compte rendu médical": 2,
+   "Consentement éclairé": 2,
+   "Imagerie / Échographie": 2,
+   "Bulletin d’hospitalisation": 2,
+   "Facture": 2,
+   "Pièce d’identité": 1,
+   "Carte d’assurance": 1,
+   "Certificat médical": 2
+  },
+  "formats": [
+   {
+    "id": "pdf",
+    "mime": "application/pdf",
+    "ext": [
+     "pdf"
+    ],
+    "familles": [
+     "courrier",
+     "patient"
+    ]
+   },
+   {
+    "id": "jpeg",
+    "mime": "image/jpeg",
+    "ext": [
+     "jpg",
+     "jpeg"
+    ],
+    "familles": [
+     "courrier",
+     "patient"
+    ]
+   },
+   {
+    "id": "png",
+    "mime": "image/png",
+    "ext": [
+     "png"
+    ],
+    "familles": [
+     "courrier",
+     "patient"
+    ]
+   },
+   {
+    "id": "webp",
+    "mime": "image/webp",
+    "ext": [
+     "webp"
+    ],
+    "familles": [
+     "patient"
+    ]
+   }
+  ],
+  "tailleDefaut": 10485760,
+  "taillePlancher": 102400,
+  "taillePlafond": 67108864
+ },
+ "serveur": {
+  "depots": [
+   {
+    "role": "admin",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "359a534db1a8109f8c804fcf9f724cc3e745de57661e45bf6b1b1db6c4595891"
+   },
+   {
+    "role": "admin",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "c4ea489e694321ab6bca9fa9deadaa86a4c9df482a38d01cabd2fd9c374d2761"
+   },
+   {
+    "role": "admin",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "242a085570b8c19be2968cc346549700549f77961a2e3b8cd91451da2ff45013"
+   },
+   {
+    "role": "admin",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "63d32f182363564accb91b733b152922919e127e0aa2af998dd61094beadb3c2"
+   },
+   {
+    "role": "admin",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "ea3ef62c712730220920ea75008feb056ee5f9b618f3740d677589e63ac80f81"
+   },
+   {
+    "role": "admin",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "c537dfbb8f3ef07303f2a9adb9d7d13d4aeb44cc6f78853b266a5b2903b85f1e"
+   },
+   {
+    "role": "admin",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "42cad69627886cff7a6cce09afdf1acb2159c1f6d099378983f872054a4f98e3"
+   },
+   {
+    "role": "direction",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "4b17171c6c6017319bfaa6f4ca8c1e8a4d4385295f402eb95edfde7e33eba41f"
+   },
+   {
+    "role": "direction",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « direction » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "direction",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « direction » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "direction",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « direction » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "direction",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « direction » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "direction",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « direction » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "direction",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « direction » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "dm",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « dm » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "dm",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "6751ff964af2e8432492608ef3ea78800e6e28caf95bfaaa309ca26ccc9df5db"
+   },
+   {
+    "role": "dm",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "72e898fa54e99b964b40d0ec4434cdf328e931a38d24667a54a022fd80a1a181"
+   },
+   {
+    "role": "dm",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "fe6b9524721154d9f1aaf6890ef705ef889e5fbc4bca1d5438487777c258fc79"
+   },
+   {
+    "role": "dm",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "0d9bc732692ce79862ebde5241fd242c3e6e3ad56ed5916c689e74f76996043d"
+   },
+   {
+    "role": "dm",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "fce2878d2df4f39709e935a76f89c48891e76843b40e42b63102a7035ed36db4"
+   },
+   {
+    "role": "dm",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "270b92b6a95b2af330f7f1d82cb9baecee2a17f992078b82dc0e0746aefd6f50"
+   },
+   {
+    "role": "da",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "c6f9f68b3b36c58767308f4b9c70c5581017d0ec1838d13e861a3f8ed3d3fde2"
+   },
+   {
+    "role": "da",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « da » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance.",
+    "sha256": null
+   },
+   {
+    "role": "da",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « da » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance.",
+    "sha256": null
+   },
+   {
+    "role": "da",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "549e1090a021f5fea039676a71ddbff307b96e12009c8902e224e7769afebf28"
+   },
+   {
+    "role": "da",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "05160abd577471beaf9c5ac928771be3db3220b37e82fca94ffe3afbd978f224"
+   },
+   {
+    "role": "da",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « da » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance.",
+    "sha256": null
+   },
+   {
+    "role": "da",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « da » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance.",
+    "sha256": null
+   },
+   {
+    "role": "medecin",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « medecin » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "medecin",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "f4fc6ace3dca39e4a97787539c00c5b48aa995b0f8c368394128cb0b06144656"
+   },
+   {
+    "role": "medecin",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "0e9011e8da4efc9f6749bee3fd41cca35dd564ec06cc4961c4f1969c8503610f"
+   },
+   {
+    "role": "medecin",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "b4a19029375cc50b2f2a6d48715ed5a9632b469032f3c3ef47be1253691abc7b"
+   },
+   {
+    "role": "medecin",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "3b2f2ef9840769a343a022e274abe7c4395fef0bc6b97dbef3822270afbcb9a5"
+   },
+   {
+    "role": "medecin",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "c3ea1fc906a5b81416ed9ea9a5d0777bcaed3cef9cb1923a1c141cf0d4b325e3"
+   },
+   {
+    "role": "medecin",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "c1344633c6262d14b39be243871e02d1996fe73b62e64fc4dd77d4a71429d3e6"
+   },
+   {
+    "role": "infirmier",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « infirmier » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "infirmier",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "74da5b2ff432ace755d6d5ff92a9e54872b1483212977565103cf71df66c037f"
+   },
+   {
+    "role": "infirmier",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "d6fcab68f093bf67a56b4b938f5b8afacf0ebab0e2ebe366efe218b58b1f0a1b"
+   },
+   {
+    "role": "infirmier",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "cf7f78bd9e2428d26348f0f520bdf20d9e625b3cae7415924567fc67b59eb2d2"
+   },
+   {
+    "role": "infirmier",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "fb46e3f0a2350de42e041f7e8a6366379de36bcde83a6ff84aa1b16751f7b6b3"
+   },
+   {
+    "role": "infirmier",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "4a932d2b384d83bd5668483ad908bfca05134ccaffddc9ade8d512bcc6bf0388"
+   },
+   {
+    "role": "infirmier",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "98b1aa91c46d50d8f77b86794e32afac34e0cc50e80fb29adbcf409549b95498"
+   },
+   {
+    "role": "pharmacien",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "pharmacien",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "pharmacien",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "pharmacien",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "pharmacien",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "pharmacien",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "pharmacien",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "laborantin",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "laborantin",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "laborantin",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "laborantin",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "laborantin",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "laborantin",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "laborantin",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "stock",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "stock",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "stock",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "stock",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "stock",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "stock",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "stock",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "caissier",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "caissier",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "caissier",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "caissier",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "caissier",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "caissier",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "caissier",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "comptable",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "comptable",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "comptable",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "comptable",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "comptable",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "comptable",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "comptable",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "rh",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "rh",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "rh",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "rh",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "rh",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "rh",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "rh",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "reception",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "0cc565fffd0e996c49047ebdf70f25e9ea6c44d6e52e6bcb3d8f17db9a024eb6"
+   },
+   {
+    "role": "reception",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « reception » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance.",
+    "sha256": null
+   },
+   {
+    "role": "reception",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « reception » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance.",
+    "sha256": null
+   },
+   {
+    "role": "reception",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "1ce9f0b9b11098074e5b7a9f1f801d5b2bfc39d39ac7bb723340c35bf96315a7"
+   },
+   {
+    "role": "reception",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "2ec171f052033a39b49f2013cbff646443c408dd7c698d846d4c35ea5225011d"
+   },
+   {
+    "role": "reception",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « reception » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance.",
+    "sha256": null
+   },
+   {
+    "role": "reception",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « reception » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance.",
+    "sha256": null
+   },
+   {
+    "role": "agentadmin",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "e2b57db9e04b740d9dfdd752ca3e0f9cce298718135a75f671f8e6b13224772e"
+   },
+   {
+    "role": "agentadmin",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « agentadmin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "agentadmin",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « agentadmin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "agentadmin",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « agentadmin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "agentadmin",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « agentadmin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "agentadmin",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « agentadmin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "agentadmin",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « agentadmin » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "ambulancier",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "ambulancier",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "ambulancier",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "ambulancier",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "ambulancier",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "ambulancier",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "ambulancier",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "echographiste",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "echographiste",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "echographiste",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "echographiste",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "echographiste",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "echographiste",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "echographiste",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "surveillant",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "surveillant",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "surveillant",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "surveillant",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "surveillant",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "surveillant",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "surveillant",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "e9de84d78e284ca22731ec5e7c19e15cc6db4b5f7f100de95872397352a2f80b"
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « assistant_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « assistant_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « assistant_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « assistant_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « assistant_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « assistant_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "chirurgien",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « chirurgien » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "chirurgien",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "47180dddd15e4cefb0e2733608c5c0560145e94d523c849ce9b312ed7162b7fa"
+   },
+   {
+    "role": "chirurgien",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "e872fc865cffe0793219ceab61d95a80f7b413eaf551d2146adcb5656bbc5cb5"
+   },
+   {
+    "role": "chirurgien",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "cc074d486191a5f1722b5e420becc9c3e0802a323a728d5ca3ef3a1ab5d71615"
+   },
+   {
+    "role": "chirurgien",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "d891ee50f7561e2ba0e1d9459b69f75a5c3fb5660b76a8f00390ebe9465e1245"
+   },
+   {
+    "role": "chirurgien",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "c4de304652bf66553bbc27aa30b1d9b0dee4ad7fea7478309adcafa595f36117"
+   },
+   {
+    "role": "chirurgien",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null,
+    "sha256": "2ce6e5fec9ab5eb2f56ff10b60d6dbbe2407ce1632b496d3324db3cf65cd6f10"
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « anesthesiste » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « anesthesiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « anesthesiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « anesthesiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « anesthesiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « anesthesiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « anesthesiste » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de déposer sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "patient",
+    "type": "Compte rendu médical",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "patient",
+    "type": "Ordonnance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "patient",
+    "type": "Pièce d’identité",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "patient",
+    "type": "Carte d’assurance",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "patient",
+    "type": "Facture",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "patient",
+    "type": "Type inconnu",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de déposer sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »).",
+    "sha256": null
+   }
+  ],
+  "lectures": [
+   {
+    "role": "admin",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "admin",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "admin",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "admin",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "PIECE_NON_RATTACHEE",
+    "motif": "cette empreinte n’est pas rattachée à la famille « courrier »",
+    "geste": "Ouvrir la pièce depuis la fiche qui la porte."
+   },
+   {
+    "role": "direction",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « direction » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance."
+   },
+   {
+    "role": "direction",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "direction",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "direction",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "PIECE_NON_RATTACHEE",
+    "motif": "cette empreinte n’est pas rattachée à la famille « courrier »",
+    "geste": "Ouvrir la pièce depuis la fiche qui la porte."
+   },
+   {
+    "role": "dm",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "dm",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "dm",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « dm » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "dm",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « dm » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "da",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « da » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance."
+   },
+   {
+    "role": "da",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "da",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "da",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "PIECE_NON_RATTACHEE",
+    "motif": "cette empreinte n’est pas rattachée à la famille « courrier »",
+    "geste": "Ouvrir la pièce depuis la fiche qui la porte."
+   },
+   {
+    "role": "medecin",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "medecin",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "medecin",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « medecin » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "medecin",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « medecin » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "infirmier",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "infirmier",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "infirmier",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « infirmier » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "infirmier",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « infirmier » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "pharmacien",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "pharmacien",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "pharmacien",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "pharmacien",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « pharmacien » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "laborantin",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "laborantin",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "laborantin",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "laborantin",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « laborantin » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "stock",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "stock",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "stock",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "stock",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « stock » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "caissier",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "caissier",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "caissier",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "caissier",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « caissier » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "comptable",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "comptable",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "comptable",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "comptable",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « comptable » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "rh",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "rh",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "rh",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "rh",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « rh » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "reception",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "ZONE_REFUSEE",
+    "motif": "le profil « reception » ne lit ni ne dépose les pièces médicales du dossier patient (RG-13)",
+    "geste": "Seuls les profils cliniques traitent ce type de pièce ; l’accueil dépose la pièce d’identité et la carte d’assurance."
+   },
+   {
+    "role": "reception",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "reception",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "reception",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "PIECE_NON_RATTACHEE",
+    "motif": "cette empreinte n’est pas rattachée à la famille « courrier »",
+    "geste": "Ouvrir la pièce depuis la fiche qui la porte."
+   },
+   {
+    "role": "agentadmin",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « agentadmin » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "agentadmin",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « agentadmin » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "agentadmin",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "agentadmin",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "PIECE_NON_RATTACHEE",
+    "motif": "cette empreinte n’est pas rattachée à la famille « courrier »",
+    "geste": "Ouvrir la pièce depuis la fiche qui la porte."
+   },
+   {
+    "role": "ambulancier",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "ambulancier",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "ambulancier",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "ambulancier",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « ambulancier » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "aide_soignant",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_soignant » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "echographiste",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "echographiste",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "echographiste",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "echographiste",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « echographiste » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "surveillant",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "surveillant",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "surveillant",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "surveillant",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « surveillant » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « assistant_comptable » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « assistant_comptable » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "courrier",
+    "type": null,
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "assistant_comptable",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "PIECE_NON_RATTACHEE",
+    "motif": "cette empreinte n’est pas rattachée à la famille « courrier »",
+    "geste": "Ouvrir la pièce depuis la fiche qui la porte."
+   },
+   {
+    "role": "chirurgien",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "chirurgien",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "chirurgien",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « chirurgien » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "chirurgien",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « chirurgien » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 200,
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "geste": null
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « anesthesiste » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "anesthesiste",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « anesthesiste » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "patient",
+    "type": "zone2",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "patient",
+    "type": "zone1",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de lire sur l’écran « m1-documents »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "courrier",
+    "type": null,
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   },
+   {
+    "role": "aide_comptable",
+    "famille": "courrier",
+    "type": "nonrattachee",
+    "statut": 403,
+    "ok": false,
+    "code": "DROIT_REFUSE",
+    "motif": "le profil « aide_comptable » n’a pas le droit de lire sur l’écran « m13-courriers »",
+    "geste": "Demander ce droit à l’administrateur (« Rôles & permissions »)."
+   }
+  ],
+  "refus": [
+   {
+    "cas": "sans-session",
+    "statut": 401,
+    "code": "SESSION_REQUISE",
+    "motif": "aucune session de poste ouverte",
+    "geste": "Ouvrir une session (api/auth.php) avant de déposer ou de lire un fichier (RG-12)."
+   },
+   {
+    "cas": "famille-inconnue",
+    "statut": 400,
+    "code": "FAMILLE_INCONNUE",
+    "motif": "la famille « autre » n’existe pas",
+    "geste": "Indiquer courrier ou patient."
+   },
+   {
+    "cas": "vide",
+    "statut": 400,
+    "code": "FICHIER_VIDE",
+    "motif": "le fichier ne contient aucun octet",
+    "geste": "Choisir un fichier numérisé non vide."
+   },
+   {
+    "cas": "exe",
+    "statut": 415,
+    "code": "FORMAT_REFUSE",
+    "motif": "le contenu du fichier n’est pas un format admis (PDF, JPEG, PNG)",
+    "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+   },
+   {
+    "cas": "webp-courrier",
+    "statut": 415,
+    "code": "FORMAT_REFUSE",
+    "motif": "le contenu du fichier n’est pas un format admis (PDF, JPEG, PNG)",
+    "geste": "Enregistrer la numérisation en PDF, JPEG ou PNG."
+   },
+   {
+    "cas": "webp-patient-ok",
+    "statut": 200
+   },
+   {
+    "cas": "empreinte-fausse",
+    "statut": 409,
+    "code": "EMPREINTE_DIVERGENTE",
+    "motif": "le fichier reçu n’a pas l’empreinte annoncée (transport altéré)",
+    "geste": "Déposer de nouveau le fichier."
+   },
+   {
+    "cas": "taille-reglee-100ko",
+    "statut": 413,
+    "code": "TAILLE_DEPASSEE",
+    "motif": "le fichier pèse 0.2 Mo, le maximum réglé est 0.1 Mo",
+    "geste": "Numériser en résolution plus basse, ou demander à l’administrateur de relever la taille maximale."
+   }
+  ]
+ },
+ "extracteur": [
+  {
+   "fichier": "courrier-texte.pdf",
+   "sha256": "a647cb59303d1b4e9b0a3cd984b181777b60e8302e5e9748e819e1d2ac7435b8",
+   "pages": 1,
+   "texteIndexe": true,
+   "mots": [
+    "amoxicilline",
+    "compte",
+    "convocation",
+    "de",
+    "des",
+    "direction",
+    "hyperglycémie",
+    "la",
+    "médicale",
+    "numérisé",
+    "rendu",
+    "réunion",
+    "échantillons",
+    "étiquetage"
+   ],
+   "motsTronques": false,
+   "raison": null
+  },
+  {
+   "fichier": "trois-pages.pdf",
+   "sha256": "dd8441dfde67d5ebc1a7a6284f8b3dfeaa93bfcb76214dc35e8a6146df121001",
+   "pages": 3,
+   "texteIndexe": true,
+   "mots": [
+    "la",
+    "mot",
+    "page",
+    "page1mot1",
+    "page2mot1",
+    "page3mot1",
+    "propre"
+   ],
+   "motsTronques": false,
+   "raison": null
+  },
+  {
+   "fichier": "scan-image.pdf",
+   "sha256": "b4c9d8c87bd6cc03bd0ddb7fc7b7d4c6439f688bf6acb9b0eebeed2981086c47",
+   "pages": 1,
+   "texteIndexe": false,
+   "mots": [],
+   "motsTronques": false,
+   "raison": "aucune couche texte lisible : scan image"
+  },
+  {
+   "fichier": "simple-winansi.pdf",
+   "sha256": "71c8c652981e5e8ef2fa48b90fb6b163d51c6cb07f03f07771ff0c70ca8e17da",
+   "pages": 1,
+   "texteIndexe": true,
+   "mots": [
+    "500",
+    "apaisée",
+    "crème",
+    "délivrée",
+    "mg",
+    "ordonnance",
+    "paracétamol"
+   ],
+   "motsTronques": false,
+   "raison": null
+  },
+  {
+   "fichier": "simple-flate.pdf",
+   "sha256": "ddc964421ae0891417f21028949c8cee1fa0c17ce3331c9b4dcd9b1932bb9326",
+   "pages": 1,
+   "texteIndexe": true,
+   "mots": [
+    "certificat",
+    "confirmée",
+    "guérison",
+    "jour",
+    "le",
+    "même",
+    "établi"
+   ],
+   "motsTronques": false,
+   "raison": null
+  },
+  {
+   "fichier": "chiffre.pdf",
+   "sha256": "3d5b5bafe20268b1a734823a07454e4589eaacaa7fcdb8a4435f5f841dadf1d6",
+   "pages": 1,
+   "texteIndexe": false,
+   "mots": [],
+   "motsTronques": false,
+   "raison": "PDF chiffré : texte non lisible"
+  },
+  {
+   "fichier": "sans-objets.pdf",
+   "sha256": "08f5d476f7b284592db771aa9d59b2077a3025eb8b61b1e929f87fc2a2851d79",
+   "pages": null,
+   "texteIndexe": false,
+   "mots": [],
+   "motsTronques": false,
+   "raison": "structure du PDF illisible"
+  },
+  {
+   "fichier": "contenu-illisible.pdf",
+   "sha256": "d38c97f36c15f141fbdf6a4fe72b315babab3e84b3ec6aed7feeed0925fb9cfb",
+   "pages": 1,
+   "texteIndexe": false,
+   "mots": [],
+   "motsTronques": false,
+   "raison": "contenu des pages illisible"
+  },
+  {
+   "fichier": "gros.pdf",
+   "sha256": "ca41ed7bb35cd158f83444ebff55d52d22595f52be8272cf73843761d1011437",
+   "pages": 1,
+   "texteIndexe": true,
+   "mots": [
+    "amoxicilline",
+    "compte",
+    "convocation",
+    "de",
+    "des",
+    "direction",
+    "hyperglycémie",
+    "la",
+    "médicale",
+    "numérisé",
+    "rendu",
+    "réunion",
+    "échantillons",
+    "étiquetage"
+   ],
+   "motsTronques": false,
+   "raison": null
+  },
+  {
+   "fichier": "scan.png",
+   "sha256": "c30e21c2556f0936e16c76c8017b46825c0f4a31f805c2cc400934061f5a6eb2",
+   "pages": null,
+   "texteIndexe": false,
+   "mots": [],
+   "motsTronques": false,
+   "raison": "image sans couche texte"
+  }
+ ]
+}
