@@ -285,3 +285,37 @@ Les trois décisions de la Direction du 13/11/2026 sont appliquées (compteurs e
 - **Accès superadmin** : le panneau entier (et non le seul écran) est réservé aux comptes `superadmin`, vrai par défaut pour tout compte existant (le seul chemin de création est la commande `relais:superadmin`). ☐ Garder ☐ N'en réserver que cet écran.
 - **Un fileul « jamais vu »** (appairé, jamais contacté) ne lève pas d'alerte de silence : on ne peut pas juger un silence sans premier contact. ☐ Garder ☐ L'alerter après ________ jours.
 - **Écran du poste** : l'écran « Synchronisation » existe au panneau du relais seulement. Le poste Flutter porte les douze écrans de la maquette (module RLS) ; celui-ci n'a pas de pendant à la maquette. ☐ Pas de pendant au poste ☐ Le porter au poste (la mère y a déjà ces compteurs).
+
+
+## V. Réponses de la Direction du 13/11/2026 (sections L à U) et lots qui en découlent
+
+Réponses reçues le 13/11/2026 sur les points ouverts des sections L à T. Les cases cochées ci-dessous font foi. Les interprétations que le texte de la réponse laisse ouvertes sont marquées « à confirmer ». Aucune de ces réponses n'est encore appliquée au code : chaque ligne « Lot » est à lancer.
+
+### Laboratoire (section Q)
+- **Forme du seuil** : GARDER « l'une ou l'autre » (absolue ou relative, l'alerte part dès que l'une est atteinte). Rien à changer.
+- **Qui valide un seuil** : la validation RESTE au Biologiste médical. L'administrateur système n'en a pas le droit par défaut. Le technicien de laboratoire est exclu par défaut, mais cette exclusion n'est pas figée dans le code : valider un seuil devient un DROIT de la fiche RBAC (par rôle), le Biologiste médical seul l'ayant à l'origine, et un administrateur peut l'accorder au technicien sur sa fiche. Lot : sortir la liste de rôles `labo_variables` du code vers un droit RBAC réglable (à confirmer : le droit s'accorde par rôle, pas par agent).
+- **Date de jugement d'une mesure** : à sa validation biologique. GARDER.
+- **Alerte visible du médecin au comparatif** : GARDER. **Comparatif à trois antériorités, une seule sur la fiche imprimée** : GARDER.
+- **Courriers « numérisés » sans fichier** : les 25 du jeu sont des textes de démonstration. En production, un courrier enregistré sans scan est « À scanner ». Déjà le comportement du moteur (`numerise` dérivé du fichier), rien à changer.
+- **Seuils et centre « Validations en attente »** : la Direction n'a pas compris la question, voir la proposition ci-dessous.
+- **Constantes d'hospitalisation** et **délai maximal entre deux mesures** : proposition ci-dessous, à valider.
+
+### Importation et fichiers (sections L, M, P, R, S)
+- **Article déjà sorti, import refusé par la mère** : GARDER (l'article reste chez le fileul, marqué « refusée par la mère », restitution partielle) ET prouver l'IDEMPOTENCE : rejouer le verdict, la restitution ou la réconciliation ne produit jamais un second mouvement ni un second article. Lot.
+- **Deux fileuls, même inventaire** : IDEMPOTENCE au lieu d'un refus après coup. Le même fichier d'inventaire (même empreinte) est reconnu comme le MÊME lot : la mère confirme une fois, le second fileul adopte les mêmes identifiants de fiche, aucun double comptage, aucune restitution nécessaire. Remplace `DOUBLON_MAGASIN`. Lot.
+- **Journal des demandes d'import** : lisible par la mère ET les fileuls (pas par un téléphone). C'est le comportement actuel, GARDER.
+- **Grand Stock en attente** : vu du seul poste qui l'a écrit, restitution par mouvements inverses. GARDER.
+
+### OCR (section T)
+- **Moteur** : à choisir après l'essai sur trois vrais scans (TROIS SUFFISENT). **Activation** : désactivée par défaut, activée à la main par l'administrateur ou la DAF. **Relance** : à qui écrit sur l'écran de la pièce, plus l'administrateur et la DAF.
+- **Correction manuelle du texte lu** : OUI, par un agent habilité, SIGNÉE et JOURNALISÉE ; elle s'ajoute comme une version signée, la lecture machine reste lisible. Lot.
+- **Réglage** : propre à chaque poste ET remonté à la mère pour une synchronisation uniforme. À confirmer : lecture proposée = l'activation, la langue et le délai sont des réglages de CLINIQUE posés à la mère (famille R, jamais vers un téléphone), chaque poste ne portant en propre que ce qu'il a d'installé (le moteur disponible ou non). Lot.
+- **Texte d'un scan de zone 2** : ACCEPTER qu'il voyage à tous les fileuls comme la fiche (seul l'affichage est de zone).
+- **Conservation des versions du texte lu** : sans réponse, illimitée par défaut.
+
+### Sauvegardes (section O)
+- **Destinations** : DEUX réglages séparés, magasin d'un côté, fichiers de l'autre. **Fréquence** : copie des fichiers toutes les heures, contrôle chaque nuit. OK.
+- **Copie hors site** : la Direction la veut par un serveur distant ou par le relais web. État réel à ne pas confondre : le relais ne détient aujourd'hui que le JOURNAL chiffré (donc une copie hors site des données synchronisées), aucun octet de scan, aucune copie de la base de la mère, et la section S disait « aucun octet par le relais ». Lot proposé : sauvegarde chiffrée au poste (clé de la clinique) puis déposée au relais ou à un serveur distant, en blocs opaques, avec limite de taille et d'espace d'hébergement dite, deux destinations (magasin, fichiers). À confirmer : cela renverse la décision « aucun octet de fichier par le relais », pour la seule sauvegarde.
+
+### Documents (sections L et M)
+Propositions soumises, pas encore tranchées : demande d'import en famille A ; ordre de portage des 12 jeux (stock, prix, garanties et couvertures, comptabilité) ; droits d'import par jeu écrits au poste ; résultat différent = refus et restitution ; annulation après confirmation refusée chez le fileul ; personnel réservé à la mère ; dépôt d'un scan = droit de l'écran ; un fichier par fiche avec remplacement ; taille maximale 10 Mo réglable ; vue unifiée du dossier élargie aux comptes rendus de maternité et aux fiches de consultation (renvois seulement, droit de zone inchangé).
