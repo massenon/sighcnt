@@ -9,6 +9,7 @@ import 'package:window_manager/window_manager.dart';
 
 
 import 'donnees/fichiers_poste.dart';
+import 'donnees/ocr_poste.dart';
 import 'donnees/sauvegarde_fichiers_poste.dart';
 import 'donnees/organigramme_poste.dart';
 import 'sync/service_demandes_import.dart';
@@ -194,6 +195,11 @@ Future<void> main() async {
   final navigation = await DonneesNavigation.chargerAssets();
   SessionPoste? session;
   ServiceFichiers? serviceFichiers;
+  // LA LECTURE OCR DES SCANS, PRÉPARÉE (lot OCR-prep) : AUCUN moteur n'est branché ni embarqué. Sans moteur, l'état de chaque scan dit « aucun moteur d'OCR installé sur ce poste » et rien ne se met en
+  // file ; le jour où un moteur est branché (`OcrPoste.enregistrer`) et choisi au réglage, les scans sans couche texte sont lus un à la fois, sous le rôle de l'agent connecté.
+  OcrPoste(fichiersPoste, roleCourant: () => session?.role, droitDe: (role, ecran) => navigation.aChaud(magasin).matrice.droit(role, ecran))
+    ..installer()
+    ..demarrer();
   for (final probleme in persistance.problemes) {
     debugPrint(probleme);
   }

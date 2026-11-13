@@ -13,6 +13,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../core/jetons_shell.dart';
 import '../donnees/fichiers_poste.dart';
 import '../donnees/magasin.dart';
+import '../donnees/ocr_poste.dart';
 import '../import/selecteurs_import.dart' show FichierChoisi;
 import '../shell/contexte_ecran.dart';
 import 'bouton.dart';
@@ -20,6 +21,7 @@ import 'badge.dart';
 import 'carte.dart';
 import 'detail.dart';
 import 'modale.dart';
+import 'ocr_ui.dart';
 import 'toast.dart';
 import 'ton.dart';
 
@@ -408,8 +410,9 @@ class _CartePieceState extends State<CartePieceNumerisee> {
   @override
   Widget build(BuildContext context) {
     final fp = FichiersPoste.de(_magasin);
+    final ocr = OcrPoste.de(_magasin);
     return ListenableBuilder(
-        listenable: Listenable.merge([_col, if (fp != null) fp]),
+        listenable: Listenable.merge([_col, if (fp != null) fp, if (ocr != null) ocr]),
         builder: (context, _) {
           final fiche = _col.parId(widget.ficheId);
           final corps = <Widget>[];
@@ -426,12 +429,15 @@ class _CartePieceState extends State<CartePieceNumerisee> {
                 ('Fichier d’origine', '${x['nom'] ?? ''}'),
                 ('Format', _formatLisible(x)),
                 ('Empreinte SHA-256', Text('${docAbrege(x['sha256'])}…', key: const Key('fichiers:empreinte'), style: const TextStyle(fontFamily: 'LiberationMono', fontSize: 12, color: JetonsShell.slate800))),
-                ('Recherche dans le texte', x['texteIndexe'] == true ? const BadgeSigh('Texte indexé', ton: TonSigh.succes) : const BadgeSigh('Texte non indexé', ton: TonSigh.neutre)),
+                ('Recherche dans le texte', ocr != null ? badgeEtatTexte(ocr.etatDe(x)) : (x['texteIndexe'] == true ? const BadgeSigh('Texte indexé', ton: TonSigh.succes) : const BadgeSigh('Texte non indexé', ton: TonSigh.neutre))),
                 ('Déposé', '${x['deposePar'] ?? 'auteur inconnu'}, le ${_dateFr(x['deposeLe'])}'),
               ]));
               if (x['texteIndexe'] != true) {
-                corps.add(const Text('Texte non indexé : la recherche par le contenu ne trouve pas cette pièce (image sans couche texte). Elle reste retrouvable par ses données de fiche.',
-                    style: TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12)));
+                // Lot OCR-prep : l'état de la lecture OCR en toutes lettres, le marquage « lu par machine, à vérifier », la relance (absente sans le droit et sans moteur prêt), l'historique des lectures.
+                corps.add(ocr != null
+                    ? BlocOcrPiece(famille: widget.famille, fichier: x, type: _type, peutDeposer: _peutDeposer)
+                    : const Text('Texte non indexé : la recherche par le contenu ne trouve pas cette pièce (image sans couche texte). Elle reste retrouvable par ses données de fiche.',
+                        style: TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12)));
               }
               corps.add(Wrap(spacing: 8, runSpacing: 8, children: [
                 BoutonSigh(key: const Key('fichiers:apercu'), libelle: 'Aperçu', icone: LucideIcons.eye, taille: TailleBouton.sm, variante: VarianteBouton.secondaire, onPressed: () => _apercu(fiche)),

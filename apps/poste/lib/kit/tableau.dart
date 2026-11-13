@@ -75,6 +75,7 @@ class TableauSigh extends StatefulWidget {
     this.libelleRecherche = 'Rechercher…',
     this.rechercheExtra,
     this.indiceRecherche,
+    this.noteRecherche,
   });
 
   /// `searchExtra` de `U.dataTable` : ce que la recherche lit EN PLUS des colonnes (observations, nom d'un fichier, texte extrait d'un PDF : lot D5). Sans accent ni casse, comme les colonnes.
@@ -82,6 +83,9 @@ class TableauSigh extends StatefulWidget {
 
   /// `indiceRecherche` : ce que la recherche ne lit PAS (une pièce numérisée sans couche texte), dit sous « Aucun résultat » : jamais un vide qui se lit « il n'y a rien ».
   final String? Function(String recherche)? indiceRecherche;
+
+  /// `noteRecherche(q, lignes)` : ce que les résultats ont de particulier (lot OCR-prep : « N résultats trouvés dans un texte lu par machine »), dit AU-DESSUS du tableau.
+  final String? Function(String recherche, List<Ligne> lignes)? noteRecherche;
 
   final List<ColonneTableau> colonnes;
   final List<Ligne> lignes;
@@ -251,6 +255,9 @@ class TableauSighState extends State<TableauSigh> {
             children: [
               _barre(),
               if (_selection.isNotEmpty) _barreSelection(),
+              if (toutes.isNotEmpty && _q.trim().isNotEmpty && widget.noteRecherche != null)
+                if (widget.noteRecherche!(_q, toutes) case final note?)
+                  Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 0), child: NoteSigh(note, key: const Key('kit:note-recherche'), ton: TonSigh.attention, icone: LucideIcons.scanText)),
               if (toutes.isEmpty)
                 VideSigh(
                     _filtreActif

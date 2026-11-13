@@ -425,6 +425,9 @@ class Magasin {
     'reunions': 'M13',
     'courriers': 'M13',
     'fichiers': 'M13',
+    // Lot OCR-prep : les lectures OCR des scans (synchronisées) et leur file (locale au poste).
+    'lecturesOcr': 'M13',
+    'fileOcr': 'M13',
     'evenementsEtablissement': 'M13',
     'planAnnuel': 'M13',
     'ambulance': 'M13',

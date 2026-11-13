@@ -6,8 +6,10 @@ import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/piece.dart';
 import '../../donnees/fichiers_poste.dart';
+import '../../donnees/ocr_poste.dart';
 import '../../kit/fichiers_ui.dart';
 import '../../kit/kit.dart';
+import '../../kit/ocr_ui.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m4/mat_commun.dart';
 import '../m4/mat_crud.dart';
@@ -35,6 +37,7 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
   List<Widget> actionsEntete(BuildContext context) => [
         // Lot D5 : le réglage de la taille maximale d'un fichier, ABSENT sans le droit de régler (administrateur et Directrice Administrative).
         if (boutonTailleFichiers(context, role: ContexteEcran.of(context).role) case final b?) b,
+        if (boutonOcr(context, role: ContexteEcran.of(context).role) case final b?) b,
         BoutonSigh(
             libelle: 'Imprimer le registre',
             icone: LucideIcons.printer,
@@ -80,7 +83,11 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
     }
     final fp = FichiersPoste.de(c.magasin);
 
-    return CrudMat(
+    // Lot OCR-prep : l'état d'indexation d'une ligne (« lu par machine », « en attente »...) suit la lecture : le registre se redessine quand le service de lecture change.
+    final ocr = OcrPoste.de(c.magasin);
+    return ListenableBuilder(
+        listenable: Listenable.merge([if (ocr != null) ocr]),
+        builder: (context, _) => CrudMat(
       collection: col,
       entite: 'courrier',
       entiteP: 'courriers',
@@ -91,9 +98,11 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
       // Lot D5 : un FILTRE du / au sur la date du courrier, la recherche dans le texte indexé d'un PDF (et ce qu'elle ne lit pas, dit sous « Aucun résultat »), la carte de la pièce numérisée.
       plageChamp: 'date',
       rechercheExtra: (r) => fp != null
-          ? fp.texteRecherche(r)
+          ? fp.texteRecherche(r, famille: 'courrier')
           : fichierTexteRecherche(r, dateFr: admDateFR(r['date']), texteIndexe: '', observations: '${r['observations'] ?? ''}'),
       indiceRecherche: (_) => fp?.indiceNonIndexe(col.toutes),
+      // Lot OCR-prep : un résultat trouvé par un texte lu par machine le DIT (la reconnaissance peut se tromper).
+      noteRecherche: (q, lignes) => OcrPoste.de(c.magasin)?.noteRecherche(q, lignes, famille: 'courrier', role: c.role),
       detailSup: (ctx, r) {
         final cc = ContexteEcran.of(ctx);
         return CartePieceNumerisee(famille: 'courrier', ficheId: r['id']!, titre: 'Courrier ${r['reference']}', role: cc.role, droit: cc.droit);
@@ -130,7 +139,9 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
               final x = fichierDe(r)!;
               return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                 const BadgeSigh('Oui', ton: TonSigh.succes),
-                Text(x['texteIndexe'] == true ? 'texte indexé' : 'texte non indexé', style: const TextStyle(color: JetonsShell.slate400, fontSize: 11, height: 14 / 11)),
+                Text(motTexte(c.magasin, x),
+                    key: Key('ocr:ligne-${etatTexte(c.magasin, x).code}'),
+                    style: TextStyle(color: etatTexte(c.magasin, x).etat == EtatIndexation.ocrIndexe ? JetonsShell.warning700 : JetonsShell.slate400, fontSize: 11, height: 14 / 11)),
               ]);
             }),
       ],
@@ -164,8 +175,13 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
         FiltreTableau(
             nom: 'numerise',
             libelle: 'Numérisé',
-            options: const [OptionChamp('oui', 'Pièce numérisée'), OptionChamp('non', 'À scanner'), OptionChamp('sansTexte', 'Texte non indexé')],
-            correspond: (r, v) => v == 'oui' ? courrierNumerise(r) : (v == 'non' ? !courrierNumerise(r) : (courrierNumerise(r) && fichierDe(r)!['texteIndexe'] != true))),
+            options: const [OptionChamp('oui', 'Pièce numérisée'), OptionChamp('non', 'À scanner'), OptionChamp('sansTexte', 'Texte non indexé'), OptionChamp('lu', 'Texte lu par machine')],
+            correspond: (r, v) {
+              if (v == 'oui') return courrierNumerise(r);
+              if (v == 'non') return !courrierNumerise(r);
+              if (v == 'lu') return courrierNumerise(r) && etatTexte(c.magasin, fichierDe(r)!).etat == EtatIndexation.ocrIndexe;
+              return courrierNumerise(r) && !etatTexte(c.magasin, fichierDe(r)!).disponible;
+            }),
       ],
       kpis: (ctx, rows) => [for (final k in admKpisCourriers(rows)) admKpi(k)],
       etat: (ctx, r) => matImprimer(ctx,
@@ -191,7 +207,7 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
             ]),
           ],
           signatures: const [Signature('L’Agent administratif'), _signDa]),
-    );
+    ));
   }
 }
 

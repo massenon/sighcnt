@@ -5,6 +5,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:sigh_sync/sigh_sync.dart' show EtatLocalFichier, ErreurFichier, StockageFichiers;
 
 import 'magasin.dart';
+import 'ocr_poste.dart';
 
 /// LES FICHIERS NUMÉRISÉS AU POSTE (lot D5, portage de `modules/fichiers.js` de la maquette) : dépôt d'un scan sur la fiche d'un courrier (M13) ou d'un document du patient
 /// (M1), lecture avec empreinte VÉRIFIÉE, téléchargement sous le nom normalisé, retrait annulable (RG-14), taille maximale réglée en base, recherche dans le texte indexé.
@@ -87,6 +88,9 @@ class FichiersPoste extends ChangeNotifier {
   /// Branché par la synchronisation ; `null` : poste sans mère.
   EtatTransfertFichiers? transfert;
 
+  /// La lecture OCR des scans (lot OCR-prep), posée par [OcrPoste] à sa création ; `null` : aucun service de lecture, la recherche ne lit que la couche texte.
+  OcrPoste? ocr;
+
   static final Expando<FichiersPoste> _installes = Expando<FichiersPoste>('FichiersPoste');
 
   /// Le service installé pour ce magasin (posé par `main`, ou par un test), ou `null` : les écrans ne plantent jamais sans lui, ils le disent.
@@ -137,22 +141,30 @@ class FichiersPoste extends ChangeNotifier {
     _registre.inserer(fichierEntreeRegistre(depot: depot, premiereDate: magasin.horloge().toIso8601String()), prefixe: 'FIC');
   }
 
-  /// Le texte indexé d'une empreinte (mots normalisés), ou `''`.
-  String texteDe(Object? sha) {
+  /// Le texte indexé d'une empreinte (mots normalisés), ou `''`. LA COUCHE TEXTE NATIVE PRIME TOUJOURS ; sinon, la lecture OCR courante (lot OCR-prep), seulement si le profil de la session
+  /// lit la zone du document : le texte d'un scan de zone 2 est de zone 2.
+  String texteDe(Object? sha, {String famille = 'courrier', String? type}) {
     if (sha == null) return '';
     final f = _registre.parId(fichierIdRegistre('$sha'));
-    return '${f?['texte'] ?? ''}';
+    if (f?['texteIndexe'] == true) return '${f?['texte'] ?? ''}';
+    final o = ocr;
+    if (o == null) return '';
+    return o.texteOcr('$sha', famille: famille, type: type, role: o.roleCourant() ?? '');
   }
 
-  /// Le texte que la recherche d'un registre lit en plus des colonnes (observations, date lisible, nom du fichier, texte extrait).
-  String texteRecherche(FicheDoc fiche) {
+  /// Le texte que la recherche d'un registre lit en plus des colonnes (observations, date lisible, nom du fichier, texte extrait ou lu par machine).
+  String texteRecherche(FicheDoc fiche, {String famille = 'courrier'}) {
     final x = fichierDe(fiche);
-    return fichierTexteRecherche(fiche, dateFr: _dateFr(fiche['date']), texteIndexe: x == null ? '' : texteDe(x['sha256']), observations: '${fiche['observations'] ?? ''}');
+    return fichierTexteRecherche(fiche,
+        dateFr: _dateFr(fiche['date']), texteIndexe: x == null ? '' : texteDe(x['sha256'], famille: famille, type: famille == 'patient' ? '${fiche['type']}' : null), observations: '${fiche['observations'] ?? ''}');
   }
 
-  /// Ce que la recherche ne lit pas, dit sous « Aucun résultat » : le nombre de pièces sans texte indexé parmi [fiches].
-  String? indiceNonIndexe(Iterable<FicheDoc> fiches) =>
-      fichierIndiceNonIndexe(fiches.where((f) => f['statut'] != 'archive' && fichierDe(f) != null && fichierDe(f)!['texteIndexe'] != true).length);
+  /// Ce que la recherche ne lit pas, dit sous « Aucun résultat » : le nombre de pièces sans texte lisible parmi [fiches], la raison (aucun moteur d'OCR installé...), les pièces lues par machine.
+  String? indiceNonIndexe(Iterable<FicheDoc> fiches) {
+    final o = ocr;
+    if (o != null) return o.indice(fiches);
+    return fichierIndiceNonIndexe(fiches.where((f) => f['statut'] != 'archive' && fichierDe(f) != null && fichierDe(f)!['texteIndexe'] != true).length);
+  }
 
   // --- dépôt, remplacement ---------------------------------------------------------------------------------------------------------------------
 
@@ -192,6 +204,8 @@ class FichiersPoste extends ChangeNotifier {
         'motsTronques': idx.motsTronques,
       };
       _noter(depot);
+      // Lot OCR-prep : un scan sans couche texte entre dans la file de lecture SI une lecture est possible (sinon rien ne se met en file et l'état dit pourquoi).
+      ocr?.apresDepot({'sha256': r.sha256, 'texteIndexe': idx.texteIndexe}, famille: famille, type: type);
       return (refus: null, depot: depot, autre: prep.autre);
     } on ErreurFichier catch (e) {
       return (refus: ResultatFichier.refus(e.refus), depot: null, autre: null);

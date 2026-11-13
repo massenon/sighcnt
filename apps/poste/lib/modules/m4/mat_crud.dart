@@ -56,6 +56,7 @@ class CrudMat extends StatefulWidget {
     this.detailSup,
     this.rechercheExtra,
     this.indiceRecherche,
+    this.noteRecherche,
   });
 
   /// `detailSup(r, ctx)` du `K.crud` : un bloc posé APRÈS la fiche par défaut dans le tiroir (la carte « Pièce numérisée » d'un courrier, lot D5).
@@ -64,6 +65,9 @@ class CrudMat extends StatefulWidget {
   /// `recherche: {extra, indice}` du `K.crud` : ce que la recherche lit en plus des colonnes, et ce qu'elle ne lit pas (dit sous « Aucun résultat »).
   final String Function(Fiche)? rechercheExtra;
   final String? Function(String)? indiceRecherche;
+
+  /// Ce que les résultats ont de particulier, dit au-dessus du tableau (lot OCR-prep : trouvés dans un texte lu par machine).
+  final String? Function(String, List<Fiche>)? noteRecherche;
 
   /// `actionsSup(r, refresh)` du `K.crud` : des commandes propres à l'écran (validation d'un circuit, par exemple), posées après « Consulter ». Une commande
   /// interdite est ABSENTE : c'est à l'appelant de ne pas la rendre.
@@ -435,6 +439,7 @@ class _CrudMatState extends State<CrudMat> {
       alClicLigne: (f) => _ouvrirDetail(ctx, f),
       rechercheExtra: widget.rechercheExtra,
       indiceRecherche: archive ? null : widget.indiceRecherche,
+      noteRecherche: archive ? null : widget.noteRecherche,
       actions: [
         if (!archive && c.droit.editer)
           BoutonSigh(

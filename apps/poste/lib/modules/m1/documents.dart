@@ -5,10 +5,12 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/fichiers_poste.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/ocr_poste.dart';
 import '../../impression/piece.dart';
 import '../../import/selecteurs_import.dart' show FichierChoisi;
 import '../../kit/fichiers_ui.dart';
 import '../../kit/kit.dart';
+import '../../kit/ocr_ui.dart';
 import '../../shell/contexte_ecran.dart';
 import 'commun_m1.dart';
 
@@ -42,6 +44,7 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
     return [
       // Lot D5 : le réglage de la taille maximale d'un fichier, ABSENT sans le droit de régler (administrateur et Directrice Administrative).
       if (boutonTailleFichiers(context, role: c.role) case final b?) b,
+      if (boutonOcr(context, role: c.role) case final b?) b,
       BoutonSigh(
           libelle: 'Répertoire des patients',
           icone: LucideIcons.users,
@@ -242,7 +245,7 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
     final col = c.magasin.collection('documentsPatient');
     final fp = FichiersPoste.de(c.magasin);
     return ListenableBuilder(
-        listenable: Listenable.merge([col, c.magasin.collection('fichiers')]),
+        listenable: Listenable.merge([col, c.magasin.collection('fichiers'), c.magasin.collection(ocrLectures), c.magasin.collection(ocrFile)]),
         builder: (context, _) {
           // ZONES (RG-13) : les pièces que le profil ne lit pas ne sont ni montrées, ni comptées ; l'écran le DIT (une restriction muette ferait croire à une donnée manquante).
           final toutes = col.actives;
@@ -276,9 +279,11 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
                   messageVide: 'Aucun enregistrement.',
                   lignes: (cc, actives) => rows,
                   rechercheExtra: (r) => fp != null
-                      ? fp.texteRecherche(r)
+                      ? fp.texteRecherche(r, famille: 'patient')
                       : fichierTexteRecherche(r, dateFr: dateFrM1(r['date']), texteIndexe: ''),
                   indiceRecherche: (_) => fp?.indiceNonIndexe(rows),
+                  // Lot OCR-prep : un résultat trouvé par un texte lu par machine le DIT (la reconnaissance peut se tromper).
+                  noteRecherche: (q, lignes) => OcrPoste.de(c.magasin)?.noteRecherche(q, lignes, famille: 'patient', role: c.role),
                   detail: _fiche,
                   titreDetail: (f) => '${f['type']}',
                   sousTitreDetail: (f) => '${f['reference']} : ${f['code'] ?? ''}',
@@ -312,10 +317,13 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
                     FiltreTableau(
                         nom: 'fichier',
                         libelle: 'Fichier',
-                        options: const [OptionChamp('oui', 'Fichier déposé'), OptionChamp('non', 'Référencé seulement'), OptionChamp('sansTexte', 'Texte non indexé')],
+                        options: const [OptionChamp('oui', 'Fichier déposé'), OptionChamp('non', 'Référencé seulement'), OptionChamp('sansTexte', 'Texte non indexé'), OptionChamp('lu', 'Texte lu par machine')],
                         correspond: (r, v) {
                           final x = fichierDe(r);
-                          return v == 'oui' ? x != null : (v == 'non' ? x == null : (x != null && x['texteIndexe'] != true));
+                          if (v == 'oui') return x != null;
+                          if (v == 'non') return x == null;
+                          if (v == 'lu') return x != null && etatTexte(c.magasin, x).etat == EtatIndexation.ocrIndexe;
+                          return x != null && !etatTexte(c.magasin, x).disponible;
                         }),
                   ],
                   colonnes: [
@@ -347,7 +355,9 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
                           return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                             Text('${'${x['mime']}'.replaceAll('application/', '').replaceAll('image/', '').toUpperCase()} · ${fichierPoids(x['taille'] as num?)}${pages != null ? ' · $pages p.' : ''}',
                                 style: styleM1(t: 12, c: JetonsShell.slate600)),
-                            Text(x['texteIndexe'] == true ? 'déposé, texte indexé' : 'déposé, texte non indexé', style: const TextStyle(color: JetonsShell.success600, fontSize: 11, height: 15 / 11)),
+                            Text('déposé, ${motTexte(c.magasin, x)}',
+                                key: Key('ocr:ligne-${etatTexte(c.magasin, x).code}'),
+                                style: TextStyle(color: etatTexte(c.magasin, x).etat == EtatIndexation.ocrIndexe ? JetonsShell.warning700 : JetonsShell.success600, fontSize: 11, height: 15 / 11)),
                           ]);
                         }),
                     const ColonneTableau(cle: 'depose', libelle: 'Déposé par'),

@@ -135,11 +135,15 @@ class RegistreM1 extends StatefulWidget {
     this.titreArchivage,
     this.rechercheExtra,
     this.indiceRecherche,
+    this.noteRecherche,
   });
 
   /// Ce que la recherche lit en plus des colonnes (texte indexé d'une pièce numérisée) et ce qu'elle ne lit pas, dit sous « Aucun résultat » (lot D5).
   final String Function(Fiche)? rechercheExtra;
   final String? Function(String)? indiceRecherche;
+
+  /// Ce que les résultats ont de particulier, dit au-dessus du tableau (lot OCR-prep : trouvés dans un texte lu par machine).
+  final String? Function(String, List<Map<String, Object?>>)? noteRecherche;
 
   /// Commandes posées dans la barre d'outils du tableau (à côté de « Nouveau »).
   final List<Widget> actionsBarre;
@@ -319,6 +323,7 @@ class _RegistreM1State extends State<RegistreM1> {
       alClicLigne: widget.detail != null ? (f) => _ouvrirDetail(context, f) : null,
       rechercheExtra: widget.rechercheExtra,
       indiceRecherche: widget.indiceRecherche,
+      noteRecherche: widget.noteRecherche,
       actions: [
         ...widget.actionsBarre,
         if (peutCreer)
