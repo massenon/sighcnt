@@ -35,6 +35,12 @@ List<List<Object?>> lignesDuCas(String id) {
 /// Le Grand Stock du vecteur `gs-valide` : MED1 (deux lots, 100 + 50) et GANT1 (40, sans lot). Total des entrées : 190, trois mouvements.
 const stockMed1 = 150, stockGant1 = 40;
 
+/// Le cas `gs-valide` dont UNE seule cellule change (la quantité du premier lot de MED1) : un AUTRE lot, jamais le même inventaire.
+List<List<Object?>> lignesModifiees() {
+  final l = lignesDuCas('gs-valide');
+  return [for (final r in l) [...r]]..[1][4] = ((l[1][4] as num) + 1);
+}
+
 class Poste {
   Poste(this.nom, this.port, this.role, this.par) {
     moteur = MoteurFileul.creer(dbChemin: ':memory:', mere: 'http://127.0.0.1:$port', nom: nom);
@@ -69,6 +75,13 @@ class Poste {
   }
 
   ({ResultatImport resultat, Fiche? demande}) importer(String cas) => imp.importerEtDemander(jeuImportParId('grand-stock')!, analyser(cas));
+
+  /// Importe des lignes quelconques (par exemple celles d'un cas dont UNE cellule change) : l'analyse est celle de ce poste, l'identité du lot dérive du contenu.
+  ({ResultatImport resultat, Fiche? demande}) importerLignes(List<List<Object?>> lignes, String nom) {
+    final profil = ProfilImport(role: role, libelleRole: role, matrice: donnees.matrice.matriceImport);
+    final a = analyserLignes(jeuImportParId('grand-stock')!, lignes, nom, PortMagasin(m, aujourdhui: () => DateTime(2026, 11, 13), nomAgent: par, profil: profil))..empreinte = 'e-$nom';
+    return imp.importerEtDemander(jeuImportParId('grand-stock')!, a);
+  }
 
   /// Une SORTIE de stock du poste (dispensation) : le lot, le produit et un mouvement de sortie, comme le geste réel.
   void sortir(String code, String numeroLot, int q) {

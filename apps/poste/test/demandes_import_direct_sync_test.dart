@@ -69,6 +69,14 @@ class Poste {
     return imp.importerEtDemander(jeuImportParId(jeu)!, a);
   }
 
+  /// Importe des lignes quelconques (lot IDEM : un fichier dont UNE cellule change est un AUTRE lot, jamais adopté comme le même inventaire).
+  ({ResultatImport resultat, Fiche? demande}) importerLignes(String jeu, List<List<Object?>> lignes, String nom) {
+    final profil = ProfilImport(role: role, libelleRole: role, matrice: donnees.matrice.matriceImport);
+    final a = analyserLignes(jeuImportParId(jeu)!, lignes, nom, PortMagasin(m, aujourdhui: () => DateTime(2026, 11, 12), nomAgent: par, profil: profil))..empreinte = 'e-$nom';
+    expect(a.accepte, isTrue, reason: '${[for (final p in a.problemes) '${p.code}:${p.motif}']}');
+    return imp.importerEtDemander(jeuImportParId(jeu)!, a);
+  }
+
   List<Fiche> actives(String col, String code) => [for (final f in m.collection(col).actives) if (f['code'] == code) f];
   Fiche? demande(Object? id) => m.collection(demandesImportCollection).parId(id);
 }
@@ -156,15 +164,15 @@ void main() {
       await c.tour();
       final r = f1.importer('fournisseurs', 'fo-valide');
       expect(r.resultat.ok, isTrue, reason: '${r.resultat.motif}');
-      final id = '${r.demande!['id']}';
+      final id = '${r.demande!['id']}', serie = '${r.demande!['serieIdentifiants']}';
       expect(f1.actives('fournisseurs', 'CAME'), hasLength(1), reason: 'écrit chez le fileul tout de suite, sans attendre la mère');
       expect(f1.actives('fournisseurs', 'CAME').single[champEnAttenteMere], id);
-      expect(f1.actives('fournisseurs', 'CAME').single['id'], 'FOU-$id-1');
+      expect(f1.actives('fournisseurs', 'CAME').single['id'], 'FOU-$serie-1');
       await c.converger(() => f1.demande(id)?['etat'] == demandeImportAppliquee && f1.demande(id)?['marquageLeve'] == true, 'la mère confirme, le fileul lève le marquage');
       final v = f1.demande(id)!;
       expect([v['resultatEcrits'], v['traitePar'], v['lignes']], [2, 'Mère', isEmpty]);
       final surMere = c.mm.collection('fournisseurs').actives.where((f) => f['lotImport'] == v['resultatLot']).toList();
-      expect({for (final f in surMere) '${f['id']}'}, {'FOU-$id-1', 'FOU-$id-2'}, reason: 'la mère rejoue avec les identifiants de la demande');
+      expect({for (final f in surMere) '${f['id']}'}, {'FOU-$serie-1', 'FOU-$serie-2'}, reason: 'la mère rejoue avec les identifiants de la série du lot (dérivée du contenu, lot IDEM)');
       expect(surMere.every((f) => f['validePar'] == 'GESTIONNAIRE UN'), isTrue, reason: 'au nom de l\'auteur (RG-12)');
       // Une identité de ligne : aucun doublon chez le fileul qui a écrit, ni chez l'autre qui a reçu la configuration.
       await c.converger(() => f2.actives('fournisseurs', 'CAME').isNotEmpty, 'la configuration de la mère arrive au second fileul');
@@ -184,7 +192,7 @@ void main() {
     }
   }, timeout: const Timeout(Duration(seconds: 240)));
 
-  test('CAS 3, LA MÈRE EST INJOIGNABLE puis revient : le fileul garde son écriture, rien n\'est « appliqué » ; DEUX fileuls importent le même code : la première demande est appliquée, la seconde refusée, le second fileul restitue', () async {
+  test('CAS 3, LA MÈRE EST INJOIGNABLE puis revient : le fileul garde son écriture, rien n\'est « appliqué » ; DEUX fileuls importent deux fichiers qui recouvrent le même code (une cellule change) : la première demande est appliquée, la seconde refusée, le second fileul restitue', () async {
     final c = Clinique(9412, '${tmp.path}/mere.sqlite');
     await c.demarrer();
     try {
@@ -194,7 +202,10 @@ void main() {
       // La mère s'ARRÊTE pour de vrai (réseau coupé, processus arrêté).
       await c.mere.arreter();
       final r1 = f1.importer('assureurs', 'as-valide');
-      final r2 = f2.importer('assureurs', 'as-valide');
+      // LOT IDEM : le MÊME fichier serait adopté (voir `import_idempotence_direct_sync_test.dart`) ; ici le second fichier a UNE cellule de différence (l'e-mail de SUNU) : un autre lot qui recouvre le premier.
+      final autre = lignesDuCas('as-valide');
+      autre[1][3] = 'autre@sunu.bj';
+      final r2 = f2.importerLignes('assureurs', autre, 'as-modifie.xlsx');
       expect(r1.resultat.ok && r2.resultat.ok, isTrue, reason: 'chacun écrit chez lui, la mère n\'est pas consultée');
       final id1 = '${r1.demande!['id']}', id2 = '${r2.demande!['id']}';
       for (var i = 0; i < 4; i++) {
@@ -221,7 +232,7 @@ void main() {
       for (final f in [f1, f2]) {
         expect(f.actives('assureurs', 'SUNU'), hasLength(1), reason: f.nom);
         expect(f.actives('assureurs', 'OLEA'), hasLength(1));
-        expect(f.actives('assureurs', 'SUNU').single['id'], 'ASS-$id1-1', reason: '${f.nom} : la fiche de la première demande, celle de la mère');
+        expect(f.actives('assureurs', 'SUNU').single['id'], 'ASS-${r1.demande!['serieIdentifiants']}-1', reason: '${f.nom} : la fiche de la première demande, celle de la mère');
         expect(f.m.collection('assureurs').actives.where((x) => x.containsKey(champEnAttenteMere)), isEmpty);
       }
       expect(f2.m.collection('assureurs').toutes.where((x) => x['statut'] == 'archive'), hasLength(2), reason: 'la restitution archive (RG-14), elle ne supprime rien');
@@ -241,7 +252,7 @@ void main() {
       // Entre-temps, la mère reçoit la fiche CAME d'ailleurs (un autre poste) : elle n'écrirait pas la même chose que le fileul.
       c.mm.collection('fournisseurs').inserer({'id': 'FOU-AILLEURS', 'code': 'CAME', 'nom': 'CAME (créé ailleurs)', 'statut': 'actif'});
       final r = f1.importer('fournisseurs', 'fo-valide');
-      final id = '${r.demande!['id']}';
+      final id = '${r.demande!['id']}', serie = '${r.demande!['serieIdentifiants']}';
       // Une pièce émise s'appuie déjà sur la fiche écrite chez le fileul avant le refus.
       f1.m.collection('commandes').inserer({'numero': 'BC-12', 'fournisseurCode': 'CAME', 'statut': 'actif'});
       await c.converger(() => f1.demande(id)?['etat'] == demandeImportRefusee && f1.demande(id)?['restitution'] != null, 'le refus de la mère revient, le fileul restitue');
@@ -251,8 +262,8 @@ void main() {
       expect(v['restitution'], restitutionPartielle);
       expect((v['restitutionGardees'] as List).single['code'], 'FOURNISSEUR_UTILISE');
       expect(libelleEtatDemandeImport(v).libelle, 'Refusée par la mère, restitution partielle');
-      expect(f1.m.collection('fournisseurs').toutes.firstWhere((f) => f['id'] == 'FOU-$id-1')['statut'], isNot('archive'), reason: 'une pièce émise ne se réécrit jamais');
-      expect('${f1.m.collection('fournisseurs').toutes.firstWhere((f) => f['id'] == 'FOU-$id-1')[champRefuseeParMere]}', contains('RESULTAT_DIFFERENT'));
+      expect(f1.m.collection('fournisseurs').toutes.firstWhere((f) => f['id'] == 'FOU-$serie-1')['statut'], isNot('archive'), reason: 'une pièce émise ne se réécrit jamais');
+      expect('${f1.m.collection('fournisseurs').toutes.firstWhere((f) => f['id'] == 'FOU-$serie-1')[champRefuseeParMere]}', contains('RESULTAT_DIFFERENT'));
       expect(f1.actives('fournisseurs', 'LOCAL'), isEmpty, reason: 'l\'autre fiche, que rien n\'utilise, est restituée');
       expect(c.mm.collection('fournisseurs').actives.where((f) => f['code'] == 'LOCAL'), isEmpty, reason: 'rien n\'a été écrit à la mère');
       expect(c.mm.collection('fournisseurs').actives.where((f) => f['code'] == 'CAME'), hasLength(1), reason: 'la mère l\'emporte : sa fiche est la seule qu\'elle tient');

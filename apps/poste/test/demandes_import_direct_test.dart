@@ -96,7 +96,9 @@ void main() {
     final d = r.demande!;
     expect([d['etat'], d['ecritureDirecte'], d['jeu'], d['demandeRole'], d['lotLocal']], [demandeImportEnAttente, true, 'fournisseurs', 'stock', r.resultat.lot!['reference']]);
     expect(fiches.every((f) => f[champEnAttenteMere] == d['id']), isTrue, reason: 'le marquage porte l\'identifiant de la demande');
-    expect(fiches.map((f) => f['id']).toSet(), {'FOU-${d['id']}-1', 'FOU-${d['id']}-2'});
+    expect(fiches.map((f) => f['id']).toSet(), {'FOU-${d['serieIdentifiants']}-1', 'FOU-${d['serieIdentifiants']}-2'}, reason: 'la série des identifiants dérive du contenu du fichier (lot IDEM), le marquage reste celui de la demande');
+    expect(d['identiteLot'], matches(RegExp(r'^[0-9a-f]{64}$')));
+    expect(d['serieIdentifiants'], 'IMP${(d['identiteLot'] as String).substring(0, 20)}');
     expect(m.collection(demandesImportCollection).toutes.single['id'], d['id']);
     expect(p.demandeDuLot(r.resultat.lot!['id'])!['id'], d['id']);
     expect(m.collection(collectionLots).toutes.single['etat'], 'applique');

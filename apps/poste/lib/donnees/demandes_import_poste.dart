@@ -91,9 +91,14 @@ class DemandesImportPoste {
         n++;
         continue;
       }
+      // LOT IDEM : une demande déjà traitée une fois (`traitePar`) que la mère rejoue (verdict perdu, demande reçue deux fois) rend le même verdict sans le journaliser de nouveau.
+      final dejaTraitee = '${d['traitePar'] ?? ''}'.isNotEmpty;
       col.mettreAJour('${d['id']}', v.versChamps(traitePar: 'Mère', traiteLe: _jour));
-      m.journaliser(v.appliquee ? 'Demande d’import appliquée' : 'Demande d’import refusée', 'IMP', 'DemandeImport', '${d['id']}',
-          {'etat': demandeImportEnAttente}, {'jeu': d['jeu'], 'par': parAuteur, 'code': v.code, 'lot': v.lot});
+      if (!dejaTraitee) {
+        m.journaliser(
+            v.appliquee ? (v.adoptee ? 'Demande d’import adoptée (déjà confirmée)' : 'Demande d’import appliquée') : 'Demande d’import refusée', 'IMP', 'DemandeImport', '${d['id']}',
+            {'etat': demandeImportEnAttente}, {'jeu': d['jeu'], 'par': parAuteur, 'code': v.code, 'lot': v.lot});
+      }
       n++;
     }
     return n;
@@ -124,7 +129,12 @@ class DemandesImportPoste {
   ({ResultatImport resultat, Fiche? demande}) importerEtDemander(JeuImport jeu, AnalyseImport analyse) {
     final col = m.collection(demandesImportCollection);
     final id = 'DIM$etiquette${aujourdhui().microsecondsSinceEpoch}${col.toutes.length}';
-    final r = m.pendantImportFileul(_autorisees(jeu), () => appliquerDemande(jeu, analyse, PortDemandeImport(_port(), demandeId: id, marquerEnAttente: true, compteurs: champsCompteurs)));
+    // LOT IDEM : la série des identifiants de fiche dérive du CONTENU du fichier (la même chez tous les postes qui importent ce contenu), le marquage « en attente » reste celui de la demande.
+    final lot = preparerLotImport(jeu, analyse.lignesBrutes, _port());
+    final r = m.pendantImportFileul(
+        _autorisees(jeu),
+        () => appliquerDemande(
+            jeu, analyse, PortDemandeImport(_port(), demandeId: lot.serie, marquage: id, identiteLot: lot.identite, marquerEnAttente: true, compteurs: champsCompteurs)));
     if (!r.ok) return (resultat: r, demande: null);
     final fiche = composerDemandeImport(
         id: id,
@@ -135,7 +145,9 @@ class DemandesImportPoste {
         jour: _jour,
         restreint: matrice.matriceImport.declaration(jeu.id)?.restreint ?? true,
         lotLocal: '${r.lot!['reference']}',
-        lotLocalId: r.lot!['id']);
+        lotLocalId: r.lot!['id'],
+        serie: lot.serie,
+        identiteLot: lot.identite);
     try {
       // Le journal ne recopie aucune valeur de cellule (RG-12, RG-13).
       m.journaliser('Import écrit chez le fileul, demande déposée à la mère', 'IMP', 'DemandeImport', id, null,
@@ -201,6 +213,26 @@ class DemandesImportPoste {
               'restitutionLe': _jour,
               'restitutionArchives': r.archives,
               'restitutionGardees': [for (final g in r.gardees) {'collection': g['collection'], 'id': g['id'], 'code': g['code'], 'motif': g['motif']}],
+            }, journaliser: false);
+            n++;
+          }
+        case SuiteDuVerdict.rebaser:
+          // LOT IDEM : la mère tient déjà ce contenu sous une autre série (ce fileul l'avait réimporté après une annulation) : son écriture locale est RESTITUÉE (archivage, contre-passations
+          // nommées, un article déjà sorti reste, marqué) ; les fiches de la mère lui arrivent par la configuration. Ce n'est pas un refus : la demande reste « appliquée, adoptée ».
+          final r = m.pendantImportFileul(
+              {if (jeu != null) ...collectionsAutoriseesAuFileul(jeu), for (final e in ecrits) '${e['collection']}'},
+              () => restituerLotDirect(jeuImportParId, d['lotLocalId'],
+                  codeRefus: 'LOT_ADOPTE',
+                  motifRefus: 'la mère tient déjà ce contenu sous la série ${d['resultatSerie']} : votre écriture locale (série ${d['serieIdentifiants']}) est remplacée par la sienne',
+                  port: _port(nomAgent: '${d['demandePar']}')));
+          final dejaFait = !r.ok && r.code == 'LOT_NON_APPLIQUE';
+          if (r.ok || dejaFait) {
+            col.mettreAJour('${d['id']}', {
+              'restitution': dejaFait ? restitutionFaite : r.etat,
+              'restitutionLe': _jour,
+              'restitutionArchives': r.archives,
+              'restitutionGardees': [for (final g in r.gardees) {'collection': g['collection'], 'id': g['id'], 'code': g['code'], 'motif': g['motif']}],
+              'marquageLeve': true,
             }, journaliser: false);
             n++;
           }
