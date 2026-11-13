@@ -7,3 +7,4 @@ export 'src/fileul.dart' show Fileul, ConfigFileul;
 export 'src/mobile.dart' show Mobile, ConfigMobile;
 export 'src/pair.dart' show FileulPair, ConfigPair;
 export 'src/smtp.dart' show ConfigSmtp, EtapeSmtp, ResultatSmtp, envoyerSmtp;
+export 'src/stockage_fichiers.dart' show StockageFichiers, ErreurFichier, FichierRange, MetaFichier, EtatLocalFichier;

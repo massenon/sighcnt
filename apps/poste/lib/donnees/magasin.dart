@@ -424,6 +424,7 @@ class Magasin {
     'appels': 'M2',
     'reunions': 'M13',
     'courriers': 'M13',
+    'fichiers': 'M13',
     'evenementsEtablissement': 'M13',
     'planAnnuel': 'M13',
     'ambulance': 'M13',
