@@ -815,6 +815,11 @@
                 + alertesDe(r).map(function (x) { return x.variable.libelle + ' ' + texteVariation(x.variation, x.suffixe); }).join(' ; ')
                 + '. Ce signalement n’empêche pas la validation : relire avant de signer.<br><br>'
               : '')
+            + (evaluationsDe(r).filter(function (x) { return x.alerte.nonEvalue === 'delai'; }).length
+              ? '<strong>Variation non évaluée</strong> (« non évalué » ne veut pas dire « pas d’alerte ») : '
+                + evaluationsDe(r).filter(function (x) { return x.alerte.nonEvalue === 'delai'; }).map(function (x) { return x.variable.libelle + ' (' + texteNonEvalue(x.alerte).replace('Variation non évaluée : ', '') + ')'; }).join(' ; ')
+                + '. Cela n’empêche pas la validation.<br><br>'
+              : '')
             + (interim
               ? 'Vous portez cette validation <strong>en l’absence du biologiste médical</strong> : '
                 + 'votre qualité d’intérimaire sera portée sur le compte rendu.<br><br>'
@@ -1674,11 +1679,26 @@
     if (s.ecartRelatif != null) t.push(s.ecartRelatif + ' %');
     return t.join(' ou ');
   }
+  /** L'ÂGE de la mesure précédente, en jours entiers de calendrier entre sa date et celle de la mesure jugée (jamais négatif) ; null quand une des deux dates manque. Toujours affiché. */
+  function ageEntreMesures(precedente, courante) {
+    var jour = function (d) { var t = String((d && (d.dateHeure || d.date)) || '').slice(0, 10); return /^\d{4}-\d{2}-\d{2}$/.test(t) ? Date.UTC(+t.slice(0, 4), +t.slice(5, 7) - 1, +t.slice(8, 10)) : null; };
+    var a = jour(precedente), b = jour(courante);
+    return a == null || b == null ? null : Math.max(0, Math.round((b - a) / 86400000));
+  }
+  function textePluriel(n, mot) { return C.num(n) + ' ' + mot + (n > 1 ? 's' : ''); }
+  /** « mesure précédente il y a 12 jours » : l'âge de la mesure précédente, avec ou sans délai réglé. */
+  function texteAge(age) { return age == null ? null : (age === 0 ? 'mesure précédente le même jour' : 'mesure précédente il y a ' + textePluriel(age, 'jour')); }
+  /** Le message d'une variation NON ÉVALUÉE faute de délai : le verdict nomme l'âge et le délai réglé. */
+  function texteNonEvalue(a) { return 'Variation non évaluée : mesure précédente trop ancienne (' + textePluriel(a.ageJours, 'jour') + ', délai réglé ' + C.num(a.delaiMaxJours) + ' jour' + (a.delaiMaxJours > 1 ? 's' : '') + ')'; }
+  /** Le délai d'un seuil, pour l'écran de réglage (vide quand aucun délai n'est réglé). */
+  function texteDelai(s) { return s && s.delaiMaxJours != null ? 'délai entre deux mesures : ' + textePluriel(s.delaiMaxJours, 'jour') : ''; }
   function texteAlerte(a, suffixe) {
     return 'Variation brutale : seuil de ' + texteSeuil(a.seuil, suffixe) + ' atteint (seuil validé, version ' + a.seuil.version + ' du ' + C.dateFR(a.seuil.dateEffet) + ')';
   }
   /** Les variations brutales d'UNE mesure (variables numériques seulement) : [{ variable, variation, alerte, precedente, suffixe }]. */
-  function alertesDe(demande) {
+  function alertesDe(demande) { return evaluationsDe(demande).filter(function (x) { return x.alerte.alerte; }); }
+  /** Les variations d'UNE mesure que le seuil a ÉVALUÉES ou DÉCLARÉES NON ÉVALUÉES faute de délai : alerte levée, ou `nonEvalue === 'delai'`. */
+  function evaluationsDe(demande) {
     var code = codeExamenDeStatique(demande);
     if (!code || !seuils()) return [];
     var out = [];
@@ -1688,22 +1708,31 @@
       var prec = derniereValeurAnterieure(demande, v.code);
       if (!prec) return;
       var variation = variationEntre(v, prec.valeur, val);
-      var a = seuils().alerteVariation(v, variation, dateJugementMesure(demande));
-      if (a && a.alerte) { var u = symbole(v.unite); out.push({ variable: v, variation: variation, alerte: a, precedente: prec.demande, suffixe: u === '—' ? '' : ' ' + u }); }
+      var a = seuils().alerteVariation(v, variation, dateJugementMesure(demande), { ageJours: ageEntreMesures(prec.demande, demande) });
+      if (a && (a.alerte || a.nonEvalue)) { var u = symbole(v.unite); out.push({ variable: v, variation: variation, alerte: a, precedente: prec.demande, suffixe: u === '—' ? '' : ' ' + u }); }
     });
     return out;
   }
   function noteAlertes(demande) {
-    var al = alertesDe(demande);
-    if (!al.length) return null;
-    return K.note('<strong>Variation brutale signalée sur ' + C.num(al.length) + ' variable(s)</strong> par rapport à la mesure précédente rendue. Ce signalement n’empêche pas la validation : il demande une relecture avant de signer.<br>'
-      + al.map(function (x) { return x.variable.libelle + ' : ' + texteVariation(x.variation, x.suffixe) + '. ' + texteAlerte(x.alerte, x.suffixe) + '.'; }).join('<br>'),
-    { tone: 'warning', icon: 'activity' });
+    var ev = evaluationsDe(demande);
+    var al = ev.filter(function (x) { return x.alerte.alerte; }), non = ev.filter(function (x) { return x.alerte.nonEvalue === 'delai'; });
+    if (!al.length && !non.length) return null;
+    var html = [];
+    if (al.length) {
+      html.push('<strong>Variation brutale signalée sur ' + C.num(al.length) + ' variable(s)</strong> par rapport à la mesure précédente rendue. Ce signalement n’empêche pas la validation : il demande une relecture avant de signer.<br>'
+        + al.map(function (x) { return x.variable.libelle + ' : ' + texteVariation(x.variation, x.suffixe) + '. ' + texteAlerte(x.alerte, x.suffixe) + '.'; }).join('<br>'));
+    }
+    if (non.length) {
+      html.push('<span data-variation-non-evaluee=""><strong>Variation non évaluée sur ' + C.num(non.length) + ' variable(s)</strong> : « non évalué » ne veut pas dire « pas d’alerte ».<br>'
+        + non.map(function (x) { return x.variable.libelle + ' : ' + texteNonEvalue(x.alerte) + '.'; }).join('<br>') + '</span>');
+    }
+    return K.note(html.join('<br>'), { tone: al.length ? 'warning' : 'info', icon: 'activity' });
   }
 
   global.SIGH.laboAnteriorites = {
     NB_ANTERIORITES: NB_ANTERIORITES, mesuresRendues: mesuresRendues, anterieuresDe: anterieuresDe,
-    derniereValeurAnterieure: derniereValeurAnterieure, variationEntre: variationEntre, texteVariation: texteVariation, alertesDe: alertesDe,
+    derniereValeurAnterieure: derniereValeurAnterieure, variationEntre: variationEntre, texteVariation: texteVariation, alertesDe: alertesDe, evaluationsDe: evaluationsDe,
+    ageEntreMesures: ageEntreMesures,
   };
 
   /** Les variables d'un examen, dans l'ordre de rendu, telles que paramétrées. */
@@ -2067,6 +2096,7 @@
                 if (!e.enVigueur) return el('span.text-xs.text-slate-400', { text: e.retire ? 'Alerte retirée' : 'Aucun seuil configuré' });
                 return el('div', { 'data-seuil-vigueur': v.code }, [
                   el('p.text-sm', { text: texteSeuil(e.enVigueur, suffixeDe(v)) }),
+                  e.enVigueur.delaiMaxJours != null ? el('p.text-[10px].text-slate-500', { 'data-delai-seuil': String(e.enVigueur.delaiMaxJours), text: texteDelai(e.enVigueur) }) : null,
                   el('p.text-[10px].text-slate-400', { text: 'version ' + e.enVigueur.version + ', depuis le ' + C.dateFR(e.enVigueur.dateEffet) }),
                 ]);
               },
@@ -2158,7 +2188,7 @@
           tb.appendChild(el('tr', null, [
             el('td', { text: 'v' + x.version }),
             el('td', { text: x.etat === 'valide' ? 'Validé' : 'Enregistré (sans effet)' }),
-            el('td', { text: x.retrait ? 'Retrait de l’alerte' : texteSeuil(x, suffixeDe(v)) }),
+            el('td', { text: x.retrait ? 'Retrait de l’alerte' : texteSeuil(x, suffixeDe(v)) + (x.delaiMaxJours != null ? ' (' + texteDelai(x) + ')' : '') }),
             el('td', { text: C.dateFR(x.dateEffet) }),
             el('td', { text: (x.enregistrePar || '') + (x.enregistreLe ? ', le ' + C.dateFR(x.enregistreLe) : '') }),
             el('td', { text: x.etat === 'valide' ? x.validePar + ' (' + x.valideRole + '), le ' + C.dateFR(x.valideLe) : '' }),
@@ -2180,19 +2210,20 @@
         var champsS = [
           { name: 'ecartAbsolu', label: 'Variation absolue d’au moins' + (u === '—' ? '' : ' (' + u + ')'), type: 'number', step: 'any', hint: 'Vide : pas d’alerte sur l’écart absolu' },
           { name: 'ecartRelatif', label: 'Variation relative d’au moins (%)', type: 'number', step: 'any', hint: 'Vide : pas d’alerte sur le pourcentage' },
+          { name: 'delaiMaxJours', label: 'Délai maximal entre deux mesures (jours)', type: 'number', step: 1, min: 1, hint: 'Vide : aucun délai. Au-delà, la variation n’est pas évaluée et le comparatif le dit ; rien n’est bloqué.' },
           { name: 'dateEffet', label: 'Date d’effet', type: 'date', required: true, hint: 'Aujourd’hui ou plus tard : un seuil ne s’applique jamais en arrière' },
           { name: 'note', label: 'Note', type: 'text', col: 'full' },
         ];
         if (e.enVigueur) champsS.push({ name: 'retrait', label: 'Retirer l’alerte à partir de la date d’effet (vider les deux seuils)', type: 'checkbox', col: 'full' });
         var f = U.form(champsS, {
-          ecartAbsolu: base.retrait ? null : base.ecartAbsolu, ecartRelatif: base.retrait ? null : base.ecartRelatif,
+          ecartAbsolu: base.retrait ? null : base.ecartAbsolu, ecartRelatif: base.retrait ? null : base.ecartRelatif, delaiMaxJours: base.retrait ? null : base.delaiMaxJours,
           dateEffet: base.dateEffet && base.dateEffet >= jour ? base.dateEffet : jour, note: base.note || '', retrait: !!(e.brouillon && e.brouillon.retrait),
         });
         var m;
         function enregistrer(apres) {
           var val = f.collect();
           if (!val) return;
-          var r = seuils().enregistrer(v.id, { ecartAbsolu: val.ecartAbsolu, ecartRelatif: val.ecartRelatif, dateEffet: val.dateEffet, note: val.note, retrait: val.retrait === true });
+          var r = seuils().enregistrer(v.id, { ecartAbsolu: val.ecartAbsolu, ecartRelatif: val.ecartRelatif, delaiMaxJours: val.delaiMaxJours, dateEffet: val.dateEffet, note: val.note, retrait: val.retrait === true });
           if (!r.ok) { refusSeuilToast(r); return; }
           m.close();
           afficher();
@@ -3479,7 +3510,8 @@
       var variation = prec ? variationEntre(v, prec.valeur, vb) : null;
       lignes.push({
         variable: v, suffixe: suffixe, cellules: cellules, precedente: prec ? prec.demande : null, variation: variation,
-        alerte: variation && seuils() ? seuils().alerteVariation(v, variation, dateJugementMesure(b)) : null,
+        ageJours: prec ? ageEntreMesures(prec.demande, b) : null,
+        alerte: variation && seuils() ? seuils().alerteVariation(v, variation, dateJugementMesure(b), { ageJours: prec ? ageEntreMesures(prec.demande, b) : null }) : null,
       });
     });
     return { colonnes: colonnes, lignes: lignes, anterieures: ant, comparee: b };
@@ -3712,8 +3744,14 @@
             if (ligne.variation && ligne.precedente && ligne.precedente !== mod.anterieures.mesures[mod.anterieures.mesures.length - 1]) {
               cVar.appendChild(el('p.text-[10px].text-slate-400', { text: 'à la mesure du ' + C.dateFR(ligne.precedente.dateHeure) }));
             }
+            /* L'ÂGE de la mesure précédente s'affiche TOUJOURS (avec ou sans délai réglé) ; au-delà du délai réglé, le comparatif DIT que la variation n'est pas évaluée. */
+            if (ligne.variation && ligne.ageJours != null) {
+              cVar.appendChild(el('p.text-[10px].text-slate-400', { 'data-age-precedente': String(ligne.ageJours), text: texteAge(ligne.ageJours) }));
+            }
             if (ligne.alerte && ligne.alerte.alerte) {
               cVar.appendChild(el('p.mt-1.text-xs.font-semibold.text-warning-700', { 'data-alerte-variation': '', text: texteAlerte(ligne.alerte, ligne.suffixe) }));
+            } else if (ligne.alerte && ligne.alerte.nonEvalue === 'delai') {
+              cVar.appendChild(el('p.mt-1.text-xs.font-medium.text-slate-600', { 'data-variation-non-evaluee': '', text: texteNonEvalue(ligne.alerte) }));
             } else if (ligne.alerte && ligne.alerte.nonEvaluable) {
               cVar.appendChild(el('p.mt-1.text-[10px].text-slate-400', { 'data-alerte-nonevaluable': '', text: 'Seuil relatif non évaluable : valeur précédente nulle.' }));
             }

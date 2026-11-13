@@ -7788,7 +7788,13 @@
     if ((abs != null && !(abs > 0)) || (rel != null && !(rel > 0))) {
       return refusSeuil('SEUIL_INVALIDE', 'Un seuil est un nombre strictement positif : zéro alerterait à chaque mesure.', 'Saisir un nombre supérieur à zéro, ou laisser vide pour ne pas alerter.');
     }
+    /* LE DÉLAI MAXIMAL ENTRE DEUX MESURES (lot B) : un nombre ENTIER de jours, VIDE par défaut (aucune valeur inventée). Il se pose AVEC le seuil, sur la même version, sous la même validation. */
+    var delai = seuilNombre(o.delaiMaxJours);
+    if (delai != null && !(Number.isInteger(delai) && delai > 0)) {
+      return refusSeuil('DELAI_INVALIDE', 'Le délai maximal entre deux mesures est un nombre entier de jours, au moins 1 : zéro refuserait d’évaluer toute variation.', 'Saisir un nombre entier de jours supérieur à zéro, ou laisser vide pour n’imposer aucun délai.');
+    }
     if (retrait) {
+      if (delai != null) return refusSeuil('RETRAIT_AVEC_VALEURS', 'Retirer le seuil ne porte aucun délai.', 'Vider le délai, ou décocher le retrait.');
       if (abs != null || rel != null) return refusSeuil('RETRAIT_AVEC_VALEURS', 'Retirer le seuil ne porte aucune valeur.', 'Vider les deux champs, ou décocher le retrait.');
       if (!seuilEnVigueur(variableId, '9999-12-31')) return refusSeuil('RIEN_A_RETIRER', 'Aucun seuil validé sur « ' + v.libelle + ' » : il n’y a rien à retirer.', 'Fermer la fenêtre.');
     } else if (abs == null && rel == null) {
@@ -7797,10 +7803,10 @@
     var d = isoJour(o.dateEffet || aujIso());
     r = controleDatesSeuil(variableId, d); if (r) return r;
     var b = brouillonSeuil(variableId), maintenant = new Date().toISOString();
-    var champs = { ecartAbsolu: abs, ecartRelatif: rel, retrait: retrait, dateEffet: d, note: o.note ? String(o.note).trim() : null,
+    var champs = { ecartAbsolu: abs, ecartRelatif: rel, delaiMaxJours: delai, retrait: retrait, dateEffet: d, note: o.note ? String(o.note).trim() : null,
       enregistrePar: acteur(), enregistreLe: maintenant, enregistreRole: roleCourant() };
     /* Le journal tronque ses extraits à 100 caractères : le plus utile vient en premier, la trace entière est la version elle-même (immuable une fois validée). */
-    var apres = { v: b ? b.version : versionsSeuil(variableId).reduce(function (m, x) { return Math.max(m, x.version); }, 0) + 1, du: d, abs: abs, rel: rel, retrait: retrait };
+    var apres = { v: b ? b.version : versionsSeuil(variableId).reduce(function (m, x) { return Math.max(m, x.version); }, 0) + 1, du: d, abs: abs, rel: rel, delai: delai, retrait: retrait };
     var rec;
     if (b) {
       rec = colSeuils().update(b.id, champs, { journal: { action: 'Seuil de variation enregistré (sans effet)', entite: 'seuil de variation', avant: { abs: b.ecartAbsolu, rel: b.ecartRelatif, du: b.dateEffet }, apres: apres } });
@@ -7853,16 +7859,30 @@
    * { alerte, seuil, raisons[], nonEvaluable }. Le seuil absolu se compare à l'écart absolu, le relatif au pourcentage ; un seuil relatif ne s'évalue pas
    * sur une valeur précédente nulle (pas de pourcentage inventé) et le dit.
    */
-  function alerteVariation(variable, variation, date) {
+  function alerteVariation(variable, variation, date, ctx) {
     if (!variable || !variation || variation.mode !== 'numerique') return null;
     var s = seuilEnVigueur(variable.id, date);
     if (!s || s.retrait) return null;
+    /* LE DÉLAI (lot B) : au-delà du délai réglé entre la mesure précédente et la mesure jugée, la variation N'EST PAS ÉVALUÉE. « Non évalué » n'est pas « pas d'alerte » : le verdict le dit
+       (`nonEvalue: 'delai'`, l'âge et le délai) pour que le comparatif l'écrive. Un âge qu'on ne sait pas calculer n'est ni zéro ni dépassé : la variation s'évalue et le verdict porte `ageInconnu`.
+       Le délai ne BLOQUE jamais rien : il retire seulement l'évaluation. */
+    var age = ctx && ctx.ageJours != null && isFinite(Number(ctx.ageJours)) ? Number(ctx.ageJours) : null;
+    if (s.delaiMaxJours != null && age != null && age > s.delaiMaxJours) {
+      return { alerte: false, seuil: s, raisons: [], nonEvaluable: false, nonEvalue: 'delai', ageJours: age, delaiMaxJours: s.delaiMaxJours };
+    }
     var raisons = [];
     if (s.ecartAbsolu != null && variation.ecartAbsolu >= s.ecartAbsolu) raisons.push({ type: 'absolu', seuil: s.ecartAbsolu, mesure: variation.ecartAbsolu });
     if (s.ecartRelatif != null && variation.pourcent != null && Math.abs(variation.pourcent) >= s.ecartRelatif) raisons.push({ type: 'relatif', seuil: s.ecartRelatif, mesure: Math.abs(variation.pourcent) });
-    return { alerte: raisons.length > 0, seuil: s, raisons: raisons, nonEvaluable: s.ecartRelatif != null && s.ecartAbsolu == null && variation.pourcent == null };
+    return { alerte: raisons.length > 0, seuil: s, raisons: raisons, nonEvaluable: s.ecartRelatif != null && s.ecartAbsolu == null && variation.pourcent == null,
+      nonEvalue: null, ageJours: age, delaiMaxJours: s.delaiMaxJours != null ? s.delaiMaxJours : null, ageInconnu: s.delaiMaxJours != null && age == null };
+  }
+  /** Les versions de seuil à l'état Enregistré (sans effet), toutes variables : ce que le centre des validations compte. Lu du magasin à chaque appel, jamais écrit. */
+  function seuilsEnAttente() {
+    var l = colSeuils().active().filter(function (x) { return x.etat === 'enregistre'; });
+    return { total: l.length, variables: l.map(function (x) { return x.variableId; }) };
   }
   global.SIGH.laboSeuils = {
+    enAttente: seuilsEnAttente,
     ECRAN: ECRAN_SEUILS, rolesValidation: rolesValidationSeuils, peutValider: peutValiderSeuil, peutEnregistrer: peutEnregistrerSeuil,
     versions: versionsSeuil, enVigueur: seuilEnVigueur, brouillon: brouillonSeuil, etat: etatSeuil,
     enregistrer: enregistrerSeuil, valider: validerSeuil, abandonner: abandonnerSeuil, alerteVariation: alerteVariation,

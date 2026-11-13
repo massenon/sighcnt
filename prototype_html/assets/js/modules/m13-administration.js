@@ -2203,6 +2203,26 @@
           }))
           : el('p.text-sm.text-slate-500', { text: 'Aucun r\u00e9f\u00e9rentiel en attente de validation ne rel\u00e8ve de votre profil.' })));
 
+      /* LIGNE « SEUILS ENREGISTRÉS À VALIDER » (lot B) : le compte des versions de seuil de variation brutale à l'état Enregistré (sans effet), visible du SEUL porteur du droit de les valider
+         (le droit de la fiche RBAC, jamais une liste de rôles : même la Direction et l'administrateur ne la voient pas sans lui). Le centre ORIENTE : le geste de validation reste à l'écran
+         « Valeurs de référence » (motif obligatoire), il n'y a aucune validation en lot. */
+      var ND = global.SIGH.nav, SE = global.SIGH.laboSeuils;
+      if (ND && ND.droitGeste && SE && SE.enAttente && ND.droitGeste(roleAdm, 'valider_seuil_labo')) {
+        var attenteSeuils = SE.enAttente();
+        var ligneSeuils = el('div.flex.items-start.gap-3.rounded-lg.border.border-slate-200.px-3.py-2', null, [
+          el('div.min-w-0.flex-1', null, [
+            el('p.text-sm.font-medium.text-slate-800', { text: 'Seuils enregistrés à valider' }),
+            el('p.text-xs.text-slate-500', { text: 'Seuils de variation brutale du laboratoire, sans effet tant qu’ils ne sont pas validés · valide : ' + ND.rolesAvecGeste('valider_seuil_labo').map(function (r) { return ND.ROLES[r] ? ND.ROLES[r].label : r; }).join(', ')
+              + ' · la validation se fait à l’écran « Valeurs de référence », un seuil à la fois, avec son motif.' }),
+          ]),
+          el('span.shrink-0.text-lg.font-semibold.num', { class: attenteSeuils.total ? 'text-warning-700' : 'text-slate-300', text: C.num(attenteSeuils.total) }),
+          ouvrable(SE.ECRAN) ? K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right', onclick: function () { if (go) go(SE.ECRAN); } }) : null,
+        ].filter(Boolean));
+        ligneSeuils.setAttribute('data-seuils-a-valider', '');
+        ligneSeuils.setAttribute('data-en-attente', String(attenteSeuils.total));
+        host.appendChild(U.card('Seuils de variation à valider : la validation reste à son poste, au porteur du droit', el('div.space-y-2', null, ligneSeuils)));
+      }
+
       if (!restreint) {
         host.appendChild(U.card('Donn\u00e9es \u00e0 compl\u00e9ter : le marquage tombe par la SAISIE, jamais par une signature',
           el('div.space-y-2', null, cas.map(function (x) {

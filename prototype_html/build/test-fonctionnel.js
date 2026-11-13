@@ -937,7 +937,7 @@ async function viderMessages(page) {
         const v = cells[0].getAttribute('data-var'); const o = { cellules: {} };
         cells.forEach((td) => {
           const c = td.getAttribute('data-col');
-          if (c === 'variation') { o.variation = td.textContent.replace(/\s+/g, ' ').trim(); o.alerte = !!td.querySelector('[data-alerte-variation]'); o.alerteTexte = (td.querySelector('[data-alerte-variation]') || { textContent: '' }).textContent.replace(/\s+/g, ' ').trim(); }
+          if (c === 'variation') { const copie = td.cloneNode(true); copie.querySelectorAll('[data-age-precedente]').forEach((n) => n.remove()); o.variation = copie.textContent.replace(/\s+/g, ' ').trim(); o.alerte = !!td.querySelector('[data-alerte-variation]'); o.alerteTexte = (td.querySelector('[data-alerte-variation]') || { textContent: '' }).textContent.replace(/\s+/g, ' ').trim(); }
           else o.cellules[c] = { texte: td.querySelector('span').textContent.trim(), hors: td.getAttribute('data-hors') === '1', ref: (td.querySelector('[data-reference-epoque]') || { textContent: null }).textContent };
         });
         o.tendance = !!tr.querySelector('[data-tendance]');
@@ -26122,6 +26122,190 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT B ÉTAPE 2 FIN */
+
+  /* ==========================================================================
+   * LOT B, ÉTAPE 3 : LE DÉLAI MAXIMAL ENTRE DEUX MESURES (par variable, vide par défaut, posé avec le seuil, jamais bloquant) ET LA LIGNE DU CENTRE DES VALIDATIONS.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 174 : lot B étape 3, délai maximal entre deux mesures : vide par défaut, âge de la mesure précédente toujours affiché, dans le délai l’alerte est évaluée, au-delà « variation non évaluée » (dit, jamais bloquant), valeur précédente nulle, refus nommés');
+    erreursJS = [];
+    const A = outilsAnt;
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-demandes.html');
+    await A.viderSeuils();
+    const NFS = 'NFS complète (hémogramme)';
+    const maintenant = new Date().toISOString();
+    const cle = 'D4' + Date.now() % 100000;
+    /* P1 : précédente le 01/06, comparée le 18/08 : 78 jours. P4 : précédente NULLE le 10/08, comparée le 18/08 : 8 jours. P6 : mesure en attente de validation biologique, précédente le 02/06 (78 jours). */
+    const P1 = await A.semer(cle + 'a', 'NFS', NFS, [{ date: '2026-06-01', etat: 'valide', valeurs: { GB: 3, HB: 12 } }, { date: '2026-08-18', etat: 'valide', valeurs: { GB: 9, HB: 12.5 }, valideLe: maintenant }]);
+    const P4 = await A.semer(cle + 'b', 'NFS', NFS, [{ date: '2026-08-10', etat: 'valide', valeurs: { GB: 0, HB: 12 } }, { date: '2026-08-18', etat: 'valide', valeurs: { GB: 5, HB: 12 }, valideLe: maintenant }]);
+    const P6 = await A.semer(cle + 'c', 'NFS', NFS, [{ date: '2026-06-02', etat: 'valide', valeurs: { GB: 3, HB: 12 } }, { date: '2026-08-19', etat: 'valide_technique', valeurs: { GB: 9, HB: 12 } }]);
+    await attendreEcritures();
+    await poserSessionServeur(A.BIOLOGISTE);
+    const poser = async (o) => { const r1 = await A.SE('enregistrer', 'VAR-NFS-GB', o); const r2 = await A.SE('valider', 'VAR-NFS-GB', { motif: 'Sonde lot B, délai' }); await attendreEcritures(); return r1.ok && r2.ok ? 'ok' : JSON.stringify([r1.code, r2.code]); };
+    const lireGB = async (patientId) => {
+      await ouvrir('m5-resultats-comparatif.html');
+      await A.choisir(patientId, 'NFS');
+      return page.evaluate(() => {
+        const td = document.querySelector('[data-comparatif] td[data-var="GB"][data-col="variation"]');
+        if (!td) return null;
+        const t = (s) => { const n = td.querySelector(s); return n ? n.textContent.replace(/\s+/g, ' ').trim() : null; };
+        return { texte: td.textContent.replace(/\s+/g, ' ').trim(), alerte: !!td.querySelector('[data-alerte-variation]'), non: t('[data-variation-non-evaluee]'), age: (td.querySelector('[data-age-precedente]') || { getAttribute: () => null }).getAttribute('data-age-precedente'), ageTexte: t('[data-age-precedente]'), relatifNonEvaluable: !!td.querySelector('[data-alerte-nonevaluable]') };
+      });
+    };
+
+    /* --- 1. Sans délai (vide par défaut) : l'alerte est évaluée à n'importe quel âge, et l'âge est AFFICHÉ ------------------------------------------------------------ */
+    verifier('Seuil posé sans délai', (await poser({ ecartAbsolu: 1 })) === 'ok');
+    const vig0 = await A.SE('enVigueur', 'VAR-NFS-GB', '9999-12-31');
+    const c1 = await lireGB(P1.patientId);
+    verifier('Sans délai réglé (vide par défaut, rien d’inventé) : le seuil ne porte aucun délai, la variation de 78 jours est évaluée et ALERTE, et le comparatif affiche toujours l’âge de la mesure précédente (« il y a 78 jours »)',
+      vig0 && vig0.delaiMaxJours == null && c1 && c1.alerte === true && c1.non === null && c1.age === '78' && c1.ageTexte === 'mesure précédente il y a 78 jours', JSON.stringify([vig0 && vig0.delaiMaxJours, c1]));
+
+    /* --- 2. Dans le délai : évaluée ; le bord (âge égal au délai) est dans le délai ------------------------------------------------------------------------------------------- */
+    verifier('Seuil avec délai de 90 jours', (await poser({ ecartAbsolu: 1, delaiMaxJours: 90 })) === 'ok');
+    const c2 = await lireGB(P1.patientId);
+    verifier('Dans le délai (78 jours, délai réglé 90) : la variation est évaluée et ALERTE, l’âge reste affiché', c2 && c2.alerte === true && c2.non === null && c2.age === '78', JSON.stringify(c2));
+    verifier('Seuil avec délai de 78 jours (le bord)', (await poser({ ecartAbsolu: 1, delaiMaxJours: 78 })) === 'ok');
+    const c2b = await lireGB(P1.patientId);
+    verifier('Au bord (âge égal au délai : 78 jours, délai réglé 78) : encore dans le délai, la variation alerte', c2b && c2b.alerte === true && c2b.non === null, JSON.stringify(c2b));
+
+    /* --- 3. Au-delà du délai : NON ÉVALUÉE, et le comparatif le DIT (jamais « pas d'alerte ») ; rien n'est bloqué -------------------------------------------------------------- */
+    verifier('Seuil avec délai de 30 jours', (await poser({ ecartAbsolu: 1, delaiMaxJours: 30 })) === 'ok');
+    const c3 = await lireGB(P1.patientId);
+    verifier('Au-delà du délai (78 jours, délai réglé 30) : AUCUNE alerte, mais le comparatif dit « Variation non évaluée : mesure précédente trop ancienne (78 jours, délai réglé 30 jours) » et affiche l’âge ; la variation (+6 G/l) reste lisible',
+      c3 && c3.alerte === false && c3.non === 'Variation non évaluée : mesure précédente trop ancienne (78 jours, délai réglé 30 jours)' && c3.age === '78' && /↑ \+6 G\/l/.test(c3.texte), JSON.stringify(c3));
+
+    /* --- 4. Valeur précédente nulle : seuil relatif non évaluable (dit), dans le délai ; l'âge reste affiché ------------------------------------------------------------------ */
+    verifier('Seuil relatif seul avec délai de 30 jours', (await poser({ ecartRelatif: 20, delaiMaxJours: 30 })) === 'ok');
+    const c4 = await lireGB(P4.patientId);
+    verifier('Valeur précédente NULLE dans le délai (8 jours) : aucun pourcentage inventé, « Seuil relatif non évaluable : valeur précédente nulle », pas de message de délai, âge affiché (8 jours)',
+      c4 && c4.alerte === false && c4.relatifNonEvaluable === true && c4.non === null && c4.age === '8' && /écart relatif non calculable/.test(c4.texte), JSON.stringify(c4));
+
+    /* --- 5. Jamais bloquant : la validation biologique d'une mesure non évaluée est possible, et la fenêtre le dit avant de signer --------------------------------------------------- */
+    verifier('Seuil avec délai de 30 jours (pour la validation)', (await poser({ ecartAbsolu: 1, delaiMaxJours: 30 })) === 'ok');
+    await poserSessionServeur(A.BIOLOGISTE);
+    await ouvrir('m5-resultats.html');
+    await page.evaluate(() => { [...document.querySelectorAll('#page-content input[type=date]')].forEach((i) => { i.value = '2026-08-19'; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); }); });
+    await pause(600);
+    await page.evaluate(() => { const t = [...document.querySelectorAll('#page-content [role="tab"]')].find((x) => /À valider biologiquement/.test(x.textContent)); if (t) t.click(); });
+    await pause(500);
+    const lig = await page.evaluate((cl) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('ANTER' + cl) >= 0); return tr ? { alerte: !!tr.querySelector('[data-alerte-validation]') } : null; }, cle + 'c');
+    await page.evaluate((cl) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('ANTER' + cl) >= 0); tr.querySelector('td:nth-child(2)').click(); }, cle + 'c');
+    await pause(500);
+    const tiroir = await page.evaluate(() => { const d = document.querySelector('[role=dialog], .drawer, aside'); return (d ? d.innerText : document.body.innerText).replace(/\s+/g, ' '); });
+    verifier('Écran de validation biologique : aucune variable « signalée » (non évaluée), mais le tiroir DIT « Variation non évaluée sur 1 variable(s) » : Globules blancs, mesure précédente trop ancienne (78 jours, délai réglé 30 jours)',
+      lig && lig.alerte === false && /Variation non évaluée sur 1 variable\(s\)/.test(tiroir) && /Globules blancs : Variation non évaluée : mesure précédente trop ancienne \(78 jours, délai réglé 30 jours\)/.test(tiroir) && !/Variation brutale signalée/.test(tiroir), tiroir.slice(0, 600));
+    await page.keyboard.press('Escape'); await pause(300);
+    await page.evaluate((cl) => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.textContent.indexOf('ANTER' + cl) >= 0); const b = [...tr.querySelectorAll('button')].find((x) => /Validation biologique/.test(x.textContent)); if (b) b.click(); }, cle + 'c');
+    await pause(400);
+    const fen = await page.evaluate(() => { const d = document.querySelector('[role=dialog]'); return d ? d.innerText.replace(/\s+/g, ' ') : null; });
+    await A.cliquerModale('Valider biologiquement'); await pause(800); await attendreEcritures();
+    const apres = await page.evaluate((id) => window.SIGH.store.collection('demandesAnalyses').get(id).etatAnalyse, P6.ids[1]);
+    verifier('Le délai ne BLOQUE jamais : la fenêtre de validation nomme la variation non évaluée, et le résultat est validé biologiquement',
+      fen && /Variation non évaluée/.test(fen) && /78 jours, délai réglé 30 jours/.test(fen) && apres === 'valide', JSON.stringify([String(fen).slice(0, 300), apres]));
+
+    /* --- 6. Refus nommés (code, motif, geste) et réglage par l'écran : le champ existe, le délai est versionné avec le seuil et affiché ------------------------------------------------------ */
+    const refus = await page.evaluate(() => ['0', '2.5', '-3'].map((d) => { const r = window.SIGH.laboSeuils.enregistrer('VAR-NFS-GB', { ecartAbsolu: 1, delaiMaxJours: Number(d) }); return { code: r.code, motif: r.motif, geste: r.geste }; }));
+    const retrait = await page.evaluate(() => { const r = window.SIGH.laboSeuils.enregistrer('VAR-NFS-GB', { retrait: true, delaiMaxJours: 10 }); return { code: r.code }; });
+    verifier('Un délai de 0, de 2,5 ou négatif est refusé : DELAI_INVALIDE avec son motif et son geste ; un retrait ne porte aucun délai (RETRAIT_AVEC_VALEURS)',
+      refus.every((r) => r.code === 'DELAI_INVALIDE' && /nombre entier de jours/.test(r.motif) && /Saisir un nombre entier/.test(r.geste)) && retrait.code === 'RETRAIT_AVEC_VALEURS', JSON.stringify([refus, retrait]));
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen('NFS');
+    await A.regler('GB', { ecartAbsolu: 1, delaiMaxJours: 45 }, 'Enregistrer');
+    const champ = await page.evaluate(() => { const b = document.querySelector('[data-seuil-etat="GB"]'); return b ? b.textContent : null; });
+    const b45 = await page.evaluate(() => { const b = window.SIGH.laboSeuils.brouillon('VAR-NFS-GB'); return b && { d: b.delaiMaxJours, etat: b.etat, version: b.version }; });
+    await A.validerParGeste('GB', 'Délai de 45 jours posé par l’écran (sonde lot B)');
+    const g = await A.ligneSeuil('GB');
+    const hist = await page.evaluate(() => window.SIGH.laboSeuils.versions('VAR-NFS-GB').map((x) => [x.version, x.etat, x.delaiMaxJours == null ? null : x.delaiMaxJours]));
+    verifier('L’écran « Valeurs de référence » règle le délai par un champ (« Délai maximal entre deux mesures (jours) ») : enregistré 45 sur une nouvelle version (sans effet), validé par le geste, affiché « délai entre deux mesures : 45 jours » ; les versions précédentes gardent leur délai (30, 30, 78, 90, vide)',
+      b45 && b45.d === 45 && b45.etat === 'enregistre' && /délai entre deux mesures : 45 jours/.test(g.vigueur) && JSON.stringify(hist.map((x) => x[2])) === JSON.stringify([null, 90, 78, 30, 30, 30, 45]) , JSON.stringify([b45, g.vigueur, hist]));
+    await poserSessionServeur(A.ADMIN);
+    await A.viderSeuils();
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT B ÉTAPE 3 (DÉLAI) FIN */
+
+  await etape(async () => {
+    scenario('Vague 175 : lot B étape 3, centre « Validations en attente » : ligne « Seuils enregistrés à valider » visible du seul porteur du droit (biologiste oui, administrateur et Direction non), compte des Enregistrés, retombée à zéro après validation, aucun geste en lot');
+    erreursJS = [];
+    const A = outilsAnt;
+    const TECH = { role: 'technicien_b175', nom: 'TECH175 Sonde', nomComplet: 'TECH175 Sonde', identifiant: 'tech175', fonction: 'tsl', secteur: 'LAB' };
+    const DIRECTION = { role: 'direction', nom: 'DIRECTION 175', nomComplet: 'DIRECTION 175', identifiant: 'dir175', fonction: 'direction', secteur: 'DIR' };
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-demandes.html');
+    const rbacAvant = await page.evaluate(() => { const S = window.SIGH.store; S.collection('rbac', { module: 'M14', entite: 'rôle', prefix: 'RBAC' }); return JSON.stringify(S.raw().rbac || []); });
+    await A.viderSeuils();
+    const ligne = () => page.evaluate(() => { const l = document.querySelector('[data-seuils-a-valider]'); return l ? { n: l.getAttribute('data-en-attente'), texte: l.textContent.replace(/\s+/g, ' ').trim(), ouvrir: !![...l.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Ouvrir'), boutons: [...l.querySelectorAll('button')].map((b) => b.textContent.trim()) } : null; });
+    const centre = async (profil) => { await poserSessionServeur(profil); await ouvrir('adm-validations.html'); return ligne(); };
+    /* Deux seuils ENREGISTRÉS (sans effet) par le biologiste, un troisième validé */
+    await poserSessionServeur(A.BIOLOGISTE);
+    await ouvrir('m5-demandes.html');
+    const e1 = await A.SE('enregistrer', 'VAR-NFS-GB', { ecartAbsolu: 1 });
+    const e2 = await A.SE('enregistrer', 'VAR-NFS-HB', { ecartAbsolu: 2 });
+    const e3 = await A.SE('enregistrer', 'VAR-NFS-LY', { ecartAbsolu: 3 });
+    const v3 = await A.SE('valider', 'VAR-NFS-LY', { motif: 'Sonde lot B, centre' });
+    await attendreEcritures();
+    verifier('Mise en place : deux seuils Enregistrés (GB, HB), un seuil Validé (LY)', e1.ok && e2.ok && e3.ok && v3.ok, JSON.stringify([e1.code, e2.code, e3.code, v3.code]));
+
+    const l1 = await centre(A.BIOLOGISTE);
+    verifier('Le biologiste (porteur du droit) voit la ligne « Seuils enregistrés à valider » : 2 (les Enregistrés seulement, pas le Validé), avec le renvoi « Ouvrir » vers l’écran de validation et sans aucun bouton de validation en lot',
+      l1 && l1.n === '2' && /Seuils enregistrés à valider/.test(l1.texte) && l1.ouvrir === true && l1.boutons.every((b) => b === 'Ouvrir'), JSON.stringify(l1));
+    const l2 = await centre(A.ADMIN);
+    const l3 = await centre(DIRECTION);
+    verifier('L’administrateur système et la Direction (qui ouvrent pourtant le centre) NE VOIENT PAS la ligne : elle est réservée au porteur du droit', l2 === null && l3 === null, JSON.stringify([l2, l3]));
+
+    /* Le rôle créé (technicien) : pas de ligne sans le droit, la ligne dès que le droit est accordé, plus de ligne après retrait */
+    await poserSessionServeur(A.ADMIN);
+    await ouvrir('m5-demandes.html');
+    await page.evaluate(() => {
+      const N = window.SIGH.nav, S = window.SIGH.store, col = S.collection('rbac', { module: 'M14', entite: 'rôle', prefix: 'RBAC' });
+      const modules = []; N.NAV.forEach((d) => d.modules.forEach((m) => modules.push(m.code)));
+      const ferme = {}; modules.forEach((c) => { ferme[c] = { voir: false, editer: false, annuler: false }; });
+      const e = N.get('adm-validations'); ferme[e.module] = { voir: true, editer: false, annuler: false }; ferme.M5 = { voir: true, editer: true, annuler: false };
+      const fermesEcrans = {}; N.ids().forEach((id) => { const x = N.get(id); if (x && x.universel) fermesEcrans[id] = { voir: false, editer: false, annuler: false }; });
+      const fermesGestes = {}; N.GESTES.forEach((g) => { fermesGestes[g.id] = false; });
+      col.insert({ role: 'technicien_b175', nouveau: true, statut: 'actif', libelle: 'Technicien de laboratoire (sonde 175)', libelleCourt: 'Tech175', libelleOrigine: 'Technicien de laboratoire (sonde 175)', couleur: 'neutral', accueil: 'dash-admin', droits: ferme, droitsEcrans: fermesEcrans, droitsGestes: fermesGestes });
+      N.invaliderRbac();
+    });
+    await attendreEcritures();
+    const t0 = await centre(TECH);
+    await poserSessionServeur(A.ADMIN);
+    await page.evaluate(() => { const S = window.SIGH.store, f = S.collection('rbac').all().filter((x) => x.role === 'technicien_b175')[0]; S.collection('rbac').update(f.id, { droitsGestes: { valider_seuil_labo: true } }); window.SIGH.nav.invaliderRbac(); });
+    await attendreEcritures();
+    const t1 = await centre(TECH);
+    await poserSessionServeur(A.ADMIN);
+    await page.evaluate(() => { const S = window.SIGH.store, f = S.collection('rbac').all().filter((x) => x.role === 'technicien_b175')[0]; S.collection('rbac').update(f.id, { droitsGestes: { valider_seuil_labo: false } }); window.SIGH.nav.invaliderRbac(); });
+    await attendreEcritures();
+    const t2 = await centre(TECH);
+    verifier('Le technicien (rôle créé) ouvre le centre : pas de ligne sans le droit ; la ligne (2) dès que l’administrateur lui accorde le droit ; plus de ligne quand il le retire',
+      t0 === null && t1 && t1.n === '2' && t2 === null, JSON.stringify([t0, t1 && t1.n, t2]));
+
+    /* Le compte tombe à zéro après validation (geste de l'écran « Valeurs de référence », motif obligatoire) */
+    await poserSessionServeur(A.BIOLOGISTE);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen('NFS');
+    await A.validerParGeste('GB', 'Validé depuis l’écran de réglage (sonde lot B, centre)');
+    const l4 = await centre(A.BIOLOGISTE);
+    await ouvrir('m5-valeurs-reference.html');
+    await A.choisirExamen('NFS');
+    await A.validerParGeste('HB', 'Validé depuis l’écran de réglage (sonde lot B, centre)');
+    const l5 = await centre(A.BIOLOGISTE);
+    verifier('Après la validation de GB (geste de l’écran, motif), le centre compte 1 ; après celle de HB, 0 : le compte est relu à chaque affichage et ne se lève que par le geste de l’écran',
+      l4 && l4.n === '1' && l5 && l5.n === '0', JSON.stringify([l4 && l4.n, l5 && l5.n]));
+
+    /* Restauration (règle 11) */
+    await poserSessionServeur(A.ADMIN);
+    await page.evaluate((d) => { const S = window.SIGH.store; const a = S.raw().rbac; a.splice(0, a.length, ...JSON.parse(d)); S.save(); window.SIGH.nav.invaliderRbac(); }, rbacAvant);
+    await A.viderSeuils();
+    await attendreEcritures();
+    await ouvrir('m5-demandes.html');
+    const fin = await page.evaluate((d) => ({ rbac: JSON.stringify(window.SIGH.store.raw().rbac || []) === d, tech: !!window.SIGH.nav.ROLES.technicien_b175, seuils: window.SIGH.store.collection('seuilsDelta').all().length }), rbacAvant);
+    verifier('Restauration : fiches RBAC identiques, rôle créé retiré, aucun seuil', fin.rbac && fin.tech === false && fin.seuils === 0, JSON.stringify(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT B ÉTAPE 3 FIN */
+
 
 
 

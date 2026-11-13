@@ -1,0 +1,201 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-seuils-delai.js — ne pas éditer. Non consommé par un test Dart : le moteur des seuils n'est pas porté (lot B, maquette seulement).",
+ "jour": "2026-10-30",
+ "cas": [
+  {
+   "nom": "sans délai : évalué, âge 78 jours affiché",
+   "seuil": {
+    "ecartAbsolu": 1
+   },
+   "mesures": [
+    {
+     "date": "2026-06-01",
+     "GB": 3
+    },
+    {
+     "date": "2026-08-18",
+     "GB": 9
+    }
+   ],
+   "moteur": {
+    "alerte": true,
+    "nonEvalue": null,
+    "nonEvaluable": false,
+    "ageJours": 78,
+    "delaiMaxJours": null,
+    "ageInconnu": false
+   },
+   "ecran": {
+    "variation": "↑ +6 G/l (+200.0 %)Variation brutale : seuil de 1 G/l atteint (seuil validé, version 1 du 30/10/2026)",
+    "alerte": true,
+    "nonEvalueeDelai": null,
+    "ageAttribut": "78",
+    "ageTexte": "mesure précédente il y a 78 jours",
+    "relatifNonEvaluable": false
+   }
+  },
+  {
+   "nom": "dans le délai (90) : évalué",
+   "seuil": {
+    "ecartAbsolu": 1,
+    "delaiMaxJours": 90
+   },
+   "mesures": [
+    {
+     "date": "2026-06-01",
+     "GB": 3
+    },
+    {
+     "date": "2026-08-18",
+     "GB": 9
+    }
+   ],
+   "moteur": {
+    "alerte": true,
+    "nonEvalue": null,
+    "nonEvaluable": false,
+    "ageJours": 78,
+    "delaiMaxJours": 90,
+    "ageInconnu": false
+   },
+   "ecran": {
+    "variation": "↑ +6 G/l (+200.0 %)Variation brutale : seuil de 1 G/l atteint (seuil validé, version 1 du 30/10/2026)",
+    "alerte": true,
+    "nonEvalueeDelai": null,
+    "ageAttribut": "78",
+    "ageTexte": "mesure précédente il y a 78 jours",
+    "relatifNonEvaluable": false
+   }
+  },
+  {
+   "nom": "au bord (78 pour 78) : évalué",
+   "seuil": {
+    "ecartAbsolu": 1,
+    "delaiMaxJours": 78
+   },
+   "mesures": [
+    {
+     "date": "2026-06-01",
+     "GB": 3
+    },
+    {
+     "date": "2026-08-18",
+     "GB": 9
+    }
+   ],
+   "moteur": {
+    "alerte": true,
+    "nonEvalue": null,
+    "nonEvaluable": false,
+    "ageJours": 78,
+    "delaiMaxJours": 78,
+    "ageInconnu": false
+   },
+   "ecran": {
+    "variation": "↑ +6 G/l (+200.0 %)Variation brutale : seuil de 1 G/l atteint (seuil validé, version 1 du 30/10/2026)",
+    "alerte": true,
+    "nonEvalueeDelai": null,
+    "ageAttribut": "78",
+    "ageTexte": "mesure précédente il y a 78 jours",
+    "relatifNonEvaluable": false
+   }
+  },
+  {
+   "nom": "au-delà (30) : non évalué, dit",
+   "seuil": {
+    "ecartAbsolu": 1,
+    "delaiMaxJours": 30
+   },
+   "mesures": [
+    {
+     "date": "2026-06-01",
+     "GB": 3
+    },
+    {
+     "date": "2026-08-18",
+     "GB": 9
+    }
+   ],
+   "moteur": {
+    "alerte": false,
+    "nonEvalue": "delai",
+    "nonEvaluable": false,
+    "ageJours": 78,
+    "delaiMaxJours": 30
+   },
+   "ecran": {
+    "variation": "↑ +6 G/l (+200.0 %)Variation non évaluée : mesure précédente trop ancienne (78 jours, délai réglé 30 jours)",
+    "alerte": false,
+    "nonEvalueeDelai": "Variation non évaluée : mesure précédente trop ancienne (78 jours, délai réglé 30 jours)",
+    "ageAttribut": "78",
+    "ageTexte": "mesure précédente il y a 78 jours",
+    "relatifNonEvaluable": false
+   }
+  },
+  {
+   "nom": "valeur précédente nulle, dans le délai : relatif non évaluable, âge 8 jours",
+   "seuil": {
+    "ecartRelatif": 20,
+    "delaiMaxJours": 30
+   },
+   "mesures": [
+    {
+     "date": "2026-08-10",
+     "GB": 0
+    },
+    {
+     "date": "2026-08-18",
+     "GB": 5
+    }
+   ],
+   "moteur": {
+    "alerte": false,
+    "nonEvalue": null,
+    "nonEvaluable": true,
+    "ageJours": 8,
+    "delaiMaxJours": 30,
+    "ageInconnu": false
+   },
+   "ecran": {
+    "variation": "↑ +5 G/l (écart relatif non calculable : valeur précédente nulle)Seuil relatif non évaluable : valeur précédente nulle.",
+    "alerte": false,
+    "nonEvalueeDelai": null,
+    "ageAttribut": "8",
+    "ageTexte": "mesure précédente il y a 8 jours",
+    "relatifNonEvaluable": true
+   }
+  },
+  {
+   "nom": "valeur précédente nulle, au-delà du délai : non évalué (délai), pas de pourcentage",
+   "seuil": {
+    "ecartRelatif": 20,
+    "delaiMaxJours": 30
+   },
+   "mesures": [
+    {
+     "date": "2026-06-01",
+     "GB": 0
+    },
+    {
+     "date": "2026-08-18",
+     "GB": 5
+    }
+   ],
+   "moteur": {
+    "alerte": false,
+    "nonEvalue": "delai",
+    "nonEvaluable": false,
+    "ageJours": 78,
+    "delaiMaxJours": 30
+   },
+   "ecran": {
+    "variation": "↑ +5 G/l (écart relatif non calculable : valeur précédente nulle)Variation non évaluée : mesure précédente trop ancienne (78 jours, délai réglé 30 jours)",
+    "alerte": false,
+    "nonEvalueeDelai": "Variation non évaluée : mesure précédente trop ancienne (78 jours, délai réglé 30 jours)",
+    "ageAttribut": "78",
+    "ageTexte": "mesure précédente il y a 78 jours",
+    "relatifNonEvaluable": false
+   }
+  }
+ ]
+}
