@@ -822,7 +822,8 @@ async function viderMessages(page) {
           const rep = function () { k.enCours--; return { texte: k.texte, mots: String(k.texte).split(/\s+/).filter(Boolean).map(function (m) { return { mot: m, confiance: 0.9 }; }), langue: e.langue }; };
           if (k.refus && (k.refusN === undefined || k.refusN > 0)) { if (k.refusN !== undefined) k.refusN--; k.enCours--; return Promise.reject(k.refus); }
           if (k.jamais) return new Promise(function () {});
-          if (k.attente) return new Promise(function (res) { k.libere = function () { k.libere = null; res(rep()); }; });
+          const retenu = !k.retenir || k.retenir.some(function (b) { if (b.length !== e.octets.length) return false; for (let i = 0; i < b.length; i++) if (b[i] !== e.octets[i]) return false; return true; });
+          if (k.attente && retenu) return new Promise(function (res) { k.libere = function () { k.libere = null; res(rep()); }; });
           return Promise.resolve(rep());
         } });
     }, cfg || {}, TEXTE);
@@ -25597,7 +25598,8 @@ async function viderMessages(page) {
     verifier('Le bouton de réglage est présent pour l’administrateur', (await reglBtn()) === true);
     const sansMoteur = await Q.regler({ actif: true, moteur: 'factice', langue: 'fra' }, 'sonde');
     verifier('Activer la lecture sans moteur installé est REFUSÉ en nommant (MOTEUR_ABSENT) et le réglage reste désactivé', sansMoteur.ok === false && sansMoteur.code === 'MOTEUR_ABSENT' && /installé/.test(sansMoteur.motif) && (await page.evaluate(() => window.SIGH.ocr.reglage().actif)) === false, JSON.stringify(sansMoteur));
-    await Q.installerMoteur({ attente: true });
+    /* Derrière d'autres scénarios qui déposent des scans, l'activation rattrape AUSSI les scans plus anciens (voulu) : le moteur factice ne retient que les deux scans de la sonde et lit les autres sans attente. */
+    await Q.installerMoteur({ attente: true, retenir: [Array.from(fs.readFileSync(png1)), Array.from(fs.readFileSync(png2))] });
     const sansMotif = await Q.regler({ actif: true, moteur: 'factice', langue: 'fra' }, '');
     const mauvaiseLangue = await Q.regler({ actif: true, moteur: 'factice', langue: 'xxx' }, 'sonde');
     verifier('Un réglage sans motif est refusé (MOTIF_REQUIS) ; une langue que le moteur ne lit pas aussi (LANGUE_ABSENTE)', sansMotif.code === 'MOTIF_REQUIS' && mauvaiseLangue.code === 'LANGUE_ABSENTE', JSON.stringify([sansMotif.code, mauvaiseLangue.code]));
