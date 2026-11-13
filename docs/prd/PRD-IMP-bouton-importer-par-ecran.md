@@ -40,7 +40,7 @@ Il n'ouvre aucune importation de donnée de santé, de paie nominative, d'écrit
 | Le type `tarif` respecte la doctrine « un tiret n'est pas un zéro » | tiret = `manquant`, `NC`/`non couvert` = `nc`, entier = `montant` ; un tiret écrit `null`, jamais 0 | `import.js:88 à 97` et `import.js:446 à 458` |
 | Analyse complète avant écriture, tout ou rien | Un seul refus refuse le fichier entier ; les avertissements ne bloquent pas | `import.js:726 à 809`, décision finale `import.js:807` |
 | Refus nommé | ligne, colonne, valeur, code, motif, geste | `import.js:769 à 779` |
-| Doublon : un seul comportement, **refuser** | `DOUBLON_FICHIER` et `DOUBLON_MAGASIN` sont des refus ; aucun mode « ignorer » ni « mettre à jour » | `import.js:782 à 789` |
+| Doublon : un seul comportement, **refuser** | `DOUBLON_FICHIER` et `DOUBLON_MAGASIN` sont des refus ; aucun mode « ignorer » ni « mettre à jour ». Exception du lot IDEM (13/11/2026, poste) : le MÊME inventaire déjà importé par une demande (identité de contenu) n'est ni refusé ni réécrit, il est `LOT_DEJA_IMPORTE` (lignes ignorées et nommées) ; voir `docs/plans/PLAN-importation-bouton-par-ecran.md` | `import.js:782 à 789` |
 | Fichier refusé consigné, rien d'écrit | lot `refuse`, 100 constats gardés | `import.js:855 à 865` |
 | Écriture atomique, rejouée avant écriture | l'analyse est refaite sur les lignes d'origine (un autre poste a pu créer la même fiche) ; en cas d'échec on retire ce qui vient d'être posé | `import.js:867 à 896` |
 | Fiches marquées `source`, `lotImport`, `validePar`, `dateImport` | | `import.js:881 à 883` |
