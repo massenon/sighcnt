@@ -11,7 +11,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:sigh_domaine/sigh_domaine.dart' show Parametres, mobPeutPrescrire, parCollectionParametres;
+import 'package:sigh_domaine/sigh_domaine.dart' show Parametres, mobPeutPrescrire, parCollectionParametres, synchroAssainirFileuls, synchroFileulPublie;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -385,9 +385,61 @@ class Pont {
             await mere.seqMax(),
             await base.metaInt('rep_seq'),
           ));
+      // Lot RLS-SYNC : l'état de synchronisation des fileuls (compteurs et horodatages seulement). Illisible, il est OMIS : le relais dit alors « non publié », jamais une liste vide.
+      final fileuls = await fileulsPublies();
       await rel('POST', '/mere/indicateurs', {
-        'indicateurs': {'patients_actifs': patients, 'seq_max': seq, 'retard_replication': seq - repSeq},
+        'indicateurs': {'patients_actifs': patients, 'seq_max': seq, 'retard_replication': seq - repSeq, 'fileuls': ?fileuls},
       });
     }, 300);
+  }
+
+  /// Cadence de calcul de l'état des fileuls (le battement part toutes les 300 ms ; l'état d'un poste ne change pas à cette vitesse). Cadence interne, pas un réglage de la clinique.
+  static const int intervalleFileulsMs = 2000;
+  List<Map<String, Object?>>? _fileuls;
+  int _fileulsLe = 0;
+
+  /// LOT RLS-SYNC : ce que la mère publie de ses fileuls à chaque battement, au plus toutes les [intervalleFileulsMs]. Un poste par ligne : son nom technique (l'étiquette de l'appairage), son
+  /// dernier contact, son retard de journal (opérations de la mère qu'il n'a pas encore reprises), ses conflits ouverts, ses demandes d'import en attente. JAMAIS un identifiant de patient,
+  /// un nom ni un libellé : la liste blanche est celle du domaine (`synchro_fileuls.dart`), appliquée une dernière fois par [synchroAssainirFileuls]. `null` si la lecture échoue.
+  Future<List<Map<String, Object?>>?> fileulsPublies() async {
+    final maintenant = maintenantMs();
+    if (_fileuls != null && maintenant - _fileulsLe < intervalleFileulsMs) return _fileuls;
+    try {
+      final brut = await _sous(() async {
+        final seq = await mere.seqMax();
+        final postes = await base.select("SELECT uuid,etiquette,dernier_contact,dernier_seq FROM appareils WHERE etat='actif' AND role<>'mobile' ORDER BY etiquette, uuid");
+        final conflits = <String, int>{};
+        for (final c in await base.select("SELECT appareil, COUNT(*) AS n FROM conflits WHERE etat='ouvert' GROUP BY appareil")) {
+          conflits['${c['appareil']}'] = (c['n'] as num).toInt();
+        }
+        // Une demande d'import appartient au poste qui l'a déposée : l'appareil de sa PREMIÈRE opération. Le champ `demandePar` est un nom de personne : jamais lu ici.
+        final demandes = <String, int>{};
+        for (final f in await base.select("SELECT id, data FROM fiches WHERE collection='demandesImport' AND archive=0")) {
+          final d = (jsonDecode(f['data'] as String) as Map);
+          if (d['statut'] == 'archive' || d['etat'] != 'en_attente') continue;
+          final o = await base.select("SELECT appareil FROM operations WHERE collection='demandesImport' AND fiche=? ORDER BY seq LIMIT 1", [f['id']]);
+          if (o.isEmpty) continue;
+          final a = '${o.first['appareil']}';
+          demandes[a] = (demandes[a] ?? 0) + 1;
+        }
+        return [
+          for (final p in postes)
+            synchroFileulPublie(
+              etiquette: p['etiquette'] as String?,
+              uuid: '${p['uuid']}',
+              dernierContact: (p['dernier_contact'] as num?)?.toInt(),
+              dernierSeq: ((p['dernier_seq'] ?? 0) as num).toInt(),
+              seqMax: seq,
+              conflitsOuverts: conflits['${p['uuid']}'] ?? 0,
+              demandesEnAttente: demandes['${p['uuid']}'] ?? 0,
+            ),
+        ];
+      });
+      _fileuls = synchroAssainirFileuls(brut);
+      _fileulsLe = maintenant;
+      return _fileuls;
+    } catch (_) {
+      return null;
+    }
   }
 }

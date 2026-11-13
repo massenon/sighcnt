@@ -133,7 +133,7 @@ void main() {
       final src = File('../sync_dart/lib/src/pont.dart').readAsStringSync();
       final bloc = RegExp(r"'/mere/indicateurs'.*?\}\s*,\s*\}\)", dotAll: true).firstMatch(src)!.group(0)!;
       final cles = RegExp(r"'(\w+)':").allMatches(bloc).map((x) => x.group(1)!).where((k) => k != 'indicateurs').toList();
-      expect(mrbChampsPublies, cles);
+      expect([...mrbChampsPublies, ...mrbChampsStructures], cles);
     });
 
     test('un champ hors liste ou une valeur textuelle (un nom) est refusé', () {
@@ -142,6 +142,14 @@ void main() {
       expect(v.sansDonneeDeSante, isFalse);
       expect(v.horsListe, ['nom']);
       expect(v.nonNumeriques, ['patients_actifs', 'nom']);
+    });
+
+    test('lot RLS-SYNC : le tableau des fileuls est jugé par la liste blanche, pas comme un compteur', () {
+      expect(mrbVerifierIndicateurs({'seq_max': 5, 'fileuls': [{'poste': 'F1', 'conflitsOuverts': 0}]}).sansDonneeDeSante, isTrue);
+      final v = mrbVerifierIndicateurs({'fileuls': [{'poste': 'F1', 'nom': 'KOUASSI Awa'}]});
+      expect(v.sansDonneeDeSante, isFalse);
+      expect(v.refusSynchro!.code, 'indicateur_cle_inconnue');
+      expect(v.horsListe, isEmpty);
     });
 
     test('opacité : une enveloppe chiffrée passe, un champ en clair ou un nom de collection non', () {

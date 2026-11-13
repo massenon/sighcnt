@@ -23,6 +23,7 @@ db.exec(`PRAGMA journal_mode=WAL;
 const setMeta = (k, v) => db.prepare('INSERT INTO meta(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v').run(k, String(v));
 const getMeta = (k) => { const r = db.prepare('SELECT v FROM meta WHERE k=?').get(k); return r ? r.v : null; };
 class Err extends Error { constructor(s, code, motif) { super(code); this.s = s; this.b = { code, motif }; } }
+const SYNCHRO = require('./synchro');
 const mereOk = (req) => req.headers['x-mere'] === SECRET_MERE;
 function appareil(req) {
   const m = /^Bearer ([^.]+)\.(.+)$/.exec(req.headers.authorization || '');
@@ -92,7 +93,13 @@ const routes = {
   'GET /compteur': (req, b, q) => { const a = appareil(req); return { max_n: db.prepare("SELECT COALESCE(MAX(n),0) AS m FROM env WHERE dir='vers_mobile' AND appareil=?").get(a.uuid).m }; },
   'POST /mere/revoquer': (req, b) => { if (!mereOk(req)) throw new Err(403, 'mere_requise'); db.prepare("UPDATE appareils SET etat='revoque' WHERE uuid=?").run(b.uuid); return { ok: true }; },
   'POST /mere/battement': (req, b) => { if (!mereOk(req)) throw new Err(403, 'mere_requise'); setMeta('battement', Date.now()); return { ok: true }; },
-  'POST /mere/indicateurs': (req, b) => { if (!mereOk(req)) throw new Err(403, 'mere_requise'); setMeta('indicateurs', JSON.stringify(b.indicateurs || {})); return { ok: true }; },
+  /* Lot RLS-SYNC : la liste blanche des fileuls (compteurs et horodatages, jamais un nom ni un libellé) est vérifiée AVANT tout enregistrement : un refus nommé, rien de stocké. */
+  'POST /mere/indicateurs': (req, b) => {
+    if (!mereOk(req)) throw new Err(403, 'mere_requise');
+    const refus = SYNCHRO.valider(b.indicateurs || {});
+    if (refus) { const e = new Err(422, refus.code, refus.motif); e.b.geste = refus.geste; e.b.chemin = refus.chemin; throw e; }
+    setMeta('indicateurs', JSON.stringify(b.indicateurs || {})); return { ok: true };
+  },
   'GET /admin/etat': (req) => {
     if (!mereOk(req)) throw new Err(403, 'mere_requise');
     const bt = getMeta('battement'); const age = bt ? Date.now() - +bt : null;

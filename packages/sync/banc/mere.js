@@ -746,9 +746,37 @@ function demarrerPont() {
   tour('copie', pairCopie, 500);
   tour('battement', async () => {
     await rel('POST', '/mere/battement', {});
-    await rel('POST', '/mere/indicateurs', { indicateurs: { patients_actifs: db.prepare("SELECT COUNT(*) AS n FROM fiches WHERE collection='patients' AND archive=0").get().n,
-      seq_max: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s), retard_replication: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s) - +meta('rep_seq', 0) } });
+    const indicateurs = { patients_actifs: db.prepare("SELECT COUNT(*) AS n FROM fiches WHERE collection='patients' AND archive=0").get().n,
+      seq_max: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s), retard_replication: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s) - +meta('rep_seq', 0) };
+    /* Lot RLS-SYNC : l'état de synchronisation des fileuls (compteurs et horodatages seulement), au plus toutes les 2 s. Illisible : OMIS, le relais dit « non publié ». */
+    const fileuls = fileulsPublies(); if (fileuls) indicateurs.fileuls = fileuls;
+    await rel('POST', '/mere/indicateurs', { indicateurs });
   }, 300);
+}
+
+/* LOT RLS-SYNC : ce que la mère publie de ses fileuls : un poste par ligne, son nom technique, son dernier contact, son retard de journal, ses conflits ouverts, ses demandes d'import
+   en attente. JAMAIS un identifiant de patient, un nom ni un libellé : la liste blanche est celle de synchro.js, appliquée une dernière fois par `assainir`. */
+const SYNCHRO = require('./synchro');
+const INTERVALLE_FILEULS_MS = 2000; let fileulsCache = null; let fileulsLe = 0;
+function fileulsPublies() {
+  const maintenant = Date.now();
+  if (fileulsCache && maintenant - fileulsLe < INTERVALLE_FILEULS_MS) return fileulsCache;
+  try {
+    const seqMax = Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s);
+    const conflits = Object.fromEntries(db.prepare("SELECT appareil, COUNT(*) AS n FROM conflits WHERE etat='ouvert' GROUP BY appareil").all().map((c) => [c.appareil, Number(c.n)]));
+    const demandes = {};
+    for (const f of db.prepare("SELECT id, data FROM fiches WHERE collection='demandesImport' AND archive=0").all()) {
+      const d = JSON.parse(f.data);
+      if (d.statut === 'archive' || d.etat !== 'en_attente') continue;
+      const o = db.prepare("SELECT appareil FROM operations WHERE collection='demandesImport' AND fiche=? ORDER BY seq LIMIT 1").get(f.id);
+      if (o) demandes[o.appareil] = (demandes[o.appareil] || 0) + 1;
+    }
+    const brut = db.prepare("SELECT uuid, etiquette, dernier_contact, dernier_seq FROM appareils WHERE etat='actif' AND role<>'mobile' ORDER BY etiquette, uuid").all().map((p) => SYNCHRO.construire({
+      etiquette: p.etiquette, uuid: p.uuid, dernierContact: p.dernier_contact == null ? null : Number(p.dernier_contact), dernierSeq: Number(p.dernier_seq || 0), seqMax,
+      conflitsOuverts: conflits[p.uuid] || 0, demandesEnAttente: demandes[p.uuid] || 0 }));
+    fileulsCache = SYNCHRO.assainir(brut); fileulsLe = maintenant;
+    return fileulsCache;
+  } catch (e) { return null; }
 }
 
 const FICHIERS = require('./fichiers');

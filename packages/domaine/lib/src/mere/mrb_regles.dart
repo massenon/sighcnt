@@ -3,6 +3,8 @@
 /// `packages/sync_dart`, banc `packages/sync/banc`). Une valeur sans source reste `null` : l'écran dit « non disponible », jamais zéro.
 library;
 
+import 'synchro_fileuls.dart';
+
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // Journal technique (M-08)
 // ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -191,22 +193,30 @@ const List<String> mrbVideSpec = [
 // Indicateurs publiés (M-14) et opacité du relais (M-13), spec §12
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 
-/// La liste FERMÉE des champs que la mère publie au relais en clair (`POST /mere/indicateurs`, `Pont.demarrer`). Un test lit `pont.dart` et vérifie
-/// que cette liste est exactement celle du moteur : elle ne peut pas dériver sans que la suite de tests l'annonce.
+/// La liste FERMÉE des COMPTEURS que la mère publie au relais en clair (`POST /mere/indicateurs`, `Pont.demarrer`). Un test lit `pont.dart` et vérifie que cette liste, avec
+/// [mrbChampsStructures], est exactement celle du moteur : elle ne peut pas dériver sans que la suite de tests l'annonce.
 const List<String> mrbChampsPublies = ['patients_actifs', 'seq_max', 'retard_replication'];
 
+/// Lot RLS-SYNC : les champs STRUCTURÉS de la même publication. `fileuls` est un tableau de compteurs et d'horodatages, jamais un texte libre : sa liste blanche et ses types sont
+/// ceux de `synchro_fileuls.dart`, vérifiés par [synchroVerifierIndicateurs].
+const List<String> mrbChampsStructures = ['fileuls'];
+
 class MrbVerdictIndicateurs {
-  const MrbVerdictIndicateurs({required this.horsListe, required this.nonNumeriques});
+  const MrbVerdictIndicateurs({required this.horsListe, required this.nonNumeriques, this.refusSynchro});
   final List<String> horsListe;
   final List<String> nonNumeriques;
 
+  /// Le premier refus de la liste blanche des fileuls (clé inconnue, valeur invalide), ou `null`.
+  final RefusSynchro? refusSynchro;
+
   /// Sans champ libre et sans valeur textuelle : aucun nom de patient ne peut s'y loger.
-  bool get sansDonneeDeSante => horsListe.isEmpty && nonNumeriques.isEmpty;
+  bool get sansDonneeDeSante => horsListe.isEmpty && nonNumeriques.isEmpty && refusSynchro == null;
 }
 
 MrbVerdictIndicateurs mrbVerifierIndicateurs(Map<String, Object?> publies) => MrbVerdictIndicateurs(
-      horsListe: [for (final k in publies.keys) if (!mrbChampsPublies.contains(k)) k],
-      nonNumeriques: [for (final e in publies.entries) if (e.value is! num) e.key],
+      horsListe: [for (final k in publies.keys) if (!mrbChampsPublies.contains(k) && !mrbChampsStructures.contains(k)) k],
+      nonNumeriques: [for (final e in publies.entries) if (!mrbChampsStructures.contains(e.key) && e.value is! num) e.key],
+      refusSynchro: synchroVerifierIndicateurs(publies),
     );
 
 /// Le relais est OPAQUE : une enveloppe déposée ne porte que `id`, `appareil`, `dir`, `n`, `nonce` et `ct` (Base64), jamais un contenu métier, pas

@@ -107,7 +107,8 @@ void main() {
 
     // 4. Les indicateurs publiés : liste fermée, valeurs numériques, aucun nom.
     final publie = ((relais.indicateurs.last['indicateurs']) as Map).cast<String, Object?>();
-    expect(publie.keys.toList(), mrbChampsPublies);
+    expect(publie.keys.toList(), [...mrbChampsPublies, ...mrbChampsStructures], reason: 'lot RLS-SYNC : les compteurs, puis le tableau des fileuls (compteurs et horodatages)');
+    expect(publie['fileuls'], isA<List>());
     expect(mrbVerifierIndicateurs(publie).sansDonneeDeSante, isTrue);
     expect(jsonEncode(relais.indicateurs), isNot(contains('KOUASSI')));
     expect(publie['patients_actifs'], 1, reason: 'l’aperçu de l’écran calcule la même valeur par /admin/compte');
