@@ -82,6 +82,13 @@ class LecteurPdfSysteme implements LecteurPdf {
     } else {
       await Process.run('xdg-open', [f.path]);
     }
+    // Le PDF a été déchiffré pour le lecteur du système : la copie en clair ne reste pas dans le dossier temporaire (suppression au mieux après dix minutes ; Windows refuse de supprimer
+    // un fichier que le lecteur tient encore ouvert, la copie reste alors jusqu'au nettoyage du dossier temporaire par le système : limite dite, écart E2542).
+    Timer(const Duration(minutes: 10), () {
+      try {
+        d.deleteSync(recursive: true);
+      } catch (_) {}
+    });
     return f.path;
   }
 
