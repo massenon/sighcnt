@@ -5,6 +5,8 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/piece.dart';
+import '../../donnees/fichiers_poste.dart';
+import '../../kit/fichiers_ui.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m4/mat_commun.dart';
@@ -31,6 +33,8 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
 
   @override
   List<Widget> actionsEntete(BuildContext context) => [
+        // Lot D5 : le réglage de la taille maximale d'un fichier, ABSENT sans le droit de régler (administrateur et Directrice Administrative).
+        if (boutonTailleFichiers(context, role: ContexteEcran.of(context).role) case final b?) b,
         BoutonSigh(
             libelle: 'Imprimer le registre',
             icone: LucideIcons.printer,
@@ -69,8 +73,12 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
     Fiche fiche(BuildContext ctx, Fiche v, Fiche? e) {
       // E530 : à la modification la référence est GARDÉE (le formulaire ne la porte pas).
       v['reference'] = e?['reference'] ?? admReferenceCourrier(v['sens'], v['date'], col.toutes);
+      // Lot D5 : le nom de téléchargement de la pièce suit la date de la fiche ; la RÉFÉRENCE, elle, ne change jamais.
+      final x = fichierDe(e);
+      if (x != null) v['fichier'] = fichierRecalculerNom('courrier', {...?e, ...v}, x);
       return matSansNuls(v);
     }
+    final fp = FichiersPoste.de(c.magasin);
 
     return CrudMat(
       collection: col,
@@ -80,6 +88,16 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
       triInitial: 'date',
       sensInitial: 'desc',
       taillePage: 15,
+      // Lot D5 : un FILTRE du / au sur la date du courrier, la recherche dans le texte indexé d'un PDF (et ce qu'elle ne lit pas, dit sous « Aucun résultat »), la carte de la pièce numérisée.
+      plageChamp: 'date',
+      rechercheExtra: (r) => fp != null
+          ? fp.texteRecherche(r)
+          : fichierTexteRecherche(r, dateFr: admDateFR(r['date']), texteIndexe: '', observations: '${r['observations'] ?? ''}'),
+      indiceRecherche: (_) => fp?.indiceNonIndexe(col.toutes),
+      detailSup: (ctx, r) {
+        final cc = ContexteEcran.of(ctx);
+        return CartePieceNumerisee(famille: 'courrier', ficheId: r['id']!, titre: 'Courrier ${r['reference']}', role: cc.role, droit: cc.droit);
+      },
       colonnes: [
         ColonneTableau(cle: 'reference', libelle: 'N° d’ordre', sansCoupure: true, rendu: (_, r) => matRef(r['reference'])),
         ColonneTableau(
@@ -100,11 +118,21 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
               final t = admTraitementCourrier(r['traitement']);
               return BadgeSigh(t.$1, ton: matTon(t.$2));
             }),
+        // `numerise` est DÉRIVÉ du fichier (lot D5) : « Oui » seulement quand un fichier est rattaché à la fiche, jamais une case que l'on coche. Un courrier que le jeu d'avant disait
+        // numérisé sans qu'aucun fichier existe reste « À scanner » : la case annonçait un scan que rien n'ouvrait.
         ColonneTableau(
             cle: 'numerise',
             libelle: 'Numérisé',
-            texte: (r) => matVrai(r['numerise']) ? 'Oui' : 'Non',
-            rendu: (_, r) => matVrai(r['numerise']) ? const BadgeSigh('Oui', ton: TonSigh.succes) : const BadgeSigh('À scanner', ton: TonSigh.attention)),
+            valeur: (r) => courrierNumerise(r) ? 'Oui' : 'À scanner',
+            texte: (r) => courrierNumerise(r) ? 'Oui' : 'Non',
+            rendu: (_, r) {
+              if (!courrierNumerise(r)) return const BadgeSigh('À scanner', ton: TonSigh.attention);
+              final x = fichierDe(r)!;
+              return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                const BadgeSigh('Oui', ton: TonSigh.succes),
+                Text(x['texteIndexe'] == true ? 'texte indexé' : 'texte non indexé', style: const TextStyle(color: JetonsShell.slate400, fontSize: 11, height: 14 / 11)),
+              ]);
+            }),
       ],
       champs: (m) => [
         const ChampDef(nom: 'sens', libelle: 'Sens', type: TypeChamp.select, requis: true, options: [OptionChamp('arrivee', 'Courrier arrivée'), OptionChamp('depart', 'Courrier départ')]),
@@ -119,7 +147,6 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
           OptionChamp('traite', 'Traité'),
         ]),
         const ChampDef(nom: 'accuseReception', libelle: 'Accusé de réception', type: TypeChamp.case_),
-        const ChampDef(nom: 'numerise', libelle: 'Document numérisé', type: TypeChamp.case_),
         const ChampDef(nom: 'observations', libelle: 'Observations', type: TypeChamp.textarea, lignes: 2, col: ColChamp.plein),
       ],
       valeursInitiales: () => {'date': iso(c.aujourdhui), 'sens': 'arrivee', 'traitement': 'en_attente', 'nature': 'Lettre'},
@@ -134,6 +161,11 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
           OptionChamp('en_attente', 'En attente'),
         ]),
         FiltreTableau(nom: 'affecteA', libelle: 'Service', options: admOptions(admServicesFiltreCourrier)),
+        FiltreTableau(
+            nom: 'numerise',
+            libelle: 'Numérisé',
+            options: const [OptionChamp('oui', 'Pièce numérisée'), OptionChamp('non', 'À scanner'), OptionChamp('sansTexte', 'Texte non indexé')],
+            correspond: (r, v) => v == 'oui' ? courrierNumerise(r) : (v == 'non' ? !courrierNumerise(r) : (courrierNumerise(r) && fichierDe(r)!['texteIndexe'] != true))),
       ],
       kpis: (ctx, rows) => [for (final k in admKpisCourriers(rows)) admKpi(k)],
       etat: (ctx, r) => matImprimer(ctx,
@@ -152,7 +184,9 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
               ('Objet', '${r['objet'] ?? ''}'),
               ('État du traitement', admTraitementCourrier(r['traitement']).$1),
               ('Accusé de réception', matOuiNon(r['accuseReception'])),
-              ('Document numérisé', matOuiNon(r['numerise'])),
+              ('Document numérisé', courrierNumerise(r) ? 'Oui' : 'Non, à scanner'),
+              ('Nom du fichier', courrierNumerise(r) ? docNomNormalise('courrier', r, '${fichierDe(r)!['nomNormalise'] ?? ''}'.split('.').last) : 'Aucun fichier rattaché'),
+              ('Empreinte SHA-256 (8 premiers caractères)', courrierNumerise(r) ? docAbrege(fichierDe(r)!['sha256']) : 'Sans objet'),
               ('Observations', matVrai(r['observations']) ? '${r['observations']}' : '—'),
             ]),
           ],

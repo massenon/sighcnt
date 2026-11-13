@@ -133,7 +133,13 @@ class RegistreM1 extends StatefulWidget {
     this.libelleArchiver = 'Archiver',
     this.messageArchive = 'Enregistrement archivé.',
     this.titreArchivage,
+    this.rechercheExtra,
+    this.indiceRecherche,
   });
+
+  /// Ce que la recherche lit en plus des colonnes (texte indexé d'une pièce numérisée) et ce qu'elle ne lit pas, dit sous « Aucun résultat » (lot D5).
+  final String Function(Fiche)? rechercheExtra;
+  final String? Function(String)? indiceRecherche;
 
   /// Commandes posées dans la barre d'outils du tableau (à côté de « Nouveau »).
   final List<Widget> actionsBarre;
@@ -290,7 +296,7 @@ class _RegistreM1State extends State<RegistreM1> {
         titre: widget.titreDetail?.call(f) ?? '${f['reference'] ?? f['numero'] ?? f['code'] ?? 'Détail'}',
         sousTitre: widget.sousTitreDetail?.call(f),
         largeurMax: 672,
-        corps: widget.detail!(ctx, f));
+        corps: ContexteEcran.of(ctx).enveloppe(widget.detail!(ctx, f)));
   }
 
   @override
@@ -311,6 +317,8 @@ class _RegistreM1State extends State<RegistreM1> {
       libelleRecherche: widget.libelleRecherche,
       messageVide: widget.messageVide,
       alClicLigne: widget.detail != null ? (f) => _ouvrirDetail(context, f) : null,
+      rechercheExtra: widget.rechercheExtra,
+      indiceRecherche: widget.indiceRecherche,
       actions: [
         ...widget.actionsBarre,
         if (peutCreer)

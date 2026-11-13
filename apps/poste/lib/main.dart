@@ -8,8 +8,10 @@ import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
 
 
+import 'donnees/fichiers_poste.dart';
 import 'donnees/organigramme_poste.dart';
 import 'sync/service_demandes_import.dart';
+import 'sync/service_fichiers.dart';
 import 'sync/service_verdicts_import.dart';
 import 'donnees/tarifs_poste.dart';
 import 'donnees/magasin.dart';
@@ -135,6 +137,8 @@ Future<void> main() async {
         dbChemin: '$dossierDonnees/mere.db',
         admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin,
         cleStockage: cleSqlite,
+        // Lot D5 : les fichiers numérisés de la mère vivent dans le MÊME dossier que ceux de ce poste (adressés par empreinte, même clé) : un scan déposé ici est aussitôt chez la mère.
+        dossierFichiers: '$dossierDonnees/fichiers',
         dossierSauvegardes: '$dossierDonnees/sauvegardes')),
     relaisPour: (relais, secret) => RelaisMereHttp(
         base: Uri.parse(relais), secretMere: secret, client: http.Client()),
@@ -179,6 +183,12 @@ Future<void> main() async {
   // LA REPRISE DES PRIX (lot T6) : un poste qui avait enregistré ses actes avant le référentiel de prix le garde, le prix facturé hier devient la version 1. Seule la MÈRE
   // (ou un poste autonome) reconstruit les collections de lecture ; un fileul les reçoit avec la configuration.
   TarifsPoste.reprendre(magasin, fileul: params.rejoint && params.mode != ModePoste.mere);
+  // LES FICHIERS NUMÉRISÉS (lot D5) : rangés hors du magasin, par empreinte SHA-256, chiffrés au repos par la clé du poste (en clair sous `SIGH_CHIFFREMENT=non`). Installés pour les écrans
+  // des courriers (M13) et des documents du patient (M1) ; un fileul rattaché leur ajoute le transfert du binaire à part (`ServiceFichiers`, ci-dessous).
+  final fichiersPoste = FichiersPoste(magasin, StockageFichiers('$dossierDonnees/fichiers', cle: cle))..installer();
+  final navigation = await DonneesNavigation.chargerAssets();
+  SessionPoste? session;
+  ServiceFichiers? serviceFichiers;
   for (final probleme in persistance.problemes) {
     debugPrint(probleme);
   }
@@ -239,6 +249,17 @@ Future<void> main() async {
     ApplicateurConfiguration? applicateur;
     ServiceVerdictsImport? verdictsImport;
     void demarrerApplication() {
+      // Lot D5 : le BINAIRE des fichiers numérisés voyage à part, par morceaux vérifiés, vers et depuis la mère (jamais par le relais, jamais vers un téléphone).
+      serviceFichiers ??= ServiceFichiers(
+          magasin: magasin,
+          fichiers: fichiersPoste,
+          appel: (methode, chemin, {corps, entetes = const {}, typeContenu = 'application/octet-stream'}) async {
+            final r = await moteur.requeteBinaire(methode, chemin, corps: corps, entetes: entetes, typeContenu: typeContenu);
+            return ReponseFichiers(r.statut, r.corps, r.entetes);
+          },
+          roleCourant: () => session?.role,
+          droitDe: (role, ecran) => navigation.aChaud(magasin).matrice.droit(role, ecran))
+        ..demarrer();
       applicateur ??= ApplicateurConfiguration(magasin, moteur.liste)..demarrer();
       // Lot IMP-D : un fileul importe directement chez lui ; il suit ensuite le verdict de la mère (restitue sur refus, lève le marquage sur confirmation).
       verdictsImport ??= ServiceVerdictsImport(magasin, role: 'fileul', auteur: () => 'Poste fileul', etiquette: moteur.uuid.replaceAll('-', '').substring(0, 6))..demarrer();
@@ -279,7 +300,7 @@ Future<void> main() async {
     }
   }
   ServiceTranscriptionMobile(magasin: magasin, source: moteur.pieces).demarrer();
-  final session = sessionDemarrage();
+  session = sessionDemarrage();
   // MODE PAIR (ADR-0006) : seulement si `pair.json` l'active. Les écritures du poste passent par le moteur pair, le relais ne voit que des enveloppes chiffrées.
   MoteurPair? moteurPair;
   EtatPairPoste.dossier = dossierDonnees;
@@ -320,7 +341,7 @@ Future<void> main() async {
   }
   runApp(SighPoste(
       controleur: controleur,
-      donnees: await DonneesNavigation.chargerAssets(),
+      donnees: navigation,
       magasin: magasin,
       session: session,
       ouvrirTrancher: moteurPair == null

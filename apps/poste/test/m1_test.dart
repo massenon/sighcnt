@@ -530,8 +530,11 @@ void main() {
       expect(kpi(t, 'Validés'), (k[1] as List)[1]);
       expect(kpi(t, 'En attente de validation'), (k[2] as List)[1]);
       expect(kpi(t, 'Dossiers couverts'), (k[3] as List)[1]);
-      expect(find.textContaining('JPEG · 3.0 Mo'), findsOneWidget);
+      // Lot D5 : un document qui ne porte aucun fichier est « référencé » (DOC1, DOC2) ; celui qui porte encore son scan en base64 le dit (DOC3 : migration en attente).
+      expect(find.text('référencé'), findsAtLeastNWidgets(2));
+      expect(find.text('fichier non déposé'), findsAtLeastNWidgets(2));
       expect(find.textContaining('PNG · 0 Ko'), findsOneWidget);
+      expect(find.text('dans le magasin, migration en attente'), findsOneWidget);
     });
 
     cas('retirer un document : motif obligatoire, archivé (RG-14), annulable', (t) async {

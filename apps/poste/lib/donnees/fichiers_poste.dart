@@ -155,6 +155,46 @@ class FichiersPoste extends ChangeNotifier {
 
   ResultatFichier _refus(String code, String motif, String geste) => ResultatFichier.refus(RefusFichier(code, motif, geste));
 
+  /// Les étapes COMMUNES d'un dépôt (sur une fiche existante ou à la création d'une fiche) : format lu sur les octets, taille, doublon, confirmation, indexation du texte, rangement
+  /// sur le disque (empreinte recalculée), registre par empreinte. Rend le refus nommé, ou le dépôt et le doublon confirmé.
+  Future<({ResultatFichier? refus, Map<String, Object?>? depot, FicheDoc? autre})> _ranger(
+      {required String famille,
+      required String nom,
+      required String mime,
+      required Uint8List octets,
+      required String? type,
+      required Iterable<FicheDoc> fiches,
+      FicheDoc? ficheCourante,
+      bool Function(FicheDoc)? portee,
+      Future<bool> Function(FicheDoc autre)? confirmerAutre}) async {
+    final prep = fichierPreparerDepot(nom: nom, mime: mime, octets: octets, famille: famille, tailleMax: tailleMax(), fiches: fiches, ficheCourante: ficheCourante, portee: portee);
+    if (prep.refus != null) return (refus: ResultatFichier.refus(prep.refus!), depot: null, autre: null);
+    if (prep.autre != null) {
+      final ok = confirmerAutre == null ? false : await confirmerAutre(prep.autre!);
+      if (!ok) return (refus: _refus('DEPOT_ANNULE', 'dépôt annulé après l’avertissement de doublon', 'Choisir un autre fichier si besoin.'), depot: null, autre: null);
+    }
+    final idx = indexerFichier(octets, prep.format!.id, _inflater);
+    try {
+      final r = await stockage.ranger(octets,
+          famille: famille, zone: famille == 'patient' ? docZoneDe(type) : 0, deposePar: magasin.utilisateur, shaAnnonce: prep.sha256, tailleMax: tailleMax());
+      if (r.sha256 != prep.sha256) return (refus: _refus('EMPREINTE_DIVERGENTE', 'le poste a rangé un fichier d’une autre empreinte', 'Déposer de nouveau le fichier.'), depot: null, autre: null);
+      final depot = <String, Object?>{
+        'sha256': r.sha256,
+        'ext': r.ext,
+        'mime': r.mime,
+        'taille': r.taille,
+        'pages': idx.pages,
+        'texteIndexe': idx.texteIndexe,
+        'mots': idx.mots,
+        'motsTronques': idx.motsTronques,
+      };
+      _noter(depot);
+      return (refus: null, depot: depot, autre: prep.autre);
+    } on ErreurFichier catch (e) {
+      return (refus: ResultatFichier.refus(e.refus), depot: null, autre: null);
+    }
+  }
+
   /// LE GESTE DE DÉPÔT, le même pour les deux familles. Droits, format lu sur les octets, taille, doublon, rangement, journal : dans cet ordre. [remplacer] : la pièce déjà
   /// rattachée est RETIRÉE de la fiche (jamais supprimée) quand la nouvelle est rangée. [confirmerAutre] : l'agent confirme un fichier déjà rattaché à une AUTRE fiche.
   Future<ResultatFichier> deposer(
@@ -175,34 +215,9 @@ class FichiersPoste extends ChangeNotifier {
     final refusDroit = fichierRefusDroit(role: role, famille: famille, geste: 'editer', type: type, droitEcran: droit);
     if (refusDroit != null) return ResultatFichier.refus(refusDroit);
     if (fiche['statut'] == 'archive') return _refus('FICHE_ARCHIVEE', 'la fiche est archivée', 'Restaurer la fiche avant d’y déposer une pièce.');
-    final prep = fichierPreparerDepot(
-        nom: nom, mime: mime, octets: octets, famille: famille, tailleMax: tailleMax(), fiches: col.toutes, ficheCourante: fiche, portee: portee);
-    if (prep.refus != null) return ResultatFichier.refus(prep.refus!);
-    if (prep.autre != null) {
-      final ok = confirmerAutre == null ? false : await confirmerAutre(prep.autre!);
-      if (!ok) return _refus('DEPOT_ANNULE', 'dépôt annulé après l’avertissement de doublon', 'Choisir un autre fichier si besoin.');
-    }
-    final idx = indexerFichier(octets, prep.format!.id, _inflater);
-    final FichierRangeLocal rg;
-    try {
-      final r = await stockage.ranger(octets,
-          famille: famille, zone: famille == 'patient' ? docZoneDe(type) : 0, deposePar: magasin.utilisateur, shaAnnonce: prep.sha256, tailleMax: tailleMax());
-      rg = FichierRangeLocal(r.sha256, r.ext, r.mime, r.taille);
-    } on ErreurFichier catch (e) {
-      return ResultatFichier.refus(e.refus);
-    }
-    if (rg.sha256 != prep.sha256) return _refus('EMPREINTE_DIVERGENTE', 'le poste a rangé un fichier d’une autre empreinte', 'Déposer de nouveau le fichier.');
-    final depot = <String, Object?>{
-      'sha256': rg.sha256,
-      'ext': rg.ext,
-      'mime': rg.mime,
-      'taille': rg.taille,
-      'pages': idx.pages,
-      'texteIndexe': idx.texteIndexe,
-      'mots': idx.mots,
-      'motsTronques': idx.motsTronques,
-    };
-    _noter(depot);
+    final r = await _ranger(famille: famille, nom: nom, mime: mime, octets: octets, type: type, fiches: col.toutes, ficheCourante: fiche, portee: portee, confirmerAutre: confirmerAutre);
+    if (r.refus != null) return r.refus!;
+    final depot = r.depot!;
     VoidCallback? undoRetrait;
     if (remplacer) {
       final ret = retirer(famille: famille, ficheId: ficheId, motif: 'Remplacée par un autre fichier', role: role, droit: droit);
@@ -220,14 +235,50 @@ class FichiersPoste extends ChangeNotifier {
       return _refus('ECRITURE_REFUSEE', e.motif, 'Vérifier les droits sur cet écran.');
     }
     magasin.journaliser('Dépôt d’un fichier numérisé', _module(famille), _entite(famille), '${courante['reference'] ?? courante['id']}', {'fichier': null},
-        {'empreinte': docAbrege(rg.sha256), 'nom': f['nomNormalise'], 'taille': rg.taille});
+        {'empreinte': docAbrege('${depot['sha256']}'), 'nom': f['nomNormalise'], 'taille': depot['taille']});
+    _enfiler('${depot['sha256']}', famille, type, role);
     notifyListeners();
-    _enfiler(rg.sha256, famille, type, role);
-    return ResultatFichier.ok(fichier: f, avertissementDoublon: prep.autre, annuler: () {
+    return ResultatFichier.ok(fichier: f, avertissementDoublon: r.autre, annuler: () {
       undo();
       // L'ANNULATION DOIT SE PROPAGER : retirer la clé ne se propage pas (la fusion par champ ne sait pas dire « retiré »), on pose `fichier: null` comme la maquette.
       col.mettreAJour(ficheId, {'fichier': null}, journaliser: false);
       undoRetrait?.call();
+      notifyListeners();
+    });
+  }
+
+  /// LA CRÉATION D'UN DOCUMENT DU PATIENT AVEC SON FICHIER (`deposer()` de `m1-documents`) : le fichier est contrôlé et rangé D'ABORD, la fiche n'est créée que s'il l'est (un refus ne
+  /// laisse aucune fiche vide). [fiche] porte référence, dossier, type, date, état, déposé par. Rend la fiche créée dans `fichier`… et de quoi ARCHIVER la création (RG-14).
+  Future<ResultatFichier> creerDocumentPatient(
+      {required FicheDoc fiche, required String nom, String mime = '', required Uint8List octets, required String role, required Droit droit, Future<bool> Function(FicheDoc autre)? confirmerAutre}) async {
+    final col = magasin.collection('documentsPatient');
+    final type = '${fiche['type']}';
+    final refusDroit = fichierRefusDroit(role: role, famille: 'patient', geste: 'editer', type: type, droitEcran: droit);
+    if (refusDroit != null) return ResultatFichier.refus(refusDroit);
+    final r = await _ranger(
+        famille: 'patient',
+        nom: nom,
+        mime: mime,
+        octets: octets,
+        type: type,
+        fiches: col.toutes,
+        portee: (f) => f['patientId'] == fiche['patientId'],
+        confirmerAutre: confirmerAutre);
+    if (r.refus != null) return r.refus!;
+    final depot = r.depot!;
+    final f = fichierConstruire(famille: 'patient', fiche: fiche, depot: depot, nomOrigine: nom, deposePar: magasin.utilisateur, deposeLe: magasin.horloge().toIso8601String());
+    final ({FicheDoc fiche, VoidCallback annuler}) ins;
+    try {
+      ins = col.inserer({'statut': 'actif', ...fiche, 'fichier': f}, prefixe: 'DOC');
+    } on EcritureRefusee catch (e) {
+      return _refus('ECRITURE_REFUSEE', e.motif, 'Vérifier les droits sur cet écran.');
+    }
+    magasin.journaliser('Création d’un document numérisé', 'M1', 'document', '${fiche['reference']}', null,
+        {'reference': fiche['reference'], 'type': type, 'empreinte': docAbrege('${depot['sha256']}'), 'nom': f['nomNormalise']});
+    _enfiler('${depot['sha256']}', 'patient', type, role);
+    notifyListeners();
+    return ResultatFichier.ok(fichier: f, avertissementDoublon: r.autre, annuler: () {
+      ins.annuler();
       notifyListeners();
     });
   }

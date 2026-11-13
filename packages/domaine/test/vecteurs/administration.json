@@ -709,7 +709,7 @@
        "Rapport",
        "Direction Administrative",
        "En cours",
-       "Oui",
+       "À scanner",
        ""
       ],
       [
@@ -721,7 +721,7 @@
        "Courriel",
        "Gestion des stocks",
        "Traité",
-       "Oui",
+       "À scanner",
        ""
       ],
       [
@@ -745,7 +745,7 @@
        "Facture",
        "Comptabilité",
        "En attente",
-       "Oui",
+       "À scanner",
        ""
       ],
       [
@@ -769,7 +769,7 @@
        "Lettre",
        "Ressources humaines",
        "En cours",
-       "Oui",
+       "À scanner",
        ""
       ],
       [
@@ -793,7 +793,7 @@
        "Convocation",
        "Direction Administrative",
        "Traité",
-       "Oui",
+       "À scanner",
        ""
       ]
      ]
@@ -801,18 +801,18 @@
    ],
    "notes": [],
    "boutons": [
+    "Aujourd’hui",
+    "Sept derniers jours",
+    "Toute la période",
     "Tous les courriers8",
     "Archivés1",
     "Colonnes",
     "Exporter",
     "Nouveau",
+    "Importer les données",
     "Imprimer la sélection",
     "Archiver",
     "Tout désélectionner",
-    "Consulter",
-    "Imprimer l’état",
-    "Modifier",
-    "Archiver",
     "Consulter",
     "Imprimer l’état"
    ]
@@ -888,6 +888,27 @@
      [
       "Gestion des stocks",
       "Gestion des stocks"
+     ]
+    ]
+   ],
+   [
+    "Numérisé",
+    [
+     [
+      "",
+      "Numérisé"
+     ],
+     [
+      "oui",
+      "Pièce numérisée"
+     ],
+     [
+      "non",
+      "À scanner"
+     ],
+     [
+      "sansTexte",
+      "Texte non indexé"
      ]
     ]
    ]
@@ -976,10 +997,34 @@
     "lignes": [
      "ARR-2026-0008"
     ]
+   },
+   {
+    "filtre": "Numérisé",
+    "valeur": "oui",
+    "lignes": []
+   },
+   {
+    "filtre": "Numérisé",
+    "valeur": "non",
+    "lignes": [
+     "DEP-2026-0007",
+     "ARR-2026-0008",
+     "ARR-2026-0006",
+     "DEP-2026-0005",
+     "ARR-2026-0004",
+     "ARR-2026-0003",
+     "DEP-2026-0002",
+     "ARR-2026-0001"
+    ]
+   },
+   {
+    "filtre": "Numérisé",
+    "valeur": "sansTexte",
+    "lignes": []
    }
   ],
   "detail": {
-   "texte": "DEP-2026-0007 DEP-2026-0007 N° d’ordre DEP-2026-0007 Sens Départ Date 30/10/2026 Correspondant Zone sanitaire Objet Rapport mensuel d’activité Nature Rapport Affecté à Direction Administrative Traitement En cours Numérisé Oui Accusé de réception Oui Observations À signer avant envoi Imprimer Modifier Archiver",
+   "texte": "DEP-2026-0007 DEP-2026-0007 N° d’ordre DEP-2026-0007 Sens Départ Date 30/10/2026 Correspondant Zone sanitaire Objet Rapport mensuel d’activité Nature Rapport Affecté à Direction Administrative Traitement En cours Numérisé À scanner Accusé de réception Oui Observations À signer avant envoi Imprimer Modifier Archiver",
    "boutons": [
     "Fermer",
     "Imprimer",
@@ -1025,7 +1070,7 @@
      "nom": "TAKI Alimatou"
     }
    ],
-   "texte": "RubriqueInformationObjetRapport mensuel d’activitéÉtat du traitementEn coursAccusé de réceptionOuiDocument numériséOuiObservationsÀ signer avant envoi",
+   "texte": "RubriqueInformationObjetRapport mensuel d’activitéÉtat du traitementEn coursAccusé de réceptionOuiDocument numériséNon, à scannerNom du fichierAucun fichier rattachéEmpreinte SHA-256 (8 premiers caractères)Sans objetObservationsÀ signer avant envoi",
    "tableaux": []
   },
   "etatRegistre": {
@@ -1072,7 +1117,6 @@
     "Service destinataire *",
     "État du traitement *",
     "Accusé de réception",
-    "Document numérisé",
     "Observations"
    ],
    "defauts": {
@@ -1084,7 +1128,6 @@
     "affecteA": "Direction Médicale",
     "traitement": "en_attente",
     "accuseReception": false,
-    "numerise": false,
     "observations": ""
    },
    "options": {
@@ -1185,7 +1228,7 @@
      ]
     ],
     "fiche": {
-     "id": "COUxmvuswn40g4g4v",
+     "id": "COUxmvuswn40psd13",
      "statut": "actif",
      "sens": "arrivee",
      "date": "2026-10-30",
@@ -1195,7 +1238,6 @@
      "affecteA": "Comptabilité",
      "traitement": "en_attente",
      "accuseReception": false,
-     "numerise": false,
      "observations": "",
      "reference": "ARR-2026-0009"
     },
@@ -1209,7 +1251,7 @@
      ]
     ],
     "fiche": {
-     "id": "COUxmvuswn40pa92d",
+     "id": "COUxmvuswn40yz4az",
      "statut": "actif",
      "sens": "depart",
      "date": "2026-10-30",
@@ -1219,7 +1261,6 @@
      "affecteA": "Comptabilité",
      "traitement": "traite",
      "accuseReception": true,
-     "numerise": true,
      "observations": "Urgent",
      "reference": "DEP-2026-0010"
     },
@@ -1277,7 +1318,7 @@
         "Lettre",
         "Comptabilité",
         "Traité",
-        "Oui",
+        "À scanner",
         ""
        ],
        [
@@ -1301,7 +1342,7 @@
         "Rapport",
         "Direction Administrative",
         "En cours",
-        "Oui",
+        "À scanner",
         ""
        ],
        [
@@ -1313,7 +1354,7 @@
         "Courriel",
         "Gestion des stocks",
         "Traité",
-        "Oui",
+        "À scanner",
         ""
        ],
        [
@@ -1337,7 +1378,7 @@
         "Facture",
         "Comptabilité",
         "En attente",
-        "Oui",
+        "À scanner",
         ""
        ],
        [
@@ -1361,7 +1402,7 @@
         "Lettre",
         "Ressources humaines",
         "En cours",
-        "Oui",
+        "À scanner",
         ""
        ],
        [
@@ -1385,7 +1426,7 @@
         "Convocation",
         "Direction Administrative",
         "Traité",
-        "Oui",
+        "À scanner",
         ""
        ]
       ]
@@ -1393,18 +1434,18 @@
     ],
     "notes": [],
     "boutons": [
+     "Aujourd’hui",
+     "Sept derniers jours",
+     "Toute la période",
      "Tous les courriers8",
      "Archivés1",
      "Colonnes",
      "Exporter",
      "Nouveau",
+     "Importer les données",
      "Imprimer la sélection",
      "Archiver",
      "Tout désélectionner",
-     "Consulter",
-     "Imprimer l’état",
-     "Modifier",
-     "Archiver",
      "Consulter",
      "Imprimer l’état"
     ]
@@ -1421,7 +1462,6 @@
     "affecteA": "Direction Médicale",
     "traitement": "en_attente",
     "accuseReception": false,
-    "numerise": false,
     "observations": ""
    },
    "enregistre": {
@@ -1443,7 +1483,7 @@
      "affecteA": "Direction Médicale",
      "traitement": "traite",
      "accuseReception": false,
-     "numerise": true,
+     "numerise": false,
      "observations": ""
     }
    }
@@ -1991,7 +2031,7 @@
      ]
     ],
     "fiche": {
-     "id": "REUxmvuswn40dy5rq",
+     "id": "REUxmvuswn40za81g",
      "statut": "actif",
      "type": "Réunion de direction",
      "date": "2026-10-30",
@@ -2847,7 +2887,7 @@
      }
     ],
     "fiche": {
-     "id": "EVExmvuswn40ctuzt",
+     "id": "EVExmvuswn40l8z1h",
      "statut": "actif",
      "libelle": "Dépistage du cancer du sein",
      "categorie": "Santé publique",
@@ -2866,7 +2906,7 @@
    },
    "sansNotif": {
     "fiche": {
-     "id": "EVExmvuswn40jzgqe",
+     "id": "EVExmvuswn40opzpa",
      "statut": "actif",
      "libelle": "Réunion sans annonce",
      "categorie": "Santé publique",
@@ -4141,7 +4181,7 @@
      ]
     ],
     "fiche": {
-     "id": "AMBxmvuswn40cvmhl",
+     "id": "AMBxmvuswn402eumz",
      "statut": "actif",
      "patientCode": "CNT/8/25",
      "dateHeure": "2026-10-30T09:30",
@@ -4183,7 +4223,7 @@
    },
    "tarifSaisi": {
     "fiche": {
-     "id": "AMBxmvuswn40xk0j8",
+     "id": "AMBxmvuswn40x1uq3",
      "statut": "actif",
      "patientCode": "CNT/9/26",
      "dateHeure": "2026-11-02T16:00",
@@ -4270,7 +4310,7 @@
   "amorcage": {
    "fiches": [
     {
-     "id": "AMBxmvuswn40309hp",
+     "id": "AMBxmvuswn40ojlnv",
      "statut": "actif",
      "libelle": "Sapeurs-pompiers",
      "type": "publique",
@@ -4283,7 +4323,7 @@
      "source": "Structure à contacter — numéro à renseigner"
     },
     {
-     "id": "AMBxmvuswn406pppu",
+     "id": "AMBxmvuswn40aqo05",
      "statut": "actif",
      "libelle": "Zone sanitaire de Natitingou",
      "type": "publique",
@@ -4296,7 +4336,7 @@
      "source": "Structure à contacter — numéro à renseigner"
     },
     {
-     "id": "AMBxmvuswn40ffd33",
+     "id": "AMBxmvuswn40jww44",
      "statut": "actif",
      "libelle": "CHD Atacora — ambulance",
      "type": "publique",
@@ -4309,7 +4349,7 @@
      "source": "Structure à contacter — numéro à renseigner"
     },
     {
-     "id": "AMBxmvuswn40whd0a",
+     "id": "AMBxmvuswn4017vls",
      "statut": "actif",
      "libelle": "Ambulance CNT 02",
      "type": "clinique",
@@ -4322,7 +4362,7 @@
      "source": "En-tête officiel de la clinique"
     },
     {
-     "id": "AMBxmvuswn400pzkb",
+     "id": "AMBxmvuswn40movkb",
      "statut": "actif",
      "libelle": "Ambulance CNT 01",
      "type": "clinique",
@@ -5096,7 +5136,7 @@
     ],
     "total": 9,
     "derniere": {
-     "id": "AMBxmvuswn40h1nzo",
+     "id": "AMBxmvuswn40lpsih",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": true,
@@ -5121,7 +5161,7 @@
     ],
     "total": 10,
     "derniere": {
-     "id": "AMBxmvuswn40f3a7a",
+     "id": "AMBxmvuswn40ke2ja",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": false,
@@ -6405,7 +6445,7 @@
      ]
     ],
     "fiche": {
-     "id": "MATxmvuswn40pcgk3",
+     "id": "MATxmvuswn40i14aq",
      "statut": "actif",
      "libelle": "Autoclave 2",
      "categorie": "Bloc opératoire",
@@ -6445,7 +6485,7 @@
    },
    "complet": {
     "fiche": {
-     "id": "MATxmvuswn40i2se5",
+     "id": "MATxmvuswn40dwbbt",
      "statut": "actif",
      "libelle": "Réfrigérateur 3",
      "categorie": "Énergie & froid",
@@ -6543,7 +6583,7 @@
   "evenements": {
    "jeu": [
     {
-     "id": "EVExmvuswn40jzgqe",
+     "id": "EVExmvuswn40opzpa",
      "statut": "actif",
      "libelle": "Réunion sans annonce",
      "categorie": "Santé publique",
@@ -6559,7 +6599,7 @@
      "_creeLe": "2026-10-30T10:00:00.000Z"
     },
     {
-     "id": "EVExmvuswn40ctuzt",
+     "id": "EVExmvuswn40l8z1h",
      "statut": "actif",
      "libelle": "Dépistage du cancer du sein",
      "categorie": "Santé publique",
@@ -6773,7 +6813,7 @@
   "reunions": {
    "jeu": [
     {
-     "id": "REUxmvuswn40dy5rq",
+     "id": "REUxmvuswn40za81g",
      "statut": "actif",
      "type": "Réunion de direction",
      "date": "2026-10-30",
@@ -7038,7 +7078,7 @@
   "repertoire": {
    "jeu": [
     {
-     "id": "AMBxmvuswn40f3a7a",
+     "id": "AMBxmvuswn40ke2ja",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": false,
@@ -7056,7 +7096,7 @@
      "_creeLe": "2026-10-30T10:00:00.000Z"
     },
     {
-     "id": "AMBxmvuswn40h1nzo",
+     "id": "AMBxmvuswn40lpsih",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": true,

@@ -53,7 +53,17 @@ class CrudMat extends StatefulWidget {
     this.validation,
     this.intro,
     this.actionsSup,
+    this.detailSup,
+    this.rechercheExtra,
+    this.indiceRecherche,
   });
+
+  /// `detailSup(r, ctx)` du `K.crud` : un bloc posé APRÈS la fiche par défaut dans le tiroir (la carte « Pièce numérisée » d'un courrier, lot D5).
+  final Widget Function(BuildContext, Fiche)? detailSup;
+
+  /// `recherche: {extra, indice}` du `K.crud` : ce que la recherche lit en plus des colonnes, et ce qu'elle ne lit pas (dit sous « Aucun résultat »).
+  final String Function(Fiche)? rechercheExtra;
+  final String? Function(String)? indiceRecherche;
 
   /// `actionsSup(r, refresh)` du `K.crud` : des commandes propres à l'écran (validation d'un circuit, par exemple), posées après « Consulter ». Une commande
   /// interdite est ABSENTE : c'est à l'appelant de ne pas la rendre.
@@ -361,7 +371,12 @@ class _CrudMatState extends State<CrudMat> {
         titre: widget.titreDetail?.call(f) ?? matTitreDetail(f),
         sousTitre: widget.sousTitreDetail != null ? widget.sousTitreDetail!(f) : matSousTitreDetail(f),
         largeurMax: widget.largeurTiroir,
-        corps: widget.detail != null ? widget.detail!(ctx, f) : _detailDefaut(ctx, f),
+        corps: widget.detail != null
+            ? widget.detail!(ctx, f)
+            : (widget.detailSup == null
+                ? _detailDefaut(ctx, f)
+                // Le tiroir vit hors de l'arbre de l'écran : le bloc supplémentaire (carte de la pièce numérisée) relit le contexte par l'enveloppe.
+                : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [_detailDefaut(ctx, f), const SizedBox(height: 16), c.enveloppe(widget.detailSup!(ctx, f))])),
         pied: (fermer) => [
               if (widget.etat != null)
                 BoutonSigh(
@@ -418,6 +433,8 @@ class _CrudMatState extends State<CrudMat> {
               ? 'Utiliser le bouton « Nouveau » pour créer le premier enregistrement.'
               : null),
       alClicLigne: (f) => _ouvrirDetail(ctx, f),
+      rechercheExtra: widget.rechercheExtra,
+      indiceRecherche: archive ? null : widget.indiceRecherche,
       actions: [
         if (!archive && c.droit.editer)
           BoutonSigh(

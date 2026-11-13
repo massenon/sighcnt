@@ -176,7 +176,8 @@ function ecrireDartNotes(n) {
         const nomF = s.getAttribute('aria-label');
         for (const o of [...s.options].filter((x) => x.value !== '')) {
           s.value = o.value; s.dispatchEvent(new Event('change')); await H.dormir(50);
-          out.filtreCas.push({ filtre: nomF, valeur: o.value, lignes: H.tableaux(racine)[0].lignes.map((l) => l[0]) });
+          /* Un filtre qui ne retient AUCUNE ligne (« Pièce numérisée » tant qu'aucun fichier n'est déposé) rend l'état vide : pas de tableau, donc aucune ligne. */
+          out.filtreCas.push({ filtre: nomF, valeur: o.value, lignes: (H.tableaux(racine)[0] || { lignes: [] }).lignes.map((l) => l[0]) });
         }
         s.value = ''; s.dispatchEvent(new Event('change')); await H.dormir(40);
       }
@@ -189,13 +190,13 @@ function ecrireDartNotes(n) {
       out.etatFiche = H.propre(window.__etats[0] || null);
       // registre imprimé
       window.__etats.length = 0;
-      SIGH.screens['m13-courriers'].actions().find((b) => b.textContent.trim() === 'Imprimer le registre').click(); await H.dormir(150);
+      SIGH.screens['m13-courriers'].actions().filter(Boolean).find((b) => b.textContent.trim() === 'Imprimer le registre').click(); await H.dormir(150);
       out.etatRegistre = H.propre(window.__etats[0] || null);
       // création
       H.bouton(racine, 'Nouveau').click(); await H.dormir(300);
       out.creation = { modale: H.modale().slice(0, 160), champs: H.champs() };
       out.creation.defauts = {};
-      ['sens', 'date', 'correspondant', 'objet', 'nature', 'affecteA', 'traitement', 'accuseReception', 'numerise', 'observations'].forEach((n) => { out.creation.defauts[n] = H.valeur(n); });
+      ['sens', 'date', 'correspondant', 'objet', 'nature', 'affecteA', 'traitement', 'accuseReception', 'observations'].forEach((n) => { out.creation.defauts[n] = H.valeur(n); });
       out.creation.options = { sens: H.optsDe('sens'), nature: H.optsDe('nature'), affecteA: H.optsDe('affecteA'), traitement: H.optsDe('traitement') };
       // refus : correspondant et objet vides
       H.viderToasts(); H.cliquer('Créer'); await H.dormir(200);
@@ -204,15 +205,15 @@ function ecrireDartNotes(n) {
       H.viderToasts(); H.cliquer('Créer'); await H.dormir(300);
       out.creation.arrivee = { toasts: H.toasts(), fiche: H.net(col.all()[0]), total: col.all().length };
       H.bouton(racine, 'Nouveau').click(); await H.dormir(300);
-      H.poser('sens', 'depart'); H.poser('correspondant', 'SOS Assurances'); H.poser('objet', 'Relance de paiement'); H.poser('nature', 'Lettre'); H.poser('affecteA', 'Comptabilité'); H.poser('traitement', 'traite'); H.poser('accuseReception', true); H.poser('numerise', true); H.poser('observations', 'Urgent');
+      H.poser('sens', 'depart'); H.poser('correspondant', 'SOS Assurances'); H.poser('objet', 'Relance de paiement'); H.poser('nature', 'Lettre'); H.poser('affecteA', 'Comptabilité'); H.poser('traitement', 'traite'); H.poser('accuseReception', true); H.poser('observations', 'Urgent');
       H.viderToasts(); H.cliquer('Créer'); await H.dormir(300);
       out.creation.depart = { toasts: H.toasts(), fiche: H.net(col.all()[0]), total: col.all().length };
       out.creation.apres = H.lireEcran(racine);
       // modification : la référence est gardée
       H.icone(H.ligne(racine, 'ARR-2026-0004'), 'Modifier').click(); await H.dormir(300);
       out.modification = { modale: H.modale().slice(0, 120), valeurs: {} };
-      ['sens', 'date', 'correspondant', 'objet', 'nature', 'affecteA', 'traitement', 'accuseReception', 'numerise', 'observations'].forEach((n) => { out.modification.valeurs[n] = H.valeur(n); });
-      H.poser('traitement', 'traite'); H.poser('numerise', true);
+      ['sens', 'date', 'correspondant', 'objet', 'nature', 'affecteA', 'traitement', 'accuseReception', 'observations'].forEach((n) => { out.modification.valeurs[n] = H.valeur(n); });
+      H.poser('traitement', 'traite');
       H.viderToasts(); H.cliquer('Enregistrer'); await H.dormir(300);
       out.modification.enregistre = { toasts: H.toasts(), fiche: H.net(col.all().find((x) => x.id === 'COU4')) };
       // archivage avec motif
@@ -384,7 +385,8 @@ function ecrireDartNotes(n) {
         const nomF = s.getAttribute('aria-label');
         for (const o of [...s.options].filter((x) => x.value !== '')) {
           s.value = o.value; s.dispatchEvent(new Event('change')); await H.dormir(50);
-          out.filtreCas.push({ filtre: nomF, valeur: o.value, lignes: H.tableaux(racine)[0].lignes.map((l) => l[0]) });
+          /* Un filtre qui ne retient AUCUNE ligne (« Pièce numérisée » tant qu'aucun fichier n'est déposé) rend l'état vide : pas de tableau, donc aucune ligne. */
+          out.filtreCas.push({ filtre: nomF, valeur: o.value, lignes: (H.tableaux(racine)[0] || { lignes: [] }).lignes.map((l) => l[0]) });
         }
         s.value = ''; s.dispatchEvent(new Event('change')); await H.dormir(40);
       }

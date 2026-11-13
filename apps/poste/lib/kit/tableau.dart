@@ -73,7 +73,15 @@ class TableauSigh extends StatefulWidget {
     this.actions = const [],
     this.actionsGroupe,
     this.libelleRecherche = 'Rechercher…',
+    this.rechercheExtra,
+    this.indiceRecherche,
   });
+
+  /// `searchExtra` de `U.dataTable` : ce que la recherche lit EN PLUS des colonnes (observations, nom d'un fichier, texte extrait d'un PDF : lot D5). Sans accent ni casse, comme les colonnes.
+  final String Function(Ligne)? rechercheExtra;
+
+  /// `indiceRecherche` : ce que la recherche ne lit PAS (une pièce numérisée sans couche texte), dit sous « Aucun résultat » : jamais un vide qui se lit « il n'y a rien ».
+  final String? Function(String recherche)? indiceRecherche;
 
   final List<ColonneTableau> colonnes;
   final List<Ligne> lignes;
@@ -127,8 +135,9 @@ class TableauSighState extends State<TableauSigh> {
     var l = [...widget.lignes];
     if (_q.isNotEmpty)
       l = l
-          .where(
-              (r) => widget.colonnes.any((c) => correspond(c.enTexte(r), _q)))
+          .where((r) =>
+              widget.colonnes.any((c) => correspond(c.enTexte(r), _q)) ||
+              (widget.rechercheExtra != null && correspond(widget.rechercheExtra!(r), _q)))
           .toList();
     for (final e in _filtres.entries) {
       if (e.value.isEmpty) continue;
@@ -247,7 +256,7 @@ class TableauSighState extends State<TableauSigh> {
                     _filtreActif
                         ? 'Aucun résultat pour cette recherche.'
                         : widget.messageVide,
-                    indice: widget.indiceVide)
+                    indice: _filtreActif && widget.indiceRecherche != null ? (widget.indiceRecherche!(_q) ?? widget.indiceVide) : widget.indiceVide)
               else
                 _table(cols, page),
               _pied(toutes.length, debut, pages),
