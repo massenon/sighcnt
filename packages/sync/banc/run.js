@@ -75,7 +75,7 @@ async function monde(opts = {}) {
     const portRel = await portLibre();
     m.relais = {
       port: portRel, proc: null,
-      async demarrer() { m.relais.proc = await lancer(process.env.SIGH_RELAIS === 'laravel' ? 'relais-laravel.js' : 'relais.js', [`--port=${portRel}`, `--db=${path.join(dir, 'relais.sqlite')}`, '--banc=1', `--seuil-battement=${opts.seuilBattement || 300000}`]); },
+      async demarrer() { m.relais.proc = await lancer(process.env.SIGH_RELAIS === 'laravel' ? 'relais-laravel.js' : 'relais.js', [`--port=${portRel}`, `--db=${path.join(dir, 'relais.sqlite')}`, '--banc=1', `--sauvegardes=${path.join(dir, 'sauvegardes-relais')}`, `--seuil-battement=${opts.seuilBattement || 300000}`]); },
       tuer() { if (m.relais.proc) { m.relais.proc.kill('SIGKILL'); m.relais.proc = null; } return dormir(80); },
       direct: (methode, chemin, corps, ent) => appel(`http://127.0.0.1:${portRel}`, methode, chemin, corps, Object.assign({ 'x-mere': 'secret-mere' }, ent || {})),
       brut: (methode, chemin, corps, ent) => appel(`http://127.0.0.1:${portRel}`, methode, chemin, corps, ent),
@@ -1046,6 +1046,7 @@ Object.assign(scenarios, require('./scenarios-droits-mere.js')({ monde, verifier
 Object.assign(scenarios, require('./scenarios-pair-pg.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 Object.assign(scenarios, require('./scenarios-parametres.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 Object.assign(scenarios, require('./scenarios-fichiers.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
+Object.assign(scenarios, require('./scenarios-sauvegarde.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 Object.assign(scenarios, require('./scenarios-ocr.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 Object.assign(scenarios, require('./scenarios-synchro.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 Object.assign(scenarios, require('./scenarios-import.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));

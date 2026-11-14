@@ -13,10 +13,11 @@ const path = require('node:path');
 const http = require('node:http');
 const arg = (n, d) => { const a = process.argv.find((x) => x.startsWith('--' + n + '=')); return a ? a.split('=').slice(1).join('=') : d; };
 const PORT = +arg('port', 0); const DB = arg('db', '/tmp/relais.sqlite');
+const SAUVEGARDES = arg('sauvegardes', DB + '.sauvegardes');
 const WEB = path.resolve(__dirname, '..', '..', '..', 'apps', 'web');
 const env = Object.assign({}, process.env, {
   APP_KEY: 'base64:' + require('node:crypto').randomBytes(32).toString('base64'), APP_ENV: 'local', APP_DEBUG: 'false', DB_CONNECTION: 'sqlite', DB_DATABASE: DB, SESSION_DRIVER: 'array', CACHE_STORE: 'array', QUEUE_CONNECTION: 'sync',
-  LOG_CHANNEL: 'stderr', RELAIS_SECRET_MERE: 'secret-mere', RELAIS_SEUIL_BATTEMENT_MS: arg('seuil-battement', '300000'), RELAIS_BANC: arg('banc', '0') === '1' ? 'true' : 'false',
+  LOG_CHANNEL: 'stderr', RELAIS_SECRET_MERE: 'secret-mere', RELAIS_SEUIL_BATTEMENT_MS: arg('seuil-battement', '300000'), RELAIS_BANC: arg('banc', '0') === '1' ? 'true' : 'false', RELAIS_SAUVEGARDES_DIR: SAUVEGARDES,
 });
 require('node:fs').closeSync(require('node:fs').openSync(DB, 'a'));
 const m = spawnSync('php', ['artisan', 'migrate', '--force', '--no-interaction'], { cwd: WEB, env, encoding: 'utf8' });

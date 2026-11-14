@@ -11,6 +11,7 @@ const nodeCrypto = require('node:crypto');
 const { DatabaseSync } = require('node:sqlite');
 const arg = (n, d) => { const a = process.argv.find((x) => x.startsWith('--' + n + '=')); return a ? a.split('=').slice(1).join('=') : d; };
 const PORT = +arg('port', 0); const DB = arg('db', ':memory:'); const SECRET_MERE = arg('secret-mere', 'secret-mere');
+const SAUVEGARDES = arg('sauvegardes', (DB === ':memory:' ? require('node:os').tmpdir() + '/sigh-relais-sauv-' + process.pid : DB + '.sauvegardes'));
 const BANC = arg('banc', '0') === '1'; const SEUIL_BATTEMENT = +arg('seuil-battement', 5 * 60 * 1000);
 const sha = (s) => nodeCrypto.createHash('sha256').update(s).digest('hex');
 const db = new DatabaseSync(DB);
@@ -107,20 +108,25 @@ const routes = {
       indicateurs: JSON.parse(getMeta('indicateurs') || '{}'), nb_enveloppes: db.prepare('SELECT COUNT(*) AS n FROM env').get().n };
   },
 };
+/* Lot 5 (ADR-0007) : la famille de routes de SAUVEGARDE HORS SITE (blocs opaques, réservée à la mère). */
+const SAUV = require('./relais-sauvegarde')({ db, dossier: SAUVEGARDES, Err, mereOk, getMeta, setMeta });
 if (BANC) { /* crochets réservés au banc : altérer ou retirer une enveloppe, vider le relais pour inspection */
   routes['POST /banc/alterer'] = (req, b) => { const r = db.prepare('SELECT ct FROM env WHERE id=?').get(b.id); const x = Buffer.from(r.ct, 'base64'); x[0] ^= 1; db.prepare('UPDATE env SET ct=? WHERE id=?').run(x.toString('base64'), b.id); return { ok: true }; };
   routes['POST /banc/retirer'] = (req, b) => { db.prepare('DELETE FROM env WHERE id=?').run(b.id); return { ok: true }; };
   routes['GET /banc/tout'] = () => ({ lignes: db.prepare('SELECT * FROM env').all(), codes: db.prepare('SELECT * FROM codes').all(), appareils: db.prepare('SELECT uuid FROM appareils').all(), meta: db.prepare('SELECT * FROM meta').all() });
+  for (const [k, f] of Object.entries(SAUV.banc)) routes[k] = f;
   routes['GET /banc/ids'] = (req, b, q) => ({ ids: db.prepare('SELECT id,appareil,dir,n FROM env WHERE dir=? ORDER BY rid').all(q.dir) });
 }
 http.createServer((req, res) => {
   const ch = []; req.on('data', (c) => ch.push(c));
   req.on('end', () => {
     const u = new URL(req.url, 'http://x'); const q = Object.fromEntries(u.searchParams);
-    let b = {}; try { b = ch.length ? JSON.parse(Buffer.concat(ch).toString()) : {}; } catch (e) { /* vide */ }
+    const brut = Buffer.concat(ch);
+    let b = {}; if (!u.pathname.startsWith('/sauvegarde/')) { try { b = brut.length ? JSON.parse(brut.toString()) : {}; } catch (e) { /* vide */ } }
     let st = 200; let out;
-    try { const h = routes[req.method + ' ' + u.pathname]; if (!h) throw new Err(404, 'route_inconnue'); out = h(req, b, q); }
+    try { const s = SAUV.traiter(req, u, q, brut); if (s !== undefined) out = s; else { const h = routes[req.method + ' ' + u.pathname]; if (!h) throw new Err(404, 'route_inconnue'); out = h(req, b, q); } }
     catch (e) { if (e instanceof Err) { st = e.s; out = e.b; } else { st = 500; out = { code: 'erreur_interne', motif: String(e.message) }; } }
+    if (out && out.__octets) { res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Length': out.__octets.length }); res.end(out.__octets); return; }
     const t = JSON.stringify(out); res.writeHead(st, { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(t) }); res.end(t);
   });
 }).listen(PORT, '127.0.0.1', function () { if (process.send) process.send({ pret: true, port: this.address().port }); });

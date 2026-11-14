@@ -1,0 +1,1826 @@
+{
+ "engendre": "packages/sync/banc/vecteurs-sauvegarde.js",
+ "cas": [
+  {
+   "nom": "découper 0 octets par blocs de 512",
+   "op": "decouper",
+   "entree": {
+    "longueur": 0,
+    "tailleBloc": 512
+   },
+   "attendu": []
+  },
+  {
+   "nom": "découper 1 octets par blocs de 512",
+   "op": "decouper",
+   "entree": {
+    "longueur": 1,
+    "tailleBloc": 512
+   },
+   "attendu": [
+    {
+     "debut": 0,
+     "longueur": 1
+    }
+   ]
+  },
+  {
+   "nom": "découper 511 octets par blocs de 512",
+   "op": "decouper",
+   "entree": {
+    "longueur": 511,
+    "tailleBloc": 512
+   },
+   "attendu": [
+    {
+     "debut": 0,
+     "longueur": 511
+    }
+   ]
+  },
+  {
+   "nom": "découper 512 octets par blocs de 512",
+   "op": "decouper",
+   "entree": {
+    "longueur": 512,
+    "tailleBloc": 512
+   },
+   "attendu": [
+    {
+     "debut": 0,
+     "longueur": 512
+    }
+   ]
+  },
+  {
+   "nom": "découper 513 octets par blocs de 512",
+   "op": "decouper",
+   "entree": {
+    "longueur": 513,
+    "tailleBloc": 512
+   },
+   "attendu": [
+    {
+     "debut": 0,
+     "longueur": 512
+    },
+    {
+     "debut": 512,
+     "longueur": 1
+    }
+   ]
+  },
+  {
+   "nom": "découper 1024 octets par blocs de 512",
+   "op": "decouper",
+   "entree": {
+    "longueur": 1024,
+    "tailleBloc": 512
+   },
+   "attendu": [
+    {
+     "debut": 0,
+     "longueur": 512
+    },
+    {
+     "debut": 512,
+     "longueur": 512
+    }
+   ]
+  },
+  {
+   "nom": "découper 3145745 octets par blocs de 1048576",
+   "op": "decouper",
+   "entree": {
+    "longueur": 3145745,
+    "tailleBloc": 1048576
+   },
+   "attendu": [
+    {
+     "debut": 0,
+     "longueur": 1048576
+    },
+    {
+     "debut": 1048576,
+     "longueur": 1048576
+    },
+    {
+     "debut": 2097152,
+     "longueur": 1048576
+    },
+    {
+     "debut": 3145728,
+     "longueur": 17
+    }
+   ]
+  },
+  {
+   "nom": "découper 5 octets par blocs de 2",
+   "op": "decouper",
+   "entree": {
+    "longueur": 5,
+    "tailleBloc": 2
+   },
+   "attendu": [
+    {
+     "debut": 0,
+     "longueur": 2
+    },
+    {
+     "debut": 2,
+     "longueur": 2
+    },
+    {
+     "debut": 4,
+     "longueur": 1
+    }
+   ]
+  },
+  {
+   "nom": "taille chiffrée de 0 octets par blocs de 512",
+   "op": "tailleChiffree",
+   "entree": {
+    "longueur": 0,
+    "tailleBloc": 512
+   },
+   "attendu": 0
+  },
+  {
+   "nom": "taille chiffrée de 513 octets par blocs de 512",
+   "op": "tailleChiffree",
+   "entree": {
+    "longueur": 513,
+    "tailleBloc": 512
+   },
+   "attendu": 569
+  },
+  {
+   "nom": "taille chiffrée de 3145728 octets par blocs de 1048576",
+   "op": "tailleChiffree",
+   "entree": {
+    "longueur": 3145728,
+    "tailleBloc": 1048576
+   },
+   "attendu": 3145812
+  },
+  {
+   "nom": "réglage : valide",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": null
+  },
+  {
+   "nom": "réglage : activer sans destination",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "aucune",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "DESTINATION_ABSENTE",
+    "motif": "la copie hors site ne peut pas être activée sans destination",
+    "geste": "Choisir le relais ou un dossier distant, puis activer."
+   }
+  },
+  {
+   "nom": "réglage : désactivé sans destination",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": false,
+    "destination": "aucune",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": null
+  },
+  {
+   "nom": "réglage : destination inconnue",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "sftp",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "DESTINATION_INCONNUE",
+    "motif": "la destination « sftp » n'existe pas",
+    "geste": "Choisir : aucune, relais ou dossier distant."
+   }
+  },
+  {
+   "nom": "réglage : dossier sans chemin",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "dossier",
+    "dossier": "  ",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "DOSSIER_ABSENT",
+    "motif": "la destination « dossier distant » n'a aucun chemin",
+    "geste": "Saisir le chemin complet du dossier monté."
+   }
+  },
+  {
+   "nom": "réglage : dossier avec chemin",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "dossier",
+    "dossier": "/mnt/sauvegardes",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": null
+  },
+  {
+   "nom": "réglage : bloc trop petit",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1000,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "TAILLE_BLOC_HORS_BORNES",
+    "motif": "la taille d'un bloc doit être de 64 Kio à 4.0 Mio",
+    "geste": "Choisir une taille dans ces bornes (1 Mio par défaut)."
+   }
+  },
+  {
+   "nom": "réglage : bloc trop gros",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 5242880,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "TAILLE_BLOC_HORS_BORNES",
+    "motif": "la taille d'un bloc doit être de 64 Kio à 4.0 Mio",
+    "geste": "Choisir une taille dans ces bornes (1 Mio par défaut)."
+   }
+  },
+  {
+   "nom": "réglage : bloc à la borne basse",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 65536,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": null
+  },
+  {
+   "nom": "réglage : bloc à la borne haute",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 4194304,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": null
+  },
+  {
+   "nom": "réglage : une seule copie (sous le plancher)",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 1,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ROTATION_HORS_BORNES",
+    "motif": "le nombre de copies gardées doit être de 2 à 60",
+    "geste": "Choisir un nombre dans ces bornes : le plancher protège la reprise, le plafond protège l'espace."
+   }
+  },
+  {
+   "nom": "réglage : deux copies (plancher)",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 2,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": null
+  },
+  {
+   "nom": "réglage : soixante copies (plafond)",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 60,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": null
+  },
+  {
+   "nom": "réglage : soixante et une copies",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 61,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ROTATION_HORS_BORNES",
+    "motif": "le nombre de copies gardées doit être de 2 à 60",
+    "geste": "Choisir un nombre dans ces bornes : le plancher protège la reprise, le plafond protège l'espace."
+   }
+  },
+  {
+   "nom": "réglage : copies non entières",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7.5,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ROTATION_HORS_BORNES",
+    "motif": "le nombre de copies gardées doit être de 2 à 60",
+    "geste": "Choisir un nombre dans ces bornes : le plancher protège la reprise, le plafond protège l'espace."
+   }
+  },
+  {
+   "nom": "réglage : fréquence trop courte",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 5,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "FREQUENCE_HORS_BORNES",
+    "motif": "la fréquence doit être de 15 à 1440 minutes",
+    "geste": "Choisir une fréquence dans ces bornes (60 minutes par défaut)."
+   }
+  },
+  {
+   "nom": "réglage : fréquence à la borne",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 15,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": null
+  },
+  {
+   "nom": "réglage : fréquence trop longue",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 2000,
+    "heureControle": 2,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "FREQUENCE_HORS_BORNES",
+    "motif": "la fréquence doit être de 15 à 1440 minutes",
+    "geste": "Choisir une fréquence dans ces bornes (60 minutes par défaut)."
+   }
+  },
+  {
+   "nom": "réglage : heure 24",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 24,
+    "blocsControles": 10
+   },
+   "attendu": {
+    "ok": false,
+    "code": "HEURE_HORS_BORNES",
+    "motif": "l'heure du contrôle nocturne est un entier de 0 à 23",
+    "geste": "Choisir une heure de nuit (2 par défaut)."
+   }
+  },
+  {
+   "nom": "réglage : heure 0",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 0,
+    "blocsControles": 10
+   },
+   "attendu": null
+  },
+  {
+   "nom": "réglage : blocs contrôlés négatifs",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": -1
+   },
+   "attendu": {
+    "ok": false,
+    "code": "BLOCS_CONTROLES_HORS_BORNES",
+    "motif": "le nombre de blocs contrôlés chaque nuit est un entier de 0 à 200",
+    "geste": "Choisir un nombre dans ces bornes (10 par défaut)."
+   }
+  },
+  {
+   "nom": "réglage : blocs contrôlés 200",
+   "op": "verifierReglage",
+   "entree": {
+    "actif": true,
+    "destination": "relais",
+    "dossier": "",
+    "tailleBloc": 1048576,
+    "copies": 7,
+    "frequenceMinutes": 60,
+    "heureControle": 2,
+    "blocsControles": 200
+   },
+   "attendu": null
+  },
+  {
+   "nom": "plan : tient",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 80,
+    "etat": {
+     "limites": {
+      "tailleMaxCopie": 100,
+      "quotaOctets": 1000,
+      "tailleBlocMax": 50
+     },
+     "utilise": 500,
+     "liberable": 0
+    }
+   },
+   "attendu": null
+  },
+  {
+   "nom": "plan : trop grosse pour une copie",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 101,
+    "etat": {
+     "limites": {
+      "tailleMaxCopie": 100,
+      "quotaOctets": 1000,
+      "tailleBlocMax": 50
+     },
+     "utilise": 0,
+     "liberable": 0
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "SAUVEGARDE_TROP_GROSSE",
+    "motif": "la copie pèse 101 o chiffrée, le maximum accepté par la destination est 100 o",
+    "geste": "Relever la limite par copie du relais (panneau), ou choisir un dossier distant pour ce type de copie.",
+    "octetsCopie": 101,
+    "limite": 100
+   }
+  },
+  {
+   "nom": "plan : à la limite de la copie",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 100,
+    "etat": {
+     "limites": {
+      "tailleMaxCopie": 100,
+      "quotaOctets": 1000,
+      "tailleBlocMax": 50
+     },
+     "utilise": 0,
+     "liberable": 0
+    }
+   },
+   "attendu": null
+  },
+  {
+   "nom": "plan : manque de place",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 90,
+    "etat": {
+     "limites": {
+      "tailleMaxCopie": 100,
+      "quotaOctets": 1000,
+      "tailleBlocMax": 50
+     },
+     "utilise": 950,
+     "liberable": 0
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ESPACE_RELAIS_INSUFFISANT",
+    "motif": "la copie demande 90 o, il reste 50 o sur le relais (anciennes copies libérables comprises)",
+    "geste": "Relever le quota du relais, réduire le nombre de copies gardées, ou choisir un dossier distant.",
+    "octetsCopie": 90,
+    "libre": 50
+   }
+  },
+  {
+   "nom": "plan : manque de place mais archive libérable",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 90,
+    "etat": {
+     "limites": {
+      "tailleMaxCopie": 100,
+      "quotaOctets": 1000,
+      "tailleBlocMax": 50
+     },
+     "utilise": 950,
+     "liberable": 60
+    }
+   },
+   "attendu": null
+  },
+  {
+   "nom": "plan : à la place exacte",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 100,
+    "etat": {
+     "limites": {
+      "tailleMaxCopie": 100,
+      "quotaOctets": 1000,
+      "tailleBlocMax": 50
+     },
+     "utilise": 900,
+     "liberable": 0
+    }
+   },
+   "attendu": null
+  },
+  {
+   "nom": "plan : un octet de trop",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 101,
+    "etat": {
+     "limites": {
+      "tailleMaxCopie": 200,
+      "quotaOctets": 1000,
+      "tailleBlocMax": 50
+     },
+     "utilise": 900,
+     "liberable": 0
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ESPACE_RELAIS_INSUFFISANT",
+    "motif": "la copie demande 101 o, il reste 100 o sur le relais (anciennes copies libérables comprises)",
+    "geste": "Relever le quota du relais, réduire le nombre de copies gardées, ou choisir un dossier distant.",
+    "octetsCopie": 101,
+    "libre": 100
+   }
+  },
+  {
+   "nom": "plan : quota inconnu : la limite ne s'applique pas (jamais zéro)",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 10000,
+    "etat": {
+     "limites": {
+      "tailleMaxCopie": 100000
+     },
+     "utilise": 0
+    }
+   },
+   "attendu": null
+  },
+  {
+   "nom": "plan : état absent",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 10,
+    "etat": null
+   },
+   "attendu": null
+  },
+  {
+   "nom": "plan : espace utilisé inconnu : pas de refus d'espace",
+   "op": "verifierPlan",
+   "entree": {
+    "octetsCopie": 900,
+    "etat": {
+     "limites": {
+      "tailleMaxCopie": 100,
+      "quotaOctets": 1000,
+      "tailleBlocMax": 50
+     },
+     "liberable": 0
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "SAUVEGARDE_TROP_GROSSE",
+    "motif": "la copie pèse 900 o chiffrée, le maximum accepté par la destination est 100 o",
+    "geste": "Relever la limite par copie du relais (panneau), ou choisir un dossier distant pour ce type de copie.",
+    "octetsCopie": 900,
+    "limite": 100
+   }
+  },
+  {
+   "nom": "rotation : cinq copies, garder trois",
+   "op": "rotation",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "garder": 3,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": true,
+    "gardees": [
+     "e",
+     "d",
+     "c"
+    ],
+    "archiver": [
+     "b",
+     "a"
+    ]
+   }
+  },
+  {
+   "nom": "rotation : garder autant que de copies",
+   "op": "rotation",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "garder": 5,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": true,
+    "gardees": [
+     "e",
+     "d",
+     "c",
+     "b",
+     "a"
+    ],
+    "archiver": []
+   }
+  },
+  {
+   "nom": "rotation : garder plus que de copies",
+   "op": "rotation",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "garder": 9,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": true,
+    "gardees": [
+     "e",
+     "d",
+     "c",
+     "b",
+     "a"
+    ],
+    "archiver": []
+   }
+  },
+  {
+   "nom": "rotation : sous le plancher",
+   "op": "rotation",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "garder": 1,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ROTATION_HORS_BORNES",
+    "motif": "garder 1 copie(s) est hors des bornes du relais (2 à 60)",
+    "geste": "Choisir un nombre de copies dans les bornes du relais.",
+    "plancher": 2,
+    "plafond": 60
+   }
+  },
+  {
+   "nom": "rotation : au plancher",
+   "op": "rotation",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "garder": 2,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": true,
+    "gardees": [
+     "e",
+     "d"
+    ],
+    "archiver": [
+     "c",
+     "b",
+     "a"
+    ]
+   }
+  },
+  {
+   "nom": "rotation : au-dessus du plafond",
+   "op": "rotation",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "garder": 61,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ROTATION_HORS_BORNES",
+    "motif": "garder 61 copie(s) est hors des bornes du relais (2 à 60)",
+    "geste": "Choisir un nombre de copies dans les bornes du relais.",
+    "plancher": 2,
+    "plafond": 60
+   }
+  },
+  {
+   "nom": "rotation : garder non entier",
+   "op": "rotation",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "garder": 2.5,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": false,
+    "code": "ROTATION_HORS_BORNES",
+    "motif": "garder 2.5 copie(s) est hors des bornes du relais (2 à 60)",
+    "geste": "Choisir un nombre de copies dans les bornes du relais.",
+    "plancher": 2,
+    "plafond": 60
+   }
+  },
+  {
+   "nom": "rotation : une copie ouverte ou purgée ne compte pas",
+   "op": "rotation",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     },
+     {
+      "id": "f",
+      "type": "magasin",
+      "etat": "ouverte",
+      "date": 9
+     },
+     {
+      "id": "g",
+      "type": "magasin",
+      "etat": "purgee",
+      "date": 8
+     },
+     {
+      "id": "h",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 0
+     }
+    ],
+    "garder": 3,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": true,
+    "gardees": [
+     "e",
+     "d",
+     "c"
+    ],
+    "archiver": [
+     "b",
+     "a"
+    ]
+   }
+  },
+  {
+   "nom": "rotation : dates égales : l'identifiant départage",
+   "op": "rotation",
+   "entree": {
+    "copies": [
+     {
+      "id": "x",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 7
+     },
+     {
+      "id": "y",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 7
+     },
+     {
+      "id": "z",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 7
+     }
+    ],
+    "garder": 2,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": true,
+    "gardees": [
+     "z",
+     "y"
+    ],
+    "archiver": [
+     "x"
+    ]
+   }
+  },
+  {
+   "nom": "rotation : aucune copie",
+   "op": "rotation",
+   "entree": {
+    "copies": [],
+    "garder": 7,
+    "plancher": 2,
+    "plafond": 60
+   },
+   "attendu": {
+    "ok": true,
+    "gardees": [],
+    "archiver": []
+   }
+  },
+  {
+   "nom": "purge : l'archive la plus ancienne d'abord",
+   "op": "ordrePurge",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "plancher": 2
+   },
+   "attendu": [
+    "a",
+    "b",
+    "c"
+   ]
+  },
+  {
+   "nom": "purge : jamais une copie courante ni une copie ouverte",
+   "op": "ordrePurge",
+   "entree": {
+    "copies": [
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     },
+     {
+      "id": "f",
+      "type": "magasin",
+      "etat": "ouverte",
+      "date": 6
+     }
+    ],
+    "plancher": 2
+   },
+   "attendu": []
+  },
+  {
+   "nom": "purge : le plancher protège les plus récentes même archivées",
+   "op": "ordrePurge",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 3
+     }
+    ],
+    "plancher": 2
+   },
+   "attendu": [
+    "a"
+   ]
+  },
+  {
+   "nom": "purge : une copie abandonnée est candidate",
+   "op": "ordrePurge",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "abandonnee",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     }
+    ],
+    "plancher": 2
+   },
+   "attendu": [
+    "a"
+   ]
+  },
+  {
+   "nom": "purge : le plancher se compte par type",
+   "op": "ordrePurge",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "fichiers",
+      "etat": "archivee",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "fichiers",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "plancher": 2
+   },
+   "attendu": [
+    "a"
+   ]
+  },
+  {
+   "nom": "purge : aucune copie",
+   "op": "ordrePurge",
+   "entree": {
+    "copies": [],
+    "plancher": 2
+   },
+   "attendu": []
+  },
+  {
+   "nom": "manifeste : éléments triés par référence, total calculé, sans date",
+   "op": "manifeste",
+   "entree": {
+    "type": "fichiers",
+    "tailleBloc": 512,
+    "elements": [
+     {
+      "ref": "zz.pdf",
+      "taille": 3,
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "meta": {
+       "ext": "pdf"
+      },
+      "blocs": [
+       {
+        "id": "3333333333333333333333333333333333333333333333333333333333333333",
+        "taille": 31,
+        "clair": 3
+       }
+      ]
+     },
+     {
+      "ref": "magasin",
+      "taille": 10,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocs": [
+       {
+        "id": "1111111111111111111111111111111111111111111111111111111111111111",
+        "taille": 38,
+        "clair": 6
+       },
+       {
+        "id": "2222222222222222222222222222222222222222222222222222222222222222",
+        "taille": 32,
+        "clair": 4
+       }
+      ]
+     }
+    ]
+   },
+   "attendu": {
+    "format": 1,
+    "type": "fichiers",
+    "tailleBloc": 512,
+    "total": 13,
+    "elements": [
+     {
+      "ref": "magasin",
+      "taille": 10,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "blocs": [
+       {
+        "id": "1111111111111111111111111111111111111111111111111111111111111111",
+        "taille": 38,
+        "clair": 6
+       },
+       {
+        "id": "2222222222222222222222222222222222222222222222222222222222222222",
+        "taille": 32,
+        "clair": 4
+       }
+      ]
+     },
+     {
+      "ref": "zz.pdf",
+      "taille": 3,
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "meta": {
+       "ext": "pdf"
+      },
+      "blocs": [
+       {
+        "id": "3333333333333333333333333333333333333333333333333333333333333333",
+        "taille": 31,
+        "clair": 3
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "nom": "manifeste lu : valide",
+   "op": "verifierManifeste",
+   "entree": {
+    "manifeste": {
+     "format": 1,
+     "type": "fichiers",
+     "tailleBloc": 512,
+     "total": 13,
+     "elements": [
+      {
+       "ref": "magasin",
+       "taille": 10,
+       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocs": [
+        {
+         "id": "1111111111111111111111111111111111111111111111111111111111111111",
+         "taille": 38,
+         "clair": 6
+        },
+        {
+         "id": "2222222222222222222222222222222222222222222222222222222222222222",
+         "taille": 32,
+         "clair": 4
+        }
+       ]
+      },
+      {
+       "ref": "zz.pdf",
+       "taille": 3,
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "meta": {
+        "ext": "pdf"
+       },
+       "blocs": [
+        {
+         "id": "3333333333333333333333333333333333333333333333333333333333333333",
+         "taille": 31,
+         "clair": 3
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "attendu": null
+  },
+  {
+   "nom": "manifeste lu : format inconnu",
+   "op": "verifierManifeste",
+   "entree": {
+    "manifeste": {
+     "format": 9,
+     "type": "fichiers",
+     "tailleBloc": 512,
+     "total": 13,
+     "elements": [
+      {
+       "ref": "magasin",
+       "taille": 10,
+       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocs": [
+        {
+         "id": "1111111111111111111111111111111111111111111111111111111111111111",
+         "taille": 38,
+         "clair": 6
+        },
+        {
+         "id": "2222222222222222222222222222222222222222222222222222222222222222",
+         "taille": 32,
+         "clair": 4
+        }
+       ]
+      },
+      {
+       "ref": "zz.pdf",
+       "taille": 3,
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "meta": {
+        "ext": "pdf"
+       },
+       "blocs": [
+        {
+         "id": "3333333333333333333333333333333333333333333333333333333333333333",
+         "taille": 31,
+         "clair": 3
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MANIFESTE_ILLISIBLE",
+    "motif": "le manifeste n'a pas le format attendu",
+    "geste": "Utiliser un logiciel de la même version que celui qui a fait la copie."
+   }
+  },
+  {
+   "nom": "manifeste lu : type inconnu",
+   "op": "verifierManifeste",
+   "entree": {
+    "manifeste": {
+     "format": 1,
+     "type": "autre",
+     "tailleBloc": 512,
+     "total": 13,
+     "elements": [
+      {
+       "ref": "magasin",
+       "taille": 10,
+       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocs": [
+        {
+         "id": "1111111111111111111111111111111111111111111111111111111111111111",
+         "taille": 38,
+         "clair": 6
+        },
+        {
+         "id": "2222222222222222222222222222222222222222222222222222222222222222",
+         "taille": 32,
+         "clair": 4
+        }
+       ]
+      },
+      {
+       "ref": "zz.pdf",
+       "taille": 3,
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "meta": {
+        "ext": "pdf"
+       },
+       "blocs": [
+        {
+         "id": "3333333333333333333333333333333333333333333333333333333333333333",
+         "taille": 31,
+         "clair": 3
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MANIFESTE_ILLISIBLE",
+    "motif": "le manifeste est incomplet",
+    "geste": "Choisir une autre copie."
+   }
+  },
+  {
+   "nom": "manifeste lu : pas de liste d'éléments",
+   "op": "verifierManifeste",
+   "entree": {
+    "manifeste": {
+     "format": 1,
+     "type": "magasin"
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MANIFESTE_ILLISIBLE",
+    "motif": "le manifeste est incomplet",
+    "geste": "Choisir une autre copie."
+   }
+  },
+  {
+   "nom": "manifeste lu : somme des blocs incohérente",
+   "op": "verifierManifeste",
+   "entree": {
+    "manifeste": {
+     "format": 1,
+     "type": "fichiers",
+     "tailleBloc": 512,
+     "total": 13,
+     "elements": [
+      {
+       "ref": "magasin",
+       "taille": 11,
+       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocs": [
+        {
+         "id": "1111111111111111111111111111111111111111111111111111111111111111",
+         "taille": 38,
+         "clair": 6
+        },
+        {
+         "id": "2222222222222222222222222222222222222222222222222222222222222222",
+         "taille": 32,
+         "clair": 4
+        }
+       ]
+      },
+      {
+       "ref": "zz.pdf",
+       "taille": 3,
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "meta": {
+        "ext": "pdf"
+       },
+       "blocs": [
+        {
+         "id": "3333333333333333333333333333333333333333333333333333333333333333",
+         "taille": 31,
+         "clair": 3
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MANIFESTE_INCOHERENT",
+    "motif": "un élément annonce 11 octets et ses blocs en portent 10",
+    "geste": "Choisir une autre copie : celle-ci est incohérente."
+   }
+  },
+  {
+   "nom": "manifeste lu : total incohérent",
+   "op": "verifierManifeste",
+   "entree": {
+    "manifeste": {
+     "format": 1,
+     "type": "fichiers",
+     "tailleBloc": 512,
+     "total": 99,
+     "elements": [
+      {
+       "ref": "magasin",
+       "taille": 10,
+       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "blocs": [
+        {
+         "id": "1111111111111111111111111111111111111111111111111111111111111111",
+         "taille": 38,
+         "clair": 6
+        },
+        {
+         "id": "2222222222222222222222222222222222222222222222222222222222222222",
+         "taille": 32,
+         "clair": 4
+        }
+       ]
+      },
+      {
+       "ref": "zz.pdf",
+       "taille": 3,
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "meta": {
+        "ext": "pdf"
+       },
+       "blocs": [
+        {
+         "id": "3333333333333333333333333333333333333333333333333333333333333333",
+         "taille": 31,
+         "clair": 3
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MANIFESTE_INCOHERENT",
+    "motif": "le manifeste annonce 99 octets et ses éléments en portent 13",
+    "geste": "Choisir une autre copie : celle-ci est incohérente."
+   }
+  },
+  {
+   "nom": "manifeste lu : empreinte du clair mal formée",
+   "op": "verifierManifeste",
+   "entree": {
+    "manifeste": {
+     "format": 1,
+     "type": "fichiers",
+     "tailleBloc": 512,
+     "total": 13,
+     "elements": [
+      {
+       "ref": "magasin",
+       "taille": 10,
+       "sha256": "xyz",
+       "blocs": [
+        {
+         "id": "1111111111111111111111111111111111111111111111111111111111111111",
+         "taille": 38,
+         "clair": 6
+        },
+        {
+         "id": "2222222222222222222222222222222222222222222222222222222222222222",
+         "taille": 32,
+         "clair": 4
+        }
+       ]
+      },
+      {
+       "ref": "zz.pdf",
+       "taille": 3,
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "meta": {
+        "ext": "pdf"
+       },
+       "blocs": [
+        {
+         "id": "3333333333333333333333333333333333333333333333333333333333333333",
+         "taille": 31,
+         "clair": 3
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MANIFESTE_ILLISIBLE",
+    "motif": "un élément du manifeste est incomplet",
+    "geste": "Choisir une autre copie."
+   }
+  },
+  {
+   "nom": "manifeste lu : rien",
+   "op": "verifierManifeste",
+   "entree": {
+    "manifeste": null
+   },
+   "attendu": {
+    "ok": false,
+    "code": "MANIFESTE_ILLISIBLE",
+    "motif": "le manifeste n'a pas le format attendu",
+    "geste": "Utiliser un logiciel de la même version que celui qui a fait la copie."
+   }
+  }
+ ]
+}
