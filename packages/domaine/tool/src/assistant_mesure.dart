@@ -377,3 +377,24 @@ Map<String, (int, int)> mesurerRobustesse(List<Map<String, Object?>> questions, 
   }
   return out;
 }
+
+const String balisesMatriceDebut = '<!-- DEBUT MATRICE ENGENDREE : dart run tool/mesure_assistant.dart --matrice -->';
+const String balisesMatriceFin = '<!-- FIN MATRICE ENGENDREE -->';
+
+/// La matrice intention par profil type, en tableau Markdown (« oui » : le profil a le droit de lecture d'après rbac.json).
+String tableauDroits(List<Map<String, Object?>> matrice, Map<String, Object?> profils) {
+  final noms = profils.keys.toList();
+  final b = StringBuffer()
+    ..writeln(balisesMatriceDebut)
+    ..writeln()
+    ..writeln('| Int. | ${noms.join(' | ')} |')
+    ..writeln('|---|${noms.map((_) => '---').join('|')}|');
+  for (final l in matrice) {
+    final p = (l['profils'] as Map).cast<String, Object?>();
+    b.writeln('| ${l['intention']} | ${noms.map((n) => p[n] == true ? 'oui' : 'non').join(' | ')} |');
+  }
+  b
+    ..writeln()
+    ..writeln(balisesMatriceFin);
+  return b.toString();
+}

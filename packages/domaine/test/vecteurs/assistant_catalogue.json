@@ -256,7 +256,7 @@
       "sources": ["packages/domaine/lib/src/rh/rhb_regles.dart : rhbTypesPlanning (garde, garde_hospi, garde_soins, permanence), rhbCompter", "packages/domaine/lib/src/rh/planning_rh.dart : vacationsGardeRh, propositions (une proposition ne change jamais le planning validé)"],
       "statut": "calculable",
       "raison": "La collection `planning` EST le planning validé (une proposition de l'agent n'y entre qu'après le surveillant) : un filtre par date et par type de vacation.",
-      "limites": ["l'écran m10-planning n'est ouvert qu'à la DAF, la Direction et l'administrateur : la réception (question 58) n'a pas le droit de lecture"],
+      "limites": ["l'écran m10-planning n'est ouvert qu'à l'administrateur, la Direction, la DAF et le surveillant : la réception (questions 58 et 60) n'a pas le droit de lecture"],
       "refus": ["LECTURE_NON_AUTORISEE", "AUCUN_RESULTAT"],
       "requis": [], "futurOk": true, "historique": true, "controles": []
     },

@@ -3,6 +3,7 @@
 ///   dart run tool/mesure_assistant.dart                       rapport complet (Markdown et JSON) dans ./rapport-assistant
 ///   dart run tool/mesure_assistant.dart --sortie <dossier>    où écrire le rapport
 ///   dart run tool/mesure_assistant.dart --tableau             écrit le bloc engendré du tableau de couverture sur la sortie standard
+///   dart run tool/mesure_assistant.dart --matrice             écrit le bloc engendré de la matrice de droits sur la sortie standard
 ///   dart run tool/mesure_assistant.dart --droits <fichier>    (re)engendre les vecteurs de droits depuis rbac.json
 library;
 
@@ -32,6 +33,10 @@ void main(List<String> args) {
 
   if (args.contains('--tableau')) {
     stdout.write(tableauCouverture(catJson, rbac, cat));
+    return;
+  }
+  if (args.contains('--matrice')) {
+    stdout.write(tableauDroits(matriceDroits(rbac, catJson, cat), (catJson['profils'] as Map).cast<String, Object?>()));
     return;
   }
   if (valeur('droits') != null) {

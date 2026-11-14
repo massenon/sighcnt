@@ -101,6 +101,17 @@ void main() {
     });
   });
 
+  group('document de couverture : la matrice de droits', () {
+    test('le bloc engendré de la matrice du document est celui que rbac.json donne', () {
+      final doc = File('$_repo/docs/architecture/ASSISTANT-couverture-des-intentions.md').readAsStringSync();
+      final a = doc.indexOf(balisesMatriceDebut);
+      final b = doc.indexOf(balisesMatriceFin);
+      expect(a, greaterThan(-1));
+      expect(b, greaterThan(a));
+      expect(doc.substring(a, b + balisesMatriceFin.length).trim(), tableauDroits(matriceDroits(rbac, catJson, cat), (catJson['profils'] as Map).cast<String, Object?>()).trim());
+    });
+  });
+
   group('transcription des 100 questions', () {
     test('les cent questions sont celles de l’annexe, sans correction', () {
       final annexe = File('$_repo/docs/prd/ANNEXE-ASSISTANT-100-questions-AST-0.md').readAsStringSync();
