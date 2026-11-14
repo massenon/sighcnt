@@ -1,4 +1,22 @@
-# Couverture des intentions de l'assistant (lot AST-0), brouillon
+# Couverture des intentions de l'assistant et mesure de la compréhension de base (lot AST-0)
+
+Statut : **mesure du 14/11/2026, rien n'est livré** (ni volet, ni écran, ni modèle). Lot de MESURE du PRD `docs/prd/PRD-ASSISTANT-conversation-locale-base-de-connaissances.md` (section 12, étape 1) et de son annexe de 100 questions. Les décisions de la Direction du 14/11/2026 (25 intentions en version 1, tous les utilisateurs avec leurs seuls droits, certificat = consultation du prix, pas de téléphone, fiches validées par la Direction, modèle local non décidé, conversations propres au poste, chiffrées, 30 jours) ne sont pas rouvertes.
+
+Tout ce qui suit est LU dans le code ou MESURÉ par l'outil `packages/domaine/tool/mesure_assistant.dart` (tests : `packages/domaine/test/assistant_mesure_test.dart`). Aucun chiffre n'est inventé : ce qui n'a pas de source est dit « non disponible », jamais « à peu près ». Le catalogue (`packages/domaine/test/vecteurs/assistant_catalogue.json`) est la source unique du tableau ci-dessous, des vecteurs de droits (`assistant_droits.json`) et de la reconnaissance ; les deux blocs engendrés sont comparés au catalogue et à `rbac.json` par un test (on régénère, on n'édite pas).
+
+## 1. Résumé
+
+| Statut du cœur de l'intention | Nombre | Intentions |
+|---|---|---|
+| calculable aujourd'hui | 19 | I02 à I08, I10 à I15, I18 à I23 |
+| calculable après un petit lot | 4 | I01, I09, I16, I17 |
+| non disponible faute de donnée | 2 | I24, I25 (aucune fiche de connaissance validée par la Direction) |
+
+Définitions. **Calculable** : la donnée ET la règle existent, la réponse est une lecture ou un filtre de champs existants. **Petit lot** : la donnée existe mais l'agrégation, la vue ou la définition manque (aucune règle n'est inventée ici, la définition à trancher est nommée). **Non disponible** : la donnée ou le contenu n'existe pas. Le statut est celui du CŒUR de l'intention ; ses limites (colonne « Raison » et section 3) peuvent être plus sévères sur une sous question : cinq sous capacités sont non disponibles faute de donnée (stock à une date, historique des prix d'un produit, articles non comptés à l'inventaire, stock « du laboratoire » comme stock distinct, rôle de validation des commandes lu en base).
+
+## 2. Tableau de couverture des 25 intentions
+
+Droit : l'assistant n'a aucun droit propre, il lit avec le profil de l'agent. Le droit d'une intention est « au moins un des écrans de lecture listés est visible du rôle » dans `packages/rbac/data/rbac.json` (`parRole[rôle][écran]`, premier terme). Les contrôles de zone et d'habilitation qui s'y ajoutent sont dans la section 5.
 
 <!-- DEBUT TABLEAU ENGENDRE : dart run tool/mesure_assistant.dart --tableau -->
 
@@ -31,3 +49,115 @@
 | I25 | Glossaire et règles de gestion | docs/guides/GLOSSAIRE.md : FEFO, CUMP et Avoir y figurent ; CLAUDE.md : RG-01 à RG-14 | aucun écran (universel, geste à créer) | **non disponible faute de donnée** | Même cause que l'intention 24 : le glossaire existe en Markdown mais aucune fiche n'est validée par la Direction et aucune collection ne les porte. Les trois termes de la mesure (FEFO, CUMP, avoir) ont une entrée source. | INTENTION_INCONNUE |
 
 <!-- FIN TABLEAU ENGENDRE -->
+
+## 3. Les points que la Direction a demandé de signaler
+
+- **Stock à une date passée (question 99) : NON DISPONIBLE.** Aucun instantané de stock n'a été trouvé (recherche « instantané » et « snapshot » dans `stock/` et `comptabilite/`). Le stock d'un article est l'état courant de `stockGros` et `stockDetail`. Le reconstruire en remontant les mouvements serait faux : le mouvement de régularisation d'inventaire porte `quantite` en valeur ABSOLUE (`mouvements_stock.dart`, `e.abs()`, le signe se lit sur la fiche d'inventaire), un transfert ne se signe que par son libellé, et la régularisation est bornée à zéro (`_max0`). Réponse prévue : `NON_CALCULABLE_HISTORIQUE`, jamais zéro (le catalogue marque I07, I08 et I10 comme lisant l'état courant). Non examiné : si la baseline financière 2025 (`m12-baseline-2025`) porte une valeur de stock d'ouverture.
+- **Historique des prix (question 6, 16 à 18) : calculable pour les actes, analyses et certificats, NON DISPONIBLE pour un produit.** `ReferentielTarifs.versionsDe(code)` rend toutes les versions immuables avec leur date d'effet. Un médicament n'a pas de grille (`data-tarifs.js` : « LES MÉDICAMENTS n'ont pas de grille », RG-02) : son prix est le prix d'achat calculé, sans version. La question 18 (« Historique des prix du paracétamol 500 ») n'a donc pas de réponse.
+- **Ancienneté des créances (question 46 à 48) : calculable pour les ASSUREURS, petit lot pour les patients.** `assBalanceAgee` donne trois tranches FIXES (`assTrancheDe` : moins de 30 jours, 30 à 90, plus de 90, constantes du code). Pour les impayés des patients, le `reliquat` et la date de la facture existent, aucune balance âgée ne les agrège. « Plus de N jours » avec N libre n'existe pas.
+- **Planning de garde validé (question 20, 58 à 60) : calculable.** La collection `planning` EST le planning validé : une proposition de l'agent n'y entre qu'après le surveillant (`planning_rh.dart`). Types `garde`, `garde_hospi`, `garde_soins`, `permanence` (`rhbTypesPlanning`). Mais l'écran `m10-planning` n'est ouvert qu'à l'administrateur, la Direction, la DAF et le surveillant : la réception des questions 58 et 60 n'a pas le droit (voir section 5).
+- **État de certification MECeF (question 15, 43) : calculable.** `etatMecefDe` lit `statutMecef` (cinq états : normalisée, en attente de transmission, à vérifier, refusée, expirée) ; un avoir « sans objet » n'est pas du registre fiscal.
+- **Valeur d'inventaire (questions 10, 11, 28 à 33) : calculable, avec une réserve.** Valorisation au CUMP : `lignesEtatStock` (montant au CUMP par ligne) et `valeurStock`, par GROUPE de famille d'article (pharmacie, laboratoire, équipement, logistique), pas par secteur de recette. Écarts du dernier inventaire : la fiche `inventaires` garde ses lignes (théorique, physique, écart signé) et `valeurEcart`. **Réserve : « articles non comptés » (question 33) est NON DISPONIBLE** : `validerInventaire` remplace un article non compté par son stock théorique (physique = théorique, écart zéro), donc « non compté » n'est pas enregistré et ne se distingue pas d'un article compté juste. C'est l'inverse de « non calculable n'est pas zéro » : constat hors lot (E2626).
+- **Articles qui tournent (question 9, 25 à 27) : PETIT LOT.** La donnée existe (chaque sortie est un mouvement avec `produitId`, `quantite`, `type`, `date`, `stockType`). Il n'existe aucune agrégation des SORTIES par article : `mouvementsDuStock` filtre seulement, et `articlesVentes` classe les articles FACTURÉS (une autre question). « Aucune sortie depuis N jours » demande la dernière date de sortie par article, avec N réglable en base. Définir ce qui compte comme sortie (types `sortie`, `perte`, `casse`, `peremption`) reste à trancher.
+
+## 4. Autres constats de la lecture du code (écarts avec le PRD)
+
+1. **Le prix d'un certificat n'est pas « deux prix ».** `data-tarifs.js` porte six lignes (famille CERTIFICAT : dispense sportive, attestation de grossesse, décès, coups et blessures, visite et contre visite, aptitude), à UN prix, avec `assurable: sos` (couverture de la seule compagnie SOS). La réponse devra dire « prix unique, couverture SOS seule ». Les huit gabarits de `cfaTypesCertificat` (dont le certificat prénuptial) ne coïncident pas avec ces six lignes : un gabarit sans ligne se répond « aucun prix au référentiel » (question 54).
+2. **Le délai de péremption est une constante de 90 jours** (`stock.dart:21`, `SEUIL_PEREMPTION` de `m6-stock.js`) alors que RG-05 et le PRD le disent paramétrable. Contraire à la règle de paramétrage du 09/11/2026, à corriger avant que l'assistant ne cite un délai.
+3. **Le validateur des commandes est une constante** (`directriceAdministrative`, écart E72) : « qui doit valider la commande » (question 38) ne peut citer que RG-04, pas un circuit lu en base.
+4. **La dette fournisseur a deux définitions** (écran : hors `payee` ; BFR : hors `payee` et `soldee`, écart E21) : à trancher avant de répondre « combien doit on au fournisseur ».
+5. **Le rôle `pharmacien` est ARCHIVÉ** dans `rbac.json` (aucun écran ouvert) ; la pharmacie est tenue par le rôle `caissier` (« Caissier, Dispensaire (Pharmacie) »). Le profil « pharmacie » de l'annexe est rapporté à `caissier` (hypothèse à confirmer), identique au profil « caisse ».
+6. **Le stock « du laboratoire » (questions 30, 95) n'est pas un stock** : un article ne porte que `stockGros` et `stockDetail` (le moteur le dit : la maquette propose « laboratoire » à la saisie d'un mouvement, retombant sur le stock détail). La valeur du laboratoire se lit par famille (réactifs, consommables de laboratoire).
+7. **Recettes ou chiffre d'affaires** : « recettes » (encaissé) et « chiffre d'affaires » (facturé) ne sont pas la même somme ; l'annexe les met sous la même intention 14. Par caissier : `encaissePar` est porté par la ligne de paiement, aucune agrégation n'existe.
+8. **Dernière visite (question 3) : aucune source ne définit la visite** (consultation, admission, facture ?). Aucune fonction ne cherche un patient par nom : la recherche est un filtre d'écran.
+
+## 5. Droits par intention et par profil type
+
+Profils types (annexe) rapportés aux rôles de `rbac.json` : réception = `reception`, caisse et pharmacie = `caissier` (hypothèse), stock = `stock`, comptabilité = `comptable`, laboratoire = `laborantin`, médecin = `medecin`, DAF = `da`, Direction = `direction`, administrateur = `admin`. « oui » : au moins un écran de lecture de l'intention est visible du rôle. Une intention sans écran (I24, I25) est ouverte à tous en attendant le geste « utiliser l'assistant » (voir les droits manquants).
+
+<!-- DEBUT MATRICE ENGENDREE : dart run tool/mesure_assistant.dart --matrice -->
+
+| Int. | reception | caisse | pharmacie | stock | comptabilite | laboratoire | medecin | daf | direction | administrateur |
+|---|---|---|---|---|---|---|---|---|---|---|
+| I01 | oui | oui | oui | non | oui | oui | oui | oui | oui | oui |
+| I02 | oui | oui | oui | non | oui | oui | oui | oui | oui | oui |
+| I03 | non | oui | oui | oui | oui | non | non | oui | oui | oui |
+| I04 | oui | non | non | non | non | non | oui | non | oui | oui |
+| I05 | oui | oui | oui | non | oui | non | non | oui | oui | oui |
+| I06 | oui | non | non | non | non | non | non | oui | oui | oui |
+| I07 | non | oui | oui | oui | oui | non | oui | oui | oui | oui |
+| I08 | non | oui | oui | oui | oui | non | oui | oui | oui | oui |
+| I09 | non | oui | oui | oui | oui | non | oui | oui | oui | oui |
+| I10 | non | oui | oui | oui | oui | non | non | oui | oui | oui |
+| I11 | non | oui | oui | oui | oui | non | non | oui | oui | oui |
+| I12 | non | non | non | oui | oui | non | non | oui | oui | oui |
+| I13 | non | non | non | oui | oui | oui | non | oui | oui | oui |
+| I14 | non | oui | oui | oui | oui | non | non | oui | oui | oui |
+| I15 | non | oui | oui | oui | oui | non | non | oui | oui | oui |
+| I16 | non | oui | oui | oui | oui | non | non | oui | oui | oui |
+| I17 | oui | non | non | non | non | non | oui | oui | oui | oui |
+| I18 | oui | non | non | non | non | non | non | oui | oui | oui |
+| I19 | oui | non | non | non | non | oui | oui | non | oui | oui |
+| I20 | non | non | non | non | non | non | non | oui | oui | oui |
+| I21 | non | non | non | non | oui | non | non | oui | oui | oui |
+| I22 | non | non | non | non | non | non | non | oui | non | oui |
+| I23 | oui | oui | oui | oui | oui | oui | oui | oui | oui | oui |
+| I24 | oui | oui | oui | oui | oui | oui | oui | oui | oui | oui |
+| I25 | oui | oui | oui | oui | oui | oui | oui | oui | oui | oui |
+
+<!-- FIN MATRICE ENGENDREE -->
+
+**Lecture.** 22 intentions sur 25 ont au moins un profil type sans le droit : la seconde exécution de l'annexe (« sous un profil sans droit, la seconde exécution doit refuser en nommant ») a donc un profil à refuser pour chacune de ces 22, avec le refus nommé `LECTURE_NON_AUTORISEE`. I23, I24 et I25 sont ouvertes à tous les profils.
+
+**L'annexe suppose des accès que `rbac.json` ne donne pas** (8 questions, mesuré par le test `incoherencesAnnexe`) : question 12 (surveillant, lits libres : `m3-admissions` et `m3-plan-lits` ne sont pas ouverts au surveillant), 15 (laboratoire, tarif d'un examen : ni `cfg-tarifs` ni `m8-facturation`), 16, 17 (comptabilité, historique des prix : `cfg-tarifs` fermé au comptable), 18 (pharmacie, même cause), 53 (caisse, liste des certificats : `cfg-tarifs` et `cfg-certificats` fermés au caissier), 58 et 60 (réception, planning de garde : `m10-planning`). Doctrine : l'assistant ne dit jamais ce que l'écran ne montrerait pas ; ces profils obtiendront `LECTURE_NON_AUTORISEE`, ou la Direction ouvre l'écran au rôle (décision de la Direction, section AC des décisions).
+
+**Cas des questions 84 à 86.** Question 85 (« Résultats de CNT530/25 », caisse) : l'intention I19 est reconnue, la caisse n'a pas le droit (vecteur). Question 86 (« Chiffre d'affaires de l'année dernière », réception) : I14 reconnue, la réception n'a pas le droit. Question 84 (salaire de Mme Adjovi) : AUCUNE intention du catalogue ne lit la paie ; la reconnaissance rend `INTENTION_INCONNUE` et ne produit aucune valeur. L'annexe attend `LECTURE_NON_AUTORISEE` : ce refus par droit n'existerait qu'avec une intention RH, absente de la version 1 (le refus rendu est sûr, mais n'est pas celui que l'annexe nomme).
+
+### Droits MANQUANTS (rien n'est ajouté dans ce lot)
+
+- **Le geste réservé « utiliser l'assistant »** (PRD section 5) n'est pas déclaré dans `gestes.jeux` de `rbac.json` (seuls `valider_seuil_labo` et `corriger_texte_ocr` y sont). Il faudra le déclarer comme `corriger_texte_ocr` l'a été (maquette d'abord, accordé d'origine à tous les rôles qui ont un poste, réglable par rôle sur la fiche). Non fait ici.
+- **Axe de secteur** : le mot n'apparaît nulle part dans `rbac.json` ; le périmètre d'un profil restreint à un secteur (stock, valorisation) ne s'exprime pas (I07, I08, I10).
+- **Fonction et secteur du résultat de laboratoire** vivent dans `SessionLabo` (`res_habilitations.dart`), pas dans `rbac.json` : l'assistant doit porter la même session (I19).
+- **Zone médicale** : la liste des rôles de zone 2 est une constante du domaine (`fichiers_donnees.dart`, `docRolesZone2`), absente de `rbac.json` (deux sources) ; aucun attribut de zone n'existe au niveau du PATIENT, seulement au niveau du type de document (I01, I04, I17, I19). La règle du PRD « un patient d'une zone interdite est répondu comme inexistant » n'a pas d'attribut sur lequel s'appuyer.
+- **Droit de l'état ouvert** (I23) : générer un rapport exige le droit de la bibliothèque ET celui de l'écran de l'état visé, qui dépend de la question.
+- **Fiche de connaissance réservée à un rôle destinataire** (I24, I25) : aucun équivalent dans `rbac.json`.
+
+## 6. Mesure de la compréhension de base (reconnaissance déterministe)
+
+Outil : `packages/domaine/tool/mesure_assistant.dart` (moteur : `tool/src/assistant_comprehension.dart`, aucune dépendance nouvelle, aucun réseau, aucun modèle). Il reconnaît une INTENTION du catalogue et des paramètres typés (code patient `CNT`, code d'analyse, nom, année de naissance, numéro de facture, lit, article ou acte, fournisseur, période relative, secteur, gabarit), ne produit aucune valeur de réponse, et ramène toute sortie hors catalogue à `INTENTION_INCONNUE`. Refus nommés avant toute intention : `ECRITURE_ABSENTE` (avec l'écran à ouvrir et les entités pour le préremplissage), `AVIS_MEDICAL_REFUSE`, `ENVOI_EXTERNE_REFUSE`, `INJONCTION_REFUSEE` (propositions de noms, à valider). Réactions non intentionnelles : `QUESTION_AMBIGUE` (trois intentions proches), `PRECISION_REQUISE`, alertes `PERIODE_FUTURE` et `NON_CALCULABLE_HISTORIQUE`.
+
+### 6.1 Protocole, et pourquoi le chiffre de contrôle n'est pas indépendant
+
+Jeu de réglage : questions impaires (50) ; jeu de contrôle : questions paires (50) ; règle écrite avant la mesure. **Limite à lire avant les chiffres : l'auteur des règles avait lu les 100 questions avant de les écrire** (l'annexe et le PRD étaient dans la même session). Le contrôle ne mesure donc PAS la généralisation, et le vocabulaire des cent questions, écrites dans un même style par un même rédacteur, est plus régulier que celui des agents. Pour que la mesure ne soit pas « réglée sur les cent jusqu'à 100 % », la PREMIÈRE exécution complète de l'outil a été figée avant toute correction :
+
+| Jeu | Première mesure (figée) | Après corrections (instantané) |
+|---|---|---|
+| Global (100) | 96,0 % | 100,0 % |
+| Réglage, impairs (50) | 98,0 % | 100,0 % |
+| Contrôle, pairs (50) | **94,0 %** | 100,0 % (non indépendant) |
+| Lecture (75) | 96,0 % | 100,0 % |
+| Cas limites (25) | 96,0 % | 100,0 % |
+
+Les quatre échecs de la première mesure : 83 « Adjovi » (réglage : un nom seul n'atteignait pas le seuil de reconnaissance), 8 « Dernière facture de Mme Adjovi » et 70 « Comment annuler une facture ? » (contrôle : deux intentions à égalité, parce que « facture » et « factures » comptaient deux fois), 68 « Rapport des recettes par secteur du mois d'octobre » (contrôle : reconnue comme recettes, I14, au lieu de rapport, I23, soit la SEULE mauvaise intention répondue des cent). Corrections apportées ensuite, avec leur déclencheur : (1) un nom seul vaut une recherche de patient (échec 83, jeu de réglage) ; (2) les indices d'une intention ne se cumulent plus sur les mêmes mots (échecs 8 et 70, jeu de CONTRÔLE : défaut de conception) ; (3) « rapport » et « imprime » pèsent plus que le sujet du rapport (échec 68, jeu de CONTRÔLE) ; (4) « du jour » se lit comme aujourd'hui (paramètre de la question 96, contrôle) ; (5) un refus d'écriture porte les entités lues (préremplissage de l'écran, paramètre de la question 79). Deux autres ajustements viennent de mes propres tests unitaires, pas des cent questions : un préfixe tolère une faute (« recete »), « M. Sossou » seul est une recherche. **Trois des cinq corrections ont été déclenchées par un échec du jeu de contrôle : le 94,0 % figé est le seul chiffre de contrôle honnête, et il est optimiste.**
+
+### 6.2 Chiffres mesurés (instantané après corrections)
+
+- Taux de bonne intention : 100 sur 100 (réglage 50 sur 50, contrôle 50 sur 50), paramètres typés exacts 46 sur 46 (vecteurs qui en déclarent). **À ne pas lire comme une capacité réelle** (6.1).
+- Mauvaise intention répondue : 0 sur 100 après corrections, 1 sur 100 à la première mesure (question 68). Intention non comprise ou ambiguë à tort : 3 sur 100 à la première mesure (8, 70, 83).
+- Cas limites (25), tous bien traités après corrections : trois avis médicaux refusés (76 à 78), quatre écritures refusées avec l'écran à ouvrir (79 à 82), une injonction (88), un envoi externe (89), trois questions hors catalogue (84 salaire, 90 traduction, 91 météo), une ambiguë avec trois intentions proches (92), une précision requise (93), une incohérence qui propose I08 (98), deux alertes (99 historique non conservé, 100 période future), quatre fautes ou abréviations reconnues (94 à 97), et quatre cas où l'intention est reconnue et où c'est la SUITE qui refuse ou désambiguïse : 83 « Adjovi » (liste d'homonymes à l'exécution), 85 et 86 (le droit refuse, section 5), 87 « Stock de licornes » (« aucun article de ce nom » dit à l'exécution). Le 84 n'est pas refusé par le droit demandé par l'annexe (section 5).
+- **Réponses inventées : 0.** Aucune valeur de réponse n'est produite ; chaque paramètre est relu dans la question ou calculé de la date de référence ; aucune intention hors catalogue.
+- Robustesse (la même question abîmée, ce n'est pas de la généralisation) : sans accents 100 sur 100 ; majuscules 96 sur 100 (échecs : les noms, « ADJOVI » n'est plus reconnu comme nom) ; une lettre oubliée dans le plus long mot 93 sur 100 (échecs : « pérme », « Recetes » au pluriel à deux fautes, « Avors », « Impyés », « fournsseur » qui perd son préfixe) ; deux lettres inversées 98 sur 100.
+- Temps : moyenne de 122 à 150 µs par question sur la machine du conteneur (quatre passages de 50 à 500 répétitions), pire cas de 4,8 à 10 ms (une valeur isolée qui change de question d'un passage à l'autre : ramasse miettes ou ordonnancement, pas une propriété d'une question). Machine virtuelle Dart (JIT) du conteneur, pas un vieux poste.
+- Étanchéité : le test échoue si une source importe autre chose que `dart:core` et `dart:convert` (le lanceur a `dart:io`, jamais de socket), nomme un client, un serveur, une socket ou un processus, ou dépend d'un paquet ; et, à l'exécution, 100 questions et leurs 400 variantes passent sans qu'aucune connexion HTTP, socket ou serveur ne soit tentée (`HttpOverrides` et `IOOverrides` qui comptent les tentatives : 0).
+
+## 7. Recommandation chiffrée (propositions à valider par la Direction)
+
+1. **La version déterministe suffit pour DÉMARRER si, et seulement si, elle passe la mesure sur de vraies questions.** Les cent questions de l'annexe ne tranchent pas : leur 94,0 % de contrôle initial et leur 100 % final sont des chiffres d'un vocabulaire que l'auteur avait vu. La décision se prend sur les questions réelles (cinq par rôle, avec leurs fautes et abréviations, comme l'annexe le demande : réception, caisse, pharmacie, stock, comptabilité, laboratoire, Direction, soit au moins 35 questions, à ajouter aux cent pour un jeu final d'au moins 135).
+2. **Seuils proposés** (aucun n'est une valeur de la Direction, tous sont à valider) : bonne intention sur le jeu réel d'au moins **90 %** ; mauvaise intention répondue d'au plus **2 %** ; **0** réponse inventée ; **100 %** des écritures et des avis médicaux refusés. Argument : une question non comprise coûte une reformulation, une MAUVAISE intention répondue montre à un caissier une donnée fausse avec sa source, donc la tolérance sur la seconde doit être bien plus faible que sur la première ; l'annexe tolère déjà zéro invention. Le 90 % est une proposition de seuil, pas un résultat : pour 135 questions, 2 % de mauvaise intention est 2 questions.
+3. **Intentions les plus fragiles** (mesure et structure) : I23 contre le contenu qu'elle cite (rapport des recettes : la seule mauvaise intention de la première mesure) ; I24 « comment » contre le sujet cité ; I01 et I03 sur les noms (nom seul, civilité, majuscules, homonymes dont la liste se construit à l'exécution) ; I05 contre I06 contre I18 (le mot « prix » les porte tous) ; I12 contre I16 (« doit » dans les deux sens) ; I15 contre I03 (« facture ») ; toute intention dont le mot clé est fautif au pluriel (robustesse à 93 %). Plus l'intention est une phrase libre, plus elle sera fragile ; plus elle est un mot du métier (FEFO, inventaire, MECeF), moins.
+4. **Ce qu'un essai de modèle local devrait mesurer pour justifier son coût** : (a) le taux de bonne intention ET de mauvaise intention sur les MÊMES questions réelles, à côté de la version déterministe, et surtout sur ses échecs ; (b) zéro sortie hors catalogue après le garde fou et zéro valeur de réponse ; (c) 100 % des écritures et avis médicaux refusés ; (d) le même résultat à chaque passage (graine fixée) ; (e) latence et mémoire sur le plus vieux poste de la clinique, démarrage à froid compris ; (f) taille sur disque. Le coût n'est justifié que si le gain sur les questions réelles passe un seuil que la Direction fixe, ou si la version déterministe reste sous le seuil du point 2.
+5. Rappel : ce lot ne choisit aucun modèle ; la question se repose après la mesure sur les questions réelles (PRD section 10, point 6).
+
+## 8. Non vérifié
+
+Le vocabulaire réel des agents (les questions sont écrites, non collectées) ; l'orthographe et les abréviations de terrain ; un vieux poste (temps) ; un modèle réel ; les intentions de bout en bout (aucune n'est exécutée : l'outil ne lit aucune donnée) ; la lecture des écrans de lecture « un parmi » (choix des écrans à confirmer par intention) ; les vecteurs de questions ne sont pas tirés de l'écran réel de la maquette dans Chrome (ce lot ne porte aucune règle de la maquette : les sources sont lues dans le domaine et la maquette, les droits dans `rbac.json`) ; Windows, SQLCipher, relais réel, deux machines, charge.

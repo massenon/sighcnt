@@ -1,6 +1,6 @@
 # PRD : Assistant de la clinique (conversation locale, base de connaissances, requêtes en lecture)
 
-Statut : **brouillon, réponses de la Direction du 14/11/2026 intégrées** (section 10) ; toutes les décisions de la section 10 sont tranchées. Aucune valeur, aucun moteur, aucune borne n'est choisi ici sans source : ce qui manque est dit en section 10.
+Statut : **brouillon, réponses de la Direction du 14/11/2026 intégrées** (section 10) ; toutes les décisions de la section 10 sont tranchées. **Lot AST-0 livré le 14/11/2026 (mesure seulement, rien au poste)** : couverture des 25 intentions 19 calculables, 4 après un petit lot, 2 non disponibles ; reconnaissance déterministe 94,0 % sur le contrôle figé, 100 % après corrections (non indépendant, l'auteur avait lu les cent questions), 0 réponse inventée, 0 connexion ; voir `docs/architecture/ASSISTANT-couverture-des-intentions.md` et la section AC de `DECISIONS-A-VALIDER.md`. Aucune valeur, aucun moteur, aucune borne n'est choisi ici sans source : ce qui manque est dit en section 10.
 Sources : demande de la Direction du 14/11/2026 (assistant conversationnel sur le poste fileul et la mère, avec base de connaissances, pour analyser les recettes, vérifier les niveaux de stock, voir les articles qui tournent, produire des rapports, tenir l'inventaire du stock, retrouver vite un nom de patient, le prix d'un acte, un certificat, un fournisseur, la validité de l'assurance d'un patient, etc.), `CLAUDE.md` (règles RG-01 à RG-14, « le texte médical ne quitte jamais la clinique », hors périmètre CDCT §4.3 : « IA d'aide au diagnostic »), skills `sigh-maitre`, `sigh-flutter`, `spec`.
 Règle de rédaction : pas de tiret cadratin comme ponctuation.
 
@@ -136,7 +136,7 @@ Le lot de mesure AST-0 est lancé dès que le lot 8 est poussé (décision du 14
 
 ## 12. Plan de livraison proposé (maquette d'abord, doctrine du dépôt)
 
-1. **Lot AST-0 : mesure et catalogue** : lister les moteurs et collections qui répondent à chacune des 25 intentions, dire lesquelles sont déjà calculables (et lesquelles non : une intention sans source reste « non disponible » et se dit, jamais une réponse inventée), jeu de 100 questions réelles de la clinique à fournir par la Direction pour mesurer la compréhension.
+1. **Lot AST-0 : mesure et catalogue (livré le 14/11/2026, voir le statut en tête)** : lister les moteurs et collections qui répondent à chacune des 25 intentions, dire lesquelles sont déjà calculables (et lesquelles non : une intention sans source reste « non disponible » et se dit, jamais une réponse inventée), jeu de 100 questions réelles de la clinique à fournir par la Direction pour mesurer la compréhension.
 2. **Lot AST-1 : maquette** : volet « Assistant » (poste fileul et mère à venir), les 25 intentions (livrées par groupes : patients et tarifs, stock, fournisseurs et achats, caisse et recettes, laboratoire et planning, aide et rapports), base de connaissances semée, vecteurs tirés de l'écran réel.
 3. **Lot AST-2 : domaine Dart** : intentions comme fonctions pures sur un port de lecture, reconnaissance en français, vecteurs de la maquette.
 4. **Lot AST-3 : poste** : volet, droits, journal RG-12, conversation locale chiffrée, tests contre la réplique locale ; la mère passe par le même code.
