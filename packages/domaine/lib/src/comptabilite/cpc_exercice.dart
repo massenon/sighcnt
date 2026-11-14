@@ -102,6 +102,15 @@ String cpcEtatExercice(Iterable<CpaFiche> exercices, int annee) {
   return _estDeLiasse(annee) ? 'clos' : 'ouvert';
 }
 
+/// LE BUDGET D'UN EXERCICE CLOS EST EN LECTURE SEULE (lot IMP-B2 de la maquette, porté au lot 8b) : la GARDE posée sur la collection `budgets`, d'où que l'écriture vienne (écran, importation).
+/// Le motif du refus (nommé) ou `null`. Un budget prévisionnel n'est pas une écriture comptable, mais un exercice clos est un exercice arrêté ; seul `clos` est refusé ici (un exercice en
+/// clôture reçoit encore ses budgets à l'écran ; l'importation, elle, n'admet que les exercices OUVERTS). Limite connue de la maquette : la garde lit l'exercice de la fiche telle qu'elle sera.
+String? cpcGardeBudgets(Iterable<CpaFiche> exercices, Object? exercice) {
+  final a = exercice is num ? exercice.toInt() : int.tryParse('${exercice ?? ''}');
+  if (a == null || a == 0 || cpcEtatExercice(exercices, a) != 'clos') return null;
+  return 'Exercice $a clôturé : le budget d’un exercice clos ne s’écrit plus. La correction passe par la réouverture de l’exercice par le comptable (motif obligatoire), ou par un budget de l’exercice ouvert.';
+}
+
 /// La GARDE posée sur la collection `ecritures` : le motif du refus (nommé) ou `null`.
 ///  * exercice CLÔTURÉ : lecture seule, y compris pour le comptable (seule la réouverture permet de corriger) ;
 ///  * exercice EN CLÔTURE : les modules n'écrivent plus ; seul le comptable (ou l'administrateur) y passe ses écritures d'inventaire, en SAISIE MANUELLE ;

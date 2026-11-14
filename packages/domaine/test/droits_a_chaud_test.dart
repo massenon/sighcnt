@@ -432,7 +432,6 @@ void main() {
     // Lot IMP-C : les pages de jeux d'import que le poste ne porte pas encore sont fermées de la même façon (liste NOMMÉE : porter un jeu retire sa page d'ici).
     const impNonPortes = {
       'imp-tarifs-produits', 'imp-produits-referentiel',
-      'imp-immobilisations', 'imp-budgets', 'imp-courriers',
     };
     const quatre = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms', ...impNonPortes};
     MatriceDroits chaud({List<Fiche>? modules, List<Fiche>? reference}) => superposerDroits(base, manifeste,

@@ -25,8 +25,7 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
    propose que si l'écran a un widget. Le jeu sobre (fixture des vecteurs) n'en porte aucune : il reproduit la maquette. */
 const JEUX_IMPORT_NON_PORTES = [
   ['06', 'imp-tarifs-produits', 'Importation des prix d’achat'],
-  ['07', 'imp-produits-referentiel', 'Importation du référentiel produits'], ['19', 'imp-immobilisations', 'Importation des immobilisations'],
-  ['20', 'imp-budgets', 'Importation des budgets'], ['21', 'imp-courriers', 'Importation des courriers'],
+  ['07', 'imp-produits-referentiel', 'Importation du référentiel produits'],
 ];
 const FERMETURES_PROPRES_AU_POSTE = [
   { id: 'MODP01', module: 'M12', ecran: 'm12-calendrier-fiscal', libelle: 'Calendrier fiscal mensuel' },

@@ -60,7 +60,6 @@ void main() {
   // `gen-poste-jeu.js` (`JEUX_IMPORT_NON_PORTES`) et de `parite-statuts.json`.
   const impNonPortes = {
     'imp-tarifs-produits', 'imp-produits-referentiel',
-    'imp-immobilisations', 'imp-budgets', 'imp-courriers',
   };
   const nonPortesNommes = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms', ...impNonPortes};
 

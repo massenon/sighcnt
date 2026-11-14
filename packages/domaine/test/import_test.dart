@@ -197,7 +197,7 @@ void main() {
       expect({for (final n in ['produits', 'lots', 'mouvements']) n: port.toutes(n).length}, avant);
     });
 
-    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide'];
+    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide', 'im-valide', 'bu-valide', 'co-valide'];
     for (final app in liste(V['applications'])) {
       test('application de ${app['cas']}', () {
         final id = '${app['cas']}';
@@ -338,6 +338,78 @@ void main() {
       final att = (S['comptageAnnule'] as Map).cast<String, Object?>();
       expect(ok.ok, att['ok']);
       expect(ok.archives, att['archives']);
+    });
+
+    // LOT 8B, GROUPE COMPTABILITÉ. Ces trois gestes se rejouent sur le MÊME magasin que les lots ci-dessus, dans le même ordre que la maquette : les numéros automatiques (IM-NNN, BG-AAAA-NNN,
+    // ARR et DEP) se prennent à la suite de la série, ARCHIVÉS COMPRIS, et un courrier archivé compte encore au registre (ajout seul).
+    Object? masque(Object? o, Object? ref) => jsonDecode(jsonEncode(o).replaceAll('$ref', '{A}'));
+    List<Map<String, Object?>> fichesNettes(FicheImport lot) => [
+          for (final e in (lot['ecrits'] as List).cast<Map>())
+            () {
+              final f = {...port.parId('${e['collection']}', e['id'])!};
+              for (final k in ['id', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', 'statutAvantArchivage', '_archivePar', '_archiveLe', '_motifArchivage']) {
+                f.remove(k);
+              }
+              return f;
+            }()
+        ];
+    AnalyseImport analyseCompta(String id) => analyseDuCas(id);
+    FicheImport poserCompta(String id) {
+      final c = liste(V['cas']).firstWhere((x) => x['id'] == id);
+      final r = appliquer(jeuImportParId('${c['jeu']}')!, analyseCompta(id), port);
+      expect(r.ok, isTrue, reason: '$id : ${r.motif}');
+      return r.lot!;
+    }
+
+    test('LOT 8B, immobilisations : les numéros explicites d\'abord, le numéro automatique à la suite (archivés compris) ; un bien cédé depuis l\'import fait refuser l\'annulation, nommée', () {
+      final C = ((V['compta'] as Map)['immobilisations'] as Map).cast<String, Object?>();
+      final lot = poserCompta('im-valide');
+      expect(lot['etat'], (C['pose'] as Map)['etat']);
+      memes(masque(fichesNettes(lot), lot['reference']), (C['pose'] as Map)['fiches'], 'immobilisations.fiches');
+      final bien = port.parId('immobilisations', (lot['ecrits'] as List).cast<Map>().first['id'])!;
+      port.mettreAJour('immobilisations', bien['id'], {'dateCession': '2026-10-30'});
+      memes(refusDe(annulerLot(jeuImportParId, lot['id'], 'essai', port)), C['annulationBienCede'], 'annulationBienCede');
+      port.mettreAJour('immobilisations', bien['id'], {'dateCession': null});
+      final ok = annulerLot(jeuImportParId, lot['id'], 'essai', port);
+      expect({'ok': ok.ok, 'archives': ok.archives}, C['annulation']);
+    });
+
+    test('LOT 8B, budgets : la garde du magasin refuse un budget sur un exercice CLOS (motif tiré de l\'écran) ; un exercice clos depuis l\'import fait refuser l\'annulation, nommée', () {
+      final C = ((V['compta'] as Map)['budgets'] as Map).cast<String, Object?>();
+      final lot = poserCompta('bu-valide');
+      memes(masque(fichesNettes(lot), lot['reference']), (C['pose'] as Map)['fiches'], 'budgets.fiches');
+      port.inserer('exercices', {'id': 'EXO-2027', 'annee': 2027, 'statut': 'actif', 'etat': 'clos', 'source': 'journal'});
+      memes(refusDe(annulerLot(jeuImportParId, lot['id'], 'essai', port)), C['annulationExerciceClos'], 'annulationExerciceClos');
+      port.retirer('exercices', 'EXO-2027');
+      // La garde : l'exercice 2025 est clos d'office (liasse déposée), l'exercice 2026 est ouvert.
+      final garde = (C['garde'] as Map).cast<String, Object?>();
+      expect(cpcGardeBudgets(port.toutes('exercices'), 2025), ((garde['toast'] as List).single as Map)['detail']);
+      expect(cpcGardeBudgets(port.toutes('exercices'), 2026), isNull, reason: 'un exercice ouvert reçoit ses budgets');
+      expect(cpcGardeBudgets(port.toutes('exercices'), 2023), isNull, reason: 'seul « clos » est refusé par la garde (« en clôture » l\'est par le jeu)');
+      expect(cpcGardeBudgets(port.toutes('exercices'), null), isNull);
+      final ok = annulerLot(jeuImportParId, lot['id'], 'essai', port);
+      expect({'ok': ok.ok, 'archives': ok.archives}, C['annulation']);
+    });
+
+    test('LOT 8B, courriers : un courrier déjà tenu est IGNORÉ et compté (ajout seul, archivés compris) ; un courrier traité fait refuser l\'annulation, nommée', () {
+      final C = ((V['compta'] as Map)['courriers'] as Map).cast<String, Object?>();
+      final att = (C['dejaTenu'] as Map).cast<String, Object?>();
+      final a2 = analyseCompta('co-deja-tenu');
+      memes(a2.compte.versJson(), att['compte'], 'dejaTenu.compte');
+      final l2 = poserCompta('co-deja-tenu');
+      expect({for (final k in ['etat', 'nbLignes', 'nbIgnores']) k: l2[k]}, {for (final k in ['etat', 'nbLignes', 'nbIgnores']) k: att[k]});
+      expect((l2['ecrits'] as List).length, att['ecrits']);
+      memes(masque(fichesNettes(l2), l2['reference']), att['fiches'], 'dejaTenu.fiches');
+      final lot = poserCompta('co-suite');
+      memes(masque(fichesNettes(lot), lot['reference']), (C['pose'] as Map)['fiches'], 'courriers.fiches');
+      final c0 = port.parId('courriers', (lot['ecrits'] as List).cast<Map>().first['id'])!;
+      port.mettreAJour('courriers', c0['id'], {'traitement': 'traite'});
+      memes(refusDe(annulerLot(jeuImportParId, lot['id'], 'essai', port)), C['annulationTraite'], 'annulationTraite');
+      port.mettreAJour('courriers', c0['id'], {'traitement': 'en_attente'});
+      final ok = annulerLot(jeuImportParId, lot['id'], 'essai', port), ok2 = annulerLot(jeuImportParId, l2['id'], 'essai', port);
+      final an = (C['annulation'] as Map).cast<String, Object?>();
+      expect({'ok': ok.ok, 'archives': ok.archives}, {'ok': an['ok'], 'archives': an['archives']});
+      expect({'ok': ok2.ok, 'archives': ok2.archives}, an['deuxieme']);
     });
 
     test('atomicité : une écriture refusée en cours de lot ne laisse rien, le fichier est consigné', () {

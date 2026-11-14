@@ -321,6 +321,10 @@
    "titre": "Importation des compagnies d’assurance",
    "description": "Compagnies d’assurance : code, raison sociale, contacts, état de la convention."
   },
+  "imp-budgets": {
+   "titre": "Importation des budgets",
+   "description": "Budget prévisionnel par exercice, centre de coûts et nature budgétaire."
+  },
   "imp-catalogue-imagerie": {
    "titre": "Importation du catalogue de l’imagerie",
    "description": "Examens d’imagerie : code, libellé, modalité (échographie, radiographie, mammographie, scanner, IRM), voie d’abord, code tarifaire."
@@ -328,6 +332,10 @@
   "imp-centres-couts": {
    "titre": "Importation des centres de coûts",
    "description": "Axes d’imputation analytique : code, intitulé, type, responsable."
+  },
+  "imp-courriers": {
+   "titre": "Importation des courriers",
+   "description": "Registre du courrier : sens, date, correspondant, objet, nature, service destinataire."
   },
   "imp-couvertures-assurance": {
    "titre": "Importation des couvertures d’assurance",
@@ -344,6 +352,10 @@
   "imp-garanties": {
    "titre": "Importation des garanties des souscripteurs",
    "description": "Taux et plafonds par souscripteur et par garantie, avec une date d’effet : chaque ligne qui change crée une NOUVELLE VERSION datée, jamais un écrasement."
+  },
+  "imp-immobilisations": {
+   "titre": "Importation des immobilisations",
+   "description": "Registre des biens : désignation, catégorie, date d’acquisition, valeur, durée d’amortissement, compte SYSCOHADA."
   },
   "imp-inventaire-comptage": {
    "titre": "Importation d’un comptage d’inventaire",

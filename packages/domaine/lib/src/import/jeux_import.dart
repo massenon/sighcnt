@@ -8,6 +8,7 @@ library;
 import '../comptabilite/cpb_gestion.dart' show cpbReferenceSuivante;
 import '../assurances/ass_garanties.dart';
 import '../assurances/ass_regles.dart' show assCategoriesGarantie, assChangerCouverture, assDate, assLibelleUnite, assUnitesPlafond;
+import '../comptabilite/cpc_exercice.dart' show cpcEtatExercice;
 import '../format/format_fr.dart' show dateFR, nombre;
 import '../format/js.dart' show arrondiJs;
 import '../imagerie/cr_modalites.dart' show modalitesImagerie;
@@ -21,6 +22,7 @@ import 'moteur_import.dart';
 part 'jeux_import_stock.dart';
 part 'jeux_import_prix.dart';
 part 'jeux_import_assurance.dart';
+part 'jeux_import_compta.dart';
 
 typedef _V = Map<String, Object?>;
 
@@ -1286,6 +1288,10 @@ final List<JeuImport> jeuxImport = [
   // Lot 8b, groupe GARANTIES ET COUVERTURES : les versions datées de garantie et les couvertures datées des assurés.
   jeuGaranties,
   jeuCouverturesAssurance,
+  // Lot 8b, groupe COMPTABILITÉ : les immobilisations, les budgets (exercice ouvert seulement) et les courriers (registre en ajout seul), dans cet ordre (le courrier, que la Direction ne range dans aucun groupe, en dernier).
+  jeuImmobilisations,
+  jeuBudgets,
+  jeuCourriers,
 ];
 
 JeuImport? jeuImportParId(String id) => jeuxImport.where((j) => j.id == id).firstOrNull;

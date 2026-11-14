@@ -62,11 +62,13 @@ const MAGASIN = {
     { id: 'CPT002', num: '571000', libelle: 'Caisse', classe: 5, journal: 'CAI', statut: 'actif' },
     { id: 'CPT003', num: '411000', libelle: 'Clients', classe: 4, journal: 'VTE', statut: 'actif' },
     { id: 'CPT004', num: '601000', libelle: 'Achats de marchandises', classe: 6, journal: 'ACH', statut: 'actif' },
+    { id: 'CPT005', num: '241000', libelle: 'Matériel et outillage industriel et commercial', classe: 2, journal: 'IMM', statut: 'actif' },
+    { id: 'CPT006', num: '244000', libelle: 'Matériel et mobilier', classe: 2, journal: 'IMM', statut: 'actif' },
   ],
   ecritures: [{ id: 'ECR1', numero: 'AN-2025-00001', date: '2025-01-01', journal: 'AN', compte: '571000', debit: 1, credit: 0, statut: 'brouillon' }],
   /* Lot IMP-C : les référentiels des jeux portés au poste (natures, centres, unités, prestataires, emplacements) : une fiche tenue chacun, de quoi éprouver les doublons. */
   naturesFacture: [{ id: 'NAT01', code: 'CONS', libelle: 'Consultation', secteur: 'Médecine générale', statut: 'actif' }],
-  centresCouts: [{ id: 'CC01', code: 'laboratoire', libelle: 'Laboratoire', type: 'exploitation', statut: 'actif' }],
+  centresCouts: [{ id: 'CC01', code: 'laboratoire', libelle: 'Laboratoire', type: 'exploitation', statut: 'actif' }, { id: 'CC02', code: 'pharmacie', libelle: 'Pharmacie', type: 'exploitation', statut: 'actif' }],
   unitesLabo: [{ id: 'UNI1', symbole: 'g/dl', libelle: 'gramme par décilitre', domaine: 'Biochimie', statut: 'actif' }],
   prestataires: [{ id: 'PE1', reference: 'PE-0001', nom: 'Dr ADJO Marius', specialite: 'Chirurgie', tarifActe: 20000, actesRealises: 3, ifu: '3202112446712', statut: 'actif' }],
   emplacements: [{ id: 'EMP1', code: 'A2', libelle: 'Rayon A, casier 2', zone: 'Rayonnage sec', statut: 'actif' }],
@@ -101,6 +103,12 @@ const MAGASIN = {
     { id: 'COU1', patientId: 'PAT0003', patientCode: 'CNT/3/26', patient: 'KOUASSI Ama', assureur: 'AFR', assureurNom: 'AFRICAINE DES ASSURANCES', numeroPolice: 'AFR/2024/0100', categorieAssurance: 'entreprise', tauxPriseEnCharge: 80, carteExpiration: '2029-12-31', souscripteurId: 'SOU001', debut: '2026-01-01', motif: 'Première couverture', statut: 'actif' },
   ],
   factures: [{ id: 'FAC1', numero: 'F-2026-0001', patientId: 'PAT0003', assureur: 'AFR', date: '2026-10-20', statut: 'emise' }],
+  /* Lot 8b, groupe COMPTABILITÉ : des comptes d'immobilisation, un bien tenu, un centre de plus, un budget tenu, des exercices (la liasse clôt 2024 et 2025 d'office ; 2023 est « en clôture »)
+     et un courrier au registre. */
+  immobilisations: [{ id: 'IMM1', reference: 'IM-001', designation: 'Autoclave', categorie: 'Matériel médical', dateAcquisition: '2025-03-01', valeurAcquisition: 1500000, dureeAmortissement: 5, compte: '241000', fournisseur: '', etat: 'En service', statut: 'actif' }],
+  budgets: [{ id: 'BUD1', reference: 'BG-2027-001', exercice: 2027, centreCout: 'laboratoire', centre: 'Laboratoire', nature: 'Charges de fonctionnement', prevu: 1000000, statut: 'actif' }],
+  exercices: [{ id: 'EXO-2023', annee: 2023, debut: '2023-01-01', fin: '2023-12-31', statut: 'actif', etat: 'en_cloture', source: 'journal' }],
+  courriers: [{ id: 'COU01', reference: 'ARR-2026-0007', sens: 'arrivee', date: '2026-10-05', correspondant: 'DDS Atacora-Donga', objet: 'Demande de renseignements', nature: 'Lettre', affecteA: 'Direction Médicale', traitement: 'en_attente', accuseReception: false, statut: 'actif' }],
   examensImagerie: [{ id: 'EXI01', code: 'IMG-ECHO-PEL', label: 'Échographie pelvienne', modalite: 'echographie', icone: 'scan-line', statut: 'actif' }],
   lotsImportation: [],
 };
@@ -124,6 +132,9 @@ const SD = (o) => Object.assign({ code: null, lot: null, peremption: null, quant
 const TL = (o) => Object.assign({ code: null, lot: null, quantite: null, destination: 'Pharmacie d’urgence', date: null, motif: null }, o);
 const IC = (o) => Object.assign({ magasin: 'Stock gros', code: null, compte: null, type: null, date: null }, o);
 const TA = (o) => Object.assign({ code: null, designation: null, famille: null, secteur: null, prixNonAssure: null, prixAssure: null, couverture: null, dateEffet: '2027-01-01', valider: null, motif: 'Nouvelle grille tarifaire', source: null }, o);
+const IB = (o) => Object.assign({ reference: null, designation: null, categorie: 'Matériel médical', dateAcquisition: '2026-03-15', valeur: null, duree: 5, compte: '241000', fournisseur: null, etat: null }, o);
+const BU = (o) => Object.assign({ exercice: 2027, centre: 'Laboratoire', nature: 'Investissements', prevu: null }, o);
+const CO = (o) => Object.assign({ reference: null, sens: null, date: null, correspondant: null, objet: null, nature: null, affecteA: null }, o);
 const GA = (o) => Object.assign({ police: 'AFR/2024/0100', categorie: 'Consultations', garantie: 'Consultation généraliste', taux: null, plafond: null, unite: null, dateEffet: '2027-01-01', motif: 'Avenant du 01/12/2026', source: null }, o);
 const CV = (o) => Object.assign({ patient: null, assureur: null, police: null, dateEffet: '2030-01-01', motif: 'Changement d’employeur', categorie: null, taux: null, carteExpiration: '2030-12-31' }, o);
 const CI = (o) => Object.assign({ code: null, libelle: null, modalite: null, voie: null, tarifCode: null }, o);
@@ -319,6 +330,46 @@ const CAS = [
   ['cv-motif-fin-de-couverture', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'AFR/2024/0100', motif: 'Fin de couverture — patient redevenu non assuré' })]],
   ['cv-assureur-hors-liste', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'ZZZ', police: 'AFR/2024/0100' })]],
   ['cv-doublon-fichier', 'couvertures-assurance', [CV({ patient: 'CNT/3/26', assureur: 'AFR', police: 'AFR/2024/0100' }), CV({ patient: 'cnt/3/26', assureur: 'NSIA', police: 'NSIA/2024/0200' })]],
+  /* Lot 8b, groupe COMPTABILITÉ : immobilisations, budgets (exercice ouvert seulement) et courriers (ajout seul, doublons ignorés). */
+  ['im-valide', 'immobilisations', [
+    IB({ designation: 'Moniteur multiparamétrique', valeur: 1800000 }),
+    IB({ reference: 'IM-050', designation: 'Réfrigérateur de laboratoire', categorie: 'Matériel de laboratoire', dateAcquisition: '2025-11-02', valeur: 600000, duree: 8, fournisseur: 'SoBAPS SA', etat: 'En maintenance' }),
+  ]],
+  ['im-doublon-reference', 'immobilisations', [IB({ reference: 'IM-001', designation: 'Autre bien', valeur: 100000 })]],
+  ['im-doublon-bien', 'immobilisations', [IB({ designation: 'Autoclave', dateAcquisition: '2025-03-01', valeur: 1500000 })]],
+  ['im-date-future', 'immobilisations', [IB({ designation: 'Bien futur', dateAcquisition: '2027-01-01', valeur: 100000 })]],
+  ['im-bien-cede', 'immobilisations', [IB({ designation: 'Bien cédé', valeur: 100000, etat: 'Cédé' })]],
+  ['im-compte-inconnu', 'immobilisations', [IB({ designation: 'Bien', valeur: 100000, compte: '999999' })]],
+  ['im-compte-non-immobilisation', 'immobilisations', [IB({ designation: 'Bien', valeur: 100000, compte: '601000' })]],
+  ['im-valeur-nulle', 'immobilisations', [IB({ designation: 'Bien', valeur: 0 })]],
+  ['im-valeur-tiret', 'immobilisations', [IB({ designation: 'Bien', valeur: '-' })]],
+  ['im-duree-hors-bornes', 'immobilisations', [IB({ designation: 'Bien', valeur: 100000, duree: 31 })]],
+  ['im-categorie-hors-liste', 'immobilisations', [IB({ designation: 'Bien', valeur: 100000, categorie: 'Bijoux' })]],
+  ['im-colonne-retiree', 'immobilisations', [IB({ designation: 'Bien', valeur: 100000 })], 'plus:Date de cession'],
+  ['im-doublon-fichier', 'immobilisations', [IB({ designation: 'Bien', valeur: 100000 }), IB({ designation: 'bien', valeur: 100000 })]],
+  ['bu-valide', 'budgets', [BU({ prevu: 2000000 }), BU({ centre: 'laboratoire', nature: 'Charges de personnel', prevu: 3000000 }), BU({ exercice: 2026, centre: 'pharmacie', nature: 'Achats de marchandises', prevu: 0 })]],
+  ['bu-exercice-clos', 'budgets', [BU({ exercice: 2025, prevu: 100 })]],
+  ['bu-exercice-en-cloture', 'budgets', [BU({ exercice: 2023, prevu: 100 })]],
+  ['bu-doublon-magasin', 'budgets', [BU({ nature: 'Charges de fonctionnement', prevu: 100 })]],
+  ['bu-centre-inconnu', 'budgets', [BU({ centre: 'Cuisine', prevu: 100 })]],
+  ['bu-nature-hors-liste', 'budgets', [BU({ nature: 'Autres', prevu: 100 })]],
+  ['bu-prevu-tiret', 'budgets', [BU({ prevu: '-' })]],
+  ['bu-prevu-negatif', 'budgets', [BU({ prevu: -5 })]],
+  ['bu-exercice-hors-bornes', 'budgets', [BU({ exercice: 1999, prevu: 100 })]],
+  ['bu-doublon-fichier', 'budgets', [BU({ prevu: 100 }), BU({ centre: 'laboratoire', prevu: 200 })]],
+  ['co-valide', 'courriers', [
+    CO({ sens: 'Arrivée', date: '2026-11-03', correspondant: 'DDS Atacora-Donga', objet: 'Convocation à la réunion', nature: 'Convocation', affecteA: 'Direction Médicale' }),
+    CO({ reference: 'DEP-2026-0042', sens: 'Départ', date: '2026-11-04', correspondant: 'CNSS', objet: 'Déclaration trimestrielle', affecteA: 'Comptabilité' }),
+    CO({ sens: 'Départ', date: '2026-11-05', objet: 'Réponse' }),
+  ]],
+  ['co-deja-tenu', 'courriers', [CO({ reference: 'ARR-2026-0007', sens: 'Arrivée', date: '2026-10-05', objet: 'Autre objet' }), CO({ sens: 'Arrivée', date: '2026-10-05', objet: 'demande de renseignements' }), CO({ sens: 'Arrivée', date: '2026-11-10', objet: 'Courrier neuf' })]],
+  ['co-suite', 'courriers', [CO({ sens: 'Arrivée', date: '2026-11-12', objet: 'Invitation' }), CO({ sens: 'Départ', date: '2026-11-12', objet: 'Remerciement', correspondant: 'DDS Atacora-Donga', affecteA: 'Direction Médicale' })]],
+  ['co-numero-incoherent', 'courriers', [CO({ reference: 'DEP-2026-0001', sens: 'Arrivée', date: '2026-11-03', objet: 'Objet' }), CO({ reference: 'ARR-2025-0001', sens: 'Arrivée', date: '2026-11-03', objet: 'Autre' })]],
+  ['co-reference-format', 'courriers', [CO({ reference: 'X-1', sens: 'Arrivée', date: '2026-11-03', objet: 'Objet' })]],
+  ['co-sens-hors-liste', 'courriers', [CO({ sens: 'Latéral', date: '2026-11-03', objet: 'Objet' })]],
+  ['co-colonne-retiree', 'courriers', [CO({ sens: 'Arrivée', date: '2026-11-03', objet: 'Objet' })], 'plus:Accusé de réception'],
+  ['co-doublon-fichier', 'courriers', [CO({ sens: 'Arrivée', date: '2026-11-03', objet: 'Objet' }), CO({ sens: 'Arrivée', date: '2026-11-03', objet: 'objet' })]],
+  ['co-objet-absent', 'courriers', [CO({ sens: 'Arrivée', date: '2026-11-03' })]],
   ['ic-doublon-fichier', 'inventaire-comptage', [IC({ code: 'COTON', compte: 1 }), IC({ code: 'coton', compte: 2 })]],
 ];
 
@@ -389,7 +440,7 @@ const CAS = [
         };
       });
       /* 3. Application, relevé des fiches, annulation. L'ordre fixe les références de lot. */
-      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide'];
+      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide', 'im-valide', 'bu-valide', 'co-valide'];
       out.applications = [];
       const refus = I.analyserOctets('grand-stock', Uint8Array.from(out.fixtures['gs-quantite-negative']), 'gs-quantite-negative.xlsx');
       const lotRefus = I.consigner(I.jeu('grand-stock'), refus);
@@ -607,6 +658,63 @@ const CAS = [
         C_.apresAnnulation = { patients: patientsEtat(), couvertures: couverturesEtat() };
         out.assurances = { garanties: mask(out.assurances.garanties, refsG), couvertures: mask(out.assurances.couvertures, refsC) };
       }
+      /* 6 quinquies. LOT 8b, groupe COMPTABILITÉ : un bien cédé ou un courrier traité ne s'annule plus avec son lot ; un budget d'un exercice devenu clos non plus ; la garde du magasin refuse un
+         budget sur un exercice clos, d'où que l'écriture vienne. */
+      out.compta = {};
+      {
+        const net = (f) => nettoyer(f, {});
+        const refusDe = (r) => ({ ok: r.ok, code: r.code || null, motif: r.motif || null, geste: r.geste || null });
+        const poser = (jeu, id) => { const r = enRole('admin', 'ADMIN TEST', () => I.appliquer(jeu, I.analyserOctets(jeu, octetsDe(id), id + '.xlsx'))); if (!r.ok) throw new Error('lot non posé ' + id + ' : ' + JSON.stringify({ code: r.code, motif: r.motif })); return r.lot; };
+        const annuler = (lot) => enRole('admin', 'ADMIN TEST', () => I.annulerLot(lot.id, 'essai'));
+        const fiches = (lot) => lot.ecrits.map((e) => net(S.collection(e.collection).get(e.id)));
+        const mask = (o, ref) => JSON.parse(JSON.stringify(o).split(ref).join('{A}'));
+        /* Immobilisations : les numéros EXPLICITES d'abord, le numéro automatique à la suite (IM-051) ; un bien cédé depuis l'import fait refuser l'annulation. */
+        {
+          const im = out.compta.immobilisations = {};
+          const lot = poser('immobilisations', 'im-valide');
+          im.pose = { etat: lot.etat, nbLignes: lot.nbLignes, fiches: mask(fiches(lot), lot.reference) };
+          const bien = S.collection('immobilisations').get(lot.ecrits[0].id);
+          S.collection('immobilisations').update(bien.id, { dateCession: '2026-10-30' });
+          im.annulationBienCede = refusDe(annuler(lot));
+          S.collection('immobilisations').update(bien.id, { dateCession: null });
+          const ok = annuler(lot);
+          im.annulation = { ok: ok.ok, archives: ok.archives === undefined ? null : ok.archives };
+        }
+        /* Budgets : un exercice clos depuis l'import fait refuser l'annulation ; la garde du magasin refuse l'écriture sur un exercice clos. */
+        {
+          const bu = out.compta.budgets = {};
+          const lot = poser('budgets', 'bu-valide');
+          bu.pose = { etat: lot.etat, nbLignes: lot.nbLignes, fiches: mask(fiches(lot), lot.reference) };
+          S.collection('exercices').all().unshift({ id: 'EXO-2027', annee: 2027, debut: '2027-01-01', fin: '2027-12-31', statut: 'actif', etat: 'clos', source: 'journal', valideLe: '2027-12-31' });
+          bu.annulationExerciceClos = refusDe(annuler(lot));
+          S.collection('exercices').all().shift();
+          const avant = S.collection('budgets').all().length;
+          /* Le motif de la garde s'affiche au toast « Écriture refusée » : on le capte là. */
+          const ui = SIGH.ui || (SIGH.ui = {}), toast0 = ui.toast, vus = [];
+          ui.toast = (m, o) => { vus.push({ message: m, detail: o && o.detail }); };
+          let r;
+          try { r = S.collection('budgets').insert({ reference: 'BG-2025-900', exercice: 2025, centreCout: 'laboratoire', centre: 'Laboratoire', nature: 'Investissements', prevu: 1 }); } finally { ui.toast = toast0; }
+          bu.garde = { insertRendu: r ? 'fiche' : 'refus', budgetsAjoutes: S.collection('budgets').all().length - avant, toast: vus };
+          bu.gardeOuvert = (function () { const a = S.collection('budgets').insert({ reference: 'BG-2026-900', exercice: 2026, centreCout: 'laboratoire', centre: 'Laboratoire', nature: 'Investissements', prevu: 1 }); return a ? 'fiche' : 'refus'; })();
+          const ok = annuler(lot);
+          bu.annulation = { ok: ok.ok, archives: ok.archives === undefined ? null : ok.archives };
+        }
+        /* Courriers : ajout seul ; un courrier déjà tenu est IGNORÉ et compté ; un courrier traité ne s'annule plus avec son lot. */
+        {
+          const co = out.compta.courriers = {};
+          const a2 = enRole('admin', 'ADMIN TEST', () => I.analyserOctets('courriers', octetsDe('co-deja-tenu'), 'co-deja-tenu.xlsx'));
+          const l2 = poser('courriers', 'co-deja-tenu');
+          co.dejaTenu = { compte: a2.compte, etat: l2.etat, nbLignes: l2.nbLignes, nbIgnores: l2.nbIgnores, ecrits: l2.ecrits.length, fiches: mask(fiches(l2), l2.reference) };
+          const lot = poser('courriers', 'co-suite');
+          co.pose = { etat: lot.etat, nbLignes: lot.nbLignes, fiches: mask(fiches(lot), lot.reference) };
+          const c0 = S.collection('courriers').get(lot.ecrits[0].id);
+          S.collection('courriers').update(c0.id, { traitement: 'traite' });
+          co.annulationTraite = refusDe(annuler(lot));
+          S.collection('courriers').update(c0.id, { traitement: 'en_attente' });
+          const ok = annuler(lot), ok2 = annuler(l2);
+          co.annulation = { ok: ok.ok, archives: ok.archives === undefined ? null : ok.archives, deuxieme: { ok: ok2.ok, archives: ok2.archives === undefined ? null : ok2.archives } };
+        }
+      }
       {
         /* 1. Analyse sans le droit d'importer : refusée en nommant, rien n'est consigné. */
         const avant = nbLots();
@@ -676,7 +784,8 @@ const CAS = [
         secteursActes: Array.from(new Set(D.ACTES.map((a) => a.secteur).filter(Boolean))),
         /* Lot IMP-C : les listes de saisie des cinq référentiels portés, lues des colonnes des jeux (aucune recopiée à la main). */
         secteursActivite: D.SECTEURS_ACTIVITE, specialitesPrestataire: D.SPECIALITES_PRESTATAIRE, domainesUnitesLabo: D.DOMAINES_UNITES_LABO,
-        motifsCouverture: D.MOTIFS_COUVERTURE,
+        motifsCouverture: D.MOTIFS_COUVERTURE, categoriesImmobilisation: D.CATEGORIES_IMMOBILISATION, naturesBudget: D.NATURES_BUDGET,
+        courriers: { natures: D.COURRIERS.NATURES, services: D.COURRIERS.SERVICES, sens: D.COURRIERS.SENS.map((x) => [x.value, x.label]) },
         destinationsTransfert: SIGH.parcours.DESTINATIONS_TRANSFERT, typesInventaire: I.jeu('inventaire-comptage').colonnes.find((c) => c.cle === 'type').liste, magasinsInventaire: I.jeu('inventaire-comptage').colonnes.find((c) => c.cle === 'magasin').liste,
         zonesEmplacement: I.jeu('emplacements').colonnes.find((c) => c.cle === 'zone').liste, temperaturesEmplacement: I.jeu('emplacements').colonnes.find((c) => c.cle === 'temperature').liste,
       };
@@ -716,6 +825,12 @@ const CAS = [
       + 'const importTemperaturesEmplacement = <String>[' + R.temperaturesEmplacement.map(q).join(', ') + '];\n\n'
       + '/// Motifs d\'un changement de couverture (`D.MOTIFS_COUVERTURE`).\n'
       + 'const importMotifsCouverture = <String>[' + R.motifsCouverture.map(q).join(', ') + '];\n\n'
+      + '/// Catégories d\'immobilisation, natures budgétaires, courriers (`D.CATEGORIES_IMMOBILISATION`, `D.NATURES_BUDGET`, `D.COURRIERS`).\n'
+      + 'const importCategoriesImmobilisation = <String>[' + R.categoriesImmobilisation.map(q).join(', ') + '];\n'
+      + 'const importNaturesBudget = <String>[' + R.naturesBudget.map(q).join(', ') + '];\n'
+      + 'const importNaturesCourrier = <String>[' + R.courriers.natures.map(q).join(', ') + '];\n'
+      + 'const importServicesCourrier = <String>[' + R.courriers.services.map(q).join(', ') + '];\n'
+      + 'const importSensCourrier = <List<String>>[' + R.courriers.sens.map((c) => '[' + q(c[0]) + ', ' + q(c[1]) + ']').join(', ') + '];\n\n'
       + '/// Services destinataires d\'un bon de transfert (`PR.DESTINATIONS_TRANSFERT`).\n'
       + 'const importDestinationsTransfert = <String>[' + R.destinationsTransfert.map(q).join(', ') + '];\n\n'
       + '/// Types d\'un inventaire et magasins nommés (colonnes du jeu `inventaire-comptage`) : [valeur, libellé].\n'

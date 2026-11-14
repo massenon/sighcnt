@@ -1,0 +1,56 @@
+{
+ "id": "imp-courriers",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation des courriers",
+ "acces": "ouvert",
+ "titre": "Importation des courriers",
+ "description": "Registre du courrier : sens, date, correspondant, objet, nature, service destinataire.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation des courriers"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "Le registre est en AJOUT SEUL : un numéro d’ordre n’est jamais réécrit. La colonne N° d’ordre est facultative (vide : numéro attribué à la suite du registre) ; renseignée, elle doit suivre la série (ARR ou DEP selon le sens, année de la date). Le traitement, l’accusé de réception et la numérisation ne s’importent jamais : le courrier naît « en attente ». Un courrier déjà tenu est IGNORÉ, compté et listé.",
+  "Jeu restreint (RG-13). Le fichier est lu et contrôlé ici, mais aucune valeur de cellule n’est recopiée dans l’historique ni dans le rapport : chaque constat porte la ligne, la colonne, le code et le geste de correction. Les lots ne sont visibles que de leur auteur et des profils qui supervisent les importations.",
+  "Fiches déjà tenues : ignorées. Une ligne dont la fiche existe déjà n’écrit rien et ne modifie rien ; elle est comptée et nommée au rapport. Un fichier peut donc être rejoué sans refus (mode arrêté par la Direction pour ce jeu seulement)."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

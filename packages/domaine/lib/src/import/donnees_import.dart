@@ -52,6 +52,13 @@ const importTemperaturesEmplacement = <String>['Ambiante', '2 à 8 °C', '− 20
 /// Motifs d'un changement de couverture (`D.MOTIFS_COUVERTURE`).
 const importMotifsCouverture = <String>['Changement d’employeur', 'Changement de compagnie par l’assuré', 'Convention non reconduite', 'Renouvellement de carte', 'Changement de police', 'Fin de couverture — patient redevenu non assuré', 'Correction d’une saisie erronée'];
 
+/// Catégories d'immobilisation, natures budgétaires, courriers (`D.CATEGORIES_IMMOBILISATION`, `D.NATURES_BUDGET`, `D.COURRIERS`).
+const importCategoriesImmobilisation = <String>['Matériel médical', 'Matériel de laboratoire', 'Matériel technique', 'Matériel de transport', 'Mobilier médical', 'Matériel informatique', 'Installations'];
+const importNaturesBudget = <String>['Charges de fonctionnement', 'Investissements', 'Charges de personnel', 'Achats de marchandises'];
+const importNaturesCourrier = <String>['Lettre', 'Courriel', 'Note', 'Facture', 'Convocation', 'Rapport'];
+const importServicesCourrier = <String>['Direction Médicale', 'Direction Administrative', 'Comptabilité', 'Ressources humaines', 'Gestion des stocks', 'Laboratoire', 'Pharmacie'];
+const importSensCourrier = <List<String>>[['arrivee', 'Arrivée'], ['depart', 'Départ']];
+
 /// Services destinataires d'un bon de transfert (`PR.DESTINATIONS_TRANSFERT`).
 const importDestinationsTransfert = <String>['Pharmacie d’urgence', 'Pharmacie externe', 'Laboratoire', 'Hospitalisation', 'Maternité', 'Bloc opératoire', 'Salle de soins'];
 
