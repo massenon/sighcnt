@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'donnees/fichiers_poste.dart';
 import 'donnees/ocr_poste.dart';
+import 'donnees/horssite_poste.dart';
 import 'donnees/sauvegarde_fichiers_poste.dart';
 import 'donnees/organigramme_poste.dart';
 import 'sync/service_demandes_import.dart';
@@ -192,6 +193,13 @@ Future<void> main() async {
   SauvegardeFichiersPoste(magasin, fichiersPoste, fichierReglage: '$dossierDonnees/sauvegarde-fichiers.json', dossierDonnees: dossierDonnees, cle: cle)
     ..installer()
     ..demarrer();
+  // Lot 5 (ADR-0007) : la copie chiffrée hors site (relais web ou dossier distant). Le réglage est un paramètre de clinique en base (désactivée par défaut) ; l'état et les gestes passent par le
+  // service de la mère de cette machine (un fileul n'en a pas : il lit le réglage, sans commande).
+  HorsSitePoste(magasin,
+      estFileul: () => params.rejoint && params.mode != ModePoste.mere,
+      estMere: () => controleur.config.mode == ModePoste.mere,
+      source: SourceHorsSiteHttp(base: Uri.parse('http://127.0.0.1:9000'), admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin))
+    .installer();
   final navigation = await DonneesNavigation.chargerAssets();
   SessionPoste? session;
   ServiceFichiers? serviceFichiers;

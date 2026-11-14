@@ -10,6 +10,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
+import '../../kit/horssite_ui.dart';
 import '../../kit/sauvegarde_fichiers_ui.dart';
 import '../../shell/contexte_ecran.dart';
 import 'commun_m14.dart';
@@ -404,6 +405,9 @@ class _VueSauvegardesState extends State<_VueSauvegardes> {
       const SizedBox(height: 16),
       // Lot D5 : les fichiers numérisés ne sont pas dans le magasin, leur sauvegarde est à part (destination réglée, copie incrémentale vérifiée, jamais tournante).
       CarteSauvegardeFichiers(role: c.role),
+      const SizedBox(height: 16),
+      // Lot 5 (ADR-0007) : la copie chiffrée hors site (relais web ou dossier distant) du magasin et des fichiers ; réglage de la clinique, désactivée par défaut.
+      CarteHorsSite(role: c.role),
       const SizedBox(height: 16),
       TableauSigh(
         titre: 'Historique des sauvegardes',
