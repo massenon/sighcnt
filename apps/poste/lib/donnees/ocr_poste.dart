@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:sigh_sync/sigh_sync.dart' show ErreurFichier, StockageFichiers;
 
+import '../core/service_parametres.dart';
 import 'fichiers_poste.dart';
 import 'magasin.dart';
 
@@ -17,7 +18,11 @@ import 'magasin.dart';
 ///  - la FILE est une collection LOCALE au poste (`fileOcr`, une ligne par empreinte, jamais synchronisée : un traitement en cours sur un poste n'est pas l'affaire d'un autre) ;
 ///  - les LECTURES (`lecturesOcr`) sont des MÉTADONNÉES du fichier : une fiche par version, identifiant déterministe, IMMUABLE (garde du magasin), synchronisée par le journal avec le registre
 ///    `fichiers` (famille B : ajout seul, deux postes qui lisent le même scan avec le même moteur ne font qu'une version), JAMAIS vers un téléphone ;
-///  - le RÉGLAGE (`reglages`, fiche `ocr`) est propre à ce poste : le moteur s'installe sur un poste, pas sur la clinique.
+///  - le RÉGLAGE est celui de la CLINIQUE (lot C) : activation, moteur choisi, langue et délai sont des paramètres `ocr.*` posés à la poste MÈRE (collection `parametres`, famille R, une
+///    version par date), reçus des fileuls par le journal, JAMAIS vers un téléphone ; un fileul les lit (cache en lecture seule) et le dit s'ils ne sont pas encore reçus. Chaque poste ne
+///    garde en propre que ce qu'il a d'INSTALLÉ : les moteurs que ce poste porte (`enregistrer`) ;
+///  - la CORRECTION SIGNÉE du texte lu (lot C) s'AJOUTE comme une version de `lecturesOcr` (`texteSource: 'correction'`), par un agent qui écrit sur l'écran de la pièce, lit la zone du scan ET
+///    détient le geste réservé `corriger_texte_ocr` ; la lecture machine reste intacte, une relance ne détruit jamais une correction signée.
 
 /// La file de lecture, collection LOCALE au poste.
 const String ocrFile = 'fileOcr';
@@ -26,7 +31,7 @@ const String ocrFile = 'fileOcr';
 const String ocrLectures = 'lecturesOcr';
 
 class ResultatFileOcr {
-  const ResultatFileOcr.ok({this.fait = false, this.sha, this.version, this.nouvelle = false, this.deja = false, this.ecarte})
+  const ResultatFileOcr.ok({this.fait = false, this.sha, this.version, this.nouvelle = false, this.deja = false, this.ecarte, this.conflit = false})
       : refus = null,
         ok = true;
   const ResultatFileOcr.refus(RefusFichier this.refus)
@@ -36,7 +41,8 @@ class ResultatFileOcr {
         version = null,
         nouvelle = false,
         deja = false,
-        ecarte = null;
+        ecarte = null,
+        conflit = false;
   final bool ok;
   final RefusFichier? refus;
 
@@ -51,15 +57,25 @@ class ResultatFileOcr {
 
   /// Le code du refus qui a fait écarter ce fichier pour ce profil (droit, zone) : un autre profil le traitera.
   final String? ecarte;
+
+  /// Une correction a été ajoutée à côté d'une autre correction concurrente (deux postes) : à départager.
+  final bool conflit;
 }
 
 class OcrPoste extends ChangeNotifier {
-  OcrPoste(this.fp, {required this.roleCourant, required this.droitDe, RendeurPages? rendeur}) : _rendeur = rendeur {
+  OcrPoste(this.fp, {required this.roleCourant, required this.droitDe, bool Function(String role, String geste)? gesteDe, bool Function()? estFileul, RendeurPages? rendeur})
+      : _rendeur = rendeur,
+        gesteDe = gesteDe ?? ((_, __) => false),
+        estFileul = estFileul ?? (() => false) {
     fp.ocr = this;
     magasin.collection(ocrLectures).garder((op, f) {
       final existantes = magasin.collection(ocrLectures).toutes;
       if (op == 'modifier') return 'Une lecture OCR est IMMUABLE : une relance AJOUTE une version datée, elle ne réécrit pas l’ancienne.';
       if (op == 'archiver') return 'Une lecture OCR ne s’archive pas : elle reste lisible (RG-14), une nouvelle lecture devient la version courante.';
+      if (op == 'inserer') {
+        final nonSignee = ocrMotifCorrectionNonSignee(f);
+        if (nonSignee != null) return nonSignee;
+      }
       if (op == 'inserer' && existantes.any((x) => x['id'] == f['id'])) return 'La lecture « ${f['id']} » existe déjà : une version ne se réécrit pas.';
       return null;
     });
@@ -72,6 +88,12 @@ class OcrPoste extends ChangeNotifier {
   /// Le rôle de l'agent connecté (`null` : aucune session), et le droit d'un rôle sur un écran (la matrice RBAC, corrections à chaud comprises).
   final String? Function() roleCourant;
   final Droit Function(String role, String ecran) droitDe;
+
+  /// Le droit d'un GESTE réservé pour un rôle (la matrice RBAC, corrections à chaud comprises). Par défaut FERMÉ : un geste réservé ne s'ouvre jamais sans la fiche.
+  final bool Function(String role, String geste) gesteDe;
+
+  /// Ce poste est-il un FILEUL rattaché à une mère ? Il lit le réglage de la clinique et ne le pose pas.
+  final bool Function() estFileul;
   RendeurPages? _rendeur;
   final Map<String, MoteurOcr> _moteurs = {};
   /// Les fichiers que le PROFIL COURANT ne lit pas (droit, zone) : écartés pour lui, pas pour un autre. Changer de session les remet à zéro.
@@ -110,14 +132,31 @@ class OcrPoste extends ChangeNotifier {
   Map<String, MoteurOcr> get moteurs => Map.unmodifiable(_moteurs);
   bool get moteurInstalle => _moteurs.isNotEmpty;
 
-  // --- réglage ---------------------------------------------------------------------------------------------------------------------------------
+  // --- réglage de clinique ----------------------------------------------------------------------------------------------------------------------
 
-  Map<String, Object?>? get _reglage {
-    final v = magasin.collection('reglages').parId('ocr')?['valeur'];
-    return v is Map ? v.cast<String, Object?>() : null;
+  ServiceParametres get _parametres => serviceParametres(magasin, auteur: () => magasin.utilisateur, horloge: () => magasin.horloge());
+  String get _aujourdhui => parametreDateIso(magasin.horloge());
+
+  /// Le réglage de clinique est-il REÇU ? La fiche d'activation de la mère (même son semis) est arrivée : sinon on ne lit pas un défaut qui peut différer de ce que la mère a posé.
+  bool get reglageRecu => _parametres.versions(ocrCleActif).isNotEmpty;
+
+  /// Le réglage de clinique, lu de la base (jamais du code). Non reçu : les valeurs du défaut, `regle` faux, et l'état des pièces le DIT (jamais « désactivé » en silence).
+  ReglageOcr get reglage {
+    if (!reglageRecu) return const ReglageOcr();
+    final p = _parametres, d = _aujourdhui;
+    final moteur = '${p.valeur(ocrCleMoteur, d) ?? ''}';
+    final delai = p.valeur(ocrCleDelai, d);
+    final dernier = [for (final v in p.versions()) if (v.cle.startsWith('ocr.') && v.version > 0) v]..sort((a, b) => '${a.creeLe}'.compareTo('${b.creeLe}'));
+    return ReglageOcr(
+        actif: p.valeur(ocrCleActif, d) == true,
+        moteur: moteur.isEmpty ? null : moteur,
+        langue: '${p.valeur(ocrCleLangue, d) ?? ocrLangueDefaut}',
+        delaiMs: delai is num && delai > 0 ? delai.toInt() : ocrDelaiDefautMs,
+        regleLe: dernier.isEmpty ? null : dernier.last.creeLe,
+        reglePar: dernier.isEmpty ? null : dernier.last.auteur,
+        regle: dernier.isNotEmpty);
   }
 
-  ReglageOcr get reglage => ocrReglageLire(_reglage);
   MoteurOcr? get moteurActif {
     final id = reglage.moteur;
     return id != null ? _moteurs[id] : null;
@@ -126,10 +165,15 @@ class OcrPoste extends ChangeNotifier {
   bool get pret => ocrPret(actif: reglage.actif, moteurActif: moteurActif != null);
   bool peutRegler(String role) => ocrPeutRegler(role);
 
-  /// Pose le réglage : réservé à l'administrateur et à la DAF, motivé ; activer sans moteur installé est REFUSÉ en le nommant. Écrit en base, journalisé (RG-12). Une activation
-  /// rattrape les scans déjà déposés.
+  /// Pose le réglage de la clinique : réservé à l'administrateur et à la DAF, motivé ; activer sans moteur installé SUR CE POSTE est REFUSÉ en le nommant. N'écrit que ce qui change, comme
+  /// NOUVELLE VERSION datée du jour (jamais une réécriture), journalisé (RG-12). Un FILEUL ne peut pas régler : la collection des paramètres est tenue par la mère, le refus est nommé. Une
+  /// activation rattrape les scans déjà déposés.
   ResultatFileOcr definirReglage({required String role, required bool actif, required String? moteur, required String langue, required String? motif, int? delaiMs}) {
     final avant = reglage;
+    if (estFileul()) {
+      return ResultatFileOcr.refus(ocrRefus('FILEUL_LECTURE_SEULE', 'la lecture des scans est un réglage de la clinique, posé à la poste mère : ce poste le reçoit par le journal',
+          'Régler la lecture des scans sur le poste mère : ce poste reçoit ce réglage par le journal.'));
+    }
     final r = ocrDefinirReglage(
         role: role,
         actif: actif,
@@ -142,16 +186,24 @@ class OcrPoste extends ChangeNotifier {
         regleLe: magasin.horloge().toUtc().toIso8601String(),
         reglePar: magasin.utilisateur);
     if (!r.ok) return ResultatFileOcr.refus(r.refus!);
-    final col = magasin.collection('reglages');
-    final valeur = r.reglage!.toJson();
-    if (col.parId('ocr') == null) {
-      col.inserer({'id': 'ocr', 'valeur': valeur});
-    } else {
-      col.mettreAJour('ocr', {'valeur': valeur}, journaliser: false);
-    }
+    final p = _parametres;
+    final voulu = <String, Object?>{ocrCleActif: actif, ocrCleMoteur: moteur ?? '', ocrCleLangue: r.reglage!.langue, ocrCleDelai: r.reglage!.delaiMs};
     final m = (motif ?? '').trim();
-    magasin.journaliser('Réglage de la lecture OCR des scans', 'M14', 'reglage', 'ocr', {'actif': avant.actif, 'moteur': avant.moteur, 'langue': avant.langue},
-        {'actif': actif, 'moteur': moteur, 'langue': r.reglage!.langue, 'motif': m.length > 40 ? m.substring(0, 40) : m});
+    try {
+      // Un poste qui n'a pas encore le semis (poste autonome, jamais rattaché) le sème : version 0 identique partout. Un fileul ne le peut pas : la garde le refuse.
+      if (!reglageRecu) p.semerDefauts();
+      final dejaLa = reglage;
+      final courant = <String, Object?>{ocrCleActif: dejaLa.actif, ocrCleMoteur: dejaLa.moteur ?? '', ocrCleLangue: dejaLa.langue, ocrCleDelai: dejaLa.delaiMs};
+      for (final e in voulu.entries) {
+        if (courant[e.key] == e.value) continue;
+        final w = p.regler(e.key, e.value, _aujourdhui, motif: m);
+        if (!w.ok) return ResultatFileOcr.refus(ocrRefus('REGLAGE_REFUSE', '${w.refus!.code} : ${w.refus!.motif}', w.refus!.geste));
+      }
+    } on EcritureRefusee catch (e) {
+      return ResultatFileOcr.refus(ocrRefus('FILEUL_LECTURE_SEULE', e.motif, 'Régler la lecture des scans sur le poste mère : ce poste reçoit ce réglage par le journal.'));
+    }
+    magasin.journaliser('Réglage de la lecture OCR des scans', 'M14', 'reglage', 'ocr', {'actif': avant.actif, 'moteur': avant.moteur, 'langue': avant.langue, 'delaiMs': avant.delaiMs},
+        {'actif': actif, 'moteur': moteur, 'langue': r.reglage!.langue, 'delaiMs': r.reglage!.delaiMs, 'motif': m.length > 40 ? m.substring(0, 40) : m});
     if (actif) {
       balayer();
       demarrer();
@@ -183,8 +235,66 @@ class OcrPoste extends ChangeNotifier {
     final sha = '${fichier['sha256']}';
     final r = reglage;
     return ocrEtatIndexation(
-        natif: _natif(sha, fichier), versions: versionsDe(sha), file: _entreeFile(sha), moteurInstalle: moteurInstalle, actif: r.actif, moteurActif: moteurActif != null);
+        natif: _natif(sha, fichier),
+        versions: versionsDe(sha),
+        file: _entreeFile(sha),
+        moteurInstalle: moteurInstalle,
+        actif: r.actif,
+        moteurActif: moteurActif != null,
+        reglageRecu: reglageRecu);
   }
+
+  // --- correction signée ----------------------------------------------------------------------------------------------------------------------------
+
+  bool _zoneLue(String famille, String? type, String role) => famille != 'patient' || docPeutVoir(type, role).autorise;
+
+  /// La commande « Corriger le texte lu » est-elle OFFERTE ? ABSENTE sinon, jamais grisée : écrire sur l'écran de la pièce, lire la zone du scan, détenir le geste réservé, pas de couche texte.
+  bool correctionPossible(Map<String, Object?> fichier, {required bool peutDeposer, required String famille, String? type}) {
+    final role = roleCourant();
+    if (role == null) return false;
+    return ocrCorrectionPossible(
+        peutDeposer: peutDeposer,
+        zoneLue: _zoneLue(famille, type, role),
+        gesteAccorde: gesteDe(role, ocrGesteCorriger),
+        etat: etatDe(fichier).etat,
+        versions: versionsDe('${fichier['sha256']}'));
+  }
+
+  /// Corrige le texte lu d'un scan : AJOUTE une version signée (jamais une réécriture), journalisée sans le texte. Le moteur refuse aussi : masquer la commande ne protège rien.
+  /// [corrigeDe] : la version dont le texte sert de départ (par défaut la courante).
+  ResultatFileOcr corriger(Map<String, Object?> fichier, String texte, {required bool peutDeposer, required String famille, String? type, String? corrigeDe}) {
+    final role = roleCourant();
+    final sha = '${fichier['sha256']}';
+    if (fichier['sha256'] == null) return ResultatFileOcr.refus(ocrRefus(CodeOcr.sansPiece, 'cette fiche ne porte aucun fichier', 'Déposer d’abord le scan.'));
+    final vs = versionsDe(sha);
+    final c = ocrCorriger(
+        sha: sha,
+        texte: texte,
+        natif: _natif(sha, fichier),
+        versions: vs,
+        corrigeDe: corrigeDe,
+        par: magasin.utilisateur,
+        le: magasin.horloge().toUtc().toIso8601String(),
+        peutDeposer: peutDeposer && role != null,
+        zoneLue: role != null && _zoneLue(famille, type, role),
+        gesteAccorde: role != null && gesteDe(role, ocrGesteCorriger));
+    if (c.refus != null) return ResultatFileOcr.refus(c.refus!);
+    if (c.deja) return ResultatFileOcr.ok(deja: true, nouvelle: false, version: null, conflit: c.conflit);
+    final f = c.fiche!;
+    final avant = vs.where((x) => x['id'] == f['corrigeDe']).firstOrNull;
+    try {
+      _lectures.inserer(f, prefixe: 'OCC');
+    } on EcritureRefusee catch (e) {
+      return ResultatFileOcr.refus(ocrRefus('CORRECTION_REFUSEE', e.motif, 'Vérifier la signature et le texte, puis recommencer.'));
+    }
+    magasin.journaliser('Correction signée du texte lu d’un scan', 'M13', 'lecture OCR', '${f['id']}', {'version': f['corrigeDe'], 'mots': avant?['nbMots'] ?? 0},
+        {'version': f['id'], 'mots': f['nbMots'], 'remplace': (f['remplace'] as List).length});
+    notifyListeners();
+    return ResultatFileOcr.ok(version: '${f['id']}', nouvelle: true, conflit: ocrConflit(versionsDe(sha)).length > 1);
+  }
+
+  /// Les corrections concurrentes (deux postes ont corrigé la même version) : vide, ou les têtes à départager.
+  List<FicheDoc> conflitDe(String sha) => ocrConflit(versionsDe(sha));
 
   /// Le texte (mots normalisés) que la recherche lit : la couche native PRIME, sinon la lecture courante, seulement si [role] lit la zone du document.
   String texteOcr(String sha, {required String famille, String? type, required String role}) {

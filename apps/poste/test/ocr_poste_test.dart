@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
+import 'package:sigh_poste/core/service_parametres.dart';
 import 'package:sigh_poste/donnees/fichiers_poste.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/donnees/ocr_poste.dart';
@@ -23,7 +24,7 @@ Droit droit(String role, String ecran) => donnees.matrice.droit(role, ecran);
 const texteLu = 'Hyperglycémie sévère : père déjà traité à Natitingou, œuf de ç';
 
 class Banc {
-  Banc(this.tmp) {
+  Banc(this.tmp, {bool semer = true, this.fileul = false}) {
     magasin = Magasin({
       'courriers': [
         for (var i = 1; i <= 8; i++) {'id': 'C$i', 'statut': 'actif', 'reference': 'ARR-2026-004$i', 'sens': 'arrivee', 'date': '2026-08-20', 'correspondant': 'Préfecture', 'objet': 'Objet $i'},
@@ -36,18 +37,21 @@ class Banc {
     }, 'POSTE')
       ..utilisateur = 'Agent Test';
     magasin.horloge = () => DateTime.utc(2026, 10, 30, 10);
+    // LA MÈRE a semé le défaut de chaque paramètre (version 0) : ce poste, ici, est cette mère (ou un fileul qui l'a reçu).
+    if (semer) serviceParametres(magasin, auteur: () => 'semis', horloge: () => magasin.horloge()).semerDefauts();
     stockage = StockageFichiers('${tmp.path}/fichiers');
     fp = FichiersPoste(magasin, stockage)..installer();
     ocr = nouveauService();
   }
   final Directory tmp;
+  final bool fileul;
   late final Magasin magasin;
   late final StockageFichiers stockage;
   late final FichiersPoste fp;
   late OcrPoste ocr;
   String role = 'admin';
 
-  OcrPoste nouveauService() => OcrPoste(fp, roleCourant: () => role, droitDe: droit)
+  OcrPoste nouveauService() => OcrPoste(fp, roleCourant: () => role, droitDe: droit, gesteDe: (r, g) => donnees.matrice.droitGeste(r, g), estFileul: () => fileul)
     ..automatique = false
     ..installer();
 
@@ -447,6 +451,263 @@ void main() {
       expect(() => b.magasin.collection(ocrLectures).mettreAJour(id, {'texteBrut': 'réécrit'}), throwsA(isA<EcritureRefusee>()));
       expect(() => b.magasin.collection(ocrLectures).archiver(id), throwsA(isA<EcritureRefusee>()));
       expect(b.magasin.collection(ocrLectures).parId(id)!['texteBrut'], texteLu);
+    });
+  });
+
+  group('correction signée du texte lu (lot C)', () {
+    const corrige = 'Hyperglycémie sévère : père déjà traité à Natitingou, zebracorrige confirmé';
+    Future<String> lu(Banc b, {String courrier = 'C1', String texte = texteLu}) async {
+      b.activer(MoteurOcrFactice(texteParDefaut: texte));
+      await b.courrier(courrier, variante('scan.png', 1), 'scan.png');
+      await b.ocr.vider();
+      return b.sha('courriers', courrier);
+    }
+
+    test('AJOUTE une version signée (jamais une réécriture) : la lecture machine reste intacte, le texte corrigé est le texte courant, la recherche le lit, le journal ne porte pas le texte', () async {
+      final sha = await lu(b);
+      final machine = {...b.ocr.versionsDe(sha).single};
+      final x = b.fichier('courriers', 'C1');
+      expect(b.ocr.correctionPossible(x, peutDeposer: true, famille: 'courrier'), isTrue);
+      b.magasin.horloge = () => DateTime.utc(2026, 10, 31, 9);
+      final r = b.ocr.corriger(x, corrige, peutDeposer: true, famille: 'courrier');
+      expect(r.ok, isTrue, reason: '${r.refus}');
+      expect(r.nouvelle, isTrue);
+      final vs = b.ocr.versionsDe(sha);
+      expect(vs, hasLength(2));
+      expect(vs.firstWhere((v) => v['id'] == machine['id']), machine, reason: 'la lecture machine est intacte, au champ près');
+      final c = vs.firstWhere((v) => v['texteSource'] == 'correction');
+      expect(c['id'], startsWith('OCC-'));
+      expect(c['texteBrut'], corrige);
+      expect(c['corrigePar'], 'Agent Test');
+      expect(c['corrigeLe'], '2026-10-31T09:00:00.000Z');
+      expect(c['corrigeDe'], machine['id']);
+      expect(c['remplace'], isEmpty);
+      final e = b.ocr.etatDe(x);
+      expect(e.etat, EtatIndexation.ocrCorrige);
+      expect(e.court, 'texte corrigé et signé par Agent Test');
+      expect(e.source, 'correction');
+      expect(e.marque, isFalse, reason: 'ce texte est signé : il n’est plus « lu par machine, à vérifier »');
+      expect(b.ocr.versionCourante(sha)!['id'], c['id']);
+      expect(fichierCorrespond(b.fp.texteDe(sha), 'zebracorrige'), isTrue);
+      final j = b.audit('Correction signée du texte lu d’un scan').single;
+      expect('${j['avant']}${j['apres']}', isNot(contains('zebracorrige')), reason: 'le texte médical n’est pas dans le journal : la trace entière est la version immuable');
+      expect('${j['avant']}${j['apres']}', isNot(contains('Hyperglyc')));
+      expect(j['utilisateur'], 'Agent Test');
+      expect('${j['apres']}', contains('${c['id']}'));
+    });
+
+    test('une relance de la lecture machine AJOUTE une version et ne détruit JAMAIS la correction signée ; l’agent décide en signant une nouvelle correction (qui remplace la première)', () async {
+      final sha = await lu(b);
+      final x = b.fichier('courriers', 'C1');
+      b.magasin.horloge = () => DateTime.utc(2026, 10, 31, 9);
+      final c1 = b.ocr.corriger(x, corrige, peutDeposer: true, famille: 'courrier');
+      b.ocr.enregistrer(MoteurOcrFactice(texteParDefaut: 'Seconde lecture : paludisme grave à Tanguiéta'));
+      b.magasin.horloge = () => DateTime.utc(2026, 11, 1, 9);
+      expect(b.ocr.relancer(x, peutDeposer: true, famille: 'courrier').ok, isTrue);
+      expect(await b.ocr.vider(), 1);
+      final vs = b.ocr.versionsDe(sha);
+      expect(vs, hasLength(3));
+      expect(vs.where((v) => v['texteSource'] == 'ocr'), hasLength(2));
+      expect(b.ocr.versionCourante(sha)!['id'], c1.version, reason: 'la correction signée reste le texte courant malgré une lecture machine plus récente');
+      expect(b.ocr.etatDe(x).etat, EtatIndexation.ocrCorrige);
+      expect(fichierCorrespond(b.fp.texteDe(sha), 'zebracorrige'), isTrue);
+      expect(fichierCorrespond(b.fp.texteDe(sha), 'paludisme'), isFalse);
+      // une relance en cours le dit : la correction reste le texte courant, non marqué
+      b.ocr.relancer(x, peutDeposer: true, famille: 'courrier');
+      final enAttente = b.ocr.etatDe(x);
+      expect(enAttente.etat, EtatIndexation.ocrEnAttente);
+      expect(enAttente.libelle, contains('la correction signée reste le texte courant'));
+      expect(enAttente.marque, isFalse);
+      // l'agent décide autrement : il signe une nouvelle correction partie de la nouvelle lecture machine
+      final machine2 = vs.lastWhere((v) => v['texteSource'] == 'ocr');
+      b.magasin.horloge = () => DateTime.utc(2026, 11, 2, 9);
+      final c2 = b.ocr.corriger(x, 'Seconde lecture : paludisme grave à Tanguiéta, relue', peutDeposer: true, famille: 'courrier', corrigeDe: '${machine2['id']}');
+      expect(c2.ok, isTrue, reason: '${c2.refus}');
+      final v2 = b.ocr.versionsDe(sha).firstWhere((v) => v['id'] == c2.version);
+      expect(v2['remplace'], [c1.version]);
+      expect(v2['corrigeDe'], machine2['id']);
+      expect(b.ocr.versionCourante(sha)!['id'], c2.version);
+      expect(b.ocr.conflitDe(sha), isEmpty);
+      expect(b.ocr.versionsDe(sha), hasLength(4), reason: 'aucune version perdue');
+    });
+
+    test('les refus se NOMMENT (code, motif, geste) et n’écrivent rien : vide, identique, sans lecture, base inconnue, couche texte native, sans le droit d’écrire, sans le geste réservé', () async {
+      final sha = await lu(b);
+      final x = b.fichier('courriers', 'C1');
+      void nomme(ResultatFileOcr r, String code) {
+        expect(r.ok, isFalse);
+        expect(r.refus!.code, code);
+        expect(r.refus!.motif, isNotEmpty);
+        expect(r.refus!.geste, isNotEmpty);
+      }
+      nomme(b.ocr.corriger(x, '  \n ', peutDeposer: true, famille: 'courrier'), CodeOcr.correctionTexteVide);
+      nomme(b.ocr.corriger(x, '$texteLu  ', peutDeposer: true, famille: 'courrier'), CodeOcr.correctionIdentique);
+      nomme(b.ocr.corriger({'sha256': 'f' * 64}, 'Un texte', peutDeposer: true, famille: 'courrier'), CodeOcr.correctionSansBase);
+      nomme(b.ocr.corriger(x, 'Un autre texte', peutDeposer: true, famille: 'courrier', corrigeDe: 'OCR-inconnu'), CodeOcr.correctionSansBase);
+      nomme(b.ocr.corriger({...x, 'texteIndexe': true}, 'Un texte', peutDeposer: true, famille: 'courrier'), CodeOcr.texteNatif);
+      nomme(b.ocr.corriger(x, 'Un texte', peutDeposer: false, famille: 'courrier'), CodeOcr.correctionReservee);
+      b.role = 'comptable';
+      expect(b.ocr.correctionPossible(x, peutDeposer: true, famille: 'courrier'), isFalse, reason: 'le comptable n’a pas le geste réservé : commande ABSENTE');
+      nomme(b.ocr.corriger(x, 'Un texte', peutDeposer: true, famille: 'courrier'), CodeOcr.correctionReservee);
+      expect(b.ocr.corriger(x, 'Un texte', peutDeposer: true, famille: 'courrier').refus!.motif, contains('Corriger le texte lu par machine'));
+      b.role = 'admin';
+      expect(b.ocr.versionsDe(sha), hasLength(1), reason: 'aucun refus n’a écrit de version');
+    });
+
+    test('idempotence : le même texte sur la même version est la MÊME version (rejeu, second poste) ; le magasin refuse une correction non signée et ne laisse ni réécrire ni archiver', () async {
+      final sha = await lu(b);
+      final x = b.fichier('courriers', 'C1');
+      final r1 = b.ocr.corriger(x, corrige, peutDeposer: true, famille: 'courrier');
+      final r2 = b.ocr.corriger(x, '$corrige  ', peutDeposer: true, famille: 'courrier', corrigeDe: '${b.ocr.versionsDe(sha).firstWhere((v) => v['texteSource'] == 'ocr')['id']}');
+      expect(r1.nouvelle, isTrue);
+      expect(r2.ok, isTrue);
+      expect(r2.deja, isTrue, reason: 'le même texte (blancs de bord près) sur la même version ne fait pas une seconde version');
+      expect(b.ocr.versionsDe(sha), hasLength(2));
+      final col = b.magasin.collection(ocrLectures);
+      expect(() => col.inserer({'id': 'OCC-${sha.substring(0, 16)}-aaaaaaaaaaaa', 'sha256': sha, 'texteBrut': 'x', 'texte': 'x', 'nbMots': 1, 'texteSource': 'correction', 'corrigeDe': 'O', 'remplace': <String>[]}),
+          throwsA(isA<EcritureRefusee>()), reason: 'sans signataire ni date : refusée par le magasin');
+      expect(() => col.inserer({'id': r1.version, 'sha256': sha, 'texteBrut': 'x', 'texte': 'x', 'nbMots': 1, 'texteSource': 'correction', 'corrigeDe': 'O', 'corrigePar': 'x', 'corrigeLe': '2026-11-01T00:00:00.000Z'}),
+          throwsA(isA<EcritureRefusee>()), reason: 'le rejeu de la même version est refusé : jamais deux fois');
+      expect(() => col.mettreAJour('${r1.version}', {'texteBrut': 'réécrit'}), throwsA(isA<EcritureRefusee>()));
+      expect(() => col.archiver('${r1.version}'), throwsA(isA<EcritureRefusee>()));
+      expect(col.parId('${r1.version}')!['texteBrut'], corrige);
+    });
+
+    test('deux corrections CONCURRENTES de la même version (deux postes) : DEUX versions, le conflit est nommé, rien n’est perdu, le texte courant est la plus récente ; une correction ultérieure remplace les deux', () async {
+      final sha = await lu(b);
+      final x = b.fichier('courriers', 'C1');
+      final avantTout = b.ocr.versionsDe(sha);
+      // La correction du poste B, calculée SUR LA MÊME BASE (il ne connaissait pas la nôtre), arrive par le journal.
+      b.magasin.horloge = () => DateTime.utc(2026, 10, 31, 9);
+      final a = b.ocr.corriger(x, corrige, peutDeposer: true, famille: 'courrier');
+      final dB = ocrCorriger(
+          sha: sha, texte: 'Hyperglycémie sévère : autre poste, zebraautre', natif: false, versions: avantTout, par: 'Agent du poste B', le: '2026-10-31T10:30:00.000Z',
+          peutDeposer: true, zoneLue: true, gesteAccorde: true);
+      expect(dB.fiche!['remplace'], isEmpty);
+      b.magasin.collection(ocrLectures).inserer(dB.fiche!);
+      final vs = b.ocr.versionsDe(sha);
+      expect(vs, hasLength(3));
+      expect(b.ocr.conflitDe(sha), hasLength(2));
+      expect(b.ocr.versionCourante(sha)!['id'], dB.fiche!['id'], reason: 'la plus récente des deux, l’ordre que tous les postes retrouvent');
+      final e = b.ocr.etatDe(x);
+      expect(e.conflit, isTrue);
+      expect(e.libelle, contains('deux corrections concurrentes'));
+      expect(vs.firstWhere((v) => v['id'] == a.version)['texteBrut'], corrige, reason: 'la nôtre reste lisible, intacte');
+      b.magasin.horloge = () => DateTime.utc(2026, 11, 1, 9);
+      final fin = b.ocr.corriger(x, 'Hyperglycémie sévère : départagée, zebradepartage', peutDeposer: true, famille: 'courrier');
+      expect(fin.ok, isTrue);
+      final f = b.ocr.versionsDe(sha).firstWhere((v) => v['id'] == fin.version);
+      expect((f['remplace'] as List).toSet(), {a.version, dB.fiche!['id']});
+      expect(b.ocr.conflitDe(sha), isEmpty);
+      expect(b.ocr.versionsDe(sha), hasLength(4));
+    });
+
+    test('le texte corrigé d’un scan de zone 2 est de zone 2 : lisible du profil clinique, d’aucun mot pour l’accueil ; l’accueil ne peut pas corriger (zone) ; qui n’écrit pas ne peut pas', () async {
+      b.activer(MoteurOcrFactice(texteParDefaut: 'Compte rendu confidentiel'));
+      b.role = 'medecin';
+      expect((await b.doc('D1', variante('scan.png', 9), 'cr.png')).ok, isTrue);
+      await b.ocr.vider();
+      final sha = b.sha('documentsPatient', 'D1');
+      final x = b.fichier('documentsPatient', 'D1');
+      expect(b.ocr.correctionPossible(x, peutDeposer: true, famille: 'patient', type: 'Compte rendu médical'), isTrue);
+      final r = b.ocr.corriger(x, 'Compte rendu zebrazonedeux confidentiel', peutDeposer: true, famille: 'patient', type: 'Compte rendu médical');
+      expect(r.ok, isTrue, reason: '${r.refus}');
+      expect(b.ocr.texteOcr(sha, famille: 'patient', type: 'Compte rendu médical', role: 'medecin'), contains('zebrazonedeux'));
+      expect(b.ocr.texteOcr(sha, famille: 'patient', type: 'Compte rendu médical', role: 'reception'), '', reason: 'ni le mot corrigé ni la lecture machine pour l’accueil');
+      b.role = 'reception';
+      expect(b.ocr.correctionPossible(x, peutDeposer: true, famille: 'patient', type: 'Compte rendu médical'), isFalse);
+      final refus = b.ocr.corriger(x, 'texte forcé', peutDeposer: true, famille: 'patient', type: 'Compte rendu médical');
+      expect(refus.refus!.code, CodeOcr.correctionReservee);
+      expect(refus.refus!.motif, contains('zone'));
+      b.role = 'anesthesiste';
+      expect(b.ocr.corriger(x, 'texte forcé', peutDeposer: false, famille: 'patient', type: 'Compte rendu médical').refus!.code, CodeOcr.correctionReservee);
+      expect(b.ocr.versionsDe(sha), hasLength(2));
+    });
+  });
+
+  group('réglage de clinique (lot C) : posé à la mère, versionné par date, reçu des fileuls, jamais en silence le défaut', () {
+    test('le défaut est SEMÉ (jamais une constante de l’écran) : désactivée, français, 120 s ; les quatre paramètres sont de la famille « ocr », jamais vers un téléphone', () {
+      final p = serviceParametres(b.magasin, auteur: () => 'x', horloge: () => b.magasin.horloge());
+      expect(b.ocr.reglageRecu, isTrue);
+      expect(b.ocr.reglage.actif, isFalse);
+      expect(b.ocr.reglage.moteur, isNull);
+      expect(b.ocr.reglage.langue, 'fra');
+      expect(b.ocr.reglage.delaiMs, 120000);
+      for (final cle in [ocrCleActif, ocrCleMoteur, ocrCleLangue, ocrCleDelai]) {
+        final v = p.versions(cle).single;
+        expect(v.famille, 'ocr');
+        expect(v.mobile, isFalse);
+        expect(v.version, 0);
+        expect(Parametres.autoriseMobile(v.toJson()), isFalse, reason: 'jamais vers un téléphone, même si une définition le demandait');
+      }
+      expect(parFamillesJamaisMobile, contains('ocr'));
+      expect(parFamillesReglageDedie, contains('ocr'));
+    });
+
+    test('régler écrit une NOUVELLE VERSION datée par valeur changée (jamais une réécriture), rien pour une valeur inchangée, journalisé', () {
+      b.ocr.enregistrer(MoteurOcrFactice());
+      final p = serviceParametres(b.magasin, auteur: () => 'x', horloge: () => b.magasin.horloge());
+      expect(b.ocr.definirReglage(role: 'admin', actif: true, moteur: 'factice', langue: 'fra', motif: 'activation', delaiMs: 30000).ok, isTrue);
+      b.ocr.arreter();
+      expect(p.versions(ocrCleActif).map((v) => v.version).toList()..sort(), [0, 1]);
+      expect(p.versions(ocrCleMoteur).map((v) => v.version).toList()..sort(), [0, 1]);
+      expect(p.versions(ocrCleLangue), hasLength(1), reason: 'la langue n’a pas changé : aucune version');
+      expect(p.versions(ocrCleDelai).map((v) => v.version).toList()..sort(), [0, 1]);
+      final v1 = p.versions(ocrCleActif).firstWhere((v) => v.version == 1);
+      expect(v1.valeur, true);
+      expect(v1.dateEffet, '2026-10-30');
+      expect(v1.auteur, 'Agent Test');
+      expect(v1.motif, 'activation');
+      expect(b.ocr.reglage.delaiMs, 30000);
+      // le même réglage : aucune version de plus
+      expect(b.ocr.definirReglage(role: 'admin', actif: true, moteur: 'factice', langue: 'fra', motif: 'idem', delaiMs: 30000).ok, isTrue);
+      expect(p.versions(ocrCleActif), hasLength(2));
+      expect(b.audit('Réglage de la lecture OCR des scans'), hasLength(2));
+      // l'ancienne valeur reste lisible : la version 0 existe toujours
+      expect(p.versions(ocrCleActif).firstWhere((v) => v.version == 0).valeur, false);
+    });
+
+    test('un réglage NON REÇU se dit : l’état d’un scan ne dit pas « désactivée » (le défaut peut différer de ce que la mère a posé) et rien ne part', () async {
+      final tmp2 = Directory.systemTemp.createTempSync('sigh-ocr-nr-');
+      addTearDown(() => tmp2.deleteSync(recursive: true));
+      final f = Banc(tmp2, semer: false, fileul: true);
+      f.ocr.enregistrer(MoteurOcrFactice());
+      expect(f.ocr.reglageRecu, isFalse);
+      await f.courrier('C1', variante('scan.png', 1), 'scan.png');
+      final e = f.ocr.etatDe(f.fichier('courriers', 'C1'));
+      expect(e.etat, EtatIndexation.nonIndexe);
+      expect(e.raison, ocrRaisonReglageNonRecu);
+      expect(e.raison, isNot(contains('désactivée')));
+      expect(f.ocr.pret, isFalse);
+      expect(f.ocr.reglage.regle, isFalse);
+      f.ocr.arreter();
+    });
+
+    test('un FILEUL lit le réglage de la mère (cache local) et ne le pose pas : refus nommé FILEUL_LECTURE_SEULE, rien d’écrit ; son moteur non installé se dit', () async {
+      // La mère règle ; ses fiches de paramètres arrivent au fileul par le journal de configuration (copie fidèle ici).
+      b.ocr.enregistrer(MoteurOcrFactice());
+      expect(b.ocr.definirReglage(role: 'admin', actif: true, moteur: 'factice', langue: 'fra', motif: 'la mère règle').ok, isTrue);
+      b.ocr.arreter();
+      final tmp2 = Directory.systemTemp.createTempSync('sigh-ocr-f-');
+      addTearDown(() => tmp2.deleteSync(recursive: true));
+      final f = Banc(tmp2, semer: false, fileul: true);
+      for (final fiche in b.magasin.collection(parCollectionParametres).toutes) {
+        f.magasin.collection(parCollectionParametres).inserer({...fiche});
+      }
+      expect(f.ocr.reglageRecu, isTrue);
+      expect(f.ocr.reglage.actif, isTrue, reason: 'la valeur de la mère, pas le défaut');
+      expect(f.ocr.reglage.moteur, 'factice');
+      await f.courrier('C1', variante('scan.png', 1), 'scan.png');
+      expect(f.ocr.etatDe(f.fichier('courriers', 'C1')).raison, ocrRaisonSansMoteur, reason: 'ce poste n’a installé aucun moteur : il le dit');
+      f.ocr.enregistrer(MoteurOcrFactice(id: 'autre'));
+      expect(f.ocr.etatDe(f.fichier('courriers', 'C1')).raison, contains('le moteur choisi au réglage n’est pas installé sur ce poste'));
+      final n0 = f.magasin.collection(parCollectionParametres).toutes.length;
+      final r = f.ocr.definirReglage(role: 'admin', actif: false, moteur: null, langue: 'fra', motif: 'essai du fileul');
+      expect(r.ok, isFalse);
+      expect(r.refus!.code, 'FILEUL_LECTURE_SEULE');
+      expect(r.refus!.geste, contains('poste mère'));
+      expect(f.magasin.collection(parCollectionParametres).toutes, hasLength(n0), reason: 'le refus n’a rien écrit');
+      f.ocr.arreter();
     });
   });
 

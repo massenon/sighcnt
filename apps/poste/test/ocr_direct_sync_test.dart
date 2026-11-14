@@ -8,7 +8,11 @@ import 'package:sigh_poste/donnees/fichiers_poste.dart' show fichiersFileEnvoi;
 import 'package:sigh_poste/donnees/ocr_poste.dart';
 import 'package:sigh_sync/sigh_sync.dart';
 
+import 'package:sigh_poste/core/donnees_navigation.dart';
+
 import 'fichiers_direct_sync_test.dart' show Clinique, Poste, droit, fx;
+
+bool droitGeste(String role, String geste) => DonneesNavigation.depuisDossier().matrice.droitGeste(role, geste);
 
 /// LE TEXTE LU PAR MACHINE PAR LA SYNCHRONISATION, CONTRE LA VRAIE MÈRE (lot OCR-prep) : deux vrais fileuls (moteur de synchronisation, pont d'activité, stockage sur disque, service de transfert,
 /// service de lecture OCR) et la vraie mère Dart. Le moteur est FACTICE : ce qui est éprouvé, c'est tout ce qui entoure le moteur.
@@ -25,7 +29,7 @@ const texteB = 'Seconde lecture : paludisme grave à Tanguiéta';
 
 class Lecteur {
   Lecteur(this.poste, String texte, {String id = 'factice'}) : moteur = MoteurOcrFactice(id: id, texteParDefaut: texte) {
-    ocr = OcrPoste(poste.fp, roleCourant: () => poste.role, droitDe: droit)
+    ocr = OcrPoste(poste.fp, roleCourant: () => poste.role, droitDe: droit, gesteDe: (r, g) => droitGeste(r, g))
       ..automatique = false
       ..installer();
     ocr.enregistrer(moteur);
@@ -195,5 +199,54 @@ void main() {
     // la file de l'accueil n'y touche pas : le binaire ne lui est jamais parvenu (ZONE_REFUSEE) et le droit de zone l'écarte
     expect(await f2.stockage.existe(sha), isFalse, reason: 'RG-13 : le binaire d’une pièce de zone 2 ne va pas à un poste dont le rôle ne la lit pas');
     expect(l2.moteur.appels, 0);
+  }, timeout: const Timeout(Duration(minutes: 3)));
+
+  test('7. LOT C : une correction signée voyage par le journal comme une version de plus ; deux corrections concurrentes sont GARDÉES partout (conflit, rien de perdu) ; jamais vers un téléphone', () async {
+    final f1 = await c.fileul('F1');
+    final f2 = await c.fileul('F2');
+    final l1 = Lecteur(f1, texteA);
+    final l2 = Lecteur(f2, texteA);
+    f1.courrier('C1');
+    expect((await f1.deposerCourrier('C1', 'scan.png')).ok, isTrue);
+    final sha = sha256Octets(fx('scan.png'));
+    expect(await l1.ocr.vider(), 1);
+    await c.converger(() => l2.lectures.isNotEmpty && f2.magasin.collection('courriers').toutes.any((f) => fichierDe(f)?['sha256'] == sha), 'la lecture et la fiche arrivent chez F2');
+    final x1 = fichierDe(f1.magasin.collection('courriers').toutes.firstWhere((f) => fichierDe(f)?['sha256'] == sha))!;
+    final x2 = fichierDe(f2.magasin.collection('courriers').toutes.firstWhere((f) => fichierDe(f)?['sha256'] == sha))!;
+    // 1. F1 corrige : la correction arrive chez F2 (signataire, date, version de départ), la lecture machine intacte
+    final r1 = l1.ocr.corriger(x1, '$texteA, zebracorrige', peutDeposer: true, famille: 'courrier');
+    expect(r1.ok, isTrue, reason: '${r1.refus}');
+    await c.converger(() => l2.lectures.length == 2, 'la correction arrive chez F2');
+    final cor = l2.lectures.firstWhere((v) => v['texteSource'] == 'correction');
+    expect(cor['id'], r1.version);
+    expect(cor['corrigePar'], isNotEmpty);
+    expect(l2.lectures.firstWhere((v) => v['texteSource'] == 'ocr')['texteBrut'], texteA);
+    expect(l2.ocr.etatDe(x2).etat, EtatIndexation.ocrCorrige);
+    expect(fichierCorrespond(f2.fp.texteDe(sha), 'zebracorrige'), isTrue, reason: 'la recherche de F2 lit le texte signé arrivé par le journal');
+    // 2. DEUX corrections concurrentes de la même version (chacun corrige avant de recevoir l'autre)
+    final ra = l1.ocr.corriger(x1, '$texteA, version de F1', peutDeposer: true, famille: 'courrier');
+    final rb = l2.ocr.corriger(x2, '$texteA, version de F2', peutDeposer: true, famille: 'courrier');
+    expect(ra.ok && rb.ok, isTrue, reason: '${ra.refus} ${rb.refus}');
+    await c.converger(() => l1.lectures.length == 4 && l2.lectures.length == 4, 'les deux corrections concurrentes sont partout');
+    expect(await compteMere(c, 'lecturesOcr'), 4, reason: 'la mère garde les quatre versions : rien écrasé, rien refusé');
+    expect(l1.ocr.conflitDe(sha), hasLength(2));
+    expect(l2.ocr.conflitDe(sha), hasLength(2));
+    expect(l1.ocr.versionCourante(sha)!['id'], l2.ocr.versionCourante(sha)!['id'], reason: 'le même texte courant sur les deux postes (date puis identifiant)');
+    expect(f1.pont.erreur.value, isNull);
+    expect(f2.pont.erreur.value, isNull);
+    // 3. une correction ultérieure remplace les deux : le conflit se ferme partout
+    final fin = l1.ocr.corriger(x1, '$texteA, départagée', peutDeposer: true, famille: 'courrier');
+    expect(fin.ok, isTrue);
+    await c.converger(() => l2.lectures.length == 5 && l2.ocr.conflitDe(sha).isEmpty, 'le conflit est fermé chez F2');
+    // 4. JAMAIS vers un téléphone
+    final base = 'http://127.0.0.1:${c.port}';
+    final code = jsonDecode((await http.post(Uri.parse('$base/admin/code'), headers: {'x-admin': 'secret-test', 'content-type': 'application/json'}, body: jsonEncode({'etiquette': 'Tel', 'role': 'mobile', 'profil': 'reception'}))).body)['code'];
+    final app = jsonDecode((await http.post(Uri.parse('$base/appairage'), headers: {'content-type': 'application/json'}, body: jsonEncode({'code': code, 'uuid': 'tel-ocr-2', 'plateforme': 'test'}))).body) as Map;
+    final lot = await http.post(Uri.parse('$base/admin/lot'),
+        headers: {'x-admin': 'secret-test', 'content-type': 'application/json'}, body: jsonEncode({'uuid': 'tel-ocr-2', 'fiches': [{'collection': 'lecturesOcr', 'id': r1.version}], 'ttl_ms': 60000}));
+    expect(lot.statusCode, 422);
+    expect(jsonDecode(lot.body)['code'], 'fichiers_interdits_au_mobile');
+    final pull = jsonDecode((await http.get(Uri.parse('$base/sync/pull?depuis=0&limite=500&epoch=1'), headers: {'authorization': 'Bearer ${app['jeton']}'})).body) as Map;
+    expect({for (final o in (pull['ops'] as List)) (o as Map)['collection']}, isNot(contains('lecturesOcr')), reason: 'un téléphone ne reçoit aucune correction');
   }, timeout: const Timeout(Duration(minutes: 3)));
 }

@@ -42,7 +42,8 @@ class PanneauParametres extends StatelessWidget {
                 ton: TonSigh.info,
                 icone: LucideIcons.history),
             for (final e in familles.entries)
-              cfaSection(
+              if (!parFamillesReglageDedie.contains(e.key))
+                cfaSection(
                   libellesFamillesParametres[e.key] ?? e.key,
                   cfaPile([
                     for (final p in e.value) _Carte(c: c, service: service, p: p, aujourdhui: aujourdhui, peutRegler: peutRegler, estMere: estMere),

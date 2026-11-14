@@ -116,15 +116,28 @@ void main() {
     tmp.deleteSync(recursive: true);
   });
 
-  (FichiersPoste, OcrPoste) brancher(Magasin m, String Function() role) {
+  (FichiersPoste, OcrPoste) brancher(Magasin m, String Function() role, {bool fileul = false}) {
     final fp = FichiersPoste(m, StockageFichiers('${tmp.path}/fichiers'))..installer();
-    final o = OcrPoste(fp, roleCourant: role, droitDe: (r, e) => donnees.matrice.droit(r, e))
+    final o = OcrPoste(fp, roleCourant: role, droitDe: (r, e) => donnees.matrice.droit(r, e), gesteDe: (r, g) => donnees.matrice.droitGeste(r, g), estFileul: () => fileul)
       ..automatique = false
       ..installer();
     return (fp, o);
   }
 
   void choisit(String nom, [Uint8List? octets]) => SelecteursFichiers.choisir = () async => FichierChoisi(nom, octets ?? fx(nom));
+
+  group('réglage de clinique sur un fileul : il se lit, il ne se pose pas', () {
+    cas('un fileul dont la mère n’a rien publié : « pas encore reçu » est DIT, la commande Enregistrer est ABSENTE ;', (t) async {
+      final m = poste({'courriers': courriers()});
+      brancher(m, () => 'admin', fileul: true);
+      await ouvrir(t, m, 'm13-courriers');
+      await toucher(t, find.byKey(const Key('ocr:bouton-reglage')));
+      expect(find.byKey(const Key('ocr:reglage-recu')), findsOneWidget);
+      expect(find.textContaining('pas encore reçu de la poste mère'), findsOneWidget);
+      expect(find.byKey(const Key('ocr:enregistrer')), findsNothing, reason: 'commande ABSENTE sur un fileul, jamais grisée');
+      expect(find.byKey(const Key('ocr:actif')), findsNothing);
+    });
+  });
 
   group('sans moteur : l’écran le dit', () {
     cas('un scan : badge « Texte non indexé », raison « aucun moteur d’OCR installé sur ce poste », AUCUNE commande de relance, message sous « Aucun résultat » avec le bon nombre', (t) async {
@@ -224,6 +237,42 @@ void main() {
       expect(find.byKey(const Key('ocr:marque')), findsNothing);
       expect(find.byKey(const Key('ocr:relancer')), findsNothing);
       expect(moteur.appels, 0);
+    });
+
+    cas('la correction signée : commande ABSENTE pour qui n’écrit pas (anesthésiste), PRÉSENTE pour le médecin ; il signe, la carte dit « corrigé et signé », la lecture machine reste lisible, un texte vide est refusé en le nommant', (t) async {
+      for (final role in ['anesthesiste', 'medecin']) {
+        final m = poste({'documentsPatient': documents()});
+        final (_, o) = brancher(m, () => 'medecin');
+        o.enregistrer(MoteurOcrFactice(texteParDefaut: texteLu));
+        expect(o.definirReglage(role: 'admin', actif: true, moteur: 'factice', langue: 'fra', motif: 'sonde').ok, isTrue);
+        o.arreter();
+        final r = await t.runAsync(() => FichiersPoste.de(m)!.deposer(
+            famille: 'patient', ficheId: 'D1', nom: 'scan.png', octets: fx('scan.png'), role: 'medecin', droit: donnees.matrice.droit('medecin', 'm1-documents')));
+        expect(r!.ok, isTrue, reason: '${r.refus}');
+        o.arreter();
+        await t.runAsync(() => o.vider());
+        await ouvrir(t, m, 'm1-documents', role: role);
+        await chercher(t, 'GED-00001');
+        await toucher(t, find.byTooltip('Consulter').first);
+        await attendreIo(t, tours: 6);
+        expect(find.byKey(const Key('ocr:corriger')), role == 'medecin' ? findsOneWidget : findsNothing, reason: role);
+        if (role == 'medecin') {
+          await toucher(t, find.byKey(const Key('ocr:corriger')));
+          await t.enterText(find.byKey(const Key('ocr:texte-corrige')), '   ');
+          await toucher(t, find.byKey(const Key('ocr:signer')));
+          expect(find.textContaining('CORRECTION_TEXTE_VIDE'), findsOneWidget);
+          await t.enterText(find.byKey(const Key('ocr:texte-corrige')), 'Compte rendu corrigé par le médecin');
+          await toucher(t, find.byKey(const Key('ocr:signer')));
+          await attendreIo(t, tours: 6);
+          expect(find.byKey(const Key('ocr:etat-ocr_corrige')), findsOneWidget);
+          expect(find.byKey(const Key('ocr:corrige')), findsOneWidget);
+          expect(find.byKey(const Key('ocr:marque')), findsNothing, reason: 'le texte courant est signé : plus « lu par machine, à vérifier »');
+          expect(find.byKey(const Key('ocr:historique-2')), findsOneWidget, reason: 'la lecture machine reste au registre des versions, à côté de la correction');
+          expect(m.collection(ocrLectures).toutes.where((x) => x['texteSource'] == 'ocr'), hasLength(1));
+        }
+        await t.pumpWidget(const SizedBox());
+        await t.pump(const Duration(seconds: 20));
+      }
     });
 
     cas('la relance est ABSENTE pour un profil qui ne peut pas écrire sur l’écran (anesthésiste : lit la zone 2, n’écrit pas), et PRÉSENTE pour le médecin', (t) async {

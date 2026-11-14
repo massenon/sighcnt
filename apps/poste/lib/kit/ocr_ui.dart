@@ -20,6 +20,7 @@ import 'ton.dart';
 
 TonSigh tonEtatOcr(EtatIndexation e) => switch (e) {
       EtatIndexation.indexe => TonSigh.succes,
+      EtatIndexation.ocrCorrige => TonSigh.succes,
       EtatIndexation.ocrIndexe => TonSigh.attention,
       EtatIndexation.ocrEnAttente || EtatIndexation.ocrEnCours => TonSigh.info,
       EtatIndexation.ocrEchec => TonSigh.danger,
@@ -96,12 +97,26 @@ class _BlocOcrPieceState extends State<BlocOcrPiece> {
                     fontSize: 12,
                     height: 16 / 12)),
           ];
-          if (e.marque || courante != null) {
+          if (courante != null && ocrEstCorrection(courante)) {
+            enfants.add(NoteSigh(
+                'Texte corrigé et signé par ${courante['corrigePar'] ?? 'auteur inconnu'} le ${_dateFr(courante['corrigeLe'])}. Une lecture machine plus récente ne le remplace pas : la lecture machine reste consultable ci-dessous. Le scan reste la seule référence.',
+                key: const Key('ocr:corrige'),
+                ton: TonSigh.info,
+                icone: LucideIcons.penLine));
+          } else if (e.marque || courante != null) {
             enfants.add(const NoteSigh(
                 'Texte lu par machine, à vérifier. La reconnaissance de caractères peut se tromper (accents, chiffres, mots coupés) : le texte sert à RETROUVER une pièce, jamais à la citer. Le scan reste la seule référence.',
                 key: Key('ocr:marque'),
                 ton: TonSigh.attention,
                 icone: LucideIcons.scanText));
+          }
+          final concurrentes = o.conflitDe(sha);
+          if (concurrentes.length > 1) {
+            enfants.add(NoteSigh(
+                'Conflit : ${concurrentes.length} corrections concurrentes de la même version (${concurrentes.map((x) => '${x['corrigePar'] ?? '?'}, ${_dateFr(x['corrigeLe'])}').join(' ; ')}). Rien n’est perdu : le texte courant est la plus récente, une nouvelle correction signée les remplace toutes les deux.',
+                key: Key('ocr:conflit-${concurrentes.length}'),
+                ton: TonSigh.danger,
+                icone: LucideIcons.gitMerge));
           }
           if (e.etat == EtatIndexation.ocrEchec) {
             enfants.add(Text('${file?['geste'] ?? ''}',
@@ -119,8 +134,19 @@ class _BlocOcrPieceState extends State<BlocOcrPiece> {
                     fontSize: 12,
                     height: 16 / 12)));
           }
-          if (o.relancePossible(x, peutDeposer: widget.peutDeposer)) {
+          final peutCorriger = o.correctionPossible(x, peutDeposer: widget.peutDeposer, famille: widget.famille, type: widget.type);
+          final peutRelancer = o.relancePossible(x, peutDeposer: widget.peutDeposer);
+          if (peutRelancer || peutCorriger) {
             enfants.add(Wrap(spacing: 8, children: [
+              if (peutCorriger)
+                BoutonSigh(
+                    key: const Key('ocr:corriger'),
+                    libelle: 'Corriger le texte lu',
+                    icone: LucideIcons.penLine,
+                    taille: TailleBouton.sm,
+                    variante: VarianteBouton.secondaire,
+                    onPressed: () => _ouvrirCorrection(context, o, x, widget.peutDeposer, widget.famille, widget.type)),
+              if (peutRelancer)
               BoutonSigh(
                   key: const Key('ocr:relancer'),
                   libelle: 'Relancer la lecture',
@@ -176,19 +202,23 @@ class _BlocOcrPieceState extends State<BlocOcrPiece> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                          'Version ${i + 1}${courante != null && versions[i]['id'] == courante['id'] ? ' (courante)' : ''} : ${versions[i]['moteur']}${(versions[i]['moteurVersion'] ?? '') != '' ? ' ${versions[i]['moteurVersion']}' : ''}, langue ${versions[i]['langue']}',
+                                          ocrEstCorrection(versions[i])
+                                              ? 'Version ${i + 1}${courante != null && versions[i]['id'] == courante['id'] ? ' (courante)' : ''} : corrigée et signée par ${versions[i]['corrigePar'] ?? 'auteur inconnu'}'
+                                              : 'Version ${i + 1}${courante != null && versions[i]['id'] == courante['id'] ? ' (courante)' : ''} : ${versions[i]['moteur']}${(versions[i]['moteurVersion'] ?? '') != '' ? ' ${versions[i]['moteurVersion']}' : ''}, langue ${versions[i]['langue']}',
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w600,
                                               fontSize: 12)),
                                       Text(
-                                          'Lue le ${_dateFr(versions[i]['ocrLe'])} par ${versions[i]['ocrPar'] ?? 'auteur inconnu'} · ${versions[i]['nbMots']} mots · confiance ${_confiance(versions[i]['confiance'])}${versions[i]['declencheur'] == 'relance' ? ' · relance' : ''}',
+                                          ocrEstCorrection(versions[i])
+                                              ? 'Signée le ${_dateFr(versions[i]['corrigeLe'])} · part de la version ${versions.indexWhere((v) => v['id'] == versions[i]['corrigeDe']) + 1} · ${versions[i]['nbMots']} mots'
+                                              : 'Lue le ${_dateFr(versions[i]['ocrLe'])} par ${versions[i]['ocrPar'] ?? 'auteur inconnu'} · ${versions[i]['nbMots']} mots · confiance ${_confiance(versions[i]['confiance'])}${versions[i]['declencheur'] == 'relance' ? ' · relance' : ''}',
                                           style: const TextStyle(
                                               color: JetonsShell.slate500,
                                               fontSize: 12)),
                                       const SizedBox(height: 4),
-                                      const Text(
-                                          'Texte lu par machine, à vérifier',
-                                          style: TextStyle(
+                                      Text(
+                                          ocrEstCorrection(versions[i]) ? 'Texte corrigé et signé' : 'Texte lu par machine, à vérifier',
+                                          style: const TextStyle(
                                               color: JetonsShell.slate600,
                                               fontSize: 12)),
                                       SelectableText(
@@ -211,6 +241,67 @@ class _BlocOcrPieceState extends State<BlocOcrPiece> {
               ]);
         });
   }
+}
+
+Future<void> _ouvrirCorrection(BuildContext context, OcrPoste o, Map<String, Object?> x, bool peutDeposer, String famille, String? type) async {
+  final sha = '${x['sha256']}';
+  final versions = o.versionsDe(sha).where((v) => ((v['nbMots'] as num?) ?? 0) > 0 || ocrEstCorrection(v)).toList();
+  final courante = o.versionCourante(sha);
+  var depart = courante?['id'] as String?;
+  final texte = TextEditingController(text: '${courante?['texteBrut'] ?? ''}');
+  final refus = ValueNotifier<RefusFichier?>(null);
+  await afficherModale<void>(context,
+      titre: 'Corriger le texte lu',
+      taille: TailleModale.md,
+      corps: StatefulBuilder(
+          builder: (_, setS) => ValueListenableBuilder<RefusFichier?>(
+              valueListenable: refus,
+              builder: (_, ref, __) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    const NoteSigh(
+                        'Votre correction est signée à votre nom, datée et journalisée. Elle s’AJOUTE : la lecture machine reste lisible et intacte, et le texte corrigé devient le texte courant de la recherche.',
+                        ton: TonSigh.info),
+                    const SizedBox(height: 12),
+                    const Text('Partir de', style: TextStyle(color: JetonsShell.slate600, fontSize: 12)),
+                    DropdownButtonFormField<String>(
+                        key: const Key('ocr:depart'),
+                        initialValue: depart,
+                        items: [
+                          for (final v in versions.reversed)
+                            DropdownMenuItem(
+                                value: '${v['id']}',
+                                child: Text(
+                                    'Version ${o.versionsDe(sha).indexWhere((y) => y['id'] == v['id']) + 1}${ocrEstCorrection(v) ? ' (corrigée par ${v['corrigePar'] ?? '?'})' : ' (lue par machine)'}${courante != null && courante['id'] == v['id'] ? ', courante' : ''}'))
+                        ],
+                        onChanged: (v) => setS(() {
+                              depart = v;
+                              final f = versions.where((y) => y['id'] == v).firstOrNull;
+                              texte.text = '${f?['texteBrut'] ?? ''}';
+                            })),
+                    const SizedBox(height: 12),
+                    const Text('Texte corrigé', style: TextStyle(color: JetonsShell.slate600, fontSize: 12)),
+                    TextField(key: const Key('ocr:texte-corrige'), controller: texte, maxLines: 8),
+                    if (ref != null)
+                      Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: NoteSigh('${ref.code} : ${ref.motif} ${ref.geste}', key: const Key('ocr:correction-refus'), ton: TonSigh.attention)),
+                  ]))),
+      pied: (fermer) => [
+            BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+            BoutonSigh(
+                key: const Key('ocr:signer'),
+                libelle: 'Signer la correction',
+                icone: LucideIcons.check,
+                onPressed: () {
+                  final r = o.corriger(x, texte.text, peutDeposer: peutDeposer, famille: famille, type: type, corrigeDe: depart);
+                  if (!r.ok) {
+                    refus.value = r.refus;
+                    return;
+                  }
+                  fermer();
+                  ToastsSigh.afficher(context, 'Correction signée.',
+                      type: TypeToast.succes, detail: r.conflit ? 'Conflit : deux corrections concurrentes, à départager.' : 'La lecture machine reste lisible.');
+                }),
+          ]);
 }
 
 String _dateFr(Object? iso) {
@@ -243,10 +334,24 @@ Widget? boutonOcr(BuildContext context, {required String role}) {
 Future<void> _ouvrirReglage(
     BuildContext context, OcrPoste o, String role) async {
   final r = o.reglage;
+  if (o.estFileul()) {
+    // Un FILEUL lit le réglage de la clinique, il ne le pose pas : la commande d'enregistrement est ABSENTE (jamais grisée), l'état de réception se DIT.
+    final recu = o.reglageRecu;
+    final texte = !recu
+        ? '${ocrRaisonReglageNonRecu[0].toUpperCase()}${ocrRaisonReglageNonRecu.substring(1)} : tant qu\u2019il n\u2019est pas arrivé, aucune lecture ne part de ce poste.'
+        : 'Réglage de la clinique, reçu de la poste mère : lecture des scans ${r.actif ? 'activée' : 'désactivée'}, moteur ${r.moteur ?? 'non choisi'}${r.moteur != null ? (o.moteurs.containsKey(r.moteur) ? ' (installé sur ce poste)' : ' (non installé sur ce poste)') : ''}, langue ${r.langue}, délai ${(r.delaiMs / 1000).round()} s. Il se règle sur la poste mère.';
+    await afficherModale<void>(context,
+        titre: 'Lecture des scans (OCR)',
+        taille: TailleModale.sm,
+        corps: NoteSigh(texte, key: const Key('ocr:reglage-recu')),
+        pied: (fermer) => [BoutonSigh(libelle: 'Fermer', variante: VarianteBouton.secondaire, onPressed: fermer)]);
+    return;
+  }
   var actif = r.actif;
   var moteur =
       r.moteur != null && o.moteurs.containsKey(r.moteur) ? r.moteur : null;
   final langue = TextEditingController(text: r.langue);
+  final delai = TextEditingController(text: '${(r.delaiMs / 1000).round()}');
   final motif = TextEditingController();
   final refus = ValueNotifier<RefusFichier?>(null);
   await afficherModale<void>(context,
@@ -261,7 +366,7 @@ Future<void> _ouvrirReglage(
                       children: [
                         NoteSigh(
                             o.moteurInstalle
-                                ? 'La lecture des scans est désactivée par défaut (à valider par la Direction). Le texte lu par machine est toujours marqué « à vérifier ». Ce réglage est propre à ce poste.'
+                                ? 'Réglage de la clinique : il est posé ici (poste mère) et reçu des autres postes. La lecture des scans est désactivée par défaut (à valider par la Direction). Le texte lu par machine est toujours marqué « à vérifier ».'
                                 : '${ocrRaisonSansMoteur[0].toUpperCase()}${ocrRaisonSansMoteur.substring(1)}. Il n’y a rien à activer tant qu’un moteur n’est pas installé : la Direction a décidé de choisir le moteur après un essai sur trois vrais scans.',
                             key: const Key('ocr:reglage-note')),
                         const SizedBox(height: 12),
@@ -302,6 +407,10 @@ Future<void> _ouvrirReglage(
                         TextField(
                             key: const Key('ocr:langue'), controller: langue),
                         const SizedBox(height: 12),
+                        const Text('Délai de lecture par page (secondes, au-delà la lecture est arrêtée et se relance)',
+                            style: TextStyle(color: JetonsShell.slate600, fontSize: 12)),
+                        TextField(key: const Key('ocr:delai'), controller: delai, keyboardType: TextInputType.number),
+                        const SizedBox(height: 12),
                         const Text('Motif (consigné dans le journal)',
                             style: TextStyle(
                                 color: JetonsShell.slate600, fontSize: 12)),
@@ -332,7 +441,8 @@ Future<void> _ouvrirReglage(
                       actif: actif,
                       moteur: moteur,
                       langue: langue.text.trim(),
-                      motif: motif.text);
+                      motif: motif.text,
+                      delaiMs: (int.tryParse(delai.text.trim()) ?? 0) * 1000);
                   if (!x.ok) {
                     refus.value = x.refus;
                     return;

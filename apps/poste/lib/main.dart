@@ -197,7 +197,11 @@ Future<void> main() async {
   ServiceFichiers? serviceFichiers;
   // LA LECTURE OCR DES SCANS, PRÉPARÉE (lot OCR-prep) : AUCUN moteur n'est branché ni embarqué. Sans moteur, l'état de chaque scan dit « aucun moteur d'OCR installé sur ce poste » et rien ne se met en
   // file ; le jour où un moteur est branché (`OcrPoste.enregistrer`) et choisi au réglage, les scans sans couche texte sont lus un à la fois, sous le rôle de l'agent connecté.
-  OcrPoste(fichiersPoste, roleCourant: () => session?.role, droitDe: (role, ecran) => navigation.aChaud(magasin).matrice.droit(role, ecran))
+  OcrPoste(fichiersPoste,
+      roleCourant: () => session?.role,
+      droitDe: (role, ecran) => navigation.aChaud(magasin).matrice.droit(role, ecran),
+      gesteDe: (role, geste) => navigation.aChaud(magasin).matrice.droitGeste(role, geste),
+      estFileul: () => params.rejoint && params.mode != ModePoste.mere)
     ..installer()
     ..demarrer();
   for (final probleme in persistance.problemes) {
