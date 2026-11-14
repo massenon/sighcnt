@@ -107,7 +107,7 @@ const PORT = Number(process.env.SIGH_PORT_TEST) || 8096;
       actes: S.collection('actes').all().map((a) => [a.id, a.code, a.libelle, a.secteur].concat(pick(a, ['prix', 'prixNonAssure', 'prixAssure', 'nonCouvert', 'assurable', 'codeTarif', 'tarifProvisoire', 'tarifArreteLe', 'statut']))),
       analyses: S.collection('analyses').all().map((a) => [a.id, a.code, a.designation].concat(pick(a, ['prix', 'tarifProvisoire', 'aValider', 'statut']))),
       catalogueTarifs: S.collection('catalogueTarifs').all().map((a) => [a.id, a.code, a.libelle, a.famille].concat(pick(a, ['prixNonAssure', 'prixAssure', 'nonCouvert', 'assurable', 'prixAValider', 'statut']))),
-      typesChambre: D.TYPES_CHAMBRE.map((t) => [t.id, t.label, t.tarif]),
+      typesChambre: D.TYPES_CHAMBRE.map((t) => [t.id, t.label, PR.prixChambreALaDate(t.id, null)]), /* TFIN : par l'accesseur, la constante n'est plus qu'une semence */
     };
     /* Les codes de GRILLE dont le prix lu change PAR CONSTRUCTION à la migration (PRD-TARIFS, décision T2) : la ligne LABO de la grille est fusionnée avec
        l'analyse de même libellé, dont le prix FACTURÉ aujourd'hui est la version 1 ; le prix de la grille devient la version 2 PROPOSÉE. Aucune voie de

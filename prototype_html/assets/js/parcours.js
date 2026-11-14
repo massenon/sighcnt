@@ -135,6 +135,15 @@
     return (assure && s.etatAssure === 'montant') ? s.pa : s.na;
   }
 
+  /** LOT TFIN (T7) : le tarif de la JOURNÉE d'un type de chambre (la prestation `HO01` à `HO03` du référentiel, dans l'ordre de `D.TYPES_CHAMBRE`) à la date dite (vide : aujourd'hui). `undefined`
+      quand le type n'est pas une prestation du référentiel, `null` quand aucun prix n'est en vigueur. C'est la SEULE lecture du prix d'une chambre : `D.TYPES_CHAMBRE[i].tarif` n'est plus que la semence. */
+  function prixChambreALaDate(typeId, date) {
+    var types = D.TYPES_CHAMBRE || [], i = -1;
+    types.forEach(function (t, k) { if (t.id === typeId) i = k; });
+    if (i < 0) return undefined;
+    return prixActeALaDate('HO' + (i < 9 ? '0' : '') + (i + 1), date, false);
+  }
+
   /* --------------------------------------------------------------------------
    * LE PRIX D'UN PRODUIT À UNE DATE (PRD-TARIFS, lot T5) : le MÊME moteur de version que les prestations, famille `PRODUIT`.
    * Le prix d'achat est celui de la version EN VIGUEUR à la date de la PIÈCE (jamais la fiche, jamais l'horloge au moment du calcul) ; le prix de vente se DÉRIVE de la
@@ -3753,7 +3762,7 @@
     deciderTousTarifs: deciderTousTarifs, variationPropositionPct: variationPropositionPct, seuilVariationAlerte: seuilVariationAlerte,
     ecartProforma: ecartProforma, validiteProformaJours: validiteProformaJours, definirValiditeProforma: definirValiditeProforma, VALIDITE_PROFORMA_DEFAUT: VALIDITE_PROFORMA_DEFAUT,
     proposerTarif: proposerTarif, evaluerProposition: evaluerProposition, peutProposerParImport: peutProposerParImport, deciderTarif: deciderTarif, retirerProposition: retirerProposition, versionsTarifDe: versionsDe,
-    tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate,
+    tarifALaDate: tarifALaDate, prixActeALaDate: prixActeALaDate, prixAnalyseALaDate: prixAnalyseALaDate, prixChambreALaDate: prixChambreALaDate,
     produitsAValoriser: produitsAValoriser, refusPrixAchatAbsent: refusPrixAchatAbsent, proposerPrixReception: proposerPrixReception,
     prixProduitALaDate: prixProduitALaDate, prixAchatALaDate: prixAchatALaDate, prixVenteALaDate: prixVenteALaDate, produitDeCode: produitDeCode, peutProposerProduit: peutProposerProduit, creerPrixProduit: creerPrixProduit,
     couvertureALaDate: couvertureALaDate, historiqueCouverture: historiqueCouverture,

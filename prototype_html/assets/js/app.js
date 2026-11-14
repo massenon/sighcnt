@@ -756,7 +756,7 @@
         if (anas.length && autorise('cfg-tarifs')) groups.push(['Analyses', anas.map(function (a) {
           return {
             label: a.designation, icon: 'flask-conical',
-            detail: a.categorie + ', ' + C.money(a.prix, false) + ' · ' + a.echantillon,
+            detail: a.categorie + ', ' + C.money(global.SIGH.parcours.prixAnalyseALaDate(a.code, null, false), false) + ' · ' + a.echantillon,
             ecran: 'cfg-tarifs', onglet: 'analyses',
           };
         })]);

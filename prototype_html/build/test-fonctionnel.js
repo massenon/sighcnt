@@ -26586,6 +26586,51 @@ async function viderMessages(page) {
   });
   /* LOT C ÉTAPE 2 FIN */
 
+  /* LOT TFIN T7 DÉBUT */
+  await etape(async () => {
+    scenario('Vague 178 : lot TFIN T7, plus aucune lecture directe d’une ancienne liste de prix (garde de génération sur le code, constantes empoisonnées en mémoire : la caisse manuelle et l’écran des chambres lisent toujours le référentiel, par une route indépendante de l’accesseur)');
+    erreursJS = [];
+    /* 1. La garde de génération : propre sur l'arbre, et elle ÉCHOUE sur chacune des trois formes de lecture directe (appel direct, variable intermédiaire, parenthèse). */
+    const garde = require('./garde-listes-prix.js');
+    verifier('La garde ne trouve aucune lecture directe dans assets/js', garde.analyser(path.join(ROOT, 'assets/js')).length === 0, JSON.stringify(garde.analyser(path.join(ROOT, 'assets/js'))));
+    const tmp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'garde-prix-')), js = path.join(tmp, 'js');
+    fs.mkdirSync(js, { recursive: true });
+    fs.writeFileSync(path.join(js, 'a.js'), "var x = D.ANALYSES.map(function (a) { return a.prix; });\n");
+    fs.writeFileSync(path.join(js, 'b.js'), "var t = D.TYPES_CHAMBRE.filter(function (t) { return t.id === 'vip'; })[0];\nreturn t.tarif;\n");
+    fs.writeFileSync(path.join(js, 'c.js'), "var n = (D.CATALOGUE || []).map(function (e) { return e.prixNonAssure; });\n");
+    fs.writeFileSync(path.join(js, 'd.js'), "var ok = D.ANALYSES.map(function (a) { return a.designation; });\nvar amorce = D.CATALOGUE.map(function (e) { return e.prixAssure; }); /* garde-prix : amorçage */\n");
+    const fautes = garde.analyser(js).map((x) => x.fichier.split('/').pop());
+    verifier('La garde échoue sur un appel direct, une variable intermédiaire et une parenthèse ; elle admet une désignation et une ligne d’amorçage marquée',
+      JSON.stringify(fautes.sort()) === JSON.stringify(['a.js', 'b.js', 'c.js']), JSON.stringify(fautes));
+    fs.rmSync(tmp, { recursive: true, force: true });
+    /* 2. Les constantes sont EMPOISONNÉES en mémoire : tout écran qui les lirait encore afficherait 111 ou 222. */
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN178', nomComplet: 'ADMIN178', fonction: 'admin', identifiant: 's178.admin', secteur: 'DIR' });
+    await ouvrir('m8-facturation.php');
+    const m1 = await page.evaluate(async () => {
+      const D = window.SIGH.data, PR = window.SIGH.parcours;
+      const ana = D.ANALYSES[0], ch = D.TYPES_CHAMBRE[0], av = [ana.prix, ch.tarif];
+      ana.prix = 111; ch.tarif = 222;
+      try {
+        const sel = [...document.querySelectorAll('#page-content select')].find((s) => [...s.options].some((o) => o.value === 'analyse'));
+        const lire = async (n) => { sel.value = n; sel.dispatchEvent(new Event('change', { bubbles: true })); await new Promise((r) => setTimeout(r, 300)); const h = [...document.querySelectorAll('#page-content *')].find((e) => e._liste); return h ? h._liste : null; };
+        const la = await lire('analyse'), lh = await lire('hospitalisation');
+        const TA = D.TARIFS, h = TA.lire();
+        /* La route indépendante : la prestation du référentiel lue par son identité (code d'analyse, code HO01), jamais par l'accesseur testé. */
+        const sa = TA.instantane(h, h.parAnalyse[ana.code], null), sc = TA.instantane(h, h.parActe.HO01, null);
+        return { analyse: la && la[0].prix, analyseAttendue: sa && sa.na, chambre: lh && lh[0].prix, chambreAttendue: sc && sc.na, semence: av };
+      } finally { ana.prix = av[0]; ch.tarif = av[1]; }
+    });
+    verifier('Caisse manuelle, analyses : le prix proposé est celui du référentiel, pas la constante empoisonnée', m1.analyse === m1.analyseAttendue && m1.analyse !== 111 && m1.analyseAttendue != null, JSON.stringify(m1));
+    verifier('Caisse manuelle, hospitalisation : le prix de la journée est celui du référentiel, pas la constante empoisonnée', m1.chambre === m1.chambreAttendue && m1.chambre !== 222 && m1.chambreAttendue != null, JSON.stringify(m1));
+    /* L'écran des chambres se peint au chargement : l'empoisonnement en mémoire n'y est pas possible ; on vérifie ce qu'il AFFICHE (le prix du référentiel) et la garde de génération couvre le reste. */
+    await ouvrir('m3-chambres.php');
+    const m2 = await page.evaluate(() => { const D = window.SIGH.data, PR = window.SIGH.parcours, M = window.SIGH.core.money; return { attendu: M(PR.prixChambreALaDate(D.TYPES_CHAMBRE[0].id, null)).replace(/\s+/g, ' ') }; });
+    const texte3 = await page.evaluate(() => (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' '));
+    verifier('Écran des chambres : le tarif journalier affiché est celui du référentiel', texte3.includes(m2.attendu), m2.attendu);
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT TFIN T7 FIN */
+
 
 
 

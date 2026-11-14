@@ -54,7 +54,7 @@
   }
   function optionsAnalyses() {
     return D.ANALYSES.map(function (a) {
-      return { value: a.code, label: a.designation, detail: a.categorie + ' · ' + C.money(a.prix, false) };
+      return { value: a.code, label: a.designation, detail: a.categorie + ' · ' + C.money(PR.prixAnalyseALaDate(a.code, null, false), false) };
     });
   }
   function optionsActes() {
@@ -2303,7 +2303,7 @@
         var ctrl = fExamens.controls;
         var mAna = C.sum(ctrl.analyses.value || [], function (code) {
           var a = D.ANALYSES.filter(function (x) { return x.code === code; })[0];
-          return a ? a.prix : 0;
+          return a ? PR.prixAnalyseALaDate(a.code, null, false) : 0;
         });
         var sansTarif = [];
         var mImg = C.sum(ctrl.imagerie.value || [], function (code) {
@@ -3086,7 +3086,7 @@
       {
         name: 'analyses', label: 'Analyses de laboratoire', type: 'multiselect', col: 'full',
         options: D.ANALYSES.map(function (a) {
-          return { value: a.code, label: a.designation, detail: a.categorie + ' · ' + C.money(a.prix, false) };
+          return { value: a.code, label: a.designation, detail: a.categorie + ' · ' + C.money(PR.prixAnalyseALaDate(a.code, null, false), false) };
         }),
         help: 'Chaque analyse cochée engendre sa demande au laboratoire, sans ressaisie.',
       },
@@ -3151,7 +3151,7 @@
       var ctrl = complements.controls;
       var mAna = C.sum(ctrl.analyses.value || [], function (code) {
         var a = D.ANALYSES.filter(function (x) { return x.code === code; })[0];
-        return a ? a.prix : 0;
+        return a ? PR.prixAnalyseALaDate(a.code, null, false) : 0;
       });
       var mAct = C.sum(ctrl.actes.value || [], function (code) {
         var a = S.collection('actes').active().filter(function (x) { return x.code === code; })[0];

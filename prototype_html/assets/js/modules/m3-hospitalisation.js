@@ -729,7 +729,7 @@
             title: 'Lit ' + l.label, subtitle: ch.aile + ' — ' + typeChambre(ch.type),
             body: el('div.space-y-4', null, [
               U.descList([['Chambre', ch.code], ['Lit', l.label], ['Type', typeChambre(ch.type)],
-                ['Tarif journalier', C.money(D.TYPES_CHAMBRE.filter(function (t) { return t.id === ch.type; })[0].tarif)],
+                ['Tarif journalier', C.money(PR.prixChambreALaDate(ch.type, null))],
                 ['État', U.badge('Libre', 'success')]]),
               U.empty('Ce lit est disponible pour une nouvelle admission.', { icon: 'bed' }),
             ]),
@@ -910,7 +910,7 @@
           var adm = litOccupePar(l.label);
           rows.push({
             id: l.code, code: l.label, chambre: ch.code, aile: ch.aile, type: ch.type,
-            tarif: D.TYPES_CHAMBRE.filter(function (t) { return t.id === ch.type; })[0].tarif,
+            tarif: PR.prixChambreALaDate(ch.type, null),
             statut: adm ? 'occupe' : 'libre',
             occupant: adm ? adm.patient : null,
             depuis: adm ? adm.dateEntree : null,
@@ -924,7 +924,7 @@
         return {
           label: 'Lits ' + t.label, value: C.num(l.length), icon: 'bed',
           tone: t.id === 'vvip' ? 'navy' : (t.id === 'vip' ? 'info' : 'neutral'),
-          hint: C.money(t.tarif) + ' / jour — ' + l.filter(function (r) { return r.statut === 'occupe'; }).length + ' occupé(s)',
+          hint: C.money(PR.prixChambreALaDate(t.id, null)) + ' / jour — ' + l.filter(function (r) { return r.statut === 'occupe'; }).length + ' occupé(s)',
         };
       }).concat([{ label: 'Capacité totale', value: C.num(rows.length), icon: 'building', tone: 'success' }])));
 
@@ -3537,7 +3537,7 @@
             name: 'analyses', label: 'Examens demandés', type: 'multiselect', required: true, col: 'full',
             options: (D.ANALYSES || []).map(function (a) {
               return { value: a.code, label: a.code + ' — ' + a.designation,
-                detail: a.prix ? C.money(a.prix) : 'tarif non renseigné' };
+                detail: PR.prixAnalyseALaDate(a.code, null, false) ? C.money(PR.prixAnalyseALaDate(a.code, null, false)) : 'tarif non renseigné' };
             }),
           },
           { name: 'urgence', label: 'Urgence', type: 'select', required: true,

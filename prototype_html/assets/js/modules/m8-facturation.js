@@ -626,13 +626,13 @@
             liste = [{ label: 'Aucun acte tarifé — voir le référentiel tarifaire', prix: 0 }];
           }
         } else if (nature === 'analyse') {
-          liste = D.ANALYSES.map(function (a) { return { label: a.designation, prix: a.prix }; });
+          liste = D.ANALYSES.map(function (a) { return { label: a.designation, prix: PR.prixAnalyseALaDate(a.code, null, false) }; });
         } else if (nature === 'medicament') {
           /* Le prix de vente DÉRIVÉ (RG-02) de la version EN VIGUEUR (PRD-TARIFS, lot T5) ; un prix d'achat absent ne se vend jamais à zéro : `prix: null`, la ligne se refuse. */
           liste = produits().filter(function (p) { return p.stockDetail > 0; })
             .map(function (p) { var px = PR.prixProduitALaDate(p, new Date().toISOString()); return { label: p.designation + ' (' + p.stockDetail + ' ' + p.unite + ')', prix: px.absent ? null : px.vente, produitId: p.id, motifPrix: px.absent ? px.motif : null }; });
         } else if (nature === 'hospitalisation') {
-          liste = D.TYPES_CHAMBRE.map(function (t) { return { label: 'Journée — chambre ' + t.label, prix: t.tarif }; });
+          liste = D.TYPES_CHAMBRE.map(function (t) { return { label: 'Journée — chambre ' + t.label, prix: PR.prixChambreALaDate(t.id, null) }; });
         }
         selArticle.setOptions(liste.map(function (x, i) {
           return { value: String(i), label: x.label, detail: x.prix == null ? 'prix à valider' : C.money(x.prix, false) };

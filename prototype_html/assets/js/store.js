@@ -1129,7 +1129,8 @@
 
     /* Le catalogue réel sert de source : facturer des libellés inventés
        rendrait les statistiques par prestation inexploitables. */
-    var analyses = (D.ANALYSES || []).filter(function (a) { return a.prix; });
+    /* AMORÇAGE (garde-prix) : la SEMENCE d'origine, jamais une lecture du référentiel (qui n'existe pas encore). */
+    var analyses = ((D.TARIFS && D.TARIFS.semence.analyses) || []).filter(function (a) { return a.prix; });
     var actes = (D.ACTES || []).filter(function (a) { return a.prix; });
     var meds = (produits || []).filter(function (x) { return x.prixAchat > 0; });
 
@@ -1778,7 +1779,7 @@
       ecritures: genEcritures(rnd),
       planning: genPlanning(rnd, personnel),
       audit: genAudit(rnd, personnel),
-      analyses: D.ANALYSES.map(function (a) { return Object.assign({}, a); }),
+      analyses: D.TARIFS.semence.analyses.map(function (a) { return Object.assign({}, a); }), /* garde-prix : amorçage */
       /* Catalogue des actes — lu par la consultation, l'hospitalisation, la
          facturation, la recherche globale ET le moteur de parcours : amorcé ICI.
          L'amorcer depuis l'écran de configuration laissait la prescription sans
@@ -1799,7 +1800,7 @@
             + 'tarif arrêté par la Direction le 01/09/2026';
         }
         return rec;
-      }).concat(D.TYPES_CHAMBRE.map(function (t, i) {
+      }).concat(D.TARIFS.semence.chambres.map(function (t, i) { /* garde-prix : amorçage */
         return {
           id: 'ACH' + C.pad(i + 1, 3), statut: 'actif',
           code: 'HO' + C.pad(i + 1, 2),
@@ -1815,7 +1816,7 @@
            l'AMIU — la SAA se pratique par aspiration manuelle intra-utérine,
            c'est le même geste. Marqué provisoire : une valeur d'attente ne
            se présente jamais comme un tarif validé. */
-        var amiu = (D.CATALOGUE || []).filter(function (e) { return e.code === 'AMIU'; })[0] || {};
+        var amiu = (D.TARIFS.semence.grille || []).filter(function (e) { return e.code === 'AMIU'; })[0] || {}; /* garde-prix : amorçage */
         return {
           id: 'ACT-SAA', statut: 'actif', code: 'GY-SAA',
           libelle: 'Avortement — Soins Après Avortement (SAA)',
@@ -1925,7 +1926,7 @@
        * pharmacie, facturation, assurances, comptabilité. Le poser dans un
        * écran le rendrait vide partout ailleurs.
        * ==================================================================== */
-      catalogueTarifs: (D.CATALOGUE || []).map(function (t, i) {
+      catalogueTarifs: (D.TARIFS.semence.grille || []).map(function (t, i) { /* garde-prix : amorçage */
         return Object.assign({ id: 'TAR' + C.pad(i + 1, 3) }, t);
       }),
 

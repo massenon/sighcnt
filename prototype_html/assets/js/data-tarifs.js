@@ -913,27 +913,13 @@
    * `D.ANALYSES[i].prix` et `D.TYPES_CHAMBRE[i].tarif` étaient lus par une trentaine d'écrans (listes, estimations, caisse manuelle). Ils lisent
    * désormais le prix EN VIGUEUR du référentiel, par une propriété calculée posée sur la constante : un lecteur de plus ou de moins ne change rien, et
    * aucun ne peut plus facturer un prix que l'écran « Tarifs et prix » ne porte pas. La SEMENCE (valeur d'origine) est conservée à côté : elle seule
-   * sert à bâtir le référentiel et à semer, jamais ce qu'on lit. Le lot T7 retirera ces propriétés quand les lecteurs passeront à l'accesseur daté.
+   * sert à bâtir le référentiel et à semer, jamais ce qu'on lit. Le lot T7 (TFIN) a retiré ces propriétés : les lecteurs passent à l'accesseur daté.
    * ======================================================================== */
   var SEMENCE_ANALYSES = (D.ANALYSES || []).map(function (a) { return Object.assign({}, a); });
   var SEMENCE_CHAMBRES = (D.TYPES_CHAMBRE || []).map(function (c) { return Object.assign({}, c); });
-  function prixCourant(h, p) { var s = TARIFS.instantane(h, p, null); return s ? s.na : null; }
-  (D.ANALYSES || []).forEach(function (a) {
-    var valeur = a.prix;
-    Object.defineProperty(a, 'prix', {
-      enumerable: true, configurable: true,
-      get: function () { var h = TARIFS.lire(); var p = h && h.parAnalyse[a.code]; return p ? prixCourant(h, p) : valeur; },
-      set: function (v) { valeur = v; },
-    });
-  });
-  (D.TYPES_CHAMBRE || []).forEach(function (c, i) {
-    var valeur = c.tarif, code = 'HO' + (i < 9 ? '0' : '') + (i + 1);
-    Object.defineProperty(c, 'tarif', {
-      enumerable: true, configurable: true,
-      get: function () { var h = TARIFS.lire(); var p = h && h.parActe[code]; return p ? prixCourant(h, p) : valeur; },
-      set: function (v) { valeur = v; },
-    });
-  });
+  /* LOT TFIN (T7) : plus AUCUNE propriété calculée. `D.ANALYSES[i].prix` et `D.TYPES_CHAMBRE[i].tarif` sont la valeur d'ORIGINE, figée : la semence du référentiel, rien d'autre. Un lecteur
+     qui les lirait encore verrait un prix périmé en silence ; c'est pourquoi `build/garde-listes-prix.js` (lancé par `npm run lint`) échoue sur toute lecture directe hors amorçage.
+     Le prix se lit par `PR.prixAnalyseALaDate`, `PR.prixChambreALaDate`, `PR.prixActeALaDate`, `PR.tarifALaDate`. */
   TARIFS.semence = { analyses: SEMENCE_ANALYSES, chambres: SEMENCE_CHAMBRES, grille: CATALOGUE, actes: function () { return D.ACTES || []; } };
   D.TARIFS = TARIFS;
 

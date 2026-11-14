@@ -34,6 +34,12 @@ for (const f of files) {
   }
 }
 
+/* LOT TFIN (T7) : aucune lecture directe d'une ancienne liste de prix (D.ANALYSES, D.TYPES_CHAMBRE, D.CATALOGUE) hors amorçage. */
+{
+  const fautes = require('./garde-listes-prix.js').analyser(path.join(ROOT, 'assets/js'));
+  fautes.forEach((x) => { erreurs++; console.error(`\n✗ ${x.fichier}:${x.ligne} lecture directe de D.${x.liste} (${x.lecture}) : le prix se lit par PR.prixAnalyseALaDate, PR.prixChambreALaDate, PR.prixActeALaDate`); });
+}
+
 console.log(`\nFichiers analysés : ${files.length}`);
 console.log(erreurs === 0 ? 'Syntaxe : CONFORME' : `Syntaxe : ${erreurs} fichier(s) en erreur`);
 process.exit(erreurs === 0 ? 0 : 1);

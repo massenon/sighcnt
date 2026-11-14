@@ -4490,9 +4490,9 @@
           var fin = sel.filter(function (a) { return a.dateSortie; });
           var j = C.sum(fin, duree);
           return {
-            type: t.label, tarif: t.tarif, sejours: sel.length, journees: j,
+            type: t.label, tarif: PR.prixChambreALaDate(t.id, null), sejours: sel.length, journees: j,
             dms: fin.length ? Math.round(j / fin.length * 10) / 10 : 0,
-            produit: j * t.tarif,
+            produit: j * PR.prixChambreALaDate(t.id, null),
           };
         });
         vue.appendChild(U.card('Par type de chambre',

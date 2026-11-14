@@ -53,7 +53,7 @@
     if (!pats.length || !labs.length || !meds.length) return;
     for (var i = 0; i < 160; i++) {
       var p = C.pick(rnd, pats);
-      var a = C.pick(rnd, D.ANALYSES);
+      var a = C.pick(rnd, D.TARIFS.semence.analyses); /* garde-prix : amorçage */
       var d = C.addDays(AUJ, -C.between(rnd, 0, 120));
       d.setHours(C.between(rnd, 7, 17), C.pick(rnd, [0, 15, 30, 45]));
       var statut = C.pick(rnd, ['valide', 'valide', 'valide', 'en_cours', 'en_attente']);
