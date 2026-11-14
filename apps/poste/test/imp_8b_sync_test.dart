@@ -96,7 +96,7 @@ void main() {
       final serie = [for (final g in c.mm.collection('garanties').actives) if (g['libelle'] == 'Consultation généraliste') g];
       expect(serie.length, 2, reason: 'la version remplacée reste écrite, la nouvelle s\'ajoute UNE fois');
       for (final f in [f1, f2]) {
-        expect([for (final g in f.m.collection('garanties').actives) if (g['libelle'] == 'Consultation généraliste') g['id']].toSet(), {for (final g in serie) g['id']}, reason: '${f.nom} : mêmes identifiants que la mère');
+        expect({for (final g in f.m.collection('garanties').actives) if (g['libelle'] == 'Consultation généraliste') g['id']}, {for (final g in serie) g['id']}, reason: '${f.nom} : mêmes identifiants que la mère');
       }
       // COMPTABILITÉ : aucune demande, et la garde d'exercice clos tient aussi chez le fileul.
       final avantDemandes = f1.m.collection(demandesImportCollection).toutes.length;

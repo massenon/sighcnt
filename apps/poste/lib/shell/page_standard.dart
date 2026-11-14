@@ -57,7 +57,9 @@ class PageStandard extends StatelessWidget {
         ],
       ]),
       const SizedBox(height: 8),
-      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      // LOT 8B : les commandes de l'en-tête passent à la ligne au-delà de 60 % de la largeur (un écran qui porte cinq commandes, dont « Importer les données », écrasait le titre à quinze pixels).
+      LayoutBuilder(
+          builder: (context, k) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -101,8 +103,11 @@ class PageStandard extends StatelessWidget {
                         fontStyle: FontStyle.italic))),
           ]),
         ),
-        if (actions.isNotEmpty) Wrap(spacing: 8, children: actions),
-      ]),
+        if (actions.isNotEmpty)
+          ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: k.maxWidth.isFinite ? k.maxWidth * 0.6 : double.infinity),
+              child: Wrap(spacing: 8, runSpacing: 8, alignment: WrapAlignment.end, children: actions)),
+      ])),
       if (regle != null) ...[
         const SizedBox(height: 14),
         NoteSigh(regle!),

@@ -11,7 +11,6 @@ import 'package:sigh_poste/core/parametres_poste.dart';
 import 'package:sigh_poste/core/service_installation.dart';
 import 'package:sigh_poste/donnees/demandes_import_poste.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
-import 'package:sigh_poste/import/port_magasin.dart';
 import 'package:sigh_poste/import/selecteurs_import.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';

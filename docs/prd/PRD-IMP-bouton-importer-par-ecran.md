@@ -575,6 +575,14 @@ Où est le poste du gestionnaire de stock (mère ou fileul), c'est ce qui comman
 * **Jeux portés au poste** : 17 sur 26 (les 14 d'IMP-C à IDEM plus le stock détail initial, le bon de transfert et le comptage d'inventaire) ; les neuf autres restent fermés et se disent « Non porté au poste » (E2614).
 * **Vue unifiée du dossier** (EF-DOC) : « Pièces produites par le logiciel » liste aussi les comptes rendus de maternité et les fiches de consultation, en renvois, la zone médicale fermant la vue entière.
 
+### 8.5 Lot 8b (14/11/2026) : prix, garanties et couvertures, comptabilité
+
+* **Jeux portés au poste** : 27 sur 29. Ajoutés : `tarifs`, `catalogue-imagerie`, `garanties`, `couvertures-assurance`, `immobilisations`, `budgets`, `courriers`. Restent fermés « Non porté au poste » : `tarifs-produits` et `produits-referentiel` (lot TFIN, prix d'achat versionné).
+* **Prix** : un fileul rattaché ne pose jamais une version de prix (elle est immuable, la mère seule l'écrit) ; il dépose une demande d'import vérifiée, la mère refait les contrôles sous le rôle et le nom de l'auteur, et le Oui d'un fileul vaut proposition (la décision d'un prix revient à la mère).
+* **Versions datées** : une garantie et une couverture sont des VERSIONS ; la prise en charge lit la version en vigueur à la date de la pièce (RG-09), une pièce émise garde son taux et un lot ne s'annule plus sous elle.
+* **Comptabilité** : un budget ne s'écrit jamais sur un exercice clos, d'où que l'écriture vienne (garde au moteur du magasin) ; les numéros de série se prennent à la suite, archivés compris ; aucune écriture comptable n'est écrite (RG-10). Écriture directe, même chez un fileul.
+* Voir `ECARTS-MAQUETTE.md` E2627 à E2637 et la section AD des décisions.
+
 ## 9. Lots proposés
 
 Ordre fondé sur les dépendances : le droit et la fabrique avant tout jeu ; les jeux demandés par la Direction avant les autres ; le poste Flutter lot par lot derrière la maquette (la maquette d'abord, vague 1 du 31/10).

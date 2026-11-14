@@ -18672,6 +18672,27 @@
      "ok": true,
      "archives": 1
     }
+   },
+   "rejeuApresAnnulation": {
+    "accepte": true,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 2,
+     "inchanges": 0,
+     "non": 0
+    },
+    "codes": [
+     [
+      2,
+      "IGNORE_EXISTANT"
+     ],
+     [
+      3,
+      "IGNORE_EXISTANT"
+     ]
+    ]
    }
   }
  },

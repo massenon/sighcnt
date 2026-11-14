@@ -410,6 +410,12 @@ void main() {
       final an = (C['annulation'] as Map).cast<String, Object?>();
       expect({'ok': ok.ok, 'archives': ok.archives}, {'ok': an['ok'], 'archives': an['archives']});
       expect({'ok': ok2.ok, 'archives': ok2.archives}, an['deuxieme']);
+      // Le registre est en AJOUT SEUL : les courriers du lot annulé sont archivés, mais comptent encore ; le même fichier rejoué est IGNORÉ (jamais réécrit sous un autre numéro).
+      final rj = (C['rejeuApresAnnulation'] as Map).cast<String, Object?>();
+      final rejeu = analyseCompta('co-suite');
+      expect(rejeu.accepte, rj['accepte']);
+      memes(rejeu.compte.versJson(), rj['compte'], 'rejeuApresAnnulation.compte');
+      expect([for (final p in rejeu.problemes) [p.n, p.code]], rj['codes']);
     });
 
     test('atomicité : une écriture refusée en cours de lot ne laisse rien, le fichier est consigné', () {

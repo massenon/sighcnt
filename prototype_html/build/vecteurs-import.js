@@ -713,6 +713,9 @@ const CAS = [
           S.collection('courriers').update(c0.id, { traitement: 'en_attente' });
           const ok = annuler(lot), ok2 = annuler(l2);
           co.annulation = { ok: ok.ok, archives: ok.archives === undefined ? null : ok.archives, deuxieme: { ok: ok2.ok, archives: ok2.archives === undefined ? null : ok2.archives } };
+          /* Le registre est en AJOUT SEUL : un courrier archivé (lot annulé) compte encore, le même fichier rejoué est IGNORÉ, jamais réécrit sous un autre numéro. */
+          const rj = enRole('admin', 'ADMIN TEST', () => I.analyserOctets('courriers', octetsDe('co-suite'), 'co-suite.xlsx'));
+          co.rejeuApresAnnulation = { accepte: rj.accepte, compte: rj.compte, codes: I.problemes(rj).map((p) => [p.n, p.code]) };
         }
       }
       {
