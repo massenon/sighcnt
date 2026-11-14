@@ -568,6 +568,13 @@ Où est le poste du gestionnaire de stock (mère ou fileul), c'est ce qui comman
 
 ---
 
+### 8.4 Lot 8 (14/11/2026) : ce que le poste porte maintenant, et comment un jeu réservé se refuse
+
+* **Droit d'import par jeu, écrit au poste** : « Rôles & permissions » règle, par rôle, voir / importer / annuler pour chaque jeu (fiche `rbac`, `droitsImport`), importer et annuler supposant voir ; une surcharge accorde autant qu'elle restreint ; effet immédiat dans le moteur ; commande absente sans le droit d'éditer l'écran. Aucun second mécanisme : le même `droitsImport` que la maquette et `rbac.json`.
+* **Jeu réservé à la mère** : sur un fileul rattaché, un jeu RESTREINT qui écrit la configuration de la mère (le personnel, le stock détail initial, le bon de transfert) ne s'écrit pas : la commande est absente ET le moteur refuse (`JEU_RESERVE_A_LA_MERE`, motif, geste), le fichier pouvant toujours être vérifié. Le comptage d'inventaire n'écrit que `inventaires` : écriture directe.
+* **Jeux portés au poste** : 17 sur 26 (les 14 d'IMP-C à IDEM plus le stock détail initial, le bon de transfert et le comptage d'inventaire) ; les neuf autres restent fermés et se disent « Non porté au poste » (E2614).
+* **Vue unifiée du dossier** (EF-DOC) : « Pièces produites par le logiciel » liste aussi les comptes rendus de maternité et les fiches de consultation, en renvois, la zone médicale fermant la vue entière.
+
 ## 9. Lots proposés
 
 Ordre fondé sur les dépendances : le droit et la fabrique avant tout jeu ; les jeux demandés par la Direction avant les autres ; le poste Flutter lot par lot derrière la maquette (la maquette d'abord, vague 1 du 31/10).
