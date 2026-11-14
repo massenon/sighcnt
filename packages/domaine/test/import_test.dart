@@ -197,7 +197,7 @@ void main() {
       expect({for (final n in ['produits', 'lots', 'mouvements']) n: port.toutes(n).length}, avant);
     });
 
-    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide', 'im-valide', 'bu-valide', 'co-valide'];
+    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide', 'im-valide', 'bu-valide', 'co-valide', 'pf-valide'];
     for (final app in liste(V['applications'])) {
       test('application de ${app['cas']}', () {
         final id = '${app['cas']}';
@@ -211,8 +211,11 @@ void main() {
         expect(lot['reference'], app['reference']);
         // La version 1 du prix d'achat (`tarifs`, `versionsTarif`, lot T5 de la maquette) n'est pas portée au poste : le prix reste à plat sur l'article, comme à l'écran
         // « Référentiel produits » du poste (ECARTS E2470). On compare tout le reste, collection par collection.
-        const horsPoste = {'tarifs', 'versionsTarif'};
-        final attendues = {for (final e in (app['fiches'] as Map).entries) if (!horsPoste.contains(e.key)) '${e.key}': e.value};
+        // Lot TFIN-2 : le jeu `produits-referentiel` pose, lui, la version 1 de chaque article qu'il crée (voie de l'écran) : il est comparé en entier.
+        final horsPoste = app['jeu'] == 'produits-referentiel' ? <String>{} : {'tarifs', 'versionsTarif'};
+        // La version 1 porte le nom de la SESSION de la maquette (`auteurDeLaSession`, ici celui du compte d'amorçage) quand le lot porte `S.currentUser` (« ADMIN TEST ») : deux noms d'une même personne
+        // dans le vecteur, un seul agent connecté au poste (`PortImport.utilisateur`).
+        final attendues = jsonDecode(jsonEncode({for (final e in (app['fiches'] as Map).entries) if (!horsPoste.contains(e.key)) '${e.key}': e.value}).replaceAll('BASSONGUI Chabi Séko', 'ADMIN TEST')) as Map<String, Object?>;
         expect((lot['ecrits'] as List).length, attendues.values.fold<int>(0, (t, l) => t + (l as List).length));
         final idVersCode = {for (final p in port.toutes('produits')) p['id']: '${p['code']}'};
         final fiches = <String, List<Map<String, Object?>>>{};
@@ -250,7 +253,7 @@ void main() {
         expect(att['cas'], id);
         expect(r.ok, att['ok'], reason: '$id : ${r.motif}');
         // La maquette archive aussi l'identité de prix (`tarifs`) que l'import du stock a créée avec l'article ; le poste n'en écrit pas (ECARTS E2470).
-        final identites = ((apps[id]!['fiches'] as Map)['tarifs'] as List?)?.length ?? 0;
+        final identites = apps[id]!['jeu'] == 'produits-referentiel' ? 0 : (((apps[id]!['fiches'] as Map)['tarifs'] as List?)?.length ?? 0);
         expect(r.archives, (att['archives'] as int) - identites, reason: id);
         final ecrits = (lots[id]!['ecrits'] as List).cast<Map>();
         expect(ecrits.where((e) => port.parId('${e['collection']}', e['id'])!['statut'] == 'archive').length, (att['archivesVerifiees'] as int) - identites);

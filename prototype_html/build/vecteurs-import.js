@@ -21,14 +21,14 @@ const { ouvrirMaquette, ecrire, ROOT, REPO } = require('./extraire');
 
 const MAGASIN = {
   produits: [
-    { id: 'PRD0001', code: 'ABA', designation: 'ABAISSE LANGUE', unite: 'Unité', categorie: 'conso_medical', stock: 2, stockGros: 2, stockDetail: 0, statut: 'actif' },
+    { id: 'PRD0001', code: 'ABA', designation: 'ABAISSE LANGUE', unite: 'Unité', categorie: 'conso_medical', stock: 2, stockGros: 2, stockDetail: 0, prixAchat: 30, prixVente: 30, statut: 'actif' },
     { id: 'PRD0002', code: 'PARA500', designation: 'PARACETAMOL 500 MG CP B/100', unite: 'Boîte', categorie: 'medicament', stock: 10, stockGros: 10, stockDetail: 0, statut: 'actif' },
     /* Lot 8 (jeux du stock) : de quoi éprouver le stock détail initial, le bon de transfert et le comptage d'inventaire. */
     { id: 'PRD0003', code: 'AMOXI', designation: 'AMOXICILLINE 500 MG B/100', unite: 'Boîte', categorie: 'medicament', stock: 30, stockGros: 30, stockDetail: 0, cump: 100, statut: 'actif' },
-    { id: 'PRD0004', code: 'COTON', designation: 'COTON HYDROPHILE 500 G', unite: 'Unité', categorie: 'conso_medical', stock: 12, stockGros: 12, stockDetail: 0, cump: 50, statut: 'actif' },
-    { id: 'PRD0005', code: 'SIROP', designation: 'SIROP TOUX 125 ML', unite: 'Flacon', categorie: 'medicament', stock: 20, stockGros: 15, stockDetail: 5, cump: 80, statut: 'actif' },
+    { id: 'PRD0004', code: 'COTON', designation: 'COTON HYDROPHILE 500 G', unite: 'Unité', categorie: 'conso_medical', stock: 12, stockGros: 12, stockDetail: 0, cump: 50, prixAchat: 60, prixVente: 90, statut: 'actif' },
+    { id: 'PRD0005', code: 'SIROP', designation: 'SIROP TOUX 125 ML', unite: 'Flacon', categorie: 'medicament', stock: 20, stockGros: 15, stockDetail: 5, cump: 80, prixAchat: 90, prixVente: 90, statut: 'actif' },
     { id: 'PRD0006', code: 'INCOH', designation: 'ARTICLE INCOHERENT', unite: 'Unité', categorie: 'conso_medical', stock: 10, stockGros: 4, stockDetail: 4, cump: 10, statut: 'actif' },
-    { id: 'PRD0007', code: 'DOLIP', designation: 'DOLIPRANE 1 G B/8', unite: 'Boîte', categorie: 'medicament', stock: 40, stockGros: 40, stockDetail: 0, cump: 200, statut: 'actif' },
+    { id: 'PRD0007', code: 'DOLIP', designation: 'DOLIPRANE 1 G B/8', unite: 'Boîte', categorie: 'medicament', stock: 40, stockGros: 40, stockDetail: 0, cump: 200, prixAchat: 250, prixVente: 250, statut: 'actif' },
   ],
   lots: [
     { id: 'LOT0001', produitId: 'PRD0003', produit: 'AMOXICILLINE 500 MG B/100', numeroLot: 'L-A', datePeremption: '2026-12-15', quantiteRestante: 20, magasin: 'gros', statut: 'alerte' },
@@ -82,6 +82,12 @@ const MAGASIN = {
     { id: 'NFS', code: 'NFS', libelle: 'NFS complète (hémogramme)', famille: 'LABO', secteur: 'Laboratoire', codeAnalyse: 'NFS', statut: 'actif' },
     { id: 'IMG-ECHO-PEL', code: 'IMG-ECHO-PEL', libelle: 'Échographie pelvienne', famille: 'IMAGERIE', secteur: 'Imagerie médicale', codeGrille: 'IMG-ECHO-PEL', statut: 'actif' },
     { id: 'PARA500', code: 'PARA500', libelle: 'PARACETAMOL 500 MG CP B/100', famille: 'PRODUIT', statut: 'actif' },
+    /* Lot TFIN-2 : trois articles de plus au référentiel de prix (un médicament, un consommable à prix de vente propre, un médicament avec une proposition en attente) ; INCOH n'en a PAS : la reprise d'un article sans prestation de prix est éprouvée côté Dart). */
+    { id: 'DOLIP', code: 'DOLIP', libelle: 'DOLIPRANE 1 G B/8', famille: 'PRODUIT', statut: 'actif' },
+    { id: 'COTON', code: 'COTON', libelle: 'COTON HYDROPHILE 500 G', famille: 'PRODUIT', statut: 'actif' },
+    { id: 'SIROP', code: 'SIROP', libelle: 'SIROP TOUX 125 ML', famille: 'PRODUIT', statut: 'actif' },
+    { id: 'AMOXI', code: 'AMOXI', libelle: 'AMOXICILLINE 500 MG B/100', famille: 'PRODUIT', statut: 'actif' },
+    { id: 'ABA', code: 'ABA', libelle: 'ABAISSE LANGUE', famille: 'PRODUIT', statut: 'actif' },
   ],
   versionsTarif: [
     { id: 'MG01@origine@1', code: 'MG01', version: 1, prixNonAssure: 5000, prixAssure: 3000, etatAssure: 'montant', origine: 'migration', statut: 'valide' },
@@ -91,6 +97,12 @@ const MAGASIN = {
     { id: 'NFS@origine@1', code: 'NFS', version: 1, prixNonAssure: 4000, etatAssure: 'unique', origine: 'migration', statut: 'valide' },
     { id: 'IMG-ECHO-PEL@origine@1', code: 'IMG-ECHO-PEL', version: 1, prixNonAssure: 15000, prixAssure: 10000, etatAssure: 'montant', origine: 'migration', statut: 'valide' },
     { id: 'PARA500@origine@1', code: 'PARA500', version: 1, prixNonAssure: 1200, etatAssure: 'unique', origine: 'migration', statut: 'valide' },
+    { id: 'DOLIP@origine@1', code: 'DOLIP', version: 1, prixNonAssure: 250, etatAssure: 'unique', origine: 'reprise', statut: 'valide' },
+    { id: 'COTON@origine@1', code: 'COTON', version: 1, prixNonAssure: 60, prixVente: 90, etatAssure: 'unique', origine: 'reprise', statut: 'valide' },
+    { id: 'SIROP@origine@1', code: 'SIROP', version: 1, prixNonAssure: 90, etatAssure: 'unique', origine: 'reprise', statut: 'valide' },
+    { id: 'AMOXI@origine@1', code: 'AMOXI', version: 1, etatNonAssure: 'manquant', etatAssure: 'unique', motif: 'Article repris sans prix d’achat : à valoriser', origine: 'reprise', statut: 'valide' },
+    { id: 'ABA@origine@1', code: 'ABA', version: 1, prixNonAssure: 30, etatAssure: 'unique', origine: 'reprise', statut: 'valide' },
+    { id: 'SIROP@2027-03-01@2', code: 'SIROP', version: 2, dateEffet: '2027-03-01', prixNonAssure: 95, etatAssure: 'unique', motif: 'Nouveau tarif', origine: 'ecran', statut: 'propose', proposePar: 'AUTRE AGENT', proposeLe: '2026-10-30', proposeRole: 'da' },
   ],
   /* Lot 8b, groupe GARANTIES ET COUVERTURES : deux souscripteurs, des garanties versionnées (une série sans date, une série à deux versions), deux assurés (l'un avec un historique de
      couverture, l'autre sans : la première modification reprend alors la couverture du dossier) et une facture émise sous la grille du premier souscripteur. */
@@ -132,6 +144,8 @@ const SD = (o) => Object.assign({ code: null, lot: null, peremption: null, quant
 const TL = (o) => Object.assign({ code: null, lot: null, quantite: null, destination: 'Pharmacie d’urgence', date: null, motif: null }, o);
 const IC = (o) => Object.assign({ magasin: 'Stock gros', code: null, compte: null, type: null, date: null }, o);
 const TA = (o) => Object.assign({ code: null, designation: null, famille: null, secteur: null, prixNonAssure: null, prixAssure: null, couverture: null, dateEffet: '2027-01-01', valider: null, motif: 'Nouvelle grille tarifaire', source: null }, o);
+const TP = (o) => Object.assign({ code: null, prixAchat: null, dateEffet: '2027-01-01', valider: 'Oui', motif: 'Nouveau tarif du fournisseur', source: null }, o);
+const PF = (o) => Object.assign({ code: null, designation: null, categorie: 'Médicaments', unite: 'Boîte', prixAchat: null, prixVente: null, seuil: null, emplacement: null, fournisseur: null }, o);
 const IB = (o) => Object.assign({ reference: null, designation: null, categorie: 'Matériel médical', dateAcquisition: '2026-03-15', valeur: null, duree: 5, compte: '241000', fournisseur: null, etat: null }, o);
 const BU = (o) => Object.assign({ exercice: 2027, centre: 'Laboratoire', nature: 'Investissements', prevu: null }, o);
 const CO = (o) => Object.assign({ reference: null, sens: null, date: null, correspondant: null, objet: null, nature: null, affecteA: null }, o);
@@ -371,6 +385,43 @@ const CAS = [
   ['co-doublon-fichier', 'courriers', [CO({ sens: 'Arrivée', date: '2026-11-03', objet: 'Objet' }), CO({ sens: 'Arrivée', date: '2026-11-03', objet: 'objet' })]],
   ['co-objet-absent', 'courriers', [CO({ sens: 'Arrivée', date: '2026-11-03' })]],
   ['ic-doublon-fichier', 'inventaire-comptage', [IC({ code: 'COTON', compte: 1 }), IC({ code: 'coton', compte: 2 })]],
+  /* Lot TFIN-2 : les prix d'achat des produits (version datée par la MÊME voie que l'écran « Changer le prix d'achat ») et le référentiel produits (fiche neuve + version 1). Session de tirage : l'administrateur. */
+  ['tp-valide', 'tarifs-produits', [
+    TP({ code: 'DOLIP', prixAchat: 300, valider: 'Oui' }),
+    TP({ code: 'COTON', prixAchat: 70, valider: 'Oui' }),
+    TP({ code: 'AMOXI', prixAchat: 120, valider: 'Oui' }),
+    TP({ code: 'ABA', prixAchat: 40, valider: 'Non', motif: 'Tarif non arrêté' }),
+  ]],
+  ['tp-proposition', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 280 }), TP({ code: 'COTON', prixAchat: 65, valider: 'Oui' })]],
+  ['tp-article-inconnu', 'tarifs-produits', [TP({ code: 'NOPE', prixAchat: 100 })]],
+  ['tp-prix-absent', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: '-' })]],
+  ['tp-nc', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 'NC' })]],
+  ['tp-prix-zero', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 0 })]],
+  ['tp-prix-decimal', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 250.5 })]],
+  ['tp-date-passee', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 300, dateEffet: '2026-10-01' })]],
+  ['tp-date-absente', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 300, dateEffet: null })]],
+  ['tp-motif-absent', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 300, motif: null })]],
+  ['tp-non-sans-motif', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 300, valider: 'Non', motif: null })]],
+  ['tp-inchange', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 250 })]],
+  ['tp-en-attente', 'tarifs-produits', [TP({ code: 'SIROP', prixAchat: 100 })]],
+  ['tp-doublon-fichier', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 300 }), TP({ code: 'dolip', prixAchat: 310 })]],
+  ['tp-deux-dates', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 300 }), TP({ code: 'DOLIP', prixAchat: 310, dateEffet: '2027-02-01' })]],
+  ['tp-colonne-retiree', 'tarifs-produits', [TP({ code: 'DOLIP', prixAchat: 300 })], 'plus:Quantité'],
+  ['pf-valide', 'produits-referentiel', [
+    PF({ code: 'NEW-MED', designation: 'AMBROXOL 30 MG CP B/20', prixAchat: 350, seuil: 20, emplacement: 'A2', fournisseur: 'SOBAPS' }),
+    PF({ code: 'NEW-CONSO', designation: 'COMPRESSES STERILES 10X10', categorie: 'Consommables médicaux', unite: 'Sachet', prixAchat: 500, prixVente: 650, seuil: 50 }),
+    PF({ code: 'NEW-SANS-SEUIL', designation: 'GANTS D EXAMEN T7', categorie: 'Consommables médicaux', unite: 'Boîte', prixAchat: 3200 }),
+  ]],
+  ['pf-doublon-magasin', 'produits-referentiel', [PF({ code: 'PARA500', designation: 'PARACETAMOL', prixAchat: 350 })]],
+  ['pf-prix-absent', 'produits-referentiel', [PF({ code: 'NEW-X1', designation: 'Article sans prix', prixAchat: null })]],
+  ['pf-prix-tiret', 'produits-referentiel', [PF({ code: 'NEW-X2', designation: 'Article au tiret', prixAchat: '-' })]],
+  ['pf-prix-zero', 'produits-referentiel', [PF({ code: 'NEW-X3', designation: 'Article à zéro', prixAchat: 0 })]],
+  ['pf-nc', 'produits-referentiel', [PF({ code: 'NEW-X4', designation: 'Article NC', prixAchat: 'NC' })]],
+  ['pf-rg02', 'produits-referentiel', [PF({ code: 'NEW-X5', designation: 'Médicament à marge', prixAchat: 100, prixVente: 150 })]],
+  ['pf-categorie-inconnue', 'produits-referentiel', [PF({ code: 'NEW-X6', designation: 'Article', categorie: 'Bijoux', prixAchat: 100 })]],
+  ['pf-fournisseur-emplacement-inconnus', 'produits-referentiel', [PF({ code: 'NEW-X7', designation: 'Article', prixAchat: 100, seuil: 5, fournisseur: 'INCONNU', emplacement: 'Z9' })]],
+  ['pf-colonne-retiree', 'produits-referentiel', [PF({ code: 'NEW-X8', designation: 'Article', prixAchat: 100 })], 'plus:Quantité'],
+  ['pf-doublon-fichier', 'produits-referentiel', [PF({ code: 'NEW-D1', designation: 'Article', prixAchat: 100 }), PF({ code: 'new-d1', designation: 'Article bis', prixAchat: 110 })]],
 ];
 
 (async () => {
@@ -440,7 +491,7 @@ const CAS = [
         };
       });
       /* 3. Application, relevé des fiches, annulation. L'ordre fixe les références de lot. */
-      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide', 'im-valide', 'bu-valide', 'co-valide'];
+      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide', 'im-valide', 'bu-valide', 'co-valide', 'pf-valide'];
       out.applications = [];
       const refus = I.analyserOctets('grand-stock', Uint8Array.from(out.fixtures['gs-quantite-negative']), 'gs-quantite-negative.xlsx');
       const lotRefus = I.consigner(I.jeu('grand-stock'), refus);
@@ -610,6 +661,48 @@ const CAS = [
         out.prix.sansDroit = { ok: rD.ok, code: rD.code || null, versionsAjoutees: S.collection('versionsTarif').all().length - avV };
         /* Les références de lot dépendent de ce qui précède : elles se disent {A} et {B} (le test rejoue sur son propre magasin). */
         out.prix = JSON.parse(JSON.stringify(out.prix).split(rA.lot.reference).join('{A}').split(rB.lot.reference).join('{B}'));
+      }
+      /* 6 ter bis. LOT TFIN-2 : les PRIX D'ACHAT des produits par fichier. Même règle que les prix de prestations (Oui + droit de décider = version validée d'emblée ; Oui sans ce droit = proposition ;
+         Non = rien ; identique = « inchangé » ; un lot validé ne s'annule plus ; ses propositions se retirent avec lui) ; un article que la prestation de prix ne porte pas encore reçoit sa version 1 de
+         reprise AVANT la proposition (AMOXI), RG-02 : le prix de vente d'un médicament est son prix d'achat. */
+      out.produits = {};
+      {
+        const enRole = (role, utilisateur, f) => {
+          S.setSession(Object.assign({}, sess0, { role: role, nomComplet: utilisateur, nom: utilisateur }));
+          const u0 = S.currentUser; S.currentUser = () => utilisateur;
+          try { return f(); } finally { S.setSession(sess0); S.currentUser = u0; }
+        };
+        const detailDe = (x) => (x && x.decision !== undefined ? ['Ancien : ' + x.ancien, 'nouveau : ' + x.nouveau].concat(x.variation ? ['variation : ' + x.variation] : []).concat(['décision : ' + x.decision]).join(' ; ') : '');
+        const resumeAnalyse = (a) => ({ accepte: a.accepte, compte: a.compte, problemes: I.problemes(a).map((p) => ({ n: p.n, colonne: p.colonne, code: p.code, niveau: p.niveau })), details: a.lignes.map((l) => [l.n, l.etat, detailDe(l.extra)]) });
+        const net = (f) => { const c = nettoyer(f, {}); c.id = f.id; return c; };
+        const fichesDe = (lot) => lot.ecrits.map((e) => net(S.collection(e.collection).get(e.id)));
+        const versionsDe = (code) => S.collection('versionsTarif').all().filter((v) => v.code === code).sort((a, b) => a.version - b.version).map((v) => net(v));
+        out.produits.adminValide = enRole('admin', 'ADMIN TEST', () => resumeAnalyse(I.analyserOctets('tarifs-produits', octetsDe('tp-valide'), 'tp-valide.xlsx')));
+        out.produits.stockValide = enRole('stock', 'STOCK TEST', () => resumeAnalyse(I.analyserOctets('tarifs-produits', octetsDe('tp-valide'), 'tp-valide.xlsx')));
+        out.produits.stockDeuxDates = enRole('stock', 'STOCK TEST', () => resumeAnalyse(I.analyserOctets('tarifs-produits', octetsDe('tp-deux-dates'), 'tp-deux-dates.xlsx')));
+        out.produits.adminDeuxDates = enRole('admin', 'ADMIN TEST', () => resumeAnalyse(I.analyserOctets('tarifs-produits', octetsDe('tp-deux-dates'), 'tp-deux-dates.xlsx')));
+        const avantLots = nbLots();
+        const rA = enRole('admin', 'ADMIN TEST', () => I.appliquer('tarifs-produits', I.analyserOctets('tarifs-produits', octetsDe('tp-valide'), 'tp-valide.xlsx')));
+        if (!rA.ok) throw new Error('lot de prix d\'achat non posé : ' + JSON.stringify({ code: rA.code, motif: rA.motif }));
+        out.produits.appliqueAdmin = { reference: rA.lot.reference, etat: rA.lot.etat, nbLignes: rA.lot.nbLignes, nbInchanges: rA.lot.nbInchanges, nbNon: rA.lot.nbNon, ecrits: rA.lot.ecrits.map((e) => e.collection), fiches: fichesDe(rA.lot) };
+        out.produits.versionsApresAdmin = { DOLIP: versionsDe('DOLIP'), AMOXI: versionsDe('AMOXI'), ABA: versionsDe('ABA') };
+        const refusA = enRole('admin', 'ADMIN TEST', () => I.annulerLot(rA.lot.id, 'essai'));
+        out.produits.annulationValidee = { ok: refusA.ok, code: refusA.code || null, motif: refusA.motif || null, geste: refusA.geste || null };
+        out.produits.rejeu = enRole('admin', 'ADMIN TEST', () => resumeAnalyse(I.analyserOctets('tarifs-produits', octetsDe('tp-valide'), 'tp-valide.xlsx')));
+        const rB = enRole('stock', 'STOCK TEST', () => I.appliquer('tarifs-produits', I.analyserOctets('tarifs-produits', octetsDe('tp-proposition'), 'tp-proposition.xlsx')));
+        if (!rB.ok) throw new Error('lot de propositions de prix d\'achat non posé : ' + JSON.stringify({ code: rB.code, motif: rB.motif, pb: enRole('stock', 'STOCK TEST', () => I.problemes(I.analyserOctets('tarifs-produits', octetsDe('tp-proposition'), 'tp-proposition.xlsx')).slice(0, 4).map((x) => [x.n, x.colonne, x.code, x.motif])) }));
+        out.produits.appliqueStock = { reference: rB.lot.reference, etat: rB.lot.etat, nbAvertissements: rB.lot.nbAvertissements, ecrits: rB.lot.ecrits.map((e) => e.collection), fiches: fichesDe(rB.lot) };
+        const ids = rB.lot.ecrits.map((e) => e.id);
+        const rBa = enRole('stock', 'STOCK TEST', () => I.annulerLot(rB.lot.id, 'essai'));
+        out.produits.annulationPropositions = { ok: rBa.ok, code: rBa.code || null, archives: rBa.archives === undefined ? null : rBa.archives, etatLot: S.collection('lotsImportation').get(rB.lot.id).etat,
+          versions: ids.map((id) => { const v = S.collection('versionsTarif').get(id); return { id: id, statut: v.statut, motifDecision: v.motifDecision, decidePar: v.decidePar, roleDecision: v.roleDecision }; }) };
+        const rBb = enRole('stock', 'STOCK TEST', () => I.annulerLot(rB.lot.id, 'encore'));
+        out.produits.annulationDeuxFois = { ok: rBb.ok, code: rBb.code || null };
+        out.produits.lotsAjoutes = nbLots() - avantLots;
+        const avV = S.collection('versionsTarif').all().length;
+        const rD = enRole('caissier', 'CAISSIER TEST', () => I.appliquer('tarifs-produits', I.analyserOctets('tarifs-produits', octetsDe('tp-valide'), 'tp-valide.xlsx')));
+        out.produits.sansDroit = { ok: rD.ok, code: rD.code || null, versionsAjoutees: S.collection('versionsTarif').all().length - avV };
+        out.produits = JSON.parse(JSON.stringify(out.produits).split(rA.lot.reference).join('{A}').split(rB.lot.reference).join('{B}'));
       }
       /* 6 quater. LOT 8b, groupe GARANTIES ET COUVERTURES : une version datée ne réécrit jamais une pièce émise. Une garantie ne s'annule plus sous une facture émise ou sous une version plus
          récente de sa série ; une couverture de même (la précédente reprend sa fin, le dossier retrouve son état). */

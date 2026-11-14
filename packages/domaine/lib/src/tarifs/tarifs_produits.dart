@@ -259,7 +259,8 @@ ResultatTarif<PropositionTarif> tarProposerProduit(ContexteTarif cx, DemandeProd
     if (!absent) 'prixNonAssure': achat.toInt(),
     'etatAssure': 'unique',
     'motif': (o.motif ?? '').trim(),
-    'origine': o.viaImport ? 'import' : (creation ? 'creation' : 'ecran'),
+    // Une version née d'un fichier (le jeu des prix d'achat OU la création d'un article par le jeu du référentiel produits) porte l'origine « import ».
+    'origine': (o.viaImport || o.importJeu != null) ? 'import' : (creation ? 'creation' : 'ecran'),
     'statut': 'propose',
     'proposePar': cx.auteur,
     'proposeLe': cx.aujourdhui,

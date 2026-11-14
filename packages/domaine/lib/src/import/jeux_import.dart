@@ -12,8 +12,25 @@ import '../comptabilite/cpc_exercice.dart' show cpcEtatExercice;
 import '../format/format_fr.dart' show dateFR, nombre;
 import '../format/js.dart' show arrondiJs;
 import '../imagerie/cr_modalites.dart' show modalitesImagerie;
+import '../stock/referentiels_stock.dart' show categoriesProduit;
 import '../tarifs/tarifs.dart'
-    show ContexteTarif, DemandeProposition, PiecesTarif, PropositionTarif, ReferentielTarifs, ResultatTarif, tarPeutDecider, tarProposer, tarRetirer;
+    show
+        ContexteTarif,
+        DemandeProduit,
+        DemandeProposition,
+        PiecesTarif,
+        PropositionTarif,
+        ReferentielTarifs,
+        ResultatTarif,
+        tarCategorieSansMarge,
+        tarDemandeCreationProduit,
+        tarMigrerProduits,
+        tarPeutDecider,
+        tarPrixVenteProduit,
+        tarProposer,
+        tarProposerProduit,
+        tarRefusPrixAchatAbsent,
+        tarRetirer;
 import '../format/recherche.dart' show normaliser;
 import 'demande_import.dart' show champDepartCompteurs, champRefuseeParMere;
 import 'donnees_import.dart';
@@ -21,6 +38,7 @@ import 'moteur_import.dart';
 
 part 'jeux_import_stock.dart';
 part 'jeux_import_prix.dart';
+part 'jeux_import_produits.dart';
 part 'jeux_import_assurance.dart';
 part 'jeux_import_compta.dart';
 
@@ -1285,6 +1303,9 @@ final List<JeuImport> jeuxImport = [
   // Lot 8b, groupe PRIX : les prix de prestations (versions datées) et le catalogue de l'imagerie.
   jeuTarifs,
   jeuCatalogueImagerie,
+  // Lot TFIN-2, groupe PRODUITS : les prix d'achat (versions datées, par la voie de « Changer le prix d'achat ») et le référentiel produits (fiche neuve et version 1).
+  jeuTarifsProduits,
+  jeuProduitsReferentiel,
   // Lot 8b, groupe GARANTIES ET COUVERTURES : les versions datées de garantie et les couvertures datées des assurés.
   jeuGaranties,
   jeuCouverturesAssurance,

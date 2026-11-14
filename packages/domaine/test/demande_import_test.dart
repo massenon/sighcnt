@@ -151,6 +151,10 @@ void main() {
     for (final jeu in ['patients', 'soldes-ouverture', 'prestataires']) {
       expect(voie(jeu), VoieImportFileul.directe, reason: '$jeu : aucune cible de configuration, écrit comme avant, sans demande');
     }
+    // LOT TFIN-2 : les prix d'achat écrivent des VERSIONS (famille R) : une demande vérifiée, rien chez le fileul ; le référentiel produits écrit la fiche (activité) et la mère pose la version 1.
+    expect(voie('tarifs-produits'), VoieImportFileul.demandeSeule, reason: 'une version de prix ne s\'écrit jamais chez un fileul');
+    expect(voie('tarifs'), VoieImportFileul.demandeSeule);
+    expect(voie('produits-referentiel'), isNot(VoieImportFileul.reserveeALaMere), reason: 'aucune donnée sensible : le référentiel produits n\'est pas un jeu restreint');
     expect(voie('personnel'), VoieImportFileul.reserveeALaMere, reason: 'restreint : ses lignes (identité, salaire) ne voyagent jamais dans une demande (RG-13)');
     expect(collectionsAutoriseesAuFileul(jeuImportParId('fournisseurs')!), {'fournisseurs'}, reason: 'le fileul n\'est autorisé à écrire que les cibles du jeu, rien d\'autre');
   });

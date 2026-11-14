@@ -57,7 +57,8 @@ class DemandesImportPoste {
   /// LOT 8B : ce que la validation d'un prix à l'import laisse à FAIRE (le marquage « tarif d'attente » levé, la projection des fiches de lecture refaite, comme après un Oui à l'écran).
   /// À appeler sur la MÈRE, après qu'un lot du jeu `tarifs` a été écrit (par elle ou pour le compte d'une demande) ; sans effet pour un autre jeu et pour un lot de propositions.
   void apresImportDePrix(Fiche? lot) {
-    if (lot == null || lot['jeu'] != 'tarifs') return;
+    // Lot TFIN-2 : les prix d'achat validés d'emblée (jeu `tarifs-produits`) font la même suite : la fiche du produit suit la version en vigueur (`TarifsPoste._projeterProduit`).
+    if (lot == null || (lot['jeu'] != 'tarifs' && lot['jeu'] != 'tarifs-produits')) return;
     final tarifs = TarifsPoste(m, role: role, auteur: auteur, libelles: libellesDesRoles(matrice), horloge: aujourdhui, etiquette: etiquette);
     final versions = [for (final e in ((lot['ecrits'] as List?) ?? const []).cast<Map>()) if (e['collection'] == 'versionsTarif') m.collection('versionsTarif').parId(e['id'])].whereType<Fiche>();
     tarifs.apresImport([for (final v in versions) if (v['statut'] == 'valide') v]);
@@ -159,7 +160,8 @@ class DemandesImportPoste {
           matrice: matrice.matriceImport,
           bornes: _bornes(),
           libellesRoles: libellesDesRoles(matrice),
-          fileul: fileulRattache));
+          fileul: fileulRattache,
+          surFileul: fileulRattache));
 
   /// Les collections que l'import de [jeu] peut écrire chez ce fileul : ses cibles, rien d'autre.
   Set<String> _autorisees(JeuImport jeu, [Iterable<Map>? ecrits]) => {...collectionsAutoriseesAuFileul(jeu), if (ecrits != null) for (final e in ecrits) '${e['collection']}'};

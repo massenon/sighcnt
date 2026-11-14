@@ -65,8 +65,9 @@ void main() {
     expect([coche(t, 'import:fournisseurs:voir'), coche(t, 'import:fournisseurs:importer'), coche(t, 'import:fournisseurs:annuler')], [true, true, true]);
     expect([coche(t, 'import:patients:voir'), coche(t, 'import:patients:importer'), coche(t, 'import:patients:annuler')], [false, false, false]);
     expect(find.text('défaut du manifeste'), findsWidgets);
-    await t.ensureVisible(find.byKey(const Key('import:tarifs-produits:non-porte')));
-    expect(find.byKey(const Key('import:tarifs-produits:non-porte')), findsOneWidget, reason: 'un jeu que le poste ne porte pas encore le dit');
+    // Lot TFIN-2 : les vingt-neuf jeux de la maquette sont portés, plus aucun jeu n'est « Non porté au poste » (les deux derniers, prix d'achat et référentiel produits, le sont maintenant).
+    expect(find.byKey(const Key('import:tarifs-produits:non-porte')), findsNothing, reason: 'le jeu des prix d\'achat est porté');
+    expect(find.byKey(const Key('import:produits-referentiel:non-porte')), findsNothing, reason: 'le jeu du référentiel produits est porté');
     expect(find.byKey(const Key('import:fournisseurs:non-porte')), findsNothing);
     sem.dispose();
   });

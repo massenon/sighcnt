@@ -1,0 +1,55 @@
+{
+ "id": "imp-tarifs-produits",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation des prix d’achat",
+ "acces": "ouvert",
+ "titre": "Importation des prix d’achat",
+ "description": "Prix d’achat des articles du référentiel produits, avec une date d’effet et la décision Oui ou Non : chaque ligne qui change devient une version datée, jamais un écrasement de la fiche.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation des prix d’achat"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "Ce jeu ne change jamais le prix en vigueur par lui-même : la ligne devient une proposition soumise à l’alerte Oui/Non de la Directrice Administrative ou de la Direction, sauf si votre profil détient le droit de décider ET que la ligne dit Oui. RG-02 : le prix de vente d’un médicament est son prix d’achat, il suit sans marge. Une pièce déjà émise garde le prix de sa date. Jamais de quantité : le stock se reprend par le jeu « Importation Grand Stock ». Un tiret n’est pas un zéro : une ligne sans prix d’achat est refusée.",
+  "Une ligne qui change un prix devient une version datée, jamais un écrasement. La vérification montre, pour chaque ligne, l’ancien prix, le nouveau et la variation. Les erreurs refusent le fichier entier ; les décisions se prennent ligne à ligne : Oui (validé d’emblée si votre profil décide, sinon proposition), Non (non appliquée, motif obligatoire), vide (proposition). Le prix en vigueur ne change jamais à l’import par lui-même."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

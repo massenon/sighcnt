@@ -33,12 +33,15 @@ class ServicePropositionsTarif {
     if (_demarre) return;
     _demarre = true;
     magasin.collection(tarCollectionDemandes).addListener(_armer);
+    // LOT TFIN-2 : une fiche produit qui ARRIVE (créée chez un fileul, importée par le référentiel produits d'un fileul) reçoit sa version 1 de reprise à la mère, jamais chez le fileul (famille R).
+    magasin.collection('produits').addListener(_armer);
     _armer();
   }
 
   void arreter() {
     _demarre = false;
     magasin.collection(tarCollectionDemandes).removeListener(_armer);
+    magasin.collection('produits').removeListener(_armer);
     _minuterie?.cancel();
   }
 
@@ -52,6 +55,7 @@ class ServicePropositionsTarif {
     if (_enCours) return 0;
     _enCours = true;
     try {
+      TarifsPoste.assurerProduits(magasin);
       final nav = await _donnees();
       final matrice = nav.aChaud(magasin).matrice;
       final tarifs = TarifsPoste(magasin,

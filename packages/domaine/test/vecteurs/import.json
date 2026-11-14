@@ -13,6 +13,8 @@
     "stock": 2,
     "stockGros": 2,
     "stockDetail": 0,
+    "prixAchat": 30,
+    "prixVente": 30,
     "statut": "actif"
    },
    {
@@ -48,6 +50,8 @@
     "stockGros": 12,
     "stockDetail": 0,
     "cump": 50,
+    "prixAchat": 60,
+    "prixVente": 90,
     "statut": "actif"
    },
    {
@@ -60,6 +64,8 @@
     "stockGros": 15,
     "stockDetail": 5,
     "cump": 80,
+    "prixAchat": 90,
+    "prixVente": 90,
     "statut": "actif"
    },
    {
@@ -84,6 +90,8 @@
     "stockGros": 40,
     "stockDetail": 0,
     "cump": 200,
+    "prixAchat": 250,
+    "prixVente": 250,
     "statut": "actif"
    }
   ],
@@ -445,6 +453,41 @@
     "libelle": "PARACETAMOL 500 MG CP B/100",
     "famille": "PRODUIT",
     "statut": "actif"
+   },
+   {
+    "id": "DOLIP",
+    "code": "DOLIP",
+    "libelle": "DOLIPRANE 1 G B/8",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   },
+   {
+    "id": "COTON",
+    "code": "COTON",
+    "libelle": "COTON HYDROPHILE 500 G",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   },
+   {
+    "id": "SIROP",
+    "code": "SIROP",
+    "libelle": "SIROP TOUX 125 ML",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   },
+   {
+    "id": "AMOXI",
+    "code": "AMOXI",
+    "libelle": "AMOXICILLINE 500 MG B/100",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   },
+   {
+    "id": "ABA",
+    "code": "ABA",
+    "libelle": "ABAISSE LANGUE",
+    "famille": "PRODUIT",
+    "statut": "actif"
    }
   ],
   "versionsTarif": [
@@ -519,6 +562,67 @@
     "etatAssure": "unique",
     "origine": "migration",
     "statut": "valide"
+   },
+   {
+    "id": "DOLIP@origine@1",
+    "code": "DOLIP",
+    "version": 1,
+    "prixNonAssure": 250,
+    "etatAssure": "unique",
+    "origine": "reprise",
+    "statut": "valide"
+   },
+   {
+    "id": "COTON@origine@1",
+    "code": "COTON",
+    "version": 1,
+    "prixNonAssure": 60,
+    "prixVente": 90,
+    "etatAssure": "unique",
+    "origine": "reprise",
+    "statut": "valide"
+   },
+   {
+    "id": "SIROP@origine@1",
+    "code": "SIROP",
+    "version": 1,
+    "prixNonAssure": 90,
+    "etatAssure": "unique",
+    "origine": "reprise",
+    "statut": "valide"
+   },
+   {
+    "id": "AMOXI@origine@1",
+    "code": "AMOXI",
+    "version": 1,
+    "etatNonAssure": "manquant",
+    "etatAssure": "unique",
+    "motif": "Article repris sans prix d’achat : à valoriser",
+    "origine": "reprise",
+    "statut": "valide"
+   },
+   {
+    "id": "ABA@origine@1",
+    "code": "ABA",
+    "version": 1,
+    "prixNonAssure": 30,
+    "etatAssure": "unique",
+    "origine": "reprise",
+    "statut": "valide"
+   },
+   {
+    "id": "SIROP@2027-03-01@2",
+    "code": "SIROP",
+    "version": 2,
+    "dateEffet": "2027-03-01",
+    "prixNonAssure": 95,
+    "etatAssure": "unique",
+    "motif": "Nouveau tarif",
+    "origine": "ecran",
+    "statut": "propose",
+    "proposePar": "AUTRE AGENT",
+    "proposeLe": "2026-10-30",
+    "proposeRole": "da"
    }
   ],
   "garanties": [
@@ -13818,6 +13922,1916 @@
      ]
     ]
    }
+  },
+  {
+   "id": "tp-valide",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     300,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ],
+    [
+     "COTON",
+     70,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ],
+    [
+     "AMOXI",
+     120,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ],
+    [
+     "ABA",
+     40,
+     "2027-01-01",
+     "Non",
+     "Tarif non arrêté",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 4,
+    "compte": {
+     "valides": 3,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 5,
+      "colonne": "Valider (Oui/Non)",
+      "code": "LIGNE_NON_APPLIQUEE",
+      "niveau": "info",
+      "valeur": "Non"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 5,
+      "colonne": "Valider (Oui/Non)",
+      "code": "LIGNE_NON_APPLIQUEE",
+      "niveau": "info",
+      "valeur": "Non",
+      "motif": "ligne non appliquée sur décision de l’importateur (motif : Tarif non arrêté)"
+     }
+    ],
+    "aEcrire": 3,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ],
+     [
+      4,
+      "valide"
+     ],
+     [
+      5,
+      "non"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-proposition",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     280,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ],
+    [
+     "COTON",
+     65,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-article-inconnu",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "NOPE",
+     100,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "ARTICLE_INCONNU",
+      "niveau": "refus",
+      "valeur": "NOPE"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "ARTICLE_INCONNU",
+      "niveau": "refus",
+      "valeur": "NOPE",
+      "motif": "aucun article « NOPE » au référentiel produits"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-prix-absent",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     "-",
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ABSENT",
+      "niveau": "refus",
+      "valeur": "-"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ABSENT",
+      "niveau": "refus",
+      "valeur": "-",
+      "motif": "un tiret n’est pas un zéro, et un prix d’achat absent n’est pas un prix : l’article ne se facturerait pas"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-nc",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     "NC",
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "NC_INTERDIT",
+      "niveau": "refus",
+      "valeur": "NC"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "NC_INTERDIT",
+      "niveau": "refus",
+      "valeur": "NC",
+      "motif": "NC n’existe pas pour un prix d’achat (un article n’a pas de colonne assurée)"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-prix-zero",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     0,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ZERO",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ZERO",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul ») : un article ne se facture jamais à zéro."
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-prix-decimal",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     250.5,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "250.5"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "250.5",
+      "motif": "« 250.5 » n’est ni un montant entier, ni NC, ni un tiret"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-date-passee",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     300,
+     "2026-10-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "DATE_PASSEE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "DATE_PASSEE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "La date d’effet (2026-10-01) est antérieure à aujourd’hui (2026-11-01) : un prix ne se change pas dans le passé sans une décision expresse."
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-date-absente",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     300,
+     "",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur obligatoire absente"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-motif-absent",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     300,
+     "2027-01-01",
+     "Oui",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur obligatoire absente"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-non-sans-motif",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     300,
+     "2027-01-01",
+     "Non",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur obligatoire absente"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-inchange",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     250,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 1,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_INCHANGE",
+      "niveau": "info",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_INCHANGE",
+      "niveau": "info",
+      "valeur": "",
+      "motif": "ce prix d’achat est déjà celui en vigueur à cette date : aucune version, la ligne est comptée"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "inchange"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-en-attente",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "SIROP",
+     100,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "CHANGEMENT_EN_ATTENTE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "CHANGEMENT_EN_ATTENTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "Une proposition est déjà en attente de décision pour « SIROP » (version 2)."
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-doublon-fichier",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     300,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ],
+    [
+     "dolip",
+     310,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Code article",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "dolip"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Code article",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "dolip",
+      "motif": "identique à la ligne 2 du même fichier"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-deux-dates",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "DOLIP",
+     300,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ],
+    [
+     "DOLIP",
+     310,
+     "2027-02-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "consignes": [],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "tp-colonne-retiree",
+   "jeu": "tarifs-produits",
+   "lignes": [
+    [
+     "Code article",
+     "Prix d’achat",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source",
+     "Quantité"
+    ],
+    [
+     "DOLIP",
+     300,
+     "2027-01-01",
+     "Oui",
+     "Nouveau tarif du fournisseur",
+     "",
+     5
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 0,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Quantité",
+      "code": "COLONNE_RETIREE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Quantité",
+      "code": "COLONNE_RETIREE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "ce jeu ne porte jamais de quantité : le stock se reprend par le jeu « Importation Grand Stock »"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": []
+   }
+  },
+  {
+   "id": "pf-valide",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "NEW-MED",
+     "AMBROXOL 30 MG CP B/20",
+     "Médicaments",
+     "Boîte",
+     350,
+     "",
+     20,
+     "A2",
+     "SOBAPS"
+    ],
+    [
+     "NEW-CONSO",
+     "COMPRESSES STERILES 10X10",
+     "Consommables médicaux",
+     "Sachet",
+     500,
+     650,
+     50,
+     "",
+     ""
+    ],
+    [
+     "NEW-SANS-SEUIL",
+     "GANTS D EXAMEN T7",
+     "Consommables médicaux",
+     "Boîte",
+     3200,
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 3,
+    "compte": {
+     "valides": 2,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 4,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 4,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera"
+     }
+    ],
+    "aEcrire": 3,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ],
+     [
+      4,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pf-doublon-magasin",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "PARA500",
+     "PARACETAMOL",
+     "Médicaments",
+     "Boîte",
+     350,
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 1,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "IGNORE_EXISTANT",
+      "niveau": "ignore",
+      "valeur": "PARA500"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "IGNORE_EXISTANT",
+      "niveau": "ignore",
+      "valeur": "PARA500",
+      "motif": "l’article « PARA500 » existe déjà (PARACETAMOL 500 MG CP B/100)"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "ignore"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pf-prix-absent",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "NEW-X1",
+     "Article sans prix",
+     "Médicaments",
+     "Boîte",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ACHAT_ABSENT",
+      "niveau": "refus",
+      "valeur": ""
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ACHAT_ABSENT",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "le prix d’achat de l’article « NEW-X1 : Article sans prix » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas"
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pf-prix-tiret",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "NEW-X2",
+     "Article au tiret",
+     "Médicaments",
+     "Boîte",
+     "-",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ACHAT_ABSENT",
+      "niveau": "refus",
+      "valeur": "-"
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ACHAT_ABSENT",
+      "niveau": "refus",
+      "valeur": "-",
+      "motif": "le prix d’achat de l’article « NEW-X2 : Article au tiret » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas"
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pf-prix-zero",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "NEW-X3",
+     "Article à zéro",
+     "Médicaments",
+     "Boîte",
+     0,
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ACHAT_ABSENT",
+      "niveau": "refus",
+      "valeur": "0"
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "PRIX_ACHAT_ABSENT",
+      "niveau": "refus",
+      "valeur": "0",
+      "motif": "le prix d’achat de l’article « NEW-X3 : Article à zéro » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas"
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pf-nc",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "NEW-X4",
+     "Article NC",
+     "Médicaments",
+     "Boîte",
+     "NC",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "NC_INTERDIT",
+      "niveau": "refus",
+      "valeur": "NC"
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix d’achat",
+      "code": "NC_INTERDIT",
+      "niveau": "refus",
+      "valeur": "NC",
+      "motif": "NC n’existe pas pour un prix d’achat (article « NEW-X4 »)"
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pf-rg02",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "NEW-X5",
+     "Médicament à marge",
+     "Médicaments",
+     "Boîte",
+     100,
+     150,
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix de vente",
+      "code": "RG02_PRIX_DE_VENTE",
+      "niveau": "refus",
+      "valeur": "150"
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix de vente",
+      "code": "RG02_PRIX_DE_VENTE",
+      "niveau": "refus",
+      "valeur": "150",
+      "motif": "RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente ne peut pas être libre"
+     },
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pf-categorie-inconnue",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "NEW-X6",
+     "Article",
+     "Bijoux",
+     "Boîte",
+     100,
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Catégorie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Bijoux"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Catégorie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Bijoux",
+      "motif": "« Bijoux » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pf-fournisseur-emplacement-inconnus",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "NEW-X7",
+     "Article",
+     "Médicaments",
+     "Boîte",
+     100,
+     "",
+     5,
+     "Z9",
+     "INCONNU"
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code fournisseur",
+      "code": "FOURNISSEUR_INCONNU",
+      "niveau": "avertissement",
+      "valeur": "INCONNU"
+     },
+     {
+      "n": 2,
+      "colonne": "Emplacement",
+      "code": "EMPLACEMENT_INCONNU",
+      "niveau": "avertissement",
+      "valeur": "Z9"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code fournisseur",
+      "code": "FOURNISSEUR_INCONNU",
+      "niveau": "avertissement",
+      "valeur": "INCONNU",
+      "motif": "aucun fournisseur « INCONNU » au référentiel"
+     },
+     {
+      "n": 2,
+      "colonne": "Emplacement",
+      "code": "EMPLACEMENT_INCONNU",
+      "niveau": "avertissement",
+      "valeur": "Z9",
+      "motif": "aucun emplacement « Z9 » au référentiel des emplacements"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pf-colonne-retiree",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur",
+     "Quantité"
+    ],
+    [
+     "NEW-X8",
+     "Article",
+     "Médicaments",
+     "Boîte",
+     100,
+     "",
+     "",
+     "",
+     "",
+     5
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 0,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Quantité",
+      "code": "COLONNE_RETIREE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 0,
+      "colonne": "Quantité",
+      "code": "COLONNE_RETIREE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "un référentiel ne porte jamais de quantité : le stock se reprend par le jeu « Importation Grand Stock »"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": []
+   }
+  },
+  {
+   "id": "pf-doublon-fichier",
+   "jeu": "produits-referentiel",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Prix d’achat",
+     "Prix de vente",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "NEW-D1",
+     "Article",
+     "Médicaments",
+     "Boîte",
+     100,
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "new-d1",
+     "Article bis",
+     "Médicaments",
+     "Boîte",
+     110,
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 3,
+      "colonne": "Code article",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "new-d1"
+     },
+     {
+      "n": 3,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera"
+     },
+     {
+      "n": 3,
+      "colonne": "Code article",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "new-d1",
+      "motif": "identique à la ligne 2 du même fichier"
+     },
+     {
+      "n": 3,
+      "colonne": "Seuil d’alerte",
+      "code": "SANS_SEUIL",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "seuil d’alerte absent : l’article sera signalé « sans seuil », aucune alerte de stock ne le concernera"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
   }
  ],
  "modeles": {
@@ -16979,6 +18993,166 @@
     "validePar": "ADMIN TEST",
     "date": "2026-11-01"
    }
+  },
+  {
+   "cas": "pf-valide",
+   "jeu": "produits-referentiel",
+   "ok": true,
+   "reference": "IMP-2026-023",
+   "ecrits": 9,
+   "fiches": {
+    "produits": [
+     {
+      "statut": "actif",
+      "source": "Import Importation du référentiel produits (pf-valide.xlsx)",
+      "lotImport": "IMP-2026-023",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "NEW-MED",
+      "designation": "AMBROXOL 30 MG CP B/20",
+      "unite": "Boîte",
+      "categorie": "medicament",
+      "prixAchat": 350,
+      "prixVente": 350,
+      "cump": 350,
+      "seuilAlerte": 20,
+      "stockGros": 0,
+      "stockDetail": 0,
+      "stock": 0,
+      "emplacement": "A2",
+      "fournisseur": "SOBAPS"
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du référentiel produits (pf-valide.xlsx)",
+      "lotImport": "IMP-2026-023",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "NEW-CONSO",
+      "designation": "COMPRESSES STERILES 10X10",
+      "unite": "Sachet",
+      "categorie": "conso_medical",
+      "prixAchat": 500,
+      "prixVente": 650,
+      "cump": 500,
+      "seuilAlerte": 50,
+      "stockGros": 0,
+      "stockDetail": 0,
+      "stock": 0,
+      "emplacement": "",
+      "fournisseur": ""
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du référentiel produits (pf-valide.xlsx)",
+      "lotImport": "IMP-2026-023",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "NEW-SANS-SEUIL",
+      "designation": "GANTS D EXAMEN T7",
+      "unite": "Boîte",
+      "categorie": "conso_medical",
+      "prixAchat": 3200,
+      "prixVente": 3200,
+      "cump": 3200,
+      "seuilAlerte": null,
+      "stockGros": 0,
+      "stockDetail": 0,
+      "stock": 0,
+      "emplacement": "",
+      "fournisseur": ""
+     }
+    ],
+    "tarifs": [
+     {
+      "statut": "actif",
+      "code": "NEW-MED",
+      "libelle": "AMBROXOL 30 MG CP B/20",
+      "famille": "PRODUIT"
+     },
+     {
+      "statut": "actif",
+      "code": "NEW-CONSO",
+      "libelle": "COMPRESSES STERILES 10X10",
+      "famille": "PRODUIT"
+     },
+     {
+      "statut": "actif",
+      "code": "NEW-SANS-SEUIL",
+      "libelle": "GANTS D EXAMEN T7",
+      "famille": "PRODUIT"
+     }
+    ],
+    "versionsTarif": [
+     {
+      "statut": "valide",
+      "code": "NEW-MED",
+      "version": 1,
+      "prixNonAssure": 350,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Création de l’article",
+      "origine": "import",
+      "proposePar": "BASSONGUI Chabi Séko",
+      "proposeLe": "2026-11-01",
+      "proposeRole": "admin",
+      "lot": "IMP-2026-023",
+      "source": "Import IMP-2026-023",
+      "decidePar": "BASSONGUI Chabi Séko",
+      "decideLe": "2026-11-01",
+      "roleDecision": "admin",
+      "motifDecision": "Première version du prix d’achat, posée à la création de l’article (import IMP-2026-023)"
+     },
+     {
+      "statut": "valide",
+      "code": "NEW-CONSO",
+      "version": 1,
+      "prixNonAssure": 500,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Création de l’article",
+      "origine": "import",
+      "proposePar": "BASSONGUI Chabi Séko",
+      "proposeLe": "2026-11-01",
+      "proposeRole": "admin",
+      "prixVente": 650,
+      "lot": "IMP-2026-023",
+      "source": "Import IMP-2026-023",
+      "decidePar": "BASSONGUI Chabi Séko",
+      "decideLe": "2026-11-01",
+      "roleDecision": "admin",
+      "motifDecision": "Première version du prix d’achat, posée à la création de l’article (import IMP-2026-023)"
+     },
+     {
+      "statut": "valide",
+      "code": "NEW-SANS-SEUIL",
+      "version": 1,
+      "prixNonAssure": 3200,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "Création de l’article",
+      "origine": "import",
+      "proposePar": "BASSONGUI Chabi Séko",
+      "proposeLe": "2026-11-01",
+      "proposeRole": "admin",
+      "lot": "IMP-2026-023",
+      "source": "Import IMP-2026-023",
+      "decidePar": "BASSONGUI Chabi Séko",
+      "decideLe": "2026-11-01",
+      "roleDecision": "admin",
+      "motifDecision": "Première version du prix d’achat, posée à la création de l’article (import IMP-2026-023)"
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 3,
+    "nbAvertissements": 1,
+    "jeu": "produits-referentiel",
+    "fichier": "pf-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
   }
  ],
  "lotRefus": {
@@ -17174,6 +19348,14 @@
    "etatLot": "annule"
   },
   {
+   "cas": "pf-valide",
+   "ok": true,
+   "code": null,
+   "archives": 6,
+   "archivesVerifiees": 6,
+   "etatLot": "annule"
+  },
+  {
    "cas": "gs-valide-deuxieme-fois",
    "ok": false,
    "code": "LOT_NON_APPLIQUE"
@@ -17228,7 +19410,7 @@
    "demandeur": "Pharmacie d’urgence",
    "motif": "Réapprovisionnement",
    "source": "Import Importation d’un bon de transfert",
-   "lotImport": "IMP-2026-024",
+   "lotImport": "IMP-2026-025",
    "validePar": "ADMIN TEST",
    "dateImport": "2026-11-01",
    "reference": "TR-00002",
@@ -17319,7 +19501,7 @@
    {
     "statut": "actif",
     "source": "Import Importation d’un comptage d’inventaire (ic-valide.xlsx)",
-    "lotImport": "IMP-2026-026",
+    "lotImport": "IMP-2026-027",
     "validePar": "ADMIN TEST",
     "dateImport": "2026-11-01",
     "reference": "INV-0004",
@@ -17350,7 +19532,7 @@
    {
     "statut": "actif",
     "source": "Import Importation d’un comptage d’inventaire (ic-valide.xlsx)",
-    "lotImport": "IMP-2026-026",
+    "lotImport": "IMP-2026-027",
     "validePar": "ADMIN TEST",
     "dateImport": "2026-11-01",
     "reference": "INV-0003",
@@ -17496,7 +19678,7 @@
    },
    "dUnAutre": {
     "code": "LOT_D_UN_AUTRE",
-    "motif": "le lot IMP-2026-038 a été écrit par un autre agent",
+    "motif": "le lot IMP-2026-041 a été écrit par un autre agent",
     "geste": "Seul son auteur, ou un profil qui supervise les importations, peut l’annuler."
    },
    "etatLot": "applique"
@@ -17982,6 +20164,467 @@
     },
     {
      "id": "NFS@2027-01-01@3",
+     "statut": "retire",
+     "motifDecision": "Lot {B} annulé : essai",
+     "decidePar": "STOCK TEST",
+     "roleDecision": "stock"
+    }
+   ]
+  },
+  "annulationDeuxFois": {
+   "ok": false,
+   "code": "LOT_NON_APPLIQUE"
+  },
+  "lotsAjoutes": 2,
+  "sansDroit": {
+   "ok": false,
+   "code": "DROIT_IMPORT_REFUSE",
+   "versionsAjoutees": 0
+  }
+ },
+ "produits": {
+  "adminValide": {
+   "accepte": true,
+   "compte": {
+    "valides": 3,
+    "avertissements": 0,
+    "refus": 0,
+    "ignores": 0,
+    "inchanges": 0,
+    "non": 1
+   },
+   "problemes": [
+    {
+     "n": 5,
+     "colonne": "Valider (Oui/Non)",
+     "code": "LIGNE_NON_APPLIQUEE",
+     "niveau": "info"
+    }
+   ],
+   "details": [
+    [
+     2,
+     "valide",
+     "Ancien : 250 ; nouveau : 300 ; variation : 20 % ; décision : Oui : version validée à l’import"
+    ],
+    [
+     3,
+     "valide",
+     "Ancien : 60 / vente 90 ; nouveau : 70 ; variation : 16.7 % ; décision : Oui : version validée à l’import"
+    ],
+    [
+     4,
+     "valide",
+     "Ancien : absent ; nouveau : 120 ; décision : Oui : version validée à l’import"
+    ],
+    [
+     5,
+     "non",
+     "Ancien : 30 ; nouveau : 40 ; variation : 33.3 % ; décision : Non : non appliquée"
+    ]
+   ]
+  },
+  "stockValide": {
+   "accepte": true,
+   "compte": {
+    "valides": 0,
+    "avertissements": 3,
+    "refus": 0,
+    "ignores": 0,
+    "inchanges": 0,
+    "non": 1
+   },
+   "problemes": [
+    {
+     "n": 2,
+     "colonne": "Valider (Oui/Non)",
+     "code": "OUI_VAUT_PROPOSITION",
+     "niveau": "avertissement"
+    },
+    {
+     "n": 3,
+     "colonne": "Valider (Oui/Non)",
+     "code": "OUI_VAUT_PROPOSITION",
+     "niveau": "avertissement"
+    },
+    {
+     "n": 4,
+     "colonne": "Valider (Oui/Non)",
+     "code": "OUI_VAUT_PROPOSITION",
+     "niveau": "avertissement"
+    },
+    {
+     "n": 5,
+     "colonne": "Valider (Oui/Non)",
+     "code": "LIGNE_NON_APPLIQUEE",
+     "niveau": "info"
+    }
+   ],
+   "details": [
+    [
+     2,
+     "avertissement",
+     "Ancien : 250 ; nouveau : 300 ; variation : 20 % ; décision : Proposition (votre Oui vaut proposition)"
+    ],
+    [
+     3,
+     "avertissement",
+     "Ancien : 60 / vente 90 ; nouveau : 70 ; variation : 16.7 % ; décision : Proposition (votre Oui vaut proposition)"
+    ],
+    [
+     4,
+     "avertissement",
+     "Ancien : absent ; nouveau : 120 ; décision : Proposition (votre Oui vaut proposition)"
+    ],
+    [
+     5,
+     "non",
+     "Ancien : 30 ; nouveau : 40 ; variation : 33.3 % ; décision : Non : non appliquée"
+    ]
+   ]
+  },
+  "stockDeuxDates": {
+   "accepte": false,
+   "compte": {
+    "valides": 0,
+    "avertissements": 2,
+    "refus": 0,
+    "ignores": 0,
+    "inchanges": 0,
+    "non": 0
+   },
+   "problemes": [
+    {
+     "n": 0,
+     "colonne": "Code article",
+     "code": "UNE_PROPOSITION_PAR_ARTICLE",
+     "niveau": "refus"
+    },
+    {
+     "n": 2,
+     "colonne": "Valider (Oui/Non)",
+     "code": "OUI_VAUT_PROPOSITION",
+     "niveau": "avertissement"
+    },
+    {
+     "n": 3,
+     "colonne": "Valider (Oui/Non)",
+     "code": "OUI_VAUT_PROPOSITION",
+     "niveau": "avertissement"
+    }
+   ],
+   "details": [
+    [
+     2,
+     "avertissement",
+     "Ancien : 250 ; nouveau : 300 ; variation : 20 % ; décision : Proposition (votre Oui vaut proposition)"
+    ],
+    [
+     3,
+     "avertissement",
+     "Ancien : 250 ; nouveau : 310 ; variation : 24 % ; décision : Proposition (votre Oui vaut proposition)"
+    ]
+   ]
+  },
+  "adminDeuxDates": {
+   "accepte": true,
+   "compte": {
+    "valides": 2,
+    "avertissements": 0,
+    "refus": 0,
+    "ignores": 0,
+    "inchanges": 0,
+    "non": 0
+   },
+   "problemes": [],
+   "details": [
+    [
+     2,
+     "valide",
+     "Ancien : 250 ; nouveau : 300 ; variation : 20 % ; décision : Oui : version validée à l’import"
+    ],
+    [
+     3,
+     "valide",
+     "Ancien : 250 ; nouveau : 310 ; variation : 24 % ; décision : Oui : version validée à l’import"
+    ]
+   ]
+  },
+  "appliqueAdmin": {
+   "reference": "{A}",
+   "etat": "applique",
+   "nbLignes": 4,
+   "nbInchanges": 0,
+   "nbNon": 1,
+   "ecrits": [
+    "versionsTarif",
+    "versionsTarif",
+    "versionsTarif"
+   ],
+   "fiches": [
+    {
+     "statut": "valide",
+     "code": "DOLIP",
+     "version": 2,
+     "prixNonAssure": 300,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Nouveau tarif du fournisseur",
+     "origine": "import",
+     "proposePar": "ADMIN TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "admin",
+     "dateEffet": "2027-01-01",
+     "lot": "{A}",
+     "decidePar": "ADMIN TEST",
+     "decideLe": "2026-11-01",
+     "roleDecision": "admin",
+     "motifDecision": "Validée à l’import {A}",
+     "id": "DOLIP@2027-01-01@2"
+    },
+    {
+     "statut": "valide",
+     "code": "COTON",
+     "version": 2,
+     "prixNonAssure": 70,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Nouveau tarif du fournisseur",
+     "origine": "import",
+     "proposePar": "ADMIN TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "admin",
+     "dateEffet": "2027-01-01",
+     "prixVente": 90,
+     "lot": "{A}",
+     "decidePar": "ADMIN TEST",
+     "decideLe": "2026-11-01",
+     "roleDecision": "admin",
+     "motifDecision": "Validée à l’import {A}",
+     "id": "COTON@2027-01-01@2"
+    },
+    {
+     "statut": "valide",
+     "code": "AMOXI",
+     "version": 2,
+     "prixNonAssure": 120,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Nouveau tarif du fournisseur",
+     "origine": "import",
+     "proposePar": "ADMIN TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "admin",
+     "dateEffet": "2027-01-01",
+     "lot": "{A}",
+     "decidePar": "ADMIN TEST",
+     "decideLe": "2026-11-01",
+     "roleDecision": "admin",
+     "motifDecision": "Validée à l’import {A}",
+     "id": "AMOXI@2027-01-01@2"
+    }
+   ]
+  },
+  "versionsApresAdmin": {
+   "DOLIP": [
+    {
+     "code": "DOLIP",
+     "version": 1,
+     "prixNonAssure": 250,
+     "etatAssure": "unique",
+     "origine": "reprise",
+     "statut": "valide",
+     "id": "DOLIP@origine@1"
+    },
+    {
+     "statut": "valide",
+     "code": "DOLIP",
+     "version": 2,
+     "prixNonAssure": 300,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Nouveau tarif du fournisseur",
+     "origine": "import",
+     "proposePar": "ADMIN TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "admin",
+     "dateEffet": "2027-01-01",
+     "lot": "{A}",
+     "decidePar": "ADMIN TEST",
+     "decideLe": "2026-11-01",
+     "roleDecision": "admin",
+     "motifDecision": "Validée à l’import {A}",
+     "id": "DOLIP@2027-01-01@2"
+    }
+   ],
+   "AMOXI": [
+    {
+     "code": "AMOXI",
+     "version": 1,
+     "etatNonAssure": "manquant",
+     "etatAssure": "unique",
+     "motif": "Article repris sans prix d’achat : à valoriser",
+     "origine": "reprise",
+     "statut": "valide",
+     "id": "AMOXI@origine@1"
+    },
+    {
+     "statut": "valide",
+     "code": "AMOXI",
+     "version": 2,
+     "prixNonAssure": 120,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Nouveau tarif du fournisseur",
+     "origine": "import",
+     "proposePar": "ADMIN TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "admin",
+     "dateEffet": "2027-01-01",
+     "lot": "{A}",
+     "decidePar": "ADMIN TEST",
+     "decideLe": "2026-11-01",
+     "roleDecision": "admin",
+     "motifDecision": "Validée à l’import {A}",
+     "id": "AMOXI@2027-01-01@2"
+    }
+   ],
+   "ABA": [
+    {
+     "code": "ABA",
+     "version": 1,
+     "prixNonAssure": 30,
+     "etatAssure": "unique",
+     "origine": "reprise",
+     "statut": "valide",
+     "id": "ABA@origine@1"
+    }
+   ]
+  },
+  "annulationValidee": {
+   "ok": false,
+   "code": "VERSION_DEJA_VALIDEE",
+   "motif": "la version DOLIP@2027-01-01@2 est déjà validée : une décision se remplace par une nouvelle version, elle ne s’efface pas",
+   "geste": "Proposez une nouvelle version à l’écran « Tarifs et prix » (ou « Changer le prix d’achat » pour un produit) ; seules les propositions encore en attente se retirent avec leur lot."
+  },
+  "rejeu": {
+   "accepte": true,
+   "compte": {
+    "valides": 0,
+    "avertissements": 0,
+    "refus": 0,
+    "ignores": 0,
+    "inchanges": 3,
+    "non": 1
+   },
+   "problemes": [
+    {
+     "n": 2,
+     "colonne": "Prix d’achat",
+     "code": "PRIX_INCHANGE",
+     "niveau": "info"
+    },
+    {
+     "n": 3,
+     "colonne": "Prix d’achat",
+     "code": "PRIX_INCHANGE",
+     "niveau": "info"
+    },
+    {
+     "n": 4,
+     "colonne": "Prix d’achat",
+     "code": "PRIX_INCHANGE",
+     "niveau": "info"
+    },
+    {
+     "n": 5,
+     "colonne": "Valider (Oui/Non)",
+     "code": "LIGNE_NON_APPLIQUEE",
+     "niveau": "info"
+    }
+   ],
+   "details": [
+    [
+     2,
+     "inchange",
+     "Ancien : 300 ; nouveau : 300 ; variation : 0 % ; décision : Inchangée"
+    ],
+    [
+     3,
+     "inchange",
+     "Ancien : 70 / vente 90 ; nouveau : 70 ; variation : 0 % ; décision : Inchangée"
+    ],
+    [
+     4,
+     "inchange",
+     "Ancien : 120 ; nouveau : 120 ; variation : 0 % ; décision : Inchangée"
+    ],
+    [
+     5,
+     "non",
+     "Ancien : 30 ; nouveau : 40 ; variation : 33.3 % ; décision : Non : non appliquée"
+    ]
+   ]
+  },
+  "appliqueStock": {
+   "reference": "{B}",
+   "etat": "applique",
+   "nbAvertissements": 2,
+   "ecrits": [
+    "versionsTarif",
+    "versionsTarif"
+   ],
+   "fiches": [
+    {
+     "statut": "propose",
+     "code": "DOLIP",
+     "version": 3,
+     "prixNonAssure": 280,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Nouveau tarif du fournisseur",
+     "origine": "import",
+     "proposePar": "STOCK TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "stock",
+     "dateEffet": "2027-01-01",
+     "lot": "{B}",
+     "id": "DOLIP@2027-01-01@3"
+    },
+    {
+     "statut": "propose",
+     "code": "COTON",
+     "version": 3,
+     "prixNonAssure": 65,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Nouveau tarif du fournisseur",
+     "origine": "import",
+     "proposePar": "STOCK TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "stock",
+     "dateEffet": "2027-01-01",
+     "prixVente": 90,
+     "lot": "{B}",
+     "id": "COTON@2027-01-01@3"
+    }
+   ]
+  },
+  "annulationPropositions": {
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "etatLot": "annule",
+   "versions": [
+    {
+     "id": "DOLIP@2027-01-01@3",
+     "statut": "retire",
+     "motifDecision": "Lot {B} annulé : essai",
+     "decidePar": "STOCK TEST",
+     "roleDecision": "stock"
+    },
+    {
+     "id": "COTON@2027-01-01@3",
      "statut": "retire",
      "motifDecision": "Lot {B} annulé : essai",
      "decidePar": "STOCK TEST",

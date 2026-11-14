@@ -29,5 +29,6 @@ ProfilImport profilImportDe(ContexteEcran c) {
       bornes: bornes,
       reservesALaMere: reserves,
       libellesRoles: DemandesImportPoste.libellesDesRoles(m),
-      fileul: fileul);
+      fileul: fileul,
+      surFileul: fileul);
 }

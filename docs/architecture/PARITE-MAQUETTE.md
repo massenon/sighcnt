@@ -7,11 +7,11 @@
 |---|---|
 | Écrans du manifeste (hors hubs de module) | **357** |
 | Hubs de module (un par module, engendrés) | 23 |
-| Écrans nommés par au moins un scénario de la maquette | 262 (73 %) |
-| Écrans **sans** scénario (recette à écrire) | 95 |
-| Écrans portés | 351 |
+| Écrans nommés par au moins un scénario de la maquette | 263 (74 %) |
+| Écrans **sans** scénario (recette à écrire) | 94 |
+| Écrans portés | 353 |
 | Écrans recettés | 0 |
-| Scénarios de la maquette analysés | 180 |
+| Scénarios de la maquette analysés | 181 |
 
 > « Nommé par un scénario » est une **estimation par analyse du texte** du banc (un identifiant d'écran cité dans le scénario) : elle dit où une recette existe déjà à reprendre, pas qu'elle couvre tout l'écran.
 
@@ -22,9 +22,9 @@
 | 1 · caisse + MECeF + impression | 17 | 13 | 17 | 0 |
 | 2 · pharmacie, stocks, achats | 27 | 23 | 27 | 0 |
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
-| 4 · parcours clinique (M1–M4) | 67 | 51 | 67 | 0 |
+| 4 · parcours clinique (M1–M4) | 67 | 52 | 67 | 0 |
 | 5 · assurances et comptabilité | 32 | 24 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 185 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 187 | 0 |
 
 ## Par écran
 
@@ -36,7 +36,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 |---|---|---|---|---|---|
 | `m8-caisse` | État de caisse journalier | M8 | 8 | 16, 30, 35, 39, 40, 43, 71, 82, 102 | porté |
 | `m8-dashboard` | Tableau de bord facturation | M8 | 8 | — | porté |
-| `m8-facturation` | Nouvelle facture | M8 | 7 | 11, 13, 17, 19, 32, 34, 88, 90, 117, 139 | porté |
+| `m8-facturation` | Nouvelle facture | M8 | 7 | 11, 13, 17, 19, 32, 34, 88, 90, 117, 139, 181 | porté |
 | `m8-facture-avoir` | Factures d’avoir | M8 | 8 | 48 | porté |
 | `m8-factures` | Factures | M8 | 8 | 12, 30, 48, 82 | porté |
 | `m8-operations` | Opérations de caisse | M8 | 8 | 20 | porté |
@@ -154,7 +154,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m3-bloc-checklist` | Check-listes du bloc | M3 | 8 | 34, 43, 95, 105 | porté |
 | `m3-bloc-cro` | Comptes rendus opératoires | M3 | 8 | 34, 43 | porté |
 | `m3-bons-pansements` | Bons de pansement | M3 | 8 | 50 | porté |
-| `m3-chambres` | Chambres & lits | M3 | 9 | — | porté |
+| `m3-chambres` | Chambres & lits | M3 | 9 | 181 | porté |
 | `m3-cpa` | Consultation pré-anesthésique | M3 | 8 | 50 | porté |
 | `m3-cr-anesthesie` | Comptes rendus d’anesthésie | M3 | 8 | 50 | porté |
 | `m3-demande-examen` | Demande d’examen | M3 | 8 | 50 | porté |
@@ -299,11 +299,11 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `imp-personnel` | Importation du personnel | IMP | 3 | 125, 126, 130 | porté |
 | `imp-plan-comptable` | Importation du plan comptable | IMP | 5 | — | porté |
 | `imp-prestataires` | Importation des prestataires externes | IMP | 3 | 144 | porté |
-| `imp-produits-referentiel` | Importation du référentiel produits | IMP | 3 | 130, 131, 139, 141 | non commencé |
+| `imp-produits-referentiel` | Importation du référentiel produits | IMP | 3 | 130, 131, 139, 141 | porté |
 | `imp-soldes-ouverture` | Importation des soldes d’ouverture | IMP | 5 | — | porté |
 | `imp-souscripteurs` | Importation des souscripteurs | IMP | 5 | — | porté |
 | `imp-stock-detail-initial` | Importation du stock détail initial | IMP | 3 | 130 | porté |
-| `imp-tarifs-produits` | Importation des prix d’achat | IMP | 4 | 138 | non commencé |
+| `imp-tarifs-produits` | Importation des prix d’achat | IMP | 4 | 138 | porté |
 | `imp-transfert-lignes` | Importation d’un bon de transfert | IMP | 3 | 130 | porté |
 | `imp-unites-labo` | Importation des unités de mesure | IMP | 4 | 144 | porté |
 | `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 27, 112, 118 | porté |

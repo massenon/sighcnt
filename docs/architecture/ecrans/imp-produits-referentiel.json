@@ -1,0 +1,55 @@
+{
+ "id": "imp-produits-referentiel",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation du référentiel produits",
+ "acces": "ouvert",
+ "titre": "Importation du référentiel produits",
+ "description": "Articles de la clinique : code, désignation, catégorie, unité, prix d’achat, seuil d’alerte. Jamais de quantité ni de lot.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation du référentiel produits"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [
+  "Ce jeu crée des fiches NEUVES, sans stock : les quantités et les lots se reprennent par « Importation Grand Stock », et un fichier qui porte une colonne de quantité ou de lot est refusé. Il ne modifie jamais un article déjà tenu (RG-02 : le prix de vente d’un médicament est son prix d’achat). Un article sans seuil est signalé « sans seuil », jamais compté à zéro. Un article sans prix d’achat est REFUSÉ (lot T5b) : le seul cas où un article naît sans prix est la reprise d’un stock qui existe déjà (« Importation Grand Stock »).",
+  "Fiches déjà tenues : ignorées. Une ligne dont la fiche existe déjà n’écrit rien et ne modifie rien ; elle est comptée et nommée au rapport. Un fichier peut donc être rejoué sans refus (mode arrêté par la Direction pour ce jeu seulement)."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

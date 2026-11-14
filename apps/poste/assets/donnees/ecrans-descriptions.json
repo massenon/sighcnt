@@ -381,6 +381,10 @@
    "titre": "Importation des prestataires externes",
    "description": "Intervenants extérieurs rémunérés à l’acte : nom, spécialité, téléphone, tarif par acte, IFU, facture normalisée."
   },
+  "imp-produits-referentiel": {
+   "titre": "Importation du référentiel produits",
+   "description": "Articles de la clinique : code, désignation, catégorie, unité, prix d’achat, seuil d’alerte. Jamais de quantité ni de lot."
+  },
   "imp-soldes-ouverture": {
    "titre": "Importation des soldes d’ouverture",
    "description": "À-nouveaux d’un exercice : une pièce du journal AN, en brouillon, équilibrée (RG-10). Seules les classes 1 à 5 se reportent."
@@ -392,6 +396,10 @@
   "imp-stock-detail-initial": {
    "titre": "Importation du stock détail initial",
    "description": "Situation initiale de la pharmacie d’urgence : quantité de chaque article, avec son lot et sa péremption pour un médicament ou un réactif."
+  },
+  "imp-tarifs-produits": {
+   "titre": "Importation des prix d’achat",
+   "description": "Prix d’achat des articles du référentiel produits, avec une date d’effet et la décision Oui ou Non : chaque ligne qui change devient une version datée, jamais un écrasement de la fiche."
   },
   "imp-transfert-lignes": {
    "titre": "Importation d’un bon de transfert",
