@@ -6,6 +6,7 @@ import '../sync/configuration_sync.dart' show collectionsConfiguration;
 import '../sync/fusion_activite.dart' show champsCompteurs;
 import '../sync/pont_activite.dart' show collectionsActivite;
 import 'magasin.dart';
+import 'tarifs_poste.dart';
 
 /// LA DEMANDE D'IMPORT AU POSTE (lot IMP-C, réponse Q5 de la Direction) : la colle entre les règles pures de `packages/domaine/lib/src/import/demande_import.dart` (rejouées sur le
 /// magasin d'un test et sur les vecteurs de la maquette) et le magasin du poste. Aucune règle d'import ici.
@@ -24,7 +25,7 @@ import 'magasin.dart';
 /// confirmation) ; [annulerLotDuFileul] annule tant que la mère n'a pas statué. LOT IMP-E (décision du 13/11/2026) : le Grand Stock s'écrit AUSSI chez le fileul (produits, lots,
 /// mouvements), avec idempotence : identité commune des fiches, valeur de départ des compteurs, fiche propre au poste tant que la mère n'a pas confirmé. Le personnel reste à la mère.
 class DemandesImportPoste {
-  DemandesImportPoste(this.m, {required this.role, required this.auteur, required this.matrice, required this.aujourdhui, this.etiquette = 'P'});
+  DemandesImportPoste(this.m, {required this.role, required this.auteur, required this.matrice, required this.aujourdhui, this.etiquette = 'P', this.fileulRattache = false});
   final Magasin m;
   final String role;
   final String Function() auteur;
@@ -36,6 +37,9 @@ class DemandesImportPoste {
   /// L'étiquette du poste, qui rend unique l'identifiant d'une demande déposée.
   final String etiquette;
 
+  /// Ce poste est un fileul rattaché (la décision d'un prix est alors tenue par la mère).
+  final bool fileulRattache;
+
   /// Les collections que la mère seule écrit au poste : celles de la configuration (garde « réglé sur la mère » des fileuls rattachés).
   static Set<String> collectionsDeLaMere() => collectionsConfiguration();
 
@@ -43,6 +47,21 @@ class DemandesImportPoste {
   static VoieImportFileul voie({required bool fileulRattache, required DeclarationImport? declaration}) => !fileulRattache || declaration == null
       ? VoieImportFileul.directe
       : voieImportFileul(declaration, configuration: collectionsDeLaMere());
+
+  /// LOT 8B : les libellés des rôles que les refus de prix NOMMENT (ceux qui décident, ceux qui datent dans le passé), pour que « une autorité de la Directrice Administrative et de la Direction »
+  /// ne devienne pas « de da et direction ».
+  static Map<String, String> libellesDesRoles(MatriceDroits? m) => {
+        for (final r in {...tarRolesValidation, ...tarRolesDatePassee}) r: m?.libelle(r) ?? r,
+      };
+
+  /// LOT 8B : ce que la validation d'un prix à l'import laisse à FAIRE (le marquage « tarif d'attente » levé, la projection des fiches de lecture refaite, comme après un Oui à l'écran).
+  /// À appeler sur la MÈRE, après qu'un lot du jeu `tarifs` a été écrit (par elle ou pour le compte d'une demande) ; sans effet pour un autre jeu et pour un lot de propositions.
+  void apresImportDePrix(Fiche? lot) {
+    if (lot == null || lot['jeu'] != 'tarifs') return;
+    final tarifs = TarifsPoste(m, role: role, auteur: auteur, libelles: libellesDesRoles(matrice), horloge: aujourdhui, etiquette: etiquette);
+    final versions = [for (final e in ((lot['ecrits'] as List?) ?? const []).cast<Map>()) if (e['collection'] == 'versionsTarif') m.collection('versionsTarif').parId(e['id'])].whereType<Fiche>();
+    tarifs.apresImport([for (final v in versions) if (v['statut'] == 'valide') v]);
+  }
 
   /// LOT 8 : les jeux que ce poste ne peut PAS écrire (le moteur refuse, nommé) : sur un fileul rattaché, ceux dont la voie est « réservée à la mère » (jeu restreint qui écrit la configuration :
   /// le personnel, le stock détail initial, le bon de transfert). Ailleurs, aucun.
@@ -81,7 +100,14 @@ class DemandesImportPoste {
       final port = PortMagasin(m,
           aujourdhui: aujourdhui,
           nomAgent: parAuteur,
-          profil: ProfilImport(role: roleAuteur, libelleRole: matrice.libelle(roleAuteur) ?? roleAuteur, matrice: matrice.matriceImport, bornes: _bornes()));
+          profil: ProfilImport(
+              role: roleAuteur,
+              libelleRole: matrice.libelle(roleAuteur) ?? roleAuteur,
+              matrice: matrice.matriceImport,
+              bornes: _bornes(),
+              libellesRoles: libellesDesRoles(matrice),
+              // La demande vient d'un fileul : la décision d'un prix reste à la mère, le Oui vaut proposition (comme à la vérification du fileul).
+              fileul: true));
       final VerdictDemandeImport v;
       try {
         v = traiterDemandeImport(d, port, jeuImportParId, compteurs: champsCompteurs);
@@ -102,6 +128,9 @@ class DemandesImportPoste {
       // LOT IDEM : une demande déjà traitée une fois (`traitePar`) que la mère rejoue (verdict perdu, demande reçue deux fois) rend le même verdict sans le journaliser de nouveau.
       final dejaTraitee = '${d['traitePar'] ?? ''}'.isNotEmpty;
       col.mettreAJour('${d['id']}', v.versChamps(traitePar: 'Mère', traiteLe: _jour));
+      if (v.appliquee && !dejaTraitee) {
+        apresImportDePrix(m.collection(collectionLots).toutes.where((l) => l['reference'] == v.lot).firstOrNull);
+      }
       if (!dejaTraitee) {
         m.journaliser(
             v.appliquee ? (v.adoptee ? 'Demande d’import adoptée (déjà confirmée)' : 'Demande d’import appliquée') : 'Demande d’import refusée', 'IMP', 'DemandeImport', '${d['id']}',
@@ -124,7 +153,13 @@ class DemandesImportPoste {
   PortMagasin _port({String? nomAgent}) => PortMagasin(m,
       aujourdhui: aujourdhui,
       nomAgent: nomAgent ?? auteur(),
-      profil: ProfilImport(role: role, libelleRole: matrice.libelle(role) ?? role, matrice: matrice.matriceImport, bornes: _bornes()));
+      profil: ProfilImport(
+          role: role,
+          libelleRole: matrice.libelle(role) ?? role,
+          matrice: matrice.matriceImport,
+          bornes: _bornes(),
+          libellesRoles: libellesDesRoles(matrice),
+          fileul: fileulRattache));
 
   /// Les collections que l'import de [jeu] peut écrire chez ce fileul : ses cibles, rien d'autre.
   Set<String> _autorisees(JeuImport jeu, [Iterable<Map>? ecrits]) => {...collectionsAutoriseesAuFileul(jeu), if (ecrits != null) for (final e in ecrits) '${e['collection']}'};

@@ -85,12 +85,18 @@ enum VoieImportFileul {
 
   /// Jeu RESTREINT qui écrit de la configuration (le personnel : identité et salaire) : ses lignes ne voyagent jamais dans une demande (RG-13), il s'importe au poste de la mère.
   reserveeALaMere,
+
+  /// LOT 8B : un jeu qui écrit des VERSIONS DE PRIX (`versionsTarif`, famille R, immuables). Rien ne s'écrit chez le fileul : une version posée chez lui puis refusée par la mère ne se
+  /// restituerait pas (une version ne s'efface pas, RG-14), et le prix en vigueur ne se lit jamais d'un poste sur l'autre. Le fileul dépose une DEMANDE d'import vérifiée (`demandesImport`,
+  /// famille A) ; la mère refait les mêmes contrôles sous le rôle de l'auteur et crée les versions (PRD-TARIFS 7.3). Le Oui d'un fileul vaut proposition : la décision revient à la mère.
+  demandeSeule,
 }
 
 /// La voie d'un jeu sur un fileul rattaché. [configuration] : les collections que la mère seule écrit.
 VoieImportFileul voieImportFileul(DeclarationImport d, {required Set<String> configuration}) {
   if (!d.collections.any(configuration.contains)) return VoieImportFileul.directe;
   if (d.restreint) return VoieImportFileul.reserveeALaMere;
+  if (d.collections.contains('versionsTarif')) return VoieImportFileul.demandeSeule;
   return VoieImportFileul.directeEtDemande;
 }
 

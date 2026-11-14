@@ -253,6 +253,9 @@ class TarifsPoste {
         if (d.valider) 'valider': true,
         if (d.creation != null) 'creation': d.creation,
         if (d.assurable != null) 'assurable': d.assurable,
+        if ((d.source ?? '').isNotEmpty) 'source': d.source,
+        if (d.importJeu != null) 'importJeu': d.importJeu,
+        if (d.importLot != null) 'importLot': d.importLot,
       });
       return IssueTarif(demande: dem, version: r.valeur!.version, valideeEnUnGeste: d.valider);
     }
@@ -379,6 +382,9 @@ class TarifsPoste {
             valider: d['valider'] == true,
             creation: (d['creation'] as Map?)?.cast<String, Object?>(),
             assurable: d['assurable'],
+            source: d['source'] as String?,
+            importJeu: d['importJeu'] as String?,
+            importLot: d['importLot'] as String?,
           );
           final r = tarProposer(cx, dem);
           if (r.ok) {
@@ -418,6 +424,15 @@ class TarifsPoste {
   }
 
   // --- Après une décision : le marquage « tarif d'attente » levé, la projection refaite -----------------------------------------------------------------
+
+  /// LOT 8B : les versions qu'un import vient de VALIDER d'emblée (Oui d'un profil qui décide, sur la mère) font la même suite qu'un Oui à l'écran : marquage levé, projection refaite.
+  /// Une proposition n'a rien à faire (elle attend sa décision). Sans effet sur un fileul.
+  void apresImport(Iterable<Map<String, Object?>> versionsValidees) {
+    if (fileul) return;
+    for (final v in versionsValidees) {
+      _apresDecision('${v['code']}', '${v['decidePar']}', '${v['roleDecision']}');
+    }
+  }
 
   void _apresDecision(String code, String qui, String roleDecideur) {
     final p = h.parCode[code];

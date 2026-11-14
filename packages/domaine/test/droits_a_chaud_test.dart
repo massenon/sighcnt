@@ -431,8 +431,8 @@ void main() {
   group('FERMETURES PROPRES AU POSTE : quatre écrans non portés, fermés pour tous les rôles par le jeu du poste (ECARTS E2422)', () {
     // Lot IMP-C : les pages de jeux d'import que le poste ne porte pas encore sont fermées de la même façon (liste NOMMÉE : porter un jeu retire sa page d'ici).
     const impNonPortes = {
-      'imp-actes', 'imp-tarifs-produits', 'imp-produits-referentiel',
-      'imp-catalogue-imagerie', 'imp-garanties', 'imp-couvertures-assurance', 'imp-immobilisations', 'imp-budgets', 'imp-courriers',
+      'imp-tarifs-produits', 'imp-produits-referentiel',
+      'imp-garanties', 'imp-couvertures-assurance', 'imp-immobilisations', 'imp-budgets', 'imp-courriers',
     };
     const quatre = {'m12-calendrier-fiscal', 'm13-sms-journal', 'cfg-bareme-aib', 'cfg-sms', ...impNonPortes};
     MatriceDroits chaud({List<Fiche>? modules, List<Fiche>? reference}) => superposerDroits(base, manifeste,

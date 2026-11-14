@@ -24,9 +24,9 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
    c'est retirer son entrée ici et régénérer ; un poste déjà installé garde la fiche fermée tant qu'on ne la rouvre pas depuis la gestion des activités, qui ne le
    propose que si l'écran a un widget. Le jeu sobre (fixture des vecteurs) n'en porte aucune : il reproduit la maquette. */
 const JEUX_IMPORT_NON_PORTES = [
-  ['05', 'imp-actes', 'Importation des tarifs et prix'], ['06', 'imp-tarifs-produits', 'Importation des prix d’achat'],
+  ['06', 'imp-tarifs-produits', 'Importation des prix d’achat'],
   ['07', 'imp-produits-referentiel', 'Importation du référentiel produits'],
-  ['14', 'imp-catalogue-imagerie', 'Importation du catalogue de l’imagerie'], ['17', 'imp-garanties', 'Importation des garanties des souscripteurs'],
+  ['17', 'imp-garanties', 'Importation des garanties des souscripteurs'],
   ['18', 'imp-couvertures-assurance', 'Importation des couvertures d’assurance'], ['19', 'imp-immobilisations', 'Importation des immobilisations'],
   ['20', 'imp-budgets', 'Importation des budgets'], ['21', 'imp-courriers', 'Importation des courriers'],
 ];

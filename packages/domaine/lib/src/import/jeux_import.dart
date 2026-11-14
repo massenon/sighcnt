@@ -7,12 +7,17 @@ library;
 
 import '../comptabilite/cpb_gestion.dart' show cpbReferenceSuivante;
 import '../format/format_fr.dart' show nombre;
+import '../format/js.dart' show arrondiJs;
+import '../imagerie/cr_modalites.dart' show modalitesImagerie;
+import '../tarifs/tarifs.dart'
+    show ContexteTarif, DemandeProposition, PiecesTarif, PropositionTarif, ReferentielTarifs, ResultatTarif, tarPeutDecider, tarProposer, tarRetirer;
 import '../format/recherche.dart' show normaliser;
 import 'demande_import.dart' show champDepartCompteurs, champRefuseeParMere;
 import 'donnees_import.dart';
 import 'moteur_import.dart';
 
 part 'jeux_import_stock.dart';
+part 'jeux_import_prix.dart';
 
 typedef _V = Map<String, Object?>;
 
@@ -1272,6 +1277,9 @@ final List<JeuImport> jeuxImport = [
   jeuStockDetailInitial,
   jeuTransfertLignes,
   jeuInventaireComptage,
+  // Lot 8b, groupe PRIX : les prix de prestations (versions datées) et le catalogue de l'imagerie.
+  jeuTarifs,
+  jeuCatalogueImagerie,
 ];
 
 JeuImport? jeuImportParId(String id) => jeuxImport.where((j) => j.id == id).firstOrNull;

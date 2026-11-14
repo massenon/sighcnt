@@ -330,6 +330,147 @@
   ],
   "transferts": [],
   "inventaires": [],
+  "tarifs": [
+   {
+    "id": "MG01",
+    "code": "MG01",
+    "libelle": "Consultation généraliste",
+    "famille": "ACTE",
+    "secteur": "Médecine générale",
+    "codeActe": "MG01",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "id": "MG02",
+    "code": "MG02",
+    "libelle": "Consultation de suivi",
+    "famille": "ACTE",
+    "secteur": "Médecine générale",
+    "codeActe": "MG02",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "id": "CH01",
+    "code": "CH01",
+    "libelle": "Petite chirurgie",
+    "famille": "ACTE",
+    "secteur": "Chirurgie",
+    "codeActe": "CH01",
+    "assurable": true,
+    "statut": "actif"
+   },
+   {
+    "id": "NFS",
+    "code": "NFS",
+    "libelle": "NFS complète (hémogramme)",
+    "famille": "LABO",
+    "secteur": "Laboratoire",
+    "codeAnalyse": "NFS",
+    "statut": "actif"
+   },
+   {
+    "id": "IMG-ECHO-PEL",
+    "code": "IMG-ECHO-PEL",
+    "libelle": "Échographie pelvienne",
+    "famille": "IMAGERIE",
+    "secteur": "Imagerie médicale",
+    "codeGrille": "IMG-ECHO-PEL",
+    "statut": "actif"
+   },
+   {
+    "id": "PARA500",
+    "code": "PARA500",
+    "libelle": "PARACETAMOL 500 MG CP B/100",
+    "famille": "PRODUIT",
+    "statut": "actif"
+   }
+  ],
+  "versionsTarif": [
+   {
+    "id": "MG01@origine@1",
+    "code": "MG01",
+    "version": 1,
+    "prixNonAssure": 5000,
+    "prixAssure": 3000,
+    "etatAssure": "montant",
+    "origine": "migration",
+    "statut": "valide"
+   },
+   {
+    "id": "MG02@origine@1",
+    "code": "MG02",
+    "version": 1,
+    "prixNonAssure": 3000,
+    "prixAssure": 2000,
+    "etatAssure": "montant",
+    "origine": "migration",
+    "statut": "valide"
+   },
+   {
+    "id": "MG02@2027-03-01@2",
+    "code": "MG02",
+    "version": 2,
+    "dateEffet": "2027-03-01",
+    "prixNonAssure": 3500,
+    "prixAssure": 2500,
+    "etatAssure": "montant",
+    "motif": "Ajustement",
+    "origine": "ecran",
+    "statut": "propose",
+    "proposePar": "AUTRE AGENT",
+    "proposeLe": "2026-10-30",
+    "proposeRole": "da"
+   },
+   {
+    "id": "CH01@origine@1",
+    "code": "CH01",
+    "version": 1,
+    "prixNonAssure": 20000,
+    "etatAssure": "unique",
+    "origine": "migration",
+    "statut": "valide"
+   },
+   {
+    "id": "NFS@origine@1",
+    "code": "NFS",
+    "version": 1,
+    "prixNonAssure": 4000,
+    "etatAssure": "unique",
+    "origine": "migration",
+    "statut": "valide"
+   },
+   {
+    "id": "IMG-ECHO-PEL@origine@1",
+    "code": "IMG-ECHO-PEL",
+    "version": 1,
+    "prixNonAssure": 15000,
+    "prixAssure": 10000,
+    "etatAssure": "montant",
+    "origine": "migration",
+    "statut": "valide"
+   },
+   {
+    "id": "PARA500@origine@1",
+    "code": "PARA500",
+    "version": 1,
+    "prixNonAssure": 1200,
+    "etatAssure": "unique",
+    "origine": "migration",
+    "statut": "valide"
+   }
+  ],
+  "examensImagerie": [
+   {
+    "id": "EXI01",
+    "code": "IMG-ECHO-PEL",
+    "label": "Échographie pelvienne",
+    "modalite": "echographie",
+    "icone": "scan-line",
+    "statut": "actif"
+   }
+  ],
   "lotsImportation": []
  },
  "cas": [
@@ -7241,6 +7382,2122 @@
    }
   },
   {
+   "id": "ta-valide",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     5500,
+     3300,
+     "",
+     "2027-01-01",
+     "Oui",
+     "Nouvelle grille tarifaire",
+     ""
+    ],
+    [
+     "NFS",
+     "",
+     "",
+     "",
+     4500,
+     "UNIQUE",
+     "",
+     "2027-01-01",
+     "Oui",
+     "Nouvelle grille tarifaire",
+     ""
+    ],
+    [
+     "CS-NEW",
+     "Consultation nouvelle",
+     "Consultations",
+     "Médecine générale",
+     8000,
+     "NC",
+     "Non couvert",
+     "2027-01-01",
+     "Oui",
+     "Nouvelle grille tarifaire",
+     ""
+    ],
+    [
+     "CH01",
+     "",
+     "",
+     "",
+     20000,
+     "UNIQUE",
+     "",
+     "2027-01-01",
+     "Oui",
+     "Nouvelle grille tarifaire",
+     ""
+    ],
+    [
+     "IMG-ECHO-PEL",
+     "",
+     "",
+     "",
+     16000,
+     11000,
+     "",
+     "2027-01-01",
+     "Non",
+     "Grille non arrêtée",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 5,
+    "compte": {
+     "valides": 3,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 1,
+     "non": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 5,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_INCHANGE",
+      "niveau": "info",
+      "valeur": ""
+     },
+     {
+      "n": 6,
+      "colonne": "Valider (Oui/Non)",
+      "code": "LIGNE_NON_APPLIQUEE",
+      "niveau": "info",
+      "valeur": "Non"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 5,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_INCHANGE",
+      "niveau": "info",
+      "valeur": "",
+      "motif": "ce prix est déjà celui en vigueur à cette date : aucune version, la ligne est comptée"
+     },
+     {
+      "n": 6,
+      "colonne": "Valider (Oui/Non)",
+      "code": "LIGNE_NON_APPLIQUEE",
+      "niveau": "info",
+      "valeur": "Non",
+      "motif": "ligne non appliquée sur décision de l’importateur (motif : Grille non arrêtée)"
+     }
+    ],
+    "aEcrire": 3,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ],
+     [
+      4,
+      "valide"
+     ],
+     [
+      5,
+      "inchange"
+     ],
+     [
+      6,
+      "non"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-proposition",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     5200,
+     3100,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ],
+    [
+     "NFS",
+     "",
+     "",
+     "",
+     4200,
+     "-",
+     "",
+     "2027-01-01",
+     "Oui",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Prix assuré",
+      "code": "PRIX_MANQUANT",
+      "niveau": "avertissement",
+      "valeur": "-"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 3,
+      "colonne": "Prix assuré",
+      "code": "PRIX_MANQUANT",
+      "niveau": "avertissement",
+      "valeur": "-",
+      "motif": "prix assuré manquant : la ligne ne se facturera pas aux assurés (un tiret n’est pas un zéro)"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-code-produit",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "PARA500",
+     "",
+     "",
+     "",
+     1300,
+     "UNIQUE",
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "CODE_PRODUIT",
+      "niveau": "refus",
+      "valeur": "PARA500"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "CODE_PRODUIT",
+      "niveau": "refus",
+      "valeur": "PARA500",
+      "motif": "le code « PARA500 » est celui d’un produit : son prix d’achat se change par le jeu « Importation des prix d’achat », jamais par les prix de prestations"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-nc-non-assure",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     "NC",
+     3000,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "NC_INTERDIT",
+      "niveau": "refus",
+      "valeur": "NC"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "NC_INTERDIT",
+      "niveau": "refus",
+      "valeur": "NC",
+      "motif": "NC n’a de sens que dans la colonne assurée"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-prix-absent",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     "-",
+     3000,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_ABSENT",
+      "niveau": "refus",
+      "valeur": "-"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_ABSENT",
+      "niveau": "refus",
+      "valeur": "-",
+      "motif": "un tiret n’est pas un zéro, et un prix non assuré absent n’est pas un tarif : la ligne ne se facturerait pas"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-prix-zero",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     0,
+     3000,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_ZERO",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_ZERO",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul »)."
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-prix-decimal",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     5000.5,
+     3000,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "5000.5"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "5000.5",
+      "motif": "« 5000.5 » n’est ni un montant entier, ni NC, ni un tiret"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-date-passee",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     5600,
+     3400,
+     "",
+     "2026-10-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "DATE_PASSEE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "DATE_PASSEE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "La date d’effet (2026-10-01) est antérieure à aujourd’hui (2026-11-01) : un prix ne se change pas dans le passé sans une décision expresse."
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-date-absente",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     5600,
+     3400,
+     "",
+     "",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Date d’effet",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur obligatoire absente"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-motif-requis",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     5600,
+     3400,
+     "",
+     "2027-01-01",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "MOTIF_REQUIS",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "MOTIF_REQUIS",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "Un changement de prix se motive : sans motif, la Direction ne peut pas décider."
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-non-sans-motif",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     5600,
+     3400,
+     "",
+     "2027-01-01",
+     "Non",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "MOTIF_REQUIS",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Motif",
+      "code": "MOTIF_REQUIS",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "une ligne « Non » se motive : sans motif, on ne sait pas pourquoi le prix n’est pas appliqué"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-identite-incomplete",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "XX99",
+     "",
+     "",
+     "",
+     1000,
+     "UNIQUE",
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ],
+    [
+     "XX98",
+     "Sans famille",
+     "",
+     "",
+     1000,
+     "UNIQUE",
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 2,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Désignation",
+      "code": "IDENTITE_INCOMPLETE",
+      "niveau": "refus",
+      "valeur": ""
+     },
+     {
+      "n": 3,
+      "colonne": "Famille",
+      "code": "IDENTITE_INCOMPLETE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Désignation",
+      "code": "IDENTITE_INCOMPLETE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "le code « XX99 » est inconnu : une nouvelle prestation porte une désignation"
+     },
+     {
+      "n": 3,
+      "colonne": "Famille",
+      "code": "IDENTITE_INCOMPLETE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "le code « XX98 » est inconnu : une nouvelle prestation porte une famille"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-colonnes-inversees",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     3000,
+     5000,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix assuré",
+      "code": "COLONNES_INVERSEES",
+      "niveau": "avertissement",
+      "valeur": "5000"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix assuré",
+      "code": "COLONNES_INVERSEES",
+      "niveau": "avertissement",
+      "valeur": "5000",
+      "motif": "les deux colonnes paraissent inversées par rapport au prix en vigueur (non assuré 5 000, assuré 3 000) : le fichier fait foi, rien n’est corrigé"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-identite-differente",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "Autre libellé",
+     "",
+     "",
+     5300,
+     3200,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ],
+    [
+     "CH01",
+     "",
+     "Consultations",
+     "",
+     21000,
+     "UNIQUE",
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 0,
+     "avertissements": 2,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Désignation",
+      "code": "IDENTITE_DIFFERENTE",
+      "niveau": "avertissement",
+      "valeur": "Autre libellé"
+     },
+     {
+      "n": 3,
+      "colonne": "Famille",
+      "code": "IDENTITE_DIFFERENTE",
+      "niveau": "avertissement",
+      "valeur": "CONSULTATION"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Désignation",
+      "code": "IDENTITE_DIFFERENTE",
+      "niveau": "avertissement",
+      "valeur": "Autre libellé",
+      "motif": "la désignation du fichier diffère de celle de la fiche : elle n’est pas appliquée (un import ne modifie pas l’identité d’une prestation)"
+     },
+     {
+      "n": 3,
+      "colonne": "Famille",
+      "code": "IDENTITE_DIFFERENTE",
+      "niveau": "avertissement",
+      "valeur": "CONSULTATION",
+      "motif": "la famille du fichier diffère de celle de la fiche : elle n’est pas appliquée"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-en-attente",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG02",
+     "",
+     "",
+     "",
+     3600,
+     2600,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "CHANGEMENT_EN_ATTENTE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code",
+      "code": "CHANGEMENT_EN_ATTENTE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "Une proposition est déjà en attente de décision pour « MG02 » (version 2)."
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-inchange",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     5000,
+     3000,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 1,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_INCHANGE",
+      "niveau": "info",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_INCHANGE",
+      "niveau": "info",
+      "valeur": "",
+      "motif": "ce prix est déjà celui en vigueur à cette date : aucune version, la ligne est comptée"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "inchange"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-code-existant-alias",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     5000,
+     3000,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ],
+    [
+     "mg01",
+     "",
+     "",
+     "",
+     5100,
+     3000,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 1,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_INCHANGE",
+      "niveau": "info",
+      "valeur": ""
+     },
+     {
+      "n": 3,
+      "colonne": "Code",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "mg01"
+     },
+     {
+      "n": 3,
+      "colonne": "Désignation",
+      "code": "IDENTITE_INCOMPLETE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_INCHANGE",
+      "niveau": "info",
+      "valeur": "",
+      "motif": "ce prix est déjà celui en vigueur à cette date : aucune version, la ligne est comptée"
+     },
+     {
+      "n": 3,
+      "colonne": "Code",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "mg01",
+      "motif": "identique à la ligne 2 du même fichier"
+     },
+     {
+      "n": 3,
+      "colonne": "Désignation",
+      "code": "IDENTITE_INCOMPLETE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "le code « mg01 » est inconnu : une nouvelle prestation porte une désignation"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "inchange"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-famille-inconnue",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "ZZ01",
+     "Soin",
+     "Bijoux",
+     "",
+     1000,
+     "UNIQUE",
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Famille",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Bijoux"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Famille",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Bijoux",
+      "motif": "« Bijoux » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ta-unique-interdit-non-assure",
+   "jeu": "tarifs",
+   "lignes": [
+    [
+     "Code",
+     "Désignation",
+     "Famille",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Couverture",
+     "Date d’effet",
+     "Valider (Oui/Non)",
+     "Motif",
+     "Source"
+    ],
+    [
+     "MG01",
+     "",
+     "",
+     "",
+     "UNIQUE",
+     3000,
+     "",
+     "2027-01-01",
+     "",
+     "Nouvelle grille tarifaire",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "UNIQUE"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "UNIQUE",
+      "motif": "« UNIQUE » n’est ni un montant entier, ni NC, ni un tiret"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ci-valide",
+   "jeu": "catalogue-imagerie",
+   "lignes": [
+    [
+     "Code examen",
+     "Intitulé",
+     "Modalité",
+     "Voie d’abord",
+     "Code tarifaire (si différent)"
+    ],
+    [
+     "IMG-RAD-THO",
+     "Radiographie du thorax",
+     "Radiographie",
+     "face",
+     ""
+    ],
+    [
+     "IMG-ECH-ABD",
+     "Échographie abdominale",
+     "Échographie",
+     "",
+     "IMG-ECHO-PEL"
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 0,
+     "avertissements": 2,
+     "refus": 0,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_TARIF",
+      "niveau": "avertissement",
+      "valeur": "IMG-RAD-THO"
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "examen importé en proposition : il porte la mention « à valider » jusqu’à la relecture du praticien de la famille"
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucune variable de compte rendu n’est importée"
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_TARIF",
+      "niveau": "avertissement",
+      "valeur": "IMG-RAD-THO",
+      "motif": "aucun tarif en vigueur pour ce code : l’examen sera refusé à la prescription en le nommant"
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "examen importé en proposition : il porte la mention « à valider » jusqu’à la relecture du praticien de la famille"
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucune variable de compte rendu n’est importée"
+     }
+    ],
+    "aEcrire": 2,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ci-doublon-magasin",
+   "jeu": "catalogue-imagerie",
+   "lignes": [
+    [
+     "Code examen",
+     "Intitulé",
+     "Modalité",
+     "Voie d’abord",
+     "Code tarifaire (si différent)"
+    ],
+    [
+     "IMG-ECHO-PEL",
+     "Échographie pelvienne",
+     "Échographie",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "IMG-ECHO-PEL"
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "IMG-ECHO-PEL",
+      "motif": "l’examen « IMG-ECHO-PEL » existe déjà (Échographie pelvienne)"
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "examen importé en proposition : il porte la mention « à valider » jusqu’à la relecture du praticien de la famille"
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucune variable de compte rendu n’est importée"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ci-modalite-inconnue",
+   "jeu": "catalogue-imagerie",
+   "lignes": [
+    [
+     "Code examen",
+     "Intitulé",
+     "Modalité",
+     "Voie d’abord",
+     "Code tarifaire (si différent)"
+    ],
+    [
+     "IMG-XX",
+     "Examen",
+     "Télépathie",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Modalité",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Télépathie"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Modalité",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Télépathie",
+      "motif": "« Télépathie » n’est pas une valeur permise"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ci-code-invalide",
+   "jeu": "catalogue-imagerie",
+   "lignes": [
+    [
+     "Code examen",
+     "Intitulé",
+     "Modalité",
+     "Voie d’abord",
+     "Code tarifaire (si différent)"
+    ],
+    [
+     "X",
+     "Examen",
+     "Scanner",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "X"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "X",
+      "motif": "2 à 40 lettres, chiffres, tiret ou souligné"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ci-obligatoire-vide",
+   "jeu": "catalogue-imagerie",
+   "lignes": [
+    [
+     "Code examen",
+     "Intitulé",
+     "Modalité",
+     "Voie d’abord",
+     "Code tarifaire (si différent)"
+    ],
+    [
+     "IMG-SC1",
+     "",
+     "Scanner",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Intitulé",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Intitulé",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": "",
+      "motif": "valeur obligatoire absente"
+     }
+    ],
+    "aEcrire": 0,
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ci-doublon-fichier",
+   "jeu": "catalogue-imagerie",
+   "lignes": [
+    [
+     "Code examen",
+     "Intitulé",
+     "Modalité",
+     "Voie d’abord",
+     "Code tarifaire (si différent)"
+    ],
+    [
+     "IMG-SC2",
+     "Scanner crâne",
+     "Scanner",
+     "",
+     ""
+    ],
+    [
+     "img-sc2",
+     "Scanner crâne bis",
+     "Scanner",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 1,
+     "ignores": 0,
+     "inchanges": 0,
+     "non": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_TARIF",
+      "niveau": "avertissement",
+      "valeur": "IMG-SC2"
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "img-sc2"
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": ""
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "SANS_TARIF",
+      "niveau": "avertissement",
+      "valeur": "img-sc2"
+     }
+    ],
+    "consignes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "examen importé en proposition : il porte la mention « à valider » jusqu’à la relecture du praticien de la famille"
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucune variable de compte rendu n’est importée"
+     },
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_TARIF",
+      "niveau": "avertissement",
+      "valeur": "IMG-SC2",
+      "motif": "aucun tarif en vigueur pour ce code : l’examen sera refusé à la prescription en le nommant"
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "img-sc2",
+      "motif": "identique à la ligne 2 du même fichier"
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "A_VALIDER",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "examen importé en proposition : il porte la mention « à valider » jusqu’à la relecture du praticien de la famille"
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": "",
+      "motif": "aucune variable de compte rendu n’est importée"
+     },
+     {
+      "n": 3,
+      "colonne": "Code examen",
+      "code": "SANS_TARIF",
+      "niveau": "avertissement",
+      "valeur": "img-sc2",
+      "motif": "aucun tarif en vigueur pour ce code : l’examen sera refusé à la prescription en le nommant"
+     }
+    ],
+    "aEcrire": 1,
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
    "id": "ic-doublon-fichier",
    "jeu": "inventaire-comptage",
    "lignes": [
@@ -10243,6 +12500,54 @@
     "validePar": "ADMIN TEST",
     "date": "2026-11-01"
    }
+  },
+  {
+   "cas": "ci-valide",
+   "jeu": "catalogue-imagerie",
+   "ok": true,
+   "reference": "IMP-2026-019",
+   "ecrits": 2,
+   "fiches": {
+    "examensImagerie": [
+     {
+      "statut": "actif",
+      "source": "Import Importation du catalogue de l’imagerie (ci-valide.xlsx)",
+      "lotImport": "IMP-2026-019",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "IMG-RAD-THO",
+      "label": "Radiographie du thorax",
+      "icone": "bone",
+      "voie": "face",
+      "modalite": "radiographie",
+      "tarifCode": null,
+      "aValider": true
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du catalogue de l’imagerie (ci-valide.xlsx)",
+      "lotImport": "IMP-2026-019",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "IMG-ECH-ABD",
+      "label": "Échographie abdominale",
+      "icone": "scan-line",
+      "voie": null,
+      "modalite": "echographie",
+      "tarifCode": "IMG-ECHO-PEL",
+      "aValider": true
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 2,
+    "jeu": "catalogue-imagerie",
+    "fichier": "ci-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
   }
  ],
  "lotRefus": {
@@ -10406,6 +12711,14 @@
    "etatLot": "annule"
   },
   {
+   "cas": "ci-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
    "cas": "gs-valide-deuxieme-fois",
    "ok": false,
    "code": "LOT_NON_APPLIQUE"
@@ -10460,7 +12773,7 @@
    "demandeur": "Pharmacie d’urgence",
    "motif": "Réapprovisionnement",
    "source": "Import Importation d’un bon de transfert",
-   "lotImport": "IMP-2026-020",
+   "lotImport": "IMP-2026-021",
    "validePar": "ADMIN TEST",
    "dateImport": "2026-11-01",
    "reference": "TR-00002",
@@ -10551,7 +12864,7 @@
    {
     "statut": "actif",
     "source": "Import Importation d’un comptage d’inventaire (ic-valide.xlsx)",
-    "lotImport": "IMP-2026-022",
+    "lotImport": "IMP-2026-023",
     "validePar": "ADMIN TEST",
     "dateImport": "2026-11-01",
     "reference": "INV-0004",
@@ -10582,7 +12895,7 @@
    {
     "statut": "actif",
     "source": "Import Importation d’un comptage d’inventaire (ic-valide.xlsx)",
-    "lotImport": "IMP-2026-022",
+    "lotImport": "IMP-2026-023",
     "validePar": "ADMIN TEST",
     "dateImport": "2026-11-01",
     "reference": "INV-0003",
@@ -10728,7 +13041,7 @@
    },
    "dUnAutre": {
     "code": "LOT_D_UN_AUTRE",
-    "motif": "le lot IMP-2026-024 a été écrit par un autre agent",
+    "motif": "le lot IMP-2026-027 a été écrit par un autre agent",
     "geste": "Seul son auteur, ou un profil qui supervise les importations, peut l’annuler."
    },
    "etatLot": "applique"
@@ -10839,6 +13152,397 @@
     "Situation familiale",
     "Salaire de base"
    ]
+  }
+ },
+ "prix": {
+  "adminValide": {
+   "accepte": true,
+   "compte": {
+    "valides": 3,
+    "avertissements": 0,
+    "refus": 0,
+    "ignores": 0,
+    "inchanges": 1,
+    "non": 1
+   },
+   "problemes": [
+    {
+     "n": 5,
+     "colonne": "Prix non assuré",
+     "code": "PRIX_INCHANGE",
+     "niveau": "info"
+    },
+    {
+     "n": 6,
+     "colonne": "Valider (Oui/Non)",
+     "code": "LIGNE_NON_APPLIQUEE",
+     "niveau": "info"
+    }
+   ],
+   "details": [
+    [
+     2,
+     "valide",
+     "Ancien : 5 000 / 3 000 ; nouveau : 5 500 / 3 300 ; variation : 10 % (assuré 10 %) ; décision : Oui : version validée à l’import"
+    ],
+    [
+     3,
+     "valide",
+     "Ancien : 4 000 / unique ; nouveau : 4 500 / unique ; variation : 12.5 % ; décision : Oui : version validée à l’import"
+    ],
+    [
+     4,
+     "valide",
+     "Ancien : nouvelle prestation ; nouveau : 8 000 / NC ; décision : Oui : prestation créée, version 1 validée"
+    ],
+    [
+     5,
+     "inchange",
+     "Ancien : 20 000 / unique ; nouveau : 20 000 / unique ; variation : 0 % ; décision : Inchangée"
+    ],
+    [
+     6,
+     "non",
+     "Ancien : 15 000 / 10 000 ; nouveau : 16 000 / 11 000 ; variation : 6.7 % (assuré 10 %) ; décision : Non : non appliquée"
+    ]
+   ]
+  },
+  "stockValide": {
+   "accepte": true,
+   "compte": {
+    "valides": 1,
+    "avertissements": 2,
+    "refus": 0,
+    "ignores": 0,
+    "inchanges": 1,
+    "non": 1
+   },
+   "problemes": [
+    {
+     "n": 2,
+     "colonne": "Valider (Oui/Non)",
+     "code": "OUI_VAUT_PROPOSITION",
+     "niveau": "avertissement"
+    },
+    {
+     "n": 3,
+     "colonne": "Valider (Oui/Non)",
+     "code": "OUI_VAUT_PROPOSITION",
+     "niveau": "avertissement"
+    },
+    {
+     "n": 5,
+     "colonne": "Prix non assuré",
+     "code": "PRIX_INCHANGE",
+     "niveau": "info"
+    },
+    {
+     "n": 6,
+     "colonne": "Valider (Oui/Non)",
+     "code": "LIGNE_NON_APPLIQUEE",
+     "niveau": "info"
+    }
+   ],
+   "details": [
+    [
+     2,
+     "avertissement",
+     "Ancien : 5 000 / 3 000 ; nouveau : 5 500 / 3 300 ; variation : 10 % (assuré 10 %) ; décision : Proposition (votre Oui vaut proposition)"
+    ],
+    [
+     3,
+     "avertissement",
+     "Ancien : 4 000 / unique ; nouveau : 4 500 / unique ; variation : 12.5 % ; décision : Proposition (votre Oui vaut proposition)"
+    ],
+    [
+     4,
+     "valide",
+     "Ancien : nouvelle prestation ; nouveau : 8 000 / NC ; décision : Prestation créée, version 1 proposée (alerte)"
+    ],
+    [
+     5,
+     "inchange",
+     "Ancien : 20 000 / unique ; nouveau : 20 000 / unique ; variation : 0 % ; décision : Inchangée"
+    ],
+    [
+     6,
+     "non",
+     "Ancien : 15 000 / 10 000 ; nouveau : 16 000 / 11 000 ; variation : 6.7 % (assuré 10 %) ; décision : Non : non appliquée"
+    ]
+   ]
+  },
+  "stockProposition": {
+   "accepte": true,
+   "compte": {
+    "valides": 1,
+    "avertissements": 1,
+    "refus": 0,
+    "ignores": 0,
+    "inchanges": 0,
+    "non": 0
+   },
+   "problemes": [
+    {
+     "n": 3,
+     "colonne": "Prix assuré",
+     "code": "PRIX_MANQUANT",
+     "niveau": "avertissement"
+    },
+    {
+     "n": 3,
+     "colonne": "Valider (Oui/Non)",
+     "code": "OUI_VAUT_PROPOSITION",
+     "niveau": "avertissement"
+    }
+   ],
+   "details": [
+    [
+     2,
+     "valide",
+     "Ancien : 5 000 / 3 000 ; nouveau : 5 200 / 3 100 ; variation : 4 % (assuré 3.3 %) ; décision : Proposition (alerte Oui/Non)"
+    ],
+    [
+     3,
+     "avertissement",
+     "Ancien : 4 000 / unique ; nouveau : 4 200 / absent ; variation : 5 % ; décision : Proposition (votre Oui vaut proposition)"
+    ]
+   ]
+  },
+  "appliqueAdmin": {
+   "reference": "{A}",
+   "etat": "applique",
+   "nbLignes": 5,
+   "nbInchanges": 1,
+   "nbNon": 1,
+   "ecrits": [
+    "versionsTarif",
+    "versionsTarif",
+    "tarifs",
+    "versionsTarif"
+   ],
+   "fiches": [
+    {
+     "statut": "valide",
+     "code": "MG01",
+     "version": 2,
+     "dateEffet": "2027-01-01",
+     "prixNonAssure": 5500,
+     "prixAssure": 3300,
+     "etatAssure": "montant",
+     "motif": "Nouvelle grille tarifaire",
+     "origine": "import",
+     "proposePar": "ADMIN TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "admin",
+     "lot": "{A}",
+     "decidePar": "ADMIN TEST",
+     "decideLe": "2026-11-01",
+     "roleDecision": "admin",
+     "motifDecision": "Validée à l’import {A}",
+     "id": "MG01@2027-01-01@2"
+    },
+    {
+     "statut": "valide",
+     "code": "NFS",
+     "version": 2,
+     "dateEffet": "2027-01-01",
+     "prixNonAssure": 4500,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "Nouvelle grille tarifaire",
+     "origine": "import",
+     "proposePar": "ADMIN TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "admin",
+     "lot": "{A}",
+     "decidePar": "ADMIN TEST",
+     "decideLe": "2026-11-01",
+     "roleDecision": "admin",
+     "motifDecision": "Validée à l’import {A}",
+     "id": "NFS@2027-01-01@2"
+    },
+    {
+     "statut": "actif",
+     "code": "CS-NEW",
+     "libelle": "Consultation nouvelle",
+     "famille": "CONSULTATION",
+     "secteur": "Médecine générale",
+     "codeGrille": "CS-NEW",
+     "assurable": false,
+     "id": "CS-NEW"
+    },
+    {
+     "statut": "valide",
+     "code": "CS-NEW",
+     "version": 1,
+     "dateEffet": "2027-01-01",
+     "prixNonAssure": 8000,
+     "prixAssure": null,
+     "etatAssure": "nc",
+     "motif": "Nouvelle grille tarifaire",
+     "origine": "import",
+     "proposePar": "ADMIN TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "admin",
+     "lot": "{A}",
+     "decidePar": "ADMIN TEST",
+     "decideLe": "2026-11-01",
+     "roleDecision": "admin",
+     "motifDecision": "Validée à l’import {A}",
+     "id": "CS-NEW@2027-01-01@1"
+    }
+   ]
+  },
+  "annulationValidee": {
+   "ok": false,
+   "code": "VERSION_DEJA_VALIDEE",
+   "motif": "la version MG01@2027-01-01@2 est déjà validée : une décision se remplace par une nouvelle version, elle ne s’efface pas",
+   "geste": "Proposez une nouvelle version à l’écran « Tarifs et prix » (ou « Changer le prix d’achat » pour un produit) ; seules les propositions encore en attente se retirent avec leur lot."
+  },
+  "rejeu": {
+   "accepte": true,
+   "compte": {
+    "valides": 0,
+    "avertissements": 0,
+    "refus": 0,
+    "ignores": 0,
+    "inchanges": 4,
+    "non": 1
+   },
+   "problemes": [
+    {
+     "n": 2,
+     "colonne": "Prix non assuré",
+     "code": "PRIX_INCHANGE",
+     "niveau": "info"
+    },
+    {
+     "n": 3,
+     "colonne": "Prix non assuré",
+     "code": "PRIX_INCHANGE",
+     "niveau": "info"
+    },
+    {
+     "n": 4,
+     "colonne": "Prix non assuré",
+     "code": "PRIX_INCHANGE",
+     "niveau": "info"
+    },
+    {
+     "n": 5,
+     "colonne": "Prix non assuré",
+     "code": "PRIX_INCHANGE",
+     "niveau": "info"
+    },
+    {
+     "n": 6,
+     "colonne": "Valider (Oui/Non)",
+     "code": "LIGNE_NON_APPLIQUEE",
+     "niveau": "info"
+    }
+   ],
+   "details": [
+    [
+     2,
+     "inchange",
+     "Ancien : 5 500 / 3 300 ; nouveau : 5 500 / 3 300 ; variation : 0 % ; décision : Inchangée"
+    ],
+    [
+     3,
+     "inchange",
+     "Ancien : 4 500 / unique ; nouveau : 4 500 / unique ; variation : 0 % ; décision : Inchangée"
+    ],
+    [
+     4,
+     "inchange",
+     "Ancien : 8 000 / NC ; nouveau : 8 000 / NC ; variation : 0 % ; décision : Inchangée"
+    ],
+    [
+     5,
+     "inchange",
+     "Ancien : 20 000 / unique ; nouveau : 20 000 / unique ; variation : 0 % ; décision : Inchangée"
+    ],
+    [
+     6,
+     "non",
+     "Ancien : 15 000 / 10 000 ; nouveau : 16 000 / 11 000 ; variation : 6.7 % (assuré 10 %) ; décision : Non : non appliquée"
+    ]
+   ]
+  },
+  "appliqueStock": {
+   "reference": "{B}",
+   "etat": "applique",
+   "nbAvertissements": 1,
+   "ecrits": [
+    "versionsTarif",
+    "versionsTarif"
+   ],
+   "fiches": [
+    {
+     "statut": "propose",
+     "code": "MG01",
+     "version": 3,
+     "dateEffet": "2027-01-01",
+     "prixNonAssure": 5200,
+     "prixAssure": 3100,
+     "etatAssure": "montant",
+     "motif": "Nouvelle grille tarifaire",
+     "origine": "import",
+     "proposePar": "STOCK TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "stock",
+     "lot": "{B}",
+     "id": "MG01@2027-01-01@3"
+    },
+    {
+     "statut": "propose",
+     "code": "NFS",
+     "version": 3,
+     "dateEffet": "2027-01-01",
+     "prixNonAssure": 4200,
+     "prixAssure": null,
+     "etatAssure": "manquant",
+     "motif": "Nouvelle grille tarifaire",
+     "origine": "import",
+     "proposePar": "STOCK TEST",
+     "proposeLe": "2026-11-01",
+     "proposeRole": "stock",
+     "lot": "{B}",
+     "id": "NFS@2027-01-01@3"
+    }
+   ]
+  },
+  "annulationPropositions": {
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "etatLot": "annule",
+   "versions": [
+    {
+     "id": "MG01@2027-01-01@3",
+     "statut": "retire",
+     "motifDecision": "Lot {B} annulé : essai",
+     "decidePar": "STOCK TEST",
+     "roleDecision": "stock"
+    },
+    {
+     "id": "NFS@2027-01-01@3",
+     "statut": "retire",
+     "motifDecision": "Lot {B} annulé : essai",
+     "decidePar": "STOCK TEST",
+     "roleDecision": "stock"
+    }
+   ]
+  },
+  "annulationDeuxFois": {
+   "ok": false,
+   "code": "LOT_NON_APPLIQUE"
+  },
+  "lotsAjoutes": 2,
+  "sansDroit": {
+   "ok": false,
+   "code": "DROIT_IMPORT_REFUSE",
+   "versionsAjoutees": 0
   }
  },
  "rapport": {

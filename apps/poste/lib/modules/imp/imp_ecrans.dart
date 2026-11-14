@@ -72,6 +72,7 @@ DemandesImportPoste _demandes(ContexteEcran c) => DemandesImportPoste(c.magasin,
     auteur: () => c.agent.nom,
     matrice: c.donnees!.matrice,
     aujourdhui: () => c.aujourdhui,
+    fileulRattache: ServiceInstallation.de(c.magasin).rattache,
     etiquette: c.magasin.poste.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toUpperCase());
 
 /// La VOIE de ce jeu sur ce poste (lot IMP-D) : directe (la mère, un poste autonome, ou un jeu d'activité), directe ET demande (un fileul rattaché, configuration seule), demande
@@ -411,6 +412,8 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
     if (!ok || !mounted) return;
     setState(() => _occupe = true);
     final r = appliquer(_jeu, a, _port(c));
+    // LOT 8B : un prix validé d'emblée fait la même suite qu'un Oui à l'écran (marquage levé, projection refaite) ; sans effet pour un autre jeu.
+    if (r.ok) _demandes(c).apresImportDePrix(r.lot);
     if (!mounted) return;
     setState(() {
       _occupe = false;
@@ -459,6 +462,29 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
     }
   }
 
+  /// FILEUL (jeu de PRIX) : rien ne s'écrit chez soi, la demande vérifiée part à la mère, qui refait les contrôles sous le rôle de l'auteur et crée les versions (PRD-TARIFS 7.3).
+  Future<void> _deposerDemande(ContexteEcran c) async {
+    final a = _analyse!;
+    final ok = await confirmerSigh(context,
+        titre: 'Envoyer la demande à la mère ?',
+        message:
+            '${a.aEcrire} ligne(s) du fichier « ${a.fichier} » partent à la mère dans une demande, au nom de ${c.agent.nom}. Rien n’est écrit chez vous : la mère refait les mêmes contrôles sous votre profil puis crée '
+            'les versions de prix. Votre Oui vaut proposition, la décision revient à la Directrice Administrative ou à la Direction. Vous lirez ici sa réponse, nommée si elle refuse.',
+        libelleOk: 'Envoyer la demande');
+    if (!ok || !mounted) return;
+    setState(() => _occupe = true);
+    final fiche = _demandes(c).deposer(_jeu, a);
+    if (!mounted) return;
+    setState(() {
+      _occupe = false;
+      _analyse = null;
+      _lotRefuse = null;
+      _resultatOk = true;
+      _resultat = 'La demande ${fiche['id']} est partie à la mère (${a.aEcrire} ligne(s)). Rien n’est écrit chez vous : elle répondra, et sa réponse se lit dans « Demandes envoyées à la mère ».';
+    });
+    ToastsSigh.afficher(context, 'Demande envoyée à la mère.', type: TypeToast.succes, detail: '${fiche['id']} : ${a.aEcrire} ligne(s).');
+  }
+
   Future<void> _rapportAnalyse(ContexteEcran c) async {
     final a = _analyse!;
     final lot = _lotRefuse;
@@ -473,7 +499,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
   }
 
   Widget _apercu(ContexteEcran c, AnalyseImport a, DroitImport droit, {required VoieImportFileul voie}) {
-    final reserve = voie == VoieImportFileul.reserveeALaMere, direct = voie == VoieImportFileul.directeEtDemande;
+    final reserve = voie == VoieImportFileul.reserveeALaMere, direct = voie == VoieImportFileul.directeEtDemande, seule = voie == VoieImportFileul.demandeSeule;
     final ps = a.problemes;
     final avecDetail = a.lignes.any((l) => l.detail != null && l.detail!.isNotEmpty);
     return CarteSigh(
@@ -570,7 +596,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         const SizedBox(height: 12),
         Wrap(spacing: 8, runSpacing: 8, children: [
           // La commande d'écriture n'existe que pour qui détient le droit d'IMPORTER CE JEU (pas celui d'éditer l'écran) : absente, jamais grisée.
-          if (a.accepte && a.aEcrire > 0 && droit.importer && !reserve && !direct)
+          if (a.accepte && a.aEcrire > 0 && droit.importer && !reserve && !direct && !seule)
             BoutonSigh(
                 libelle: 'Confirmer l’importation (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
                 icone: LucideIcons.packageCheck,
@@ -582,6 +608,13 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
                 libelle: 'Écrire chez moi et prévenir la mère (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
                 icone: LucideIcons.packageCheck,
                 onPressed: _occupe ? null : () => _importerEtDemander(c)),
+          // Sur un FILEUL rattaché, des prix ne s'écrivent PAS chez lui : la demande vérifiée part à la mère (lot 8B).
+          if (a.accepte && a.aEcrire > 0 && droit.importer && seule)
+            BoutonSigh(
+                key: const Key('imp-deposer-demande'),
+                libelle: 'Envoyer la demande à la mère (${a.aEcrire} ligne${a.aEcrire > 1 ? 's' : ''})',
+                icone: LucideIcons.send,
+                onPressed: _occupe ? null : () => _deposerDemande(c)),
           if (ps.isNotEmpty && !a.droitRefuse)
             BoutonSigh(
                 libelle: 'Rapport d’erreurs (.xlsx)',
@@ -618,6 +651,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
         final voie = _voie(c, j.id);
         final reserve = voie == VoieImportFileul.reserveeALaMere;
         final direct = voie == VoieImportFileul.directeEtDemande;
+        final seule = voie == VoieImportFileul.demandeSeule;
         // La REPRISE valorisée du Grand Stock a ses propres droits (ceux de M6) : elle reste atteignable de qui l'a, même sans détenir le JEU.
         Widget repriseValorisee() => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: const [
               SizedBox(height: 24),
@@ -680,6 +714,12 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             const NoteSigh(
                 'Écrit chez vous maintenant, la mère confirmera. Ce jeu écrit la configuration de la clinique, dont la mère reste l’autorité : votre fichier est vérifié, puis écrit dans VOTRE magasin tout de suite, et une demande part automatiquement à la mère. Elle rejoue la vérification sous votre profil et applique ou refuse. Tant qu’elle n’a pas répondu, les fiches portent le marquage « en attente de la mère » ; si elle refuse, elles sont restituées (archivées) et vous lisez le motif sur votre demande ; hors ligne, la demande attend dans votre file. En cas de conflit, la mère l’emporte.',
                 icone: LucideIcons.serverCog),
+          ],
+          if (seule) ...[
+            const SizedBox(height: 16),
+            const NoteSigh(
+                'Des prix ne s’écrivent pas chez vous. Une version de prix est une fiche immuable que la mère seule écrit : votre fichier est vérifié ici, puis une demande part à la mère, qui refait les mêmes contrôles sous votre profil et crée les versions. Votre Oui vaut proposition ; la décision revient à la Directrice Administrative ou à la Direction.',
+                icone: LucideIcons.send),
           ],
           if (reserve) ...[
             const SizedBox(height: 16),
@@ -753,7 +793,7 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
             NoteSigh(_resultat!, ton: _resultatOk ? TonSigh.succes : TonSigh.danger, icone: _resultatOk ? LucideIcons.circleCheck : LucideIcons.octagonAlert),
           ],
           if (_analyse != null) ...[const SizedBox(height: 16), _apercu(c, _analyse!, d, voie: voie)],
-          if (direct) ...[
+          if (direct || seule) ...[
             const SizedBox(height: 16),
             CarteSigh(titre: 'Demandes envoyées à la mère', sansRemplissage: true, child: tableauDemandes(_demandes(c).sesDemandes(jeu: j.id))),
           ],

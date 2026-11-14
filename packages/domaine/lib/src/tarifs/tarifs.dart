@@ -748,6 +748,9 @@ class DemandeProposition {
     this.valider = false,
     this.creation,
     this.assurable,
+    this.source,
+    this.importJeu,
+    this.importLot,
   });
   final String code;
   final Object? prixNonAssure;
@@ -767,6 +770,15 @@ class DemandeProposition {
   /// Création d'une prestation : `{libelle, famille, secteur?, source?}`.
   final Map<String, Object?>? creation;
   final Object? assurable;
+
+  /// La source du prix (grille, avenant) : posée sur la version quand elle est renseignée.
+  final String? source;
+
+  /// LOT 8B : la proposition naît d'un fichier d'import. Le jeu `tarifs` seul compte comme import de prix de prestation : la version porte l'origine `import`, la référence du lot,
+  /// et son journal et son motif de décision le disent (« validation à l'import », « Validée à l'import IMP-… »).
+  final String? importJeu;
+  final String? importLot;
+  bool get viaImport => importJeu == 'tarifs';
 }
 
 /// Ce qu'une proposition recevable donne à ÉCRIRE : la version, et l'identité de la prestation quand c'est une création.
@@ -818,6 +830,11 @@ RefusTarif? _controleProposition(DemandeProposition o) {
 ResultatTarif<PropositionTarif> tarProposer(ContexteTarif cx, DemandeProposition o) {
   ResultatTarif<PropositionTarif> non(RefusTarif r) => ResultatTarif.refuse(r);
   if (!cx.peutEditerEcran) {
+    // Par un fichier, le droit est celui d'IMPORTER le jeu (le gestionnaire de stock importe des prix sans pouvoir éditer l'écran) : la phrase le dit.
+    if (o.viaImport) {
+      return non(const RefusTarif('PROPOSITION_RESERVEE', 'Proposer un prix par un fichier revient aux profils qui détiennent le droit d’importer le jeu « Importation des tarifs et prix ».',
+          'Demander ce droit à l’administrateur (« Rôles & permissions », section Importation).'));
+    }
     return non(const RefusTarif('PROPOSITION_RESERVEE', 'Proposer un prix se fait depuis « Tarifs et prix », par un profil qui peut modifier cet écran.',
         'Demander la modification à la Directrice Administrative ou à la Direction.'));
   }
@@ -906,12 +923,14 @@ ResultatTarif<PropositionTarif> tarProposer(ContexteTarif cx, DemandeProposition
     if (etatA == 'montant') 'prixAssure': _nombre(o.prixAssure).toInt(),
     'etatAssure': etatA,
     'motif': o.motif!.trim(),
-    'origine': 'ecran',
+    'origine': o.viaImport ? 'import' : 'ecran',
     'statut': 'propose',
     'proposePar': cx.auteur,
     'proposeLe': cx.aujourdhui,
     'proposeRole': cx.role,
   };
+  if (o.viaImport && (o.importLot ?? '').isNotEmpty) v['lot'] = o.importLot;
+  if ((o.source ?? '').trim().isNotEmpty) v['source'] = o.source!.trim();
   if (passee) v['datePassee'] = true;
   if (o.valider) {
     // Née VALIDE en un geste, avec le rôle de l'auteur tracé : la correction de la DAF n'attend pas la Direction.
@@ -919,13 +938,13 @@ ResultatTarif<PropositionTarif> tarProposer(ContexteTarif cx, DemandeProposition
     v['decidePar'] = v['proposePar'];
     v['decideLe'] = v['proposeLe'];
     v['roleDecision'] = v['proposeRole'];
-    v['motifDecision'] = 'Validée en un geste à la saisie';
+    v['motifDecision'] = o.viaImport ? 'Validée à l’import ${o.importLot ?? ''}' : 'Validée en un geste à la saisie';
   }
   return ResultatTarif.ok(PropositionTarif(
     version: v,
     identite: identite,
     valideeEnUnGeste: o.valider,
-    journalAction: o.valider ? 'validation en un geste' : 'proposition',
+    journalAction: o.viaImport ? (o.valider ? 'validation à l’import' : 'proposition à l’import') : (o.valider ? 'validation en un geste' : 'proposition'),
     journalExtra: _extraJournal(v, {'motif': v['motif'], 'role': v['proposeRole']}),
   ));
 }

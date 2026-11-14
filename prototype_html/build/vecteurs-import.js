@@ -69,6 +69,26 @@ const MAGASIN = {
   prestataires: [{ id: 'PE1', reference: 'PE-0001', nom: 'Dr ADJO Marius', specialite: 'Chirurgie', tarifActe: 20000, actesRealises: 3, ifu: '3202112446712', statut: 'actif' }],
   emplacements: [{ id: 'EMP1', code: 'A2', libelle: 'Rayon A, casier 2', zone: 'Rayonnage sec', statut: 'actif' }],
   transferts: [], inventaires: [],
+  /* Lot 8b, groupe PRIX : un référentiel de prix de quelques prestations (une par famille d'espace de codes), versionné par date, de quoi éprouver le changement de prix, la création, l'inchangé,
+     l'inversion des colonnes, la proposition en attente et le code d'un produit ; le catalogue d'imagerie tient un examen. */
+  tarifs: [
+    { id: 'MG01', code: 'MG01', libelle: 'Consultation généraliste', famille: 'ACTE', secteur: 'Médecine générale', codeActe: 'MG01', assurable: true, statut: 'actif' },
+    { id: 'MG02', code: 'MG02', libelle: 'Consultation de suivi', famille: 'ACTE', secteur: 'Médecine générale', codeActe: 'MG02', assurable: true, statut: 'actif' },
+    { id: 'CH01', code: 'CH01', libelle: 'Petite chirurgie', famille: 'ACTE', secteur: 'Chirurgie', codeActe: 'CH01', assurable: true, statut: 'actif' },
+    { id: 'NFS', code: 'NFS', libelle: 'NFS complète (hémogramme)', famille: 'LABO', secteur: 'Laboratoire', codeAnalyse: 'NFS', statut: 'actif' },
+    { id: 'IMG-ECHO-PEL', code: 'IMG-ECHO-PEL', libelle: 'Échographie pelvienne', famille: 'IMAGERIE', secteur: 'Imagerie médicale', codeGrille: 'IMG-ECHO-PEL', statut: 'actif' },
+    { id: 'PARA500', code: 'PARA500', libelle: 'PARACETAMOL 500 MG CP B/100', famille: 'PRODUIT', statut: 'actif' },
+  ],
+  versionsTarif: [
+    { id: 'MG01@origine@1', code: 'MG01', version: 1, prixNonAssure: 5000, prixAssure: 3000, etatAssure: 'montant', origine: 'migration', statut: 'valide' },
+    { id: 'MG02@origine@1', code: 'MG02', version: 1, prixNonAssure: 3000, prixAssure: 2000, etatAssure: 'montant', origine: 'migration', statut: 'valide' },
+    { id: 'MG02@2027-03-01@2', code: 'MG02', version: 2, dateEffet: '2027-03-01', prixNonAssure: 3500, prixAssure: 2500, etatAssure: 'montant', motif: 'Ajustement', origine: 'ecran', statut: 'propose', proposePar: 'AUTRE AGENT', proposeLe: '2026-10-30', proposeRole: 'da' },
+    { id: 'CH01@origine@1', code: 'CH01', version: 1, prixNonAssure: 20000, etatAssure: 'unique', origine: 'migration', statut: 'valide' },
+    { id: 'NFS@origine@1', code: 'NFS', version: 1, prixNonAssure: 4000, etatAssure: 'unique', origine: 'migration', statut: 'valide' },
+    { id: 'IMG-ECHO-PEL@origine@1', code: 'IMG-ECHO-PEL', version: 1, prixNonAssure: 15000, prixAssure: 10000, etatAssure: 'montant', origine: 'migration', statut: 'valide' },
+    { id: 'PARA500@origine@1', code: 'PARA500', version: 1, prixNonAssure: 1200, etatAssure: 'unique', origine: 'migration', statut: 'valide' },
+  ],
+  examensImagerie: [{ id: 'EXI01', code: 'IMG-ECHO-PEL', label: 'Échographie pelvienne', modalite: 'echographie', icone: 'scan-line', statut: 'actif' }],
   lotsImportation: [],
 };
 
@@ -90,6 +110,8 @@ const EM = (o) => Object.assign({ code: null, libelle: null, zone: null, tempera
 const SD = (o) => Object.assign({ code: null, lot: null, peremption: null, quantite: null }, o);
 const TL = (o) => Object.assign({ code: null, lot: null, quantite: null, destination: 'Pharmacie d’urgence', date: null, motif: null }, o);
 const IC = (o) => Object.assign({ magasin: 'Stock gros', code: null, compte: null, type: null, date: null }, o);
+const TA = (o) => Object.assign({ code: null, designation: null, famille: null, secteur: null, prixNonAssure: null, prixAssure: null, couverture: null, dateEffet: '2027-01-01', valider: null, motif: 'Nouvelle grille tarifaire', source: null }, o);
+const CI = (o) => Object.assign({ code: null, libelle: null, modalite: null, voie: null, tarifCode: null }, o);
 const AN = (o) => Object.assign({ code: null, designation: null, section: null, echantillon: null, delai: null }, o);
 
 const CAS = [
@@ -220,6 +242,38 @@ const CAS = [
   ['ic-feuille-unique', 'inventaire-comptage', [IC({ code: 'COTON', compte: 1, type: 'Mensuel' }), IC({ code: 'AMOXI', compte: 1, type: 'Annuel' })]],
   ['ic-compte-negatif', 'inventaire-comptage', [IC({ code: 'COTON', compte: -1 })]],
   ['ic-magasin-invalide', 'inventaire-comptage', [IC({ magasin: 'Cave', code: 'COTON', compte: 1 })]],
+  /* Lot 8b, groupe PRIX : les prix de prestations (changement versionné, création, Oui et Non, inchangé) et le catalogue de l'imagerie. La session de tirage est l'administrateur (il décide). */
+  ['ta-valide', 'tarifs', [
+    TA({ code: 'MG01', prixNonAssure: 5500, prixAssure: 3300, valider: 'Oui' }),
+    TA({ code: 'NFS', prixNonAssure: 4500, prixAssure: 'UNIQUE', valider: 'Oui' }),
+    TA({ code: 'CS-NEW', designation: 'Consultation nouvelle', famille: 'Consultations', secteur: 'Médecine générale', prixNonAssure: 8000, prixAssure: 'NC', couverture: 'Non couvert', valider: 'Oui' }),
+    TA({ code: 'CH01', prixNonAssure: 20000, prixAssure: 'UNIQUE', valider: 'Oui' }),
+    TA({ code: 'IMG-ECHO-PEL', prixNonAssure: 16000, prixAssure: 11000, valider: 'Non', motif: 'Grille non arrêtée' }),
+  ]],
+  ['ta-proposition', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 5200, prixAssure: 3100 }), TA({ code: 'NFS', prixNonAssure: 4200, prixAssure: '-', valider: 'Oui' })]],
+  ['ta-code-produit', 'tarifs', [TA({ code: 'PARA500', prixNonAssure: 1300, prixAssure: 'UNIQUE' })]],
+  ['ta-nc-non-assure', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 'NC', prixAssure: 3000 })]],
+  ['ta-prix-absent', 'tarifs', [TA({ code: 'MG01', prixNonAssure: '-', prixAssure: 3000 })]],
+  ['ta-prix-zero', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 0, prixAssure: 3000 })]],
+  ['ta-prix-decimal', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 5000.5, prixAssure: 3000 })]],
+  ['ta-date-passee', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 5600, prixAssure: 3400, dateEffet: '2026-10-01' })]],
+  ['ta-date-absente', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 5600, prixAssure: 3400, dateEffet: null })]],
+  ['ta-motif-requis', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 5600, prixAssure: 3400, motif: null })]],
+  ['ta-non-sans-motif', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 5600, prixAssure: 3400, valider: 'Non', motif: null })]],
+  ['ta-identite-incomplete', 'tarifs', [TA({ code: 'XX99', prixNonAssure: 1000, prixAssure: 'UNIQUE' }), TA({ code: 'XX98', designation: 'Sans famille', prixNonAssure: 1000, prixAssure: 'UNIQUE' })]],
+  ['ta-colonnes-inversees', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 3000, prixAssure: 5000 })]],
+  ['ta-identite-differente', 'tarifs', [TA({ code: 'MG01', designation: 'Autre libellé', prixNonAssure: 5300, prixAssure: 3200 }), TA({ code: 'CH01', famille: 'Consultations', prixNonAssure: 21000, prixAssure: 'UNIQUE' })]],
+  ['ta-en-attente', 'tarifs', [TA({ code: 'MG02', prixNonAssure: 3600, prixAssure: 2600 })]],
+  ['ta-inchange', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 5000, prixAssure: 3000 })]],
+  ['ta-code-existant-alias', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 5000, prixAssure: 3000 }), TA({ code: 'mg01', prixNonAssure: 5100, prixAssure: 3000 })]],
+  ['ta-famille-inconnue', 'tarifs', [TA({ code: 'ZZ01', designation: 'Soin', famille: 'Bijoux', prixNonAssure: 1000, prixAssure: 'UNIQUE' })]],
+  ['ta-unique-interdit-non-assure', 'tarifs', [TA({ code: 'MG01', prixNonAssure: 'UNIQUE', prixAssure: 3000 })]],
+  ['ci-valide', 'catalogue-imagerie', [CI({ code: 'IMG-RAD-THO', libelle: 'Radiographie du thorax', modalite: 'Radiographie', voie: 'face' }), CI({ code: 'IMG-ECH-ABD', libelle: 'Échographie abdominale', modalite: 'Échographie', tarifCode: 'IMG-ECHO-PEL' })]],
+  ['ci-doublon-magasin', 'catalogue-imagerie', [CI({ code: 'IMG-ECHO-PEL', libelle: 'Échographie pelvienne', modalite: 'Échographie' })]],
+  ['ci-modalite-inconnue', 'catalogue-imagerie', [CI({ code: 'IMG-XX', libelle: 'Examen', modalite: 'Télépathie' })]],
+  ['ci-code-invalide', 'catalogue-imagerie', [CI({ code: 'X', libelle: 'Examen', modalite: 'Scanner' })]],
+  ['ci-obligatoire-vide', 'catalogue-imagerie', [CI({ code: 'IMG-SC1', libelle: null, modalite: 'Scanner' })]],
+  ['ci-doublon-fichier', 'catalogue-imagerie', [CI({ code: 'IMG-SC2', libelle: 'Scanner crâne', modalite: 'Scanner' }), CI({ code: 'img-sc2', libelle: 'Scanner crâne bis', modalite: 'Scanner' })]],
   ['ic-doublon-fichier', 'inventaire-comptage', [IC({ code: 'COTON', compte: 1 }), IC({ code: 'coton', compte: 2 })]],
 ];
 
@@ -236,6 +290,7 @@ const CAS = [
       S.currentUser = () => 'ADMIN TEST';
       const propre = (x) => JSON.parse(JSON.stringify(x));
       Object.keys(MAG).forEach((n) => { const a = S.collection(n).all(); a.splice(0, a.length); MAG[n].forEach((f) => a.push(propre(f))); });
+      if (D.TARIFS && D.TARIFS.invalider) D.TARIFS.invalider();
       const META = ['_creePar', '_creeLe', '_modifiePar', '_modifieLe', 'statutAvantArchivage', '_archivePar', '_archiveLe', '_motifArchivage'];
       const nettoyer = (f, idVersCode) => {
         const c = propre(f); META.forEach((k) => delete c[k]); delete c.id;
@@ -289,7 +344,7 @@ const CAS = [
         };
       });
       /* 3. Application, relevé des fiches, annulation. L'ordre fixe les références de lot. */
-      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide'];
+      const ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide'];
       out.applications = [];
       const refus = I.analyserOctets('grand-stock', Uint8Array.from(out.fixtures['gs-quantite-negative']), 'gs-quantite-negative.xlsx');
       const lotRefus = I.consigner(I.jeu('grand-stock'), refus);
@@ -414,6 +469,52 @@ const CAS = [
       const octetsDe = (id) => Uint8Array.from(out.fixtures[id]);
       const codes = (a) => a.globaux.concat(a.lignes.reduce((t, l) => t.concat(l.problemes), [])).map((p) => p.code);
       const nbLots = () => S.collection('lotsImportation').all().length;
+      /* 6 ter. LOT 8b, groupe PRIX : le changement de prix versionné par date. Rôle qui DÉCIDE (admin) : Oui vaut version validée d'emblée, et un lot validé ne s'annule plus ; rôle qui ne décide
+         pas (stock, qui importe des prix sans éditer l'écran) : le Oui vaut proposition, et ses propositions se retirent avec leur lot. Un prix identique à celui en vigueur est « inchangé ». */
+      out.prix = {};
+      {
+        /* Ici l'auteur d'une version est le nom de la SESSION (`auteurDeLaSession`) : on le pose avec le rôle, comme le poste porte un seul nom d'agent. */
+        const enRole = (role, utilisateur, f) => {
+          S.setSession(Object.assign({}, sess0, { role: role, nomComplet: utilisateur, nom: utilisateur }));
+          const u0 = S.currentUser; S.currentUser = () => utilisateur;
+          try { return f(); } finally { S.setSession(sess0); S.currentUser = u0; }
+        };
+        const detailDe = (x) => (x && x.decision !== undefined ? ['Ancien : ' + x.ancien, 'nouveau : ' + x.nouveau].concat(x.variation ? ['variation : ' + x.variation] : []).concat(['décision : ' + x.decision]).join(' ; ') : '');
+        const resumeAnalyse = (a) => ({ accepte: a.accepte, compte: a.compte, problemes: I.problemes(a).map((p) => ({ n: p.n, colonne: p.colonne, code: p.code, niveau: p.niveau })), details: a.lignes.map((l) => [l.n, l.etat, detailDe(l.extra)]) });
+        const net = (f) => { const c = nettoyer(f, {}); c.id = f.id; return c; };
+        const fichesDe = (lot) => lot.ecrits.map((e) => net(S.collection(e.collection).get(e.id)));
+        out.prix.adminValide = enRole('admin', 'ADMIN TEST', () => resumeAnalyse(I.analyserOctets('tarifs', octetsDe('ta-valide'), 'ta-valide.xlsx')));
+        out.prix.stockValide = enRole('stock', 'STOCK TEST', () => resumeAnalyse(I.analyserOctets('tarifs', octetsDe('ta-valide'), 'ta-valide.xlsx')));
+        out.prix.stockProposition = enRole('stock', 'STOCK TEST', () => resumeAnalyse(I.analyserOctets('tarifs', octetsDe('ta-proposition'), 'ta-proposition.xlsx')));
+        const avantLots = nbLots();
+        /* A. L'administrateur applique : versions validées d'emblée, identité créée. */
+        const rA = enRole('admin', 'ADMIN TEST', () => I.appliquer('tarifs', I.analyserOctets('tarifs', octetsDe('ta-valide'), 'ta-valide.xlsx')));
+        if (!rA.ok) throw new Error('lot de prix non posé : ' + JSON.stringify({ code: rA.code, motif: rA.motif }));
+        out.prix.appliqueAdmin = { reference: rA.lot.reference, etat: rA.lot.etat, nbLignes: rA.lot.nbLignes, nbInchanges: rA.lot.nbInchanges, nbNon: rA.lot.nbNon, ecrits: rA.lot.ecrits.map((e) => e.collection), fiches: fichesDe(rA.lot) };
+        const refusA = enRole('admin', 'ADMIN TEST', () => I.annulerLot(rA.lot.id, 'essai'));
+        out.prix.annulationValidee = { ok: refusA.ok, code: refusA.code || null, motif: refusA.motif || null, geste: refusA.geste || null };
+        /* Le même fichier rejoué : le prix est celui en vigueur, rien à écrire. */
+        out.prix.rejeu = enRole('admin', 'ADMIN TEST', () => resumeAnalyse(I.analyserOctets('tarifs', octetsDe('ta-valide'), 'ta-valide.xlsx')));
+        /* B. Le gestionnaire de stock propose : le Oui vaut proposition, aucune version validée. */
+        const rB = enRole('stock', 'STOCK TEST', () => I.appliquer('tarifs', I.analyserOctets('tarifs', octetsDe('ta-proposition'), 'ta-proposition.xlsx')));
+        if (!rB.ok) throw new Error('lot de propositions non posé : ' + JSON.stringify({ code: rB.code, motif: rB.motif }));
+        out.prix.appliqueStock = { reference: rB.lot.reference, etat: rB.lot.etat, nbAvertissements: rB.lot.nbAvertissements, ecrits: rB.lot.ecrits.map((e) => e.collection), fiches: fichesDe(rB.lot) };
+        /* L'auteur retire ses propositions avec son lot : les versions restent lisibles (retirées), rien n'est supprimé. */
+        const ids = rB.lot.ecrits.map((e) => e.id);
+        const rBa = enRole('stock', 'STOCK TEST', () => I.annulerLot(rB.lot.id, 'essai'));
+        out.prix.annulationPropositions = { ok: rBa.ok, code: rBa.code || null, archives: rBa.archives === undefined ? null : rBa.archives, etatLot: S.collection('lotsImportation').get(rB.lot.id).etat,
+          versions: ids.map((id) => { const v = S.collection('versionsTarif').get(id); return { id: id, statut: v.statut, motifDecision: v.motifDecision, decidePar: v.decidePar, roleDecision: v.roleDecision }; }) };
+        const rBb = enRole('stock', 'STOCK TEST', () => I.annulerLot(rB.lot.id, 'encore'));
+        out.prix.annulationDeuxFois = { ok: rBb.ok, code: rBb.code || null };
+        /* C. Un autre agent ne retire pas les propositions d'un lot qui n'est pas le sien (sans supervision) : le moteur le dit. */
+        out.prix.lotsAjoutes = nbLots() - avantLots;
+        /* D. Un rôle sans le droit d'importer les prix : refus de l'application, rien n'est écrit. */
+        const avV = S.collection('versionsTarif').all().length;
+        const rD = enRole('caissier', 'CAISSIER TEST', () => I.appliquer('tarifs', I.analyserOctets('tarifs', octetsDe('ta-valide'), 'ta-valide.xlsx')));
+        out.prix.sansDroit = { ok: rD.ok, code: rD.code || null, versionsAjoutees: S.collection('versionsTarif').all().length - avV };
+        /* Les références de lot dépendent de ce qui précède : elles se disent {A} et {B} (le test rejoue sur son propre magasin). */
+        out.prix = JSON.parse(JSON.stringify(out.prix).split(rA.lot.reference).join('{A}').split(rB.lot.reference).join('{B}'));
+      }
       {
         /* 1. Analyse sans le droit d'importer : refusée en nommant, rien n'est consigné. */
         const avant = nbLots();

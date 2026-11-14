@@ -9,7 +9,7 @@
 | Hubs de module (un par module, engendrés) | 23 |
 | Écrans nommés par au moins un scénario de la maquette | 262 (73 %) |
 | Écrans **sans** scénario (recette à écrire) | 95 |
-| Écrans portés | 344 |
+| Écrans portés | 346 |
 | Écrans recettés | 0 |
 | Scénarios de la maquette analysés | 180 |
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 22 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 51 | 67 | 0 |
 | 5 · assurances et comptabilité | 32 | 24 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 178 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 190 | 129 | 180 | 0 |
 
 ## Par écran
 
@@ -281,11 +281,11 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `ged-bibliotheque` | Bibliothèque documentaire | GED | 6 | 53 | porté |
 | `ged-workflow` | Workflow de validation | GED | 6 | 95 | porté |
 | `imp-accueil` | Jeux d’import et historique des lots | IMP | 9 | 124, 125, 126, 130, 131, 134, 135, 140, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154 | porté |
-| `imp-actes` | Importation des tarifs et prix | IMP | 4 | 125, 127, 128, 130 | non commencé |
+| `imp-actes` | Importation des tarifs et prix | IMP | 4 | 125, 127, 128, 130 | porté |
 | `imp-analyses` | Importation du modèle des analyses | IMP | 4 | 94, 95, 105 | porté |
 | `imp-assureurs` | Importation des compagnies d’assurance | IMP | 5 | — | porté |
 | `imp-budgets` | Importation des budgets | IMP | 5 | 144 | non commencé |
-| `imp-catalogue-imagerie` | Importation du catalogue de l’imagerie | IMP | 3 | 144 | non commencé |
+| `imp-catalogue-imagerie` | Importation du catalogue de l’imagerie | IMP | 3 | 144 | porté |
 | `imp-centres-couts` | Importation des centres de coûts | IMP | 5 | 144 | porté |
 | `imp-courriers` | Importation des courriers | IMP | 4 | 144, 153 | non commencé |
 | `imp-couvertures-assurance` | Importation des couvertures d’assurance | IMP | 5 | 144 | non commencé |

@@ -60,7 +60,7 @@ void main() {
       await v2.brancherPersistance(p, fusionnables: fusionnables);
       // Les quatre écrans non portés plus les pages de jeux d'import non portés (lot IMP-C) : une fiche `proprePoste` du jeu livré par écran, comptées du fichier même.
       final nbPropres = nbPropresDuJeu();
-      expect(nbPropres, 4 + 9, reason: 'quatre écrans plus les pages des jeux d\'import encore non portés (neuf après le groupe stock du lot 8)');
+      expect(nbPropres, 4 + 7, reason: 'quatre écrans plus les pages des jeux d\'import encore non portés (sept après le groupe stock du lot 8 et le groupe prix du lot 8b)');
       expect(v2.jeuxFusionnes, {'modulesActifs': nbPropres}, reason: 'les fiches propres au poste arrivent, rien d\'autre');
       final col = v2.collection('modulesActifs');
       expect([for (final id in ['MODP01', 'MODP02', 'MODP03', 'MODP04']) col.parId(id)!['actif']], everyElement(false));

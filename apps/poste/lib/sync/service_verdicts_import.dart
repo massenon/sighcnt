@@ -58,7 +58,7 @@ class ServiceVerdictsImport {
     try {
       final nav = await _donnees();
       final matrice = nav.aChaud(magasin).matrice;
-      final n = DemandesImportPoste(magasin, role: role, auteur: auteur, matrice: matrice, aujourdhui: _horloge, etiquette: etiquette).traiterVerdicts();
+      final n = DemandesImportPoste(magasin, role: role, auteur: auteur, matrice: matrice, aujourdhui: _horloge, etiquette: etiquette, fileulRattache: true).traiterVerdicts();
       suivies += n;
       derniereErreur = null;
       return n;

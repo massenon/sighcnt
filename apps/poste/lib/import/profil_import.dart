@@ -21,5 +21,13 @@ ProfilImport profilImportDe(ContexteEcran c) {
   final matrice = m?.matriceImport ?? MatriceImport.vide;
   // LOT 8 : sur un fileul rattaché, les jeux restreints qui écrivent la configuration de la mère ne s'écrivent PAS ici (le moteur refuse, nommé).
   final reserves = DemandesImportPoste.reservesALaMere(fileulRattache: ServiceInstallation.de(c.magasin).rattache, matrice: matrice);
-  return ProfilImport(role: c.role, libelleRole: m?.libelle(c.role) ?? c.role, matrice: matrice, bornes: bornes, reservesALaMere: reserves);
+  final fileul = ServiceInstallation.de(c.magasin).rattache;
+  return ProfilImport(
+      role: c.role,
+      libelleRole: m?.libelle(c.role) ?? c.role,
+      matrice: matrice,
+      bornes: bornes,
+      reservesALaMere: reserves,
+      libellesRoles: DemandesImportPoste.libellesDesRoles(m),
+      fileul: fileul);
 }

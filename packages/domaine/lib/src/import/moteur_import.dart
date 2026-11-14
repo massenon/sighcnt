@@ -153,8 +153,14 @@ class AnalyseImport {
 /// doublon, la capacité paie et la supervision viennent de la section `import` de `rbac.json` (superposée à chaud par les fiches RBAC). Le moteur REFUSE sans le droit :
 /// masquer un bouton ne protège rien.
 class ProfilImport {
-  const ProfilImport({required this.role, required this.libelleRole, required this.matrice, this.bornes = const {}, this.reservesALaMere = const {}});
+  const ProfilImport({required this.role, required this.libelleRole, required this.matrice, this.bornes = const {}, this.reservesALaMere = const {}, this.libellesRoles = const {}, this.fileul = false});
   final String role, libelleRole;
+
+  /// LOT 8B : les libellés des rôles du manifeste (rôles renommés compris), pour les refus qui NOMMENT un autre profil (« une date antérieure est une autorité de la Directrice Administrative et de la Direction »).
+  final Map<String, String> libellesRoles;
+
+  /// LOT 8B : ce profil agit depuis un FILEUL rattaché (ou pour le compte d'une demande qui en vient) : la décision d'un prix est tenue par la mère, un Oui vaut proposition.
+  final bool fileul;
 
   /// LOT 8 : les jeux que CE poste ne peut pas écrire parce qu'il est un fileul rattaché et que le jeu est RESTREINT et écrit de la configuration de la mère (le personnel, le stock détail
   /// initial, le bon de transfert : voir `voieImportFileul`). Le moteur refuse l'écriture, nommée ; l'analyse reste permise (le fichier peut être vérifié ici).
@@ -770,6 +776,7 @@ AnalyseImport analyserLignes(JeuImport j, List<List<Object?>> lignes, String fic
           ligne.problemes.add(ProblemeImport(
               n: n, colonne: cols.first.label, valeur: lecture.first, code: 'DOUBLON_MAGASIN', niveau: importRefus, motif: existe, geste: j.gesteExiste ?? 'Retirez la ligne.'));
         }
+        sc['ligne'] = ligne;
         for (final p in j.regles(ligne.v, ctx, sc, n)) {
           ligne.problemes.add(p.avecLigne(n));
         }

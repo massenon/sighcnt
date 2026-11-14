@@ -197,7 +197,7 @@ void main() {
       expect({for (final n in ['produits', 'lots', 'mouvements']) n: port.toutes(n).length}, avant);
     });
 
-    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide'];
+    final ordre = ['gs-valide', 'pa-valide', 'so-valide', 'pe-valide', 'fo-valide', 'as-valide', 'sc-valide', 'pc-valide', 'an-valide', 'na-valide', 'ce-valide', 'un-valide', 'ps-valide', 'em-valide', 'sd-valide', 'tl-valide', 'ic-valide', 'ci-valide'];
     for (final app in liste(V['applications'])) {
       test('application de ${app['cas']}', () {
         final id = '${app['cas']}';
