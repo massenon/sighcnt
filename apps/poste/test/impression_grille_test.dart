@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/impression/feuilles.dart';
 import 'package:sigh_poste/impression/pdf.dart';
@@ -42,7 +41,7 @@ void main() {
     final info = '${(await t.runAsync(() => Process.run('pdfinfo', [f.path])))!.stdout}';
     final pages = int.parse(RegExp(r'Pages:\s+(\d+)').firstMatch(info)!.group(1)!);
     // ignore: avoid_print
-    print('GRILLE : poste ${pages} page(s) A4, maquette (Chrome) ${V['pagesPdf']} page(s) ; ${V['nbLignes']} lignes de part et d\'autre');
+    print('GRILLE : poste $pages page(s) A4, maquette (Chrome) ${V['pagesPdf']} page(s) ; ${V['nbLignes']} lignes de part et d\'autre');
 
     // Le titre et le sous-titre (la date est celle du jour de chaque banc : on compare le gabarit, pas la date).
     expect(piece.titre, V['titre']);
