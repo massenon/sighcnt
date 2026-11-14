@@ -80,6 +80,8 @@ TarifsPoste _tarifs(ContexteEcran c) {
       libelles: ValidationPoste(c).libelles,
       peutEditerEcran: c.droit.editer,
       peutEditerPour: matrice == null ? null : (r) => matrice.peutEditer(r, 'cfg-tarifs'),
+      peutProposerPrixAchat: matrice?.peutEditer(c.role, 'm6-produits') ?? false,
+      peutProposerPrixAchatPour: matrice == null ? null : (r) => matrice.peutEditer(r, 'm6-produits'),
       horloge: () => c.aujourdhui,
       etiquette: m.poste.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toUpperCase());
 }

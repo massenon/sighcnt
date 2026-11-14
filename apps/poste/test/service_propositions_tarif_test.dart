@@ -68,6 +68,7 @@ void main() {
       }
     }
 
+    TarifsPoste.assurerProduits(mm);
     try {
       await pub.pousser();
       final code = await console.codeAppareil('Direction').timeout(const Duration(seconds: 20));
@@ -122,6 +123,21 @@ void main() {
       final traitees = service.traitees;
       expect(await service.traiter(), 0, reason: 'rejeu sans effet après la décision');
       expect(service.traitees, traitees);
+
+      // 5. LES PRODUITS (lot TFIN) : le gestionnaire de stock d'un fileul propose le prix d'achat d'un article ; la mère l'applique par le même service, sous son rôle ; une seule version AJOUTÉE.
+      await converger(() => mf.collection('versionsTarif').toutes.where((x) => x['origine'] == 'reprise').length >= 184, 'les prix d\'achat repris arrivent au fileul');
+      final art = mm.collection('produits').actives.firstWhere((x) => x['categorie'] == 'medicament' && (x['prixAchat'] as num? ?? 0) > 0);
+      final prixArt = art['prixAchat'] as num;
+      final gest = TarifsPoste(mf, role: 'stock', auteur: () => 'Gestionnaire fileul', fileul: true, peutProposerPrixAchat: true, horloge: () => auj, etiquette: 'G');
+      final nVers = mm.collection('versionsTarif').toutes.length;
+      final dp = gest.proposerPrixAchat(DemandeProduit(code: '${art['code']}', prixAchat: prixArt + 30, dateEffet: plus(5), motif: 'Test du service TFIN'));
+      expect(dp.ok && dp.depose, isTrue, reason: '${dp.refus?.code} ${dp.refus?.motif}');
+      await converger(() => mf.collection('propositionsTarif').toutes.any((d) => d['genre'] == 'propositionProduit' && d['etat'] == 'appliquee'), 'la mère applique la proposition du prix d\'achat');
+      expect(mm.collection('versionsTarif').toutes.length, nVers + 1, reason: 'une version AJOUTÉE à la mère');
+      final vp = mm.collection('versionsTarif').toutes.firstWhere((x) => x['code'] == art['code'] && x['statut'] == 'propose');
+      expect([vp['proposePar'], vp['proposeRole'], vp['statut'], vp['prixNonAssure']], ['Gestionnaire fileul', 'stock', 'propose', prixArt + 30]);
+      expect(mm.collection('produits').parId(art['id'])!['prixAchat'], prixArt, reason: 'une proposition ne change rien');
+      expect(await service.traiter(), 0, reason: 'rejeu sans effet');
 
       // 6. JAMAIS vers un téléphone (RG-13).
       final http0 = HttpClient();

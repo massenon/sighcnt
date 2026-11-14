@@ -311,3 +311,19 @@ DemandeProduit tarDemandeCreationProduit(FicheTarif produit, {String? motif, Str
     importLot: importLot,
   );
 }
+
+/// LA GARDE RG-02 DU MAGASIN (`garder('produits')` de la maquette, partie RG-02) : un médicament ne naît jamais avec une marge, et une fiche ne le devient pas par une modification. Tenue AU
+/// MOTEUR, d'où que vienne l'écriture : masquer un champ ne protège rien. Rend le motif du refus (nommé) ou `null`. Le prix d'achat et le prix de vente de la fiche se règlent d'ailleurs
+/// à l'écran (`transformerProduit` aligne la vente sur l'achat d'un médicament) ; la garde tient quand l'écran ne le fait pas (import, outil, synchronisation d'un autre poste).
+const String tarMessageRg02 =
+    'RG-02 : un médicament se facture au prix d’achat, sans marge : son prix de vente ne peut pas être libre. Le prix de vente d’un médicament EST son prix d’achat ; une exception se valide par la Direction.';
+
+String? tarGardeProduitRg02(String operation, FicheTarif apres, FicheTarif? avant) {
+  if (operation != 'inserer' && operation != 'modifier') return null;
+  if (apres['categorie'] != tarCategorieSansMarge) return null;
+  // Une modification qui ne touche NI le prix d'achat NI le prix de vente (un mouvement de stock, un seuil) passe : la garde juge le PRIX, pas l'historique de la fiche.
+  if (operation == 'modifier' && avant != null && _egal(avant['prixAchat'], apres['prixAchat']) && _egal(avant['prixVente'], apres['prixVente'])) return null;
+  final a = apres['prixAchat'], v = apres['prixVente'];
+  if (a != null && v != null && v != a) return '$tarMessageRg02 (${apres['code']} : achat $a, vente $v)';
+  return null;
+}

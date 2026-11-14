@@ -14,7 +14,10 @@ import 'magasin.dart';
 /// `actes`, `analyses` et `catalogueTarifs` ne sont plus que des PROJECTIONS de lecture (prix en vigueur aujourd'hui), reconstruites par la MÈRE au démarrage, à chaque
 /// décision et au changement de jour ; un fileul les reçoit avec la configuration. Aucun lecteur de prix ne les relit : tous passent par [lire] et l'accesseur daté.
 class IssueTarif {
-  const IssueTarif({this.refus, this.version, this.demande, this.valideeEnUnGeste = false, this.rapport});
+  const IssueTarif({this.refus, this.version, this.demande, this.valideeEnUnGeste = false, this.rapport, this.reutilise = false});
+
+  /// LOT TFIN : la prestation de prix du produit existait déjà (fiche recréée, reprise) : aucune seconde version 1 n'est posée.
+  final bool reutilise;
   final RefusTarif? refus;
 
   /// La version écrite (mère) ou, pour une proposition d'un fileul, la version telle que la mère l'écrira (aperçu).
@@ -44,6 +47,8 @@ class TarifsPoste {
     this.libelles = const {},
     this.peutEditerEcran = false,
     this.peutEditerPour,
+    this.peutProposerPrixAchat = false,
+    this.peutProposerPrixAchatPour,
     DateTime Function()? horloge,
     this.etiquette = 'P',
   }) : _horloge = horloge ?? DateTime.now;
@@ -60,6 +65,12 @@ class TarifsPoste {
 
   /// Le droit d'éditer l'écran, pour un AUTRE rôle (la mère qui applique la demande d'un fileul sous le rôle de son auteur). `null` : seuls les rôles de décision.
   final bool Function(String role)? peutEditerPour;
+
+  /// LOT TFIN : le droit de PROPOSER le prix d'achat d'un produit (modifier « Référentiel produits », importer le jeu `tarifs-produits`, modifier les réceptions) : jamais celui d'éditer « Tarifs et prix ».
+  final bool peutProposerPrixAchat;
+
+  /// Le même droit pour un AUTRE rôle (la mère qui applique la demande d'un fileul). `null` : seuls les rôles de décision.
+  final bool Function(String role)? peutProposerPrixAchatPour;
   final DateTime Function() _horloge;
 
   /// L'étiquette du poste, qui rend unique l'identifiant d'une demande déposée.
@@ -225,6 +236,7 @@ class TarifsPoste {
       role: r,
       auteur: pourAuteur ?? auteur(),
       peutEditerEcran: pourRole == null ? peutEditerEcran : (peutEditerPour?.call(r) ?? tarPeutDecider(r)),
+      peutProposerProduit: pourRole == null ? peutProposerPrixAchat : (peutProposerPrixAchatPour?.call(r) ?? tarPeutDecider(r)),
       fileul: pourFileul ?? fileul,
       libelles: libelles,
       pieces: pieces(m),
@@ -271,6 +283,83 @@ class TarifsPoste {
     m.collection(tarCollectionVersions).inserer(p.version);
     if (p.valideeEnUnGeste) _apresDecision(code, '${p.version['decidePar']}', '${p.version['proposeRole']}');
     return p.version;
+  }
+
+  // --- Les PRODUITS : le prix d'achat versionné (lot TFIN, PRD-TARIFS T5) ------------------------------------------------------------------------------------
+
+  /// Propose un changement du PRIX D'ACHAT d'un produit (jamais un écrasement de la fiche : une version AJOUTÉE, datée, soumise au Oui ou au Non). RG-02 : un médicament se facture
+  /// au prix d'achat, sans marge, refusé en nommant. Sur la MÈRE : écrit la version. Sur un FILEUL : la même vérification, puis DÉPÔT d'une demande que la mère applique.
+  IssueTarif proposerPrixAchat(DemandeProduit d) {
+    final produits = m.collection('produits').toutes;
+    if (fileul) {
+      final r = tarProposerProduit(contexte(pourFileul: false), d, produits: produits);
+      if (!r.ok) return IssueTarif(refus: r.refus);
+      final dem = _deposer('propositionProduit', {
+        'code': d.code,
+        'prixAchat': d.prixAchat,
+        if (d.prixVente != null) 'prixVente': d.prixVente,
+        'dateEffet': d.dateEffet,
+        'motif': d.motif,
+        if (d.datePassee) 'datePassee': true,
+        if (d.valider) 'valider': true,
+        if ((d.source ?? '').isNotEmpty) 'source': d.source,
+        if (d.importJeu != null) 'importJeu': d.importJeu,
+        if (d.importLot != null) 'importLot': d.importLot,
+        if (d.reception) 'reception': true,
+      });
+      return IssueTarif(demande: dem, version: r.valeur!.version, valideeEnUnGeste: d.valider);
+    }
+    final r = tarProposerProduit(contexte(), d, produits: produits);
+    if (!r.ok) return IssueTarif(refus: r.refus);
+    return IssueTarif(version: _ecrireProposition(r.valeur!), valideeEnUnGeste: r.valeur!.valideeEnUnGeste);
+  }
+
+  /// LA CRÉATION D'UNE FICHE PRODUIT pose la version 1 de son prix d'achat par la MÊME voie, jamais « à plat sur la fiche » (`PR.creerPrixProduit`). Un prix absent ou nul pose un
+  /// `manquant` : l'article se crée « à valoriser » et ne se facture pas. Si la prestation de prix existe déjà, aucune seconde version 1 n'est posée. Un fileul ne l'écrit pas (famille R) :
+  /// la fiche reçoit sa version 1 de reprise à la mère (`assurerProduits`).
+  IssueTarif creerPrixProduit(Map<String, Object?> produit, {String? motif, String? source, String? importJeu, String? importLot}) {
+    if (produit['code'] == null) return IssueTarif(refus: const RefusTarif('PRODUIT_INTROUVABLE', 'Aucune fiche produit à doter d’un prix d’achat.', 'Créer la fiche produit d’abord.'));
+    if (h.parCode['${produit['code']}'] != null) return const IssueTarif(reutilise: true);
+    if (fileul) return IssueTarif(refus: tarRefusFileul());
+    final r = tarProposerProduit(contexte(), tarDemandeCreationProduit(produit, motif: motif, source: source, importJeu: importJeu, importLot: importLot), produits: m.collection('produits').toutes);
+    if (!r.ok) return IssueTarif(refus: r.refus);
+    return IssueTarif(version: _ecrireProposition(r.valeur!));
+  }
+
+  /// LA MÈRE seulement : chaque produit actif sans prestation de prix reçoit la sienne, ORIGINE « reprise » : le prix d'achat qu'il tient aujourd'hui, jamais un zéro (un prix absent est
+  /// `manquant`). Réparation d'une donnée existante, pas un geste d'agent (aucune ligne de journal par produit, une seule pour le lot). Rend le nombre de produits repris.
+  static int assurerProduits(Magasin m) {
+    final h = lire(m);
+    final dotes = {for (final p in h.tarifs) '${p['code']}'};
+    final r = tarMigrerProduits(m.collection('produits').actives, origine: 'reprise', dejaDotes: dotes);
+    for (final t in r.tarifs) {
+      m.collection(tarCollectionTarifs).ajouterSansJournal(t);
+    }
+    for (final v in r.versions) {
+      m.collection(tarCollectionVersions).ajouterSansJournal(v);
+    }
+    if (r.tarifs.isNotEmpty) m.journaliser('Reprise des prix d’achat des produits', 'CFG', 'prix', 'produits', null, {'produits': r.tarifs.length});
+    return r.tarifs.length;
+  }
+
+  /// Le prix d'achat (et le prix de vente DÉRIVÉ, RG-02) d'un produit à la date de la PIÈCE : jamais la fiche, jamais l'horloge au moment du calcul. Un prix absent n'est pas zéro.
+  static PrixProduit prixProduit(Magasin m, Map<String, Object?> produit, {required DateTime aujourdhui, Object? date}) =>
+      tarPrixProduit(lire(m), produit, date, aujourdhui: tarIso(aujourdhui));
+
+  /// Les articles « à valoriser » aujourd'hui : source UNIQUE de la liste, de l'indicateur et de l'alerte.
+  static List<({Map<String, Object?> produit, bool enAttente})> produitsAValoriser(Magasin m, {required DateTime aujourdhui}) =>
+      tarProduitsAValoriser(lire(m), m.collection('produits').toutes, tarIso(aujourdhui));
+
+  /// La fiche `produits` suit la version en vigueur d'UN produit qu'une décision vient de toucher (jamais une projection globale : une fiche qu'aucune décision n'a touchée garde son
+  /// prix). Écriture directe, sans garde ni journal (état dérivé du référentiel).
+  void _projeterProduit(String code) {
+    final p = h.parCode[code];
+    if (p == null || p['famille'] != tarFamilleProduit) return;
+    final fiche = m.collection('produits').actives.where((f) => f['code'] == code).firstOrNull;
+    final s = h.instantane(p, aujourdhui);
+    if (fiche == null || s == null) return;
+    final c = tarCorrectifProduit(fiche, s);
+    if (c != null) m.collection('produits').appliquerDistante({...fiche, ...c});
   }
 
   // --- Décider ----------------------------------------------------------------------------------------------------------------------------------------
@@ -392,6 +481,28 @@ class TarifsPoste {
           } else {
             refus = r.refus;
           }
+        case 'propositionProduit':
+          final r = tarProposerProduit(
+              cx,
+              DemandeProduit(
+                code: '${d['code']}',
+                prixAchat: d['prixAchat'],
+                prixVente: d['prixVente'],
+                dateEffet: d['dateEffet'] as String?,
+                motif: d['motif'] as String?,
+                datePassee: d['datePassee'] == true,
+                valider: d['valider'] == true,
+                source: d['source'] as String?,
+                importJeu: d['importJeu'] as String?,
+                importLot: d['importLot'] as String?,
+                reception: d['reception'] == true,
+              ),
+              produits: m.collection('produits').toutes);
+          if (r.ok) {
+            versionId = _ecrireProposition(r.valeur!)['id'];
+          } else {
+            refus = r.refus;
+          }
         case 'decision':
           final r = tarDecider(cx, '${d['versionId']}', '${d['decision']}', motif: d['motifDecision'] as String?, dateEffet: d['dateEffet'] as String?);
           if (r.ok) {
@@ -461,6 +572,7 @@ class TarifsPoste {
     for (final (id, patch) in tarLeverProvisoire(h, code, qui: qui, jour: aujourdhui)) {
       m.collection(tarCollectionVersions).mettreAJour(id, patch, journaliser: false);
     }
+    _projeterProduit(code);
     projeter(m, _horloge());
   }
 

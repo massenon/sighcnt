@@ -61,6 +61,7 @@ class ServicePropositionsTarif {
           libelles: DemandesImportPoste.libellesDesRoles(matrice),
           peutEditerEcran: true,
           peutEditerPour: (r) => matrice.peutEditer(r, 'cfg-tarifs'),
+          peutProposerPrixAchatPour: (r) => matrice.peutEditer(r, 'm6-produits'),
           horloge: _horloge,
           etiquette: 'M');
       final n = tarifs.appliquerDemandes();
