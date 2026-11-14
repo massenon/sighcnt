@@ -350,7 +350,7 @@ class _OngletMatrice extends StatelessWidget {
     final c = x.c;
     const largeRole = 240.0;
     const largeCase = 44.0;
-    const largeActions = 170.0;
+    const largeActions = 214.0;
     final entete = const TextStyle(
         color: JetonsShell.slate500,
         fontSize: 12,
@@ -423,6 +423,11 @@ class _OngletMatrice extends StatelessWidget {
                             icone: LucideIcons.listTree,
                             libelle: 'Régler écran par écran',
                             onPressed: () => _editerEcrans(context, x, r)),
+                        BoutonIcone(
+                            key: Key('role-importations-${r.id}'),
+                            icone: LucideIcons.fileUp,
+                            libelle: 'Régler les importations',
+                            onPressed: () => _editerImports(context, x, r)),
                         BoutonIcone(
                             icone: LucideIcons.pencil,
                             libelle: 'Renommer ce rôle',
@@ -1278,6 +1283,147 @@ void _editerEcrans(BuildContext ctx, _Ctx x, RoleSec r) {
                       type: TypeToast.succes,
                       detail:
                           '${nombre(existants.length)} écran(s) réglé(s), dont ${nombre(fermes)} fermé(s).');
+                }),
+          ]);
+}
+
+// --- Importation : un droit par jeu (lot IMP-A de la maquette, lot 8 du poste) -----------------------------------------------------------------
+
+/// Les trois cases d'un jeu : voir, importer, annuler. Importer et annuler SUPPOSENT voir (comme la maquette et comme `droitImport`).
+class _CasesImport {
+  _CasesImport(this.voir, this.importer, this.annuler);
+  bool voir, importer, annuler;
+  void cocher(String k, bool v) {
+    switch (k) {
+      case 'voir':
+        voir = v;
+        if (!v) {
+          importer = false;
+          annuler = false;
+        }
+      case 'importer':
+        importer = v;
+        if (v) voir = true;
+      default:
+        annuler = v;
+        if (v) voir = true;
+    }
+  }
+
+  Map<String, Object?> versFiche() => {'voir': voir, 'importer': importer, 'annuler': annuler};
+}
+
+/// « Régler les importations » : trois cases par jeu d'import, à côté des trois cases par module et par écran, SANS les modifier. Le droit d'importer n'est pas celui d'éditer l'écran qui
+/// héberge le bouton. Une case cochée ici l'emporte sur le défaut du manifeste, dans les deux sens (une surcharge accorde autant qu'elle restreint) ; le droit s'accorde au RÔLE, jamais à
+/// un agent. Le moteur refuse aussi : un jeu décoché ne s'importe pas, même par un appel direct. Un jeu que le poste ne porte pas encore le dit (« Non porté au poste ») : son droit se règle,
+/// sa page reste fermée à tous les rôles.
+void _editerImports(BuildContext ctx, _Ctx x, RoleSec r) {
+  final matrice = x.c.donnees?.matrice.matriceImport;
+  if (matrice == null || matrice.declarations.isEmpty) return;
+  final f = x.fiche(r.id);
+  final regles = (f?['droitsImport'] as Map?)?.cast<String, Object?>() ?? const <String, Object?>{};
+  final portes = {for (final j in jeuxImport) j.id};
+  final etat = <String, _CasesImport>{
+    for (final d in matrice.declarations)
+      d.id: () {
+        final c = matrice.droit(r.id, d.id);
+        return _CasesImport(c.voir, c.importer, c.annuler);
+      }(),
+  };
+  final modifies = <String>{};
+  const tete = TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w600, letterSpacing: 0.6);
+  afficherModale<void>(ctx,
+      titre: 'Importations du rôle « ${r.label} »',
+      sousTitre: 'Un droit par jeu d’import',
+      taille: TailleModale.xl,
+      corps: StatefulBuilder(
+          builder: (context, majEtat) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                const NoteSigh(
+                    'Le droit d’importer est propre à chaque jeu : voir (le modèle, l’historique de ses lots, la rangée « Importation de données » du ruban), importer (vérifier un fichier et confirmer) et annuler (défaire un lot). '
+                    'Il n’est ni déduit ni emporté par le droit d’éditer un écran. Une case cochée ici l’emporte sur le défaut du manifeste ; un rôle créé part de zéro. Les importations cliniques, de paie nominative, de pièces émises et de sécurité n’existent pas : aucun jeu à accorder.',
+                    ton: TonSigh.info,
+                    icone: LucideIcons.fileUp),
+                const SizedBox(height: 12),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 352),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: JetonsShell.slate200)),
+                  child: SingleChildScrollView(
+                    child: Table(
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                      columnWidths: const {0: FlexColumnWidth(3), 1: FixedColumnWidth(70), 2: FixedColumnWidth(80), 3: FixedColumnWidth(80), 4: FixedColumnWidth(170)},
+                      children: [
+                        TableRow(decoration: const BoxDecoration(color: JetonsShell.slate50, border: Border(bottom: BorderSide(color: JetonsShell.slate200))), children: [
+                          for (final (i, t) in ['JEU D’IMPORT', 'VOIR', 'IMPORTER', 'ANNULER', 'ORIGINE'].indexed)
+                            Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                child: Align(alignment: i == 0 ? Alignment.centerLeft : (i == 4 ? Alignment.centerRight : Alignment.center), child: Text(t, style: tete))),
+                        ]),
+                        for (final d in matrice.declarations)
+                          () {
+                            final cases = etat[d.id]!;
+                            Widget cel(Widget w, {Alignment a = Alignment.center}) =>
+                                Padding(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), child: Align(alignment: a, child: w));
+                            Widget caseDe(String k, String libelle, bool v) => cel(_CaseDroit(
+                                key: Key('import:${d.id}:$k'),
+                                libelle: '$libelle ${d.libelle}',
+                                valeur: v,
+                                alChanger: (n) => majEtat(() {
+                                      cases.cocher(k, n);
+                                      modifies.add(d.id);
+                                    })));
+                            return TableRow(decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: JetonsShell.slate100))), children: [
+                              cel(
+                                  Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                                    Text(d.libelle, style: const TextStyle(color: JetonsShell.slate800, fontSize: 14, height: 20 / 14)),
+                                    Text('${d.id} · ${d.restreint ? 'restreint (valeurs jamais recopiées)' : 'courant'} · doublon : ${d.doublon}',
+                                        style: const TextStyle(color: JetonsShell.slate400, fontSize: 12, height: 16 / 12)),
+                                  ]),
+                                  a: Alignment.centerLeft),
+                              caseDe('voir', 'Voir', cases.voir),
+                              caseDe('importer', 'Importer', cases.importer),
+                              caseDe('annuler', 'Annuler', cases.annuler),
+                              cel(
+                                  Column(crossAxisAlignment: CrossAxisAlignment.end, mainAxisSize: MainAxisSize.min, children: [
+                                    regles.containsKey(d.id)
+                                        ? const BadgeSigh('Réglé', ton: TonSigh.navy)
+                                        : const Text('défaut du manifeste', style: TextStyle(color: JetonsShell.slate400, fontSize: 12, height: 16 / 12)),
+                                    if (!portes.contains(d.id))
+                                      Text('Non porté au poste', key: Key('import:${d.id}:non-porte'), style: const TextStyle(color: JetonsShell.warning700, fontSize: 12, height: 16 / 12)),
+                                  ]),
+                                  a: Alignment.centerRight),
+                            ]);
+                          }(),
+                      ],
+                    ),
+                  ),
+                ),
+              ])),
+      pied: (fermer) => [
+            BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+            BoutonSigh(
+                key: const Key('import:retirer'),
+                libelle: 'Retirer les réglages d’importation',
+                icone: LucideIcons.rotateCcw,
+                variante: VarianteBouton.secondaire,
+                onPressed: () {
+                  x.enregistrer(r.id, {'droitsImport': <String, Object?>{}}, 'Retrait des réglages d’importation');
+                  fermer();
+                  ToastsSigh.afficher(ctx, 'Réglages d’importation retirés.', type: TypeToast.succes, detail: 'Chaque jeu suit de nouveau le défaut du manifeste.');
+                }),
+            BoutonSigh(
+                key: const Key('import:enregistrer'),
+                libelle: 'Enregistrer',
+                icone: LucideIcons.save,
+                onPressed: () {
+                  final existants = <String, Object?>{...regles};
+                  for (final id in modifies) {
+                    existants[id] = etat[id]!.versFiche();
+                  }
+                  x.enregistrer(r.id, {'droitsImport': existants, 'statut': 'actif'}, 'Réglage des droits d’importation');
+                  fermer();
+                  final ouverts = existants.values.where((v) => (v as Map)['importer'] == true).length;
+                  ToastsSigh.afficher(ctx, 'Droits d’importation enregistrés.',
+                      type: TypeToast.succes, detail: '${nombre(existants.length)} jeu(x) réglé(s), dont ${nombre(ouverts)} à importer.');
                 }),
           ]);
 }
