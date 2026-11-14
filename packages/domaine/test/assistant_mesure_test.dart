@@ -410,7 +410,7 @@ void main() {
       expect(jsonEncode(fichier['matrice']), jsonEncode(matrice));
       expect(jsonEncode(fichier['profils']), jsonEncode(catJson['profils']));
     });
-    test('la lecture directe de rbac.json se relit à l’identique par le moteur de droits du domaine (255 cases, 25 intentions, dix profils)', () {
+    test('la lecture directe de rbac.json se relit à l’identique par le moteur de droits du domaine (250 cases : 25 intentions, dix profils)', () {
       final m = MatriceDroits.depuisJson(rbac);
       final profils = (catJson['profils'] as Map).cast<String, Object?>();
       var cases = 0;
