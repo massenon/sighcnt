@@ -46,6 +46,8 @@ purge('jamais une copie courante ni une copie ouverte', [C('d', 'magasin', 'comp
 purge('le plancher protège les plus récentes même archivées', [C('a', 'magasin', 'archivee', 1), C('b', 'magasin', 'archivee', 2), C('c', 'magasin', 'archivee', 3)], 2);
 purge('une copie abandonnée est candidate', [C('a', 'magasin', 'abandonnee', 1), C('b', 'magasin', 'complete', 2), C('c', 'magasin', 'complete', 3)], 2);
 purge('le plancher se compte par type', [C('a', 'magasin', 'archivee', 1), C('b', 'fichiers', 'archivee', 2), C('c', 'fichiers', 'complete', 3), C('d', 'magasin', 'complete', 4), C('e', 'magasin', 'complete', 5)], 2);
+purge('une copie courante au-delà du plancher n\'est jamais candidate (le plancher n\'est pas la seule garde)', [C('a', 'magasin', 'archivee', 1), C('b', 'magasin', 'complete', 2), C('c', 'magasin', 'complete', 3), C('d', 'magasin', 'complete', 4), C('e', 'magasin', 'complete', 5)], 2);
+purge('une copie en cours (ouverte) n\'est jamais candidate', [C('a', 'magasin', 'ouverte', 1), C('b', 'magasin', 'archivee', 2), C('c', 'magasin', 'complete', 3), C('d', 'magasin', 'complete', 4)], 2);
 purge('aucune copie', [], 2);
 
 const bl = (id, taille, clair) => ({ id, taille, clair });

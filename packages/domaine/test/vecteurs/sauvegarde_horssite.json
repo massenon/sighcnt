@@ -1396,6 +1396,84 @@
    ]
   },
   {
+   "nom": "purge : une copie courante au-delà du plancher n'est jamais candidate (le plancher n'est pas la seule garde)",
+   "op": "ordrePurge",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     },
+     {
+      "id": "e",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 5
+     }
+    ],
+    "plancher": 2
+   },
+   "attendu": [
+    "a"
+   ]
+  },
+  {
+   "nom": "purge : une copie en cours (ouverte) n'est jamais candidate",
+   "op": "ordrePurge",
+   "entree": {
+    "copies": [
+     {
+      "id": "a",
+      "type": "magasin",
+      "etat": "ouverte",
+      "date": 1
+     },
+     {
+      "id": "b",
+      "type": "magasin",
+      "etat": "archivee",
+      "date": 2
+     },
+     {
+      "id": "c",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 3
+     },
+     {
+      "id": "d",
+      "type": "magasin",
+      "etat": "complete",
+      "date": 4
+     }
+    ],
+    "plancher": 2
+   },
+   "attendu": [
+    "b"
+   ]
+  },
+  {
    "nom": "purge : aucune copie",
    "op": "ordrePurge",
    "entree": {
