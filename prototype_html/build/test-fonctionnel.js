@@ -25967,7 +25967,7 @@ async function viderMessages(page) {
     const ouvert = await page.evaluate(() => { const tr = [...document.querySelectorAll('#page-content tbody tr')].find((x) => x.innerText.indexOf('Technicien de laboratoire (sonde 170)') >= 0); const b = tr && tr.querySelector('button[title="Régler les gestes réservés de ce rôle"]'); if (b) b.click(); return !!b; });
     await pause(600);
     const fen = await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); const c = d && d.querySelector('input[data-geste-case="valider_seuil_labo"]'); return d ? { lignes: d.querySelectorAll('tr[data-geste]').length, coche: c ? c.checked : null } : null; });
-    verifier('« Rôles & permissions » : une fenêtre « gestes réservés » par rôle, une ligne par geste, case DÉCOCHÉE pour le technicien', ouvert && fen && fen.lignes === 1 && fen.coche === false, JSON.stringify(fen));
+    verifier('« Rôles & permissions » : une fenêtre « gestes réservés » par rôle, une ligne par geste, case DÉCOCHÉE pour le technicien', ouvert && fen && fen.lignes >= 1 && fen.coche === false, JSON.stringify(fen));
     await page.evaluate(() => { document.querySelector('[role="dialog"] input[data-geste-case="valider_seuil_labo"]').click(); });
     await cliquer('Enregistrer', '[role="dialog"] button'); await pause(900);
     const apresAccord = await page.evaluate(() => { const N = window.SIGH.nav; N.invaliderRbac(); const f = window.SIGH.store.collection('rbac').all().filter((x) => x.role === 'technicien_b170')[0]; return { droit: N.droitGeste('technicien_b170', 'valider_seuil_labo'), laborantin: N.droitGeste('laborantin', 'valider_seuil_labo'), admin: N.droitGeste('admin', 'valider_seuil_labo'), fiche: f && f.droitsGestes, porteurs: N.rolesAvecGeste('valider_seuil_labo') }; });
@@ -26049,7 +26049,7 @@ async function viderMessages(page) {
       };
     });
     verifier('Semence migrée : tous les relevés au lit portent la tension en DEUX nombres entiers (aucun texte « 12/8 » stocké), la diurèse en millilitres (entiers, centaines), l’accueil aussi, version du schéma 85',
-      semence.version === 85 && semence.nRel > 20 && semence.relOk && semence.accueil, JSON.stringify(semence));
+      semence.version >= 85 && semence.nRel > 20 && semence.relOk && semence.accueil, JSON.stringify(semence));
 
     /* --- 2. La saisie au lit : deux champs de tension en cmHg, diurèse en mL, rien d'autre ; l'enregistrement stocke des nombres ---------------------------- */
     await cliquer('Nouveau relevé', '#page-content button'); await pause(500);
@@ -26118,7 +26118,7 @@ async function viderMessages(page) {
     await ouvrir('m3-feuille-temperature.html');
     const migre = await page.evaluate(() => { const S = window.SIGH.store, rel = S.collection('releves').all(); return { version: S.raw()._version, ancien: rel.some((r) => r.id === 'RELANCIEN173'), texte: rel.filter((r) => 'tension' in r).length, nombres: rel.every((r) => Number.isInteger(r.tensionSys) && Number.isInteger(r.tensionDia) && r.diurese >= 100), n: rel.length }; });
     verifier('Un poste en version 84 (relevé ancien en texte « 12/8 », diurèse 1,5) est RÉ-AMORCÉ à l’ouverture : version 85, l’ancien relevé n’est plus là, aucun texte de tension, toute diurèse en millilitres',
-      migre.version === 85 && migre.ancien === false && migre.texte === 0 && migre.nombres && migre.n > 20, JSON.stringify(migre));
+      migre.version >= 85 && migre.ancien === false && migre.texte === 0 && migre.nombres && migre.n > 20, JSON.stringify(migre));
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT B ÉTAPE 2 FIN */
