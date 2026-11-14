@@ -146,7 +146,7 @@ async function extraireRbac() {
       const importSupervision = roles.filter((ro) => N.superviseImport(ro.id)).map((ro) => ro.id);
       const importPaie = roles.filter((ro) => N.capacitePaie(ro.id)).map((ro) => ro.id);
       /* LES GESTES RÉSERVÉS (lot B) : la déclaration du manifeste, puis ce que chaque rôle détient réellement (même appel que la commande, `N.droitGeste`). */
-      const gestesDef = propre(N.GESTES).map((g) => ({ id: g.id, libelle: g.libelle, module: g.module, ecran: g.ecran, rolesDefaut: g.rolesDefaut }));
+      const gestesDef = propre(N.GESTES).map((g) => ({ id: g.id, libelle: g.libelle, module: g.module, ecran: g.ecran, rolesDefaut: g.rolesDefaut, defautSiEcritSur: g.defautSiEcritSur || null }));
       const gestesParRole = {};
       roles.forEach((ro) => { gestesParRole[ro.id] = {}; N.GESTES.forEach((g) => { gestesParRole[ro.id][g.id] = N.droitGeste(ro.id, g.id) ? 1 : 0; }); });
       return { roles, domaines, raccourcis: propre(N.RACCOURCIS), modules, ecrans, matrice, parRole, version: SIGH.store.VERSION || null,

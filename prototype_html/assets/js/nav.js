@@ -203,6 +203,12 @@
   var GESTES = [
     { id: 'valider_seuil_labo', libelle: 'Valider un seuil de variation brutale du laboratoire', module: 'M5', ecran: 'm5-valeurs-reference',
       rolesDefaut: ['laborantin'] },
+    /* Lot C : corriger à la main le texte lu par machine d'un scan (Direction, 13/11/2026 : « par un agent habilité, signée et journalisée »). D'ORIGINE, les rôles qui écrivent sur l'écran
+       d'une pièce numérisée (courriers M13, documents du patient M1) ; la zone du scan reste exigée À PART (un scan médical de zone 2 ne se corrige que par un profil qui le lit), comme le droit
+       d'écrire sur la pièce. Le droit n'ouvre aucun écran. PROPOSITION À VALIDER (aucun document ne nomme les habilités) : la liste est vérifiée contre la matrice par `packages/rbac/test`. */
+    { id: 'corriger_texte_ocr', libelle: 'Corriger le texte lu par machine d\u2019un scan (correction signée et journalisée)', module: null, ecran: null,
+      rolesDefaut: ['admin', 'direction', 'dm', 'da', 'medecin', 'infirmier', 'laborantin', 'reception', 'agentadmin', 'ambulancier', 'assistant_comptable', 'chirurgien'],
+      defautSiEcritSur: ['M13', 'M1'] },
   ];
   var GESTES_INDEX = {};
   GESTES.forEach(function (g) { GESTES_INDEX[g.id] = g; });

@@ -137,8 +137,11 @@
      85 (13/11/2026) : les CONSTANTES D'HOSPITALISATION corrigées à la source (lot B) : la diurèse est en MILLILITRES partout (l'accueil la saisissait en litres) et la tension des relevés
      au lit et des feuilles d'observation se stocke en DEUX nombres (`tensionSys`, `tensionDia`, cmHg) au lieu du texte « 12/8 » ; la semence est migrée, l'échelle de diurèse de la feuille de
      température est graduée en mL. Les seuils de variation du laboratoire portent un délai maximal entre deux mesures (`delaiMaxJours`, absent par défaut), et les fiches RBAC peuvent porter
-     `droitsGestes` (valider un seuil). Les postes en version 84 sont ré-amorcés (les seuils survivent, comme avant). Sans incrément, un poste garderait des relevés en texte et la diurèse en litres. */
-  var VERSION = 85;
+     `droitsGestes` (valider un seuil). Les postes en version 84 sont ré-amorcés (les seuils survivent, comme avant). Sans incrément, un poste garderait des relevés en texte et la diurèse en litres.
+     86 (14/11/2026) : la CORRECTION SIGNÉE du texte lu par machine (lot C). La collection `lecturesOcr` porte une seconde espèce de version (`texteSource: 'correction'`, `corrigePar`, `corrigeLe`,
+     `corrigeDe`, `remplace`), le droit de corriger est un geste réservé de la fiche RBAC (`corriger_texte_ocr`, `droitsGestes`), et le réglage `ocr` porte un délai de lecture réglable. Une reprise garde
+     les lectures. Sans incrément, un poste n'aurait pas la garde qui refuse une correction non signée. */
+  var VERSION = 86;
   var db = null;
   var listeners = {};
 
@@ -4788,6 +4791,10 @@
   garder('lecturesOcr', function (op, rec) {
     if (op === 'modifier') return 'Une lecture OCR est IMMUABLE : une relance AJOUTE une version datée, elle ne réécrit pas l’ancienne.';
     if (op === 'archiver') return 'Une lecture OCR ne s’archive pas : elle reste lisible (RG-14), une nouvelle lecture devient la version courante.';
+    /* LOT C : une CORRECTION est une version signée. Sans signataire, sans date, sans la version dont elle part ou sans texte, elle n'entre pas : une correction anonyme ou vide n'a pas de valeur (RG-12). */
+    if (op === 'inserer' && rec.texteSource === 'correction' && (!rec.corrigePar || !rec.corrigeLe || !rec.corrigeDe || !String(rec.texteBrut || '').trim())) {
+      return 'Une correction du texte lu se signe : signataire, date, version dont elle part et texte sont requis.';
+    }
     var existantes = (db && db.lecturesOcr) || [];
     if (op === 'inserer' && existantes.some(function (x) { return x.id === rec.id; })) return 'La lecture « ' + rec.id + ' » existe déjà : une version ne se réécrit pas.';
     return null;

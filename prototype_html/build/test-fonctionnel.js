@@ -877,7 +877,7 @@ async function viderMessages(page) {
       const c = [...document.querySelectorAll('[data-carte-piece]')].pop(); if (!c) return null;
       const b = c.querySelector('[data-ocr-bloc]'), e = c.querySelector('[data-ocr-etat]');
       return { texte: c.textContent.replace(/\s+/g, ' '), etat: e ? e.getAttribute('data-ocr-etat') : null, marque: !!c.querySelector('[data-ocr-marque]'), bloc: b ? b.getAttribute('data-ocr-bloc') : null,
-        relancer: !!c.querySelector('[data-ocr-relancer]'), historique: (c.querySelector('[data-ocr-historique]') || { getAttribute: () => null }).getAttribute('data-ocr-historique'),
+        relancer: !!c.querySelector('[data-ocr-relancer]'), corriger: !!c.querySelector('[data-ocr-corriger]'), corrige: !!c.querySelector('[data-ocr-corrige]'), conflit: (c.querySelector('[data-ocr-conflit]') || { getAttribute: () => null }).getAttribute('data-ocr-conflit'), signees: c.querySelectorAll('[data-ocr-signee]').length, historique: (c.querySelector('[data-ocr-historique]') || { getAttribute: () => null }).getAttribute('data-ocr-historique'),
         textes: [...c.querySelectorAll('[data-ocr-texte]')].map((n) => [n.getAttribute('data-ocr-texte'), n.textContent]) };
     });
     const lignes = () => page.evaluate(() => [...document.querySelectorAll('#page-content tbody tr')].map((tr) => tr.textContent.replace(/\s+/g, ' ')));
@@ -26305,6 +26305,272 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT B ÉTAPE 3 FIN */
+
+  /* ==========================================================================
+   * LOT C : LA CORRECTION SIGNÉE DU TEXTE LU PAR MACHINE (réponse de la Direction du 13/11/2026) : une version de plus, signée et journalisée, la lecture machine intacte.
+   * ======================================================================== */
+  await etape(async () => {
+    scenario('Vague 176 : lot C étape 1, correction signée du texte lu : une version de plus (signée, datée, journalisée sans le texte), la lecture machine intacte, texte courant pour la recherche, une relance machine ne la détruit jamais, refus nommés, idempotence, immuabilité');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), Q = outilsOcr, sfx = O.sfx();
+    const MOT = ('zebracorrige' + sfx).toLowerCase(), FAUX = ('zebrafaux' + sfx).toLowerCase(), NEUF = ('zebraneuf' + sfx).toLowerCase();
+    const canon = (o) => JSON.stringify(Object.keys(o).sort().map((k) => [k, o[k]]));
+    const png = await Fx.image('png', 1761);
+    const ctx = { peutDeposer: true, famille: 'courrier', type: null };
+    await poserSessionServeur(roleImp('admin', 'ADMIN176'));
+    await ouvrir('m13-courriers.html');
+    const reglageAvant = await page.evaluate(() => JSON.parse(JSON.stringify(window.SIGH.store.reglage('ocr', null))));
+    await Q.installerMoteur({ texte: 'Ordonnance ' + FAUX + ' paracétamol' });
+
+    /* 0. Le réglage est celui de la CLINIQUE : la fenêtre le dit et porte le délai. */
+    await page.evaluate(() => document.querySelector('[data-ocr-reglage]').click());
+    await pause(500);
+    const fen = await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); const champs = d ? [...d.querySelectorAll('input[type="number"]')] : []; return d ? { clinique: /Réglage de la clinique/.test(d.textContent) || /Réglage de\s+la clinique/.test(d.textContent), delai: champs[0] ? champs[0].value : null } : null; });
+    verifier('La fenêtre de réglage dit que c’est un réglage de la CLINIQUE (valable pour tous les postes) et porte le délai de lecture par page (120 secondes par défaut)', fen && fen.clinique === true && fen.delai === '120', JSON.stringify(fen));
+    await page.evaluate(() => { const d = document.querySelector('[role="dialog"]'); d.querySelector('input[type="checkbox"]').click(); const sel = d.querySelector('select'); sel.value = 'factice'; sel.dispatchEvent(new Event('change', { bubbles: true })); const n = d.querySelector('input[type="number"]'); n.value = '5'; n.dispatchEvent(new Event('input', { bubbles: true })); const t = d.querySelector('textarea'); t.value = 'sonde lot C'; t.dispatchEvent(new Event('input', { bubbles: true })); });
+    await cliquer('Enregistrer', '[role="dialog"] button'); await pause(700);
+    const reg = await page.evaluate(() => { const r = window.SIGH.ocr.reglage(); return { actif: r.actif, moteur: r.moteur, delaiMs: r.delaiMs }; });
+    verifier('L’administrateur active la lecture par la fenêtre : activée, moteur choisi, délai posé à 5 secondes (en base, journalisé)', reg.actif === true && reg.moteur === 'factice' && reg.delaiMs === 5000, JSON.stringify(reg));
+
+    const d = await Q.deposer('courrier', png, { suffixe: 'c' });
+    const lu = await Q.attendreEtat(d.sha, 'ocr_indexe', 20000);
+    verifier('Le scan est lu par machine (« à vérifier ») : la lecture machine est la version 1', lu && lu.code === 'ocr_indexe' && lu.marque === true && (await Q.versions(d.sha)).length === 1, JSON.stringify(lu));
+    const machine = (await Q.versions(d.sha))[0];
+    const machineAvant = canon(machine);
+    await ouvrir('m13-courriers.html');
+    await Q.installerMoteur({ texte: 'Ordonnance ' + FAUX + ' paracétamol' });
+    await O.chercher(d.ref); await O.ouvrirLigne(d.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    let c = await Q.carte();
+    verifier('L’administrateur (qui écrit sur l’écran et détient le droit) a la commande « Corriger le texte lu » sur la carte', c && c.corriger === true && c.corrige === false, JSON.stringify(c && [c.etat, c.corriger]));
+
+    /* 1. Corriger par la fenêtre : la version signée s'AJOUTE. */
+    await page.evaluate(() => document.querySelector('[data-ocr-corriger]').click());
+    await pause(400);
+    const prerempli = await page.evaluate(() => { const t = document.querySelector('[role="dialog"] textarea'); return t ? t.value : null; });
+    verifier('La fenêtre propose le texte courant (la lecture machine) à corriger', prerempli === 'Ordonnance ' + FAUX + ' paracétamol', String(prerempli));
+    await page.evaluate((m) => { const t = document.querySelector('[role="dialog"] textarea'); t.value = 'Ordonnance ' + m + ' paracétamol'; t.dispatchEvent(new Event('input', { bubbles: true })); }, MOT);
+    await cliquer('Signer la correction', '[role="dialog"] button'); await pause(800);
+    const vs = await Q.versions(d.sha);
+    const cor = vs.find((x) => x.texteSource === 'correction');
+    verifier('La correction est une SECONDE version (jamais un remplacement) : texte, signataire, date, version dont elle part',
+      vs.length === 2 && cor && cor.texteBrut === 'Ordonnance ' + MOT + ' paracétamol' && /ADMIN176/.test(cor.corrigePar) && !!cor.corrigeLe && cor.corrigeDe === machine.id && Array.isArray(cor.remplace) && cor.remplace.length === 0 && /^OCC-/.test(cor.id), JSON.stringify(cor));
+    verifier('La lecture machine est INTACTE (même fiche, au caractère près) et reste lisible', canon((await Q.versions(d.sha)).find((x) => x.id === machine.id)) === machineAvant);
+    const e1 = await Q.etat(d.sha);
+    verifier('L’état dit « texte corrigé et signé par … » (ocr_corrige), source « correction », NON marqué « lu par machine, à vérifier »', e1 && e1.code === 'ocr_corrige' && /corrigé et signé par .*ADMIN176/.test(e1.court) && e1.source === 'correction' && e1.marque === false, JSON.stringify(e1));
+    await ouvrir('m13-courriers.html');
+    await Q.installerMoteur({ texte: 'Ordonnance ' + FAUX + ' paracétamol' });
+    await O.chercher(d.ref);
+    const lg = await Q.lignes();
+    await O.ouvrirLigne(d.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    c = await Q.carte();
+    verifier('La ligne et la carte distinguent le texte corrigé et signé de la lecture machine : note « corrigé et signé par », historique avec la version signée ET la version machine, la lecture machine toujours libellée « lu par machine, à vérifier »',
+      lg.length === 1 && /corrigé et signé par/.test(lg[0]) && !/texte lu par machine, à vérifier/.test(lg[0]) && c.etat === 'ocr_corrige' && c.corrige === true && c.signees === 1 && c.historique === '2'
+      && c.textes.some((t) => t[1].indexOf(FAUX) >= 0) && c.textes.some((t) => t[1].indexOf(MOT) >= 0) && /Texte lu par machine, à vérifier/.test(c.texte), JSON.stringify(c && [c.etat, c.signees, c.historique]));
+    await O.fermerTout();
+    const rech = await page.evaluate((a) => ({ mot: window.SIGH.ocr.texteOcrDe(a.s).indexOf(a.m) >= 0, faux: window.SIGH.ocr.texteOcrDe(a.s).indexOf(a.f) >= 0 }), { s: d.sha, m: MOT, f: FAUX });
+    verifier('Le texte courant de la recherche est la correction : elle trouve le mot corrigé, plus le mot faussement lu', rech.mot === true && rech.faux === false, JSON.stringify(rech));
+
+    /* 2. Le journal : qui, quand, quelle version, jamais le texte. */
+    const j = await page.evaluate(() => { const a = window.SIGH.store.raw().audit.filter((x) => x.action === 'Correction signée du texte lu d’un scan')[0]; return a && { u: a.utilisateur, avant: a.ancienneValeur, apres: a.nouvelleValeur, ref: a.reference }; });
+    verifier('RG-12 : la correction est journalisée (utilisateur, ancienne version, nouvelle version) et l’extrait du journal ne porte AUCUN mot du texte (la trace entière est la version immuable)',
+      j && /ADMIN176/.test(j.u) && j.avant.indexOf(machine.id) >= 0 && j.apres.indexOf(cor.id) >= 0 && (j.avant + j.apres).indexOf(MOT) < 0 && (j.avant + j.apres).indexOf(FAUX) < 0, JSON.stringify(j));
+
+    /* 3. Une relance de la lecture machine ne détruit JAMAIS la correction signée. */
+    await Q.cfg({ texte: 'Ordonnance ' + NEUF + ' nouvelle lecture' });
+    const rl = await page.evaluate((a) => window.SIGH.ocr.relancer({ sha256: a.s }, a.ctx), { s: d.sha, ctx: ctx });
+    await page.evaluate(() => window.SIGH.ocr.vider(5));
+    const vs3 = await Q.versions(d.sha);
+    const e3 = await Q.etat(d.sha);
+    const rech3 = await page.evaluate((a) => ({ cor: window.SIGH.ocr.texteOcrDe(a.s).indexOf(a.m) >= 0, neuf: window.SIGH.ocr.texteOcrDe(a.s).indexOf(a.n) >= 0, cur: window.SIGH.ocr.versionCourante(a.s).id }), { s: d.sha, m: MOT, n: NEUF });
+    verifier('La relance AJOUTE une version machine (3 versions, la nouvelle lecture est postérieure) mais la correction signée reste le texte courant : état « ocr_corrige », la recherche lit toujours le texte signé',
+      rl.ok === true && vs3.length === 3 && vs3.filter((x) => x.texteSource === 'ocr').length === 2 && e3.code === 'ocr_corrige' && rech3.cor === true && rech3.neuf === false && rech3.cur === cor.id, JSON.stringify([rl.ok, vs3.length, e3 && e3.code, rech3]));
+    const machine2 = vs3.find((x) => x.texteSource === 'ocr' && x.id !== machine.id);
+    verifier('L’état d’une relance en cours dit que la correction signée reste le texte courant (et n’est pas marquée « à vérifier »)', await page.evaluate((a) => { const e = window.SIGH.ocr.etatIndexation({ natif: false, versions: window.SIGH.ocr.versionsDe(a), file: { etat: 'en_cours' }, moteurInstalle: true, actif: true, moteurActif: true }); return /la correction signée reste le texte courant/.test(e.libelle) && e.marque === false && e.source === 'correction'; }, d.sha));
+
+    /* 4. L'agent décide autrement : il SIGNE une nouvelle correction, partie de la nouvelle lecture machine. */
+    const c2 = await page.evaluate((a) => window.SIGH.ocr.corriger({ sha256: a.s }, 'Ordonnance ' + a.n + ' relue et corrigée', Object.assign({}, a.ctx, { corrigeDe: a.m2 })), { s: d.sha, n: NEUF, ctx: ctx, m2: machine2.id });
+    const vs4 = await Q.versions(d.sha);
+    const cor2 = vs4.find((x) => x.id === c2.id);
+    verifier('Une nouvelle correction partie de la nouvelle lecture machine REMPLACE la première (elle la nomme) et devient le texte courant ; la première reste lisible ; aucun conflit',
+      c2.ok === true && cor2 && cor2.corrigeDe === machine2.id && cor2.remplace.length === 1 && cor2.remplace[0] === cor.id && vs4.length === 4 && (await page.evaluate((s) => window.SIGH.ocr.versionCourante(s).id + '|' + window.SIGH.ocr.conflitDe(s).length, d.sha)) === cor2.id + '|0', JSON.stringify([c2, vs4.length]));
+
+    /* 5. Refus nommés (code, motif, geste). */
+    const essais = await page.evaluate((a) => {
+      const O = window.SIGH.ocr, f = { sha256: a.s };
+      const out = {};
+      out.vide = O.corriger(f, '   \n ', a.ctx);
+      out.identique = O.corriger(f, 'Ordonnance ' + a.n + '   relue et corrigée', a.ctx);
+      out.sansBase = O.corriger({ sha256: 'f'.repeat(64) }, 'Un texte', a.ctx);
+      out.baseInconnue = O.corriger(f, 'Un autre texte', Object.assign({}, a.ctx, { corrigeDe: 'OCR-inconnu' }));
+      out.natif = O.corriger({ sha256: a.s, texteIndexe: true }, 'Un texte', a.ctx);
+      out.sansDroit = O.corriger(f, 'Un texte', Object.assign({}, a.ctx, { peutDeposer: false }));
+      return out;
+    }, { s: d.sha, n: NEUF, ctx: ctx });
+    const nom = (r, code) => r && r.ok === false && r.code === code && !!r.motif && !!r.geste;
+    verifier('Les refus se NOMMENT (code, motif, geste) : texte vide, texte identique, scan sans lecture, version de départ inconnue, couche texte native, profil sans le droit d’écrire',
+      nom(essais.vide, 'CORRECTION_TEXTE_VIDE') && nom(essais.identique, 'CORRECTION_IDENTIQUE') && nom(essais.sansBase, 'CORRECTION_SANS_BASE') && nom(essais.baseInconnue, 'CORRECTION_SANS_BASE') && nom(essais.natif, 'TEXTE_NATIF') && nom(essais.sansDroit, 'CORRECTION_RESERVEE'), JSON.stringify(Object.keys(essais).map((k) => [k, essais[k].code])));
+    const nb0 = await Q.nbVersions();
+    verifier('Aucun refus n’a écrit de version', nb0 === (await Q.nbVersions()) && (await Q.versions(d.sha)).length === 4);
+
+    /* 6. Idempotence, signature exigée par le magasin, immuabilité. */
+    const rejeu = await page.evaluate((a) => window.SIGH.ocr.corriger({ sha256: a.s }, 'Ordonnance ' + a.n + ' relue et corrigée', a.ctx), { s: d.sha, n: NEUF, ctx: Object.assign({}, ctx, { corrigeDe: machine2.id }) });
+    verifier('Le même texte sur la même version est la MÊME version : le rejeu ne la double pas (nouvelle: false, même identifiant, toujours 4 versions)', rejeu.ok === true && rejeu.nouvelle === false && rejeu.id === cor2.id && (await Q.versions(d.sha)).length === 4, JSON.stringify(rejeu));
+    const garde = await page.evaluate((a) => {
+      const col = window.SIGH.store.collection('lecturesOcr'), n0 = col.all().length;
+      const sans = col.insert({ id: 'OCC-sans-signature', sha256: a.s, texteBrut: 'texte non signé', texte: 'texte non signe', nbMots: 3, texteSource: 'correction', corrigeDe: a.m, remplace: [], ocrLe: new Date().toISOString() });
+      const modif = col.update(a.c, { texteBrut: 'réécrit' });
+      const arch = col.archive ? col.archive(a.c) : null;
+      return { sans: sans, modif: modif, apres: col.all().length - n0, texte: col.get(a.c).texteBrut };
+    }, { s: d.sha, m: machine.id, c: cor2.id });
+    verifier('Le magasin refuse une correction SANS signature (ni signataire ni date), et une correction signée ne se réécrit ni ne s’archive : le texte reste celui de la version, aucune fiche ajoutée', !garde.sans && !garde.modif && garde.apres === 0 && garde.texte === cor2.texteBrut, JSON.stringify(garde));
+
+    /* Restauration (règle 11) : réglage OCR remis comme avant. */
+    await page.evaluate((r) => { window.SIGH.store.setReglage('ocr', r || { actif: false, moteur: null, langue: 'fra', delaiMs: 120000 }); }, reglageAvant);
+    await attendreEcritures();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT C ÉTAPE 1 FIN */
+
+  await etape(async () => {
+    scenario('Vague 177 : lot C étape 2, droit de corriger (geste réservé par rôle, écrire sur l’écran de la pièce ET lire la zone du scan), commande absente hors droit, moteur qui refuse, texte corrigé de zone 2 invisible hors zone, corrections concurrentes sans perte');
+    erreursJS = [];
+    const O = outilsDocs, Fx = await O.fabrique(), Q = outilsOcr, sfx = O.sfx();
+    const MOT = ('zebrazonec' + sfx).toLowerCase(), LU = ('zebralucrc' + sfx).toLowerCase();
+    await poserSessionServeur(roleImp('admin', 'ADMIN177'));
+    await ouvrir('m1-documents.html');
+    const depart = await page.evaluate(() => { const S = window.SIGH.store; S.collection('rbac', { module: 'M14', entite: 'rôle', prefix: 'RBAC' }); return { rbac: JSON.stringify(S.raw().rbac || []), reglage: JSON.parse(JSON.stringify(S.reglage('ocr', null))) }; });
+
+    /* 1. Le droit d'ORIGINE : les rôles qui écrivent sur l'écran d'une pièce, vérifiés contre la matrice ; jamais « tous les droits » pour un rôle créé ou inconnu. */
+    const orig = await page.evaluate(() => {
+      const N = window.SIGH.nav, g = N.geste('corriger_texte_ocr');
+      const porteurs = Object.keys(N.ROLES).filter((r) => N.droitGeste(r, 'corriger_texte_ocr')).sort();
+      const attendus = Object.keys(N.ROLES).filter((r) => g.defautSiEcritSur.some((m) => N.droits(r, m).editer)).sort();
+      return { porteurs: porteurs, attendus: attendus, pharmacien: N.droitGeste('pharmacien', 'corriger_texte_ocr'), comptable: N.droitGeste('comptable', 'corriger_texte_ocr'), inconnu: N.droitGeste('role_inconnu', 'corriger_texte_ocr') };
+    });
+    verifier('D’origine, le droit de corriger est porté par les rôles qui écrivent sur l’écran d’une pièce (courriers M13, documents du patient M1) : liste identique à celle dérivée de la matrice ; ni le pharmacien ni le comptable, ni un rôle inconnu',
+      orig.porteurs.length > 5 && JSON.stringify(orig.porteurs) === JSON.stringify(orig.attendus) && orig.pharmacien === false && orig.comptable === false && orig.inconnu === false, JSON.stringify(orig));
+
+    const Fx2 = Fx;
+    await Q.installerMoteur({ texte: 'Compte rendu ' + LU + ' confidentiel' });
+    await Q.regler({ actif: true, moteur: 'factice', langue: 'fra', delaiMs: 5000 }, 'sonde lot C droit');
+    const pid = await Q.premierPatient();
+    await poserSessionServeur(roleImp('medecin', 'MEDECIN177'));
+    await ouvrir('m1-documents.html');
+    await Q.installerMoteur({ texte: 'Compte rendu ' + LU + ' confidentiel' });
+    const z2 = await Q.deposer('patient', await Fx2.image('png', 1771), { type: 'Compte rendu médical', patientId: pid });
+    verifier('Le médecin dépose un compte rendu (zone 2) : lu par machine', z2.ok && (await Q.attendreEtat(z2.sha, 'ocr_indexe', 20000)).code === 'ocr_indexe', JSON.stringify(z2));
+    const ctx2 = { peutDeposer: true, famille: 'patient', type: 'Compte rendu médical' };
+    await O.chercher(z2.ref); await O.ouvrirLigne(z2.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    let c = await Q.carte();
+    verifier('Le médecin (écrit sur l’écran, lit la zone 2, détient le droit) a la commande « Corriger le texte lu »', c && c.corriger === true, JSON.stringify(c && c.corriger));
+    await O.fermerTout();
+
+    /* 2. Hors zone : l'accueil écrit sur l'écran des documents mais ne lit pas la zone 2. */
+    await poserSessionServeur(roleImp('reception', 'ACCUEIL177'));
+    const acc = await page.evaluate((a) => ({ possible: window.SIGH.ocr.correctionPossible({ sha256: a.s }, a.ctx), refus: window.SIGH.ocr.corriger({ sha256: a.s }, 'texte forcé', a.ctx) }), { s: z2.sha, ctx: ctx2 });
+    verifier('L’accueil (écrit M1, ne lit pas la zone 2) : commande ABSENTE et le moteur refuse en nommant (CORRECTION_RESERVEE, zone médicale RG-13)', acc.possible === false && acc.refus.ok === false && acc.refus.code === 'CORRECTION_RESERVEE' && /zone/.test(acc.refus.motif) && !!acc.refus.geste, JSON.stringify(acc));
+
+    /* 3. Sans le droit d'écrire : l'anesthésiste lit la zone 2 mais n'écrit pas sur cet écran. */
+    await poserSessionServeur(roleImp('anesthesiste', 'ANESTH177'));
+    await ouvrir('m1-documents.html');
+    await Q.installerMoteur({});
+    await O.chercher(z2.ref); await O.ouvrirLigne(z2.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    c = await Q.carte();
+    const ane = await page.evaluate((a) => window.SIGH.ocr.corriger({ sha256: a.s }, 'texte forcé', Object.assign({}, a.ctx, { peutDeposer: false })), { s: z2.sha, ctx: ctx2 });
+    verifier('L’anesthésiste lit la pièce (texte lu marqué) mais n’a PAS la commande « Corriger » (il n’écrit pas) ; le moteur refuse aussi', c && c.etat === 'ocr_indexe' && c.corriger === false && ane.ok === false && ane.code === 'CORRECTION_RESERVEE', JSON.stringify([c && c.corriger, ane.code]));
+    await O.fermerTout();
+
+    /* 4. Le médecin corrige : le texte corrigé d'une pièce de zone 2 est de zone 2. */
+    await poserSessionServeur(roleImp('medecin', 'MEDECIN177'));
+    await ouvrir('m1-documents.html');
+    const cm = await page.evaluate((a) => window.SIGH.ocr.corriger({ sha256: a.s }, 'Compte rendu ' + a.m + ' confidentiel', a.ctx), { s: z2.sha, m: MOT, ctx: ctx2 });
+    verifier('Le médecin signe une correction du compte rendu', cm.ok === true && cm.nouvelle === true, JSON.stringify(cm));
+    const vue = await page.evaluate((a) => ({ medecin: window.SIGH.ocr.texteLisible(a.s, 'patient', 'Compte rendu médical').indexOf(a.m) >= 0 }), { s: z2.sha, m: MOT });
+    await poserSessionServeur(roleImp('reception', 'ACCUEIL177'));
+    const vue2 = await page.evaluate((a) => ({ texteLisible: window.SIGH.ocr.texteLisible(a.s, 'patient', 'Compte rendu médical'), texteDe: window.SIGH.fichiers.texteDe({ sha256: a.s }, { famille: 'patient', type: 'Compte rendu médical' }) }), { s: z2.sha });
+    verifier('Le texte corrigé de zone 2 est lisible du profil clinique et d’AUCUN mot pour l’accueil (ni par la recherche ni par `texteLisible`)', vue.medecin === true && vue2.texteLisible === '' && vue2.texteDe === '', JSON.stringify([vue, vue2.texteLisible.length, vue2.texteDe.length]));
+
+    /* 5. Un rôle CRÉÉ : part de zéro, écrit sur l'écran, n'a pas le droit ; l'administrateur l'accorde puis le retire. Pièce de zone 1 (le rôle créé ne lit pas la zone 2). */
+    await poserSessionServeur(roleImp('admin', 'ADMIN177'));
+    await ouvrir('m1-documents.html');
+    await Q.installerMoteur({ texte: 'Carte ' + LU + ' assurance' });
+    const z1 = await Q.deposer('patient', await Fx2.image('png', 1772), { type: 'Pièce d’identité', patientId: pid });
+    await Q.attendreEtat(z1.sha, 'ocr_indexe', 20000);
+    await page.evaluate(() => {
+      const N = window.SIGH.nav, S = window.SIGH.store, col = S.collection('rbac', { module: 'M14', entite: 'rôle', prefix: 'RBAC' });
+      const modules = []; N.NAV.forEach((dd) => dd.modules.forEach((m) => modules.push(m.code)));
+      const ferme = {}; modules.forEach((cc) => { ferme[cc] = { voir: false, editer: false, annuler: false }; });
+      ferme.M1 = { voir: true, editer: true, annuler: false };
+      const fermesEcrans = {}; N.ids().forEach((id) => { const e = N.get(id); if (e && e.universel) fermesEcrans[id] = { voir: false, editer: false, annuler: false }; });
+      const fermesImport = {}; N.IMPORTS.forEach((j) => { fermesImport[j.id] = { voir: false, importer: false, annuler: false }; });
+      const fermesGestes = {}; N.GESTES.forEach((g) => { fermesGestes[g.id] = false; });
+      col.insert({ role: 'correcteur_c177', nouveau: true, statut: 'actif', libelle: 'Correcteur de scans (sonde 177)', libelleCourt: 'Corr177', libelleOrigine: 'Correcteur de scans (sonde 177)', couleur: 'neutral', accueil: 'dash-admin',
+        droits: ferme, droitsEcrans: fermesEcrans, droitsImport: fermesImport, droitsGestes: fermesGestes });
+      N.invaliderRbac();
+    });
+    await attendreEcritures();
+    const CORR = { role: 'correcteur_c177', nom: 'CORR177 Sonde', nomComplet: 'CORR177 Sonde', identifiant: 'corr177', fonction: 'agent', secteur: 'DIR' };
+    const ctx1 = { peutDeposer: true, famille: 'patient', type: 'Pièce d’identité' };
+    const etatCorr = async () => {
+      await poserSessionServeur(CORR);
+      await ouvrir('m1-documents.html');
+      await Q.installerMoteur({});
+      await O.chercher(z1.ref); await O.ouvrirLigne(z1.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+      const cc = await Q.carte();
+      await O.fermerTout();
+      return cc && cc.corriger;
+    };
+    const sansDroit = await etatCorr();
+    const refusCorr = await page.evaluate((a) => window.SIGH.ocr.corriger({ sha256: a.s }, 'Carte corrigée sans droit', a.ctx), { s: z1.sha, ctx: ctx1 });
+    verifier('Le rôle créé écrit sur l’écran des documents mais n’a PAS le droit : commande ABSENTE, le moteur refuse en nommant (CORRECTION_RESERVEE, droit « Corriger le texte lu par machine » non accordé)',
+      sansDroit === false && refusCorr.ok === false && refusCorr.code === 'CORRECTION_RESERVEE' && /droit « Corriger le texte lu par machine »/.test(refusCorr.motif), JSON.stringify([sansDroit, refusCorr.code, refusCorr.motif]));
+    await poserSessionServeur(roleImp('admin', 'ADMIN177'));
+    await page.evaluate(() => { const S = window.SIGH.store, f = S.collection('rbac').all().filter((x) => x.role === 'correcteur_c177')[0]; S.collection('rbac').update(f.id, { droitsGestes: { corriger_texte_ocr: true } }); window.SIGH.nav.invaliderRbac(); });
+    await attendreEcritures();
+    const avecDroit = await etatCorr();
+    const okCorr = await page.evaluate((a) => window.SIGH.ocr.corriger({ sha256: a.s }, 'Carte ' + a.m + ' assurance corrigée', a.ctx), { s: z1.sha, m: LU, ctx: ctx1 });
+    const signe = (await Q.versions(z1.sha)).find((x) => x.texteSource === 'correction');
+    verifier('Après l’accord du droit par la fiche du rôle : la commande apparaît, la correction est signée du nom de ce rôle', avecDroit === true && okCorr.ok === true && signe && /CORR177/.test(signe.corrigePar), JSON.stringify([avecDroit, okCorr.ok, signe && signe.corrigePar]));
+    await poserSessionServeur(roleImp('admin', 'ADMIN177'));
+    await page.evaluate(() => { const S = window.SIGH.store, f = S.collection('rbac').all().filter((x) => x.role === 'correcteur_c177')[0]; S.collection('rbac').update(f.id, { droitsGestes: { corriger_texte_ocr: false } }); window.SIGH.nav.invaliderRbac(); });
+    await attendreEcritures();
+    const retire = await etatCorr();
+    const refusRetire = await page.evaluate((a) => window.SIGH.ocr.corriger({ sha256: a.s }, 'Carte retirée', a.ctx), { s: z1.sha, ctx: ctx1 });
+    verifier('Après le retrait du droit : commande de nouveau ABSENTE, le moteur refuse de nouveau', retire === false && refusRetire.ok === false && refusRetire.code === 'CORRECTION_RESERVEE', JSON.stringify([retire, refusRetire.code]));
+
+    /* 6. Deux corrections CONCURRENTES de la même version (deux postes) : deux versions, conflit nommé, rien de perdu. */
+    await poserSessionServeur(roleImp('admin', 'ADMIN177'));
+    await ouvrir('m1-documents.html');
+    const basePreuve = (await Q.versions(z1.sha)).find((x) => x.texteSource === 'ocr');
+    const conc = await page.evaluate((a) => {
+      const O = window.SIGH.ocr, col = window.SIGH.store.collection('lecturesOcr');
+      /* La correction qui arrive d'un AUTRE poste par le journal : même version de départ, texte différent, signée, ne remplaçant rien (elle ne connaissait pas la nôtre). */
+      const texte = 'Carte ' + a.m + ' autre poste';
+      const id = O.idCorrection(a.s, a.b, texte);
+      col.insert({ id: id, sha256: a.s, texteBrut: texte, texte: O.motsNormalises(texte).join(' '), nbMots: O.motsNormalises(texte).length, texteSource: 'correction', corrigeDe: a.b, remplace: [], corrigePar: 'Agent du poste B', corrigeLe: '2099-01-01T00:00:00.000Z', ocrLe: '2099-01-01T00:00:00.000Z' });
+      const tetes = O.tetesDe(O.versionsDe(a.s));
+      return { n: O.versionsDe(a.s).length, tetes: tetes.map((x) => x.id), conflit: O.conflitDe(a.s).length, courant: O.versionCourante(a.s).id, etat: O.etatDe({ sha256: a.s }), autre: id };
+    }, { s: z1.sha, b: basePreuve.id, m: LU });
+    verifier('La correction concurrente arrive : DEUX versions signées coexistent (rien d’écrasé), le conflit est nommé (2), le texte courant est la plus récente (ordre que tous les postes retrouvent), l’état le dit',
+      conc.n === 3 && conc.conflit === 2 && conc.tetes.length === 2 && conc.courant === conc.autre && conc.etat.conflit === true && /deux corrections concurrentes/.test(conc.etat.libelle), JSON.stringify([conc.n, conc.conflit, conc.etat.libelle]));
+    await O.chercher(z1.ref); await O.ouvrirLigne(z1.ref); await O.attendre(() => !!document.querySelector('[data-carte-piece] [data-ocr-bloc]'));
+    c = await Q.carte();
+    verifier('La carte montre le conflit (bandeau « corrections concurrentes » avec les deux signataires) et garde les deux textes lisibles dans l’historique', c && c.conflit === '2' && c.signees === 2 && /Agent du poste B/.test(c.texte) && /CORR177/.test(c.texte), JSON.stringify(c && [c.conflit, c.signees]));
+    await O.fermerTout();
+    const resolu = await page.evaluate((a) => { const O = window.SIGH.ocr; const r = O.corriger({ sha256: a.s }, 'Carte ' + a.m + ' départagée', a.ctx); return { r: r, remplace: r.ok ? O.versionsDe(a.s).find((x) => x.id === r.id).remplace.length : null, conflit: O.conflitDe(a.s).length, n: O.versionsDe(a.s).length }; }, { s: z1.sha, m: LU, ctx: ctx1 });
+    verifier('Une correction ultérieure signée REMPLACE les deux (remplace : 2), le conflit se ferme, aucune version n’est perdue (4 versions)', resolu.r.ok === true && resolu.remplace === 2 && resolu.conflit === 0 && resolu.n === 4, JSON.stringify(resolu));
+    const doublon = await page.evaluate((a) => { const col = window.SIGH.store.collection('lecturesOcr'), n0 = col.all().length; const r = col.insert({ id: a.id, sha256: a.s, texteBrut: 'x', nbMots: 1, texteSource: 'correction', corrigeDe: a.b, corrigePar: 'x', corrigeLe: '2099-01-01T00:00:00.000Z' }); return { r: r, ajoutees: col.all().length - n0 }; }, { id: conc.autre, s: z1.sha, b: basePreuve.id });
+    verifier('Le rejeu de la correction du poste B (même identifiant) est refusé par le magasin : jamais deux fois la même version', !doublon.r && doublon.ajoutees === 0, JSON.stringify(doublon));
+
+    /* Restauration (règle 11) : fiches RBAC et réglage remis TELS QU'AVANT, rôle créé retiré. */
+    await page.evaluate((d) => { const S = window.SIGH.store; const a = S.raw().rbac; a.splice(0, a.length, ...JSON.parse(d.rbac)); S.save(); window.SIGH.nav.invaliderRbac(); S.setReglage('ocr', d.reglage || { actif: false, moteur: null, langue: 'fra', delaiMs: 120000 }); }, depart);
+    await attendreEcritures();
+    await ouvrir('m1-documents.html');
+    const fin = await page.evaluate((d) => ({ rbac: JSON.stringify(window.SIGH.store.raw().rbac || []) === d.rbac, role: !!window.SIGH.nav.ROLES.correcteur_c177 }), depart);
+    verifier('Restauration : fiches RBAC identiques à celles d’avant, le rôle créé a disparu', fin.rbac === true && fin.role === false, JSON.stringify(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT C ÉTAPE 2 FIN */
 
 
 

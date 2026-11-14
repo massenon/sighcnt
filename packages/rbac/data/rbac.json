@@ -13254,75 +13254,122 @@
     "ecran": "m5-valeurs-reference",
     "rolesDefaut": [
      "laborantin"
+    ],
+    "defautSiEcritSur": null
+   },
+   {
+    "id": "corriger_texte_ocr",
+    "libelle": "Corriger le texte lu par machine d’un scan (correction signée et journalisée)",
+    "module": null,
+    "ecran": null,
+    "rolesDefaut": [
+     "admin",
+     "direction",
+     "dm",
+     "da",
+     "medecin",
+     "infirmier",
+     "laborantin",
+     "reception",
+     "agentadmin",
+     "ambulancier",
+     "assistant_comptable",
+     "chirurgien"
+    ],
+    "defautSiEcritSur": [
+     "M13",
+     "M1"
     ]
    }
   ],
   "parRole": {
    "admin": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "direction": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "dm": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "da": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "medecin": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "infirmier": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "pharmacien": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    },
    "laborantin": {
-    "valider_seuil_labo": 1
+    "valider_seuil_labo": 1,
+    "corriger_texte_ocr": 1
    },
    "stock": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    },
    "caissier": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    },
    "comptable": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    },
    "rh": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    },
    "reception": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "agentadmin": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "ambulancier": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "aide_soignant": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    },
    "echographiste": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    },
    "surveillant": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    },
    "assistant_comptable": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "chirurgien": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 1
    },
    "anesthesiste": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    },
    "aide_comptable": {
-    "valider_seuil_labo": 0
+    "valider_seuil_labo": 0,
+    "corriger_texte_ocr": 0
    }
   }
  },

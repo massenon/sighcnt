@@ -15,6 +15,16 @@
  *   - une lecture ne se RÉÉCRIT jamais : une relance ou un autre moteur AJOUTE une version datée (collection `lecturesOcr`, garde du magasin), l'ancienne reste lisible. Son identifiant est
  *     DÉTERMINISTE (empreinte du fichier, moteur, version du moteur, langue, texte normalisé) : deux postes qui lisent le même scan avec le même moteur ne font qu'une version ;
  *   - la file est UNE par empreinte (l'état de lecture vit sur la fiche du registre `fichiers`, qui est une fiche par empreinte) : deux dépôts du même scan ne font jamais deux files.
+ *
+ * LOT C (réponses de la Direction du 13/11/2026) : la CORRECTION MANUELLE du texte lu, par un agent habilité (geste réservé `corriger_texte_ocr`), SIGNÉE et JOURNALISÉE. Elle s'AJOUTE comme une
+ * version de `lecturesOcr` (`texteSource: 'correction'`, signataire, date, version dont elle part `corrigeDe`, corrections qu'elle remplace `remplace`) ; la lecture machine reste lisible et intacte.
+ *   - le TEXTE COURANT (recherche, affichage) est la correction signée la plus récente non remplacée ; SANS correction, la lecture machine la plus récente. Une relance de la lecture AJOUTE une version
+ *     machine, elle ne détruit JAMAIS une correction signée : celle-ci reste le texte courant tant qu'un agent n'a pas décidé autrement, et il décide en SIGNANT une nouvelle correction (qui peut
+ *     partir de la nouvelle lecture machine). Une lecture machine ne vaut pas la signature d'un agent : l'ordre des dates ne décide pas à sa place ;
+ *   - deux corrections concurrentes de la même version (deux postes) ne s'écrasent pas : DEUX versions, le conflit est NOMMÉ et visible, le texte courant est la plus récente des deux (ordre que tous
+ *     les postes retrouvent) en le disant, et une correction signée ultérieure remplace les deux ;
+ *   - une correction de même contenu sur la même version est la MÊME version (identifiant déterministe) : le rejeu et le second poste ne la doublent pas ;
+ *   - le journal (RG-12) ne porte que des identifiants et des comptes : la trace entière est la version immuable.
  * ========================================================================== */
 (function (global) {
   'use strict';
@@ -34,6 +44,7 @@
     MOTEUR_ABSENT: 'MOTEUR_ABSENT', LANGUE_ABSENTE: 'LANGUE_ABSENTE', IMAGE_ILLISIBLE: 'IMAGE_ILLISIBLE', DELAI_DEPASSE: 'DELAI_DEPASSE', FORMAT_NON_LU: 'FORMAT_NON_LU',
     RENDU_PAGES_ABSENT: 'RENDU_PAGES_ABSENT', AUCUN_TEXTE: 'AUCUN_TEXTE', OCR_DESACTIVE: 'OCR_DESACTIVE', MOTEUR_EN_ECHEC: 'MOTEUR_EN_ECHEC', ESSAIS_EPUISES: 'ESSAIS_EPUISES',
     REGLAGE_RESERVE: 'REGLAGE_RESERVE', MOTIF_REQUIS: 'MOTIF_REQUIS', TEXTE_NATIF: 'TEXTE_NATIF', DROIT_REFUSE: 'DROIT_REFUSE',
+    CORRECTION_RESERVEE: 'CORRECTION_RESERVEE', CORRECTION_TEXTE_VIDE: 'CORRECTION_TEXTE_VIDE', CORRECTION_SANS_BASE: 'CORRECTION_SANS_BASE', CORRECTION_IDENTIQUE: 'CORRECTION_IDENTIQUE',
   };
   var GESTES = {
     MOTEUR_ABSENT: 'Installer un moteur d’OCR sur ce poste, puis le choisir au réglage de la lecture des scans.',
@@ -50,6 +61,10 @@
     MOTIF_REQUIS: 'Saisir le motif du réglage.',
     TEXTE_NATIF: 'Ce fichier porte déjà une couche texte : elle prime, rien à lire.',
     DROIT_REFUSE: 'Demander ce droit à l’administrateur (« Rôles & permissions »).',
+    CORRECTION_RESERVEE: 'Demander le droit « Corriger le texte lu par machine » à l’administrateur (« Rôles & permissions »), ou faire corriger la pièce par un agent habilité.',
+    CORRECTION_TEXTE_VIDE: 'Saisir le texte corrigé : une correction ne peut pas être vide.',
+    CORRECTION_SANS_BASE: 'Corriger à partir d’une lecture de ce scan : aucune lecture n’existe encore (lancer la lecture, ou saisir la pièce à la main hors de ce texte).',
+    CORRECTION_IDENTIQUE: 'Modifier le texte avant d’enregistrer : il est identique à celui de la version dont la correction part.',
   };
   function refus(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste || GESTES[code] || '' }; }
 
@@ -69,7 +84,9 @@
   function poserRendeur(r) { rendeur = r || null; }
 
   /* ==========================================================================
-   * 2. RÉGLAGE : activer ou non, moteur choisi, langue ; en base ; administrateur et DAF ; DÉSACTIVÉ par défaut (à valider)
+   * 2. RÉGLAGE : activer ou non, moteur choisi, langue, délai ; en base ; administrateur et DAF ; DÉSACTIVÉ par défaut (à valider)
+   * Lot C : c'est un réglage de CLINIQUE (la maquette n'a qu'une clinique, donc un seul exemplaire, en base du serveur) ; à la cible il est posé à la poste mère, versionné par date, et reçu des
+   * fileuls ; chaque poste ne garde en propre que ce qu'il a d'INSTALLÉ (le moteur disponible ou non). Il ne va jamais vers un téléphone.
    * ======================================================================== */
   function reglage() {
     var r = S.reglage('ocr', null) || {};
@@ -95,7 +112,7 @@
       if (moteurs[id].langues.indexOf(langue) < 0) return refus(CODES.LANGUE_ABSENTE, 'le moteur « ' + id + ' » ne lit pas la langue « ' + langue + ' » (langues : ' + moteurs[id].langues.join(', ') + ')');
     }
     var nouveau = { actif: actif, moteur: id, langue: langue, delaiMs: v.delaiMs > 0 ? v.delaiMs : avant.delaiMs, regleLe: new Date().toISOString(), reglePar: S.currentUser() };
-    S.log('Réglage de la lecture OCR des scans', 'M14', 'reglage', 'ocr', { actif: avant.actif, moteur: avant.moteur, langue: avant.langue }, { actif: actif, moteur: id, langue: langue, motif: String(motif).slice(0, 40) });
+    S.log('Réglage de la lecture OCR des scans', 'M14', 'reglage', 'ocr', { actif: avant.actif, moteur: avant.moteur, langue: avant.langue, delaiMs: avant.delaiMs }, { actif: actif, moteur: id, langue: langue, delaiMs: nouveau.delaiMs, motif: String(motif).slice(0, 40) });
     S.setReglage('ocr', nouveau);
     if (actif) { balayer(); demarrer(); }
     return { ok: true, avant: avant, reglage: reglage() };
@@ -128,11 +145,24 @@
       return a.ocrLe < b.ocrLe ? -1 : (a.ocrLe > b.ocrLe ? 1 : (a.id < b.id ? -1 : (a.id > b.id ? 1 : 0)));
     });
   }
-  /** La version COURANTE : la plus récente qui porte du texte. */
-  function versionCourante(sha) {
-    var v = versionsDe(sha).filter(function (x) { return (x.nbMots || 0) > 0; });
-    return v.length ? v[v.length - 1] : null;
+  function estCorrection(v) { return !!v && v.texteSource === 'correction'; }
+  function plusRecente(liste) { return liste.length ? liste[liste.length - 1] : null; }
+  /** Les corrections signées que NULLE autre ne remplace (les « têtes »), de la plus ancienne à la plus récente. `versions` : déjà triées par `versionsDe`. */
+  function tetesDe(versions) {
+    var remplacees = {};
+    versions.forEach(function (x) { (x.remplace || []).forEach(function (id) { remplacees[id] = true; }); });
+    return versions.filter(function (x) { return estCorrection(x) && !remplacees[x.id]; });
   }
+  /** La version COURANTE d'une liste triée : la correction signée la plus récente non remplacée ; SANS correction, la lecture machine la plus récente qui porte du texte. Une lecture machine, même
+   * plus récente, ne prend jamais la place d'une correction signée. */
+  function courantDe(versions) {
+    var t = tetesDe(versions);
+    if (t.length) return plusRecente(t);
+    return plusRecente(versions.filter(function (x) { return (x.nbMots || 0) > 0 && !estCorrection(x); }));
+  }
+  function versionCourante(sha) { return courantDe(versionsDe(sha)); }
+  /** Les corrections CONCURRENTES (deux têtes ou plus) d'une empreinte, ou []. */
+  function conflitDe(sha) { var t = tetesDe(versionsDe(sha)); return t.length > 1 ? t : []; }
   function natifDe(sha) { var f = fiche(sha); return !!(f && f.texteIndexe); }
 
   /** Le texte OCR (mots normalisés) de la version courante, ou ''. Jamais le natif : c'est `texteDe` de fichiers.js qui fait primer le natif. */
@@ -143,19 +173,24 @@
    * ======================================================================== */
   /** `o` : { natif, versions, file: {etat, code?, raison?}|null, moteurInstalle, actif, moteurActif }. Rend { code, court, libelle, raison, source, marque, disponible }. */
   function etatIndexation(o) {
-    var cur = null;
-    (o.versions || []).forEach(function (x) { if ((x.nbMots || 0) > 0 && (!cur || x.ocrLe >= cur.ocrLe)) cur = x; });
+    var vs = (o.versions || []).slice().sort(function (a, b) { return a.ocrLe < b.ocrLe ? -1 : (a.ocrLe > b.ocrLe ? 1 : (a.id < b.id ? -1 : (a.id > b.id ? 1 : 0))); });
+    var cur = courantDe(vs), signe = estCorrection(cur), conflit = tetesDe(vs).length > 1;
     var f = o.file || null;
-    if (o.natif) return { code: 'indexe', court: 'texte indexé', libelle: 'Texte indexé (couche texte du fichier)', raison: null, source: 'couche_texte', marque: false, disponible: true };
-    var source = cur ? 'ocr' : null, disponible = !!cur;
-    if (f && f.etat === 'en_cours') return { code: 'ocr_en_cours', court: 'lecture OCR en cours', libelle: 'Lecture OCR en cours' + (cur ? ' (la version précédente reste lisible)' : ''), raison: null, source: source, marque: !!cur, disponible: disponible };
-    if (f && f.etat === 'en_attente') return { code: 'ocr_en_attente', court: 'lecture OCR en attente', libelle: 'Lecture OCR en attente' + (cur ? ' (la version précédente reste lisible)' : ''), raison: null, source: source, marque: !!cur, disponible: disponible };
-    if (f && f.etat === 'echec') return { code: 'ocr_echec', court: 'lecture OCR en échec', libelle: 'Lecture OCR en échec : ' + (f.raison || 'cause non renseignée'), raison: f.raison || null, source: source, marque: !!cur, disponible: disponible };
-    if (cur) return { code: 'ocr_indexe', court: 'texte lu par machine, à vérifier', libelle: 'Texte lu par machine, à vérifier', raison: null, source: 'ocr', marque: true, disponible: true };
+    if (o.natif) return { code: 'indexe', court: 'texte indexé', libelle: 'Texte indexé (couche texte du fichier)', raison: null, source: 'couche_texte', marque: false, disponible: true, conflit: false };
+    var source = cur ? (signe ? 'correction' : 'ocr') : null, disponible = !!cur, marque = !!cur && !signe;
+    var precedente = signe ? ' (la correction signée reste le texte courant)' : ' (la version précédente reste lisible)';
+    if (f && f.etat === 'en_cours') return { code: 'ocr_en_cours', court: 'lecture OCR en cours', libelle: 'Lecture OCR en cours' + (cur ? precedente : ''), raison: null, source: source, marque: marque, disponible: disponible, conflit: conflit };
+    if (f && f.etat === 'en_attente') return { code: 'ocr_en_attente', court: 'lecture OCR en attente', libelle: 'Lecture OCR en attente' + (cur ? precedente : ''), raison: null, source: source, marque: marque, disponible: disponible, conflit: conflit };
+    if (f && f.etat === 'echec') return { code: 'ocr_echec', court: 'lecture OCR en échec', libelle: 'Lecture OCR en échec : ' + (f.raison || 'cause non renseignée') + (signe ? ' (la correction signée reste le texte courant)' : ''), raison: f.raison || null, source: source, marque: marque, disponible: disponible, conflit: conflit };
+    if (signe) {
+      var qui = cur.corrigePar || 'auteur inconnu';
+      return { code: 'ocr_corrige', court: 'texte corrigé et signé par ' + qui, libelle: 'Texte corrigé et signé par ' + qui + (conflit ? ' (deux corrections concurrentes à départager)' : ''), raison: null, source: 'correction', marque: false, disponible: true, conflit: conflit };
+    }
+    if (cur) return { code: 'ocr_indexe', court: 'texte lu par machine, à vérifier', libelle: 'Texte lu par machine, à vérifier', raison: null, source: 'ocr', marque: true, disponible: true, conflit: false };
     var raison = !o.moteurInstalle ? RAISON_SANS_MOTEUR
       : (!o.actif ? 'la lecture OCR est désactivée au réglage'
         : (!o.moteurActif ? 'le moteur choisi au réglage n’est pas installé sur ce poste' : 'lecture OCR non encore demandée'));
-    return { code: 'non_indexe', court: 'texte non indexé', libelle: 'Texte non indexé : ' + raison, raison: raison, source: null, marque: false, disponible: false };
+    return { code: 'non_indexe', court: 'texte non indexé', libelle: 'Texte non indexé : ' + raison, raison: raison, source: null, marque: false, disponible: false, conflit: false };
   }
   function etatDe(fichier) {
     if (!fichier || !fichier.sha256) return null;
@@ -362,6 +397,60 @@
   }
 
   /* ==========================================================================
+   * 6bis. CORRECTION SIGNÉE du texte lu (lot C) : une version de plus, jamais une réécriture
+   * ======================================================================== */
+  var GESTE_CORRECTION = 'corriger_texte_ocr';
+  /** Le texte d'une correction comparé à un autre : les blancs répétés et ceux des bords ne comptent pas. */
+  function blancsNormalises(t) { return String(t || '').replace(/\s+/g, ' ').trim(); }
+  /** L'identifiant d'une correction : DÉTERMINISTE (empreinte, version dont elle part, texte sans blancs superflus). Le même texte sur la même version est la MÊME version, d'un poste à l'autre. */
+  function idCorrection(sha, corrigeDe, texte) {
+    return 'OCC-' + String(sha).slice(0, 16) + '-' + sha256Texte(corrigeDe + '|' + blancsNormalises(texte)).slice(0, 12);
+  }
+  /** Ce profil peut-il corriger la pièce ? Écrire sur l'écran de la pièce (zone comprise, déjà portée par `peutDeposer`) ET détenir le geste réservé. Rend null, ou le refus NOMMÉ avec sa cause. */
+  function refusDroitCorrection(ctx) {
+    var s = S.session() || {};
+    if (!ctx || !ctx.peutDeposer) return refus(CODES.CORRECTION_RESERVEE, 'votre profil n’écrit pas sur l’écran de cette pièce (ou la pièce est d’une zone qu’il ne lit pas) : il ne peut pas corriger son texte');
+    if (ctx.famille === 'patient' && global.SIGH.parcours && !global.SIGH.parcours.peutVoirDocument(ctx.type).autorise) return refus(CODES.CORRECTION_RESERVEE, 'cette pièce médicale est d’une zone que votre profil ne lit pas (RG-13)');
+    if (!global.SIGH.nav.droitGeste(s.role, GESTE_CORRECTION)) return refus(CODES.CORRECTION_RESERVEE, 'le droit « Corriger le texte lu par machine » n’est pas accordé à votre rôle');
+    return null;
+  }
+  /** La commande « Corriger le texte lu » est-elle OFFERTE ? ABSENTE sinon, jamais grisée : droit, pas de couche texte native, une lecture à corriger. */
+  function correctionPossible(fichier, ctx) {
+    if (!fichier || !fichier.sha256 || refusDroitCorrection(ctx)) return false;
+    var e = etatDe(fichier);
+    return !!e && e.code !== 'indexe' && versionsDe(fichier.sha256).some(function (x) { return (x.nbMots || 0) > 0 || estCorrection(x); });
+  }
+  /** Corrige le texte lu d'un scan : AJOUTE une version signée (jamais une réécriture), journalisée. Le moteur refuse aussi : masquer le bouton ne protège rien.
+   * `ctx` : { peutDeposer, famille, type, corrigeDe? (la version dont le texte sert de départ ; par défaut la courante) }. */
+  function corriger(fichier, texte, ctx) {
+    var d = refusDroitCorrection(ctx);
+    if (d) return d;
+    if (!fichier || !fichier.sha256) return refus('SANS_PIECE', 'cette fiche ne porte aucun fichier', 'Déposer d’abord le scan.');
+    var sha = fichier.sha256;
+    if (natifDe(sha) || fichier.texteIndexe) return refus(CODES.TEXTE_NATIF, 'ce fichier porte déjà une couche texte : elle prime, il n’y a rien à corriger');
+    var propre = String(texte == null ? '' : texte);
+    if (!propre.trim()) return refus(CODES.CORRECTION_TEXTE_VIDE, 'le texte corrigé est vide');
+    var vs = versionsDe(sha);
+    var base = ctx.corrigeDe ? vs.filter(function (x) { return x.id === ctx.corrigeDe; })[0] : courantDe(vs);
+    if (!base) return refus(CODES.CORRECTION_SANS_BASE, ctx.corrigeDe ? 'la version « ' + ctx.corrigeDe + ' » n’est pas une lecture de ce scan' : 'ce scan n’a aucune lecture à corriger');
+    if (blancsNormalises(propre) === blancsNormalises(base.texteBrut)) return refus(CODES.CORRECTION_IDENTIQUE, 'le texte est identique à celui de la version dont la correction part');
+    var id = idCorrection(sha, base.id, propre);
+    var dejaLa = lectures().get(id);
+    if (!dejaLa) {
+      var norm = motsNormalises(propre);
+      var maintenant = new Date().toISOString();
+      /* Elle remplace les corrections courantes qu'elle a sous les yeux : c'est ce qui départage un conflit, et ce qui fait qu'une correction ultérieure ferme les deux branches. */
+      var remplace = tetesDe(vs).map(function (x) { return x.id; });
+      var avant = courantDe(vs);
+      var ecrit = lectures().insert({ id: id, sha256: sha, texteBrut: propre.slice(0, BRUT_MAX), brutTronque: propre.length > BRUT_MAX, texte: norm.slice(0, MOTS_MAX).join(' '),
+        motsTronques: norm.length > MOTS_MAX, nbMots: norm.length, texteSource: 'correction', corrigeDe: base.id, remplace: remplace, corrigePar: S.currentUser(), corrigeLe: maintenant, ocrLe: maintenant },
+      { journal: { action: 'Correction signée du texte lu d’un scan', module: 'M13', entite: 'lecture OCR', avant: { version: base.id, mots: base.nbMots || 0 }, apres: { version: id, mots: norm.length, remplace: remplace.length } } });
+      if (!ecrit) return refus('CORRECTION_REFUSEE', 'le magasin a refusé l’écriture de la correction (voir la garde de la collection des lectures)', 'Vérifier la signature et le texte, puis recommencer.');
+    }
+    return { ok: true, id: id, nouvelle: !dejaLa, conflit: conflitDe(sha).length > 1 };
+  }
+
+  /* ==========================================================================
    * 6. RELANCE : absente sans le droit, sans moteur prêt, ou sur un fichier qui porte une couche texte
    * ======================================================================== */
   /** La commande « Relancer la lecture » est-elle OFFERTE ? Le droit d'écrire sur l'écran de la pièce (et la zone, déjà portée par `peutDeposer`), un moteur prêt, pas de couche texte native. */
@@ -384,7 +473,7 @@
   /* ==========================================================================
    * 7. ÉCRANS : la ligne d'état de la carte, l'historique, le réglage, le message vide, la note de recherche
    * ======================================================================== */
-  var TONS = { indexe: 'success', ocr_indexe: 'warning', ocr_en_attente: 'info', ocr_en_cours: 'info', ocr_echec: 'danger', non_indexe: 'neutral' };
+  var TONS = { indexe: 'success', ocr_corrige: 'success', ocr_indexe: 'warning', ocr_en_attente: 'info', ocr_en_cours: 'info', ocr_echec: 'danger', non_indexe: 'neutral' };
 
   /** La ligne « Recherche dans le texte » de la carte. */
   function ligneEtat(fichier) {
@@ -407,8 +496,18 @@
     bloc.appendChild(el('p.text-xs.text-slate-600', { 'data-ocr-libelle': '1', text: e.libelle + '.' }));
     var versions = versionsDe(fichier.sha256);
     var cur = versionCourante(fichier.sha256);
-    if (e.marque || cur) {
+    if (e.code === 'ocr_corrige' || (cur && estCorrection(cur))) {
+      var nc = K.note('<strong>Texte corrigé et signé par ' + (cur.corrigePar || 'auteur inconnu') + ' le ' + dateHeure(cur.corrigeLe) + '.</strong> Une lecture machine plus récente ne le remplace pas : la lecture machine reste consultable ci-dessous. Le scan reste la seule référence.', { tone: 'info', icon: 'pen-line' });
+      nc.setAttribute('data-ocr-corrige', '1');
+      bloc.appendChild(nc);
+    } else if (e.marque || cur) {
       bloc.appendChild(K.note('<strong>Texte lu par machine, à vérifier.</strong> La reconnaissance de caractères peut se tromper (accents, chiffres, mots coupés) : le texte sert à RETROUVER une pièce, jamais à la citer. Le scan reste la seule référence.', { tone: 'warning', icon: 'scan-text' }));
+    }
+    var concurrentes = conflitDe(fichier.sha256);
+    if (concurrentes.length > 1) {
+      var nk = K.note('<strong>Conflit : ' + concurrentes.length + ' corrections concurrentes de la même version</strong> (' + concurrentes.map(function (x) { return (x.corrigePar || '?') + ', ' + dateHeure(x.corrigeLe); }).join(' ; ') + '). Rien n’est perdu : le texte courant est la plus récente, une nouvelle correction signée les remplace toutes les deux.', { tone: 'danger', icon: 'git-merge' });
+      nk.setAttribute('data-ocr-conflit', String(concurrentes.length));
+      bloc.appendChild(nk);
     }
     if (e.code === 'ocr_echec') {
       bloc.appendChild(el('p.text-xs.text-danger-700', { 'data-ocr-echec': (fiche(fichier.sha256).ocr || {}).code || '', text: ((fiche(fichier.sha256).ocr || {}).geste || '') }));
@@ -427,6 +526,11 @@
       } }));
       actes.lastChild.setAttribute('data-ocr-relancer', '1');
     }
+    if (correctionPossible(fichier, o)) {
+      var bc = K.btn('Corriger le texte lu', { icon: 'pen-line', size: 'sm', onclick: function () { ouvrirCorrection(fichier, o); } });
+      bc.setAttribute('data-ocr-corriger', '1');
+      actes.appendChild(bc);
+    }
     if (actes.childNodes.length) bloc.appendChild(actes);
     if (versions.length) {
       var det = el('details.rounded-lg.border.border-slate-200.p-2', { 'data-ocr-historique': String(versions.length) });
@@ -435,6 +539,15 @@
       versions.slice().reverse().forEach(function (v, i) {
         var rang = versions.length - i;
         var courante = cur && v.id === cur.id;
+        if (estCorrection(v)) {
+          var deRang = versions.map(function (x) { return x.id; }).indexOf(v.corrigeDe) + 1;
+          liste.appendChild(el('div.rounded.bg-slate-50.p-2.text-xs', { 'data-ocr-version': String(rang), 'data-ocr-signee': '1' }, [
+            el('p.font-semibold', { text: 'Version ' + rang + (courante ? ' (courante)' : '') + ' : corrigée et signée par ' + (v.corrigePar || 'auteur inconnu') }),
+            el('p.text-slate-500', { text: 'Signée le ' + dateHeure(v.corrigeLe) + ' · part de la version ' + (deRang || '?') + (v.remplace && v.remplace.length ? ' · remplace ' + v.remplace.length + ' correction' + (v.remplace.length > 1 ? 's' : '') : '') + ' · ' + v.nbMots + ' mots' }),
+            el('details', null, [el('summary.cursor-pointer.text-slate-600', { text: 'Texte corrigé et signé' }), el('p.mt-1.whitespace-pre-wrap.text-slate-700', { 'data-ocr-texte': String(rang), text: v.texteBrut || '' })]),
+          ]));
+          return;
+        }
         liste.appendChild(el('div.rounded.bg-slate-50.p-2.text-xs', { 'data-ocr-version': String(rang) }, [
           el('p.font-semibold', { text: 'Version ' + rang + (courante ? ' (courante)' : '') + ' : ' + v.moteur + (v.moteurVersion ? ' ' + v.moteurVersion : '') + ', langue ' + v.langue }),
           el('p.text-slate-500', { text: 'Lue le ' + dateHeure(v.ocrLe) + ' par ' + (v.ocrPar || 'auteur inconnu') + ' · ' + v.nbMots + ' mots · confiance ' + poidsConf(v.confiance) + (v.declencheur === 'relance' ? ' · relance' : '') }),
@@ -477,6 +590,39 @@
     return note;
   }
 
+  /** La fenêtre de correction : le texte courant à corriger, la version de départ au choix (la dernière lecture machine après une relance), la signature rappelée. */
+  function ouvrirCorrection(fichier, o) {
+    var K = global.SIGH.kit;
+    var vs = versionsDe(fichier.sha256).filter(function (x) { return (x.nbMots || 0) > 0 || estCorrection(x); });
+    var cur = versionCourante(fichier.sha256);
+    var depart = el('select.select', { 'aria-label': 'Version de départ' });
+    vs.slice().reverse().forEach(function (v) {
+      var rang = versionsDe(fichier.sha256).map(function (x) { return x.id; }).indexOf(v.id) + 1;
+      depart.appendChild(el('option', { value: v.id, text: 'Version ' + rang + (estCorrection(v) ? ' (corrigée par ' + (v.corrigePar || '?') + ')' : ' (lue par machine)') + (cur && cur.id === v.id ? ', courante' : '') }));
+    });
+    depart.value = cur ? cur.id : '';
+    var zone = el('textarea.textarea', { rows: 8, 'aria-label': 'Texte corrigé' });
+    zone.value = cur ? (cur.texteBrut || '') : '';
+    depart.addEventListener('change', function () { var v = vs.filter(function (x) { return x.id === depart.value; })[0]; zone.value = v ? (v.texteBrut || '') : ''; });
+    var msg = el('p.text-xs.text-danger-700', { role: 'alert' });
+    var corps = el('div.space-y-3', null, [
+      K.note('Votre correction est <strong>signée à votre nom</strong>, datée et journalisée. Elle s’AJOUTE : la lecture machine reste lisible et intacte, et le texte corrigé devient le texte courant de la recherche.', { tone: 'info' }),
+      el('div', null, [el('label.label', { text: 'Partir de' }), depart]),
+      el('div', null, [el('label.label', { text: 'Texte corrigé' }), zone]),
+      msg,
+    ]);
+    var m = U.modal({ title: 'Corriger le texte lu', size: 'md', body: corps, footer: [
+      K.btn('Annuler', { onclick: function () { m.close(); } }),
+      K.btn('Signer la correction', { variant: 'primary', icon: 'check', onclick: function () {
+        var r = corriger(fichier, zone.value, { peutDeposer: o.peutDeposer, famille: o.famille, type: o.type, corrigeDe: depart.value || null });
+        if (!r.ok) { msg.textContent = r.code + ' : ' + r.motif + ' ' + r.geste; return; }
+        m.close();
+        U.toast('Correction signée.', { type: 'success', detail: r.conflit ? 'Conflit : deux corrections concurrentes, à départager.' : 'La lecture machine reste lisible.' });
+        if (o.refresh) o.refresh();
+      } }),
+    ] });
+  }
+
   /** Le bouton de réglage : ABSENT hors administrateur et DAF. */
   function boutonReglage() {
     if (!peutRegler()) return null;
@@ -496,21 +642,23 @@
     choix.forEach(function (m) { moteur.appendChild(el('option', { value: m.id, text: m.libelle + (m.version ? ' ' + m.version : '') })); });
     moteur.value = r.moteur || '';
     var langue = el('input.input', { type: 'text', 'aria-label': 'Langue', value: r.langue });
+    var delai = el('input.input', { type: 'number', min: '1', step: '1', 'aria-label': 'Délai de lecture par page, en secondes', value: String(Math.round(r.delaiMs / 1000)) });
     var motif = el('textarea.textarea', { rows: 2, placeholder: 'Motif du réglage', 'aria-label': 'Motif' });
     var msg = el('p.text-xs.text-danger-700', { role: 'alert' });
     var corps = el('div.space-y-3', null, [
-      K.note(choix.length ? 'La lecture des scans est <strong>désactivée par défaut</strong> (à valider par la Direction). Le texte lu par machine est toujours marqué « à vérifier ».'
+      K.note(choix.length ? 'Réglage de <strong>la clinique</strong> : il vaut pour tous les postes. La lecture des scans est <strong>désactivée par défaut</strong> (à valider par la Direction). Le texte lu par machine est toujours marqué « à vérifier ».'
         : '<strong>' + RAISON_SANS_MOTEUR + '.</strong> Il n’y a rien à activer tant qu’un moteur n’est pas installé : la Direction a décidé de choisir le moteur après un essai sur trois vrais scans.', { tone: 'info' }),
       el('label.flex.items-center.gap-2.text-sm', null, [actif, 'Activer la lecture automatique des scans']),
       el('div', null, [el('label.label', { text: 'Moteur d’OCR' }), moteur]),
       el('div', null, [el('label.label', { text: 'Langue (code du moteur, « fra » pour le français)' }), langue]),
+      el('div', null, [el('label.label', { text: 'Délai de lecture par page (secondes, au-delà la lecture est arrêtée et se relance)' }), delai]),
       el('div', null, [el('label.label', { text: 'Motif (consigné dans le journal)' }), motif]),
       msg,
     ]);
     var m = U.modal({ title: 'Lecture des scans (OCR)', size: 'sm', body: corps, footer: [
       K.btn('Annuler', { onclick: function () { m.close(); } }),
       K.btn('Enregistrer', { variant: 'primary', icon: 'check', onclick: function () {
-        var x = definirReglage({ actif: actif.checked, moteur: moteur.value || null, langue: String(langue.value || '').trim() || LANGUE_DEFAUT }, motif.value);
+        var x = definirReglage({ actif: actif.checked, moteur: moteur.value || null, langue: String(langue.value || '').trim() || LANGUE_DEFAUT, delaiMs: Math.round(Number(delai.value) * 1000) || 0 }, motif.value);
         if (!x.ok) { msg.textContent = x.code + ' : ' + x.motif + ' ' + x.geste; return; }
         m.close();
         U.toast(x.reglage.actif ? 'Lecture des scans activée.' : 'Lecture des scans désactivée.', { type: 'success' });
@@ -526,6 +674,8 @@
     etatIndexation: etatIndexation, etatDe: etatDe, court: court, aUnTexte: aUnTexte,
     demander: demander, apresDepot: apresDepot, balayer: balayer, reprendre: reprendre, traiterSuivant: traiterSuivant, vider: vider, demarrer: demarrer,
     relancePossible: relancePossible, relancer: relancer,
+    GESTE_CORRECTION: GESTE_CORRECTION, estCorrection: estCorrection, tetesDe: tetesDe, courantDe: courantDe, conflitDe: conflitDe, idCorrection: idCorrection,
+    refusDroitCorrection: refusDroitCorrection, correctionPossible: correctionPossible, corriger: corriger,
     ligneEtat: ligneEtat, blocCarte: blocCarte, indiceVide: indiceVide, noteRecherche: noteRecherche, boutonReglage: boutonReglage,
   };
 })(window);

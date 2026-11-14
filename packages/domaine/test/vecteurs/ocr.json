@@ -146,7 +146,8 @@
     "raison": "aucun moteur d’OCR installé sur ce poste",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -167,7 +168,8 @@
     "raison": "la lecture OCR est désactivée au réglage",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -188,7 +190,8 @@
     "raison": "le moteur choisi au réglage n’est pas installé sur ce poste",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -209,7 +212,8 @@
     "raison": "lecture OCR non encore demandée",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -230,7 +234,8 @@
     "raison": "aucun moteur d’OCR installé sur ce poste",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -253,7 +258,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -276,7 +282,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -299,7 +306,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -322,7 +330,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -345,7 +354,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -368,7 +378,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -391,7 +402,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -414,7 +426,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -437,7 +450,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -460,7 +474,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -484,7 +499,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -508,7 +524,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -532,7 +549,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -556,7 +574,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -580,7 +599,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -603,7 +623,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -626,7 +647,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -649,7 +671,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -672,7 +695,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -695,7 +719,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -722,7 +747,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -749,7 +775,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -776,7 +803,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -803,7 +831,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -830,7 +859,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -859,7 +889,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -888,7 +919,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -917,7 +949,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -946,7 +979,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -975,7 +1009,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1004,7 +1039,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1033,7 +1069,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1062,7 +1099,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1091,7 +1129,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1120,7 +1159,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1150,7 +1190,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1180,7 +1221,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1210,7 +1252,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1240,7 +1283,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1270,7 +1314,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1299,7 +1344,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1328,7 +1374,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1357,7 +1404,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1386,7 +1434,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1415,7 +1464,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1447,7 +1497,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1479,7 +1530,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1511,7 +1563,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1543,7 +1596,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1575,7 +1629,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1609,7 +1664,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1643,7 +1699,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1677,7 +1734,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1711,7 +1769,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1745,7 +1804,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1779,7 +1839,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1813,7 +1874,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1847,7 +1909,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1881,7 +1944,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1915,7 +1979,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1950,7 +2015,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -1985,7 +2051,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -2020,7 +2087,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -2055,7 +2123,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -2090,7 +2159,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -2124,7 +2194,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -2158,7 +2229,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -2192,7 +2264,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -2226,7 +2299,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -2260,7 +2334,8 @@
     "raison": null,
     "source": "ocr",
     "marque": true,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -2287,7 +2362,8 @@
     "raison": "aucun moteur d’OCR installé sur ce poste",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2314,7 +2390,8 @@
     "raison": "la lecture OCR est désactivée au réglage",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2341,7 +2418,8 @@
     "raison": "le moteur choisi au réglage n’est pas installé sur ce poste",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2368,7 +2446,8 @@
     "raison": "lecture OCR non encore demandée",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2395,7 +2474,8 @@
     "raison": "aucun moteur d’OCR installé sur ce poste",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2424,7 +2504,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2453,7 +2534,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2482,7 +2564,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2511,7 +2594,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2540,7 +2624,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2569,7 +2654,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2598,7 +2684,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2627,7 +2714,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2656,7 +2744,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2685,7 +2774,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2715,7 +2805,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2745,7 +2836,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2775,7 +2867,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2805,7 +2898,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2835,7 +2929,8 @@
     "raison": "le moteur n’a pas répondu en 120 s",
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2864,7 +2959,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2893,7 +2989,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2922,7 +3019,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2951,7 +3049,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -2980,7 +3079,8 @@
     "raison": null,
     "source": null,
     "marque": false,
-    "disponible": false
+    "disponible": false,
+    "conflit": false
    }
   },
   {
@@ -3001,7 +3101,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3022,7 +3123,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3043,7 +3145,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3064,7 +3167,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3085,7 +3189,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3108,7 +3213,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3131,7 +3237,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3154,7 +3261,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3177,7 +3285,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3200,7 +3309,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3223,7 +3333,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3246,7 +3357,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3269,7 +3381,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3292,7 +3405,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3315,7 +3429,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3339,7 +3454,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3363,7 +3479,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3387,7 +3504,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3411,7 +3529,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3435,7 +3554,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3458,7 +3578,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3481,7 +3602,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3504,7 +3626,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3527,7 +3650,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3550,7 +3674,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3577,7 +3702,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3604,7 +3730,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3631,7 +3758,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3658,7 +3786,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3685,7 +3814,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3714,7 +3844,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3743,7 +3874,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3772,7 +3904,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3801,7 +3934,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3830,7 +3964,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3859,7 +3994,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3888,7 +4024,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3917,7 +4054,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3946,7 +4084,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -3975,7 +4114,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4005,7 +4145,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4035,7 +4176,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4065,7 +4207,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4095,7 +4238,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4125,7 +4269,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4154,7 +4299,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4183,7 +4329,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4212,7 +4359,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4241,7 +4389,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4270,7 +4419,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4302,7 +4452,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4334,7 +4485,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4366,7 +4518,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4398,7 +4551,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4430,7 +4584,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4464,7 +4619,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4498,7 +4654,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4532,7 +4689,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4566,7 +4724,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4600,7 +4759,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4634,7 +4794,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4668,7 +4829,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4702,7 +4864,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4736,7 +4899,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4770,147 +4934,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
-   }
-  },
-  {
-   "entree": {
-    "natif": true,
-    "versions": [
-     {
-      "id": "OCR-a",
-      "nbMots": 5,
-      "ocrLe": "2026-10-01T10:00:00.000Z"
-     },
-     {
-      "id": "OCR-b",
-      "nbMots": 7,
-      "ocrLe": "2026-10-02T10:00:00.000Z"
-     }
-    ],
-    "file": {
-     "etat": "echec",
-     "raison": "le moteur n’a pas répondu en 120 s"
-    },
-    "cleVersions": "deux",
-    "cleFile": "echec",
-    "moteurInstalle": false,
-    "actif": false,
-    "moteurActif": false
-   },
-   "sortie": {
-    "code": "indexe",
-    "court": "texte indexé",
-    "libelle": "Texte indexé (couche texte du fichier)",
-    "raison": null,
-    "source": "couche_texte",
-    "marque": false,
-    "disponible": true
-   }
-  },
-  {
-   "entree": {
-    "natif": true,
-    "versions": [
-     {
-      "id": "OCR-a",
-      "nbMots": 5,
-      "ocrLe": "2026-10-01T10:00:00.000Z"
-     },
-     {
-      "id": "OCR-b",
-      "nbMots": 7,
-      "ocrLe": "2026-10-02T10:00:00.000Z"
-     }
-    ],
-    "file": {
-     "etat": "echec",
-     "raison": "le moteur n’a pas répondu en 120 s"
-    },
-    "cleVersions": "deux",
-    "cleFile": "echec",
-    "moteurInstalle": true,
-    "actif": false,
-    "moteurActif": false
-   },
-   "sortie": {
-    "code": "indexe",
-    "court": "texte indexé",
-    "libelle": "Texte indexé (couche texte du fichier)",
-    "raison": null,
-    "source": "couche_texte",
-    "marque": false,
-    "disponible": true
-   }
-  },
-  {
-   "entree": {
-    "natif": true,
-    "versions": [
-     {
-      "id": "OCR-a",
-      "nbMots": 5,
-      "ocrLe": "2026-10-01T10:00:00.000Z"
-     },
-     {
-      "id": "OCR-b",
-      "nbMots": 7,
-      "ocrLe": "2026-10-02T10:00:00.000Z"
-     }
-    ],
-    "file": {
-     "etat": "echec",
-     "raison": "le moteur n’a pas répondu en 120 s"
-    },
-    "cleVersions": "deux",
-    "cleFile": "echec",
-    "moteurInstalle": true,
-    "actif": true,
-    "moteurActif": false
-   },
-   "sortie": {
-    "code": "indexe",
-    "court": "texte indexé",
-    "libelle": "Texte indexé (couche texte du fichier)",
-    "raison": null,
-    "source": "couche_texte",
-    "marque": false,
-    "disponible": true
-   }
-  },
-  {
-   "entree": {
-    "natif": true,
-    "versions": [
-     {
-      "id": "OCR-a",
-      "nbMots": 5,
-      "ocrLe": "2026-10-01T10:00:00.000Z"
-     },
-     {
-      "id": "OCR-b",
-      "nbMots": 7,
-      "ocrLe": "2026-10-02T10:00:00.000Z"
-     }
-    ],
-    "file": {
-     "etat": "echec",
-     "raison": "le moteur n’a pas répondu en 120 s"
-    },
-    "cleVersions": "deux",
-    "cleFile": "echec",
-    "moteurInstalle": true,
-    "actif": true,
-    "moteurActif": true
-   },
-   "sortie": {
-    "code": "indexe",
-    "court": "texte indexé",
-    "libelle": "Texte indexé (couche texte du fichier)",
-    "raison": null,
-    "source": "couche_texte",
-    "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4935,6 +4960,78 @@
     "cleVersions": "deux",
     "cleFile": "echec",
     "moteurInstalle": false,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true,
+    "conflit": false
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": false,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true,
+    "conflit": false
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": true,
     "actif": true,
     "moteurActif": false
    },
@@ -4945,7 +5042,80 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": true,
+    "actif": true,
+    "moteurActif": true
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true,
+    "conflit": false
+   }
+  },
+  {
+   "entree": {
+    "natif": true,
+    "versions": [
+     {
+      "id": "OCR-a",
+      "nbMots": 5,
+      "ocrLe": "2026-10-01T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-b",
+      "nbMots": 7,
+      "ocrLe": "2026-10-02T10:00:00.000Z"
+     }
+    ],
+    "file": {
+     "etat": "echec",
+     "raison": "le moteur n’a pas répondu en 120 s"
+    },
+    "cleVersions": "deux",
+    "cleFile": "echec",
+    "moteurInstalle": false,
+    "actif": true,
+    "moteurActif": false
+   },
+   "sortie": {
+    "code": "indexe",
+    "court": "texte indexé",
+    "libelle": "Texte indexé (couche texte du fichier)",
+    "raison": null,
+    "source": "couche_texte",
+    "marque": false,
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -4979,7 +5149,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5013,7 +5184,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5047,7 +5219,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5081,7 +5254,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5115,7 +5289,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5142,7 +5317,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5169,7 +5345,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5196,7 +5373,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5223,7 +5401,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5250,7 +5429,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5279,7 +5459,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5308,7 +5489,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5337,7 +5519,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5366,7 +5549,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5395,7 +5579,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5424,7 +5609,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5453,7 +5639,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5482,7 +5669,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5511,7 +5699,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5540,7 +5729,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5570,7 +5760,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5600,7 +5791,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5630,7 +5822,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5660,7 +5853,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5690,7 +5884,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5719,7 +5914,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5748,7 +5944,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5777,7 +5974,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5806,7 +6004,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   },
   {
@@ -5835,7 +6034,8 @@
     "raison": null,
     "source": "couche_texte",
     "marque": false,
-    "disponible": true
+    "disponible": true,
+    "conflit": false
    }
   }
  ],
@@ -5929,6 +6129,1482 @@
    "courante": null
   }
  ],
+ "corrections": {
+  "geste": "corriger_texte_ocr",
+  "ids": [
+   {
+    "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "corrigeDe": "OCR-x",
+    "texte": "Texte corrigé",
+    "id": "OCC-aaaaaaaaaaaaaaaa-6ffbf2704c67"
+   },
+   {
+    "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "corrigeDe": "OCR-x",
+    "texte": "  Texte   corrigé \n",
+    "id": "OCC-aaaaaaaaaaaaaaaa-6ffbf2704c67"
+   },
+   {
+    "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "corrigeDe": "OCR-y",
+    "texte": "Texte corrigé",
+    "id": "OCC-aaaaaaaaaaaaaaaa-fc17e3ac5295"
+   },
+   {
+    "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "corrigeDe": "OCR-x",
+    "texte": "Texte corrigé autrement",
+    "id": "OCC-aaaaaaaaaaaaaaaa-7259d7da2a81"
+   },
+   {
+    "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "corrigeDe": "OCR-x",
+    "texte": "Texte corrigé",
+    "id": "OCC-bbbbbbbbbbbbbbbb-6ffbf2704c67"
+   }
+  ],
+  "courant": [
+   {
+    "nom": "machine seule",
+    "versions": [
+     {
+      "id": "M1",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "texte": "motM1",
+      "texteBrut": "brut M1"
+     }
+    ],
+    "courant": "M1",
+    "tetes": [],
+    "etats": [
+     {
+      "file": null,
+      "code": "ocr_indexe",
+      "court": "texte lu par machine, à vérifier",
+      "libelle": "Texte lu par machine, à vérifier",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_cours"
+      },
+      "code": "ocr_en_cours",
+      "court": "lecture OCR en cours",
+      "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_attente"
+      },
+      "code": "ocr_en_attente",
+      "court": "lecture OCR en attente",
+      "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "echec",
+       "raison": "le moteur a échoué"
+      },
+      "code": "ocr_echec",
+      "court": "lecture OCR en échec",
+      "libelle": "Lecture OCR en échec : le moteur a échoué",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     }
+    ]
+   },
+   {
+    "nom": "deux machines, la plus récente courante",
+    "versions": [
+     {
+      "id": "M1",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "texte": "motM1",
+      "texteBrut": "brut M1"
+     },
+     {
+      "id": "M2",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "texte": "motM2",
+      "texteBrut": "brut M2"
+     }
+    ],
+    "courant": "M2",
+    "tetes": [],
+    "etats": [
+     {
+      "file": null,
+      "code": "ocr_indexe",
+      "court": "texte lu par machine, à vérifier",
+      "libelle": "Texte lu par machine, à vérifier",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_cours"
+      },
+      "code": "ocr_en_cours",
+      "court": "lecture OCR en cours",
+      "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_attente"
+      },
+      "code": "ocr_en_attente",
+      "court": "lecture OCR en attente",
+      "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "echec",
+       "raison": "le moteur a échoué"
+      },
+      "code": "ocr_echec",
+      "court": "lecture OCR en échec",
+      "libelle": "Lecture OCR en échec : le moteur a échoué",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     }
+    ]
+   },
+   {
+    "nom": "une correction",
+    "versions": [
+     {
+      "id": "M1",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "texte": "motM1",
+      "texteBrut": "brut M1"
+     },
+     {
+      "id": "C1",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "corrigeLe": "2026-10-02T10:00:00.000Z",
+      "corrigePar": "Agent A",
+      "corrigeDe": "M1",
+      "remplace": [],
+      "texte": "motC1",
+      "texteBrut": "brut C1"
+     }
+    ],
+    "courant": "C1",
+    "tetes": [
+     "C1"
+    ],
+    "etats": [
+     {
+      "file": null,
+      "code": "ocr_corrige",
+      "court": "texte corrigé et signé par Agent A",
+      "libelle": "Texte corrigé et signé par Agent A",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_cours"
+      },
+      "code": "ocr_en_cours",
+      "court": "lecture OCR en cours",
+      "libelle": "Lecture OCR en cours (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_attente"
+      },
+      "code": "ocr_en_attente",
+      "court": "lecture OCR en attente",
+      "libelle": "Lecture OCR en attente (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "echec",
+       "raison": "le moteur a échoué"
+      },
+      "code": "ocr_echec",
+      "court": "lecture OCR en échec",
+      "libelle": "Lecture OCR en échec : le moteur a échoué (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     }
+    ]
+   },
+   {
+    "nom": "une machine plus récente que la correction : la correction reste courante",
+    "versions": [
+     {
+      "id": "M1",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "texte": "motM1",
+      "texteBrut": "brut M1"
+     },
+     {
+      "id": "C1",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "corrigeLe": "2026-10-02T10:00:00.000Z",
+      "corrigePar": "Agent A",
+      "corrigeDe": "M1",
+      "remplace": [],
+      "texte": "motC1",
+      "texteBrut": "brut C1"
+     },
+     {
+      "id": "M2",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-03T10:00:00.000Z",
+      "texte": "motM2",
+      "texteBrut": "brut M2"
+     }
+    ],
+    "courant": "C1",
+    "tetes": [
+     "C1"
+    ],
+    "etats": [
+     {
+      "file": null,
+      "code": "ocr_corrige",
+      "court": "texte corrigé et signé par Agent A",
+      "libelle": "Texte corrigé et signé par Agent A",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_cours"
+      },
+      "code": "ocr_en_cours",
+      "court": "lecture OCR en cours",
+      "libelle": "Lecture OCR en cours (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_attente"
+      },
+      "code": "ocr_en_attente",
+      "court": "lecture OCR en attente",
+      "libelle": "Lecture OCR en attente (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "echec",
+       "raison": "le moteur a échoué"
+      },
+      "code": "ocr_echec",
+      "court": "lecture OCR en échec",
+      "libelle": "Lecture OCR en échec : le moteur a échoué (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     }
+    ]
+   },
+   {
+    "nom": "une correction qui remplace la première, partie de la nouvelle machine",
+    "versions": [
+     {
+      "id": "M1",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "texte": "motM1",
+      "texteBrut": "brut M1"
+     },
+     {
+      "id": "C1",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "corrigeLe": "2026-10-02T10:00:00.000Z",
+      "corrigePar": "Agent A",
+      "corrigeDe": "M1",
+      "remplace": [],
+      "texte": "motC1",
+      "texteBrut": "brut C1"
+     },
+     {
+      "id": "M2",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-03T10:00:00.000Z",
+      "texte": "motM2",
+      "texteBrut": "brut M2"
+     },
+     {
+      "id": "C2",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-04T10:00:00.000Z",
+      "corrigeLe": "2026-10-04T10:00:00.000Z",
+      "corrigePar": "Agent B",
+      "corrigeDe": "M1",
+      "remplace": [
+       "C1"
+      ],
+      "texte": "motC2",
+      "texteBrut": "brut C2"
+     }
+    ],
+    "courant": "C2",
+    "tetes": [
+     "C2"
+    ],
+    "etats": [
+     {
+      "file": null,
+      "code": "ocr_corrige",
+      "court": "texte corrigé et signé par Agent B",
+      "libelle": "Texte corrigé et signé par Agent B",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_cours"
+      },
+      "code": "ocr_en_cours",
+      "court": "lecture OCR en cours",
+      "libelle": "Lecture OCR en cours (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_attente"
+      },
+      "code": "ocr_en_attente",
+      "court": "lecture OCR en attente",
+      "libelle": "Lecture OCR en attente (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "echec",
+       "raison": "le moteur a échoué"
+      },
+      "code": "ocr_echec",
+      "court": "lecture OCR en échec",
+      "libelle": "Lecture OCR en échec : le moteur a échoué (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     }
+    ]
+   },
+   {
+    "nom": "deux corrections concurrentes : conflit, la plus récente est courante",
+    "versions": [
+     {
+      "id": "M1",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "texte": "motM1",
+      "texteBrut": "brut M1"
+     },
+     {
+      "id": "C1",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "corrigeLe": "2026-10-02T10:00:00.000Z",
+      "corrigePar": "Agent A",
+      "corrigeDe": "M1",
+      "remplace": [],
+      "texte": "motC1",
+      "texteBrut": "brut C1"
+     },
+     {
+      "id": "C2",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-02T11:00:00.000Z",
+      "corrigeLe": "2026-10-02T11:00:00.000Z",
+      "corrigePar": "Agent B",
+      "corrigeDe": "M1",
+      "remplace": [],
+      "texte": "motC2",
+      "texteBrut": "brut C2"
+     }
+    ],
+    "courant": "C2",
+    "tetes": [
+     "C1",
+     "C2"
+    ],
+    "etats": [
+     {
+      "file": null,
+      "code": "ocr_corrige",
+      "court": "texte corrigé et signé par Agent B",
+      "libelle": "Texte corrigé et signé par Agent B (deux corrections concurrentes à départager)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": true
+     },
+     {
+      "file": {
+       "etat": "en_cours"
+      },
+      "code": "ocr_en_cours",
+      "court": "lecture OCR en cours",
+      "libelle": "Lecture OCR en cours (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": true
+     },
+     {
+      "file": {
+       "etat": "en_attente"
+      },
+      "code": "ocr_en_attente",
+      "court": "lecture OCR en attente",
+      "libelle": "Lecture OCR en attente (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": true
+     },
+     {
+      "file": {
+       "etat": "echec",
+       "raison": "le moteur a échoué"
+      },
+      "code": "ocr_echec",
+      "court": "lecture OCR en échec",
+      "libelle": "Lecture OCR en échec : le moteur a échoué (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": true
+     }
+    ]
+   },
+   {
+    "nom": "deux corrections au même instant : l’identifiant départage",
+    "versions": [
+     {
+      "id": "M1",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "texte": "motM1",
+      "texteBrut": "brut M1"
+     },
+     {
+      "id": "C1",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "corrigeLe": "2026-10-02T10:00:00.000Z",
+      "corrigePar": "Agent A",
+      "corrigeDe": "M1",
+      "remplace": [],
+      "texte": "motC1",
+      "texteBrut": "brut C1"
+     },
+     {
+      "id": "C2",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "corrigeLe": "2026-10-02T10:00:00.000Z",
+      "corrigePar": "Agent B",
+      "corrigeDe": "M1",
+      "remplace": [],
+      "texte": "motC2",
+      "texteBrut": "brut C2"
+     }
+    ],
+    "courant": "C2",
+    "tetes": [
+     "C1",
+     "C2"
+    ],
+    "etats": [
+     {
+      "file": null,
+      "code": "ocr_corrige",
+      "court": "texte corrigé et signé par Agent B",
+      "libelle": "Texte corrigé et signé par Agent B (deux corrections concurrentes à départager)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": true
+     },
+     {
+      "file": {
+       "etat": "en_cours"
+      },
+      "code": "ocr_en_cours",
+      "court": "lecture OCR en cours",
+      "libelle": "Lecture OCR en cours (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": true
+     },
+     {
+      "file": {
+       "etat": "en_attente"
+      },
+      "code": "ocr_en_attente",
+      "court": "lecture OCR en attente",
+      "libelle": "Lecture OCR en attente (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": true
+     },
+     {
+      "file": {
+       "etat": "echec",
+       "raison": "le moteur a échoué"
+      },
+      "code": "ocr_echec",
+      "court": "lecture OCR en échec",
+      "libelle": "Lecture OCR en échec : le moteur a échoué (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": true
+     }
+    ]
+   },
+   {
+    "nom": "une correction ultérieure remplace les deux : plus de conflit",
+    "versions": [
+     {
+      "id": "M1",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "texte": "motM1",
+      "texteBrut": "brut M1"
+     },
+     {
+      "id": "C1",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "corrigeLe": "2026-10-02T10:00:00.000Z",
+      "corrigePar": "Agent A",
+      "corrigeDe": "M1",
+      "remplace": [],
+      "texte": "motC1",
+      "texteBrut": "brut C1"
+     },
+     {
+      "id": "C2",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-02T11:00:00.000Z",
+      "corrigeLe": "2026-10-02T11:00:00.000Z",
+      "corrigePar": "Agent B",
+      "corrigeDe": "M1",
+      "remplace": [],
+      "texte": "motC2",
+      "texteBrut": "brut C2"
+     },
+     {
+      "id": "C3",
+      "texteSource": "correction",
+      "nbMots": 5,
+      "ocrLe": "2026-10-03T10:00:00.000Z",
+      "corrigeLe": "2026-10-03T10:00:00.000Z",
+      "corrigePar": "Agent C",
+      "corrigeDe": "M1",
+      "remplace": [
+       "C1",
+       "C2"
+      ],
+      "texte": "motC3",
+      "texteBrut": "brut C3"
+     }
+    ],
+    "courant": "C3",
+    "tetes": [
+     "C3"
+    ],
+    "etats": [
+     {
+      "file": null,
+      "code": "ocr_corrige",
+      "court": "texte corrigé et signé par Agent C",
+      "libelle": "Texte corrigé et signé par Agent C",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_cours"
+      },
+      "code": "ocr_en_cours",
+      "court": "lecture OCR en cours",
+      "libelle": "Lecture OCR en cours (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_attente"
+      },
+      "code": "ocr_en_attente",
+      "court": "lecture OCR en attente",
+      "libelle": "Lecture OCR en attente (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "echec",
+       "raison": "le moteur a échoué"
+      },
+      "code": "ocr_echec",
+      "court": "lecture OCR en échec",
+      "libelle": "Lecture OCR en échec : le moteur a échoué (la correction signée reste le texte courant)",
+      "source": "correction",
+      "marque": false,
+      "disponible": true,
+      "conflit": false
+     }
+    ]
+   },
+   {
+    "nom": "une lecture machine vide ne compte pas",
+    "versions": [
+     {
+      "id": "M1",
+      "texteSource": "ocr",
+      "nbMots": 4,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "texte": "motM1",
+      "texteBrut": "brut M1"
+     },
+     {
+      "id": "M2",
+      "texteSource": "ocr",
+      "nbMots": 0,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "texte": "motM2",
+      "texteBrut": "brut M2"
+     }
+    ],
+    "courant": "M1",
+    "tetes": [],
+    "etats": [
+     {
+      "file": null,
+      "code": "ocr_indexe",
+      "court": "texte lu par machine, à vérifier",
+      "libelle": "Texte lu par machine, à vérifier",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_cours"
+      },
+      "code": "ocr_en_cours",
+      "court": "lecture OCR en cours",
+      "libelle": "Lecture OCR en cours (la version précédente reste lisible)",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "en_attente"
+      },
+      "code": "ocr_en_attente",
+      "court": "lecture OCR en attente",
+      "libelle": "Lecture OCR en attente (la version précédente reste lisible)",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     },
+     {
+      "file": {
+       "etat": "echec",
+       "raison": "le moteur a échoué"
+      },
+      "code": "ocr_echec",
+      "court": "lecture OCR en échec",
+      "libelle": "Lecture OCR en échec : le moteur a échoué",
+      "source": "ocr",
+      "marque": true,
+      "disponible": true,
+      "conflit": false
+     }
+    ]
+   }
+  ],
+  "corriger": [
+   {
+    "nom": "l’administrateur corrige un courrier : une version signée",
+    "role": "admin",
+    "sha": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+    "texte": "Ordonnance corrigée, paracétamol 1 g",
+    "corrigeDe": null,
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance lue par machine, paracétamol 500 mg",
+      "texte": "ordonnance lue par machine paracetamol 500 mg",
+      "nbMots": 7,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "nouvelle": true,
+    "id": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+    "fiche": {
+     "id": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+     "texteBrut": "Ordonnance corrigée, paracétamol 1 g",
+     "texte": "ordonnance corrigee paracetamol",
+     "nbMots": 3,
+     "texteSource": "correction",
+     "corrigeDe": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+     "remplace": [],
+     "corrigePar": "SONDE vec",
+     "corrigeLe": "2026-10-30T10:00:00.000Z",
+     "ocrLe": "2026-10-30T10:00:00.000Z"
+    }
+   },
+   {
+    "nom": "le même texte sur la même version : rejeu, aucune seconde version",
+    "role": "admin",
+    "sha": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+    "texte": "  Ordonnance corrigée, paracétamol 1 g ",
+    "corrigeDe": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance lue par machine, paracétamol 500 mg",
+      "texte": "ordonnance lue par machine paracetamol 500 mg",
+      "nbMots": 7,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     },
+     {
+      "id": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance corrigée, paracétamol 1 g",
+      "brutTronque": false,
+      "texte": "ordonnance corrigee paracetamol",
+      "motsTronques": false,
+      "nbMots": 3,
+      "texteSource": "correction",
+      "corrigeDe": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "remplace": [],
+      "corrigePar": "SONDE vec",
+      "corrigeLe": "2026-10-30T10:00:00.000Z",
+      "ocrLe": "2026-10-30T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "nouvelle": false,
+    "id": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16"
+   },
+   {
+    "nom": "une seconde correction remplace la première",
+    "role": "admin",
+    "sha": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+    "texte": "Ordonnance corrigée deux fois, paracétamol 1 g",
+    "corrigeDe": null,
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance lue par machine, paracétamol 500 mg",
+      "texte": "ordonnance lue par machine paracetamol 500 mg",
+      "nbMots": 7,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     },
+     {
+      "id": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance corrigée, paracétamol 1 g",
+      "brutTronque": false,
+      "texte": "ordonnance corrigee paracetamol",
+      "motsTronques": false,
+      "nbMots": 3,
+      "texteSource": "correction",
+      "corrigeDe": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "remplace": [],
+      "corrigePar": "SONDE vec",
+      "corrigeLe": "2026-10-30T10:00:00.000Z",
+      "ocrLe": "2026-10-30T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "nouvelle": true,
+    "id": "OCC-c1c1c1c1c1c1c1c1-14289a132e14",
+    "fiche": {
+     "id": "OCC-c1c1c1c1c1c1c1c1-14289a132e14",
+     "texteBrut": "Ordonnance corrigée deux fois, paracétamol 1 g",
+     "texte": "ordonnance corrigee deux fois paracetamol",
+     "nbMots": 5,
+     "texteSource": "correction",
+     "corrigeDe": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+     "remplace": [
+      "OCC-c1c1c1c1c1c1c1c1-48e90a815b16"
+     ],
+     "corrigePar": "SONDE vec",
+     "corrigeLe": "2026-10-30T10:00:00.000Z",
+     "ocrLe": "2026-10-30T10:00:00.000Z"
+    }
+   },
+   {
+    "nom": "texte vide",
+    "role": "admin",
+    "sha": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+    "texte": "  \n ",
+    "corrigeDe": null,
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance lue par machine, paracétamol 500 mg",
+      "texte": "ordonnance lue par machine paracetamol 500 mg",
+      "nbMots": 7,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     },
+     {
+      "id": "OCC-c1c1c1c1c1c1c1c1-14289a132e14",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance corrigée deux fois, paracétamol 1 g",
+      "brutTronque": false,
+      "texte": "ordonnance corrigee deux fois paracetamol",
+      "motsTronques": false,
+      "nbMots": 5,
+      "texteSource": "correction",
+      "corrigeDe": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+      "remplace": [
+       "OCC-c1c1c1c1c1c1c1c1-48e90a815b16"
+      ],
+      "corrigePar": "SONDE vec",
+      "corrigeLe": "2026-10-30T10:00:00.000Z",
+      "ocrLe": "2026-10-30T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     },
+     {
+      "id": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance corrigée, paracétamol 1 g",
+      "brutTronque": false,
+      "texte": "ordonnance corrigee paracetamol",
+      "motsTronques": false,
+      "nbMots": 3,
+      "texteSource": "correction",
+      "corrigeDe": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "remplace": [],
+      "corrigePar": "SONDE vec",
+      "corrigeLe": "2026-10-30T10:00:00.000Z",
+      "ocrLe": "2026-10-30T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": false,
+    "code": "CORRECTION_TEXTE_VIDE",
+    "motif": "le texte corrigé est vide",
+    "nouvelle": null,
+    "id": null
+   },
+   {
+    "nom": "texte identique à la version dont la correction part",
+    "role": "admin",
+    "sha": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+    "texte": "Ordonnance corrigée deux fois,   paracétamol 1 g ",
+    "corrigeDe": null,
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance lue par machine, paracétamol 500 mg",
+      "texte": "ordonnance lue par machine paracetamol 500 mg",
+      "nbMots": 7,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     },
+     {
+      "id": "OCC-c1c1c1c1c1c1c1c1-14289a132e14",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance corrigée deux fois, paracétamol 1 g",
+      "brutTronque": false,
+      "texte": "ordonnance corrigee deux fois paracetamol",
+      "motsTronques": false,
+      "nbMots": 5,
+      "texteSource": "correction",
+      "corrigeDe": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+      "remplace": [
+       "OCC-c1c1c1c1c1c1c1c1-48e90a815b16"
+      ],
+      "corrigePar": "SONDE vec",
+      "corrigeLe": "2026-10-30T10:00:00.000Z",
+      "ocrLe": "2026-10-30T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     },
+     {
+      "id": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance corrigée, paracétamol 1 g",
+      "brutTronque": false,
+      "texte": "ordonnance corrigee paracetamol",
+      "motsTronques": false,
+      "nbMots": 3,
+      "texteSource": "correction",
+      "corrigeDe": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "remplace": [],
+      "corrigePar": "SONDE vec",
+      "corrigeLe": "2026-10-30T10:00:00.000Z",
+      "ocrLe": "2026-10-30T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": false,
+    "code": "CORRECTION_IDENTIQUE",
+    "motif": "le texte est identique à celui de la version dont la correction part",
+    "nouvelle": null,
+    "id": null
+   },
+   {
+    "nom": "version de départ inconnue",
+    "role": "admin",
+    "sha": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+    "texte": "Un autre texte",
+    "corrigeDe": "OCR-inconnu",
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance lue par machine, paracétamol 500 mg",
+      "texte": "ordonnance lue par machine paracetamol 500 mg",
+      "nbMots": 7,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     },
+     {
+      "id": "OCC-c1c1c1c1c1c1c1c1-14289a132e14",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance corrigée deux fois, paracétamol 1 g",
+      "brutTronque": false,
+      "texte": "ordonnance corrigee deux fois paracetamol",
+      "motsTronques": false,
+      "nbMots": 5,
+      "texteSource": "correction",
+      "corrigeDe": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+      "remplace": [
+       "OCC-c1c1c1c1c1c1c1c1-48e90a815b16"
+      ],
+      "corrigePar": "SONDE vec",
+      "corrigeLe": "2026-10-30T10:00:00.000Z",
+      "ocrLe": "2026-10-30T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     },
+     {
+      "id": "OCC-c1c1c1c1c1c1c1c1-48e90a815b16",
+      "statut": "actif",
+      "sha256": "c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+      "texteBrut": "Ordonnance corrigée, paracétamol 1 g",
+      "brutTronque": false,
+      "texte": "ordonnance corrigee paracetamol",
+      "motsTronques": false,
+      "nbMots": 3,
+      "texteSource": "correction",
+      "corrigeDe": "OCR-c1c1c1c1c1c1c1c1-1e67be41372a",
+      "remplace": [],
+      "corrigePar": "SONDE vec",
+      "corrigeLe": "2026-10-30T10:00:00.000Z",
+      "ocrLe": "2026-10-30T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": false,
+    "code": "CORRECTION_SANS_BASE",
+    "motif": "la version « OCR-inconnu » n’est pas une lecture de ce scan",
+    "nouvelle": null,
+    "id": null
+   },
+   {
+    "nom": "scan sans aucune lecture",
+    "role": "admin",
+    "sha": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "texte": "Un texte",
+    "corrigeDe": null,
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-eeee000000000000-111111111111",
+      "statut": "actif",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "texte": "motOCR-eeee000000000000-111111111111",
+      "texteBrut": "x",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "nbMots": 3,
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     },
+     {
+      "id": "OCR-eeee000000000000-222222222222",
+      "statut": "actif",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "texte": "motOCR-eeee000000000000-222222222222",
+      "texteBrut": "x",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "nbMots": 0,
+      "ocrLe": "2026-10-02T10:00:00.000Z",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "nouvelle": true,
+    "id": "OCC-eeeeeeeeeeeeeeee-21cc4ca4984b",
+    "fiche": {
+     "id": "OCC-eeeeeeeeeeeeeeee-21cc4ca4984b",
+     "texteBrut": "Un texte",
+     "texte": "un texte",
+     "nbMots": 2,
+     "texteSource": "correction",
+     "corrigeDe": "OCR-eeee000000000000-111111111111",
+     "remplace": [],
+     "corrigePar": "SONDE vec",
+     "corrigeLe": "2026-10-30T10:00:00.000Z",
+     "ocrLe": "2026-10-30T10:00:00.000Z"
+    }
+   },
+   {
+    "nom": "couche texte native : elle prime, rien à corriger",
+    "role": "admin",
+    "sha": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2",
+    "texte": "Un texte",
+    "corrigeDe": null,
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": true,
+    "natif": true,
+    "versionsAvant": [
+     {
+      "id": "OCR-c2c2c2c2c2c2c2c2-687d63d3bdaf",
+      "statut": "actif",
+      "sha256": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2",
+      "texteBrut": "Facture lue par machine",
+      "texte": "facture lue par machine",
+      "nbMots": 4,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": false,
+    "code": "TEXTE_NATIF",
+    "motif": "ce fichier porte déjà une couche texte : elle prime, il n’y a rien à corriger",
+    "nouvelle": null,
+    "id": null
+   },
+   {
+    "nom": "profil qui n’écrit pas sur l’écran de la pièce",
+    "role": "admin",
+    "sha": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2",
+    "texte": "Un texte",
+    "corrigeDe": null,
+    "peutDeposer": false,
+    "zoneLue": true,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c2c2c2c2c2c2c2c2-687d63d3bdaf",
+      "statut": "actif",
+      "sha256": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2",
+      "texteBrut": "Facture lue par machine",
+      "texte": "facture lue par machine",
+      "nbMots": 4,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": false,
+    "code": "CORRECTION_RESERVEE",
+    "motif": "votre profil n’écrit pas sur l’écran de cette pièce (ou la pièce est d’une zone qu’il ne lit pas) : il ne peut pas corriger son texte",
+    "nouvelle": null,
+    "id": null
+   },
+   {
+    "nom": "rôle sans le geste réservé (comptable)",
+    "role": "comptable",
+    "sha": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2",
+    "texte": "Un texte",
+    "corrigeDe": null,
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": false,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c2c2c2c2c2c2c2c2-687d63d3bdaf",
+      "statut": "actif",
+      "sha256": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2",
+      "texteBrut": "Facture lue par machine",
+      "texte": "facture lue par machine",
+      "nbMots": 4,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": false,
+    "code": "CORRECTION_RESERVEE",
+    "motif": "le droit « Corriger le texte lu par machine » n’est pas accordé à votre rôle",
+    "nouvelle": null,
+    "id": null
+   },
+   {
+    "nom": "l’accueil écrit sur l’écran des documents mais ne lit pas la zone 2",
+    "role": "reception",
+    "sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "texte": "Un texte",
+    "corrigeDe": null,
+    "peutDeposer": true,
+    "zoneLue": false,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c3c3c3c3c3c3c3c3-b6dcf7ff53a6",
+      "statut": "actif",
+      "sha256": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "texteBrut": "Compte rendu lu par machine, hyperglycémie",
+      "texte": "compte rendu lu par machine hyperglycemie",
+      "nbMots": 6,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": false,
+    "code": "CORRECTION_RESERVEE",
+    "motif": "cette pièce médicale est d’une zone que votre profil ne lit pas (RG-13)",
+    "nouvelle": null,
+    "id": null
+   },
+   {
+    "nom": "l’anesthésiste lit la zone 2 mais n’écrit pas sur l’écran",
+    "role": "anesthesiste",
+    "sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "texte": "Un texte",
+    "corrigeDe": null,
+    "peutDeposer": false,
+    "zoneLue": true,
+    "geste": false,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c3c3c3c3c3c3c3c3-b6dcf7ff53a6",
+      "statut": "actif",
+      "sha256": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "texteBrut": "Compte rendu lu par machine, hyperglycémie",
+      "texte": "compte rendu lu par machine hyperglycemie",
+      "nbMots": 6,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": false,
+    "code": "CORRECTION_RESERVEE",
+    "motif": "votre profil n’écrit pas sur l’écran de cette pièce (ou la pièce est d’une zone qu’il ne lit pas) : il ne peut pas corriger son texte",
+    "nouvelle": null,
+    "id": null
+   },
+   {
+    "nom": "le médecin corrige le compte rendu de zone 2",
+    "role": "medecin",
+    "sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "texte": "Compte rendu corrigé, hyperglycémie sévère",
+    "corrigeDe": null,
+    "peutDeposer": true,
+    "zoneLue": true,
+    "geste": true,
+    "natif": false,
+    "versionsAvant": [
+     {
+      "id": "OCR-c3c3c3c3c3c3c3c3-b6dcf7ff53a6",
+      "statut": "actif",
+      "sha256": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "texteBrut": "Compte rendu lu par machine, hyperglycémie",
+      "texte": "compte rendu lu par machine hyperglycemie",
+      "nbMots": 6,
+      "texteSource": "ocr",
+      "moteur": "factice",
+      "moteurVersion": "0.1",
+      "langue": "fra",
+      "ocrLe": "2026-10-01T10:00:00.000Z",
+      "ocrPar": "machine",
+      "_creePar": "SONDE vec",
+      "_creeLe": "2026-10-30T10:00:00.000Z"
+     }
+    ],
+    "ok": true,
+    "code": null,
+    "motif": null,
+    "nouvelle": true,
+    "id": "OCC-c3c3c3c3c3c3c3c3-b90ff15dbd06",
+    "fiche": {
+     "id": "OCC-c3c3c3c3c3c3c3c3-b90ff15dbd06",
+     "texteBrut": "Compte rendu corrigé, hyperglycémie sévère",
+     "texte": "compte rendu corrige hyperglycemie severe",
+     "nbMots": 5,
+     "texteSource": "correction",
+     "corrigeDe": "OCR-c3c3c3c3c3c3c3c3-b6dcf7ff53a6",
+     "remplace": [],
+     "corrigePar": "SONDE vec",
+     "corrigeLe": "2026-10-30T10:00:00.000Z",
+     "ocrLe": "2026-10-30T10:00:00.000Z"
+    }
+   }
+  ],
+  "droit": {
+   "admin": true,
+   "direction": true,
+   "dm": true,
+   "da": true,
+   "medecin": true,
+   "infirmier": true,
+   "pharmacien": false,
+   "laborantin": true,
+   "stock": false,
+   "caissier": false,
+   "comptable": false,
+   "rh": false,
+   "reception": true,
+   "agentadmin": true,
+   "ambulancier": true,
+   "aide_soignant": false,
+   "echographiste": false,
+   "surveillant": false,
+   "assistant_comptable": true,
+   "chirurgien": true,
+   "anesthesiste": false,
+   "aide_comptable": false
+  }
+ },
  "texteRecherche": [
   {
    "natif": false,

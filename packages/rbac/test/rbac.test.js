@@ -169,3 +169,16 @@ test('une page de jeu `imp-*` est visible de qui détient le droit VOIR du jeu (
     assert.equal(!!droit(r.id, 'imp-accueil'), un || imp.jeux.some((x) => di(r.id, x.id)[0] === 1), r.id + ' imp-accueil');
   }
 });
+
+test('lot C : le geste « corriger le texte lu » est donné D\'ORIGINE aux seuls rôles qui écrivent sur l\'écran d\'une pièce (M13 courriers, M1 documents du patient) : liste dérivée de la matrice, jamais écrite deux fois ; ni pharmacien, ni comptable, ni caissier ; aucun rôle archivé', () => {
+  const g = rbac.gestes.jeux.find((x) => x.id === 'corriger_texte_ocr');
+  assert.ok(g, 'le geste est déclaré');
+  assert.deepEqual(g.defautSiEcritSur, ['M13', 'M1']);
+  const attendus = rbac.roles.filter((r) => !r.archive && g.defautSiEcritSur.some((m) => rbac.matriceModules[r.id] && rbac.matriceModules[r.id][m] && rbac.matriceModules[r.id][m].editer)).map((r) => r.id).sort();
+  const detenus = Object.keys(rbac.gestes.parRole).filter((r) => rbac.gestes.parRole[r].corriger_texte_ocr === 1).sort();
+  assert.deepEqual(detenus, attendus, 'la liste d\'origine du manifeste = les rôles qui écrivent M13 ou M1');
+  assert.deepEqual([...g.rolesDefaut].sort(), attendus);
+  for (const r of ['pharmacien', 'comptable', 'caissier', 'rh', 'stock', 'aide_soignant']) assert.equal(rbac.gestes.parRole[r].corriger_texte_ocr, 0, r);
+  for (const r of rbac.roles.filter((x) => x.archive)) assert.equal(rbac.gestes.parRole[r.id].corriger_texte_ocr, 0, r.id);
+  for (const r of ['admin', 'da', 'medecin', 'infirmier', 'reception', 'agentadmin']) assert.equal(rbac.gestes.parRole[r].corriger_texte_ocr, 1, r);
+});

@@ -95,6 +95,85 @@ const FIXT = path.join(REPO, 'apps/poste/test/fixtures/fichiers');
       return cas;
     });
 
+    /* --- 4b. LOT C : la CORRECTION SIGNÉE du texte lu (module réel, magasin réel, horloge figée) : identifiants, version courante et conflit (grille), états, refus nommés, fiche écrite ------------------- */
+    out.corrections = await page.evaluate(() => {
+      const O = SIGH.ocr, S = SIGH.store, N = SIGH.nav;
+      const col = S.collection('lecturesOcr', { module: 'M13', entite: 'lecture OCR', prefix: 'OCR' });
+      const res = { geste: O.GESTE_CORRECTION, ids: [], courant: [], corriger: [], droit: {} };
+      const sha0 = 'a'.repeat(64);
+      [[sha0, 'OCR-x', 'Texte corrigé'], [sha0, 'OCR-x', '  Texte   corrigé \n'], [sha0, 'OCR-y', 'Texte corrigé'], [sha0, 'OCR-x', 'Texte corrigé autrement'], ['b'.repeat(64), 'OCR-x', 'Texte corrigé']]
+        .forEach((c) => res.ids.push({ sha: c[0], corrigeDe: c[1], texte: c[2], id: O.idCorrection(c[0], c[1], c[2]) }));
+      /* La grille de la version courante, des têtes, du conflit et de l'état : toutes les listes sont données DANS L'ORDRE QUE LE MODULE TROUVE (date de lecture, puis identifiant). */
+      const M = (id, le, nb) => ({ id: id, texteSource: 'ocr', nbMots: nb === undefined ? 4 : nb, ocrLe: le, texte: 'mot' + id, texteBrut: 'brut ' + id });
+      const C = (id, le, remplace, par) => ({ id: id, texteSource: 'correction', nbMots: 5, ocrLe: le, corrigeLe: le, corrigePar: par || 'Agent A', corrigeDe: 'M1', remplace: remplace || [], texte: 'mot' + id, texteBrut: 'brut ' + id });
+      const grilles = {
+        'machine seule': [M('M1', '2026-10-01T10:00:00.000Z')],
+        'deux machines, la plus récente courante': [M('M1', '2026-10-01T10:00:00.000Z'), M('M2', '2026-10-02T10:00:00.000Z')],
+        'une correction': [M('M1', '2026-10-01T10:00:00.000Z'), C('C1', '2026-10-02T10:00:00.000Z')],
+        'une machine plus récente que la correction : la correction reste courante': [M('M1', '2026-10-01T10:00:00.000Z'), C('C1', '2026-10-02T10:00:00.000Z'), M('M2', '2026-10-03T10:00:00.000Z')],
+        'une correction qui remplace la première, partie de la nouvelle machine': [M('M1', '2026-10-01T10:00:00.000Z'), C('C1', '2026-10-02T10:00:00.000Z'), M('M2', '2026-10-03T10:00:00.000Z'), C('C2', '2026-10-04T10:00:00.000Z', ['C1'], 'Agent B')],
+        'deux corrections concurrentes : conflit, la plus récente est courante': [M('M1', '2026-10-01T10:00:00.000Z'), C('C1', '2026-10-02T10:00:00.000Z', [], 'Agent A'), C('C2', '2026-10-02T11:00:00.000Z', [], 'Agent B')],
+        'deux corrections au même instant : l’identifiant départage': [M('M1', '2026-10-01T10:00:00.000Z'), C('C1', '2026-10-02T10:00:00.000Z', [], 'Agent A'), C('C2', '2026-10-02T10:00:00.000Z', [], 'Agent B')],
+        'une correction ultérieure remplace les deux : plus de conflit': [M('M1', '2026-10-01T10:00:00.000Z'), C('C1', '2026-10-02T10:00:00.000Z', [], 'Agent A'), C('C2', '2026-10-02T11:00:00.000Z', [], 'Agent B'), C('C3', '2026-10-03T10:00:00.000Z', ['C1', 'C2'], 'Agent C')],
+        'une lecture machine vide ne compte pas': [M('M1', '2026-10-01T10:00:00.000Z'), M('M2', '2026-10-02T10:00:00.000Z', 0)],
+      };
+      Object.keys(grilles).forEach((nom) => {
+        const vs = grilles[nom].slice().sort((a, b) => (a.ocrLe < b.ocrLe ? -1 : (a.ocrLe > b.ocrLe ? 1 : (a.id < b.id ? -1 : 1))));
+        const cur = O.courantDe(vs);
+        res.courant.push({ nom: nom, versions: grilles[nom], courant: cur ? cur.id : null, tetes: O.tetesDe(vs).map((x) => x.id),
+          etats: [{ file: null }, { file: { etat: 'en_cours' } }, { file: { etat: 'en_attente' } }, { file: { etat: 'echec', raison: 'le moteur a échoué' } }].map((f) => {
+            const e = O.etatIndexation({ natif: false, versions: grilles[nom], file: f.file, moteurInstalle: true, actif: true, moteurActif: true });
+            return { file: f.file, code: e.code, court: e.court, libelle: e.libelle, source: e.source, marque: e.marque, disponible: e.disponible, conflit: e.conflit };
+          }) });
+      });
+      /* La correction de bout en bout : droits, refus nommés, fiche écrite. Chaque cas part d'un scan LU par machine (une version) ; `suite` rejoue sur le même scan. */
+      const sess = (role) => S.setSession({ role: role, nom: 'SONDE vec', nomComplet: 'SONDE vec', identifiant: 'vec.' + role, fonction: role });
+      let n = 0;
+      const scan = (machineTexte) => {
+        n++;
+        const sha = ('c' + n).padStart(2, '0').repeat(32).slice(0, 64);
+        const id = O.idLecture(sha, 'factice', '0.1', 'fra', O.motsNormalises(machineTexte).join(' '));
+        col.insert({ id: id, sha256: sha, texteBrut: machineTexte, texte: O.motsNormalises(machineTexte).join(' '), nbMots: O.motsNormalises(machineTexte).length, texteSource: 'ocr', moteur: 'factice', moteurVersion: '0.1', langue: 'fra', ocrLe: '2026-10-01T10:00:00.000Z', ocrPar: 'machine' });
+        return { sha: sha, machine: id };
+      };
+      const essai = (nom, role, f, texte, ctx, avecNatif) => {
+        sess(role);
+        const avant = JSON.parse(JSON.stringify(O.versionsDe(f.sha)));
+        const fichier = { sha256: f.sha }; if (avecNatif) fichier.texteIndexe = true;
+        const zoneLue = ctx.famille !== 'patient' || SIGH.parcours.peutVoirDocument(ctx.type).autorise;
+        let r; try { r = O.corriger(fichier, texte, ctx); } catch (e) { throw new Error(nom + ' : ' + e.stack); }
+        const apres = O.versionsDe(f.sha);
+        const nouvelle = apres.filter((x) => !avant.some((y) => y.id === x.id))[0];
+        const cas = { nom: nom, role: role, sha: f.sha, texte: texte, corrigeDe: ctx.corrigeDe || null, peutDeposer: !!ctx.peutDeposer, zoneLue: zoneLue, geste: N.droitGeste(role, O.GESTE_CORRECTION), natif: !!avecNatif,
+          versionsAvant: avant, ok: !!r.ok, code: r.code || null, motif: r.motif || null, nouvelle: r.ok ? r.nouvelle : null, id: r.ok ? r.id : null };
+        if (nouvelle) cas.fiche = { id: nouvelle.id, texteBrut: nouvelle.texteBrut, texte: nouvelle.texte, nbMots: nouvelle.nbMots, texteSource: nouvelle.texteSource, corrigeDe: nouvelle.corrigeDe, remplace: nouvelle.remplace, corrigePar: nouvelle.corrigePar, corrigeLe: nouvelle.corrigeLe, ocrLe: nouvelle.ocrLe };
+        res.corriger.push(cas);
+        return r;
+      };
+      const courrier = { peutDeposer: true, famille: 'courrier', type: null };
+      const cr = { peutDeposer: true, famille: 'patient', type: 'Compte rendu médical' };
+      const a = scan('Ordonnance lue par machine, paracétamol 500 mg');
+      essai('l’administrateur corrige un courrier : une version signée', 'admin', a, 'Ordonnance corrigée, paracétamol 1 g', courrier);
+      essai('le même texte sur la même version : rejeu, aucune seconde version', 'admin', a, '  Ordonnance corrigée, paracétamol 1 g ', Object.assign({ corrigeDe: a.machine }, courrier));
+      essai('une seconde correction remplace la première', 'admin', a, 'Ordonnance corrigée deux fois, paracétamol 1 g', courrier);
+      essai('texte vide', 'admin', a, '  \n ', courrier);
+      essai('texte identique à la version dont la correction part', 'admin', a, 'Ordonnance corrigée deux fois,   paracétamol 1 g ', courrier);
+      essai('version de départ inconnue', 'admin', a, 'Un autre texte', Object.assign({ corrigeDe: 'OCR-inconnu' }, courrier));
+      essai('scan sans aucune lecture', 'admin', { sha: 'e'.repeat(64) }, 'Un texte', courrier);
+      const b = scan('Facture lue par machine');
+      essai('couche texte native : elle prime, rien à corriger', 'admin', b, 'Un texte', courrier, true);
+      essai('profil qui n’écrit pas sur l’écran de la pièce', 'admin', b, 'Un texte', { peutDeposer: false, famille: 'courrier', type: null });
+      essai('rôle sans le geste réservé (comptable)', 'comptable', b, 'Un texte', courrier);
+      const z = scan('Compte rendu lu par machine, hyperglycémie');
+      essai('l’accueil écrit sur l’écran des documents mais ne lit pas la zone 2', 'reception', z, 'Un texte', cr);
+      essai('l’anesthésiste lit la zone 2 mais n’écrit pas sur l’écran', 'anesthesiste', z, 'Un texte', { peutDeposer: false, famille: 'patient', type: 'Compte rendu médical' });
+      essai('le médecin corrige le compte rendu de zone 2', 'medecin', z, 'Compte rendu corrigé, hyperglycémie sévère', cr);
+      /* Le droit d'origine, rôle par rôle, tel que le manifeste le donne. */
+      Object.keys(N.ROLES).forEach((r) => { res.droit[r] = N.droitGeste(r, O.GESTE_CORRECTION); });
+      S.setSession({ role: 'admin', nom: 'SONDE vec', nomComplet: 'SONDE vec', identifiant: 'vec.admin', fonction: 'admin' });
+      return res;
+    });
+
     /* --- 5. texte lu pour la recherche : la couche native prime, la zone 2 reste de zone 2 --------------------------------------------------- */
     out.texteRecherche = await page.evaluate(() => {
       const reg = SIGH.store.collection('fichiers', { module: 'M13', entite: 'fichier', prefix: 'FIC' });
@@ -294,7 +373,9 @@ const FIXT = path.join(REPO, 'apps/poste/test/fixtures/fichiers');
         F.rattacher(docs, docs.get(fiche.id), 'patient', rep, nom, { module: 'M1', entite: 'document' });
         moteur(cfg);
         O.demander(rep.sha256, { famille: 'patient', type: 'Pièce d’identité' });
-        const t = await O.traiterSuivant();
+        /* Les lignes de file fictives des sections précédentes (empreintes sans fichier) sont écartées une à une (FICHIER_ABSENT) avant d'arriver au scan de ce cas. */
+        let t = await O.traiterSuivant();
+        for (let i = 0; i < 40 && t.ecarte && !t.fait; i++) t = await O.traiterSuivant();
         const f = reg.get('FIC-' + rep.sha256.slice(0, 16));
         const vs = O.versionsDe(rep.sha256).map((v) => { const c = JSON.parse(JSON.stringify(v)); delete c.ocrLe; delete c.dureeMs; delete c.ocrPar; delete c.statut; delete c.sha256; delete c.id; delete c._modifiePar; delete c._modifieLe; delete c._creePar; delete c._creeLe; return Object.assign({ id: v.id.slice(-12) }, c); });
         const o = f.ocr ? { etat: f.ocr.etat, code: f.ocr.code, raison: f.ocr.raison, geste: f.ocr.geste } : null;
@@ -318,6 +399,7 @@ const FIXT = path.join(REPO, 'apps/poste/test/fixtures/fichiers');
       for (const d of defs) { const r = await lire(d[1], d[2]); cas.push(Object.assign({ nom: d[0], moteur: { texte: d[2].texte, confiance: d[2].confiance === undefined ? 0.9 : d[2].confiance, refus: d[2].refus || null, jamais: !!d[2].jamais, langues: d[2].langues || ['fra'], formats: d[2].formats || ['png', 'jpeg', 'webp'], delaiMs: d[2].delaiMs || 5000 } }, r)); }
       /* La même lecture rejouée avec le même moteur et le même texte : la MÊME version (identifiant déterministe). */
       const a = await lire('scan.png', { texte: 'Texte identique rejoué' });
+      if (!a.id) throw new Error('la lecture rejouée n’a produit aucune version');
       const idAvant = a.id, nAvant = a.versions.length;
       S.setReglage('ocr', { actif: true, moteur: 'factice', langue: 'fra', delaiMs: 5000 });
       O.relancer({ sha256: a.sha }, { peutDeposer: true, famille: 'patient', type: 'Pièce d’identité' });
