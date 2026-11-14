@@ -13,6 +13,7 @@
 // Le lot U a branché `affichage.planDuSite` (`src/acces/acc_plan_du_site.dart`, lu par les pages d'erreur, la commande des paramètres et l'adresse du plan du site).
 // Aucune de ces définitions n'est envoyée au téléphone (`mobile: false`) : la liste blanche est vide tant qu'un lot ne démontre pas le besoin (RG-13).
 
+import '../comptabilite/cpc_circuit.dart';
 import '../fichiers/ocr.dart' show ocrCleActif, ocrCleMoteur, ocrCleLangue, ocrCleDelai, ocrLangueDefaut, ocrDelaiDefautMs;
 import '../sauvegarde/sauvegarde_horssite.dart';
 import 'parametres.dart';
@@ -333,6 +334,65 @@ const List<DefinitionParametre> definitionsParametres = [
     branche: true,
     appliquePar: 'Lot 5 (sauvegarde hors site)',
   ),
+  // Lot CLO (14/11/2026, PRD M12 clôture annuelle, réponses de la Direction du 11/11/2026 Q1 et Q2) : le CIRCUIT de la clôture annuelle est un réglage de BRANCHE posé à la poste mère, versionné par
+  // date, reçu des fileuls, JAMAIS envoyé à un téléphone (`mobile: false`, RG-13). Chaque liste est un texte d'identifiants de rôle séparés par des virgules ; les défauts SEMÉS sont ceux de
+  // la maquette (`D.REGLAGES_CLOTURE_SEMENCE`) : aucun nom de rôle n'est lu ailleurs que dans ce registre. Le droit de les régler est le geste réservé `regler_circuit_cloture` de la fiche RBAC
+  // (administrateur et Directrice Administrative d'origine, proposition à valider), vérifié par `cpcControleReglageCircuit`.
+  DefinitionParametre(
+    cle: cpcCleDemarrer,
+    famille: 'exercice',
+    type: TypeParametre.texte,
+    defaut: 'comptable,da,admin',
+    libelle: cpcLibelleDemarrer,
+    aide: 'Identifiants de rôle séparés par des virgules. Le droit d\'écrire sur l\'écran de la clôture reste exigé en plus.',
+    source: 'Valeur d\'avant le lot CLO (liste écrite dans le moteur), reprise telle quelle',
+    branche: true,
+    appliquePar: 'Lot CLO C1 (circuit de clôture)',
+  ),
+  DefinitionParametre(
+    cle: cpcCleInventaire,
+    famille: 'exercice',
+    type: TypeParametre.texte,
+    defaut: 'comptable,admin',
+    libelle: cpcLibelleInventaire,
+    aide: 'Les rôles dont la saisie manuelle est acceptée dans un exercice en clôture ; les modules, eux, n\'y écrivent plus.',
+    source: 'Valeur d\'avant le lot CLO (liste écrite dans le moteur), reprise telle quelle',
+    branche: true,
+    appliquePar: 'Lot CLO C1 (circuit de clôture)',
+  ),
+  DefinitionParametre(
+    cle: cpcCleCloturer,
+    famille: 'exercice',
+    type: TypeParametre.texte,
+    defaut: 'da,direction,admin,comptable',
+    libelle: cpcLibelleCloturer,
+    aide: 'Jamais la personne qui a démarré la clôture : signer n\'est pas saisir.',
+    source: 'Réponse de la Direction du 11/11/2026 (Q2) : la Directrice Administrative, la Direction, l\'administrateur ou le comptable',
+    branche: true,
+    appliquePar: 'Lot CLO C1 (circuit de clôture)',
+  ),
+  DefinitionParametre(
+    cle: cpcCleRouvrir,
+    famille: 'exercice',
+    type: TypeParametre.texte,
+    defaut: 'comptable,admin',
+    libelle: cpcLibelleRouvrir,
+    aide: 'Avec un motif d\'au moins dix caractères (contre-passation des pièces de clôture).',
+    source: 'Valeur d\'avant le lot CLO (liste écrite dans le moteur), reprise telle quelle',
+    branche: true,
+    appliquePar: 'Lot CLO C1 (circuit de clôture)',
+  ),
+  DefinitionParametre(
+    cle: cpcCleMoisOuverture,
+    famille: 'exercice',
+    type: TypeParametre.entier,
+    defaut: 12,
+    libelle: cpcLibelleMoisOuverture,
+    aide: 'Entier de 1 à 12. À partir de ce mois, l\'exercice de l\'année suivante est ouvert aussi ; aucune pièce n\'est écrite.',
+    source: 'Texte de spécification de la Direction du 11/11/2026 : l\'exercice N+1 s\'ouvre en décembre',
+    branche: true,
+    appliquePar: 'Lot CLO C4 (ouverture des exercices)',
+  ),
 ];
 
 /// Le libellé d'une famille de paramètres, pour les onglets de l'écran des paramètres. Une famille absente de la table s'affiche sous son identifiant.
@@ -345,6 +405,7 @@ const Map<String, String> libellesFamillesParametres = {
   'affichage': 'Affichage',
   'ocr': 'Lecture des scans (OCR)',
   'horssite': 'Sauvegarde hors site',
+  'exercice': 'Clôture annuelle',
 };
 
 /// La définition d'une clé, ou `null`.

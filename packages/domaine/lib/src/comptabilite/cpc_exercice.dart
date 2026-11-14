@@ -20,6 +20,7 @@ import '../format/format_fr.dart';
 import '../format/js.dart';
 import 'cpa_ecritures.dart' show cpaAnnee;
 import 'cpa_referentiels.dart';
+import 'cpc_circuit.dart';
 import 'cpc_liasse.dart';
 
 double _n(Object? v) => nombreOuZero(v);
@@ -28,9 +29,7 @@ double _som(Iterable<CpaFiche> l, String k) => l.fold<double>(0, (a, x) => a + _
 /// Les comptes de tiers : les seuls LETTRABLES, et les seuls repris ligne à ligne aux à-nouveaux.
 const List<String> cpcLettrables = ['40', '41', '42', '43', '44', '47'];
 
-/// Les rôles qui valident une clôture, et ceux qui la demandent (en plus du droit d'édition de M12).
-const List<String> cpcRolesValidation = ['da', 'direction', 'admin'];
-const List<String> cpcRolesDemande = ['comptable', 'da', 'admin'];
+// Qui démarre, qui passe l'inventaire, qui clôture et qui rouvre : le CIRCUIT DE CLÔTURE ([CpcCircuit], `cpc_circuit.dart`), lu des paramètres, jamais écrit ici.
 
 Map<String, Object?>? _liasse;
 Map<String, Object?> get cpcLiasse => _liasse ??= (jsonDecode(cpcLiasseJson) as Map).cast<String, Object?>();
@@ -113,9 +112,10 @@ String? cpcGardeBudgets(Iterable<CpaFiche> exercices, Object? exercice) {
 
 /// La GARDE posée sur la collection `ecritures` : le motif du refus (nommé) ou `null`.
 ///  * exercice CLÔTURÉ : lecture seule, y compris pour le comptable (seule la réouverture permet de corriger) ;
-///  * exercice EN CLÔTURE : les modules n'écrivent plus ; seul le comptable (ou l'administrateur) y passe ses écritures d'inventaire, en SAISIE MANUELLE ;
+///  * exercice EN CLÔTURE : les modules n'écrivent plus ; seuls les rôles de la liste lue du circuit ([CpcCircuit.inventaire]) y passent leurs écritures d'inventaire, en SAISIE MANUELLE ;
 ///  * les pièces de la clôture elle-même (CL, AN, contre-passations : `origineCloture`) passent à l'INSERTION, jamais à la modification ni à l'archivage.
-String? cpcGardeEcritures(Iterable<CpaFiche> exercices, Object? date, {String op = 'inserer', Object? origineCloture, Object? origine, String role = ''}) {
+String? cpcGardeEcritures(Iterable<CpaFiche> exercices, Object? date,
+    {String op = 'inserer', Object? origineCloture, Object? origine, String role = '', CpcCircuit circuit = const CpcCircuit(demarrer: [], inventaire: [], cloturer: [], rouvrir: [])}) {
   final a = cpaAnnee(date);
   if (a == null) return null;
   if (origineCloture != null && '$origineCloture'.isNotEmpty && op == 'inserer') return null;
@@ -127,8 +127,8 @@ String? cpcGardeEcritures(Iterable<CpaFiche> exercices, Object? date, {String op
     return 'Exercice $a clôturé${d != null ? ' le ${dateFR(d)}' : ''} : lecture seule. La correction passe par la réouverture par le comptable (motif obligatoire), ou par une écriture de l’exercice en cours.';
   }
   if (etat == 'en_cloture') {
-    if ('$origine' == 'Saisie manuelle' && (role == 'comptable' || role == 'admin')) return null;
-    return 'Exercice $a en clôture : les modules n’y écrivent plus. Seul le comptable y passe ses écritures d’inventaire (saisie manuelle) ; sinon dater la pièce de l’exercice ouvert.';
+    if ('$origine' == 'Saisie manuelle' && circuit.peutInventaire(role)) return null;
+    return 'Exercice $a en clôture : les modules n’y écrivent plus. Seuls ${circuit.inventaire.isEmpty ? 'les rôles du circuit de clôture (non arrêté)' : circuit.noms(circuit.inventaire)} y passent leurs écritures d’inventaire (saisie manuelle) ; sinon dater la pièce de l’exercice ouvert.';
   }
   return null;
 }
@@ -253,6 +253,112 @@ List<CpaFiche> cpcANouveauxProvisoires(Iterable<CpaFiche> exercices, Iterable<Cp
         ...l,
       }
   ];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// LES SOLDES D'UN COMPTE AU GRAND LIVRE (lot CLO C3, EF-CLO-4) : ouverture et clôture, jamais un zéro inventé (port de `SIGH.exercice.soldesCompte`)
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+/// Les soldes d'ouverture et de clôture d'un compte pour un exercice.
+///
+/// OUVERTURE d'un compte de bilan (classes 1 à 5) : (a) le report ÉCRIT (journal AN, hors contre-passations) quand l'exercice en porte ; (b) sinon le report PROVISOIRE de l'exercice
+/// précédent s'il n'est pas clos (calculé, dit tel) ; (c) sinon l'exercice précédent est clos (ou celui de la liasse) SANS à-nouveau : l'ouverture est INCONNUE (`ouverture == null`),
+/// ce n'est pas zéro ; (d) sans exercice précédent : premier exercice, 0. Un compte de GESTION (6, 7, 8) ne se reporte jamais : ouverture 0. CLÔTURE : ouverture plus mouvements, ou
+/// INCONNUE quand l'ouverture l'est ; dans un exercice clos par le moteur la pièce de clôture CL compte (un compte de gestion y est à zéro).
+class CpcSoldesCompte {
+  const CpcSoldesCompte(
+      {required this.compte,
+      required this.annee,
+      required this.gestion,
+      required this.ouverture,
+      required this.etatOuverture,
+      required this.sourceOuverture,
+      required this.debit,
+      required this.credit,
+      required this.nb,
+      required this.cloture,
+      required this.etatCloture,
+      required this.apresCL});
+  final String compte;
+  final int annee;
+  final bool gestion, apresCL;
+
+  /// `null` : INCONNUE.
+  final double? ouverture, cloture;
+
+  /// `gestion`, `ecrit`, `provisoire`, `inconnue`, `premier`.
+  final String etatOuverture;
+  final String sourceOuverture;
+
+  /// `clos`, `en_cloture`, `courant`, `inconnue`.
+  final String etatCloture;
+  final double debit, credit;
+  final int nb;
+}
+
+/// [actives] : TOUTES les écritures actives (statut quelconque, comme l'écran du grand livre) ; [exercices] : les fiches d'exercice.
+CpcSoldesCompte cpcSoldesGrandLivre(Iterable<CpaFiche> exercices, Iterable<CpaFiche> actives, Object? compte, int annee, {Iterable<CpaFiche> comptesResultat = const []}) {
+  final c = '$compte';
+  final classe = c.isEmpty ? '' : c[0];
+  final gestion = '678'.contains(classe) && classe.isNotEmpty;
+  final x = cpcExercice(exercices, annee), prec = cpcExercice(exercices, annee - 1);
+  final contrePassees = <Object?>{for (final e in actives) if (e['contrePasseDe'] != null) e['contrePasseDe']};
+  final delAnnee = [
+    for (final e in actives)
+      if (cpaAnnee(e['date']) == annee && '${e['compte']}' == c) e
+  ];
+  bool estAN(CpaFiche e) => e['journal'] == 'AN' && e['contrePasseDe'] == null && !contrePassees.contains(e['numero']);
+  final anAnnee = actives.any((e) => cpaAnnee(e['date']) == annee && estAN(e));
+  double somme(Iterable<CpaFiche> l) => l.fold<double>(0, (a, e) => a + _n(e['debit']) - _n(e['credit']));
+  final opening = [for (final e in delAnnee) if (estAN(e)) e];
+  double? ouv;
+  String etat, source;
+  if (gestion) {
+    ouv = 0;
+    etat = 'gestion';
+    source = 'Un compte de gestion ne se reporte jamais : il est soldé par le résultat.';
+  } else if (anAnnee) {
+    ouv = somme(opening);
+    etat = 'ecrit';
+    source = opening.isNotEmpty ? 'À-nouveaux écrits (${opening.first['numero']})' : 'À-nouveaux écrits : ce compte n’y figure pas';
+  } else if (prec != null && prec['etat'] != 'clos' && prec['source'] != 'liasse') {
+    final prov = [
+      for (final l in cpcANouveauxProvisoires(exercices, actives, annee, comptesResultat: comptesResultat))
+        if ('${l['compte']}' == c) l
+    ];
+    ouv = somme(prov);
+    etat = 'provisoire';
+    source = 'À-nouveaux provisoires de ${annee - 1} (calculés, l’exercice n’est pas clos)';
+  } else if (prec != null) {
+    ouv = null;
+    etat = 'inconnue';
+    source = 'L’exercice ${annee - 1} est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro.';
+  } else {
+    ouv = 0;
+    etat = 'premier';
+    source = 'Premier exercice : aucun report.';
+  }
+  final clos = x != null && x['etat'] == 'clos' && x['source'] != 'liasse';
+  final mvts = [
+    for (final e in delAnnee)
+      if ((clos || e['journal'] != 'CL') && !(!gestion && anAnnee && estAN(e)) && e['provisoire'] != true) e
+  ];
+  final d = _som(mvts, 'debit'), cr = _som(mvts, 'credit');
+  final double? clot = ouv == null ? null : ouv + d - cr;
+  final etatClot = ouv == null ? 'inconnue' : (clos ? 'clos' : (x != null && x['etat'] == 'en_cloture' ? 'en_cloture' : 'courant'));
+  return CpcSoldesCompte(
+      compte: c,
+      annee: annee,
+      gestion: gestion,
+      ouverture: ouv,
+      etatOuverture: etat,
+      sourceOuverture: source,
+      debit: d,
+      credit: cr,
+      nb: mvts.length,
+      cloture: clot,
+      etatCloture: etatClot,
+      apresCL: clos);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -387,21 +493,26 @@ String _iso(DateTime d) => d.toUtc().toIso8601String();
 
 /// Le verdict d'une transition simple (démarrer, reprendre) : refusé EN NOMMANT, ou accepté avec le PATCH à porter sur la fiche d'exercice.
 class CpcDemande {
-  const CpcDemande.refus(this.motif, [this.pre])
+  const CpcDemande.refus(this.motif, [this.pre, this.code, this.geste])
       : ok = false,
         patch = null;
   const CpcDemande.ok(this.pre, this.patch)
       : ok = true,
-        motif = null;
+        motif = null,
+        code = null,
+        geste = null;
   final bool ok;
   final String? motif;
+
+  /// Le code du refus de rôle (`CLOTURE_DEMARRAGE_RESERVE`, …) et le geste de correction ; `null` pour les autres refus.
+  final String? code, geste;
   final CpcPreCloture? pre;
   final CpaFiche? patch;
 }
 
 /// TRANSITION 1 : démarrer la clôture (ouvert vers en clôture). Les modules n'écrivent plus dans N ; le comptable passe ses écritures d'inventaire.
 CpcDemande cpcDemarrerCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche> actives, int annee,
-    {required String acteur, String? acteurId, required String role, required DateTime maintenant, int enAttente = 0}) {
+    {required String acteur, String? acteurId, required String role, required CpcCircuit circuit, required DateTime maintenant, int enAttente = 0}) {
   final x = cpcExercice(exercices, annee);
   if (x == null) return CpcDemande.refus('Exercice $annee inconnu.');
   if (x['source'] == 'liasse') {
@@ -410,9 +521,8 @@ CpcDemande cpcDemarrerCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche> a
   final etat = cpcEtatExercice(exercices, annee);
   if (etat == 'clos') return CpcDemande.refus('Exercice $annee déjà clôturé : le rouvrir (comptable, motif obligatoire) pour le corriger.');
   if (etat == 'en_cloture') return CpcDemande.refus('L’exercice $annee est déjà en clôture.');
-  if (!cpcRolesDemande.contains(role)) {
-    return const CpcDemande.refus('Démarrer la clôture est réservé au comptable, à la Directrice Administrative et à l’administrateur.');
-  }
+  final rd = circuit.refus(circuit.demarrer, role, code: 'CLOTURE_DEMARRAGE_RESERVE', quoi: 'Démarrer la clôture');
+  if (rd != null) return CpcDemande.refus(rd.motif, null, rd.code, rd.geste);
   final pre = cpcPreCloture(actives, annee, exercices: exercices, enAttente: enAttente);
   return CpcDemande.ok(pre, {
     'etat': 'en_cloture',
@@ -426,25 +536,24 @@ CpcDemande cpcDemarrerCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche> a
 
 /// Ancien nom du geste 1 (la maquette garde `demander` comme alias).
 CpcDemande cpcDemanderCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche> actives, int annee,
-        {required String acteur, String? acteurId, String role = 'comptable', required DateTime maintenant}) =>
-    cpcDemarrerCloture(exercices, actives, annee, acteur: acteur, acteurId: acteurId, role: role, maintenant: maintenant);
+        {required String acteur, String? acteurId, String role = 'comptable', required CpcCircuit circuit, required DateTime maintenant}) =>
+    cpcDemarrerCloture(exercices, actives, annee, acteur: acteur, acteurId: acteurId, role: role, circuit: circuit, maintenant: maintenant);
 
 /// TRANSITION 2 : reprendre la saisie (en clôture vers ouvert), tant que rien n'est clôturé.
-CpcDemande cpcReprendreSaisie(Iterable<CpaFiche> exercices, int annee, {required String acteur, required String role, required DateTime maintenant}) {
+CpcDemande cpcReprendreSaisie(Iterable<CpaFiche> exercices, int annee, {required String acteur, required String role, required CpcCircuit circuit, required DateTime maintenant}) {
   final x = cpcExercice(exercices, annee);
   if (x == null || cpcEtatExercice(exercices, annee) != 'en_cloture') {
     return CpcDemande.refus('L’exercice $annee n’est pas en clôture : rien à reprendre.');
   }
-  if (!cpcRolesDemande.contains(role)) {
-    return const CpcDemande.refus('Reprendre la saisie est réservé au comptable, à la Directrice Administrative et à l’administrateur.');
-  }
+  final rr = circuit.refus(circuit.demarrer, role, code: 'CLOTURE_REPRISE_RESERVEE', quoi: 'Reprendre la saisie');
+  if (rr != null) return CpcDemande.refus(rr.motif, null, rr.code, rr.geste);
   return CpcDemande.ok(null, {'etat': 'ouvert', 'demandeLe': null, 'demandePar': null, 'demandeParId': null, 'reprisLe': _iso(maintenant), 'reprisPar': acteur});
 }
 
 /// Le verdict de la clôture définitive : les lignes à INSÉRER (pièce CL puis pièce AN, dans l'ordre), le patch de l'exercice, la fiche du registre des
 /// clôtures, l'exercice N+1 s'il manque. Tout est CALCULÉ avant que le poste n'écrive quoi que ce soit : un refus ne laisse rien derrière lui.
 class CpcValidation {
-  const CpcValidation.refus(this.motif)
+  const CpcValidation.refus(this.motif, [this.code, this.geste])
       : ok = false,
         lignesCL = const [],
         lignesAN = const [],
@@ -459,9 +568,14 @@ class CpcValidation {
   const CpcValidation.ok(this.lignesCL, this.lignesAN, this.patch, this.exerciceSuivant, this.cloture, this.resultat, this.empreinte, this.nbArchivees,
       this.clNumero, this.anNumero)
       : ok = true,
-        motif = null;
+        motif = null,
+        code = null,
+        geste = null;
   final bool ok;
   final String? motif;
+
+  /// Le code et le geste d'un refus de rôle ou de séparation des tâches ; `null` pour les autres refus.
+  final String? code, geste;
   final List<CpaFiche> lignesCL, lignesAN;
   final CpaFiche? patch, cloture;
 
@@ -472,7 +586,7 @@ class CpcValidation {
   final int nbArchivees;
 }
 
-/// TRANSITION 3 : clôturer définitivement (en clôture vers clôturé). Par la Direction, la DAF ou l'administrateur, une AUTRE personne que celle qui a démarré,
+/// TRANSITION 3 : clôturer définitivement (en clôture vers clôturé). Par un rôle de la liste lue du circuit, une AUTRE personne que celle qui a démarré,
 /// avec un motif. Dans l'ordre : (1) PIÈCE CL au 31/12/N, journal CL, classes 6, 7 et 8 soldées centre de coûts par centre de coûts, contrepartie en 131
 /// ou 139 (table `comptesResultat`) ; (2) PIÈCE AN au 01/01/N+1 (classes 1 à 5, résultat compris, calculées APRÈS la pièce CL) ; (3) empreinte du journal arrêté,
 /// puis le verrou. Refus nommés : état, rôle, motif, signataire identique, contrôles bloquants, pièces déséquilibrées (RG-10).
@@ -481,6 +595,7 @@ CpcValidation cpcValiderCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche>
     required String acteur,
     String? acteurId,
     required String role,
+    required CpcCircuit circuit,
     required DateTime maintenant,
     Iterable<CpaFiche> toutesEcritures = const [],
     Iterable<CpaFiche> comptesResultat = const [],
@@ -489,16 +604,17 @@ CpcValidation cpcValiderCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche>
   if (x == null || cpcEtatExercice(exercices, annee) != 'en_cloture') {
     return CpcValidation.refus('L’exercice $annee n’est pas en clôture : démarrer la clôture d’abord.');
   }
-  if (!cpcRolesValidation.contains(role)) {
-    return const CpcValidation.refus('La clôture définitive est prononcée par la Direction ou la Directrice Administrative.');
-  }
+  final rv = circuit.refus(circuit.cloturer, role, code: 'CLOTURE_DEFINITIVE_RESERVEE', quoi: 'La clôture définitive');
+  if (rv != null) return CpcValidation.refus(rv.motif, rv.code, rv.geste);
   if (motif.trim().length < 3) return const CpcValidation.refus('Un motif est obligatoire pour clôturer un exercice.');
   // A1 : l'identifiant décide quand les DEUX côtés en portent un ; une demande antérieure (sans identifiant) retombe sur le nom.
   final demandeurId = x['demandeParId'];
   final memePersonne = (demandeurId != null && acteurId != null) ? demandeurId == acteurId : x['demandePar'] == acteur;
   if (memePersonne) {
     return CpcValidation.refus(
-        'Signer n’est pas saisir : la clôture définitive doit venir d’une autre personne que celle qui a démarré la clôture (${x['demandePar']}).');
+        'Signer n’est pas saisir : la clôture définitive doit venir d’une autre personne que celle qui a démarré la clôture (${x['demandePar']}).',
+        'CLOTURE_MEME_PERSONNE',
+        'Faire prononcer la clôture par une autre personne du circuit.');
   }
   final pre = cpcPreCloture(actives, annee, exercices: exercices, enAttente: enAttente);
   if (pre.bloquants.isNotEmpty) {
@@ -638,7 +754,7 @@ CpcValidation cpcValiderCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche>
 
 /// Le verdict de la réouverture : les pièces de CONTRE-PASSATION à insérer, le patch de l'exercice, la fiche du registre des clôtures.
 class CpcReouverture {
-  const CpcReouverture.refus(this.motif)
+  const CpcReouverture.refus(this.motif, [this.code, this.geste])
       : ok = false,
         lignes = const [],
         patch = null,
@@ -646,21 +762,25 @@ class CpcReouverture {
         pieces = const [];
   const CpcReouverture.ok(this.lignes, this.patch, this.cloture, this.pieces)
       : ok = true,
-        motif = null;
+        motif = null,
+        code = null,
+        geste = null;
   final bool ok;
   final String? motif;
+  final String? code, geste;
   final List<CpaFiche> lignes;
   final CpaFiche? patch, cloture;
   final List<String> pieces;
 }
 
-/// TRANSITION 4 : rouvrir (clôturé vers en clôture). Le COMPTABLE seul, motif d'au moins DIX caractères. Rien ne s'efface : la pièce CL et la pièce AN sont
+/// TRANSITION 4 : rouvrir (clôturé vers en clôture). Un rôle de la liste lue du circuit, motif d'au moins DIX caractères. Rien ne s'efface : la pièce CL et la pièce AN sont
 /// CONTRE-PASSÉES (mêmes lignes, sens inversé, `contrePasseDe`). Refusée pour l'exercice de la liasse déposée, et si N+1 n'est plus ouvert.
 CpcReouverture cpcRouvrirExercice(Iterable<CpaFiche> exercices, Iterable<CpaFiche> actives, int annee,
     {required String motif,
     required String acteur,
     String? acteurId,
     required String role,
+    required CpcCircuit circuit,
     required DateTime maintenant,
     Iterable<CpaFiche> toutesEcritures = const []}) {
   final x = cpcExercice(exercices, annee);
@@ -668,7 +788,8 @@ CpcReouverture cpcRouvrirExercice(Iterable<CpaFiche> exercices, Iterable<CpaFich
   if (x['source'] == 'liasse') {
     return CpcReouverture.refus('L’exercice $annee est celui de la liasse déposée à la DGI : il ne se rouvre pas dans le logiciel.');
   }
-  if (role != 'comptable' && role != 'admin') return const CpcReouverture.refus('La réouverture est réservée au comptable.');
+  final ro = circuit.refus(circuit.rouvrir, role, code: 'REOUVERTURE_RESERVEE', quoi: 'La réouverture');
+  if (ro != null) return CpcReouverture.refus(ro.motif, ro.code, ro.geste);
   if (motif.trim().length < 10) return const CpcReouverture.refus('Le motif de réouverture doit compter au moins dix caractères.');
   final suivEtat = cpcExercice(exercices, annee + 1) == null ? 'ouvert' : cpcEtatExercice(exercices, annee + 1);
   if (suivEtat != 'ouvert') {

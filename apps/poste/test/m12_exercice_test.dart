@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_poste/core/service_parametres.dart';
+import 'package:sigh_poste/donnees/circuit_cloture_poste.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
 
@@ -79,7 +81,7 @@ void main() {
       expect(find.widgetWithText(BoutonSigh, 'Démarrer la clôture'), findsNothing);
     });
 
-    casM14('LES GESTES : le comptable DÉMARRE (notification à la Direction, journal), une AUTRE personne clôture, l\'exercice se FIGE, CL et AN sont écrites', (t) async {
+    casM14('LES GESTES : le comptable DÉMARRE (notification aux rôles qui clôturent, journal), une AUTRE personne clôture, l\'exercice se FIGE, CL et AN sont écrites', (t) async {
       final m = magasinComplet();
       validerBrouillons(m);
       await ouvrirM14(t, m, 'm12-cloture', role: 'comptable');
@@ -90,8 +92,9 @@ void main() {
       var x = m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026);
       expect(x['etat'], 'en_cloture');
       expect(x['demandePar'], isNotEmpty);
-      expect(m.collection('notifications').actives.first['poste'], 'direction');
-      expect(m.collection('notifications').actives.first['libelle'], 'Clôture 2026 à valider');
+      // la notification suit le circuit LU (défaut semé : DAF, Direction, administrateur, comptable), jamais un poste écrit dans le moteur
+      final aValider = m.collection('notifications').actives.where((n) => n['libelle'] == 'Clôture 2026 à valider').map((n) => n['poste']).toSet();
+      expect(aValider, {'da', 'direction', 'admin', 'comptable'});
       expect(m.collection('audit').actives.any((a) => a['action'] == 'Démarrage de la clôture'), true);
       expect(find.text('Clôture 2026 démarrée.'), findsOneWidget);
       await t.pump(const Duration(seconds: 10));
@@ -262,6 +265,57 @@ void main() {
       expect(find.widgetWithText(BoutonSigh, 'Lettrer la sélection'), findsNothing);
       expect(find.widgetWithText(BoutonSigh, 'Dé-lettrer un code…'), findsNothing);
       expect(find.byKey(const Key('lettrage:L1')), findsNothing);
+    });
+  });
+
+  group('m12-cloture : le circuit de clôture (lot CLO C1), lu des paramètres, jamais un nom de rôle', () {
+    test('les défauts semés sont lus ; un réglage est une NOUVELLE version datée, jamais une réécriture, journalisée', () {
+      final m = magasinComplet();
+      expect(circuitClotureDe(m).cloturer, ['da', 'direction', 'admin', 'comptable']);
+      final refus = reglerCircuitCloture(m, cle: cpcCleCloturer, valeur: 'direction', role: 'admin', gesteAccorde: true, motif: 'La Direction seule clôture');
+      expect(refus, isNull);
+      expect(circuitClotureDe(m).cloturer, ['direction']);
+      final versions = serviceParametres(m, auteur: () => 'T').versions(cpcCleCloturer);
+      expect(versions.length, greaterThanOrEqualTo(1), reason: 'une version est écrite, la valeur d\'avant reste lisible');
+      expect(m.collection('audit').actives.any((a) => a['action'] == 'Circuit de clôture : nouvelle version'), true);
+    });
+    test('refus nommés : droit réservé, motif, liste vide, rôle inconnu, mois 13 ; un fileul lit et ne règle pas', () {
+      final m = magasinComplet();
+      String? code(Object? valeur, {String cle = cpcCleRouvrir, bool geste = true, String? motif = 'Un motif', bool fileul = false}) =>
+          reglerCircuitCloture(m, cle: cle, valeur: valeur, role: 'comptable', gesteAccorde: geste, motif: motif, fileul: fileul)?.code;
+      expect(code('admin', geste: false), 'CIRCUIT_REGLAGE_RESERVE');
+      expect(code('admin', motif: ''), 'CIRCUIT_MOTIF_OBLIGATOIRE');
+      expect(code(''), 'CIRCUIT_LISTE_VIDE');
+      expect(code('comptable,roi'), 'CIRCUIT_ROLE_INCONNU');
+      expect(code(13, cle: cpcCleMoisOuverture), 'CIRCUIT_MOIS_INVALIDE');
+      expect(code('admin', fileul: true), 'FILEUL_LECTURE_SEULE');
+      expect(circuitClotureDe(m).rouvrir, ['comptable', 'admin'], reason: 'aucun de ces refus n\'écrit quoi que ce soit');
+    });
+    casM14('l\'onglet « Circuit de clôture » : l\'administrateur a la commande, le comptable lit sans commande (ABSENTE, pas grisée)', (t) async {
+      final m = magasinComplet();
+      await ouvrirM14(t, m, 'm12-cloture', role: 'comptable');
+      await toucherM14(t, find.text('Circuit de clôture'));
+      expect(find.text('Circuit en vigueur aujourd’hui'), findsOneWidget);
+      expect(find.widgetWithText(BoutonSigh, 'Modifier le circuit'), findsNothing);
+      await ouvrirM14(t, m, 'm12-cloture', role: 'admin');
+      await toucherM14(t, find.text('Circuit de clôture'));
+      expect(find.widgetWithText(BoutonSigh, 'Modifier le circuit'), findsOneWidget);
+      await t.pump(const Duration(seconds: 10));
+    });
+  });
+
+  group('m12-grand-livre : soldes d\'ouverture et de clôture (lot CLO C3), inconnu jamais zéro', () {
+    casM14('2026 : l\'ouverture est INCONNUE (2025 clos par la liasse, sans à-nouveau) : la tuile dit « Inconnu », la clôture aussi ; jamais 0', (t) async {
+      final m = magasinComplet();
+      await ouvrirM14(t, m, 'm12-grand-livre');
+      final txt = textesVisibles(t).join(' | ');
+      expect(txt, contains('solde d’ouverture'));
+      expect(txt, contains('solde de clôture'));
+      expect(txt, contains('inconnu'));
+      expect(txt, contains('ce n’est pas zéro'));
+      final so = cpcSoldesGrandLivre(m.collection('exercices').toutes, m.collection('ecritures').actives, '401000', 2026);
+      expect([so.ouverture, so.cloture], [null, null]);
+      await t.pump(const Duration(seconds: 10));
     });
   });
 

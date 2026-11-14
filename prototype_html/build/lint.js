@@ -40,6 +40,13 @@ for (const f of files) {
   fautes.forEach((x) => { erreurs++; console.error(`\n✗ ${x.fichier}:${x.ligne} lecture directe de D.${x.liste} (${x.lecture}) : le prix se lit par PR.prixAnalyseALaDate, PR.prixChambreALaDate, PR.prixActeALaDate`); });
 }
 
+/* LOT CLO (C1) : aucun NOUVEAU nom de rôle écrit en dur dans un moteur ou un écran (liste blanche décroissante, PRD M12 clôture annuelle EF-DRO-2). */
+{
+  const r = require('./garde-roles-en-dur.js').analyser(path.join(ROOT, 'assets/js'));
+  r.nouveaux.forEach((x) => { erreurs++; console.error(`\n✗ ${x.fichier}:${x.lignes.join(',')} rôle écrit en dur ${x.texte} (${x.n} > ${x.max}) : le droit se lit de la matrice (geste réservé) ou d'un réglage`); });
+  r.disparus.forEach((x) => { erreurs++; console.error(`\n✗ ${x.fichier} site disparu ${x.texte} : abaisser la liste (node build/garde-roles-en-dur.js --abaisser)`); });
+}
+
 console.log(`\nFichiers analysés : ${files.length}`);
 console.log(erreurs === 0 ? 'Syntaxe : CONFORME' : `Syntaxe : ${erreurs} fichier(s) en erreur`);
 process.exit(erreurs === 0 ? 0 : 1);

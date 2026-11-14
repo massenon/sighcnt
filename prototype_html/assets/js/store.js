@@ -140,8 +140,12 @@
      `droitsGestes` (valider un seuil). Les postes en version 84 sont ré-amorcés (les seuils survivent, comme avant). Sans incrément, un poste garderait des relevés en texte et la diurèse en litres.
      86 (14/11/2026) : la CORRECTION SIGNÉE du texte lu par machine (lot C). La collection `lecturesOcr` porte une seconde espèce de version (`texteSource: 'correction'`, `corrigePar`, `corrigeLe`,
      `corrigeDe`, `remplace`), le droit de corriger est un geste réservé de la fiche RBAC (`corriger_texte_ocr`, `droitsGestes`), et le réglage `ocr` porte un délai de lecture réglable. Une reprise garde
-     les lectures. Sans incrément, un poste n'aurait pas la garde qui refuse une correction non signée. */
-  var VERSION = 86;
+     les lectures. Sans incrément, un poste n'aurait pas la garde qui refuse une correction non signée. 
+     87 (14/11/2026) : le CIRCUIT DE CLÔTURE ANNUELLE réglable (lot CLO C1). La collection `reglagesCloture` (qui démarre, qui passe l'inventaire, qui clôture, qui rouvre, mois d'ouverture de l'exercice
+     suivant : une fiche par version datée, jamais réécrite) est semée au socle avec les défauts de la Direction ; un geste réservé de la fiche RBAC (`regler_circuit_cloture`) règle le circuit. Sans incrément, un
+     poste n'aurait ni la collection ni les défauts et le moteur refuserait nommément de clôturer.
+  */
+  var VERSION = 87;
   var db = null;
   var listeners = {};
 
@@ -1876,6 +1880,12 @@
          désactivé) naissent « à valider » ; aucun compte n'est semé. Lus par la caisse, les achats et l'écran de paramétrage, donc au socle. */
       reglagesAib: (D.REGLAGES_AIB_SEMENCE || []).map(function (x, i) {
         return Object.assign({ id: 'RAI' + C.pad(i + 1, 3), statut: 'actif', dateFin: null, aValider: true, creeLe: '2026-11-09', creePar: 'Semence du socle' }, x);
+      }),
+
+      /* LE CIRCUIT DE CLÔTURE ANNUELLE (14/11/2026, lot CLO C1) : une fiche par version datée, jamais réécrite ; les défauts sont SEMÉS (ils égalent les listes qui étaient
+         écrites dans le moteur, sauf la clôture définitive élargie au comptable par la Direction). Lus par le moteur d'exercice, donc au socle. */
+      reglagesCloture: (D.REGLAGES_CLOTURE_SEMENCE || []).map(function (x, i) {
+        return Object.assign({ id: 'RCL' + C.pad(i + 1, 3), statut: 'actif', dateFin: null, creeLe: '2026-11-14', creePar: 'Semence du socle' }, x);
       }),
 
       /* ====================================================================
@@ -4160,7 +4170,7 @@
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
     'regimesTravail', 'regimesIndividuels', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
-    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'parametresFiscaux',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations', 'validationsReferentiels', 'situationsAib', 'baremeAib', 'reglagesAib', 'reglagesCloture', 'parametresFiscaux',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'seuilsDelta',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -4470,6 +4480,7 @@
     situationsAib: 'CFG|Situations de l’acheteur (AIB)',
     baremeAib: 'CFG|Barème de l’AIB par situation',
     reglagesAib: 'CFG|Réglages de l’AIB',
+    reglagesCloture: 'M12|Réglages de la clôture annuelle',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
     avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',

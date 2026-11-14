@@ -111,6 +111,7 @@ export 'src/comptabilite/cpb_feuillets.dart';
 export 'src/comptabilite/cpb_seuil.dart';
 export 'src/comptabilite/cpb_gestion.dart';
 export 'src/rh/rhb_regles.dart';
+export 'src/comptabilite/cpc_circuit.dart';
 export 'src/comptabilite/cpc_exercice.dart';
 export 'src/comptabilite/cpc_archive.dart';
 export 'src/comptabilite/cpc_baseline.dart';

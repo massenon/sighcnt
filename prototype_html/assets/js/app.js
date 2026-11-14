@@ -1201,13 +1201,13 @@
           el('span.shrink-0.text-warning-600', null, C.icon('lock', 'h-4 w-4')),
           el('p.text-xs.text-warning-900', { html: '<strong>Exercice ' + xc.annee + ' clôturé</strong>'
             + (xc.valideLe ? ' le ' + C.dateFR(xc.valideLe) : '') + (xc.validePar ? ' par ' + U.texteEnrichi(xc.validePar) : '')
-            + ' : <strong>lecture seule</strong>. Seule la réouverture par le comptable (motif obligatoire, à l’écran « Exercices & clôtures ») permet de corriger.' }),
+            + ' : <strong>lecture seule</strong>. Seule la réouverture par : ' + U.texteEnrichi(global.SIGH.exercice.nomsRoles((global.SIGH.exercice.circuit('rolesRouvrir').valeur) || [])) + ' (motif obligatoire, à l’écran « Exercices & clôtures ») permet de corriger.' }),
         ]));
       } else if (xc && xc.etat === 'en_cloture') {
         head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-info-200.bg-info-50.px-3.py-2', null, [
           el('span.shrink-0.text-info-600', null, C.icon('hourglass', 'h-4 w-4')),
-          el('p.text-xs.text-info-900', { html: '<strong>Exercice ' + xc.annee + ' en clôture</strong> : les modules n’y écrivent plus, seul le comptable y passe ses écritures d’inventaire. '
-            + 'La clôture définitive revient à la Direction ou à la DAF (démarrée par ' + U.texteEnrichi(xc.demandePar || 'le comptable') + ').' }),
+          el('p.text-xs.text-info-900', { html: '<strong>Exercice ' + xc.annee + ' en clôture</strong> : les modules n’y écrivent plus, seules les personnes du circuit de clôture y passent leurs écritures d’inventaire. '
+            + 'La clôture définitive revient à : ' + U.texteEnrichi(global.SIGH.exercice.nomsRoles((global.SIGH.exercice.circuit('rolesCloturer').valeur) || [])) + ' (démarrée par ' + U.texteEnrichi(xc.demandePar || 'une personne du circuit') + ').' }),
         ]));
       } else if (xc && global.SIGH.exercice.provisoires(xc.annee).length) {
         head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-slate-200.bg-slate-50.px-3.py-2', null, [
@@ -1222,7 +1222,8 @@
     if (def.regle) {
       head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-info-200.bg-info-50.px-3.py-2', null, [
         el('span.shrink-0.text-info-600', null, C.icon('info', 'h-4 w-4')),
-        el('p.text-xs.text-info-900', { html: def.regle }),
+        /* Une règle peut être une FONCTION : elle se lit au moment de peindre (le circuit de clôture, par exemple, est un réglage). */
+        el('p.text-xs.text-info-900', { html: typeof def.regle === 'function' ? def.regle() : def.regle }),
       ]));
     }
     return head;
@@ -1244,13 +1245,19 @@
       if (x.annee === courant) o.selected = true;
       sel.appendChild(o);
     });
-    function aller(annee) { X.choisir(annee); global.location.reload(); }
+    /* Le pas d'exercice CONSERVE l'onglet affiché : l'onglet principal de l'écran (le premier actif dans l'ordre du document) est repris par `#onglet=` au rechargement. */
+    function aller(annee) {
+      X.choisir(annee);
+      var t = document.querySelector('#page-content button.tab.tab-active[data-tab]');
+      if (t && t.dataset.tab) global.location.hash = '#onglet=' + encodeURIComponent(t.dataset.tab);
+      global.location.reload();
+    }
     sel.addEventListener('change', function () { aller(sel.value); });
     var prec = X.voisin(-1), suiv = X.voisin(1);
     /* Une borne atteinte : le bouton est ABSENT, pas grisé sans explication. */
     var boutons = [];
-    if (prec) boutons.push(el('button.ribbon-tool.px-2.w-auto.text-xs', { type: 'button', id: 'exercice-precedent', title: 'Exercice ' + prec, onclick: function () { aller(prec); } }, '‹ ' + prec));
-    if (suiv) boutons.push(el('button.ribbon-tool.px-2.w-auto.text-xs', { type: 'button', id: 'exercice-suivant', title: 'Exercice ' + suiv, onclick: function () { aller(suiv); } }, suiv + ' ›'));
+    if (prec) boutons.push(el('button.ribbon-tool.px-2.w-auto.text-xs', { type: 'button', id: 'exercice-precedent', title: 'Exercice ' + prec, onclick: function () { aller(prec); } }, '‹ Exercice ' + prec));
+    if (suiv) boutons.push(el('button.ribbon-tool.px-2.w-auto.text-xs', { type: 'button', id: 'exercice-suivant', title: 'Exercice ' + suiv, onclick: function () { aller(suiv); } }, 'Exercice ' + suiv + ' ›'));
     return el('div#bloc-exercice.hidden.items-center.gap-1.md\\:flex', null,
       [C.icon('calendar', 'h-4 w-4 text-navy-200')].concat(boutons.slice(0, 1), [sel], boutons.slice(1)));
   }

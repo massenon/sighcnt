@@ -138,6 +138,15 @@ class _EtatGrandLivre extends State<EcranGrandLivre> {
         final compte = '${_compte!['compte'] ?? ''}';
         final rows = cpaGrandLivre(e, compte);
         final s = cpaSoldeCompte(e, compte);
+        // EF-CLO-4 : l'ouverture et la clôture sont LUES du domaine ; une ouverture inconnue se DIT (« Inconnu »), elle n'est jamais un zéro.
+        final so = cpcSoldesGrandLivre(c.magasin.collection('exercices').toutes, c.magasin.collection('ecritures').actives, compte, exerciceChoisi(c),
+            comptesResultat: c.magasin.collection('comptesResultat').actives);
+        KpiSigh tuile(String libelle, double? v, String indice) => KpiSigh(
+            libelle: libelle,
+            valeur: v == null ? 'Inconnu' : money(v),
+            indice: indice + (v == null ? '' : (v >= 0 ? ' · Débiteur' : ' · Créditeur')),
+            icone: v == null ? LucideIcons.info : LucideIcons.scale,
+            ton: v == null ? TonSigh.attention : (v >= 0 ? TonSigh.navy : TonSigh.danger));
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           CarteSigh(
               child: Wrap(spacing: 12, runSpacing: 12, crossAxisAlignment: WrapCrossAlignment.end, children: [
@@ -160,6 +169,13 @@ class _EtatGrandLivre extends State<EcranGrandLivre> {
                 indice: s.solde >= 0 ? 'Débiteur' : 'Créditeur',
                 icone: LucideIcons.scale,
                 ton: s.solde >= 0 ? TonSigh.navy : TonSigh.danger),
+            tuile('Solde d’ouverture', so.ouverture, so.etatOuverture == 'provisoire' ? 'Provisoire : ${so.sourceOuverture}' : so.sourceOuverture),
+            tuile(
+                'Solde de clôture',
+                so.cloture,
+                so.cloture == null
+                    ? 'Inconnu : l’ouverture ne l’est pas moins'
+                    : (so.apresCL ? 'Après la pièce de clôture (journal CL)' : (so.etatCloture == 'en_cloture' ? 'Exercice en clôture' : 'Ouverture plus mouvements'))),
           ]),
           const SizedBox(height: 16),
           TableauSigh(

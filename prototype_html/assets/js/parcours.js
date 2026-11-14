@@ -3878,9 +3878,9 @@
     if (etat === 'en_cloture') {
       if (lettrageEnCours && op === 'modifier') return null;
       /* En clôture : les modules n'écrivent plus ; seul le comptable passe ses écritures d'inventaire (saisie manuelle). */
-      var role = roleCourant();
-      if ((rec && rec.origine === 'Saisie manuelle') && (role === 'comptable' || role === 'admin')) return null;
-      return 'Exercice ' + a + ' en clôture : les modules n’y écrivent plus. Seul le comptable y passe ses écritures d’inventaire (saisie manuelle) ; sinon dater la pièce de l’exercice ouvert.';
+      var inv = circuitALaDate('rolesInventaire');
+      if ((rec && rec.origine === 'Saisie manuelle') && inv.ok && inv.valeur.indexOf(roleCourant()) >= 0) return null;
+      return 'Exercice ' + a + ' en clôture : les modules n’y écrivent plus. Seuls ' + (inv.ok ? nomsRoles(inv.valeur) : 'les rôles du circuit de clôture (non arrêté)') + ' y passent leurs écritures d’inventaire (saisie manuelle) ; sinon dater la pièce de l’exercice ouvert.';
     }
     return null;
   });
@@ -3967,6 +3967,39 @@
         date: annee + '-01-01', journal: 'AN', journalLibelle: 'Journal des à-nouveaux (provisoire)',
         libelle: l.libelle || 'À-nouveau provisoire', statut: 'validee', provisoire: true, origine: 'Provisoire — calculé' }, l);
     });
+  }
+
+  /* LES SOLDES D'UN COMPTE AU GRAND LIVRE (lot CLO C3, EF-CLO-4) : solde d'OUVERTURE et solde de CLÔTURE d'un exercice, jamais un zéro inventé.
+     OUVERTURE d'un compte de bilan (classes 1 à 5) : (a) le report ÉCRIT (journal AN, hors contre-passations) quand l'exercice en porte ; (b) sinon le report PROVISOIRE de
+     l'exercice précédent s'il n'est pas clos (calculé, dit tel, jamais stocké) ; (c) sinon, l'exercice précédent est clos (ou celui de la liasse) SANS à-nouveau : l'ouverture est
+     INCONNUE, ce n'est pas zéro ; (d) sans exercice précédent : premier exercice, pas de report (0, dit tel). Un compte de GESTION (6, 7, 8) ne se reporte jamais : ouverture 0.
+     CLÔTURE : ouverture + mouvements de l'exercice (ou INCONNUE quand l'ouverture l'est). Dans un exercice CLOS par le moteur la pièce de clôture CL compte : un compte de gestion y
+     est à zéro. Même population de lignes que l'écran du grand livre (écritures de l'exercice, brouillons compris), pour que le solde progressif aboutisse au solde de clôture. */
+  function soldesGrandLivre(compte, annee) {
+    compte = String(compte); annee = Number(annee);
+    var classe = compte.charAt(0), gestion = '678'.indexOf(classe) >= 0;
+    var x = exercice(annee), prec = exercice(annee - 1);
+    var toutes = S.collection('ecritures').active();
+    var contrePassees = {};
+    toutes.forEach(function (e) { if (e.contrePasseDe) contrePassees[e.contrePasseDe] = true; });
+    var delAnnee = toutes.filter(function (e) { return anneeDe(e.date) === annee && String(e.compte) === compte; });
+    var estAN = function (e) { return e.journal === 'AN' && !e.contrePasseDe && !contrePassees[e.numero]; };
+    var anAnnee = toutes.some(function (e) { return anneeDe(e.date) === annee && estAN(e); });
+    var somme = function (l) { return l.reduce(function (n, e) { return n + (Number(e.debit) || 0) - (Number(e.credit) || 0); }, 0); };
+    var ouv = { valeur: null, etat: 'inconnue', source: null };
+    var opening = delAnnee.filter(estAN);
+    if (gestion) ouv = { valeur: 0, etat: 'gestion', source: 'Un compte de gestion ne se reporte jamais : il est soldé par le résultat.' };
+    else if (anAnnee) ouv = { valeur: somme(opening), etat: 'ecrit', source: opening.length ? 'À-nouveaux écrits (' + opening[0].numero + ')' : 'À-nouveaux écrits : ce compte n’y figure pas' };
+    else if (prec && prec.etat !== 'clos' && prec.source !== 'liasse') {
+      var prov = aNouveauxProvisoires(annee).filter(function (l) { return String(l.compte) === compte; });
+      ouv = { valeur: somme(prov), etat: 'provisoire', source: 'À-nouveaux provisoires de ' + (annee - 1) + ' (calculés, l’exercice n’est pas clos)' };
+    } else if (prec) ouv = { valeur: null, etat: 'inconnue', source: 'L’exercice ' + (annee - 1) + ' est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro.' };
+    else ouv = { valeur: 0, etat: 'premier', source: 'Premier exercice : aucun report.' };
+    var clos = x && x.etat === 'clos' && x.source !== 'liasse';
+    var mvts = delAnnee.filter(function (e) { return (clos || e.journal !== 'CL') && !(!gestion && anAnnee && estAN(e)) && !(e.provisoire); });
+    var d = mvts.reduce(function (n, e) { return n + (Number(e.debit) || 0); }, 0), c = mvts.reduce(function (n, e) { return n + (Number(e.credit) || 0); }, 0);
+    var clot = ouv.valeur == null ? { valeur: null, etat: 'inconnue' } : { valeur: ouv.valeur + d - c, etat: clos ? 'clos' : (x && x.etat === 'en_cloture' ? 'en_cloture' : 'courant') };
+    return { compte: compte, annee: annee, gestion: gestion, ouverture: ouv, mouvements: { debit: d, credit: c, nb: mvts.length }, cloture: clot, apresCL: !!clos };
   }
 
   /* PRÉ-CLÔTURE : contrôles nommés, chacun avec les pièces en cause et l'écran où corriger. */
@@ -4057,7 +4090,113 @@
   }
   function pad5(n) { return ('00000' + n).slice(-5); }
 
-  function peutDemarrer() { return ['comptable', 'da', 'admin'].indexOf(roleCourant()) >= 0; }
+  /* ==========================================================================
+   * LE CIRCUIT DE CLÔTURE ANNUELLE (Direction, 11/11/2026 ; lot CLO C1) : AUCUN nom de rôle dans le moteur. Qui démarre, qui passe l'inventaire en clôture, qui clôture
+   * définitivement et qui rouvre se LISENT dans la collection `reglagesCloture` (une fiche par version datée, défauts semés), à la date du geste. Un refus nomme la liste
+   * LUE (jamais une liste recopiée dans la phrase) et le geste de correction. Régler le circuit est un geste réservé de la fiche RBAC (`regler_circuit_cloture`).
+   * Sans version en vigueur, le geste est refusé nommément : rien n'est supposé.
+   * ======================================================================== */
+  function colReglagesCloture() { return S.collection('reglagesCloture', { module: 'M12', entite: 'réglage de la clôture', prefix: 'RCL' }); }
+  function definitionCircuit(cle) { return (D.REGLAGES_CLOTURE || []).filter(function (x) { return x.cle === cle; })[0] || null; }
+  function versionsCircuit(cle) {
+    return colReglagesCloture().active().filter(function (v) { return v.cle === cle; })
+      .sort(function (a, b) { return String(a.dateEffet).localeCompare(String(b.dateEffet)); });
+  }
+  /** La valeur du réglage à la date : { ok, valeur, dateEffet, versionId, version } ou le refus nommé CIRCUIT_SANS_VERSION (jamais une valeur inventée). */
+  function circuitALaDate(cle, date) {
+    var d = date ? isoJour(date) : aujIso();
+    var def = definitionCircuit(cle);
+    if (!def) return refusCfg('CIRCUIT_REGLAGE_INCONNU', 'Le réglage « ' + cle + ' » n’existe pas parmi ceux de la clôture annuelle.', 'Choisir un réglage listé à l’écran « Exercices & clôtures », onglet « Circuit de clôture ».', { cle: cle });
+    var toutes = versionsCircuit(cle);
+    var couvrantes = toutes.filter(function (v) { return String(v.dateEffet) <= d && (!v.dateFin || String(v.dateFin) >= d); });
+    var v = couvrantes[couvrantes.length - 1];
+    if (!v || v.valeur == null || (Array.isArray(v.valeur) && !v.valeur.length)) {
+      return refusCfg('CIRCUIT_SANS_VERSION', 'Aucune version du réglage « ' + def.libelle + ' » ne couvre le ' + C.dateFR(d) + ' : la valeur n’est pas arrêtée, rien n’est supposé.',
+        'Ajouter une version à l’écran « Exercices & clôtures », onglet « Circuit de clôture ».', { cle: cle, date: d });
+    }
+    return { ok: true, cle: cle, valeur: v.valeur, dateEffet: v.dateEffet, version: toutes.indexOf(v) + 1, versionId: v.id, date: d };
+  }
+  function nomsRoles(liste) {
+    var n = (liste || []).map(function (r) { return libelleRole(r); });
+    return n.length > 1 ? n.slice(0, -1).join(', ') + ' ou ' + n[n.length - 1] : (n[0] || 'aucun rôle');
+  }
+  /** Le rôle de la session figure-t-il dans la liste lue ? null s'il y figure, sinon le refus nommé qui CITE la liste lue. */
+  function verifierCircuit(cle, code, quoi, geste) {
+    var r = circuitALaDate(cle);
+    if (!r.ok) return r;
+    if (r.valeur.indexOf(roleCourant()) >= 0) return null;
+    return refusCfg(code, quoi + ' : action réservée à : ' + nomsRoles(r.valeur) + '.', geste, { roles: r.valeur.slice(), versionId: r.versionId });
+  }
+  function peutDansCircuit(cle, role) {
+    var r = circuitALaDate(cle);
+    return r.ok && r.valeur.indexOf(role == null ? roleCourant() : role) >= 0;
+  }
+  /** Les rôles du circuit (liste LUE), pour le routage des notifications. */
+  function rolesDuCircuit(cle) { var r = circuitALaDate(cle); return r.ok ? r.valeur.slice() : []; }
+  function notifierCircuit(cle, o) { rolesDuCircuit(cle).forEach(function (poste) { notifier(Object.assign({}, o, { poste: poste })); }); }
+
+  var GESTE_REGLER_CIRCUIT = 'regler_circuit_cloture';
+  function peutRegler(role) { var N = global.SIGH.nav; return !!(N && N.droitGeste && N.droitGeste(role == null ? roleCourant() : role, GESTE_REGLER_CIRCUIT)); }
+  /** Poser une NOUVELLE version d'un réglage du circuit : { cle, valeur, dateEffet?, motif }. Jamais une réécriture : la version précédente est fermée à la veille. */
+  function definirCircuit(o) {
+    o = o || {};
+    var def = definitionCircuit(o.cle);
+    if (!def) return refusCfg('CIRCUIT_REGLAGE_INCONNU', 'Le réglage « ' + o.cle + ' » n’existe pas parmi ceux de la clôture annuelle.', 'Choisir un réglage listé à l’écran « Exercices & clôtures », onglet « Circuit de clôture ».');
+    if (!peutRegler()) return refusCfg('CIRCUIT_REGLAGE_RESERVE', 'Régler le circuit de la clôture annuelle est un droit réservé de la fiche du rôle : « ' + libelleRole(roleCourant()) + ' » ne l’a pas.',
+      'Demander à un rôle qui détient le droit « Régler le circuit de la clôture annuelle » (matrice des droits).', { roles: global.SIGH.nav.rolesAvecGeste(GESTE_REGLER_CIRCUIT) });
+    var fileul = controleEcritureCfg();
+    if (fileul) return fileul;
+    if (!o.motif || String(o.motif).trim().length < 3) return refusCfg('CIRCUIT_MOTIF_OBLIGATOIRE', 'Un motif est obligatoire pour changer le circuit de clôture.', 'Saisir le motif du changement.');
+    var valeur = o.valeur;
+    if (def.type === 'roles') {
+      var ROLES = (global.SIGH.nav && global.SIGH.nav.ROLES) || {};
+      valeur = (Array.isArray(valeur) ? valeur : String(valeur == null ? '' : valeur).split(',')).map(function (x) { return String(x).trim(); }).filter(Boolean)
+        .filter(function (x, i, a) { return a.indexOf(x) === i; });
+      if (!valeur.length) return refusCfg('CIRCUIT_LISTE_VIDE', 'La liste « ' + def.libelle + ' » ne peut pas être vide : personne ne pourrait accomplir le geste.', 'Choisir au moins un rôle.');
+      var inconnus = valeur.filter(function (x) { return !ROLES[x] || (global.SIGH.nav.roleArchive && global.SIGH.nav.roleArchive(x)); });
+      if (inconnus.length) return refusCfg('CIRCUIT_ROLE_INCONNU', 'Rôle inconnu ou archivé : ' + inconnus.join(', ') + '.', 'Choisir des rôles de la matrice des droits.', { inconnus: inconnus });
+    } else if (def.type === 'mois') {
+      valeur = Number(valeur);
+      if (!(valeur >= 1 && valeur <= 12) || Math.floor(valeur) !== valeur) return refusCfg('CIRCUIT_MOIS_INVALIDE', 'Le mois doit être un entier de 1 à 12 (reçu « ' + o.valeur + ' »).', 'Saisir un mois de 1 à 12.');
+    }
+    var dateEffet = o.dateEffet ? isoJour(o.dateEffet) : aujIso();
+    var existantes = versionsCircuit(o.cle), derniere = existantes[existantes.length - 1] || null;
+    if (derniere && String(dateEffet) < String(derniere.dateEffet)) {
+      return refusCfg('CIRCUIT_DATE_ANTERIEURE', 'La date d’effet ' + C.dateFR(dateEffet) + ' précède celle de la version en vigueur (' + C.dateFR(derniere.dateEffet) + ') : une version ne s’insère pas dans le passé.',
+        'Choisir une date d’effet égale ou postérieure.');
+    }
+    var veillee = veille(dateEffet), ferme = null;
+    if (derniere && (!derniere.dateFin || String(derniere.dateFin) > veillee)) {
+      ferme = { id: derniere.id, avant: derniere.dateFin || null };
+      colReglagesCloture().update(derniere.id, { dateFin: veillee, modifieLe: aujIso(), modifiePar: acteur() });
+    }
+    var affiche = def.type === 'roles' ? nomsRoles(valeur) : String(valeur);
+    var base = { cle: o.cle, valeur: valeur, libelle: def.libelle + ' : ' + affiche, dateEffet: dateEffet, dateFin: null, source: String(o.source || '').trim() || null,
+      motif: String(o.motif).trim(), creeLe: aujIso(), creePar: acteur() };
+    var res = colReglagesCloture().insert(base, { journal: { action: 'Circuit de clôture : nouvelle version', module: 'M12', entite: 'reglagesCloture',
+      avant: { precedente: derniere ? { id: derniere.id, valeur: derniere.valeur } : null },
+      apres: { cle: o.cle, valeur: valeur, dateEffet: dateEffet, motif: base.motif, precedenteFermeeLe: ferme ? veillee : null } } });
+    if (!res) return refusCfg('CIRCUIT_ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture de la version.', 'Relire le journal.');
+    return { ok: true, id: res.record.id, cle: o.cle, valeur: valeur, dateEffet: dateEffet, version: existantes.length + 1, precedente: derniere ? derniere.id : null, undo: res.undo };
+  }
+  S.garder('reglagesCloture', function (op, rec) {
+    if (op !== 'modifier') return null;
+    var avant = rec && rec.id ? colReglagesCloture().get(rec.id) : null;
+    if (!avant) return null;
+    if (JSON.stringify(avant.valeur) !== JSON.stringify(rec.valeur) || avant.cle !== rec.cle || String(avant.dateEffet) !== String(rec.dateEffet)) {
+      return 'CIRCUIT_VERSION_FIGEE : une version du circuit de clôture ne se réécrit pas (valeur, réglage, date d’effet). Ajouter une nouvelle version à une date d’effet égale ou postérieure.';
+    }
+    return null;
+  });
+  function circuitComplet(date) {
+    var out = { ok: true, date: date ? isoJour(date) : aujIso() };
+    ['rolesDemarrer', 'rolesInventaire', 'rolesCloturer', 'rolesRouvrir', 'moisOuvertureSuivant'].forEach(function (c) {
+      var r = circuitALaDate(c, date);
+      if (!r.ok) { out.ok = false; out[c] = null; out.refus = r; } else out[c] = r.valeur;
+    });
+    return out;
+  }
+
 
   /* TRANSITION 1 : démarrer la clôture (ouvert → en clôture). Les modules n'écrivent plus dans N ; le comptable passe ses écritures d'inventaire. */
   function demarrerCloture(annee) {
@@ -4067,11 +4206,12 @@
     if (x.source === 'liasse') return { ok: false, motif: 'L’exercice ' + annee + ' est celui de la liasse déposée : il est clôturé et ne se rouvre pas ici.' };
     if (x.etat === 'clos') return { ok: false, motif: 'Exercice ' + annee + ' déjà clôturé : le rouvrir (comptable, motif obligatoire) pour le corriger.' };
     if (x.etat === 'en_cloture') return { ok: false, motif: 'L’exercice ' + annee + ' est déjà en clôture.' };
-    if (!peutDemarrer()) return { ok: false, motif: 'Démarrer la clôture est réservé au comptable, à la Directrice Administrative et à l’administrateur.' };
+    var refusD = verifierCircuit('rolesDemarrer', 'CLOTURE_DEMARRAGE_RESERVE', 'Démarrer la clôture', 'Demander à l’un de ces rôles, ou faire modifier le circuit (écran « Exercices & clôtures », onglet « Circuit de clôture »).');
+    if (refusD) return refusD;
     var pre = preCloture(annee);
     S.collection('exercices').update(x.id, { etat: 'en_cloture', demandeLe: new Date().toISOString(), demandePar: acteur(), resultatPrevu: pre.resultat });
     S.log('Démarrage de la clôture', 'M12', 'Exercice', String(annee), { etat: 'ouvert' }, { etat: 'en_cloture', resultat: pre.resultat });
-    notifier({ type: 'cloture', poste: 'direction', libelle: 'Clôture ' + annee + ' à valider', detail: 'Le comptable a démarré la clôture de l’exercice ' + annee + ' : les modules n’y écrivent plus.', priorite: 'haute', reference: String(annee) });
+    notifierCircuit('rolesCloturer', { type: 'cloture', libelle: 'Clôture ' + annee + ' à valider', detail: acteur() + ' a démarré la clôture de l’exercice ' + annee + ' : les modules n’y écrivent plus.', priorite: 'haute', reference: String(annee) });
     return { ok: true, pre: pre };
   }
   var demanderCloture = demarrerCloture;   /* ancien nom du geste, conservé pour les appelants et les sondes */
@@ -4081,7 +4221,8 @@
     annee = Number(annee);
     var x = exercice(annee);
     if (!x || x.etat !== 'en_cloture') return { ok: false, motif: 'L’exercice ' + annee + ' n’est pas en clôture : rien à reprendre.' };
-    if (!peutDemarrer()) return { ok: false, motif: 'Reprendre la saisie est réservé au comptable, à la Directrice Administrative et à l’administrateur.' };
+    var refusR = verifierCircuit('rolesDemarrer', 'CLOTURE_REPRISE_RESERVEE', 'Reprendre la saisie', 'Demander à l’un de ces rôles, ou faire modifier le circuit (écran « Exercices & clôtures », onglet « Circuit de clôture »).');
+    if (refusR) return refusR;
     S.collection('exercices').update(x.id, { etat: 'ouvert', demandeLe: null, demandePar: null, reprisLe: new Date().toISOString(), reprisPar: acteur() });
     S.log('Reprise de la saisie', 'M12', 'Exercice', String(annee), { etat: 'en_cloture' }, { etat: 'ouvert' });
     return { ok: true };
@@ -4120,9 +4261,10 @@
     annee = Number(annee);
     var x = exercice(annee);
     if (!x || x.etat !== 'en_cloture') return { ok: false, motif: 'L’exercice ' + annee + ' n’est pas en clôture : démarrer la clôture d’abord.' };
-    if (['da', 'direction', 'admin'].indexOf(roleCourant()) < 0) return { ok: false, motif: 'La clôture définitive est prononcée par la Direction ou la Directrice Administrative.' };
+    var refusV = verifierCircuit('rolesCloturer', 'CLOTURE_DEFINITIVE_RESERVEE', 'La clôture définitive', 'Demander à l’un de ces rôles, ou faire modifier le circuit (écran « Exercices & clôtures », onglet « Circuit de clôture »).');
+    if (refusV) return refusV;
     if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour clôturer un exercice.' };
-    if (x.demandePar === acteur()) return { ok: false, motif: 'Signer n’est pas saisir : la clôture définitive doit venir d’une autre personne que celle qui a démarré la clôture (' + x.demandePar + ').' };
+    if (x.demandePar === acteur()) return refusCfg('CLOTURE_MEME_PERSONNE', 'Signer n’est pas saisir : la clôture définitive doit venir d’une autre personne que celle qui a démarré la clôture (' + x.demandePar + ').', 'Faire prononcer la clôture par une autre personne du circuit.');
     var pre = preCloture(annee);
     if (pre.bloquants.length) return { ok: false, motif: 'Contrôles bloquants en échec : ' + pre.bloquants.map(function (b) { return b.libelle + (b.detail ? ' (' + b.detail + ')' : ''); }).join(' ; '), pre: pre };
 
@@ -4191,7 +4333,7 @@
         statut: 'actif', etat: 'ouvert', source: 'journal' });
     }
     S.log('Clôture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'en_cloture' }, { etat: 'clos', resultat: res, cl: numCL, an: numAN });
-    notifier({ type: 'cloture', poste: 'comptable', libelle: 'Exercice ' + annee + ' clôturé', detail: 'Résultat ' + C.money(res) + ' ; pièces ' + numCL + ' et ' + numAN + ' écrites.', reference: String(annee) });
+    notifierCircuit('rolesRouvrir', { type: 'cloture', libelle: 'Exercice ' + annee + ' clôturé', detail: 'Résultat ' + C.money(res) + ' ; pièces ' + numCL + ' et ' + numAN + ' écrites.', reference: String(annee) });
     S.save();
     /* L'archive de conservation naît AVEC la clôture, par quelque porte qu'elle soit prononcée. */
     var archive = null;
@@ -4207,7 +4349,8 @@
     var x = exercice(annee);
     if (!x || x.etat !== 'clos') return { ok: false, motif: 'L’exercice ' + annee + ' n’est pas clôturé : rien à rouvrir.' };
     if (x.source === 'liasse') return { ok: false, motif: 'L’exercice ' + annee + ' est celui de la liasse déposée à la DGI : il ne se rouvre pas dans le logiciel.' };
-    if (['comptable', 'admin'].indexOf(roleCourant()) < 0) return { ok: false, motif: 'La réouverture est réservée au comptable.' };
+    var refusO = verifierCircuit('rolesRouvrir', 'REOUVERTURE_RESERVEE', 'La réouverture', 'Demander à l’un de ces rôles, ou faire modifier le circuit (écran « Exercices & clôtures », onglet « Circuit de clôture »).');
+    if (refusO) return refusO;
     if (!motif || String(motif).trim().length < 10) return { ok: false, motif: 'Le motif de réouverture doit compter au moins dix caractères.' };
     var suiv = exercice(annee + 1);
     if (suiv && suiv.etat !== 'ouvert') return { ok: false, motif: 'L’exercice ' + (annee + 1) + ' est ' + (suiv.etat === 'clos' ? 'clôturé' : 'en clôture') + ' : il a consommé les à-nouveaux de ' + annee + '. Le rouvrir ou le reprendre d’abord.' };
@@ -4236,7 +4379,7 @@
       return { ok: false, motif: String((e && e.message) || e) + ' L’exercice reste clôturé, rien n’a été écrit.' };
     }
     S.log('Réouverture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'clos' }, { etat: 'en_cloture', motif: String(motif).trim(), contrePasse: [x.clNumero, x.anNumero] });
-    notifier({ type: 'cloture', poste: 'direction', libelle: 'Exercice ' + annee + ' rouvert', detail: acteur() + ' a rouvert l’exercice ' + annee + ' : ' + String(motif).trim(), priorite: 'haute', reference: String(annee) });
+    notifierCircuit('rolesCloturer', { type: 'cloture', libelle: 'Exercice ' + annee + ' rouvert', detail: acteur() + ' a rouvert l’exercice ' + annee + ' : ' + String(motif).trim(), priorite: 'haute', reference: String(annee) });
     S.save();
     return { ok: true, pieces: [nCL, nAN], lignes: posees.length };
   }
@@ -4525,10 +4668,13 @@
     liste: exercices, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,
     dateReference: dateReference, voisin: exerciceVoisin, parDefaut: exerciceParDefaut,
     anneeDe: anneeDe, ecrituresDe: ecrituresDe, soldes: soldesParCompte, resultat: resultatDe,
-    provisoires: aNouveauxProvisoires, preCloture: preCloture, demander: demanderCloture, demarrer: demarrerCloture, reprendre: reprendreSaisie,
+    provisoires: aNouveauxProvisoires, soldesCompte: soldesGrandLivre, preCloture: preCloture, demander: demanderCloture, demarrer: demarrerCloture, reprendre: reprendreSaisie,
     valider: validerCloture, cloturer: validerCloture, comptesResultat: comptesResultat, controleCompteResultat: controleCompteResultat, rouvrir: rouvrirExercice, compteResultat: compteResultat,
     lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256, archiver: archiverExercice, lireArchive: lireArchive,
     formatEcrituresCsv: formatEcrituresCsv,
+    /* Le circuit de clôture (lot CLO C1) : lu à la date, réglé par un geste réservé, jamais écrit en dur. */
+    circuit: circuitALaDate, circuitComplet: circuitComplet, peut: peutDansCircuit, nomsRoles: nomsRoles, definirCircuit: definirCircuit, peutRegler: peutRegler,
+    versionsCircuit: versionsCircuit, definitionsCircuit: function () { return D.REGLAGES_CLOTURE; },
   };
 
   /* Le moteur du BFR est EXPOSÉ pour être SONDÉ, jamais recopié : le scénario

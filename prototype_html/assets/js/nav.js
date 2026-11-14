@@ -209,6 +209,10 @@
     { id: 'corriger_texte_ocr', libelle: 'Corriger le texte lu par machine d\u2019un scan (correction signée et journalisée)', module: null, ecran: null,
       rolesDefaut: ['admin', 'direction', 'dm', 'da', 'medecin', 'infirmier', 'laborantin', 'reception', 'agentadmin', 'ambulancier', 'assistant_comptable', 'chirurgien'],
       defautSiEcritSur: ['M13', 'M1'] },
+    /* Lot CLO C1 (14/11/2026) : régler le circuit de la clôture annuelle (qui démarre, qui clôture, qui rouvre). PRD M12 section 1 : réservé à l'administrateur et à la Directrice Administrative,
+       PROPOSITION À VALIDER (la Direction n'a pas nommé qui règle). Un droit de la fiche RBAC par RÔLE, jamais un nom de rôle dans le moteur : il ne donne aucun écran. */
+    { id: 'regler_circuit_cloture', libelle: 'Régler le circuit de la clôture annuelle (qui démarre, qui clôture, qui rouvre)', module: 'M12', ecran: 'm12-cloture',
+      rolesDefaut: ['admin', 'da'] },
   ];
   var GESTES_INDEX = {};
   GESTES.forEach(function (g) { GESTES_INDEX[g.id] = g; });

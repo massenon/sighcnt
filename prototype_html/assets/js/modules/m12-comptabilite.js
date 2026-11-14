@@ -827,9 +827,14 @@
         });
       }
 
+      function soldeTuile(label, v, hint) {
+        return { label: label, value: v == null ? 'Inconnu' : C.money(v), icon: v == null ? 'help-circle' : 'scale', tone: v == null ? 'warning' : (v >= 0 ? 'navy' : 'danger'), hint: hint + (v == null ? '' : (v >= 0 ? ' · Débiteur' : ' · Créditeur')) };
+      }
+
       function afficher() {
         var rows = avecSolde();
         var s = soldeCompte(selCompte.value);
+        var so = global.SIGH.exercice.soldesCompte(selCompte.value, exo());
         C.clear(vue);
 
         vue.appendChild(U.kpiGrid([
@@ -837,6 +842,9 @@
           { label: 'Total débit', value: C.money(s.debit), icon: 'arrow-down-left', tone: 'warning' },
           { label: 'Total crédit', value: C.money(s.credit), icon: 'arrow-up-right', tone: 'success' },
           { label: 'Solde', value: C.money(s.solde), icon: 'scale', tone: s.solde >= 0 ? 'navy' : 'danger', hint: s.solde >= 0 ? 'Débiteur' : 'Créditeur' },
+          /* EF-CLO-4 : l'ouverture et la clôture sont LUES du moteur d'exercice ; une ouverture inconnue se DIT (« Inconnu »), elle n'est jamais un zéro. */
+          soldeTuile('Solde d’ouverture', so.ouverture.valeur, so.ouverture.etat === 'provisoire' ? 'Provisoire : ' + so.ouverture.source : so.ouverture.source),
+          soldeTuile('Solde de clôture', so.cloture.valeur, so.cloture.valeur == null ? 'Inconnu : l’ouverture ne l’est pas moins' : (so.apresCL ? 'Après la pièce de clôture (journal CL)' : (so.cloture.etat === 'en_cloture' ? 'Exercice en clôture' : 'Ouverture plus mouvements'))),
         ]));
 
         vue.appendChild(U.dataTable({
@@ -1956,6 +1964,11 @@
         var v = soldeDesComptes(l.comptes, 'credit', eN1);
         return v == null || v < 0 ? null : v;
       }
+      function calculResultatN1(l) {
+        var v = soldeDesComptes(l.comptes, l.signe === '-' ? 'debit' : 'credit', eN1);
+        if (v == null) return null;
+        return l.signe === '-' ? -v : v;
+      }
       function colonneN1(calcul) {
         return avecN1 ? [{ label: 'Exercice ' + anneeN1 + ' (journal)', align: 'right',
           render: function (l) { return l.t ? el('span') : cellule(calcul(l), { vide: '—' }); } }] : [];
@@ -2101,7 +2114,7 @@
                 { label: 'Exercice ' + L.DEPOT.exerciceN1, align: 'right', render: function (l) { return cellule(l.n1); } },
                 { label: 'Exercice en cours', align: 'right',
                   render: function (l) { return l.t ? el('span') : cellule(calculResultat(l), { vide: '—' }); } },
-              ])),
+              ].concat(colonneN1(calculResultatN1)))),
               K.note('La <strong>marge commerciale est nulle</strong> à la liasse déposée — et c’est '
                 + 'la confirmation documentaire de <strong>RG-02</strong> : les médicaments sont '
                 + 'facturés au prix d’achat, sans marge. Si elle cessait de l’être, ce serait un '
@@ -2428,7 +2441,7 @@
         + 'Rien n’est figé : la saisie peut reprendre tant que la Direction n’a pas clôturé définitivement.', confirmLabel: 'Démarrer la clôture' }).then(function (ok) {
       if (!ok) return;
       var r = global.SIGH.exercice.demarrer(x.annee);
-      if (!r.ok) { U.toast('Démarrage refusé.', { type: 'error', detail: r.motif }); return; }
+      if (!r.ok) { U.toast('Démarrage refusé.', { type: 'error', detail: r.motif + (r.geste ? ' ' + r.geste : '') }); return; }
       U.toast('Clôture ' + x.annee + ' démarrée.', { type: 'success', detail: 'Les modules n’écrivent plus dans cet exercice.' });
       S.rechargerQuandEnvoye();
     });
@@ -2438,7 +2451,7 @@
     U.confirm({ title: 'Reprendre la saisie de l’exercice ' + x.annee + ' ?', message: 'Les modules écrivent de nouveau dans ' + x.annee + '. Possible tant que rien n’est clôturé.', confirmLabel: 'Reprendre la saisie' }).then(function (ok) {
       if (!ok) return;
       var r = global.SIGH.exercice.reprendre(x.annee);
-      if (!r.ok) { U.toast('Reprise refusée.', { type: 'error', detail: r.motif }); return; }
+      if (!r.ok) { U.toast('Reprise refusée.', { type: 'error', detail: r.motif + (r.geste ? ' ' + r.geste : '') }); return; }
       U.toast('Saisie de ' + x.annee + ' reprise.', { type: 'success' });
       S.rechargerQuandEnvoye();
     });
@@ -2452,7 +2465,7 @@
       footer: [K.btn('Annuler', { variant: 'secondary', onclick: function () { m.close(); } }),
         K.btn('Rouvrir', { icon: 'unlock', variant: 'danger', onclick: function () {
           var r = global.SIGH.exercice.rouvrir(x.annee, champ.value);
-          if (!r.ok) { U.toast('Réouverture refusée.', { type: 'error', detail: r.motif }); return; }
+          if (!r.ok) { U.toast('Réouverture refusée.', { type: 'error', detail: r.motif + (r.geste ? ' ' + r.geste : '') }); return; }
           m.close();
           U.toast('Exercice ' + x.annee + ' rouvert.', { type: 'success', detail: r.pieces.join(' et ') + ' contre-passent la clôture.' });
           S.rechargerQuandEnvoye();
@@ -2463,11 +2476,11 @@
     var champ = el('textarea.input', { rows: 3, placeholder: 'Motif de la validation (obligatoire)', id: 'motif-cloture' });
     var m = U.modal({ title: 'Valider la clôture de l’exercice ' + x.annee, body: el('div.space-y-3', null, [
       el('p.text-sm.text-slate-700', { html: 'Clôture démarrée par <strong>' + U.texteEnrichi(x.demandePar || '—') + '</strong>. Les contrôles sont rejoués, puis, d’un seul tenant : '
-        + 'pièce de clôture (journal CL) qui solde les classes 6, 7 et 8 centre par centre, pièce d’à-nouveaux (journal AN) de ' + (x.annee + 1) + ', verrou, archive. Seul le comptable peut ensuite rouvrir l’exercice.' }), champ ]),
+        + 'pièce de clôture (journal CL) qui solde les classes 6, 7 et 8 centre par centre, pièce d’à-nouveaux (journal AN) de ' + (x.annee + 1) + ', verrou, archive. Peuvent ensuite rouvrir l’exercice : ' + global.SIGH.exercice.nomsRoles(global.SIGH.exercice.circuit('rolesRouvrir').valeur || []) + '.' }), champ ]),
       footer: [K.btn('Annuler', { variant: 'secondary', onclick: function () { m.close(); } }),
         K.btn('Clôturer définitivement', { icon: 'lock', variant: 'danger', onclick: function () {
           var r = global.SIGH.exercice.valider(x.annee, champ.value);
-          if (!r.ok) { U.toast('Clôture refusée.', { type: 'error', detail: r.motif }); return; }
+          if (!r.ok) { U.toast('Clôture refusée.', { type: 'error', detail: r.motif + (r.geste ? ' ' + r.geste : '') }); return; }
           m.close();
           U.toast('Exercice ' + x.annee + ' clos.', { type: 'success', detail: 'Résultat ' + C.money(r.resultat) + ' — ' + r.lignesAN + ' ligne(s) d’à-nouveau écrite(s).' });
           S.rechargerQuandEnvoye();
@@ -2477,15 +2490,19 @@
   global.SIGH.screen('m12-cloture', {
     title: 'Exercices & clôtures',
     description: 'Sélecteur d’exercice, pré-clôture, clôture en deux gestes, à-nouveaux et lettrage des tiers.',
-    regle: 'Trois états : <strong>ouvert</strong>, <strong>en clôture</strong> (les modules n’écrivent plus), <strong>clôturé</strong> (lecture seule). Le <strong>comptable démarre</strong> la clôture, '
-      + 'la <strong>Direction ou la DAF clôture définitivement</strong> (une autre personne), et seul le <strong>comptable rouvre</strong>, avec un motif, par contre-passation. '
-      + 'La caisse continue d’encaisser : une pièce s’enregistre toujours dans l’exercice de sa date.',
+    regle: function () {
+      var X = global.SIGH.exercice, c = X.circuitComplet(), nom = function (l) { return c.ok || l ? '<strong>' + C.escapeHtml(X.nomsRoles(l)) + '</strong>' : '<strong>(non arrêté)</strong>'; };
+      return 'Trois états : <strong>ouvert</strong>, <strong>en clôture</strong> (les modules n’écrivent plus), <strong>clôturé</strong> (lecture seule). Démarrent la clôture : ' + nom(c.rolesDemarrer)
+        + ' ; la clôture définitive revient à ' + nom(c.rolesCloturer) + ' (une autre personne que celle qui l’a démarrée) ; rouvrent, avec un motif, par contre-passation : ' + nom(c.rolesRouvrir)
+        + '. Ces listes se règlent à l’onglet « Circuit de clôture ». La caisse continue d’encaisser : une pièce s’enregistre toujours dans l’exercice de sa date.';
+    },
     render: function () {
       var X = global.SIGH.exercice, host = el('div.space-y-4');
       var droits = K.droits('M12'), role = (S.session() || {}).role;
-      var peutDemander = droits.editer && ['comptable', 'da', 'admin'].indexOf(role) >= 0;
-      var peutValider = ['da', 'direction', 'admin'].indexOf(role) >= 0;
-      var peutRouvrir = droits.editer && ['comptable', 'admin'].indexOf(role) >= 0;
+      /* Aucun nom de rôle ici : les trois listes se LISENT dans le circuit de clôture (réglage daté, défauts semés). */
+      var peutDemander = droits.editer && X.peut('rolesDemarrer');
+      var peutValider = X.peut('rolesCloturer');
+      var peutRouvrir = droits.editer && X.peut('rolesRouvrir');
       var cur = X.de(X.choisi()), pre = X.preCloture(X.choisi());
 
       host.appendChild(U.kpiGrid([
@@ -2556,11 +2573,75 @@
         } },
         { id: 'lettrage', label: 'Lettrage des tiers', render: function () { return ecranLettrage(); } },
         { id: 'comptes-resultat', label: 'Comptes de résultat', render: function () { return ecranComptesResultat(droits, role); } },
+        { id: 'circuit', label: 'Circuit de clôture', render: function () { return ecranCircuitCloture(); } },
       ];
       host.appendChild(U.tabs(onglets));
       return host;
     },
   });
+
+  /* LE CIRCUIT DE CLÔTURE (lot CLO C1) : lu au moteur (`SIGH.exercice.circuit`), réglé par un geste réservé de la fiche RBAC. L'écran ne nomme aucun rôle : les cases viennent de la
+     matrice des rôles, les valeurs du réglage daté. La commande « Enregistrer le circuit » est ABSENTE sans le droit (jamais grisée) ; le moteur refuse aussi. */
+  function ecranCircuitCloture() {
+    var X = global.SIGH.exercice, N = global.SIGH.nav, wrap = el('div.space-y-4');
+    var defs = X.definitionsCircuit(), peut = X.peutRegler();
+    var libOf = function (d, v) { return d.type === 'roles' ? X.nomsRoles(v) : String(v); };
+    wrap.appendChild(U.card('Circuit en vigueur aujourd’hui', K.miniTable(['Réglage', 'Valeur lue', 'En vigueur depuis', 'Version'], defs.map(function (d) {
+      var r = X.circuit(d.cle);
+      return [d.libelle, r.ok ? libOf(d, r.valeur) : 'Non arrêté : ' + r.motif, r.ok ? C.dateFR(r.dateEffet) : '—', r.ok ? String(r.version) : '—'];
+    }))));
+    var histo = [];
+    defs.forEach(function (d) { X.versionsCircuit(d.cle).forEach(function (v) { histo.push([d.libelle, libOf(d, v.valeur), C.dateFR(v.dateEffet) + (v.dateFin ? ' au ' + C.dateFR(v.dateFin) : ' (en cours)'), v.creePar || '—', v.motif || '—']); }); });
+    wrap.appendChild(U.card('Historique des versions (jamais réécrites)', K.miniTable(['Réglage', 'Valeur', 'Période', 'Par', 'Motif'], histo)));
+    if (!peut) {
+      wrap.appendChild(K.note('Le droit « Régler le circuit de la clôture annuelle » n’est pas accordé à votre profil : le circuit se <strong>lit</strong> ici, il se règle depuis un profil qui détient ce droit (matrice des droits). Aucune commande n’est proposée.', { tone: 'info', icon: 'lock' }));
+      return wrap;
+    }
+    var roles = Object.keys(N.ROLES).filter(function (r) { return !(N.roleArchive && N.roleArchive(r)); });
+    var champs = {};
+    var form = el('div.space-y-4');
+    defs.forEach(function (d) {
+      var r = X.circuit(d.cle), courant = r.ok ? r.valeur : [];
+      var bloc = el('div.rounded-lg.border.border-slate-200.p-3');
+      bloc.appendChild(el('p.text-sm.font-semibold', { text: d.libelle }));
+      bloc.appendChild(el('p.text-xs.text-slate-500.mb-2', { text: d.aide }));
+      if (d.type === 'roles') {
+        var grille = el('div.grid.gap-1.sm\\:grid-cols-2.lg\\:grid-cols-3'), cases = {};
+        roles.forEach(function (rid) {
+          var cb = el('input', { type: 'checkbox', 'aria-label': d.libelle + ' : ' + libelleRoleCircuit(rid), dataset: { cle: d.cle, role: rid } });
+          cb.checked = courant.indexOf(rid) >= 0; cases[rid] = cb;
+          grille.appendChild(el('label.flex.items-center.gap-2.text-sm', null, [cb, el('span', { text: libelleRoleCircuit(rid) })]));
+        });
+        champs[d.cle] = { lire: function () { return roles.filter(function (rid) { return cases[rid].checked; }); }, courant: courant };
+        bloc.appendChild(grille);
+      } else {
+        var sel = el('select.select.w-auto', { 'aria-label': d.libelle, dataset: { cle: d.cle } });
+        C.MOIS.forEach(function (m, i) { var o = el('option', { value: String(i + 1) }, (i + 1) + ' : ' + m); if (courant === i + 1) o.selected = true; sel.appendChild(o); });
+        champs[d.cle] = { lire: function () { return Number(sel.value); }, courant: courant };
+        bloc.appendChild(sel);
+      }
+      form.appendChild(bloc);
+    });
+    var date = el('input.input.w-44', { type: 'date', value: C.iso(C.aujourdhui()), 'aria-label': 'Date d’effet' });
+    var motif = el('textarea.input', { rows: 2, placeholder: 'Motif du changement (obligatoire)', 'aria-label': 'Motif du changement' });
+    form.appendChild(el('div.grid.gap-3.sm\\:grid-cols-2', null, [el('div', null, [el('label.label', { text: 'Date d’effet' }), date]), el('div', null, [el('label.label', { text: 'Motif' }), motif])]));
+    form.appendChild(K.btn('Enregistrer le circuit', { icon: 'save', variant: 'primary', onclick: function () {
+      var faits = 0;
+      for (var i = 0; i < defs.length; i++) {
+        var d = defs[i], f = champs[d.cle], v = f.lire();
+        if (JSON.stringify(v) === JSON.stringify(f.courant)) continue;
+        var res = X.definirCircuit({ cle: d.cle, valeur: v, dateEffet: date.value, motif: motif.value });
+        if (!res.ok) { U.toast('Circuit refusé.', { type: 'error', detail: res.motif + (res.geste ? ' ' + res.geste : '') }); if (faits) S.rechargerQuandEnvoye(); return; }
+        faits++;
+      }
+      if (!faits) { U.toast('Aucun changement : le circuit est identique.', { type: 'info' }); return; }
+      U.toast('Circuit de clôture enregistré (' + faits + ' réglage(s), nouvelle version datée).', { type: 'success', detail: 'Les versions précédentes sont conservées.' });
+      S.rechargerQuandEnvoye();
+    } }));
+    wrap.appendChild(U.card('Modifier le circuit (une nouvelle version datée, la précédente est conservée)', form));
+    return wrap;
+  }
+  function libelleRoleCircuit(rid) { var N = global.SIGH.nav; return (N.ROLES[rid] && N.ROLES[rid].label) || rid; }
 
   /* LETTRAGE — un ensemble de lignes d'un compte de tiers dont le total s'annule.
      Seules les lignes NON lettrées sont reprises ligne à ligne aux à-nouveaux. */
@@ -3839,10 +3920,10 @@
      on les MODIFIE, on ne les crée ni ne les archive (la clôture a besoin des deux). Réservée à ceux qui peuvent démarrer une clôture. */
   function ecranComptesResultat(droits, role) {
     var X = global.SIGH.exercice, col = X.comptesResultat();
-    var peut = droits.editer && ['comptable', 'da', 'admin'].indexOf(role) >= 0;
+    var peut = droits.editer && X.peut('rolesDemarrer');
     var host = el('div.space-y-4');
     host.appendChild(K.note('<strong>Le compte du résultat net.</strong> La clôture solde les classes 6, 7 et 8 vers le compte de bénéfice (131) ou de perte (139) selon le signe du résultat. Ces comptes se paramètrent ici, jamais dans le code. '
-      + (peut ? 'Une modification vaut pour les prochaines clôtures : les pièces CL déjà écrites ne changent pas.' : 'Réservé au comptable, à la Directrice Administrative et à l’administrateur : vous consultez.'), { tone: 'info', icon: 'scale' }));
+      + (peut ? 'Une modification vaut pour les prochaines clôtures : les pièces CL déjà écrites ne changent pas.' : 'Réservé à : ' + C.escapeHtml(X.nomsRoles(X.circuit('rolesDemarrer').valeur || [])) + ' (circuit de clôture) : vous consultez.'), { tone: 'info', icon: 'scale' }));
     function champs() {
       return [
         { name: 'compte', label: 'Compte (six chiffres)', required: true, help: '131… pour le bénéfice, 139… pour la perte (SYSCOHADA).' },

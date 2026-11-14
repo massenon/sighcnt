@@ -9,6 +9,9 @@ typedef M = Map<String, Object?>;
 
 final auj = DateTime.utc(2026, 10, 31, 10);
 
+/// Le circuit SEMÉ (défauts du registre des paramètres), jamais une liste écrite dans le test.
+CpcCircuit circuitDeTest() => CpcCircuit.lire((k) => definitionDeParametre(k)!.defaut);
+
 void main() {
   group('Agent : l\'identité nominative', () {
     final personnel = <M>[
@@ -86,21 +89,21 @@ void main() {
 
     test('le même agent ne valide pas sa propre demande, même sous un autre nom ou un autre rôle', () {
       final r = cpcValiderCloture(exercices(demandeParId: 'USR003'), const [], 2026,
-          motif: 'Exercice conforme', acteur: 'Un autre libellé', acteurId: 'USR003', role: 'direction', maintenant: auj);
+          motif: 'Exercice conforme', acteur: 'Un autre libellé', acteurId: 'USR003', role: 'direction', circuit: circuitDeTest(), maintenant: auj);
       expect(r.ok, isFalse);
       expect(r.motif, contains('Signer n’est pas saisir'));
     });
 
     test('deux agents de même NOM mais d\'identifiants différents sont deux personnes : le contrôle ne refuse pas sur le nom', () {
       final r = cpcValiderCloture(exercices(demandeParId: 'USR003'), const [], 2026,
-          motif: 'Exercice conforme', acteur: 'KASSA Augustin', acteurId: 'USR777', role: 'direction', maintenant: auj);
+          motif: 'Exercice conforme', acteur: 'KASSA Augustin', acteurId: 'USR777', role: 'direction', circuit: circuitDeTest(), maintenant: auj);
       // Le refus éventuel vient d'ailleurs (pas d'écritures à clore), jamais de la séparation des tâches.
       expect(r.motif ?? '', isNot(contains('Signer n’est pas saisir')));
     });
 
     test('une demande ANTÉRIEURE sans identifiant retombe sur le nom, faute de mieux', () {
       final r = cpcValiderCloture(exercices(), const [], 2026,
-          motif: 'Exercice conforme', acteur: 'KASSA Augustin', acteurId: 'USR003', role: 'direction', maintenant: auj);
+          motif: 'Exercice conforme', acteur: 'KASSA Augustin', acteurId: 'USR003', role: 'direction', circuit: circuitDeTest(), maintenant: auj);
       expect(r.motif, contains('Signer n’est pas saisir'));
     });
   });

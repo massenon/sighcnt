@@ -26640,10 +26640,10 @@ async function viderMessages(page) {
     /* --- E2 : la première pièce du 1er janvier ouvre l'année, et le journal d'audit le DIT --- */
     const e2 = await page.evaluate(() => {
       const X = window.SIGH.exercice, S = window.SIGH.store;
-      const avant = X.de(2028);
-      const r = S.collection('ecritures').insert({ numero: 'CLO-E2', date: '2028-01-01', journal: 'OD', compte: '606000', debit: 10, credit: 0, statut: 'brouillon', origine: 'Saisie manuelle' });
-      const x = X.de(2028);
-      const trace = (S.raw().audit || []).filter((l) => /Ouverture d.exercice/.test(l.action) && String(l.reference) === '2028');
+      const avant = X.de(2057);
+      const r = S.collection('ecritures').insert({ numero: 'CLO-E2', date: '2057-01-01', journal: 'OD', compte: '606000', debit: 10, credit: 0, statut: 'brouillon', origine: 'Saisie manuelle' });
+      const x = X.de(2057);
+      const trace = (S.raw().audit || []).filter((l) => /Ouverture d.exercice/.test(l.action) && String(l.reference) === '2057');
       return { avant: !!avant, insere: !!r, existe: !!x, etat: x && x.etat, trace: trace.length };
     });
     verifier('E2 : une pièce datée du 1er janvier d’une année sans exercice FAIT exister l’exercice (ouvert)', e2.avant === false && e2.insere && e2.existe && e2.etat === 'ouvert', JSON.stringify(e2));
@@ -26749,6 +26749,248 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
   });
   /* LOT CLO C0 FIN */
+
+  /* LOT CLO C1 DÉBUT */
+  await etape(async () => {
+    scenario('Vague 180 : lot CLO C1, circuit de clôture réglable (défauts semés, version datée jamais réécrite, geste réservé, refus qui cite la liste LUE, séparation des tâches, fileul en lecture, garde de génération contre un rôle écrit en dur)');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN180', nomComplet: 'ADMIN180', fonction: 'admin', identifiant: 's180.admin', secteur: 'DIR' });
+    await ouvrir('m12-cloture.html');
+    /* 1. Les défauts sont SEMÉS, égaux aux listes d'avant (sauf la clôture définitive, élargie au comptable par la Direction) */
+    const d0 = await page.evaluate(() => { const X = window.SIGH.exercice; const c = X.circuitComplet(); return { ok: c.ok, dem: c.rolesDemarrer, inv: c.rolesInventaire, clo: c.rolesCloturer, rou: c.rolesRouvrir, mois: c.moisOuvertureSuivant,
+      nb: window.SIGH.store.collection('reglagesCloture').active().length, v: window.SIGH.store.raw()._version != null ? null : null }; });
+    verifier('Les défauts du circuit sont semés : démarrer (comptable, DA, administrateur), inventaire (comptable, administrateur), clôturer (DA, Direction, administrateur, comptable), rouvrir (comptable, administrateur), décembre',
+      d0.ok && JSON.stringify(d0.dem) === '["comptable","da","admin"]' && JSON.stringify(d0.inv) === '["comptable","admin"]' && JSON.stringify(d0.clo) === '["da","direction","admin","comptable"]' && JSON.stringify(d0.rou) === '["comptable","admin"]' && d0.mois === 12 && d0.nb === 5, JSON.stringify(d0));
+    /* 2. Le moteur lit le circuit : changer la liste change qui clôture, sans toucher au code */
+    const c2 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures'), o = {};
+      const qui = (role, nom) => S.setSession({ role, nom, nomComplet: nom, fonction: role, secteur: 'DIR' });
+      qui('admin', 'ADMIN180');
+      S.raw().ecritures.splice(0);
+      ecr.insert({ numero: 'CLO-C1P', date: '2026-04-04', journal: 'OD', compte: '706000', debit: 0, credit: 500, statut: 'validee', origine: 'Saisie manuelle' });
+      ecr.insert({ numero: 'CLO-C1P', date: '2026-04-04', journal: 'OD', compte: '571000', debit: 500, credit: 0, statut: 'validee', origine: 'Saisie manuelle' });
+      o.refusInitial = (() => { qui('caissier', 'CAISSIER180'); const r = X.demarrer(2026); qui('admin', 'ADMIN180'); return { ok: r.ok, code: r.code, motif: r.motif, geste: r.geste, roles: r.roles }; })();
+      qui('comptable', 'COMPTABLE180'); o.demarre = X.demarrer(2026).ok; o.etat = X.etat(2026);
+      qui('caissier', 'CAISSIER180'); const avant = X.valider(2026, 'tentative caissier'); o.caissierAvant = { ok: avant.ok, code: avant.code, motif: avant.motif, geste: avant.geste };
+      /* l'administrateur change la liste : le caissier clôture, la Directrice Administrative non */
+      qui('admin', 'ADMIN180');
+      const chg = X.definirCircuit({ cle: 'rolesCloturer', valeur: ['caissier'], motif: 'Sonde 180 : le caissier clôture' }); o.chg = { ok: chg.ok, code: chg.code };
+      qui('da', 'DA180'); const daRefus = X.valider(2026, 'tentative DA'); o.daRefus = { ok: daRefus.ok, code: daRefus.code, motif: daRefus.motif, roles: daRefus.roles };
+      qui('caissier', 'CAISSIER180'); const ok = X.valider(2026, 'Clôture par un rôle que le circuit désigne'); o.caissierApres = { ok: ok.ok, motif: ok.motif || '' }; o.etatApres = X.etat(2026);
+      qui('admin', 'ADMIN180');
+      return o;
+    });
+    verifier('Un rôle hors de la liste lue est refusé en NOMMANT le refus : code CLOTURE_DEMARRAGE_RESERVE, motif qui cite les rôles de la liste (Comptable, DAF, Administrateur système) et geste de correction',
+      c2.refusInitial.ok === false && c2.refusInitial.code === 'CLOTURE_DEMARRAGE_RESERVE' && /action réservée à : .*Comptable.*Administrateur/.test(c2.refusInitial.motif) && /circuit/.test(c2.refusInitial.geste || '') && c2.refusInitial.roles.length === 3, JSON.stringify(c2.refusInitial));
+    verifier('Avant le changement, un caissier ne peut pas clôturer : refus CLOTURE_DEFINITIVE_RESERVEE qui cite la liste lue', c2.demarre && c2.etat === 'en_cloture' && c2.caissierAvant.ok === false && c2.caissierAvant.code === 'CLOTURE_DEFINITIVE_RESERVEE' && /DAF/.test(c2.caissierAvant.motif), JSON.stringify(c2.caissierAvant));
+    verifier('Changer le circuit change qui peut clôturer, sans toucher au code : la Directrice Administrative est refusée avec la NOUVELLE liste (Caissier), le caissier clôture',
+      c2.chg.ok && c2.daRefus.ok === false && c2.daRefus.code === 'CLOTURE_DEFINITIVE_RESERVEE' && /action réservée à : Caissier/.test(c2.daRefus.motif) && c2.caissierApres.ok === true && c2.etatApres === 'clos', JSON.stringify([c2.chg, c2.daRefus, c2.caissierApres, c2.etatApres]));
+    await page.evaluate(() => window.SIGH.store.reset());
+    /* 3. La séparation des tâches reste : la personne qui a démarré ne clôture pas, même présente dans la liste */
+    const c3 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      const qui = (role, nom) => S.setSession({ role, nom, nomComplet: nom, fonction: role, secteur: 'DIR' });
+      qui('admin', 'ADMIN180'); S.raw().ecritures.splice(0);
+      ecr.insert({ numero: 'CLO-C1S', date: '2026-04-04', journal: 'OD', compte: '706000', debit: 0, credit: 700, statut: 'validee', origine: 'Saisie manuelle' });
+      ecr.insert({ numero: 'CLO-C1S', date: '2026-04-04', journal: 'OD', compte: '571000', debit: 700, credit: 0, statut: 'validee', origine: 'Saisie manuelle' });
+      qui('comptable', 'COMPTABLE180'); const dem = X.demarrer(2026);
+      const seul = X.valider(2026, 'le comptable clôture sa propre clôture');
+      qui('comptable', 'COMPTABLE181'); const autre = X.valider(2026, 'un autre comptable clôture (le comptable est dans la liste par défaut)');
+      qui('admin', 'ADMIN180');
+      return { dem: dem.ok, seul: { ok: seul.ok, code: seul.code }, autre: { ok: autre.ok, motif: autre.motif || '' } };
+    });
+    verifier('Le comptable peut désormais clôturer (Direction, Q2) mais JAMAIS celui qui a démarré : refus CLOTURE_MEME_PERSONNE ; un autre comptable clôture',
+      c3.dem && c3.seul.ok === false && c3.seul.code === 'CLOTURE_MEME_PERSONNE' && c3.autre.ok === true, JSON.stringify(c3));
+    await page.evaluate(() => window.SIGH.store.reset());
+    /* 4. Versions datées : jamais réécrites, la précédente est fermée à la veille, la valeur d'une date passée reste lisible */
+    const c4 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, col = S.collection('reglagesCloture');
+      S.setSession({ role: 'admin', nom: 'ADMIN180', nomComplet: 'ADMIN180', fonction: 'admin', secteur: 'DIR' });
+      const r = X.definirCircuit({ cle: 'rolesRouvrir', valeur: ['comptable', 'admin', 'da'], dateEffet: '2026-09-01', motif: 'Sonde 180 : la DAF rouvre aussi' });
+      const v = X.versionsCircuit('rolesRouvrir');
+      const avant = X.circuit('rolesRouvrir', '2026-08-31'), apres = X.circuit('rolesRouvrir', '2026-09-01');
+      const reecrit = col.update(v[0].id, { valeur: ['direction'] });
+      const passe = X.definirCircuit({ cle: 'rolesRouvrir', valeur: ['admin'], dateEffet: '2026-01-15', motif: 'Sonde 180 : dans le passé' });
+      const vide = X.definirCircuit({ cle: 'rolesRouvrir', valeur: [], motif: 'Sonde 180 : liste vide' });
+      const inconnu = X.definirCircuit({ cle: 'rolesRouvrir', valeur: ['comptable', 'roi'], motif: 'Sonde 180 : rôle inconnu' });
+      const mois = X.definirCircuit({ cle: 'moisOuvertureSuivant', valeur: 13, motif: 'Sonde 180 : mois 13' });
+      const sansMotif = X.definirCircuit({ cle: 'rolesRouvrir', valeur: ['admin'], motif: '' });
+      const audit = (S.raw().audit || []).filter((l) => l.action === 'Circuit de clôture : nouvelle version').length;
+      return { ok: r.ok, n: v.length, fin0: v[0].dateFin, avant: avant.valeur, apres: apres.valeur, reecrit: reecrit === null, passe: passe.code, vide: vide.code, inconnu: inconnu.code, mois: mois.code, sansMotif: sansMotif.code, audit };
+    });
+    verifier('Une nouvelle version est datée : la précédente est fermée à la veille (31/08), la valeur du 31/08 reste l’ancienne liste, celle du 01/09 la nouvelle ; le journal d’audit porte le changement',
+      c4.ok && c4.n === 2 && c4.fin0 === '2026-08-31' && JSON.stringify(c4.avant) === '["comptable","admin"]' && JSON.stringify(c4.apres) === '["comptable","admin","da"]' && c4.audit === 1, JSON.stringify(c4));
+    verifier('Une version ne se réécrit jamais (CIRCUIT_VERSION_FIGEE au moteur du magasin) ; une date dans le passé, une liste vide, un rôle inconnu, un mois 13 et l’absence de motif sont refusés avec leur code',
+      c4.reecrit && c4.passe === 'CIRCUIT_DATE_ANTERIEURE' && c4.vide === 'CIRCUIT_LISTE_VIDE' && c4.inconnu === 'CIRCUIT_ROLE_INCONNU' && c4.mois === 'CIRCUIT_MOIS_INVALIDE' && c4.sansMotif === 'CIRCUIT_MOTIF_OBLIGATOIRE', JSON.stringify(c4));
+    await page.evaluate(() => window.SIGH.store.reset());
+    /* 5. Régler le circuit est un geste RÉSERVÉ de la fiche RBAC (admin et DA d'origine), jamais un nom de rôle du moteur ; le fileul lit, la mère règle */
+    const c5 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, N = window.SIGH.nav, out = {};
+      const essai = (role) => { S.setSession({ role, nom: role + '180', nomComplet: role + '180', fonction: role, secteur: 'DIR' }); const r = X.definirCircuit({ cle: 'moisOuvertureSuivant', valeur: 11, motif: 'Sonde 180 : droit de ' + role }); if (r.ok) S.collection('reglagesCloture').archive(r.id, 'Sonde 180'); return r.ok ? 'ok' : r.code; };
+      out.admin = essai('admin'); out.da = essai('da'); out.comptable = essai('comptable'); out.direction = essai('direction');
+      out.detenteurs = N.rolesAvecGeste('regler_circuit_cloture').slice().sort();
+      S.setSession({ role: 'admin', nom: 'ADMIN180', nomComplet: 'ADMIN180', fonction: 'direction', secteur: 'DIR' });
+      S.setReglage('posteFileul', true);
+      const f = X.definirCircuit({ cle: 'moisOuvertureSuivant', valeur: 11, motif: 'Sonde 180 : fileul' });
+      out.fileul = f.code; out.fileulLit = X.circuit('rolesCloturer').ok;
+      S.setReglage('posteFileul', false);
+      return out;
+    });
+    verifier('Le droit de régler le circuit est un geste réservé : l’administrateur et la Directrice Administrative l’ont d’origine, le comptable et la Direction non (refus CIRCUIT_REGLAGE_RESERVE)',
+      c5.admin === 'ok' && c5.da === 'ok' && c5.comptable === 'CIRCUIT_REGLAGE_RESERVE' && c5.direction === 'CIRCUIT_REGLAGE_RESERVE' && JSON.stringify(c5.detenteurs) === '["admin","da"]', JSON.stringify(c5));
+    verifier('Un fileul LIT le circuit mais ne le règle pas (la mère écrit) : refus FILEUL_LECTURE_SEULE', c5.fileul === 'FILEUL_LECTURE_SEULE' && c5.fileulLit === true, JSON.stringify(c5));
+    /* 6. Inventaire en clôture : la liste lue décide aussi de la saisie manuelle */
+    const c6 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      const qui = (role, nom) => S.setSession({ role, nom, nomComplet: nom, fonction: role, secteur: 'DIR' });
+      qui('admin', 'ADMIN180'); S.raw().ecritures.splice(0);
+      ecr.insert({ numero: 'CLO-C1I', date: '2026-04-04', journal: 'OD', compte: '706000', debit: 0, credit: 700, statut: 'validee', origine: 'Saisie manuelle' });
+      qui('comptable', 'COMPTABLE180'); X.demarrer(2026);
+      const tente = (role, num) => { qui(role, role + '180'); return !!ecr.insert({ numero: num, date: '2026-12-10', journal: 'OD', compte: '606000', debit: 5, credit: 0, statut: 'brouillon', origine: 'Saisie manuelle' }); };
+      const avant = { comptable: tente('comptable', 'CLO-C1I1'), da: tente('da', 'CLO-C1I2') };
+      qui('admin', 'ADMIN180'); X.definirCircuit({ cle: 'rolesInventaire', valeur: ['da'], motif: 'Sonde 180 : seule la DAF passe l’inventaire' });
+      const apres = { comptable: tente('comptable', 'CLO-C1I3'), da: tente('da', 'CLO-C1I4') };
+      qui('admin', 'ADMIN180');
+      return { avant, apres };
+    });
+    verifier('La saisie d’inventaire en clôture suit la liste lue : par défaut le comptable passe et la DAF non ; après le réglage, la DAF passe et le comptable non',
+      c6.avant.comptable === true && c6.avant.da === false && c6.apres.comptable === false && c6.apres.da === true, JSON.stringify(c6));
+    await page.evaluate(() => window.SIGH.store.reset());
+    /* 7. Le routage des notifications suit le circuit (aucun poste écrit en dur) */
+    const c7 = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store;
+      const qui = (role, nom) => S.setSession({ role, nom, nomComplet: nom, fonction: role, secteur: 'DIR' });
+      qui('admin', 'ADMIN180'); X.definirCircuit({ cle: 'rolesCloturer', valeur: ['direction', 'dm'], motif: 'Sonde 180 : notifications' });
+      qui('comptable', 'COMPTABLE180'); const r = X.demarrer(2026);
+      const n = S.collection('notifications').active().filter((x) => x.type === 'cloture' && /Clôture 2026 à valider/.test(x.libelle)).map((x) => x.poste).sort();
+      qui('admin', 'ADMIN180');
+      return { ok: r.ok, postes: n };
+    });
+    verifier('« Clôture à valider » est notifiée aux rôles de la liste lue (Direction et Directeur médical), pas à un poste écrit dans le moteur', c7.ok && JSON.stringify(c7.postes) === '["direction","dm"]', JSON.stringify(c7));
+    await page.evaluate(() => window.SIGH.store.reset());
+    /* 8. L'écran : onglet « Circuit de clôture », commande absente sans le droit, bouton « Clôturer définitivement » selon la liste lue */
+    const lireEcran = async () => page.evaluate(async () => {
+      const t = document.querySelector('button.tab[data-tab="circuit"]'); if (t) { t.click(); await new Promise((r) => setTimeout(r, 400)); }
+      const cmd = [...document.querySelectorAll('#page-content button')].filter((b) => /Enregistrer le circuit/.test(b.textContent)).length;
+      const cases = document.querySelectorAll('#page-content input[type="checkbox"][data-cle]').length;
+      return { onglet: !!t, commande: cmd, cases, regle: (document.getElementById('page-header') || document.body).textContent.replace(/\s+/g, ' ') };
+    });
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN180', nomComplet: 'ADMIN180', fonction: 'admin', identifiant: 's180.admin', secteur: 'DIR' });
+    await ouvrir('m12-cloture.html');
+    const e1 = await lireEcran();
+    verifier('Administrateur : l’onglet « Circuit de clôture » propose les cases (rôles de la matrice) et la commande « Enregistrer le circuit » ; la règle d’en-tête cite la liste lue', e1.onglet && e1.commande === 1 && e1.cases > 40 && /Démarrent la clôture : Comptable/.test(e1.regle), JSON.stringify({ o: e1.onglet, c: e1.commande, k: e1.cases, r: e1.regle.slice(0, 200) }));
+    await poserSessionServeur({ role: 'comptable', nom: 'COMPTABLE180', nomComplet: 'COMPTABLE180', fonction: 'comptable', identifiant: 's180.cpt', secteur: 'ADM' });
+    await ouvrir('m12-cloture.html');
+    const e2 = await lireEcran();
+    verifier('Comptable (sans le droit de régler) : le circuit se lit, la commande « Enregistrer le circuit » est ABSENTE (jamais grisée)', e2.onglet && e2.commande === 0 && e2.cases === 0, JSON.stringify({ o: e2.onglet, c: e2.commande, k: e2.cases }));
+    /* 9. La garde de génération : propre sur l'arbre, et elle ÉCHOUE sur chaque forme de rôle écrit en dur */
+    const garde = require('./garde-roles-en-dur.js');
+    const brut = garde.analyser(path.join(ROOT, 'assets/js'));
+    verifier('La garde ne trouve aucun site nouveau ni disparu dans assets/js (liste blanche exacte)', brut.nouveaux.length === 0 && brut.disparus.length === 0, JSON.stringify([brut.nouveaux.slice(0, 2), brut.disparus.slice(0, 2)]));
+    const tmp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'garde-roles-')), js = path.join(tmp, 'js');
+    fs.mkdirSync(js, { recursive: true });
+    fs.writeFileSync(path.join(js, 'a.js'), "function f(r) { return ['da', 'direction', 'admin'].indexOf(r) >= 0; }\n");
+    fs.writeFileSync(path.join(js, 'b.js'), "function g(s) { return s.role === 'comptable' || role == 'da'; }\n");
+    fs.writeFileSync(path.join(js, 'c.js'), "var r = ['simple', 'texte'];\n/* ['da', 'admin'] en commentaire */\nvar ok = (S.session() || {}).role === roleVoulu;\n");
+    fs.writeFileSync(path.join(js, 'nav.js'), "var m = ['da', 'admin'];\n");
+    const vide = garde.analyser(js, {});
+    const fautes = [...new Set(vide.nouveaux.map((x) => x.fichier.split('/').pop()))].sort();
+    verifier('La garde échoue sur un tableau de rôles et sur une comparaison de rôle ; elle ignore un tableau de textes, un commentaire, une comparaison à une variable et le manifeste nav.js',
+      JSON.stringify(fautes) === JSON.stringify(['a.js', 'b.js']) && vide.nouveaux.length === 3, JSON.stringify(vide.nouveaux.map((x) => x.texte)));
+    let refus = null; try { const sauve = fs.readFileSync(path.join(ROOT, 'build/garde-roles-en-dur.liste.json'), 'utf8'); try { garde.abaisser(js); } finally { fs.writeFileSync(path.join(ROOT, 'build/garde-roles-en-dur.liste.json'), sauve); } } catch (e) { refus = String(e.message); }
+    verifier('La liste blanche ne s’écrit que vers le bas : « --abaisser » refuse d’inscrire un site nouveau', /ne s'écrit que vers le bas/.test(refus || ''), refus);
+    fs.rmSync(tmp, { recursive: true, force: true });
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN180', nomComplet: 'ADMIN180', fonction: 'admin', identifiant: 's180.admin', secteur: 'DIR' });
+    await page.evaluate(() => window.SIGH.store.reset());
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT CLO C1 FIN */
+
+  /* LOT CLO C2 C3 DÉBUT */
+  await etape(async () => {
+    scenario('Vague 181 : lot CLO C2 et C3, boutons « Exercice N-1 / N+1 » (absents sans voisin, onglet conservé), colonne N-1 du compte de résultat au même filtre, soldes d’ouverture et de clôture du grand livre (inconnu jamais zéro, gestion à zéro après la clôture)');
+    erreursJS = [];
+    await poserSessionServeur({ role: 'admin', nom: 'ADMIN181', nomComplet: 'ADMIN181', fonction: 'admin', identifiant: 's181.admin', secteur: 'DIR' });
+    await page.evaluate(() => { window.SIGH.store.reset(); window.SIGH.exercice.choisir(new Date().getFullYear()); });
+    await ouvrir('m12-cloture.html');
+    /* --- C2 : boutons de pas --- */
+    const b0 = await page.evaluate(() => { const p = document.getElementById('exercice-precedent'), n = document.getElementById('exercice-suivant');
+      return { prec: p ? p.textContent.trim() : null, suiv: n ? n.textContent.trim() : null, annees: window.SIGH.exercice.liste().map((x) => x.annee) }; });
+    verifier('E7 : « ‹ Exercice 2025 » est proposé (l’exercice voisin existe), « Exercice 2027 › » est ABSENT (aucun exercice 2027 : jamais grisé)', b0.prec === '‹ Exercice 2025' && b0.suiv === null && b0.annees.indexOf(2027) < 0, JSON.stringify(b0));
+    /* le pas conserve l'onglet affiché */
+    await page.evaluate(async () => { const t = document.querySelector('button.tab[data-tab="circuit"]'); t.click(); await new Promise((r) => setTimeout(r, 300)); });
+    await Promise.all([page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => null), page.evaluate(() => document.getElementById('exercice-precedent').click())]);
+    await attendrePeinture();
+    await pause(700);
+    const b1 = await page.evaluate(() => ({ exo: window.SIGH.exercice.choisi(), onglet: (document.querySelector('#page-content button.tab.tab-active') || {}).dataset ? document.querySelector('#page-content button.tab.tab-active').dataset.tab : null,
+      suiv: !!document.getElementById('exercice-suivant'), prec: !!document.getElementById('exercice-precedent') }));
+    verifier('E7 : le pas vers 2025 CONSERVE l’onglet « Circuit de clôture » ; on peut revenir à 2026 (« Exercice 2026 › » apparaît)', b1.exo === 2025 && b1.onglet === 'circuit' && b1.suiv === true, JSON.stringify(b1));
+    await page.evaluate(() => { window.SIGH.exercice.choisir(new Date().getFullYear()); });
+    /* --- C2 : colonne N-1 du compte de résultat, même filtre de statut --- */
+    await ouvrir('m12-etats-financiers.html');
+    await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      S.raw().ecritures.splice(0);
+      const mk = (num, date, compte, d, c, statut) => ecr.insert({ numero: num, date, journal: 'OD', compte, debit: d, credit: c, statut, origine: 'Saisie manuelle' });
+      mk('CLO-C3A', '2026-05-05', '411000', 123457, 0, 'validee'); mk('CLO-C3A', '2026-05-05', '706000', 0, 123457, 'validee');
+      mk('CLO-C3B', '2026-05-06', '411000', 654321, 0, 'brouillon'); mk('CLO-C3B', '2026-05-06', '706000', 0, 654321, 'brouillon');
+      mk('CLO-C3C', '2027-05-05', '411000', 234569, 0, 'validee'); mk('CLO-C3C', '2027-05-05', '706000', 0, 234569, 'validee');
+      mk('CLO-C3D', '2027-05-06', '411000', 765431, 0, 'brouillon'); mk('CLO-C3D', '2027-05-06', '706000', 0, 765431, 'brouillon');
+      X.choisir(2027);
+    });
+    await ouvrir('m12-etats-financiers.html');
+    const cr = await page.evaluate(async () => {
+      const t = document.querySelector('button.tab[data-tab="resultat"]'); if (t) { t.click(); await new Promise((r) => setTimeout(r, 400)); }
+      const entetes = [...document.querySelectorAll('#page-content table thead th')].map((x) => x.textContent.trim());
+      const lignes = {}; [...document.querySelectorAll('#page-content table tbody tr')].forEach((tr) => { const c = [...tr.children].map((x) => x.textContent.replace(/[\s  ]+/g, '')); if (c.length > 4 && /^[A-Z]{2}$/.test(c[0])) lignes[c[0]] = c; });
+      return { entetes: entetes.filter((h) => /journal|en cours/i.test(h)), TC: lignes.TC || null, texte: (document.getElementById('page-content') || document.body).textContent.replace(/[\s  ]+/g, '') };
+    });
+    const ch = (v) => String(v || '').replace(/[^0-9]/g, '');
+    verifier('E9 : le compte de résultat de 2027 a une colonne « Exercice 2026 (journal) » : N-1 = 123 457 (le brouillon 654 321 n’y est pas), N = 234 569 (le brouillon 765 431 non plus), au MÊME filtre de statut que le bilan',
+      cr.entetes.some((h) => /Exercice 2026 \(journal\)/.test(h)) && cr.TC && ch(cr.TC[cr.TC.length - 1]) === '123457' && ch(cr.TC[cr.TC.length - 2]) === '234569' && !/654321/.test(cr.texte) && !/765431/.test(cr.texte), JSON.stringify({ e: cr.entetes, tc: cr.TC }));
+    /* --- C3 : les soldes du grand livre (moteur) --- */
+    const g = await page.evaluate(() => {
+      const X = window.SIGH.exercice, f = (c, a) => { const r = X.soldesCompte(c, a); return { ouv: r.ouverture.valeur, etatO: r.ouverture.etat, d: r.mouvements.debit, c: r.mouvements.credit, clo: r.cloture.valeur, etatC: r.cloture.etat, apresCL: r.apresCL }; };
+      return { b27: f('411000', 2027), g27: f('706000', 2027), b26: f('411000', 2026), g26: f('706000', 2026) };
+    });
+    verifier('E11 : l’ouverture de 2027 pour un compte de bilan est le report PROVISOIRE de 2026 (123 457, dit tel) ; la clôture = ouverture + mouvements de 2027 (brouillons compris, comme l’écran)',
+      g.b27.ouv === 123457 && g.b27.etatO === 'provisoire' && g.b27.d === 234569 + 765431 && g.b27.clo === 123457 + 234569 + 765431 && g.b27.etatC === 'courant', JSON.stringify(g.b27));
+    verifier('E11 : l’ouverture d’un compte de GESTION est zéro, dit « gestion » (il ne se reporte jamais)', g.g27.ouv === 0 && g.g27.etatO === 'gestion' && g.g26.etatO === 'gestion', JSON.stringify([g.g27, g.g26]));
+    verifier('E11 : l’ouverture de 2026 est INCONNUE (2025 est clos par la liasse, sans à-nouveau) : ni zéro ni inventée, la clôture l’est aussi',
+      g.b26.ouv === null && g.b26.etatO === 'inconnue' && g.b26.clo === null && g.b26.etatC === 'inconnue', JSON.stringify(g.b26));
+    /* --- C3 : l'écran dit « Inconnu » (jamais zéro) et affiche les deux tuiles --- */
+    await page.evaluate(() => { window.SIGH.exercice.choisir(2026); });
+    await ouvrir('m12-grand-livre.html');
+    const t1 = await page.evaluate(() => (document.getElementById('page-content') || document.body).textContent.replace(/\s+/g, ' '));
+    verifier('E11 : le grand livre de 2026 affiche « Solde d’ouverture » INCONNU (« ce n’est pas zéro ») et « Solde de clôture » INCONNU', /Solde d’ouverture\s*Inconnu/.test(t1) && /ce n’est pas zéro/.test(t1) && /Solde de clôture\s*Inconnu/.test(t1), t1.slice(0, 400));
+    await page.evaluate(() => { window.SIGH.exercice.choisir(2027); });
+    await ouvrir('m12-grand-livre.html');
+    const t2 = await page.evaluate(() => (document.getElementById('page-content') || document.body).textContent.replace(/[\s  ]+/g, ''));
+    verifier('E11 : le grand livre de 2027 affiche l’ouverture provisoire 123 457 et la clôture 1 123 457', /Solded’ouverture123457/.test(t2) && /Provisoire/.test(t2) && /Soldedeclôture1123457/.test(t2), t2.slice(0, 300));
+    /* --- C3 : après la clôture, les comptes de gestion sont à zéro, l'ouverture suivante est ÉCRITE --- */
+    const k = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      const qui = (role, nom) => S.setSession({ role, nom, nomComplet: nom, fonction: role, secteur: 'DIR' });
+      qui('admin', 'ADMIN181'); S.raw().ecritures.splice(0);
+      ecr.insert({ numero: 'CLO-C3K', date: '2026-06-06', journal: 'OD', compte: '411000', debit: 700, credit: 0, statut: 'validee', origine: 'Saisie manuelle' });
+      ecr.insert({ numero: 'CLO-C3K', date: '2026-06-06', journal: 'OD', compte: '706000', debit: 0, credit: 700, statut: 'validee', origine: 'Saisie manuelle' });
+      qui('comptable', 'COMPTABLE181'); const dem = X.demarrer(2026);
+      qui('da', 'DA181'); const val = X.valider(2026, 'Clôture de la sonde CLO C3');
+      qui('admin', 'ADMIN181');
+      const f = (c, a) => { const r = X.soldesCompte(c, a); return { ouv: r.ouverture.valeur, etatO: r.ouverture.etat, src: r.ouverture.source, d: r.mouvements.debit, c: r.mouvements.credit, clo: r.cloture.valeur, etatC: r.cloture.etat, apresCL: r.apresCL }; };
+      const lignes27 = ecr.active().filter((e) => String(e.date).slice(0, 4) === '2027' && e.compte === '411000');
+      return { ok: dem.ok && val.ok, g26: f('706000', 2026), r26: f('131000', 2026), b27: f('411000', 2027), somme27: lignes27.reduce((n, e) => n + e.debit - e.credit, 0) };
+    });
+    verifier('E11 : après la clôture de 2026 le compte de gestion 706000 est à ZÉRO à la clôture (les 700 de produits restent aux mouvements, la pièce CL les solde) ; le compte de résultat 131000 reçoit le résultat (700 au crédit) mais sa clôture reste INCONNUE, car son ouverture de 2026 l’est (2025 clos par la liasse)',
+      k.ok && k.g26.apresCL === true && k.g26.c === 700 && k.g26.clo === 0 && k.g26.etatC === 'clos' && k.r26.c === 700 && k.r26.clo === null && k.r26.etatC === 'inconnue', JSON.stringify([k.g26, k.r26]));
+    verifier('E11 : l’ouverture de 2027 est maintenant ÉCRITE (à-nouveaux AN-2027) : 700, sans double compte avec les mouvements, clôture = somme des lignes du compte',
+      k.b27.etatO === 'ecrit' && k.b27.ouv === 700 && /AN-2027-/.test(k.b27.src) && k.b27.d === 0 && k.b27.clo === 700 && k.somme27 === 700, JSON.stringify([k.b27, k.somme27]));
+    await page.evaluate(() => { window.SIGH.exercice.choisir(new Date().getFullYear()); window.SIGH.store.reset(); });
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource|403|404|409|413|415|401/.test(x)).length === 0, erreursJS.join(' | '));
+  });
+  /* LOT CLO C2 C3 FIN */
+
+
 
 
 

@@ -1815,6 +1815,135 @@
    "lignes": 2
   }
  },
+ "circuit": {
+  "rouvrirRefus": {
+   "ok": false,
+   "code": "REOUVERTURE_RESERVEE",
+   "motif": "La réouverture : action réservée à : Comptable ou Administrateur système.",
+   "geste": "Demander à l’un de ces rôles, ou faire modifier le circuit (écran « Exercices & clôtures », onglet « Circuit de clôture »).",
+   "roles": [
+    "comptable",
+    "admin"
+   ],
+   "versionId": "RCL004"
+  },
+  "demarrerRefus": {
+   "ok": false,
+   "code": "CLOTURE_DEMARRAGE_RESERVE",
+   "motif": "Démarrer la clôture : action réservée à : Comptable, Directrice de l’Administration et des Finances (DAF) ou Administrateur système.",
+   "geste": "Demander à l’un de ces rôles, ou faire modifier le circuit (écran « Exercices & clôtures », onglet « Circuit de clôture »).",
+   "roles": [
+    "comptable",
+    "da",
+    "admin"
+   ],
+   "versionId": "RCL001"
+  },
+  "reprendreRefus": {
+   "ok": false,
+   "code": "CLOTURE_REPRISE_RESERVEE",
+   "motif": "Reprendre la saisie : action réservée à : Comptable, Directrice de l’Administration et des Finances (DAF) ou Administrateur système.",
+   "geste": "Demander à l’un de ces rôles, ou faire modifier le circuit (écran « Exercices & clôtures », onglet « Circuit de clôture »).",
+   "roles": [
+    "comptable",
+    "da",
+    "admin"
+   ],
+   "versionId": "RCL001"
+  },
+  "gardeInventaireCaissier": [
+   "Exercice 2026 en clôture : les modules n’y écrivent plus. Seuls Comptable ou Administrateur système y passent leurs écritures d’inventaire (saisie manuelle) ; sinon dater la pièce de l’exercice ouvert."
+  ],
+  "gardeInventaireDa": [
+   "Exercice 2026 en clôture : les modules n’y écrivent plus. Seuls Comptable ou Administrateur système y passent leurs écritures d’inventaire (saisie manuelle) ; sinon dater la pièce de l’exercice ouvert."
+  ],
+  "definir": [
+   {
+    "role": "admin",
+    "cle": "rolesCloturer",
+    "valeur": [
+     "direction"
+    ],
+    "motif": "Vecteur : clôture par la Direction seule",
+    "ok": true,
+    "code": null,
+    "motif_refus": null,
+    "geste": null
+   },
+   {
+    "role": "comptable",
+    "cle": "rolesCloturer",
+    "valeur": [
+     "direction"
+    ],
+    "motif": "Vecteur : le comptable n'a pas le droit",
+    "ok": false,
+    "code": "CIRCUIT_REGLAGE_RESERVE",
+    "motif_refus": "Régler le circuit de la clôture annuelle est un droit réservé de la fiche du rôle : « Comptable » ne l’a pas.",
+    "geste": "Demander à un rôle qui détient le droit « Régler le circuit de la clôture annuelle » (matrice des droits)."
+   },
+   {
+    "role": "admin",
+    "cle": "rolesCloturer",
+    "valeur": [],
+    "motif": "Vecteur : liste vide",
+    "ok": false,
+    "code": "CIRCUIT_LISTE_VIDE",
+    "motif_refus": "La liste « Qui clôture définitivement » ne peut pas être vide : personne ne pourrait accomplir le geste.",
+    "geste": "Choisir au moins un rôle."
+   },
+   {
+    "role": "admin",
+    "cle": "rolesCloturer",
+    "valeur": [
+     "comptable",
+     "roi"
+    ],
+    "motif": "Vecteur : rôle inconnu",
+    "ok": false,
+    "code": "CIRCUIT_ROLE_INCONNU",
+    "motif_refus": "Rôle inconnu ou archivé : roi.",
+    "geste": "Choisir des rôles de la matrice des droits."
+   },
+   {
+    "role": "admin",
+    "cle": "moisOuvertureSuivant",
+    "valeur": 13,
+    "motif": "Vecteur : mois 13",
+    "ok": false,
+    "code": "CIRCUIT_MOIS_INVALIDE",
+    "motif_refus": "Le mois doit être un entier de 1 à 12 (reçu « 13 »).",
+    "geste": "Saisir un mois de 1 à 12."
+   },
+   {
+    "role": "admin",
+    "cle": "rolesRouvrir",
+    "valeur": [
+     "admin"
+    ],
+    "motif": "",
+    "ok": false,
+    "code": "CIRCUIT_MOTIF_OBLIGATOIRE",
+    "motif_refus": "Un motif est obligatoire pour changer le circuit de clôture.",
+    "geste": "Saisir le motif du changement."
+   },
+   {
+    "role": "admin",
+    "cle": "rolesInexistant",
+    "valeur": [
+     "admin"
+    ],
+    "motif": "Vecteur : réglage inconnu",
+    "ok": false,
+    "code": "CIRCUIT_REGLAGE_INCONNU",
+    "motif_refus": "Le réglage « rolesInexistant » n’existe pas parmi ceux de la clôture annuelle.",
+    "geste": "Choisir un réglage listé à l’écran « Exercices & clôtures », onglet « Circuit de clôture »."
+   }
+  ],
+  "versions": {
+   "rolesCloturer": 2
+  }
+ },
  "cloture": {
   "inconnue": {
    "ok": false,
@@ -1913,11 +2042,22 @@
   },
   "validerRole": {
    "ok": false,
-   "motif": "La clôture définitive est prononcée par la Direction ou la Directrice Administrative."
+   "code": "CLOTURE_DEFINITIVE_RESERVEE",
+   "motif": "La clôture définitive : action réservée à : Directrice de l’Administration et des Finances (DAF), Direction / Gérance, Administrateur système ou Comptable.",
+   "geste": "Demander à l’un de ces rôles, ou faire modifier le circuit (écran « Exercices & clôtures », onglet « Circuit de clôture »).",
+   "roles": [
+    "da",
+    "direction",
+    "admin",
+    "comptable"
+   ],
+   "versionId": "RCL003"
   },
   "validerDemandeur": {
    "ok": false,
-   "motif": "Signer n’est pas saisir : la clôture définitive doit venir d’une autre personne que celle qui a démarré la clôture (KASSA Augustin)."
+   "code": "CLOTURE_MEME_PERSONNE",
+   "motif": "Signer n’est pas saisir : la clôture définitive doit venir d’une autre personne que celle qui a démarré la clôture (KASSA Augustin).",
+   "geste": "Faire prononcer la clôture par une autre personne du circuit."
   },
   "validerSansMotif": {
    "ok": false,
@@ -2049,17 +2189,22 @@
    {
     "action": "Création",
     "entite": "Document",
-    "reference": "DOCxmvuswnjddn6vw"
+    "reference": "DOCxmvuswnagsu9g4"
    },
    {
     "action": "Création",
     "entite": "Archive de clôture",
-    "reference": "ARCxmvuswnjd43n9t"
+    "reference": "ARCxmvuswnafa4wne"
    },
    {
     "action": "Création",
     "entite": "notification",
-    "reference": "NOTxmvuswnijzac9i"
+    "reference": "NOTxmvuswna2t2x7z"
+   },
+   {
+    "action": "Création",
+    "entite": "notification",
+    "reference": "NOTxmvuswna2hnq1p"
    },
    {
     "action": "Clôture d’exercice",
@@ -2069,12 +2214,7 @@
    {
     "action": "Création",
     "entite": "Clôture",
-    "reference": "CLOxmvuswnijbuz85"
-   },
-   {
-    "action": "Modification",
-    "entite": "exercices",
-    "reference": "EXO-2026"
+    "reference": "CLOxmvuswn9zzfguk"
    }
   ],
   "toasts": []
@@ -2162,7 +2302,8 @@
     "Exercices",
     "Périodes de l’exercice",
     "Lettrage des tiers",
-    "Comptes de résultat"
+    "Comptes de résultat",
+    "Circuit de clôture"
    ],
    "cartes": [],
    "boutons": [
@@ -2170,6 +2311,7 @@
     "Périodes de l’exercice",
     "Lettrage des tiers",
     "Comptes de résultat",
+    "Circuit de clôture",
     "Colonnes affichées",
     "Exporter",
     "Tout désélectionner",
@@ -2288,7 +2430,8 @@
     "Exercices",
     "Périodes de l’exercice",
     "Lettrage des tiers",
-    "Comptes de résultat"
+    "Comptes de résultat",
+    "Circuit de clôture"
    ],
    "cartes": [],
    "boutons": [
@@ -2296,6 +2439,7 @@
     "Périodes de l’exercice",
     "Lettrage des tiers",
     "Comptes de résultat",
+    "Circuit de clôture",
     "Colonnes affichées",
     "Exporter",
     "Tout désélectionner",
@@ -2414,7 +2558,8 @@
     "Exercices",
     "Périodes de l’exercice",
     "Lettrage des tiers",
-    "Comptes de résultat"
+    "Comptes de résultat",
+    "Circuit de clôture"
    ],
    "cartes": [],
    "boutons": [
@@ -2422,6 +2567,7 @@
     "Périodes de l’exercice",
     "Lettrage des tiers",
     "Comptes de résultat",
+    "Circuit de clôture",
     "Colonnes affichées",
     "Exporter",
     "Tout désélectionner",
@@ -2540,7 +2686,8 @@
     "Exercices",
     "Périodes de l’exercice",
     "Lettrage des tiers",
-    "Comptes de résultat"
+    "Comptes de résultat",
+    "Circuit de clôture"
    ],
    "cartes": [],
    "boutons": [
@@ -2548,6 +2695,7 @@
     "Périodes de l’exercice",
     "Lettrage des tiers",
     "Comptes de résultat",
+    "Circuit de clôture",
     "Colonnes affichées",
     "Exporter",
     "Tout désélectionner",
@@ -2737,7 +2885,8 @@
     "Exercices",
     "Périodes de l’exercice",
     "Lettrage des tiers",
-    "Comptes de résultat"
+    "Comptes de résultat",
+    "Circuit de clôture"
    ],
    "cartes": [],
    "boutons": [
@@ -2745,6 +2894,7 @@
     "Périodes de l’exercice",
     "Lettrage des tiers",
     "Comptes de résultat",
+    "Circuit de clôture",
     "Colonnes affichées",
     "Exporter",
     "Tout désélectionner",
@@ -2865,7 +3015,8 @@
     "Exercices",
     "Périodes de l’exercice",
     "Lettrage des tiers",
-    "Comptes de résultat"
+    "Comptes de résultat",
+    "Circuit de clôture"
    ],
    "cartes": [],
    "boutons": [
@@ -2873,6 +3024,7 @@
     "Périodes de l’exercice",
     "Lettrage des tiers",
     "Comptes de résultat",
+    "Circuit de clôture",
     "Colonnes affichées",
     "Exporter",
     "Tout désélectionner",
@@ -2911,7 +3063,7 @@
    ]
   },
   "modaleValidation": {
-   "texte": "Valider la clôture de l’exercice 2026 Clôture démarrée par KASSA Augustin. Les contrôles sont rejoués, puis, d’un seul tenant : pièce de clôture (journal CL) qui solde les classes 6, 7 et 8 centre par centre, pièce d’à-nouveaux (journal AN) de 2027, verrou, archive. Seul le comptable peut ensuite rouvrir l’exercice. Annuler Clôturer définitivement",
+   "texte": "Valider la clôture de l’exercice 2026 Clôture démarrée par KASSA Augustin. Les contrôles sont rejoués, puis, d’un seul tenant : pièce de clôture (journal CL) qui solde les classes 6, 7 et 8 centre par centre, pièce d’à-nouveaux (journal AN) de 2027, verrou, archive. Peuvent ensuite rouvrir l’exercice : Comptable ou Administrateur système. Annuler Clôturer définitivement",
    "boutons": [
     "Annuler",
     "Clôturer définitivement"
@@ -3025,12 +3177,13 @@
    "titre": ""
   },
   "lettrage": {
-   "texte": "Exercice affiché 2026 État En clôture Résultat provisoire -23 087 218 FCFA Contrôles bloquants en échec 0 Exercices Périodes de l’exercice Lettrage des tiers Comptes de résultat Un lettrage rapproche des lignes d’un même compte de tiers dont le total s’annule (une facture et son règlement). À la clôture, seules les lignes non lettrées sont reprises une à une aux à-nouveaux. Compte 401000 — Fournisseurs 411000 — Clients — Patients 411100 — 411100 411200 — Clients — Compagnies d’assurance 422000 — Personnel — Rémunérations dues 431000 — Caisse de sécurité social 442100 — Etat impôts et taxes Lignes du compte 401000 Colonnes Exporter PIÈCE DATE LIBELLÉ DÉBIT CRÉDIT LETTRAGE OD-2026-00045 15/08/2026 Honoraires du comptable 0 523 000 non lettrée ACH-2026-00005 10/08/2026 Produits d’entretien 0 291 000 non lettrée OD-2026-00118 09/08/2026 Maintenance de l’échographe 0 217 000 non lettrée ACH-2026-00003 01/08/2026 Achat de marchandises — Médicaments 0 580 000 non lettrée OD-2026-00048 28/07/2026 Maintenance des automates 0 553 000 non lettrée OD-2026-00073 18/07/2026 Maintenance des automates 0 557 000 non lettrée OD-2026-00069 17/07/2026 Entretien et réparations 0 177 000 non lettrée ACH-2026-00017 16/07/2026 Fournitures de bureau 0 172 000 non lettrée OD-2026-00111 16/07/2026 Entretien et réparations 0 615 000 non lettrée OD-2026-00013 09/07/2026 Entretien et réparations 0 719 000 non lettrée Affichage de 1 à 10 sur 65 enregistrements 1 2 3 4 5 Lettrer la sélection Dé-lettrer un code…",
+   "texte": "Exercice affiché 2026 État En clôture Résultat provisoire -23 087 218 FCFA Contrôles bloquants en échec 0 Exercices Périodes de l’exercice Lettrage des tiers Comptes de résultat Circuit de clôture Un lettrage rapproche des lignes d’un même compte de tiers dont le total s’annule (une facture et son règlement). À la clôture, seules les lignes non lettrées sont reprises une à une aux à-nouveaux. Compte 401000 — Fournisseurs 411000 — Clients — Patients 411100 — 411100 411200 — Clients — Compagnies d’assurance 422000 — Personnel — Rémunérations dues 431000 — Caisse de sécurité social 442100 — Etat impôts et taxes Lignes du compte 401000 Colonnes Exporter PIÈCE DATE LIBELLÉ DÉBIT CRÉDIT LETTRAGE OD-2026-00045 15/08/2026 Honoraires du comptable 0 523 000 non lettrée ACH-2026-00005 10/08/2026 Produits d’entretien 0 291 000 non lettrée OD-2026-00118 09/08/2026 Maintenance de l’échographe 0 217 000 non lettrée ACH-2026-00003 01/08/2026 Achat de marchandises — Médicaments 0 580 000 non lettrée OD-2026-00048 28/07/2026 Maintenance des automates 0 553 000 non lettrée OD-2026-00073 18/07/2026 Maintenance des automates 0 557 000 non lettrée OD-2026-00069 17/07/2026 Entretien et réparations 0 177 000 non lettrée ACH-2026-00017 16/07/2026 Fournitures de bureau 0 172 000 non lettrée OD-2026-00111 16/07/2026 Entretien et réparations 0 615 000 non lettrée OD-2026-00013 09/07/2026 Entretien et réparations 0 719 000 non lettrée Affichage de 1 à 10 sur 65 enregistrements 1 2 3 4 5 Lettrer la sélection Dé-lettrer un code…",
    "boutons": [
     "Exercices",
     "Périodes de l’exercice",
     "Lettrage des tiers",
     "Comptes de résultat",
+    "Circuit de clôture",
     "Colonnes",
     "Exporter",
     "Tout désélectionner",
@@ -3120,6 +3273,997 @@
     ]
    ],
    "nbLignes": 10
+  }
+ },
+ "soldesGL": {
+  "comptes": [
+   "401000",
+   "411000",
+   "521000",
+   "571000",
+   "601100",
+   "604100",
+   "701000",
+   "706000"
+  ],
+  "avant": {
+   "2024": [
+    {
+     "compte": "401000",
+     "annee": 2024,
+     "gestion": false,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "premier",
+      "source": "Premier exercice : aucun report."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "411000",
+     "annee": 2024,
+     "gestion": false,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "premier",
+      "source": "Premier exercice : aucun report."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "521000",
+     "annee": 2024,
+     "gestion": false,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "premier",
+      "source": "Premier exercice : aucun report."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "571000",
+     "annee": 2024,
+     "gestion": false,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "premier",
+      "source": "Premier exercice : aucun report."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "601100",
+     "annee": 2024,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "604100",
+     "annee": 2024,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "701000",
+     "annee": 2024,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "706000",
+     "annee": 2024,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    }
+   ],
+   "2025": [
+    {
+     "compte": "401000",
+     "annee": 2025,
+     "gestion": false,
+     "ouverture": {
+      "valeur": null,
+      "etat": "inconnue",
+      "source": "L’exercice 2024 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": null,
+      "etat": "inconnue"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "411000",
+     "annee": 2025,
+     "gestion": false,
+     "ouverture": {
+      "valeur": null,
+      "etat": "inconnue",
+      "source": "L’exercice 2024 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": null,
+      "etat": "inconnue"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "521000",
+     "annee": 2025,
+     "gestion": false,
+     "ouverture": {
+      "valeur": null,
+      "etat": "inconnue",
+      "source": "L’exercice 2024 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": null,
+      "etat": "inconnue"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "571000",
+     "annee": 2025,
+     "gestion": false,
+     "ouverture": {
+      "valeur": null,
+      "etat": "inconnue",
+      "source": "L’exercice 2024 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": null,
+      "etat": "inconnue"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "601100",
+     "annee": 2025,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "604100",
+     "annee": 2025,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "701000",
+     "annee": 2025,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "706000",
+     "annee": 2025,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    }
+   ],
+   "2026": [
+    {
+     "compte": "401000",
+     "annee": 2026,
+     "gestion": false,
+     "ouverture": {
+      "valeur": null,
+      "etat": "inconnue",
+      "source": "L’exercice 2025 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+     },
+     "mouvements": {
+      "debit": 2337000,
+      "credit": 23554000,
+      "nb": 65
+     },
+     "cloture": {
+      "valeur": null,
+      "etat": "inconnue"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "411000",
+     "annee": 2026,
+     "gestion": false,
+     "ouverture": {
+      "valeur": null,
+      "etat": "inconnue",
+      "source": "L’exercice 2025 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+     },
+     "mouvements": {
+      "debit": 5718000,
+      "credit": 568000,
+      "nb": 16
+     },
+     "cloture": {
+      "valeur": null,
+      "etat": "inconnue"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "521000",
+     "annee": 2026,
+     "gestion": false,
+     "ouverture": {
+      "valeur": null,
+      "etat": "inconnue",
+      "source": "L’exercice 2025 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+     },
+     "mouvements": {
+      "debit": 1071000,
+      "credit": 4291000,
+      "nb": 13
+     },
+     "cloture": {
+      "valeur": null,
+      "etat": "inconnue"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "571000",
+     "annee": 2026,
+     "gestion": false,
+     "ouverture": {
+      "valeur": null,
+      "etat": "inconnue",
+      "source": "L’exercice 2025 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+     },
+     "mouvements": {
+      "debit": 5388782,
+      "credit": 7268000,
+      "nb": 149
+     },
+     "cloture": {
+      "valeur": null,
+      "etat": "inconnue"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "601100",
+     "annee": 2026,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 2415000,
+      "credit": 0,
+      "nb": 6
+     },
+     "cloture": {
+      "valeur": 2415000,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "604100",
+     "annee": 2026,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 6482000,
+      "credit": 0,
+      "nb": 12
+     },
+     "cloture": {
+      "valeur": 6482000,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "701000",
+     "annee": 2026,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 533000,
+      "nb": 1
+     },
+     "cloture": {
+      "valeur": -533000,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "706000",
+     "annee": 2026,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 2258782,
+      "nb": 123
+     },
+     "cloture": {
+      "valeur": -2258782,
+      "etat": "courant"
+     },
+     "apresCL": false
+    }
+   ],
+   "2027": [
+    {
+     "compte": "401000",
+     "annee": 2027,
+     "gestion": false,
+     "ouverture": {
+      "valeur": -21217000,
+      "etat": "provisoire",
+      "source": "À-nouveaux provisoires de 2026 (calculés, l’exercice n’est pas clos)"
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": -21217000,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "411000",
+     "annee": 2027,
+     "gestion": false,
+     "ouverture": {
+      "valeur": 5150000,
+      "etat": "provisoire",
+      "source": "À-nouveaux provisoires de 2026 (calculés, l’exercice n’est pas clos)"
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 5150000,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "521000",
+     "annee": 2027,
+     "gestion": false,
+     "ouverture": {
+      "valeur": -3220000,
+      "etat": "provisoire",
+      "source": "À-nouveaux provisoires de 2026 (calculés, l’exercice n’est pas clos)"
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": -3220000,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "571000",
+     "annee": 2027,
+     "gestion": false,
+     "ouverture": {
+      "valeur": -1879218,
+      "etat": "provisoire",
+      "source": "À-nouveaux provisoires de 2026 (calculés, l’exercice n’est pas clos)"
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": -1879218,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "601100",
+     "annee": 2027,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "604100",
+     "annee": 2027,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "701000",
+     "annee": 2027,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    },
+    {
+     "compte": "706000",
+     "annee": 2027,
+     "gestion": true,
+     "ouverture": {
+      "valeur": 0,
+      "etat": "gestion",
+      "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+     },
+     "mouvements": {
+      "debit": 0,
+      "credit": 0,
+      "nb": 0
+     },
+     "cloture": {
+      "valeur": 0,
+      "etat": "courant"
+     },
+     "apresCL": false
+    }
+   ]
+  },
+  "cloture": {
+   "ok": true,
+   "apres": {
+    "2026": [
+     {
+      "compte": "401000",
+      "annee": 2026,
+      "gestion": false,
+      "ouverture": {
+       "valeur": null,
+       "etat": "inconnue",
+       "source": "L’exercice 2025 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+      },
+      "mouvements": {
+       "debit": 2337000,
+       "credit": 23554000,
+       "nb": 65
+      },
+      "cloture": {
+       "valeur": null,
+       "etat": "inconnue"
+      },
+      "apresCL": true
+     },
+     {
+      "compte": "411000",
+      "annee": 2026,
+      "gestion": false,
+      "ouverture": {
+       "valeur": null,
+       "etat": "inconnue",
+       "source": "L’exercice 2025 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+      },
+      "mouvements": {
+       "debit": 5718000,
+       "credit": 568000,
+       "nb": 16
+      },
+      "cloture": {
+       "valeur": null,
+       "etat": "inconnue"
+      },
+      "apresCL": true
+     },
+     {
+      "compte": "521000",
+      "annee": 2026,
+      "gestion": false,
+      "ouverture": {
+       "valeur": null,
+       "etat": "inconnue",
+       "source": "L’exercice 2025 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+      },
+      "mouvements": {
+       "debit": 1071000,
+       "credit": 4291000,
+       "nb": 13
+      },
+      "cloture": {
+       "valeur": null,
+       "etat": "inconnue"
+      },
+      "apresCL": true
+     },
+     {
+      "compte": "571000",
+      "annee": 2026,
+      "gestion": false,
+      "ouverture": {
+       "valeur": null,
+       "etat": "inconnue",
+       "source": "L’exercice 2025 est clos sans à-nouveau écrit : l’ouverture est inconnue, ce n’est pas zéro."
+      },
+      "mouvements": {
+       "debit": 5388782,
+       "credit": 7268000,
+       "nb": 149
+      },
+      "cloture": {
+       "valeur": null,
+       "etat": "inconnue"
+      },
+      "apresCL": true
+     },
+     {
+      "compte": "601100",
+      "annee": 2026,
+      "gestion": true,
+      "ouverture": {
+       "valeur": 0,
+       "etat": "gestion",
+       "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+      },
+      "mouvements": {
+       "debit": 2415000,
+       "credit": 2415000,
+       "nb": 7
+      },
+      "cloture": {
+       "valeur": 0,
+       "etat": "clos"
+      },
+      "apresCL": true
+     },
+     {
+      "compte": "604100",
+      "annee": 2026,
+      "gestion": true,
+      "ouverture": {
+       "valeur": 0,
+       "etat": "gestion",
+       "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+      },
+      "mouvements": {
+       "debit": 6482000,
+       "credit": 6482000,
+       "nb": 15
+      },
+      "cloture": {
+       "valeur": 0,
+       "etat": "clos"
+      },
+      "apresCL": true
+     },
+     {
+      "compte": "701000",
+      "annee": 2026,
+      "gestion": true,
+      "ouverture": {
+       "valeur": 0,
+       "etat": "gestion",
+       "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+      },
+      "mouvements": {
+       "debit": 533000,
+       "credit": 533000,
+       "nb": 2
+      },
+      "cloture": {
+       "valeur": 0,
+       "etat": "clos"
+      },
+      "apresCL": true
+     },
+     {
+      "compte": "706000",
+      "annee": 2026,
+      "gestion": true,
+      "ouverture": {
+       "valeur": 0,
+       "etat": "gestion",
+       "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+      },
+      "mouvements": {
+       "debit": 2258782,
+       "credit": 2258782,
+       "nb": 125
+      },
+      "cloture": {
+       "valeur": 0,
+       "etat": "clos"
+      },
+      "apresCL": true
+     }
+    ],
+    "2027": [
+     {
+      "compte": "401000",
+      "annee": 2027,
+      "gestion": false,
+      "ouverture": {
+       "valeur": -21217000,
+       "etat": "ecrit",
+       "source": "À-nouveaux écrits (AN-2027-00001)"
+      },
+      "mouvements": {
+       "debit": 0,
+       "credit": 0,
+       "nb": 0
+      },
+      "cloture": {
+       "valeur": -21217000,
+       "etat": "courant"
+      },
+      "apresCL": false
+     },
+     {
+      "compte": "411000",
+      "annee": 2027,
+      "gestion": false,
+      "ouverture": {
+       "valeur": 5150000,
+       "etat": "ecrit",
+       "source": "À-nouveaux écrits (AN-2027-00001)"
+      },
+      "mouvements": {
+       "debit": 0,
+       "credit": 0,
+       "nb": 0
+      },
+      "cloture": {
+       "valeur": 5150000,
+       "etat": "courant"
+      },
+      "apresCL": false
+     },
+     {
+      "compte": "521000",
+      "annee": 2027,
+      "gestion": false,
+      "ouverture": {
+       "valeur": -3220000,
+       "etat": "ecrit",
+       "source": "À-nouveaux écrits (AN-2027-00001)"
+      },
+      "mouvements": {
+       "debit": 0,
+       "credit": 0,
+       "nb": 0
+      },
+      "cloture": {
+       "valeur": -3220000,
+       "etat": "courant"
+      },
+      "apresCL": false
+     },
+     {
+      "compte": "571000",
+      "annee": 2027,
+      "gestion": false,
+      "ouverture": {
+       "valeur": -1879218,
+       "etat": "ecrit",
+       "source": "À-nouveaux écrits (AN-2027-00001)"
+      },
+      "mouvements": {
+       "debit": 0,
+       "credit": 0,
+       "nb": 0
+      },
+      "cloture": {
+       "valeur": -1879218,
+       "etat": "courant"
+      },
+      "apresCL": false
+     },
+     {
+      "compte": "601100",
+      "annee": 2027,
+      "gestion": true,
+      "ouverture": {
+       "valeur": 0,
+       "etat": "gestion",
+       "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+      },
+      "mouvements": {
+       "debit": 0,
+       "credit": 0,
+       "nb": 0
+      },
+      "cloture": {
+       "valeur": 0,
+       "etat": "courant"
+      },
+      "apresCL": false
+     },
+     {
+      "compte": "604100",
+      "annee": 2027,
+      "gestion": true,
+      "ouverture": {
+       "valeur": 0,
+       "etat": "gestion",
+       "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+      },
+      "mouvements": {
+       "debit": 0,
+       "credit": 0,
+       "nb": 0
+      },
+      "cloture": {
+       "valeur": 0,
+       "etat": "courant"
+      },
+      "apresCL": false
+     },
+     {
+      "compte": "701000",
+      "annee": 2027,
+      "gestion": true,
+      "ouverture": {
+       "valeur": 0,
+       "etat": "gestion",
+       "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+      },
+      "mouvements": {
+       "debit": 0,
+       "credit": 0,
+       "nb": 0
+      },
+      "cloture": {
+       "valeur": 0,
+       "etat": "courant"
+      },
+      "apresCL": false
+     },
+     {
+      "compte": "706000",
+      "annee": 2027,
+      "gestion": true,
+      "ouverture": {
+       "valeur": 0,
+       "etat": "gestion",
+       "source": "Un compte de gestion ne se reporte jamais : il est soldé par le résultat."
+      },
+      "mouvements": {
+       "debit": 0,
+       "credit": 0,
+       "nb": 0
+      },
+      "cloture": {
+       "valeur": 0,
+       "etat": "courant"
+      },
+      "apresCL": false
+     }
+    ]
+   }
   }
  },
  "ecranOuverture": {
@@ -3248,7 +4392,8 @@
    ],
    "boutons": [
     "Écrire les à-nouveaux",
-    "Imprimer le bilan d’ouverture"
+    "Imprimer le bilan d’ouverture",
+    "Modèle à télécharger, vérification sans écriture, puis import"
    ],
    "notes": [
     "Le report s’équilibre : soldes débiteurs 7 397 000 FCFA = soldes créditeurs 31 747 456 FCFA + résultat -24 350 456 FCFA. L’à-nouveau peut être écrit.",
@@ -3319,7 +4464,8 @@
   ],
   "boutons": [
    "Écrire les à-nouveaux",
-   "Imprimer le bilan d’ouverture"
+   "Imprimer le bilan d’ouverture",
+   "Importer les données"
   ],
   "piece": {
    "titre": "Bilan d’ouverture — à-nouveaux",
@@ -3445,7 +4591,7 @@
    "inserts": {
     "ecritures": [
      {
-      "id": "ECRxmvuswqlu3a38n",
+      "id": "ECRxmvuswq8k65olj",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3460,7 +4606,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswqltpdh7u",
+      "id": "ECRxmvuswq8k38a1e",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3475,7 +4621,7 @@
       "credit": 3142456
      },
      {
-      "id": "ECRxmvuswqltk6jx5",
+      "id": "ECRxmvuswq8kalkij",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3490,7 +4636,7 @@
       "credit": 3220000
      },
      {
-      "id": "ECRxmvuswqls8a6xl",
+      "id": "ECRxmvuswq8ka1ij4",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3505,7 +4651,7 @@
       "credit": 2610000
      },
      {
-      "id": "ECRxmvuswqls2jxhh",
+      "id": "ECRxmvuswq8jxwtyc",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3520,7 +4666,7 @@
       "credit": 1286000
      },
      {
-      "id": "ECRxmvuswqlrqujbj",
+      "id": "ECRxmvuswq8jrgjkx",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3535,7 +4681,7 @@
       "credit": 272000
      },
      {
-      "id": "ECRxmvuswqlq668a5",
+      "id": "ECRxmvuswq8j4nhuj",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3550,7 +4696,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswqlq6sb7b",
+      "id": "ECRxmvuswq8ibzxzq",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3565,7 +4711,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswqlpjbejm",
+      "id": "ECRxmvuswq8hz9g56",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3715,7 +4861,8 @@
    ],
    "boutons": [
     "Écrire les à-nouveaux",
-    "Imprimer le bilan d’ouverture"
+    "Imprimer le bilan d’ouverture",
+    "Modèle à télécharger, vérification sans écriture, puis import"
    ],
    "notes": [
     "Le report s’équilibre : soldes débiteurs 7 397 000 FCFA = soldes créditeurs 31 747 456 FCFA + résultat -24 350 456 FCFA. L’à-nouveau peut être écrit.",
@@ -3860,7 +5007,8 @@
    ],
    "boutons": [
     "Écrire les à-nouveaux",
-    "Imprimer le bilan d’ouverture"
+    "Imprimer le bilan d’ouverture",
+    "Modèle à télécharger, vérification sans écriture, puis import"
    ],
    "notes": [
     "Le report NE S’ÉQUILIBRE PAS — écart de 5 000 FCFA. L’à-nouveau est refusé : un report boiteux propagerait le déséquilibre à toutes les années suivantes (RG-10). Vérifier les écritures de l’exercice 2026 avant de reporter.",
@@ -3881,7 +5029,8 @@
    ],
    "comptable": [
     "Écrire les à-nouveaux",
-    "Imprimer le bilan d’ouverture"
+    "Imprimer le bilan d’ouverture",
+    "Importer les données"
    ],
    "aide_comptable": [
     "Écrire les à-nouveaux",
@@ -3889,5 +5038,5 @@
    ]
   }
  },
- "toastsTotal": 7
+ "toastsTotal": 9
 }

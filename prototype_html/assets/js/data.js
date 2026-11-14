@@ -954,6 +954,33 @@
       motif: 'Défaut de la Direction : le moteur liste, il n’écrit rien (date d’effet d’attente : début de l’exercice 2026).' },
   ];
 
+  /* --------------------------------------------------------------------------
+   * LE CIRCUIT DE CLÔTURE ANNUELLE (Direction, 11/11/2026, réponses Q1 et Q2 ; lot CLO C1, 14/11/2026) : qui démarre, qui passe les écritures d'inventaire en clôture, qui
+   * clôture définitivement, qui rouvre, et à partir de quel mois l'exercice suivant s'ouvre. Ce tableau ne DÉFINIT que les clés ; la valeur en vigueur se lit dans la collection
+   * `reglagesCloture` (une fiche par version datée, jamais réécrite). AUCUN nom de rôle n'est écrit dans un moteur ni dans un écran : les défauts ci-dessous sont SEMÉS
+   * (ils égalent les listes qui étaient en dur, sauf la clôture définitive, élargie au comptable par la Direction : la séparation « jamais la personne qui a démarré la
+   * clôture » reste). Un réglage de BRANCHE : posé à la mère, il voyage aux fileuls, jamais aux mobiles.
+   * ----------------------------------------------------------------------- */
+  var REGLAGES_CLOTURE = [
+    { cle: 'rolesDemarrer', type: 'roles', libelle: 'Qui démarre la clôture (ou reprend la saisie)', aide: 'Les rôles qui font passer un exercice de « ouvert » à « en clôture », ou le reprennent tant que rien n’est clôturé. Le droit d’écrire sur l’écran de la clôture reste exigé en plus.' },
+    { cle: 'rolesInventaire', type: 'roles', libelle: 'Qui passe les écritures d’inventaire en clôture', aide: 'Les rôles dont la saisie manuelle est acceptée dans un exercice en clôture ; les modules, eux, n’y écrivent plus.' },
+    { cle: 'rolesCloturer', type: 'roles', libelle: 'Qui clôture définitivement', aide: 'Les rôles qui prononcent la clôture définitive. Jamais la personne qui a démarré la clôture : signer n’est pas saisir.' },
+    { cle: 'rolesRouvrir', type: 'roles', libelle: 'Qui rouvre un exercice clôturé', aide: 'Les rôles qui rouvrent un exercice clôturé, avec un motif d’au moins dix caractères (contre-passation des pièces de clôture).' },
+    { cle: 'moisOuvertureSuivant', type: 'mois', libelle: 'Mois à partir duquel l’exercice suivant s’ouvre', aide: 'À partir de ce mois (1 à 12), la tâche quotidienne ouvre aussi l’exercice de l’année suivante. Aucune pièce n’est écrite.' },
+  ];
+  var REGLAGES_CLOTURE_SEMENCE = [
+    { cle: 'rolesDemarrer', valeur: ['comptable', 'da', 'admin'], dateEffet: '2026-01-01', source: 'Valeur d’avant le lot CLO (liste écrite dans le moteur), reprise telle quelle',
+      motif: 'Défaut semé : les trois rôles qui démarraient la clôture avant le réglage.' },
+    { cle: 'rolesInventaire', valeur: ['comptable', 'admin'], dateEffet: '2026-01-01', source: 'Valeur d’avant le lot CLO (liste écrite dans le moteur), reprise telle quelle',
+      motif: 'Défaut semé : le comptable et l’administrateur passaient déjà leurs écritures d’inventaire.' },
+    { cle: 'rolesCloturer', valeur: ['da', 'direction', 'admin', 'comptable'], dateEffet: '2026-01-01', source: 'Réponse de la Direction du 11/11/2026 (Q2) : la Directrice Administrative, la Direction, l’administrateur ou le comptable',
+      motif: 'Défaut semé : les quatre rôles nommés par la Direction.' },
+    { cle: 'rolesRouvrir', valeur: ['comptable', 'admin'], dateEffet: '2026-01-01', source: 'Valeur d’avant le lot CLO (liste écrite dans le moteur), reprise telle quelle',
+      motif: 'Défaut semé : le comptable (et l’administrateur) rouvrent, comme avant le réglage.' },
+    { cle: 'moisOuvertureSuivant', valeur: 12, dateEffet: '2026-01-01', source: 'Texte de spécification de la Direction du 11/11/2026 : l’exercice N+1 s’ouvre en décembre',
+      motif: 'Défaut semé : décembre.' },
+  ];
+
   var FOURNISSEURS = [
     {
       id: 'F001', code: 'SOBAPS', nom: 'SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé',
@@ -2442,6 +2469,7 @@
     BAREME_AIB: BAREME_AIB,
     REGLAGES_AIB: REGLAGES_AIB,
     REGLAGES_AIB_SEMENCE: REGLAGES_AIB_SEMENCE,
+    REGLAGES_CLOTURE: REGLAGES_CLOTURE, REGLAGES_CLOTURE_SEMENCE: REGLAGES_CLOTURE_SEMENCE,
     PARAM_PAIE: PARAM_PAIE, TYPES_CHAMBRE: TYPES_CHAMBRE, CHAMBRES: CHAMBRES,
     MODES_PAIEMENT: MODES_PAIEMENT, TYPES_PLANNING: TYPES_PLANNING, SERVICES: SERVICES,
     REGLES_PLANNING: REGLES_PLANNING, regleDe: regleDe,

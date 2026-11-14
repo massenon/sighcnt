@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../donnees/circuit_cloture_poste.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart' show Signature;
@@ -33,7 +34,7 @@ class EcranCloture extends StatefulWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'Trois états : ouvert, en clôture (les modules n’écrivent plus), clôturé (lecture seule). Le comptable démarre la clôture, la Direction ou la DAF clôture définitivement (une autre personne), et seul le comptable rouvre, avec un motif, par contre-passation. La caisse continue d’encaisser : une pièce s’enregistre toujours dans l’exercice de sa date.';
+      'Trois états : ouvert, en clôture (les modules n’écrivent plus), clôturé (lecture seule). Qui démarre la clôture, qui la prononce (une autre personne que celle qui l’a démarrée) et qui rouvre, avec un motif, par contre-passation, se lit à l’onglet « Circuit de clôture » : ces listes sont un réglage, jamais un nom de rôle écrit dans le code. La caisse continue d’encaisser : une pièce s’enregistre toujours dans l’exercice de sa date.';
 
   @override
   State<EcranCloture> createState() => _EtatCloture();
@@ -106,20 +107,22 @@ class _EtatCloture extends State<EcranCloture> {
         libelleOk: 'Démarrer la clôture');
     if (!ok || !ctx.mounted) return;
     final r = cpcDemarrerCloture(c.magasin.collection('exercices').toutes, _ecritures(c), annee,
-        acteur: acteurDe(c), acteurId: acteurIdDe(c), role: c.role, maintenant: c.aujourdhui);
+        acteur: acteurDe(c), acteurId: acteurIdDe(c), role: c.role, circuit: circuitClotureDe(c.magasin, horloge: () => c.aujourdhui), maintenant: c.aujourdhui);
     if (!r.ok) {
-      ToastsSigh.afficher(ctx, 'Démarrage refusé.', type: TypeToast.erreur, detail: r.motif);
+      ToastsSigh.afficher(ctx, 'Démarrage refusé.', type: TypeToast.erreur, detail: '${r.motif}${r.geste == null ? '' : ' ${r.geste}'}');
       return;
     }
     c.magasin.collection('exercices').mettreAJour(x['id'], r.patch!);
     c.magasin.journaliser('Démarrage de la clôture', 'M12', 'Exercice', '$annee', {'etat': 'ouvert'}, {'etat': 'en_cloture', 'resultat': r.pre!.resultat});
-    notifier(c,
-        type: 'cloture',
-        poste: 'direction',
-        libelle: 'Clôture $annee à valider',
-        detail: 'Le comptable a démarré la clôture de l’exercice $annee : les modules n’y écrivent plus.',
-        priorite: 'haute',
-        reference: '$annee');
+    for (final poste in circuitClotureDe(c.magasin, horloge: () => c.aujourdhui).cloturer) {
+      notifier(c,
+          type: 'cloture',
+          poste: poste,
+          libelle: 'Clôture $annee à valider',
+          detail: '${acteurDe(c)} a démarré la clôture de l’exercice $annee : les modules n’y écrivent plus.',
+          priorite: 'haute',
+          reference: '$annee');
+    }
     ToastsSigh.afficher(ctx, 'Clôture $annee démarrée.', type: TypeToast.succes, detail: 'Les modules n’écrivent plus dans cet exercice.');
   }
 
@@ -130,9 +133,10 @@ class _EtatCloture extends State<EcranCloture> {
         message: 'Les modules écrivent de nouveau dans $annee. Possible tant que rien n’est clôturé.',
         libelleOk: 'Reprendre la saisie');
     if (!ok || !ctx.mounted) return;
-    final r = cpcReprendreSaisie(c.magasin.collection('exercices').toutes, annee, acteur: acteurDe(c), role: c.role, maintenant: c.aujourdhui);
+    final r = cpcReprendreSaisie(c.magasin.collection('exercices').toutes, annee,
+        acteur: acteurDe(c), role: c.role, circuit: circuitClotureDe(c.magasin, horloge: () => c.aujourdhui), maintenant: c.aujourdhui);
     if (!r.ok) {
-      ToastsSigh.afficher(ctx, 'Reprise refusée.', type: TypeToast.erreur, detail: r.motif);
+      ToastsSigh.afficher(ctx, 'Reprise refusée.', type: TypeToast.erreur, detail: '${r.motif}${r.geste == null ? '' : ' ${r.geste}'}');
       return;
     }
     c.magasin.collection('exercices').mettreAJour(x['id'], r.patch!);
@@ -174,11 +178,12 @@ class _EtatCloture extends State<EcranCloture> {
                         acteur: acteurDe(c),
                         acteurId: acteurIdDe(c),
                         role: c.role,
+                        circuit: circuitClotureDe(c.magasin, horloge: () => c.aujourdhui),
                         maintenant: c.aujourdhui,
                         toutesEcritures: ecr.toutes,
                         comptesResultat: c.magasin.collection('comptesResultat').actives);
                     if (!r.ok) {
-                      ToastsSigh.afficher(ctx, 'Clôture refusée.', type: TypeToast.erreur, detail: r.motif);
+                      ToastsSigh.afficher(ctx, 'Clôture refusée.', type: TypeToast.erreur, detail: '${r.motif}${r.geste == null ? '' : ' ${r.geste}'}');
                       return;
                     }
                     // ATOMICITÉ : une insertion refusée par le journal défait tout ce qui a été posé, l'exercice reste en clôture.
@@ -217,12 +222,14 @@ class _EtatCloture extends State<EcranCloture> {
                     }
                     c.magasin.journaliser('Clôture d’exercice', 'M12', 'Exercice', '$annee', {'etat': 'en_cloture'},
                         {'etat': 'clos', 'resultat': r.resultat, 'cl': r.clNumero, 'an': r.anNumero});
-                    notifier(c,
-                        type: 'cloture',
-                        poste: 'comptable',
-                        libelle: 'Exercice $annee clôturé',
-                        detail: 'Résultat ${money(r.resultat)} ; pièces ${r.clNumero} et ${r.anNumero} écrites.',
-                        reference: '$annee');
+                    for (final poste in circuitClotureDe(c.magasin, horloge: () => c.aujourdhui).rouvrir) {
+                      notifier(c,
+                          type: 'cloture',
+                          poste: poste,
+                          libelle: 'Exercice $annee clôturé',
+                          detail: 'Résultat ${money(r.resultat)} ; pièces ${r.clNumero} et ${r.anNumero} écrites.',
+                          reference: '$annee');
+                    }
                     fermer();
                     ToastsSigh.afficher(ctx, 'Exercice $annee clôturé.',
                         type: TypeToast.succes, detail: 'Résultat ${money(r.resultat)} · ${r.lignesCL.length} ligne(s) de clôture, ${r.lignesAN.length} d’à-nouveau · archive $reference.');
@@ -260,10 +267,11 @@ class _EtatCloture extends State<EcranCloture> {
                         acteur: acteurDe(c),
                         acteurId: acteurIdDe(c),
                         role: c.role,
+                        circuit: circuitClotureDe(c.magasin, horloge: () => c.aujourdhui),
                         maintenant: c.aujourdhui,
                         toutesEcritures: ecr.toutes);
                     if (!r.ok) {
-                      ToastsSigh.afficher(ctx, 'Réouverture refusée.', type: TypeToast.erreur, detail: r.motif);
+                      ToastsSigh.afficher(ctx, 'Réouverture refusée.', type: TypeToast.erreur, detail: '${r.motif}${r.geste == null ? '' : ' ${r.geste}'}');
                       return;
                     }
                     final annulations = <VoidCallback>[];
@@ -282,13 +290,15 @@ class _EtatCloture extends State<EcranCloture> {
                     c.magasin.collection('clotures').inserer(r.cloture!, prefixe: 'CLO');
                     c.magasin.journaliser('Réouverture d’exercice', 'M12', 'Exercice', '$annee', {'etat': 'clos'},
                         {'etat': 'en_cloture', 'motif': '${motif['motif']}'.trim(), 'contrePasse': r.cloture!['contrePasse']});
-                    notifier(c,
-                        type: 'cloture',
-                        poste: 'direction',
-                        libelle: 'Exercice $annee rouvert',
-                        detail: '${acteurDe(c)} a rouvert l’exercice $annee : ${'${motif['motif']}'.trim()}',
-                        priorite: 'haute',
-                        reference: '$annee');
+                    for (final poste in circuitClotureDe(c.magasin, horloge: () => c.aujourdhui).cloturer) {
+                      notifier(c,
+                          type: 'cloture',
+                          poste: poste,
+                          libelle: 'Exercice $annee rouvert',
+                          detail: '${acteurDe(c)} a rouvert l’exercice $annee : ${'${motif['motif']}'.trim()}',
+                          priorite: 'haute',
+                          reference: '$annee');
+                    }
                     fermer();
                     ToastsSigh.afficher(ctx, 'Exercice $annee rouvert.', type: TypeToast.succes, detail: '${r.pieces.join(' et ')} contre-passent la clôture.');
                   }),
@@ -403,12 +413,107 @@ class _EtatCloture extends State<EcranCloture> {
             ]);
   }
 
+  // ----------------------------------------------------------------------------------------------------------------------------------------------
+  // LE CIRCUIT DE CLÔTURE (lot CLO C1) : lu des paramètres, réglé par un geste réservé de la fiche RBAC ; la commande est ABSENTE sans le droit
+  // ----------------------------------------------------------------------------------------------------------------------------------------------
+  Widget _circuit(BuildContext ctx, ContexteEcran c, CpcCircuit circuit) {
+    final peut = c.donnees?.matrice.droitGeste(c.role, cpcGesteRegler) ?? false;
+    final lignes = <Fiche>[
+      {'id': cpcCleDemarrer, 'libelle': 'Qui démarre la clôture (ou reprend la saisie)', 'valeur': circuit.noms(circuit.demarrer)},
+      {'id': cpcCleInventaire, 'libelle': 'Qui passe les écritures d’inventaire en clôture', 'valeur': circuit.noms(circuit.inventaire)},
+      {'id': cpcCleCloturer, 'libelle': 'Qui clôture définitivement', 'valeur': circuit.noms(circuit.cloturer)},
+      {'id': cpcCleRouvrir, 'libelle': 'Qui rouvre un exercice clôturé', 'valeur': circuit.noms(circuit.rouvrir)},
+      {'id': cpcCleMoisOuverture, 'libelle': 'Mois à partir duquel l’exercice suivant s’ouvre', 'valeur': '${circuit.moisOuvertureSuivant}'},
+    ];
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      TableauSigh(
+        titre: 'Circuit en vigueur aujourd’hui',
+        lignes: lignes,
+        nomExport: 'circuit-cloture',
+        taillePage: 10,
+        recherche: false,
+        colonnes: [
+          ColonneTableau(cle: 'libelle', libelle: 'Réglage', texte: (x) => '${x['libelle']}'),
+          ColonneTableau(cle: 'valeur', libelle: 'Valeur lue', texte: (x) => '${x['valeur']}'),
+        ],
+      ),
+      const SizedBox(height: 12),
+      if (!peut)
+        const NoteSigh(
+            'Le droit « Régler le circuit de la clôture annuelle » n’est pas accordé à votre profil : le circuit se lit ici, il se règle depuis un profil qui détient ce droit (matrice des droits). Aucune commande n’est proposée.',
+            icone: LucideIcons.lock)
+      else
+        Align(
+            alignment: Alignment.centerLeft,
+            child: BoutonSigh(libelle: 'Modifier le circuit', icone: LucideIcons.save, onPressed: () => _modifierCircuit(ctx, c, circuit))),
+    ]);
+  }
+
+  void _modifierCircuit(BuildContext ctx, ContexteEcran c, CpcCircuit circuit) {
+    final roles = rolesConnusDuCircuit(c.magasin).toList()..sort();
+    List<OptionChamp> options() => [for (final r in roles) OptionChamp(r, circuit.libelles[r] ?? r)];
+    final form = ControleurFormulaire([
+      ChampDef(nom: cpcCleDemarrer, libelle: 'Qui démarre la clôture', type: TypeChamp.multiselect, col: ColChamp.plein, options: options()),
+      ChampDef(nom: cpcCleInventaire, libelle: 'Qui passe l’inventaire en clôture', type: TypeChamp.multiselect, col: ColChamp.plein, options: options()),
+      ChampDef(nom: cpcCleCloturer, libelle: 'Qui clôture définitivement', type: TypeChamp.multiselect, col: ColChamp.plein, options: options()),
+      ChampDef(nom: cpcCleRouvrir, libelle: 'Qui rouvre un exercice clôturé', type: TypeChamp.multiselect, col: ColChamp.plein, options: options()),
+      const ChampDef(nom: cpcCleMoisOuverture, libelle: 'Mois d’ouverture de l’exercice suivant (1 à 12)', type: TypeChamp.nombre),
+      const ChampDef(nom: 'motif', libelle: 'Motif du changement (obligatoire)', type: TypeChamp.textarea, col: ColChamp.plein, lignes: 2),
+    ], {
+      cpcCleDemarrer: circuit.demarrer,
+      cpcCleInventaire: circuit.inventaire,
+      cpcCleCloturer: circuit.cloturer,
+      cpcCleRouvrir: circuit.rouvrir,
+      cpcCleMoisOuverture: circuit.moisOuvertureSuivant,
+    });
+    afficherModale<void>(ctx,
+        titre: 'Modifier le circuit de clôture',
+        sousTitre: 'Une nouvelle version datée du jour : la précédente est conservée, jamais réécrite.',
+        corps: FormulaireSigh(controleur: form),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Enregistrer le circuit',
+                  icone: LucideIcons.save,
+                  onPressed: () {
+                    final avant = <String, Object?>{
+                      cpcCleDemarrer: circuit.demarrer,
+                      cpcCleInventaire: circuit.inventaire,
+                      cpcCleCloturer: circuit.cloturer,
+                      cpcCleRouvrir: circuit.rouvrir,
+                      cpcCleMoisOuverture: circuit.moisOuvertureSuivant,
+                    };
+                    var faits = 0;
+                    for (final cle in avant.keys) {
+                      final v = form[cle];
+                      final voulu = v is List ? [for (final x in v) '$x'] : v;
+                      if ('$voulu' == '${avant[cle]}') continue;
+                      final refus = reglerCircuitCloture(c.magasin,
+                          cle: cle,
+                          valeur: voulu is List ? voulu.join(',') : voulu,
+                          role: c.role,
+                          gesteAccorde: c.donnees?.matrice.droitGeste(c.role, cpcGesteRegler) ?? false,
+                          motif: '${form['motif'] ?? ''}',
+                          horloge: () => c.aujourdhui);
+                      if (refus != null) {
+                        ToastsSigh.afficher(ctx, 'Circuit refusé.', type: TypeToast.erreur, detail: '${refus.motif} ${refus.geste}');
+                        return;
+                      }
+                      faits++;
+                    }
+                    fermer();
+                    ToastsSigh.afficher(ctx, faits == 0 ? 'Aucun changement : le circuit est identique.' : 'Circuit de clôture enregistré ($faits réglage(s), nouvelle version datée).',
+                        type: faits == 0 ? TypeToast.info : TypeToast.succes);
+                  }),
+            ]);
+  }
+
   Widget _comptesResultat(BuildContext ctx, ContexteEcran c, bool peut) {
     final lignes = c.magasin.collection('comptesResultat').actives;
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       NoteSigh(
           'La clôture solde les classes 6, 7 et 8 vers le compte de bénéfice (131) ou de perte (139) selon le signe du résultat. Ces comptes se paramètrent ici, jamais dans le code. '
-          '${peut ? 'Une modification vaut pour les prochaines clôtures : les pièces CL déjà écrites ne changent pas.' : 'Réservé au comptable, à la Directrice Administrative et à l’administrateur : vous consultez.'}'),
+          '${peut ? 'Une modification vaut pour les prochaines clôtures : les pièces CL déjà écrites ne changent pas.' : 'Réservé aux rôles qui démarrent la clôture (circuit de clôture) : vous consultez.'}'),
       const SizedBox(height: 12),
       TableauSigh(
         titre: 'Comptes du résultat net',
@@ -749,9 +854,11 @@ class _EtatCloture extends State<EcranCloture> {
         final pre = cpcPreCloture(_ecritures(c), annee, exercices: exos);
         final etat = cpcEtatExercice(exos, annee);
         final clos = etat == 'clos';
-        final peutDemander = c.droit.editer && cpcRolesDemande.contains(c.role);
-        final peutValider = cpcRolesValidation.contains(c.role);
-        final peutRouvrir = c.droit.editer && (c.role == 'comptable' || c.role == 'admin');
+        // Aucun nom de rôle ici : les listes se LISENT dans le circuit de clôture (paramètres, défauts semés, versionnés par date).
+        final circuit = circuitClotureDe(c.magasin, horloge: () => c.aujourdhui);
+        final peutDemander = c.droit.editer && circuit.peutDemarrer(c.role);
+        final peutValider = circuit.peutCloturer(c.role);
+        final peutRouvrir = c.droit.editer && circuit.peutRouvrir(c.role);
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           KpiGrilleSigh(kpis: [
             KpiSigh(libelle: 'Exercice affiché', valeur: '$annee', icone: LucideIcons.calendar),
@@ -776,7 +883,8 @@ class _EtatCloture extends State<EcranCloture> {
             OngletDef(id: 'exercices', libelle: 'Exercices', construire: (ctx) => _exercices(context, c, peutDemander, peutValider, peutRouvrir)),
             OngletDef(id: 'periodes', libelle: 'Périodes de l’exercice', construire: (ctx) => _periodes(context, c)),
             OngletDef(id: 'lettrage', libelle: 'Lettrage des tiers', construire: (ctx) => _lettrage(context, c)),
-            OngletDef(id: 'comptes-resultat', libelle: 'Comptes de résultat', construire: (ctx) => _comptesResultat(context, c, c.droit.editer && cpcRolesDemande.contains(c.role))),
+            OngletDef(id: 'comptes-resultat', libelle: 'Comptes de résultat', construire: (ctx) => _comptesResultat(context, c, peutDemander)),
+            OngletDef(id: 'circuit', libelle: 'Circuit de clôture', construire: (ctx) => _circuit(context, c, circuit)),
           ]),
         ]);
       },

@@ -23,7 +23,9 @@
   "Mouvements",
   "Total débit",
   "Total crédit",
-  "Solde"
+  "Solde",
+  "Solde d’ouverture",
+  "Solde de clôture"
  ],
  "cartes": [
   "401000 — Fournisseurs"
@@ -55,5 +57,5 @@
   "Compte"
  ],
  "nbTableaux": 1,
- "nbKpis": 4
+ "nbKpis": 6
 }

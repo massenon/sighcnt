@@ -143,7 +143,9 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         cl.demande = propre(X.demarrer(2026));
         cl.secondeDemande = propre(X.demarrer(2026));
         // refus nommés de la clôture définitive
-        cl.validerRole = propre(X.valider(2026, 'Conforme'));                      // le comptable ne clôture pas
+        session('caissier', 'DIEYABIDI Aïssatou');
+        cl.validerRole = propre(X.valider(2026, 'Conforme'));                      // un rôle hors du circuit ne clôture pas (le comptable le peut depuis la réponse Q2 du 11/11/2026)
+        session('comptable', 'KASSA Augustin');
         session('direction', 'KASSA Augustin');
         cl.validerDemandeur = propre(X.valider(2026, 'Conforme'));                 // même nom que celui qui a démarré
         session('direction', 'BASSONGUI Chabi Séko');
@@ -163,6 +165,40 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         cl.preApres = pre(2026);
         cl.journal = propre(S.collection('audit').all().slice(0, 6).map((a) => ({ action: a.action, entite: a.entite, reference: a.reference })));
         cl.toasts = O.toasts.slice(t0).map((t) => ({ message: t.message, type: t.type }));
+        /* Le CIRCUIT (lot CLO C1) : refus nommés de rôle (code, motif cité de la liste lue, geste), garde d'inventaire, réouverture, réglage. */
+        {
+          const ci = {};
+          session('da', 'TAKI Alimatou');
+          ci.rouvrirRefus = propre(X.rouvrir(2026, 'Erreur découverte après coup'));
+          session('direction', 'BASSONGUI Chabi Séko');
+          poserJeu(); valideTout();
+          session('caissier', 'DIEYABIDI Aïssatou');
+          ci.demarrerRefus = propre(X.demarrer(2026));
+          session('comptable', 'KASSA Augustin'); X.demarrer(2026);
+          session('caissier', 'DIEYABIDI Aïssatou');
+          ci.reprendreRefus = propre(X.reprendre(2026));
+          const t1 = O.toasts.length;
+          S.collection('ecritures').insert({ numero: 'VEC-CLO-1', date: '2026-12-10', journal: 'OD', compte: '606000', debit: 5, credit: 0, statut: 'brouillon', origine: 'Saisie manuelle' });
+          ci.gardeInventaireCaissier = O.toasts.slice(t1).map((t) => t.detail);
+          session('da', 'TAKI Alimatou');
+          const t2 = O.toasts.length;
+          S.collection('ecritures').insert({ numero: 'VEC-CLO-2', date: '2026-12-10', journal: 'OD', compte: '606000', debit: 5, credit: 0, statut: 'brouillon', origine: 'Saisie manuelle' });
+          ci.gardeInventaireDa = O.toasts.slice(t2).map((t) => t.detail);
+          const defs = [
+            ['admin', 'rolesCloturer', ['direction'], 'Vecteur : clôture par la Direction seule'],
+            ['comptable', 'rolesCloturer', ['direction'], 'Vecteur : le comptable n\'a pas le droit'],
+            ['admin', 'rolesCloturer', [], 'Vecteur : liste vide'],
+            ['admin', 'rolesCloturer', ['comptable', 'roi'], 'Vecteur : rôle inconnu'],
+            ['admin', 'moisOuvertureSuivant', 13, 'Vecteur : mois 13'],
+            ['admin', 'rolesRouvrir', ['admin'], ''],
+            ['admin', 'rolesInexistant', ['admin'], 'Vecteur : réglage inconnu'],
+          ];
+          ci.definir = defs.map(([role, cle, valeur, motif]) => { session(role, role + ' vecteur'); const r = propre(X.definirCircuit({ cle, valeur, motif })); return { role, cle, valeur, motif, ok: r.ok, code: r.code || null, motif_refus: r.motif || null, geste: r.geste || null }; });
+          const nb = X.versionsCircuit('rolesCloturer').length;
+          ci.versions = { rolesCloturer: nb };
+          rep.circuit = ci;
+        }
+        poserJeu();
         session(base.role, base.nom);
         rep.cloture = cl;
       }
@@ -227,6 +263,24 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         }
         rep.ecranCloture = ecr;
         poserJeu(); session(base.role, base.nom);
+      }
+
+      /* ---------- 8. les soldes d'ouverture et de clôture d'un compte au grand livre (lot CLO C3) ----------------------------------- */
+      {
+        poserJeu(); valideTout();
+        const g = {};
+        const comptesJeu = [...new Set(db().ecritures.filter((e) => e.statut !== 'archive').map((e) => String(e.compte)))].sort();
+        /* un compte de chaque classe 1 à 5 et de gestion 6 et 7, pour que les sept états de l'ouverture soient mesurés */
+        const choisis = []; ['1', '2', '3', '4', '5', '6', '7'].forEach((cl) => { comptesJeu.filter((c) => c.charAt(0) === cl).slice(0, 2).forEach((c) => choisis.push(c)); });
+        g.comptes = choisis;
+        const lire = (a) => choisis.map((c) => propre(X.soldesCompte(c, a)));
+        g.avant = { 2024: lire(2024), 2025: lire(2025), 2026: lire(2026), 2027: lire(2027) };
+        session('comptable', 'KASSA Augustin'); X.demarrer(2026);
+        session('direction', 'BASSONGUI Chabi Séko'); const v = X.valider(2026, 'Vecteur : soldes du grand livre');
+        g.cloture = { ok: v.ok, apres: { 2026: lire(2026), 2027: lire(2027) } };
+        session(base.role, base.nom);
+        rep.soldesGL = g;
+        poserJeu();
       }
 
       /* ---------- 8. l'écran « Bilan d'ouverture & à-nouveaux » -------------------------------------------------------------------- */

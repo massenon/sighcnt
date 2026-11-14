@@ -7,6 +7,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:sigh_domaine/sigh_domaine.dart'
     show Agent, cpaDoublonsDuPlan, cpcGardeArchives, cpcGardeBudgets, cpcGardeClotures, cpcGardeEcritures, gardePresenceValideeRh, gardeRegimeIndividuelRh, tarChampsPrixLecture, tarGardeLecture, tarGardeProduitRg02, tarGardeVersion;
 
+import 'circuit_cloture_poste.dart';
 import 'persistance.dart';
 
 typedef Fiche = Map<String, Object?>;
@@ -590,7 +591,7 @@ class Magasin {
         // protège rien. La garde relit les exercices À CHAQUE écriture (une clôture validée ferme aussitôt).
         if (nom == 'ecritures') {
           c.garder((op, f) => cpcGardeEcritures(collection('exercices').toutes, f['date'],
-              op: op, origineCloture: f['origineCloture'], origine: f['origine'], role: acteur?.role ?? ''));
+              op: op, origineCloture: f['origineCloture'], origine: f['origine'], role: acteur?.role ?? '', circuit: circuitClotureDe(this)));
         }
         // LE BUDGET D'UN EXERCICE CLOS EST EN LECTURE SEULE (lot IMP-B2 de la maquette, porté au lot 8b) : tenu AU MOTEUR, d'où que l'écriture vienne (écran « Budgets », importation) ;
         // masquer un bouton ne protège rien. La garde relit les exercices À CHAQUE écriture.

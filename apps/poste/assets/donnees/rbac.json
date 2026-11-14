@@ -13280,96 +13280,129 @@
      "M13",
      "M1"
     ]
+   },
+   {
+    "id": "regler_circuit_cloture",
+    "libelle": "Régler le circuit de la clôture annuelle (qui démarre, qui clôture, qui rouvre)",
+    "module": "M12",
+    "ecran": "m12-cloture",
+    "rolesDefaut": [
+     "admin",
+     "da"
+    ],
+    "defautSiEcritSur": null
    }
   ],
   "parRole": {
    "admin": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 1
    },
    "direction": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "dm": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "da": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 1
    },
    "medecin": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "infirmier": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "pharmacien": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    },
    "laborantin": {
     "valider_seuil_labo": 1,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "stock": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    },
    "caissier": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    },
    "comptable": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    },
    "rh": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    },
    "reception": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "agentadmin": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "ambulancier": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "aide_soignant": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    },
    "echographiste": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    },
    "surveillant": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    },
    "assistant_comptable": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "chirurgien": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 1
+    "corriger_texte_ocr": 1,
+    "regler_circuit_cloture": 0
    },
    "anesthesiste": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    },
    "aide_comptable": {
     "valider_seuil_labo": 0,
-    "corriger_texte_ocr": 0
+    "corriger_texte_ocr": 0,
+    "regler_circuit_cloture": 0
    }
   }
  },
