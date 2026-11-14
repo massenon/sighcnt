@@ -290,6 +290,66 @@ ResultatTarif<PropositionTarif> tarProposerProduit(ContexteTarif cx, DemandeProd
   ));
 }
 
+/// Ce qu'une RÉCEPTION d'achat propose (`proposerPrixReception` de la maquette) : `ouverte` (une proposition de changement du prix d'achat est à écrire), `identique` (rien à proposer),
+/// `deja_ouverte` (une proposition attend déjà sa décision : aucune seconde), `refusee` (le moteur refuse, la réception n'est JAMAIS bloquée) ou `sans_objet` (prix reçu absent ou non entier).
+class IssuePrixReception {
+  const IssuePrixReception(this.etat, {this.code, this.ancien, this.prix, this.dateEffet, this.refus, this.proposition, this.motif});
+  final String etat;
+  final String? code;
+
+  /// Le prix d'achat en vigueur à la date de réception (`null` : sans prix).
+  final num? ancien;
+  final num? prix;
+  final String? dateEffet;
+  final RefusTarif? refus;
+
+  /// La proposition à ÉCRIRE (état `ouverte` seulement) : le moteur n'écrit rien.
+  final PropositionTarif? proposition;
+  final String? motif;
+}
+
+/// UNE RÉCEPTION À UN AUTRE PRIX propose le changement du prix d'achat (lot T5b de la maquette, Direction, 12/11/2026), sans JAMAIS bloquer la réception : le prix reçu est celui de la ligne ;
+/// s'il diffère du prix d'achat en vigueur à la DATE DE RÉCEPTION, une PROPOSITION s'ouvre (famille PRODUIT, date d'effet = date de réception, motif « prix constaté à la réception n° … »),
+/// soumise au Oui ou Non du circuit commun. UNE SEULE proposition ouverte par produit. Le prix en vigueur, le prix de vente dérivé (RG-02) et les pièces émises ne bougent QU'AU OUI.
+/// L'autorité est celle de MODIFIER l'écran des réceptions : l'appelant la pose dans [ContexteTarif.peutProposerProduit]. Le moteur n'écrit rien.
+IssuePrixReception tarProposerPrixReception(ContexteTarif cx, {required FicheTarif produit, required Object? prixRecu, Object? date, String reference = '', required Iterable<FicheTarif> produits}) {
+  // La maquette lit le prix reçu par `Number(...)` (vide ou nul vaut zéro) et ne met « sans objet » que sur un non-nombre, un négatif ou un décimal : un zéro est REFUSÉ en nommant (PRIX_ZERO) par le
+  // moteur commun, jamais ignoré en silence.
+  final prix = (prixRecu == null || (prixRecu is String && prixRecu.trim().isEmpty)) ? 0.0 : _nombre(prixRecu);
+  if (produit['code'] == null || '${produit['code']}'.isEmpty || !prix.isFinite || prix < 0 || prix.floorToDouble() != prix) return const IssuePrixReception('sans_objet', motif: 'prix de réception non renseigné');
+  final code = '${produit['code']}', h = cx.referentiel;
+  final jour = tarJourDe(date, cx.aujourdhui);
+  final en = tarPrixProduit(h, produit, jour, aujourdhui: cx.aujourdhui);
+  if (!en.absent && en.achat == prix) return IssuePrixReception('identique', code: code, prix: prix.toInt());
+  final p = _prestationProduit(h, code);
+  if (p == null) return IssuePrixReception('sans_objet', code: code, motif: 'produit sans prix versionné');
+  final attente = h.versionsDe(code).where((v) => v['statut'] == 'propose').firstOrNull;
+  if (attente != null) return IssuePrixReception('deja_ouverte', code: code, prix: attente['prixNonAssure'] as num?);
+  final ref = reference.trim();
+  final passee = jour.compareTo(cx.aujourdhui) < 0;
+  final r = tarProposerProduit(
+      cx,
+      DemandeProduit(
+          code: code,
+          prixAchat: prix.toInt(),
+          dateEffet: jour,
+          datePassee: passee,
+          motif: 'prix constaté à la réception n° $ref',
+          source: 'Réception $ref',
+          reception: true),
+      produits: produits);
+  if (!r.ok) return IssuePrixReception('refusee', code: code, refus: r.refus);
+  return IssuePrixReception('ouverte', code: code, ancien: en.absent ? null : en.achat, prix: prix.toInt(), dateEffet: jour, proposition: r.valeur);
+}
+
+/// Le refus d'un article créé SANS prix d'achat (`PR.refusPrixAchatAbsent`, lot T5b de la maquette) : code, motif, geste. Un tiret n'est pas un zéro, et zéro n'est pas un prix : l'article ne se
+/// crée pas. Le seul cas où un article naît sans prix est la reprise du Grand Stock (le stock existe déjà), qui le marque « à valoriser ».
+RefusTarif tarRefusPrixAchatAbsent(Object? code, Object? designation) {
+  final nom = [code, designation].where((x) => x != null && '$x'.isNotEmpty).join(' : ');
+  return RefusTarif('PRIX_ACHAT_ABSENT', 'le prix d’achat de l’article « $nom » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas',
+      'Renseignez son prix d’achat en FCFA. Si le stock existe déjà, passez par « Importation Grand Stock » : l’article y est créé « à valoriser », sans prix facturable, jusqu’à la décision d’un premier prix.');
+}
+
 /// Le motif de la version 1 posée à la CRÉATION d'un article (`creerPrixProduit` de la maquette) : un article sans prix d'achat naît « à valoriser ».
 String tarMotifCreationProduit(num? achat) => achat == null ? 'Article créé sans prix d’achat : à valoriser' : 'Création de l’article';
 

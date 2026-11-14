@@ -49,6 +49,8 @@ class TarifsPoste {
     this.peutEditerPour,
     this.peutProposerPrixAchat = false,
     this.peutProposerPrixAchatPour,
+    this.peutProposerReception = false,
+    this.peutProposerReceptionPour,
     DateTime Function()? horloge,
     this.etiquette = 'P',
   }) : _horloge = horloge ?? DateTime.now;
@@ -71,6 +73,13 @@ class TarifsPoste {
 
   /// Le même droit pour un AUTRE rôle (la mère qui applique la demande d'un fileul). `null` : seuls les rôles de décision.
   final bool Function(String role)? peutProposerPrixAchatPour;
+
+  /// LOT TFIN-2 : le droit de MODIFIER l'écran des réceptions d'achats (`m7-receptions`), qui est l'autorité de la proposition née d'une réception (PRD-TARIFS 4.7, `peutProposerProduit({ reception })`
+  /// de la maquette) : jamais celui de modifier « Référentiel produits ».
+  final bool peutProposerReception;
+
+  /// Le même droit pour un AUTRE rôle (la mère qui applique la demande d'un fileul). `null` : seuls les rôles de décision.
+  final bool Function(String role)? peutProposerReceptionPour;
   final DateTime Function() _horloge;
 
   /// L'étiquette du poste, qui rend unique l'identifiant d'une demande déposée.
@@ -228,7 +237,7 @@ class TarifsPoste {
 
   ReferentielTarifs get h => lire(m);
 
-  ContexteTarif contexte({String? pourRole, String? pourAuteur, bool? pourFileul}) {
+  ContexteTarif contexte({String? pourRole, String? pourAuteur, bool? pourFileul, bool reception = false}) {
     final r = pourRole ?? role;
     return ContexteTarif(
       referentiel: lire(m),
@@ -236,7 +245,9 @@ class TarifsPoste {
       role: r,
       auteur: pourAuteur ?? auteur(),
       peutEditerEcran: pourRole == null ? peutEditerEcran : (peutEditerPour?.call(r) ?? tarPeutDecider(r)),
-      peutProposerProduit: pourRole == null ? peutProposerPrixAchat : (peutProposerPrixAchatPour?.call(r) ?? tarPeutDecider(r)),
+      peutProposerProduit: reception
+          ? (pourRole == null ? peutProposerReception : (peutProposerReceptionPour?.call(r) ?? tarPeutDecider(r)))
+          : (pourRole == null ? peutProposerPrixAchat : (peutProposerPrixAchatPour?.call(r) ?? tarPeutDecider(r))),
       fileul: pourFileul ?? fileul,
       libelles: libelles,
       pieces: pieces(m),
@@ -324,6 +335,30 @@ class TarifsPoste {
     final r = tarProposerProduit(contexte(), tarDemandeCreationProduit(produit, motif: motif, source: source, importJeu: importJeu, importLot: importLot), produits: m.collection('produits').toutes);
     if (!r.ok) return IssueTarif(refus: r.refus);
     return IssueTarif(version: _ecrireProposition(r.valeur!));
+  }
+
+  /// LA PROPOSITION NÉE D'UNE RÉCEPTION D'ACHAT (PRD-TARIFS 4.7, `PR.proposerPrixReception` de la maquette) : une réception à un autre prix que celui en vigueur à sa date OUVRE une proposition de
+  /// changement du prix d'achat (date d'effet = date de réception, motif « prix constaté à la réception n° … »), une seule par produit, JAMAIS bloquante : la réception, le stock et le CUMP sont
+  /// écrits par l'écran avant, un refus du moteur se DIT sans rien défaire. Aucun prix ne change avant le Oui. Sur la MÈRE : écrit la version. Sur un FILEUL : même vérification, puis DÉPÔT d'une
+  /// demande (`reception: true`) que la mère applique sous l'autorité de MODIFIER les réceptions. Rend l'issue du moteur et, pour un fileul, la demande déposée.
+  ({IssuePrixReception issue, Map<String, Object?>? version, Map<String, Object?>? demande}) proposerPrixReception(
+      {required Map<String, Object?> produit, required Object? prixRecu, Object? date, required String reference}) {
+    final produits = m.collection('produits').toutes;
+    final i = tarProposerPrixReception(contexte(pourFileul: false, reception: true), produit: produit, prixRecu: prixRecu, date: date, reference: reference, produits: produits);
+    if (i.etat != 'ouverte') return (issue: i, version: null, demande: null);
+    if (fileul) {
+      final dem = _deposer('propositionProduit', {
+        'code': i.code,
+        'prixAchat': i.prix,
+        'dateEffet': i.dateEffet,
+        'motif': i.proposition!.version['motif'],
+        if (i.proposition!.version['datePassee'] == true) 'datePassee': true,
+        'source': i.proposition!.version['source'],
+        'reception': true,
+      });
+      return (issue: i, version: i.proposition!.version, demande: dem);
+    }
+    return (issue: i, version: _ecrireProposition(i.proposition!), demande: null);
   }
 
   /// LA MÈRE seulement : chaque produit actif sans prestation de prix reçoit la sienne, ORIGINE « reprise » : le prix d'achat qu'il tient aujourd'hui, jamais un zéro (un prix absent est
@@ -455,7 +490,8 @@ class TarifsPoste {
       ..sort((a, b) => '${a['demandeLe']}${a['id']}'.compareTo('${b['demandeLe']}${b['id']}'));
     for (final d in enAttente) {
       final role = '${d['demandeRole']}', par = '${d['demandePar']}';
-      final cx = contexte(pourRole: role, pourAuteur: par, pourFileul: false);
+      // La proposition née d'une réception a l'autorité de MODIFIER les réceptions, non celle de modifier « Référentiel produits » (PRD-TARIFS 4.7).
+      final cx = contexte(pourRole: role, pourAuteur: par, pourFileul: false, reception: d['reception'] == true);
       RefusTarif? refus;
       Object? versionId;
       switch ('${d['genre']}') {
@@ -630,6 +666,19 @@ class TarifsPoste {
       }
       n++;
     }
+    // LOT TFIN-2 : les fiches `produits` suivent aussi la version en vigueur AUJOURD'HUI (une version à date future prend effet le jour venu, sans qu'aucune décision ne passe) : les lecteurs
+    // de vente du poste lisent encore la fiche. Seuls les champs de prix, sans ligne de journal ; un prix absent ne corrige rien (la fiche garde son marquage « à valoriser »).
+    final produits = m.collection('produits');
+    for (final f in produits.actives) {
+      final p = h.parCode['${f['code']}'];
+      if (p == null || p['famille'] != tarFamilleProduit) continue;
+      final s = h.instantane(p, j);
+      final corr = s == null ? null : tarCorrectifProduit(f, s);
+      if (corr != null) {
+        produits.appliquerDistante({...f, ...corr});
+        n++;
+      }
+    }
     _dernierJour[m] = j;
     return n;
   }
@@ -670,7 +719,12 @@ class TarifsPoste {
       m.journaliser('Reprise des prix (magasin d’avant le référentiel)', 'CFG', 'prix', 'migration', null,
           {'prestations': mg.tarifs.length, 'versions': mg.versions.length, 'ecartsListes': reels.length});
     }
-    if (!fileul) projeter(m, (horloge ?? DateTime.now)());
+    // LOT TFIN-2 : chaque produit actif reçoit sa prestation de prix (version 1 = le prix d'achat qu'il tient, « reprise »), à chaque démarrage de la MÈRE : idempotent (un produit déjà doté n'est
+    // pas repris), jamais une fiche touchée. Sans cette reprise, l'écran « Référentiel produits » n'aurait aucune version à lire.
+    if (!fileul) {
+      assurerProduits(m);
+      projeter(m, (horloge ?? DateTime.now)());
+    }
     return mg;
   }
 

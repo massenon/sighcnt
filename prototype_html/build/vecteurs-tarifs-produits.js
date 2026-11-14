@@ -110,10 +110,44 @@ const PORT = Number(process.env.SIGH_PORT_TEST) || 8096;
       [{ code: 'C3', categorie: 'medicament', prixAchat: 100, prixVente: 100 }, { na: 100, vrs: { prixNonAssure: 100 } }], [{ code: 'C4', categorie: 'medicament', prixAchat: 100, prixVente: 100 }, { na: null, vrs: { etatNonAssure: 'manquant' } }]].forEach(([doc, s]) => {
       R.correctifs.push({ doc: doc, s: s, attendu: TA.correctifProduit(doc, null, s) });
     });
+    /* LA PROPOSITION NÉE D'UNE RÉCEPTION D'ACHAT (lot T5b de la maquette, portée au poste par le lot TFIN-2) : `PR.proposerPrixReception` sur des articles réels, sous des rôles réels (le droit est celui de
+       modifier l'écran des réceptions de M7). Chaque cas porte son ÉTAT de départ, le droit lu de la matrice, et le résultat (état, refus nommé, version écrite). */
+    R.receptions = [];
+    const sessionDe = (role) => S.setSession({ role: role, nom: 'VECTEURS', nomComplet: 'VECTEURS', fonction: role === 'admin' ? 'direction' : role, identifiant: 'vecteurs', secteur: 'DIR' });
+    const rec = (nom, role, produit, prixRecu, date, reference, avecFactures) => {
+      sessionDe(role);
+      const avant = etat(produit.code, true), droit = PR.peutProposerProduit({ reception: true });
+      const fiche = brut().produits.filter((x) => x.id === produit.id)[0];
+      const r = PR.proposerPrixReception({ produit: fiche, prixRecu: prixRecu, date: date, reference: reference });
+      const res = { etat: r.etat, code: r.code === undefined ? null : r.code, ancien: r.ancien === undefined ? null : r.ancien, prix: r.prix === undefined ? null : r.prix, dateEffet: r.dateEffet || null, motif: r.motif || null,
+        refus: r.refus ? { code: r.refus.code, motif: r.refus.motif, geste: r.refus.geste } : null };
+      if (r.etat === 'ouverte') { const v = brut().versionsTarif.filter((x) => x.id === r.version.id)[0] || r.version; res.version = v; }
+      R.receptions.push({ nom: nom, role: role, droit: droit === true, entree: { code: produit.code, prixRecu: prixRecu === undefined ? null : prixRecu, date: date, reference: reference }, avant: avant, resultat: res });
+      sessionDe('admin'); return r;
+    };
+    /* Des articles qu'aucune pièce du jeu ne porte (sinon le contrôle d'usage les refuserait tous) ; le cas « déjà vendu » pose sa propre facture. */
+    const utilises = new Set(); brut().factures.forEach((f) => (f.lignes || []).forEach((l) => { if (l.produitId) utilises.add(l.produitId); }));
+    const libres = (L) => L.filter((p) => !utilises.has(p.id) && M.indexOf(p) < 0 && A.indexOf(p) < 0);
+    const RM = libres(meds).slice(0, 4), RA = libres(autres)[0];
+    rec('prix identique : rien à proposer', 'admin', RM[0], RM[0].prixAchat, jour, 'BL-VEC-1');
+    rec('prix reçu à zéro : le moteur refuse en nommant, la réception n\'est pas bloquée', 'admin', RM[0], 0, jour, 'BL-VEC-1');
+    rec('prix reçu décimal : sans objet', 'admin', RM[0], 12.5, jour, 'BL-VEC-1');
+    rec('prix reçu vide (compté zéro par la maquette) : même refus nommé', 'admin', RM[0], '', jour, 'BL-VEC-1');
+    rec('un profil sans le droit de modifier les réceptions : refus nommé', 'comptable', RM[1], RM[1].prixAchat + 20, jour, 'BL-VEC-2');
+    rec('prix différent à la date du jour : proposition ouverte', 'admin', RM[1], RM[1].prixAchat + 20, jour, 'BL-VEC-3');
+    rec('une seule proposition ouverte par produit : la seconde le dit', 'admin', RM[1], RM[1].prixAchat + 40, jour, 'BL-VEC-4');
+    rec('date de réception antérieure sans l\'autorité de la date passée : refus nommé', 'admin', RM[2], RM[2].prixAchat + 15, plus(-3), 'BL-VEC-5');
+    rec('date de réception antérieure par la Directrice Administrative : proposition ouverte, date passée motivée', 'da', RM[2], RM[2].prixAchat + 15, plus(-3), 'BL-VEC-6');
+    const prR = RM[3], facR = S.collection('factures').insert({ numero: 'FAC-VEC-REC', date: jour, statut: 'emise', patientId: null, lignes: [{ produitId: prR.id, designation: prR.designation, quantite: 1, prixUnitaire: prR.prixAchat }] });
+    rec('article déjà vendu depuis la date de réception : refus nommé, la réception n\'est pas bloquée', 'admin', prR, prR.prixAchat + 5, jour, 'BL-VEC-7');
+    if (facR && facR.record) S.collection('factures').archive(facR.record.id);
+    rec('hors médicament : la proposition ne touche que le prix d\'achat, le prix de vente propre est conservé', 'admin', RA, RA.prixAchat + 7, jour, 'BL-VEC-8');
+    /* LE REFUS D'UN ARTICLE CRÉÉ SANS PRIX D'ACHAT (lot T5b) : code, motif, geste. */
+    R.refusPrixAbsent = [['MED-1', 'Paracétamol 500 mg'], ['MED-2', ''], [undefined, 'Sans code']].map((a) => { const r = PR.refusPrixAchatAbsent(a[0], a[1]); return { code: a[0] === undefined ? null : a[0], designation: a[1], refus: { code: r.code, motif: r.motif, geste: r.geste } }; });
     return R;
   });
   fs.writeFileSync(sortie, JSON.stringify(R, null, 1));
-  console.log('Vecteurs écrits : ' + sortie + ' (' + R.cas.length + ' cas, ' + R.lectures.length + ' lectures, ' + R.creations.length + ' créations ; erreurs JS : ' + erreurs.length + ')');
+  console.log('Vecteurs écrits : ' + sortie + ' (' + R.cas.length + ' cas, ' + R.lectures.length + ' lectures, ' + R.creations.length + ' créations, ' + R.receptions.length + ' réceptions ; erreurs JS : ' + erreurs.length + ')');
   if (erreurs.length) console.error(erreurs.slice(0, 5));
   await br.close(); srv.close(); try { php.php.kill(); } catch (e) { /* mort */ }
   process.exit(erreurs.length ? 1 : 0);

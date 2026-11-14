@@ -44,6 +44,8 @@ class CrudStock extends StatefulWidget {
     this.champsPour,
     this.messageModification = 'Modification enregistrée.',
     this.validation,
+    this.actionsLigneSup,
+    this.apresCreation,
   });
 
   final CollectionMagasin collection;
@@ -93,6 +95,12 @@ class CrudStock extends StatefulWidget {
 
   /// Le geste de validation de la famille (moteur commun) ; absent : l'écran ne valide rien.
   final ValidationCrud? validation;
+
+  /// Des gestes de ligne SUPPLÉMENTAIRES (après « Consulter ») : l'historique de prix et « Changer le prix d'achat » du référentiel produits (lot TFIN-2). L'écran décide de leur présence (ABSENTS sans le droit).
+  final List<Widget> Function(BuildContext, Fiche)? actionsLigneSup;
+
+  /// Ce que la création pose APRÈS l'insertion de la fiche (la version 1 du prix d'achat) : rend un message d'attention à dire, ou `null`.
+  final String? Function(BuildContext, Fiche)? apresCreation;
 
   @override
   State<CrudStock> createState() => _CrudStockState();
@@ -207,9 +215,11 @@ class _CrudStockState extends State<CrudStock> {
                         '_creePar': acteur(c).nom,
                         '_creeLe': c.aujourdhui.toIso8601String(),
                       }, prefixe: widget.prefixeId);
+                      final attention = widget.apresCreation?.call(ctx, r.fiche);
+                      final detail = [widget.referenceToast?.call(r.fiche), attention].where((x) => x != null && x.isNotEmpty).join(' : ');
                       ToastsSigh.afficher(ctx, 'Nouveau ${widget.entite} créé.',
                           type: TypeToast.succes,
-                          detail: widget.referenceToast?.call(r.fiche),
+                          detail: attention == null ? widget.referenceToast?.call(r.fiche) : detail,
                           annuler: r.annuler);
                     } else {
                       final annuler =
@@ -321,6 +331,7 @@ class _CrudStockState extends State<CrudStock> {
                   libelle: 'Consulter',
                   onPressed: () => _ouvrirDetail(ctx, f)),
               if (widget.validation != null) ...ValidationPoste(c).boutonsDeLigne(context, widget.validation!, f),
+              ...?widget.actionsLigneSup?.call(context, f),
               if (c.droit.editer)
                 BoutonIcone(
                     icone: LucideIcons.pencil,

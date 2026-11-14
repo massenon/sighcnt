@@ -607,7 +607,7 @@
     ],
     "factures": [
      {
-      "id": "FACxmsvr64zs3n9z6",
+      "id": "FACxmsvr64rzdj4ew",
       "numero": "FAC-VEC-PRD",
       "date": "2026-08-16",
       "statut": "emise",
@@ -702,7 +702,7 @@
     "dateEffet": "2026-08-19",
     "source": "Facture VEC",
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.018Z"
+    "_creeLe": "2026-08-16T12:00:02.737Z"
    },
    "identite": null,
    "valideeEnUnGeste": false
@@ -766,7 +766,7 @@
       "dateEffet": "2026-08-19",
       "source": "Facture VEC",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.737Z"
      }
     ],
     "factures": []
@@ -843,7 +843,7 @@
     "dateEffet": "2026-08-19",
     "prixVente": 93,
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.018Z"
+    "_creeLe": "2026-08-16T12:00:02.738Z"
    },
    "identite": null,
    "valideeEnUnGeste": false
@@ -971,7 +971,7 @@
     "roleDecision": "admin",
     "motifDecision": "Validée en un geste à la saisie",
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.019Z"
+    "_creeLe": "2026-08-16T12:00:02.739Z"
    },
    "identite": null,
    "valideeEnUnGeste": true
@@ -1038,7 +1038,7 @@
       "dateEffet": "2026-08-19",
       "source": "Facture VEC",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.737Z"
      }
     ],
     "factures": []
@@ -1104,7 +1104,7 @@
       "dateEffet": "2026-08-19",
       "source": "Facture VEC",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.737Z"
      }
     ],
     "factures": []
@@ -1170,7 +1170,7 @@
       "dateEffet": "2026-08-19",
       "source": "Facture VEC",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.737Z"
      }
     ],
     "factures": []
@@ -1236,7 +1236,7 @@
       "dateEffet": "2026-08-19",
       "source": "Facture VEC",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.737Z"
      }
     ],
     "factures": []
@@ -1302,7 +1302,7 @@
       "dateEffet": "2026-08-19",
       "source": "Facture VEC",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.737Z"
      }
     ],
     "factures": []
@@ -1368,7 +1368,7 @@
       "dateEffet": "2026-08-19",
       "prixVente": 93,
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.738Z"
      }
     ],
     "factures": []
@@ -1434,7 +1434,7 @@
       "dateEffet": "2026-08-19",
       "prixVente": 93,
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.738Z"
      }
     ],
     "factures": []
@@ -1500,7 +1500,7 @@
       "dateEffet": "2026-08-19",
       "prixVente": 93,
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.738Z"
      }
     ],
     "factures": []
@@ -1566,7 +1566,7 @@
       "dateEffet": "2026-08-19",
       "prixVente": 93,
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.738Z"
      }
     ],
     "factures": []
@@ -1632,7 +1632,7 @@
       "dateEffet": "2026-08-19",
       "prixVente": 93,
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.018Z"
+      "_creeLe": "2026-08-16T12:00:02.738Z"
      }
     ],
     "factures": []
@@ -1941,7 +1941,7 @@
       "roleDecision": "admin",
       "motifDecision": "Validée en un geste à la saisie",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.019Z"
+      "_creeLe": "2026-08-16T12:00:02.739Z"
      }
     ],
     "factures": []
@@ -2010,7 +2010,7 @@
       "roleDecision": "admin",
       "motifDecision": "Validée en un geste à la saisie",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.019Z"
+      "_creeLe": "2026-08-16T12:00:02.739Z"
      }
     ],
     "factures": []
@@ -2079,7 +2079,7 @@
       "roleDecision": "admin",
       "motifDecision": "Validée en un geste à la saisie",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.019Z"
+      "_creeLe": "2026-08-16T12:00:02.739Z"
      }
     ],
     "factures": []
@@ -2148,7 +2148,7 @@
       "roleDecision": "admin",
       "motifDecision": "Validée en un geste à la saisie",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.019Z"
+      "_creeLe": "2026-08-16T12:00:02.739Z"
      }
     ],
     "factures": []
@@ -2217,7 +2217,7 @@
       "roleDecision": "admin",
       "motifDecision": "Validée en un geste à la saisie",
       "_creePar": "VECTEURS",
-      "_creeLe": "2026-08-16T12:00:03.019Z"
+      "_creeLe": "2026-08-16T12:00:02.739Z"
      }
     ],
     "factures": []
@@ -2713,7 +2713,7 @@
   {
    "code": "VEC-NEUF-1",
    "fiche": {
-    "id": "PROxmsvr64zxpmr97",
+    "id": "PROxmsvr64s5dmcyg",
     "statut": "actif",
     "code": "VEC-NEUF-1",
     "designation": "Article VEC-NEUF-1",
@@ -2724,7 +2724,7 @@
     "stock": 0,
     "prixAchat": 700,
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.021Z",
+    "_creeLe": "2026-08-16T12:00:02.741Z",
     "prixVente": 700
    },
    "avant": {
@@ -2750,7 +2750,7 @@
     "roleDecision": "admin",
     "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.022Z"
+    "_creeLe": "2026-08-16T12:00:02.741Z"
    },
    "identite": {
     "id": "VEC-NEUF-1",
@@ -2759,7 +2759,7 @@
     "libelle": "Article VEC-NEUF-1",
     "famille": "PRODUIT",
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.022Z"
+    "_creeLe": "2026-08-16T12:00:02.741Z"
    },
    "reutilise": false,
    "apres": [
@@ -2781,14 +2781,14 @@
      "roleDecision": "admin",
      "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
      "_creePar": "VECTEURS",
-     "_creeLe": "2026-08-16T12:00:03.022Z"
+     "_creeLe": "2026-08-16T12:00:02.741Z"
     }
    ]
   },
   {
    "code": "VEC-NEUF-2",
    "fiche": {
-    "id": "PROxmsvr64zyfdy91",
+    "id": "PROxmsvr64s5iqomg",
     "statut": "actif",
     "code": "VEC-NEUF-2",
     "designation": "Article VEC-NEUF-2",
@@ -2799,7 +2799,7 @@
     "stock": 0,
     "prixAchat": 450,
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.022Z",
+    "_creeLe": "2026-08-16T12:00:02.741Z",
     "prixVente": 450
    },
    "avant": {
@@ -2825,7 +2825,7 @@
     "roleDecision": "admin",
     "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.022Z"
+    "_creeLe": "2026-08-16T12:00:02.742Z"
    },
    "identite": {
     "id": "VEC-NEUF-2",
@@ -2834,7 +2834,7 @@
     "libelle": "Article VEC-NEUF-2",
     "famille": "PRODUIT",
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.022Z"
+    "_creeLe": "2026-08-16T12:00:02.742Z"
    },
    "reutilise": false,
    "apres": [
@@ -2856,14 +2856,14 @@
      "roleDecision": "admin",
      "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
      "_creePar": "VECTEURS",
-     "_creeLe": "2026-08-16T12:00:03.022Z"
+     "_creeLe": "2026-08-16T12:00:02.742Z"
     }
    ]
   },
   {
    "code": "VEC-NEUF-3",
    "fiche": {
-    "id": "PROxmsvr64zygcs9h",
+    "id": "PROxmsvr64s626t4u",
     "statut": "actif",
     "code": "VEC-NEUF-3",
     "designation": "Article VEC-NEUF-3",
@@ -2873,7 +2873,7 @@
     "stockDetail": 0,
     "stock": 0,
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.022Z"
+    "_creeLe": "2026-08-16T12:00:02.742Z"
    },
    "avant": {
     "tarifs": [],
@@ -2899,7 +2899,7 @@
     "roleDecision": "admin",
     "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.023Z"
+    "_creeLe": "2026-08-16T12:00:02.742Z"
    },
    "identite": {
     "id": "VEC-NEUF-3",
@@ -2908,7 +2908,7 @@
     "libelle": "Article VEC-NEUF-3",
     "famille": "PRODUIT",
     "_creePar": "VECTEURS",
-    "_creeLe": "2026-08-16T12:00:03.023Z"
+    "_creeLe": "2026-08-16T12:00:02.742Z"
    },
    "reutilise": false,
    "apres": [
@@ -2931,7 +2931,7 @@
      "roleDecision": "admin",
      "motifDecision": "Première version du prix d’achat, posée à la création de l’article",
      "_creePar": "VECTEURS",
-     "_creeLe": "2026-08-16T12:00:03.023Z"
+     "_creeLe": "2026-08-16T12:00:02.742Z"
     }
    ]
   }
@@ -3145,6 +3145,758 @@
     }
    },
    "attendu": null
+  }
+ ],
+ "receptions": [
+  {
+   "nom": "prix identique : rien à proposer",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "CHLG",
+    "prixRecu": 1400,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-1"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0041",
+      "code": "CHLG",
+      "designation": "CHLORXY-G GEL",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 1400,
+      "prixVente": 1400,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "CHLG",
+      "code": "CHLG",
+      "libelle": "CHLORXY-G GEL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "CHLG@origine@1",
+      "code": "CHLG",
+      "version": 1,
+      "prixNonAssure": 1400,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "identique",
+    "code": "CHLG",
+    "ancien": null,
+    "prix": 1400,
+    "dateEffet": null,
+    "motif": null,
+    "refus": null
+   }
+  },
+  {
+   "nom": "prix reçu à zéro : le moteur refuse en nommant, la réception n'est pas bloquée",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "CHLG",
+    "prixRecu": 0,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-1"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0041",
+      "code": "CHLG",
+      "designation": "CHLORXY-G GEL",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 1400,
+      "prixVente": 1400,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "CHLG",
+      "code": "CHLG",
+      "libelle": "CHLORXY-G GEL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "CHLG@origine@1",
+      "code": "CHLG",
+      "version": 1,
+      "prixNonAssure": 1400,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "CHLG",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "PRIX_ZERO",
+     "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul ») : un article ne se facture jamais à zéro.",
+     "geste": "Saisir un prix d’achat strictement positif, ou laisser l’article « à valoriser » (sans prix)."
+    }
+   }
+  },
+  {
+   "nom": "prix reçu décimal : sans objet",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "CHLG",
+    "prixRecu": 12.5,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-1"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0041",
+      "code": "CHLG",
+      "designation": "CHLORXY-G GEL",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 1400,
+      "prixVente": 1400,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "CHLG",
+      "code": "CHLG",
+      "libelle": "CHLORXY-G GEL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "CHLG@origine@1",
+      "code": "CHLG",
+      "version": 1,
+      "prixNonAssure": 1400,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "sans_objet",
+    "code": null,
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": "prix de réception non renseigné",
+    "refus": null
+   }
+  },
+  {
+   "nom": "prix reçu vide (compté zéro par la maquette) : même refus nommé",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "CHLG",
+    "prixRecu": "",
+    "date": "2026-08-16",
+    "reference": "BL-VEC-1"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0041",
+      "code": "CHLG",
+      "designation": "CHLORXY-G GEL",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 1400,
+      "prixVente": 1400,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "CHLG",
+      "code": "CHLG",
+      "libelle": "CHLORXY-G GEL",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "CHLG@origine@1",
+      "code": "CHLG",
+      "version": 1,
+      "prixNonAssure": 1400,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "CHLG",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "PRIX_ZERO",
+     "motif": "Un zéro n’est pas un tarif (arbitrage « plus aucun montant nul ») : un article ne se facture jamais à zéro.",
+     "geste": "Saisir un prix d’achat strictement positif, ou laisser l’article « à valoriser » (sans prix)."
+    }
+   }
+  },
+  {
+   "nom": "un profil sans le droit de modifier les réceptions : refus nommé",
+   "role": "comptable",
+   "droit": false,
+   "entree": {
+    "code": "FORL",
+    "prixRecu": 220,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-2"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0068",
+      "code": "FORL",
+      "designation": "FORLAX SACHET",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 200,
+      "prixVente": 200,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "FORL",
+      "code": "FORL",
+      "libelle": "FORLAX SACHET",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "FORL@origine@1",
+      "code": "FORL",
+      "version": 1,
+      "prixNonAssure": 200,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "FORL",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "PROPOSITION_RESERVEE",
+     "motif": "Changer le prix d’achat d’un produit se fait au « Référentiel produits », par un profil qui peut modifier cet écran.",
+     "geste": "Demander le changement au gestionnaire de stock, à la Directrice Administrative ou à l’administrateur."
+    }
+   }
+  },
+  {
+   "nom": "prix différent à la date du jour : proposition ouverte",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "FORL",
+    "prixRecu": 220,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-3"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0068",
+      "code": "FORL",
+      "designation": "FORLAX SACHET",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 200,
+      "prixVente": 200,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "FORL",
+      "code": "FORL",
+      "libelle": "FORLAX SACHET",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "FORL@origine@1",
+      "code": "FORL",
+      "version": 1,
+      "prixNonAssure": 200,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "ouverte",
+    "code": "FORL",
+    "ancien": 200,
+    "prix": 220,
+    "dateEffet": "2026-08-16",
+    "motif": null,
+    "refus": null,
+    "version": {
+     "id": "FORL@2026-08-16@2",
+     "statut": "propose",
+     "code": "FORL",
+     "version": 2,
+     "prixNonAssure": 220,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "prix constaté à la réception n° BL-VEC-3",
+     "origine": "ecran",
+     "proposePar": "VECTEURS",
+     "proposeLe": "2026-08-16",
+     "proposeRole": "admin",
+     "dateEffet": "2026-08-16",
+     "source": "Réception BL-VEC-3",
+     "_creePar": "VECTEURS",
+     "_creeLe": "2026-08-16T12:00:02.747Z"
+    }
+   }
+  },
+  {
+   "nom": "une seule proposition ouverte par produit : la seconde le dit",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "FORL",
+    "prixRecu": 240,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-4"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0068",
+      "code": "FORL",
+      "designation": "FORLAX SACHET",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "prixAchat": 200,
+      "prixVente": 200,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "FORL",
+      "code": "FORL",
+      "libelle": "FORLAX SACHET",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "FORL@origine@1",
+      "code": "FORL",
+      "version": 1,
+      "prixNonAssure": 200,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     },
+     {
+      "id": "FORL@2026-08-16@2",
+      "statut": "propose",
+      "code": "FORL",
+      "version": 2,
+      "prixNonAssure": 220,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "motif": "prix constaté à la réception n° BL-VEC-3",
+      "origine": "ecran",
+      "proposePar": "VECTEURS",
+      "proposeLe": "2026-08-16",
+      "proposeRole": "admin",
+      "dateEffet": "2026-08-16",
+      "source": "Réception BL-VEC-3",
+      "_creePar": "VECTEURS",
+      "_creeLe": "2026-08-16T12:00:02.747Z"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "deja_ouverte",
+    "code": "FORL",
+    "ancien": null,
+    "prix": 220,
+    "dateEffet": null,
+    "motif": null,
+    "refus": null
+   }
+  },
+  {
+   "nom": "date de réception antérieure sans l'autorité de la date passée : refus nommé",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "GENC",
+    "prixRecu": 867,
+    "date": "2026-08-13",
+    "reference": "BL-VEC-5"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0075",
+      "code": "GENC",
+      "designation": "GENTA COLLYRE",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 852,
+      "prixVente": 852,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "GENC",
+      "code": "GENC",
+      "libelle": "GENTA COLLYRE",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "GENC@origine@1",
+      "code": "GENC",
+      "version": 1,
+      "prixNonAssure": 852,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "GENC",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "DATE_PASSEE_RESERVEE",
+     "motif": "Une date d’effet antérieure à aujourd’hui est une autorité de Directrice de l’Administration et des Finances (DAF) et Direction / Gérance.",
+     "geste": "Choisir aujourd’hui ou une date future, ou demander cette date à l’un de ces profils."
+    }
+   }
+  },
+  {
+   "nom": "date de réception antérieure par la Directrice Administrative : proposition ouverte, date passée motivée",
+   "role": "da",
+   "droit": true,
+   "entree": {
+    "code": "GENC",
+    "prixRecu": 867,
+    "date": "2026-08-13",
+    "reference": "BL-VEC-6"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0075",
+      "code": "GENC",
+      "designation": "GENTA COLLYRE",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 852,
+      "prixVente": 852,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "GENC",
+      "code": "GENC",
+      "libelle": "GENTA COLLYRE",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "GENC@origine@1",
+      "code": "GENC",
+      "version": 1,
+      "prixNonAssure": 852,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "ouverte",
+    "code": "GENC",
+    "ancien": 852,
+    "prix": 867,
+    "dateEffet": "2026-08-13",
+    "motif": null,
+    "refus": null,
+    "version": {
+     "id": "GENC@2026-08-13@2",
+     "statut": "propose",
+     "code": "GENC",
+     "version": 2,
+     "prixNonAssure": 867,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "prix constaté à la réception n° BL-VEC-6",
+     "origine": "ecran",
+     "proposePar": "VECTEURS",
+     "proposeLe": "2026-08-16",
+     "proposeRole": "da",
+     "dateEffet": "2026-08-13",
+     "source": "Réception BL-VEC-6",
+     "datePassee": true,
+     "_creePar": "VECTEURS",
+     "_creeLe": "2026-08-16T12:00:02.750Z"
+    }
+   }
+  },
+  {
+   "nom": "article déjà vendu depuis la date de réception : refus nommé, la réception n'est pas bloquée",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "ISF",
+    "prixRecu": 783,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-7"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0083",
+      "code": "ISF",
+      "designation": "ISOFLURANE",
+      "categorie": "medicament",
+      "unite": "Flacon",
+      "prixAchat": 778,
+      "prixVente": 778,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "ISF",
+      "code": "ISF",
+      "libelle": "ISOFLURANE",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "ISF@origine@1",
+      "code": "ISF",
+      "version": 1,
+      "prixNonAssure": 778,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": [
+     {
+      "id": "FACxmsvr64seenozs",
+      "numero": "FAC-VEC-REC",
+      "date": "2026-08-16",
+      "statut": "emise",
+      "lignes": [
+       {
+        "produitId": "PRD0083"
+       }
+      ]
+     }
+    ]
+   },
+   "resultat": {
+    "etat": "refusee",
+    "code": "ISF",
+    "ancien": null,
+    "prix": null,
+    "dateEffet": null,
+    "motif": null,
+    "refus": {
+     "code": "TARIF_DEJA_UTILISE",
+     "motif": "La facture FAC-VEC-REC du 16/08/2026 porte déjà « ISF » : un prix qui prendrait effet le 16/08/2026 changerait après coup ce que la pièce dit.",
+     "geste": "Choisir une date d’effet postérieure à la dernière pièce, ou émettre un avoir pour corriger la pièce."
+    }
+   }
+  },
+  {
+   "nom": "hors médicament : la proposition ne touche que le prix d'achat, le prix de vente propre est conservé",
+   "role": "admin",
+   "droit": true,
+   "entree": {
+    "code": "BIP10",
+    "prixRecu": 1907,
+    "date": "2026-08-16",
+    "reference": "BL-VEC-8"
+   },
+   "avant": {
+    "produits": [
+     {
+      "id": "PRD0020",
+      "code": "BIP10",
+      "designation": "BILPATRIX 10 CM",
+      "categorie": "conso_medical",
+      "unite": "Unité",
+      "prixAchat": 1900,
+      "prixVente": 1900,
+      "statut": "actif"
+     }
+    ],
+    "tarifs": [
+     {
+      "id": "BIP10",
+      "code": "BIP10",
+      "libelle": "BILPATRIX 10 CM",
+      "famille": "PRODUIT",
+      "statut": "actif"
+     }
+    ],
+    "versions": [
+     {
+      "id": "BIP10@origine@1",
+      "code": "BIP10",
+      "version": 1,
+      "prixNonAssure": 1900,
+      "prixAssure": null,
+      "etatAssure": "unique",
+      "origine": "migration",
+      "statut": "valide"
+     }
+    ],
+    "factures": []
+   },
+   "resultat": {
+    "etat": "ouverte",
+    "code": "BIP10",
+    "ancien": 1900,
+    "prix": 1907,
+    "dateEffet": "2026-08-16",
+    "motif": null,
+    "refus": null,
+    "version": {
+     "id": "BIP10@2026-08-16@2",
+     "statut": "propose",
+     "code": "BIP10",
+     "version": 2,
+     "prixNonAssure": 1907,
+     "prixAssure": null,
+     "etatAssure": "unique",
+     "motif": "prix constaté à la réception n° BL-VEC-8",
+     "origine": "ecran",
+     "proposePar": "VECTEURS",
+     "proposeLe": "2026-08-16",
+     "proposeRole": "admin",
+     "dateEffet": "2026-08-16",
+     "source": "Réception BL-VEC-8",
+     "_creePar": "VECTEURS",
+     "_creeLe": "2026-08-16T12:00:02.752Z"
+    }
+   }
+  }
+ ],
+ "refusPrixAbsent": [
+  {
+   "code": "MED-1",
+   "designation": "Paracétamol 500 mg",
+   "refus": {
+    "code": "PRIX_ACHAT_ABSENT",
+    "motif": "le prix d’achat de l’article « MED-1 : Paracétamol 500 mg » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas",
+    "geste": "Renseignez son prix d’achat en FCFA. Si le stock existe déjà, passez par « Importation Grand Stock » : l’article y est créé « à valoriser », sans prix facturable, jusqu’à la décision d’un premier prix."
+   }
+  },
+  {
+   "code": "MED-2",
+   "designation": "",
+   "refus": {
+    "code": "PRIX_ACHAT_ABSENT",
+    "motif": "le prix d’achat de l’article « MED-2 » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas",
+    "geste": "Renseignez son prix d’achat en FCFA. Si le stock existe déjà, passez par « Importation Grand Stock » : l’article y est créé « à valoriser », sans prix facturable, jusqu’à la décision d’un premier prix."
+   }
+  },
+  {
+   "code": null,
+   "designation": "Sans code",
+   "refus": {
+    "code": "PRIX_ACHAT_ABSENT",
+    "motif": "le prix d’achat de l’article « Sans code » n’est pas renseigné (absent, tiret ou nul) : un article sans prix d’achat ne se crée pas",
+    "geste": "Renseignez son prix d’achat en FCFA. Si le stock existe déjà, passez par « Importation Grand Stock » : l’article y est créé « à valoriser », sans prix facturable, jusqu’à la décision d’un premier prix."
+   }
   }
  ]
 }

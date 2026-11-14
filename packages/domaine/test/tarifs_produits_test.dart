@@ -122,6 +122,47 @@ void main() {
     }
   });
 
+  group('la proposition née d\'une réception d\'achat (tarProposerPrixReception), tirée de la maquette', () {
+    final receptions = liste(V['receptions']);
+    test('le jeu de vecteurs porte les onze cas', () => expect(receptions.length, greaterThanOrEqualTo(11)));
+    for (final c in receptions) {
+      test('${c['nom']}', () {
+        final etat = (c['avant'] as Map).cast<String, Object?>(), e = (c['entree'] as Map).cast<String, Object?>(), att = (c['resultat'] as Map).cast<String, Object?>();
+        final cx = contexte(etat, role: '${c['role']}', proposer: c['droit'] == true);
+        final fiche = liste(etat['produits']).firstWhere((x) => x['code'] == e['code']);
+        final r = tarProposerPrixReception(cx, produit: fiche, prixRecu: e['prixRecu'], date: e['date'], reference: '${e['reference']}', produits: liste(etat['produits']));
+        expect(r.etat, att['etat'], reason: 'l\'état de la proposition, comme la maquette');
+        expect(r.code, att['code']);
+        expect(r.prix, att['prix']);
+        expect(r.ancien, att['ancien']);
+        expect(r.dateEffet, att['dateEffet']);
+        if (att['refus'] != null) {
+          final a = (att['refus'] as Map).cast<String, Object?>();
+          expect([r.refus!.code, r.refus!.motif, r.refus!.geste], [a['code'], a['motif'], a['geste']], reason: 'un refus se nomme : code, motif et geste comme la maquette');
+        } else {
+          expect(r.refus, isNull);
+        }
+        if (att['etat'] == 'ouverte') {
+          final v = propre(r.proposition!.version), a = propre((att['version'] as Map).cast<String, Object?>());
+          for (final k in ['code', 'version', 'prixNonAssure', 'prixVente', 'dateEffet', 'motif', 'source', 'statut', 'origine', 'datePassee', 'proposeRole', 'etatAssure']) {
+            expect(v[k], a[k], reason: 'la version écrite, champ $k');
+          }
+        } else {
+          expect(r.proposition, isNull, reason: 'rien n\'est à écrire hors de l\'état ouverte');
+        }
+      });
+    }
+  });
+
+  test('un article créé sans prix d\'achat est refusé en nommant (PRIX_ACHAT_ABSENT : code, motif, geste comme la maquette)', () {
+    final l = liste(V['refusPrixAbsent']);
+    expect(l.length, 3);
+    for (final c in l) {
+      final a = (c['refus'] as Map).cast<String, Object?>(), r = tarRefusPrixAchatAbsent(c['code'], c['designation']);
+      expect([r.code, r.motif, r.geste], [a['code'], a['motif'], a['geste']]);
+    }
+  });
+
   group('la création d\'une fiche pose la version 1 (valide, sans date d\'effet) ; sans prix d\'achat, manquant', () {
     for (final c in liste(V['creations'])) {
       test('${c['code']}', () {

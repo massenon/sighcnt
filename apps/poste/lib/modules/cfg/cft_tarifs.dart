@@ -8,8 +8,8 @@ import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../kit/validation_poste.dart';
 import '../../shell/contexte_ecran.dart';
-import '../../core/service_installation.dart';
 import 'cfa_commun.dart';
+import 'tarifs_ecran.dart';
 
 /// `cfg-tarifs` — « Tarifs et prix » (PRD-TARIFS, lot T6) : l'écran UNIQUE du référentiel de prix. Il remplace `cfa_tarifs.dart` (référentiel tarifaire) et
 /// `cfa_catalogue.dart` (catalogue à deux prix) : la caisse, la prescription, les soins, l'imagerie et les certificats lisent UNE liste, au prix EN VIGUEUR à la date de
@@ -70,21 +70,7 @@ const _libelleOrigine = {
   'import': 'Importation',
 };
 
-TarifsPoste _tarifs(ContexteEcran c) {
-  final m = c.magasin;
-  final matrice = c.donnees?.matrice;
-  return TarifsPoste(m,
-      role: c.role,
-      auteur: () => c.agent.nom.isEmpty ? 'Utilisateur' : c.agent.nom,
-      fileul: ServiceInstallation.de(m).rattache,
-      libelles: ValidationPoste(c).libelles,
-      peutEditerEcran: c.droit.editer,
-      peutEditerPour: matrice == null ? null : (r) => matrice.peutEditer(r, 'cfg-tarifs'),
-      peutProposerPrixAchat: matrice?.peutEditer(c.role, 'm6-produits') ?? false,
-      peutProposerPrixAchatPour: matrice == null ? null : (r) => matrice.peutEditer(r, 'm6-produits'),
-      horloge: () => c.aujourdhui,
-      etiquette: m.poste.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toUpperCase());
-}
+TarifsPoste _tarifs(ContexteEcran c) => tarifsDeEcran(c);
 
 String _jour(ContexteEcran c) => tarIso(c.aujourdhui);
 String _argent(Object? x) => x == null ? 'Non renseigné' : money(x, avecDevise: false);
@@ -416,7 +402,7 @@ class _OngletProduits extends StatelessWidget {
 
     return cfaPile([
       const NoteSigh(
-          'Lecture seule. RG-02 : un médicament se facture au prix d’achat, sans marge. Son prix se modifie au référentiel des produits, avec le prix d’achat qui le fonde.',
+          'Lecture seule. RG-02 : un médicament se facture au prix d’achat, sans marge. Les prix affichés sont ceux de la version EN VIGUEUR aujourd’hui (jamais la fiche) ; ils se changent au référentiel des produits (« Changer le prix d’achat »).',
           icone: LucideIcons.pill),
       if (peutOuvrir)
         Align(
@@ -436,21 +422,27 @@ class _OngletProduits extends StatelessWidget {
           ColonneTableau(cle: 'code', libelle: 'Code', sansCoupure: true, texte: (p) => '${p['code'] ?? ''}', rendu: (_, p) => cfaCode(p['code'])),
           const ColonneTableau(cle: 'designation', libelle: 'Désignation'),
           ColonneTableau(cle: 'categorie', libelle: 'Catégorie', texte: (p) => categorie(p['categorie'])),
-          ColonneTableau(cle: 'prixAchat', libelle: 'Prix d’achat', droite: true, texte: (p) => _argent(p['prixAchat'])),
+          ColonneTableau(
+              cle: 'prixAchat',
+              libelle: 'Prix d’achat',
+              droite: true,
+              valeur: (p) => achatDuJour(c, p),
+              texte: (p) => aValoriser(c, p) ? 'À valoriser' : _argent(achatDuJour(c, p))),
           ColonneTableau(
               cle: 'prixVente',
               libelle: 'Prix de vente',
               droite: true,
-              texte: (p) => _argent(p['prixVente']),
-              rendu: (_, p) => Text(_argent(p['prixVente']), style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, color: JetonsShell.slate700))),
+              valeur: (p) => venteDuJour(c, p),
+              texte: (p) => aValoriser(c, p) ? 'À valoriser' : _argent(venteDuJour(c, p)),
+              rendu: (_, p) => Text(aValoriser(c, p) ? 'À valoriser' : _argent(venteDuJour(c, p)), style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, color: JetonsShell.slate700))),
           ColonneTableau(
               cle: 'marge',
               libelle: 'Marge',
               droite: true,
-              valeur: (p) => nombreOuZero(p['prixVente']) - nombreOuZero(p['prixAchat']),
-              texte: (p) => nombreOuZero(p['prixVente']) - nombreOuZero(p['prixAchat']) == 0 ? 'Sans marge' : money(nombreOuZero(p['prixVente']) - nombreOuZero(p['prixAchat']), avecDevise: false),
+              valeur: (p) => nombreOuZero(venteDuJour(c, p)) - nombreOuZero(achatDuJour(c, p)),
+              texte: (p) => nombreOuZero(venteDuJour(c, p)) - nombreOuZero(achatDuJour(c, p)) == 0 ? 'Sans marge' : money(nombreOuZero(venteDuJour(c, p)) - nombreOuZero(achatDuJour(c, p)), avecDevise: false),
               rendu: (_, p) {
-                final mg = nombreOuZero(p['prixVente']) - nombreOuZero(p['prixAchat']);
+                final mg = nombreOuZero(venteDuJour(c, p)) - nombreOuZero(achatDuJour(c, p));
                 return mg == 0
                     ? const BadgeSigh('Sans marge', ton: TonSigh.succes)
                     : Text(money(mg, avecDevise: false), style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, color: JetonsShell.warning600));

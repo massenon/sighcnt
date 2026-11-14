@@ -301,6 +301,11 @@ void main() {
       await saisir(t, 'prixVente', '700');
       await saisir(t, 'stockGros', '3');
       await saisir(t, 'stockDetail', '4');
+      // RG-02 À L'ÉCRITURE (lot T5b, corrige E846) : un prix de vente libre pour un médicament est REFUSÉ en le nommant, plus aligné en silence ; rien n'est écrit.
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
+      expect(col.actives.length, avant, reason: 'refusé : rien n\'est écrit');
+      expect(find.textContaining('RG-02 : un médicament se facture au prix d’achat, sans marge'), findsWidgets);
+      await saisir(t, 'prixVente', '');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
       expect(col.actives.length, avant + 1);
       final p = col.actives.first;
@@ -312,7 +317,8 @@ void main() {
       expect(p['seuilAlerte'], 10);
       expect(p['statut'], 'actif');
       expect(find.text('Nouveau produit créé.'), findsOneWidget);
-      await t.tap(find.text('Annuler'));
+      await t.pump(const Duration(milliseconds: 400));
+      await t.tap(find.text('Annuler').last);
       await t.pump(const Duration(milliseconds: 300));
       expect(col.actives.length, avant);
       expect(col.parId(p['id']), isNotNull,

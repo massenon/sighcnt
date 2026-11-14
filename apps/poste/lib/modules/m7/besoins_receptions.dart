@@ -6,6 +6,7 @@ import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../cfg/tarifs_ecran.dart';
 import 'besoins_commun.dart';
 
 /// `m7-receptions` — « Réceptions & contrôles » : réception physique d'une commande validée, vérification contradictoire par 2 à 3 personnes, entrée en
@@ -268,10 +269,46 @@ class _EtatModaleReception extends State<_ModaleReception> {
     annulations.add(c.magasin
         .collection('commandes')
         .mettreAJour(widget.commande['id'], calc.patchCommande));
+    // LOT TFIN-2 (PRD-TARIFS 4.7, lot T5b de la maquette) : une réception à un autre prix OUVRE une proposition de changement du prix d'achat, APRÈS l'entrée en stock et le CUMP, qui ne changent
+    // pas, et sans JAMAIS bloquer la réception. Une seule proposition par produit ; aucun prix ne change avant le Oui. Un refus du moteur se DIT, sans rien défaire.
+    final tarifs = tarifsDeEcran(c);
+    final ouvertes = <IssuePrixReception>[], deja = <IssuePrixReception>[], refusees = <IssuePrixReception>[];
+    var deposees = 0;
+    for (final (i, l) in _lignes.indexed) {
+      if (_recu(i) <= 0) continue;
+      final p = produitsCol.actives.where((x) => x['id'] == l['produitId']).firstOrNull;
+      if (p == null) continue;
+      final r = tarifs.proposerPrixReception(produit: p, prixRecu: l['prixUnitaire'], date: v['date'], reference: '${v['referenceBL']}');
+      switch (r.issue.etat) {
+        case 'ouverte':
+          ouvertes.add(r.issue);
+          if (r.demande != null) {
+            deposees++;
+          } else if (r.version != null) {
+            annulations.add(() => tarifs.retirer('${r.version!['id']}', 'Réception ${v['referenceBL']} annulée'));
+          }
+        case 'deja_ouverte':
+          deja.add(r.issue);
+        case 'refusee':
+          refusees.add(r.issue);
+      }
+    }
     fermer();
+    var detailProp = '';
+    if (ouvertes.isNotEmpty) {
+      detailProp += ' ${ouvertes.length} proposition(s) de changement du prix d’achat ouverte(s) (${[
+        for (final r in ouvertes) '${r.code} : ${r.ancien == null ? 'sans prix' : nombre(r.ancien)} à ${nombre(r.prix)}'
+      ].join(' ; ')}) : le prix en vigueur ne change qu’au Oui de la Directrice Administrative.${deposees > 0 ? ' Déposée(s) à la mère, qui les applique.' : ''}';
+    }
+    if (deja.isNotEmpty) {
+      detailProp += ' Une proposition attend déjà sa décision pour ${[for (final r in deja) r.code].join(', ')} : aucune seconde n’a été ouverte.';
+    }
+    if (refusees.isNotEmpty) {
+      detailProp += ' Proposition de prix non ouverte (la réception n’est pas bloquée) : ${[for (final r in refusees) '${r.code} (${r.refus!.code})'].join(', ')}.';
+    }
     dire(widget.ecran, calc.message,
         type: calc.type == 'success' ? TypeToast.succes : TypeToast.attention,
-        detail: 'Stock gros mis à jour, CUMP recalculé.',
+        detail: 'Stock gros mis à jour, CUMP recalculé.$detailProp',
         annuler: () {
           for (final u in annulations.reversed) {
             u();
